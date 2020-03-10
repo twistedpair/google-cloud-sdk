@@ -17,6 +17,7 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+import itertools
 import os.path
 
 from googlecloudsdk.command_lib.code import local
@@ -51,26 +52,22 @@ class LocalRuntimeFiles(object):
     Returns:
       Text of a kubernetes config file.
     """
-    deployment = local.CreateDeployment(self._settings.service_name,
-                                        self._settings.image_name)
-    if self._settings.env_vars:
-      local.AddEnvironmentVariables(deployment,
-                                    self._settings.service_name + '-container',
+    code_generators = [
+        local.AppContainerGenerator(self._settings.service_name,
+                                    self._settings.image_name,
                                     self._settings.env_vars)
-    kubernetes_configs = [
-        deployment,
-        local.CreateService(self._settings.service_name)
     ]
 
     if self._settings.service_account:
-      service_account = local.CreateDevelopmentServiceAccount(
-          self._settings.service_account)
-      private_key_json = local.CreateServiceAccountKey(service_account)
-      secret_yaml = local.LocalDevelopmentSecretSpec(private_key_json)
-      kubernetes_configs.append(secret_yaml)
-      local.AddServiceAccountSecret(kubernetes_configs)
+      secret_generator = local.SecretGenerator(self._settings.service_account)
+      code_generators.append(secret_generator)
 
-    return yaml.dump_all(kubernetes_configs)
+    if self._settings.cloudsql_instances:
+      cloudsql_proxy = local.CloudSqlProxyGenerator(
+          self._settings.cloudsql_instances, secret_generator.GetInfo())
+      code_generators.append(cloudsql_proxy)
+
+    return _GenerateKubeConfigs(code_generators)
 
   def SkaffoldConfig(self, kubernetes_file_path):
     """Create a skaffold yaml file.
@@ -109,3 +106,34 @@ class LocalRuntimeFiles(object):
       }]
 
     return yaml.dump(skaffold_yaml)
+
+
+def _GenerateKubeConfigs(code_generators):
+  """Generate Kubernetes yaml configs.
+
+  Args:
+    code_generators: Iterable of KubeConfigGenerator.
+
+  Returns:
+    Iterable of dictionaries representing kubernetes yaml configs.
+  """
+  kube_configs = []
+  for code_generator in code_generators:
+    kube_configs.extend(code_generator.CreateConfigs())
+
+  deployments = [
+      config for config in kube_configs if config['kind'] == 'Deployment'
+  ]
+  for deployment, code_generator in itertools.product(deployments,
+                                                      code_generators):
+    code_generator.ModifyDeployment(deployment)
+
+  for deployment in deployments:
+    containers = yaml_helper.GetAll(deployment,
+                                    ('spec', 'template', 'spec', 'containers'))
+
+    for container, code_generator in itertools.product(containers,
+                                                       code_generators):
+      code_generator.ModifyContainer(container)
+
+  return yaml.dump_all(kube_configs)

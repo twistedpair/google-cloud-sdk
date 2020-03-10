@@ -646,8 +646,25 @@ def AddNodeCountUpdateFlagToGroup(update_type_group):
       help='The new number of nodes running the environment. Must be >= 3.')
 
 
-def AddPrivateIpAndIpAliasEnvironmentFlags(update_type_group):
-  """Adds flags related to private clusters and IP alias to parser.
+def AddIpAliasEnvironmentFlags(update_type_group):
+  """Adds flags related to IP aliasing to parser.
+
+  IP alias flags are related to similar flags found within GKE SDK:
+    /third_party/py/googlecloudsdk/command_lib/container/flags.py
+
+  Args:
+    update_type_group: argument group, the group to which flag should be added.
+  """
+  group = update_type_group.add_group(help='IP Alias (VPC-native)')
+  ENABLE_IP_ALIAS_FLAG.AddToParser(group)
+  CLUSTER_IPV4_CIDR_FLAG.AddToParser(group)
+  SERVICES_IPV4_CIDR_FLAG.AddToParser(group)
+  CLUSTER_SECONDARY_RANGE_NAME_FLAG.AddToParser(group)
+  SERVICES_SECONDARY_RANGE_NAME_FLAG.AddToParser(group)
+
+
+def AddPrivateIpEnvironmentFlags(update_type_group):
+  """Adds flags related to private clusters to parser.
 
   Private cluster flags are related to similar flags found within GKE SDK:
     /third_party/py/googlecloudsdk/command_lib/container/flags.py
@@ -655,16 +672,10 @@ def AddPrivateIpAndIpAliasEnvironmentFlags(update_type_group):
   Args:
     update_type_group: argument group, the group to which flag should be added.
   """
-  group = update_type_group.add_group(
-      help='Private Clusters and IP Alias (VPC-native)')
+  group = update_type_group.add_group(help='Private Clusters')
   ENABLE_PRIVATE_ENVIRONMENT_FLAG.AddToParser(group)
   ENABLE_PRIVATE_ENDPOINT_FLAG.AddToParser(group)
   MASTER_IPV4_CIDR_FLAG.AddToParser(group)
-  ENABLE_IP_ALIAS_FLAG.AddToParser(group)
-  CLUSTER_IPV4_CIDR_FLAG.AddToParser(group)
-  SERVICES_IPV4_CIDR_FLAG.AddToParser(group)
-  CLUSTER_SECONDARY_RANGE_NAME_FLAG.AddToParser(group)
-  SERVICES_SECONDARY_RANGE_NAME_FLAG.AddToParser(group)
 
 
 def AddPypiUpdateFlagsToGroup(update_type_group):

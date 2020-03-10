@@ -24,56 +24,50 @@ from googlecloudsdk.core import log
 from googlecloudsdk.core import resources as core_resources
 
 
-def _CreateServiceRestriction(restriction_message_type, mask_prefix,
-                              enable_restriction, allowed_services):
-  """Returns a service restriction message and its update mask."""
-  if allowed_services is None and enable_restriction is None:
-    return None, []
+def _SetIfNotNone(field_name, field_value, obj, update_mask):
+  """Sets specified field to the provided value and adds it to update mask.
 
-  message = restriction_message_type()
-  update_mask = []
+  Args:
+    field_name: The name of the field to set the value of.
+    field_value: The value to set the field to. If it is None, the field will
+      NOT be set.
+    obj: The object on which the value is to be set.
+    update_mask: The update mask to add this field to.
 
-  if allowed_services is not None:
-    message.allowedServices = allowed_services
-    update_mask.append('allowedServices')
+  Returns:
+    True if the field was set and False otherwise.
+  """
+  if field_value is not None:
+    setattr(obj, field_name, field_value)
+    update_mask.append(field_name)
+    return True
+  return False
 
-  if enable_restriction is not None:
-    message.enableRestriction = enable_restriction
-    update_mask.append('enableRestriction')
 
-  return message, ['{}.{}'.format(mask_prefix, item) for item in update_mask]
-
-
-def _CreateServicePerimeterConfig(messages, mask_prefix,
-                                  include_unrestricted_services, resources,
-                                  restricted_services, unrestricted_services,
-                                  levels, vpc_allowed_services,
+def _CreateServicePerimeterConfig(messages, mask_prefix, resources,
+                                  restricted_services, levels,
+                                  vpc_allowed_services,
                                   enable_vpc_accessible_services):
   """Returns a ServicePerimeterConfig and its update mask."""
 
   config = messages.ServicePerimeterConfig()
   mask = []
-  if resources is not None:
-    mask.append('resources')
-    config.resources = resources
-  if include_unrestricted_services and unrestricted_services is not None:
-    mask.append('unrestrictedServices')
-    config.unrestrictedServices = unrestricted_services
-  if restricted_services is not None:
-    mask.append('restrictedServices')
-    config.restrictedServices = restricted_services
+  _SetIfNotNone('resources', resources, config, mask)
+  _SetIfNotNone('restrictedServices', restricted_services, config, mask)
   if levels is not None:
     mask.append('accessLevels')
     config.accessLevels = [l.RelativeName() for l in levels]
 
   if (enable_vpc_accessible_services is not None or
       vpc_allowed_services is not None):
-    config.vpcAccessibleServices, mask_updates = _CreateServiceRestriction(
-        messages.VpcAccessibleServices,
-        'vpcAccessibleServices',
-        enable_restriction=enable_vpc_accessible_services,
-        allowed_services=vpc_allowed_services)
-    mask += mask_updates
+    service_filter = messages.VpcAccessibleServices()
+    service_filter_mask = []
+    _SetIfNotNone('allowedServices', vpc_allowed_services, service_filter,
+                  service_filter_mask)
+    _SetIfNotNone('enableRestriction', enable_vpc_accessible_services,
+                  service_filter, service_filter_mask)
+    config.vpcAccessibleServices = service_filter
+    mask.extend(['vpcAccessibleServices.' + m for m in service_filter_mask])
 
   if not mask:
     return None, []
@@ -87,17 +81,32 @@ class Client(object):
   def __init__(self, client=None, messages=None, version='v1'):
     self.client = client or util.GetClient(version=version)
     self.messages = messages or self.client.MESSAGES_MODULE
-    self.include_unrestricted_services = {
-        'v1': False,
-        'v1alpha': True,
-        'v1beta': True
-    }[version]
 
   def Get(self, zone_ref):
     return self.client.accessPolicies_servicePerimeters.Get(
         self.messages
         .AccesscontextmanagerAccessPoliciesServicePerimetersGetRequest(
             name=zone_ref.RelativeName()))
+
+  def _ApplyPatch(self, perimeter_ref, perimeter, update_mask):
+    """Applies a PATCH to the provided Service Perimeter."""
+    m = self.messages
+    update_mask = sorted(update_mask)  # For ease-of-testing
+    request_type = (
+        m.AccesscontextmanagerAccessPoliciesServicePerimetersPatchRequest)
+    request = request_type(
+        servicePerimeter=perimeter,
+        name=perimeter_ref.RelativeName(),
+        updateMask=','.join(update_mask),
+    )
+    operation = self.client.accessPolicies_servicePerimeters.Patch(request)
+    poller = util.OperationPoller(self.client.accessPolicies_servicePerimeters,
+                                  self.client.operations, perimeter_ref)
+    operation_ref = core_resources.REGISTRY.Parse(
+        operation.name, collection='accesscontextmanager.operations')
+    return waiter.WaitFor(
+        poller, operation_ref,
+        'Waiting for PATCH operation [{}]'.format(operation_ref.Name()))
 
   def Patch(self,
             perimeter_ref,
@@ -106,12 +115,9 @@ class Client(object):
             perimeter_type=None,
             resources=None,
             restricted_services=None,
-            unrestricted_services=None,
             levels=None,
             vpc_allowed_services=None,
-            enable_vpc_accessible_services=None,
-            apply_to_dry_run_config=False,
-            clear_dry_run=False):
+            enable_vpc_accessible_services=None):
     """Patch a service perimeter.
 
     Args:
@@ -125,9 +131,6 @@ class Client(object):
       restricted_services: list of str, the names of services
         ('example.googleapis.com') that *are* restricted by the access zone or
         None if not updating.
-      unrestricted_services: list of str, the names of services
-        ('example.googleapis.com') that *are not* restricted by the access zone
-        or None if not updating.
       levels: list of Resource, the access levels (in the same policy) that must
         be satisfied for calls into this zone or None if not updating.
       vpc_allowed_services: list of str, the names of services
@@ -135,55 +138,28 @@ class Client(object):
         access zone, or None if not updating.
       enable_vpc_accessible_services: bool, whether to restrict the set of APIs
         callable within the access zone, or None if not updating.
-      apply_to_dry_run_config: When true, the configuration will be place in the
-        'spec' field instead of the 'status' field of the Service Perimeter.
-      clear_dry_run: When true, the ServicePerimeterConfig field for dry-run
-        (i.e. 'spec') will be cleared and dryRun will be set to False.
 
     Returns:
       ServicePerimeter, the updated Service Perimeter.
     """
     m = self.messages
     perimeter = m.ServicePerimeter()
-
     update_mask = []
 
-    if description is not None:
-      update_mask.append('description')
-      perimeter.description = description
-    if title is not None:
-      update_mask.append('title')
-      perimeter.title = title
-    if perimeter_type is not None:
-      update_mask.append('perimeterType')
-      perimeter.perimeterType = perimeter_type
+    _SetIfNotNone('title', title, perimeter, update_mask)
+    _SetIfNotNone('description', description, perimeter, update_mask)
+    _SetIfNotNone('perimeterType', perimeter_type, perimeter, update_mask)
 
-    if not clear_dry_run:
-      mask_prefix = 'status' if not apply_to_dry_run_config else 'spec'
-
-      config, config_mask_additions = _CreateServicePerimeterConfig(
-          m, mask_prefix, self.include_unrestricted_services, resources,
-          restricted_services, unrestricted_services, levels,
-          vpc_allowed_services, enable_vpc_accessible_services)
-
-      if not apply_to_dry_run_config:
-        perimeter.status = config
-      else:
-        perimeter.useExplicitDryRunSpec = True
-        perimeter.spec = config
-
-      update_mask += config_mask_additions
-
-      if apply_to_dry_run_config and config_mask_additions:
-        update_mask.append('useExplicitDryRunSpec')
-
-    else:
-      update_mask.append('spec')
-      update_mask.append('useExplicitDryRunSpec')
-      perimeter.spec = None
-      perimeter.useExplicitDryRunSpec = False
-
-    update_mask.sort()  # For ease-of-testing
+    config, config_mask_additions = _CreateServicePerimeterConfig(
+        messages=m,
+        mask_prefix='status',
+        resources=resources,
+        restricted_services=restricted_services,
+        levels=levels,
+        vpc_allowed_services=vpc_allowed_services,
+        enable_vpc_accessible_services=enable_vpc_accessible_services)
+    perimeter.status = config
+    update_mask.extend(config_mask_additions)
 
     # No update mask implies no fields were actually edited, so this is a no-op.
     if not update_mask:
@@ -192,19 +168,80 @@ class Client(object):
       )
       return perimeter
 
-    request_type = (
-        m.AccesscontextmanagerAccessPoliciesServicePerimetersPatchRequest)
-    request = request_type(
-        servicePerimeter=perimeter,
-        name=perimeter_ref.RelativeName(),
-        updateMask=','.join(update_mask),
-    )
+    return self._ApplyPatch(perimeter_ref, perimeter, update_mask)
 
-    operation = self.client.accessPolicies_servicePerimeters.Patch(request)
-    poller = util.OperationPoller(self.client.accessPolicies_servicePerimeters,
-                                  self.client.operations, perimeter_ref)
-    operation_ref = core_resources.REGISTRY.Parse(
-        operation.name, collection='accesscontextmanager.operations')
-    return waiter.WaitFor(
-        poller, operation_ref,
-        'Waiting for PATCH operation [{}]'.format(operation_ref.Name()))
+  def PatchDryRunConfig(self,
+                        perimeter_ref,
+                        description=None,
+                        title=None,
+                        perimeter_type=None,
+                        resources=None,
+                        restricted_services=None,
+                        levels=None,
+                        vpc_allowed_services=None,
+                        enable_vpc_accessible_services=None):
+    """Patch the dry-run config (spec) for a Service Perimeter.
+
+    Args:
+      perimeter_ref: resources.Resource, reference to the perimeter to patch
+      description: str, description of the zone or None if not updating
+      title: str, title of the zone or None if not updating
+      perimeter_type: PerimeterTypeValueValuesEnum type enum value for the level
+        or None if not updating
+      resources: list of str, the names of resources (for now, just
+        'projects/...') in the zone or None if not updating.
+      restricted_services: list of str, the names of services
+        ('example.googleapis.com') that *are* restricted by the access zone or
+        None if not updating.
+      levels: list of Resource, the access levels (in the same policy) that must
+        be satisfied for calls into this zone or None if not updating.
+      vpc_allowed_services: list of str, the names of services
+        ('example.googleapis.com') that *are* allowed to be made within the
+        access zone, or None if not updating.
+      enable_vpc_accessible_services: bool, whether to restrict the set of APIs
+        callable within the access zone, or None if not updating.
+
+    Returns:
+      ServicePerimeter, the updated Service Perimeter.
+    """
+    m = self.messages
+    perimeter = m.ServicePerimeter()
+    update_mask = []
+
+    if _SetIfNotNone('title', title, perimeter, update_mask):
+      perimeter.name = perimeter_ref.RelativeName()  # Necessary for upsert.
+      update_mask.append('name')
+    _SetIfNotNone('description', description, perimeter, update_mask)
+    _SetIfNotNone('perimeterType', perimeter_type, perimeter, update_mask)
+
+    config, config_mask_additions = _CreateServicePerimeterConfig(
+        messages=m,
+        mask_prefix='spec',
+        resources=resources,
+        restricted_services=restricted_services,
+        levels=levels,
+        vpc_allowed_services=vpc_allowed_services,
+        enable_vpc_accessible_services=enable_vpc_accessible_services)
+
+    perimeter.spec = config
+    update_mask.extend(config_mask_additions)
+    perimeter.useExplicitDryRunSpec = True
+    update_mask.append('useExplicitDryRunSpec')
+    return self._ApplyPatch(perimeter_ref, perimeter, update_mask)
+
+  def UnsetSpec(self, perimeter_ref, use_explicit_dry_run_spec):
+    """Unsets the spec for a Service Perimeter.
+
+    Args:
+      perimeter_ref: resources.Resource, reference to the perimeter to patch.
+      use_explicit_dry_run_spec: The value to use for the perimeter field of the
+        same name.
+
+    Returns:
+      ServicePerimeter, the updated Service Perimeter.
+    """
+    perimeter = self.messages.ServicePerimeter()
+    perimeter.useExplicitDryRunSpec = use_explicit_dry_run_spec
+    perimeter.spec = None
+    update_mask = ['spec', 'useExplicitDryRunSpec']
+    return self._ApplyPatch(perimeter_ref, perimeter, update_mask)

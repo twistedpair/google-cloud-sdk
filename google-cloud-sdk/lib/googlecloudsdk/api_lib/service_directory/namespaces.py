@@ -82,12 +82,10 @@ class NamespacesClient(object):
         updateMask=','.join(mask_parts))
     return self.service.Patch(update_req)
 
-  def AddIamPolicyBinding(self, namespace_ref, member, role, condition):
+  def AddIamPolicyBinding(self, namespace_ref, member, role):
     """Namespaces add iam policy binding request."""
     policy = self.GetIamPolicy(namespace_ref)
-    iam_util.AddBindingToIamPolicyWithCondition(self.msgs.Binding,
-                                                self.msgs.Expr, policy, member,
-                                                role, condition)
+    iam_util.AddBindingToIamPolicy(self.msgs.Binding, policy, member, role)
     return self.SetIamPolicy(namespace_ref, policy)
 
   def GetIamPolicy(self, namespace_ref):
@@ -96,11 +94,10 @@ class NamespacesClient(object):
         resource=namespace_ref.RelativeName())
     return self.service.GetIamPolicy(get_req)
 
-  def RemoveIamPolicyBinding(self, namespace_ref, member, role, condition):
+  def RemoveIamPolicyBinding(self, namespace_ref, member, role):
     """Namespaces remove iam policy binding request."""
     policy = self.GetIamPolicy(namespace_ref)
-    iam_util.RemoveBindingFromIamPolicyWithCondition(policy, member, role,
-                                                     condition)
+    iam_util.RemoveBindingFromIamPolicy(policy, member, role)
     return self.SetIamPolicy(namespace_ref, policy)
 
   def SetIamPolicy(self, namespace_ref, policy):

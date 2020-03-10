@@ -795,6 +795,8 @@ class GoogleDevtoolsRemotebuildbotCommandStatus(_messages.Message):
         CreateComputeSystem error.
       DOCKER_PREPARELAYER_ERROR: Docker failed to run containers with
         hcsshim::PrepareLayer error.
+      DOCKER_INCOMPATIBLE_OS_ERROR: Docker incompatible operating system
+        error.
     """
     OK = 0
     INVALID_ARGUMENT = 1
@@ -827,6 +829,7 @@ class GoogleDevtoolsRemotebuildbotCommandStatus(_messages.Message):
     DOCKER_UNKNOWN_ERROR = 28
     DOCKER_CREATE_COMPUTE_SYSTEM_ERROR = 29
     DOCKER_PREPARELAYER_ERROR = 30
+    DOCKER_INCOMPATIBLE_OS_ERROR = 31
 
   code = _messages.EnumField('CodeValueValuesEnum', 1)
   message = _messages.StringField(2)

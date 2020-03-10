@@ -200,9 +200,9 @@ class BasicInfo(object):
       String: Default locale, with a fallback to locale environment variables.
     """
     env_vars = [
-        '%s:%s' % (var, os.environ.get(var))
+        '%s:%s' % (var, encoding.GetEncodedValue(os.environ, var))
         for var in ['LC_ALL', 'LC_CTYPE', 'LANG', 'LANGUAGE']
-        if os.environ.get(var)
+        if encoding.GetEncodedValue(os.environ, var)
     ]
     fallback_locale = '; '.join(env_vars)
 

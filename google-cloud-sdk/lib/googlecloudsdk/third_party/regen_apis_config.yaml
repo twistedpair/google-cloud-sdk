@@ -335,6 +335,17 @@ apis:
           path: projects/{projectsId}/locations/{locationsId}/tagTemplates/{tagTemplatesId}/fields/{fieldsId}
         projects.locations.entryGroups.entries.tags:
           path: projects/{projectsId}/locations/{locationsId}/entryGroups/{entryGroupsId}/entries/{entriesId}/tags/{tagsId}
+    v1:
+      discovery_doc: datacatalog_v1.json
+      resources:
+        catalog:
+          path: catalog
+        entries:
+          path: entries
+        projects.locations.tagTemplates.fields:
+          path: projects/{projectsId}/locations/{locationsId}/tagTemplates/{tagTemplatesId}/fields/{fieldsId}
+        projects.locations.entryGroups.entries.tags:
+          path: projects/{projectsId}/locations/{locationsId}/entryGroups/{entryGroupsId}/entries/{entriesId}/tags/{tagsId}
   dataflow:
     v1b3:
       discovery_doc: dataflow_v1b3.json
@@ -552,6 +563,7 @@ apis:
   memcache:
     v1beta2:
       discovery_doc: memcache_v1beta2.json
+      default: true
   ml:
     v1:
       discovery_doc: ml_v1.json
@@ -573,8 +585,14 @@ apis:
         # generated client will simply use the Dashboard message as the request message for PATCH.
         - monitoring.projects.dashboards.patch
   networkmanagement:
+    v1:
+      discovery_doc: networkmanagement_v1.json
     v1beta1:
+      default: true
       discovery_doc: networkmanagement_v1beta1.json
+  networkservices:
+    v1alpha1:
+      discovery_doc: networkservices_v1alpha1.json
   notebooks:
     v1beta1:
       discovery_doc: notebooks_v1beta1.json

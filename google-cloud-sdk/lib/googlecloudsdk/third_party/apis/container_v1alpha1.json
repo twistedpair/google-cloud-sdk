@@ -1714,10 +1714,6 @@
           "description": "Output only. The external IP address of this cluster's endpoint.",
           "type": "string"
         },
-        "enablePeeringRouteSharing": {
-          "description": "Whether to enable route sharing over the network peering.",
-          "type": "boolean"
-        },
         "peeringName": {
           "description": "Output only. The peering name in the customer VPC used by this cluster.",
           "type": "string"

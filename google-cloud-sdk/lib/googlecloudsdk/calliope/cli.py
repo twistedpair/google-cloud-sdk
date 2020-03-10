@@ -43,6 +43,7 @@ from googlecloudsdk.core import properties
 from googlecloudsdk.core import yaml
 from googlecloudsdk.core.configurations import named_configs
 from googlecloudsdk.core.console import console_attr
+from googlecloudsdk.core.util import encoding
 from googlecloudsdk.core.util import files
 from googlecloudsdk.core.util import pkg_resources
 
@@ -671,7 +672,8 @@ class CLILoader(object):
     # Don't bother setting up logging if we are just doing a completion.
     if '_ARGCOMPLETE' not in os.environ or '_ARGCOMPLETE_TRACE' in os.environ:
       log.AddFileLogging(self.__logs_dir)
-      verbosity_string = os.environ.get('_ARGCOMPLETE_TRACE')
+      verbosity_string = encoding.GetEncodedValue(os.environ,
+                                                  '_ARGCOMPLETE_TRACE')
       if verbosity_string:
         verbosity = log.VALID_VERBOSITY_STRINGS.get(verbosity_string)
         log.SetVerbosity(verbosity)
@@ -766,7 +768,7 @@ class _CompletionFinder(argcomplete.CompletionFinder):
     else:
       special_chars = single_quote_special
 
-    if os.environ.get('_ARGCOMPLETE_SHELL') == 'tcsh':
+    if encoding.GetEncodedValue(os.environ, '_ARGCOMPLETE_SHELL') == 'tcsh':
       # tcsh escapes special characters itself.
       special_chars = ''
     elif cword_prequote == "'":

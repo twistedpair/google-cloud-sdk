@@ -410,6 +410,20 @@
         }
       }
     },
+    "CancelOperationRequest": {
+      "id": "CancelOperationRequest",
+      "description": "The request message for Operations.CancelOperation.",
+      "type": "object",
+      "properties": {
+      }
+    },
+    "Empty": {
+      "id": "Empty",
+      "description": "A generic empty message that you can re-use to avoid defining duplicated\nempty messages in your APIs. A typical example is to use it as the request\nor the response type of an API method. For instance:\n\n    service Foo {\n      rpc Bar(google.protobuf.Empty) returns (google.protobuf.Empty);\n    }\n\nThe JSON representation for `Empty` is empty JSON object `{}`.",
+      "type": "object",
+      "properties": {
+      }
+    },
     "AnnotationStore": {
       "id": "AnnotationStore",
       "description": "An Annotation store that can store annotation resources such as\nlabels and tags for text, image and audio.",
@@ -426,13 +440,6 @@
             "type": "string"
           }
         }
-      }
-    },
-    "Empty": {
-      "id": "Empty",
-      "description": "A generic empty message that you can re-use to avoid defining duplicated\nempty messages in your APIs. A typical example is to use it as the request\nor the response type of an API method. For instance:\n\n    service Foo {\n      rpc Bar(google.protobuf.Empty) returns (google.protobuf.Empty);\n    }\n\nThe JSON representation for `Empty` is empty JSON object `{}`.",
-      "type": "object",
-      "properties": {
       }
     },
     "ListAnnotationStoresResponse": {
@@ -776,7 +783,7 @@
     },
     "RedactConfig": {
       "id": "RedactConfig",
-      "description": "Defines how to redact sensitive values. Default behavior is erase.\nFor example, \"My name is Jake.\" becomes \"My name is .\"",
+      "description": "Defines how to redact sensitive values. Default behavior is erase.\nFor example, \"My name is Jane.\" becomes \"My name is .\"",
       "type": "object",
       "properties": {
       }
@@ -818,7 +825,7 @@
     },
     "ReplaceWithInfoTypeConfig": {
       "id": "ReplaceWithInfoTypeConfig",
-      "description": "When using the\nINSPECT_AND_TRANSFORM\naction, each match is replaced with the name of the `info_type`. For example,\n\"My name is Jake\" becomes \"My name is [PERSON_NAME].\" The\nTRANSFORM\naction is equivalent to redacting.",
+      "description": "When using the\nINSPECT_AND_TRANSFORM\naction, each match is replaced with the name of the `info_type`. For example,\n\"My name is Jane\" becomes \"My name is [PERSON_NAME].\" The\nTRANSFORM\naction is equivalent to redacting.",
       "type": "object",
       "properties": {
       }
@@ -1158,6 +1165,22 @@
         "subscriptionConfig": {
           "description": "Configuration of FHIR Subscription:\nhttps:\/\/www.hl7.org\/fhir\/subscription.html.",
           "$ref": "SubscriptionConfig"
+        },
+        "version": {
+          "description": "The FHIR specification version that this FHIR store supports natively. This\nfield is immutable after store creation. Requests are rejected if they\ncontain FHIR resources of a different version.\nAn empty value is treated as STU3.",
+          "enumDescriptions": [
+            "VERSION_UNSPECIFIED is treated as STU3 to accommodate the existing FHIR\nstores.",
+            "Draft Standard for Trial Use, [Release 2](https:\/\/www.hl7.org\/fhir\/DSTU2)",
+            "Standard for Trial Use, [Release 3](https:\/\/www.hl7.org\/fhir\/STU3)",
+            "[Release 4](https:\/\/www.hl7.org\/fhir\/R4)"
+          ],
+          "type": "string",
+          "enum": [
+            "VERSION_UNSPECIFIED",
+            "DSTU2",
+            "STU3",
+            "R4"
+          ]
         },
         "streamConfigs": {
           "description": "A list of streaming configs that configure the destinations of streaming\nexport for every resource mutation in this FHIR store. Each store is\nallowed to have up to 10 streaming configs.\nAfter a new config is added, the next resource mutation is streamed to\nthe new location in addition to the existing ones.\nWhen a location is removed from the list, the server stops streaming to\nthat location. Before adding a new config, you must add the required\n[`bigquery.dataEditor`](https:\/\/cloud.google.com\/bigquery\/docs\/access-control#bigquery.dataEditor)\nrole to your project's **Cloud Healthcare Service Agent**\n[service account](https:\/\/cloud.google.com\/iam\/docs\/service-accounts).\nSome lag (typically on the order of dozens of seconds) is expected before\nthe results show up in the streaming destination.",
@@ -3220,6 +3243,34 @@
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
                       "description": "Gets the latest state of a long-running operation.  Clients can use this\nmethod to poll the operation result at intervals as recommended by the API\nservice."
+                    },
+                    "cancel": {
+                      "id": "healthcare.projects.locations.datasets.operations.cancel",
+                      "path": "v1alpha2/{+name}:cancel",
+                      "flatPath": "v1alpha2/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/operations/{operationsId}:cancel",
+                      "httpMethod": "POST",
+                      "parameters": {
+                        "name": {
+                          "description": "The name of the operation resource to be cancelled.",
+                          "location": "path",
+                          "required": true,
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/datasets\/[^\/]+\/operations\/[^\/]+$",
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "name"
+                      ],
+                      "request": {
+                        "$ref": "CancelOperationRequest"
+                      },
+                      "response": {
+                        "$ref": "Empty"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Starts asynchronous cancellation on a long-running operation.  The server\nmakes a best effort to cancel the operation, but success is not\nguaranteed.  If the server doesn't support this method, it returns\n`google.rpc.Code.UNIMPLEMENTED`.  Clients can use\nOperations.GetOperation or\nother methods to check whether the cancellation succeeded or whether the\noperation completed despite cancellation. On successful cancellation,\nthe operation is not deleted; instead, it becomes an operation with\nan Operation.error value with a google.rpc.Status.code of 1,\ncorresponding to `Code.CANCELLED`."
                     }
                   }
                 }

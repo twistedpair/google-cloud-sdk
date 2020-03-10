@@ -206,6 +206,32 @@ def AddTcpRelatedUpdateArgs(parser):
   _AddTcpRelatedArgsImpl(add_info_about_clearing=True, parser=parser)
 
 
+def AddGrpcRelatedCreationArgs(parser):
+  """Adds parser arguments for creation related to gRPC."""
+
+  _AddPortRelatedCreationArgs(
+      parser, use_serving_port=True, port_type='TCP', default_port=None)
+
+  parser.add_argument(
+      '--grpc-service-name',
+      help="""\
+      An optional gRPC service name string of up to 1024 characters to include
+      in the gRPC health check request. Only ASCII characters are allowed.""")
+
+
+def AddGrpcRelatedUpdateArgs(parser):
+  """Adds parser arguments for update subcommands related to gRPC."""
+
+  _AddPortRelatedUpdateArgs(parser)
+
+  parser.add_argument(
+      '--grpc-service-name',
+      help="""\
+      An optional gRPC service name string of up to 1024 characters to include
+      in the gRPC health check request. Pass in an empty string to unset.
+      Only ASCII characters are allowed.""")
+
+
 def AddUdpRelatedArgs(parser, request_and_response_required=True):
   """Adds parser arguments related to UDP."""
 

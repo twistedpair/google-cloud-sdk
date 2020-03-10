@@ -19,14 +19,16 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+from googlecloudsdk.api_lib.privateca import base
 from googlecloudsdk.api_lib.privateca import locations
 from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.calliope.concepts import concepts
 from googlecloudsdk.calliope.concepts import deps
+from googlecloudsdk.command_lib.privateca import exceptions as privateca_exceptions
 from googlecloudsdk.command_lib.util.concepts import concept_parsers
 
 PREDEFINED_REUSABLE_CONFIG_LOCATION = 'us-west1'
-PREDEFINED_REUSABLE_CONFIG_PROJECT = 'private-ca-shared'
+PREDEFINED_REUSABLE_CONFIG_PROJECT = 'privateca-data'
 
 
 def ReusableConfigAttributeConfig():
@@ -34,9 +36,10 @@ def ReusableConfigAttributeConfig():
   return concepts.ResourceParameterAttributeConfig(name='reusable_config')
 
 
-def CertificateAttributeConfig():
+def CertificateAttributeConfig(fallthroughs=None):
   # Certificate is always an anchor attribute so help_text is unused.
-  return concepts.ResourceParameterAttributeConfig(name='certificate')
+  return concepts.ResourceParameterAttributeConfig(
+      name='certificate', fallthroughs=fallthroughs or [])
 
 
 def CertificateAuthorityAttributeConfig(arg_name='certificate_authority'):
@@ -82,12 +85,14 @@ def CreateReusableConfigResourceSpec():
   # For now, reusable configs exist in a single location and project.
   location_fallthrough = deps.Fallthrough(
       function=lambda: PREDEFINED_REUSABLE_CONFIG_LOCATION,
-      hint='location must be specified',
+      hint='location will default to {}'.format(
+          PREDEFINED_REUSABLE_CONFIG_LOCATION),
       active=False,
       plural=False)
   project_fallthrough = deps.Fallthrough(
       function=lambda: PREDEFINED_REUSABLE_CONFIG_PROJECT,
-      hint='project must be specified',
+      hint='project will default to {}'.format(
+          PREDEFINED_REUSABLE_CONFIG_PROJECT),
       active=False,
       plural=False)
   return concepts.ResourceSpec(
@@ -112,12 +117,13 @@ def CreateCertificateAuthorityResourceSpec(
       projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG)
 
 
-def CreateCertificateResourceSpec(display_name):
+def CreateCertificateResourceSpec(display_name, id_fallthroughs=None):
   return concepts.ResourceSpec(
       'privateca.projects.locations.certificateAuthorities.certificates',
       # This will be formatted and used as {resource} in the help text.
       resource_name=display_name,
-      certificatesId=CertificateAttributeConfig(),
+      certificatesId=CertificateAttributeConfig(
+          fallthroughs=id_fallthroughs or []),
       certificateAuthoritiesId=CertificateAuthorityAttributeConfig('issuer'),
       locationsId=LocationAttributeConfig('issuer-location'),
       projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG)
@@ -167,3 +173,22 @@ def ValidateKmsKeyVersionLocation(version_ref):
         '--kms-key-version',
         'Resource is in an unsupported location. Supported locations are: {}.'
         .format(', '.join(sorted(supported_locations))))
+
+
+def CheckExpectedCAType(expected_type, ca):
+  """Raises an exception if the Certificate Authority type is not expected_type.
+
+  Args:
+    expected_type: The expected type.
+    ca: The ca object to check.
+  """
+  ca_type_enum = base.GetMessagesModule(
+  ).CertificateAuthority.TypeValueValuesEnum
+  if expected_type == ca_type_enum.SUBORDINATE and ca.type != expected_type:
+    raise privateca_exceptions.InvalidCertificateAuthorityTypeError(
+        'Cannot perform subordinates command on Root CA. Please use the `privateca roots` command group instead.'
+    )
+  elif expected_type == ca_type_enum.SELF_SIGNED and ca.type != expected_type:
+    raise privateca_exceptions.InvalidCertificateAuthorityTypeError(
+        'Cannot perform roots command on Subordinate CA. Please use the `privateca subordinates` command group instead.'
+    )

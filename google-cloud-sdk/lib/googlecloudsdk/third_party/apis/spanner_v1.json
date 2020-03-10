@@ -1564,6 +1564,52 @@
         }
       }
     },
+    "CreateBackupMetadata": {
+      "id": "CreateBackupMetadata",
+      "description": "Metadata type for the operation returned by\nCreateBackup.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "The name of the backup being created.",
+          "type": "string"
+        },
+        "database": {
+          "description": "The name of the database the backup is created from.",
+          "type": "string"
+        },
+        "progress": {
+          "description": "The progress of the\nCreateBackup operation.",
+          "$ref": "OperationProgress"
+        },
+        "cancelTime": {
+          "description": "The time at which cancellation of this operation was received.\nOperations.CancelOperation\nstarts asynchronous cancellation on a long-running operation. The server\nmakes a best effort to cancel the operation, but success is not guaranteed.\nClients can use\nOperations.GetOperation or\nother methods to check whether the cancellation succeeded or whether the\noperation completed despite cancellation. On successful cancellation,\nthe operation is not deleted; instead, it becomes an operation with\nan Operation.error value with a google.rpc.Status.code of 1,\ncorresponding to `Code.CANCELLED`.",
+          "type": "string",
+          "format": "google-datetime"
+        }
+      }
+    },
+    "OperationProgress": {
+      "id": "OperationProgress",
+      "description": "Encapsulates progress related information for a Cloud Spanner long\nrunning operation.",
+      "type": "object",
+      "properties": {
+        "progressPercent": {
+          "description": "Percent completion of the operation.\nValues are between 0 and 100 inclusive.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "startTime": {
+          "description": "Time the request was received.",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "endTime": {
+          "description": "If set, the time at which this operation failed or was completed\nsuccessfully.",
+          "type": "string",
+          "format": "google-datetime"
+        }
+      }
+    },
     "CreateDatabaseMetadata": {
       "id": "CreateDatabaseMetadata",
       "description": "Metadata type for the operation returned by\nCreateDatabase.",
@@ -2245,7 +2291,7 @@
                     "https://www.googleapis.com/auth/cloud-platform",
                     "https://www.googleapis.com/auth/spanner.admin"
                   ],
-                  "description": "Drops (aka deletes) a Cloud Spanner database."
+                  "description": "Drops (aka deletes) a Cloud Spanner database.\nCompleted backups for the database will be retained according to their\n`expire_time`."
                 },
                 "getDdl": {
                   "id": "spanner.projects.instances.databases.getDdl",
@@ -2300,7 +2346,7 @@
                     "https://www.googleapis.com/auth/cloud-platform",
                     "https://www.googleapis.com/auth/spanner.admin"
                   ],
-                  "description": "Sets the access control policy on a database resource.\nReplaces any existing policy.\n\nAuthorization requires `spanner.databases.setIamPolicy`\npermission on resource."
+                  "description": "Sets the access control policy on a database or backup resource.\nReplaces any existing policy.\n\nAuthorization requires `spanner.databases.setIamPolicy`\npermission on resource.\nFor backups, authorization requires `spanner.backups.setIamPolicy`\npermission on resource."
                 },
                 "getIamPolicy": {
                   "id": "spanner.projects.instances.databases.getIamPolicy",
@@ -2329,7 +2375,7 @@
                     "https://www.googleapis.com/auth/cloud-platform",
                     "https://www.googleapis.com/auth/spanner.admin"
                   ],
-                  "description": "Gets the access control policy for a database resource.\nReturns an empty policy if a database exists but does\nnot have a policy set.\n\nAuthorization requires `spanner.databases.getIamPolicy` permission on\nresource."
+                  "description": "Gets the access control policy for a database or backup resource.\nReturns an empty policy if a database or backup exists but does not have a\npolicy set.\n\nAuthorization requires `spanner.databases.getIamPolicy` permission on\nresource.\nFor backups, authorization requires `spanner.backups.getIamPolicy`\npermission on resource."
                 },
                 "testIamPermissions": {
                   "id": "spanner.projects.instances.databases.testIamPermissions",
@@ -2358,7 +2404,7 @@
                     "https://www.googleapis.com/auth/cloud-platform",
                     "https://www.googleapis.com/auth/spanner.admin"
                   ],
-                  "description": "Returns permissions that the caller has on the specified database resource.\n\nAttempting this RPC on a non-existent Cloud Spanner database will\nresult in a NOT_FOUND error if the user has\n`spanner.databases.list` permission on the containing Cloud\nSpanner instance. Otherwise returns an empty set of permissions."
+                  "description": "Returns permissions that the caller has on the specified database or backup\nresource.\n\nAttempting this RPC on a non-existent Cloud Spanner database will\nresult in a NOT_FOUND error if the user has\n`spanner.databases.list` permission on the containing Cloud\nSpanner instance. Otherwise returns an empty set of permissions.\nCalling this method on a backup that does not exist will\nresult in a NOT_FOUND error if the user has\n`spanner.backups.list` permission on the containing instance."
                 }
               }
               ,
@@ -2964,7 +3010,7 @@
                     "https://www.googleapis.com/auth/cloud-platform",
                     "https://www.googleapis.com/auth/spanner.admin"
                   ],
-                  "description": "Sets the access control policy on a database resource.\nReplaces any existing policy.\n\nAuthorization requires `spanner.databases.setIamPolicy`\npermission on resource."
+                  "description": "Sets the access control policy on a database or backup resource.\nReplaces any existing policy.\n\nAuthorization requires `spanner.databases.setIamPolicy`\npermission on resource.\nFor backups, authorization requires `spanner.backups.setIamPolicy`\npermission on resource."
                 },
                 "getIamPolicy": {
                   "id": "spanner.projects.instances.backups.getIamPolicy",
@@ -2993,7 +3039,7 @@
                     "https://www.googleapis.com/auth/cloud-platform",
                     "https://www.googleapis.com/auth/spanner.admin"
                   ],
-                  "description": "Gets the access control policy for a database resource.\nReturns an empty policy if a database exists but does\nnot have a policy set.\n\nAuthorization requires `spanner.databases.getIamPolicy` permission on\nresource."
+                  "description": "Gets the access control policy for a database or backup resource.\nReturns an empty policy if a database or backup exists but does not have a\npolicy set.\n\nAuthorization requires `spanner.databases.getIamPolicy` permission on\nresource.\nFor backups, authorization requires `spanner.backups.getIamPolicy`\npermission on resource."
                 },
                 "testIamPermissions": {
                   "id": "spanner.projects.instances.backups.testIamPermissions",
@@ -3022,7 +3068,7 @@
                     "https://www.googleapis.com/auth/cloud-platform",
                     "https://www.googleapis.com/auth/spanner.admin"
                   ],
-                  "description": "Returns permissions that the caller has on the specified database resource.\n\nAttempting this RPC on a non-existent Cloud Spanner database will\nresult in a NOT_FOUND error if the user has\n`spanner.databases.list` permission on the containing Cloud\nSpanner instance. Otherwise returns an empty set of permissions."
+                  "description": "Returns permissions that the caller has on the specified database or backup\nresource.\n\nAttempting this RPC on a non-existent Cloud Spanner database will\nresult in a NOT_FOUND error if the user has\n`spanner.databases.list` permission on the containing Cloud\nSpanner instance. Otherwise returns an empty set of permissions.\nCalling this method on a backup that does not exist will\nresult in a NOT_FOUND error if the user has\n`spanner.backups.list` permission on the containing instance."
                 }
               }
               ,

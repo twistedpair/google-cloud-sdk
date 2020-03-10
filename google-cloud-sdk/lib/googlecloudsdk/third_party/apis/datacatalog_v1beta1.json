@@ -268,6 +268,24 @@
       "properties": {
       }
     },
+    "GoogleCloudDatacatalogV1beta1ListEntryGroupsResponse": {
+      "id": "GoogleCloudDatacatalogV1beta1ListEntryGroupsResponse",
+      "description": "Response message for\nListEntryGroups.",
+      "type": "object",
+      "properties": {
+        "entryGroups": {
+          "description": "EntryGroup details.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudDatacatalogV1beta1EntryGroup"
+          }
+        },
+        "nextPageToken": {
+          "description": "Token to retrieve the next page of results. It is set to empty if no items\nremain in results.",
+          "type": "string"
+        }
+      }
+    },
     "GoogleCloudDatacatalogV1beta1Entry": {
       "id": "GoogleCloudDatacatalogV1beta1Entry",
       "description": "Entry Metadata. \nA Data Catalog Entry resource represents another resource in Google\nCloud Platform (such as a BigQuery dataset or a Cloud Pub\/Sub topic), or\noutside of Google Cloud Platform. Clients can use the `linked_resource` field\nin the Entry resource to refer to the original resource ID of the source\nsystem.\n\nAn Entry resource contains resource details, such as its schema. An Entry can\nalso be used to attach flexible metadata, such as a\nTag.",
@@ -1221,6 +1239,42 @@
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
                   "description": "Deletes an EntryGroup. Only entry groups that do not contain entries can be\ndeleted. Users should enable the Data Catalog API in the project\nidentified by the `name` parameter (see [Data Catalog Resource Project]\n(\/data-catalog\/docs\/concepts\/resource-project) for more information)."
+                },
+                "list": {
+                  "id": "datacatalog.projects.locations.entryGroups.list",
+                  "path": "v1beta1/{+parent}/entryGroups",
+                  "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/entryGroups",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "parent": {
+                      "description": "Required. The name of the location that contains the entry groups, which can be\nprovided in URL format. Example:\n\n* projects\/{project_id}\/locations\/{location}",
+                      "location": "path",
+                      "required": true,
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
+                      "type": "string"
+                    },
+                    "pageSize": {
+                      "description": "Optional. The maximum number of items to return. Default is 10. Max limit is 1000.\nThrows an invalid argument for `page_size > 1000`.",
+                      "location": "query",
+                      "type": "integer",
+                      "format": "int32"
+                    },
+                    "pageToken": {
+                      "description": "Optional. Token that specifies which page is requested. If empty, the first page is\nreturned.",
+                      "location": "query",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "parent"
+                  ],
+                  "response": {
+                    "$ref": "GoogleCloudDatacatalogV1beta1ListEntryGroupsResponse"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Lists entry groups."
                 },
                 "setIamPolicy": {
                   "id": "datacatalog.projects.locations.entryGroups.setIamPolicy",

@@ -21,6 +21,7 @@ from __future__ import unicode_literals
 from googlecloudsdk.api_lib.ml_engine import models
 from googlecloudsdk.command_lib.iam import iam_util
 from googlecloudsdk.command_lib.util.args import labels_util
+from googlecloudsdk.core import exceptions as core_exceptions
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 from googlecloudsdk.core import resources
@@ -43,12 +44,26 @@ def ParseCreateLabels(models_client, args):
       args, models_client.messages.GoogleCloudMlV1Model.LabelsValue)
 
 
-def Create(models_client, model, regions=None, enable_logging=None,
+class RegionArgError(core_exceptions.Error):
+  """Indicates that both --region and --regions flag were passed."""
+  pass
+
+
+def _GetModelRegion(args):
+  if args.region and args.regions:
+    raise RegionArgError('Only one of --region or --regions can be specified.')
+  if args.region is not None:
+    return [args.region]
+  if args.regions is None:
+    log.warning(
+        'Please explicitly specify a region. Using [us-central1] by default.')
+    return ['us-central1']
+  return args.regions
+
+
+def Create(models_client, model, args, enable_logging=None,
            enable_console_logging=None, labels=None, description=None):
-  if regions is None:
-    log.warning('`--regions` flag will soon be required. Please explicitly '
-                'specify a region. Using [us-central1] by default.')
-    regions = ['us-central1']
+  regions = _GetModelRegion(args)
   return models_client.Create(model, regions, enable_logging=enable_logging,
                               enable_console_logging=enable_console_logging,
                               labels=labels, description=description)

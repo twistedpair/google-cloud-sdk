@@ -51,15 +51,12 @@ class AppengineAppUpdateApiClient(base.AppengineApiClientBase):
     self._registry.RegisterApiByName('appengine', client._VERSION)
 
   def PatchApplication(self,
-                       split_health_checks=None,
-                       use_container_optimized_os=None):
+                       split_health_checks=None):
     """Updates an application.
 
     Args:
       split_health_checks: Boolean, whether to enable split health checks by
       default.
-      use_container_optimized_os: Boolean, whether to enable Container-Opimized
-      OS as Flex base VM image by default.
 
     Returns:
       Long running operation.
@@ -69,13 +66,10 @@ class AppengineAppUpdateApiClient(base.AppengineApiClientBase):
     update_mask = ''
     if split_health_checks is not None:
       update_mask += 'featureSettings.splitHealthChecks,'
-    if use_container_optimized_os is not None:
-      update_mask += 'featureSettings.useContainerOptimizedOs,'
 
     application_update = self.messages.Application()
     application_update.featureSettings = self.messages.FeatureSettings(
-        splitHealthChecks=split_health_checks,
-        useContainerOptimizedOs=use_container_optimized_os)
+        splitHealthChecks=split_health_checks)
     update_request = self.messages.AppengineAppsPatchRequest(
         name=self._FormatApp(),
         application=application_update,

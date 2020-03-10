@@ -19,14 +19,22 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
-from apitools.base.py import list_pager
-
 from googlecloudsdk.api_lib.api_gateway import base
 from googlecloudsdk.api_lib.util import waiter
 
 
 class OperationsClient(base.BaseClient):
   """Client for operation objects on Cloud API Gateway API."""
+
+  def __init__(self, client=None):
+    base.BaseClient.__init__(
+        self,
+        client=client,
+        message_base='ApigatewayProjectsLocationsOperations',
+        service_name='projects_locations_operations')
+
+    self.DefineGet()
+    self.DefineList('operations', is_operations=True)
 
   def Cancel(self, operation_ref):
     """Cancel an operation.
@@ -40,45 +48,7 @@ class OperationsClient(base.BaseClient):
     req = self.messages.ApigatewayProjectsLocationsOperationsCancelRequest(
         name=operation_ref.RelativeName())
 
-    return self.client.projects_locations_operations.Cancel(req)
-
-  def Get(self, operation_ref):
-    """Get an operation object.
-
-    Args:
-      operation_ref: The message to process (expected to be of type Operation)
-
-    Returns:
-      The Operation object.
-    """
-    request = self.messages.ApigatewayProjectsLocationsOperationsGetRequest(
-        name=operation_ref.RelativeName())
-
-    return self.client.projects_locations_operations.Get(request)
-
-  def List(self, parent_name, filters=None, limit=None, page_size=None):
-    """Lists the opeation objects under a given parent.
-
-    Args:
-      parent_name: Resource name of the parent to list under
-      filters: Filters to be applied to results (optional)
-      limit: Limit to the number of results per page (optional)
-      page_size: the number of results per page (optional)
-
-    Returns:
-      List Pager
-    """
-    req = self.messages.ApigatewayProjectsLocationsOperationsListRequest(
-        filter=filters,
-        name=parent_name)
-
-    return list_pager.YieldFromList(
-        self.client.projects_locations_operations,
-        req,
-        limit=limit,
-        batch_size_attribute='pageSize',
-        batch_size=page_size,
-        field='operations')
+    return self.service.Cancel(req)
 
   def WaitForOperation(self, operation_ref, message=None, service=None):
     """Waits for the given google.longrunning.Operation to complete.
@@ -106,11 +76,11 @@ class OperationsClient(base.BaseClient):
     # return the Operation itself.
     if service is None:
       poller = waiter.CloudOperationPollerNoResources(
-          self.client.projects_locations_operations)
+          self.service)
     else:
       poller = waiter.CloudOperationPoller(
           service,
-          self.client.projects_locations_operations)
+          self.service)
 
     if message is None:
       message = 'Waiting for Operation [{}] to complete'.format(

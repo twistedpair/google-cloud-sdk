@@ -931,7 +931,7 @@ class DataprocV1(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Lists all regions/{region}/clusters in a project.
+      r"""Lists all regions/{region}/clusters in a project alphabetically.
 
       Args:
         request: (DataprocProjectsRegionsClustersListRequest) input message

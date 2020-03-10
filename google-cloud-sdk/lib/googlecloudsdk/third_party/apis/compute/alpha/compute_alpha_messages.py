@@ -2460,6 +2460,7 @@ class AutoscalingPolicy(_messages.Message):
     queueBasedScaling: Configuration parameters of autoscaling based on
       queuing system.
     scaleDownControl: A AutoscalingPolicyScaleDownControl attribute.
+    scaleInControl: A AutoscalingPolicyScaleInControl attribute.
   """
 
   class ModeValueValuesEnum(_messages.Enum):
@@ -2483,6 +2484,7 @@ class AutoscalingPolicy(_messages.Message):
   mode = _messages.EnumField('ModeValueValuesEnum', 7)
   queueBasedScaling = _messages.MessageField('AutoscalingPolicyQueueBasedScaling', 8)
   scaleDownControl = _messages.MessageField('AutoscalingPolicyScaleDownControl', 9)
+  scaleInControl = _messages.MessageField('AutoscalingPolicyScaleInControl', 10)
 
 
 class AutoscalingPolicyCpuUtilization(_messages.Message):
@@ -2690,6 +2692,26 @@ class AutoscalingPolicyScaleDownControl(_messages.Message):
   """
 
   maxScaledDownReplicas = _messages.MessageField('FixedOrPercent', 1)
+  timeWindowSec = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+
+
+class AutoscalingPolicyScaleInControl(_messages.Message):
+  r"""Configuration that allows for slower scale in so that even if Autoscaler
+  recommends an abrupt scale in of a MIG, it will be throttled as specified by
+  the parameters below.
+
+  Fields:
+    maxScaledInReplicas: Maximum allowed number (or %) of VMs that can be
+      deducted from the peak recommendation during the window autoscaler looks
+      at when computing recommendations. Possibly all these VMs can be deleted
+      at once so user service needs to be prepared to lose that many VMs in
+      one step.
+    timeWindowSec: How long back autoscaling should look when computing
+      recommendations to include directives regarding slower scale in, as
+      described above.
+  """
+
+  maxScaledInReplicas = _messages.MessageField('FixedOrPercent', 1)
   timeWindowSec = _messages.IntegerField(2, variant=_messages.Variant.INT32)
 
 

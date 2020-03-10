@@ -19,8 +19,12 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+import random
+import string
+
 from googlecloudsdk.api_lib.privateca import base
 from googlecloudsdk.calliope import exceptions
+from googlecloudsdk.core.util import times
 
 
 def GetCertificateBySerialNum(ca_ref, serial_num):
@@ -55,3 +59,18 @@ def GetCertificateBySerialNum(ca_ref, serial_num):
         .format(ca_ref.RelativeName()))
 
   return response.certificates[0]
+
+
+def GenerateCertId():
+  """Generate a certificate id with the date and two length 3 alphanum strings.
+
+  E.G. YYYYMMDD-ABC-DEF.
+
+  Returns:
+    The generated certificate id string.
+  """
+  alphanum = string.ascii_uppercase + string.digits
+  alphanum_rand1 = ''.join(random.choice(alphanum) for i in range(3))
+  alphanum_rand2 = ''.join(random.choice(alphanum) for i in range(3))
+  date_str = times.FormatDateTime(times.Now(), '%Y%m%d')
+  return '{}-{}-{}'.format(date_str, alphanum_rand1, alphanum_rand2)

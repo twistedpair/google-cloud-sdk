@@ -18,12 +18,18 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+import json
+import os
+
 from apitools.base.py import encoding
 from apitools.base.py import exceptions as apitools_exceptions
-
+from googlecloudsdk.api_lib.storage import storage_api
+from googlecloudsdk.api_lib.storage import storage_util
 from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.api_lib.util import exceptions
+from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
+from googlecloudsdk.core.util import files
 import six
 
 DATAFLOW_API_NAME = 'dataflow'
@@ -159,7 +165,7 @@ class Jobs(object):
         projectId=project_id,
         snapshotJobRequest=GetMessagesModule().SnapshotJobRequest(
             location=region_id, ttl=ttl, snapshotSources=snapshot_sources),
-        )
+    )
     try:
       return Jobs.GetService().Snapshot(request)
     except apitools_exceptions.HttpError as error:
@@ -267,6 +273,10 @@ class Templates(object):
   PARAMETERS_VALUE = CREATE_REQUEST.ParametersValue
   FLEX_TEMPLATE_PARAMETER = GetMessagesModule().LaunchFlexTemplateParameter
   FLEX_TEMPLATE_PARAMETERS_VALUE = FLEX_TEMPLATE_PARAMETER.ParametersValue
+  TEMPLATE_METADATA = GetMessagesModule().TemplateMetadata
+  SDK_INFO = GetMessagesModule().SDKInfo
+  SDK_LANGUAGE = GetMessagesModule().SDKInfo.LanguageValueValuesEnum
+  CONTAINER_SPEC = GetMessagesModule().ContainerSpec
 
   # Mapping of apitools request message fields to their json parameters
   _CUSTOM_JSON_FIELD_MAPPINGS = {
@@ -333,8 +343,8 @@ class Templates(object):
             tempLocation=template_args.staging_location,
             kmsKeyName=template_args.kms_key_name,
             ipConfiguration=ip_configuration),
-        parameters=Templates.PARAMETERS_VALUE(additionalProperties=params_list)
-        if parameters else None)
+        parameters=Templates.PARAMETERS_VALUE(
+            additionalProperties=params_list) if parameters else None)
     request = GetMessagesModule(
     ).DataflowProjectsLocationsTemplatesCreateRequest(
         projectId=template_args.project_id or GetProject(),
@@ -452,6 +462,138 @@ class Templates(object):
           'https://cloud.google.com/dataflow/docs/guides/specifying-exec-params'
       )
     return error
+
+  @staticmethod
+  def _ValidateTemplateParameters(parameters):
+    """Validates ParameterMetadata objects in template metadata.
+
+    Args:
+      parameters: List of ParameterMetadata objects.
+
+    Raises:
+      ValueError: If is any of the required field is not set.
+    """
+    for parameter in parameters:
+      if not parameter.name:
+        raise ValueError(
+            'Invalid template metadata. Parameter name field is empty.'
+            ' Parameter: {}'.format(parameter))
+      if not parameter.label:
+        raise ValueError(
+            'Invalid template metadata. Parameter label field is empty.'
+            ' Parameter: {}'.format(parameter))
+      if not parameter.helpText:
+        raise ValueError(
+            'Invalid template metadata. Parameter helpText field is empty.'
+            ' Parameter: {}'.format(parameter))
+
+  @staticmethod
+  def _BuildTemplateMetadata(template_metadata_json):
+    """Builds and validates TemplateMetadata object.
+
+    Args:
+      template_metadata_json: Template metadata in json format.
+
+    Returns:
+      TemplateMetadata object on success.
+
+    Raises:
+      ValueError: If is any of the required field is not set.
+    """
+    template_metadata = encoding.JsonToMessage(Templates.TEMPLATE_METADATA,
+                                               template_metadata_json)
+    template_metadata_obj = Templates.TEMPLATE_METADATA()
+
+    if not template_metadata.name:
+      raise ValueError('Invalid template metadata. Name field is empty.'
+                       ' Template Metadata: {}'.format(template_metadata))
+    template_metadata_obj.name = template_metadata.name
+
+    if template_metadata.description:
+      template_metadata_obj.description = template_metadata.description
+
+    if template_metadata.parameters:
+      Templates._ValidateTemplateParameters(template_metadata.parameters)
+      template_metadata_obj.parameters = template_metadata.parameters
+
+    return template_metadata_obj
+
+  @staticmethod
+  def _BuildSDKInfo(sdk_language):
+    """Builds SDKInfo object.
+
+    Args:
+      sdk_language: SDK language of the flex template.
+
+    Returns:
+      SDKInfo object
+    """
+    if sdk_language == 'JAVA':
+      return Templates.SDK_INFO(language=Templates.SDK_LANGUAGE.JAVA)
+    elif sdk_language == 'PYTHON':
+      return Templates.SDK_INFO(language=Templates.SDK_LANGUAGE.PYTHON)
+
+  @staticmethod
+  def _StoreFlexTemplateFile(template_file_gcs_location, container_spec_json):
+    """Stores flex template container spec file in GCS.
+
+    Args:
+      template_file_gcs_location: GCS location to store the template file.
+      container_spec_json: Container spec in json format.
+
+    Returns:
+      Returns the stored flex template file gcs object on success.
+      Propagates the error on failures.
+    """
+    with files.TemporaryDirectory() as temp_dir:
+      local_path = os.path.join(temp_dir, 'template-file.json')
+      files.WriteFileContents(local_path, container_spec_json)
+      storage_client = storage_api.StorageClient()
+      obj_ref = storage_util.ObjectReference.FromUrl(template_file_gcs_location)
+      return storage_client.CopyFileToGCS(local_path, obj_ref)
+
+  @staticmethod
+  def BuildAndStoreFlexTemplateFile(template_file_gcs_location, image,
+                                    template_metadata_json, sdk_language,
+                                    print_only):
+    """Builds container spec and stores it in the flex template file in GCS.
+
+    Args:
+      template_file_gcs_location: GCS location to store the template file.
+      image: Path to the container image.
+      template_metadata_json: Template metadata in json format.
+      sdk_language: SDK language of the flex template.
+      print_only: Only prints the container spec and skips write to GCS.
+
+    Returns:
+      Container spec json if print_only is set. A sucess message with template
+      file GCS path and container spec otherewise.
+    """
+    template_metadata = None
+    if template_metadata_json:
+      template_metadata = Templates._BuildTemplateMetadata(
+          template_metadata_json)
+    sdk_info = Templates._BuildSDKInfo(sdk_language)
+    container_spec = Templates.CONTAINER_SPEC(
+        image=image, metadata=template_metadata, sdkInfo=sdk_info)
+    container_spec_json = encoding.MessageToJson(container_spec)
+    container_spec_pretty_json = json.dumps(
+        json.loads(container_spec_json),
+        sort_keys=True,
+        indent=4,
+        separators=(',', ': '))
+    if print_only:
+      return container_spec_pretty_json
+    try:
+      Templates._StoreFlexTemplateFile(template_file_gcs_location,
+                                       container_spec_pretty_json)
+      log.status.Print(
+          'Successfully saved container spec in flex template file.\n'
+          'Template File GCS Location: {}\n'
+          'Container Spec:\n\n'
+          '{}').format(template_file_gcs_location, container_spec_pretty_json)
+    except apitools_exceptions.HttpError as error:
+      raise exceptions.HttpException(error)
 
   @staticmethod
   def CreateJobFromFlexTemplate(template_args=None):

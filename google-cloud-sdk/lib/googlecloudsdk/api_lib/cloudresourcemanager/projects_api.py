@@ -48,16 +48,18 @@ def List(limit=None,
   return list_pager.YieldFromList(
       client.projects,
       messages.CloudresourcemanagerProjectsListRequest(
-          filter=_AddActiveProjectFilter(filter)),
+          filter=_AddActiveProjectFilterIfNotSpecified(filter)),
       batch_size=batch_size,
       limit=limit,
       field='projects',
       batch_size_attribute='pageSize')
 
 
-def _AddActiveProjectFilter(filter_expr):
+def _AddActiveProjectFilterIfNotSpecified(filter_expr):
   if not filter_expr:
     return 'lifecycleState:ACTIVE'
+  if 'lifecycleState' in filter_expr:
+    return filter_expr
   return 'lifecycleState:ACTIVE AND ({})'.format(filter_expr)
 
 

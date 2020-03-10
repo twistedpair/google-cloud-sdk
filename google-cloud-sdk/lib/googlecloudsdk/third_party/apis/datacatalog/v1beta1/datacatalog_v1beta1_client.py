@@ -770,6 +770,33 @@ Callers must have following Google IAM permission
         supports_download=False,
     )
 
+    def List(self, request, global_params=None):
+      r"""Lists entry groups.
+
+      Args:
+        request: (DatacatalogProjectsLocationsEntryGroupsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudDatacatalogV1beta1ListEntryGroupsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1beta1/projects/{projectsId}/locations/{locationsId}/entryGroups',
+        http_method=u'GET',
+        method_id=u'datacatalog.projects.locations.entryGroups.list',
+        ordered_params=[u'parent'],
+        path_params=[u'parent'],
+        query_params=[u'pageSize', u'pageToken'],
+        relative_path=u'v1beta1/{+parent}/entryGroups',
+        request_field='',
+        request_type_name=u'DatacatalogProjectsLocationsEntryGroupsListRequest',
+        response_type_name=u'GoogleCloudDatacatalogV1beta1ListEntryGroupsResponse',
+        supports_download=False,
+    )
+
     def Patch(self, request, global_params=None):
       r"""Updates an EntryGroup. The user should enable the Data Catalog API in the.
 project identified by the `entry_group.name` parameter (see [Data Catalog

@@ -190,6 +190,10 @@ class Binding(_messages.Message):
   role = _messages.StringField(3)
 
 
+class CancelOperationRequest(_messages.Message):
+  r"""The request message for Operations.CancelOperation."""
+
+
 class CharacterMaskConfig(_messages.Message):
   r"""Masks a string by replacing its characters with a fixed character.
 
@@ -628,6 +632,12 @@ class FhirConfig(_messages.Message):
 class FhirStore(_messages.Message):
   r"""Represents a FHIR store.
 
+  Enums:
+    VersionValueValuesEnum: The FHIR specification version that this FHIR
+      store supports natively. This field is immutable after store creation.
+      Requests are rejected if they contain FHIR resources of a different
+      version. An empty value is treated as STU3.
+
   Messages:
     LabelsValue: User-supplied key-value pairs used to organize FHIR stores.
       Label keys must be between 1 and 63 characters long, have a UTF-8
@@ -697,7 +707,30 @@ class FhirStore(_messages.Message):
       https://www.hl7.org/fhir/subscription.html.
     validationConfig: Configuration for how to validate incoming FHIR
       resources against configured profiles.
+    version: The FHIR specification version that this FHIR store supports
+      natively. This field is immutable after store creation. Requests are
+      rejected if they contain FHIR resources of a different version. An empty
+      value is treated as STU3.
   """
+
+  class VersionValueValuesEnum(_messages.Enum):
+    r"""The FHIR specification version that this FHIR store supports natively.
+    This field is immutable after store creation. Requests are rejected if
+    they contain FHIR resources of a different version. An empty value is
+    treated as STU3.
+
+    Values:
+      VERSION_UNSPECIFIED: VERSION_UNSPECIFIED is treated as STU3 to
+        accommodate the existing FHIR stores.
+      DSTU2: Draft Standard for Trial Use, [Release
+        2](https://www.hl7.org/fhir/DSTU2)
+      STU3: Standard for Trial Use, [Release 3](https://www.hl7.org/fhir/STU3)
+      R4: [Release 4](https://www.hl7.org/fhir/R4)
+    """
+    VERSION_UNSPECIFIED = 0
+    DSTU2 = 1
+    STU3 = 2
+    R4 = 3
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
@@ -739,6 +772,7 @@ class FhirStore(_messages.Message):
   streamConfigs = _messages.MessageField('StreamConfig', 7, repeated=True)
   subscriptionConfig = _messages.MessageField('SubscriptionConfig', 8)
   validationConfig = _messages.MessageField('ValidationConfig', 9)
+  version = _messages.EnumField('VersionValueValuesEnum', 10)
 
 
 class FieldMetadata(_messages.Message):
@@ -1797,6 +1831,19 @@ class HealthcareProjectsLocationsDatasetsListRequest(_messages.Message):
   parent = _messages.StringField(3, required=True)
 
 
+class HealthcareProjectsLocationsDatasetsOperationsCancelRequest(_messages.Message):
+  r"""A HealthcareProjectsLocationsDatasetsOperationsCancelRequest object.
+
+  Fields:
+    cancelOperationRequest: A CancelOperationRequest resource to be passed as
+      the request body.
+    name: The name of the operation resource to be cancelled.
+  """
+
+  cancelOperationRequest = _messages.MessageField('CancelOperationRequest', 1)
+  name = _messages.StringField(2, required=True)
+
+
 class HealthcareProjectsLocationsDatasetsOperationsGetRequest(_messages.Message):
   r"""A HealthcareProjectsLocationsDatasetsOperationsGetRequest object.
 
@@ -2569,14 +2616,14 @@ class ProgressCounter(_messages.Message):
 
 class RedactConfig(_messages.Message):
   r"""Defines how to redact sensitive values. Default behavior is erase. For
-  example, "My name is Jake." becomes "My name is ."
+  example, "My name is Jane." becomes "My name is ."
   """
 
 
 
 class ReplaceWithInfoTypeConfig(_messages.Message):
   r"""When using the INSPECT_AND_TRANSFORM action, each match is replaced with
-  the name of the `info_type`. For example, "My name is Jake" becomes "My name
+  the name of the `info_type`. For example, "My name is Jane" becomes "My name
   is [PERSON_NAME]." The TRANSFORM action is equivalent to redacting.
   """
 

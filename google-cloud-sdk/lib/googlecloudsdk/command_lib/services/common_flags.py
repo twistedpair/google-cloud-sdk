@@ -18,7 +18,10 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+import re
+
 from googlecloudsdk.api_lib.services import services_util
+from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import base
 from googlecloudsdk.calliope.concepts import concepts
 from googlecloudsdk.command_lib.util import completers
@@ -29,6 +32,8 @@ _SERVICES_LEGACY_LIST_COMMAND = ('services list --format=disable '
                                  '--flatten=serviceName')
 _SERVICES_LIST_COMMAND = ('beta services list --format=disable '
                           '--flatten=config.name')
+
+_OPERATION_NAME_RE = re.compile(r'operations/(?P<namespace>\w+)\.(?P<id>.*)')
 
 
 class ConsumerServiceCompleter(completers.ListCommandCompleter):
@@ -54,6 +59,14 @@ class ConsumerServiceLegacyCompleter(completers.ListCommandCompleter):
 def operation_flag(suffix='to act on'):
   return base.Argument(
       'operation', help='The name of the operation {0}.'.format(suffix))
+
+
+def get_operation_namespace(op_name):
+  match = _OPERATION_NAME_RE.match(op_name)
+  if not match:
+    raise arg_parsers.ArgumentTypeError("Invalid value '{0}': {1}".format(
+        op_name, 'Operation format should be operations/namespace.id'))
+  return match.group('namespace')
 
 
 def consumer_service_flag(suffix='to act on', flag_name='service'):

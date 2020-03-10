@@ -19,7 +19,10 @@ from __future__ import division
 from __future__ import unicode_literals
 
 _BETA_ADDITIONS = [
+    'centos-8',
     'opensuse-15',
+    'rhel-8',
+    'rhel-8-byol',
     'sles-12-byol',
     'sles-15-byol',
 ]

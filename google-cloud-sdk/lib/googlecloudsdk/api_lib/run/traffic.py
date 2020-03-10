@@ -33,13 +33,13 @@ class InvalidTrafficSpecificationError(exceptions.Error):
 LATEST_REVISION_KEY = 'LATEST'
 
 
-def NewTrafficTarget(messages, key, percent, tag=None):
+def NewTrafficTarget(messages, key, percent=None, tag=None):
   """Creates a new TrafficTarget.
 
   Args:
     messages: The message module that defines TrafficTarget.
     key: The key for the traffic target in the TrafficTargets mapping.
-    percent: Percent of traffic to assign to the traffic target.
+    percent: Optional percent of traffic to assign to the traffic target.
     tag: Optional tag to assign to the traffic target.
 
   Returns:
@@ -227,7 +227,7 @@ class TrafficTargets(collections.MutableMapping):
     existing = self.get(key)
     if existing:
       new_targets = [
-          NewTrafficTarget(self._messages, key, 0, t.tag)
+          NewTrafficTarget(self._messages, key, tag=t.tag)
           for t in existing
           if t.tag
       ]
@@ -288,22 +288,22 @@ class TrafficTargets(collections.MutableMapping):
       key = GetKey(target)
       if target.tag:
         tag_targets.append(
-            NewTrafficTarget(self._messages, key, 0, tag=target.tag))
+            NewTrafficTarget(self._messages, key, tag=target.tag))
       if target.percent:
         percent_targets.setdefault(key, NewTrafficTarget(
             self._messages, key, 0)).percent += target.percent
     return percent_targets, tag_targets
 
-  def _ValidateCurrentTraffic(self):
+  def _ValidateCurrentTraffic(self, existing_percent_targets):
     percent = 0
-    for target in self._m:
+    for target in existing_percent_targets:
       percent += target.percent
 
     if percent != 100:
       raise ValueError(
           'Current traffic allocation of %s is not 100 percent' % percent)
 
-    for target in self._m:
+    for target in existing_percent_targets:
       if target.percent < 0:
         raise ValueError(
             'Current traffic for target %s is negative (%s)' % (
@@ -317,15 +317,6 @@ class TrafficTargets(collections.MutableMapping):
       if target.percent and key not in new_percentages:
         result[key] = target
     return result
-
-  def _IsChangedPercentages(self, new_percentages):
-    """Returns True iff new_percentages changes current traffic."""
-    old_percentages = {GetKey(target): target.percent for target in self._m}
-    for key in new_percentages:
-      if (key not in old_percentages or
-          new_percentages[key] != old_percentages[key]):
-        return True
-    return False
 
   def _ValidateNewPercentages(self, new_percentages, unspecified_targets):
     """Validate the new traffic percentages the user specified."""
@@ -414,8 +405,8 @@ class TrafficTargets(collections.MutableMapping):
       InvalidTrafficSpecificationError: If the caller attempts to set
         the traffic for the service to an incorrect state.
     """
-    self._ValidateCurrentTraffic()
     existing_percent_targets, tag_targets = self._GetNormalizedTraffic()
+    self._ValidateCurrentTraffic(existing_percent_targets.values())
     updated_percentages = new_percentages.copy()
     unassigned_targets = self._GetUnassignedTargets(updated_percentages)
     self._ValidateNewPercentages(updated_percentages, unassigned_targets)
@@ -474,5 +465,5 @@ class TrafficTargets(collections.MutableMapping):
         new_targets.append(target)
     for tag, revision_key in to_update.items():
       new_targets.append(
-          NewTrafficTarget(self._messages, revision_key, 0, tag=tag))
+          NewTrafficTarget(self._messages, revision_key, tag=tag))
     self._m[:] = new_targets

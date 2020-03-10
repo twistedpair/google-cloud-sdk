@@ -166,3 +166,14 @@ def Update(versions_client, operations_client, version_ref, args):
 def SetDefault(versions_client, version, model=None):
   version_ref = ParseVersion(model, version)
   return versions_client.SetDefault(version_ref)
+
+
+def ValidateFrameworkAndMachineTypeGa(framework, machine_type):
+  frameworks_enum = (
+      versions_api.GetMessagesModule().GoogleCloudMlV1Version
+      .FrameworkValueValuesEnum)
+  if (framework != frameworks_enum.TENSORFLOW and
+      not machine_type.startswith('ml')):
+    raise InvalidArgumentCombinationError(
+        'Machine type {0} is currently only supported with tensorflow.'.format(
+            machine_type))

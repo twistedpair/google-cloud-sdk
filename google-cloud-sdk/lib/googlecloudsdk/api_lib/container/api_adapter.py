@@ -138,7 +138,7 @@ Invalid local SSD format [{err_format}] for argument --local-ssd-volumes. Valid 
 """
 
 UNKNOWN_WORKLOAD_METADATA_FROM_NODE_ERROR_MSG = """\
-Invalid option '{option}' for '--workload-metadata-from-node' (must be one of 'unspecified', 'secure', 'exposed').
+Invalid option '{option}' for '--workload-metadata-from-node' (must be one of 'gce_metadata', 'gke_metadata').
 """
 
 ALLOW_ROUTE_OVERLAP_WITHOUT_EXPLICIT_NETWORK_MODE = """\
@@ -229,6 +229,8 @@ SANDBOX_TYPE_NOT_SUPPORTED = """\
 Provided sandbox type '{type}' not supported.
 """
 
+TPU_SERVING_MODE_ERROR = """\
+Cannot specify --tpu-ipv4-cidr with --enable-tpu-service-networking."""
 
 MAX_NODES_PER_POOL = 1000
 
@@ -260,10 +262,10 @@ SCOPES = 'scopes'
 AUTOPROVISIONING_LOCATIONS = 'autoprovisioningLocations'
 DEFAULT_ADDONS = [INGRESS, HPA]
 ADDONS_OPTIONS = DEFAULT_ADDONS + [DASHBOARD, NETWORK_POLICY, CLOUDRUN]
-BETA_ADDONS_OPTIONS = ADDONS_OPTIONS + [ISTIO, APPLICATIONMANAGER, NODELOCALDNS, GCEPDCSIDRIVER]
-ALPHA_ADDONS_OPTIONS = BETA_ADDONS_OPTIONS + [
-    CONFIGCONNECTOR, CLOUDBUILD
+BETA_ADDONS_OPTIONS = ADDONS_OPTIONS + [
+    ISTIO, APPLICATIONMANAGER, NODELOCALDNS, GCEPDCSIDRIVER
 ]
+ALPHA_ADDONS_OPTIONS = BETA_ADDONS_OPTIONS + [CONFIGCONNECTOR, CLOUDBUILD]
 
 
 def CheckResponse(response):
@@ -461,6 +463,7 @@ class CreateClusterOptions(object):
       enable_network_egress_metering=None,
       enable_resource_consumption_metering=None,
       identity_namespace=None,
+      workload_pool=None,
       enable_shielded_nodes=None,
       linux_sysctls=None,
       disable_default_snat=None,
@@ -572,6 +575,7 @@ class CreateClusterOptions(object):
     self.enable_network_egress_metering = enable_network_egress_metering
     self.enable_resource_consumption_metering = enable_resource_consumption_metering
     self.identity_namespace = identity_namespace
+    self.workload_pool = workload_pool
     self.enable_shielded_nodes = enable_shielded_nodes
     self.linux_sysctls = linux_sysctls
     self.disable_default_snat = disable_default_snat
@@ -636,6 +640,7 @@ class UpdateClusterOptions(object):
                autoscaling_profile=None,
                enable_peering_route_sharing=None,
                identity_namespace=None,
+               workload_pool=None,
                disable_workload_identity=None,
                enable_shielded_nodes=None,
                disable_default_snat=None,
@@ -661,7 +666,10 @@ class UpdateClusterOptions(object):
                autoprovisioning_max_unavailable_upgrade=None,
                enable_autoprovisioning_autoupgrade=None,
                enable_autoprovisioning_autorepair=None,
-               autoprovisioning_min_cpu_platform=None):
+               autoprovisioning_min_cpu_platform=None,
+               enable_tpu=None,
+               tpu_ipv4_cidr=None,
+               enable_tpu_service_networking=None):
     self.version = version
     self.update_master = bool(update_master)
     self.update_nodes = bool(update_nodes)
@@ -690,6 +698,7 @@ class UpdateClusterOptions(object):
     self.enable_intra_node_visibility = enable_intra_node_visibility
     self.enable_peering_route_sharing = enable_peering_route_sharing
     self.identity_namespace = identity_namespace
+    self.workload_pool = workload_pool
     self.disable_workload_identity = disable_workload_identity
     self.enable_shielded_nodes = enable_shielded_nodes
     self.disable_default_snat = disable_default_snat
@@ -717,6 +726,9 @@ class UpdateClusterOptions(object):
     self.enable_autoprovisioning_autoupgrade = enable_autoprovisioning_autoupgrade
     self.enable_autoprovisioning_autorepair = enable_autoprovisioning_autorepair
     self.autoprovisioning_min_cpu_platform = autoprovisioning_min_cpu_platform
+    self.enable_tpu = enable_tpu
+    self.tpu_ipv4_cidr = tpu_ipv4_cidr
+    self.enable_tpu_service_networking = enable_tpu_service_networking
 
 
 class SetMasterAuthOptions(object):
@@ -1257,7 +1269,7 @@ class APIAdapter(object):
     if options.min_cpu_platform is not None:
       node_config.minCpuPlatform = options.min_cpu_platform
 
-    _AddWorkloadMetadataToNodeConfig(node_config, options, self.messages)
+    self._AddWorkloadMetadataToNodeConfig(node_config, options, self.messages)
     _AddLinuxNodeConfigToNodeConfig(node_config, options, self.messages)
     _AddShieldedInstanceConfigToNodeConfig(node_config, options, self.messages)
     _AddReservationAffinityToNodeConfig(node_config, options, self.messages)
@@ -1519,6 +1531,11 @@ class APIAdapter(object):
           raise util.Error(CLOUDRUN_INGRESS_KUBERNETES_DISABLED_ERROR_MSG)
         cluster.addonsConfig.cloudRunConfig = self.messages.CloudRunConfig(
             disabled=False)
+
+    if options.workload_pool:
+      cluster.workloadIdentityConfig = self.messages.WorkloadIdentityConfig(
+          workloadPool=options.workload_pool)
+
     req = self.messages.CreateClusterRequest(
         parent=ProjectLocation(cluster_ref.projectId, cluster_ref.zone),
         cluster=cluster)
@@ -1788,6 +1805,10 @@ class APIAdapter(object):
       update = self.messages.ClusterUpdate(
           desiredShieldedNodes=self.messages.ShieldedNodes(
               enabled=options.enable_shielded_nodes))
+    if options.enable_tpu is not None:
+      update = self.messages.ClusterUpdate(
+          desiredTpuConfig=_GetTpuConfigForClusterUpdate(
+              options, self.messages))
 
     return update
 
@@ -1805,6 +1826,15 @@ class APIAdapter(object):
     """
 
     update = self.UpdateClusterCommon(cluster_ref, options)
+
+    if options.workload_pool:
+      update = self.messages.ClusterUpdate(
+          desiredWorkloadIdentityConfig=self.messages.WorkloadIdentityConfig(
+              workloadPool=options.workload_pool))
+    elif options.disable_workload_identity:
+      update = self.messages.ClusterUpdate(
+          desiredWorkloadIdentityConfig=self.messages.WorkloadIdentityConfig(
+              workloadPool=''))
 
     if not update:
       # if reached here, it's possible:
@@ -1826,6 +1856,7 @@ class APIAdapter(object):
             name=ProjectLocationCluster(cluster_ref.projectId, cluster_ref.zone,
                                         cluster_ref.clusterId),
             update=update))
+
     return self.ParseOperation(op.name, cluster_ref.zone)
 
   def SetLoggingService(self, cluster_ref, logging_service):
@@ -1944,6 +1975,35 @@ class APIAdapter(object):
           self.messages.NodeTaint(key=key, value=value, effect=effect))
 
     node_config.taints = taints
+
+  def _AddWorkloadMetadataToNodeConfig(self, node_config, options, messages):
+    """Adds WorkLoadMetadata to NodeConfig."""
+    if options.workload_metadata_from_node is not None:
+      option = options.workload_metadata_from_node
+      if option == 'GCE_METADATA':
+        node_config.workloadMetadataConfig = messages.WorkloadMetadataConfig(
+            mode=messages.WorkloadMetadataConfig.ModeValueValuesEnum
+            .GCE_METADATA)
+      elif option == 'GKE_METADATA':
+        node_config.workloadMetadataConfig = messages.WorkloadMetadataConfig(
+            mode=messages.WorkloadMetadataConfig.ModeValueValuesEnum
+            .GKE_METADATA)
+      # the following options are deprecated
+      elif option == 'SECURE':
+        node_config.workloadMetadataConfig = messages.WorkloadMetadataConfig(
+            nodeMetadata=messages.WorkloadMetadataConfig
+            .NodeMetadataValueValuesEnum.SECURE)
+      elif option == 'EXPOSED':
+        node_config.workloadMetadataConfig = messages.WorkloadMetadataConfig(
+            nodeMetadata=messages.WorkloadMetadataConfig
+            .NodeMetadataValueValuesEnum.EXPOSE)
+      elif option == 'GKE_METADATA_SERVER':
+        node_config.workloadMetadataConfig = messages.WorkloadMetadataConfig(
+            nodeMetadata=messages.WorkloadMetadataConfig
+            .NodeMetadataValueValuesEnum.GKE_METADATA_SERVER)
+      else:
+        raise util.Error(
+            UNKNOWN_WORKLOAD_METADATA_FROM_NODE_ERROR_MSG.format(option=option))
 
   def SetNetworkPolicyCommon(self, options):
     """Returns a SetNetworkPolicy operation."""
@@ -2122,7 +2182,7 @@ class APIAdapter(object):
     if options.min_cpu_platform is not None:
       node_config.minCpuPlatform = options.min_cpu_platform
 
-    _AddWorkloadMetadataToNodeConfig(node_config, options, self.messages)
+    self._AddWorkloadMetadataToNodeConfig(node_config, options, self.messages)
     _AddLinuxNodeConfigToNodeConfig(node_config, options, self.messages)
     _AddShieldedInstanceConfigToNodeConfig(node_config, options, self.messages)
     _AddReservationAffinityToNodeConfig(node_config, options, self.messages)
@@ -2271,7 +2331,8 @@ class APIAdapter(object):
         ))
 
     if options.workload_metadata_from_node is not None:
-      _AddWorkloadMetadataToNodeConfig(update_request, options, self.messages)
+      self._AddWorkloadMetadataToNodeConfig(update_request, options,
+                                            self.messages)
     elif options.node_locations is not None:
       update_request.locations = sorted(options.node_locations)
     elif (options.max_surge_upgrade is not None or
@@ -2510,8 +2571,7 @@ class APIAdapter(object):
     """
     recurring_window = self.messages.RecurringTimeWindow(
         window=self.messages.TimeWindow(
-            startTime=window_start.isoformat(),
-            endTime=window_end.isoformat()),
+            startTime=window_start.isoformat(), endTime=window_end.isoformat()),
         recurrence=window_recurrence)
     if existing_policy is None:
       existing_policy = self.messages.MaintenancePolicy()
@@ -2703,7 +2763,10 @@ class V1Beta1Adapter(V1Adapter):
     if options.boot_disk_kms_key:
       for pool in cluster.nodePools:
         pool.config.bootDiskKmsKey = options.boot_disk_kms_key
-    if options.identity_namespace is not None:
+    if options.workload_pool:
+      cluster.workloadIdentityConfig = self.messages.WorkloadIdentityConfig(
+          workloadPool=options.workload_pool)
+    elif options.identity_namespace:
       cluster.workloadIdentityConfig = self.messages.WorkloadIdentityConfig(
           identityNamespace=options.identity_namespace)
     _AddReleaseChannelToCluster(cluster, options, self.messages)
@@ -2717,14 +2780,18 @@ class V1Beta1Adapter(V1Adapter):
   def UpdateCluster(self, cluster_ref, options):
     update = self.UpdateClusterCommon(cluster_ref, options)
 
-    if options.identity_namespace:
+    if options.workload_pool:
+      update = self.messages.ClusterUpdate(
+          desiredWorkloadIdentityConfig=self.messages.WorkloadIdentityConfig(
+              workloadPool=options.workload_pool))
+    elif options.identity_namespace:
       update = self.messages.ClusterUpdate(
           desiredWorkloadIdentityConfig=self.messages.WorkloadIdentityConfig(
               identityNamespace=options.identity_namespace))
     elif options.disable_workload_identity:
       update = self.messages.ClusterUpdate(
           desiredWorkloadIdentityConfig=self.messages.WorkloadIdentityConfig(
-              identityNamespace=''))
+              workloadPool=''))
 
     if options.release_channel is not None:
       update = self.messages.ClusterUpdate(
@@ -2840,8 +2907,9 @@ class V1Beta1Adapter(V1Adapter):
         upgrade_settings.maxUnavailable = max_unavailable_upgrade
         upgrade_settings.maxSurge = max_surge_upgrade
       if enable_autorepair is not None or enable_autoupgrade is not None:
-        management = (self.messages.NodeManagement(
-            autoUpgrade=enable_autoupgrade, autoRepair=enable_autorepair))
+        management = (
+            self.messages.NodeManagement(
+                autoUpgrade=enable_autoupgrade, autoRepair=enable_autorepair))
       autoscaling.autoprovisioningNodePoolDefaults = self.messages \
         .AutoprovisioningNodePoolDefaults(serviceAccount=service_account,
                                           oauthScopes=scopes,
@@ -2871,9 +2939,11 @@ class V1Beta1Adapter(V1Adapter):
 
     profiles_enum = \
         self.messages.ClusterAutoscaling.AutoscalingProfileValueValuesEnum
-    valid_choices = [arg_utils.EnumNameToChoice(n)
-                     for n in profiles_enum.names()
-                     if n != 'profile-unspecified']
+    valid_choices = [
+        arg_utils.EnumNameToChoice(n)
+        for n in profiles_enum.names()
+        if n != 'profile-unspecified'
+    ]
     return arg_utils.ChoiceToEnum(
         choice=arg_utils.EnumNameToChoice(options.autoscaling_profile),
         enum_type=profiles_enum,
@@ -2996,7 +3066,10 @@ class V1Alpha1Adapter(V1Beta1Adapter):
               istio_auth = mtls
         cluster.addonsConfig.istioConfig = self.messages.IstioConfig(
             disabled=False, auth=istio_auth)
-    if options.identity_namespace is not None:
+    if options.workload_pool:
+      cluster.workloadIdentityConfig = self.messages.WorkloadIdentityConfig(
+          workloadPool=options.workload_pool)
+    elif options.identity_namespace:
       cluster.workloadIdentityConfig = self.messages.WorkloadIdentityConfig(
           identityNamespace=options.identity_namespace)
     if options.security_profile is not None:
@@ -3026,14 +3099,18 @@ class V1Alpha1Adapter(V1Beta1Adapter):
   def UpdateCluster(self, cluster_ref, options):
     update = self.UpdateClusterCommon(cluster_ref, options)
 
-    if options.identity_namespace:
+    if options.workload_pool:
+      update = self.messages.ClusterUpdate(
+          desiredWorkloadIdentityConfig=self.messages.WorkloadIdentityConfig(
+              workloadPool=options.workload_pool))
+    elif options.identity_namespace:
       update = self.messages.ClusterUpdate(
           desiredWorkloadIdentityConfig=self.messages.WorkloadIdentityConfig(
               identityNamespace=options.identity_namespace))
     elif options.disable_workload_identity:
       update = self.messages.ClusterUpdate(
           desiredWorkloadIdentityConfig=self.messages.WorkloadIdentityConfig(
-              identityNamespace=''))
+              workloadPool=''))
 
     if options.enable_cost_management is not None:
       update = self.messages.ClusterUpdate(
@@ -3297,31 +3374,6 @@ def _AddNodeLabelsToNodeConfig(node_config, options):
   node_config.labels = labels
 
 
-def _AddWorkloadMetadataToNodeConfig(node_config, options, messages):
-  """Adds WorkLoadMetadata to NodeConfig."""
-  if options.workload_metadata_from_node is not None:
-    option = options.workload_metadata_from_node
-    if option == 'UNSPECIFIED':
-      node_config.workloadMetadataConfig = messages.WorkloadMetadataConfig(
-          nodeMetadata=messages.WorkloadMetadataConfig
-          .NodeMetadataValueValuesEnum.UNSPECIFIED)
-    elif option == 'SECURE':
-      node_config.workloadMetadataConfig = messages.WorkloadMetadataConfig(
-          nodeMetadata=messages.WorkloadMetadataConfig
-          .NodeMetadataValueValuesEnum.SECURE)
-    elif option == 'EXPOSED':
-      node_config.workloadMetadataConfig = messages.WorkloadMetadataConfig(
-          nodeMetadata=messages.WorkloadMetadataConfig
-          .NodeMetadataValueValuesEnum.EXPOSE)
-    elif option == 'GKE_METADATA_SERVER':
-      node_config.workloadMetadataConfig = messages.WorkloadMetadataConfig(
-          nodeMetadata=messages.WorkloadMetadataConfig
-          .NodeMetadataValueValuesEnum.GKE_METADATA_SERVER)
-    else:
-      raise util.Error(
-          UNKNOWN_WORKLOAD_METADATA_FROM_NODE_ERROR_MSG.format(option=option))
-
-
 def _AddLinuxNodeConfigToNodeConfig(node_config, options, messages):
   """Adds LinuxNodeConfig to NodeConfig."""
 
@@ -3400,8 +3452,8 @@ def _AddSandboxConfigToNodeConfig(node_config, options, messages):
         'gvisor': messages.SandboxConfig.TypeValueValuesEnum.GVISOR,
     }
     if options.sandbox['type'] not in sandbox_types:
-      raise util.Error(SANDBOX_TYPE_NOT_SUPPORTED.format(
-          type=options.sandbox['type']))
+      raise util.Error(
+          SANDBOX_TYPE_NOT_SUPPORTED.format(type=options.sandbox['type']))
     node_config.sandboxConfig = messages.SandboxConfig(
         type=sandbox_types[options.sandbox['type']])
 
@@ -3428,6 +3480,18 @@ def _GetReleaseChannelForClusterUpdate(options, messages):
         'None': messages.ReleaseChannel.ChannelValueValuesEnum.UNSPECIFIED,
     }
     return messages.ReleaseChannel(channel=channels[options.release_channel])
+
+
+def _GetTpuConfigForClusterUpdate(options, messages):
+  """Gets the TpuConfig from update options."""
+  if options.enable_tpu is not None:
+    if options.tpu_ipv4_cidr and options.enable_tpu_service_networking:
+      raise util.Error(TPU_SERVING_MODE_ERROR)
+    return messages.TpuConfig(
+        enabled=options.enable_tpu,
+        ipv4CidrBlock=options.tpu_ipv4_cidr,
+        useServiceNetworking=options.enable_tpu_service_networking,
+    )
 
 
 def ProjectLocation(project, location):

@@ -33,4 +33,4 @@ def GetSupportedLocations():
   response = client.projects_locations.List(
       messages.PrivatecaProjectsLocationsListRequest(
           name='projects/{}'.format(project)))
-  return map(lambda location: location.locationId, response.locations)
+  return [location.locationId for location in response.locations]

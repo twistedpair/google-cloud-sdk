@@ -342,6 +342,24 @@ class DatacatalogProjectsLocationsEntryGroupsGetRequest(_messages.Message):
   readMask = _messages.StringField(2)
 
 
+class DatacatalogProjectsLocationsEntryGroupsListRequest(_messages.Message):
+  r"""A DatacatalogProjectsLocationsEntryGroupsListRequest object.
+
+  Fields:
+    pageSize: Optional. The maximum number of items to return. Default is 10.
+      Max limit is 1000. Throws an invalid argument for `page_size > 1000`.
+    pageToken: Optional. Token that specifies which page is requested. If
+      empty, the first page is returned.
+    parent: Required. The name of the location that contains the entry groups,
+      which can be provided in URL format. Example:  *
+      projects/{project_id}/locations/{location}
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
 class DatacatalogProjectsLocationsEntryGroupsPatchRequest(_messages.Message):
   r"""A DatacatalogProjectsLocationsEntryGroupsPatchRequest object.
 
@@ -1378,6 +1396,19 @@ class GoogleCloudDatacatalogV1beta1ListEntriesResponse(_messages.Message):
   """
 
   entries = _messages.MessageField('GoogleCloudDatacatalogV1beta1Entry', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+
+
+class GoogleCloudDatacatalogV1beta1ListEntryGroupsResponse(_messages.Message):
+  r"""Response message for ListEntryGroups.
+
+  Fields:
+    entryGroups: EntryGroup details.
+    nextPageToken: Token to retrieve the next page of results. It is set to
+      empty if no items remain in results.
+  """
+
+  entryGroups = _messages.MessageField('GoogleCloudDatacatalogV1beta1EntryGroup', 1, repeated=True)
   nextPageToken = _messages.StringField(2)
 
 

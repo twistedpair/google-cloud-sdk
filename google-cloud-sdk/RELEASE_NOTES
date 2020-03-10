@@ -5,6 +5,88 @@ Copyright 2014-2020 Google Inc. All rights reserved.
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 
 
+## 284.0.0 (2020-03-10)
+
+### Breaking Changes
+
+*   **(Cloud Dataproc)** Deprecated the following flags in `gcloud dataproc clusters create` and
+*   **(Cloud Dataproc)** `gcloud dataproc workflow-templates set-managed-cluster` commands:
+  * `--num-preemptible-workers`
+  * `--num-preemptible-worker-local-ssds`
+  * `--preemptible-worker-boot-disk-size`
+  * `--preemptible-worker-boot-disk-type`
+  * `--preemptible-worker-accelerator`
+*   **(Kubernetes Engine)** Promoted Workload Identity flags to GA:
+    *   Promoted `--disable-workload-identity` of `gcloud beta container
+        clusters update`.
+    *   Renamed `--identity-namespace` of `gcloud beta container clusters` to
+        `--workload-pool`.
+    *   Changed the choices of `--workload-metadata-from-node` of `gcloud beta
+        container node-pools` to ["GCE_METADATA", "GKE_METADATA"].
+*   **(Kubernetes Engine)** Removed "UNSPECIFIED" from the choices of `--workload-metadata-from-node` of
+    `gcloud beta container node-pools`.
+
+
+### App Engine Flexible Environment
+
+* Removed the deprecated flag `--use-container-optimized-os` from `gcloud beta app update`.
+  Starting 2020-02-17, Container-Optimized OS is the default VM image type of App Engine Flex deployments
+  and can not be changed.
+
+### Cloud Access Context Manager
+
+* Added the 'etag' field to `gcloud access-context-manager policies list`.
+
+### Cloud Data Catalog
+
+* Promoted `gcloud data-catalog` command group to GA.
+* Added `gcloud data-catalog entry-groups list` to help list all entry groups in a Cloud Data Catalog location.
+
+### Cloud Dataflow
+
+* Added flex-template build command `gcloud beta dataflow flex-template build`.
+
+### Cloud Dataproc
+
+* Added the following flags to `gcloud dataproc clusters create` and
+`gcloud dataproc workflow-templates set-managed-cluster` commands:
+  * `--num-secondary-workers`
+  * `--num-secondary-worker-local-ssds`
+  * `--secondary-worker-boot-disk-size`
+  * `--secondary-worker-boot-disk-type`
+  * `--secondary-worker-accelerator`
+
+### Compute Engine
+
+* Added centos-8, rhel-8, and rhel-8-byol options for `--os` flag
+  to `gcloud beta compute images import`
+  and `gcloud beta compute instances import`.
+
+### Kpt
+
+* Updated kpt from v0.7.0 to v0.9.0.
+* Added `kpt live init` command to existing `kpt live` commands.
+* Updated import of cli-utils from v0.1.3 to v0.2.0.
+
+### Kubernetes Engine
+
+* Added `--enable-tpu` and `--tpu-ipv4-cidr` flags to
+  `gcloud container clusters update` to support enabling/disabling Cloud TPU
+  on existing clusters.
+
+### Service Directory
+
+*   Promoted `gcloud service-directory namespaces` to beta. Added command to
+    create/delete/describe/list/update namespaces.
+*   Promoted `gcloud service-directory services` to beta. Added command to
+    create/delete/describe/list/resolve/update/add-iam-policy-binding/get-iam-policy/set-iam-policy/remove-iam-policy-binding.
+*   Promoted `gcloud service-directory endpoints` to beta. Added command to
+    create/delete/describe/list/update/add-iam-policy-binding/get-iam-policy/set-iam-policy/remove-iam-policy-binding.
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+
 ## 283.0.0 (2020-03-03)
 
 ### Cloud Dataflow
@@ -19,7 +101,6 @@ Subscribe to these release notes at [https://groups.google.com/forum/#!forum/goo
 
 ### Cloud Storage
 
-* 
 * Updated gsutil component to 4.48.
 
 ### Compute Engine

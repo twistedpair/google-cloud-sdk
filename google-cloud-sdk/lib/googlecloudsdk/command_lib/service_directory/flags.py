@@ -69,7 +69,7 @@ def AddLabelsFlag(parser, resource_type):
 def AddMaxEndpointsFlag(parser):
   """Adds max_endpoints flags for service-directory commands."""
   return base.Argument(
-      '--max_endpoints',
+      '--max-endpoints',
       type=int,
       help="""\
            Maximum number of endpoints to return.

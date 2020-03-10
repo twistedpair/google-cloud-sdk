@@ -151,6 +151,7 @@ class Build(_messages.Message):
       INTERNAL_ERROR: Build or step failed due to an internal cause.
       TIMEOUT: Build or step took longer than was allowed.
       CANCELLED: Build or step was canceled by a user.
+      EXPIRED: Build was enqueued for longer than the value of `queue_ttl`.
     """
     STATUS_UNKNOWN = 0
     QUEUED = 1
@@ -160,6 +161,7 @@ class Build(_messages.Message):
     INTERNAL_ERROR = 5
     TIMEOUT = 6
     CANCELLED = 7
+    EXPIRED = 8
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class SubstitutionsValue(_messages.Message):
@@ -468,6 +470,7 @@ class BuildStep(_messages.Message):
       INTERNAL_ERROR: Build or step failed due to an internal cause.
       TIMEOUT: Build or step took longer than was allowed.
       CANCELLED: Build or step was canceled by a user.
+      EXPIRED: Build was enqueued for longer than the value of `queue_ttl`.
     """
     STATUS_UNKNOWN = 0
     QUEUED = 1
@@ -477,6 +480,7 @@ class BuildStep(_messages.Message):
     INTERNAL_ERROR = 5
     TIMEOUT = 6
     CANCELLED = 7
+    EXPIRED = 8
 
   args = _messages.StringField(1, repeated=True)
   dir = _messages.StringField(2)

@@ -786,6 +786,33 @@ class Policy(_messages.Message):
   version = _messages.IntegerField(6, variant=_messages.Variant.INT32)
 
 
+class ResolveServiceRequest(_messages.Message):
+  r"""The request message for LookupService.ResolveService. Looks up a service
+  by its name, returns the service and its endpoints.
+
+  Fields:
+    endpointFilter: Optional. The filter applied to the endpoints of the
+      resolved service.  General filter string syntax: <field> <operator>
+      <value> (<logical connector>) <field> can be "name" or "metadata.<key>"
+      for map field. <operator> can be "<, >, <=, >=, !=, =, :". Of which ":"
+      means HAS and is roughly the same as "=". <value> must be the same data
+      type as the field. <logical connector> can be "AND, OR, NOT".  Examples
+      of valid filters: * "metadata.owner" returns Endpoints that have a label
+      with the   key "owner", this is the same as "metadata:owner" *
+      "metadata.protocol=gRPC" returns Endpoints that have key/value
+      "protocol=gRPC" * "metadata.owner!=sd AND metadata.foo=bar" returns
+      Endpoints that have "owner" field in metadata with a value that is not
+      "sd" AND have the key/value foo=bar.
+    maxEndpoints: Optional. The maximum number of endpoints to return.
+      Defaults to 25. Maximum is 100. If a value less than one is specified,
+      the Default is used. If a value greater than the Maximum is specified,
+      the Maximum is used.
+  """
+
+  endpointFilter = _messages.StringField(1)
+  maxEndpoints = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+
+
 class ResolveServiceResponse(_messages.Message):
   r"""The response message for LookupService.ResolveService.
 
@@ -1298,28 +1325,13 @@ class ServicedirectoryProjectsLocationsNamespacesServicesResolveRequest(_message
   object.
 
   Fields:
-    endpointFilter: Optional. The filter applied to the endpoints of the
-      resolved service.  General filter string syntax: <field> <operator>
-      <value> (<logical connector>) <field> can be "name" or "metadata.<key>"
-      for map field. <operator> can be "<, >, <=, >=, !=, =, :". Of which ":"
-      means HAS and is roughly the same as "=". <value> must be the same data
-      type as the field. <logical connector> can be "AND, OR, NOT".  Examples
-      of valid filters: * "metadata.owner" returns Endpoints that have a label
-      with the   key "owner", this is the same as "metadata:owner" *
-      "metadata.protocol=gRPC" returns Endpoints that have key/value
-      "protocol=gRPC" * "metadata.owner!=sd AND metadata.foo=bar" returns
-      Endpoints that have "owner" field in metadata with a value that is not
-      "sd" AND have the key/value foo=bar.
-    maxEndpoints: Optional. The maximum number of endpoints to return.
-      Defaults to 25. Maximum is 100. If a value less than one is specified,
-      the Default is used. If a value greater than the Maximum is specified,
-      the Maximum is used.
     name: Required. The name of the service to resolve.
+    resolveServiceRequest: A ResolveServiceRequest resource to be passed as
+      the request body.
   """
 
-  endpointFilter = _messages.StringField(1)
-  maxEndpoints = _messages.IntegerField(2, variant=_messages.Variant.INT32)
-  name = _messages.StringField(3, required=True)
+  name = _messages.StringField(1, required=True)
+  resolveServiceRequest = _messages.MessageField('ResolveServiceRequest', 2)
 
 
 class ServicedirectoryProjectsLocationsNamespacesServicesSetIamPolicyRequest(_messages.Message):

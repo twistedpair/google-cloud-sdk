@@ -22,12 +22,14 @@ from __future__ import unicode_literals
 import collections
 import os
 import re
+from apitools.base.py import exceptions as apitools_exceptions
 import enum
 
 from googlecloudsdk.api_lib.container import kubeconfig
 from googlecloudsdk.api_lib.run import global_methods
 from googlecloudsdk.api_lib.run import traffic
 from googlecloudsdk.api_lib.services import enable_api
+from googlecloudsdk.api_lib.services import exceptions as services_exceptions
 from googlecloudsdk.calliope import actions
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import base
@@ -826,8 +828,16 @@ _CLOUD_SQL_ADMIN_API_SERVICE_TOKEN = 'sqladmin.googleapis.com'
 def _CheckCloudSQLApiEnablement():
   if not properties.VALUES.core.should_prompt_to_enable_api.GetBool():
     return
-  PromptToEnableApi(_CLOUD_SQL_API_SERVICE_TOKEN)
-  PromptToEnableApi(_CLOUD_SQL_ADMIN_API_SERVICE_TOKEN)
+  try:
+    PromptToEnableApi(_CLOUD_SQL_API_SERVICE_TOKEN)
+    PromptToEnableApi(_CLOUD_SQL_ADMIN_API_SERVICE_TOKEN)
+  except (services_exceptions.GetServicePermissionDeniedException,
+          apitools_exceptions.HttpError):
+    log.status.Print('Skipped validating Cloud SQL API and Cloud SQL Admin API'
+                     ' enablement due to an issue contacting the Service Usage '
+                     ' API. Please ensure the Cloud SQL API and Cloud SQL Admin'
+                     ' API are activated (see '
+                     'https://console.cloud.google.com/apis/dashboard).')
 
 
 def _GetTrafficChanges(args):

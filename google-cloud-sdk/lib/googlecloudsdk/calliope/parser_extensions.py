@@ -1011,7 +1011,8 @@ class ArgumentParser(argparse.ArgumentParser):
       if re.search('too few arguments', message):
         return
       if (re.search('arguments? .* required', message) and
-          not re.search('in dict arg but not provided', message)):
+          not re.search('in dict arg but not provided', message) and
+          not re.search(r'\[.*\brequired\b.*\]', message)):
         return
 
     # No need to output help/usage text if we are in completion mode. However,

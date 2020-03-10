@@ -406,6 +406,21 @@ def _GetLevelIdFromLevelName(level_name):
   return REGISTRY.Parse(level_name, collection=levels.COLLECTION).accessLevelsId
 
 
+def ExpandLevelNamesIfNecessary(level_ids, policy_id):
+  """Returns the FULL Access Level names, prepending Policy ID if necessary."""
+  if level_ids is None:
+    return None
+  final_level_ids = []
+  for l in level_ids:
+    if l.startswith('accessPolicies/'):
+      final_level_ids.append(l)
+    else:
+      final_level_ids.append(
+          REGISTRY.Create(
+              levels.COLLECTION, accessPoliciesId=policy_id, accessLevelsId=l))
+  return final_level_ids
+
+
 def ParseLevels(args, perimeter_result, policy_id, dry_run=False):
   """Process repeated level changes."""
 
@@ -416,14 +431,7 @@ def ParseLevels(args, perimeter_result, policy_id, dry_run=False):
     ]
 
   level_ids = repeated.ParsePrimitiveArgs(args, 'access_levels', GetLevelIds)
-
-  if level_ids is None:
-    return None
-  return [
-      REGISTRY.Create(
-          levels.COLLECTION, accessPoliciesId=policy_id, accessLevelsId=l)
-      for l in level_ids
-  ]
+  return ExpandLevelNamesIfNecessary(level_ids, policy_id)
 
 
 def ParseServicePerimetersAlpha(path):

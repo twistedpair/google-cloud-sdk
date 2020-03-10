@@ -36,10 +36,120 @@ class RecommenderV1beta1(base_api.BaseApiClient):
         default_global_params=default_global_params,
         additional_http_headers=additional_http_headers,
         response_encoding=response_encoding)
+    self.projects_locations_insightTypes_insights = self.ProjectsLocationsInsightTypesInsightsService(self)
+    self.projects_locations_insightTypes = self.ProjectsLocationsInsightTypesService(self)
     self.projects_locations_recommenders_recommendations = self.ProjectsLocationsRecommendersRecommendationsService(self)
     self.projects_locations_recommenders = self.ProjectsLocationsRecommendersService(self)
     self.projects_locations = self.ProjectsLocationsService(self)
     self.projects = self.ProjectsService(self)
+
+  class ProjectsLocationsInsightTypesInsightsService(base_api.BaseApiService):
+    """Service class for the projects_locations_insightTypes_insights resource."""
+
+    _NAME = u'projects_locations_insightTypes_insights'
+
+    def __init__(self, client):
+      super(RecommenderV1beta1.ProjectsLocationsInsightTypesInsightsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Get(self, request, global_params=None):
+      r"""Gets the requested insight. Requires the recommender.*.get IAM permission.
+for the specified insight type.
+
+      Args:
+        request: (RecommenderProjectsLocationsInsightTypesInsightsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudRecommenderV1beta1Insight) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1beta1/projects/{projectsId}/locations/{locationsId}/insightTypes/{insightTypesId}/insights/{insightsId}',
+        http_method=u'GET',
+        method_id=u'recommender.projects.locations.insightTypes.insights.get',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[],
+        relative_path=u'v1beta1/{+name}',
+        request_field='',
+        request_type_name=u'RecommenderProjectsLocationsInsightTypesInsightsGetRequest',
+        response_type_name=u'GoogleCloudRecommenderV1beta1Insight',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists insights for a Cloud project. Requires the recommender.*.list IAM.
+permission for the specified insight type.
+
+      Args:
+        request: (RecommenderProjectsLocationsInsightTypesInsightsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudRecommenderV1beta1ListInsightsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1beta1/projects/{projectsId}/locations/{locationsId}/insightTypes/{insightTypesId}/insights',
+        http_method=u'GET',
+        method_id=u'recommender.projects.locations.insightTypes.insights.list',
+        ordered_params=[u'parent'],
+        path_params=[u'parent'],
+        query_params=[u'filter', u'pageSize', u'pageToken'],
+        relative_path=u'v1beta1/{+parent}/insights',
+        request_field='',
+        request_type_name=u'RecommenderProjectsLocationsInsightTypesInsightsListRequest',
+        response_type_name=u'GoogleCloudRecommenderV1beta1ListInsightsResponse',
+        supports_download=False,
+    )
+
+    def MarkAccepted(self, request, global_params=None):
+      r"""Marks the Insight State as Accepted. Users can use this method to.
+indicate to the Recommender API that they have applied some action based
+on the insight. This stops the insight content from being updated.
+
+MarkInsightAccepted can be applied to insights in ACTIVE state. Requires
+the recommender.*.update IAM permission for the specified insight.
+
+      Args:
+        request: (RecommenderProjectsLocationsInsightTypesInsightsMarkAcceptedRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudRecommenderV1beta1Insight) The response message.
+      """
+      config = self.GetMethodConfig('MarkAccepted')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    MarkAccepted.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1beta1/projects/{projectsId}/locations/{locationsId}/insightTypes/{insightTypesId}/insights/{insightsId}:markAccepted',
+        http_method=u'POST',
+        method_id=u'recommender.projects.locations.insightTypes.insights.markAccepted',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[],
+        relative_path=u'v1beta1/{+name}:markAccepted',
+        request_field=u'googleCloudRecommenderV1beta1MarkInsightAcceptedRequest',
+        request_type_name=u'RecommenderProjectsLocationsInsightTypesInsightsMarkAcceptedRequest',
+        response_type_name=u'GoogleCloudRecommenderV1beta1Insight',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsInsightTypesService(base_api.BaseApiService):
+    """Service class for the projects_locations_insightTypes resource."""
+
+    _NAME = u'projects_locations_insightTypes'
+
+    def __init__(self, client):
+      super(RecommenderV1beta1.ProjectsLocationsInsightTypesService, self).__init__(client)
+      self._upload_configs = {
+          }
 
   class ProjectsLocationsRecommendersRecommendationsService(base_api.BaseApiService):
     """Service class for the projects_locations_recommenders_recommendations resource."""

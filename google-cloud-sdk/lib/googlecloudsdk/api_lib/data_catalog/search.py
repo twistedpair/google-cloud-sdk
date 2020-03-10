@@ -26,9 +26,10 @@ from googlecloudsdk.command_lib.util.apis import arg_utils
 class SearchClient(object):
   """Cloud Datacatalog search client."""
 
-  def __init__(self):
-    self.client = util.GetClientInstance()
-    self.messages = util.GetMessagesModule()
+  def __init__(self, version_label):
+    self.version_label = version_label
+    self.client = util.GetClientInstance(version_label)
+    self.messages = util.GetMessagesModule(version_label)
     self.service = self.client.catalog
 
   def Search(self, query,
@@ -37,10 +38,16 @@ class SearchClient(object):
              include_project_ids,
              order_by, page_size, limit):
     """Parses search args into the request."""
-    request = self.messages.GoogleCloudDatacatalogV1beta1SearchCatalogRequest(
-        query=query,
-        orderBy=order_by,
-    )
+    if self.version_label == 'v1':
+      request = self.messages.GoogleCloudDatacatalogV1SearchCatalogRequest(
+          query=query,
+          orderBy=order_by,
+      )
+    else:
+      request = self.messages.GoogleCloudDatacatalogV1beta1SearchCatalogRequest(
+          query=query,
+          orderBy=order_by,
+      )
     if include_gcp_public_datasets:
       arg_utils.SetFieldInMessage(
           request, 'scope.includeGcpPublicDatasets',

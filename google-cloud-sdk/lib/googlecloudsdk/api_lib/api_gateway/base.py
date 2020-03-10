@@ -19,6 +19,10 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+import types
+
+from apitools.base.py import list_pager
+
 from googlecloudsdk.api_lib.util import apis
 
 
@@ -29,6 +33,155 @@ def GetClientInstance(version='v1alpha1', no_http=False):
 class BaseClient(object):
   """Base for building API Clients."""
 
-  def __init__(self, client=None, messages=None):
+  def __init__(self, client=None, message_base=None, service_name=None):
     self.client = client or GetClientInstance()
-    self.messages = messages or self.client.MESSAGES_MODULE
+    self.messages = self.client.MESSAGES_MODULE
+    self.service = getattr(self.client, service_name, None)
+
+    # Define standard request types if they exist for the base message
+    self.get_request = getattr(self.messages, message_base + 'GetRequest', None)
+    self.create_request = getattr(self.messages,
+                                  message_base + 'CreateRequest',
+                                  None)
+    self.list_request = getattr(self.messages,
+                                message_base + 'ListRequest',
+                                None)
+    self.patch_request = getattr(self.messages,
+                                 message_base + 'PatchRequest',
+                                 None)
+    self.delete_request = getattr(self.messages,
+                                  message_base + 'DeleteRequest',
+                                  None)
+
+    # Define IAM request types if they exist for the base message
+    self.get_iam_policy_request = getattr(self.messages,
+                                          message_base + 'GetIamPolicyRequest',
+                                          None)
+    self.set_iam_policy_request = getattr(self.messages,
+                                          message_base + 'SetIamPolicyRequest',
+                                          None)
+
+  def DefineGet(self):
+    """Defines basic get function on an assigned class."""
+    def Get(self, object_ref):
+      """Gets an object.
+
+      Args:
+        self: The self of the class this is set on
+        object_ref: Resource, resource reference for object to get
+
+      Returns:
+        The object requested
+      """
+      req = self.get_request(name=object_ref.RelativeName())
+
+      return self.service.Get(req)
+
+    # Bind the function to the method and set the attribute
+    setattr(self, 'Get', types.MethodType(Get, self))
+
+  def DefineDelete(self):
+    """Defines basic delete function on an assigned class."""
+    def Delete(self, object_ref):
+      """Deletes a given object given an object name.
+
+      Args:
+        self: The self of the class this is set on
+        object_ref: Resource, resource reference for object to delete
+
+      Returns:
+        Long running operation.
+      """
+      req = self.delete_request(name=object_ref.RelativeName())
+
+      return self.service.Delete(req)
+
+    # Bind the function to the method and set the attribute
+    setattr(self, 'Delete', types.MethodType(Delete, self))
+
+  def DefineList(self, field_name, is_operations=False):
+    """Defines the List functionality on the calling class.
+
+    Args:
+      field_name: The name of the field on the list response to list
+      is_operations: Operations have a slightly altered message structure, set
+                     to true in operations client
+    """
+    def List(self, parent_name, filters=None, limit=None, page_size=None,
+             sort_by=None):
+      """Lists the objects under a given parent.
+
+      Args:
+        self: the self object being wrapped by decorator
+        parent_name: Resource name of the parent to list under
+        filters: Filters to be applied to results (optional)
+        limit: Limit to the number of results per page (optional)
+        page_size: the number of results per page (optional)
+        sort_by: Instructions about how to sort the results (optional)
+
+      Returns:
+        List Pager
+      """
+      if is_operations:
+        req = self.list_request(filter=filters, name=parent_name)
+
+      else:
+        req = self.list_request(filter=filters, parent=parent_name,
+                                orderBy=sort_by)
+
+      return list_pager.YieldFromList(
+          self.service,
+          req,
+          limit=limit,
+          batch_size_attribute='pageSize',
+          batch_size=page_size,
+          field=field_name)
+
+    # Bind the function to the method and set the attribute
+    setattr(self, 'List', types.MethodType(List, self))
+
+  def DefineUpdate(self, update_field_name):
+    """Defines the Update functionality on the calling class.
+
+    Args:
+      update_field_name: the field on the patch_request to assign updated object
+                         to
+    """
+    def Update(self, updating_object, update_mask=None):
+      """Updates an object.
+
+      Args:
+        self: The self of the class this is set on
+        updating_object: Object which is being updated
+        update_mask: A string saying which fields have been updated
+
+      Returns:
+        Long running operation.
+      """
+      req = self.patch_request(name=updating_object.name,
+                               updateMask=update_mask)
+      setattr(req, update_field_name, updating_object)
+
+      return self.service.Patch(req)
+
+    # Bind the function to the method and set the attribute
+    setattr(self, 'Update', types.MethodType(Update, self))
+
+  def DefineGetIamPolicy(self):
+    """Defines basic get iam policy function on an assigned class."""
+    def GetIamPolicy(self, object_ref):
+      """Gets an IAM Policy on an object.
+
+      Args:
+        self: The self of the class this is set on
+        object_ref: Resource, reference for object IAM policy belongs to
+
+      Returns:
+        The IAM policy
+      """
+      req = self.get_iam_policy_request(resource=object_ref.RelativeName())
+
+      return self.service.GetIamPolicy(req)
+
+    # Bind the function to the method and set the attribute
+    setattr(self, 'GetIamPolicy', types.MethodType(GetIamPolicy, self))

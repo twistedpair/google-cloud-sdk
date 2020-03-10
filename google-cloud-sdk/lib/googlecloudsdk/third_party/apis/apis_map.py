@@ -533,6 +533,12 @@ MAP = {
                 default_version=False),
     },
     'datacatalog': {
+        'v1':
+            APIDef(
+                class_path='googlecloudsdk.third_party.apis.datacatalog.v1',
+                client_classpath='datacatalog_v1_client.DatacatalogV1',
+                messages_modulepath='datacatalog_v1_messages',
+                default_version=False),
         'v1alpha3':
             APIDef(
                 class_path='googlecloudsdk.third_party.apis.datacatalog.v1alpha3',
@@ -919,11 +925,25 @@ MAP = {
                 default_version=True),
     },
     'networkmanagement': {
+        'v1':
+            APIDef(
+                class_path='googlecloudsdk.third_party.apis.networkmanagement.v1',
+                client_classpath='networkmanagement_v1_client.NetworkmanagementV1',
+                messages_modulepath='networkmanagement_v1_messages',
+                default_version=False),
         'v1beta1':
             APIDef(
                 class_path='googlecloudsdk.third_party.apis.networkmanagement.v1beta1',
                 client_classpath='networkmanagement_v1beta1_client.NetworkmanagementV1beta1',
                 messages_modulepath='networkmanagement_v1beta1_messages',
+                default_version=True),
+    },
+    'networkservices': {
+        'v1alpha1':
+            APIDef(
+                class_path='googlecloudsdk.third_party.apis.networkservices.v1alpha1',
+                client_classpath='networkservices_v1alpha1_client.NetworkservicesV1alpha1',
+                messages_modulepath='networkservices_v1alpha1_messages',
                 default_version=True),
     },
     'notebooks': {

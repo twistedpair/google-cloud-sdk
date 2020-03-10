@@ -23,7 +23,6 @@ from googlecloudsdk.calliope.concepts import concepts
 from googlecloudsdk.calliope.concepts import deps
 from googlecloudsdk.command_lib.util.concepts import concept_parsers
 from googlecloudsdk.command_lib.util.concepts import presentation_specs
-from googlecloudsdk.core import properties
 
 
 def LocationAttributeConfig(default=None):
@@ -66,16 +65,6 @@ def ApiAttributeConfig(name='api', wildcard=False):
       help_text='API ID.')
 
 
-def ApiConfigProjectAttributeConfig(name='api-config-project'):
-  return concepts.ResourceParameterAttributeConfig(
-      name=name,
-      help_text='Cloud project API Config resource is in.',
-      fallthroughs=[
-          deps.ArgFallthrough('--project'),
-          deps.PropertyFallthrough(properties.VALUES.core.project)
-      ])
-
-
 def ApiConfigAttributeConfig(name='api-config'):
   return concepts.ResourceParameterAttributeConfig(
       name=name,
@@ -114,19 +103,14 @@ def GetApiResourceSpec(resource_name='api', wildcard=False):
       projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG)
 
 
-def GetApiConfigResourceSpec(resource_name='api-config', include_project=False):
-  if include_project:
-    projects_id = ApiConfigProjectAttributeConfig()
-  else:
-    projects_id = concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG
-
+def GetApiConfigResourceSpec(resource_name='api-config'):
   return concepts.ResourceSpec(
       'apigateway.projects.locations.apis.configs',
       resource_name=resource_name,
       configsId=ApiConfigAttributeConfig(),
       apisId=ApiAttributeConfig(),
       locationsId=LocationAttributeConfig(default='global'),
-      projectsId=projects_id)
+      projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG)
 
 
 def GetOperationResourceSpec(resource_name='operation'):
@@ -183,7 +167,7 @@ def AddGatewayApiConfigResourceArgs(parser, verb, gateway_required=True,
               required=gateway_required),
           presentation_specs.ResourcePresentationSpec(
               '--api-config',
-              GetApiConfigResourceSpec(include_project=True),
+              GetApiConfigResourceSpec(),
               'Resource name for API config the gateway will use.',
               flag_name_overrides={'location': ''},
               required=api_config_required)

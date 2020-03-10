@@ -27,61 +27,56 @@ from googlecloudsdk.calliope import base
 from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.command_lib.privateca import text_utils
 from googlecloudsdk.command_lib.util.apis import arg_utils
+from googlecloudsdk.core.util import times
+
 import ipaddress
 import six
-
 
 _EMAIL_SAN_REGEX = re.compile('^[^@]+@[^@]+$')
 # Any number of labels (any character that is not a dot) concatenated by dots
 _DNS_SAN_REGEX = re.compile(r'^([^.]+\.)*[^.]+$')
 
-# Resource Flag definitions
-
-# Other Flag definitions
+# Flag definitions
 
 PUBLISH_CA_CERT_CREATE_HELP = """
-If this is set, the following will happen:
-1) A new GCS bucket will be created in the same project.
-2) The CA certificate will be written to a known location within that bucket.
-3) The AIA extension in all issued certificates will point to the CA cert URL in that bucket.
+If this is enabled, the following will happen:
+1) The CA certificate will be written to a known location within the CA distribution point.
+2) The AIA extension in all issued certificates will point to the CA cert URL in that distribition point.
 
-Note that the same GCS bucket may be used for the CRLs if --publish-crl is set.
+Note that the same bucket may be used for the CRLs if --publish-crl is set.
 """
 
 PUBLISH_CA_CERT_UPDATE_HELP = """
-If this is set, the following will happen:
-1) A new GCS bucket will be created in the same project.
-2) The CA certificate will be written to a known location within that bucket.
-3) The AIA extension in all issued certificates will point to the CA cert URL in that bucket.
+If this is enabled, the following will happen:
+1) The CA certificate will be written to a known location within the CA distribution point.
+2) The AIA extension in all issued certificates will point to the CA cert URL in that distribution point.
 
 If this gets disabled, the AIA extension will not be written to any future certificates issued
-by this CA. However, an existing GCS bucket will not be deleted, and the CA certificate will not
+by this CA. However, an existing bucket will not be deleted, and the CA certificate will not
 be removed from that bucket.
 
-Note that the same GCS bucket may be used for the CRLs if --publish-crl is set.
+Note that the same bucket may be used for the CRLs if --publish-crl is set.
 """
 
 PUBLISH_CRL_CREATE_HELP = """
 If this gets enabled, the following will happen:
-1) If there is no existing GCS bucket for this CA, a new bucket will be created in the same project.
-2) CRLs will be written to a known location within that bucket.
-3) The CDP extension in all future issued certificates will point to the CRL URL in that bucket.
+1) CRLs will be written to a known location within the CA distribution point.
+2) The CDP extension in all future issued certificates will point to the CRL URL in that distribution point.
 
-Note that the same GCS bucket may be used for the CA cert if --publish-ca-cert is set.
+Note that the same bucket may be used for the CA cert if --publish-ca-cert is set.
 """
 
 PUBLISH_CRL_UPDATE_HELP = """
 If this gets enabled, the following will happen:
-1) If there is no existing GCS bucket for this CA, a new bucket will be created in the same project.
-2) CRLs will be written to a known location within that bucket.
-3) The CDP extension in all future issued certificates will point to the CRL URL in that bucket.
+1) CRLs will be written to a known location within the CA distribution point.
+2) The CDP extension in all future issued certificates will point to the CRL URL in that distribution point.
 
 If this gets disabled, the CDP extension will not be written to any future certificates issued
 by this CA, and new CRLs will not be published to that bucket (which affects existing certs).
-However, an existing GCS bucket will not be deleted, and any existing CRLs will not be removed
+However, an existing bucket will not be deleted, and any existing CRLs will not be removed
 from that bucket.
 
-Note that the same GCS bucket may be used for the CA cert if --publish-ca-cert is set.
+Note that the same bucket may be used for the CA cert if --publish-ca-cert is set.
 """
 
 _VALID_KEY_USAGES = [
@@ -115,6 +110,10 @@ def AddPublishCaCertFlag(parser, use_update_help_text=False):
       default=True).AddToParser(parser)
 
 
+def _StripVal(val):
+  return six.text_type(val).strip()
+
+
 def AddSubjectAlternativeNameFlags(parser):
   """Adds the Subject Alternative Name (san) flags.
 
@@ -125,30 +124,31 @@ def AddSubjectAlternativeNameFlags(parser):
   """
   base.Argument(
       '--email-san',
-      help='One or more space-separated email Subject Alternative Names.',
-      nargs='*').AddToParser(parser)
+      help='One or more comma-separated email Subject Alternative Names.',
+      type=arg_parsers.ArgList(element_type=_StripVal),
+      metavar='EMAIL_SAN').AddToParser(parser)
   base.Argument(
       '--ip-san',
-      help='One or more space-separated IP Subject Alternative Names.',
-      nargs='*').AddToParser(parser)
+      help='One or more comma-separated IP Subject Alternative Names.',
+      type=arg_parsers.ArgList(element_type=_StripVal),
+      metavar='IP_SAN').AddToParser(parser)
   base.Argument(
       '--dns-san',
-      help='One or more space-separated DNS Subject Alternative Names.',
-      nargs='*').AddToParser(parser)
+      help='One or more comma-separated DNS Subject Alternative Names.',
+      type=arg_parsers.ArgList(element_type=_StripVal),
+      metavar='DNS_SAN').AddToParser(parser)
   base.Argument(
       '--uri-san',
-      help='One or more space-separated URI Subject Alternative Names.',
-      nargs='*').AddToParser(parser)
-
-
-def _StripVal(val):
-  return six.text_type(val).strip()
+      help='One or more comma-separated URI Subject Alternative Names.',
+      type=arg_parsers.ArgList(element_type=_StripVal),
+      metavar='URI_SAN').AddToParser(parser)
 
 
 def AddSubjectFlag(parser, required=False):
   base.Argument(
       '--subject',
       required=required,
+      metavar='SUBJECT',
       help='X.501 name of the certificate subject. Example:'
       '--subject \"C=US,ST=California,L=Mountain View,O=Google LLC,CN=google.com\"',
       type=arg_parsers.ArgDict(
@@ -167,11 +167,14 @@ def AddValidityFlag(parser,
       default=default_value).AddToParser(parser)
 
 
-def AddIssuancePolicyFlag(parser, resource_name):
+def AddCertificateAuthorityIssuancePolicyFlag(parser):
   base.Argument(
       '--issuance-policy',
-      help="A yaml file describing this {}'s issuance policy.".format(
-          resource_name)).AddToParser(parser)
+      action='store',
+      type=arg_parsers.YAMLFileContents(),
+      help=("A YAML file describing this Certificate Authority's issuance "
+            "policy.")
+  ).AddToParser(parser)
 
 
 def AddInlineReusableConfigFlags(parser, is_ca):
@@ -180,45 +183,62 @@ def AddInlineReusableConfigFlags(parser, is_ca):
   Args:
     parser: The parser to add the flags to.
     is_ca: Whether the current operation is on a CA. This influences the help
-           text, and whether the --max-chain-length flag is added.
+      text, and whether the --max-chain-length flag is added.
   """
   resource_name = 'CA' if is_ca else 'certificate'
   group = base.ArgumentGroup()
   group.AddArgument(
       base.Argument(
           '--key-usages',
-          help='The list of key usages for this {}.'.format(resource_name),
+          metavar='KEY_USAGES',
+          help='The list of key usages for this {}. This can only be provided if `--reusable-config` is not provided.'
+          .format(resource_name),
           type=arg_parsers.ArgList(
               element_type=_StripVal, choices=_VALID_KEY_USAGES)))
   group.AddArgument(
       base.Argument(
           '--extended-key-usages',
-          help='The list of extended key usages for this {}'.format(
-              resource_name),
+          metavar='EXTENDED_KEY_USAGES',
+          help='The list of extended key usages for this {}. This can only be provided if `--reusable-config` is not provided.'
+          .format(resource_name),
           type=arg_parsers.ArgList(
               element_type=_StripVal, choices=_VALID_EXTENDED_KEY_USAGES)))
-  if is_ca:
-    group.AddArgument(base.Argument(
-        '--max-chain-length',
-        help='Maximum depth of subordinate CAs allowed under this CA.'))
+  group.AddArgument(
+      base.Argument(
+          '--max-chain-length',
+          help='Maximum depth of subordinate CAs allowed under this CA for a CA certificate. This can only be provided if `--reusable-config` is not provided.',
+          default=0))
+
+  if not is_ca:
+    group.AddArgument(
+        base.Argument(
+            '--is-ca-cert',
+            help='Whether this certificate is for a CertificateAuthority or not. Indicates the Certificate Authority field in the x509 basic constraints extension.',
+            required=False,
+            default=False,
+            action='store_true'))
+
   group.AddToParser(parser)
+
 
 # Flag parsing
 
 
-def ParseReusableConfig(args, required=False):
+def ParseReusableConfig(args):
   """Parses the reusable config flags into an API ReusableConfigWrapper.
 
   Args:
     args: The parsed argument values.
-    required: Whether a reusable config is required.
 
   Returns:
     A ReusableConfigWrapper object.
   """
   resource = args.CONCEPTS.reusable_config.Parse()
+  # If key_usages or extended_usages or max_chain_length or is_ca_cert are
+  # provided OR nothing was provided, use inline values (with defaults).
   has_inline = args.IsSpecified('key_usages') or args.IsSpecified(
-      'extended_key_usages') or args.IsSpecified('max_chain_length')
+      'extended_key_usages') or args.IsSpecified('max_chain_length') or (
+          'is_ca_cert' in vars(args) and args.IsSpecified('is_ca_cert'))
 
   messages = privateca_base.GetMessagesModule()
 
@@ -233,14 +253,6 @@ def ParseReusableConfig(args, required=False):
     return messages.ReusableConfigWrapper(
         reusableConfig=resource.RelativeName())
 
-  if not has_inline:
-    if required:
-      raise exceptions.InvalidArgumentException(
-          '--reusable-config',
-          'Either --reusable-config or one or more of --key-usages, '
-          '--extended-key-usages and --max-chain-length must be specified.')
-    return messages.ReusableConfigWrapper()
-
   key_usage_dict = {}
   for key_usage in args.key_usages or []:
     key_usage = text_utils.SnakeCaseToCamelCase(key_usage)
@@ -249,8 +261,13 @@ def ParseReusableConfig(args, required=False):
   for extended_key_usage in args.extended_key_usages or []:
     extended_key_usage = text_utils.SnakeCaseToCamelCase(extended_key_usage)
     extended_key_usage_dict[extended_key_usage] = True
-  max_issuer_length = (int(args.max_chain_length)
-                       if args.IsSpecified('max_chain_length') else None)
+
+  if 'is_ca_cert' in vars(args):
+    is_ca_val = args.is_ca_cert
+  else:
+    # For Reusable Configs in CA commands, the command is always creating a
+    # CA certificate.
+    is_ca_val = True
 
   return messages.ReusableConfigWrapper(
       reusableConfigValues=messages.ReusableConfigValues(
@@ -260,7 +277,9 @@ def ParseReusableConfig(args, required=False):
               extendedKeyUsage=messages_util.DictToMessageWithErrorCheck(
                   extended_key_usage_dict, messages.ExtendedKeyUsageOptions)),
           caOptions=messages.CaOptions(
-              maxIssuerPathLength=max_issuer_length)))
+              isCa=is_ca_val,
+              maxIssuerPathLength=int(args.max_chain_length
+                                     ) if is_ca_val else None)))
 
 
 def ParseSubject(subject_args):
@@ -299,6 +318,59 @@ def ParseSubject(subject_args):
     raise exceptions.InvalidArgumentException(
         '--subject', 'Unrecognized subject attribute.')
 
+
+def ParseSanFlags(args):
+  """Validates the san flags and creates a SubjectAltNames message from them.
+
+  Args:
+    args: The parser that contains the flags.
+
+  Returns:
+    The SubjectAltNames message with the flag data.
+  """
+  email_addresses, dns_names, ip_addresses, uris = [], [], [], []
+  if args.IsSpecified('email_san'):
+    email_addresses = list(map(ValidateEmailSanFlag, args.email_san))
+  if args.IsSpecified('dns_san'):
+    dns_names = list(map(ValidateDnsSanFlag, args.dns_san))
+  if args.IsSpecified('ip_san'):
+    ip_addresses = list(map(ValidateIpSanFlag, args.ip_san))
+  if args.IsSpecified('uri_san'):
+    uris = args.uri_san
+
+  return privateca_base.GetMessagesModule().SubjectAltNames(
+      emailAddresses=email_addresses,
+      dnsNames=dns_names,
+      ipAddresses=ip_addresses,
+      uris=uris)
+
+
+def SanFlagsAreSpecified(args):
+  """Returns true if any san flags are specified."""
+  return args.IsSpecified('email_san') or args.IsSpecified(
+      'dns_san') or args.IsSpecified('ip_san') or args.IsSpecified('uri_san')
+
+
+def ParseIssuingOptions(args):
+  """Parses the IssuingOptions proto message from the args."""
+  return privateca_base.GetMessagesModule().IssuingOptions(
+      includeCaCertUrl=args.publish_ca_cert,
+      includeCrlAccessUrl=args.publish_crl)
+
+
+def ParseIssuancePolicy(args):
+  """Parses a CertificateAuthorityPolicy proto message from the args."""
+  if not args.IsSpecified('issuance_policy'):
+    return None
+  try:
+    return messages_util.DictToMessageWithErrorCheck(
+        args.issuance_policy,
+        privateca_base.GetMessagesModule().CertificateAuthorityPolicy)
+  except messages_util.DecodeError:
+    raise exceptions.InvalidArgumentException(
+        '--issuance-policy', 'Unrecognized field in the Issuance Policy.')
+
+
 # Flag validation helpers
 
 
@@ -306,12 +378,14 @@ def ValidateEmailSanFlag(san):
   if not re.match(_EMAIL_SAN_REGEX, san):
     raise exceptions.InvalidArgumentException('--email-san',
                                               'Invalid email address.')
+  return san
 
 
 def ValidateDnsSanFlag(san):
   if not re.match(_DNS_SAN_REGEX, san):
     raise exceptions.InvalidArgumentException('--dns-san',
                                               'Invalid domain name value')
+  return san
 
 
 def ValidateIpSanFlag(san):
@@ -320,6 +394,7 @@ def ValidateIpSanFlag(san):
   except ValueError:
     raise exceptions.InvalidArgumentException('--ip-san',
                                               'Invalid IP address value.')
+  return san
 
 
 def AddLocationFlag(parser, resource_name, flag_name='--location'):
@@ -376,3 +451,7 @@ def ParseRevocationChoiceToEnum(choice):
     The revocation enum value for the choice text.
   """
   return _REVOCATION_REASON_MAPPER.GetEnumForChoice(choice)
+
+
+def ParseValidityFlag(args):
+  return times.FormatDurationForJson(times.ParseDuration(args.validity))

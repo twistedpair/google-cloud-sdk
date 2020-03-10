@@ -70,11 +70,14 @@ def ConnectToInstance(cmd_args, sql_user):
     log.Print(info_holder.InfoHolder())
 
 
-def _GetAndValidateCmekKeyName(args):
+def _GetAndValidateCmekKeyName(args, is_master):
   """Parses the CMEK resource arg, makes sure the key format was correct."""
   kms_ref = args.CONCEPTS.kms_key.Parse()
   if kms_ref:
-    _ShowCmekPrompt()
+    # Since CMEK is required for replicas of CMEK masters, this prompt is only
+    # actionable for master instances.
+    if is_master:
+      _ShowCmekPrompt()
     return kms_ref.RelativeName()
   else:
     # Check for partially specified disk-encryption-key.
@@ -169,11 +172,17 @@ def ShowZoneDeprecationWarnings(args):
                 'either a region or a zone to create an instance.')
 
 
-def ShowCmekWarning(resource_type_label, instance_type_label):
-  log.warning(
-      'Your {} will be encrypted with {}\'s customer-managed encryption key. '
-      'If anyone destroys this key, all data encrypted with it will be '
-      'permanently lost.'.format(resource_type_label, instance_type_label))
+def ShowCmekWarning(resource_type_label, instance_type_label=None):
+  if instance_type_label is None:
+    log.warning(
+        'Your {} will be encrypted with a customer-managed key. If anyone '
+        'destroys this key, all data encrypted with it will be permanently '
+        'lost.'.format(resource_type_label))
+  else:
+    log.warning(
+        'Your {} will be encrypted with {}\'s customer-managed encryption key. '
+        'If anyone destroys this key, all data encrypted with it will be '
+        'permanently lost.'.format(resource_type_label, instance_type_label))
 
 
 def _ShowCmekPrompt():
@@ -513,7 +522,8 @@ class _BaseInstances(object):
           args.master_dump_file_path, args.master_ca_certificate_path,
           args.client_certificate_path, args.client_key_path)
 
-    key_name = _GetAndValidateCmekKeyName(args)
+    is_master = instance_resource.masterInstanceName is None
+    key_name = _GetAndValidateCmekKeyName(args, is_master)
     if key_name:
       config = sql_messages.DiskEncryptionConfiguration(
           kind='sql#diskEncryptionConfiguration', kmsKeyName=key_name)

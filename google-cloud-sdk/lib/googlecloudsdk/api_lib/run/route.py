@@ -48,7 +48,7 @@ class Route(k8s_object.KubernetesObject):
     """Return the revisions whose traffic target is positive."""
     revisions = {}
     for traffic_target in self._m.status.traffic:
-      if traffic_target.percent > 0:
+      if traffic_target.percent:
         revisions[traffic_target.revisionName] = traffic_target.percent
     return revisions
 

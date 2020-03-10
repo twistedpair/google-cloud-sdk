@@ -73,8 +73,9 @@ class ServicesClient(object):
     """Services resolve request."""
     resolve_req = self.msgs.ServicedirectoryProjectsLocationsNamespacesServicesResolveRequest(
         name=service_ref.RelativeName(),
-        maxEndpoints=max_endpoints,
-        endpointFilter=endpoint_filter)
+        resolveServiceRequest=self.msgs.ResolveServiceRequest(
+            maxEndpoints=max_endpoints,
+            endpointFilter=endpoint_filter))
     return self.service.Resolve(resolve_req)
 
   def Update(self, service_ref, metadata=None):
@@ -90,12 +91,10 @@ class ServicesClient(object):
         updateMask=','.join(mask_parts))
     return self.service.Patch(update_req)
 
-  def AddIamPolicyBinding(self, service_ref, member, role, condition):
+  def AddIamPolicyBinding(self, service_ref, member, role):
     """Services add iam policy binding request."""
     policy = self.GetIamPolicy(service_ref)
-    iam_util.AddBindingToIamPolicyWithCondition(self.msgs.Binding,
-                                                self.msgs.Expr, policy, member,
-                                                role, condition)
+    iam_util.AddBindingToIamPolicy(self.msgs.Binding, policy, member, role)
     return self.SetIamPolicy(service_ref, policy)
 
   def GetIamPolicy(self, service_ref):
@@ -104,11 +103,10 @@ class ServicesClient(object):
         resource=service_ref.RelativeName())
     return self.service.GetIamPolicy(get_req)
 
-  def RemoveIamPolicyBinding(self, service_ref, member, role, condition):
+  def RemoveIamPolicyBinding(self, service_ref, member, role):
     """Services remove iam policy binding request."""
     policy = self.GetIamPolicy(service_ref)
-    iam_util.RemoveBindingFromIamPolicyWithCondition(policy, member, role,
-                                                     condition)
+    iam_util.RemoveBindingFromIamPolicy(policy, member, role)
     return self.SetIamPolicy(service_ref, policy)
 
   def SetIamPolicy(self, service_ref, policy):

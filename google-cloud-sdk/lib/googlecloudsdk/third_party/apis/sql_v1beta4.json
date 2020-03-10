@@ -2194,6 +2194,20 @@
           "description": "The project ID of the project containing the Cloud SQL database. The Google\napps domain is prefixed if applicable. Can be omitted for\n<code>update<\/code> since it is already specified on the URL.",
           "type": "string"
         },
+        "type": {
+          "description": "The user type. It determines the method to authenticate the user during\nlogin.\n  <br><code>NATIVE<\/code>: database native user. (default)\n  <br><code>CLOUD_IAM_USER<\/code>: Cloud IAM user.",
+          "enumDescriptions": [
+            "",
+            "",
+            ""
+          ],
+          "type": "string",
+          "enum": [
+            "NATIVE",
+            "CLOUD_IAM_USER",
+            "CLOUD_IAM_SERVICE_ACCOUNT"
+          ]
+        },
         "sqlserverUserDetails": {
           "$ref": "SqlServerUserDetails"
         }

@@ -1403,7 +1403,6 @@ class _SectionAuth(_Section):
         'role that includes the iam.serviceAccounts.getAccessToken permission '
         'for the service account. The roles/iam.serviceAccountTokenCreator '
         'role has this permission or you may create a custom role.')
-    self.pkce_code_verifier = self._Add('pkce_code_verifier', hidden=True)
     self.disable_google_auth = self._AddBool(
         'disable_google_auth', default=False, hidden=True)
 
@@ -1567,6 +1566,11 @@ class _SectionDataflow(_Section):
         'disable_public_ips',
         help_text='Specifies that Cloud Dataflow workers '
         'must not use public IP addresses.',
+        default=False)
+    self.print_only = self._AddBool(
+        'print_only',
+        help_text='Prints the container spec to stdout. Does not save in '
+        'Google Cloud Storage.',
         default=False)
 
 
@@ -1810,6 +1814,7 @@ class _SectionApiEndpointOverrides(_Section):
     self.logging = self._Add('logging')
     self.managedidentities = self._Add('managedidentities')
     self.manager = self._Add('manager')
+    self.memcache = self._Add('memcache')
     self.ml = self._Add('ml')
     self.monitoring = self._Add('monitoring')
     self.networkmanagement = self._Add('networkmanagement')

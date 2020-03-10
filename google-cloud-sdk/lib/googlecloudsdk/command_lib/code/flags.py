@@ -19,6 +19,7 @@ from __future__ import unicode_literals
 
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.command_lib.util.args import map_util
+from googlecloudsdk.core import exceptions
 import six
 
 
@@ -57,6 +58,13 @@ def CommonFlags(parser):
       help='Local port to which the service connection is forwarded. If this '
       'flag is not set, then a random port is chosen.')
 
+  parser.add_argument(
+      '--cloudsql-instances',
+      type=arg_parsers.ArgList(),
+      metavar='CLOUDSQL_INSTANCE',
+      help='Cloud SQL instance connection strings. Must be in the form '
+      '<project>:<region>:<instance>.')
+
   env_var_group = parser.add_mutually_exclusive_group(required=False)
   env_var_group.add_argument(
       '--env-vars',
@@ -73,3 +81,15 @@ def CommonFlags(parser):
           key_type=six.text_type, value_type=six.text_type),
       help='Path to a local YAML file with definitions for all environment '
       'variables.')
+
+
+class InvalidFlagError(exceptions.Error):
+  """Flag settings are illegal."""
+
+
+def Validate(namespace):
+  """Validate flag requirements that cannot be handled by argparse."""
+  if (namespace.IsSpecified('cloudsql_instances') and
+      not namespace.IsSpecified('service_account')):
+    raise InvalidFlagError(
+        '--cloudsql-instances requires --service-account to be specified.')

@@ -453,15 +453,19 @@ def ExecWithStreamingOutput(args,
         p = subprocess.Popen(args, env=env, stderr=subprocess.PIPE,
                              stdout=subprocess.PIPE, **extra_popen_kwargs)
 
-        if isinstance(in_str, six.text_type):
-          in_str = in_str.encode('utf-8')
+        if in_str:
+          in_str = six.text_type(in_str).encode('utf-8')
           try:
             p.stdin.write(in_str)
             p.stdin.close()
           except OSError as exc:
-            if exc.errno != errno.EIO:
+            if (exc.errno == errno.EPIPE or
+                exc.errno == errno.EINVAL):
+              pass  # Obey same conventions as subprocess.communicate()
+            else:
               _KillProcIfRunning(p)
               raise OutputStreamProcessingException(exc)
+
         try:
           with parallel.GetPool(2) as pool:
             std_out_future = pool.ApplyAsync(_ProcessStreamHandler,

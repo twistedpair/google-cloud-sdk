@@ -20,43 +20,57 @@ from __future__ import division
 from __future__ import unicode_literals
 
 from googlecloudsdk.api_lib.privateca import base
-from googlecloudsdk.command_lib.privateca import exceptions as exceptions
+from googlecloudsdk.api_lib.privateca import request_utils
+from googlecloudsdk.command_lib.privateca import resource_args
 
 
-def _CheckTypeHook(response, ca_type):
-  """Raises an exception if the response is not of type ca_type.
-
-  Args:
-    response: The ca response from the server.
-    ca_type: The string descripting the type. Either 'subordinate' or 'root'.
-
-  Returns:
-    The response, unmodified.
-  """
-  ca_type_enum = base.GetMessagesModule(
-  ).CertificateAuthority.TypeValueValuesEnum
-  if ca_type == ca_type_enum.SUBORDINATE and response.type != ca_type:
-    raise exceptions.InvalidCertificateAuthorityTypeError(
-        'Cannot perform subordinates command on Root CA. Please use the `privateca roots` command group instead.'
-    )
-  elif ca_type == ca_type_enum.SELF_SIGNED and response.type != ca_type:
-    raise exceptions.InvalidCertificateAuthorityTypeError(
-        'Cannot perform roots command on Subordinate CA. Please use the `privateca subordinates` command group instead.'
-    )
+def CheckResponseSubordinateTypeHook(response, unused_args):
+  """Raises an exception if the response is not a subordinate ca."""
+  resource_args.CheckExpectedCAType(
+      base.GetMessagesModule().CertificateAuthority.TypeValueValuesEnum
+      .SUBORDINATE, response)
   return response
 
 
-def CheckSubordinateTypeHook(response, _):
-  """Raises an exception if the response is not a subordinate ca."""
-  return _CheckTypeHook(
-      response,
-      base.GetMessagesModule().CertificateAuthority.TypeValueValuesEnum
-      .SUBORDINATE)
-
-
-def CheckRootTypeHook(response, _):
+def CheckResponseRootTypeHook(response, unused_args):
   """Raises an exception if the response is not a root ca."""
-  return _CheckTypeHook(
-      response,
+  resource_args.CheckExpectedCAType(
+      base.GetMessagesModule().CertificateAuthority.TypeValueValuesEnum
+      .SELF_SIGNED, response)
+  return response
+
+
+def _CheckRequestTypeHook(resource_ref, expected_type):
+  """Do a get on a CA resource and check its type against expected_type."""
+  client = base.GetClientInstance()
+  messages = base.GetMessagesModule()
+  certificate_authority = client.projects_locations_certificateAuthorities.Get(
+      messages.PrivatecaProjectsLocationsCertificateAuthoritiesGetRequest(
+          name=resource_ref.RelativeName()))
+
+  resource_args.CheckExpectedCAType(expected_type, certificate_authority)
+
+
+def CheckRequestRootTypeHook(resource_ref, unused_args, request):
+  """Raises an exception if the request is not for a root ca."""
+  _CheckRequestTypeHook(
+      resource_ref,
       base.GetMessagesModule().CertificateAuthority.TypeValueValuesEnum
       .SELF_SIGNED)
+
+  return request
+
+
+def CheckRequestSubordinateTypeHook(resource_ref, unused_args, request):
+  """Raises an exception if the request is not for a subordinate ca."""
+  _CheckRequestTypeHook(
+      resource_ref,
+      base.GetMessagesModule().CertificateAuthority.TypeValueValuesEnum
+      .SUBORDINATE)
+  return request
+
+
+def AddRequestIdHook(unused_ref, unused_args, request):
+  """Fills a unique identifier for a request with a requestId field."""
+  request.requestId = request_utils.GenerateRequestId()
+  return request

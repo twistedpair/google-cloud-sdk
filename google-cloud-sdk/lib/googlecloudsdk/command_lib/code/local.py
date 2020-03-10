@@ -31,6 +31,7 @@ from googlecloudsdk.core import config
 from googlecloudsdk.core import properties
 from googlecloudsdk.core import yaml
 from googlecloudsdk.core.console import console_io
+from googlecloudsdk.core.util import encoding
 from googlecloudsdk.core.util import files
 import six
 
@@ -42,7 +43,8 @@ class Settings(object):
   """Settings for local development environments."""
 
   __slots__ = ('service_name', 'image_name', 'service_account', 'dockerfile',
-               'build_context_directory', 'builder', 'local_port', 'env_vars')
+               'build_context_directory', 'builder', 'local_port', 'env_vars',
+               'cloudsql_instances')
 
   @classmethod
   def FromArgs(cls, args):
@@ -64,10 +66,11 @@ class Settings(object):
 
     return cls(service_name, image_name, args.service_account, args.dockerfile,
                args.build_context_directory, args.builder, args.local_port,
-               args.env_vars or args.env_vars_file)
+               args.env_vars or args.env_vars_file, args.cloudsql_instances)
 
   def __init__(self, service_name, image_name, service_account, dockerfile,
-               build_context_directory, builder, local_port, env_vars):
+               build_context_directory, builder, local_port, env_vars,
+               cloudsql_instances):
     """Initialize Settings.
 
     Args:
@@ -80,6 +83,7 @@ class Settings(object):
       builder: Buildpack builder.
       local_port: Local port to which to forward the service connection.
       env_vars: Container environment variables.
+      cloudsql_instances: Cloud SQL instances.
     """
     super(Settings, self).__setattr__('service_name', service_name)
     super(Settings, self).__setattr__('image_name', image_name)
@@ -90,6 +94,7 @@ class Settings(object):
     super(Settings, self).__setattr__('builder', builder)
     super(Settings, self).__setattr__('local_port', local_port)
     super(Settings, self).__setattr__('env_vars', env_vars)
+    super(Settings, self).__setattr__('cloudsql_instances', cloudsql_instances)
 
   def __setattr__(self, name, value):
     """Prevent modification of attributes."""
@@ -210,9 +215,16 @@ def CreateDevelopmentServiceAccount(service_account_email):
     _CreateAccount('Serverless Local Development Service Account', account_id,
                    project_id)
 
-  # Make the service account an editor on the project
-  _AddBinding(project_id, 'serviceAccount:' + service_account_email,
-              'roles/editor')
+    permission_msg = ('The project editor role allows the service account '
+                      'to create, delete, and modify most resources in the '
+                      'project.')
+    prompt_string = (
+        'Add project editor role to {}?'.format(service_account_email))
+    # Make the service account an editor on the project
+    if console_io.PromptContinue(
+        message=permission_msg, prompt_string=prompt_string):
+      _AddBinding(project_id, 'serviceAccount:' + service_account_email,
+                  'roles/editor')
 
   return service_account_name
 
@@ -354,27 +366,161 @@ def _AddBinding(project, account, role):
     crm_client.projects.SetIamPolicy(req)
 
 
-_CREDENTIAL_SECRET_NAME = 'local-development-credential'
+class KubeConfigGenerator(object):
+  """The base code generator with default return values.
 
-
-def AddServiceAccountSecret(configs):
-  """Add a service account secret and mounts to kubernetes configs.
-
-  Args:
-    configs: List of kubernetes yaml configurations as dictionaries.
+  Subclasses may override any of the member methods.
   """
-  deployments = (config for config in configs if config['kind'] == 'Deployment')
-  for deployment in deployments:
+
+  def CreateConfigs(self):
+    """Create top level kubernetes configs.
+
+    Returns:
+      List of kubernetes configuration yamls encoded as dictionaries.
+    """
+    return []
+
+  def ModifyDeployment(self, deployment):
+    """Modify a deployment.
+
+    Subclasses that override this method should use this method for adding
+    or deleting resources (e.g. containers, volumes, metadata) to the
+    deployment.
+
+    Args:
+      deployment: (dict) Deployment yaml in dictionary form.
+    """
+
+  def ModifyContainer(self, container):
+    """Modify a container.
+
+    Subclasses that override this method should use this method for adding,
+    deleting, or modifying any of the yaml for a container.
+
+    Args:
+      container: (dict) Container yaml in dictionary form.
+    """
+
+
+class AppContainerGenerator(KubeConfigGenerator):
+  """Generate deployment and service for a developer's app."""
+
+  def __init__(self, service_name, image_name, env_vars=None):
+    self._service_name = service_name
+    self._image_name = image_name
+    self._env_vars = env_vars
+
+  def CreateConfigs(self):
+    deployment = CreateDeployment(self._service_name, self._image_name)
+    if self._env_vars:
+      AddEnvironmentVariables(deployment, self._service_name + '-container',
+                              self._env_vars)
+    service = CreateService(self._service_name)
+    return [deployment, service]
+
+
+class SecretInfo(object):
+
+  """Information about a generated secret."""
+
+  def __init__(self):
+    self.secret_name = 'local-development-credential'
+    self.path = ('/etc/' + self.secret_name.replace('-', '_') +
+                 '/local_development_service_account.json')
+
+
+class SecretGenerator(KubeConfigGenerator):
+  """Configures service account secret."""
+
+  def __init__(self, account_name):
+    self._account_name = account_name
+
+  def GetInfo(self):
+    return SecretInfo()
+
+  def CreateConfigs(self):
+
+    """Create a secret."""
+    service_account = CreateDevelopmentServiceAccount(self._account_name)
+    private_key_json = CreateServiceAccountKey(service_account)
+    return [LocalDevelopmentSecretSpec(private_key_json)]
+
+  def ModifyDeployment(self, deployment):
+    """Add a secret volume to a deployment."""
+    secret_info = self.GetInfo()
     volumes = yaml_helper.GetOrCreate(deployment,
                                       ('spec', 'template', 'spec', 'volumes'),
                                       list)
-    _AddSecretVolume(volumes, _CREDENTIAL_SECRET_NAME)
-    for container in yaml_helper.GetOrCreate(
-        deployment, ('spec', 'template', 'spec', 'containers'), list):
-      mounts = yaml_helper.GetOrCreate(container, ('volumeMounts',), list)
-      _AddVolumeMount(mounts, _CREDENTIAL_SECRET_NAME)
-      envs = yaml_helper.GetOrCreate(container, ('env',), list)
-      _AddSecretEnvVar(envs, _CREDENTIAL_SECRET_NAME)
+    _AddSecretVolume(volumes, secret_info.secret_name)
+
+  def ModifyContainer(self, container):
+    """Add volume mount and set application credential environment variable."""
+    secret_info = self.GetInfo()
+    mounts = yaml_helper.GetOrCreate(container, ('volumeMounts',), list)
+    _AddSecretVolumeMount(mounts, secret_info.secret_name)
+    envs = yaml_helper.GetOrCreate(container, ('env',), list)
+    _AddSecretEnvVar(envs, secret_info.path)
+
+
+_CLOUD_PROXY_CONTAINER_NAME = 'cloud-sql-proxy'
+
+
+class CloudSqlProxyGenerator(KubeConfigGenerator):
+  """Generate kubernetes configurations for a Cloud SQL proxy connection."""
+
+  def __init__(self, instance_names, secret_info):
+    self._instance_names = instance_names
+    self._secret_info = secret_info
+
+  def ModifyDeployment(self, deployment):
+    """Add sidecar container and empty volume for unix socket."""
+    volumes = yaml_helper.GetOrCreate(
+        deployment, ('spec', 'template', 'spec', 'volumes'), constructor=list)
+    volumes.append({'name': 'cloudsql', 'emptyDir': {}})
+
+    containers = yaml_helper.GetOrCreate(
+        deployment, ('spec', 'template', 'spec', 'containers'),
+        constructor=list)
+    containers.append(
+        _CreateCloudSqlProxyContainer(self._instance_names,
+                                      self._secret_info.path))
+
+  def ModifyContainer(self, container):
+    """Add volume mount to continer.
+
+    This method will not modify the CloudSql proxy container.
+
+    Args:
+      container: (dict) Container yaml as a dict.
+    """
+    if container['name'] == _CLOUD_PROXY_CONTAINER_NAME:
+      return
+    volume_mounts = yaml_helper.GetOrCreate(
+        container, ('volumeMounts',), constructor=list)
+    volume_mounts.append({
+        'name': 'cloudsql',
+        'mountPath': '/cloudsql',
+        'readOnly': True
+    })
+
+
+_CLOUD_SQL_PROXY_VERSION = '1.16'
+
+
+def _CreateCloudSqlProxyContainer(instances, secret_path):
+  return {
+      'name': _CLOUD_PROXY_CONTAINER_NAME,
+      'image': 'gcr.io/cloudsql-docker/gce-proxy:' + _CLOUD_SQL_PROXY_VERSION,
+      'command': ['/cloud_sql_proxy'],
+      'args': [
+          '-dir=/cloudsql', '-instances=' + ','.join(instances),
+          '-credential_file=' + secret_path
+      ],
+      'volumeMounts': [{
+          'name': 'cloudsql',
+          'mountPath': '/cloudsql',
+      }]
+  }
 
 
 _SECRET_TEMPLATE = """
@@ -398,8 +544,9 @@ def CreateServiceAccountKey(service_account_name):
   default_credential_path = os.path.join(
       config.Paths().global_config_dir,
       _Utf8ToBase64(service_account_name) + '.json')
-  credential_file_path = os.environ.get('LOCAL_CREDENTIAL_PATH',
-                                        default_credential_path)
+  credential_file_path = encoding.GetEncodedValue(os.environ,
+                                                  'LOCAL_CREDENTIAL_PATH',
+                                                  default_credential_path)
   if os.path.exists(credential_file_path):
     return files.ReadFileContents(credential_file_path)
 
@@ -476,7 +623,7 @@ readOnly: true
 """
 
 
-def _AddVolumeMount(mounts, secret_name):
+def _AddSecretVolumeMount(mounts, secret_name):
   """Add a secret volume mount.
 
   Args:
@@ -494,7 +641,7 @@ def _IsApplicationCredentialVar(var):
   return var['name'] == 'GOOGLE_APPLICATION_CREDENTIALS'
 
 
-def _AddSecretEnvVar(envs, secret_name):
+def _AddSecretEnvVar(envs, path):
   """Adds a environmental variable that points to the secret file.
 
   Add a environment varible where GOOGLE_APPLICATION_CREDENTIALS is the name
@@ -502,16 +649,10 @@ def _AddSecretEnvVar(envs, secret_name):
 
   Args:
     envs: (list[dict]) List of dictionaries with a name entry and value entry.
-    secret_name: (str) Name of a secret.
+    path: (str) Path to secret.
   """
   if not _Contains(envs, _IsApplicationCredentialVar):
-    envs.append({
-        'name':
-            'GOOGLE_APPLICATION_CREDENTIALS',
-        'value':
-            '/etc/' + secret_name.replace('-', '_') +
-            '/local_development_service_account.json'
-    })
+    envs.append({'name': 'GOOGLE_APPLICATION_CREDENTIALS', 'value': path})
 
 
 def _FindByName(configs, name):

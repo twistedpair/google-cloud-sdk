@@ -23,6 +23,10 @@ from googlecloudsdk.api_lib.util import apis
 import six.moves.urllib.parse
 
 
+def GetClientClass():
+  return apis.GetClientClass('privateca', 'v1alpha1')
+
+
 def GetClientInstance():
   return apis.GetClientInstance('privateca', 'v1alpha1')
 

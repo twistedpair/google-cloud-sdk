@@ -225,6 +225,15 @@ Storage bucket given by `--staging-bucket`, or Cloud Storage URLs
 """)
 
 
+# TODO(b/150109532) Find a better description.
+def GetRegionArg(noun):
+  """Adds --region flag to determine endpoint for models and versions."""
+  return base.Argument(
+      '--region',
+      hidden=True,
+      help='Google Cloud Region to use for {0}.'.format(noun))
+
+
 SERVICE_ACCOUNT = base.Argument(
     '--service-account',
     required=False,

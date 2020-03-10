@@ -25,6 +25,7 @@ import sys
 from apitools.base.py import list_pager
 
 from googlecloudsdk.api_lib.compute import exceptions
+from googlecloudsdk.api_lib.compute import instance_utils
 from googlecloudsdk.api_lib.compute import lister
 from googlecloudsdk.api_lib.compute import path_simplifier
 from googlecloudsdk.api_lib.compute import request_helper
@@ -33,6 +34,7 @@ from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import base
 from googlecloudsdk.calliope import exceptions as calliope_exceptions
 from googlecloudsdk.command_lib.compute.managed_instance_groups import auto_healing_utils
+from googlecloudsdk.command_lib.util.apis import arg_utils
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 from googlecloudsdk.core.console import console_io
@@ -101,7 +103,8 @@ def AddAutoscalerArgs(parser,
                       queue_scaling_enabled=False,
                       autoscaling_file_enabled=False,
                       stackdriver_metrics_flags=False,
-                      scale_in=False):
+                      scale_in=False,
+                      predictive=False):
   """Adds commandline arguments to parser."""
   parser.add_argument(
       '--cool-down-period',
@@ -261,6 +264,9 @@ Mutually exclusive with `--update-stackdriver-metric`.
   if scale_in:
     AddScaleInControlFlag(parser)
 
+  if predictive:
+    AddPredictiveAutoscaling(parser)
+
 
 def GetModeFlag():
   # Can't use a ChoiceEnumMapper because we don't have access to the "messages"
@@ -327,6 +333,22 @@ def AddScaleInControlFlag(parser, include_clear=False):
         recommendations to include directives regarding slower scale in.
         Measured in seconds.
         """)
+
+
+def AddPredictiveAutoscaling(parser):
+  parser.add_argument(
+      '--cpu-utilization-predictive-method',
+      choices={
+          'none':
+              ('(Default) No predictions are made based on the scaling metric '
+               'when calculating the number of VM instances.'),
+          'standard':
+              ('Standard predictive autoscaling  predicts the future values of '
+               'the scaling metric and then scales a MIG to ensure that new VM '
+               'instances are ready in time to cover the predicted peak.')
+      },
+      help='Indicates which method of prediction is used for CPU utilization metric, if any.'
+  )
 
 
 def _ValidateCloudPubSubResource(pubsub_spec_dict, expected_resource_type):
@@ -765,13 +787,21 @@ def AddAutoscalersToMigs(migs_iterator,
     yield mig
 
 
-def _BuildCpuUtilization(args, messages):
-  if args.target_cpu_utilization:
-    return messages.AutoscalingPolicyCpuUtilization(
-        utilizationTarget=args.target_cpu_utilization,
-    )
-  if args.scale_based_on_cpu:
-    return messages.AutoscalingPolicyCpuUtilization()
+def _BuildCpuUtilization(args, messages, predictive=False):
+  """Builds the CPU Utilization message given relevant arguments."""
+  flags_to_check = ['target_cpu_utilization', 'scale_based_on_cpu']
+  if predictive:
+    flags_to_check.append('cpu_utilization_predictive_method')
+
+  if instance_utils.IsAnySpecified(args, *flags_to_check):
+    cpu_message = messages.AutoscalingPolicyCpuUtilization()
+    if args.target_cpu_utilization:
+      cpu_message.utilizationTarget = args.target_cpu_utilization
+    if predictive and args.cpu_utilization_predictive_method:
+      cpu_predictive_enum = messages.AutoscalingPolicyCpuUtilization.PredictiveMethodValueValuesEnum
+      cpu_message.predictiveMethod = arg_utils.ChoiceToEnum(
+          args.cpu_utilization_predictive_method, cpu_predictive_enum)
+    return cpu_message
   return None
 
 
@@ -963,7 +993,8 @@ def BuildScaleDown(args, messages):
         timeWindowSec=args.scale_in_control.get('time-window'))
 
 
-def _BuildAutoscalerPolicy(args, messages, original, scale_in=False):
+def _BuildAutoscalerPolicy(args, messages, original, scale_in=False,
+                           predictive=False):
   """Builds AutoscalingPolicy from args.
 
   Args:
@@ -971,13 +1002,15 @@ def _BuildAutoscalerPolicy(args, messages, original, scale_in=False):
     messages: module containing message classes.
     original: original autoscaler message.
     scale_in: bool, whether to include the
-    'autoscalingPolicy.scaleDownControl' field in the message
+      'autoscalingPolicy.scaleDownControl' field in the message.
+    predictive: bool, whether to inclue the
+      `autoscalingPolicy.cpuUtilization.predictiveMethod' field in the message.
   Returns:
     AutoscalingPolicy message object.
   """
   policy_dict = {
       'coolDownPeriodSec': args.cool_down_period,
-      'cpuUtilization': _BuildCpuUtilization(args, messages),
+      'cpuUtilization': _BuildCpuUtilization(args, messages, predictive),
       'customMetricUtilizations': _BuildCustomMetricUtilizations(
           args, messages, original),
       'loadBalancingUtilization': _BuildLoadBalancingUtilization(
@@ -1020,11 +1053,21 @@ def AdjustAutoscalerNameForCreation(autoscaler_resource, igm_ref):
   autoscaler_resource.name = new_name
 
 
-def BuildAutoscaler(args, messages, igm_ref, name, original, scale_in=False):
+def BuildAutoscaler(args,
+                    messages,
+                    igm_ref,
+                    name,
+                    original,
+                    scale_in=False,
+                    predictive=False):
   """Builds autoscaler message protocol buffer."""
   autoscaler = messages.Autoscaler(
       autoscalingPolicy=_BuildAutoscalerPolicy(
-          args, messages, original, scale_in=scale_in),
+          args,
+          messages,
+          original,
+          scale_in=scale_in,
+          predictive=predictive),
       description=args.description,
       name=name,
       target=igm_ref.SelfLink(),

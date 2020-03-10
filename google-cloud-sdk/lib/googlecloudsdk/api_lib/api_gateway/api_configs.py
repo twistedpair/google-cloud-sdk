@@ -19,8 +19,6 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
-from apitools.base.py import list_pager
-
 from googlecloudsdk.api_lib.api_gateway import base
 from googlecloudsdk.command_lib.api_gateway import common_flags
 
@@ -28,19 +26,16 @@ from googlecloudsdk.command_lib.api_gateway import common_flags
 class ApiConfigClient(base.BaseClient):
   """Client for Api Config objects on Cloud API Gateway API."""
 
-  def Get(self, api_config_ref):
-    """Gets an Api Config object.
-
-    Args:
-      api_config_ref: Resource, a resource reference for the api
-
-    Returns:
-      Api Object
-    """
-    req = self.messages.ApigatewayProjectsLocationsApisConfigsGetRequest(
-        name=api_config_ref.RelativeName())
-
-    return self.client.projects_locations_apis_configs.Get(req)
+  def __init__(self, client=None):
+    base.BaseClient.__init__(
+        self,
+        client=client,
+        message_base='ApigatewayProjectsLocationsApisConfigs',
+        service_name='projects_locations_apis_configs')
+    self.DefineGet()
+    self.DefineDelete()
+    self.DefineList('apiConfigs')
+    self.DefineUpdate('apigatewayApiConfig')
 
   def Create(self, api_config_ref, rollout_id, display_name=None, labels=None,
              backend_auth=None):
@@ -73,52 +68,9 @@ class ApiConfigClient(base.BaseClient):
         labels=labels,
         gatewayConfig=gateway_config)
 
-    req = self.messages.ApigatewayProjectsLocationsApisConfigsCreateRequest(
+    req = self.create_request(
         apiConfigId=api_config_ref.Name(),
         apigatewayApiConfig=api_config,
         parent=api_config_ref.Parent().RelativeName())
 
-    return self.client.projects_locations_apis_configs.Create(req)
-
-  def Delete(self, api_config_ref):
-    """Deletes an API Config object.
-
-    Args:
-      api_config_ref: Resource, a reference for the API Config
-
-    Returns:
-      Long running operation.
-    """
-
-    req = self.messages.ApigatewayProjectsLocationsApisConfigsDeleteRequest(
-        name=api_config_ref.RelativeName())
-
-    return self.client.projects_locations_apis_configs.Delete(req)
-
-  def List(self, parent_name, filters=None, limit=None, page_size=None,
-           sort_by=None):
-    """Lists the gateway objects under a given parent.
-
-    Args:
-      parent_name: Resource name of the parent to list under
-      filters: Filters to be applied to results (optional)
-      limit: Limit to the number of results per page (optional)
-      page_size: the number of results per page (optional)
-      sort_by: Instructions about how to sort the results (optional)
-
-    Returns:
-      List Pager
-    """
-    req = self.messages.ApigatewayProjectsLocationsApisConfigsListRequest(
-        filter=filters,
-        orderBy=sort_by,
-        parent=parent_name
-        )
-
-    return list_pager.YieldFromList(
-        self.client.projects_locations_apis_configs,
-        req,
-        limit=limit,
-        batch_size_attribute='pageSize',
-        batch_size=page_size,
-        field='apiConfigs')
+    return self.service.Create(req)

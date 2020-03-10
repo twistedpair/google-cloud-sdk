@@ -162,6 +162,22 @@
         }
       }
     },
+    "ResolveServiceRequest": {
+      "id": "ResolveServiceRequest",
+      "description": "The request message for LookupService.ResolveService.\nLooks up a service by its name, returns the service and its endpoints.",
+      "type": "object",
+      "properties": {
+        "maxEndpoints": {
+          "description": "Optional. The maximum number of endpoints to return. Defaults to 25. Maximum is 100.\nIf a value less than one is specified, the Default is used.\nIf a value greater than the Maximum is specified, the Maximum is used.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "endpointFilter": {
+          "description": "Optional. The filter applied to the endpoints of the resolved service.\n\nGeneral filter string syntax:\n<field> <operator> <value> (<logical connector>)\n<field> can be \"name\" or \"metadata.<key>\" for map field.\n<operator> can be \"<, >, <=, >=, !=, =, :\". Of which \":\" means HAS and is\nroughly the same as \"=\".\n<value> must be the same data type as the field.\n<logical connector> can be \"AND, OR, NOT\".\n\nExamples of valid filters:\n* \"metadata.owner\" returns Endpoints that have a label with the\n  key \"owner\", this is the same as \"metadata:owner\"\n* \"metadata.protocol=gRPC\" returns Endpoints that have key\/value\n  \"protocol=gRPC\"\n* \"metadata.owner!=sd AND metadata.foo=bar\" returns\n  Endpoints that have \"owner\" field in metadata with a value that is not\n  \"sd\" AND have the key\/value foo=bar.",
+          "type": "string"
+        }
+      }
+    },
     "ResolveServiceResponse": {
       "id": "ResolveServiceResponse",
       "description": "The response message for LookupService.ResolveService.",
@@ -1154,22 +1170,14 @@
                           "required": true,
                           "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/namespaces\/[^\/]+\/services\/[^\/]+$",
                           "type": "string"
-                        },
-                        "maxEndpoints": {
-                          "description": "Optional. The maximum number of endpoints to return. Defaults to 25. Maximum is 100.\nIf a value less than one is specified, the Default is used.\nIf a value greater than the Maximum is specified, the Maximum is used.",
-                          "location": "query",
-                          "type": "integer",
-                          "format": "int32"
-                        },
-                        "endpointFilter": {
-                          "description": "Optional. The filter applied to the endpoints of the resolved service.\n\nGeneral filter string syntax:\n<field> <operator> <value> (<logical connector>)\n<field> can be \"name\" or \"metadata.<key>\" for map field.\n<operator> can be \"<, >, <=, >=, !=, =, :\". Of which \":\" means HAS and is\nroughly the same as \"=\".\n<value> must be the same data type as the field.\n<logical connector> can be \"AND, OR, NOT\".\n\nExamples of valid filters:\n* \"metadata.owner\" returns Endpoints that have a label with the\n  key \"owner\", this is the same as \"metadata:owner\"\n* \"metadata.protocol=gRPC\" returns Endpoints that have key\/value\n  \"protocol=gRPC\"\n* \"metadata.owner!=sd AND metadata.foo=bar\" returns\n  Endpoints that have \"owner\" field in metadata with a value that is not\n  \"sd\" AND have the key\/value foo=bar.",
-                          "location": "query",
-                          "type": "string"
                         }
                       },
                       "parameterOrder": [
                         "name"
                       ],
+                      "request": {
+                        "$ref": "ResolveServiceRequest"
+                      },
                       "response": {
                         "$ref": "ResolveServiceResponse"
                       },

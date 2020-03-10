@@ -3181,7 +3181,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Lists all regions\/{region}\/clusters in a project."
+                  "description": "Lists all regions\/{region}\/clusters in a project alphabetically."
                 },
                 "diagnose": {
                   "id": "dataproc.projects.regions.clusters.diagnose",

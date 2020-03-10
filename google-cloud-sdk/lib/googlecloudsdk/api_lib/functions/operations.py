@@ -42,9 +42,10 @@ def OperationErrorToString(error):
       error.code, encoding.Decode(error.message))
 
 
-# TODO(b/139026575): Remove do_every_poll option.
+# TODO(b/139026575): Remove try_set_invoker option.
 def _GetOperationStatus(client, get_request,
-                        progress_tracker=None, do_every_poll=None):
+                        progress_tracker=None, try_set_invoker=None,
+                        on_every_poll=None):
   """Helper function for getting the status of an operation.
 
   Args:
@@ -52,7 +53,9 @@ def _GetOperationStatus(client, get_request,
     get_request: A GetOperationRequest message.
     progress_tracker: progress_tracker.ProgressTracker, A reference for the
         progress tracker to tick, in case this function is used in a Retryer.
-    do_every_poll: An optional side effect to do before getting the status.
+    try_set_invoker: function to try setting invoker, see above TODO.
+    on_every_poll: list of functions to execute every time we poll.
+                   Functions should take in Operation as an argument.
 
   Returns:
     True if the operation succeeded without error.
@@ -61,18 +64,22 @@ def _GetOperationStatus(client, get_request,
   Raises:
     FunctionsError: If the operation is finished with error.
   """
-  if do_every_poll:
-    do_every_poll()
+  if try_set_invoker:
+    try_set_invoker()
   if progress_tracker:
     progress_tracker.Tick()
   op = client.operations.Get(get_request)
   if op.error:
     raise exceptions.FunctionsError(OperationErrorToString(op.error))
+  if on_every_poll:
+    for function in on_every_poll:
+      function(op)
   return op.done
 
 
-# TODO(b/139026575): Remove do_every_poll option.
-def _WaitForOperation(client, get_request, message, do_every_poll=None):
+# TODO(b/139026575): Remove try_set_invoker option.
+def _WaitForOperation(client, get_request, message, try_set_invoker=None,
+                      on_every_poll=None):
   """Wait for an operation to complete.
 
   No operation is done instantly. Wait for it to finish following this logic:
@@ -84,9 +91,11 @@ def _WaitForOperation(client, get_request, message, do_every_poll=None):
 
   Args:
     client:  The client used to make requests.
-    get_request: A GetOperatioRequest message.
+    get_request: A GetOperationRequest message.
     message: str, The string to print while polling.
-    do_every_poll: function, A function to execute every time we poll.
+    try_set_invoker: function to try setting invoker, see above TODO.
+    on_every_poll: list of functions to execute every time we poll.
+                   Functions should take in Operation as an argument.
 
   Returns:
     True if the operation succeeded without error.
@@ -105,7 +114,8 @@ def _WaitForOperation(client, get_request, message, do_every_poll=None):
                             [client, get_request],
                             {
                                 'progress_tracker': pt,
-                                'do_every_poll': do_every_poll,
+                                'try_set_invoker': try_set_invoker,
+                                'on_every_poll': on_every_poll
                             },
                             should_retry_if=None,
                             sleep_ms=SLEEP_MS)
@@ -114,7 +124,8 @@ def _WaitForOperation(client, get_request, message, do_every_poll=None):
           'Operation {0} is taking too long'.format(get_request.name))
 
 
-def Wait(operation, messages, client, notice=None, do_every_poll=None):
+def Wait(operation, messages, client, notice=None, try_set_invoker=None,
+         on_every_poll=None):
   """Initialize waiting for operation to finish.
 
   Generate get request based on the operation and wait for an operation
@@ -125,7 +136,9 @@ def Wait(operation, messages, client, notice=None, do_every_poll=None):
     messages: GCF messages module.
     client: GCF client module.
     notice: str, displayed when waiting for the operation to finish.
-    do_every_poll: function, A function to execute every time we poll.
+    try_set_invoker: function to try setting invoker, see above TODO.
+    on_every_poll: list of functions to execute every time we poll.
+                   Functions should take in Operation as an argument.
 
   Raises:
     FunctionsError: If the operation takes more than 620s.
@@ -134,4 +147,5 @@ def Wait(operation, messages, client, notice=None, do_every_poll=None):
     notice = 'Waiting for operation to finish'
   request = messages.CloudfunctionsOperationsGetRequest()
   request.name = operation.name
-  _WaitForOperation(client, request, notice, do_every_poll)
+  _WaitForOperation(client, request, notice, try_set_invoker,
+                    on_every_poll)

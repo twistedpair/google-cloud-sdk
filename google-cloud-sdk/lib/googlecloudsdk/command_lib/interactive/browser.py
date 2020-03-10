@@ -27,6 +27,7 @@ import webbrowser
 
 from googlecloudsdk.command_lib.interactive import parser
 from googlecloudsdk.core import log
+from googlecloudsdk.core.util import encoding
 from googlecloudsdk.core.util import files
 import six
 
@@ -193,7 +194,7 @@ def _GetReferenceURL(cli, line, pos=None, man_page=False):
 
 def OpenReferencePage(cli, line, pos):
   """Opens a web browser or local help/man page for line at pos."""
-  man_page = bool(os.environ.get('SSH_CLIENT'))
+  man_page = bool(encoding.GetEncodedValue(os.environ, 'SSH_CLIENT'))
   ref = _GetReferenceURL(cli, line, pos, man_page)
   if not ref:
     return

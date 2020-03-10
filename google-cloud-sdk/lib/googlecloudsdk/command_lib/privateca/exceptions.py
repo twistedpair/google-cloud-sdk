@@ -30,19 +30,25 @@ class InvalidCertificateAuthorityTypeError(exceptions.Error):
   """Error thrown for performing a command on the wrong CA type."""
 
 
+class NoUpdateException(exceptions.Error):
+  """Error thrown when an update command is run resulting in no updates."""
+
+
 class InsufficientPermissionException(exceptions.Error):
   """Indicates that a user is missing required permissions for an operation."""
 
-  def __init__(self, resource):
+  def __init__(self, resource, missing_permissions):
     """Create a new InsufficientPermissionException.
 
     Args:
       resource: str, The resource on which the user needs permissions.
+      missing_permissions: iterable, The missing permissions.
     """
     super(InsufficientPermissionException, self).__init__(
-        'The current user is missing required permissions for this operation. '
-        'Please ensure you have the necessary IAM roles on the {} and that '
-        'you are logged-in as the correct user and try again.'.format(resource))
+        'The current user does not have permissions for this operation. '
+        'Please ensure you have {} permissions on the {} and that '
+        'you are logged-in as the correct user and try again.'.format(
+            ','.join(missing_permissions), resource))
 
 
 class UnsupportedKmsKeyTypeException(exceptions.Error):

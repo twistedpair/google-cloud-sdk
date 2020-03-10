@@ -246,7 +246,7 @@ ReplaceAccessLevelsResponse.
           }
 
     def Create(self, request, global_params=None):
-      r"""Create an Service Perimeter. The.
+      r"""Create a Service Perimeter. The.
 longrunning operation from this RPC will have a successful status once the
 Service Perimeter has
 propagated to long-lasting storage. Service Perimeters containing
@@ -277,7 +277,7 @@ errors will result in an error response for the first error encountered.
     )
 
     def Delete(self, request, global_params=None):
-      r"""Delete an Service Perimeter by resource.
+      r"""Delete a Service Perimeter by resource.
 name. The longrunning operation from this RPC will have a successful status
 once the Service Perimeter has been
 removed from long-lasting storage.
@@ -307,7 +307,7 @@ removed from long-lasting storage.
     )
 
     def Get(self, request, global_params=None):
-      r"""Get an Service Perimeter by resource.
+      r"""Get a Service Perimeter by resource.
 name.
 
       Args:
@@ -363,7 +363,7 @@ access policy.
     )
 
     def Patch(self, request, global_params=None):
-      r"""Update an Service Perimeter. The.
+      r"""Update a Service Perimeter. The.
 longrunning operation from this RPC will have a successful status once the
 changes to the Service Perimeter have
 propagated to long-lasting storage. Service Perimeter containing

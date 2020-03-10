@@ -38,6 +38,25 @@ class Collections(enum.Enum):
       [u'projectsId', u'locationsId'],
       True
   )
+  PROJECTS_LOCATIONS_INSIGHTTYPES = (
+      'projects.locations.insightTypes',
+      'projects/{projectsId}/locations/{locationsId}/insightTypes/'
+      '{insightTypesId}',
+      {},
+      [u'projectsId', u'locationsId', u'insightTypesId'],
+      True
+  )
+  PROJECTS_LOCATIONS_INSIGHTTYPES_INSIGHTS = (
+      'projects.locations.insightTypes.insights',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/insightTypes/'
+              '{insightTypesId}/insights/{insightsId}',
+      },
+      [u'name'],
+      True
+  )
   PROJECTS_LOCATIONS_RECOMMENDERS = (
       'projects.locations.recommenders',
       'projects/{projectsId}/locations/{locationsId}/recommenders/'

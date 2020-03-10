@@ -285,6 +285,8 @@ def ParseUpdateOptionsBase(args, locations):
       locations=locations,
       enable_master_authorized_networks=args.enable_master_authorized_networks,
       master_authorized_networks=args.master_authorized_networks,
+      workload_pool=args.workload_pool,
+      disable_workload_identity=args.disable_workload_identity,
       database_encryption_key=args.database_encryption_key,
       disable_database_encryption=args.disable_database_encryption,
       enable_vertical_pod_autoscaling=args.enable_vertical_pod_autoscaling,

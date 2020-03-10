@@ -35,13 +35,15 @@ class AuditConfig(_messages.Message):
 
   Fields:
     auditLogConfigs: The configuration for logging of each type of permission.
+    exemptedMembers: A string attribute.
     service: Specifies a service that will be enabled for audit logging. For
       example, `storage.googleapis.com`, `cloudsql.googleapis.com`.
       `allServices` is a special value that covers all services.
   """
 
   auditLogConfigs = _messages.MessageField('AuditLogConfig', 1, repeated=True)
-  service = _messages.StringField(2)
+  exemptedMembers = _messages.StringField(2, repeated=True)
+  service = _messages.StringField(3)
 
 
 class AuditLogConfig(_messages.Message):
@@ -58,6 +60,7 @@ class AuditLogConfig(_messages.Message):
   Fields:
     exemptedMembers: Specifies the identities that do not cause logging for
       this type of permission. Follows the same format of Binding.members.
+    ignoreChildExemptions: A boolean attribute.
     logType: The log type that this config enables.
   """
 
@@ -76,7 +79,38 @@ class AuditLogConfig(_messages.Message):
     DATA_READ = 3
 
   exemptedMembers = _messages.StringField(1, repeated=True)
-  logType = _messages.EnumField('LogTypeValueValuesEnum', 2)
+  ignoreChildExemptions = _messages.BooleanField(2)
+  logType = _messages.EnumField('LogTypeValueValuesEnum', 3)
+
+
+class AuthorizationLoggingOptions(_messages.Message):
+  r"""Authorization-related information used by Cloud Audit Logging.
+
+  Enums:
+    PermissionTypeValueValuesEnum: The type of the permission that was
+      checked.
+
+  Fields:
+    permissionType: The type of the permission that was checked.
+  """
+
+  class PermissionTypeValueValuesEnum(_messages.Enum):
+    r"""The type of the permission that was checked.
+
+    Values:
+      PERMISSION_TYPE_UNSPECIFIED: Default. Should not be used.
+      ADMIN_READ: A read of admin (meta) data.
+      ADMIN_WRITE: A write of admin (meta) data.
+      DATA_READ: A read of standard data.
+      DATA_WRITE: A write of standard data.
+    """
+    PERMISSION_TYPE_UNSPECIFIED = 0
+    ADMIN_READ = 1
+    ADMIN_WRITE = 2
+    DATA_READ = 3
+    DATA_WRITE = 4
+
+  permissionType = _messages.EnumField('PermissionTypeValueValuesEnum', 1)
 
 
 class AuthorizerFeatureSpec(_messages.Message):
@@ -138,6 +172,422 @@ class CancelOperationRequest(_messages.Message):
   r"""The request message for Operations.CancelOperation."""
 
 
+class CloudAuditOptions(_messages.Message):
+  r"""Write a Cloud Audit log
+
+  Enums:
+    LogNameValueValuesEnum: The log_name to populate in the Cloud Audit
+      Record.
+
+  Fields:
+    authorizationLoggingOptions: Information used by the Cloud Audit Logging
+      pipeline.
+    logName: The log_name to populate in the Cloud Audit Record.
+  """
+
+  class LogNameValueValuesEnum(_messages.Enum):
+    r"""The log_name to populate in the Cloud Audit Record.
+
+    Values:
+      UNSPECIFIED_LOG_NAME: Default. Should not be used.
+      ADMIN_ACTIVITY: Corresponds to "cloudaudit.googleapis.com/activity"
+      DATA_ACCESS: Corresponds to "cloudaudit.googleapis.com/data_access"
+    """
+    UNSPECIFIED_LOG_NAME = 0
+    ADMIN_ACTIVITY = 1
+    DATA_ACCESS = 2
+
+  authorizationLoggingOptions = _messages.MessageField('AuthorizationLoggingOptions', 1)
+  logName = _messages.EnumField('LogNameValueValuesEnum', 2)
+
+
+class Condition(_messages.Message):
+  r"""A condition to be met.
+
+  Enums:
+    IamValueValuesEnum: Trusted attributes supplied by the IAM system.
+    OpValueValuesEnum: An operator to apply the subject with.
+    SysValueValuesEnum: Trusted attributes supplied by any service that owns
+      resources and uses the IAM system for access control.
+
+  Fields:
+    iam: Trusted attributes supplied by the IAM system.
+    op: An operator to apply the subject with.
+    svc: Trusted attributes discharged by the service.
+    sys: Trusted attributes supplied by any service that owns resources and
+      uses the IAM system for access control.
+    values: The objects of the condition.
+  """
+
+  class IamValueValuesEnum(_messages.Enum):
+    r"""Trusted attributes supplied by the IAM system.
+
+    Values:
+      NO_ATTR: Default non-attribute.
+      AUTHORITY: Either principal or (if present) authority selector.
+      ATTRIBUTION: The principal (even if an authority selector is present),
+        which must only be used for attribution, not authorization.
+      SECURITY_REALM: Any of the security realms in the IAMContext (go
+        /security-realms). When used with IN, the condition indicates "any of
+        the request's realms match one of the given values; with NOT_IN, "none
+        of the realms match any of the given values". Note that a value can
+        be:  - 'self' (i.e., allow connections from clients that are in the
+        same  security realm)  - a realm (e.g., 'campus-abc')  - a realm group
+        (e.g., 'realms-for-borg-cell-xx', see: go/realm-groups) A match is
+        determined by a realm group membership check performed by a
+        RealmAclRep object (go/realm-acl-howto). It is not permitted to grant
+        access based on the *absence* of a realm, so realm conditions can only
+        be used in a "positive" context (e.g., ALLOW/IN or DENY/NOT_IN).
+      APPROVER: An approver (distinct from the requester) that has authorized
+        this request. When used with IN, the condition indicates that one of
+        the approvers associated with the request matches the specified
+        principal, or is a member of the specified group. Approvers can only
+        grant additional access, and are thus only used in a strictly positive
+        context (e.g. ALLOW/IN or DENY/NOT_IN).
+      JUSTIFICATION_TYPE: What types of justifications have been supplied with
+        this request. String values should match enum names from
+        security.credentials.JustificationType, e.g. "MANUAL_STRING". It is
+        not permitted to grant access based on the *absence* of a
+        justification, so justification conditions can only be used in a
+        "positive" context (e.g., ALLOW/IN or DENY/NOT_IN).  Multiple
+        justifications, e.g., a Buganizer ID and a manually-entered reason,
+        are normal and supported.
+      CREDENTIALS_TYPE: What type of credentials have been supplied with this
+        request. String values should match enum names from
+        security_loas_l2.CredentialsType - currently, only
+        CREDS_TYPE_EMERGENCY is supported. It is not permitted to grant access
+        based on the *absence* of a credentials type, so the conditions can
+        only be used in a "positive" context (e.g., ALLOW/IN or DENY/NOT_IN).
+    """
+    NO_ATTR = 0
+    AUTHORITY = 1
+    ATTRIBUTION = 2
+    SECURITY_REALM = 3
+    APPROVER = 4
+    JUSTIFICATION_TYPE = 5
+    CREDENTIALS_TYPE = 6
+
+  class OpValueValuesEnum(_messages.Enum):
+    r"""An operator to apply the subject with.
+
+    Values:
+      NO_OP: Default no-op.
+      EQUALS: DEPRECATED. Use IN instead.
+      NOT_EQUALS: DEPRECATED. Use NOT_IN instead.
+      IN: The condition is true if the subject (or any element of it if it is
+        a set) matches any of the supplied values.
+      NOT_IN: The condition is true if the subject (or every element of it if
+        it is a set) matches none of the supplied values.
+      DISCHARGED: Subject is discharged
+    """
+    NO_OP = 0
+    EQUALS = 1
+    NOT_EQUALS = 2
+    IN = 3
+    NOT_IN = 4
+    DISCHARGED = 5
+
+  class SysValueValuesEnum(_messages.Enum):
+    r"""Trusted attributes supplied by any service that owns resources and
+    uses the IAM system for access control.
+
+    Values:
+      NO_ATTR: Default non-attribute type
+      REGION: Region of the resource
+      SERVICE: Service name
+      NAME: Resource name
+      IP: IP address of the caller
+    """
+    NO_ATTR = 0
+    REGION = 1
+    SERVICE = 2
+    NAME = 3
+    IP = 4
+
+  iam = _messages.EnumField('IamValueValuesEnum', 1)
+  op = _messages.EnumField('OpValueValuesEnum', 2)
+  svc = _messages.StringField(3)
+  sys = _messages.EnumField('SysValueValuesEnum', 4)
+  values = _messages.StringField(5, repeated=True)
+
+
+class ConfigManagementFeatureSpec(_messages.Message):
+  r"""Spec for Anthos Config Management (ACM).
+
+  Messages:
+    MembershipConfigsValue: Map of Membership IDs to individual configs.
+
+  Fields:
+    membershipConfigs: Map of Membership IDs to individual configs.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class MembershipConfigsValue(_messages.Message):
+    r"""Map of Membership IDs to individual configs.
+
+    Messages:
+      AdditionalProperty: An additional property for a MembershipConfigsValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type
+        MembershipConfigsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a MembershipConfigsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A MembershipConfig attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('MembershipConfig', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  membershipConfigs = _messages.MessageField('MembershipConfigsValue', 1)
+
+
+class ConfigManagementFeatureState(_messages.Message):
+  r"""State for Anthos Config Management
+
+  Fields:
+    clusterName: The user-defined name for the cluster used by
+      ClusterSelectors to group clusters together. This should match
+      Membership's membership_name, unless the user installed ACM on the
+      cluster manually prior to enabling the ACM hub feature. Unique within a
+      Anthos Config Management installation.
+    configSyncState: Current sync status
+    membershipConfig: Membership configuration in the cluster. This represents
+      the actual state in the cluster, while the MembershipConfig in the
+      FeatureSpec represents the intended state
+    operatorState: Current install status of ACM's Operator
+  """
+
+  clusterName = _messages.StringField(1)
+  configSyncState = _messages.MessageField('ConfigSyncState', 2)
+  membershipConfig = _messages.MessageField('MembershipConfig', 3)
+  operatorState = _messages.MessageField('OperatorState', 4)
+
+
+class ConfigSync(_messages.Message):
+  r"""Git repo configuration for a single cluster.
+
+  Fields:
+    policyDir: The path within the Git repository that represents the top
+      level of the repo to sync. Default: the root directory of the
+      repository.
+    secretType: Git revision (tag or hash) to check out. Default HEAD.
+    syncBranch: The branch of the repository to sync from. Default: master.
+    syncRepo: The URL of the Git repository to use as the source of truth.
+    syncRev: Git revision (tag or hash) to check out. Default HEAD.
+    syncWaitSecs: Period in seconds between consecutive syncs. Default: 15.
+  """
+
+  policyDir = _messages.StringField(1)
+  secretType = _messages.StringField(2)
+  syncBranch = _messages.StringField(3)
+  syncRepo = _messages.StringField(4)
+  syncRev = _messages.StringField(5)
+  syncWaitSecs = _messages.IntegerField(6)
+
+
+class ConfigSyncDeploymentState(_messages.Message):
+  r"""The state of ConfigSync's deployment on a cluster
+
+  Enums:
+    GitSyncValueValuesEnum: Deployment state of the git-sync pod
+    ImporterValueValuesEnum: Deployment state of the importer pod
+    MonitorValueValuesEnum: Deployment state of the monitor pod
+    SyncerValueValuesEnum: Deployment state of the syncer pod
+
+  Fields:
+    gitSync: Deployment state of the git-sync pod
+    importer: Deployment state of the importer pod
+    monitor: Deployment state of the monitor pod
+    syncer: Deployment state of the syncer pod
+  """
+
+  class GitSyncValueValuesEnum(_messages.Enum):
+    r"""Deployment state of the git-sync pod
+
+    Values:
+      DEPLOYMENT_STATE_UNSPECIFIED: Deployment's state cannot be determined
+      NOT_INSTALLED: Deployment is not installed
+      INSTALLED: Deployment is installed
+      ERROR: Deployment was attempted to be installed, but has errors
+    """
+    DEPLOYMENT_STATE_UNSPECIFIED = 0
+    NOT_INSTALLED = 1
+    INSTALLED = 2
+    ERROR = 3
+
+  class ImporterValueValuesEnum(_messages.Enum):
+    r"""Deployment state of the importer pod
+
+    Values:
+      DEPLOYMENT_STATE_UNSPECIFIED: Deployment's state cannot be determined
+      NOT_INSTALLED: Deployment is not installed
+      INSTALLED: Deployment is installed
+      ERROR: Deployment was attempted to be installed, but has errors
+    """
+    DEPLOYMENT_STATE_UNSPECIFIED = 0
+    NOT_INSTALLED = 1
+    INSTALLED = 2
+    ERROR = 3
+
+  class MonitorValueValuesEnum(_messages.Enum):
+    r"""Deployment state of the monitor pod
+
+    Values:
+      DEPLOYMENT_STATE_UNSPECIFIED: Deployment's state cannot be determined
+      NOT_INSTALLED: Deployment is not installed
+      INSTALLED: Deployment is installed
+      ERROR: Deployment was attempted to be installed, but has errors
+    """
+    DEPLOYMENT_STATE_UNSPECIFIED = 0
+    NOT_INSTALLED = 1
+    INSTALLED = 2
+    ERROR = 3
+
+  class SyncerValueValuesEnum(_messages.Enum):
+    r"""Deployment state of the syncer pod
+
+    Values:
+      DEPLOYMENT_STATE_UNSPECIFIED: Deployment's state cannot be determined
+      NOT_INSTALLED: Deployment is not installed
+      INSTALLED: Deployment is installed
+      ERROR: Deployment was attempted to be installed, but has errors
+    """
+    DEPLOYMENT_STATE_UNSPECIFIED = 0
+    NOT_INSTALLED = 1
+    INSTALLED = 2
+    ERROR = 3
+
+  gitSync = _messages.EnumField('GitSyncValueValuesEnum', 1)
+  importer = _messages.EnumField('ImporterValueValuesEnum', 2)
+  monitor = _messages.EnumField('MonitorValueValuesEnum', 3)
+  syncer = _messages.EnumField('SyncerValueValuesEnum', 4)
+
+
+class ConfigSyncState(_messages.Message):
+  r"""State information for ConfigSync
+
+  Fields:
+    deploymentState: Information about the deployment of ConfigSync, including
+      the version of the various Pods deployed
+    syncState: The state of ConfigSync's process to sync configs to a cluster
+    version: The version of ConfigSync deployed
+  """
+
+  deploymentState = _messages.MessageField('ConfigSyncDeploymentState', 1)
+  syncState = _messages.MessageField('SyncState', 2)
+  version = _messages.MessageField('ConfigSyncVersion', 3)
+
+
+class ConfigSyncVersion(_messages.Message):
+  r"""Specific versioning information pertaining to ConfigSync's Pods
+
+  Fields:
+    gitSync: Version of the deployed git-sync pod
+    importer: Version of the deployed importer pod
+    monitor: Version of the deployed monitor pod
+    syncer: Version of the deployed syncer pod
+  """
+
+  gitSync = _messages.StringField(1)
+  importer = _messages.StringField(2)
+  monitor = _messages.StringField(3)
+  syncer = _messages.StringField(4)
+
+
+class CounterOptions(_messages.Message):
+  r"""Increment a streamz counter with the specified metric and field names.
+  Metric names should start with a '/', generally be lowercase-only, and end
+  in "_count". Field names should not contain an initial slash. The actual
+  exported metric names will have "/iam/policy" prepended.  Field names
+  correspond to IAM request parameters and field values are their respective
+  values.  Supported field names:    - "authority", which is "[token]" if
+  IAMContext.token is present,      otherwise the value of
+  IAMContext.authority_selector if present, and      otherwise a
+  representation of IAMContext.principal; or    - "iam_principal", a
+  representation of IAMContext.principal even if a      token or authority
+  selector is present; or    - "" (empty string), resulting in a counter with
+  no fields.  Examples:   counter { metric: "/debug_access_count"  field:
+  "iam_principal" }   ==> increment counter /iam/policy/debug_access_count
+  {iam_principal=[value of IAMContext.principal]}
+
+  Fields:
+    customFields: Custom fields.
+    field: The field value to attribute.
+    metric: The metric to update.
+  """
+
+  customFields = _messages.MessageField('CustomField', 1, repeated=True)
+  field = _messages.StringField(2)
+  metric = _messages.StringField(3)
+
+
+class CustomField(_messages.Message):
+  r"""Custom fields. These can be used to create a counter with arbitrary
+  field/value pairs. See: go/rpcsp-custom-fields.
+
+  Fields:
+    name: Name is the field name.
+    value: Value is the field value. It is important that in contrast to the
+      CounterOptions.field, the value here is a constant that is not derived
+      from the IAMContext.
+  """
+
+  name = _messages.StringField(1)
+  value = _messages.StringField(2)
+
+
+class DataAccessOptions(_messages.Message):
+  r"""Write a Data Access (Gin) log
+
+  Enums:
+    LogModeValueValuesEnum: Whether Gin logging should happen in a fail-closed
+      manner at the caller. This is currently supported in the LocalIAM
+      implementation, Stubby C++, and Stubby Java. For Apps Framework, see go
+      /af-audit-logging#failclosed.
+
+  Fields:
+    logMode: Whether Gin logging should happen in a fail-closed manner at the
+      caller. This is currently supported in the LocalIAM implementation,
+      Stubby C++, and Stubby Java. For Apps Framework, see go/af-audit-
+      logging#failclosed.
+  """
+
+  class LogModeValueValuesEnum(_messages.Enum):
+    r"""Whether Gin logging should happen in a fail-closed manner at the
+    caller. This is currently supported in the LocalIAM implementation, Stubby
+    C++, and Stubby Java. For Apps Framework, see go/af-audit-
+    logging#failclosed.
+
+    Values:
+      LOG_MODE_UNSPECIFIED: Client is not required to write a partial Gin log
+        immediately after the authorization check. If client chooses to write
+        one and it fails, client may either fail open (allow the operation to
+        continue) or fail closed (handle as a DENY outcome).
+      LOG_FAIL_CLOSED: The application's operation in the context of which
+        this authorization check is being made may only be performed if it is
+        successfully logged to Gin. For instance, the authorization library
+        may satisfy this obligation by emitting a partial log entry at
+        authorization check time and only returning ALLOW to the application
+        if it succeeds.  If a matching Rule has this directive, but the client
+        has not indicated that it will honor such requirements, then the IAM
+        check will result in authorization failure by setting
+        CheckPolicyResponse.success=false.
+    """
+    LOG_MODE_UNSPECIFIED = 0
+    LOG_FAIL_CLOSED = 1
+
+  logMode = _messages.EnumField('LogModeValueValuesEnum', 1)
+
+
 class Empty(_messages.Message):
   r"""A generic empty message that you can re-use to avoid defining duplicated
   empty messages in your APIs. A typical example is to use it as the request
@@ -146,6 +596,22 @@ class Empty(_messages.Message):
   JSON representation for `Empty` is empty JSON object `{}`.
   """
 
+
+
+class ErrorResource(_messages.Message):
+  r"""Model for a config file in the git repo with an associated Sync error
+
+  Fields:
+    resourceGvk: Group/version/kind of the resource that is causing an error
+    resourceName: Metadata name of the resource that is causing an error
+    resourceNamespace: Namespace of the resource that is causing an error
+    sourcePath: Path in the git repo of the erroneous config
+  """
+
+  resourceGvk = _messages.MessageField('GroupVersionKind', 1)
+  resourceName = _messages.StringField(2)
+  resourceNamespace = _messages.StringField(3)
+  sourcePath = _messages.StringField(4)
 
 
 class Expr(_messages.Message):
@@ -192,10 +658,13 @@ class Feature(_messages.Message):
 
   Fields:
     authorizerFeatureSpec: A AuthorizerFeatureSpec attribute.
+    configmanagementFeatureSpec: Feature for Anthos Config Management.
     createTime: Output only. Timestamp for when the Feature was created.
     deleteTime: Output only. Timestamp for when the Feature was deleted.
     description: Description of the feature, limited to 63 characters.
     featureState: Output only. State of the resource itself.
+    helloworldFeatureSpec: A hello world feature to act as an example and test
+      our feature lifecycle code.
     labels: GCP labels for this feature.
     meteringFeatureSpec: The specification for the metering feature.
     multiclusteringressFeatureSpec: A MultiClusterIngressFeatureSpec
@@ -204,6 +673,7 @@ class Feature(_messages.Message):
       cluster service discovery.
     name: Output only. The unique name of this feature resource in the format:
       `projects/[project_id]/locations/global/features/[feature_id]`.
+    servicemeshFeatureSpec: A ServiceMeshFeatureSpec attribute.
     updateTime: Output only. Timestamp for when the Feature was last updated.
   """
 
@@ -232,16 +702,19 @@ class Feature(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   authorizerFeatureSpec = _messages.MessageField('AuthorizerFeatureSpec', 1)
-  createTime = _messages.StringField(2)
-  deleteTime = _messages.StringField(3)
-  description = _messages.StringField(4)
-  featureState = _messages.MessageField('FeatureState', 5)
-  labels = _messages.MessageField('LabelsValue', 6)
-  meteringFeatureSpec = _messages.MessageField('MeteringFeatureSpec', 7)
-  multiclusteringressFeatureSpec = _messages.MessageField('MultiClusterIngressFeatureSpec', 8)
-  multiclusterservicediscoveryFeatureSpec = _messages.MessageField('MultiClusterServiceDiscoveryFeatureSpec', 9)
-  name = _messages.StringField(10)
-  updateTime = _messages.StringField(11)
+  configmanagementFeatureSpec = _messages.MessageField('ConfigManagementFeatureSpec', 2)
+  createTime = _messages.StringField(3)
+  deleteTime = _messages.StringField(4)
+  description = _messages.StringField(5)
+  featureState = _messages.MessageField('FeatureState', 6)
+  helloworldFeatureSpec = _messages.MessageField('HelloWorldFeatureSpec', 7)
+  labels = _messages.MessageField('LabelsValue', 8)
+  meteringFeatureSpec = _messages.MessageField('MeteringFeatureSpec', 9)
+  multiclusteringressFeatureSpec = _messages.MessageField('MultiClusterIngressFeatureSpec', 10)
+  multiclusterservicediscoveryFeatureSpec = _messages.MessageField('MultiClusterServiceDiscoveryFeatureSpec', 11)
+  name = _messages.StringField(12)
+  servicemeshFeatureSpec = _messages.MessageField('ServiceMeshFeatureSpec', 13)
+  updateTime = _messages.StringField(14)
 
 
 class FeatureState(_messages.Message):
@@ -332,12 +805,15 @@ class FeatureStateDetails(_messages.Message):
     authorizerFeatureState: A AuthorizerFeatureState attribute.
     code: The code indicates machine-interpretable status code of the feature.
       It also allows for an interpretation of the details.
+    configmanagementFeatureState: A ConfigManagementFeatureState attribute.
     description: Human readable description of the issue.
+    helloworldFeatureState: A HelloWorldFeatureState attribute.
     meteringFeatureState: A MeteringFeatureState attribute.
     multiclusteringressFeatureState: A MultiClusterIngressFeatureState
       attribute.
     multiclusterservicediscoveryFeatureState: A
       MultiClusterServiceDiscoveryFeatureState attribute.
+    servicemeshFeatureState: A ServiceMeshFeatureState attribute.
     updateTime: The last update time of this status by the controllers
   """
 
@@ -356,11 +832,14 @@ class FeatureStateDetails(_messages.Message):
 
   authorizerFeatureState = _messages.MessageField('AuthorizerFeatureState', 1)
   code = _messages.EnumField('CodeValueValuesEnum', 2)
-  description = _messages.StringField(3)
-  meteringFeatureState = _messages.MessageField('MeteringFeatureState', 4)
-  multiclusteringressFeatureState = _messages.MessageField('MultiClusterIngressFeatureState', 5)
-  multiclusterservicediscoveryFeatureState = _messages.MessageField('MultiClusterServiceDiscoveryFeatureState', 6)
-  updateTime = _messages.StringField(7)
+  configmanagementFeatureState = _messages.MessageField('ConfigManagementFeatureState', 3)
+  description = _messages.StringField(4)
+  helloworldFeatureState = _messages.MessageField('HelloWorldFeatureState', 5)
+  meteringFeatureState = _messages.MessageField('MeteringFeatureState', 6)
+  multiclusteringressFeatureState = _messages.MessageField('MultiClusterIngressFeatureState', 7)
+  multiclusterservicediscoveryFeatureState = _messages.MessageField('MultiClusterServiceDiscoveryFeatureState', 8)
+  servicemeshFeatureState = _messages.MessageField('ServiceMeshFeatureState', 9)
+  updateTime = _messages.StringField(10)
 
 
 class GenerateConnectAgentManifestResponse(_messages.Message):
@@ -563,15 +1042,18 @@ class GkehubProjectsLocationsListRequest(_messages.Message):
 
   Fields:
     filter: The standard list filter.
+    includeUnrevealedLocations: If true, the returned list will include
+      locations which are not yet revealed.
     name: The resource that owns the locations collection, if applicable.
     pageSize: The standard list page size.
     pageToken: The standard list page token.
   """
 
   filter = _messages.StringField(1)
-  name = _messages.StringField(2, required=True)
-  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(4)
+  includeUnrevealedLocations = _messages.BooleanField(2)
+  name = _messages.StringField(3, required=True)
+  pageSize = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(5)
 
 
 class GkehubProjectsLocationsOperationsCancelRequest(_messages.Message):
@@ -672,6 +1154,44 @@ class GoogleRpcStatus(_messages.Message):
   code = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   details = _messages.MessageField('DetailsValueListEntry', 2, repeated=True)
   message = _messages.StringField(3)
+
+
+class GroupVersionKind(_messages.Message):
+  r"""A Kubernetes object's GVK
+
+  Fields:
+    group: Kubernetes Group
+    kind: Kubernetes Kind
+    version: Kubernetes Version
+  """
+
+  group = _messages.StringField(1)
+  kind = _messages.StringField(2)
+  version = _messages.StringField(3)
+
+
+class HelloWorldFeatureSpec(_messages.Message):
+  r"""An empty spec for hello world feature. This is required since Feature
+  proto requires a spec.
+  """
+
+
+
+class HelloWorldFeatureState(_messages.Message):
+  r"""An empty state for hello world feature. This is required since
+  FeatureStateDetails requires a state.
+  """
+
+
+
+class InstallError(_messages.Message):
+  r"""Errors pertaining to the installation of ACM
+
+  Fields:
+    errorMessage: A string representing the user facing error message
+  """
+
+  errorMessage = _messages.StringField(1)
 
 
 class ListFeaturesResponse(_messages.Message):
@@ -793,6 +1313,31 @@ class Location(_messages.Message):
   locationId = _messages.StringField(3)
   metadata = _messages.MessageField('MetadataValue', 4)
   name = _messages.StringField(5)
+
+
+class LogConfig(_messages.Message):
+  r"""Specifies what kind of log the caller must write
+
+  Fields:
+    cloudAudit: Cloud audit options.
+    counter: Counter options.
+    dataAccess: Data access options.
+  """
+
+  cloudAudit = _messages.MessageField('CloudAuditOptions', 1)
+  counter = _messages.MessageField('CounterOptions', 2)
+  dataAccess = _messages.MessageField('DataAccessOptions', 3)
+
+
+class MembershipConfig(_messages.Message):
+  r"""Configuration for a single cluster. Intended to parallel the
+  ConfigManagement CR.
+
+  Fields:
+    configSync: Git repo configuration for the cluster.
+  """
+
+  configSync = _messages.MessageField('ConfigSync', 1)
 
 
 class MeteringFeatureSpec(_messages.Message):
@@ -954,6 +1499,37 @@ class Operation(_messages.Message):
   response = _messages.MessageField('ResponseValue', 5)
 
 
+class OperatorState(_messages.Message):
+  r"""State information for an ACM's Operator
+
+  Enums:
+    DeploymentStateValueValuesEnum: The state of the Operator's deployment
+
+  Fields:
+    deploymentState: The state of the Operator's deployment
+    errors: Install errors.
+    version: The semenatic version number of the operator
+  """
+
+  class DeploymentStateValueValuesEnum(_messages.Enum):
+    r"""The state of the Operator's deployment
+
+    Values:
+      DEPLOYMENT_STATE_UNSPECIFIED: Deployment's state cannot be determined
+      NOT_INSTALLED: Deployment is not installed
+      INSTALLED: Deployment is installed
+      ERROR: Deployment was attempted to be installed, but has errors
+    """
+    DEPLOYMENT_STATE_UNSPECIFIED = 0
+    NOT_INSTALLED = 1
+    INSTALLED = 2
+    ERROR = 3
+
+  deploymentState = _messages.EnumField('DeploymentStateValueValuesEnum', 1)
+  errors = _messages.MessageField('InstallError', 2, repeated=True)
+  version = _messages.StringField(3)
+
+
 class Policy(_messages.Message):
   r"""An Identity and Access Management (IAM) policy, which specifies access
   controls for Google Cloud resources.   A `Policy` is a collection of
@@ -1002,6 +1578,14 @@ class Policy(_messages.Message):
       `etag` field whenever you call `setIamPolicy`. If you omit this field,
       then IAM allows you to overwrite a version `3` policy with a version `1`
       policy, and all of the conditions in the version `3` policy are lost.
+    iamOwned: A boolean attribute.
+    rules: If more than one rule is specified, the rules are applied in the
+      following manner: - All matching LOG rules are always applied. - If any
+      DENY/DENY_WITH_LOG rule matches, permission is denied.   Logging will be
+      applied if one or more matching rule requires logging. - Otherwise, if
+      any ALLOW/ALLOW_WITH_LOG rule matches, permission is   granted.
+      Logging will be applied if one or more matching rule requires logging. -
+      Otherwise, if no rule applies, permission is denied.
     version: Specifies the format of the policy.  Valid values are `0`, `1`,
       and `3`. Requests that specify an invalid value are rejected.  Any
       operation that affects conditional role bindings must specify version
@@ -1021,7 +1605,92 @@ class Policy(_messages.Message):
   auditConfigs = _messages.MessageField('AuditConfig', 1, repeated=True)
   bindings = _messages.MessageField('Binding', 2, repeated=True)
   etag = _messages.BytesField(3)
-  version = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  iamOwned = _messages.BooleanField(4)
+  rules = _messages.MessageField('Rule', 5, repeated=True)
+  version = _messages.IntegerField(6, variant=_messages.Variant.INT32)
+
+
+class Rule(_messages.Message):
+  r"""A rule to be applied in a Policy.
+
+  Enums:
+    ActionValueValuesEnum: Required
+
+  Fields:
+    action: Required
+    conditions: Additional restrictions that must be met. All conditions must
+      pass for the rule to match.
+    description: Human-readable description of the rule.
+    in_: If one or more 'in' clauses are specified, the rule matches if the
+      PRINCIPAL/AUTHORITY_SELECTOR is in at least one of these entries.
+    logConfig: The config returned to callers of tech.iam.IAM.CheckPolicy for
+      any entries that match the LOG action.
+    notIn: If one or more 'not_in' clauses are specified, the rule matches if
+      the PRINCIPAL/AUTHORITY_SELECTOR is in none of the entries. The format
+      for in and not_in entries can be found at in the Local IAM documentation
+      (see go/local-iam#features).
+    permissions: A permission is a string of form '<service>.<resource
+      type>.<verb>' (e.g., 'storage.buckets.list'). A value of '*' matches all
+      permissions, and a verb part of '*' (e.g., 'storage.buckets.*') matches
+      all verbs.
+  """
+
+  class ActionValueValuesEnum(_messages.Enum):
+    r"""Required
+
+    Values:
+      NO_ACTION: Default no action.
+      ALLOW: Matching 'Entries' grant access.
+      ALLOW_WITH_LOG: Matching 'Entries' grant access and the caller promises
+        to log the request per the returned log_configs.
+      DENY: Matching 'Entries' deny access.
+      DENY_WITH_LOG: Matching 'Entries' deny access and the caller promises to
+        log the request per the returned log_configs.
+      LOG: Matching 'Entries' tell IAM.Check callers to generate logs.
+    """
+    NO_ACTION = 0
+    ALLOW = 1
+    ALLOW_WITH_LOG = 2
+    DENY = 3
+    DENY_WITH_LOG = 4
+    LOG = 5
+
+  action = _messages.EnumField('ActionValueValuesEnum', 1)
+  conditions = _messages.MessageField('Condition', 2, repeated=True)
+  description = _messages.StringField(3)
+  in_ = _messages.StringField(4, repeated=True)
+  logConfig = _messages.MessageField('LogConfig', 5, repeated=True)
+  notIn = _messages.StringField(6, repeated=True)
+  permissions = _messages.StringField(7, repeated=True)
+
+
+class ServiceMeshFeatureSpec(_messages.Message):
+  r"""ServiceMeshFeatureSpec contains the input for the service mesh feature.
+  Only those fields that qualify as user inputs are eligible to be in a
+  feature spec. These feature spec messages are per-feature, meaning each
+  feature is expected to have its own set of fields. Auto-filled fields and
+  statues do not belong to a spec and must be included in the details field of
+  the feature's status. Spec fields could be of any type: primitive or non-
+  primitive types. These types could be simple or complex types and complex
+  types could be nested. There is no restriction on nesting depth.
+
+  Fields:
+    mtls: Mesh should have mtls enabled.
+  """
+
+  mtls = _messages.BooleanField(1)
+
+
+class ServiceMeshFeatureState(_messages.Message):
+  r"""ServiceMeshFeatureState contains the status fields specific to the
+  service mesh feature. Only those fields that reflect the state of the
+  feature are eligible to be in a feature's state message. These fields are
+  expected to be updated only by the automation and that's usually the
+  controllers operating on this feature.  This is currently just a placeholder
+  and more fields will be added when we have more state information to report
+  for this feature.
+  """
+
 
 
 class SetIamPolicyRequest(_messages.Message):
@@ -1105,6 +1774,68 @@ class StandardQueryParameters(_messages.Message):
   upload_protocol = _messages.StringField(12)
 
 
+class SyncError(_messages.Message):
+  r"""An ACM created error representing a problem syncing configurations
+
+  Fields:
+    code: An ACM defined error code
+    errorMessage: A description of the error
+    errorResources: A list of config(s) associated with the error, if any
+  """
+
+  code = _messages.StringField(1)
+  errorMessage = _messages.StringField(2)
+  errorResources = _messages.MessageField('ErrorResource', 3, repeated=True)
+
+
+class SyncState(_messages.Message):
+  r"""State indicating an ACM's progress syncing configurations to a cluster
+
+  Enums:
+    CodeValueValuesEnum: Sync status code
+
+  Fields:
+    code: Sync status code
+    errors: A list of errors resulting from problematic configs. This list
+      will be truncated after 100 errors, although it is unlikely for that
+      many errors to simultaneously exist.
+    importToken: Token indicating the state of the importer.
+    lastSync: Timestamp of when ACM last successfully synced the repo
+    sourceToken: Token indicating the state of the repo.
+    syncToken: Token indicating the state of the syncer.
+  """
+
+  class CodeValueValuesEnum(_messages.Enum):
+    r"""Sync status code
+
+    Values:
+      SYNC_CODE_UNSPECIFIED: ACM cannot determine a sync code
+      SYNCED: ACM successfully synced the git Repo with the cluster
+      PENDING: ACM is in the progress of syncing a new change
+      ERROR: Indicates an error configuring ACM, and user action is required
+      NOT_CONFIGURED: ACM has been installed (operator manifest deployed), but
+        not configured.
+      NOT_INSTALLED: ACM has not been installed (no operator pod found)
+      UNAUTHORIZED: Error authorizing with the cluster
+      UNREACHABLE: Cluster could not be reached
+    """
+    SYNC_CODE_UNSPECIFIED = 0
+    SYNCED = 1
+    PENDING = 2
+    ERROR = 3
+    NOT_CONFIGURED = 4
+    NOT_INSTALLED = 5
+    UNAUTHORIZED = 6
+    UNREACHABLE = 7
+
+  code = _messages.EnumField('CodeValueValuesEnum', 1)
+  errors = _messages.MessageField('SyncError', 2, repeated=True)
+  importToken = _messages.StringField(3)
+  lastSync = _messages.StringField(4)
+  sourceToken = _messages.StringField(5)
+  syncToken = _messages.StringField(6)
+
+
 class TestIamPermissionsRequest(_messages.Message):
   r"""Request message for `TestIamPermissions` method.
 
@@ -1129,6 +1860,8 @@ class TestIamPermissionsResponse(_messages.Message):
   permissions = _messages.StringField(1, repeated=True)
 
 
+encoding.AddCustomJsonFieldMapping(
+    Rule, 'in_', 'in')
 encoding.AddCustomJsonFieldMapping(
     StandardQueryParameters, 'f__xgafv', '$.xgafv')
 encoding.AddCustomJsonEnumMapping(

@@ -25,21 +25,22 @@ from googlecloudsdk.command_lib.privateca import exceptions
 
 # Permissions needed on a KMS key for creating a CA.
 _KEY_CREATE_PERMISSIONS = [
-    'cloudkms.setIamPolicy',
-    'cloudkms.cryptoKeyVersions.viewPublicKey',
+    'cloudkms.cryptoKeys.setIamPolicy',
 ]
 
 # Permissions needed on a project for creating a CA.
 _PROJECT_CREATE_PERMISSIONS = [
-    'privateca.certificateAuthorities.create',
-    'storage.buckets.create'
+    'privateca.certificateauthorities.create', 'storage.buckets.create'
 ]
 
 
-def _HasAllPermissions(iam_response, requested_permissions):
-  """Returns True if all the requested permissions are set in the response."""
+def _CheckAllPermissions(actual_permissions, expected_permissions, resource):
+  """Raises an exception if the expected permissions are not all present."""
   # IAM won't return more permissions than requested, so equality works here.
-  return set(iam_response.permissions) == set(requested_permissions)
+  diff = set(expected_permissions) - set(actual_permissions)
+  if diff:
+    raise exceptions.InsufficientPermissionException(
+        resource=resource, missing_permissions=diff)
 
 
 def CheckCreateCertificateAuthorityPermissions(project_ref, kms_key_ref):
@@ -52,11 +53,11 @@ def CheckCreateCertificateAuthorityPermissions(project_ref, kms_key_ref):
   Raises:
     InsufficientPermissionException: If the user is missing permissions.
   """
-  if not _HasAllPermissions(
-      projects_api.TestIamPermissions(project_ref, _PROJECT_CREATE_PERMISSIONS),
-      _PROJECT_CREATE_PERMISSIONS):
-    raise exceptions.InsufficientPermissionException(resource='project')
-  if not _HasAllPermissions(
-      kms_iam.TestCryptoKeyIamPermissions(kms_key_ref, _KEY_CREATE_PERMISSIONS),
-      _KEY_CREATE_PERMISSIONS):
-    raise exceptions.InsufficientPermissionException(resource='KMS key')
+  _CheckAllPermissions(
+      projects_api.TestIamPermissions(project_ref,
+                                      _PROJECT_CREATE_PERMISSIONS).permissions,
+      _PROJECT_CREATE_PERMISSIONS, 'project')
+  _CheckAllPermissions(
+      kms_iam.TestCryptoKeyIamPermissions(kms_key_ref,
+                                          _KEY_CREATE_PERMISSIONS).permissions,
+      _KEY_CREATE_PERMISSIONS, 'KMS key')

@@ -21,9 +21,9 @@ from __future__ import unicode_literals
 from googlecloudsdk.api_lib.data_catalog import search
 
 
-def Search(args):
+def Search(args, version_label):
   """Search Data Catalog for entries, tags, etc that match a query."""
-  client = search.SearchClient()
+  client = search.SearchClient(version_label)
   return client.Search(
       args.query,
       args.include_gcp_public_datasets,

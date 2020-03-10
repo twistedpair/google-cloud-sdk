@@ -76,7 +76,7 @@ def RSAKeyGen(key_size=2048):
       NoEncryption())
 
   public_key_bytes = private_key.public_key().public_bytes(
-      Encoding.PEM, PublicFormat.PKCS1)
+      Encoding.PEM, PublicFormat.SubjectPublicKeyInfo)
 
   return private_key_bytes, public_key_bytes
 

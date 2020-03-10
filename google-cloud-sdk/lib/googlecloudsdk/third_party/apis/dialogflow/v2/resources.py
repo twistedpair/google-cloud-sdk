@@ -48,6 +48,52 @@ class Collections(enum.Enum):
       [u'name'],
       True
   )
+  PROJECTS_AGENT_ENVIRONMENTS = (
+      'projects.agent.environments',
+      'projects/{projectsId}/agent/environments/{environmentsId}',
+      {},
+      [u'projectsId', u'environmentsId'],
+      True
+  )
+  PROJECTS_AGENT_ENVIRONMENTS_USERS = (
+      'projects.agent.environments.users',
+      'projects/{projectsId}/agent/environments/{environmentsId}/users/'
+      '{usersId}',
+      {},
+      [u'projectsId', u'environmentsId', u'usersId'],
+      True
+  )
+  PROJECTS_AGENT_ENVIRONMENTS_USERS_SESSIONS = (
+      'projects.agent.environments.users.sessions',
+      'projects/{projectsId}/agent/environments/{environmentsId}/users/'
+      '{usersId}/sessions/{sessionsId}',
+      {},
+      [u'projectsId', u'environmentsId', u'usersId', u'sessionsId'],
+      True
+  )
+  PROJECTS_AGENT_ENVIRONMENTS_USERS_SESSIONS_CONTEXTS = (
+      'projects.agent.environments.users.sessions.contexts',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/agent/environments/{environmentsId}/'
+              'users/{usersId}/sessions/{sessionsId}/contexts/{contextsId}',
+      },
+      [u'name'],
+      True
+  )
+  PROJECTS_AGENT_ENVIRONMENTS_USERS_SESSIONS_ENTITYTYPES = (
+      'projects.agent.environments.users.sessions.entityTypes',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/agent/environments/{environmentsId}/'
+              'users/{usersId}/sessions/{sessionsId}/entityTypes/'
+              '{entityTypesId}',
+      },
+      [u'name'],
+      True
+  )
   PROJECTS_AGENT_INTENTS = (
       'projects.agent.intents',
       '{+name}',

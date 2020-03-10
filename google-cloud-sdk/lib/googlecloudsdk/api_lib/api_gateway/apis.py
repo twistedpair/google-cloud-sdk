@@ -20,30 +20,23 @@ from __future__ import division
 from __future__ import unicode_literals
 
 from apitools.base.py import exceptions as apitools_exceptions
-from apitools.base.py import list_pager
 
 from googlecloudsdk.api_lib.api_gateway import base
+from googlecloudsdk.command_lib.api_gateway import common_flags
 
 
 class ApiClient(base.BaseClient):
   """Client for Api objects on Cloud API Gateway API."""
 
-  def Get(self, api_ref):
-    """Gets an Api object.
-
-    Args:
-      api_ref: Resource, a resource reference for the api
-
-    Raises:
-      HttpNotFoundError: The requested object could not be found.
-
-    Returns:
-      Api object
-    """
-    req = self.messages.ApigatewayProjectsLocationsApisGetRequest(
-        name=api_ref.RelativeName())
-
-    return self.client.projects_locations_apis.Get(req)
+  def __init__(self, client=None):
+    base.BaseClient.__init__(self,
+                             client=client,
+                             message_base='ApigatewayProjectsLocationsApis',
+                             service_name='projects_locations_apis')
+    self.DefineGet()
+    self.DefineList('apis')
+    self.DefineUpdate('apigatewayApi')
+    self.DefineGetIamPolicy()
 
   def DoesExist(self, api_ref):
     """Checks if an Api object exists.
@@ -73,6 +66,10 @@ class ApiClient(base.BaseClient):
     Returns:
       Long running operation response object.
     """
+    labels = common_flags.ProcessLabelsFlag(
+        labels,
+        self.messages.ApigatewayApi.LabelsValue)
+
     api_controller = self.messages.ApigatewayApiApiController(
         managedService=managed_service)
     api = self.messages.ApigatewayApi(
@@ -81,36 +78,9 @@ class ApiClient(base.BaseClient):
         labels=labels,
         displayName=display_name)
 
-    req = self.messages.ApigatewayProjectsLocationsApisCreateRequest(
+    req = self.create_request(
         apiId=api_ref.Name(),
         apigatewayApi=api,
         parent=api_ref.Parent().RelativeName())
 
-    return self.client.projects_locations_apis.Create(req)
-
-  def List(self, parent_name, filters=None, limit=None, page_size=None,
-           sort_by=None):
-    """Lists the gateway objects under a given parent.
-
-    Args:
-      parent_name: Resource name of the parent to list under
-      filters: Filters to be applied to results (optional)
-      limit: Limit to the number of results per page (optional)
-      page_size: the number of results per page (optional)
-      sort_by: Instructions about how to sort the results (optional)
-
-    Returns:
-      List Pager
-    """
-    req = self.messages.ApigatewayProjectsLocationsApisListRequest(
-        filter=filters,
-        orderBy=sort_by,
-        parent=parent_name)
-
-    return list_pager.YieldFromList(
-        self.client.projects_locations_apis,
-        req,
-        limit=limit,
-        batch_size_attribute='pageSize',
-        batch_size=page_size,
-        field='apis')
+    return self.service.Create(req)

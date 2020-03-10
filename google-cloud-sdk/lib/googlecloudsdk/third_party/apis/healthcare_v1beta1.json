@@ -410,6 +410,20 @@
         }
       }
     },
+    "CancelOperationRequest": {
+      "id": "CancelOperationRequest",
+      "description": "The request message for Operations.CancelOperation.",
+      "type": "object",
+      "properties": {
+      }
+    },
+    "Empty": {
+      "id": "Empty",
+      "description": "A generic empty message that you can re-use to avoid defining duplicated\nempty messages in your APIs. A typical example is to use it as the request\nor the response type of an API method. For instance:\n\n    service Foo {\n      rpc Bar(google.protobuf.Empty) returns (google.protobuf.Empty);\n    }\n\nThe JSON representation for `Empty` is empty JSON object `{}`.",
+      "type": "object",
+      "properties": {
+      }
+    },
     "DeidentifyFhirStoreRequest": {
       "id": "DeidentifyFhirStoreRequest",
       "description": "Creates a new FHIR store with sensitive information de-identified.",
@@ -619,7 +633,7 @@
     },
     "RedactConfig": {
       "id": "RedactConfig",
-      "description": "Define how to redact sensitive values. Default behaviour is erase.\nFor example, \"My name is Jake.\" becomes \"My name is .\"",
+      "description": "Define how to redact sensitive values. Default behaviour is erase.\nFor example, \"My name is Jane.\" becomes \"My name is .\"",
       "type": "object",
       "properties": {
       }
@@ -661,7 +675,7 @@
     },
     "ReplaceWithInfoTypeConfig": {
       "id": "ReplaceWithInfoTypeConfig",
-      "description": "When using the\nINSPECT_AND_TRANSFORM\naction, each match is replaced with the name of the info_type. For example,\n\"My name is Jake\" becomes \"My name is [PERSON_NAME].\" The\nTRANSFORM\naction is equivalent to redacting.",
+      "description": "When using the\nINSPECT_AND_TRANSFORM\naction, each match is replaced with the name of the info_type. For example,\n\"My name is Jane\" becomes \"My name is [PERSON_NAME].\" The\nTRANSFORM\naction is equivalent to redacting.",
       "type": "object",
       "properties": {
       }
@@ -752,13 +766,6 @@
           "description": "Token to retrieve the next page of results, or empty if there are no\nmore results in the list.",
           "type": "string"
         }
-      }
-    },
-    "Empty": {
-      "id": "Empty",
-      "description": "A generic empty message that you can re-use to avoid defining duplicated\nempty messages in your APIs. A typical example is to use it as the request\nor the response type of an API method. For instance:\n\n    service Foo {\n      rpc Bar(google.protobuf.Empty) returns (google.protobuf.Empty);\n    }\n\nThe JSON representation for `Empty` is empty JSON object `{}`.",
-      "type": "object",
-      "properties": {
       }
     },
     "DeidentifyDatasetRequest": {
@@ -1354,6 +1361,10 @@
         },
         "counter": {
           "$ref": "ProgressCounter"
+        },
+        "cancelRequested": {
+          "description": "Specifies if cancellation was requested for the operation.",
+          "type": "boolean"
         }
       }
     },
@@ -3339,7 +3350,7 @@
                               "type": "string"
                             },
                             "filter": {
-                              "description": "Restricts messages returned to those matching a filter. Syntax:\nhttps:\/\/cloud.google.com\/appengine\/docs\/standard\/python\/search\/query_strings\n\nFields\/functions available for filtering are:\n\n*  `message_type`, from the MSH-9.1 field. For example,\n`NOT message_type = \"ADT\"`.\n*  `send_date` or `sendDate`, the YYYY-MM-DD date the message was sent in\nthe dataset's time_zone, from the MSH-7 segment. For example,\n`send_date < \"2017-01-02\"`.\n*  `send_time`, the timestamp when the message was sent, using the\nRFC3339 time format for comparisons, from the MSH-7 segment. For example,\n`send_time < \"2017-01-02T00:00:00-05:00\"`.\n*  `send_facility`, the care center that the message came from, from the\nMSH-4 segment. For example, `send_facility = \"ABC\"`.\n*  `PatientId(value, type)`, which matches if the message lists a patient\nhaving an ID of the given value and type in the PID-2, PID-3, or PID-4\nsegments. For example, `PatientId(\"123456\", \"MRN\")`.\n*  `labels.x`, a string value of the label with key `x` as set using the\nMessage.labels\nmap. For example, `labels.\"priority\"=\"high\"`. The operator `:*` can be used\nto assert the existence of a label. For example, `labels.\"priority\":*`.\n\nLimitations on conjunctions:\n\n*  Negation on the patient ID function or the labels field is not\nsupported. For example, these queries are invalid:\n`NOT PatientId(\"123456\", \"MRN\")`, `NOT labels.\"tag1\":*`,\n`NOT labels.\"tag2\"=\"val2\"`.\n*  Conjunction of multiple patient ID functions is not supported, for\nexample this query is invalid:\n`PatientId(\"123456\", \"MRN\") AND PatientId(\"456789\", \"MRN\")`.\n*  Conjunction of multiple labels fields is also not supported, for\nexample this query is invalid: `labels.\"tag1\":* AND labels.\"tag2\"=\"val2\"`.\n*  Conjunction of one patient ID function, one labels field and conditions\non other fields is supported. For example, this query is valid:\n`PatientId(\"123456\", \"MRN\") AND labels.\"tag1\":* AND message_type = \"ADT\"`.",
+                              "description": "Restricts messages returned to those matching a filter. Syntax:\nhttps:\/\/cloud.google.com\/appengine\/docs\/standard\/python\/search\/query_strings\n\nFields\/functions available for filtering are:\n\n*  `message_type`, from the MSH-9.1 field. For example,\n`NOT message_type = \"ADT\"`.\n*  `send_date` or `sendDate`, the YYYY-MM-DD date the message was sent in\nthe dataset's time_zone, from the MSH-7 segment. For example,\n`send_date < \"2017-01-02\"`.\n*  `send_time`, the timestamp when the message was sent, using the\nRFC3339 time format for comparisons, from the MSH-7 segment. For example,\n`send_time < \"2017-01-02T00:00:00-05:00\"`.\n*  `send_facility`, the care center that the message came from, from the\nMSH-4 segment. For example, `send_facility = \"ABC\"`.\n*  `PatientId(value, type)`, which matches if the message lists a patient\nhaving an ID of the given value and type in the PID-2, PID-3, or PID-4\nsegments. For example, `PatientId(\"123456\", \"MRN\")`.\n*  `labels.x`, a string value of the label with key `x` as set using the\nMessage.labels\nmap. For example, `labels.\"priority\"=\"high\"`. The operator `:*` can be used\nto assert the existence of a label. For example, `labels.\"priority\":*`.",
                               "location": "query",
                               "type": "string"
                             },
@@ -4471,6 +4482,34 @@
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
                       "description": "Gets the latest state of a long-running operation.  Clients can use this\nmethod to poll the operation result at intervals as recommended by the API\nservice."
+                    },
+                    "cancel": {
+                      "id": "healthcare.projects.locations.datasets.operations.cancel",
+                      "path": "v1beta1/{+name}:cancel",
+                      "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/operations/{operationsId}:cancel",
+                      "httpMethod": "POST",
+                      "parameters": {
+                        "name": {
+                          "description": "The name of the operation resource to be cancelled.",
+                          "location": "path",
+                          "required": true,
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/datasets\/[^\/]+\/operations\/[^\/]+$",
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "name"
+                      ],
+                      "request": {
+                        "$ref": "CancelOperationRequest"
+                      },
+                      "response": {
+                        "$ref": "Empty"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Starts asynchronous cancellation on a long-running operation.  The server\nmakes a best effort to cancel the operation, but success is not\nguaranteed.  If the server doesn't support this method, it returns\n`google.rpc.Code.UNIMPLEMENTED`.  Clients can use\nOperations.GetOperation or\nother methods to check whether the cancellation succeeded or whether the\noperation completed despite cancellation. On successful cancellation,\nthe operation is not deleted; instead, it becomes an operation with\nan Operation.error value with a google.rpc.Status.code of 1,\ncorresponding to `Code.CANCELLED`."
                     }
                   }
                 }

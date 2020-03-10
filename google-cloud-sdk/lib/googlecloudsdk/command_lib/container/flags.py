@@ -1588,38 +1588,52 @@ CPU platform selection is available only in selected zones.
       '--min-cpu-platform', metavar='PLATFORM', hidden=hidden, help=help_text)
 
 
-def AddWorkloadMetadataFromNodeFlag(parser, hidden=False):
+def AddWorkloadMetadataFromNodeFlag(parser, use_mode=True):
   """Adds the --workload-metadata-from-node flag to the parser.
 
   Args:
     parser: A given parser.
-    hidden: Whether or not to hide the help text.
+    use_mode: Whether use Mode or NodeMetadata in WorkloadMetadataConfig.
   """
+  choices = {
+      'GCE_METADATA':
+          "Pods running in this node pool have access to the node's "
+          'underlying Compute Engine Metadata Server.',
+      'GKE_METADATA':
+          'Run the Kubernetes Engine Metadata Server on this node. The '
+          'Kubernetes Engine Metadata Server exposes a metadata API to '
+          'workloads that is compatible with the V1 Compute Metadata APIs '
+          'exposed by the Compute Engine and App Engine Metadata Servers. '
+          'This feature can only be enabled if Workload Identity is enabled '
+          'at the cluster level.',
+  }
+  if not use_mode:
+    choices.update({
+        'SECURE': '[DPRECATED] Prevents pods not in hostNetwork from accessing '
+                  'certain VM metadata, specifically kube-env, which '
+                  'contains Kubelet credentials, and the instance identity '
+                  'token. This is a temporary security solution available '
+                  'while the bootstrapping process for cluster nodes is '
+                  'being redesigned with significant security improvements. '
+                  'This feature is scheduled to be deprecated in the future '
+                  'and later removed.',
+        'EXPOSED':
+            "[DEPRECATED] Pods running in this node pool have access to the node's "
+            'underlying Compute Engine Metadata Server.',
+        'GKE_METADATA_SERVER':
+            '[DEPRECATED] Run the Kubernetes Engine Metadata Server on this node. The '
+            'Kubernetes Engine Metadata Server exposes a metadata API to '
+            'workloads that is compatible with the V1 Compute Metadata APIs '
+            'exposed by the Compute Engine and App Engine Metadata Servers. '
+            'This feature can only be enabled if Workload Identity is enabled '
+            'at the cluster level.',
+    })
 
   parser.add_argument(
       '--workload-metadata-from-node',
       default=None,
-      choices={
-          'SECURE': 'Prevents pods not in hostNetwork from accessing '
-                    'certain VM metadata, specifically kube-env, which '
-                    'contains Kubelet credentials, and the instance identity '
-                    'token. This is a temporary security solution available '
-                    'while the bootstrapping process for cluster nodes is '
-                    'being redesigned with significant security improvements. '
-                    'This feature is scheduled to be deprecated in the future '
-                    'and later removed.',
-          'EXPOSED': "Pods running in this node pool have access to the node's "
-                     'underlying Compute Engine Metadata Server.',
-          'GKE_METADATA_SERVER':
-              'Run the Kubernetes Engine Metadata Server on this node. The Kubernetes '
-              'Engine Metadata Server exposes a metadata API to workloads that is '
-              'compatible with the V1 Compute Metadata APIs exposed by the Compute Engine '
-              'and App Engine Metadata Servers. This feature can only be enabled if '
-              'Workload Identity is enabled at the cluster level.',
-          'UNSPECIFIED': 'Chooses the default.',
-      },
+      choices=choices,
       type=lambda x: x.upper(),
-      hidden=hidden,
       help='Type of metadata server available to pods running in the node pool.'
   )
 
@@ -1865,6 +1879,7 @@ def AddTpuFlags(parser, hidden=False, enable_tpu_service_networking=False):
   tpu_group.add_argument(
       '--enable-tpu',
       action='store_true',
+      default=None,
       hidden=hidden,
       help="""\
 Enable Cloud TPUs for this cluster.
@@ -1879,6 +1894,7 @@ Can not be specified unless `--enable-ip-alias` is also specified.
     group.add_argument(
         '--enable-tpu-service-networking',
         action='store_true',
+        default=None,
         hidden=hidden,
         help="""\
 Enable Cloud TPU's Service Networking mode. In this mode, the CIDR blocks used
@@ -2063,12 +2079,30 @@ of RAM:
   parser.add_argument('--machine-type', '-m', help=help_text)
 
 
-def AddWorkloadIdentityFlags(parser):
+def AddWorkloadIdentityFlags(parser, use_workload_pool=True):
   """Adds Workload Identity flags to the parser."""
   parser.add_argument(
-      '--identity-namespace',
+      '--workload-pool',
       default=None,
       help="""\
+Enable Workload Identity on the cluster.
+
+When enabled, Kubernetes service accounts will be able to act as Cloud IAM
+Service Accounts, through the provided workload pool.
+
+Currently, the only accepted workload pool is the workload pool of
+the Cloud project containing the cluster, `PROJECT_NAME.svc.id.goog`.
+
+For more information on Workload Identity, see
+
+            https://cloud.google.com/kubernetes-engine/docs/how-to/workload-identity
+  """)
+  if not use_workload_pool:
+    parser.add_argument(
+        '--identity-namespace',
+        default=None,
+        hidden=True,
+        help="""\
 Enable Workload Identity on the cluster.
 
 When enabled, Kubernetes service accounts will be able to act as Cloud IAM
@@ -2080,7 +2114,7 @@ the Cloud project containing the cluster, `PROJECT_NAME.svc.id.goog`.
 For more information on Workload Identity, see
 
             https://cloud.google.com/kubernetes-engine/docs/how-to/workload-identity
-""")
+    """)
 
 
 def AddWorkloadIdentityUpdateFlags(parser):

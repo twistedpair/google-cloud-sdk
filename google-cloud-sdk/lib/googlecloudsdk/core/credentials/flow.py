@@ -94,6 +94,14 @@ class ClientRedirectHandler(tools.ClientRedirectHandler):
     self.wfile.write(pkg_resources.GetResource(__name__, page))
 
 
+def PromptForAuthCode(message, authorize_url):
+  log.err.Print('{message}\n\n    {url}\n\n'.format(
+      message=message,
+      url=authorize_url,
+  ))
+  return input('Enter verification code: ').strip()
+
+
 def Run(flow, launch_browser=True, http=None,
         auth_host_name='localhost', auth_host_port_start=8085):
   """Run a web flow to get oauth2 credentials.
@@ -170,12 +178,8 @@ def Run(flow, launch_browser=True, http=None,
     flow.redirect_uri = client.OOB_CALLBACK_URN
     authorize_url = flow.step1_get_authorize_url()
     message = 'Go to the following link in your browser:'
-    log.err.Print('{message}\n\n    {url}\n\n'.format(
-        message=message,
-        url=authorize_url,
-    ))
     try:
-      code = input('Enter verification code: ').strip()
+      code = PromptForAuthCode(message, authorize_url)
     except EOFError as e:
       raise AuthRequestRejectedError(e)
 

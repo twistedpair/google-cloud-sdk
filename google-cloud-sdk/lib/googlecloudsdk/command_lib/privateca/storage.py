@@ -34,15 +34,10 @@ def CreateBucketForCertificateAuthority(ca_ref):
   location = ca_ref.Parent().Name()
   project = ca_ref.Parent().Parent().Name()
   bucket_name = _BUCKET_NAMING_PATTERN.format(uuid=uuid.uuid4())
-  labels = messages.Bucket.LabelsValue(additionalProperties=[
-      messages.Bucket.LabelsValue.AdditionalProperty(
-          key='certificate_authority_id', value=ca_ref.RelativeName())
-  ])
 
   client.buckets.Insert(
       messages.StorageBucketsInsertRequest(
           project=project,
-          bucket=messages.Bucket(
-              name=bucket_name, location=location, labels=labels)))
+          bucket=messages.Bucket(name=bucket_name, location=location)))
 
   return storage_util.BucketReference(bucket_name)

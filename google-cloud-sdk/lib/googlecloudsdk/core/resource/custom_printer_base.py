@@ -25,14 +25,117 @@ from googlecloudsdk.core.resource import resource_printer_base
 import six
 
 
+# The number of spaces to add in front of a _Marker's content when starting to
+# print a nested _Marker.
+INDENT_STEP = 2
+
+# String to use to indent lines.
+_INDENT_STRING = ''
+
+# Format string to use when printing lines.
+_LINE_FORMAT = '{indent: <%d}{line}\n'
+
+
+def _GenerateLineValue(value, indent_length=0):
+  """Returns a formatted, indented line containing the given value."""
+  line_format = _LINE_FORMAT % indent_length
+  return line_format.format(indent=_INDENT_STRING, line=value)
+
+
+@six.add_metaclass(abc.ABCMeta)
 class _Marker(object):
-  pass
+  """Base class for a marker indicating how to format printer output."""
+
+  @abc.abstractmethod
+  def CalculateColumnWidths(self, max_column_width=None, indent_length=0):
+    """Calculates the minimum width of any table columns in the record.
+
+    Returns a ColumnWidths object that contains the minimum width of each column
+    in any Table markers contained in this record, including Table markers
+    nested within other Table markers.
+
+    Args:
+      max_column_width: The maximum column width to allow.
+      indent_length: The number of spaces of indentation that begin this
+        record's lines.
+
+    Returns:
+      A ColumnWidths object with the computed columns for this record. Will be
+      empty if this record does not contain any tables.
+    """
+
+  @abc.abstractmethod
+  def Print(self, output, indent_length, column_widths):
+    """Prints this record to the given output.
+
+    Prints this record to the given output using this record's print format.
+
+    Args:
+      output: An object with a `write` method that takes a string argument. This
+        method calls output.write with one string as an argument for each line
+        in this record's print format.
+      indent_length: The number of spaces of indentation to print at the
+        beginning of each line.
+      column_widths: A ColumnWidths object containing the minimum width of each
+        column in any tables contained in this record.
+    """
 
 
 class Table(list, _Marker):
   """Marker class for a table."""
+
+  # Format string to use when generating the string value for a column in a row.
+  _COLUMN_TEMPLATE = '{: <%d}'
+
+  # String to use to separate table columns.
+  _COLUMN_SEPARATOR = ' '
+
   skip_empty = False
   separator = ''
+
+  def CalculateColumnWidths(self, max_column_width=None, indent_length=0):
+    """See _Marker base class."""
+    widths = ColumnWidths(max_column_width=max_column_width)
+    for row in self:
+      widths = widths.Merge(
+          ColumnWidths(row, self.separator, self.skip_empty, max_column_width,
+                       indent_length))
+    return widths
+
+  def _GenerateColumnValue(self, index, row, indent_length, column_widths):
+    """Generates the string value for one column in one row."""
+    width = column_widths.widths[index]
+    if index == 0:
+      width -= indent_length
+    column_format = self._COLUMN_TEMPLATE % width
+    separator = self.separator if index < len(row) - 1 else ''
+    return column_format.format(str(row[index]) + separator)
+
+  def _WriteColumns(self, output, indent_length, column_values):
+    """Writes generated column values to output with the given indentation."""
+    output.write(
+        _GenerateLineValue(
+            self._COLUMN_SEPARATOR.join(column_values).rstrip(), indent_length))
+
+  def Print(self, output, indent_length, column_widths):
+    """See _Marker base class."""
+    for row in self:
+      if not row or (self.skip_empty and _FollowedByEmpty(row, 0)):
+        continue
+      column_values = []
+      for i in range(len(row) - 1):
+        if isinstance(row[i], _Marker):
+          raise TypeError('Markers must be in the last column.')
+        column_values.append(
+            self._GenerateColumnValue(i, row, indent_length, column_widths))
+      if isinstance(row[-1], _Marker):
+        self._WriteColumns(output, indent_length, column_values)
+        row[-1].Print(output, indent_length + INDENT_STEP, column_widths)
+      else:
+        column_values.append(
+            self._GenerateColumnValue(
+                len(row) - 1, row, indent_length, column_widths))
+        self._WriteColumns(output, indent_length, column_values)
 
 
 class Labeled(Table):
@@ -48,6 +151,23 @@ class Mapped(Table):
 
 class Lines(list, _Marker):
   """Marker class for a list of lines in a section."""
+
+  def CalculateColumnWidths(self, max_column_width=None, indent_length=0):
+    """See _Marker base class."""
+    widths = ColumnWidths(max_column_width=max_column_width)
+    for line in self:
+      if isinstance(line, _Marker):
+        widths = widths.Merge(
+            line.CalculateColumnWidths(max_column_width, indent_length))
+    return widths
+
+  def Print(self, output, indent_length, column_widths):
+    """See _Marker base class."""
+    for line in self:
+      if isinstance(line, _Marker):
+        line.Print(output, indent_length, column_widths)
+      elif line:
+        output.write(_GenerateLineValue(line, indent_length))
 
 
 def _FollowedByEmpty(row, index):
@@ -72,22 +192,21 @@ class ColumnWidths(object):
   """Computes and stores column widths for a table and any nested tables.
 
   A nested table is a table defined in the last column of a row in another
-  table. ColumnWidths calculates the column widths for nested tables separately
-  from the parent table. When merging ColumnWidths, the class merges nested
-  tables at the same level of nesting.
+  table. ColumnWidths includes any nested tables when computing column widths
+  so that the width of each column will be based on the contents of that column
+  in the parent table and all nested tables.
 
   Attributes:
     widths: A list containing the computed minimum width of each column in the
-      table.
-    subtable: A ColumnWidths instance describing the column widths for all
-      nested tables or None if there are no nested tables.
+      table and any nested tables.
   """
 
   def __init__(self,
                row=None,
                separator='',
                skip_empty=False,
-               max_column_width=None):
+               max_column_width=None,
+               indent_length=0):
     """Computes the width of each column in row and in any nested tables.
 
     Args:
@@ -97,30 +216,29 @@ class ColumnWidths(object):
       skip_empty: A boolean indicating whether columns followed only by empty
         columns should be skipped.
       max_column_width: An optional maximum column width.
+      indent_length: The number of indent spaces that precede `row`. Added to
+        the width of the first column in `row`.
 
     Returns:
       A ColumnWidths object containing the computed column widths.
     """
     self._widths = []
-    self._subtable = None
     self._max_column_width = max_column_width
+    self._separator_width = len(separator)
+    self._skip_empty = skip_empty
+    self._indent_length = indent_length
     if row:
       for i in range(len(row)):
-        self._ProcessColumn(i, row, len(separator), skip_empty)
+        self._ProcessColumn(i, row)
 
   @property
   def widths(self):
     """A list containing the minimum width of each column."""
     return self._widths
 
-  @property
-  def subtable(self):
-    """A ColumnWidths object for nested tables or None if no nested tables."""
-    return self._subtable
-
   def __repr__(self):
     """Returns a string representation of a ColumnWidths object."""
-    return '<widths: {}, subtable: {}>'.format(self.widths, self.subtable)
+    return '<widths: {}>'.format(self.widths)
 
   def _SetWidth(self, column_index, content_length):
     """Adjusts widths to account for the length of new column content.
@@ -142,21 +260,59 @@ class ColumnWidths(object):
       new_width = min(self._max_column_width, new_width)
     self._widths[column_index] = new_width
 
-  def _ProcessColumn(self, index, row, separator_width, skip_empty):
+  def _ProcessColumn(self, index, row):
     """Processes a single column value when computing column widths."""
     record = row[index]
     last_index = len(row) - 1
     if isinstance(record, _Marker):
       if index == last_index:
-        # TODO(b/148901171) Compute column widths of nested tables.
+        self._MergeColumnWidths(
+            record.CalculateColumnWidths(self._max_column_width,
+                                         self._indent_length + INDENT_STEP))
         return
       else:
         raise TypeError('Markers can only be used in the last column.')
 
-    if _IsLastColumnInRow(row, index, last_index, skip_empty):
+    if _IsLastColumnInRow(row, index, last_index, self._skip_empty):
       self._SetWidth(index, 0)
     else:
-      self._SetWidth(index, len(record) + separator_width)
+      width = len(record) + self._separator_width
+      if index == 0:
+        width += self._indent_length
+      self._SetWidth(index, width)
+
+  def _MergeColumnWidths(self, other):
+    """Merges another ColumnWidths into this instance."""
+    for i, width in enumerate(other.widths):
+      self._SetWidth(i, width)
+
+  def Merge(self, other):
+    """Merges this object and another ColumnWidths into a new ColumnWidths.
+
+    Combines the computed column widths for self and other into a new
+    ColumnWidths. Uses the larger maximum column width between the two
+    ColumnWidths objects for the merged ColumnWidths. If one or both
+    ColumnWidths objects have unlimited max column width (max_column_width is
+    None), sets the merged ColumnWidths max column width to unlimited (None).
+
+    Args:
+      other: A ColumnWidths object to merge with this instance.
+
+    Returns:
+      A new ColumnWidths object containing the combined column widths.
+    """
+    if not isinstance(other, ColumnWidths):
+      raise TypeError('other must be a ColumnWidths object.')
+    # pylint: disable=protected-access
+    if self._max_column_width is None or other._max_column_width is None:
+      merged_max_column_width = None
+    else:
+      merged_max_column_width = max(self._max_column_width,
+                                    other._max_column_width)
+    merged = ColumnWidths(max_column_width=merged_max_column_width)
+    merged._MergeColumnWidths(self)
+    merged._MergeColumnWidths(other)
+    return merged
 
 
 @six.add_metaclass(abc.ABCMeta)
@@ -164,67 +320,27 @@ class CustomPrinterBase(resource_printer_base.ResourcePrinter):
   """Base to extend to custom-format a resource.
 
   Instead of using a format string, uses the "Transform" method to build a
-  structure of marker classes that represent out to print out the resource
+  structure of marker classes that represent how to print out the resource
   in a structured way, and then prints it out in that way.
 
   A string prints out as a string; the marker classes above print out as an
   indented aligned table.
   """
 
-  MAX_MAP_WIDTH = 20
+  MAX_COLUMN_WIDTH = 20
 
   def __init__(self, *args, **kwargs):
     kwargs['process_record'] = self.Transform
     super(CustomPrinterBase, self).__init__(*args, **kwargs)
 
   def _AddRecord(self, record, delimit=True):
-    column_div = self._CalculateColumn(record)
-    self._PrintHelper(record, 0, column_div)
+    if isinstance(record, _Marker):
+      column_widths = record.CalculateColumnWidths(self.MAX_COLUMN_WIDTH)
+      record.Print(self._out, 0, column_widths)
+    elif record:
+      self._out.write(_GenerateLineValue(record))
     if delimit:
       self._out.write('------\n')
-
-  def _CalculateColumn(self, record):
-    """Return the position of the tabstop between labels or keys and values."""
-    if not record:
-      return 0
-    if isinstance(record, Table):
-      add_width = len(record.separator)
-      if record.skip_empty:
-        if not any(v for _, v in record):
-          return 0
-      ret = max(len(k) for k, v in record if v) + add_width
-      ret = max(ret, 2 + max(self._CalculateColumn(v) for _, v in record))
-      return min(ret, self.MAX_MAP_WIDTH)
-    elif isinstance(record, Lines):
-      return max(self._CalculateColumn(l) for l in record)
-    else:
-      return 0
-
-  def _PrintHelper(self, subrecord, indent_level, column_div):
-    """Helper function for recursively indentedly printing."""
-    linefmt = '{indent: <%d}{line}\n' % indent_level
-    mapfmt = '{indent: <%d}{k: <%d} {v}' % (indent_level, column_div)
-    if not subrecord:
-      return
-    elif isinstance(subrecord, Table):
-      sep = subrecord.separator
-      for k, v in subrecord:
-        if not v and subrecord.skip_empty:
-          continue
-        if isinstance(v, _Marker):
-          self._out.write(
-              mapfmt.format(indent='', k=k+sep, v='').rstrip() + '\n')
-          self._PrintHelper(v, indent_level+2, column_div-2)
-        else:
-          self._out.write(
-              mapfmt.format(indent='', k=k+sep, v=v).rstrip() + '\n')
-    elif isinstance(subrecord, Lines):
-      for r in subrecord:
-        self._PrintHelper(r, indent_level, column_div)
-    elif isinstance(subrecord, _Marker):
-      raise ValueError('Unrecognized marker class')
-    else:
-      self._out.write(linefmt.format(indent='', line=subrecord))
 
   @abc.abstractmethod
   def Transform(self, record):
@@ -235,7 +351,6 @@ class CustomPrinterBase(resource_printer_base.ResourcePrinter):
 
     Args:
       record: The record to transform
-    Return:
+    Returns:
       A structure of "marker classes" that describes how to print the record.
     """
-    pass

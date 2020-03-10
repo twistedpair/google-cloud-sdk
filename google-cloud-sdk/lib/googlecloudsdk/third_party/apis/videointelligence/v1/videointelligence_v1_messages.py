@@ -70,6 +70,7 @@ class GoogleCloudVideointelligenceV1AnnotateVideoRequest(_messages.Message):
       SPEECH_TRANSCRIPTION: <no description>
       TEXT_DETECTION: <no description>
       OBJECT_TRACKING: <no description>
+      LOGO_RECOGNITION: <no description>
     """
     FEATURE_UNSPECIFIED = 0
     LABEL_DETECTION = 1
@@ -78,6 +79,7 @@ class GoogleCloudVideointelligenceV1AnnotateVideoRequest(_messages.Message):
     SPEECH_TRANSCRIPTION = 4
     TEXT_DETECTION = 5
     OBJECT_TRACKING = 6
+    LOGO_RECOGNITION = 7
 
   features = _messages.EnumField('FeaturesValueListEntryValuesEnum', 1, repeated=True)
   inputContent = _messages.BytesField(2)
@@ -98,6 +100,40 @@ class GoogleCloudVideointelligenceV1AnnotateVideoResponse(_messages.Message):
   """
 
   annotationResults = _messages.MessageField('GoogleCloudVideointelligenceV1VideoAnnotationResults', 1, repeated=True)
+
+
+class GoogleCloudVideointelligenceV1DetectedAttribute(_messages.Message):
+  r"""A generic detected attribute represented by name in string format.
+
+  Fields:
+    confidence: Detected attribute confidence. Range [0, 1].
+    name: The name of the attribute, i.e. glasses, dark_glasses, mouth_open
+      etc. A full list of supported type names will be provided in the
+      document.
+    value: Text value of the detection result. For example, the value for
+      "HairColor" can be "black", "blonde", etc.
+  """
+
+  confidence = _messages.FloatField(1, variant=_messages.Variant.FLOAT)
+  name = _messages.StringField(2)
+  value = _messages.StringField(3)
+
+
+class GoogleCloudVideointelligenceV1DetectedLandmark(_messages.Message):
+  r"""A generic detected landmark represented by name in string format and a
+  2D location.
+
+  Fields:
+    confidence: The confidence score of the detected landmark. Range [0, 1].
+    name: The name of this landmark, i.e. left_hand, right_shoulder.
+    point: The 2D point of the detected landmark using the normalized image
+      coordindate system. The normalized coordinates have the range from 0 to
+      1.
+  """
+
+  confidence = _messages.FloatField(1, variant=_messages.Variant.FLOAT)
+  name = _messages.StringField(2)
+  point = _messages.MessageField('GoogleCloudVideointelligenceV1NormalizedVertex', 3)
 
 
 class GoogleCloudVideointelligenceV1Entity(_messages.Message):
@@ -268,6 +304,25 @@ class GoogleCloudVideointelligenceV1LabelSegment(_messages.Message):
 
   confidence = _messages.FloatField(1, variant=_messages.Variant.FLOAT)
   segment = _messages.MessageField('GoogleCloudVideointelligenceV1VideoSegment', 2)
+
+
+class GoogleCloudVideointelligenceV1LogoRecognitionAnnotation(_messages.Message):
+  r"""Annotation corresponding to one detected, tracked and recognized logo
+  class.
+
+  Fields:
+    entity: Entity category information to specify the logo class that all the
+      logo tracks within this LogoRecognitionAnnotation are recognized as.
+    segments: All video segments where the recognized logo appears. There
+      might be multiple instances of the same logo class appearing in one
+      VideoSegment.
+    tracks: All logo tracks where the recognized logo appears. Each track
+      corresponds to one logo instance appearing in consecutive frames.
+  """
+
+  entity = _messages.MessageField('GoogleCloudVideointelligenceV1Entity', 1)
+  segments = _messages.MessageField('GoogleCloudVideointelligenceV1VideoSegment', 2, repeated=True)
+  tracks = _messages.MessageField('GoogleCloudVideointelligenceV1Track', 3, repeated=True)
 
 
 class GoogleCloudVideointelligenceV1NormalizedBoundingBox(_messages.Message):
@@ -551,6 +606,42 @@ class GoogleCloudVideointelligenceV1TextSegment(_messages.Message):
   segment = _messages.MessageField('GoogleCloudVideointelligenceV1VideoSegment', 3)
 
 
+class GoogleCloudVideointelligenceV1TimestampedObject(_messages.Message):
+  r"""For tracking related features. An object at time_offset with attributes,
+  and located with normalized_bounding_box.
+
+  Fields:
+    attributes: Optional. The attributes of the object in the bounding box.
+    landmarks: Optional. The detected landmarks.
+    normalizedBoundingBox: Normalized Bounding box in a frame, where the
+      object is located.
+    timeOffset: Time-offset, relative to the beginning of the video,
+      corresponding to the video frame for this object.
+  """
+
+  attributes = _messages.MessageField('GoogleCloudVideointelligenceV1DetectedAttribute', 1, repeated=True)
+  landmarks = _messages.MessageField('GoogleCloudVideointelligenceV1DetectedLandmark', 2, repeated=True)
+  normalizedBoundingBox = _messages.MessageField('GoogleCloudVideointelligenceV1NormalizedBoundingBox', 3)
+  timeOffset = _messages.StringField(4)
+
+
+class GoogleCloudVideointelligenceV1Track(_messages.Message):
+  r"""A track of an object instance.
+
+  Fields:
+    attributes: Optional. Attributes in the track level.
+    confidence: Optional. The confidence score of the tracked object.
+    segment: Video segment of a track.
+    timestampedObjects: The object with timestamp and attributes per frame in
+      the track.
+  """
+
+  attributes = _messages.MessageField('GoogleCloudVideointelligenceV1DetectedAttribute', 1, repeated=True)
+  confidence = _messages.FloatField(2, variant=_messages.Variant.FLOAT)
+  segment = _messages.MessageField('GoogleCloudVideointelligenceV1VideoSegment', 3)
+  timestampedObjects = _messages.MessageField('GoogleCloudVideointelligenceV1TimestampedObject', 4, repeated=True)
+
+
 class GoogleCloudVideointelligenceV1VideoAnnotationProgress(_messages.Message):
   r"""Annotation progress for a single video.
 
@@ -583,6 +674,7 @@ class GoogleCloudVideointelligenceV1VideoAnnotationProgress(_messages.Message):
       SPEECH_TRANSCRIPTION: Speech transcription.
       TEXT_DETECTION: OCR text detection and tracking.
       OBJECT_TRACKING: Object detection and tracking.
+      LOGO_RECOGNITION: Logo detection, tracking, and recognition.
     """
     FEATURE_UNSPECIFIED = 0
     LABEL_DETECTION = 1
@@ -591,6 +683,7 @@ class GoogleCloudVideointelligenceV1VideoAnnotationProgress(_messages.Message):
     SPEECH_TRANSCRIPTION = 4
     TEXT_DETECTION = 5
     OBJECT_TRACKING = 6
+    LOGO_RECOGNITION = 7
 
   feature = _messages.EnumField('FeatureValueValuesEnum', 1)
   inputUri = _messages.StringField(2)
@@ -611,6 +704,8 @@ class GoogleCloudVideointelligenceV1VideoAnnotationResults(_messages.Message):
       one element for each unique label.
     inputUri: Video file location in [Cloud
       Storage](https://cloud.google.com/storage/).
+    logoRecognitionAnnotations: Annotations for list of logos detected,
+      tracked and recognized in video.
     objectAnnotations: Annotations for list of objects detected and tracked in
       video.
     segment: Video segment on which the annotation is run.
@@ -644,15 +739,16 @@ class GoogleCloudVideointelligenceV1VideoAnnotationResults(_messages.Message):
   explicitAnnotation = _messages.MessageField('GoogleCloudVideointelligenceV1ExplicitContentAnnotation', 2)
   frameLabelAnnotations = _messages.MessageField('GoogleCloudVideointelligenceV1LabelAnnotation', 3, repeated=True)
   inputUri = _messages.StringField(4)
-  objectAnnotations = _messages.MessageField('GoogleCloudVideointelligenceV1ObjectTrackingAnnotation', 5, repeated=True)
-  segment = _messages.MessageField('GoogleCloudVideointelligenceV1VideoSegment', 6)
-  segmentLabelAnnotations = _messages.MessageField('GoogleCloudVideointelligenceV1LabelAnnotation', 7, repeated=True)
-  segmentPresenceLabelAnnotations = _messages.MessageField('GoogleCloudVideointelligenceV1LabelAnnotation', 8, repeated=True)
-  shotAnnotations = _messages.MessageField('GoogleCloudVideointelligenceV1VideoSegment', 9, repeated=True)
-  shotLabelAnnotations = _messages.MessageField('GoogleCloudVideointelligenceV1LabelAnnotation', 10, repeated=True)
-  shotPresenceLabelAnnotations = _messages.MessageField('GoogleCloudVideointelligenceV1LabelAnnotation', 11, repeated=True)
-  speechTranscriptions = _messages.MessageField('GoogleCloudVideointelligenceV1SpeechTranscription', 12, repeated=True)
-  textAnnotations = _messages.MessageField('GoogleCloudVideointelligenceV1TextAnnotation', 13, repeated=True)
+  logoRecognitionAnnotations = _messages.MessageField('GoogleCloudVideointelligenceV1LogoRecognitionAnnotation', 5, repeated=True)
+  objectAnnotations = _messages.MessageField('GoogleCloudVideointelligenceV1ObjectTrackingAnnotation', 6, repeated=True)
+  segment = _messages.MessageField('GoogleCloudVideointelligenceV1VideoSegment', 7)
+  segmentLabelAnnotations = _messages.MessageField('GoogleCloudVideointelligenceV1LabelAnnotation', 8, repeated=True)
+  segmentPresenceLabelAnnotations = _messages.MessageField('GoogleCloudVideointelligenceV1LabelAnnotation', 9, repeated=True)
+  shotAnnotations = _messages.MessageField('GoogleCloudVideointelligenceV1VideoSegment', 10, repeated=True)
+  shotLabelAnnotations = _messages.MessageField('GoogleCloudVideointelligenceV1LabelAnnotation', 11, repeated=True)
+  shotPresenceLabelAnnotations = _messages.MessageField('GoogleCloudVideointelligenceV1LabelAnnotation', 12, repeated=True)
+  speechTranscriptions = _messages.MessageField('GoogleCloudVideointelligenceV1SpeechTranscription', 13, repeated=True)
+  textAnnotations = _messages.MessageField('GoogleCloudVideointelligenceV1TextAnnotation', 14, repeated=True)
 
 
 class GoogleCloudVideointelligenceV1VideoContext(_messages.Message):
@@ -752,6 +848,40 @@ class GoogleCloudVideointelligenceV1beta2AnnotateVideoResponse(_messages.Message
   """
 
   annotationResults = _messages.MessageField('GoogleCloudVideointelligenceV1beta2VideoAnnotationResults', 1, repeated=True)
+
+
+class GoogleCloudVideointelligenceV1beta2DetectedAttribute(_messages.Message):
+  r"""A generic detected attribute represented by name in string format.
+
+  Fields:
+    confidence: Detected attribute confidence. Range [0, 1].
+    name: The name of the attribute, i.e. glasses, dark_glasses, mouth_open
+      etc. A full list of supported type names will be provided in the
+      document.
+    value: Text value of the detection result. For example, the value for
+      "HairColor" can be "black", "blonde", etc.
+  """
+
+  confidence = _messages.FloatField(1, variant=_messages.Variant.FLOAT)
+  name = _messages.StringField(2)
+  value = _messages.StringField(3)
+
+
+class GoogleCloudVideointelligenceV1beta2DetectedLandmark(_messages.Message):
+  r"""A generic detected landmark represented by name in string format and a
+  2D location.
+
+  Fields:
+    confidence: The confidence score of the detected landmark. Range [0, 1].
+    name: The name of this landmark, i.e. left_hand, right_shoulder.
+    point: The 2D point of the detected landmark using the normalized image
+      coordindate system. The normalized coordinates have the range from 0 to
+      1.
+  """
+
+  confidence = _messages.FloatField(1, variant=_messages.Variant.FLOAT)
+  name = _messages.StringField(2)
+  point = _messages.MessageField('GoogleCloudVideointelligenceV1beta2NormalizedVertex', 3)
 
 
 class GoogleCloudVideointelligenceV1beta2Entity(_messages.Message):
@@ -857,6 +987,25 @@ class GoogleCloudVideointelligenceV1beta2LabelSegment(_messages.Message):
 
   confidence = _messages.FloatField(1, variant=_messages.Variant.FLOAT)
   segment = _messages.MessageField('GoogleCloudVideointelligenceV1beta2VideoSegment', 2)
+
+
+class GoogleCloudVideointelligenceV1beta2LogoRecognitionAnnotation(_messages.Message):
+  r"""Annotation corresponding to one detected, tracked and recognized logo
+  class.
+
+  Fields:
+    entity: Entity category information to specify the logo class that all the
+      logo tracks within this LogoRecognitionAnnotation are recognized as.
+    segments: All video segments where the recognized logo appears. There
+      might be multiple instances of the same logo class appearing in one
+      VideoSegment.
+    tracks: All logo tracks where the recognized logo appears. Each track
+      corresponds to one logo instance appearing in consecutive frames.
+  """
+
+  entity = _messages.MessageField('GoogleCloudVideointelligenceV1beta2Entity', 1)
+  segments = _messages.MessageField('GoogleCloudVideointelligenceV1beta2VideoSegment', 2, repeated=True)
+  tracks = _messages.MessageField('GoogleCloudVideointelligenceV1beta2Track', 3, repeated=True)
 
 
 class GoogleCloudVideointelligenceV1beta2NormalizedBoundingBox(_messages.Message):
@@ -1029,6 +1178,42 @@ class GoogleCloudVideointelligenceV1beta2TextSegment(_messages.Message):
   segment = _messages.MessageField('GoogleCloudVideointelligenceV1beta2VideoSegment', 3)
 
 
+class GoogleCloudVideointelligenceV1beta2TimestampedObject(_messages.Message):
+  r"""For tracking related features. An object at time_offset with attributes,
+  and located with normalized_bounding_box.
+
+  Fields:
+    attributes: Optional. The attributes of the object in the bounding box.
+    landmarks: Optional. The detected landmarks.
+    normalizedBoundingBox: Normalized Bounding box in a frame, where the
+      object is located.
+    timeOffset: Time-offset, relative to the beginning of the video,
+      corresponding to the video frame for this object.
+  """
+
+  attributes = _messages.MessageField('GoogleCloudVideointelligenceV1beta2DetectedAttribute', 1, repeated=True)
+  landmarks = _messages.MessageField('GoogleCloudVideointelligenceV1beta2DetectedLandmark', 2, repeated=True)
+  normalizedBoundingBox = _messages.MessageField('GoogleCloudVideointelligenceV1beta2NormalizedBoundingBox', 3)
+  timeOffset = _messages.StringField(4)
+
+
+class GoogleCloudVideointelligenceV1beta2Track(_messages.Message):
+  r"""A track of an object instance.
+
+  Fields:
+    attributes: Optional. Attributes in the track level.
+    confidence: Optional. The confidence score of the tracked object.
+    segment: Video segment of a track.
+    timestampedObjects: The object with timestamp and attributes per frame in
+      the track.
+  """
+
+  attributes = _messages.MessageField('GoogleCloudVideointelligenceV1beta2DetectedAttribute', 1, repeated=True)
+  confidence = _messages.FloatField(2, variant=_messages.Variant.FLOAT)
+  segment = _messages.MessageField('GoogleCloudVideointelligenceV1beta2VideoSegment', 3)
+  timestampedObjects = _messages.MessageField('GoogleCloudVideointelligenceV1beta2TimestampedObject', 4, repeated=True)
+
+
 class GoogleCloudVideointelligenceV1beta2VideoAnnotationProgress(_messages.Message):
   r"""Annotation progress for a single video.
 
@@ -1061,6 +1246,7 @@ class GoogleCloudVideointelligenceV1beta2VideoAnnotationProgress(_messages.Messa
       SPEECH_TRANSCRIPTION: Speech transcription.
       TEXT_DETECTION: OCR text detection and tracking.
       OBJECT_TRACKING: Object detection and tracking.
+      LOGO_RECOGNITION: Logo detection, tracking, and recognition.
     """
     FEATURE_UNSPECIFIED = 0
     LABEL_DETECTION = 1
@@ -1069,6 +1255,7 @@ class GoogleCloudVideointelligenceV1beta2VideoAnnotationProgress(_messages.Messa
     SPEECH_TRANSCRIPTION = 4
     TEXT_DETECTION = 5
     OBJECT_TRACKING = 6
+    LOGO_RECOGNITION = 7
 
   feature = _messages.EnumField('FeatureValueValuesEnum', 1)
   inputUri = _messages.StringField(2)
@@ -1089,6 +1276,8 @@ class GoogleCloudVideointelligenceV1beta2VideoAnnotationResults(_messages.Messag
       one element for each unique label.
     inputUri: Video file location in [Cloud
       Storage](https://cloud.google.com/storage/).
+    logoRecognitionAnnotations: Annotations for list of logos detected,
+      tracked and recognized in video.
     objectAnnotations: Annotations for list of objects detected and tracked in
       video.
     segment: Video segment on which the annotation is run.
@@ -1122,15 +1311,16 @@ class GoogleCloudVideointelligenceV1beta2VideoAnnotationResults(_messages.Messag
   explicitAnnotation = _messages.MessageField('GoogleCloudVideointelligenceV1beta2ExplicitContentAnnotation', 2)
   frameLabelAnnotations = _messages.MessageField('GoogleCloudVideointelligenceV1beta2LabelAnnotation', 3, repeated=True)
   inputUri = _messages.StringField(4)
-  objectAnnotations = _messages.MessageField('GoogleCloudVideointelligenceV1beta2ObjectTrackingAnnotation', 5, repeated=True)
-  segment = _messages.MessageField('GoogleCloudVideointelligenceV1beta2VideoSegment', 6)
-  segmentLabelAnnotations = _messages.MessageField('GoogleCloudVideointelligenceV1beta2LabelAnnotation', 7, repeated=True)
-  segmentPresenceLabelAnnotations = _messages.MessageField('GoogleCloudVideointelligenceV1beta2LabelAnnotation', 8, repeated=True)
-  shotAnnotations = _messages.MessageField('GoogleCloudVideointelligenceV1beta2VideoSegment', 9, repeated=True)
-  shotLabelAnnotations = _messages.MessageField('GoogleCloudVideointelligenceV1beta2LabelAnnotation', 10, repeated=True)
-  shotPresenceLabelAnnotations = _messages.MessageField('GoogleCloudVideointelligenceV1beta2LabelAnnotation', 11, repeated=True)
-  speechTranscriptions = _messages.MessageField('GoogleCloudVideointelligenceV1beta2SpeechTranscription', 12, repeated=True)
-  textAnnotations = _messages.MessageField('GoogleCloudVideointelligenceV1beta2TextAnnotation', 13, repeated=True)
+  logoRecognitionAnnotations = _messages.MessageField('GoogleCloudVideointelligenceV1beta2LogoRecognitionAnnotation', 5, repeated=True)
+  objectAnnotations = _messages.MessageField('GoogleCloudVideointelligenceV1beta2ObjectTrackingAnnotation', 6, repeated=True)
+  segment = _messages.MessageField('GoogleCloudVideointelligenceV1beta2VideoSegment', 7)
+  segmentLabelAnnotations = _messages.MessageField('GoogleCloudVideointelligenceV1beta2LabelAnnotation', 8, repeated=True)
+  segmentPresenceLabelAnnotations = _messages.MessageField('GoogleCloudVideointelligenceV1beta2LabelAnnotation', 9, repeated=True)
+  shotAnnotations = _messages.MessageField('GoogleCloudVideointelligenceV1beta2VideoSegment', 10, repeated=True)
+  shotLabelAnnotations = _messages.MessageField('GoogleCloudVideointelligenceV1beta2LabelAnnotation', 11, repeated=True)
+  shotPresenceLabelAnnotations = _messages.MessageField('GoogleCloudVideointelligenceV1beta2LabelAnnotation', 12, repeated=True)
+  speechTranscriptions = _messages.MessageField('GoogleCloudVideointelligenceV1beta2SpeechTranscription', 13, repeated=True)
+  textAnnotations = _messages.MessageField('GoogleCloudVideointelligenceV1beta2TextAnnotation', 14, repeated=True)
 
 
 class GoogleCloudVideointelligenceV1beta2VideoSegment(_messages.Message):
@@ -1206,6 +1396,40 @@ class GoogleCloudVideointelligenceV1p1beta1AnnotateVideoResponse(_messages.Messa
   """
 
   annotationResults = _messages.MessageField('GoogleCloudVideointelligenceV1p1beta1VideoAnnotationResults', 1, repeated=True)
+
+
+class GoogleCloudVideointelligenceV1p1beta1DetectedAttribute(_messages.Message):
+  r"""A generic detected attribute represented by name in string format.
+
+  Fields:
+    confidence: Detected attribute confidence. Range [0, 1].
+    name: The name of the attribute, i.e. glasses, dark_glasses, mouth_open
+      etc. A full list of supported type names will be provided in the
+      document.
+    value: Text value of the detection result. For example, the value for
+      "HairColor" can be "black", "blonde", etc.
+  """
+
+  confidence = _messages.FloatField(1, variant=_messages.Variant.FLOAT)
+  name = _messages.StringField(2)
+  value = _messages.StringField(3)
+
+
+class GoogleCloudVideointelligenceV1p1beta1DetectedLandmark(_messages.Message):
+  r"""A generic detected landmark represented by name in string format and a
+  2D location.
+
+  Fields:
+    confidence: The confidence score of the detected landmark. Range [0, 1].
+    name: The name of this landmark, i.e. left_hand, right_shoulder.
+    point: The 2D point of the detected landmark using the normalized image
+      coordindate system. The normalized coordinates have the range from 0 to
+      1.
+  """
+
+  confidence = _messages.FloatField(1, variant=_messages.Variant.FLOAT)
+  name = _messages.StringField(2)
+  point = _messages.MessageField('GoogleCloudVideointelligenceV1p1beta1NormalizedVertex', 3)
 
 
 class GoogleCloudVideointelligenceV1p1beta1Entity(_messages.Message):
@@ -1311,6 +1535,25 @@ class GoogleCloudVideointelligenceV1p1beta1LabelSegment(_messages.Message):
 
   confidence = _messages.FloatField(1, variant=_messages.Variant.FLOAT)
   segment = _messages.MessageField('GoogleCloudVideointelligenceV1p1beta1VideoSegment', 2)
+
+
+class GoogleCloudVideointelligenceV1p1beta1LogoRecognitionAnnotation(_messages.Message):
+  r"""Annotation corresponding to one detected, tracked and recognized logo
+  class.
+
+  Fields:
+    entity: Entity category information to specify the logo class that all the
+      logo tracks within this LogoRecognitionAnnotation are recognized as.
+    segments: All video segments where the recognized logo appears. There
+      might be multiple instances of the same logo class appearing in one
+      VideoSegment.
+    tracks: All logo tracks where the recognized logo appears. Each track
+      corresponds to one logo instance appearing in consecutive frames.
+  """
+
+  entity = _messages.MessageField('GoogleCloudVideointelligenceV1p1beta1Entity', 1)
+  segments = _messages.MessageField('GoogleCloudVideointelligenceV1p1beta1VideoSegment', 2, repeated=True)
+  tracks = _messages.MessageField('GoogleCloudVideointelligenceV1p1beta1Track', 3, repeated=True)
 
 
 class GoogleCloudVideointelligenceV1p1beta1NormalizedBoundingBox(_messages.Message):
@@ -1483,6 +1726,42 @@ class GoogleCloudVideointelligenceV1p1beta1TextSegment(_messages.Message):
   segment = _messages.MessageField('GoogleCloudVideointelligenceV1p1beta1VideoSegment', 3)
 
 
+class GoogleCloudVideointelligenceV1p1beta1TimestampedObject(_messages.Message):
+  r"""For tracking related features. An object at time_offset with attributes,
+  and located with normalized_bounding_box.
+
+  Fields:
+    attributes: Optional. The attributes of the object in the bounding box.
+    landmarks: Optional. The detected landmarks.
+    normalizedBoundingBox: Normalized Bounding box in a frame, where the
+      object is located.
+    timeOffset: Time-offset, relative to the beginning of the video,
+      corresponding to the video frame for this object.
+  """
+
+  attributes = _messages.MessageField('GoogleCloudVideointelligenceV1p1beta1DetectedAttribute', 1, repeated=True)
+  landmarks = _messages.MessageField('GoogleCloudVideointelligenceV1p1beta1DetectedLandmark', 2, repeated=True)
+  normalizedBoundingBox = _messages.MessageField('GoogleCloudVideointelligenceV1p1beta1NormalizedBoundingBox', 3)
+  timeOffset = _messages.StringField(4)
+
+
+class GoogleCloudVideointelligenceV1p1beta1Track(_messages.Message):
+  r"""A track of an object instance.
+
+  Fields:
+    attributes: Optional. Attributes in the track level.
+    confidence: Optional. The confidence score of the tracked object.
+    segment: Video segment of a track.
+    timestampedObjects: The object with timestamp and attributes per frame in
+      the track.
+  """
+
+  attributes = _messages.MessageField('GoogleCloudVideointelligenceV1p1beta1DetectedAttribute', 1, repeated=True)
+  confidence = _messages.FloatField(2, variant=_messages.Variant.FLOAT)
+  segment = _messages.MessageField('GoogleCloudVideointelligenceV1p1beta1VideoSegment', 3)
+  timestampedObjects = _messages.MessageField('GoogleCloudVideointelligenceV1p1beta1TimestampedObject', 4, repeated=True)
+
+
 class GoogleCloudVideointelligenceV1p1beta1VideoAnnotationProgress(_messages.Message):
   r"""Annotation progress for a single video.
 
@@ -1515,6 +1794,7 @@ class GoogleCloudVideointelligenceV1p1beta1VideoAnnotationProgress(_messages.Mes
       SPEECH_TRANSCRIPTION: Speech transcription.
       TEXT_DETECTION: OCR text detection and tracking.
       OBJECT_TRACKING: Object detection and tracking.
+      LOGO_RECOGNITION: Logo detection, tracking, and recognition.
     """
     FEATURE_UNSPECIFIED = 0
     LABEL_DETECTION = 1
@@ -1523,6 +1803,7 @@ class GoogleCloudVideointelligenceV1p1beta1VideoAnnotationProgress(_messages.Mes
     SPEECH_TRANSCRIPTION = 4
     TEXT_DETECTION = 5
     OBJECT_TRACKING = 6
+    LOGO_RECOGNITION = 7
 
   feature = _messages.EnumField('FeatureValueValuesEnum', 1)
   inputUri = _messages.StringField(2)
@@ -1543,6 +1824,8 @@ class GoogleCloudVideointelligenceV1p1beta1VideoAnnotationResults(_messages.Mess
       one element for each unique label.
     inputUri: Video file location in [Cloud
       Storage](https://cloud.google.com/storage/).
+    logoRecognitionAnnotations: Annotations for list of logos detected,
+      tracked and recognized in video.
     objectAnnotations: Annotations for list of objects detected and tracked in
       video.
     segment: Video segment on which the annotation is run.
@@ -1576,15 +1859,16 @@ class GoogleCloudVideointelligenceV1p1beta1VideoAnnotationResults(_messages.Mess
   explicitAnnotation = _messages.MessageField('GoogleCloudVideointelligenceV1p1beta1ExplicitContentAnnotation', 2)
   frameLabelAnnotations = _messages.MessageField('GoogleCloudVideointelligenceV1p1beta1LabelAnnotation', 3, repeated=True)
   inputUri = _messages.StringField(4)
-  objectAnnotations = _messages.MessageField('GoogleCloudVideointelligenceV1p1beta1ObjectTrackingAnnotation', 5, repeated=True)
-  segment = _messages.MessageField('GoogleCloudVideointelligenceV1p1beta1VideoSegment', 6)
-  segmentLabelAnnotations = _messages.MessageField('GoogleCloudVideointelligenceV1p1beta1LabelAnnotation', 7, repeated=True)
-  segmentPresenceLabelAnnotations = _messages.MessageField('GoogleCloudVideointelligenceV1p1beta1LabelAnnotation', 8, repeated=True)
-  shotAnnotations = _messages.MessageField('GoogleCloudVideointelligenceV1p1beta1VideoSegment', 9, repeated=True)
-  shotLabelAnnotations = _messages.MessageField('GoogleCloudVideointelligenceV1p1beta1LabelAnnotation', 10, repeated=True)
-  shotPresenceLabelAnnotations = _messages.MessageField('GoogleCloudVideointelligenceV1p1beta1LabelAnnotation', 11, repeated=True)
-  speechTranscriptions = _messages.MessageField('GoogleCloudVideointelligenceV1p1beta1SpeechTranscription', 12, repeated=True)
-  textAnnotations = _messages.MessageField('GoogleCloudVideointelligenceV1p1beta1TextAnnotation', 13, repeated=True)
+  logoRecognitionAnnotations = _messages.MessageField('GoogleCloudVideointelligenceV1p1beta1LogoRecognitionAnnotation', 5, repeated=True)
+  objectAnnotations = _messages.MessageField('GoogleCloudVideointelligenceV1p1beta1ObjectTrackingAnnotation', 6, repeated=True)
+  segment = _messages.MessageField('GoogleCloudVideointelligenceV1p1beta1VideoSegment', 7)
+  segmentLabelAnnotations = _messages.MessageField('GoogleCloudVideointelligenceV1p1beta1LabelAnnotation', 8, repeated=True)
+  segmentPresenceLabelAnnotations = _messages.MessageField('GoogleCloudVideointelligenceV1p1beta1LabelAnnotation', 9, repeated=True)
+  shotAnnotations = _messages.MessageField('GoogleCloudVideointelligenceV1p1beta1VideoSegment', 10, repeated=True)
+  shotLabelAnnotations = _messages.MessageField('GoogleCloudVideointelligenceV1p1beta1LabelAnnotation', 11, repeated=True)
+  shotPresenceLabelAnnotations = _messages.MessageField('GoogleCloudVideointelligenceV1p1beta1LabelAnnotation', 12, repeated=True)
+  speechTranscriptions = _messages.MessageField('GoogleCloudVideointelligenceV1p1beta1SpeechTranscription', 13, repeated=True)
+  textAnnotations = _messages.MessageField('GoogleCloudVideointelligenceV1p1beta1TextAnnotation', 14, repeated=True)
 
 
 class GoogleCloudVideointelligenceV1p1beta1VideoSegment(_messages.Message):
@@ -1660,6 +1944,40 @@ class GoogleCloudVideointelligenceV1p2beta1AnnotateVideoResponse(_messages.Messa
   """
 
   annotationResults = _messages.MessageField('GoogleCloudVideointelligenceV1p2beta1VideoAnnotationResults', 1, repeated=True)
+
+
+class GoogleCloudVideointelligenceV1p2beta1DetectedAttribute(_messages.Message):
+  r"""A generic detected attribute represented by name in string format.
+
+  Fields:
+    confidence: Detected attribute confidence. Range [0, 1].
+    name: The name of the attribute, i.e. glasses, dark_glasses, mouth_open
+      etc. A full list of supported type names will be provided in the
+      document.
+    value: Text value of the detection result. For example, the value for
+      "HairColor" can be "black", "blonde", etc.
+  """
+
+  confidence = _messages.FloatField(1, variant=_messages.Variant.FLOAT)
+  name = _messages.StringField(2)
+  value = _messages.StringField(3)
+
+
+class GoogleCloudVideointelligenceV1p2beta1DetectedLandmark(_messages.Message):
+  r"""A generic detected landmark represented by name in string format and a
+  2D location.
+
+  Fields:
+    confidence: The confidence score of the detected landmark. Range [0, 1].
+    name: The name of this landmark, i.e. left_hand, right_shoulder.
+    point: The 2D point of the detected landmark using the normalized image
+      coordindate system. The normalized coordinates have the range from 0 to
+      1.
+  """
+
+  confidence = _messages.FloatField(1, variant=_messages.Variant.FLOAT)
+  name = _messages.StringField(2)
+  point = _messages.MessageField('GoogleCloudVideointelligenceV1p2beta1NormalizedVertex', 3)
 
 
 class GoogleCloudVideointelligenceV1p2beta1Entity(_messages.Message):
@@ -1765,6 +2083,25 @@ class GoogleCloudVideointelligenceV1p2beta1LabelSegment(_messages.Message):
 
   confidence = _messages.FloatField(1, variant=_messages.Variant.FLOAT)
   segment = _messages.MessageField('GoogleCloudVideointelligenceV1p2beta1VideoSegment', 2)
+
+
+class GoogleCloudVideointelligenceV1p2beta1LogoRecognitionAnnotation(_messages.Message):
+  r"""Annotation corresponding to one detected, tracked and recognized logo
+  class.
+
+  Fields:
+    entity: Entity category information to specify the logo class that all the
+      logo tracks within this LogoRecognitionAnnotation are recognized as.
+    segments: All video segments where the recognized logo appears. There
+      might be multiple instances of the same logo class appearing in one
+      VideoSegment.
+    tracks: All logo tracks where the recognized logo appears. Each track
+      corresponds to one logo instance appearing in consecutive frames.
+  """
+
+  entity = _messages.MessageField('GoogleCloudVideointelligenceV1p2beta1Entity', 1)
+  segments = _messages.MessageField('GoogleCloudVideointelligenceV1p2beta1VideoSegment', 2, repeated=True)
+  tracks = _messages.MessageField('GoogleCloudVideointelligenceV1p2beta1Track', 3, repeated=True)
 
 
 class GoogleCloudVideointelligenceV1p2beta1NormalizedBoundingBox(_messages.Message):
@@ -1937,6 +2274,42 @@ class GoogleCloudVideointelligenceV1p2beta1TextSegment(_messages.Message):
   segment = _messages.MessageField('GoogleCloudVideointelligenceV1p2beta1VideoSegment', 3)
 
 
+class GoogleCloudVideointelligenceV1p2beta1TimestampedObject(_messages.Message):
+  r"""For tracking related features. An object at time_offset with attributes,
+  and located with normalized_bounding_box.
+
+  Fields:
+    attributes: Optional. The attributes of the object in the bounding box.
+    landmarks: Optional. The detected landmarks.
+    normalizedBoundingBox: Normalized Bounding box in a frame, where the
+      object is located.
+    timeOffset: Time-offset, relative to the beginning of the video,
+      corresponding to the video frame for this object.
+  """
+
+  attributes = _messages.MessageField('GoogleCloudVideointelligenceV1p2beta1DetectedAttribute', 1, repeated=True)
+  landmarks = _messages.MessageField('GoogleCloudVideointelligenceV1p2beta1DetectedLandmark', 2, repeated=True)
+  normalizedBoundingBox = _messages.MessageField('GoogleCloudVideointelligenceV1p2beta1NormalizedBoundingBox', 3)
+  timeOffset = _messages.StringField(4)
+
+
+class GoogleCloudVideointelligenceV1p2beta1Track(_messages.Message):
+  r"""A track of an object instance.
+
+  Fields:
+    attributes: Optional. Attributes in the track level.
+    confidence: Optional. The confidence score of the tracked object.
+    segment: Video segment of a track.
+    timestampedObjects: The object with timestamp and attributes per frame in
+      the track.
+  """
+
+  attributes = _messages.MessageField('GoogleCloudVideointelligenceV1p2beta1DetectedAttribute', 1, repeated=True)
+  confidence = _messages.FloatField(2, variant=_messages.Variant.FLOAT)
+  segment = _messages.MessageField('GoogleCloudVideointelligenceV1p2beta1VideoSegment', 3)
+  timestampedObjects = _messages.MessageField('GoogleCloudVideointelligenceV1p2beta1TimestampedObject', 4, repeated=True)
+
+
 class GoogleCloudVideointelligenceV1p2beta1VideoAnnotationProgress(_messages.Message):
   r"""Annotation progress for a single video.
 
@@ -1969,6 +2342,7 @@ class GoogleCloudVideointelligenceV1p2beta1VideoAnnotationProgress(_messages.Mes
       SPEECH_TRANSCRIPTION: Speech transcription.
       TEXT_DETECTION: OCR text detection and tracking.
       OBJECT_TRACKING: Object detection and tracking.
+      LOGO_RECOGNITION: Logo detection, tracking, and recognition.
     """
     FEATURE_UNSPECIFIED = 0
     LABEL_DETECTION = 1
@@ -1977,6 +2351,7 @@ class GoogleCloudVideointelligenceV1p2beta1VideoAnnotationProgress(_messages.Mes
     SPEECH_TRANSCRIPTION = 4
     TEXT_DETECTION = 5
     OBJECT_TRACKING = 6
+    LOGO_RECOGNITION = 7
 
   feature = _messages.EnumField('FeatureValueValuesEnum', 1)
   inputUri = _messages.StringField(2)
@@ -1997,6 +2372,8 @@ class GoogleCloudVideointelligenceV1p2beta1VideoAnnotationResults(_messages.Mess
       one element for each unique label.
     inputUri: Video file location in [Cloud
       Storage](https://cloud.google.com/storage/).
+    logoRecognitionAnnotations: Annotations for list of logos detected,
+      tracked and recognized in video.
     objectAnnotations: Annotations for list of objects detected and tracked in
       video.
     segment: Video segment on which the annotation is run.
@@ -2030,15 +2407,16 @@ class GoogleCloudVideointelligenceV1p2beta1VideoAnnotationResults(_messages.Mess
   explicitAnnotation = _messages.MessageField('GoogleCloudVideointelligenceV1p2beta1ExplicitContentAnnotation', 2)
   frameLabelAnnotations = _messages.MessageField('GoogleCloudVideointelligenceV1p2beta1LabelAnnotation', 3, repeated=True)
   inputUri = _messages.StringField(4)
-  objectAnnotations = _messages.MessageField('GoogleCloudVideointelligenceV1p2beta1ObjectTrackingAnnotation', 5, repeated=True)
-  segment = _messages.MessageField('GoogleCloudVideointelligenceV1p2beta1VideoSegment', 6)
-  segmentLabelAnnotations = _messages.MessageField('GoogleCloudVideointelligenceV1p2beta1LabelAnnotation', 7, repeated=True)
-  segmentPresenceLabelAnnotations = _messages.MessageField('GoogleCloudVideointelligenceV1p2beta1LabelAnnotation', 8, repeated=True)
-  shotAnnotations = _messages.MessageField('GoogleCloudVideointelligenceV1p2beta1VideoSegment', 9, repeated=True)
-  shotLabelAnnotations = _messages.MessageField('GoogleCloudVideointelligenceV1p2beta1LabelAnnotation', 10, repeated=True)
-  shotPresenceLabelAnnotations = _messages.MessageField('GoogleCloudVideointelligenceV1p2beta1LabelAnnotation', 11, repeated=True)
-  speechTranscriptions = _messages.MessageField('GoogleCloudVideointelligenceV1p2beta1SpeechTranscription', 12, repeated=True)
-  textAnnotations = _messages.MessageField('GoogleCloudVideointelligenceV1p2beta1TextAnnotation', 13, repeated=True)
+  logoRecognitionAnnotations = _messages.MessageField('GoogleCloudVideointelligenceV1p2beta1LogoRecognitionAnnotation', 5, repeated=True)
+  objectAnnotations = _messages.MessageField('GoogleCloudVideointelligenceV1p2beta1ObjectTrackingAnnotation', 6, repeated=True)
+  segment = _messages.MessageField('GoogleCloudVideointelligenceV1p2beta1VideoSegment', 7)
+  segmentLabelAnnotations = _messages.MessageField('GoogleCloudVideointelligenceV1p2beta1LabelAnnotation', 8, repeated=True)
+  segmentPresenceLabelAnnotations = _messages.MessageField('GoogleCloudVideointelligenceV1p2beta1LabelAnnotation', 9, repeated=True)
+  shotAnnotations = _messages.MessageField('GoogleCloudVideointelligenceV1p2beta1VideoSegment', 10, repeated=True)
+  shotLabelAnnotations = _messages.MessageField('GoogleCloudVideointelligenceV1p2beta1LabelAnnotation', 11, repeated=True)
+  shotPresenceLabelAnnotations = _messages.MessageField('GoogleCloudVideointelligenceV1p2beta1LabelAnnotation', 12, repeated=True)
+  speechTranscriptions = _messages.MessageField('GoogleCloudVideointelligenceV1p2beta1SpeechTranscription', 13, repeated=True)
+  textAnnotations = _messages.MessageField('GoogleCloudVideointelligenceV1p2beta1TextAnnotation', 14, repeated=True)
 
 
 class GoogleCloudVideointelligenceV1p2beta1VideoSegment(_messages.Message):

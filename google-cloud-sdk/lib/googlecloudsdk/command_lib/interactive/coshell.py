@@ -53,8 +53,8 @@ import os
 import re
 import signal
 import subprocess
+from googlecloudsdk.core.util import encoding
 import six
-
 
 COSHELL_ENV = 'COSHELL'
 COSHELL_VERSION = '1.1'
@@ -640,7 +640,7 @@ class _UnixCoshell(_UnixCoshellBase):
 
     # Check for an alternate coshell command.
 
-    coshell_command_line = os.environ.get(COSHELL_ENV)
+    coshell_command_line = encoding.GetEncodedValue(os.environ, COSHELL_ENV)
     if coshell_command_line:
       shell_command = coshell_command_line.split(' ')
     else:

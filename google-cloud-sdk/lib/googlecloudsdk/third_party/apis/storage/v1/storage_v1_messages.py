@@ -2594,6 +2594,9 @@ class StorageObjectsListRequest(_messages.Message):
       delimiter. Objects whose names, aside from the prefix, contain delimiter
       will have their name, truncated after the delimiter, returned in
       prefixes. Duplicate prefixes are omitted.
+    endOffset: Filter results to objects whose names are lexicographically
+      before endOffset. If startOffset is also set, the objects listed will
+      have names between startOffset (inclusive) and endOffset (exclusive).
     includeTrailingDelimiter: If true, objects that end in exactly one
       instance of delimiter will have their metadata included in items in
       addition to prefixes.
@@ -2607,6 +2610,10 @@ class StorageObjectsListRequest(_messages.Message):
     projection: Set of properties to return. Defaults to noAcl.
     provisionalUserProject: The project to be billed for this request if the
       target bucket is requester-pays bucket.
+    startOffset: Filter results to objects whose names are lexicographically
+      equal to or after startOffset. If endOffset is also set, the objects
+      listed will have names between startOffset (inclusive) and endOffset
+      (exclusive).
     userProject: The project to be billed for this request. Required for
       Requester Pays buckets.
     versions: If true, lists all versions of an object as distinct results.
@@ -2625,14 +2632,16 @@ class StorageObjectsListRequest(_messages.Message):
 
   bucket = _messages.StringField(1, required=True)
   delimiter = _messages.StringField(2)
-  includeTrailingDelimiter = _messages.BooleanField(3)
-  maxResults = _messages.IntegerField(4, variant=_messages.Variant.UINT32, default=1000)
-  pageToken = _messages.StringField(5)
-  prefix = _messages.StringField(6)
-  projection = _messages.EnumField('ProjectionValueValuesEnum', 7)
-  provisionalUserProject = _messages.StringField(8)
-  userProject = _messages.StringField(9)
-  versions = _messages.BooleanField(10)
+  endOffset = _messages.StringField(3)
+  includeTrailingDelimiter = _messages.BooleanField(4)
+  maxResults = _messages.IntegerField(5, variant=_messages.Variant.UINT32, default=1000)
+  pageToken = _messages.StringField(6)
+  prefix = _messages.StringField(7)
+  projection = _messages.EnumField('ProjectionValueValuesEnum', 8)
+  provisionalUserProject = _messages.StringField(9)
+  startOffset = _messages.StringField(10)
+  userProject = _messages.StringField(11)
+  versions = _messages.BooleanField(12)
 
 
 class StorageObjectsPatchRequest(_messages.Message):
@@ -2987,6 +2996,9 @@ class StorageObjectsWatchAllRequest(_messages.Message):
       delimiter. Objects whose names, aside from the prefix, contain delimiter
       will have their name, truncated after the delimiter, returned in
       prefixes. Duplicate prefixes are omitted.
+    endOffset: Filter results to objects whose names are lexicographically
+      before endOffset. If startOffset is also set, the objects listed will
+      have names between startOffset (inclusive) and endOffset (exclusive).
     includeTrailingDelimiter: If true, objects that end in exactly one
       instance of delimiter will have their metadata included in items in
       addition to prefixes.
@@ -3000,6 +3012,10 @@ class StorageObjectsWatchAllRequest(_messages.Message):
     projection: Set of properties to return. Defaults to noAcl.
     provisionalUserProject: The project to be billed for this request if the
       target bucket is requester-pays bucket.
+    startOffset: Filter results to objects whose names are lexicographically
+      equal to or after startOffset. If endOffset is also set, the objects
+      listed will have names between startOffset (inclusive) and endOffset
+      (exclusive).
     userProject: The project to be billed for this request. Required for
       Requester Pays buckets.
     versions: If true, lists all versions of an object as distinct results.
@@ -3019,14 +3035,16 @@ class StorageObjectsWatchAllRequest(_messages.Message):
   bucket = _messages.StringField(1, required=True)
   channel = _messages.MessageField('Channel', 2)
   delimiter = _messages.StringField(3)
-  includeTrailingDelimiter = _messages.BooleanField(4)
-  maxResults = _messages.IntegerField(5, variant=_messages.Variant.UINT32, default=1000)
-  pageToken = _messages.StringField(6)
-  prefix = _messages.StringField(7)
-  projection = _messages.EnumField('ProjectionValueValuesEnum', 8)
-  provisionalUserProject = _messages.StringField(9)
-  userProject = _messages.StringField(10)
-  versions = _messages.BooleanField(11)
+  endOffset = _messages.StringField(4)
+  includeTrailingDelimiter = _messages.BooleanField(5)
+  maxResults = _messages.IntegerField(6, variant=_messages.Variant.UINT32, default=1000)
+  pageToken = _messages.StringField(7)
+  prefix = _messages.StringField(8)
+  projection = _messages.EnumField('ProjectionValueValuesEnum', 9)
+  provisionalUserProject = _messages.StringField(10)
+  startOffset = _messages.StringField(11)
+  userProject = _messages.StringField(12)
+  versions = _messages.BooleanField(13)
 
 
 class StorageProjectsHmacKeysCreateRequest(_messages.Message):

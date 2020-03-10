@@ -39,6 +39,9 @@ from oauth2client import service_account
 from oauth2client.contrib import gce as oauth2client_gce
 import six
 import sqlite3
+from google.auth import _oauth2client as oauth2client_helper
+from google.auth import compute_engine
+from google.oauth2 import service_account as google_auth_service_account
 
 ADC_QUOTA_PROJECT_FIELD_NAME = 'quota_project_id'
 
@@ -567,3 +570,60 @@ def _ConvertCredentialsToADC(credentials):
         credentials.token_expiry, credentials.token_uri, credentials.user_agent,
         credentials.revoke_uri)
   return credentials.serialization_data
+
+
+# TODO(b/147098689): Deprecate this method once credentials store is ready
+# to produce credentials of google-auth directly.
+def MaybeConvertToGoogleAuthCredentials(credentials, use_google_auth):
+  """Converts credentials to type of google-auth under certain conditions.
+
+  The conversion will take place when the below conditions are all met,
+  1. use_google_auth is True;
+  2. credentials is of type oauth2client;
+  3. The input credentials are not built from P12 service account key. The
+     reason is that this legacy service account key is not supported by
+     google-auth. Additionally, gcloud plans to deprecate P12 service account
+     key support. The authenticaion logic of credentials of this type will be
+     left on oauth2client for now and will be removed in the deprecation.
+
+
+  Args:
+    credentials: oauth2client.client.Credentials or
+      google.auth.credentials.Credentials
+    use_google_auth: bool, True if the calling command indicates to use
+      google-auth library for authentication.
+
+  Returns:
+    google.auth.credentials.Credentials or oauth2client.client.Credentials
+  """
+  if ((not use_google_auth) or
+      (not isinstance(credentials, client.OAuth2Credentials)) or
+      CredentialType.FromCredentials(
+          credentials) == CredentialType.P12_SERVICE_ACCOUNT):
+    return credentials
+
+  # pylint: disable=g-import-not-at-top
+  # To work around the circular dependency between this the util and the creds
+  # modules.
+  from googlecloudsdk.api_lib.iamcredentials import util
+
+  if isinstance(credentials, c_devshell.DevshellCredentials):
+    google_auth_creds = c_devshell.DevShellCredentialsGoogleAuth
+    return google_auth_creds.from_devshell_credentials(credentials)
+  if isinstance(credentials, util.ImpersonationCredentials):
+    google_auth_creds = util.ImpersonationCredentialsGoogleAuth
+    return google_auth_creds.from_impersonation_credentials(credentials)
+
+  google_auth_creds = oauth2client_helper.convert(credentials)
+  # token expiry is lost in the conversion.
+  google_auth_creds.expiry = getattr(credentials, 'token_expiry', None)
+  if (isinstance(google_auth_creds, google_auth_service_account.Credentials) or
+      isinstance(google_auth_creds, compute_engine.Credentials)):
+    # Access token and scopes are lost in the conversions of service acccount
+    # and GCE credentials.
+    google_auth_creds.token = getattr(credentials, 'access_token', None)
+    scopes = getattr(credentials, 'scopes', config.CLOUDSDK_SCOPES)
+    # client.OAuth2Credentials converts scopes into a set. google-auth requires
+    # scopes to be of a Sequence type.
+    google_auth_creds._scopes = list(scopes)  # pylint: disable=protected-access
+  return google_auth_creds

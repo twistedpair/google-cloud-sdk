@@ -127,6 +127,10 @@ class Binding(_messages.Message):
   role = _messages.StringField(3)
 
 
+class CancelOperationRequest(_messages.Message):
+  r"""The request message for Operations.CancelOperation."""
+
+
 class CharacterMaskConfig(_messages.Message):
   r"""Mask a string by replacing its characters with a fixed character.
 
@@ -2178,18 +2182,7 @@ class HealthcareProjectsLocationsDatasetsHl7V2StoresMessagesListRequest(_message
       string value of the label with key `x` as set using the Message.labels
       map. For example, `labels."priority"="high"`. The operator `:*` can be
       used to assert the existence of a label. For example,
-      `labels."priority":*`.  Limitations on conjunctions:  *  Negation on the
-      patient ID function or the labels field is not supported. For example,
-      these queries are invalid: `NOT PatientId("123456", "MRN")`, `NOT
-      labels."tag1":*`, `NOT labels."tag2"="val2"`. *  Conjunction of multiple
-      patient ID functions is not supported, for example this query is
-      invalid: `PatientId("123456", "MRN") AND PatientId("456789", "MRN")`. *
-      Conjunction of multiple labels fields is also not supported, for example
-      this query is invalid: `labels."tag1":* AND labels."tag2"="val2"`. *
-      Conjunction of one patient ID function, one labels field and conditions
-      on other fields is supported. For example, this query is valid:
-      `PatientId("123456", "MRN") AND labels."tag1":* AND message_type =
-      "ADT"`.
+      `labels."priority":*`.
     orderBy: Orders messages returned by the specified order_by clause.
       Syntax:
       https://cloud.google.com/apis/design/design_patterns#sorting_order
@@ -2312,6 +2305,19 @@ class HealthcareProjectsLocationsDatasetsListRequest(_messages.Message):
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(2)
   parent = _messages.StringField(3, required=True)
+
+
+class HealthcareProjectsLocationsDatasetsOperationsCancelRequest(_messages.Message):
+  r"""A HealthcareProjectsLocationsDatasetsOperationsCancelRequest object.
+
+  Fields:
+    cancelOperationRequest: A CancelOperationRequest resource to be passed as
+      the request body.
+    name: The name of the operation resource to be cancelled.
+  """
+
+  cancelOperationRequest = _messages.MessageField('CancelOperationRequest', 1)
+  name = _messages.StringField(2, required=True)
 
 
 class HealthcareProjectsLocationsDatasetsOperationsGetRequest(_messages.Message):
@@ -3095,15 +3101,18 @@ class OperationMetadata(_messages.Message):
 
   Fields:
     apiMethodName: The name of the API method that initiated the operation.
+    cancelRequested: Specifies if cancellation was requested for the
+      operation.
     counter: A ProgressCounter attribute.
     createTime: The time at which the operation was created by the API.
     endTime: The time at which execution was completed.
   """
 
   apiMethodName = _messages.StringField(1)
-  counter = _messages.MessageField('ProgressCounter', 2)
-  createTime = _messages.StringField(3)
-  endTime = _messages.StringField(4)
+  cancelRequested = _messages.BooleanField(2)
+  counter = _messages.MessageField('ProgressCounter', 3)
+  createTime = _messages.StringField(4)
+  endTime = _messages.StringField(5)
 
 
 class ParsedData(_messages.Message):
@@ -3228,14 +3237,14 @@ class ProgressCounter(_messages.Message):
 
 class RedactConfig(_messages.Message):
   r"""Define how to redact sensitive values. Default behaviour is erase. For
-  example, "My name is Jake." becomes "My name is ."
+  example, "My name is Jane." becomes "My name is ."
   """
 
 
 
 class ReplaceWithInfoTypeConfig(_messages.Message):
   r"""When using the INSPECT_AND_TRANSFORM action, each match is replaced with
-  the name of the info_type. For example, "My name is Jake" becomes "My name
+  the name of the info_type. For example, "My name is Jane" becomes "My name
   is [PERSON_NAME]." The TRANSFORM action is equivalent to redacting.
   """
 

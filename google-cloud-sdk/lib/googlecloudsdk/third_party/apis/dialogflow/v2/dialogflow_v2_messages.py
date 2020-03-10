@@ -185,6 +185,248 @@ class DialogflowProjectsAgentEntityTypesPatchRequest(_messages.Message):
   updateMask = _messages.StringField(4)
 
 
+class DialogflowProjectsAgentEnvironmentsUsersSessionsContextsCreateRequest(_messages.Message):
+  r"""A DialogflowProjectsAgentEnvironmentsUsersSessionsContextsCreateRequest
+  object.
+
+  Fields:
+    googleCloudDialogflowV2Context: A GoogleCloudDialogflowV2Context resource
+      to be passed as the request body.
+    parent: Required. The session to create a context for. Format:
+      `projects/<Project ID>/agent/sessions/<Session ID>` or
+      `projects/<Project ID>/agent/environments/<Environment ID>/users/<User
+      ID>/sessions/<Session ID>`. If `Environment ID` is not specified, we
+      assume default 'draft' environment. If `User ID` is not specified, we
+      assume default '-' user.
+  """
+
+  googleCloudDialogflowV2Context = _messages.MessageField('GoogleCloudDialogflowV2Context', 1)
+  parent = _messages.StringField(2, required=True)
+
+
+class DialogflowProjectsAgentEnvironmentsUsersSessionsContextsDeleteRequest(_messages.Message):
+  r"""A DialogflowProjectsAgentEnvironmentsUsersSessionsContextsDeleteRequest
+  object.
+
+  Fields:
+    name: Required. The name of the context to delete. Format:
+      `projects/<Project ID>/agent/sessions/<Session ID>/contexts/<Context
+      ID>` or `projects/<Project ID>/agent/environments/<Environment
+      ID>/users/<User ID>/sessions/<Session ID>/contexts/<Context ID>`. If
+      `Environment ID` is not specified, we assume default 'draft'
+      environment. If `User ID` is not specified, we assume default '-' user.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class DialogflowProjectsAgentEnvironmentsUsersSessionsContextsGetRequest(_messages.Message):
+  r"""A DialogflowProjectsAgentEnvironmentsUsersSessionsContextsGetRequest
+  object.
+
+  Fields:
+    name: Required. The name of the context. Format: `projects/<Project
+      ID>/agent/sessions/<Session ID>/contexts/<Context ID>` or
+      `projects/<Project ID>/agent/environments/<Environment ID>/users/<User
+      ID>/sessions/<Session ID>/contexts/<Context ID>`. If `Environment ID` is
+      not specified, we assume default 'draft' environment. If `User ID` is
+      not specified, we assume default '-' user.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class DialogflowProjectsAgentEnvironmentsUsersSessionsContextsListRequest(_messages.Message):
+  r"""A DialogflowProjectsAgentEnvironmentsUsersSessionsContextsListRequest
+  object.
+
+  Fields:
+    pageSize: Optional. The maximum number of items to return in a single
+      page. By default 100 and at most 1000.
+    pageToken: Optional. The next_page_token value returned from a previous
+      list request.
+    parent: Required. The session to list all contexts from. Format:
+      `projects/<Project ID>/agent/sessions/<Session ID>` or
+      `projects/<Project ID>/agent/environments/<Environment ID>/users/<User
+      ID>/sessions/<Session ID>`. If `Environment ID` is not specified, we
+      assume default 'draft' environment. If `User ID` is not specified, we
+      assume default '-' user.
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class DialogflowProjectsAgentEnvironmentsUsersSessionsContextsPatchRequest(_messages.Message):
+  r"""A DialogflowProjectsAgentEnvironmentsUsersSessionsContextsPatchRequest
+  object.
+
+  Fields:
+    googleCloudDialogflowV2Context: A GoogleCloudDialogflowV2Context resource
+      to be passed as the request body.
+    name: Required. The unique identifier of the context. Format:
+      `projects/<Project ID>/agent/sessions/<Session ID>/contexts/<Context
+      ID>`, or `projects/<Project ID>/agent/environments/<Environment
+      ID>/users/<User ID>/sessions/<Session ID>/contexts/<Context ID>`.  The
+      `Context ID` is always converted to lowercase, may only contain
+      characters in a-zA-Z0-9_-% and may be at most 250 bytes long.  If
+      `Environment ID` is not specified, we assume default 'draft'
+      environment. If `User ID` is not specified, we assume default '-' user.
+      The following context names are reserved for internal use by Dialogflow.
+      You should not use these contexts or create contexts with these names:
+      * `__system_counters__` * `*_id_dialog_context` * `*_dialog_params_size`
+    updateMask: Optional. The mask to control which fields get updated.
+  """
+
+  googleCloudDialogflowV2Context = _messages.MessageField('GoogleCloudDialogflowV2Context', 1)
+  name = _messages.StringField(2, required=True)
+  updateMask = _messages.StringField(3)
+
+
+class DialogflowProjectsAgentEnvironmentsUsersSessionsDeleteContextsRequest(_messages.Message):
+  r"""A DialogflowProjectsAgentEnvironmentsUsersSessionsDeleteContextsRequest
+  object.
+
+  Fields:
+    parent: Required. The name of the session to delete all contexts from.
+      Format: `projects/<Project ID>/agent/sessions/<Session ID>` or
+      `projects/<Project ID>/agent/environments/<Environment ID>/users/<User
+      ID>/sessions/<Session ID>`. If `Environment ID` is not specified we
+      assume default 'draft' environment. If `User ID` is not specified, we
+      assume default '-' user.
+  """
+
+  parent = _messages.StringField(1, required=True)
+
+
+class DialogflowProjectsAgentEnvironmentsUsersSessionsDetectIntentRequest(_messages.Message):
+  r"""A DialogflowProjectsAgentEnvironmentsUsersSessionsDetectIntentRequest
+  object.
+
+  Fields:
+    googleCloudDialogflowV2DetectIntentRequest: A
+      GoogleCloudDialogflowV2DetectIntentRequest resource to be passed as the
+      request body.
+    session: Required. The name of the session this query is sent to. Format:
+      `projects/<Project ID>/agent/sessions/<Session ID>`, or
+      `projects/<Project ID>/agent/environments/<Environment ID>/users/<User
+      ID>/sessions/<Session ID>`. If `Environment ID` is not specified, we
+      assume default 'draft' environment. If `User ID` is not specified, we
+      are using "-". It's up to the API caller to choose an appropriate
+      `Session ID` and `User Id`. They can be a random number or some type of
+      user and session identifiers (preferably hashed). The length of the
+      `Session ID` and `User ID` must not exceed 36 characters.
+  """
+
+  googleCloudDialogflowV2DetectIntentRequest = _messages.MessageField('GoogleCloudDialogflowV2DetectIntentRequest', 1)
+  session = _messages.StringField(2, required=True)
+
+
+class DialogflowProjectsAgentEnvironmentsUsersSessionsEntityTypesCreateRequest(_messages.Message):
+  r"""A
+  DialogflowProjectsAgentEnvironmentsUsersSessionsEntityTypesCreateRequest
+  object.
+
+  Fields:
+    googleCloudDialogflowV2SessionEntityType: A
+      GoogleCloudDialogflowV2SessionEntityType resource to be passed as the
+      request body.
+    parent: Required. The session to create a session entity type for. Format:
+      `projects/<Project ID>/agent/sessions/<Session ID>` or
+      `projects/<Project ID>/agent/environments/<Environment ID>/users/<User
+      ID>/ sessions/<Session ID>`. If `Environment ID` is not specified, we
+      assume default 'draft' environment. If `User ID` is not specified, we
+      assume default '-' user.
+  """
+
+  googleCloudDialogflowV2SessionEntityType = _messages.MessageField('GoogleCloudDialogflowV2SessionEntityType', 1)
+  parent = _messages.StringField(2, required=True)
+
+
+class DialogflowProjectsAgentEnvironmentsUsersSessionsEntityTypesDeleteRequest(_messages.Message):
+  r"""A
+  DialogflowProjectsAgentEnvironmentsUsersSessionsEntityTypesDeleteRequest
+  object.
+
+  Fields:
+    name: Required. The name of the entity type to delete. Format:
+      `projects/<Project ID>/agent/sessions/<Session ID>/entityTypes/<Entity
+      Type Display Name>` or `projects/<Project
+      ID>/agent/environments/<Environment ID>/users/<User
+      ID>/sessions/<Session ID>/entityTypes/<Entity Type Display Name>`. If
+      `Environment ID` is not specified, we assume default 'draft'
+      environment. If `User ID` is not specified, we assume default '-' user.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class DialogflowProjectsAgentEnvironmentsUsersSessionsEntityTypesGetRequest(_messages.Message):
+  r"""A DialogflowProjectsAgentEnvironmentsUsersSessionsEntityTypesGetRequest
+  object.
+
+  Fields:
+    name: Required. The name of the session entity type. Format:
+      `projects/<Project ID>/agent/sessions/<Session ID>/entityTypes/<Entity
+      Type Display Name>` or `projects/<Project
+      ID>/agent/environments/<Environment ID>/users/<User
+      ID>/sessions/<Session ID>/entityTypes/<Entity Type Display Name>`. If
+      `Environment ID` is not specified, we assume default 'draft'
+      environment. If `User ID` is not specified, we assume default '-' user.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class DialogflowProjectsAgentEnvironmentsUsersSessionsEntityTypesListRequest(_messages.Message):
+  r"""A DialogflowProjectsAgentEnvironmentsUsersSessionsEntityTypesListRequest
+  object.
+
+  Fields:
+    pageSize: Optional. The maximum number of items to return in a single
+      page. By default 100 and at most 1000.
+    pageToken: Optional. The next_page_token value returned from a previous
+      list request.
+    parent: Required. The session to list all session entity types from.
+      Format: `projects/<Project ID>/agent/sessions/<Session ID>` or
+      `projects/<Project ID>/agent/environments/<Environment ID>/users/<User
+      ID>/ sessions/<Session ID>`. If `Environment ID` is not specified, we
+      assume default 'draft' environment. If `User ID` is not specified, we
+      assume default '-' user.
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class DialogflowProjectsAgentEnvironmentsUsersSessionsEntityTypesPatchRequest(_messages.Message):
+  r"""A
+  DialogflowProjectsAgentEnvironmentsUsersSessionsEntityTypesPatchRequest
+  object.
+
+  Fields:
+    googleCloudDialogflowV2SessionEntityType: A
+      GoogleCloudDialogflowV2SessionEntityType resource to be passed as the
+      request body.
+    name: Required. The unique identifier of this session entity type. Format:
+      `projects/<Project ID>/agent/sessions/<Session ID>/entityTypes/<Entity
+      Type Display Name>`, or `projects/<Project
+      ID>/agent/environments/<Environment ID>/users/<User
+      ID>/sessions/<Session ID>/entityTypes/<Entity Type Display Name>`. If
+      `Environment ID` is not specified, we assume default 'draft'
+      environment. If `User ID` is not specified, we assume default '-' user.
+      `<Entity Type Display Name>` must be the display name of an existing
+      entity type in the same agent that will be overridden or supplemented.
+    updateMask: Optional. The mask to control which fields get updated.
+  """
+
+  googleCloudDialogflowV2SessionEntityType = _messages.MessageField('GoogleCloudDialogflowV2SessionEntityType', 1)
+  name = _messages.StringField(2, required=True)
+  updateMask = _messages.StringField(3)
+
+
 class DialogflowProjectsAgentExportRequest(_messages.Message):
   r"""A DialogflowProjectsAgentExportRequest object.
 
@@ -475,7 +717,11 @@ class DialogflowProjectsAgentSessionsContextsCreateRequest(_messages.Message):
     googleCloudDialogflowV2Context: A GoogleCloudDialogflowV2Context resource
       to be passed as the request body.
     parent: Required. The session to create a context for. Format:
-      `projects/<Project ID>/agent/sessions/<Session ID>`.
+      `projects/<Project ID>/agent/sessions/<Session ID>` or
+      `projects/<Project ID>/agent/environments/<Environment ID>/users/<User
+      ID>/sessions/<Session ID>`. If `Environment ID` is not specified, we
+      assume default 'draft' environment. If `User ID` is not specified, we
+      assume default '-' user.
   """
 
   googleCloudDialogflowV2Context = _messages.MessageField('GoogleCloudDialogflowV2Context', 1)
@@ -488,7 +734,10 @@ class DialogflowProjectsAgentSessionsContextsDeleteRequest(_messages.Message):
   Fields:
     name: Required. The name of the context to delete. Format:
       `projects/<Project ID>/agent/sessions/<Session ID>/contexts/<Context
-      ID>`.
+      ID>` or `projects/<Project ID>/agent/environments/<Environment
+      ID>/users/<User ID>/sessions/<Session ID>/contexts/<Context ID>`. If
+      `Environment ID` is not specified, we assume default 'draft'
+      environment. If `User ID` is not specified, we assume default '-' user.
   """
 
   name = _messages.StringField(1, required=True)
@@ -499,7 +748,11 @@ class DialogflowProjectsAgentSessionsContextsGetRequest(_messages.Message):
 
   Fields:
     name: Required. The name of the context. Format: `projects/<Project
-      ID>/agent/sessions/<Session ID>/contexts/<Context ID>`.
+      ID>/agent/sessions/<Session ID>/contexts/<Context ID>` or
+      `projects/<Project ID>/agent/environments/<Environment ID>/users/<User
+      ID>/sessions/<Session ID>/contexts/<Context ID>`. If `Environment ID` is
+      not specified, we assume default 'draft' environment. If `User ID` is
+      not specified, we assume default '-' user.
   """
 
   name = _messages.StringField(1, required=True)
@@ -514,7 +767,11 @@ class DialogflowProjectsAgentSessionsContextsListRequest(_messages.Message):
     pageToken: Optional. The next_page_token value returned from a previous
       list request.
     parent: Required. The session to list all contexts from. Format:
-      `projects/<Project ID>/agent/sessions/<Session ID>`.
+      `projects/<Project ID>/agent/sessions/<Session ID>` or
+      `projects/<Project ID>/agent/environments/<Environment ID>/users/<User
+      ID>/sessions/<Session ID>`. If `Environment ID` is not specified, we
+      assume default 'draft' environment. If `User ID` is not specified, we
+      assume default '-' user.
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -530,8 +787,12 @@ class DialogflowProjectsAgentSessionsContextsPatchRequest(_messages.Message):
       to be passed as the request body.
     name: Required. The unique identifier of the context. Format:
       `projects/<Project ID>/agent/sessions/<Session ID>/contexts/<Context
-      ID>`.  The `Context ID` is always converted to lowercase, may only
-      contain characters in [a-zA-Z0-9_-%] and may be at most 250 bytes long.
+      ID>`, or `projects/<Project ID>/agent/environments/<Environment
+      ID>/users/<User ID>/sessions/<Session ID>/contexts/<Context ID>`.  The
+      `Context ID` is always converted to lowercase, may only contain
+      characters in a-zA-Z0-9_-% and may be at most 250 bytes long.  If
+      `Environment ID` is not specified, we assume default 'draft'
+      environment. If `User ID` is not specified, we assume default '-' user.
       The following context names are reserved for internal use by Dialogflow.
       You should not use these contexts or create contexts with these names:
       * `__system_counters__` * `*_id_dialog_context` * `*_dialog_params_size`
@@ -548,7 +809,11 @@ class DialogflowProjectsAgentSessionsDeleteContextsRequest(_messages.Message):
 
   Fields:
     parent: Required. The name of the session to delete all contexts from.
-      Format: `projects/<Project ID>/agent/sessions/<Session ID>`.
+      Format: `projects/<Project ID>/agent/sessions/<Session ID>` or
+      `projects/<Project ID>/agent/environments/<Environment ID>/users/<User
+      ID>/sessions/<Session ID>`. If `Environment ID` is not specified we
+      assume default 'draft' environment. If `User ID` is not specified, we
+      assume default '-' user.
   """
 
   parent = _messages.StringField(1, required=True)
@@ -562,10 +827,14 @@ class DialogflowProjectsAgentSessionsDetectIntentRequest(_messages.Message):
       GoogleCloudDialogflowV2DetectIntentRequest resource to be passed as the
       request body.
     session: Required. The name of the session this query is sent to. Format:
-      `projects/<Project ID>/agent/sessions/<Session ID>`. It's up to the API
-      caller to choose an appropriate session ID. It can be a random number or
-      some type of user identifier (preferably hashed). The length of the
-      session ID must not exceed 36 bytes.
+      `projects/<Project ID>/agent/sessions/<Session ID>`, or
+      `projects/<Project ID>/agent/environments/<Environment ID>/users/<User
+      ID>/sessions/<Session ID>`. If `Environment ID` is not specified, we
+      assume default 'draft' environment. If `User ID` is not specified, we
+      are using "-". It's up to the API caller to choose an appropriate
+      `Session ID` and `User Id`. They can be a random number or some type of
+      user and session identifiers (preferably hashed). The length of the
+      `Session ID` and `User ID` must not exceed 36 characters.
   """
 
   googleCloudDialogflowV2DetectIntentRequest = _messages.MessageField('GoogleCloudDialogflowV2DetectIntentRequest', 1)
@@ -580,7 +849,11 @@ class DialogflowProjectsAgentSessionsEntityTypesCreateRequest(_messages.Message)
       GoogleCloudDialogflowV2SessionEntityType resource to be passed as the
       request body.
     parent: Required. The session to create a session entity type for. Format:
-      `projects/<Project ID>/agent/sessions/<Session ID>`.
+      `projects/<Project ID>/agent/sessions/<Session ID>` or
+      `projects/<Project ID>/agent/environments/<Environment ID>/users/<User
+      ID>/ sessions/<Session ID>`. If `Environment ID` is not specified, we
+      assume default 'draft' environment. If `User ID` is not specified, we
+      assume default '-' user.
   """
 
   googleCloudDialogflowV2SessionEntityType = _messages.MessageField('GoogleCloudDialogflowV2SessionEntityType', 1)
@@ -593,7 +866,11 @@ class DialogflowProjectsAgentSessionsEntityTypesDeleteRequest(_messages.Message)
   Fields:
     name: Required. The name of the entity type to delete. Format:
       `projects/<Project ID>/agent/sessions/<Session ID>/entityTypes/<Entity
-      Type Display Name>`.
+      Type Display Name>` or `projects/<Project
+      ID>/agent/environments/<Environment ID>/users/<User
+      ID>/sessions/<Session ID>/entityTypes/<Entity Type Display Name>`. If
+      `Environment ID` is not specified, we assume default 'draft'
+      environment. If `User ID` is not specified, we assume default '-' user.
   """
 
   name = _messages.StringField(1, required=True)
@@ -605,7 +882,11 @@ class DialogflowProjectsAgentSessionsEntityTypesGetRequest(_messages.Message):
   Fields:
     name: Required. The name of the session entity type. Format:
       `projects/<Project ID>/agent/sessions/<Session ID>/entityTypes/<Entity
-      Type Display Name>`.
+      Type Display Name>` or `projects/<Project
+      ID>/agent/environments/<Environment ID>/users/<User
+      ID>/sessions/<Session ID>/entityTypes/<Entity Type Display Name>`. If
+      `Environment ID` is not specified, we assume default 'draft'
+      environment. If `User ID` is not specified, we assume default '-' user.
   """
 
   name = _messages.StringField(1, required=True)
@@ -620,7 +901,11 @@ class DialogflowProjectsAgentSessionsEntityTypesListRequest(_messages.Message):
     pageToken: Optional. The next_page_token value returned from a previous
       list request.
     parent: Required. The session to list all session entity types from.
-      Format: `projects/<Project ID>/agent/sessions/<Session ID>`.
+      Format: `projects/<Project ID>/agent/sessions/<Session ID>` or
+      `projects/<Project ID>/agent/environments/<Environment ID>/users/<User
+      ID>/ sessions/<Session ID>`. If `Environment ID` is not specified, we
+      assume default 'draft' environment. If `User ID` is not specified, we
+      assume default '-' user.
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -637,9 +922,13 @@ class DialogflowProjectsAgentSessionsEntityTypesPatchRequest(_messages.Message):
       request body.
     name: Required. The unique identifier of this session entity type. Format:
       `projects/<Project ID>/agent/sessions/<Session ID>/entityTypes/<Entity
-      Type Display Name>`.  `<Entity Type Display Name>` must be the display
-      name of an existing entity type in the same agent that will be
-      overridden or supplemented.
+      Type Display Name>`, or `projects/<Project
+      ID>/agent/environments/<Environment ID>/users/<User
+      ID>/sessions/<Session ID>/entityTypes/<Entity Type Display Name>`. If
+      `Environment ID` is not specified, we assume default 'draft'
+      environment. If `User ID` is not specified, we assume default '-' user.
+      `<Entity Type Display Name>` must be the display name of an existing
+      entity type in the same agent that will be overridden or supplemented.
     updateMask: Optional. The mask to control which fields get updated.
   """
 
@@ -1104,8 +1393,12 @@ class GoogleCloudDialogflowV2Context(_messages.Message):
       there are no matching queries.
     name: Required. The unique identifier of the context. Format:
       `projects/<Project ID>/agent/sessions/<Session ID>/contexts/<Context
-      ID>`.  The `Context ID` is always converted to lowercase, may only
-      contain characters in [a-zA-Z0-9_-%] and may be at most 250 bytes long.
+      ID>`, or `projects/<Project ID>/agent/environments/<Environment
+      ID>/users/<User ID>/sessions/<Session ID>/contexts/<Context ID>`.  The
+      `Context ID` is always converted to lowercase, may only contain
+      characters in a-zA-Z0-9_-% and may be at most 250 bytes long.  If
+      `Environment ID` is not specified, we assume default 'draft'
+      environment. If `User ID` is not specified, we assume default '-' user.
       The following context names are reserved for internal use by Dialogflow.
       You should not use these contexts or create contexts with these names:
       * `__system_counters__` * `*_id_dialog_context` * `*_dialog_params_size`
@@ -3076,9 +3369,13 @@ class GoogleCloudDialogflowV2SessionEntityType(_messages.Message):
       override or supplement the custom entity type definition.
     name: Required. The unique identifier of this session entity type. Format:
       `projects/<Project ID>/agent/sessions/<Session ID>/entityTypes/<Entity
-      Type Display Name>`.  `<Entity Type Display Name>` must be the display
-      name of an existing entity type in the same agent that will be
-      overridden or supplemented.
+      Type Display Name>`, or `projects/<Project
+      ID>/agent/environments/<Environment ID>/users/<User
+      ID>/sessions/<Session ID>/entityTypes/<Entity Type Display Name>`. If
+      `Environment ID` is not specified, we assume default 'draft'
+      environment. If `User ID` is not specified, we assume default '-' user.
+      `<Entity Type Display Name>` must be the display name of an existing
+      entity type in the same agent that will be overridden or supplemented.
   """
 
   class EntityOverrideModeValueValuesEnum(_messages.Enum):

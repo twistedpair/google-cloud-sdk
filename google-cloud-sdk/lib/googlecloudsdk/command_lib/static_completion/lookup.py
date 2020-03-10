@@ -22,7 +22,7 @@ from __future__ import unicode_literals
 import os
 import shlex
 import sys
-
+from googlecloudsdk.core.util import encoding
 import six
 
 
@@ -57,8 +57,8 @@ def _GetCmdLineFromEnv():
   Returns:
     str, Command line.
   """
-  cmd_line = os.environ.get(LINE_ENV_VAR)
-  completion_point = int(os.environ.get(POINT_ENV_VAR))
+  cmd_line = encoding.GetEncodedValue(os.environ, LINE_ENV_VAR)
+  completion_point = int(encoding.GetEncodedValue(os.environ, POINT_ENV_VAR))
   cmd_line = cmd_line[:completion_point]
   return cmd_line
 
@@ -208,7 +208,7 @@ def Complete():
   completions = _GetCompletions()
   if completions:
     # The bash/zsh completion scripts set IFS_ENV_VAR to one character.
-    ifs = os.environ.get(IFS_ENV_VAR, IFS_ENV_DEFAULT)
+    ifs = encoding.GetEncodedValue(os.environ, IFS_ENV_VAR, IFS_ENV_DEFAULT)
     # Write completions to stream
     f = None
     try:

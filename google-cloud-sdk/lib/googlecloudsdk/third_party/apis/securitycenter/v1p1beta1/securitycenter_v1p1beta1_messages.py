@@ -782,16 +782,20 @@ class GroupFindingsRequest(_messages.Message):
       result. For example, the results aren't affected if the finding is made
       inactive and then active again.  Possible "state_change" values when
       compare_duration is specified:  * "CHANGED":   indicates that the
-      finding was present at the start of                  compare_duration,
-      but changed its state at read_time. * "UNCHANGED": indicates that the
-      finding was present at the start of                  compare_duration
-      and did not change state at read_time. * "ADDED":     indicates that the
-      finding was not present at the start                  of
-      compare_duration, but was present at read_time.  If compare_duration is
-      not specified, then the only possible state_change is "UNUSED",  which
-      will be the state_change set for all findings present at read_time.  If
-      this field is set then `state_change` must be a specified field in
-      `group_by`.
+      finding was present and matched the given                  filter at the
+      start of compare_duration, but changed its                  state at
+      read_time. * "UNCHANGED": indicates that the finding was present and
+      matched the given                  filter at the start of
+      compare_duration and did not change                  state at read_time.
+      * "ADDED":     indicates that the finding did not match the given filter
+      or                  was not present at the start of compare_duration,
+      but was                  present at read_time. * "REMOVED":   indicates
+      that the finding was present and matched the                  filter at
+      the start of compare_duration, but did not match                  the
+      filter at read_time.  If compare_duration is not specified, then the
+      only possible state_change is "UNUSED",  which will be the state_change
+      set for all findings present at read_time.  If this field is set then
+      `state_change` must be a specified field in `group_by`.
     filter: Expression that defines the filter to apply across findings. The
       expression is a list of one or more restrictions combined via logical
       operators `AND` and `OR`. Parentheses are supported, and `OR` has higher
@@ -1651,14 +1655,19 @@ class SecuritycenterOrganizationsSourcesFindingsListRequest(_messages.Message):
       result. For example, the results aren't affected if the finding is made
       inactive and then active again.  Possible "state_change" values when
       compare_duration is specified:  * "CHANGED":   indicates that the
-      finding was present at the start of                  compare_duration,
-      but changed its state at read_time. * "UNCHANGED": indicates that the
-      finding was present at the start of                  compare_duration
-      and did not change state at read_time. * "ADDED":     indicates that the
-      finding was not present at the start                  of
-      compare_duration, but was present at read_time.  If compare_duration is
-      not specified, then the only possible state_change is "UNUSED", which
-      will be the state_change set for all findings present at read_time.
+      finding was present and matched the given                  filter at the
+      start of compare_duration, but changed its                  state at
+      read_time. * "UNCHANGED": indicates that the finding was present and
+      matched the given                  filter at the start of
+      compare_duration and did not change                  state at read_time.
+      * "ADDED":     indicates that the finding did not match the given filter
+      or                  was not present at the start of compare_duration,
+      but was                  present at read_time. * "REMOVED":   indicates
+      that the finding was present and matched the                  filter at
+      the start of compare_duration, but did not match                  the
+      filter at read_time.  If compare_duration is not specified, then the
+      only possible state_change is "UNUSED", which will be the state_change
+      set for all findings present at read_time.
     fieldMask: Optional. A field mask to specify the Finding fields to be
       listed in the response. An empty field mask will list all fields.
     filter: Expression that defines the filter to apply across findings. The

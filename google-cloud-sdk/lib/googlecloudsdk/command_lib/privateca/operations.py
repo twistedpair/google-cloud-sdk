@@ -24,7 +24,6 @@ from apitools.base.py import encoding
 from googlecloudsdk.api_lib.privateca import base
 from googlecloudsdk.api_lib.util import messages as messages_util
 from googlecloudsdk.api_lib.util import waiter
-from googlecloudsdk.command_lib.privateca import text_utils
 from googlecloudsdk.core import resources
 
 
@@ -68,6 +67,7 @@ def GetMessageFromResponse(response, message_type):
     An instance of message_type with the values from the response filled in.
   """
   message_dict = encoding.MessageToDict(response)
-  snake_cased_dict = text_utils.ToSnakeCaseDict(message_dict)
-  return messages_util.DictToMessageWithErrorCheck(snake_cased_dict,
-                                                   message_type)
+  # '@type' is not needed and not present in messages.
+  if '@type' in message_dict:
+    del message_dict['@type']
+  return messages_util.DictToMessageWithErrorCheck(message_dict, message_type)

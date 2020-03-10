@@ -74,7 +74,7 @@ def ArgsForClusterRef(parser,
 
   # Either allow creating a single node cluster (--single-node), or specifying
   # the number of workers in the multi-node cluster (--num-workers and
-  # --num-preemptible-workers)
+  # --num-secondary-workers)
   node_group = parser.add_argument_group(mutex=True)  # Mutually exclusive
   node_group.add_argument(
       '--single-node',
@@ -94,9 +94,26 @@ def ArgsForClusterRef(parser,
       help='The number of worker nodes in the cluster. Defaults to '
       'server-specified.')
   worker_group.add_argument(
+      '--secondary-worker-preemptibility',
+      hidden=True,
+      metavar='PREEMPTIBILITY',
+      choices=['preemptible', 'non-preemptible', 'unspecified'],
+      default='unspecified',
+      help='The preemptibility of the secondary worker group.')
+  num_secondary_workers = worker_group.add_argument_group(mutex=True)
+  num_secondary_workers.add_argument(
       '--num-preemptible-workers',
+      action=actions.DeprecationAction(
+          '--num-preemptible-workers',
+          warn=('The `--num-preemptible-workers` flag is deprecated. '
+                'Use the `--num-secondary-workers` flag instead.')),
       type=int,
+      hidden=True,
       help='The number of preemptible worker nodes in the cluster.')
+  num_secondary_workers.add_argument(
+      '--num-secondary-workers',
+      type=int,
+      help='The number of secondary worker nodes in the cluster.')
 
   parser.add_argument(
       '--master-machine-type',
@@ -148,8 +165,21 @@ def ArgsForClusterRef(parser,
       '--num-master-local-ssds',
       type=int,
       help='The number of local SSDs to attach to the master in a cluster.')
-  parser.add_argument(
+  secondary_worker_local_ssds = parser.add_argument_group(mutex=True)
+  secondary_worker_local_ssds.add_argument(
       '--num-preemptible-worker-local-ssds',
+      type=int,
+      hidden=True,
+      action=actions.DeprecationAction(
+          '--num-preemptible-worker-local-ssds',
+          warn=('The `--num-preemptible-worker-local-ssds` flag is deprecated. '
+                'Use the `--num-secondary-worker-local-ssds` flag instead.')),
+      help="""\
+      The number of local SSDs to attach to each secondary worker in
+      a cluster.
+      """)
+  secondary_worker_local_ssds.add_argument(
+      '--num-secondary-worker-local-ssds',
       type=int,
       help="""\
       The number of local SSDs to attach to each preemptible worker in
@@ -280,8 +310,17 @@ If you want to enable all scopes use the 'cloud-platform' scope.
       '--master-boot-disk-type', help=boot_disk_type_detailed_help)
   parser.add_argument(
       '--worker-boot-disk-type', help=boot_disk_type_detailed_help)
-  parser.add_argument(
-      '--preemptible-worker-boot-disk-type', help=boot_disk_type_detailed_help)
+  secondary_worker_boot_disk_type = parser.add_argument_group(mutex=True)
+  secondary_worker_boot_disk_type.add_argument(
+      '--preemptible-worker-boot-disk-type',
+      help=boot_disk_type_detailed_help,
+      hidden=True,
+      action=actions.DeprecationAction(
+          '--preemptible-worker-boot-disk-type',
+          warn=('The `--preemptible-worker-boot-disk-type` flag is deprecated. '
+                'Use the `--secondary-worker-boot-disk-type` flag instead.')))
+  secondary_worker_boot_disk_type.add_argument(
+      '--secondary-worker-boot-disk-type', help=boot_disk_type_detailed_help)
 
   autoscaling_group = parser.add_argument_group()
   flags.AddAutoscalingPolicyResourceArgForCluster(
@@ -320,13 +359,21 @@ If you want to enable all scopes use the 'cloud-platform' scope.
 
   flags.AddMinCpuPlatformArgs(parser)
 
-  for instance_type in ('master', 'worker', 'preemptible-worker'):
-    help_msg = """\
+  _AddAcceleratorArgs(parser)
+
+  AddReservationAffinityGroup(
+      parser,
+      group_text='Specifies the reservation for the instance.',
+      affinity_text='The type of reservation for the instance.')
+
+
+def _AddAcceleratorArgs(parser):
+  """Adds accelerator related args to the parser."""
+  accelerator_help_fmt = """\
       Attaches accelerators (e.g. GPUs) to the {instance_type}
       instance(s).
-      """.format(instance_type=instance_type)
-
-    help_msg += """
+      """
+  accelerator_help_fmt += """
       *type*::: The specific type (e.g. nvidia-tesla-k80 for nVidia Tesla
       K80) of accelerator to attach to the instances. Use 'gcloud compute
       accelerator-types list' to learn about all available accelerator
@@ -335,19 +382,49 @@ If you want to enable all scopes use the 'cloud-platform' scope.
       *count*::: The number of pieces of the accelerator to attach to each
       of the instances. The default value is 1.
       """
-    parser.add_argument(
-        '--{0}-accelerator'.format(instance_type),
-        type=arg_parsers.ArgDict(spec={
-            'type': str,
-            'count': int,
-        }),
-        metavar='type=TYPE,[count=COUNT]',
-        help=help_msg)
 
-  AddReservationAffinityGroup(
-      parser,
-      group_text='Specifies the reservation for the instance.',
-      affinity_text='The type of reservation for the instance.')
+  parser.add_argument(
+      '--master-accelerator',
+      type=arg_parsers.ArgDict(spec={
+          'type': str,
+          'count': int,
+      }),
+      metavar='type=TYPE,[count=COUNT]',
+      help=accelerator_help_fmt.format(instance_type='master'))
+
+  parser.add_argument(
+      '--worker-accelerator',
+      type=arg_parsers.ArgDict(spec={
+          'type': str,
+          'count': int,
+      }),
+      metavar='type=TYPE,[count=COUNT]',
+      help=accelerator_help_fmt.format(instance_type='worker'))
+
+  secondary_worker_accelerator = parser.add_argument_group(mutex=True)
+
+  secondary_worker_accelerator.add_argument(
+      '--secondary-worker-accelerator',
+      type=arg_parsers.ArgDict(spec={
+          'type': str,
+          'count': int,
+      }),
+      metavar='type=TYPE,[count=COUNT]',
+      help=accelerator_help_fmt.format(instance_type='secondary-worker'))
+
+  secondary_worker_accelerator.add_argument(
+      '--preemptible-worker-accelerator',
+      type=arg_parsers.ArgDict(spec={
+          'type': str,
+          'count': int,
+      }),
+      metavar='type=TYPE,[count=COUNT]',
+      help=accelerator_help_fmt.format(instance_type='preemptible-worker'),
+      hidden=True,
+      action=actions.DeprecationAction(
+          '--preemptible-worker-accelerator',
+          warn=('The `--preemptible-worker-accelerator` flag is deprecated. '
+                'Use the `--secondary-worker-accelerator` flag instead.')))
 
 
 def _AddDiskArgs(parser):
@@ -367,8 +444,18 @@ def _AddDiskArgs(parser):
       '--worker-boot-disk-size',
       type=arg_parsers.BinarySize(lower_bound='10GB'),
       help=boot_disk_size_detailed_help)
-  parser.add_argument(
+  secondary_worker_boot_disk_size = parser.add_argument_group(mutex=True)
+  secondary_worker_boot_disk_size.add_argument(
       '--preemptible-worker-boot-disk-size',
+      type=arg_parsers.BinarySize(lower_bound='10GB'),
+      help=boot_disk_size_detailed_help,
+      hidden=True,
+      action=actions.DeprecationAction(
+          '--preemptible-worker-boot-disk-size',
+          warn=('The `--preemptible-worker-boot-disk-size` flag is deprecated. '
+                'Use the `--secondary-worker-boot-disk-size` flag instead.')))
+  secondary_worker_boot_disk_size.add_argument(
+      '--secondary-worker-boot-disk-size',
       type=arg_parsers.BinarySize(lower_bound='10GB'),
       help=boot_disk_size_detailed_help)
 
@@ -413,8 +500,18 @@ def _AddDiskArgsDeprecated(parser):
       '--worker-boot-disk-size',
       type=arg_parsers.BinarySize(lower_bound='10GB'),
       help=boot_disk_size_detailed_help)
-  parser.add_argument(
+  secondary_worker_boot_disk_size = parser.add_argument_group(mutex=True)
+  secondary_worker_boot_disk_size.add_argument(
       '--preemptible-worker-boot-disk-size',
+      type=arg_parsers.BinarySize(lower_bound='10GB'),
+      help=boot_disk_size_detailed_help,
+      hidden=True,
+      action=actions.DeprecationAction(
+          '--preemptible-worker-boot-disk-size',
+          warn=('The `--preemptible-worker-boot-disk-size` flag is deprecated. '
+                'Use the `--secondary-worker-boot-disk-size` flag instead.')))
+  secondary_worker_boot_disk_size.add_argument(
+      '--secondary-worker-boot-disk-size',
       type=arg_parsers.BinarySize(lower_bound='10GB'),
       help=boot_disk_size_detailed_help)
 
@@ -454,7 +551,7 @@ def GetClusterConfig(args,
   """
   master_accelerator_type = None
   worker_accelerator_type = None
-  preemptible_worker_accelerator_type = None
+  secondary_worker_accelerator_type = None
 
   if args.master_accelerator:
     master_accelerator_type = args.master_accelerator['type']
@@ -464,11 +561,12 @@ def GetClusterConfig(args,
     worker_accelerator_type = args.worker_accelerator['type']
     worker_accelerator_count = args.worker_accelerator.get('count', 1)
 
-  if args.preemptible_worker_accelerator:
-    preemptible_worker_accelerator_type = (
-        args.preemptible_worker_accelerator['type'])
-    preemptible_worker_accelerator_count = (
-        args.preemptible_worker_accelerator.get('count', 1))
+  secondary_worker_accelerator = _FirstNonNone(
+      args.secondary_worker_accelerator, args.preemptible_worker_accelerator)
+  if secondary_worker_accelerator:
+    secondary_worker_accelerator_type = secondary_worker_accelerator['type']
+    secondary_worker_accelerator_count = secondary_worker_accelerator.get(
+        'count', 1)
 
   # Resolve non-zonal GCE resources
   # We will let the server resolve short names of zonal resources because
@@ -515,8 +613,10 @@ def GetClusterConfig(args,
   if args.worker_boot_disk_size:
     worker_boot_disk_size_gb = (api_utils.BytesToGb(args.worker_boot_disk_size))
 
-  preemptible_worker_boot_disk_size_gb = (
-      api_utils.BytesToGb(args.preemptible_worker_boot_disk_size))
+  secondary_worker_boot_disk_size_gb = (
+      api_utils.BytesToGb(
+          _FirstNonNone(args.secondary_worker_boot_disk_size,
+                        args.preemptible_worker_boot_disk_size)))
 
   if args.single_node or args.num_workers == 0:
     # Explicitly specifying --num-workers=0 gives you a single node cluster,
@@ -569,12 +669,12 @@ def GetClusterConfig(args,
         dataproc.messages.AcceleratorConfig(
             acceleratorTypeUri=worker_accelerator_type,
             acceleratorCount=worker_accelerator_count))
-  preemptible_worker_accelerators = []
-  if preemptible_worker_accelerator_type:
-    preemptible_worker_accelerators.append(
+  secondary_worker_accelerators = []
+  if secondary_worker_accelerator_type:
+    secondary_worker_accelerators.append(
         dataproc.messages.AcceleratorConfig(
-            acceleratorTypeUri=preemptible_worker_accelerator_type,
-            acceleratorCount=preemptible_worker_accelerator_count))
+            acceleratorTypeUri=secondary_worker_accelerator_type,
+            acceleratorCount=secondary_worker_accelerator_count))
 
   cluster_config = dataproc.messages.ClusterConfig(
       configBucket=args.bucket,
@@ -662,24 +762,50 @@ def GetClusterConfig(args,
 
   # Secondary worker group is optional. However, users may specify
   # future pVMs configuration at creation time.
-  if (args.num_preemptible_workers is not None or
-      preemptible_worker_boot_disk_size_gb is not None or
-      args.preemptible_worker_boot_disk_type is not None or
-      args.num_preemptible_worker_local_ssds is not None or
-      args.worker_min_cpu_platform is not None):
+  num_secondary_workers = _FirstNonNone(args.num_secondary_workers,
+                                        args.num_preemptible_workers)
+  secondary_worker_boot_disk_type = _FirstNonNone(
+      args.secondary_worker_boot_disk_type,
+      args.preemptible_worker_boot_disk_type)
+  num_secondary_worker_local_ssds = _FirstNonNone(
+      args.num_secondary_worker_local_ssds,
+      args.num_preemptible_worker_local_ssds)
+  if (num_secondary_workers is not None or
+      secondary_worker_boot_disk_size_gb is not None or
+      secondary_worker_boot_disk_type is not None or
+      num_secondary_worker_local_ssds is not None or
+      args.worker_min_cpu_platform is not None or
+      args.secondary_worker_preemptibility != 'unspecified'):
     cluster_config.secondaryWorkerConfig = (
         dataproc.messages.InstanceGroupConfig(
-            numInstances=args.num_preemptible_workers,
-            accelerators=preemptible_worker_accelerators,
+            numInstances=num_secondary_workers,
+            accelerators=secondary_worker_accelerators,
             diskConfig=GetDiskConfig(
                 dataproc,
-                args.preemptible_worker_boot_disk_type,
-                preemptible_worker_boot_disk_size_gb,
-                args.num_preemptible_worker_local_ssds,
+                secondary_worker_boot_disk_type,
+                secondary_worker_boot_disk_size_gb,
+                num_secondary_worker_local_ssds,
             ),
-            minCpuPlatform=args.worker_min_cpu_platform))
+            minCpuPlatform=args.worker_min_cpu_platform,
+            preemptibility=_GetPreemptibility(
+                dataproc, args.secondary_worker_preemptibility)))
 
   return cluster_config
+
+
+def _FirstNonNone(first, second):
+  return first if first is not None else second
+
+
+def _GetPreemptibility(dataproc, secondary_worker_preemptibility):
+  if secondary_worker_preemptibility == 'preemptible':
+    return dataproc.messages.InstanceGroupConfig.PreemptibilityValueValuesEnum(
+        'PREEMPTIBLE')
+  elif secondary_worker_preemptibility == 'non-preemptible':
+    return dataproc.messages.InstanceGroupConfig.PreemptibilityValueValuesEnum(
+        'NON_PREEMPTIBLE')
+  else:
+    return None
 
 
 def GetDiskConfig(dataproc, boot_disk_type, boot_disk_size, num_local_ssds):

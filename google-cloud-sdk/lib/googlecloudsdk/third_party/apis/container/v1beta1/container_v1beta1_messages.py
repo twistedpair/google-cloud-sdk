@@ -2521,8 +2521,6 @@ class PrivateClusterConfig(_messages.Message):
   r"""Configuration options for private clusters.
 
   Fields:
-    enablePeeringRouteSharing: Whether to enable route sharing over the
-      network peering.
     enablePrivateEndpoint: Whether the master's internal IP address is used as
       the cluster endpoint.
     enablePrivateNodes: Whether nodes have internal IP addresses only. If
@@ -2541,13 +2539,12 @@ class PrivateClusterConfig(_messages.Message):
       master endpoint.
   """
 
-  enablePeeringRouteSharing = _messages.BooleanField(1)
-  enablePrivateEndpoint = _messages.BooleanField(2)
-  enablePrivateNodes = _messages.BooleanField(3)
-  masterIpv4CidrBlock = _messages.StringField(4)
-  peeringName = _messages.StringField(5)
-  privateEndpoint = _messages.StringField(6)
-  publicEndpoint = _messages.StringField(7)
+  enablePrivateEndpoint = _messages.BooleanField(1)
+  enablePrivateNodes = _messages.BooleanField(2)
+  masterIpv4CidrBlock = _messages.StringField(3)
+  peeringName = _messages.StringField(4)
+  privateEndpoint = _messages.StringField(5)
+  publicEndpoint = _messages.StringField(6)
 
 
 class RecurringTimeWindow(_messages.Message):

@@ -2841,6 +2841,12 @@ class TruncateLogContext(_messages.Message):
 class User(_messages.Message):
   r"""A Cloud SQL user resource.
 
+  Enums:
+    TypeValueValuesEnum: The user type. It determines the method to
+      authenticate the user during login.   <br><code>NATIVE</code>: database
+      native user. (default)   <br><code>CLOUD_IAM_USER</code>: Cloud IAM
+      user.
+
   Fields:
     etag: This field is deprecated and will be removed from a future version
       of the API.
@@ -2859,7 +2865,24 @@ class User(_messages.Message):
       The Google apps domain is prefixed if applicable. Can be omitted for
       <code>update</code> since it is already specified on the URL.
     sqlserverUserDetails: A SqlServerUserDetails attribute.
+    type: The user type. It determines the method to authenticate the user
+      during login.   <br><code>NATIVE</code>: database native user. (default)
+      <br><code>CLOUD_IAM_USER</code>: Cloud IAM user.
   """
+
+  class TypeValueValuesEnum(_messages.Enum):
+    r"""The user type. It determines the method to authenticate the user
+    during login.   <br><code>NATIVE</code>: database native user. (default)
+    <br><code>CLOUD_IAM_USER</code>: Cloud IAM user.
+
+    Values:
+      NATIVE: <no description>
+      CLOUD_IAM_USER: <no description>
+      CLOUD_IAM_SERVICE_ACCOUNT: <no description>
+    """
+    NATIVE = 0
+    CLOUD_IAM_USER = 1
+    CLOUD_IAM_SERVICE_ACCOUNT = 2
 
   etag = _messages.StringField(1)
   host = _messages.StringField(2)
@@ -2869,6 +2892,7 @@ class User(_messages.Message):
   password = _messages.StringField(6)
   project = _messages.StringField(7)
   sqlserverUserDetails = _messages.MessageField('SqlServerUserDetails', 8)
+  type = _messages.EnumField('TypeValueValuesEnum', 9)
 
 
 class UsersListResponse(_messages.Message):

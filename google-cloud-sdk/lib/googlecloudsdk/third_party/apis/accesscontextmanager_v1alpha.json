@@ -1126,7 +1126,7 @@
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform"
               ],
-              "description": "Get an Service Perimeter by resource\nname."
+              "description": "Get a Service Perimeter by resource\nname."
             },
             "create": {
               "id": "accesscontextmanager.accessPolicies.servicePerimeters.create",
@@ -1154,7 +1154,7 @@
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform"
               ],
-              "description": "Create an Service Perimeter. The\nlongrunning operation from this RPC will have a successful status once the\nService Perimeter has\npropagated to long-lasting storage. Service Perimeters containing\nerrors will result in an error response for the first error encountered."
+              "description": "Create a Service Perimeter. The\nlongrunning operation from this RPC will have a successful status once the\nService Perimeter has\npropagated to long-lasting storage. Service Perimeters containing\nerrors will result in an error response for the first error encountered."
             },
             "patch": {
               "id": "accesscontextmanager.accessPolicies.servicePerimeters.patch",
@@ -1188,7 +1188,7 @@
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform"
               ],
-              "description": "Update an Service Perimeter. The\nlongrunning operation from this RPC will have a successful status once the\nchanges to the Service Perimeter have\npropagated to long-lasting storage. Service Perimeter containing\nerrors will result in an error response for the first error encountered."
+              "description": "Update a Service Perimeter. The\nlongrunning operation from this RPC will have a successful status once the\nchanges to the Service Perimeter have\npropagated to long-lasting storage. Service Perimeter containing\nerrors will result in an error response for the first error encountered."
             },
             "delete": {
               "id": "accesscontextmanager.accessPolicies.servicePerimeters.delete",
@@ -1213,7 +1213,7 @@
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform"
               ],
-              "description": "Delete an Service Perimeter by resource\nname. The longrunning operation from this RPC will have a successful status\nonce the Service Perimeter has been\nremoved from long-lasting storage."
+              "description": "Delete a Service Perimeter by resource\nname. The longrunning operation from this RPC will have a successful status\nonce the Service Perimeter has been\nremoved from long-lasting storage."
             },
             "replaceAll": {
               "id": "accesscontextmanager.accessPolicies.servicePerimeters.replaceAll",

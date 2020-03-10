@@ -242,11 +242,18 @@
           "description": "Description of the feature, limited to 63 characters.",
           "type": "string"
         },
+        "servicemeshFeatureSpec": {
+          "$ref": "ServiceMeshFeatureSpec"
+        },
         "authorizerFeatureSpec": {
           "$ref": "AuthorizerFeatureSpec"
         },
         "multiclusteringressFeatureSpec": {
           "$ref": "MultiClusterIngressFeatureSpec"
+        },
+        "helloworldFeatureSpec": {
+          "description": "A hello world feature to act as an example and test our feature\nlifecycle code.",
+          "$ref": "HelloWorldFeatureSpec"
         },
         "meteringFeatureSpec": {
           "description": "The specification for the metering feature.",
@@ -255,6 +262,10 @@
         "multiclusterservicediscoveryFeatureSpec": {
           "description": "An EAP feature for GKE multi-cluster service discovery.",
           "$ref": "MultiClusterServiceDiscoveryFeatureSpec"
+        },
+        "configmanagementFeatureSpec": {
+          "description": "Feature for Anthos Config Management.",
+          "$ref": "ConfigManagementFeatureSpec"
         },
         "featureState": {
           "description": "Output only. State of the resource itself.",
@@ -277,6 +288,17 @@
         }
       }
     },
+    "ServiceMeshFeatureSpec": {
+      "id": "ServiceMeshFeatureSpec",
+      "description": "ServiceMeshFeatureSpec contains the input for the service mesh\nfeature. Only those fields that qualify as user inputs are eligible to be\nin a feature spec. These feature spec messages are per-feature, meaning each\nfeature is expected to have its own set of fields. Auto-filled fields and\nstatues do not belong to a spec and must be included in the details field\nof the feature's status. Spec fields could be of any type: primitive or\nnon-primitive types. These types could be simple or complex types and\ncomplex types could be nested. There is no restriction on nesting depth.",
+      "type": "object",
+      "properties": {
+        "mtls": {
+          "description": "Mesh should have mtls enabled.",
+          "type": "boolean"
+        }
+      }
+    },
     "AuthorizerFeatureSpec": {
       "id": "AuthorizerFeatureSpec",
       "type": "object",
@@ -294,6 +316,13 @@
         }
       }
     },
+    "HelloWorldFeatureSpec": {
+      "id": "HelloWorldFeatureSpec",
+      "description": "An empty spec for hello world feature. This is required since Feature proto\nrequires a spec.",
+      "type": "object",
+      "properties": {
+      }
+    },
     "MeteringFeatureSpec": {
       "id": "MeteringFeatureSpec",
       "description": "An empty spec for metering feature. This is required since Feature proto\nrequires a spec.",
@@ -306,6 +335,63 @@
       "description": "An empty spec for multi-cluster service discovery feature. This is required\nsince Feature proto requires a spec.",
       "type": "object",
       "properties": {
+      }
+    },
+    "ConfigManagementFeatureSpec": {
+      "id": "ConfigManagementFeatureSpec",
+      "description": "Spec for Anthos Config Management (ACM).",
+      "type": "object",
+      "properties": {
+        "membershipConfigs": {
+          "description": "Map of Membership IDs to individual configs.",
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "MembershipConfig"
+          }
+        }
+      }
+    },
+    "MembershipConfig": {
+      "id": "MembershipConfig",
+      "description": "Configuration for a single cluster. Intended to parallel the ConfigManagement\nCR.",
+      "type": "object",
+      "properties": {
+        "configSync": {
+          "description": "Git repo configuration for the cluster.",
+          "$ref": "ConfigSync"
+        }
+      }
+    },
+    "ConfigSync": {
+      "id": "ConfigSync",
+      "description": "Git repo configuration for a single cluster.",
+      "type": "object",
+      "properties": {
+        "syncRepo": {
+          "description": "The URL of the Git repository to use as the source of truth.",
+          "type": "string"
+        },
+        "syncBranch": {
+          "description": "The branch of the repository to sync from. Default: master.",
+          "type": "string"
+        },
+        "policyDir": {
+          "description": "The path within the Git repository that represents the top level of the\nrepo to sync. Default: the root directory of the repository.",
+          "type": "string"
+        },
+        "syncWaitSecs": {
+          "description": "Period in seconds between consecutive syncs. Default: 15.",
+          "type": "string",
+          "format": "int64"
+        },
+        "syncRev": {
+          "description": "Git revision (tag or hash) to check out. Default HEAD.",
+          "type": "string"
+        },
+        "secretType": {
+          "description": "Git revision (tag or hash) to check out. Default HEAD.",
+          "type": "string"
+        }
       }
     },
     "FeatureState": {
@@ -368,11 +454,17 @@
           "description": "Human readable description of the issue.",
           "type": "string"
         },
+        "servicemeshFeatureState": {
+          "$ref": "ServiceMeshFeatureState"
+        },
         "authorizerFeatureState": {
           "$ref": "AuthorizerFeatureState"
         },
         "multiclusteringressFeatureState": {
           "$ref": "MultiClusterIngressFeatureState"
+        },
+        "helloworldFeatureState": {
+          "$ref": "HelloWorldFeatureState"
         },
         "meteringFeatureState": {
           "$ref": "MeteringFeatureState"
@@ -380,11 +472,21 @@
         "multiclusterservicediscoveryFeatureState": {
           "$ref": "MultiClusterServiceDiscoveryFeatureState"
         },
+        "configmanagementFeatureState": {
+          "$ref": "ConfigManagementFeatureState"
+        },
         "updateTime": {
           "description": "The last update time of this status by the controllers",
           "type": "string",
           "format": "google-datetime"
         }
+      }
+    },
+    "ServiceMeshFeatureState": {
+      "id": "ServiceMeshFeatureState",
+      "description": "ServiceMeshFeatureState contains the status fields specific to the\nservice mesh feature. Only those fields that reflect the state of the\nfeature are eligible to be in a feature's state message. These fields are\nexpected to be updated only by the automation and that's usually the\ncontrollers operating on this feature.\n\nThis is currently just a placeholder and more fields will be added when we\nhave more state information to report for this feature.",
+      "type": "object",
+      "properties": {
       }
     },
     "AuthorizerFeatureState": {
@@ -396,6 +498,13 @@
     "MultiClusterIngressFeatureState": {
       "id": "MultiClusterIngressFeatureState",
       "description": "MultiClusterIngressFeatureState contains the status fields specific to the\nMultiClusterIngress feature. This is just a placeholder and more fields will\nbe added when we have more state information to report for this feature.",
+      "type": "object",
+      "properties": {
+      }
+    },
+    "HelloWorldFeatureState": {
+      "id": "HelloWorldFeatureState",
+      "description": "An empty state for hello world feature. This is required since\nFeatureStateDetails requires a state.",
       "type": "object",
       "properties": {
       }
@@ -412,6 +521,305 @@
       "description": "An empty state for multi-cluster service discovery feature. This is required\nsince FeatureStateDetails requires a state.",
       "type": "object",
       "properties": {
+      }
+    },
+    "ConfigManagementFeatureState": {
+      "id": "ConfigManagementFeatureState",
+      "description": "State for Anthos Config Management",
+      "type": "object",
+      "properties": {
+        "clusterName": {
+          "description": "The user-defined name for the cluster used by ClusterSelectors to group\nclusters together. This should match Membership's membership_name,\nunless the user installed ACM on the cluster manually prior to enabling\nthe ACM hub feature.\nUnique within a Anthos Config Management installation.",
+          "type": "string"
+        },
+        "membershipConfig": {
+          "description": "Membership configuration in the cluster. This represents the actual state\nin the cluster, while the MembershipConfig in the FeatureSpec represents\nthe intended state",
+          "$ref": "MembershipConfig"
+        },
+        "operatorState": {
+          "description": "Current install status of ACM's Operator",
+          "$ref": "OperatorState"
+        },
+        "configSyncState": {
+          "description": "Current sync status",
+          "$ref": "ConfigSyncState"
+        }
+      }
+    },
+    "OperatorState": {
+      "id": "OperatorState",
+      "description": "State information for an ACM's Operator",
+      "type": "object",
+      "properties": {
+        "version": {
+          "description": "The semenatic version number of the operator",
+          "type": "string"
+        },
+        "deploymentState": {
+          "description": "The state of the Operator's deployment",
+          "enumDescriptions": [
+            "Deployment's state cannot be determined",
+            "Deployment is not installed",
+            "Deployment is installed",
+            "Deployment was attempted to be installed, but has errors"
+          ],
+          "type": "string",
+          "enum": [
+            "DEPLOYMENT_STATE_UNSPECIFIED",
+            "NOT_INSTALLED",
+            "INSTALLED",
+            "ERROR"
+          ]
+        },
+        "errors": {
+          "description": "Install errors.",
+          "type": "array",
+          "items": {
+            "$ref": "InstallError"
+          }
+        }
+      }
+    },
+    "InstallError": {
+      "id": "InstallError",
+      "description": "Errors pertaining to the installation of ACM",
+      "type": "object",
+      "properties": {
+        "errorMessage": {
+          "description": "A string representing the user facing error message",
+          "type": "string"
+        }
+      }
+    },
+    "ConfigSyncState": {
+      "id": "ConfigSyncState",
+      "description": "State information for ConfigSync",
+      "type": "object",
+      "properties": {
+        "version": {
+          "description": "The version of ConfigSync deployed",
+          "$ref": "ConfigSyncVersion"
+        },
+        "deploymentState": {
+          "description": "Information about the deployment of ConfigSync, including the version\nof the various Pods deployed",
+          "$ref": "ConfigSyncDeploymentState"
+        },
+        "syncState": {
+          "description": "The state of ConfigSync's process to sync configs to a cluster",
+          "$ref": "SyncState"
+        }
+      }
+    },
+    "ConfigSyncVersion": {
+      "id": "ConfigSyncVersion",
+      "description": "Specific versioning information pertaining to ConfigSync's Pods",
+      "type": "object",
+      "properties": {
+        "importer": {
+          "description": "Version of the deployed importer pod",
+          "type": "string"
+        },
+        "syncer": {
+          "description": "Version of the deployed syncer pod",
+          "type": "string"
+        },
+        "gitSync": {
+          "description": "Version of the deployed git-sync pod",
+          "type": "string"
+        },
+        "monitor": {
+          "description": "Version of the deployed monitor pod",
+          "type": "string"
+        }
+      }
+    },
+    "ConfigSyncDeploymentState": {
+      "id": "ConfigSyncDeploymentState",
+      "description": "The state of ConfigSync's deployment on a cluster",
+      "type": "object",
+      "properties": {
+        "importer": {
+          "description": "Deployment state of the importer pod",
+          "enumDescriptions": [
+            "Deployment's state cannot be determined",
+            "Deployment is not installed",
+            "Deployment is installed",
+            "Deployment was attempted to be installed, but has errors"
+          ],
+          "type": "string",
+          "enum": [
+            "DEPLOYMENT_STATE_UNSPECIFIED",
+            "NOT_INSTALLED",
+            "INSTALLED",
+            "ERROR"
+          ]
+        },
+        "syncer": {
+          "description": "Deployment state of the syncer pod",
+          "enumDescriptions": [
+            "Deployment's state cannot be determined",
+            "Deployment is not installed",
+            "Deployment is installed",
+            "Deployment was attempted to be installed, but has errors"
+          ],
+          "type": "string",
+          "enum": [
+            "DEPLOYMENT_STATE_UNSPECIFIED",
+            "NOT_INSTALLED",
+            "INSTALLED",
+            "ERROR"
+          ]
+        },
+        "gitSync": {
+          "description": "Deployment state of the git-sync pod",
+          "enumDescriptions": [
+            "Deployment's state cannot be determined",
+            "Deployment is not installed",
+            "Deployment is installed",
+            "Deployment was attempted to be installed, but has errors"
+          ],
+          "type": "string",
+          "enum": [
+            "DEPLOYMENT_STATE_UNSPECIFIED",
+            "NOT_INSTALLED",
+            "INSTALLED",
+            "ERROR"
+          ]
+        },
+        "monitor": {
+          "description": "Deployment state of the monitor pod",
+          "enumDescriptions": [
+            "Deployment's state cannot be determined",
+            "Deployment is not installed",
+            "Deployment is installed",
+            "Deployment was attempted to be installed, but has errors"
+          ],
+          "type": "string",
+          "enum": [
+            "DEPLOYMENT_STATE_UNSPECIFIED",
+            "NOT_INSTALLED",
+            "INSTALLED",
+            "ERROR"
+          ]
+        }
+      }
+    },
+    "SyncState": {
+      "id": "SyncState",
+      "description": "State indicating an ACM's progress syncing configurations to a cluster",
+      "type": "object",
+      "properties": {
+        "sourceToken": {
+          "description": "Token indicating the state of the repo.",
+          "type": "string"
+        },
+        "importToken": {
+          "description": "Token indicating the state of the importer.",
+          "type": "string"
+        },
+        "syncToken": {
+          "description": "Token indicating the state of the syncer.",
+          "type": "string"
+        },
+        "lastSync": {
+          "description": "Timestamp of when ACM last successfully synced the repo",
+          "type": "string"
+        },
+        "code": {
+          "description": "Sync status code",
+          "enumDescriptions": [
+            "ACM cannot determine a sync code",
+            "ACM successfully synced the git Repo with the cluster",
+            "ACM is in the progress of syncing a new change",
+            "Indicates an error configuring ACM, and user action is required",
+            "ACM has been installed (operator manifest deployed),\nbut not configured.",
+            "ACM has not been installed (no operator pod found)",
+            "Error authorizing with the cluster",
+            "Cluster could not be reached"
+          ],
+          "type": "string",
+          "enum": [
+            "SYNC_CODE_UNSPECIFIED",
+            "SYNCED",
+            "PENDING",
+            "ERROR",
+            "NOT_CONFIGURED",
+            "NOT_INSTALLED",
+            "UNAUTHORIZED",
+            "UNREACHABLE"
+          ]
+        },
+        "errors": {
+          "description": "A list of errors resulting from problematic configs.\nThis list will be truncated after 100 errors, although it is\nunlikely for that many errors to simultaneously exist.",
+          "type": "array",
+          "items": {
+            "$ref": "SyncError"
+          }
+        }
+      }
+    },
+    "SyncError": {
+      "id": "SyncError",
+      "description": "An ACM created error representing a problem syncing configurations",
+      "type": "object",
+      "properties": {
+        "code": {
+          "description": "An ACM defined error code",
+          "type": "string"
+        },
+        "errorMessage": {
+          "description": "A description of the error",
+          "type": "string"
+        },
+        "errorResources": {
+          "description": "A list of config(s) associated with the error, if any",
+          "type": "array",
+          "items": {
+            "$ref": "ErrorResource"
+          }
+        }
+      }
+    },
+    "ErrorResource": {
+      "id": "ErrorResource",
+      "description": "Model for a config file in the git repo with an associated Sync error",
+      "type": "object",
+      "properties": {
+        "sourcePath": {
+          "description": "Path in the git repo of the erroneous config",
+          "type": "string"
+        },
+        "resourceName": {
+          "description": "Metadata name of the resource that is causing an error",
+          "type": "string"
+        },
+        "resourceNamespace": {
+          "description": "Namespace of the resource that is causing an error",
+          "type": "string"
+        },
+        "resourceGvk": {
+          "description": "Group\/version\/kind of the resource that is causing an error",
+          "$ref": "GroupVersionKind"
+        }
+      }
+    },
+    "GroupVersionKind": {
+      "id": "GroupVersionKind",
+      "description": "A Kubernetes object's GVK",
+      "type": "object",
+      "properties": {
+        "group": {
+          "description": "Kubernetes Group",
+          "type": "string"
+        },
+        "version": {
+          "description": "Kubernetes Version",
+          "type": "string"
+        },
+        "kind": {
+          "description": "Kubernetes Kind",
+          "type": "string"
+        }
       }
     },
     "GenerateConnectAgentManifestResponse": {
@@ -517,10 +925,20 @@
             "$ref": "AuditConfig"
           }
         },
+        "rules": {
+          "description": "If more than one rule is specified, the rules are applied in the following\nmanner:\n- All matching LOG rules are always applied.\n- If any DENY\/DENY_WITH_LOG rule matches, permission is denied.\n  Logging will be applied if one or more matching rule requires logging.\n- Otherwise, if any ALLOW\/ALLOW_WITH_LOG rule matches, permission is\n  granted.\n  Logging will be applied if one or more matching rule requires logging.\n- Otherwise, if no rule applies, permission is denied.",
+          "type": "array",
+          "items": {
+            "$ref": "Rule"
+          }
+        },
         "etag": {
           "description": "`etag` is used for optimistic concurrency control as a way to help\nprevent simultaneous updates of a policy from overwriting each other.\nIt is strongly suggested that systems make use of the `etag` in the\nread-modify-write cycle to perform policy updates in order to avoid race\nconditions: An `etag` is returned in the response to `getIamPolicy`, and\nsystems are expected to put that etag in the request to `setIamPolicy` to\nensure that their change will be applied to the same version of the policy.\n\n**Important:** If you use IAM Conditions, you must include the `etag` field\nwhenever you call `setIamPolicy`. If you omit this field, then IAM allows\nyou to overwrite a version `3` policy with a version `1` policy, and all of\nthe conditions in the version `3` policy are lost.",
           "type": "string",
           "format": "byte"
+        },
+        "iamOwned": {
+          "type": "boolean"
         }
       }
     },
@@ -578,6 +996,12 @@
           "description": "Specifies a service that will be enabled for audit logging.\nFor example, `storage.googleapis.com`, `cloudsql.googleapis.com`.\n`allServices` is a special value that covers all services.",
           "type": "string"
         },
+        "exemptedMembers": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
         "auditLogConfigs": {
           "description": "The configuration for logging of each type of permission.",
           "type": "array",
@@ -614,6 +1038,278 @@
           "items": {
             "type": "string"
           }
+        },
+        "ignoreChildExemptions": {
+          "type": "boolean"
+        }
+      }
+    },
+    "Rule": {
+      "id": "Rule",
+      "description": "A rule to be applied in a Policy.",
+      "type": "object",
+      "properties": {
+        "description": {
+          "description": "Human-readable description of the rule.",
+          "type": "string"
+        },
+        "permissions": {
+          "description": "A permission is a string of form '<service>.<resource type>.<verb>'\n(e.g., 'storage.buckets.list'). A value of '*' matches all permissions,\nand a verb part of '*' (e.g., 'storage.buckets.*') matches all verbs.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "action": {
+          "description": "Required",
+          "enumDescriptions": [
+            "Default no action.",
+            "Matching 'Entries' grant access.",
+            "Matching 'Entries' grant access and the caller promises to log\nthe request per the returned log_configs.",
+            "Matching 'Entries' deny access.",
+            "Matching 'Entries' deny access and the caller promises to log\nthe request per the returned log_configs.",
+            "Matching 'Entries' tell IAM.Check callers to generate logs."
+          ],
+          "type": "string",
+          "enum": [
+            "NO_ACTION",
+            "ALLOW",
+            "ALLOW_WITH_LOG",
+            "DENY",
+            "DENY_WITH_LOG",
+            "LOG"
+          ]
+        },
+        "in": {
+          "description": "If one or more 'in' clauses are specified, the rule matches if\nthe PRINCIPAL\/AUTHORITY_SELECTOR is in at least one of these entries.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "notIn": {
+          "description": "If one or more 'not_in' clauses are specified, the rule matches\nif the PRINCIPAL\/AUTHORITY_SELECTOR is in none of the entries.\nThe format for in and not_in entries can be found at in the Local IAM\ndocumentation (see go\/local-iam#features).",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "conditions": {
+          "description": "Additional restrictions that must be met. All conditions must pass for the\nrule to match.",
+          "type": "array",
+          "items": {
+            "$ref": "Condition"
+          }
+        },
+        "logConfig": {
+          "description": "The config returned to callers of tech.iam.IAM.CheckPolicy for any entries\nthat match the LOG action.",
+          "type": "array",
+          "items": {
+            "$ref": "LogConfig"
+          }
+        }
+      }
+    },
+    "Condition": {
+      "id": "Condition",
+      "description": "A condition to be met.",
+      "type": "object",
+      "properties": {
+        "iam": {
+          "description": "Trusted attributes supplied by the IAM system.",
+          "enumDescriptions": [
+            "Default non-attribute.",
+            "Either principal or (if present) authority selector.",
+            "The principal (even if an authority selector is present), which\nmust only be used for attribution, not authorization.",
+            "Any of the security realms in the IAMContext (go\/security-realms).\nWhen used with IN, the condition indicates \"any of the request's realms\nmatch one of the given values; with NOT_IN, \"none of the realms match\nany of the given values\". Note that a value can be:\n - 'self' (i.e., allow connections from clients that are in the same\n security realm)\n - a realm (e.g., 'campus-abc')\n - a realm group (e.g., 'realms-for-borg-cell-xx', see: go\/realm-groups)\nA match is determined by a realm group\nmembership check performed by a RealmAclRep object (go\/realm-acl-howto).\nIt is not permitted to grant access based on the *absence* of a realm, so\nrealm conditions can only be used in a \"positive\" context (e.g., ALLOW\/IN\nor DENY\/NOT_IN).",
+            "An approver (distinct from the requester) that has authorized this\nrequest.\nWhen used with IN, the condition indicates that one of the approvers\nassociated with the request matches the specified principal, or is a\nmember of the specified group. Approvers can only grant additional\naccess, and are thus only used in a strictly positive context\n(e.g. ALLOW\/IN or DENY\/NOT_IN).",
+            "What types of justifications have been supplied with this request.\nString values should match enum names from\nsecurity.credentials.JustificationType, e.g. \"MANUAL_STRING\". It is not\npermitted to grant access based on the *absence* of a justification, so\njustification conditions can only be used in a \"positive\" context\n(e.g., ALLOW\/IN or DENY\/NOT_IN).\n\nMultiple justifications, e.g., a Buganizer ID and a manually-entered\nreason, are normal and supported.",
+            "What type of credentials have been supplied with this request.\nString values should match enum names from\nsecurity_loas_l2.CredentialsType - currently, only CREDS_TYPE_EMERGENCY\nis supported.\nIt is not permitted to grant access based on the *absence* of a\ncredentials type, so the conditions can only be used in a \"positive\"\ncontext (e.g., ALLOW\/IN or DENY\/NOT_IN)."
+          ],
+          "type": "string",
+          "enum": [
+            "NO_ATTR",
+            "AUTHORITY",
+            "ATTRIBUTION",
+            "SECURITY_REALM",
+            "APPROVER",
+            "JUSTIFICATION_TYPE",
+            "CREDENTIALS_TYPE"
+          ]
+        },
+        "sys": {
+          "description": "Trusted attributes supplied by any service that owns resources and uses\nthe IAM system for access control.",
+          "enumDescriptions": [
+            "Default non-attribute type",
+            "Region of the resource",
+            "Service name",
+            "Resource name",
+            "IP address of the caller"
+          ],
+          "type": "string",
+          "enum": [
+            "NO_ATTR",
+            "REGION",
+            "SERVICE",
+            "NAME",
+            "IP"
+          ]
+        },
+        "svc": {
+          "description": "Trusted attributes discharged by the service.",
+          "type": "string"
+        },
+        "op": {
+          "description": "An operator to apply the subject with.",
+          "enumDescriptions": [
+            "Default no-op.",
+            "DEPRECATED. Use IN instead.",
+            "DEPRECATED. Use NOT_IN instead.",
+            "The condition is true if the subject (or any element of it if it is\na set) matches any of the supplied values.",
+            "The condition is true if the subject (or every element of it if it is\na set) matches none of the supplied values.",
+            "Subject is discharged"
+          ],
+          "type": "string",
+          "enum": [
+            "NO_OP",
+            "EQUALS",
+            "NOT_EQUALS",
+            "IN",
+            "NOT_IN",
+            "DISCHARGED"
+          ]
+        },
+        "values": {
+          "description": "The objects of the condition.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "LogConfig": {
+      "id": "LogConfig",
+      "description": "Specifies what kind of log the caller must write",
+      "type": "object",
+      "properties": {
+        "counter": {
+          "description": "Counter options.",
+          "$ref": "CounterOptions"
+        },
+        "dataAccess": {
+          "description": "Data access options.",
+          "$ref": "DataAccessOptions"
+        },
+        "cloudAudit": {
+          "description": "Cloud audit options.",
+          "$ref": "CloudAuditOptions"
+        }
+      }
+    },
+    "CounterOptions": {
+      "id": "CounterOptions",
+      "description": "Increment a streamz counter with the specified metric and field names.\n\nMetric names should start with a '\/', generally be lowercase-only,\nand end in \"_count\". Field names should not contain an initial slash.\nThe actual exported metric names will have \"\/iam\/policy\" prepended.\n\nField names correspond to IAM request parameters and field values are\ntheir respective values.\n\nSupported field names:\n   - \"authority\", which is \"[token]\" if IAMContext.token is present,\n     otherwise the value of IAMContext.authority_selector if present, and\n     otherwise a representation of IAMContext.principal; or\n   - \"iam_principal\", a representation of IAMContext.principal even if a\n     token or authority selector is present; or\n   - \"\" (empty string), resulting in a counter with no fields.\n\nExamples:\n  counter { metric: \"\/debug_access_count\"  field: \"iam_principal\" }\n  ==> increment counter \/iam\/policy\/debug_access_count\n                        {iam_principal=[value of IAMContext.principal]}",
+      "type": "object",
+      "properties": {
+        "metric": {
+          "description": "The metric to update.",
+          "type": "string"
+        },
+        "field": {
+          "description": "The field value to attribute.",
+          "type": "string"
+        },
+        "customFields": {
+          "description": "Custom fields.",
+          "type": "array",
+          "items": {
+            "$ref": "CustomField"
+          }
+        }
+      }
+    },
+    "CustomField": {
+      "id": "CustomField",
+      "description": "Custom fields.\nThese can be used to create a counter with arbitrary field\/value\npairs.\nSee: go\/rpcsp-custom-fields.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Name is the field name.",
+          "type": "string"
+        },
+        "value": {
+          "description": "Value is the field value. It is important that in contrast to the\nCounterOptions.field, the value here is a constant that is not\nderived from the IAMContext.",
+          "type": "string"
+        }
+      }
+    },
+    "DataAccessOptions": {
+      "id": "DataAccessOptions",
+      "description": "Write a Data Access (Gin) log",
+      "type": "object",
+      "properties": {
+        "logMode": {
+          "description": "Whether Gin logging should happen in a fail-closed manner at the caller.\nThis is currently supported in the LocalIAM implementation, Stubby C++,\nand Stubby Java. For Apps Framework, see go\/af-audit-logging#failclosed.",
+          "enumDescriptions": [
+            "Client is not required to write a partial Gin log immediately after\nthe authorization check. If client chooses to write one and it fails,\nclient may either fail open (allow the operation to continue) or\nfail closed (handle as a DENY outcome).",
+            "The application's operation in the context of which this authorization\ncheck is being made may only be performed if it is successfully logged\nto Gin. For instance, the authorization library may satisfy this\nobligation by emitting a partial log entry at authorization check time\nand only returning ALLOW to the application if it succeeds.\n\nIf a matching Rule has this directive, but the client has not indicated\nthat it will honor such requirements, then the IAM check will result in\nauthorization failure by setting CheckPolicyResponse.success=false."
+          ],
+          "type": "string",
+          "enum": [
+            "LOG_MODE_UNSPECIFIED",
+            "LOG_FAIL_CLOSED"
+          ]
+        }
+      }
+    },
+    "CloudAuditOptions": {
+      "id": "CloudAuditOptions",
+      "description": "Write a Cloud Audit log",
+      "type": "object",
+      "properties": {
+        "logName": {
+          "description": "The log_name to populate in the Cloud Audit Record.",
+          "enumDescriptions": [
+            "Default. Should not be used.",
+            "Corresponds to \"cloudaudit.googleapis.com\/activity\"",
+            "Corresponds to \"cloudaudit.googleapis.com\/data_access\""
+          ],
+          "type": "string",
+          "enum": [
+            "UNSPECIFIED_LOG_NAME",
+            "ADMIN_ACTIVITY",
+            "DATA_ACCESS"
+          ]
+        },
+        "authorizationLoggingOptions": {
+          "description": "Information used by the Cloud Audit Logging pipeline.",
+          "$ref": "AuthorizationLoggingOptions"
+        }
+      }
+    },
+    "AuthorizationLoggingOptions": {
+      "id": "AuthorizationLoggingOptions",
+      "description": "Authorization-related information used by Cloud Audit Logging.",
+      "type": "object",
+      "properties": {
+        "permissionType": {
+          "description": "The type of the permission that was checked.",
+          "enumDescriptions": [
+            "Default. Should not be used.",
+            "A read of admin (meta) data.",
+            "A write of admin (meta) data.",
+            "A read of standard data.",
+            "A write of standard data."
+          ],
+          "type": "string",
+          "enum": [
+            "PERMISSION_TYPE_UNSPECIFIED",
+            "ADMIN_READ",
+            "ADMIN_WRITE",
+            "DATA_READ",
+            "DATA_WRITE"
+          ]
         }
       }
     },
@@ -668,6 +1364,11 @@
                   "description": "The standard list filter.",
                   "location": "query",
                   "type": "string"
+                },
+                "includeUnrevealedLocations": {
+                  "description": "If true, the returned list will include locations which are not yet\nrevealed.",
+                  "location": "query",
+                  "type": "boolean"
                 },
                 "pageSize": {
                   "description": "The standard list page size.",
