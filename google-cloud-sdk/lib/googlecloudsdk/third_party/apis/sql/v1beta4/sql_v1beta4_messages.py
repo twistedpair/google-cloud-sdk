@@ -444,6 +444,7 @@ class DatabaseInstance(_messages.Message):
       SQLSERVER_2017_WEB: The database version is SQL Server 2017 Web.
       POSTGRES_10: The database version is PostgreSQL 10.
       POSTGRES_12: The database version is PostgreSQL 12.
+      MYSQL_8_0: The database version is MySQL 8.
     """
     SQL_DATABASE_VERSION_UNSPECIFIED = 0
     MYSQL_5_1 = 1
@@ -458,6 +459,7 @@ class DatabaseInstance(_messages.Message):
     SQLSERVER_2017_WEB = 10
     POSTGRES_10 = 11
     POSTGRES_12 = 12
+    MYSQL_8_0 = 13
 
   class InstanceTypeValueValuesEnum(_messages.Enum):
     r"""The instance type. This can be one of the following.
@@ -837,6 +839,7 @@ class Flag(_messages.Message):
       SQLSERVER_2017_WEB: <no description>
       POSTGRES_10: <no description>
       POSTGRES_12: <no description>
+      MYSQL_8_0: <no description>
     """
     SQL_DATABASE_VERSION_UNSPECIFIED = 0
     MYSQL_5_1 = 1
@@ -851,6 +854,7 @@ class Flag(_messages.Message):
     SQLSERVER_2017_WEB = 10
     POSTGRES_10 = 11
     POSTGRES_12 = 12
+    MYSQL_8_0 = 13
 
   class TypeValueValuesEnum(_messages.Enum):
     r"""The type of the flag. Flags are typed to being <code>BOOLEAN</code>,
@@ -1623,7 +1627,7 @@ class RotateServerCaContext(_messages.Message):
 
 
 class Settings(_messages.Message):
-  r"""Database instance settings.
+  r"""LINT.IfChange(Settings) Database instance settings.
 
   Enums:
     ActivationPolicyValueValuesEnum: The activation policy specifies when the
@@ -1672,6 +1676,8 @@ class Settings(_messages.Message):
       use. Instances with <code>PER_USE</code> pricing turn off after 15
       minutes of inactivity. Instances with <code>PER_PACKAGE</code> pricing
       turn off after 12 hours of inactivity.
+    activeDirectoryConfig: Active Directory configuration, for now relevant
+      only for SQL Server
     authorizedGaeApplications: The App Engine app IDs that can access this
       instance. First Generation instances only.
     availabilityType: Availability type (PostgreSQL and MySQL instances only).
@@ -1847,25 +1853,38 @@ class Settings(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   activationPolicy = _messages.EnumField('ActivationPolicyValueValuesEnum', 1)
-  authorizedGaeApplications = _messages.StringField(2, repeated=True)
-  availabilityType = _messages.EnumField('AvailabilityTypeValueValuesEnum', 3)
-  backupConfiguration = _messages.MessageField('BackupConfiguration', 4)
-  crashSafeReplicationEnabled = _messages.BooleanField(5)
-  dataDiskSizeGb = _messages.IntegerField(6)
-  dataDiskType = _messages.EnumField('DataDiskTypeValueValuesEnum', 7)
-  databaseFlags = _messages.MessageField('DatabaseFlags', 8, repeated=True)
-  databaseReplicationEnabled = _messages.BooleanField(9)
-  ipConfiguration = _messages.MessageField('IpConfiguration', 10)
-  kind = _messages.StringField(11)
-  locationPreference = _messages.MessageField('LocationPreference', 12)
-  maintenanceWindow = _messages.MessageField('MaintenanceWindow', 13)
-  pricingPlan = _messages.EnumField('PricingPlanValueValuesEnum', 14)
-  replicationType = _messages.EnumField('ReplicationTypeValueValuesEnum', 15)
-  settingsVersion = _messages.IntegerField(16)
-  storageAutoResize = _messages.BooleanField(17)
-  storageAutoResizeLimit = _messages.IntegerField(18)
-  tier = _messages.StringField(19)
-  userLabels = _messages.MessageField('UserLabelsValue', 20)
+  activeDirectoryConfig = _messages.MessageField('SqlActiveDirectoryConfig', 2)
+  authorizedGaeApplications = _messages.StringField(3, repeated=True)
+  availabilityType = _messages.EnumField('AvailabilityTypeValueValuesEnum', 4)
+  backupConfiguration = _messages.MessageField('BackupConfiguration', 5)
+  crashSafeReplicationEnabled = _messages.BooleanField(6)
+  dataDiskSizeGb = _messages.IntegerField(7)
+  dataDiskType = _messages.EnumField('DataDiskTypeValueValuesEnum', 8)
+  databaseFlags = _messages.MessageField('DatabaseFlags', 9, repeated=True)
+  databaseReplicationEnabled = _messages.BooleanField(10)
+  ipConfiguration = _messages.MessageField('IpConfiguration', 11)
+  kind = _messages.StringField(12)
+  locationPreference = _messages.MessageField('LocationPreference', 13)
+  maintenanceWindow = _messages.MessageField('MaintenanceWindow', 14)
+  pricingPlan = _messages.EnumField('PricingPlanValueValuesEnum', 15)
+  replicationType = _messages.EnumField('ReplicationTypeValueValuesEnum', 16)
+  settingsVersion = _messages.IntegerField(17)
+  storageAutoResize = _messages.BooleanField(18)
+  storageAutoResizeLimit = _messages.IntegerField(19)
+  tier = _messages.StringField(20)
+  userLabels = _messages.MessageField('UserLabelsValue', 21)
+
+
+class SqlActiveDirectoryConfig(_messages.Message):
+  r"""Active Directory configuration, for now relevant only for SQL Server
+
+  Fields:
+    domain: Domain name
+    kind: This will be always sql#activeDirectoryConfig.
+  """
+
+  domain = _messages.StringField(1)
+  kind = _messages.StringField(2)
 
 
 class SqlBackupRunsDeleteRequest(_messages.Message):

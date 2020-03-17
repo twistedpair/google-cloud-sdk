@@ -55,7 +55,9 @@ class LocalRuntimeFiles(object):
     code_generators = [
         local.AppContainerGenerator(self._settings.service_name,
                                     self._settings.image_name,
-                                    self._settings.env_vars)
+                                    self._settings.env_vars,
+                                    self._settings.memory_limit,
+                                    self._settings.cpu_limit)
     ]
 
     if self._settings.service_account:

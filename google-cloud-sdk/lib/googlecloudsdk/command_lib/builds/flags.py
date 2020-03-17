@@ -28,11 +28,7 @@ from googlecloudsdk.command_lib.util.apis import arg_utils
 from googlecloudsdk.core import properties
 import six
 
-_machine_type_flag_map = arg_utils.ChoiceEnumMapper(
-    '--machine-type', (cloudbuild_util.GetMessagesModule()
-                      ).BuildOptions.MachineTypeValueValuesEnum,
-    include_filter=lambda s: six.text_type(s) != 'UNSPECIFIED',
-    help_str='Machine type used to run the build.')
+_machine_type_flag_map = None
 
 
 class BuildsCompleter(completers.ListCommandCompleter):
@@ -63,10 +59,11 @@ def AddBuildArg(parser, intro=None):
       help=help_text)
 
 
-def AddNoCacheFlag(parser):
+def AddNoCacheFlag(parser, hidden=False):
   """Add a flag to disable layer caching."""
   parser.add_argument(
       '--no-cache',
+      hidden=hidden,
       action='store_true',
       help='If set, disable layer caching when building with Kaniko.\n'
       '\n'
@@ -76,51 +73,63 @@ def AddNoCacheFlag(parser):
       'result should not be cached.')
 
 
-def AddDiskSizeFlag(parser):
+def AddDiskSizeFlag(parser, hidden=False):
   """Add a disk size flag."""
   parser.add_argument(
       '--disk-size',
+      hidden=hidden,
       type=arg_parsers.BinarySize(lower_bound='100GB', upper_bound='1TB'),
       help='Machine disk size (GB) to run the build.')
 
 
-def AddGcsLogDirFlag(parser):
+def AddGcsLogDirFlag(parser, hidden=False):
   """Add a GCS directory flag to hold build logs."""
   parser.add_argument(
       '--gcs-log-dir',
+      hidden=hidden,
       help='A directory in Google Cloud Storage to hold build logs. If this '
       'field is not set, '
       '```gs://[PROJECT_NUMBER].cloudbuild-logs.googleusercontent.com/``` '
       'will be created and used.')
 
 
-def AddGcsSourceStagingDirFlag(parser):
+def AddGcsSourceStagingDirFlag(parser, hidden=False):
   """Add a GCS directory flag for staging the build."""
   parser.add_argument(
       '--gcs-source-staging-dir',
+      hidden=hidden,
       help='A directory in Google Cloud Storage to copy the source used for '
       'staging the build. If the specified bucket does not exist, Cloud '
       'Build will create one. If you don\'t set this field, '
       '```gs://[PROJECT_ID]_cloudbuild/source``` is used.')
 
 
-def AddIgnoreFileFlag(parser):
+def AddIgnoreFileFlag(parser, hidden=False):
   """Add a ignore file flag."""
   parser.add_argument(
       '--ignore-file',
+      hidden=hidden,
       help='Override the `.gcloudignore` file and use the specified file '
       'instead.')
 
 
-def AddMachineTypeFlag(parser):
+def AddMachineTypeFlag(parser, hidden=False):
   """Add a machine type flag."""
+  global _machine_type_flag_map
+  _machine_type_flag_map = arg_utils.ChoiceEnumMapper(
+      '--machine-type', (cloudbuild_util.GetMessagesModule()
+                        ).BuildOptions.MachineTypeValueValuesEnum,
+      include_filter=lambda s: six.text_type(s) != 'UNSPECIFIED',
+      help_str='Machine type used to run the build.',
+      hidden=hidden)
   _machine_type_flag_map.choice_arg.AddToParser(parser)
 
 
-def AddSubstitutionsFlag(parser):
+def AddSubstitutionsFlag(parser, hidden=False):
   """Add a substitutions flag."""
   parser.add_argument(
       '--substitutions',
+      hidden=hidden,
       metavar='KEY=VALUE',
       type=arg_parsers.ArgDict(),
       help="""\

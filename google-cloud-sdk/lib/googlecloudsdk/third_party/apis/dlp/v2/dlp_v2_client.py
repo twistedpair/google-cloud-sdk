@@ -2268,6 +2268,37 @@ https://cloud.google.com/dlp/docs/compute-risk-analysis to learn more.
         supports_download=False,
     )
 
+    def Finish(self, request, global_params=None):
+      r"""Finish a running hybrid DlpJob. Triggers the finalization steps and running.
+of any enabled actions that have not yet run.
+Early access feature is in a pre-release state and might change or have
+limited support. For more information, see
+https://cloud.google.com/products#product-launch-stages.
+
+      Args:
+        request: (DlpProjectsLocationsDlpJobsFinishRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleProtobufEmpty) The response message.
+      """
+      config = self.GetMethodConfig('Finish')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Finish.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v2/projects/{projectsId}/locations/{locationsId}/dlpJobs/{dlpJobsId}:finish',
+        http_method=u'POST',
+        method_id=u'dlp.projects.locations.dlpJobs.finish',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[],
+        relative_path=u'v2/{+name}:finish',
+        request_field=u'googlePrivacyDlpV2FinishDlpJobRequest',
+        request_type_name=u'DlpProjectsLocationsDlpJobsFinishRequest',
+        response_type_name=u'GoogleProtobufEmpty',
+        supports_download=False,
+    )
+
     def Get(self, request, global_params=None):
       r"""Gets the latest state of a long-running DlpJob.
 See https://cloud.google.com/dlp/docs/inspecting-storage and
@@ -2294,6 +2325,38 @@ https://cloud.google.com/dlp/docs/compute-risk-analysis to learn more.
         request_field='',
         request_type_name=u'DlpProjectsLocationsDlpJobsGetRequest',
         response_type_name=u'GooglePrivacyDlpV2DlpJob',
+        supports_download=False,
+    )
+
+    def HybridInspect(self, request, global_params=None):
+      r"""Inspect hybrid content and store findings to a job.
+To review the findings inspect the job. Inspection will occur
+asynchronously.
+Early access feature is in a pre-release state and might change or have
+limited support. For more information, see
+https://cloud.google.com/products#product-launch-stages.
+
+      Args:
+        request: (DlpProjectsLocationsDlpJobsHybridInspectRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GooglePrivacyDlpV2HybridInspectResponse) The response message.
+      """
+      config = self.GetMethodConfig('HybridInspect')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    HybridInspect.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v2/projects/{projectsId}/locations/{locationsId}/dlpJobs/{dlpJobsId}:hybridInspect',
+        http_method=u'POST',
+        method_id=u'dlp.projects.locations.dlpJobs.hybridInspect',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[],
+        relative_path=u'v2/{+name}:hybridInspect',
+        request_field=u'googlePrivacyDlpV2HybridInspectDlpJobRequest',
+        request_type_name=u'DlpProjectsLocationsDlpJobsHybridInspectRequest',
+        response_type_name=u'GooglePrivacyDlpV2HybridInspectResponse',
         supports_download=False,
     )
 
@@ -2641,6 +2704,38 @@ See https://cloud.google.com/dlp/docs/creating-job-triggers to learn more.
         request_field='',
         request_type_name=u'DlpProjectsLocationsJobTriggersGetRequest',
         response_type_name=u'GooglePrivacyDlpV2JobTrigger',
+        supports_download=False,
+    )
+
+    def HybridInspect(self, request, global_params=None):
+      r"""Inspect hybrid content and store findings to a trigger. The inspection.
+will be processed asynchronously. To review the findings monitor the
+jobs within the trigger.
+Early access feature is in a pre-release state and might change or have
+limited support. For more information, see
+https://cloud.google.com/products#product-launch-stages.
+
+      Args:
+        request: (DlpProjectsLocationsJobTriggersHybridInspectRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GooglePrivacyDlpV2HybridInspectResponse) The response message.
+      """
+      config = self.GetMethodConfig('HybridInspect')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    HybridInspect.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v2/projects/{projectsId}/locations/{locationsId}/jobTriggers/{jobTriggersId}:hybridInspect',
+        http_method=u'POST',
+        method_id=u'dlp.projects.locations.jobTriggers.hybridInspect',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[],
+        relative_path=u'v2/{+name}:hybridInspect',
+        request_field=u'googlePrivacyDlpV2HybridInspectJobTriggerRequest',
+        request_type_name=u'DlpProjectsLocationsJobTriggersHybridInspectRequest',
+        response_type_name=u'GooglePrivacyDlpV2HybridInspectResponse',
         supports_download=False,
     )
 

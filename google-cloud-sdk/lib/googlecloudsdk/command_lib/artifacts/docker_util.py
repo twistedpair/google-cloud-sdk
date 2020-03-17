@@ -89,7 +89,6 @@ def _GetDefaultResources():
   """Gets default config values for project, location, and repository."""
   project = properties.VALUES.core.project.Get()
   location = properties.VALUES.artifacts.location.Get()
-  ar_util.ValidateLocation(location, project)
   repo = properties.VALUES.artifacts.repository.Get()
   if not project or not location or not repo:
     raise ar_exceptions.InvalidInputValueError(
@@ -98,6 +97,7 @@ def _GetDefaultResources():
             "location": location,
             "repo": repo,
         }))
+  ar_util.ValidateLocation(location, project)
   return DockerRepo(project, location, repo)
 
 

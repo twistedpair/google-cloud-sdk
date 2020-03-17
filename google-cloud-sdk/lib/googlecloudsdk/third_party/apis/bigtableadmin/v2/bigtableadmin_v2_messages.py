@@ -1480,13 +1480,8 @@ class Instance(_messages.Message):
         when updating an instance, the type will be left unchanged.
       PRODUCTION: An instance meant for production use. `serve_nodes` must be
         set on the cluster.
-      DEVELOPMENT: The instance is meant for development and testing purposes
-        only; it has no performance or uptime guarantees and is not covered by
-        SLA. After a development instance is created, it can be upgraded by
-        updating the instance to type `PRODUCTION`. An instance created as a
-        production instance cannot be changed to a development instance. When
-        creating a development instance, `serve_nodes` on the cluster must not
-        be set.
+      DEVELOPMENT: DEPRECATED: Prefer PRODUCTION for all use cases, as it no
+        longer enforces a higher minimum node count than DEVELOPMENT.
     """
     TYPE_UNSPECIFIED = 0
     PRODUCTION = 1

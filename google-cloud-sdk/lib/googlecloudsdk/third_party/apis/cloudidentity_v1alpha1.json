@@ -533,7 +533,7 @@
     },
     "GetMembershipGraphResponse": {
       "id": "GetMembershipGraphResponse",
-      "description": "Response message for getting the membership graph of a member\nconditionally constrained by a group.",
+      "description": "The response message for MembershipsService.GetMembershipGraph.",
       "type": "object",
       "properties": {
         "adjacencyList": {

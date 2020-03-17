@@ -106,6 +106,11 @@ class Bucket(_messages.Message):
     website: The bucket's website configuration, controlling how the service
       behaves when accessing bucket contents as a web site. See the Static
       Website Examples for more information.
+    zoneAffinity: The zone or zones from which the bucket is intended to use
+      zonal quota. Requests for data from outside the specified affinities are
+      still allowed but won't be able to use zonal quota. The zone or zones
+      need to be within the bucket location otherwise the requests will fail
+      with a 400 Bad Request response.
   """
 
   class BillingValue(_messages.Message):
@@ -419,6 +424,7 @@ class Bucket(_messages.Message):
   updated = _message_types.DateTimeField(24)
   versioning = _messages.MessageField('VersioningValue', 25)
   website = _messages.MessageField('WebsiteValue', 26)
+  zoneAffinity = _messages.StringField(27, repeated=True)
 
 
 class BucketAccessControl(_messages.Message):
@@ -2275,6 +2281,10 @@ class StorageObjectsCopyRequest(_messages.Message):
       Overrides the provided object metadata's bucket value, if any.For
       information about how to URL encode object names to be path safe, see
       Encoding URI Path Parts.
+    destinationKmsKeyName: Resource name of the Cloud KMS key, of the form
+      projects/my-project/locations/global/keyRings/my-kr/cryptoKeys/my-key,
+      that will be used to encrypt the object. Overrides the object metadata's
+      kms_key_name value, if any.
     destinationObject: Name of the new object. Required when the object
       metadata is not otherwise provided. Overrides the object metadata's name
       value, if any.
@@ -2351,23 +2361,24 @@ class StorageObjectsCopyRequest(_messages.Message):
     noAcl = 1
 
   destinationBucket = _messages.StringField(1, required=True)
-  destinationObject = _messages.StringField(2, required=True)
-  destinationPredefinedAcl = _messages.EnumField('DestinationPredefinedAclValueValuesEnum', 3)
-  ifGenerationMatch = _messages.IntegerField(4)
-  ifGenerationNotMatch = _messages.IntegerField(5)
-  ifMetagenerationMatch = _messages.IntegerField(6)
-  ifMetagenerationNotMatch = _messages.IntegerField(7)
-  ifSourceGenerationMatch = _messages.IntegerField(8)
-  ifSourceGenerationNotMatch = _messages.IntegerField(9)
-  ifSourceMetagenerationMatch = _messages.IntegerField(10)
-  ifSourceMetagenerationNotMatch = _messages.IntegerField(11)
-  object = _messages.MessageField('Object', 12)
-  projection = _messages.EnumField('ProjectionValueValuesEnum', 13)
-  provisionalUserProject = _messages.StringField(14)
-  sourceBucket = _messages.StringField(15, required=True)
-  sourceGeneration = _messages.IntegerField(16)
-  sourceObject = _messages.StringField(17, required=True)
-  userProject = _messages.StringField(18)
+  destinationKmsKeyName = _messages.StringField(2)
+  destinationObject = _messages.StringField(3, required=True)
+  destinationPredefinedAcl = _messages.EnumField('DestinationPredefinedAclValueValuesEnum', 4)
+  ifGenerationMatch = _messages.IntegerField(5)
+  ifGenerationNotMatch = _messages.IntegerField(6)
+  ifMetagenerationMatch = _messages.IntegerField(7)
+  ifMetagenerationNotMatch = _messages.IntegerField(8)
+  ifSourceGenerationMatch = _messages.IntegerField(9)
+  ifSourceGenerationNotMatch = _messages.IntegerField(10)
+  ifSourceMetagenerationMatch = _messages.IntegerField(11)
+  ifSourceMetagenerationNotMatch = _messages.IntegerField(12)
+  object = _messages.MessageField('Object', 13)
+  projection = _messages.EnumField('ProjectionValueValuesEnum', 14)
+  provisionalUserProject = _messages.StringField(15)
+  sourceBucket = _messages.StringField(16, required=True)
+  sourceGeneration = _messages.IntegerField(17)
+  sourceObject = _messages.StringField(18, required=True)
+  userProject = _messages.StringField(19)
 
 
 class StorageObjectsDeleteRequest(_messages.Message):

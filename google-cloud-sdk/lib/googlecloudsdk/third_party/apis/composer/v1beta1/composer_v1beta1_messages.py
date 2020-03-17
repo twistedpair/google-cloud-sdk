@@ -725,10 +725,16 @@ class PrivateClusterConfig(_messages.Message):
     masterIpv4CidrBlock: Optional. The CIDR block from which IPv4 range for
       GKE master will be reserved. If left blank, the default value of
       '172.16.0.0/23' is used.
+    masterIpv4ReservedRange: Output only. The IP range in CIDR notation to use
+      for the hosted master network. This range is used for assigning internal
+      IP addresses to the cluster master or set of masters and to the internal
+      load balancer virtual IP. This range must not overlap with any other
+      ranges in use within the cluster's network.
   """
 
   enablePrivateEndpoint = _messages.BooleanField(1)
   masterIpv4CidrBlock = _messages.StringField(2)
+  masterIpv4ReservedRange = _messages.StringField(3)
 
 
 class PrivateEnvironmentConfig(_messages.Message):
@@ -736,18 +742,27 @@ class PrivateEnvironmentConfig(_messages.Message):
   Composer environment.
 
   Fields:
+    cloudSqlIpv4CidrBlock: Optional. The CIDR block from which IP range in
+      tenant project will be reserved for Cloud SQL. Needs to be disjoint from
+      web_server_ipv4_cidr_block
     enablePrivateEnvironment: Optional. If `true`, a Private IP Cloud Composer
       environment is created. If this field is true, `use_ip_aliases` must be
       true.
     privateClusterConfig: Optional. Configuration for the private GKE cluster
       for a Private IP Cloud Composer environment.
+    webServerIpv4CidrBlock: Optional. The CIDR block from which IP range for
+      web server will be reserved. Needs to be disjoint from
+      private_cluster_config.master_ipv4_cidr_block and
+      cloud_sql_ipv4_cidr_block.
     webServerIpv4ReservedRange: Output only. The IP range reserved for the
       tenant project's App Engine VMs.
   """
 
-  enablePrivateEnvironment = _messages.BooleanField(1)
-  privateClusterConfig = _messages.MessageField('PrivateClusterConfig', 2)
-  webServerIpv4ReservedRange = _messages.StringField(3)
+  cloudSqlIpv4CidrBlock = _messages.StringField(1)
+  enablePrivateEnvironment = _messages.BooleanField(2)
+  privateClusterConfig = _messages.MessageField('PrivateClusterConfig', 3)
+  webServerIpv4CidrBlock = _messages.StringField(4)
+  webServerIpv4ReservedRange = _messages.StringField(5)
 
 
 class SoftwareConfig(_messages.Message):

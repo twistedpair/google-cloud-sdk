@@ -199,3 +199,18 @@ new physical server and assigned a new sole tenant physical server ID.""")},
           'determines where the nodes should restart following a maintenance '
           'event.'),
       default='restart-node-on-any-server')
+
+
+def AddCpuOvercommitTypeFlag(parser):
+  parser.add_argument(
+      '--cpu-overcommit-type',
+      choices=['enabled', 'none'],
+      help=('CPU overcommit type for nodes created based on this template. To '
+            'overcommit CPUs on a VM, set --cpu-overcommit-type equal to '
+            'either standard or none, and then when creating a VM, specify a '
+            'value for the --min-node-cpu flag. Lower values for '
+            '--min-node-cpu specify a higher overcommit ratio, that is, '
+            'proportionally more vCPUs in relation to physical CPUs. You can '
+            'only overcommit CPUs on VMs that are scheduled on nodes that '
+            'support it.')
+  )

@@ -2926,9 +2926,25 @@ class ValidationConfig(_messages.Message):
     disableProfileValidation: Whether to disable profile validation for this
       FHIR store. Set this to true to disable checking incoming resources for
       conformance against StructureDefinitions in this FHIR store.
+    enabledImplementationGuides: A list of ImplementationGuide URLs in this
+      FHIR store that are used to configure which profiles are used for
+      validation. For example, if you were using the US Core profiles to your
+      FHIR store you would set `enabled_implementation_guides` to
+      `["http://hl7.org/fhir/us/core/ImplementationGuide/ig"]`. If
+      `enabled_implementation_guides` is empty or omitted, then incoming
+      resources are only required to conform to the base FHIR profiles.
+      Otherwise, a resource must conform to at least one profile listed in the
+      `global` property of one of the enabled ImplementationGuides.  The Cloud
+      Healthcare API does not currently enforce all of the rules in a
+      StructureDefinition. The following rules are supported:     - min/max
+      - minValue/maxValue     - maxLength     - type     - fixed[x]     -
+      pattern[x] on simple types     - slicing, when using "value" as the
+      discriminator type When a URL cannot be resolved (for example, in a type
+      assertion), the server does not return an error.
   """
 
   disableProfileValidation = _messages.BooleanField(1)
+  enabledImplementationGuides = _messages.StringField(2, repeated=True)
 
 
 encoding.AddCustomJsonFieldMapping(

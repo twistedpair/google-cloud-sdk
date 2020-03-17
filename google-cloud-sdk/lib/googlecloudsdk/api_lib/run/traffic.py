@@ -431,17 +431,17 @@ class TrafficTargets(collections.MutableMapping):
 
   def ZeroLatestTraffic(self, latest_ready_revision_name):
     """Reasign traffic from LATEST to the current latest revision."""
-    targets = {GetKey(target): target for target in self._m}
-    if LATEST_REVISION_KEY in targets and targets[LATEST_REVISION_KEY].percent:
-      latest = targets.pop(LATEST_REVISION_KEY)
-      if latest_ready_revision_name in targets:
-        targets[latest_ready_revision_name].percent += latest.percent
+    percent_targets, tag_targets = self._GetNormalizedTraffic()
+    if LATEST_REVISION_KEY in percent_targets:
+      latest = percent_targets.pop(LATEST_REVISION_KEY)
+      if latest_ready_revision_name in percent_targets:
+        percent_targets[latest_ready_revision_name].percent += latest.percent
       else:
-        targets[latest_ready_revision_name] = NewTrafficTarget(
+        percent_targets[latest_ready_revision_name] = NewTrafficTarget(
             self._messages, latest_ready_revision_name, latest.percent)
-      sorted_targets = [targets[k] for k in sorted(targets, key=SortKeyFromKey)]
-      del self._m[:]
-      self._m.extend(sorted_targets)
+      sorted_percent_targets = sorted(
+          percent_targets.values(), key=SortKeyFromTarget)
+      self._m[:] = sorted_percent_targets + tag_targets
 
   def UpdateTags(self, to_update, to_remove, clear_others):
     """Update traffic tags.
@@ -463,7 +463,7 @@ class TrafficTargets(collections.MutableMapping):
         target.tag = None
       if target.percent or target.tag:
         new_targets.append(target)
-    for tag, revision_key in to_update.items():
+    for tag, revision_key in sorted(to_update.items()):
       new_targets.append(
           NewTrafficTarget(self._messages, revision_key, tag=tag))
     self._m[:] = new_targets

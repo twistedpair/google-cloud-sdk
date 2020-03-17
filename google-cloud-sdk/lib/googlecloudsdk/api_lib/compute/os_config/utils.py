@@ -28,6 +28,7 @@ _API_CLIENT_NAME = 'osconfig'
 _API_CLIENT_VERSION_MAP = {
     base.ReleaseTrack.ALPHA: 'v1alpha2',
     base.ReleaseTrack.BETA: 'v1beta',
+    base.ReleaseTrack.GA: 'v1'
 }
 
 

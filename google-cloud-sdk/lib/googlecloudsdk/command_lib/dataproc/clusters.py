@@ -47,7 +47,8 @@ GENERATED_LABEL_PREFIX = 'goog-dataproc-'
 def ArgsForClusterRef(parser,
                       beta=False,
                       include_deprecated=True,
-                      include_ttl_config=False):
+                      include_ttl_config=False,
+                      include_gke_platform_args=False):
   """Register flags for creating a dataproc cluster.
 
   Args:
@@ -55,15 +56,21 @@ def ArgsForClusterRef(parser,
     beta: whether or not this is a beta command (may affect flag visibility)
     include_deprecated: whether deprecated flags should be included
     include_ttl_config: whether to include Scheduled Delete(TTL) args
+    include_gke_platform_args: whether to include GKE-based cluster args
   """
   labels_util.AddCreateLabelsFlags(parser)
-  instances_flags.AddTagsArgs(parser)
   # 30m is backend timeout + 5m for safety buffer.
   flags.AddTimeoutFlag(parser, default='35m')
   flags.AddZoneFlag(parser, short_flags=include_deprecated)
   flags.AddComponentFlag(parser)
 
-  parser.add_argument(
+  platform_group = parser.add_argument_group(mutex=True)
+  gce_platform_group = platform_group.add_argument_group(help="""\
+    Compute Engine options for Dataproc clusters.
+    """)
+
+  instances_flags.AddTagsArgs(gce_platform_group)
+  gce_platform_group.add_argument(
       '--metadata',
       type=arg_parsers.ArgDict(min_length=1),
       action='append',
@@ -143,7 +150,7 @@ def ArgsForClusterRef(parser,
       when using this cluster.
       """)
 
-  netparser = parser.add_mutually_exclusive_group()
+  netparser = gce_platform_group.add_argument_group(mutex=True)
   netparser.add_argument(
       '--network',
       help="""\
@@ -246,10 +253,10 @@ See https://cloud.google.com/dataproc/docs/concepts/configuring-clusters/cluster
 for more information.
 
 """)
-  parser.add_argument(
+  gce_platform_group.add_argument(
       '--service-account',
       help='The Google Cloud IAM service account to be authenticated as.')
-  parser.add_argument(
+  gce_platform_group.add_argument(
       '--scopes',
       type=arg_parsers.ArgList(min_length=1),
       metavar='SCOPE',
@@ -362,9 +369,32 @@ If you want to enable all scopes use the 'cloud-platform' scope.
   _AddAcceleratorArgs(parser)
 
   AddReservationAffinityGroup(
-      parser,
+      gce_platform_group,
       group_text='Specifies the reservation for the instance.',
       affinity_text='The type of reservation for the instance.')
+  if include_gke_platform_args:
+    gke_based_cluster_group = platform_group.add_argument_group(
+        hidden=True,
+        help="""\
+          Options for creating a GKE-based Dataproc cluster. Specifying any of these
+          will indicate that this cluster is intended to be a GKE-based cluster.
+          These options are mutually exclusive with GCE-based options.
+          """)
+    gke_based_cluster_group.add_argument(
+        '--gke-cluster',
+        hidden=True,
+        help="""\
+            Required for GKE-based clusters. Specify the name of the GKE cluster to
+            deploy this GKE-based Dataproc cluster to. This should be the short name
+            and not the full path name.
+            """)
+    gke_based_cluster_group.add_argument(
+        '--gke-cluster-namespace',
+        hidden=True,
+        help="""\
+            Optional. Specify the name of the namespace to deploy Dataproc system
+            components into. This namespace does not need to already exist.
+            """)
 
 
 def _AddAcceleratorArgs(parser):
@@ -534,7 +564,8 @@ def GetClusterConfig(args,
                      compute_resources,
                      beta=False,
                      include_deprecated=True,
-                     include_ttl_config=False):
+                     include_ttl_config=False,
+                     include_gke_platform_args=False):
   """Get dataproc cluster configuration.
 
   Args:
@@ -545,6 +576,7 @@ def GetClusterConfig(args,
     beta: use BETA only features
     include_deprecated: whether to include deprecated args
     include_ttl_config: whether to include Scheduled Delete(TTL) args
+    include_gke_platform_args: whether to include GKE-based cluster args
 
   Returns:
     cluster_config: Dataproc cluster configuration
@@ -723,11 +755,6 @@ def GetClusterConfig(args,
     cluster_config.autoscalingConfig = dataproc.messages.AutoscalingConfig(
         policyUri=args.CONCEPTS.autoscaling_policy.Parse().RelativeName())
 
-  if beta:
-    if args.enable_component_gateway:
-      cluster_config.endpointConfig = dataproc.messages.EndpointConfig(
-          enableHttpPortAccess=args.enable_component_gateway)
-
   if include_ttl_config:
     lifecycle_config = dataproc.messages.LifecycleConfig()
     changed_config = False
@@ -790,6 +817,24 @@ def GetClusterConfig(args,
             preemptibility=_GetPreemptibility(
                 dataproc, args.secondary_worker_preemptibility)))
 
+  if include_gke_platform_args:
+    if args.enable_component_gateway:
+      cluster_config.endpointConfig = dataproc.messages.EndpointConfig(
+          enableHttpPortAccess=args.enable_component_gateway)
+    if args.gke_cluster is not None:
+      location = args.zone or args.region
+      target_gke_cluster = 'projects/{0}/locations/{1}/clusters/{2}'.format(
+          args.project, location, args.gke_cluster)
+      cluster_config.gkeClusterConfig = dataproc.messages.GkeClusterConfig(
+          namespacedGkeDeploymentTarget=dataproc.messages
+          .NamespacedGkeDeploymentTarget(
+              targetGkeCluster=target_gke_cluster,
+              clusterNamespace=args.gke_cluster_namespace))
+      cluster_config.gceClusterConfig = None
+      cluster_config.masterConfig = None
+      cluster_config.workerConfig = None
+      cluster_config.secondaryWorkerConfig = None
+
   return cluster_config
 
 
@@ -827,7 +872,12 @@ def GetDiskConfig(dataproc, boot_disk_type, boot_disk_size, num_local_ssds):
       numLocalSsds=num_local_ssds)
 
 
-def CreateCluster(dataproc, cluster_ref, cluster, is_async, timeout):
+def CreateCluster(dataproc,
+                  cluster_ref,
+                  cluster,
+                  is_async,
+                  timeout,
+                  enable_create_on_gke=False):
   """Create a cluster.
 
   Args:
@@ -836,6 +886,7 @@ def CreateCluster(dataproc, cluster_ref, cluster, is_async, timeout):
     cluster: Cluster to create
     is_async: Whether to wait for the operation to complete
     timeout: Timeout used when waiting for the operation to complete
+    enable_create_on_gke: Whether to enable creation of GKE-based clusters
 
   Returns:
     Created cluster, or None if async
@@ -867,20 +918,27 @@ def CreateCluster(dataproc, cluster_ref, cluster, is_async, timeout):
   cluster = dataproc.client.projects_regions_clusters.Get(get_request)
   if cluster.status.state == (
       dataproc.messages.ClusterStatus.StateValueValuesEnum.RUNNING):
+    if enable_create_on_gke and cluster.config.gkeClusterConfig is not None:
+      log.CreatedResource(
+          cluster_ref,
+          details='Cluster created on GKE cluster {0}'.format(
+              cluster.config.gkeClusterConfig.namespacedGkeDeploymentTarget
+              .targetGkeCluster))
+    else:
+      zone_uri = cluster.config.gceClusterConfig.zoneUri
+      zone_short_name = zone_uri.split('/')[-1]
 
-    zone_uri = cluster.config.gceClusterConfig.zoneUri
-    zone_short_name = zone_uri.split('/')[-1]
-
-    # Log the URL of the cluster
-    log.CreatedResource(
-        cluster_ref,
-        # Also indicate which zone the cluster was placed in. This is helpful
-        # if the server picked a zone (auto zone)
-        details='Cluster placed in zone [{0}]'.format(zone_short_name))
+      # Log the URL of the cluster
+      log.CreatedResource(
+          cluster_ref,
+          # Also indicate which zone the cluster was placed in. This is helpful
+          # if the server picked a zone (auto zone)
+          details='Cluster placed in zone [{0}]'.format(zone_short_name))
   else:
+    # The operation didn't have an error, but the cluster is not RUNNING.
     log.error('Create cluster failed!')
-    if operation.details:
-      log.error('Details:\n' + operation.details)
+    if cluster.status.detail:
+      log.error('Details:\n' + cluster.status.detail)
   return cluster
 
 

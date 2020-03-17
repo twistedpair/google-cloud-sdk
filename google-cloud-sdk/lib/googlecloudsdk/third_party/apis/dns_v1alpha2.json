@@ -138,6 +138,7 @@
           "type": "string"
         },
         "kind": {
+          "description": "Type of resource.",
           "default": "dns#resourceRecordSetsListResponse",
           "type": "string"
         }

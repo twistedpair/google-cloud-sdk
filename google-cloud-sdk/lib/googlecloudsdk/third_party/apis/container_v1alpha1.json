@@ -1615,6 +1615,20 @@
         "enableL4ilbSubsetting": {
           "description": "Whether L4ILB Subsetting is enabled for this cluster.",
           "type": "boolean"
+        },
+        "datapathProvider": {
+          "description": "The desired datapath provider for this cluster. By default, uses the\nIPTables-based kube-proxy implementation.",
+          "enumDescriptions": [
+            "Default value.",
+            "Use the IPTables implementation based on kube-proxy.",
+            "Use the eBPF based data plane with additional visibility features."
+          ],
+          "type": "string",
+          "enum": [
+            "DATAPATH_PROVIDER_UNSPECIFIED",
+            "LEGACY_DATAPATH",
+            "ADVANCED_DATAPATH"
+          ]
         }
       }
     },

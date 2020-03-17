@@ -62,6 +62,28 @@ class Collections(enum.Enum):
       [u'name'],
       True
   )
+  PROJECTS_LOCATIONS_STUDIES = (
+      'projects.locations.studies',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/studies/'
+              '{studiesId}',
+      },
+      [u'name'],
+      True
+  )
+  PROJECTS_LOCATIONS_STUDIES_TRIALS = (
+      'projects.locations.studies.trials',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/studies/'
+              '{studiesId}/trials/{trialsId}',
+      },
+      [u'name'],
+      True
+  )
   PROJECTS_MODELS = (
       'projects.models',
       '{+name}',

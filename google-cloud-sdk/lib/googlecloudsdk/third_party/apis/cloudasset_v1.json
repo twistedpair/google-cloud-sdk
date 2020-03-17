@@ -178,7 +178,7 @@
       "type": "object",
       "properties": {
         "readTime": {
-          "description": "Timestamp to take an asset snapshot. This can only be set to a timestamp\nbetween 2018-10-02 UTC (inclusive) and the current time. If not specified,\nthe current time will be used. Due to delays in resource data collection\nand indexing, there is a volatile window during which running the same\nquery may get different results.",
+          "description": "Timestamp to take an asset snapshot. This can only be set to a timestamp\nbetween the current time and the current time minus 35 days (inclusive).\nIf not specified, the current time will be used. Due to delays in resource\ndata collection and indexing, there is a volatile window during which\nrunning the same query may get different results.",
           "type": "string",
           "format": "google-datetime"
         },

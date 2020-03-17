@@ -41,6 +41,12 @@ more).
 """
 
 
+def _ResetOwnership(tarinfo):
+  tarinfo.uid = tarinfo.gid = 0
+  tarinfo.uname = tarinfo.gname = 'root'
+  return tarinfo
+
+
 class FileMetadata(object):
   """FileMetadata contains information about a file destined for GCP upload.
 
@@ -136,10 +142,10 @@ class Snapshot(object):
       t = tarfile.TarInfo(dpath)
       t.type = tarfile.DIRTYPE
       t.mode = os.stat(dpath).st_mode
-      tf.addfile(t)
+      tf.addfile(_ResetOwnership(t))
       log.debug('Added dir [%s]', dpath)
     for path in self.files:
-      tf.add(path)
+      tf.add(path, filter=_ResetOwnership)
       log.debug('Added [%s]', path)
     return tf
 

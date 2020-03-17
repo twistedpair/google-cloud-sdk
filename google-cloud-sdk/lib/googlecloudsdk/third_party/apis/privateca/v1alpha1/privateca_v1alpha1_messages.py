@@ -423,7 +423,7 @@ class CertificateConfig(_messages.Message):
   Fields:
     publicKey: Optional. The public key that corresponds to this config. This
       is, for example, used when issuing Certificates, but not when creating a
-      self-signed CertificateAuthority.
+      self-signed CertificateAuthority or CertificateAuthority CSR.
     reusableConfig: Required. Describes how some of the technical fields in a
       certificate should be populated.
     subjectConfig: Required. Specifies some of the values in a certificate

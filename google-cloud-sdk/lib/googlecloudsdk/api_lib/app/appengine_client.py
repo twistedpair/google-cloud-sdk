@@ -295,6 +295,7 @@ class AppengineClient(object):
         req = six.moves.urllib.request.Request(
             url, headers={'Metadata-Flavor': 'Google'})
         vm_scopes_string = six.moves.urllib.request.urlopen(req).read()
+        vm_scopes_string = six.ensure_text(vm_scopes_string)
       except six.moves.urllib.error.URLError as e:
         raise Error(
             'Could not obtain scope list from metadata service: %s: %s. This '
@@ -306,7 +307,7 @@ class AppengineClient(object):
         raise Error(
             'You are currently logged into gcloud using a service account '
             'which does not have the appropriate access to [{0}]. The account '
-            'has the following scopes: [{1}].  It needs [{2}] in order to '
+            'has the following scopes: [{1}]. It needs [{2}] in order to '
             'succeed.\nPlease recreate this VM instance with the missing '
             'scopes. You may also log into a standard account that has the '
             'appropriate access by using `gcloud auth login`.'

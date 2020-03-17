@@ -273,6 +273,114 @@ class Expr(_messages.Message):
   title = _messages.StringField(4)
 
 
+class Finding(_messages.Message):
+  r"""Cloud Security Command Center (Cloud SCC) finding.  A finding is a
+  record of assessment data like security, risk, health, or privacy, that is
+  ingested into Cloud SCC for presentation, notification, analysis, policy
+  testing, and enforcement. For example, a cross-site scripting (XSS)
+  vulnerability in an App Engine application is a finding.
+
+  Enums:
+    StateValueValuesEnum: The state of the finding.
+
+  Messages:
+    SourcePropertiesValue: Source specific properties. These properties are
+      managed by the source that writes the finding. The key names in the
+      source_properties map must be between 1 and 255 characters, and must
+      start with a letter and contain alphanumeric characters or underscores
+      only.
+
+  Fields:
+    category: The additional taxonomy group within findings from a given
+      source. This field is immutable after creation time. Example:
+      "XSS_FLASH_INJECTION"
+    createTime: The time at which the finding was created in Cloud SCC.
+    eventTime: The time at which the event took place. For example, if the
+      finding represents an open firewall it would capture the time the
+      detector believes the firewall became open. The accuracy is determined
+      by the detector.
+    externalUri: The URI that, if available, points to a web page outside of
+      Cloud SCC where additional information about the finding can be found.
+      This field is guaranteed to be either empty or a well formed URL.
+    name: The relative resource name of this finding. See:
+      https://cloud.google.com/apis/design/resource_names#relative_resource_na
+      me Example: "organizations/{organization_id}/sources/{source_id}/finding
+      s/{finding_id}"
+    parent: The relative resource name of the source the finding belongs to.
+      See: https://cloud.google.com/apis/design/resource_names#relative_resour
+      ce_name This field is immutable after creation time. For example:
+      "organizations/{organization_id}/sources/{source_id}"
+    resourceName: For findings on Google Cloud Platform (GCP) resources, the
+      full resource name of the GCP resource this finding is for. See:
+      https://cloud.google.com/apis/design/resource_names#full_resource_name
+      When the finding is for a non-GCP resource, the resourceName can be a
+      customer or partner defined string. This field is immutable after
+      creation time.
+    securityMarks: Output only. User specified security marks. These marks are
+      entirely managed by the user and come from the SecurityMarks resource
+      that belongs to the finding.
+    sourceProperties: Source specific properties. These properties are managed
+      by the source that writes the finding. The key names in the
+      source_properties map must be between 1 and 255 characters, and must
+      start with a letter and contain alphanumeric characters or underscores
+      only.
+    state: The state of the finding.
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""The state of the finding.
+
+    Values:
+      STATE_UNSPECIFIED: Unspecified state.
+      ACTIVE: The finding requires attention and has not been addressed yet.
+      INACTIVE: The finding has been fixed, triaged as a non-issue or
+        otherwise addressed and is no longer active.
+    """
+    STATE_UNSPECIFIED = 0
+    ACTIVE = 1
+    INACTIVE = 2
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class SourcePropertiesValue(_messages.Message):
+    r"""Source specific properties. These properties are managed by the source
+    that writes the finding. The key names in the source_properties map must
+    be between 1 and 255 characters, and must start with a letter and contain
+    alphanumeric characters or underscores only.
+
+    Messages:
+      AdditionalProperty: An additional property for a SourcePropertiesValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type
+        SourcePropertiesValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a SourcePropertiesValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A extra_types.JsonValue attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('extra_types.JsonValue', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  category = _messages.StringField(1)
+  createTime = _messages.StringField(2)
+  eventTime = _messages.StringField(3)
+  externalUri = _messages.StringField(4)
+  name = _messages.StringField(5)
+  parent = _messages.StringField(6)
+  resourceName = _messages.StringField(7)
+  securityMarks = _messages.MessageField('SecurityMarks', 8)
+  sourceProperties = _messages.MessageField('SourcePropertiesValue', 9)
+  state = _messages.EnumField('StateValueValuesEnum', 10)
+
+
 class GetIamPolicyRequest(_messages.Message):
   r"""Request message for `GetIamPolicy` method.
 
@@ -296,6 +404,20 @@ class GetPolicyOptions(_messages.Message):
   """
 
   requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+
+
+class GoogleCloudSecuritycenterV1NotificationMessage(_messages.Message):
+  r"""Cloud SCC's Notification
+
+  Fields:
+    finding: If it's a Finding based notification config, this field will be
+      populated.
+    notificationConfigName: Name of the notification config that generated
+      current notification.
+  """
+
+  finding = _messages.MessageField('Finding', 1)
+  notificationConfigName = _messages.StringField(2)
 
 
 class GoogleCloudSecuritycenterV1RunAssetDiscoveryResponse(_messages.Message):
@@ -1395,6 +1517,68 @@ class SecurityCenterProperties(_messages.Message):
   resourceParent = _messages.StringField(3)
   resourceProject = _messages.StringField(4)
   resourceType = _messages.StringField(5)
+
+
+class SecurityMarks(_messages.Message):
+  r"""User specified security marks that are attached to the parent Cloud
+  Security Command Center (Cloud SCC) resource. Security marks are scoped
+  within a Cloud SCC organization -- they can be modified and viewed by all
+  users who have proper permissions on the organization.
+
+  Messages:
+    MarksValue: Mutable user specified security marks belonging to the parent
+      resource. Constraints are as follows:    * Keys and values are treated
+      as case insensitive   * Keys must be between 1 - 256 characters
+      (inclusive)   * Keys must be letters, numbers, underscores, or dashes
+      * Values have leading and trailing whitespace trimmed, remaining
+      characters must be between 1 - 4096 characters (inclusive)
+
+  Fields:
+    marks: Mutable user specified security marks belonging to the parent
+      resource. Constraints are as follows:    * Keys and values are treated
+      as case insensitive   * Keys must be between 1 - 256 characters
+      (inclusive)   * Keys must be letters, numbers, underscores, or dashes
+      * Values have leading and trailing whitespace trimmed, remaining
+      characters must be between 1 - 4096 characters (inclusive)
+    name: The relative resource name of the SecurityMarks. See:
+      https://cloud.google.com/apis/design/resource_names#relative_resource_na
+      me Examples:
+      "organizations/{organization_id}/assets/{asset_id}/securityMarks" "organ
+      izations/{organization_id}/sources/{source_id}/findings/{finding_id}/sec
+      urityMarks".
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class MarksValue(_messages.Message):
+    r"""Mutable user specified security marks belonging to the parent
+    resource. Constraints are as follows:    * Keys and values are treated as
+    case insensitive   * Keys must be between 1 - 256 characters (inclusive)
+    * Keys must be letters, numbers, underscores, or dashes   * Values have
+    leading and trailing whitespace trimmed, remaining     characters must be
+    between 1 - 4096 characters (inclusive)
+
+    Messages:
+      AdditionalProperty: An additional property for a MarksValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type MarksValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a MarksValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  marks = _messages.MessageField('MarksValue', 1)
+  name = _messages.StringField(2)
 
 
 class SecuritycenterOrganizationsAssetsGroupRequest(_messages.Message):

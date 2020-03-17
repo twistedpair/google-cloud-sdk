@@ -70,7 +70,8 @@ def CreateMembership(project,
                      description,
                      gke_cluster_self_link=None,
                      external_id=None,
-                     release_track=None):
+                     release_track=None,
+                     issuer_url=None):
   """Creates a Membership resource in the GKE Hub API.
 
   Args:
@@ -83,6 +84,8 @@ def CreateMembership(project,
       or None if it is not available.
     release_track: the release_track used in the gcloud command,
       or None if it is not available.
+    issuer_url: the discovery URL for the cluster's service account token
+      issuer. Set to None to skip enabling Workload Identity.
 
   Returns:
     the created Membership resource.
@@ -105,6 +108,8 @@ def CreateMembership(project,
     request.membership.endpoint = endpoint
   if external_id:
     request.membership.externalId = external_id
+  if issuer_url:
+    request.membership.authority = messages.Authority(issuer=issuer_url)
   op = client.projects_locations_memberships.Create(request)
   op_resource = resources.REGISTRY.ParseRelativeName(
       op.name, collection='gkehub.projects.locations.operations')

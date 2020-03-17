@@ -37,14 +37,14 @@ class EnableCommand(base.CreateCommand):
   def RunCommand(self, args, **kwargs):
     try:
       project = properties.VALUES.core.project.GetOrFail()
-      return CreateFeature(project, self.FEATURE_NAME, **kwargs)
+      return CreateFeature(project, self.FEATURE_NAME,
+                           self.FEATURE_DISPLAY_NAME, **kwargs)
     except apitools_exceptions.HttpUnauthorizedError as e:
       raise exceptions.Error(
-          'You are not authorized to disable MultiClusterIngress Feature from project [{}]. '
-          'Underlying error: {}'.format(project, e))
+          'You are not authorized to disable {} Feature from project [{}]. '
+          'Underlying error: {}'.format(self.FEATURE_DISPLAY_NAME, project, e))
     except properties.RequiredPropertyError as e:
-      raise exceptions.Error(
-          'Failed to retrieve the project ID.')
+      raise exceptions.Error('Failed to retrieve the project ID.')
 
 
 class DisableCommand(base.DeleteCommand):
@@ -55,14 +55,14 @@ class DisableCommand(base.DeleteCommand):
       project_id = properties.VALUES.core.project.GetOrFail()
       name = 'projects/{0}/locations/global/features/{1}'.format(
           project_id, self.FEATURE_NAME)
-      DeleteFeature(name)
+      DeleteFeature(name, self.FEATURE_DISPLAY_NAME)
     except apitools_exceptions.HttpUnauthorizedError as e:
       raise exceptions.Error(
-          'You are not authorized to disable MultiClusterIngress Feature from project [{}]. '
-          'Underlying error: {}'.format(project_id, e))
+          'You are not authorized to disable {} Feature from project [{}]. '
+          'Underlying error: {}'.format(self.FEATURE_DISPLAY_NAME, project_id,
+                                        e))
     except properties.RequiredPropertyError as e:
-      raise exceptions.Error(
-          'Failed to retrieve the project ID.')
+      raise exceptions.Error('Failed to retrieve the project ID.')
 
 
 class DescribeCommand(base.DescribeCommand):
@@ -76,9 +76,9 @@ class DescribeCommand(base.DescribeCommand):
       return GetFeature(name)
     except apitools_exceptions.HttpUnauthorizedError as e:
       raise exceptions.Error(
-          'You are not authorized to see the status of MultiClusterIngress '
-          'Feature from project [{}]. '
-          'Underlying error: {}'.format(project_id, e))
+          'You are not authorized to see the status of {} '
+          'Feature from project [{}]. Underlying error: {}'.format(
+              self.FEATURE_DISPLAY_NAME, project_id, e))
 
 
 def CreateMultiClusterIngressFeatureSpec(config_membership):
@@ -88,12 +88,19 @@ def CreateMultiClusterIngressFeatureSpec(config_membership):
       configMembership=config_membership)
 
 
-def CreateFeature(project, feature_id, **kwargs):
+def CreateMultiClusterServiceDiscoveryFeatureSpec():
+  client = core_apis.GetClientInstance('gkehub', 'v1alpha1')
+  messages = client.MESSAGES_MODULE
+  return messages.MultiClusterServiceDiscoveryFeatureSpec()
+
+
+def CreateFeature(project, feature_id, feature_display_name, **kwargs):
   """Creates a Feature resource in Hub.
 
   Args:
     project: the project in which to create the Feature
     feature_id: the value to use for the feature_id
+    feature_display_name: the FEATURE_DISPLAY_NAME of this Feature
     **kwargs: arguments for Feature object. For eg, multiclusterFeatureSpec
 
   Returns:
@@ -117,7 +124,8 @@ def CreateFeature(project, feature_id, **kwargs):
   result = waiter.WaitFor(
       waiter.CloudOperationPoller(client.projects_locations_global_features,
                                   client.projects_locations_operations),
-      op_resource, 'Waiting for Feature to be created')
+      op_resource,
+      'Waiting for Feature {} to be created'.format(feature_display_name))
 
   # This allows us pass warning messages returned from OnePlatform backends.
   request_type = client.projects_locations_operations.GetRequestType('Get')
@@ -150,12 +158,13 @@ def GetFeature(name):
           name=name))
 
 
-def DeleteFeature(name):
+def DeleteFeature(name, feature_display_name):
   """Deletes a Feature resource in Hub.
 
   Args:
     name: the full resource name of the Feature to delete, e.g.,
       projects/foo/locations/global/features/name.
+    feature_display_name: the FEATURE_DISPLAY_NAME of this Feature
 
   Raises:
     apitools.base.py.HttpError: if the request returns an HTTP error
@@ -163,14 +172,14 @@ def DeleteFeature(name):
 
   client = core_apis.GetClientInstance('gkehub', 'v1alpha1')
   op = client.projects_locations_global_features.Delete(
-      client.MESSAGES_MODULE
-      .GkehubProjectsLocationsGlobalFeaturesDeleteRequest(name=name))
+      client.MESSAGES_MODULE.GkehubProjectsLocationsGlobalFeaturesDeleteRequest(
+          name=name))
   op_resource = resources.REGISTRY.ParseRelativeName(
       op.name, collection='gkehub.projects.locations.operations')
   waiter.WaitFor(
       waiter.CloudOperationPollerNoResources(
           client.projects_locations_operations), op_resource,
-      'Waiting for feature to be deleted')
+      'Waiting for Feature {} to be deleted'.format(feature_display_name))
 
 
 def ListMemberships(project):
@@ -188,8 +197,9 @@ def ListMemberships(project):
   parent = 'projects/{}/locations/global'.format(project)
   client = core_apis.GetClientInstance('gkehub', 'v1beta1')
   response = client.projects_locations_memberships.List(
-      client.MESSAGES_MODULE
-      .GkehubProjectsLocationsMembershipsListRequest(parent=parent))
+      client.MESSAGES_MODULE.GkehubProjectsLocationsMembershipsListRequest(
+          parent=parent))
 
-  return [os.path.basename(membership.name)
-          for membership in response.resources]
+  return [
+      os.path.basename(membership.name) for membership in response.resources
+  ]

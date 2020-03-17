@@ -1018,13 +1018,16 @@ class EffectiveQuotaLimit2(_messages.Message):
       or if this limit is a project level one and there is an identical
       organizational limit.
     baseLimit: The service's configuration for this quota limit.
+    defaultLimit: The default quota limit based on the consumer's reputation
+      and billing status. Region and zone default limits are kept.
     quotaBuckets: Effective quota limit, maximum override allowed, and usage
       for each quota bucket.
   """
 
   allowAdminOverrides = _messages.BooleanField(1)
   baseLimit = _messages.MessageField('QuotaLimit', 2)
-  quotaBuckets = _messages.MessageField('QuotaBucket', 3, repeated=True)
+  defaultLimit = _messages.MessageField('QuotaLimit', 3)
+  quotaBuckets = _messages.MessageField('QuotaBucket', 4, repeated=True)
 
 
 class EffectiveQuotasForMetric(_messages.Message):
@@ -3372,7 +3375,7 @@ class Service(_messages.Message):
     configVersion: The semantic version of the service configuration. The
       config version affects the interpretation of the service configuration.
       For example, certain features are enabled by default for certain config
-      versions. The latest config version is `3`.
+      versions.  The latest config version is `3`.
     context: Context configuration.
     control: Configuration for the service control plane.
     customError: Custom error configuration.

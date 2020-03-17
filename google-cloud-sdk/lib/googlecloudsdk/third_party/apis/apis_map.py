@@ -253,6 +253,12 @@ MAP = {
                 client_classpath='cloudasset_v1p4alpha1_client.CloudassetV1p4alpha1',
                 messages_modulepath='cloudasset_v1p4alpha1_messages',
                 default_version=False),
+        'v1p4beta1':
+            APIDef(
+                class_path='googlecloudsdk.third_party.apis.cloudasset.v1p4beta1',
+                client_classpath='cloudasset_v1p4beta1_client.CloudassetV1p4beta1',
+                messages_modulepath='cloudasset_v1p4beta1_messages',
+                default_version=False),
         'v1p5alpha1':
             APIDef(
                 class_path='googlecloudsdk.third_party.apis.cloudasset.v1p5alpha1',
@@ -930,13 +936,13 @@ MAP = {
                 class_path='googlecloudsdk.third_party.apis.networkmanagement.v1',
                 client_classpath='networkmanagement_v1_client.NetworkmanagementV1',
                 messages_modulepath='networkmanagement_v1_messages',
-                default_version=False),
+                default_version=True),
         'v1beta1':
             APIDef(
                 class_path='googlecloudsdk.third_party.apis.networkmanagement.v1beta1',
                 client_classpath='networkmanagement_v1beta1_client.NetworkmanagementV1beta1',
                 messages_modulepath='networkmanagement_v1beta1_messages',
-                default_version=True),
+                default_version=False),
     },
     'networkservices': {
         'v1alpha1':
@@ -963,6 +969,12 @@ MAP = {
                 default_version=True),
     },
     'osconfig': {
+        'v1':
+            APIDef(
+                class_path='googlecloudsdk.third_party.apis.osconfig.v1',
+                client_classpath='osconfig_v1_client.OsconfigV1',
+                messages_modulepath='osconfig_v1_messages',
+                default_version=True),
         'v1alpha1':
             APIDef(
                 class_path='googlecloudsdk.third_party.apis.osconfig.v1alpha1',
@@ -980,7 +992,7 @@ MAP = {
                 class_path='googlecloudsdk.third_party.apis.osconfig.v1beta',
                 client_classpath='osconfig_v1beta_client.OsconfigV1beta',
                 messages_modulepath='osconfig_v1beta_messages',
-                default_version=True),
+                default_version=False),
     },
     'oslogin': {
         'v1':

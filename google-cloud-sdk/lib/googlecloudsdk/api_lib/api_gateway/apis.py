@@ -36,6 +36,7 @@ class ApiClient(base.BaseClient):
     self.DefineGet()
     self.DefineList('apis')
     self.DefineUpdate('apigatewayApi')
+    self.DefineDelete()
     self.DefineGetIamPolicy()
 
   def DoesExist(self, api_ref):

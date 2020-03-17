@@ -239,7 +239,7 @@ may "fail open" without warning.
         method_id=u'gkehub.projects.locations.global.features.delete',
         ordered_params=[u'name'],
         path_params=[u'name'],
-        query_params=[],
+        query_params=[u'force'],
         relative_path=u'v1alpha1/{+name}',
         request_field='',
         request_type_name=u'GkehubProjectsLocationsGlobalFeaturesDeleteRequest',

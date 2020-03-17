@@ -117,6 +117,9 @@ class Build(_messages.Message):
       `${logs_bucket}/log-${build_id}.txt`.
     options: Special options for this build.
     projectId: Output only. ID of the project.
+    queueTtl: TTL in queue for this build. If provided and the build is
+      enqueued longer than this value, the build will expire and the build
+      status will be `EXPIRED`.  The TTL starts ticking from create_time.
     results: Output only. Results of the build.
     secrets: Secrets to decrypt using Cloud Key Management Service.
     source: The location of the source files to build.
@@ -225,18 +228,19 @@ class Build(_messages.Message):
   logsBucket = _messages.StringField(8)
   options = _messages.MessageField('BuildOptions', 9)
   projectId = _messages.StringField(10)
-  results = _messages.MessageField('Results', 11)
-  secrets = _messages.MessageField('Secret', 12, repeated=True)
-  source = _messages.MessageField('Source', 13)
-  sourceProvenance = _messages.MessageField('SourceProvenance', 14)
-  startTime = _messages.StringField(15)
-  status = _messages.EnumField('StatusValueValuesEnum', 16)
-  statusDetail = _messages.StringField(17)
-  steps = _messages.MessageField('BuildStep', 18, repeated=True)
-  substitutions = _messages.MessageField('SubstitutionsValue', 19)
-  tags = _messages.StringField(20, repeated=True)
-  timeout = _messages.StringField(21)
-  timing = _messages.MessageField('TimingValue', 22)
+  queueTtl = _messages.StringField(11)
+  results = _messages.MessageField('Results', 12)
+  secrets = _messages.MessageField('Secret', 13, repeated=True)
+  source = _messages.MessageField('Source', 14)
+  sourceProvenance = _messages.MessageField('SourceProvenance', 15)
+  startTime = _messages.StringField(16)
+  status = _messages.EnumField('StatusValueValuesEnum', 17)
+  statusDetail = _messages.StringField(18)
+  steps = _messages.MessageField('BuildStep', 19, repeated=True)
+  substitutions = _messages.MessageField('SubstitutionsValue', 20)
+  tags = _messages.StringField(21, repeated=True)
+  timeout = _messages.StringField(22)
+  timing = _messages.MessageField('TimingValue', 23)
 
 
 class BuildOperationMetadata(_messages.Message):
@@ -1026,6 +1030,8 @@ class PullRequestFilter(_messages.Message):
       https://github.com/google/re2/wiki/Syntax
     commentControl: Whether to block builds on a "/gcbrun" comment from a
       repository admin or collaborator.
+    invertRegex: If true, branches that do NOT match the git_ref will trigger
+      a build.
   """
 
   class CommentControlValueValuesEnum(_messages.Enum):
@@ -1043,6 +1049,7 @@ class PullRequestFilter(_messages.Message):
 
   branch = _messages.StringField(1)
   commentControl = _messages.EnumField('CommentControlValueValuesEnum', 2)
+  invertRegex = _messages.BooleanField(3)
 
 
 class PushFilter(_messages.Message):
@@ -1052,13 +1059,16 @@ class PushFilter(_messages.Message):
     branch: Regexes matching branches to build.  The syntax of the regular
       expressions accepted is the syntax accepted by RE2 and described at
       https://github.com/google/re2/wiki/Syntax
+    invertRegex: When true, only trigger a build if the revision regex does
+      NOT match the git_ref regex.
     tag: Regexes matching tags to build.  The syntax of the regular
       expressions accepted is the syntax accepted by RE2 and described at
       https://github.com/google/re2/wiki/Syntax
   """
 
   branch = _messages.StringField(1)
-  tag = _messages.StringField(2)
+  invertRegex = _messages.BooleanField(2)
+  tag = _messages.StringField(3)
 
 
 class RepoSource(_messages.Message):
@@ -1076,6 +1086,8 @@ class RepoSource(_messages.Message):
     dir: Directory, relative to the source root, in which to run the build.
       This must be a relative path. If a step's `dir` is specified and is an
       absolute path, this value is ignored for that step's execution.
+    invertRegex: Only trigger a build if the revision regex does NOT match the
+      revision regex.
     projectId: ID of the project that owns the Cloud Source Repository. If
       omitted, the project ID requesting the build is assumed.
     repoName: Required. Name of the Cloud Source Repository.
@@ -1115,10 +1127,11 @@ class RepoSource(_messages.Message):
   branchName = _messages.StringField(1)
   commitSha = _messages.StringField(2)
   dir = _messages.StringField(3)
-  projectId = _messages.StringField(4)
-  repoName = _messages.StringField(5)
-  substitutions = _messages.MessageField('SubstitutionsValue', 6)
-  tagName = _messages.StringField(7)
+  invertRegex = _messages.BooleanField(4)
+  projectId = _messages.StringField(5)
+  repoName = _messages.StringField(6)
+  substitutions = _messages.MessageField('SubstitutionsValue', 7)
+  tagName = _messages.StringField(8)
 
 
 class Results(_messages.Message):

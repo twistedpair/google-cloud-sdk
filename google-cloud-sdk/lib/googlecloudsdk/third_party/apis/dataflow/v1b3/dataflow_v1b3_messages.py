@@ -3175,6 +3175,23 @@ class MapTask(_messages.Message):
   systemName = _messages.StringField(4)
 
 
+class MemInfo(_messages.Message):
+  r"""Information about the memory usage of a worker or a container within a
+  worker.
+
+  Fields:
+    currentLimitBytes: Instantenous memory limit in bytes.
+    currentRssBytes: Instantenous memory (RSS) size in bytes.
+    timestamp: Timestamp of the measurement.
+    totalGbMs: Total memory (RSS) usage since start up in GB * ms.
+  """
+
+  currentLimitBytes = _messages.IntegerField(1, variant=_messages.Variant.UINT64)
+  currentRssBytes = _messages.IntegerField(2, variant=_messages.Variant.UINT64)
+  timestamp = _messages.StringField(3)
+  totalGbMs = _messages.IntegerField(4, variant=_messages.Variant.UINT64)
+
+
 class MetricShortId(_messages.Message):
   r"""The metric short id is returned to the user alongside an offset into
   ReportWorkItemStatusRequest
@@ -3841,11 +3858,42 @@ class ResourceUtilizationReport(_messages.Message):
   metrics accumulated from a variety of sources. For more information, see go
   /df-resource-signals.
 
+  Messages:
+    ContainersValue: Per container information. Key: container name.
+
   Fields:
+    containers: Per container information. Key: container name.
     cpuTime: CPU utilization samples.
+    memoryInfo: Memory utilization samples.
   """
 
-  cpuTime = _messages.MessageField('CPUTime', 1, repeated=True)
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class ContainersValue(_messages.Message):
+    r"""Per container information. Key: container name.
+
+    Messages:
+      AdditionalProperty: An additional property for a ContainersValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type ContainersValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a ContainersValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A ResourceUtilizationReport attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('ResourceUtilizationReport', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  containers = _messages.MessageField('ContainersValue', 1)
+  cpuTime = _messages.MessageField('CPUTime', 2, repeated=True)
+  memoryInfo = _messages.MessageField('MemInfo', 3, repeated=True)
 
 
 class ResourceUtilizationReportResponse(_messages.Message):

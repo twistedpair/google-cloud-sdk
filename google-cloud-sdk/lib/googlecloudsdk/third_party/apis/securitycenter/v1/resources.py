@@ -38,6 +38,17 @@ class Collections(enum.Enum):
       [u'organizationsId', u'assetsId'],
       True
   )
+  ORGANIZATIONS_NOTIFICATIONCONFIGS = (
+      'organizations.notificationConfigs',
+      '{+name}',
+      {
+          '':
+              'organizations/{organizationsId}/notificationConfigs/'
+              '{notificationConfigsId}',
+      },
+      [u'name'],
+      True
+  )
   ORGANIZATIONS_OPERATIONS = (
       'organizations.operations',
       '{+name}',

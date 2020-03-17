@@ -138,6 +138,16 @@ class GoogleCloudMlV1AcceleratorConfig(_messages.Message):
   type = _messages.EnumField('TypeValueValuesEnum', 2)
 
 
+class GoogleCloudMlV1AddTrialMeasurementRequest(_messages.Message):
+  r"""The request message for the AddTrialMeasurement service method.
+
+  Fields:
+    measurement: Required. The measurement to be added to a trial.
+  """
+
+  measurement = _messages.MessageField('GoogleCloudMlV1Measurement', 1)
+
+
 class GoogleCloudMlV1AutoScaling(_messages.Message):
   r"""Options for automatically scaling a model.
 
@@ -173,6 +183,54 @@ class GoogleCloudMlV1AutoScaling(_messages.Message):
   """
 
   minNodes = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+
+
+class GoogleCloudMlV1AutomatedStoppingConfig(_messages.Message):
+  r"""Configuration for Automated Early Stopping of Trials. If no
+  implementation_config is set, automated early stopping will not be run.
+
+  Fields:
+    decayCurveStoppingConfig: A
+      GoogleCloudMlV1AutomatedStoppingConfigDecayCurveAutomatedStoppingConfig
+      attribute.
+    medianAutomatedStoppingConfig: A
+      GoogleCloudMlV1AutomatedStoppingConfigMedianAutomatedStoppingConfig
+      attribute.
+  """
+
+  decayCurveStoppingConfig = _messages.MessageField('GoogleCloudMlV1AutomatedStoppingConfigDecayCurveAutomatedStoppingConfig', 1)
+  medianAutomatedStoppingConfig = _messages.MessageField('GoogleCloudMlV1AutomatedStoppingConfigMedianAutomatedStoppingConfig', 2)
+
+
+class GoogleCloudMlV1AutomatedStoppingConfigDecayCurveAutomatedStoppingConfig(_messages.Message):
+  r"""A
+  GoogleCloudMlV1AutomatedStoppingConfigDecayCurveAutomatedStoppingConfig
+  object.
+
+  Fields:
+    useElapsedTime: True if measurement.elapsed_time is used as the x-axis of
+      each Trials Decay Curve. Otherwise, Measurement.steps will be used as
+      the x-axis.
+  """
+
+  useElapsedTime = _messages.BooleanField(1)
+
+
+class GoogleCloudMlV1AutomatedStoppingConfigMedianAutomatedStoppingConfig(_messages.Message):
+  r"""The median automated stopping rule stops a pending trial if the trial's
+  best objective_value is strictly below the median 'performance' of all
+  completed trials reported up to the trial's last measurement. Currently,
+  'performance' refers to the running average of the objective values reported
+  by the trial in each measurement.
+
+  Fields:
+    useElapsedTime: True if median automated stopping rule applies on
+      measurement.use_elapsed_time. it means that elapsed_time field of latest
+      measurement of current trial is used to compute median objective value
+      for each completed trials.
+  """
+
+  useElapsedTime = _messages.BooleanField(1)
 
 
 class GoogleCloudMlV1BuiltInAlgorithmOutput(_messages.Message):
@@ -252,6 +310,62 @@ class GoogleCloudMlV1Capability(_messages.Message):
 
   availableAccelerators = _messages.EnumField('AvailableAcceleratorsValueListEntryValuesEnum', 1, repeated=True)
   type = _messages.EnumField('TypeValueValuesEnum', 2)
+
+
+class GoogleCloudMlV1CheckTrialEarlyStoppingStateMetatdata(_messages.Message):
+  r"""This message will be placed in the metadata field of a
+  google.longrunning.Operation associated with a CheckTrialEarlyStoppingState
+  request.
+
+  Fields:
+    createTime: The time operation was submitted.
+    study: The name of the study that the trial belongs to.
+    trial: The Trial name.
+  """
+
+  createTime = _messages.StringField(1)
+  study = _messages.StringField(2)
+  trial = _messages.StringField(3)
+
+
+class GoogleCloudMlV1CheckTrialEarlyStoppingStateRequest(_messages.Message):
+  r"""The request message for the CheckTrialEarlyStoppingState service method.
+  """
+
+
+
+class GoogleCloudMlV1CheckTrialEarlyStoppingStateResponse(_messages.Message):
+  r"""The message will be placed in the response field of a completed
+  google.longrunning.Operation associated with a CheckTrialEarlyStoppingState
+  request.
+
+  Fields:
+    endTime: The time operation processing completed.
+    shouldStop: True if the Trial should stop.
+    startTime: The time operation was started.
+  """
+
+  endTime = _messages.StringField(1)
+  shouldStop = _messages.BooleanField(2)
+  startTime = _messages.StringField(3)
+
+
+class GoogleCloudMlV1CompleteTrialRequest(_messages.Message):
+  r"""The request message for the CompleteTrial service method.
+
+  Fields:
+    finalMeasurement: Optional. If provided, it will be used as the completed
+      trial's final_measurement; Otherwise, the service will auto-select a
+      previously reported measurement as the final-measurement
+    infeasibleReason: Optional. A human readable reason why the Trial was
+      infeasible. This should only be provided if `trial_infeasible` is true.
+    trialInfeasible: Optional. True if the trial cannot be run with the given
+      Parameter, and final_measurement will be ignored.
+  """
+
+  finalMeasurement = _messages.MessageField('GoogleCloudMlV1Measurement', 1)
+  infeasibleReason = _messages.StringField(2)
+  trialInfeasible = _messages.BooleanField(3)
 
 
 class GoogleCloudMlV1Config(_messages.Message):
@@ -364,18 +478,39 @@ class GoogleCloudMlV1ExplainRequest(_messages.Message):
 class GoogleCloudMlV1ExplanationConfig(_messages.Message):
   r"""Message holding configuration options for explaining model predictions.
   There are two feature attribution methods supported for TensorFlow models:
-  integrated gradients and sampled Shapley. <a href="/ml-engine/docs/ai-
-  explanations/overview">Learn more about feature attributions</a>.
+  integrated gradients and sampled Shapley. [Learn more about feature
+  attributions.](/ml-engine/docs/ai-explanations/overview)
 
   Fields:
-    ablationAttribution: TensorFlow framework explanation methods.
-    integratedGradientsAttribution: A
-      GoogleCloudMlV1IntegratedGradientsAttribution attribute.
-    saabasAttribution: A GoogleCloudMlV1SaabasAttribution attribute.
-    sampledShapleyAttribution: A GoogleCloudMlV1SampledShapleyAttribution
-      attribute.
-    treeShapAttribution: XGBoost framework explanation methods.
-    xraiAttribution: A GoogleCloudMlV1XraiAttribution attribute.
+    ablationAttribution: TensorFlow framework explanation methods. Attributes
+      credit to model inputs by ablating features (ie. setting them to their
+      default/missing values) and computing corresponding model score delta
+      per feature. The term "ablation" is in reference to running an "ablation
+      study" to analyze input effects on the outcome of interest, which in
+      this case is the model's output. This attribution method is supported
+      for TensorFlow and XGBoost models.
+    integratedGradientsAttribution: Attributes credit by computing the Aumann-
+      Shapley value taking advantage of the model's fully differentiable
+      structure. Refer to this paper for more details:
+      http://proceedings.mlr.press/v70/sundararajan17a.html
+    saabasAttribution: Attributes credit by running a faster aproximation to
+      the TreeShap method. Please refer to this link for more details:
+      https://blog.datadive.net/interpreting-random-forests/ This attribution
+      method is only supported for XGBoost models.
+    sampledShapleyAttribution: An attribution method that approximates Shapley
+      values for features that contribute to the label being predicted. A
+      sampling strategy is used to approximate the value rather than
+      considering all subsets of features.
+    treeShapAttribution: XGBoost framework explanation methods. Attributes
+      credit by computing the Shapley value taking advantage of the model's
+      tree ensemble structure. Refer to this paper for more details:
+      http://papers.nips.cc/paper/7062-a-unified-approach-to-interpreting-
+      model-predictions.pdf. This attribution method is supported for XGBoost
+      models.
+    xraiAttribution: Attributes credit by computing the XRAI taking advantage
+      of the model's fully differentiable structure. Refer to this paper for
+      more details: https://arxiv.org/abs/1906.02825 Currently only
+      implemented for models with natural image inputs.
   """
 
   ablationAttribution = _messages.MessageField('GoogleCloudMlV1AblationAttribution', 1)
@@ -909,6 +1044,26 @@ class GoogleCloudMlV1ListModelsResponse(_messages.Message):
   nextPageToken = _messages.StringField(2)
 
 
+class GoogleCloudMlV1ListStudiesResponse(_messages.Message):
+  r"""A GoogleCloudMlV1ListStudiesResponse object.
+
+  Fields:
+    studies: The Studies associated with the project.
+  """
+
+  studies = _messages.MessageField('GoogleCloudMlV1Study', 1, repeated=True)
+
+
+class GoogleCloudMlV1ListTrialsResponse(_messages.Message):
+  r"""The response message for the ListTrials method.
+
+  Fields:
+    trials: The trials associated with the study.
+  """
+
+  trials = _messages.MessageField('GoogleCloudMlV1Trial', 1, repeated=True)
+
+
 class GoogleCloudMlV1ListVersionsResponse(_messages.Message):
   r"""Response message for the ListVersions method.
 
@@ -945,6 +1100,35 @@ class GoogleCloudMlV1ManualScaling(_messages.Message):
   """
 
   nodes = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+
+
+class GoogleCloudMlV1Measurement(_messages.Message):
+  r"""A message representing a Measurement.
+
+  Fields:
+    elapsedTime: Time that the Trial has been running at the point of this
+      Measurement.
+    metrics: Provides a list of metrics that act as inputs into the objective
+      function.
+    stepCount: The number of steps a machine learning model has been trained
+      for. Must be non-negative.
+  """
+
+  elapsedTime = _messages.StringField(1)
+  metrics = _messages.MessageField('GoogleCloudMlV1MeasurementMetric', 2, repeated=True)
+  stepCount = _messages.IntegerField(3)
+
+
+class GoogleCloudMlV1MeasurementMetric(_messages.Message):
+  r"""A message representing a metric in the measurement.
+
+  Fields:
+    metric: Required. Metric name.
+    value: Required. The value for this metric.
+  """
+
+  metric = _messages.StringField(1)
+  value = _messages.FloatField(2)
 
 
 class GoogleCloudMlV1Model(_messages.Message):
@@ -1569,11 +1753,11 @@ class GoogleCloudMlV1ReplicaConfig(_messages.Message):
   Fields:
     acceleratorConfig: Represents the type and number of accelerators used by
       the replica. [Learn about restrictions on accelerator configurations for
-      training.](/ml-engine/docs/tensorflow/using-gpus#compute-engine-machine-
+      training.](/ai-platform/training/docs/using-gpus#compute-engine-machine-
       types-with-gpu)
     imageUri: The Docker image to run on the replica. This image must be in
       Container Registry. Learn more about [configuring custom containers
-      ](/ml-engine/docs/distributed-training-containers).
+      ](/ai-platform/training/docs/distributed-training-containers).
     tpuTfVersion: The AI Platform runtime version that includes a TensorFlow
       version matching the one used in the custom container. This field is
       required if the replica is a TPU worker that uses a custom container.
@@ -1690,6 +1874,349 @@ class GoogleCloudMlV1SetDefaultVersionRequest(_messages.Message):
   r"""Request message for the SetDefaultVersion request."""
 
 
+class GoogleCloudMlV1StopTrialRequest(_messages.Message):
+  r"""A GoogleCloudMlV1StopTrialRequest object."""
+
+
+class GoogleCloudMlV1Study(_messages.Message):
+  r"""A message representing a Study.
+
+  Enums:
+    StateValueValuesEnum: Output only. The detailed state of a study.
+
+  Fields:
+    createTime: Output only. Time that the study was created.
+    inactiveReason: Output only. A human readable reason why the Study is
+      inactive. This should be empty if a study is ACTIVE or COMPLETED.
+    name: Output only. The name of a study.
+    state: Output only. The detailed state of a study.
+    studyConfig: Required. Configuration of the study.
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Output only. The detailed state of a study.
+
+    Values:
+      STATE_UNSPECIFIED: The study state is unspecified.
+      ACTIVE: The study is active.
+      INACTIVE: The study is stopped due to an internal error.
+      COMPLETED: The study is done when the service exhausts the parameter
+        search space or max_trial_count is reached.
+    """
+    STATE_UNSPECIFIED = 0
+    ACTIVE = 1
+    INACTIVE = 2
+    COMPLETED = 3
+
+  createTime = _messages.StringField(1)
+  inactiveReason = _messages.StringField(2)
+  name = _messages.StringField(3)
+  state = _messages.EnumField('StateValueValuesEnum', 4)
+  studyConfig = _messages.MessageField('GoogleCloudMlV1StudyConfig', 5)
+
+
+class GoogleCloudMlV1StudyConfig(_messages.Message):
+  r"""Represents configuration of a study.
+
+  Enums:
+    AlgorithmValueValuesEnum: The search algorithm specified for the study.
+
+  Fields:
+    algorithm: The search algorithm specified for the study.
+    automatedStoppingConfig: Configuration for automated stopping of
+      unpromising Trials.
+    metrics: A GoogleCloudMlV1StudyConfigMetricSpec attribute.
+    parameters: Required. The set of parameters to tune.
+  """
+
+  class AlgorithmValueValuesEnum(_messages.Enum):
+    r"""The search algorithm specified for the study.
+
+    Values:
+      ALGORITHM_UNSPECIFIED: The default algorithm used by the Cloud AI
+        Platform Optimization service.
+      GAUSSIAN_PROCESS_BANDIT: Gaussian Process Bandit.
+      GRID_SEARCH: Simple grid search within the feasible space. To use grid
+        search, all parameters must be `INTEGER`, `CATEGORICAL`, or
+        `DISCRETE`.
+      RANDOM_SEARCH: Simple random search within the feasible space.
+    """
+    ALGORITHM_UNSPECIFIED = 0
+    GAUSSIAN_PROCESS_BANDIT = 1
+    GRID_SEARCH = 2
+    RANDOM_SEARCH = 3
+
+  algorithm = _messages.EnumField('AlgorithmValueValuesEnum', 1)
+  automatedStoppingConfig = _messages.MessageField('GoogleCloudMlV1AutomatedStoppingConfig', 2)
+  metrics = _messages.MessageField('GoogleCloudMlV1StudyConfigMetricSpec', 3, repeated=True)
+  parameters = _messages.MessageField('GoogleCloudMlV1StudyConfigParameterSpec', 4, repeated=True)
+
+
+class GoogleCloudMlV1StudyConfigMetricSpec(_messages.Message):
+  r"""Represents a metric to optimize.
+
+  Enums:
+    GoalValueValuesEnum: Required. The optimization goal of the metric.
+
+  Fields:
+    goal: Required. The optimization goal of the metric.
+    metric: Required. The name of the metric.
+  """
+
+  class GoalValueValuesEnum(_messages.Enum):
+    r"""Required. The optimization goal of the metric.
+
+    Values:
+      GOAL_TYPE_UNSPECIFIED: Goal Type will default to maximize.
+      MAXIMIZE: Maximize the goal metric.
+      MINIMIZE: Minimize the goal metric.
+    """
+    GOAL_TYPE_UNSPECIFIED = 0
+    MAXIMIZE = 1
+    MINIMIZE = 2
+
+  goal = _messages.EnumField('GoalValueValuesEnum', 1)
+  metric = _messages.StringField(2)
+
+
+class GoogleCloudMlV1StudyConfigParameterSpec(_messages.Message):
+  r"""Represents a single parameter to optimize.
+
+  Enums:
+    ScaleTypeValueValuesEnum: How the parameter should be scaled. Leave unset
+      for categorical parameters.
+    TypeValueValuesEnum: Required. The type of the parameter.
+
+  Fields:
+    categoricalValueSpec: The value spec for a 'CATEGORICAL' parameter.
+    childParameterSpecs: A child node is active if the parameter's value
+      matches the child node's matching_parent_values.  If two items in
+      child_parameter_specs have the same name, they must have disjoint
+      matching_parent_values.
+    discreteValueSpec: The value spec for a 'DISCRETE' parameter.
+    doubleValueSpec: The value spec for a 'DOUBLE' parameter.
+    integerValueSpec: The value spec for an 'INTEGER' parameter.
+    parameter: Required. The parameter name must be unique amongst all
+      ParameterSpecs.
+    parentCategoricalValues: A
+      GoogleCloudMlV1StudyConfigParameterSpecMatchingParentCategoricalValueSpe
+      c attribute.
+    parentDiscreteValues: A
+      GoogleCloudMlV1StudyConfigParameterSpecMatchingParentDiscreteValueSpec
+      attribute.
+    parentIntValues: A
+      GoogleCloudMlV1StudyConfigParameterSpecMatchingParentIntValueSpec
+      attribute.
+    scaleType: How the parameter should be scaled. Leave unset for categorical
+      parameters.
+    type: Required. The type of the parameter.
+  """
+
+  class ScaleTypeValueValuesEnum(_messages.Enum):
+    r"""How the parameter should be scaled. Leave unset for categorical
+    parameters.
+
+    Values:
+      SCALE_TYPE_UNSPECIFIED: By default, no scaling is applied.
+      UNIT_LINEAR_SCALE: Scales the feasible space to (0, 1) linearly.
+      UNIT_LOG_SCALE: Scales the feasible space logarithmically to (0, 1). The
+        entire feasible space must be strictly positive.
+      UNIT_REVERSE_LOG_SCALE: Scales the feasible space "reverse"
+        logarithmically to (0, 1). The result is that values close to the top
+        of the feasible space are spread out more than points near the bottom.
+        The entire feasible space must be strictly positive.
+    """
+    SCALE_TYPE_UNSPECIFIED = 0
+    UNIT_LINEAR_SCALE = 1
+    UNIT_LOG_SCALE = 2
+    UNIT_REVERSE_LOG_SCALE = 3
+
+  class TypeValueValuesEnum(_messages.Enum):
+    r"""Required. The type of the parameter.
+
+    Values:
+      PARAMETER_TYPE_UNSPECIFIED: You must specify a valid type. Using this
+        unspecified type will result in an error.
+      DOUBLE: Type for real-valued parameters.
+      INTEGER: Type for integral parameters.
+      CATEGORICAL: The parameter is categorical, with a value chosen from the
+        categories field.
+      DISCRETE: The parameter is real valued, with a fixed set of feasible
+        points. If `type==DISCRETE`, feasible_points must be provided, and
+        {`min_value`, `max_value`} will be ignored.
+    """
+    PARAMETER_TYPE_UNSPECIFIED = 0
+    DOUBLE = 1
+    INTEGER = 2
+    CATEGORICAL = 3
+    DISCRETE = 4
+
+  categoricalValueSpec = _messages.MessageField('GoogleCloudMlV1StudyConfigParameterSpecCategoricalValueSpec', 1)
+  childParameterSpecs = _messages.MessageField('GoogleCloudMlV1StudyConfigParameterSpec', 2, repeated=True)
+  discreteValueSpec = _messages.MessageField('GoogleCloudMlV1StudyConfigParameterSpecDiscreteValueSpec', 3)
+  doubleValueSpec = _messages.MessageField('GoogleCloudMlV1StudyConfigParameterSpecDoubleValueSpec', 4)
+  integerValueSpec = _messages.MessageField('GoogleCloudMlV1StudyConfigParameterSpecIntegerValueSpec', 5)
+  parameter = _messages.StringField(6)
+  parentCategoricalValues = _messages.MessageField('GoogleCloudMlV1StudyConfigParameterSpecMatchingParentCategoricalValueSpec', 7)
+  parentDiscreteValues = _messages.MessageField('GoogleCloudMlV1StudyConfigParameterSpecMatchingParentDiscreteValueSpec', 8)
+  parentIntValues = _messages.MessageField('GoogleCloudMlV1StudyConfigParameterSpecMatchingParentIntValueSpec', 9)
+  scaleType = _messages.EnumField('ScaleTypeValueValuesEnum', 10)
+  type = _messages.EnumField('TypeValueValuesEnum', 11)
+
+
+class GoogleCloudMlV1StudyConfigParameterSpecCategoricalValueSpec(_messages.Message):
+  r"""A GoogleCloudMlV1StudyConfigParameterSpecCategoricalValueSpec object.
+
+  Fields:
+    values: Must be specified if type is `CATEGORICAL`. The list of possible
+      categories.
+  """
+
+  values = _messages.StringField(1, repeated=True)
+
+
+class GoogleCloudMlV1StudyConfigParameterSpecDiscreteValueSpec(_messages.Message):
+  r"""A GoogleCloudMlV1StudyConfigParameterSpecDiscreteValueSpec object.
+
+  Fields:
+    values: Must be specified if type is `DISCRETE`. A list of feasible
+      points. The list should be in strictly increasing order. For instance,
+      this parameter might have possible settings of 1.5, 2.5, and 4.0. This
+      list should not contain more than 1,000 values.
+  """
+
+  values = _messages.FloatField(1, repeated=True)
+
+
+class GoogleCloudMlV1StudyConfigParameterSpecDoubleValueSpec(_messages.Message):
+  r"""A GoogleCloudMlV1StudyConfigParameterSpecDoubleValueSpec object.
+
+  Fields:
+    maxValue: Must be specified if type is `DOUBLE`. Maximum value of the
+      parameter.
+    minValue: Must be specified if type is `DOUBLE`. Minimum value of the
+      parameter.
+  """
+
+  maxValue = _messages.FloatField(1)
+  minValue = _messages.FloatField(2)
+
+
+class GoogleCloudMlV1StudyConfigParameterSpecIntegerValueSpec(_messages.Message):
+  r"""A GoogleCloudMlV1StudyConfigParameterSpecIntegerValueSpec object.
+
+  Fields:
+    maxValue: Must be specified if type is `INTEGER`. Maximum value of the
+      parameter.
+    minValue: Must be specified if type is `INTEGER`. Minimum value of the
+      parameter.
+  """
+
+  maxValue = _messages.IntegerField(1)
+  minValue = _messages.IntegerField(2)
+
+
+class GoogleCloudMlV1StudyConfigParameterSpecMatchingParentCategoricalValueSpec(_messages.Message):
+  r"""Represents the spec to match categorical values from parent parameter.
+
+  Fields:
+    values: Matches values of the parent parameter with type 'CATEGORICAL'.
+      All values must exist in `categorical_value_spec` of parent parameter.
+  """
+
+  values = _messages.StringField(1, repeated=True)
+
+
+class GoogleCloudMlV1StudyConfigParameterSpecMatchingParentDiscreteValueSpec(_messages.Message):
+  r"""Represents the spec to match discrete values from parent parameter.
+
+  Fields:
+    values: Matches values of the parent parameter with type 'DISCRETE'. All
+      values must exist in `discrete_value_spec` of parent parameter.
+  """
+
+  values = _messages.FloatField(1, repeated=True)
+
+
+class GoogleCloudMlV1StudyConfigParameterSpecMatchingParentIntValueSpec(_messages.Message):
+  r"""Represents the spec to match integer values from parent parameter.
+
+  Fields:
+    values: Matches values of the parent parameter with type 'INTEGER'. All
+      values must lie in `integer_value_spec` of parent parameter.
+  """
+
+  values = _messages.IntegerField(1, repeated=True)
+
+
+class GoogleCloudMlV1SuggestTrialsMetadata(_messages.Message):
+  r"""Metadata field of a google.longrunning.Operation associated with a
+  SuggestTrialsRequest.
+
+  Fields:
+    clientId: The identifier of the client that is requesting the suggestion.
+    createTime: The time operation was submitted.
+    study: The name of the study that the trial belongs to.
+    suggestionCount: The number of suggestions requested.
+  """
+
+  clientId = _messages.StringField(1)
+  createTime = _messages.StringField(2)
+  study = _messages.StringField(3)
+  suggestionCount = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+
+
+class GoogleCloudMlV1SuggestTrialsRequest(_messages.Message):
+  r"""The request message for the SuggestTrial service method.
+
+  Fields:
+    clientId: Required. The identifier of the client that is requesting the
+      suggestion.  If multiple SuggestTrialsRequests have the same
+      `client_id`, the service will return the identical suggested trial if
+      the trial is pending, and provide a new trial if the last suggested
+      trial was completed.
+    suggestionCount: Required. The number of suggestions requested.
+  """
+
+  clientId = _messages.StringField(1)
+  suggestionCount = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+
+
+class GoogleCloudMlV1SuggestTrialsResponse(_messages.Message):
+  r"""This message will be placed in the response field of a completed
+  google.longrunning.Operation associated with a SuggestTrials request.
+
+  Enums:
+    StudyStateValueValuesEnum: The state of the study.
+
+  Fields:
+    endTime: The time operation processing completed.
+    startTime: The time operation was started.
+    studyState: The state of the study.
+    trials: A list of Trials.
+  """
+
+  class StudyStateValueValuesEnum(_messages.Enum):
+    r"""The state of the study.
+
+    Values:
+      STATE_UNSPECIFIED: The study state is unspecified.
+      ACTIVE: The study is active.
+      INACTIVE: The study is stopped due to an internal error.
+      COMPLETED: The study is done when the service exhausts the parameter
+        search space or max_trial_count is reached.
+    """
+    STATE_UNSPECIFIED = 0
+    ACTIVE = 1
+    INACTIVE = 2
+    COMPLETED = 3
+
+  endTime = _messages.StringField(1)
+  startTime = _messages.StringField(2)
+  studyState = _messages.EnumField('StudyStateValueValuesEnum', 3)
+  trials = _messages.MessageField('GoogleCloudMlV1Trial', 4, repeated=True)
+
+
 class GoogleCloudMlV1TrainingInput(_messages.Message):
   r"""Represents input parameters for a training job. When using the gcloud
   command to submit your training job, you can specify the input parameters as
@@ -1706,6 +2233,28 @@ class GoogleCloudMlV1TrainingInput(_messages.Message):
     encryptionConfig: Custom encryption key options for a training job. If
       this is set, then all resources created by the training job will be
       encrypted with the provided encryption key.
+    evaluatorConfig: Optional. The configuration for evaluators.  You should
+      only set `evaluatorConfig.acceleratorConfig` if `evaluatorType` is set
+      to a Compute Engine machine type. [Learn about restrictions on
+      accelerator configurations for training.](/ai-platform/training/docs
+      /using-gpus#compute-engine-machine-types-with-gpu)  Set
+      `evaluatorConfig.imageUri` only if you build a custom image for your
+      evaluator. If `evaluatorConfig.imageUri` has not been set, AI Platform
+      uses the value of `masterConfig.imageUri`. Learn more about [configuring
+      custom containers](/ai-platform/training/docs/distributed-training-
+      containers).
+    evaluatorCount: Optional. The number of evaluator replicas to use for the
+      training job. Each replica in the cluster will be of the type specified
+      in `evaluator_type`.  This value can only be used when `scale_tier` is
+      set to `CUSTOM`. If you set this value, you must also set
+      `evaluator_type`.  The default value is zero.
+    evaluatorType: Optional. Specifies the type of virtual machine to use for
+      your training job's evaluator nodes.  The supported values are the same
+      as those described in the entry for `masterType`.  This value must be
+      consistent with the category of machine type that `masterType` uses. In
+      other words, both must be Compute Engine machine types or both must be
+      legacy machine types.  This value must be present when `scaleTier` is
+      set to `CUSTOM` and `evaluatorCount` is greater than zero.
     hyperparameters: Optional. The set of Hyperparameters to tune.
     jobDir: Optional. A Google Cloud Storage path in which to store training
       outputs and other data needed for training. This path is passed to your
@@ -1715,12 +2264,12 @@ class GoogleCloudMlV1TrainingInput(_messages.Message):
     masterConfig: Optional. The configuration for your master worker.  You
       should only set `masterConfig.acceleratorConfig` if `masterType` is set
       to a Compute Engine machine type. Learn about [restrictions on
-      accelerator configurations for training.](/ml-engine/docs/tensorflow
+      accelerator configurations for training.](/ai-platform/training/docs
       /using-gpus#compute-engine-machine-types-with-gpu)  Set
       `masterConfig.imageUri` only if you build a custom image. Only one of
       `masterConfig.imageUri` and `runtimeVersion` should be set. Learn more
-      about [configuring custom containers](/ml-engine/docs/distributed-
-      training-containers).
+      about [configuring custom containers](/ai-platform/training/docs
+      /distributed-training-containers).
     masterType: Optional. Specifies the type of virtual machine to use for
       your training job's master worker. You must specify this field when
       `scaleTier` is set to `CUSTOM`.  You can use certain Compute Engine
@@ -1748,18 +2297,18 @@ class GoogleCloudMlV1TrainingInput(_messages.Message):
       number of package URIs is 100.
     parameterServerConfig: Optional. The configuration for parameter servers.
       You should only set `parameterServerConfig.acceleratorConfig` if
-      `parameterServerConfigType` is set to a Compute Engine machine type.
-      [Learn about restrictions on accelerator configurations for training
-      .](/ml-engine/docs/tensorflow/using-gpus#compute-engine-machine-types-
-      with-gpu)  Set `parameterServerConfig.imageUri` only if you build a
-      custom image for your parameter server. If
-      `parameterServerConfig.imageUri` has not been set, AI Platform uses the
-      value of `masterConfig.imageUri`. Learn more about [configuring custom
-      containers](/ml-engine/docs/distributed-training-containers).
+      `parameterServerType` is set to a Compute Engine machine type. [Learn
+      about restrictions on accelerator configurations for training.](/ai-
+      platform/training/docs/using-gpus#compute-engine-machine-types-with-gpu)
+      Set `parameterServerConfig.imageUri` only if you build a custom image
+      for your parameter server. If `parameterServerConfig.imageUri` has not
+      been set, AI Platform uses the value of `masterConfig.imageUri`. Learn
+      more about [configuring custom containers](/ai-platform/training/docs
+      /distributed-training-containers).
     parameterServerCount: Optional. The number of parameter server replicas to
       use for the training job. Each replica in the cluster will be of the
       type specified in `parameter_server_type`.  This value can only be used
-      when `scale_tier` is set to `CUSTOM`.If you set this value, you must
+      when `scale_tier` is set to `CUSTOM`. If you set this value, you must
       also set `parameter_server_type`.  The default value is zero.
     parameterServerType: Optional. Specifies the type of virtual machine to
       use for your training job's parameter server.  The supported values are
@@ -1796,12 +2345,12 @@ class GoogleCloudMlV1TrainingInput(_messages.Message):
     workerConfig: Optional. The configuration for workers.  You should only
       set `workerConfig.acceleratorConfig` if `workerType` is set to a Compute
       Engine machine type. [Learn about restrictions on accelerator
-      configurations for training.](/ml-engine/docs/tensorflow/using-gpus
+      configurations for training.](/ai-platform/training/docs/using-gpus
       #compute-engine-machine-types-with-gpu)  Set `workerConfig.imageUri`
       only if you build a custom image for your worker. If
       `workerConfig.imageUri` has not been set, AI Platform uses the value of
       `masterConfig.imageUri`. Learn more about [configuring custom containers
-      ](/ml-engine/docs/distributed-training-containers).
+      ](/ai-platform/training/docs/distributed-training-containers).
     workerCount: Optional. The number of worker replicas to use for the
       training job. Each replica in the cluster will be of the type specified
       in `worker_type`.  This value can only be used when `scale_tier` is set
@@ -1829,8 +2378,8 @@ class GoogleCloudMlV1TrainingInput(_messages.Message):
         datasets.
       STANDARD_1: Many workers and a few parameter servers.
       PREMIUM_1: A large number of workers with many parameter servers.
-      BASIC_GPU: A single worker instance [with a GPU](/ml-
-        engine/docs/tensorflow/using-gpus).
+      BASIC_GPU: A single worker instance [with a GPU](/ai-
+        platform/training/docs/using-gpus).
       BASIC_TPU: A single worker instance with a [Cloud TPU](/ml-
         engine/docs/tensorflow/using-tpus).
       CUSTOM: The CUSTOM tier is not a set tier, but rather enables you to use
@@ -1860,25 +2409,28 @@ class GoogleCloudMlV1TrainingInput(_messages.Message):
 
   args = _messages.StringField(1, repeated=True)
   encryptionConfig = _messages.MessageField('GoogleCloudMlV1EncryptionConfig', 2)
-  hyperparameters = _messages.MessageField('GoogleCloudMlV1HyperparameterSpec', 3)
-  jobDir = _messages.StringField(4)
-  masterConfig = _messages.MessageField('GoogleCloudMlV1ReplicaConfig', 5)
-  masterType = _messages.StringField(6)
-  nasJobSpec = _messages.MessageField('GoogleCloudMlV1NasSpec', 7)
-  packageUris = _messages.StringField(8, repeated=True)
-  parameterServerConfig = _messages.MessageField('GoogleCloudMlV1ReplicaConfig', 9)
-  parameterServerCount = _messages.IntegerField(10)
-  parameterServerType = _messages.StringField(11)
-  pythonModule = _messages.StringField(12)
-  pythonVersion = _messages.StringField(13)
-  region = _messages.StringField(14)
-  runtimeVersion = _messages.StringField(15)
-  scaleTier = _messages.EnumField('ScaleTierValueValuesEnum', 16)
-  scheduling = _messages.MessageField('GoogleCloudMlV1Scheduling', 17)
-  useChiefInTfConfig = _messages.BooleanField(18)
-  workerConfig = _messages.MessageField('GoogleCloudMlV1ReplicaConfig', 19)
-  workerCount = _messages.IntegerField(20)
-  workerType = _messages.StringField(21)
+  evaluatorConfig = _messages.MessageField('GoogleCloudMlV1ReplicaConfig', 3)
+  evaluatorCount = _messages.IntegerField(4)
+  evaluatorType = _messages.StringField(5)
+  hyperparameters = _messages.MessageField('GoogleCloudMlV1HyperparameterSpec', 6)
+  jobDir = _messages.StringField(7)
+  masterConfig = _messages.MessageField('GoogleCloudMlV1ReplicaConfig', 8)
+  masterType = _messages.StringField(9)
+  nasJobSpec = _messages.MessageField('GoogleCloudMlV1NasSpec', 10)
+  packageUris = _messages.StringField(11, repeated=True)
+  parameterServerConfig = _messages.MessageField('GoogleCloudMlV1ReplicaConfig', 12)
+  parameterServerCount = _messages.IntegerField(13)
+  parameterServerType = _messages.StringField(14)
+  pythonModule = _messages.StringField(15)
+  pythonVersion = _messages.StringField(16)
+  region = _messages.StringField(17)
+  runtimeVersion = _messages.StringField(18)
+  scaleTier = _messages.EnumField('ScaleTierValueValuesEnum', 19)
+  scheduling = _messages.MessageField('GoogleCloudMlV1Scheduling', 20)
+  useChiefInTfConfig = _messages.BooleanField(21)
+  workerConfig = _messages.MessageField('GoogleCloudMlV1ReplicaConfig', 22)
+  workerCount = _messages.IntegerField(23)
+  workerType = _messages.StringField(24)
 
 
 class GoogleCloudMlV1TrainingOutput(_messages.Message):
@@ -1919,6 +2471,77 @@ class GoogleCloudMlV1TreeShapAttribution(_messages.Message):
   predictions.pdf. This attribution method is supported for XGBoost models.
   """
 
+
+
+class GoogleCloudMlV1Trial(_messages.Message):
+  r"""A message representing a Trial.
+
+  Enums:
+    StateValueValuesEnum: The detailed state of a trial.
+
+  Fields:
+    clientId: Output only. The identifier of the client that originally
+      requested this trial.
+    endTime: Output only. Time the Trial's status changed to COMPLETED.
+    finalMeasurement: The final Measurement containing the objective value.
+    infeasibleReason: Output only. A human readable string describing why the
+      Trial is infeasible. This should only be set if trial_infeasible is
+      true.
+    measurements: A list of measurements that are strictly lexicographically
+      ordered by their induced tuples (steps, elapsed_time). These are used
+      for early stopping computations.
+    name: Output only. Name of the trial assigned by the service.
+    parameters: The parameters of the Trial.
+    startTime: Output only. Time the Trial was started.
+    state: The detailed state of a trial.
+    trialInfeasible: Output only. True if the parameters in this trial should
+      not be attempted again.
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""The detailed state of a trial.
+
+    Values:
+      STATE_UNSPECIFIED: The trial state is unspecified.
+      REQUESTED: Indicates that a specific Trial has been requested, but it
+        has not yet been suggested by the service.
+      ACTIVE: Indicates that the Trial has been suggested.
+      COMPLETED: Indicates that the Trial is done, and either has a
+        final_measurement set, or is marked as trial_infeasible.
+      STOPPING: Indicates that the Trial should stop according to the service.
+    """
+    STATE_UNSPECIFIED = 0
+    REQUESTED = 1
+    ACTIVE = 2
+    COMPLETED = 3
+    STOPPING = 4
+
+  clientId = _messages.StringField(1)
+  endTime = _messages.StringField(2)
+  finalMeasurement = _messages.MessageField('GoogleCloudMlV1Measurement', 3)
+  infeasibleReason = _messages.StringField(4)
+  measurements = _messages.MessageField('GoogleCloudMlV1Measurement', 5, repeated=True)
+  name = _messages.StringField(6)
+  parameters = _messages.MessageField('GoogleCloudMlV1TrialParameter', 7, repeated=True)
+  startTime = _messages.StringField(8)
+  state = _messages.EnumField('StateValueValuesEnum', 9)
+  trialInfeasible = _messages.BooleanField(10)
+
+
+class GoogleCloudMlV1TrialParameter(_messages.Message):
+  r"""A message representing a parameter to be tuned.
+
+  Fields:
+    floatValue: Must be set if ParameterType is DOUBLE or DISCRETE.
+    intValue: Must be set if ParameterType is INTEGER
+    parameter: The name of the parameter.
+    stringValue: Must be set if ParameterTypeis CATEGORICAL
+  """
+
+  floatValue = _messages.FloatField(1)
+  intValue = _messages.IntegerField(2)
+  parameter = _messages.StringField(3)
+  stringValue = _messages.StringField(4)
 
 
 class GoogleCloudMlV1Version(_messages.Message):
@@ -2866,6 +3489,164 @@ class MlProjectsLocationsOperationsGetRequest(_messages.Message):
   """
 
   name = _messages.StringField(1, required=True)
+
+
+class MlProjectsLocationsStudiesCreateRequest(_messages.Message):
+  r"""A MlProjectsLocationsStudiesCreateRequest object.
+
+  Fields:
+    googleCloudMlV1Study: A GoogleCloudMlV1Study resource to be passed as the
+      request body.
+    parent: Required. The project and location that the study belongs to.
+      Format: projects/{project}/locations/{location}
+    studyId: Required. The ID to use for the study, which will become the
+      final component of the study's resource name.
+  """
+
+  googleCloudMlV1Study = _messages.MessageField('GoogleCloudMlV1Study', 1)
+  parent = _messages.StringField(2, required=True)
+  studyId = _messages.StringField(3)
+
+
+class MlProjectsLocationsStudiesDeleteRequest(_messages.Message):
+  r"""A MlProjectsLocationsStudiesDeleteRequest object.
+
+  Fields:
+    name: Required. The study name.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class MlProjectsLocationsStudiesGetRequest(_messages.Message):
+  r"""A MlProjectsLocationsStudiesGetRequest object.
+
+  Fields:
+    name: Required. The study name.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class MlProjectsLocationsStudiesListRequest(_messages.Message):
+  r"""A MlProjectsLocationsStudiesListRequest object.
+
+  Fields:
+    parent: Required. The project and location that the study belongs to.
+      Format: projects/{project}/locations/{location}
+  """
+
+  parent = _messages.StringField(1, required=True)
+
+
+class MlProjectsLocationsStudiesTrialsAddMeasurementRequest(_messages.Message):
+  r"""A MlProjectsLocationsStudiesTrialsAddMeasurementRequest object.
+
+  Fields:
+    googleCloudMlV1AddTrialMeasurementRequest: A
+      GoogleCloudMlV1AddTrialMeasurementRequest resource to be passed as the
+      request body.
+    name: Required. The trial name.
+  """
+
+  googleCloudMlV1AddTrialMeasurementRequest = _messages.MessageField('GoogleCloudMlV1AddTrialMeasurementRequest', 1)
+  name = _messages.StringField(2, required=True)
+
+
+class MlProjectsLocationsStudiesTrialsCheckEarlyStoppingStateRequest(_messages.Message):
+  r"""A MlProjectsLocationsStudiesTrialsCheckEarlyStoppingStateRequest object.
+
+  Fields:
+    googleCloudMlV1CheckTrialEarlyStoppingStateRequest: A
+      GoogleCloudMlV1CheckTrialEarlyStoppingStateRequest resource to be passed
+      as the request body.
+    name: Required. The trial name.
+  """
+
+  googleCloudMlV1CheckTrialEarlyStoppingStateRequest = _messages.MessageField('GoogleCloudMlV1CheckTrialEarlyStoppingStateRequest', 1)
+  name = _messages.StringField(2, required=True)
+
+
+class MlProjectsLocationsStudiesTrialsCompleteRequest(_messages.Message):
+  r"""A MlProjectsLocationsStudiesTrialsCompleteRequest object.
+
+  Fields:
+    googleCloudMlV1CompleteTrialRequest: A GoogleCloudMlV1CompleteTrialRequest
+      resource to be passed as the request body.
+    name: Required. The trial name.
+  """
+
+  googleCloudMlV1CompleteTrialRequest = _messages.MessageField('GoogleCloudMlV1CompleteTrialRequest', 1)
+  name = _messages.StringField(2, required=True)
+
+
+class MlProjectsLocationsStudiesTrialsCreateRequest(_messages.Message):
+  r"""A MlProjectsLocationsStudiesTrialsCreateRequest object.
+
+  Fields:
+    googleCloudMlV1Trial: A GoogleCloudMlV1Trial resource to be passed as the
+      request body.
+    parent: Required. The name of the study that the trial belongs to.
+  """
+
+  googleCloudMlV1Trial = _messages.MessageField('GoogleCloudMlV1Trial', 1)
+  parent = _messages.StringField(2, required=True)
+
+
+class MlProjectsLocationsStudiesTrialsDeleteRequest(_messages.Message):
+  r"""A MlProjectsLocationsStudiesTrialsDeleteRequest object.
+
+  Fields:
+    name: Required. The trial name.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class MlProjectsLocationsStudiesTrialsGetRequest(_messages.Message):
+  r"""A MlProjectsLocationsStudiesTrialsGetRequest object.
+
+  Fields:
+    name: Required. The trial name.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class MlProjectsLocationsStudiesTrialsListRequest(_messages.Message):
+  r"""A MlProjectsLocationsStudiesTrialsListRequest object.
+
+  Fields:
+    parent: Required. The name of the study that the trial belongs to.
+  """
+
+  parent = _messages.StringField(1, required=True)
+
+
+class MlProjectsLocationsStudiesTrialsStopRequest(_messages.Message):
+  r"""A MlProjectsLocationsStudiesTrialsStopRequest object.
+
+  Fields:
+    googleCloudMlV1StopTrialRequest: A GoogleCloudMlV1StopTrialRequest
+      resource to be passed as the request body.
+    name: Required. The trial name.
+  """
+
+  googleCloudMlV1StopTrialRequest = _messages.MessageField('GoogleCloudMlV1StopTrialRequest', 1)
+  name = _messages.StringField(2, required=True)
+
+
+class MlProjectsLocationsStudiesTrialsSuggestRequest(_messages.Message):
+  r"""A MlProjectsLocationsStudiesTrialsSuggestRequest object.
+
+  Fields:
+    googleCloudMlV1SuggestTrialsRequest: A GoogleCloudMlV1SuggestTrialsRequest
+      resource to be passed as the request body.
+    parent: Required. The name of the study that the trial belongs to.
+  """
+
+  googleCloudMlV1SuggestTrialsRequest = _messages.MessageField('GoogleCloudMlV1SuggestTrialsRequest', 1)
+  parent = _messages.StringField(2, required=True)
 
 
 class MlProjectsModelsCreateRequest(_messages.Message):

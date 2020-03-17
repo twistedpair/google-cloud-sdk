@@ -59,6 +59,14 @@ def EndpointAttributeConfig():
       name='endpoint', help_text='The name of the endpoint for the {resource}.')
 
 
+def GetProjectResourceSpec():
+  """Gets project resource spec."""
+  return concepts.ResourceSpec(
+      'servicedirectory.projects',
+      resource_name='project',
+      projectsId=ProjectAttributeConfig())
+
+
 def GetLocationResourceSpec():
   """Gets location resource spec."""
   return concepts.ResourceSpec(
@@ -99,6 +107,16 @@ def GetEndpointResourceSpec():
       namespacesId=NamespaceAttributeConfig(),
       locationsId=LocationAttributeConfig(),
       projectsId=ProjectAttributeConfig())
+
+
+def AddProjectResourceArg(parser, verb, positional=True):
+  """Adds a resource argument for a Service Directory project."""
+  name = 'project' if positional else '--project'
+  return concept_parsers.ConceptParser.ForResource(
+      name,
+      GetProjectResourceSpec(),
+      'The Service Directory project {}'.format(verb),
+      required=True).AddToParser(parser)
 
 
 def AddLocationResourceArg(parser, verb, positional=True):

@@ -253,6 +253,23 @@ def GetTypeEnumMapper(version=None):
   )
 
 
+def GetPerimeterTypeEnumForShortName(perimeter_type_short_name, api_version):
+  """Returns the PerimeterTypeValueValuesEnum value for the given short name.
+
+  Args:
+    perimeter_type_short_name: Either 'regular' or 'bridge'.
+    api_version: One of 'v1alpha', 'v1beta', or 'v1'.
+
+  Returns:
+    The appropriate value of type PerimeterTypeValueValuesEnum.
+  """
+  if perimeter_type_short_name is None:
+    return None
+
+  return GetTypeEnumMapper(
+      version=api_version).GetEnumForChoice(perimeter_type_short_name)
+
+
 def AddPerimeterUpdateArgs(parser, version=None, track=None):
   """Add args for perimeters update command."""
   args = [
@@ -504,3 +521,84 @@ def ParseReplaceServicePerimetersResponseBase(lro, version):
       poller, operation_ref,
       'Waiting for Replace Service Perimeters operation [{}]'.format(
           operation_ref.Name()))
+
+
+def _CompareField(status_val, spec_val, field_name, line_prefix=''):
+  """Compares two sets of values and generates a diff."""
+  output = []
+
+  output.append(line_prefix + '{}:'.format(field_name))
+  added = list(spec_val - status_val)
+  removed = list(status_val - spec_val)
+  unchanged = list(spec_val.intersection(status_val))
+  if added:
+    output.extend(
+        sorted((line_prefix + '  +{}'.format(item)) for item in added))
+  if removed:
+    output.extend(
+        sorted((line_prefix + '  -{}'.format(item)) for item in removed))
+  if unchanged:
+    output.extend(
+        sorted((line_prefix + '   {}'.format(item)) for item in unchanged))
+
+  if not status_val and not spec_val:
+    output.append(line_prefix + '   NONE')
+
+  return output
+
+
+def _CompareTopLevelField(status, spec, field_name):
+  status_val = set(getattr(status, field_name, []))
+  spec_val = set(getattr(spec, field_name, []))
+  return _CompareField(status_val, spec_val, field_name)
+
+
+def GenerateDryRunConfigDiff(perimeter):
+  """Generates a diff string by comparing status with spec."""
+  output = []
+  status = perimeter.status
+  if not perimeter.useExplicitDryRunSpec:
+    spec = status
+    output.append('This Service Perimeter does not have an explicit '
+                  'dry-run mode configuration. The enforcement config '
+                  'will be used as the dry-run mode configuration.')
+  else:
+    spec = perimeter.spec
+
+  output.append('name: {}'.format(perimeter.name[perimeter.name.rfind('/') +
+                                                 1:]))
+  output.append('title: {}'.format(perimeter.title))
+
+  output.append('type: {}'.format(perimeter.perimeterType or
+                                  'PERIMETER_TYPE_REGULAR'))
+
+  output.extend(_CompareTopLevelField(status, spec, 'resources'))
+  output.extend(_CompareTopLevelField(status, spec, 'restrictedServices'))
+  output.extend(_CompareTopLevelField(status, spec, 'accessLevels'))
+
+  status_vpc = status.vpcAccessibleServices
+  spec_vpc = spec.vpcAccessibleServices
+
+  output.append('vpcAccessibleServices:')
+  if status_vpc is None and spec_vpc is None:
+    output.append('   NONE')
+  else:
+    status_enabled = bool(status_vpc and status_vpc.enableRestriction)
+    spec_enabled = bool(spec_vpc and spec_vpc.enableRestriction)
+    output.append('  enableRestriction: {} -> {}'.format(
+        status_enabled, spec_enabled))
+    if status_vpc is not None:
+      status_vpc_services = set(status_vpc.allowedServices)
+    else:
+      status_vpc_services = set()
+    if spec_vpc is not None:
+      spec_vpc_services = set(spec_vpc.allowedServices)
+    else:
+      spec_vpc_services = set()
+    output.extend(
+        _CompareField(
+            status_vpc_services,
+            spec_vpc_services,
+            'allowedServices',
+            line_prefix='  '))
+  return '\n'.join(output)

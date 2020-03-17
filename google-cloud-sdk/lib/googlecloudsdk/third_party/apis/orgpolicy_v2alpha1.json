@@ -6,7 +6,7 @@
   "canonicalName": "OrgPolicy API",
   "version": "v2alpha1",
   "revision": "0",
-  "title": "OrgPolicy API",
+  "title": "Organization Policy API",
   "description": "The Org Policy API allows users to configure governance ruleson their GCP resources across the Cloud Resource Hierarchy.",
   "ownerDomain": "google.com",
   "ownerName": "Google",

@@ -32,3 +32,23 @@ certificate_authority:
     attribute_name: certificate_authority
     help: The ID of the certificate authority.
   disable_auto_completers: true
+
+certificate:
+  name: CERTIFICATE
+  collection: privateca.projects.locations.certificateAuthorities.certificates
+  request_id_field: certificate.name
+  attributes:
+  - *project
+  - &issuer_location
+    parameter_name: locationsId
+    attribute_name: issuer-location
+    help: The location of the {resource}.
+  - &issuer
+    parameter_name: certificateAuthoritiesId
+    attribute_name: issuer
+    help: The ID of the issuing certificate authority.
+  - &certificate
+    parameter_name: certificatesId
+    attribute_name: certificate
+    help: The ID of the certificate.
+  disable_auto_completers: true

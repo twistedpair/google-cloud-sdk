@@ -26,6 +26,7 @@ from googlecloudsdk.command_lib.concepts import exceptions as concept_exceptions
 from googlecloudsdk.command_lib.util.apis import arg_utils
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import yaml
+from googlecloudsdk.core.util import times
 import six
 
 
@@ -39,6 +40,22 @@ class InvalidSchemaFileError(exceptions.Error):
 
 class UnderSpecifiedEntryError(exceptions.Error):
   """Error if an entry resource argument is not fully specified."""
+
+
+def ParseFilesetRequirements(ref, args, request):
+  """Fileset types need a file pattern."""
+  del ref
+  if args.type == 'fileset' and args.gcs_file_patterns is None:
+    # if type is fileset and gcs-file-patterns not specified
+    raise concept_exceptions.ModalGroupError(
+        'gcs-file-patterns',
+        'type=FILESET',
+        '--gcs-file-patterns')
+  return request
+
+
+def GetJsonTimeString(dt):
+  return times.FormatDateTime(times.ParseDateTime(dt))
 
 
 def CorrectUpdateMask(ref, args, request):

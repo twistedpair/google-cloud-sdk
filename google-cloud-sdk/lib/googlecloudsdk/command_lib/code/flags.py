@@ -65,6 +65,20 @@ def CommonFlags(parser):
       help='Cloud SQL instance connection strings. Must be in the form '
       '<project>:<region>:<instance>.')
 
+  parser.add_argument(
+      '--cpu-limit',
+      type=arg_parsers.BoundedFloat(lower_bound=0.0),
+      help='Container CPU limit. Limit is expressed as a number of CPUs. '
+      'Fractional CPU limits are allowed (e.g. 1.5).')
+
+  parser.add_argument(
+      '--memory-limit',
+      type=arg_parsers.BinarySize(default_unit='B'),
+      help='Container memory limit. Limit is expressed either as an integer '
+      'representing the number of bytes or an integer followed by a unit '
+      'suffix. Valid unit suffixes are "B", "KB", "MB", "GB", "TB", "KiB", '
+      '"MiB", "GiB", "TiB", or "PiB".')
+
   env_var_group = parser.add_mutually_exclusive_group(required=False)
   env_var_group.add_argument(
       '--env-vars',

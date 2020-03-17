@@ -5,6 +5,104 @@ Copyright 2014-2020 Google Inc. All rights reserved.
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 
 
+## 285.0.0 (2020-03-17)
+
+### Breaking Changes
+
+*   **(Cloud Dataproc)** Deprecated the following flag in `gcloud dataproc clusters update` command:
+  * `--num-preemptible-workers`
+
+
+### AI Platform
+
+* Modified `ai-platform models set-iam-policy` to accept a model resource arg.
+* Modified `ai-platform models get-iam-policy` to accept a model resource arg.
+
+### Artifact Registry
+
+* Promoted `gcloud artifacts` to beta.
+
+### Cloud Access Context Manager
+
+* Added `--custom-level-spec` argument to enable custom access level definition
+  to the following commands:
+    * `gcloud access-context-manager levels create`
+    * `gcloud access-context-manager levels update`
+
+### Cloud Build
+
+* Reset ownership to root when creating workspace snapshot.
+
+### Cloud DNS
+
+* Promoted `gcloud dns managed-zones` to beta.
+* Added `--service-directory-namespace` to `gcloud beta dns managed-zones create` to support providing a Service Directory namespace that should be associated with the zone.
+
+### Cloud Data Catalog
+
+* Modified `gcloud data-catalog entries <create|update>` to support user specified types.
+
+### Cloud Dataproc
+
+* Added the following flag to `gcloud dataproc clusters update` command:
+  * `--num-secondary-workers`
+* Added `--gke-cluster` and `--gke-cluster-namespace` flags to `gcloud beta
+  dataproc clusters create` to allow creation of GKE-based Dataproc clusters.
+
+### Cloud Identity-Aware Proxy
+
+*      Promoted `gcloud iap settings` command group to GA.
+
+### Cloud Memorystore
+
+* Added `gcloud beta memcache` which manages Cloud Memorystore Memcached resources.
+
+### Cloud Run
+
+* Modified `--args` and `--command` flags of `gcloud run services update`,
+  `gcloud run deploy`, `gcloud beta run services update`, and `gcloud beta run
+  deploy` to support repeated usages on a single command invocation.
+
+### Compute Engine
+
+* Added `cpu-overcommit-type` flag to `gcloud beta compute sole-tenancy node-templates create`.
+* Promoted `gcloud compute resource-policies create group-placement` command
+to GA.
+* Promoted `gcloud compute os-config patch-jobs` command group to GA.
+* Promoted `gcloud compute os-config patch-deployments` command group to GA.
+
+### Identity Groups
+
+* Added `gcloud beta identity groups preview` to retrieve a list of users in a
+customer account using CEL query.
+* Added `--dynamic-user-query` to `gcloud beta identity groups create`.
+
+### Kpt
+
+* Updated kpt from v0.9.0 to v0.11.0.
+* Updated import of cli-utils from v0.2.0 to v0.3.0.
+
+### Kubernetes Engine
+
+*   Added `--enable-logging-monitoring-system-only` flag to
+    `gcloud container clusters create` and `gcloud container clusters
+    update` to enable Stackdriver system-only logging and monitoring.
+
+### Network Management
+
+* Modified `gcloud beta network-management connectivity-tests create` to verify that at least one source and one destination are specified.
+* Modified `gcloud beta network-management connectivity-tests create` and `gcloud beta network-management connectivity-tests update` to verify that instance and network formats are valid.
+* Added the following optional flags to `gcloud beta network-management connectivity-tests update`:
+  * `--clear-source-instance`
+  * `--clear-source-ip-address`
+  * `--clear-destination-instance`
+  * `--clear-destination-ip-address`
+* Promoted `gcloud network-management` command group to GA.
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+
 ## 284.0.0 (2020-03-10)
 
 ### Breaking Changes

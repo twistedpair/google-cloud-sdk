@@ -30,6 +30,7 @@ import tempfile
 from googlecloudsdk.api_lib.run import gke
 from googlecloudsdk.api_lib.run import global_methods
 from googlecloudsdk.api_lib.util import apis
+from googlecloudsdk.calliope import base
 from googlecloudsdk.command_lib.run import exceptions as serverless_exceptions
 from googlecloudsdk.command_lib.run import flags
 from googlecloudsdk.core import properties
@@ -41,6 +42,8 @@ from six.moves.urllib import parse as urlparse
 
 
 _CLUSTER_API_VERSION = 'v1alpha1'
+_CLUSTER_ALPHA_API_VERSION = 'v1'
+
 _EVENTS_API_VERSION = 'v1alpha1'
 
 
@@ -399,12 +402,18 @@ class _RegionalConnectionContext(ConnectionInfo):
     return True
 
 
-def GetConnectionContext(args, product=flags.Product.RUN):
+def GetConnectionContext(args,
+                         product=flags.Product.RUN,
+                         release_track=base.ReleaseTrack.GA,
+                         version_override=None):
   """Gets the regional, kubeconfig, or GKE connection context.
 
   Args:
     args: Namespace, the args namespace.
     product: Which product is requesting connection context.
+    release_track: Release track of the command being run.
+    version_override: If specified, the given api version will be used no matter
+      the other parameters.
 
   Raises:
     ArgumentError if region or cluster is not specified.
@@ -414,7 +423,11 @@ def GetConnectionContext(args, product=flags.Product.RUN):
   """
   if flags.GetPlatform() == flags.PLATFORM_KUBERNETES:
     kubeconfig = flags.GetKubeconfig(args)
-    return _KubeconfigConnectionContext(kubeconfig, _CLUSTER_API_VERSION,
+    if release_track == base.ReleaseTrack.ALPHA:
+      version = _CLUSTER_ALPHA_API_VERSION
+    else:
+      version = _CLUSTER_API_VERSION
+    return _KubeconfigConnectionContext(kubeconfig, version_override or version,
                                         args.context)
 
   if flags.GetPlatform() == flags.PLATFORM_GKE:
@@ -424,7 +437,11 @@ def GetConnectionContext(args, product=flags.Product.RUN):
           'You must specify a cluster in a given location. '
           'Either use the `--cluster` and `--cluster-location` flags '
           'or set the run/cluster and run/cluster_location properties.')
-    return _GKEConnectionContext(cluster_ref, _CLUSTER_API_VERSION)
+    if release_track == base.ReleaseTrack.ALPHA:
+      version = _CLUSTER_ALPHA_API_VERSION
+    else:
+      version = _CLUSTER_API_VERSION
+    return _GKEConnectionContext(cluster_ref, version_override or version)
 
   if flags.GetPlatform() == flags.PLATFORM_MANAGED:
     region = flags.GetRegion(args, prompt=True)
@@ -438,4 +455,4 @@ def GetConnectionContext(args, product=flags.Product.RUN):
       version = _EVENTS_API_VERSION
     else:
       raise ValueError('Unrecognized product: ' + six.u(product))
-    return _RegionalConnectionContext(region, version)
+    return _RegionalConnectionContext(region, version_override or version)

@@ -638,7 +638,16 @@ def AddPortName(parser):
       """)
 
 
-def AddProtocol(parser, default='HTTP'):
+def AddProtocol(parser, default='HTTP', support_grpc_protocol=False):
+  """Adds --protocol flag to the argparse.
+
+  Args:
+    parser: An argparse.ArgumentParser instance.
+    default: The default protocol if this flag is unspecified.
+    support_grpc_protocol: Indicates if GRPC is a valid protocol.
+  """
+  td_protocols = ('HTTP, HTTPS, HTTP2, GRPC'
+                  if support_grpc_protocol else 'HTTP, HTTPS, HTTP2')
   parser.add_argument(
       '--protocol',
       default=default,
@@ -650,7 +659,7 @@ def AddProtocol(parser, default='HTTP'):
       balancers), the protocol must be one of: TCP, UDP.
 
       If the `load-balancing-scheme` is `INTERNAL_SELF_MANAGED` (Traffic
-      Director), the protocol must be one of: HTTP, HTTPS, HTTP2.
+      Director), the protocol must be one of: {0}.
 
       If the `load-balancing-scheme` is `INTERNAL_MANAGED` (internal HTTP(S)
       load balancers), the protocol must be one of: HTTP, HTTPS, HTTP2.
@@ -658,7 +667,7 @@ def AddProtocol(parser, default='HTTP'):
       If the `load-balancing-scheme` is `EXTERNAL` (HTTP(S), SSL proxy, or TCP
       proxy load balancers), the protocol must be one of: HTTP, HTTPS, HTTP2,
       SSL, TCP.
-      """)
+      """.format(td_protocols))
 
 
 def AddConnectionDrainOnFailover(parser, default):

@@ -793,8 +793,7 @@ class ExpiryDetail(_messages.Message):
 
 
 class GetMembershipGraphResponse(_messages.Message):
-  r"""Response message for getting the membership graph of a member
-  conditionally constrained by a group.
+  r"""The response message for MembershipsService.GetMembershipGraph.
 
   Fields:
     adjacencyList: The membership graph's path information represented as an

@@ -165,18 +165,18 @@ class TrafficTargetPair(object):
   @property
   def specTags(self):  # pylint: disable=invalid-name
     spec_tags = _TAGS_JOIN_STRING.join(
-        t.tag for t in self._spec_targets if t.tag)
+        sorted(t.tag for t in self._spec_targets if t.tag))
     return spec_tags if spec_tags else _MISSING_PERCENT_OR_TAGS
 
   @property
   def statusTags(self):  # pylint: disable=invalid-name
     status_tags = _TAGS_JOIN_STRING.join(
-        t.tag for t in self._status_targets if t.tag)
+        sorted(t.tag for t in self._status_targets if t.tag))
     return status_tags if status_tags else _MISSING_PERCENT_OR_TAGS
 
   @property
   def urls(self):
-    return [t.url for t in self._status_targets if t.url]
+    return sorted(t.url for t in self._status_targets if t.url)
 
   @property
   def displayPercent(self):  # pylint: disable=invalid-name

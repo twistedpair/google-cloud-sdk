@@ -1505,7 +1505,7 @@ class ResourceRecordSetsListResponse(_messages.Message):
 
   Fields:
     header: A ResponseHeader attribute.
-    kind: A string attribute.
+    kind: Type of resource.
     nextPageToken: The presence of this field indicates that there exist more
       results following your last page of results in pagination order. To
       fetch them, make another list request using this value as your

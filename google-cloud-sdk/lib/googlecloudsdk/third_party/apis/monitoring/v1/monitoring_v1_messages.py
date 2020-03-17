@@ -37,7 +37,8 @@ class Aggregation(_messages.Message):
   the average of all tasks in a cluster". This representative data can be more
   easily graphed and comprehended, and the individual time series data is
   still available for later drilldown. For more details, see Aggregating Time
-  Series.
+  Series (https://cloud.google.com/monitoring/api/v3/metrics#aggregating_time_
+  series).
 
   Enums:
     CrossSeriesReducerValueValuesEnum: The reduction operation to be used to
@@ -907,8 +908,9 @@ class RatioPart(_messages.Message):
   Fields:
     aggregation: By default, the raw time series data is returned. Use this
       field to combine multiple time series for different views of the data.
-    filter: Required. The monitoring filter that identifies the metric types,
-      resources, and projects to query.
+    filter: Required. The monitoring filter
+      (https://cloud.google.com/monitoring/api/v3/filters) that identifies the
+      metric types, resources, and projects to query.
   """
 
   aggregation = _messages.MessageField('Aggregation', 1)
@@ -1183,13 +1185,15 @@ class Threshold(_messages.Message):
 
 class TimeSeriesFilter(_messages.Message):
   r"""A filter that defines a subset of time series data that is displayed in
-  a widget. Time series data is fetched using the ListTimeSeries method.
+  a widget. Time series data is fetched using the ListTimeSeries (https://clou
+  d.google.com/monitoring/api/ref_v3/rest/v3/projects.timeSeries/list) method.
 
   Fields:
     aggregation: By default, the raw time series data is returned. Use this
       field to combine multiple time series for different views of the data.
-    filter: Required. The monitoring filter that identifies the metric types,
-      resources, and projects to query.
+    filter: Required. The monitoring filter
+      (https://cloud.google.com/monitoring/api/v3/filters) that identifies the
+      metric types, resources, and projects to query.
     pickTimeSeriesFilter: Ranking based time series filter.
   """
 
@@ -1227,7 +1231,9 @@ class TimeSeriesQuery(_messages.Message):
       filters.
     unitOverride: The unit of data contained in fetched time series. If non-
       empty, this unit will override any unit that accompanies fetched data.
-      The format is the same as the unit field in MetricDescriptor.
+      The format is the same as the unit (https://cloud.google.com/monitoring/
+      api/ref_v3/rest/v3/projects.metricDescriptors) field in
+      MetricDescriptor.
   """
 
   timeSeriesFilter = _messages.MessageField('TimeSeriesFilter', 1)

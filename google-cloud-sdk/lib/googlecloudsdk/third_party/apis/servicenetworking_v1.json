@@ -434,7 +434,7 @@
       "type": "object",
       "properties": {
         "configVersion": {
-          "description": "The semantic version of the service configuration. The config version\naffects the interpretation of the service configuration. For example,\ncertain features are enabled by default for certain config versions.\nThe latest config version is `3`.",
+          "description": "The semantic version of the service configuration. The config version\naffects the interpretation of the service configuration. For example,\ncertain features are enabled by default for certain config versions.\n\nThe latest config version is `3`.",
           "type": "integer",
           "format": "uint32"
         },

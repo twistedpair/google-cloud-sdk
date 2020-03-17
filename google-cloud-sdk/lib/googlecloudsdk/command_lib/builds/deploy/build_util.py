@@ -24,7 +24,6 @@ from googlecloudsdk.core.util import times
 
 import six
 
-_IMAGE = 'gcr.io/$PROJECT_ID/$REPO_NAME:$COMMIT_SHA'
 _VERSION = '$COMMIT_SHA'
 
 _DEFAULT_TAGS = [
@@ -112,15 +111,7 @@ fi
   --output=output \\
   --annotation=gcb-build-id=$BUILD_ID,${k8s_annotations} \\
   --expose=${expose_port}
-'''.format(
-    image=_IMAGE,
-    cluster=_GKE_CLUSTER_SUB_VAR,
-    location=_GKE_LOCATION_SUB_VAR,
-    k8s_yaml_path=_K8S_YAML_PATH_SUB_VAR,
-    app_name=_APP_NAME_SUB_VAR,
-    k8s_annotations=_K8S_ANNOTATIONS_SUB_VAR,
-    expose_port=_EXPOSE_PORT_SUB_VAR,
-)
+'''
 
 _APPLY_PREVIEW_DEPLOY_SCRIPT = '''
 set -e
@@ -259,7 +250,7 @@ def CreateBuild(
     staged_source: An optional GCS object for a staged source repository. The
       object must have bucket, name, and generation fields. If this value is
       None, the created build will not have a source.
-    image: The image that will deployed and optionally built beforehand. The
+    image: The image that will be deployed and optionally built beforehand. The
       image can include a tag or digest.
     dockerfile_path: An optional path to the source repository's Dockerfile,
       relative to the source repository's root directory. If this value is not
@@ -395,7 +386,7 @@ def CreateGitPushBuildTrigger(
     messages, name, description, build_timeout,
     csr_repo_name, github_repo_owner, github_repo_name,
     branch_pattern, tag_pattern,
-    dockerfile_path, app_name, config_path, namespace,
+    image, dockerfile_path, app_name, config_path, namespace,
     expose_port, gcs_config_staging_path, cluster, location, build_tags,
     build_trigger_tags
 ):
@@ -428,6 +419,8 @@ def CreateGitPushBuildTrigger(
     tag_pattern: An optional regex value to be used to trigger. If this value
       if provided, branch_pattern should not be provided. branch_pattern or
       tag_pattern must be provided.
+    image: The image that will be built and deployed. The image can include a
+      tag or digest.
     dockerfile_path: An optional path to the source repository's Dockerfile,
       relative to the source repository's root directory that is set to a
       substitution variable. If this value is not provided, 'Dockerfile' is
@@ -470,7 +463,7 @@ def CreateGitPushBuildTrigger(
   build_trigger = messages.BuildTrigger(
       name=name,
       description=description,
-      build=CreateBuild(messages, build_timeout, True, None, _IMAGE,
+      build=CreateBuild(messages, build_timeout, True, None, image,
                         dockerfile_path, app_name, _VERSION, config_path,
                         namespace, expose_port, gcs_config_staging_path,
                         cluster, location, build_tags),
@@ -507,7 +500,7 @@ def CreatePRPreviewBuildTrigger(
     messages, name, description, build_timeout,
     github_repo_owner, github_repo_name,
     pr_pattern, preview_expiry_days, comment_control,
-    dockerfile_path, app_name, config_path, expose_port,
+    image, dockerfile_path, app_name, config_path, expose_port,
     gcs_config_staging_path, cluster, location, build_tags,
     build_trigger_tags
 ):
@@ -532,6 +525,8 @@ def CreatePRPreviewBuildTrigger(
       before it is expired, in days, that is set to a substitution variable.
     comment_control: Whether or not a user must comment /gcbrun to trigger
       the deployment build.
+    image: The image that will be built and deployed. The image can include a
+      tag or digest.
     dockerfile_path: An optional path to the source repository's Dockerfile,
       relative to the source repository's root directory that is set to a
       substitution variable. If this value is not provided, 'Dockerfile' is
@@ -568,15 +563,23 @@ def CreatePRPreviewBuildTrigger(
 
   build = messages.Build(
       steps=[
-          _BuildBuildStep(messages, _IMAGE),
-          _PushBuildStep(messages, _IMAGE),
+          _BuildBuildStep(messages, image),
+          _PushBuildStep(messages, image),
           messages.BuildStep(
               id=_PREPARE_DEPLOY_BUILD_STEP_ID,
               name=_GKE_DEPLOY_PROD,
               entrypoint='sh',
               args=[
                   '-c',
-                  _PREPARE_PREVIEW_DEPLOY_SCRIPT
+                  _PREPARE_PREVIEW_DEPLOY_SCRIPT.format(
+                      image=image,
+                      cluster=_GKE_CLUSTER_SUB_VAR,
+                      location=_GKE_LOCATION_SUB_VAR,
+                      k8s_yaml_path=_K8S_YAML_PATH_SUB_VAR,
+                      app_name=_APP_NAME_SUB_VAR,
+                      k8s_annotations=_K8S_ANNOTATIONS_SUB_VAR,
+                      expose_port=_EXPOSE_PORT_SUB_VAR,
+                  )
               ]
           ),
           _SaveConfigsBuildStep(messages),
@@ -605,7 +608,7 @@ def CreatePRPreviewBuildTrigger(
           substitutionOption=messages.BuildOptions
           .SubstitutionOptionValueValuesEnum.ALLOW_LOOSE
       ),
-      images=[_IMAGE],
+      images=[image],
       artifacts=messages.Artifacts(
           objects=messages.ArtifactObjects(
               location='gs://' + _EXPANDED_CONFIGS_PATH_DYNAMIC,

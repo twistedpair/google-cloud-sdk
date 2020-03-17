@@ -50,7 +50,7 @@ def CreateNotificationReqHook(ref, args, req):
   config = _GetNotificationConfigName(args)
   req.parent = GetOrganizationFromResourceName(config)
   req.configId = _GetNotificationConfigId(config)
-  messages = sc_client.GetMessages("v1p1beta1")
+  messages = sc_client.GetMessages("v1")
   if (args.filter is None):
     streamingConfig = messages.StreamingConfig()
     streamingConfig.filter = "";

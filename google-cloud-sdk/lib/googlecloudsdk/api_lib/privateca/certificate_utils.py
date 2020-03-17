@@ -42,7 +42,7 @@ def GetCertificateBySerialNum(ca_ref, serial_num):
     exceptions.InvalidArgumentError if there were no certificates with the
     specified ca and serial number.
   """
-  cert_filter = 'certificate_description.subject_description.hex_serial_number={}'.format(
+  cert_filter = 'certificate_description.subject_description.hex_serial_number:{}'.format(
       serial_num)
   client = base.GetClientInstance()
   messages = base.GetMessagesModule()

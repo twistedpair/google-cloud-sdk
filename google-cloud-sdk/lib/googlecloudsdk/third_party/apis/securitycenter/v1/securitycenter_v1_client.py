@@ -37,6 +37,7 @@ class SecuritycenterV1(base_api.BaseApiClient):
         additional_http_headers=additional_http_headers,
         response_encoding=response_encoding)
     self.organizations_assets = self.OrganizationsAssetsService(self)
+    self.organizations_notificationConfigs = self.OrganizationsNotificationConfigsService(self)
     self.organizations_operations = self.OrganizationsOperationsService(self)
     self.organizations_sources_findings = self.OrganizationsSourcesFindingsService(self)
     self.organizations_sources = self.OrganizationsSourcesService(self)
@@ -163,6 +164,152 @@ error.
         request_field=u'securityMarks',
         request_type_name=u'SecuritycenterOrganizationsAssetsUpdateSecurityMarksRequest',
         response_type_name=u'SecurityMarks',
+        supports_download=False,
+    )
+
+  class OrganizationsNotificationConfigsService(base_api.BaseApiService):
+    """Service class for the organizations_notificationConfigs resource."""
+
+    _NAME = u'organizations_notificationConfigs'
+
+    def __init__(self, client):
+      super(SecuritycenterV1.OrganizationsNotificationConfigsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Creates a notification config.
+
+      Args:
+        request: (SecuritycenterOrganizationsNotificationConfigsCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (NotificationConfig) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1/organizations/{organizationsId}/notificationConfigs',
+        http_method=u'POST',
+        method_id=u'securitycenter.organizations.notificationConfigs.create',
+        ordered_params=[u'parent'],
+        path_params=[u'parent'],
+        query_params=[u'configId'],
+        relative_path=u'v1/{+parent}/notificationConfigs',
+        request_field=u'notificationConfig',
+        request_type_name=u'SecuritycenterOrganizationsNotificationConfigsCreateRequest',
+        response_type_name=u'NotificationConfig',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes a notification config.
+
+      Args:
+        request: (SecuritycenterOrganizationsNotificationConfigsDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Empty) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1/organizations/{organizationsId}/notificationConfigs/{notificationConfigsId}',
+        http_method=u'DELETE',
+        method_id=u'securitycenter.organizations.notificationConfigs.delete',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[],
+        relative_path=u'v1/{+name}',
+        request_field='',
+        request_type_name=u'SecuritycenterOrganizationsNotificationConfigsDeleteRequest',
+        response_type_name=u'Empty',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Gets a notification config.
+
+      Args:
+        request: (SecuritycenterOrganizationsNotificationConfigsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (NotificationConfig) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1/organizations/{organizationsId}/notificationConfigs/{notificationConfigsId}',
+        http_method=u'GET',
+        method_id=u'securitycenter.organizations.notificationConfigs.get',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[],
+        relative_path=u'v1/{+name}',
+        request_field='',
+        request_type_name=u'SecuritycenterOrganizationsNotificationConfigsGetRequest',
+        response_type_name=u'NotificationConfig',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists notification configs.
+
+      Args:
+        request: (SecuritycenterOrganizationsNotificationConfigsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListNotificationConfigsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1/organizations/{organizationsId}/notificationConfigs',
+        http_method=u'GET',
+        method_id=u'securitycenter.organizations.notificationConfigs.list',
+        ordered_params=[u'parent'],
+        path_params=[u'parent'],
+        query_params=[u'pageSize', u'pageToken'],
+        relative_path=u'v1/{+parent}/notificationConfigs',
+        request_field='',
+        request_type_name=u'SecuritycenterOrganizationsNotificationConfigsListRequest',
+        response_type_name=u'ListNotificationConfigsResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r""".
+Updates a notification config.
+
+      Args:
+        request: (SecuritycenterOrganizationsNotificationConfigsPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (NotificationConfig) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1/organizations/{organizationsId}/notificationConfigs/{notificationConfigsId}',
+        http_method=u'PATCH',
+        method_id=u'securitycenter.organizations.notificationConfigs.patch',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[u'updateMask'],
+        relative_path=u'v1/{+name}',
+        request_field=u'notificationConfig',
+        request_type_name=u'SecuritycenterOrganizationsNotificationConfigsPatchRequest',
+        response_type_name=u'NotificationConfig',
         supports_download=False,
     )
 

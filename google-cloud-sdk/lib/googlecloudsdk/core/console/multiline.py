@@ -329,6 +329,7 @@ class SuffixConsoleMessage(object):
 
   def _WriteLine(self, line):
     self._stream.write(self._level * INDENTATION_WIDTH * ' ' + line)
+    self._stream.flush()
 
 
 class MultilineConsoleOutput(ConsoleOutput):

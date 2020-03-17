@@ -406,6 +406,20 @@ class GetPolicyOptions(_messages.Message):
   requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
 
 
+class GoogleCloudSecuritycenterV1NotificationMessage(_messages.Message):
+  r"""Cloud SCC's Notification
+
+  Fields:
+    finding: If it's a Finding based notification config, this field will be
+      populated.
+    notificationConfigName: Name of the notification config that generated
+      current notification.
+  """
+
+  finding = _messages.MessageField('Finding', 1)
+  notificationConfigName = _messages.StringField(2)
+
+
 class GoogleCloudSecuritycenterV1RunAssetDiscoveryResponse(_messages.Message):
   r"""Response of asset discovery run
 
@@ -1191,6 +1205,20 @@ class ListFindingsResult(_messages.Message):
   stateChange = _messages.EnumField('StateChangeValueValuesEnum', 3)
 
 
+class ListNotificationConfigsResponse(_messages.Message):
+  r"""Response message for listing notification configs.
+
+  Fields:
+    nextPageToken: Token to retrieve the next page of results, or empty if
+      there are no more results.
+    notificationConfigs: Notification configs belonging to the requested
+      parent.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  notificationConfigs = _messages.MessageField('NotificationConfig', 2, repeated=True)
+
+
 class ListOperationsResponse(_messages.Message):
   r"""The response message for Operations.ListOperations.
 
@@ -1215,6 +1243,32 @@ class ListSourcesResponse(_messages.Message):
 
   nextPageToken = _messages.StringField(1)
   sources = _messages.MessageField('Source', 2, repeated=True)
+
+
+class NotificationConfig(_messages.Message):
+  r"""Cloud Security Command Center (Cloud SCC) notification configs.  A
+  notification config is a Cloud SCC resource that contains the configuration
+  to send notifications for create/update events of findings, assets and etc.
+
+  Fields:
+    description: The description of the notification config (max of 1024
+      characters).
+    name: The relative resource name of this notification config. See:
+      https://cloud.google.com/apis/design/resource_names#relative_resource_na
+      me Example: "organizations/{organization_id}/notificationConfigs/notify_
+      public_bucket".
+    pubsubTopic: The PubSub topic to send notifications to. Its format is
+      "projects/[project_id]/topics/[topic]".
+    serviceAccount: Output only. The service account that needs
+      "pubsub.topics.publish" permission to publish to the PubSub topic.
+    streamingConfig: The config for triggering streaming-based notifications.
+  """
+
+  description = _messages.StringField(1)
+  name = _messages.StringField(2)
+  pubsubTopic = _messages.StringField(3)
+  serviceAccount = _messages.StringField(4)
+  streamingConfig = _messages.MessageField('StreamingConfig', 5)
 
 
 class Operation(_messages.Message):
@@ -1696,6 +1750,84 @@ class SecuritycenterOrganizationsGetOrganizationSettingsRequest(_messages.Messag
   """
 
   name = _messages.StringField(1, required=True)
+
+
+class SecuritycenterOrganizationsNotificationConfigsCreateRequest(_messages.Message):
+  r"""A SecuritycenterOrganizationsNotificationConfigsCreateRequest object.
+
+  Fields:
+    configId: Required. Unique identifier provided by the client within the
+      parent scope. It must be between 1 and 128 characters, and contains
+      alphanumeric characters, underscores or hyphens only.
+    notificationConfig: A NotificationConfig resource to be passed as the
+      request body.
+    parent: Required. Resource name of the new notification config's parent.
+      Its format is "organizations/[organization_id]".
+  """
+
+  configId = _messages.StringField(1)
+  notificationConfig = _messages.MessageField('NotificationConfig', 2)
+  parent = _messages.StringField(3, required=True)
+
+
+class SecuritycenterOrganizationsNotificationConfigsDeleteRequest(_messages.Message):
+  r"""A SecuritycenterOrganizationsNotificationConfigsDeleteRequest object.
+
+  Fields:
+    name: Required. Name of the notification config to delete. Its format is
+      "organizations/[organization_id]/notificationConfigs/[config_id]".
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class SecuritycenterOrganizationsNotificationConfigsGetRequest(_messages.Message):
+  r"""A SecuritycenterOrganizationsNotificationConfigsGetRequest object.
+
+  Fields:
+    name: Required. Name of the notification config to get. Its format is
+      "organizations/[organization_id]/notificationConfigs/[config_id]".
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class SecuritycenterOrganizationsNotificationConfigsListRequest(_messages.Message):
+  r"""A SecuritycenterOrganizationsNotificationConfigsListRequest object.
+
+  Fields:
+    pageSize: The maximum number of results to return in a single response.
+      Default is 10, minimum is 1, maximum is 1000.
+    pageToken: The value returned by the last
+      `ListNotificationConfigsResponse`; indicates that this is a continuation
+      of a prior `ListNotificationConfigs` call, and that the system should
+      return the next page of data.
+    parent: Required. Name of the organization to list notification configs.
+      Its format is "organizations/[organization_id]".
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class SecuritycenterOrganizationsNotificationConfigsPatchRequest(_messages.Message):
+  r"""A SecuritycenterOrganizationsNotificationConfigsPatchRequest object.
+
+  Fields:
+    name: The relative resource name of this notification config. See:
+      https://cloud.google.com/apis/design/resource_names#relative_resource_na
+      me Example: "organizations/{organization_id}/notificationConfigs/notify_
+      public_bucket".
+    notificationConfig: A NotificationConfig resource to be passed as the
+      request body.
+    updateMask: The FieldMask to use when updating the notification config.
+      If empty all mutable fields will be updated.
+  """
+
+  name = _messages.StringField(1, required=True)
+  notificationConfig = _messages.MessageField('NotificationConfig', 2)
+  updateMask = _messages.StringField(3)
 
 
 class SecuritycenterOrganizationsOperationsCancelRequest(_messages.Message):
@@ -2233,6 +2365,28 @@ class Status(_messages.Message):
   code = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   details = _messages.MessageField('DetailsValueListEntry', 2, repeated=True)
   message = _messages.StringField(3)
+
+
+class StreamingConfig(_messages.Message):
+  r"""The config for streaming-based notifications, which send each event as
+  soon as it is detected.
+
+  Fields:
+    filter: Expression that defines the filter to apply across create/update
+      events of assets or findings as specified by the event type. The
+      expression is a list of zero or more restrictions combined via logical
+      operators `AND` and `OR`. Parentheses are supported, and `OR` has higher
+      precedence than `AND`.  Restrictions have the form `<field> <operator>
+      <value>` and may have a `-` character in front of them to indicate
+      negation. The fields map to those defined in the corresponding resource.
+      The supported operators are:  * `=` for all value types. * `>`, `<`,
+      `>=`, `<=` for integer values. * `:`, meaning substring matching, for
+      strings.  The supported value types are:  * string literals in quotes. *
+      integer literals without quotes. * boolean literals `true` and `false`
+      without quotes.
+  """
+
+  filter = _messages.StringField(1)
 
 
 class TestIamPermissionsRequest(_messages.Message):

@@ -4343,6 +4343,20 @@
           "items": {
             "$ref": "CPUTime"
           }
+        },
+        "memoryInfo": {
+          "description": "Memory utilization samples.",
+          "type": "array",
+          "items": {
+            "$ref": "MemInfo"
+          }
+        },
+        "containers": {
+          "description": "Per container information.\nKey: container name.",
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "ResourceUtilizationReport"
+          }
         }
       }
     },
@@ -4365,6 +4379,33 @@
           "description": "Average CPU utilization rate (% non-idle cpu \/ second) since previous\nsample.",
           "type": "number",
           "format": "double"
+        }
+      }
+    },
+    "MemInfo": {
+      "id": "MemInfo",
+      "description": "Information about the memory usage of a worker or a container within a\nworker.",
+      "type": "object",
+      "properties": {
+        "timestamp": {
+          "description": "Timestamp of the measurement.",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "totalGbMs": {
+          "description": "Total memory (RSS) usage since start up in GB * ms.",
+          "type": "string",
+          "format": "uint64"
+        },
+        "currentRssBytes": {
+          "description": "Instantenous memory (RSS) size in bytes.",
+          "type": "string",
+          "format": "uint64"
+        },
+        "currentLimitBytes": {
+          "description": "Instantenous memory limit in bytes.",
+          "type": "string",
+          "format": "uint64"
         }
       }
     },

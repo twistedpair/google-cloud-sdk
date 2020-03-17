@@ -2012,7 +2012,7 @@ class Service(_messages.Message):
     configVersion: The semantic version of the service configuration. The
       config version affects the interpretation of the service configuration.
       For example, certain features are enabled by default for certain config
-      versions. The latest config version is `3`.
+      versions.  The latest config version is `3`.
     context: Context configuration.
     control: Configuration for the service control plane.
     customError: Custom error configuration.

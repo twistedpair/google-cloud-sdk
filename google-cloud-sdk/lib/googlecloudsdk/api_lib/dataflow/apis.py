@@ -591,7 +591,7 @@ class Templates(object):
           'Successfully saved container spec in flex template file.\n'
           'Template File GCS Location: {}\n'
           'Container Spec:\n\n'
-          '{}').format(template_file_gcs_location, container_spec_pretty_json)
+          '{}'.format(template_file_gcs_location, container_spec_pretty_json))
     except apitools_exceptions.HttpError as error:
       raise exceptions.HttpException(error)
 

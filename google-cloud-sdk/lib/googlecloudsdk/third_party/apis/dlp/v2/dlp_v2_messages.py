@@ -1222,6 +1222,20 @@ class DlpProjectsLocationsDlpJobsDeleteRequest(_messages.Message):
   name = _messages.StringField(1, required=True)
 
 
+class DlpProjectsLocationsDlpJobsFinishRequest(_messages.Message):
+  r"""A DlpProjectsLocationsDlpJobsFinishRequest object.
+
+  Fields:
+    googlePrivacyDlpV2FinishDlpJobRequest: A
+      GooglePrivacyDlpV2FinishDlpJobRequest resource to be passed as the
+      request body.
+    name: Required. The name of the DlpJob resource to be cancelled.
+  """
+
+  googlePrivacyDlpV2FinishDlpJobRequest = _messages.MessageField('GooglePrivacyDlpV2FinishDlpJobRequest', 1)
+  name = _messages.StringField(2, required=True)
+
+
 class DlpProjectsLocationsDlpJobsGetRequest(_messages.Message):
   r"""A DlpProjectsLocationsDlpJobsGetRequest object.
 
@@ -1230,6 +1244,21 @@ class DlpProjectsLocationsDlpJobsGetRequest(_messages.Message):
   """
 
   name = _messages.StringField(1, required=True)
+
+
+class DlpProjectsLocationsDlpJobsHybridInspectRequest(_messages.Message):
+  r"""A DlpProjectsLocationsDlpJobsHybridInspectRequest object.
+
+  Fields:
+    googlePrivacyDlpV2HybridInspectDlpJobRequest: A
+      GooglePrivacyDlpV2HybridInspectDlpJobRequest resource to be passed as
+      the request body.
+    name: Required. Resource name of the job to execute a hybrid inspect on,
+      for example `projects/dlp-test-project/dlpJob/53234423`.
+  """
+
+  googlePrivacyDlpV2HybridInspectDlpJobRequest = _messages.MessageField('GooglePrivacyDlpV2HybridInspectDlpJobRequest', 1)
+  name = _messages.StringField(2, required=True)
 
 
 class DlpProjectsLocationsDlpJobsListRequest(_messages.Message):
@@ -1455,6 +1484,21 @@ class DlpProjectsLocationsJobTriggersGetRequest(_messages.Message):
   """
 
   name = _messages.StringField(1, required=True)
+
+
+class DlpProjectsLocationsJobTriggersHybridInspectRequest(_messages.Message):
+  r"""A DlpProjectsLocationsJobTriggersHybridInspectRequest object.
+
+  Fields:
+    googlePrivacyDlpV2HybridInspectJobTriggerRequest: A
+      GooglePrivacyDlpV2HybridInspectJobTriggerRequest resource to be passed
+      as the request body.
+    name: Required. Resource name of the trigger to execute a hybrid inspect
+      on, for example `projects/dlp-test-project/jobTriggers/53234423`.
+  """
+
+  googlePrivacyDlpV2HybridInspectJobTriggerRequest = _messages.MessageField('GooglePrivacyDlpV2HybridInspectJobTriggerRequest', 1)
+  name = _messages.StringField(2, required=True)
 
 
 class DlpProjectsLocationsJobTriggersListRequest(_messages.Message):
@@ -2121,13 +2165,17 @@ class GooglePrivacyDlpV2CloudStorageOptions(_messages.Message):
       BINARY_FILE: <no description>
       TEXT_FILE: <no description>
       IMAGE: <no description>
+      WORD: <no description>
+      PDF: <no description>
       AVRO: <no description>
     """
     FILE_TYPE_UNSPECIFIED = 0
     BINARY_FILE = 1
     TEXT_FILE = 2
     IMAGE = 3
-    AVRO = 4
+    WORD = 4
+    PDF = 5
+    AVRO = 6
 
   class SampleMethodValueValuesEnum(_messages.Enum):
     r"""SampleMethodValueValuesEnum enum type.
@@ -2281,6 +2329,43 @@ class GooglePrivacyDlpV2Conditions(_messages.Message):
   """
 
   conditions = _messages.MessageField('GooglePrivacyDlpV2Condition', 1, repeated=True)
+
+
+class GooglePrivacyDlpV2Container(_messages.Message):
+  r"""Represents a container that may contain DLP findings. Examples of a
+  container include a file, table, or database record.
+
+  Fields:
+    fullPath: A string representation of the full container name. Examples: -
+      BigQuery: 'Project:DataSetId.TableId' - Google Cloud Storage:
+      'gs://Bucket/folders/filename.txt'
+    projectId: Project where the finding was found. Can be different from the
+      project that owns the finding.
+    relativePath: The rest of the path after the root. Examples: - For
+      BigQuery table `project_id:dataset_id.table_id`, the relative path is
+      `table_id` - Google Cloud Storage file
+      `gs://bucket/folder/filename.txt`, the relative  path is
+      `folder/filename.txt`
+    rootPath: The root of the container. Examples: - For BigQuery table
+      `project_id:dataset_id.table_id`, the root is  `dataset_id` - For Google
+      Cloud Storage file `gs://bucket/folder/filename.txt`, the root  is
+      `gs://bucket`
+    type: Container type, for example BigQuery or Google Cloud Storage.
+    updateTime: Findings container modification timestamp, if applicable. For
+      Google Cloud Storage contains last file modification timestamp. For
+      BigQuery table contains last_modified_time property. For Datastore - not
+      populated.
+    version: Findings container version, if available ("generation" for Google
+      Cloud Storage).
+  """
+
+  fullPath = _messages.StringField(1)
+  projectId = _messages.StringField(2)
+  relativePath = _messages.StringField(3)
+  rootPath = _messages.StringField(4)
+  type = _messages.StringField(5)
+  updateTime = _messages.StringField(6)
+  version = _messages.StringField(7)
 
 
 class GooglePrivacyDlpV2ContentItem(_messages.Message):
@@ -3009,6 +3094,11 @@ class GooglePrivacyDlpV2DlpJob(_messages.Message):
       DONE: The job is no longer running.
       CANCELED: The job was canceled before it could complete.
       FAILED: The job had an error and did not complete.
+      ACTIVE: The job is currently accepting findings via hybridInspect. A
+        hybrid job in ACTIVE state may continue to have findings added to it
+        through calling of hybridInspect. After the job has finished no more
+        calls to hybridInspect may be made. ACTIVE jobs can transition to
+        DONE.
     """
     JOB_STATE_UNSPECIFIED = 0
     PENDING = 1
@@ -3016,6 +3106,7 @@ class GooglePrivacyDlpV2DlpJob(_messages.Message):
     DONE = 3
     CANCELED = 4
     FAILED = 5
+    ACTIVE = 6
 
   class TypeValueValuesEnum(_messages.Enum):
     r"""The type of job.
@@ -3230,18 +3321,34 @@ class GooglePrivacyDlpV2Finding(_messages.Message):
     LikelihoodValueValuesEnum: Confidence of how likely it is that the
       `info_type` is correct.
 
+  Messages:
+    LabelsValue: The labels associated with this `Finding`.  Label keys must
+      be between 1 and 63 characters long and must conform to the following
+      regular expression: \[a-z\](\[-a-z0-9\]*\[a-z0-9\])?.  Label values must
+      be between 0 and 63 characters long and must conform to the regular
+      expression (\[a-z\](\[-a-z0-9\]*\[a-z0-9\])?)?.  No more than 10 labels
+      can be associated with a given finding.  Example: <code>"environment" :
+      "production"</code> Example: <code>"pipeline" : "etl"</code>
+
   Fields:
     createTime: Timestamp when finding was detected.
     infoType: The type of content that might have been found. Provided if
       `excluded_types` is false.
     jobCreateTime: Time the job started that produced this finding.
     jobName: The job that stored the finding.
+    labels: The labels associated with this `Finding`.  Label keys must be
+      between 1 and 63 characters long and must conform to the following
+      regular expression: \[a-z\](\[-a-z0-9\]*\[a-z0-9\])?.  Label values must
+      be between 0 and 63 characters long and must conform to the regular
+      expression (\[a-z\](\[-a-z0-9\]*\[a-z0-9\])?)?.  No more than 10 labels
+      can be associated with a given finding.  Example: <code>"environment" :
+      "production"</code> Example: <code>"pipeline" : "etl"</code>
     likelihood: Confidence of how likely it is that the `info_type` is
       correct.
     location: Where the content was found.
     name: Resource name in format
-      projects/{id}/locations/{id}/inspectFindings/{id} Populated only when
-      viewing persisted findings.
+      projects/{project}/locations/{location}/findings/{finding} Populated
+      only when viewing persisted findings.
     quote: The content that was found. Even if the content is not textual, it
       may be converted to a textual representation here. Provided if
       `include_quote` is true and the finding is less than or equal to 4096
@@ -3272,17 +3379,48 @@ class GooglePrivacyDlpV2Finding(_messages.Message):
     LIKELY = 4
     VERY_LIKELY = 5
 
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""The labels associated with this `Finding`.  Label keys must be between
+    1 and 63 characters long and must conform to the following regular
+    expression: \[a-z\](\[-a-z0-9\]*\[a-z0-9\])?.  Label values must be
+    between 0 and 63 characters long and must conform to the regular
+    expression (\[a-z\](\[-a-z0-9\]*\[a-z0-9\])?)?.  No more than 10 labels
+    can be associated with a given finding.  Example: <code>"environment" :
+    "production"</code> Example: <code>"pipeline" : "etl"</code>
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
   createTime = _messages.StringField(1)
   infoType = _messages.MessageField('GooglePrivacyDlpV2InfoType', 2)
   jobCreateTime = _messages.StringField(3)
   jobName = _messages.StringField(4)
-  likelihood = _messages.EnumField('LikelihoodValueValuesEnum', 5)
-  location = _messages.MessageField('GooglePrivacyDlpV2Location', 6)
-  name = _messages.StringField(7)
-  quote = _messages.StringField(8)
-  quoteInfo = _messages.MessageField('GooglePrivacyDlpV2QuoteInfo', 9)
-  resourceName = _messages.StringField(10)
-  triggerName = _messages.StringField(11)
+  labels = _messages.MessageField('LabelsValue', 5)
+  likelihood = _messages.EnumField('LikelihoodValueValuesEnum', 6)
+  location = _messages.MessageField('GooglePrivacyDlpV2Location', 7)
+  name = _messages.StringField(8)
+  quote = _messages.StringField(9)
+  quoteInfo = _messages.MessageField('GooglePrivacyDlpV2QuoteInfo', 10)
+  resourceName = _messages.StringField(11)
+  triggerName = _messages.StringField(12)
 
 
 class GooglePrivacyDlpV2FindingLimits(_messages.Message):
@@ -3303,6 +3441,10 @@ class GooglePrivacyDlpV2FindingLimits(_messages.Message):
   maxFindingsPerInfoType = _messages.MessageField('GooglePrivacyDlpV2InfoTypeLimit', 1, repeated=True)
   maxFindingsPerItem = _messages.IntegerField(2, variant=_messages.Variant.INT32)
   maxFindingsPerRequest = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+
+
+class GooglePrivacyDlpV2FinishDlpJobRequest(_messages.Message):
+  r"""The request message for finishing a DLP hybrid job."""
 
 
 class GooglePrivacyDlpV2FixedSizeBucketingConfig(_messages.Message):
@@ -3361,6 +3503,218 @@ class GooglePrivacyDlpV2HotwordRule(_messages.Message):
   hotwordRegex = _messages.MessageField('GooglePrivacyDlpV2Regex', 1)
   likelihoodAdjustment = _messages.MessageField('GooglePrivacyDlpV2LikelihoodAdjustment', 2)
   proximity = _messages.MessageField('GooglePrivacyDlpV2Proximity', 3)
+
+
+class GooglePrivacyDlpV2HybridContentItem(_messages.Message):
+  r"""An individual hybrid item to inspect. Will be stored temporarily during
+  processing.
+
+  Fields:
+    findingDetails: Supplementary information that will be added to each
+      finding.
+    item: The item to inspect.
+  """
+
+  findingDetails = _messages.MessageField('GooglePrivacyDlpV2HybridFindingDetails', 1)
+  item = _messages.MessageField('GooglePrivacyDlpV2ContentItem', 2)
+
+
+class GooglePrivacyDlpV2HybridFindingDetails(_messages.Message):
+  r"""Populate to associate additional data with each finding.
+
+  Messages:
+    LabelsValue: Labels to represent user provided metadata about the data
+      being inspected. If configured by the job, some key values may be
+      required. The labels associated with `Finding`'s produced by hybrid
+      inspection.  Label keys must be between 1 and 63 characters long and
+      must conform to the following regular expression:
+      \[a-z\](\[-a-z0-9\]*\[a-z0-9\])?.  Label values must be between 0 and 63
+      characters long and must conform to the regular expression
+      (\[a-z\](\[-a-z0-9\]*\[a-z0-9\])?)?.  No more than 10 labels can be
+      associated with a given finding.  Example: <code>"environment" :
+      "production"</code> Example: <code>"pipeline" : "etl"</code>
+
+  Fields:
+    containerDetails: Details about the container where the content being
+      inspected is from.
+    fileOffset: Offset in bytes of the line, from the beginning of the file,
+      where the finding  is located. Populate if the item being scanned is
+      only part of a bigger item, such as a shard of a file and you want to
+      track the absolute position of the finding.
+    labels: Labels to represent user provided metadata about the data being
+      inspected. If configured by the job, some key values may be required.
+      The labels associated with `Finding`'s produced by hybrid inspection.
+      Label keys must be between 1 and 63 characters long and must conform to
+      the following regular expression: \[a-z\](\[-a-z0-9\]*\[a-z0-9\])?.
+      Label values must be between 0 and 63 characters long and must conform
+      to the regular expression (\[a-z\](\[-a-z0-9\]*\[a-z0-9\])?)?.  No more
+      than 10 labels can be associated with a given finding.  Example:
+      <code>"environment" : "production"</code> Example: <code>"pipeline" :
+      "etl"</code>
+    rowOffset: Offset of the row for tables. Populate if the row(s) being
+      scanned are part of a bigger dataset and you want to keep track of their
+      absolute position.
+    tableOptions: If the container is a table, additional information to make
+      findings meaningful such as the columns that are primary keys. If not
+      known ahead of time, can also be set within each inspect hybrid call and
+      the two will be merged. Note that identifying_fields will only be stored
+      to BigQuery, and only if the BigQuery action has been included.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Labels to represent user provided metadata about the data being
+    inspected. If configured by the job, some key values may be required. The
+    labels associated with `Finding`'s produced by hybrid inspection.  Label
+    keys must be between 1 and 63 characters long and must conform to the
+    following regular expression: \[a-z\](\[-a-z0-9\]*\[a-z0-9\])?.  Label
+    values must be between 0 and 63 characters long and must conform to the
+    regular expression (\[a-z\](\[-a-z0-9\]*\[a-z0-9\])?)?.  No more than 10
+    labels can be associated with a given finding.  Example:
+    <code>"environment" : "production"</code> Example: <code>"pipeline" :
+    "etl"</code>
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  containerDetails = _messages.MessageField('GooglePrivacyDlpV2Container', 1)
+  fileOffset = _messages.IntegerField(2)
+  labels = _messages.MessageField('LabelsValue', 3)
+  rowOffset = _messages.IntegerField(4)
+  tableOptions = _messages.MessageField('GooglePrivacyDlpV2TableOptions', 5)
+
+
+class GooglePrivacyDlpV2HybridInspectDlpJobRequest(_messages.Message):
+  r"""Request to search for potentially sensitive info in a custom location.
+
+  Fields:
+    hybridItem: The item to inspect.
+  """
+
+  hybridItem = _messages.MessageField('GooglePrivacyDlpV2HybridContentItem', 1)
+
+
+class GooglePrivacyDlpV2HybridInspectJobTriggerRequest(_messages.Message):
+  r"""Request to search for potentially sensitive info in a custom location.
+
+  Fields:
+    hybridItem: The item to inspect.
+  """
+
+  hybridItem = _messages.MessageField('GooglePrivacyDlpV2HybridContentItem', 1)
+
+
+class GooglePrivacyDlpV2HybridInspectResponse(_messages.Message):
+  r"""Quota exceeded errors will be thrown once quota has been met."""
+
+
+class GooglePrivacyDlpV2HybridInspectStatistics(_messages.Message):
+  r"""Statistics related to processing hybrid inspect requests.
+
+  Fields:
+    abortedCount: The number of hybrid inspection requests aborted because the
+      job ran out of quota or was ended before they could be processed.
+    pendingCount: The number of hybrid requests currently being processed.
+      Only populated when called via method `getDlpJob`. A burst of traffic
+      may cause hybrid inspect requests to be enqueued. Processing will take
+      place as quickly as possible, but resource limitations may impact how
+      long a request is enqueued for.
+    processedCount: The number of hybrid inspection requests processed within
+      this job.
+  """
+
+  abortedCount = _messages.IntegerField(1)
+  pendingCount = _messages.IntegerField(2)
+  processedCount = _messages.IntegerField(3)
+
+
+class GooglePrivacyDlpV2HybridOptions(_messages.Message):
+  r"""Configuration to control jobs where the content being inspected is
+  outside of Google Cloud Platform.
+
+  Messages:
+    LabelsValue: To organize findings, these labels will be added to each
+      finding.  Label keys must be between 1 and 63 characters long and must
+      conform to the following regular expression:
+      \[a-z\](\[-a-z0-9\]*\[a-z0-9\])?.  Label values must be between 0 and 63
+      characters long and must conform to the regular expression
+      (\[a-z\](\[-a-z0-9\]*\[a-z0-9\])?)?.  No more than 10 labels can be
+      associated with a given finding.  Example: <code>"environment" :
+      "production"</code> Example: <code>"pipeline" : "etl"</code>
+
+  Fields:
+    description: A short description of where the data is coming from. Will be
+      stored once in the job. 256 max length.
+    labels: To organize findings, these labels will be added to each finding.
+      Label keys must be between 1 and 63 characters long and must conform to
+      the following regular expression: \[a-z\](\[-a-z0-9\]*\[a-z0-9\])?.
+      Label values must be between 0 and 63 characters long and must conform
+      to the regular expression (\[a-z\](\[-a-z0-9\]*\[a-z0-9\])?)?.  No more
+      than 10 labels can be associated with a given finding.  Example:
+      <code>"environment" : "production"</code> Example: <code>"pipeline" :
+      "etl"</code>
+    requiredFindingLabelKeys: These are labels that each inspection request
+      must include within their 'finding_labels' map. Request may contain
+      others, but any missing one of these will be rejected.  Label keys must
+      be between 1 and 63 characters long and must conform to the following
+      regular expression: \[a-z\](\[-a-z0-9\]*\[a-z0-9\])?.  No more than 10
+      keys can be required.
+    tableOptions: If the container is a table, additional information to make
+      findings meaningful such as the columns that are primary keys.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""To organize findings, these labels will be added to each finding.
+    Label keys must be between 1 and 63 characters long and must conform to
+    the following regular expression: \[a-z\](\[-a-z0-9\]*\[a-z0-9\])?.  Label
+    values must be between 0 and 63 characters long and must conform to the
+    regular expression (\[a-z\](\[-a-z0-9\]*\[a-z0-9\])?)?.  No more than 10
+    labels can be associated with a given finding.  Example:
+    <code>"environment" : "production"</code> Example: <code>"pipeline" :
+    "etl"</code>
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  description = _messages.StringField(1)
+  labels = _messages.MessageField('LabelsValue', 2)
+  requiredFindingLabelKeys = _messages.StringField(3, repeated=True)
+  tableOptions = _messages.MessageField('GooglePrivacyDlpV2TableOptions', 4)
 
 
 class GooglePrivacyDlpV2ImageLocation(_messages.Message):
@@ -4218,6 +4572,13 @@ class GooglePrivacyDlpV2Location(_messages.Message):
   contentLocations = _messages.MessageField('GooglePrivacyDlpV2ContentLocation', 3, repeated=True)
 
 
+class GooglePrivacyDlpV2Manual(_messages.Message):
+  r"""Job trigger option for hybrid jobs. Jobs must be manually created and
+  finished.
+  """
+
+
+
 class GooglePrivacyDlpV2NumericalStatsConfig(_messages.Message):
   r"""Compute numerical stats over an individual column, including min, max,
   and quantiles.
@@ -4753,15 +5114,20 @@ class GooglePrivacyDlpV2Result(_messages.Message):
   processing.
 
   Fields:
+    hybridStats: Statistics related to the processing of hybrid inspect. Early
+      access feature is in a pre-release state and might change or have
+      limited support. For more information, see
+      https://cloud.google.com/products#product-launch-stages.
     infoTypeStats: Statistics of how many instances of each info type were
       found during inspect job.
     processedBytes: Total size in bytes that were processed.
     totalEstimatedBytes: Estimate of the number of bytes to process.
   """
 
-  infoTypeStats = _messages.MessageField('GooglePrivacyDlpV2InfoTypeStats', 1, repeated=True)
-  processedBytes = _messages.IntegerField(2)
-  totalEstimatedBytes = _messages.IntegerField(3)
+  hybridStats = _messages.MessageField('GooglePrivacyDlpV2HybridInspectStatistics', 1)
+  infoTypeStats = _messages.MessageField('GooglePrivacyDlpV2InfoTypeStats', 2, repeated=True)
+  processedBytes = _messages.IntegerField(3)
+  totalEstimatedBytes = _messages.IntegerField(4)
 
 
 class GooglePrivacyDlpV2RiskAnalysisJobConfig(_messages.Message):
@@ -4844,13 +5210,18 @@ class GooglePrivacyDlpV2StorageConfig(_messages.Message):
     bigQueryOptions: BigQuery options.
     cloudStorageOptions: Google Cloud Storage options.
     datastoreOptions: Google Cloud Datastore options.
+    hybridOptions: Hybrid inspection options. Early access feature is in a
+      pre-release state and might change or have limited support. For more
+      information, see https://cloud.google.com/products#product-launch-
+      stages.
     timespanConfig: A GooglePrivacyDlpV2TimespanConfig attribute.
   """
 
   bigQueryOptions = _messages.MessageField('GooglePrivacyDlpV2BigQueryOptions', 1)
   cloudStorageOptions = _messages.MessageField('GooglePrivacyDlpV2CloudStorageOptions', 2)
   datastoreOptions = _messages.MessageField('GooglePrivacyDlpV2DatastoreOptions', 3)
-  timespanConfig = _messages.MessageField('GooglePrivacyDlpV2TimespanConfig', 4)
+  hybridOptions = _messages.MessageField('GooglePrivacyDlpV2HybridOptions', 4)
+  timespanConfig = _messages.MessageField('GooglePrivacyDlpV2TimespanConfig', 5)
 
 
 class GooglePrivacyDlpV2StoredInfoType(_messages.Message):
@@ -5039,6 +5410,19 @@ class GooglePrivacyDlpV2TableLocation(_messages.Message):
   rowIndex = _messages.IntegerField(1)
 
 
+class GooglePrivacyDlpV2TableOptions(_messages.Message):
+  r"""Instructions regarding the table content being inspected.
+
+  Fields:
+    identifyingFields: The columns that are the primary keys for table objects
+      included in ContentItem. A copy of this cell's value will stored
+      alongside alongside each finding so that the finding can be traced to
+      the specific row it came from. No more than 3 may be provided.
+  """
+
+  identifyingFields = _messages.MessageField('GooglePrivacyDlpV2FieldId', 1, repeated=True)
+
+
 class GooglePrivacyDlpV2TaggedField(_messages.Message):
   r"""A column with a semantic tag attached.
 
@@ -5219,10 +5603,15 @@ class GooglePrivacyDlpV2Trigger(_messages.Message):
   r"""What event needs to occur for a new job to be started.
 
   Fields:
+    manual: For use with hybrid jobs. Jobs must be manually created and
+      finished. Early access feature is in a pre-release state and might
+      change or have limited support. For more information, see
+      https://cloud.google.com/products#product-launch-stages.
     schedule: Create a job on a repeating basis based on the elapse of time.
   """
 
-  schedule = _messages.MessageField('GooglePrivacyDlpV2Schedule', 1)
+  manual = _messages.MessageField('GooglePrivacyDlpV2Manual', 1)
+  schedule = _messages.MessageField('GooglePrivacyDlpV2Schedule', 2)
 
 
 class GooglePrivacyDlpV2UnwrappedCryptoKey(_messages.Message):

@@ -117,3 +117,111 @@ def key_flag(parser, suffix='to act on'):
       _create_key_resource_arg(
           help_txt='The name of the key {0}.'.format(suffix))
   ]).AddToParser(parser)
+
+
+def display_name_flag(parser, suffix='to act on'):
+  base.Argument(
+      '--display-name',
+      help='Display name of the key {0}.'.format(suffix)).AddToParser(parser)
+
+
+def add_key_update_args(parser):
+  """Add args for api-keys update command."""
+  update_set_group = parser.add_mutually_exclusive_group(required=False)
+  _add_clear_restrictions_arg(update_set_group)
+  restriction_group = update_set_group.add_argument_group()
+  client_restriction_group = restriction_group.add_mutually_exclusive_group()
+  _allowed_referrers_arg(client_restriction_group)
+  _allowed_ips_arg(client_restriction_group)
+  _allowed_bundle_ids(client_restriction_group)
+  _allowed_application(client_restriction_group)
+  _api_targets_arg(restriction_group)
+
+
+def add_key_create_args(parser):
+  """Add args for api-keys create command."""
+  restriction_group = parser.add_argument_group()
+  client_restriction_group = restriction_group.add_mutually_exclusive_group()
+  _allowed_referrers_arg(client_restriction_group)
+  _allowed_ips_arg(client_restriction_group)
+  _allowed_bundle_ids(client_restriction_group)
+  _allowed_application(client_restriction_group)
+  _api_targets_arg(restriction_group)
+
+
+def _add_clear_restrictions_arg(parser):
+  base.Argument(
+      '--clear-restrictions',
+      action='store_true',
+      help='If set, clear all restrictions on the key.').AddToParser(parser)
+
+
+def _allowed_referrers_arg(parser):
+  base.Argument(
+      '--allowed-referrers',
+      default=[],
+      type=arg_parsers.ArgList(),
+      metavar='ALLOWED_REFERRERS',
+      help='A list of regular expressions for the referrer URLs that are '
+           'allowed to make API calls with this key.'
+  ).AddToParser(parser)
+
+
+def _allowed_ips_arg(parser):
+  base.Argument(
+      '--allowed-ips',
+      default=[],
+      type=arg_parsers.ArgList(),
+      metavar='ALLOWED_IPS',
+      help='A list of the caller IP addresses that are allowed to make API '
+           'calls with this key.'
+  ).AddToParser(parser)
+
+
+def _allowed_bundle_ids(parser):
+  base.Argument(
+      '--allowed-bundle-ids',
+      default=[],
+      metavar='ALLOWED_BUNDLE_IDS',
+      type=arg_parsers.ArgList(),
+      help='iOS app\'s bundle ids that are allowed to use the key.'
+  ).AddToParser(parser)
+
+
+def _allowed_application(parser):
+  base.Argument(
+      '--allowed-application',
+      type=arg_parsers.ArgDict(
+          spec={
+              'sha1_fingerprint': str,
+              'package_name': str
+          },
+          required_keys=['sha1_fingerprint', 'package_name'],
+          max_length=2),
+      metavar='sha1_fingerprint=SHA1_FINGERPRINT,package_name=PACKAGE_NAME',
+      action='append',
+      help=('This flag is repeatable to specify multiple allowed applications. '
+            'The accepted keys are `sha1_fingerprint` and `package_name`.'
+           )).AddToParser(parser)
+
+
+def _api_targets_arg(parser):
+  base.Argument(
+      '--api-target',
+      type=arg_parsers.ArgDict(
+          spec={
+              'service': str,
+              'methods': list
+          },
+          required_keys=['service'],
+          min_length=1),
+      metavar='service=SERVICE',
+      action='append',
+      help="""\
+       This flag is repeatable to specify multiple api targets.
+        `service` and optionally one or multiple specific `methods`.
+        Both fields are case insensitive.
+        If you need to specify methods, it should be specified
+      with the `--flags-file`. See $ gcloud topic flags-file for details.
+      See the examples section for how to use `--api-target` in
+      `--flags-file`.""").AddToParser(parser)

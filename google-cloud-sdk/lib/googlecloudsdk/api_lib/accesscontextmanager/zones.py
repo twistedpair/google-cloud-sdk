@@ -18,6 +18,8 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+from apitools.base.py import list_pager
+
 from googlecloudsdk.api_lib.accesscontextmanager import util
 from googlecloudsdk.api_lib.util import waiter
 from googlecloudsdk.core import log
@@ -87,6 +89,30 @@ class Client(object):
         self.messages
         .AccesscontextmanagerAccessPoliciesServicePerimetersGetRequest(
             name=zone_ref.RelativeName()))
+
+  def List(self, policy_ref, limit=None):
+    req = self.messages.AccesscontextmanagerAccessPoliciesServicePerimetersListRequest(
+        parent=policy_ref.RelativeName())
+    return list_pager.YieldFromList(
+        self.client.accessPolicies_servicePerimeters,
+        req,
+        limit=limit,
+        batch_size_attribute='pageSize',
+        batch_size=None,
+        field='servicePerimeters')
+
+  def Commit(self, policy_ref, etag):
+    commit_req = self.messages.CommitServicePerimetersRequest(etag=etag)
+    req = self.messages.AccesscontextmanagerAccessPoliciesServicePerimetersCommitRequest(
+        parent=policy_ref.RelativeName(),
+        commitServicePerimetersRequest=commit_req)
+    operation = self.client.accessPolicies_servicePerimeters.Commit(req)
+    poller = waiter.CloudOperationPollerNoResources(self.client.operations)
+    operation_ref = core_resources.REGISTRY.Parse(
+        operation.name, collection='accesscontextmanager.operations')
+    return waiter.WaitFor(
+        poller, operation_ref,
+        'Waiting for COMMIT operation [{}]'.format(operation_ref.Name()))
 
   def _ApplyPatch(self, perimeter_ref, perimeter, update_mask):
     """Applies a PATCH to the provided Service Perimeter."""

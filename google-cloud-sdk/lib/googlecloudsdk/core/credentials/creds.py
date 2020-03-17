@@ -45,6 +45,8 @@ from google.oauth2 import service_account as google_auth_service_account
 
 ADC_QUOTA_PROJECT_FIELD_NAME = 'quota_project_id'
 
+_TOKEN_URI = 'https://oauth2.googleapis.com/token'
+
 
 class Error(exceptions.Error):
   """Exceptions for this module."""
@@ -139,17 +141,35 @@ class SqliteCredentialStore(CredentialStore):
           'SELECT account_id FROM "{}" ORDER BY rowid'
           .format(_CREDENTIAL_TABLE_NAME)))
 
-  def Load(self, account_id):
+  def Load(self, account_id, use_google_auth=False):
     with self._cursor as cur:
       item = cur.Execute(
           'SELECT value FROM "{}" WHERE account_id = ?'
           .format(_CREDENTIAL_TABLE_NAME), (account_id,)).fetchone()
     if item is not None:
+      if use_google_auth:
+        credentials = FromJsonGoogleAuth(item[0])
+        # If credentials cannot be deserialized to google-auth credentials,
+        # the logic will fall back to deserializing oauth2client credentials
+        # which will be converted to google-auth credentials in the upper call
+        # stack once access token is retrieved from the AccessTokenCache.
+        if credentials:
+          return credentials
       return FromJson(item[0])
     return None
 
   def Store(self, account_id, credentials):
-    value = ToJson(credentials)
+    """Stores the input credentials to the record of account_id in the cache.
+
+    Args:
+      account_id: string, the account ID of the input credentials.
+      credentials: google.auth.credentials.Credentials or
+        client.OAuth2Credentials, the credentials to be stored.
+    """
+    if isinstance(credentials, client.OAuth2Credentials):
+      value = ToJson(credentials)
+    else:
+      value = ToJsonGoogleAuth(credentials)
     self._Execute(
         'REPLACE INTO "{}" (account_id, value) VALUES (?,?)'
         .format(_CREDENTIAL_TABLE_NAME), (account_id, value))
@@ -271,6 +291,64 @@ class AccessTokenStore(client.Storage):
     self._access_token_cache.Remove(self._account_id)
 
 
+class AccessTokenStoreGoogleAuth(object):
+  """google-auth adapted for access token cache.
+
+  This class works with google-auth credentials and serializes its short lived
+  tokens, including access token, rapt token and ID token into the access token
+  cache.
+  """
+
+  def __init__(self, access_token_cache, account_id, credentials):
+    """Sets up token store for given acount.
+
+    Args:
+      access_token_cache: AccessTokenCache, cache for access tokens.
+      account_id: str, account for which token is stored.
+      credentials: google.auth.credentials.Credentials, credentials of account
+        of account_id.
+    """
+    self._access_token_cache = access_token_cache
+    self._account_id = account_id
+    self._credentials = credentials
+
+  def Get(self):
+    """Gets credentials with short lived tokens from the internal cache.
+
+    Retrieves the short lived tokens from the internal access token cache,
+    populates the internal credentials with these tokens and returns the
+    credentials.
+
+    Returns:
+       google.auth.credentials.Credentials
+    """
+    token_data = self._access_token_cache.Load(self._account_id)
+    if token_data:
+      access_token, token_expiry, rapt_token, id_token = token_data
+      self._credentials.token = access_token
+      self._credentials.expiry = token_expiry
+      self._credentials.rapt_token = rapt_token
+      # '_id_token' is the field supported in google-auth natively. gcloud
+      # keeps an additional field 'id_tokenb64' to store this information
+      # which is referenced in several places.
+      self._credentials._id_token = id_token  # pylint: disable=protected-access
+      self._credentials.id_tokenb64 = id_token
+    return self._credentials
+
+  def Put(self):
+    """Puts the short lived tokens of the credentials to the internal cache."""
+    id_token = getattr(self._credentials, 'id_tokenb64')
+    if not id_token:
+      id_token = getattr(self._credentials, 'id_token')
+    self._access_token_cache.Store(
+        self._account_id, self._credentials.token, self._credentials.expiry,
+        getattr(self._credentials, 'rapt_token', None), id_token)
+
+  def Delete(self):
+    """Removes the tokens of the account from the internal cache."""
+    self._access_token_cache.Remove(self._account_id)
+
+
 def MaybeAttachAccessTokenCacheStore(credentials,
                                      access_token_file=None):
   """Attaches access token cache to given credentials if no store set.
@@ -385,6 +463,62 @@ class CredentialType(enum.Enum):
     return CredentialType.UNKNOWN
 
 
+class CredentialTypeGoogleAuth(enum.Enum):
+  """Enum of google-auth credential types managed by gcloud."""
+
+  UNKNOWN = (0, 'unknown', False, False)
+  USER_ACCOUNT = (1, 'authorized_user', True, True)
+  SERVICE_ACCOUNT = (2, 'service_account', True, False)
+  GCE = (3, 'gce', False, False)
+  DEVSHELL = (4, 'devshell', False, True)
+
+  def __init__(self, type_id, key, is_serializable, is_user):
+    """Builds a credentials type instance given the credentails information.
+
+    Args:
+      type_id: string, ID for the credentials type, based on the enum constant
+        value of the type.
+      key: string, key of the credentialz type, based on the enum constant value
+        of the type.
+      is_serializable: bool, whether the type of the credentialas is
+        serializable, based on the enum constant value of the type.
+      is_user: bool, True if the credentials are of user account. False
+        otherwise.
+
+    Returns:
+      CredentialTypeGoogleAuth, an instance of CredentialTypeGoogleAuth which
+        is a gcloud internal representation of type of the google-auth
+        credentails.
+    """
+    self.type_id = type_id
+    self.key = key
+    self.is_serializable = is_serializable
+    # True if this cooresponds to a "user" or 3LO credential as opposed to a
+    # service account of some kind.
+    self.is_user = is_user
+
+  @staticmethod
+  def FromTypeKey(key):
+    """Returns the credentials type based on the input key."""
+    for cred_type in CredentialTypeGoogleAuth:
+      if cred_type.key == key:
+        return cred_type
+    return CredentialTypeGoogleAuth.UNKNOWN
+
+  @staticmethod
+  def FromCredentials(creds):
+    """Returns the credentials type based on the input credentials."""
+    if isinstance(creds, c_devshell.DevShellCredentialsGoogleAuth):
+      return CredentialTypeGoogleAuth.DEVSHELL
+    if isinstance(creds, compute_engine.Credentials):
+      return CredentialTypeGoogleAuth.GCE
+    if isinstance(creds, google_auth_service_account.Credentials):
+      return CredentialTypeGoogleAuth.SERVICE_ACCOUNT
+    if getattr(creds, 'refresh_token', None) is not None:
+      return CredentialTypeGoogleAuth.USER_ACCOUNT
+    return CredentialTypeGoogleAuth.UNKNOWN
+
+
 def ToJson(credentials):
   """Given Oauth2client credentials return library independent json for it."""
   creds_type = CredentialType.FromCredentials(credentials)
@@ -426,6 +560,31 @@ def ToJson(credentials):
                     indent=2, separators=(',', ': '))
 
 
+# TODO(b/147893169): ToJsonGoogleAuth needs to support credentials of user
+# account.
+def ToJsonGoogleAuth(credentials):
+  """Given google-auth credentials return library independent json for it."""
+  creds_type = CredentialTypeGoogleAuth.FromCredentials(credentials)
+  if creds_type == CredentialTypeGoogleAuth.SERVICE_ACCOUNT:
+    creds_dict = {
+        'type': 'service_account',
+        'client_email': credentials.service_account_email,
+        'private_key_id': credentials.private_key_id,
+        'private_key': credentials.private_key,
+        'client_id': credentials.client_id,
+        # '_token_uri' is not exposed in a public property in the service
+        # credentials implementation which does not currently support
+        # serialization, so pylint: disable=protected-access
+        'token_uri': credentials._token_uri,
+        # pylint: enable=protected-access
+        'project_id': credentials.project_id,
+    }
+  else:
+    raise UnknownCredentialsType(creds_type)
+  return json.dumps(
+      creds_dict, sort_keys=True, indent=2, separators=(',', ': '))
+
+
 def FromJson(json_value):
   """Returns Oauth2client credentials from library independent json format."""
   json_key = json.loads(json_value)
@@ -461,6 +620,44 @@ def FromJson(json_value):
   else:
     raise UnknownCredentialsType(json_key['type'])
   return cred
+
+
+def FromJsonGoogleAuth(json_value):
+  """Returns google-auth credentials from library independent json format.
+
+  This method should return None rather than throwing UnknownCredentialsType
+  for the credentials type it cannot deserialize before FromJson() is
+  deprecated. The intention is for store to fallback to provide oauth2client
+  credentials instead of breaking the users.
+
+  Args:
+    json_value: string, A string of the JSON representation of the credentials.
+
+  Returns:
+    google.auth.credentials.Credentials if the credentials type is supported
+    by this method. Otherwise, returns None.
+  """
+  json_key = json.loads(json_value)
+  cred_type = CredentialTypeGoogleAuth.FromTypeKey(json_key['type'])
+  if cred_type == CredentialTypeGoogleAuth.SERVICE_ACCOUNT:
+    # To be backward compatible with oauth2client, which sets the token URI
+    # internally if it is not provided.
+    if not json_key.get('token_uri'):
+      json_key['token_uri'] = _TOKEN_URI
+    service_account_credentials = (
+        google_auth_service_account.Credentials.from_service_account_info)
+    cred = service_account_credentials(json_key, scopes=config.CLOUDSDK_SCOPES)
+    # The following fields are not members of the google-auth credentials which
+    # are not designed to support persistent caching. These fields will be used
+    # by gcloud to build google-auth credentials from cache data.
+    cred.private_key = json_key.get('private_key')
+    cred.private_key_id = json_key.get('private_key_id')
+    cred.client_id = json_key.get('client_id')
+    return cred
+  else:
+    # TODO(b/147893169): Implement logic of deserialization user account
+    # credentials.
+    return None
 
 
 def _GetSqliteStore(sqlite_credential_file=None, sqlite_access_token_file=None):
@@ -622,7 +819,8 @@ def MaybeConvertToGoogleAuthCredentials(credentials, use_google_auth):
     # Access token and scopes are lost in the conversions of service acccount
     # and GCE credentials.
     google_auth_creds.token = getattr(credentials, 'access_token', None)
-    scopes = getattr(credentials, 'scopes', config.CLOUDSDK_SCOPES)
+    scopes = getattr(credentials, 'scopes', [])
+    scopes = scopes if scopes else config.CLOUDSDK_SCOPES
     # client.OAuth2Credentials converts scopes into a set. google-auth requires
     # scopes to be of a Sequence type.
     google_auth_creds._scopes = list(scopes)  # pylint: disable=protected-access

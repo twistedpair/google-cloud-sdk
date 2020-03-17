@@ -226,6 +226,7 @@ Storage bucket given by `--staging-bucket`, or Cloud Storage URLs
 
 
 # TODO(b/150109532) Find a better description.
+# TODO(b/150923506) Add autocompletion.
 def GetRegionArg(noun):
   """Adds --region flag to determine endpoint for models and versions."""
   return base.Argument(
@@ -479,6 +480,38 @@ def AddVersionResourceArg(parser, verb):
       GetVersionResourceSpec(),
       'The AI Platform model {}.'.format(verb),
       required=True).AddToParser(parser)
+
+
+def GetModelResourceSpec(resource_name='model'):
+  return concepts.ResourceSpec(
+      'ml.projects.models',
+      resource_name=resource_name,
+      projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
+      disable_auto_completers=True)
+
+
+def GetModelResourceArg(positional=True, required=False, verb=''):
+  """Add a resource argument for AI Platform model.
+
+  NOTE: Must be used only if it's the only resource arg in the command.
+
+  Args:
+    positional: bool, if True, means that the model is a positional rather
+    required: bool, if True means that argument is required.
+    verb: str, the verb to describe the resource, such as 'to update'.
+
+  Returns:
+    An argparse.ArgumentParse object.
+  """
+  if positional:
+    name = 'model'
+  else:
+    name = '--model'
+  return concept_parsers.ConceptParser.ForResource(
+      name,
+      GetModelResourceSpec(),
+      'The AI Platform model {}.'.format(verb),
+      required=required)
 
 
 def AddUserCodeArgs(parser):

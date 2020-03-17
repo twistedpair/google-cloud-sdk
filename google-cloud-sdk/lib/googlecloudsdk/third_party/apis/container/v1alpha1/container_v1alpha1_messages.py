@@ -2172,7 +2172,13 @@ class Metric(_messages.Message):
 class NetworkConfig(_messages.Message):
   r"""Parameters for cluster networking.
 
+  Enums:
+    DatapathProviderValueValuesEnum: The desired datapath provider for this
+      cluster. By default, uses the IPTables-based kube-proxy implementation.
+
   Fields:
+    datapathProvider: The desired datapath provider for this cluster. By
+      default, uses the IPTables-based kube-proxy implementation.
     disableDefaultSnat: Whether the cluster disables default in-node sNAT
       rules. In-node sNAT rules will be disabled when this flag is true. When
       set to false, default IP masquerade rules will be applied to the nodes
@@ -2200,14 +2206,29 @@ class NetworkConfig(_messages.Message):
       Example: projects/my-project/regions/us-central1/subnetworks/my-subnet
   """
 
-  disableDefaultSnat = _messages.BooleanField(1)
-  enableCloudNat = _messages.BooleanField(2)
-  enableIntraNodeVisibility = _messages.BooleanField(3)
-  enableL4ilbSubsetting = _messages.BooleanField(4)
-  enablePrivateIpv6Access = _messages.BooleanField(5)
-  enableSharedNetwork = _messages.BooleanField(6)
-  network = _messages.StringField(7)
-  subnetwork = _messages.StringField(8)
+  class DatapathProviderValueValuesEnum(_messages.Enum):
+    r"""The desired datapath provider for this cluster. By default, uses the
+    IPTables-based kube-proxy implementation.
+
+    Values:
+      DATAPATH_PROVIDER_UNSPECIFIED: Default value.
+      LEGACY_DATAPATH: Use the IPTables implementation based on kube-proxy.
+      ADVANCED_DATAPATH: Use the eBPF based data plane with additional
+        visibility features.
+    """
+    DATAPATH_PROVIDER_UNSPECIFIED = 0
+    LEGACY_DATAPATH = 1
+    ADVANCED_DATAPATH = 2
+
+  datapathProvider = _messages.EnumField('DatapathProviderValueValuesEnum', 1)
+  disableDefaultSnat = _messages.BooleanField(2)
+  enableCloudNat = _messages.BooleanField(3)
+  enableIntraNodeVisibility = _messages.BooleanField(4)
+  enableL4ilbSubsetting = _messages.BooleanField(5)
+  enablePrivateIpv6Access = _messages.BooleanField(6)
+  enableSharedNetwork = _messages.BooleanField(7)
+  network = _messages.StringField(8)
+  subnetwork = _messages.StringField(9)
 
 
 class NetworkPolicy(_messages.Message):

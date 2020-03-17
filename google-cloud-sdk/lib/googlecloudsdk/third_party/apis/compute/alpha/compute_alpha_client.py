@@ -84,6 +84,7 @@ class ComputeAlpha(base_api.BaseApiClient):
     self.regionDisks = self.RegionDisksService(self)
     self.regionHealthCheckServices = self.RegionHealthCheckServicesService(self)
     self.regionHealthChecks = self.RegionHealthChecksService(self)
+    self.regionInPlaceSnapshots = self.RegionInPlaceSnapshotsService(self)
     self.regionInstanceGroupManagers = self.RegionInstanceGroupManagersService(self)
     self.regionInstanceGroups = self.RegionInstanceGroupsService(self)
     self.regionInstances = self.RegionInstancesService(self)
@@ -115,6 +116,7 @@ class ComputeAlpha(base_api.BaseApiClient):
     self.urlMaps = self.UrlMapsService(self)
     self.vpnGateways = self.VpnGatewaysService(self)
     self.vpnTunnels = self.VpnTunnelsService(self)
+    self.zoneInPlaceSnapshots = self.ZoneInPlaceSnapshotsService(self)
     self.zoneOperations = self.ZoneOperationsService(self)
     self.zones = self.ZonesService(self)
 
@@ -2911,7 +2913,7 @@ class ComputeAlpha(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      r"""Retrieves the specified Operations resource. Gets a list of operations by making a list() request.
+      r"""Retrieves the specified Operations resource. Gets a list of operations by making a `list()` request.
 
       Args:
         request: (ComputeGlobalOperationsGetRequest) input message
@@ -2963,11 +2965,11 @@ class ComputeAlpha(base_api.BaseApiClient):
     )
 
     def Wait(self, request, global_params=None):
-      r"""Waits for the specified Operation resource to return as DONE or for the request to approach the 2 minute deadline, and retrieves the specified Operation resource. This method differs from the GET method in that it waits for no more than the default deadline (2 minutes) and then returns the current state of the operation, which might be DONE or still in progress.
+      r"""Waits for the specified Operation resource to return as `DONE` or for the request to approach the 2 minute deadline, and retrieves the specified Operation resource. This method differs from the `GET` method in that it waits for no more than the default deadline (2 minutes) and then returns the current state of the operation, which might be `DONE` or still in progress.
 
 This method is called on a best-effort basis. Specifically:  
 - In uncommon cases, when the server is overloaded, the request might return before the default deadline is reached, or might return after zero seconds. 
-- If the default deadline is reached, there is no guarantee that the operation is actually done when the method returns. Be prepared to retry if the operation is not DONE.
+- If the default deadline is reached, there is no guarantee that the operation is actually done when the method returns. Be prepared to retry if the operation is not `DONE`.
 
       Args:
         request: (ComputeGlobalOperationsWaitRequest) input message
@@ -3029,7 +3031,7 @@ This method is called on a best-effort basis. Specifically:
     )
 
     def Get(self, request, global_params=None):
-      r"""Retrieves the specified Operations resource. Gets a list of operations by making a list() request.
+      r"""Retrieves the specified Operations resource. Gets a list of operations by making a `list()` request.
 
       Args:
         request: (ComputeGlobalOrganizationOperationsGetRequest) input message
@@ -4013,6 +4015,32 @@ If an empty request body is given, clears the deprecation status instead.
         request_field='',
         request_type_name=u'ComputeImagesListRequest',
         response_type_name=u'ImageList',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Patches the specified image with the data included in the request. Only the following fields can be modified: family, description, deprecation status.
+
+      Args:
+        request: (ComputeImagesPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'PATCH',
+        method_id=u'compute.images.patch',
+        ordered_params=[u'project', u'image'],
+        path_params=[u'image', u'project'],
+        query_params=[u'requestId'],
+        relative_path=u'projects/{project}/global/images/{image}',
+        request_field=u'imageResource',
+        request_type_name=u'ComputeImagesPatchRequest',
+        response_type_name=u'Operation',
         supports_download=False,
     )
 
@@ -8553,7 +8581,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def Patch(self, request, global_params=None):
-      r"""Patch the node group.
+      r"""Updates the specified node group.
 
       Args:
         request: (ComputeNodeGroupsPatchRequest) input message
@@ -11552,6 +11580,226 @@ If the group is part of a backend service that has enabled connection draining, 
         supports_download=False,
     )
 
+  class RegionInPlaceSnapshotsService(base_api.BaseApiService):
+    """Service class for the regionInPlaceSnapshots resource."""
+
+    _NAME = u'regionInPlaceSnapshots'
+
+    def __init__(self, client):
+      super(ComputeAlpha.RegionInPlaceSnapshotsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes the specified InPlaceSnapshot resource. Keep in mind that deleting a single inPlaceSnapshot might not necessarily delete all the data on that inPlaceSnapshot. If any data on the inPlaceSnapshot that is marked for deletion is needed for subsequent inPlaceSnapshots, the data will be moved to the next corresponding inPlaceSnapshot.
+
+For more information, see Deleting inPlaceSnapshots.
+
+      Args:
+        request: (ComputeRegionInPlaceSnapshotsDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'DELETE',
+        method_id=u'compute.regionInPlaceSnapshots.delete',
+        ordered_params=[u'project', u'region', u'inPlaceSnapshot'],
+        path_params=[u'inPlaceSnapshot', u'project', u'region'],
+        query_params=[u'requestId'],
+        relative_path=u'projects/{project}/regions/{region}/inPlaceSnapshots/{inPlaceSnapshot}',
+        request_field='',
+        request_type_name=u'ComputeRegionInPlaceSnapshotsDeleteRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Returns the specified InPlaceSnapshot resource in the specified region.
+
+      Args:
+        request: (ComputeRegionInPlaceSnapshotsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (InPlaceSnapshot) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'compute.regionInPlaceSnapshots.get',
+        ordered_params=[u'project', u'region', u'inPlaceSnapshot'],
+        path_params=[u'inPlaceSnapshot', u'project', u'region'],
+        query_params=[],
+        relative_path=u'projects/{project}/regions/{region}/inPlaceSnapshots/{inPlaceSnapshot}',
+        request_field='',
+        request_type_name=u'ComputeRegionInPlaceSnapshotsGetRequest',
+        response_type_name=u'InPlaceSnapshot',
+        supports_download=False,
+    )
+
+    def GetIamPolicy(self, request, global_params=None):
+      r"""Gets the access control policy for a resource. May be empty if no such policy or resource exists.
+
+      Args:
+        request: (ComputeRegionInPlaceSnapshotsGetIamPolicyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Policy) The response message.
+      """
+      config = self.GetMethodConfig('GetIamPolicy')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'compute.regionInPlaceSnapshots.getIamPolicy',
+        ordered_params=[u'project', u'region', u'resource'],
+        path_params=[u'project', u'region', u'resource'],
+        query_params=[u'optionsRequestedPolicyVersion'],
+        relative_path=u'projects/{project}/regions/{region}/inPlaceSnapshots/{resource}/getIamPolicy',
+        request_field='',
+        request_type_name=u'ComputeRegionInPlaceSnapshotsGetIamPolicyRequest',
+        response_type_name=u'Policy',
+        supports_download=False,
+    )
+
+    def Insert(self, request, global_params=None):
+      r"""Creates an in-place snapshot in the specified region.
+
+      Args:
+        request: (ComputeRegionInPlaceSnapshotsInsertRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Insert')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Insert.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'compute.regionInPlaceSnapshots.insert',
+        ordered_params=[u'project', u'region'],
+        path_params=[u'project', u'region'],
+        query_params=[u'requestId'],
+        relative_path=u'projects/{project}/regions/{region}/inPlaceSnapshots',
+        request_field=u'inPlaceSnapshot',
+        request_type_name=u'ComputeRegionInPlaceSnapshotsInsertRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Retrieves the list of InPlaceSnapshot resources contained within the specified region.
+
+      Args:
+        request: (ComputeRegionInPlaceSnapshotsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (InPlaceSnapshotList) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'compute.regionInPlaceSnapshots.list',
+        ordered_params=[u'project', u'region'],
+        path_params=[u'project', u'region'],
+        query_params=[u'filter', u'maxResults', u'orderBy', u'pageToken', u'returnPartialSuccess'],
+        relative_path=u'projects/{project}/regions/{region}/inPlaceSnapshots',
+        request_field='',
+        request_type_name=u'ComputeRegionInPlaceSnapshotsListRequest',
+        response_type_name=u'InPlaceSnapshotList',
+        supports_download=False,
+    )
+
+    def SetIamPolicy(self, request, global_params=None):
+      r"""Sets the access control policy on the specified resource. Replaces any existing policy.
+
+      Args:
+        request: (ComputeRegionInPlaceSnapshotsSetIamPolicyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Policy) The response message.
+      """
+      config = self.GetMethodConfig('SetIamPolicy')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'compute.regionInPlaceSnapshots.setIamPolicy',
+        ordered_params=[u'project', u'region', u'resource'],
+        path_params=[u'project', u'region', u'resource'],
+        query_params=[],
+        relative_path=u'projects/{project}/regions/{region}/inPlaceSnapshots/{resource}/setIamPolicy',
+        request_field=u'regionSetPolicyRequest',
+        request_type_name=u'ComputeRegionInPlaceSnapshotsSetIamPolicyRequest',
+        response_type_name=u'Policy',
+        supports_download=False,
+    )
+
+    def SetLabels(self, request, global_params=None):
+      r"""Sets the labels on a inPlaceSnapshot in the given region. To learn more about labels, read the Labeling Resources documentation.
+
+      Args:
+        request: (ComputeRegionInPlaceSnapshotsSetLabelsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('SetLabels')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SetLabels.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'compute.regionInPlaceSnapshots.setLabels',
+        ordered_params=[u'project', u'region', u'resource'],
+        path_params=[u'project', u'region', u'resource'],
+        query_params=[u'requestId'],
+        relative_path=u'projects/{project}/regions/{region}/inPlaceSnapshots/{resource}/setLabels',
+        request_field=u'regionSetLabelsRequest',
+        request_type_name=u'ComputeRegionInPlaceSnapshotsSetLabelsRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
+    def TestIamPermissions(self, request, global_params=None):
+      r"""Returns permissions that a caller has on the specified resource.
+
+      Args:
+        request: (ComputeRegionInPlaceSnapshotsTestIamPermissionsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (TestPermissionsResponse) The response message.
+      """
+      config = self.GetMethodConfig('TestIamPermissions')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    TestIamPermissions.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'compute.regionInPlaceSnapshots.testIamPermissions',
+        ordered_params=[u'project', u'region', u'resource'],
+        path_params=[u'project', u'region', u'resource'],
+        query_params=[],
+        relative_path=u'projects/{project}/regions/{region}/inPlaceSnapshots/{resource}/testIamPermissions',
+        request_field=u'testPermissionsRequest',
+        request_type_name=u'ComputeRegionInPlaceSnapshotsTestIamPermissionsRequest',
+        response_type_name=u'TestPermissionsResponse',
+        supports_download=False,
+    )
+
   class RegionInstanceGroupManagersService(base_api.BaseApiService):
     """Service class for the regionInstanceGroupManagers resource."""
 
@@ -12671,11 +12919,11 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def Wait(self, request, global_params=None):
-      r"""Waits for the specified Operation resource to return as DONE or for the request to approach the 2 minute deadline, and retrieves the specified Operation resource. This method differs from the GET method in that it waits for no more than the default deadline (2 minutes) and then returns the current state of the operation, which might be DONE or still in progress.
+      r"""Waits for the specified Operation resource to return as `DONE` or for the request to approach the 2 minute deadline, and retrieves the specified Operation resource. This method differs from the `GET` method in that it waits for no more than the default deadline (2 minutes) and then returns the current state of the operation, which might be `DONE` or still in progress.
 
 This method is called on a best-effort basis. Specifically:  
 - In uncommon cases, when the server is overloaded, the request might return before the default deadline is reached, or might return after zero seconds. 
-- If the default deadline is reached, there is no guarantee that the operation is actually done when the method returns. Be prepared to retry if the operation is not DONE.
+- If the default deadline is reached, there is no guarantee that the operation is actually done when the method returns. Be prepared to retry if the operation is not `DONE`.
 
       Args:
         request: (ComputeRegionOperationsWaitRequest) input message
@@ -15495,7 +15743,7 @@ For more information, see Deleting snapshots.
     )
 
     def Patch(self, request, global_params=None):
-      r"""Patches the specified subnetwork with the data included in the request. Only certain fields can up updated with a patch request as indicated in the field descriptions. You must specify the current fingeprint of the subnetwork resource being patched.
+      r"""Patches the specified subnetwork with the data included in the request. Only certain fields can up updated with a patch request as indicated in the field descriptions. You must specify the current fingerprint of the subnetwork resource being patched.
 
       Args:
         request: (ComputeSubnetworksPatchRequest) input message
@@ -17996,6 +18244,226 @@ For more information, see Deleting snapshots.
         supports_download=False,
     )
 
+  class ZoneInPlaceSnapshotsService(base_api.BaseApiService):
+    """Service class for the zoneInPlaceSnapshots resource."""
+
+    _NAME = u'zoneInPlaceSnapshots'
+
+    def __init__(self, client):
+      super(ComputeAlpha.ZoneInPlaceSnapshotsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes the specified InPlaceSnapshot resource. Keep in mind that deleting a single inPlaceSnapshot might not necessarily delete all the data on that inPlaceSnapshot. If any data on the inPlaceSnapshot that is marked for deletion is needed for subsequent inPlaceSnapshots, the data will be moved to the next corresponding inPlaceSnapshot.
+
+For more information, see Deleting inPlaceSnapshots.
+
+      Args:
+        request: (ComputeZoneInPlaceSnapshotsDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'DELETE',
+        method_id=u'compute.zoneInPlaceSnapshots.delete',
+        ordered_params=[u'project', u'zone', u'inPlaceSnapshot'],
+        path_params=[u'inPlaceSnapshot', u'project', u'zone'],
+        query_params=[u'requestId'],
+        relative_path=u'projects/{project}/zones/{zone}/inPlaceSnapshots/{inPlaceSnapshot}',
+        request_field='',
+        request_type_name=u'ComputeZoneInPlaceSnapshotsDeleteRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Returns the specified InPlaceSnapshot resource in the specified zone.
+
+      Args:
+        request: (ComputeZoneInPlaceSnapshotsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (InPlaceSnapshot) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'compute.zoneInPlaceSnapshots.get',
+        ordered_params=[u'project', u'zone', u'inPlaceSnapshot'],
+        path_params=[u'inPlaceSnapshot', u'project', u'zone'],
+        query_params=[],
+        relative_path=u'projects/{project}/zones/{zone}/inPlaceSnapshots/{inPlaceSnapshot}',
+        request_field='',
+        request_type_name=u'ComputeZoneInPlaceSnapshotsGetRequest',
+        response_type_name=u'InPlaceSnapshot',
+        supports_download=False,
+    )
+
+    def GetIamPolicy(self, request, global_params=None):
+      r"""Gets the access control policy for a resource. May be empty if no such policy or resource exists.
+
+      Args:
+        request: (ComputeZoneInPlaceSnapshotsGetIamPolicyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Policy) The response message.
+      """
+      config = self.GetMethodConfig('GetIamPolicy')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'compute.zoneInPlaceSnapshots.getIamPolicy',
+        ordered_params=[u'project', u'zone', u'resource'],
+        path_params=[u'project', u'resource', u'zone'],
+        query_params=[u'optionsRequestedPolicyVersion'],
+        relative_path=u'projects/{project}/zones/{zone}/inPlaceSnapshots/{resource}/getIamPolicy',
+        request_field='',
+        request_type_name=u'ComputeZoneInPlaceSnapshotsGetIamPolicyRequest',
+        response_type_name=u'Policy',
+        supports_download=False,
+    )
+
+    def Insert(self, request, global_params=None):
+      r"""Creates an in-place snapshot in the specified zone.
+
+      Args:
+        request: (ComputeZoneInPlaceSnapshotsInsertRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Insert')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Insert.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'compute.zoneInPlaceSnapshots.insert',
+        ordered_params=[u'project', u'zone'],
+        path_params=[u'project', u'zone'],
+        query_params=[u'requestId'],
+        relative_path=u'projects/{project}/zones/{zone}/inPlaceSnapshots',
+        request_field=u'inPlaceSnapshot',
+        request_type_name=u'ComputeZoneInPlaceSnapshotsInsertRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Retrieves the list of InPlaceSnapshot resources contained within the specified zone.
+
+      Args:
+        request: (ComputeZoneInPlaceSnapshotsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (InPlaceSnapshotList) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'compute.zoneInPlaceSnapshots.list',
+        ordered_params=[u'project', u'zone'],
+        path_params=[u'project', u'zone'],
+        query_params=[u'filter', u'maxResults', u'orderBy', u'pageToken', u'returnPartialSuccess'],
+        relative_path=u'projects/{project}/zones/{zone}/inPlaceSnapshots',
+        request_field='',
+        request_type_name=u'ComputeZoneInPlaceSnapshotsListRequest',
+        response_type_name=u'InPlaceSnapshotList',
+        supports_download=False,
+    )
+
+    def SetIamPolicy(self, request, global_params=None):
+      r"""Sets the access control policy on the specified resource. Replaces any existing policy.
+
+      Args:
+        request: (ComputeZoneInPlaceSnapshotsSetIamPolicyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Policy) The response message.
+      """
+      config = self.GetMethodConfig('SetIamPolicy')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'compute.zoneInPlaceSnapshots.setIamPolicy',
+        ordered_params=[u'project', u'zone', u'resource'],
+        path_params=[u'project', u'resource', u'zone'],
+        query_params=[],
+        relative_path=u'projects/{project}/zones/{zone}/inPlaceSnapshots/{resource}/setIamPolicy',
+        request_field=u'zoneSetPolicyRequest',
+        request_type_name=u'ComputeZoneInPlaceSnapshotsSetIamPolicyRequest',
+        response_type_name=u'Policy',
+        supports_download=False,
+    )
+
+    def SetLabels(self, request, global_params=None):
+      r"""Sets the labels on a inPlaceSnapshot in the given zone. To learn more about labels, read the Labeling Resources documentation.
+
+      Args:
+        request: (ComputeZoneInPlaceSnapshotsSetLabelsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('SetLabels')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SetLabels.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'compute.zoneInPlaceSnapshots.setLabels',
+        ordered_params=[u'project', u'zone', u'resource'],
+        path_params=[u'project', u'resource', u'zone'],
+        query_params=[u'requestId'],
+        relative_path=u'projects/{project}/zones/{zone}/inPlaceSnapshots/{resource}/setLabels',
+        request_field=u'zoneSetLabelsRequest',
+        request_type_name=u'ComputeZoneInPlaceSnapshotsSetLabelsRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
+    def TestIamPermissions(self, request, global_params=None):
+      r"""Returns permissions that a caller has on the specified resource.
+
+      Args:
+        request: (ComputeZoneInPlaceSnapshotsTestIamPermissionsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (TestPermissionsResponse) The response message.
+      """
+      config = self.GetMethodConfig('TestIamPermissions')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    TestIamPermissions.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'compute.zoneInPlaceSnapshots.testIamPermissions',
+        ordered_params=[u'project', u'zone', u'resource'],
+        path_params=[u'project', u'resource', u'zone'],
+        query_params=[],
+        relative_path=u'projects/{project}/zones/{zone}/inPlaceSnapshots/{resource}/testIamPermissions',
+        request_field=u'testPermissionsRequest',
+        request_type_name=u'ComputeZoneInPlaceSnapshotsTestIamPermissionsRequest',
+        response_type_name=u'TestPermissionsResponse',
+        supports_download=False,
+    )
+
   class ZoneOperationsService(base_api.BaseApiService):
     """Service class for the zoneOperations resource."""
 
@@ -18085,11 +18553,11 @@ For more information, see Deleting snapshots.
     )
 
     def Wait(self, request, global_params=None):
-      r"""Waits for the specified Operation resource to return as DONE or for the request to approach the 2 minute deadline, and retrieves the specified Operation resource. This method differs from the GET method in that it waits for no more than the default deadline (2 minutes) and then returns the current state of the operation, which might be DONE or still in progress.
+      r"""Waits for the specified Operation resource to return as `DONE` or for the request to approach the 2 minute deadline, and retrieves the specified Operation resource. This method differs from the `GET` method in that it waits for no more than the default deadline (2 minutes) and then returns the current state of the operation, which might be `DONE` or still in progress.
 
 This method is called on a best-effort basis. Specifically:  
 - In uncommon cases, when the server is overloaded, the request might return before the default deadline is reached, or might return after zero seconds. 
-- If the default deadline is reached, there is no guarantee that the operation is actually done when the method returns. Be prepared to retry if the operation is not DONE.
+- If the default deadline is reached, there is no guarantee that the operation is actually done when the method returns. Be prepared to retry if the operation is not `DONE`.
 
       Args:
         request: (ComputeZoneOperationsWaitRequest) input message

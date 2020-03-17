@@ -12,7 +12,6 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
 """Declarative hooks for Cloud Identity Groups CLI."""
 from __future__ import absolute_import
 from __future__ import division
@@ -36,6 +35,7 @@ def SetParent(unused_ref, args, request):
     unused_ref: unused.
     args: The argparse namespace.
     request: The request to modify.
+
   Returns:
     The updated request.
   """
@@ -57,6 +57,7 @@ def SetEntityKey(unused_ref, args, request):
     unused_ref: unused.
     args: The argparse namespace.
     request: The request to modify.
+
   Returns:
     The updated request.
   """
@@ -76,11 +77,12 @@ def SetLabels(unused_ref, args, request):
     unused_ref: unused.
     args: The argparse namespace.
     request: The request to modify.
+
   Returns:
     The updated request.
   """
 
-  if hasattr(args, 'labels') and args.IsSpecified('labels'):
+  if args.IsSpecified('labels'):
     request.group.labels = ReformatLabels(args, args.labels)
 
   return request
@@ -93,11 +95,12 @@ def SetResourceName(unused_ref, args, request):
     unused_ref: unused.
     args: The argparse namespace.
     request: The request to modify.
+
   Returns:
     The updated request.
   """
 
-  if hasattr(args, 'email') and args.IsSpecified('email'):
+  if args.IsSpecified('email'):
     version = GetApiVersion(args)
     request.name = ConvertEmailToResourceName(version, args.email, 'email')
 
@@ -111,11 +114,12 @@ def SetPageSize(unused_ref, args, request):
     unused_ref: unused.
     args: The argparse namespace.
     request: The request to modify.
+
   Returns:
     The updated request.
   """
 
-  if hasattr(args, 'page-size') and args.IsSpecified('page_size'):
+  if args.IsSpecified('page_size'):
     request.pageSize = int(args.page_size)
 
   return request
@@ -128,6 +132,7 @@ def SetGroupUpdateMask(unused_ref, args, request):
     unused_ref: unused.
     args: The argparse namespace.
     request: The request to modify.
+
   Returns:
     The updated request.
   Raises:
@@ -135,12 +140,11 @@ def SetGroupUpdateMask(unused_ref, args, request):
   """
   update_mask = []
 
-  if (args.IsSpecified('display_name')
-      or args.IsSpecified('clear_display_name')):
+  if (args.IsSpecified('display_name') or
+      args.IsSpecified('clear_display_name')):
     update_mask.append('display_name')
 
-  if (args.IsSpecified('description')
-      or args.IsSpecified('clear_description')):
+  if (args.IsSpecified('description') or args.IsSpecified('clear_description')):
     update_mask.append('description')
 
   # TODO(b/139939605): Add PosixGroups check once it is added.
@@ -161,6 +165,7 @@ def GenerateQuery(unused_ref, args, request):
     unused_ref: unused.
     args: The argparse namespace.
     request: The request to modify.
+
   Returns:
     The updated request.
   """
@@ -180,6 +185,7 @@ def UpdateDisplayName(unused_ref, args, request):
     unused_ref: unused.
     args: The argparse namespace.
     request: The request to modify.
+
   Returns:
     The updated request.
   """
@@ -199,6 +205,7 @@ def UpdateDescription(unused_ref, args, request):
     unused_ref: unused.
     args: The argparse namespace.
     request: The request to modify.
+
   Returns:
     The updated request.
   """
@@ -212,28 +219,34 @@ def UpdateDescription(unused_ref, args, request):
 
 
 # processor hooks
-def AddDynamicGroupUserQuery(arg_list):
+def SetDynamicUserQuery(unused_ref, args, request):
   """Add DynamicGroupUserQuery to DynamicGroupQueries object list.
 
   Args:
-    arg_list: dynamicGroupQuery whose resource type is USER.
+    unused_ref: unused.
+    args: The argparse namespace.
+    request: The request to modify.
+
   Returns:
     The updated dynamic group queries.
   """
 
   queries = []
 
-  if arg_list:
-    dg_user_query = ','.join(arg_list)
+  if args.IsSpecified('dynamic_user_query'):
+    dg_user_query = args.dynamic_user_query
 
     # TODO(b/147011481): Remove hard coded version info if necessary.
-    messages = ci_client.GetMessages('v1alpha1')
+    version = GetApiVersion(args)
+    messages = ci_client.GetMessages(version)
     resource_type = messages.DynamicGroupQuery.ResourceTypeValueValuesEnum
     new_dynamic_group_query = messages.DynamicGroupQuery(
         resourceType=resource_type.USER, query=dg_user_query)
     queries.append(new_dynamic_group_query)
+    request.group.dynamicGroupMetadata = messages.DynamicGroupMetadata(
+        queries=queries)
 
-  return queries
+  return request
 
 
 def ReformatLabels(args, labels):
@@ -246,9 +259,10 @@ def ReformatLabels(args, labels):
 
   Args:
     args: The argparse namespace.
-    labels: list of label strings.
-    e.g. ["cloudidentity.googleapis.com/security=",
-          "cloudidentity.googleapis.com/groups.discussion_forum"]
+    labels: list of label strings. e.g.
+      ["cloudidentity.googleapis.com/security=",
+      "cloudidentity.googleapis.com/groups.discussion_forum"]
+
   Returns:
     Encoded labels message.
 
@@ -354,11 +368,11 @@ def FilterLabels(labels):
       # Catch invalid format like 'key=value1=value2'
       if len(split_label) > 2:
         raise exceptions.InvalidArgumentException(
-            'labels', 'Invalid format of label string has been input. Label: '
-            + label)
+            'labels',
+            'Invalid format of label string has been input. Label: ' + label)
 
       if split_label[1]:
-        filtered_labels.append(label)           # Valid format #1: 'key=value'
+        filtered_labels.append(label)  # Valid format #1: 'key=value'
       else:
         filtered_labels.append(split_label[0])  # Valid format #2: 'key'
 

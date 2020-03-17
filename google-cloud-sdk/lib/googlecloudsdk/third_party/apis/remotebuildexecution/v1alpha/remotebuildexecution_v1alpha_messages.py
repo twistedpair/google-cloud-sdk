@@ -1195,7 +1195,7 @@ class GoogleDevtoolsRemotebuildexecutionAdminV1alphaWorkerPool(_messages.Message
     workerConfig: Specifies the properties, such as machine type and disk
       size, used for creating workers in a worker pool.
     workerCount: The desired number of workers in the worker pool. Must be a
-      value between 0 and 1000.
+      value between 0 and 15000.
   """
 
   class StateValueValuesEnum(_messages.Enum):

@@ -1256,6 +1256,32 @@ class DataprocV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def SubmitAsOperation(self, request, global_params=None):
+      r"""Submits job to a cluster.
+
+      Args:
+        request: (DataprocProjectsRegionsJobsSubmitAsOperationRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('SubmitAsOperation')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SubmitAsOperation.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'dataproc.projects.regions.jobs.submitAsOperation',
+        ordered_params=[u'projectId', u'region'],
+        path_params=[u'projectId', u'region'],
+        query_params=[],
+        relative_path=u'v1/projects/{projectId}/regions/{region}/jobs:submitAsOperation',
+        request_field=u'submitJobRequest',
+        request_type_name=u'DataprocProjectsRegionsJobsSubmitAsOperationRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
     def TestIamPermissions(self, request, global_params=None):
       r"""Returns permissions that a caller has on the specified resource. If the resource does not exist, this will return an empty set of permissions, not a NOT_FOUND error.Note: This operation is designed to be used for building permission-aware UIs and command-line tools, not for authorization checking. This operation may "fail open" without warning.
 

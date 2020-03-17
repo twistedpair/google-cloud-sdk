@@ -272,7 +272,7 @@
           "$ref": "GoogleDevtoolsRemotebuildexecutionAdminV1alphaWorkerConfig"
         },
         "workerCount": {
-          "description": "The desired number of workers in the worker pool. Must be a value between\n0 and 1000.",
+          "description": "The desired number of workers in the worker pool. Must be a value between\n0 and 15000.",
           "type": "string",
           "format": "int64"
         },

@@ -452,7 +452,7 @@ creation and delete the backup.
     )
 
     def GetIamPolicy(self, request, global_params=None):
-      r"""Gets the access control policy for a Table or Backup resource.
+      r"""Gets the access control policy for a Table resource.
 Returns an empty policy if the resource exists but does not have a policy
 set.
 
@@ -536,7 +536,7 @@ backups.
     )
 
     def SetIamPolicy(self, request, global_params=None):
-      r"""Sets the access control policy on a Table or Backup resource.
+      r"""Sets the access control policy on a Table resource.
 Replaces any existing policy.
 
       Args:
@@ -917,7 +917,7 @@ for 90 days.
     )
 
     def GetIamPolicy(self, request, global_params=None):
-      r"""Gets the access control policy for a Table or Backup resource.
+      r"""Gets the access control policy for a Table resource.
 Returns an empty policy if the resource exists but does not have a policy
 set.
 
@@ -1037,7 +1037,7 @@ Table, if successful.
     )
 
     def SetIamPolicy(self, request, global_params=None):
-      r"""Sets the access control policy on a Table or Backup resource.
+      r"""Sets the access control policy on a Table resource.
 Replaces any existing policy.
 
       Args:

@@ -13,7 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-"""Common flag setup for Cloud API Gateway surface."""
+"""Common flag setup and parsing for Cloud API Gateway surface."""
 
 from __future__ import absolute_import
 from __future__ import division
@@ -29,6 +29,11 @@ def AddDisplayNameArg(parser):
       help="""\
       Human readable name which can optionally be supplied.
       """)
+
+
+def ProcessApiRefToEndpointsService(api_ref):
+  return '{}.apigateway.{}.cloud.goog'.format(api_ref.Name(),
+                                              api_ref.projectsId)
 
 
 def AddBackendAuthServiceAccountFlag(parser):

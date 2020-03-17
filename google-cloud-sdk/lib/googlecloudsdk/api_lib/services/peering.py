@@ -128,6 +128,75 @@ def ListConnections(project_number, service, network):
                             exceptions.ListConnectionsPermissionDeniedException)
 
 
+def EnableVpcServiceControls(project_number, service, network):
+  """Make API call to enable VPC service controls for a specific service.
+
+  Args:
+    project_number: The number of the project which is peered with the service.
+    service: The name of the service to enable VPC service controls for.
+    network: The network in the consumer project peered with the service.
+
+  Raises:
+    exceptions.EnableVpcServiceControlsPermissionDeniedException: when the
+    enable VPC service controls API fails.
+    apitools_exceptions.HttpError: Another miscellaneous error with the peering
+        service.
+
+  Returns:
+    The result of the peering operation.
+  """
+  client = _GetClientInstance()
+  messages = client.MESSAGES_MODULE
+
+  # the API only takes project number, so we cannot use resource parser.
+  request = messages.ServicenetworkingServicesEnableVpcServiceControlsRequest(
+      enableVpcServiceControlsRequest=messages.EnableVpcServiceControlsRequest(
+          consumerNetwork='projects/%s/global/networks/%s' %
+          (project_number, network)),
+      parent='services/' + service)
+  try:
+    return client.services.EnableVpcServiceControls(request)
+  except (apitools_exceptions.HttpForbiddenError,
+          apitools_exceptions.HttpNotFoundError) as e:
+    exceptions.ReraiseError(
+        e, exceptions.EnableVpcServiceControlsPermissionDeniedException)
+
+
+def DisableVpcServiceControls(project_number, service, network):
+  """Make API call to disable VPC service controls for a specific service.
+
+  Args:
+    project_number: The number of the project which is peered with the service.
+    service: The name of the service to disable VPC service controls for.
+    network: The network in the consumer project peered with the service.
+
+  Raises:
+    exceptions.DisableVpcServiceControlsPermissionDeniedException: when the
+    disable VPC service controls API fails.
+    apitools_exceptions.HttpError: Another miscellaneous error with the peering
+        service.
+
+  Returns:
+    The result of the disable VPC service controls operation.
+  """
+  client = _GetClientInstance()
+  messages = client.MESSAGES_MODULE
+
+  # the API only takes project number, so we cannot use resource parser.
+  request = messages.ServicenetworkingServicesDisableVpcServiceControlsRequest(
+      disableVpcServiceControlsRequest=messages
+      .DisableVpcServiceControlsRequest(
+          consumerNetwork='projects/%s/global/networks/%s' %
+          (project_number, network)),
+      parent='services/' + service)
+  try:
+    return client.services.DisableVpcServiceControls(request)
+  except (apitools_exceptions.HttpForbiddenError,
+          apitools_exceptions.HttpNotFoundError) as e:
+    exceptions.ReraiseError(
+        e, exceptions.DisableVpcServiceControlsPermissionDeniedException)
+
+
 def GetOperation(name):
   """Make API call to get an operation.
 

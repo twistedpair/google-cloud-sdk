@@ -29,6 +29,7 @@ from googlecloudsdk.core import exceptions
 DEFAULT_MESSAGE_RETENTION_VALUE = 'default'
 NEVER_EXPIRATION_PERIOD_VALUE = 'never'
 CLEAR_DEAD_LETTER_VALUE = 'clear'
+CLEAR_RETRY_VALUE = 'clear'
 
 
 class NoFieldsSpecifiedError(exceptions.Error):
@@ -102,7 +103,9 @@ class SubscriptionsClient(object):
              enable_message_ordering=None,
              filter_string=None,
              dead_letter_topic=None,
-             max_delivery_attempts=None):
+             max_delivery_attempts=None,
+             min_retry_delay=None,
+             max_retry_delay=None):
     """Creates a Subscription.
 
     Args:
@@ -125,6 +128,10 @@ class SubscriptionsClient(object):
       dead_letter_topic (str): Topic for publishing dead messages.
       max_delivery_attempts (int): Threshold of failed deliveries before sending
         message to the dead letter topic.
+      min_retry_delay (str): The minimum delay between consecutive deliveries
+        of a given message.
+      max_retry_delay (str): The maximum delay between consecutive deliveries
+        of a given message.
     Returns:
       Subscription: the created subscription
     """
@@ -141,7 +148,8 @@ class SubscriptionsClient(object):
         enableMessageOrdering=enable_message_ordering,
         filter=filter_string,
         deadLetterPolicy=self._DeadLetterPolicy(dead_letter_topic,
-                                                max_delivery_attempts))
+                                                max_delivery_attempts),
+        retryPolicy=self._RetryPolicy(min_retry_delay, max_retry_delay))
 
     return self._service.Create(subscription)
 
@@ -281,12 +289,33 @@ class SubscriptionsClient(object):
           maxDeliveryAttempts=max_delivery_attempts)
     return None
 
+  def _RetryPolicy(self, min_retry_delay, max_retry_delay):
+    """Builds RetryPolicy message from argument values.
+
+    Args:
+      min_retry_delay (str): The minimum delay between consecutive deliveries of
+        a given message.
+      max_retry_delay (str): The maximum delay between consecutive deliveries of
+        a given message.
+
+    Returns:
+      DeadLetterPolicy message or None.
+    """
+    if min_retry_delay or max_retry_delay:
+      return self.messages.RetryPolicy(
+          minimumBackoff=min_retry_delay, maximumBackoff=max_retry_delay)
+    return None
+
   def _HandleMessageRetentionUpdate(self, update_setting):
     if update_setting.value == DEFAULT_MESSAGE_RETENTION_VALUE:
       update_setting.value = None
 
   def _HandleDeadLetterPolicyUpdate(self, update_setting):
     if update_setting.value == CLEAR_DEAD_LETTER_VALUE:
+      update_setting.value = None
+
+  def _HandleRetryPolicyUpdate(self, update_setting):
+    if update_setting.value == CLEAR_RETRY_VALUE:
       update_setting.value = None
 
   def Patch(self,
@@ -300,7 +329,10 @@ class SubscriptionsClient(object):
             expiration_period=None,
             dead_letter_topic=None,
             max_delivery_attempts=None,
-            clear_dead_letter_policy=False):
+            clear_dead_letter_policy=False,
+            min_retry_delay=None,
+            max_retry_delay=None,
+            clear_retry_policy=False):
     """Updates a Subscription.
 
     Args:
@@ -320,6 +352,12 @@ class SubscriptionsClient(object):
         message to the dead letter topic.
       clear_dead_letter_policy (bool): If set, clear the dead letter policy from
         the subscription.
+      min_retry_delay (str): The minimum delay between consecutive deliveries
+        of a given message.
+      max_retry_delay (str): The maximum delay between consecutive deliveries
+        of a given message.
+      clear_retry_policy (bool): If set, clear the retry policy from the
+        subscription.
     Returns:
       Subscription: The updated subscription.
     Raises:
@@ -340,6 +378,10 @@ class SubscriptionsClient(object):
             'deadLetterPolicy',
             CLEAR_DEAD_LETTER_VALUE if clear_dead_letter_policy else
             self._DeadLetterPolicy(dead_letter_topic, max_delivery_attempts)),
+        _SubscriptionUpdateSetting(
+            'retryPolicy',
+            CLEAR_RETRY_VALUE if clear_retry_policy else self._RetryPolicy(
+                min_retry_delay, max_retry_delay))
     ]
     subscription = self.messages.Subscription(
         name=subscription_ref.RelativeName())
@@ -350,6 +392,8 @@ class SubscriptionsClient(object):
           self._HandleMessageRetentionUpdate(update_setting)
         if update_setting.field_name == 'deadLetterPolicy':
           self._HandleDeadLetterPolicyUpdate(update_setting)
+        if update_setting.field_name == 'retryPolicy':
+          self._HandleRetryPolicyUpdate(update_setting)
         setattr(subscription, update_setting.field_name, update_setting.value)
         update_mask.append(update_setting.field_name)
     if not update_mask:

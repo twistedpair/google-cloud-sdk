@@ -468,7 +468,7 @@ class Instance(_messages.Message):
     availableVersion: Available versions that the instance can be upgraded to
       using UpdateInstanceRequest.
     createTime: Output only. The time the instance was created.
-    description: An optional description of this instance.
+    description: Optional. An optional description of this instance.
     displayName: Display name for an instance.
     enableStackdriverLogging: Option to enable Stackdriver Logging.
     enableStackdriverMonitoring: Option to enable Stackdriver Monitoring.
@@ -535,12 +535,17 @@ class Instance(_messages.Message):
         certain limitations, such as fewer number of concurrent pipelines, no
         support for streaming pipelines, etc.
       ENTERPRISE: Enterprise Data Fusion instance. In Enterprise type, the
-        user will have more features available, such as support for streaming
+        user will have all features available, such as support for streaming
         pipelines, higher number of concurrent pipelines, etc.
+      DEVELOPER: Developer Data Fusion instance. In Developer type, the user
+        will have all features available but with restrictive capabilities.
+        This is to help enterprises design and develop their data ingestion
+        and integration pipelines at low cost.
     """
     TYPE_UNSPECIFIED = 0
     BASIC = 1
     ENTERPRISE = 2
+    DEVELOPER = 3
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):

@@ -52,9 +52,6 @@ class ListRewriter(resource_expr_rewrite.Backend):
     """Rewrites <key op operand>."""
 
     del key_type  # unused in RewriteTerm
-    for prefix in ('project', '_'):
-      if key.startswith(prefix):
-        key = key[len(prefix):]
     if not key.startswith('labels.'):
       # Support OnePlatform aliases.
       key = key.lower()
@@ -62,7 +59,13 @@ class ListRewriter(resource_expr_rewrite.Backend):
         key = 'createTime'
       elif key in ('lifecyclestate', 'lifecycle_state'):
         key = 'lifecycleState'
-      elif key not in ('id', 'name', 'number', 'parent.id', 'parent.type'):
+      elif key in ('projectid', 'project_id'):
+        key = 'id'
+      elif key in ('projectname', 'project_name'):
+        key = 'name'
+      elif key in ('projectnumber', 'project_number'):
+        key = 'projectNumber'
+      elif key not in ('id', 'name', 'parent.id', 'parent.type'):
         return None
 
     if op not in (':', '=', '!='):

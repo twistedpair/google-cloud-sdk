@@ -19,11 +19,14 @@ class AccessSettings(_messages.Message):
     gcipSettings: GCIP claims and endpoint configurations for 3p identity
       providers.
     oauthSettings: Settings to configure IAP's OAuth behavior.
+    policyDelegationSettings: Settings to configure Policy delegation for apps
+      hosted in tenant projects. INTERNAL_ONLY.
   """
 
   corsSettings = _messages.MessageField('CorsSettings', 1)
   gcipSettings = _messages.MessageField('GcipSettings', 2)
   oauthSettings = _messages.MessageField('OAuthSettings', 3)
+  policyDelegationSettings = _messages.MessageField('PolicyDelegationSettings', 4)
 
 
 class ApplicationSettings(_messages.Message):
@@ -550,8 +553,145 @@ class Policy(_messages.Message):
   version = _messages.IntegerField(3, variant=_messages.Variant.INT32)
 
 
+class PolicyDelegationSettings(_messages.Message):
+  r"""PolicyDelegationConfig allows google-internal teams to use IAP for apps
+  hosted in a tenant project. Using these settings, the app can delegate
+  permission check to happen against the linked customer project. This is only
+  ever supposed to be used by google internal teams, hence the restriction on
+  the proto.
+
+  Fields:
+    iamPermission: Permission to check in IAM.
+    iamServiceName: The DNS name of the service (e.g.
+      "resourcemanager.googleapis.com"). This should be the domain name part
+      of the full resource names (see https://aip.dev/122#full-resource-
+      names), which is usually the same as IamServiceSpec.service of the
+      service where the resource type is defined.
+    policyName: Policy name to be checked
+    resource: IAM resource to check permission on
+  """
+
+  iamPermission = _messages.StringField(1)
+  iamServiceName = _messages.StringField(2)
+  policyName = _messages.MessageField('PolicyName', 3)
+  resource = _messages.MessageField('Resource', 4)
+
+
+class PolicyName(_messages.Message):
+  r"""A PolicyName object.
+
+  Fields:
+    id: A string attribute.
+    region: For Cloud IAM: The location of the Policy. Must be empty or
+      "global" for Policies owned by global IAM.  Must name a region from
+      prodspec/cloud-iam-cloudspec for Regional IAM Policies, see http://go
+      /iam-faq#where-is-iam-currently-deployed.  For Local IAM: This field
+      should be set to "local".
+    type: Valid values for type might be 'gce', 'gcs', 'project', 'account'
+      etc.
+  """
+
+  id = _messages.StringField(1)
+  region = _messages.StringField(2)
+  type = _messages.StringField(3)
+
+
 class ResetIdentityAwareProxyClientSecretRequest(_messages.Message):
   r"""The request sent to ResetIdentityAwareProxyClientSecret."""
+
+
+class Resource(_messages.Message):
+  r"""A Resource object.
+
+  Messages:
+    LabelsValue: The service defined labels of the resource on which the
+      conditions will be evaluated. The semantics - including the key names -
+      are vague to IAM. If the effective condition has a reference to a
+      `resource.labels[foo]` construct, IAM consults with this map to retrieve
+      the values associated with `foo` key for Conditions evaluation. If the
+      provided key is not found in the labels map, the condition would
+      evaluate to false.  This field is in limited use. If your intended use
+      case is not expected to express resource.labels attribute in IAM
+      Conditions, leave this field empty. Before planning on using this
+      attribute please: * Read go/iam-conditions-labels-comm and ensure your
+      service can meet the   data availability and management requirements. *
+      Talk to iam-conditions-eng@ about your use case.
+
+  Fields:
+    labels: The service defined labels of the resource on which the conditions
+      will be evaluated. The semantics - including the key names - are vague
+      to IAM. If the effective condition has a reference to a
+      `resource.labels[foo]` construct, IAM consults with this map to retrieve
+      the values associated with `foo` key for Conditions evaluation. If the
+      provided key is not found in the labels map, the condition would
+      evaluate to false.  This field is in limited use. If your intended use
+      case is not expected to express resource.labels attribute in IAM
+      Conditions, leave this field empty. Before planning on using this
+      attribute please: * Read go/iam-conditions-labels-comm and ensure your
+      service can meet the   data availability and management requirements. *
+      Talk to iam-conditions-eng@ about your use case.
+    name: Name of the resource on which conditions will be evaluated. Relative
+      Resource Name of the resource should be set, which is the URI path of
+      the resource without leading "/". For instance, resource.name set for a
+      bucket is "projects/project123/buckets/bucket456". This field is
+      required for evaluating conditions with rules on resource names.
+      SYSContext.resource_name is not used by condition evaluation. See
+      https://cloud.google.com/apis/design/resource_names for details.
+    service: The name of the service this resource belongs to. It is
+      configured using the official_service_name of the Service as defined in
+      service configurations under //configs/cloud/resourcetypes. For example,
+      the official_service_name of cloud resource manager service is set as
+      'cloudresourcemanager.googleapis.com' according to
+      //configs/cloud/resourcetypes/google/cloud/resourcemanager/prod.yaml
+    type: The public resource type name of the resource on which conditions
+      will be evaluated. It is configured using the official_name of the
+      ResourceType as defined in service configurations under
+      //configs/cloud/resourcetypes. For example, the official_name for GCP
+      projects is set as 'cloudresourcemanager.googleapis.com/Project'
+      according to
+      //configs/cloud/resourcetypes/google/cloud/resourcemanager/prod.yaml For
+      details see go/iam-conditions-integration-guide.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""The service defined labels of the resource on which the conditions
+    will be evaluated. The semantics - including the key names - are vague to
+    IAM. If the effective condition has a reference to a
+    `resource.labels[foo]` construct, IAM consults with this map to retrieve
+    the values associated with `foo` key for Conditions evaluation. If the
+    provided key is not found in the labels map, the condition would evaluate
+    to false.  This field is in limited use. If your intended use case is not
+    expected to express resource.labels attribute in IAM Conditions, leave
+    this field empty. Before planning on using this attribute please: * Read
+    go/iam-conditions-labels-comm and ensure your service can meet the   data
+    availability and management requirements. * Talk to iam-conditions-eng@
+    about your use case.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  labels = _messages.MessageField('LabelsValue', 1)
+  name = _messages.StringField(2)
+  service = _messages.StringField(3)
+  type = _messages.StringField(4)
 
 
 class SetIamPolicyRequest(_messages.Message):

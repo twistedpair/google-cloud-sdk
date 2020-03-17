@@ -103,6 +103,20 @@ def AddImageArg(parser):
       '`gcr.io/cloudrun/hello:latest`).')
 
 
+def AddConfigFlags(parser):
+  """Add config flags."""
+  build_config = parser.add_mutually_exclusive_group()
+  build_config.add_argument(
+      '--image',
+      help='Name of the container image to deploy (e.g. '
+      '`gcr.io/cloudrun/hello:latest`).')
+  build_config.add_argument(
+      '--config',
+      hidden=True,
+      default='cloudbuild.yaml',  # By default, find this in the current dir
+      help='The YAML or JSON file to use as the build configuration file.')
+
+
 _ARG_GROUP_HELP_TEXT = ('Only applicable if connecting to {platform_desc}. '
                         'Specify {platform} to use:')
 
@@ -581,6 +595,7 @@ def AddCommandFlag(parser):
       '--command',
       metavar='COMMAND',
       type=arg_parsers.ArgList(),
+      action=arg_parsers.UpdateAction,
       help='Entrypoint for the container image. If not specified, the '
       'container image\'s default Entrypoint is run. '
       'To reset this field to its default, pass an empty string.')
@@ -592,6 +607,7 @@ def AddArgsFlag(parser):
       '--args',
       metavar='ARG',
       type=arg_parsers.ArgList(),
+      action=arg_parsers.UpdateAction,
       help='Comma-separated arguments passed to the command run by the '
       'container image. If not specified and no \'--command\' is provided, the '
       'container image\'s default Cmd is used. Otherwise, if not specified, no '
@@ -629,7 +645,7 @@ def AddHttp2Flag(parser):
 
 def _HasChanges(args, flags):
   """True iff any of the passed flags are set."""
-  return any(_FlagIsExplicitlySet(args, flag) for flag in flags)
+  return any(FlagIsExplicitlySet(args, flag) for flag in flags)
 
 
 def _HasEnvChanges(args):
@@ -913,7 +929,7 @@ def GetConfigurationChanges(args):
   if _HasLabelChanges(args):
     additions = (
         args.labels
-        if _FlagIsExplicitlySet(args, 'labels') else args.update_labels)
+        if FlagIsExplicitlySet(args, 'labels') else args.update_labels)
     diff = labels_util.Diff(
         additions=additions,
         subtractions=args.remove_labels,
@@ -937,9 +953,9 @@ def GetConfigurationChanges(args):
   if 'args' in args and args.args is not None:
     # Allow passing an empty string here to reset the field
     changes.append(config_changes.ContainerArgsChange(args.args))
-  if _FlagIsExplicitlySet(args, 'port'):
+  if FlagIsExplicitlySet(args, 'port'):
     changes.append(config_changes.ContainerPortChange(port=args.port))
-  if _FlagIsExplicitlySet(args, 'use_http2'):
+  if FlagIsExplicitlySet(args, 'use_http2'):
     changes.append(config_changes.ContainerPortChange(use_http2=args.use_http2))
   return changes
 
@@ -1095,7 +1111,7 @@ def GetKubeconfig(args):
       files.ExpandHomeDir(_DEFAULT_KUBECONFIG_PATH))
 
 
-def _FlagIsExplicitlySet(args, flag):
+def FlagIsExplicitlySet(args, flag):
   """Return True if --flag is explicitly passed by the user."""
   # hasattr check is to allow the same code to work for release tracks that
   # don't have the args at all yet.
@@ -1110,28 +1126,28 @@ def VerifyOnePlatformFlags(args, release_track, product):
                '`gcloud config set run/platform {platform}` to work with '
                '{platform_desc}.')
 
-  if _FlagIsExplicitlySet(args, 'connectivity'):
+  if FlagIsExplicitlySet(args, 'connectivity'):
     raise serverless_exceptions.ConfigurationError(
         error_msg.format(
             flag='--connectivity=[internal|external]',
             platform=PLATFORM_GKE,
             platform_desc=_PLATFORM_SHORT_DESCRIPTIONS[PLATFORM_GKE]))
 
-  if _FlagIsExplicitlySet(args, 'namespace'):
+  if FlagIsExplicitlySet(args, 'namespace'):
     raise serverless_exceptions.ConfigurationError(
         error_msg.format(
             flag='--namespace',
             platform=PLATFORM_GKE,
             platform_desc=_PLATFORM_SHORT_DESCRIPTIONS[PLATFORM_GKE]))
 
-  if _FlagIsExplicitlySet(args, 'cluster'):
+  if FlagIsExplicitlySet(args, 'cluster'):
     raise serverless_exceptions.ConfigurationError(
         error_msg.format(
             flag='--cluster',
             platform=PLATFORM_GKE,
             platform_desc=_PLATFORM_SHORT_DESCRIPTIONS[PLATFORM_GKE]))
 
-  if _FlagIsExplicitlySet(args, 'cluster_location'):
+  if FlagIsExplicitlySet(args, 'cluster_location'):
     raise serverless_exceptions.ConfigurationError(
         error_msg.format(
             flag='--cluster-location',
@@ -1152,35 +1168,35 @@ def VerifyOnePlatformFlags(args, release_track, product):
             platform=PLATFORM_GKE,
             platform_desc=_PLATFORM_SHORT_DESCRIPTIONS[PLATFORM_GKE]))
 
-  if _FlagIsExplicitlySet(args, 'use_http2'):
+  if FlagIsExplicitlySet(args, 'use_http2'):
     raise serverless_exceptions.ConfigurationError(
         error_msg.format(
             flag='--[no-]-use-http2',
             platform=PLATFORM_GKE,
             platform_desc=_PLATFORM_SHORT_DESCRIPTIONS[PLATFORM_GKE]))
 
-  if _FlagIsExplicitlySet(args, 'broker'):
+  if FlagIsExplicitlySet(args, 'broker'):
     raise serverless_exceptions.ConfigurationError(
         error_msg.format(
             flag='--broker',
             platform=PLATFORM_GKE,
             platform_desc=_PLATFORM_SHORT_DESCRIPTIONS[PLATFORM_GKE]))
 
-  if _FlagIsExplicitlySet(args, 'custom_type') and product == Product.EVENTS:
+  if FlagIsExplicitlySet(args, 'custom_type') and product == Product.EVENTS:
     raise serverless_exceptions.ConfigurationError(
         error_msg.format(
             flag='--custom-type',
             platform=PLATFORM_GKE,
             platform_desc=_PLATFORM_SHORT_DESCRIPTIONS[PLATFORM_GKE]))
 
-  if _FlagIsExplicitlySet(args, 'kubeconfig'):
+  if FlagIsExplicitlySet(args, 'kubeconfig'):
     raise serverless_exceptions.ConfigurationError(
         error_msg.format(
             flag='--kubeconfig',
             platform=PLATFORM_KUBERNETES,
             platform_desc=_PLATFORM_SHORT_DESCRIPTIONS[PLATFORM_KUBERNETES]))
 
-  if _FlagIsExplicitlySet(args, 'context'):
+  if FlagIsExplicitlySet(args, 'context'):
     raise serverless_exceptions.ConfigurationError(
         error_msg.format(
             flag='--context',
@@ -1195,7 +1211,7 @@ def VerifyGKEFlags(args, release_track, product):
                'run `gcloud config set run/platform {platform}` to work with '
                '{platform_desc}.')
 
-  if _FlagIsExplicitlySet(args, 'allow_unauthenticated'):
+  if FlagIsExplicitlySet(args, 'allow_unauthenticated'):
     raise serverless_exceptions.ConfigurationError(
         error_msg.format(
             flag='--allow-unauthenticated',
@@ -1203,7 +1219,7 @@ def VerifyGKEFlags(args, release_track, product):
             platform_desc=_PLATFORM_SHORT_DESCRIPTIONS[PLATFORM_MANAGED]))
 
   if (release_track != base.ReleaseTrack.ALPHA and
-      _FlagIsExplicitlySet(args, 'service_account') and
+      FlagIsExplicitlySet(args, 'service_account') and
       product == Product.RUN):
     raise serverless_exceptions.ConfigurationError(
         error_msg.format(
@@ -1211,35 +1227,35 @@ def VerifyGKEFlags(args, release_track, product):
             platform=PLATFORM_MANAGED,
             platform_desc=_PLATFORM_SHORT_DESCRIPTIONS[PLATFORM_MANAGED]))
 
-  if _FlagIsExplicitlySet(args, 'region'):
+  if FlagIsExplicitlySet(args, 'region'):
     raise serverless_exceptions.ConfigurationError(
         error_msg.format(
             flag='--region',
             platform=PLATFORM_MANAGED,
             platform_desc=_PLATFORM_SHORT_DESCRIPTIONS[PLATFORM_MANAGED]))
 
-  if _FlagIsExplicitlySet(args, 'vpc_connector'):
+  if FlagIsExplicitlySet(args, 'vpc_connector'):
     raise serverless_exceptions.ConfigurationError(
         error_msg.format(
             flag='--vpc-connector',
             platform=PLATFORM_MANAGED,
             platform_desc=_PLATFORM_SHORT_DESCRIPTIONS[PLATFORM_MANAGED]))
 
-  if _FlagIsExplicitlySet(args, 'clear_vpc_connector'):
+  if FlagIsExplicitlySet(args, 'clear_vpc_connector'):
     raise serverless_exceptions.ConfigurationError(
         error_msg.format(
             flag='--clear-vpc-connector',
             platform=PLATFORM_MANAGED,
             platform_desc=_PLATFORM_SHORT_DESCRIPTIONS[PLATFORM_MANAGED]))
 
-  if _FlagIsExplicitlySet(args, 'kubeconfig'):
+  if FlagIsExplicitlySet(args, 'kubeconfig'):
     raise serverless_exceptions.ConfigurationError(
         error_msg.format(
             flag='--kubeconfig',
             platform=PLATFORM_KUBERNETES,
             platform_desc=_PLATFORM_SHORT_DESCRIPTIONS[PLATFORM_KUBERNETES]))
 
-  if _FlagIsExplicitlySet(args, 'context'):
+  if FlagIsExplicitlySet(args, 'context'):
     raise serverless_exceptions.ConfigurationError(
         error_msg.format(
             flag='--context',
@@ -1254,7 +1270,7 @@ def VerifyKubernetesFlags(args, release_track, product):
                '`gcloud config set run/platform {platform}` to work with '
                '{platform_desc}.')
 
-  if _FlagIsExplicitlySet(args, 'allow_unauthenticated'):
+  if FlagIsExplicitlySet(args, 'allow_unauthenticated'):
     raise serverless_exceptions.ConfigurationError(
         error_msg.format(
             flag='--allow-unauthenticated',
@@ -1262,7 +1278,7 @@ def VerifyKubernetesFlags(args, release_track, product):
             platform_desc=_PLATFORM_SHORT_DESCRIPTIONS[PLATFORM_MANAGED]))
 
   if (release_track != base.ReleaseTrack.ALPHA and
-      _FlagIsExplicitlySet(args, 'service_account') and
+      FlagIsExplicitlySet(args, 'service_account') and
       product == Product.RUN):
     raise serverless_exceptions.ConfigurationError(
         error_msg.format(
@@ -1270,35 +1286,35 @@ def VerifyKubernetesFlags(args, release_track, product):
             platform=PLATFORM_MANAGED,
             platform_desc=_PLATFORM_SHORT_DESCRIPTIONS[PLATFORM_MANAGED]))
 
-  if _FlagIsExplicitlySet(args, 'region'):
+  if FlagIsExplicitlySet(args, 'region'):
     raise serverless_exceptions.ConfigurationError(
         error_msg.format(
             flag='--region',
             platform=PLATFORM_MANAGED,
             platform_desc=_PLATFORM_SHORT_DESCRIPTIONS[PLATFORM_MANAGED]))
 
-  if _FlagIsExplicitlySet(args, 'vpc_connector'):
+  if FlagIsExplicitlySet(args, 'vpc_connector'):
     raise serverless_exceptions.ConfigurationError(
         error_msg.format(
             flag='--vpc-connector',
             platform='managed',
             platform_desc=_PLATFORM_SHORT_DESCRIPTIONS['managed']))
 
-  if _FlagIsExplicitlySet(args, 'clear_vpc_connector'):
+  if FlagIsExplicitlySet(args, 'clear_vpc_connector'):
     raise serverless_exceptions.ConfigurationError(
         error_msg.format(
             flag='--clear-vpc-connector',
             platform=PLATFORM_MANAGED,
             platform_desc=_PLATFORM_SHORT_DESCRIPTIONS[PLATFORM_MANAGED]))
 
-  if _FlagIsExplicitlySet(args, 'cluster'):
+  if FlagIsExplicitlySet(args, 'cluster'):
     raise serverless_exceptions.ConfigurationError(
         error_msg.format(
             flag='--cluster',
             platform=PLATFORM_GKE,
             platform_desc=_PLATFORM_SHORT_DESCRIPTIONS[PLATFORM_GKE]))
 
-  if _FlagIsExplicitlySet(args, 'cluster_location'):
+  if FlagIsExplicitlySet(args, 'cluster_location'):
     raise serverless_exceptions.ConfigurationError(
         error_msg.format(
             flag='--cluster-location',
@@ -1381,3 +1397,31 @@ def ValidatePlatformIsManaged(unused_ref, unused_args, req):
         '`gcloud config set run/platform {managed}`.'.format(
             platform=GetPlatform(), managed=PLATFORM_MANAGED))
   return req
+
+
+def AddBuildTimeoutFlag(parser):
+  parser.add_argument(
+      '--build-timeout',
+      hidden=True,
+      help='Set the maximum request execution time (timeout) to build the '
+      'resource. It is specified as a duration; for example, "10m5s" is ten '
+      'minutes, and five seconds. If you don\'t specify a unit, seconds is '
+      'assumed. For example, "10" is 10 seconds.',
+      action=actions.StoreProperty(properties.VALUES.builds.timeout))
+
+
+def AddSourceFlag(parser):
+  """Add deploy source flags, an image or a source for build."""
+  parser.add_argument(
+      '--source',
+      hidden=True,
+      help='The location of the source to build. The location can be a '
+      'directory on a local disk or a gzipped archive file (.tar.gz) in '
+      'Google Cloud Storage. If the source is a local directory, this '
+      'command skips the files specified in the `--ignore-file`. If '
+      '`--ignore-file` is not specified, use`.gcloudignore` file. If a '
+      '`.gitignore` file is present in the local source directory, gcloud '
+      'will use a Git-compatible `.gcloudignore` file that respects your '
+      '.gitignored files. The global `.gitignore` is not respected. For more '
+      'information on `.gcloudignore`, see `gcloud topic gcloudignore`.',
+  )

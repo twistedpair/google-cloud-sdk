@@ -20,6 +20,7 @@ from __future__ import unicode_literals
 
 from apitools.base.py import encoding
 from googlecloudsdk.command_lib.compute.sole_tenancy.node_templates import flags
+from googlecloudsdk.command_lib.util.apis import arg_utils
 import six
 
 
@@ -29,12 +30,16 @@ def _ParseNodeAffinityLabels(affinity_labels, messages):
       affinity_labels, affinity_labels_class, sort_items=True)
 
 
-def CreateNodeTemplate(node_template_ref, args, messages, enable_disk=False):
+def CreateNodeTemplate(node_template_ref,
+                       args,
+                       messages,
+                       enable_disk=False,
+                       overcommit=False):
   """Creates a Node Template message from args."""
   node_affinity_labels = None
   if args.node_affinity_labels:
-    node_affinity_labels = _ParseNodeAffinityLabels(
-        args.node_affinity_labels, messages)
+    node_affinity_labels = _ParseNodeAffinityLabels(args.node_affinity_labels,
+                                                    messages)
 
   node_type_flexbility = None
   if args.IsSpecified('node_requirements'):
@@ -60,6 +65,12 @@ def CreateNodeTemplate(node_template_ref, args, messages, enable_disk=False):
           diskSizeGb=args.disk.get('size'),
           diskType=args.disk.get('type'))
       node_template.disks = [local_disk]
+
+  if overcommit and args.IsSpecified('cpu_overcommit_type'):
+    overcommit_type = arg_utils.ChoiceToEnum(
+        args.cpu_overcommit_type,
+        messages.NodeTemplate.CpuOvercommitTypeValueValuesEnum)
+    node_template.cpuOvercommitType = overcommit_type
 
   server_binding_flag = flags.GetServerBindingMapperFlag(messages)
   server_binding = messages.ServerBinding(

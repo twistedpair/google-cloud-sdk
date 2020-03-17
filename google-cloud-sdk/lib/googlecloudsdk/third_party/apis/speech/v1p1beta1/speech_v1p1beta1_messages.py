@@ -12,6 +12,34 @@ from apitools.base.py import extra_types
 package = 'speech'
 
 
+class ClassItem(_messages.Message):
+  r"""An item of the class.
+
+  Fields:
+    value: The class item's value.
+  """
+
+  value = _messages.StringField(1)
+
+
+class CustomClass(_messages.Message):
+  r"""A set of words or phrases that represents a common concept likely to
+  appear in your audio, for example a list of passenger ship names.
+  CustomClass items can be substituted into placeholders that you set in
+  PhraseSet phrases.
+
+  Fields:
+    customClassId: If this custom class is a resource, the custom_class_id is
+      the resource id of the CustomClass.
+    items: A collection of class items.
+    name: The resource name of the custom class.
+  """
+
+  customClassId = _messages.StringField(1)
+  items = _messages.MessageField('ClassItem', 2, repeated=True)
+  name = _messages.StringField(3)
+
+
 class DataErrors(_messages.Message):
   r"""Different types of dataset errors and the stats associated with each
   error.
@@ -143,6 +171,16 @@ class DeployModelRequest(_messages.Message):
   r"""Message sent by the client for the `DeployModel` method."""
 
 
+class Empty(_messages.Message):
+  r"""A generic empty message that you can re-use to avoid defining duplicated
+  empty messages in your APIs. A typical example is to use it as the request
+  or the response type of an API method. For instance:      service Foo {
+  rpc Bar(google.protobuf.Empty) returns (google.protobuf.Empty);     }  The
+  JSON representation for `Empty` is empty JSON object `{}`.
+  """
+
+
+
 class EvaluateModelRequest(_messages.Message):
   r"""Message sent by the client for the `EvaluateModel` method."""
 
@@ -192,6 +230,19 @@ class EvaluateModelResponse(_messages.Message):
   modelType = _messages.EnumField('ModelTypeValueValuesEnum', 2)
   wordCount = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   wordErrorRate = _messages.FloatField(4, variant=_messages.Variant.FLOAT)
+
+
+class ListCustomClassesResponse(_messages.Message):
+  r"""Message returned to the client by the `ListCustomClasses` method.
+
+  Fields:
+    customClasses: The custom classes.
+    nextPageToken: A token, which can be sent as `page_token` to retrieve the
+      next page. If this field is omitted, there are no subsequent pages.
+  """
+
+  customClasses = _messages.MessageField('CustomClass', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
 
 
 class ListDatasetsResponse(_messages.Message):
@@ -246,6 +297,19 @@ class ListOperationsResponse(_messages.Message):
 
   nextPageToken = _messages.StringField(1)
   operations = _messages.MessageField('Operation', 2, repeated=True)
+
+
+class ListPhraseSetResponse(_messages.Message):
+  r"""Message returned to the client by the `ListPhraseSet` method.
+
+  Fields:
+    nextPageToken: A token, which can be sent as `page_token` to retrieve the
+      next page. If this field is omitted, there are no subsequent pages.
+    phraseSet: The phrase set.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  phraseSet = _messages.MessageField('PhraseSet', 2, repeated=True)
 
 
 class LogBucketStats(_messages.Message):
@@ -460,6 +524,67 @@ class Operation(_messages.Message):
   response = _messages.MessageField('ResponseValue', 5)
 
 
+class Phrase(_messages.Message):
+  r"""A phrases containing words and phrase "hints" so that the speech
+  recognition is more likely to recognize them. This can be used to improve
+  the accuracy for specific words and phrases, for example, if specific
+  commands are typically spoken by the user. This can also be used to add
+  additional words to the vocabulary of the recognizer. See [usage
+  limits](https://cloud.google.com/speech-to-text/quotas#content).  List items
+  can also include pre-built or custom classes containing groups of words that
+  represent common concepts that occur in natural language. For example,
+  rather than providing a phrase hint for every month of the year (e.g. "i was
+  born in january", "i was born in febuary", ...), use the pre-built $MONTH
+  class improves the likelihood of correctly transcribing audio that includes
+  months (e.g. "i was born in $month"). To refer to pre-built classes, use the
+  class' symbol prepended with $ e.g. $MONTH. To refer to custom classes that
+  were defined inline in the request, set the class's `custom_class_id` to a
+  string unique to all class resources and inline classes. Then use the class'
+  id wrapped in ${...} e.g. "${my-months}". To refer to custom classes
+  resources, use the class' id wrapped in ${} (e.g. ${my-months}).
+
+  Fields:
+    boost: Hint Boost. Overrides the boost set at the phrase set level.
+      Positive value will increase the probability that a specific phrase will
+      be recognized over other similar sounding phrases. The higher the boost,
+      the higher the chance of false positive recognition as well. Negative
+      boost values would correspond to anti-biasing. Anti-biasing is not
+      enabled, so negative boost will simply be ignored. Though `boost` can
+      accept a wide range of positive values, most use cases are best served
+      with values between 0 and 20. We recommend using a binary search
+      approach to finding the optimal value for your use case. Speech
+      recognition will skip PhraseSets with a boost value of 0.
+    value: The phrase itself.
+  """
+
+  boost = _messages.FloatField(1, variant=_messages.Variant.FLOAT)
+  value = _messages.StringField(2)
+
+
+class PhraseSet(_messages.Message):
+  r"""Provides "hints" to the speech recognizer to favor specific words and
+  phrases in the results.
+
+  Fields:
+    boost: Hint Boost. Positive value will increase the probability that a
+      specific phrase will be recognized over other similar sounding phrases.
+      The higher the boost, the higher the chance of false positive
+      recognition as well. Negative boost values would correspond to anti-
+      biasing. Anti-biasing is not enabled, so negative boost will simply be
+      ignored. Though `boost` can accept a wide range of positive values, most
+      use cases are best served with values between 0 (exclusive) and 20. We
+      recommend using a binary search approach to finding the optimal value
+      for your use case. Speech recognition will skip PhraseSets with a boost
+      value of 0.
+    name: The resource name of the phrase set.
+    phrases: A list of word and phrases.
+  """
+
+  boost = _messages.FloatField(1, variant=_messages.Variant.FLOAT)
+  name = _messages.StringField(2)
+  phrases = _messages.MessageField('Phrase', 3, repeated=True)
+
+
 class RecognitionAudio(_messages.Message):
   r"""Contains audio data in the encoding specified in the
   `RecognitionConfig`. Either `content` or `uri` must be supplied. Supplying
@@ -494,6 +619,11 @@ class RecognitionConfig(_messages.Message):
       AudioEncoding.
 
   Fields:
+    adaptation: Speech adaptation configuration improves the accuracy of
+      speech recognition. When speech adaptation is set it supersedes the
+      `speech_contexts` field. For more information, see the [speech
+      adaptation](https://cloud.google.com/speech-to-text/docs/context-
+      strength) documentation.
     alternativeLanguageCodes: A list of up to 3 additional
       [BCP-47](https://www.rfc-editor.org/rfc/bcp/bcp47.txt) language tags,
       listing possible alternative languages of the supplied audio. See
@@ -653,24 +783,25 @@ class RecognitionConfig(_messages.Message):
     SPEEX_WITH_HEADER_BYTE = 7
     MP3 = 8
 
-  alternativeLanguageCodes = _messages.StringField(1, repeated=True)
-  audioChannelCount = _messages.IntegerField(2, variant=_messages.Variant.INT32)
-  diarizationConfig = _messages.MessageField('SpeakerDiarizationConfig', 3)
-  diarizationSpeakerCount = _messages.IntegerField(4, variant=_messages.Variant.INT32)
-  enableAutomaticPunctuation = _messages.BooleanField(5)
-  enableSeparateRecognitionPerChannel = _messages.BooleanField(6)
-  enableSpeakerDiarization = _messages.BooleanField(7)
-  enableWordConfidence = _messages.BooleanField(8)
-  enableWordTimeOffsets = _messages.BooleanField(9)
-  encoding = _messages.EnumField('EncodingValueValuesEnum', 10)
-  languageCode = _messages.StringField(11)
-  maxAlternatives = _messages.IntegerField(12, variant=_messages.Variant.INT32)
-  metadata = _messages.MessageField('RecognitionMetadata', 13)
-  model = _messages.StringField(14)
-  profanityFilter = _messages.BooleanField(15)
-  sampleRateHertz = _messages.IntegerField(16, variant=_messages.Variant.INT32)
-  speechContexts = _messages.MessageField('SpeechContext', 17, repeated=True)
-  useEnhanced = _messages.BooleanField(18)
+  adaptation = _messages.MessageField('SpeechAdaptation', 1)
+  alternativeLanguageCodes = _messages.StringField(2, repeated=True)
+  audioChannelCount = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  diarizationConfig = _messages.MessageField('SpeakerDiarizationConfig', 4)
+  diarizationSpeakerCount = _messages.IntegerField(5, variant=_messages.Variant.INT32)
+  enableAutomaticPunctuation = _messages.BooleanField(6)
+  enableSeparateRecognitionPerChannel = _messages.BooleanField(7)
+  enableSpeakerDiarization = _messages.BooleanField(8)
+  enableWordConfidence = _messages.BooleanField(9)
+  enableWordTimeOffsets = _messages.BooleanField(10)
+  encoding = _messages.EnumField('EncodingValueValuesEnum', 11)
+  languageCode = _messages.StringField(12)
+  maxAlternatives = _messages.IntegerField(13, variant=_messages.Variant.INT32)
+  metadata = _messages.MessageField('RecognitionMetadata', 14)
+  model = _messages.StringField(15)
+  profanityFilter = _messages.BooleanField(16)
+  sampleRateHertz = _messages.IntegerField(17, variant=_messages.Variant.INT32)
+  speechContexts = _messages.MessageField('SpeechContext', 18, repeated=True)
+  useEnhanced = _messages.BooleanField(19)
 
 
 class RecognitionMetadata(_messages.Message):
@@ -885,6 +1016,25 @@ class SpeakerDiarizationConfig(_messages.Message):
   speakerTag = _messages.IntegerField(4, variant=_messages.Variant.INT32)
 
 
+class SpeechAdaptation(_messages.Message):
+  r"""Speech adaptation configuration.
+
+  Fields:
+    customClasses: A collection of custom classes. To specify the classes
+      inline, leave the class' `name` blank and fill in the rest of its
+      fields, giving it a unique `custom_class_id`. Refer to the inline
+      defined class in phrase hints by its `custom_class_id`.
+    phraseSetReferences: A collection of phrase set resource names to use.
+    phraseSets: A collection of phrase sets. To specify the hints inline,
+      leave the phrase set's `name` blank and fill in the rest of its fields.
+      Any phrase set can use any custom class.
+  """
+
+  customClasses = _messages.MessageField('CustomClass', 1, repeated=True)
+  phraseSetReferences = _messages.StringField(2, repeated=True)
+  phraseSets = _messages.MessageField('PhraseSet', 3, repeated=True)
+
+
 class SpeechContext(_messages.Message):
   r"""Provides "hints" to the speech recognizer to favor specific words and
   phrases in the results.
@@ -959,6 +1109,84 @@ class SpeechOperationsListRequest(_messages.Message):
   name = _messages.StringField(2)
   pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(4)
+
+
+class SpeechProjectsLocationsCustomClassesCreateRequest(_messages.Message):
+  r"""A SpeechProjectsLocationsCustomClassesCreateRequest object.
+
+  Fields:
+    customClass: A CustomClass resource to be passed as the request body.
+    customClassId: The ID to use for the custom class, which will become the
+      final component of the custom class' resource name.  This value should
+      be 4-63 characters, and valid characters are /a-z-/.
+    parent: Required. The parent resource where this custom class will be
+      created. Format:
+      {api_version}/projects/{project}/locations/{location}/customClasses
+  """
+
+  customClass = _messages.MessageField('CustomClass', 1)
+  customClassId = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class SpeechProjectsLocationsCustomClassesDeleteRequest(_messages.Message):
+  r"""A SpeechProjectsLocationsCustomClassesDeleteRequest object.
+
+  Fields:
+    name: Required. The name of the custom class to delete. Format:  {api_vers
+      ion}/projects/{project}/locations/{location}/customClasses/{custom_class
+      }
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class SpeechProjectsLocationsCustomClassesGetRequest(_messages.Message):
+  r"""A SpeechProjectsLocationsCustomClassesGetRequest object.
+
+  Fields:
+    name: Required. The name of the custom class to retrieve. Format:  {api_ve
+      rsion}/projects/{project}/locations/{location}/customClasses/{custom_cla
+      ss}
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class SpeechProjectsLocationsCustomClassesListRequest(_messages.Message):
+  r"""A SpeechProjectsLocationsCustomClassesListRequest object.
+
+  Fields:
+    pageSize: The maximum number of custom classes to return. The service may
+      return fewer than this value. If unspecified, at most 50 custom classes
+      will be returned. The maximum value is 1000; values above 1000 will be
+      coerced to 1000.
+    pageToken: A page token, received from a previous `ListCustomClass` call.
+      Provide this to retrieve the subsequent page.  When paginating, all
+      other parameters provided to `ListCustomClass` must match the call that
+      provided the page token.
+    parent: Required. The parent, which owns this collection of custom
+      classes. Format:
+      {api_version}/projects/{project}/locations/{location}/customClasses
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class SpeechProjectsLocationsCustomClassesPatchRequest(_messages.Message):
+  r"""A SpeechProjectsLocationsCustomClassesPatchRequest object.
+
+  Fields:
+    customClass: A CustomClass resource to be passed as the request body.
+    name: The resource name of the custom class.
+    updateMask: The list of fields to be updated.
+  """
+
+  customClass = _messages.MessageField('CustomClass', 1)
+  name = _messages.StringField(2, required=True)
+  updateMask = _messages.StringField(3)
 
 
 class SpeechProjectsLocationsDatasetsCreateRequest(_messages.Message):
@@ -1160,6 +1388,81 @@ class SpeechProjectsLocationsOperationsListRequest(_messages.Message):
   name = _messages.StringField(2, required=True)
   pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(4)
+
+
+class SpeechProjectsLocationsPhraseSetsCreateRequest(_messages.Message):
+  r"""A SpeechProjectsLocationsPhraseSetsCreateRequest object.
+
+  Fields:
+    parent: Required. The parent resource where this phrase set will be
+      created. Format:
+      {api_version}/projects/{project}/locations/{location}/phraseSets
+    phraseSet: A PhraseSet resource to be passed as the request body.
+    phraseSetId: The ID to use for the phrase set, which will become the final
+      component of the phrase set's resource name.  This value should be 4-63
+      characters, and valid characters are /a-z-/.
+  """
+
+  parent = _messages.StringField(1, required=True)
+  phraseSet = _messages.MessageField('PhraseSet', 2)
+  phraseSetId = _messages.StringField(3)
+
+
+class SpeechProjectsLocationsPhraseSetsDeleteRequest(_messages.Message):
+  r"""A SpeechProjectsLocationsPhraseSetsDeleteRequest object.
+
+  Fields:
+    name: Required. The name of the phrase set to delete. Format:  {api_versio
+      n}/projects/{project}/locations/{location}/phraseSets/{phrase_set}
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class SpeechProjectsLocationsPhraseSetsGetRequest(_messages.Message):
+  r"""A SpeechProjectsLocationsPhraseSetsGetRequest object.
+
+  Fields:
+    name: Required. The name of the phrase set to retrieve. Format:  {api_vers
+      ion}/projects/{project}/locations/{location}/phraseSets/{phrase_set}
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class SpeechProjectsLocationsPhraseSetsListRequest(_messages.Message):
+  r"""A SpeechProjectsLocationsPhraseSetsListRequest object.
+
+  Fields:
+    pageSize: The maximum number of phrase sets to return. The service may
+      return fewer than this value. If unspecified, at most 50 phrase sets
+      will be returned. The maximum value is 1000; values above 1000 will be
+      coerced to 1000.
+    pageToken: A page token, received from a previous `ListPhraseSet` call.
+      Provide this to retrieve the subsequent page.  When paginating, all
+      other parameters provided to `ListPhraseSet` must match the call that
+      provided the page token.
+    parent: Required. The parent, which owns this collection of phrase set.
+      Format: {api_version}/projects/{project}/locations/{location}/phraseSets
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class SpeechProjectsLocationsPhraseSetsPatchRequest(_messages.Message):
+  r"""A SpeechProjectsLocationsPhraseSetsPatchRequest object.
+
+  Fields:
+    name: The resource name of the phrase set.
+    phraseSet: A PhraseSet resource to be passed as the request body.
+    updateMask: The list of fields to be updated.
+  """
+
+  name = _messages.StringField(1, required=True)
+  phraseSet = _messages.MessageField('PhraseSet', 2)
+  updateMask = _messages.StringField(3)
 
 
 class SpeechRecognitionAlternative(_messages.Message):

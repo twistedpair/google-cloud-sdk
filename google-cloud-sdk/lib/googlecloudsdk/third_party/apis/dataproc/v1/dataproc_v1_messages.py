@@ -1379,6 +1379,22 @@ class DataprocProjectsRegionsJobsSetIamPolicyRequest(_messages.Message):
   setIamPolicyRequest = _messages.MessageField('SetIamPolicyRequest', 2)
 
 
+class DataprocProjectsRegionsJobsSubmitAsOperationRequest(_messages.Message):
+  r"""A DataprocProjectsRegionsJobsSubmitAsOperationRequest object.
+
+  Fields:
+    projectId: Required. The ID of the Google Cloud Platform project that the
+      job belongs to.
+    region: Required. The Dataproc region in which to handle the request.
+    submitJobRequest: A SubmitJobRequest resource to be passed as the request
+      body.
+  """
+
+  projectId = _messages.StringField(1, required=True)
+  region = _messages.StringField(2, required=True)
+  submitJobRequest = _messages.MessageField('SubmitJobRequest', 3)
+
+
 class DataprocProjectsRegionsJobsSubmitRequest(_messages.Message):
   r"""A DataprocProjectsRegionsJobsSubmitRequest object.
 
@@ -2325,6 +2341,22 @@ class Job(_messages.Message):
   status = _messages.MessageField('JobStatus', 17)
   statusHistory = _messages.MessageField('JobStatus', 18, repeated=True)
   yarnApplications = _messages.MessageField('YarnApplication', 19, repeated=True)
+
+
+class JobMetadata(_messages.Message):
+  r"""Job Operation metadata.
+
+  Fields:
+    jobId: Output only. The job id.
+    operationType: Output only. Operation type.
+    startTime: Output only. Job submission time.
+    status: Output only. Most recent job status.
+  """
+
+  jobId = _messages.StringField(1)
+  operationType = _messages.StringField(2)
+  startTime = _messages.StringField(3)
+  status = _messages.MessageField('JobStatus', 4)
 
 
 class JobPlacement(_messages.Message):

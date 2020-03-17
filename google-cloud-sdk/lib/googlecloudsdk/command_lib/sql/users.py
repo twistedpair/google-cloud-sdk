@@ -23,3 +23,10 @@ from __future__ import unicode_literals
 def GetHostValue(args):
   """Returns the host value, if specified, or None."""
   return args.host or args.deprecated_host or None
+
+
+def ParseUserType(sql_messages, args):
+  if args.type:
+    return sql_messages.User.TypeValueValuesEnum.lookup_by_name(
+        args.type.upper())
+  return None

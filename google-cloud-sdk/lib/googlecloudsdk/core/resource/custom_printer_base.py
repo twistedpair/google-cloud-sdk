@@ -150,7 +150,7 @@ class Mapped(Table):
 
 
 class Lines(list, _Marker):
-  """Marker class for a list of lines in a section."""
+  """Marker class for a list of lines."""
 
   def CalculateColumnWidths(self, max_column_width=None, indent_length=0):
     """See _Marker base class."""
@@ -168,6 +168,62 @@ class Lines(list, _Marker):
         line.Print(output, indent_length, column_widths)
       elif line:
         output.write(_GenerateLineValue(line, indent_length))
+
+
+class Section(_Marker):
+  """Marker class for a section.
+
+  A section is a list of lines. Section differs from Line in that Section
+  introduces an alignment break into the layout and allows overriding the global
+  maximum column width within the section. An alignment break causes all columns
+  in Table markers within a Section to be aligned but columns in Table markers
+  outside of a specific Section marker are not aligned with the columns inside
+  the Section.
+  """
+
+  def __init__(self, lines, max_column_width=None):
+    """Initializes a section.
+
+    Args:
+      lines: A list of lines to include in the section.
+      max_column_width: An optional maximum column width to use for this
+        section. Overrides the global maximum column width if specified.
+    """
+    self._lines = Lines(lines)
+    self._max_column_width = max_column_width
+    self._column_widths = None
+
+  def CalculateColumnWidths(self, max_column_width=None, indent_length=0):
+    """See _Marker base class.
+
+    Args:
+      max_column_width: The maximum column width to allow. Overriden by the
+        instance's max_column_width, if the instance has a max_column_width
+        specified.
+      indent_length: See _Marker base class.
+
+    Returns:
+      An empty ColumnWidths object.
+    """
+    effective_max_column_width = self._max_column_width or max_column_width
+    self._column_widths = self._lines.CalculateColumnWidths(
+        effective_max_column_width, indent_length)
+    return ColumnWidths()
+
+  def Print(self, output, indent_length, column_widths):
+    """See _Marker base class.
+
+    Args:
+      output: See _Marker base class.
+      indent_length: See _Marker base class.
+      column_widths: Ignored by Section. Section computes its own column widths
+        to align columns within the section independently from columns outside
+        the section.
+    """
+    del column_widths  # Unused by Section.
+    if not self._column_widths:
+      self.CalculateColumnWidths(indent_length=indent_length)
+    self._lines.Print(output, indent_length, self._column_widths)
 
 
 def _FollowedByEmpty(row, index):

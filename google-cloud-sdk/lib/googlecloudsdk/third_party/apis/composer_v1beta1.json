@@ -419,6 +419,14 @@
           "description": "Optional. Configuration for the private GKE cluster for a Private IP\nCloud Composer environment.",
           "$ref": "PrivateClusterConfig"
         },
+        "webServerIpv4CidrBlock": {
+          "description": "Optional. The CIDR block from which IP range for web server will be reserved. Needs\nto be disjoint from private_cluster_config.master_ipv4_cidr_block and\ncloud_sql_ipv4_cidr_block.",
+          "type": "string"
+        },
+        "cloudSqlIpv4CidrBlock": {
+          "description": "Optional. The CIDR block from which IP range in tenant project will be reserved for\nCloud SQL. Needs to be disjoint from web_server_ipv4_cidr_block",
+          "type": "string"
+        },
         "webServerIpv4ReservedRange": {
           "description": "Output only. The IP range reserved for the tenant project's App Engine VMs.",
           "type": "string"
@@ -436,6 +444,10 @@
         },
         "masterIpv4CidrBlock": {
           "description": "Optional. The CIDR block from which IPv4 range for GKE master will be reserved. If\nleft blank, the default value of '172.16.0.0\/23' is used.",
+          "type": "string"
+        },
+        "masterIpv4ReservedRange": {
+          "description": "Output only. The IP range in CIDR notation to use for the hosted master network. This\nrange is used for assigning internal IP addresses to the cluster\nmaster or set of masters and to the internal load balancer virtual IP.\nThis range must not overlap with any other ranges in use\nwithin the cluster's network.",
           "type": "string"
         }
       }

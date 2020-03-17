@@ -106,7 +106,7 @@ class BadArgumentException(ValueError):
 
 
 def AddZoneFlag(parser, resource_type, operation_type, flag_prefix=None,
-                explanation=ZONE_PROPERTY_EXPLANATION,
+                explanation=ZONE_PROPERTY_EXPLANATION, help_text=None,
                 hidden=False, plural=False, custom_plural=None):
   """Adds a --zone flag to the given parser.
 
@@ -118,6 +118,7 @@ def AddZoneFlag(parser, resource_type, operation_type, flag_prefix=None,
                     "update" or "delete".
     flag_prefix: str, flag will be named --{flag_prefix}-zone.
     explanation: str, detailed explanation of the flag.
+    help_text: str, help text will be overridden with this value.
     hidden: bool, If True, --zone argument help will be hidden.
     plural: bool, resource_type will be pluralized or not depending on value.
     custom_plural: str, If plural is True then this string will be used as
@@ -135,12 +136,12 @@ def AddZoneFlag(parser, resource_type, operation_type, flag_prefix=None,
       hidden=hidden,
       completer=completers.ZonesCompleter,
       action=actions.StoreProperty(properties.VALUES.compute.zone),
-      help='{0} {1}'.format(short_help, explanation))
+      help=help_text or '{0} {1}'.format(short_help, explanation))
 
 
 def AddRegionFlag(parser, resource_type, operation_type,
                   flag_prefix=None,
-                  explanation=REGION_PROPERTY_EXPLANATION,
+                  explanation=REGION_PROPERTY_EXPLANATION, help_text=None,
                   hidden=False, plural=False, custom_plural=None):
   """Adds a --region flag to the given parser.
 
@@ -152,6 +153,7 @@ def AddRegionFlag(parser, resource_type, operation_type,
                     "update" or "delete".
     flag_prefix: str, flag will be named --{flag_prefix}-region.
     explanation: str, detailed explanation of the flag.
+    help_text: str, help text will be overridden with this value.
     hidden: bool, If True, --region argument help will be hidden.
     plural: bool, resource_type will be pluralized or not depending on value.
     custom_plural: str, If plural is True then this string will be used as
@@ -169,7 +171,7 @@ def AddRegionFlag(parser, resource_type, operation_type,
       completer=completers.RegionsCompleter,
       action=actions.StoreProperty(properties.VALUES.compute.region),
       hidden=hidden,
-      help='{0} {1}'.format(short_help, explanation))
+      help=help_text or '{0} {1}'.format(short_help, explanation))
 
 
 class UnderSpecifiedResourceError(exceptions.Error):
@@ -598,12 +600,25 @@ class ResourceArgument(object):
     and zonal qualifiers (or any combination of) for each resource.
   """
 
-  def __init__(self, name=None, resource_name=None, completer=None,
-               plural=False, required=True, zonal_collection=None,
-               regional_collection=None, global_collection=None,
-               region_explanation=None, region_hidden=False,
-               zone_explanation=None, zone_hidden=False,
-               short_help=None, detailed_help=None, custom_plural=None):
+  def __init__(self,
+               name=None,
+               resource_name=None,
+               completer=None,
+               plural=False,
+               required=True,
+               zonal_collection=None,
+               regional_collection=None,
+               global_collection=None,
+               global_help_text=None,
+               region_explanation=None,
+               region_help_text=None,
+               region_hidden=False,
+               zone_explanation=None,
+               zone_help_text=None,
+               zone_hidden=False,
+               short_help=None,
+               detailed_help=None,
+               custom_plural=None):
 
     """Constructor.
 
@@ -620,11 +635,17 @@ class ResourceArgument(object):
       global_collection: str, if also zonal and/or regional adds global flag
                               and uses this collection to resolve as
                               global resource.
+      global_help_text: str, if provided, global flag help text will be
+                             overridden with this value.
       region_explanation: str, long help that will be given for region flag,
                                empty by default.
+      region_help_text: str, if provided, region flag help text will be
+                             overridden with this value.
       region_hidden: bool, Hide region in help if True.
       zone_explanation: str, long help that will be given for zone flag, empty
                              by default.
+      zone_help_text: str, if provided, zone flag help text will be overridden
+                           with this value.
       zone_hidden: bool, Hide region in help if True.
       short_help: str, help for the flag being added, if not provided help text
                        will be 'The name[s] of the ${resource_name}[s].'.
@@ -665,9 +686,12 @@ class ResourceArgument(object):
     if global_collection:
       self.scopes.AddScope(compute_scope.ScopeEnum.GLOBAL,
                            collection=global_collection)
+    self._global_help_text = global_help_text
     self._region_explanation = region_explanation or ''
+    self._region_help_text = region_help_text
     self._region_hidden = region_hidden
     self._zone_explanation = zone_explanation or ''
+    self._zone_help_text = zone_help_text
     self._zone_hidden = zone_hidden
     self._resource_resolver = ResourceResolver(self.scopes, resource_name)
 
@@ -729,6 +753,7 @@ class ResourceArgument(object):
           resource_type=self.resource_name,
           operation_type=operation_type,
           explanation=self._zone_explanation,
+          help_text=self._zone_help_text,
           hidden=self._zone_hidden,
           plural=self.plural,
           custom_plural=self.custom_plural)
@@ -740,6 +765,7 @@ class ResourceArgument(object):
           resource_type=self.resource_name,
           operation_type=operation_type,
           explanation=self._region_explanation,
+          help_text=self._region_help_text,
           hidden=self._region_hidden,
           plural=self.plural,
           custom_plural=self.custom_plural)
@@ -755,7 +781,7 @@ class ResourceArgument(object):
           self.scopes[compute_scope.ScopeEnum.GLOBAL].flag,
           action='store_true',
           default=None,
-          help='If set, the {0} global.'
+          help=self._global_help_text or 'If set, the {0} global.'
           .format(resource_mention))
 
   def ResolveAsResource(self,

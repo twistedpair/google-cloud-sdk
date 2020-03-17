@@ -667,6 +667,8 @@ class RepoSource(_messages.Message):
     dir: Directory, relative to the source root, in which to run the build.
       This must be a relative path. If a step's `dir` is specified and is an
       absolute path, this value is ignored for that step's execution.
+    invertRegex: Only trigger a build if the revision regex does NOT match the
+      revision regex.
     projectId: ID of the project that owns the Cloud Source Repository. If
       omitted, the project ID requesting the build is assumed.
     repoName: Required. Name of the Cloud Source Repository.
@@ -706,10 +708,11 @@ class RepoSource(_messages.Message):
   branchName = _messages.StringField(1)
   commitSha = _messages.StringField(2)
   dir = _messages.StringField(3)
-  projectId = _messages.StringField(4)
-  repoName = _messages.StringField(5)
-  substitutions = _messages.MessageField('SubstitutionsValue', 6)
-  tagName = _messages.StringField(7)
+  invertRegex = _messages.BooleanField(4)
+  projectId = _messages.StringField(5)
+  repoName = _messages.StringField(6)
+  substitutions = _messages.MessageField('SubstitutionsValue', 7)
+  tagName = _messages.StringField(8)
 
 
 class Results(_messages.Message):

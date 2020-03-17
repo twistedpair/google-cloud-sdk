@@ -27,46 +27,67 @@ class Error(core_exceptions.Error):
 
 
 class EnableServicePermissionDeniedException(Error):
+  """Permission denied exception for enable service command."""
   pass
 
 
 class ListServicesPermissionDeniedException(Error):
+  """Permission denied exception for list services command."""
   pass
 
 
 class GetServicePermissionDeniedException(Error):
+  """Permission denied exception for get service command."""
   pass
 
 
 class CreateQuotaOverridePermissionDeniedException(Error):
+  """Permission denied exception for create quota override command."""
   pass
 
 
 class UpdateQuotaOverridePermissionDeniedException(Error):
+  """Permission denied exception for update quota override command."""
   pass
 
 
 class DeleteQuotaOverridePermissionDeniedException(Error):
+  """Permission denied exception for delete quota override command."""
   pass
 
 
 class CreateConnectionsPermissionDeniedException(Error):
+  """Permission denied exception for create connection command."""
   pass
 
 
 class ListConnectionsPermissionDeniedException(Error):
+  """Permission denied exception for list connections command."""
+  pass
+
+
+class EnableVpcServiceControlsPermissionDeniedException(Error):
+  """Permission denied exception for enable vpc service controls command."""
+  pass
+
+
+class DisableVpcServiceControlsPermissionDeniedException(Error):
+  """Permission denied exception for disable vpc service controls command."""
   pass
 
 
 class GenerateServiceIdentityPermissionDeniedException(Error):
+  """Permission denied exception for generate service identitiy command."""
   pass
 
 
 class OperationErrorException(Error):
+  """Exception for operation error."""
   pass
 
 
 class TimeoutError(Error):
+  """Exception for timeout error."""
   pass
 
 

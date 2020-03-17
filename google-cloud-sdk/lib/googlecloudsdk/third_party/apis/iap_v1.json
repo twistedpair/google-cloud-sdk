@@ -276,6 +276,10 @@
         "oauthSettings": {
           "description": "Settings to configure IAP's OAuth behavior.",
           "$ref": "OAuthSettings"
+        },
+        "policyDelegationSettings": {
+          "description": "Settings to configure Policy delegation for apps hosted in tenant projects.\nINTERNAL_ONLY.",
+          "$ref": "PolicyDelegationSettings"
         }
       }
     },
@@ -319,6 +323,71 @@
         },
         "clientId": {
           "description": "OAuth 2.0 client ID used in the OAuth flow to generate an access token. If\nthis field is set, you can skip obtaining the OAuth credentials in this\nstep:\nhttps:\/\/developers.google.com\/identity\/protocols\/OAuth2?hl=en_US#1.-obtain-oauth-2.0-credentials-from-the-google-api-console.\nHowever, this could allow for client sharing. The risks of client sharing\nare outlined here:\nhttps:\/\/cloud.google.com\/iap\/docs\/sharing-oauth-clients#risks.",
+          "type": "string"
+        }
+      }
+    },
+    "PolicyDelegationSettings": {
+      "id": "PolicyDelegationSettings",
+      "description": "PolicyDelegationConfig allows google-internal teams to use IAP for apps\nhosted in a tenant project. Using these settings, the app can delegate\npermission check to happen against the linked customer project.\nThis is only ever supposed to be used by google internal teams, hence the\nrestriction on the proto.",
+      "type": "object",
+      "properties": {
+        "iamServiceName": {
+          "description": "The DNS name of the service (e.g. \"resourcemanager.googleapis.com\").\nThis should be the domain name part of the full resource names (see\nhttps:\/\/aip.dev\/122#full-resource-names), which is usually\nthe same as IamServiceSpec.service of the service where the resource type\nis defined.",
+          "type": "string"
+        },
+        "iamPermission": {
+          "description": "Permission to check in IAM.",
+          "type": "string"
+        },
+        "resource": {
+          "description": "IAM resource to check permission on",
+          "$ref": "Resource"
+        },
+        "policyName": {
+          "description": "Policy name to be checked",
+          "$ref": "PolicyName"
+        }
+      }
+    },
+    "Resource": {
+      "id": "Resource",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Name of the resource on which conditions will be evaluated.\nRelative Resource Name of the resource should be set, which is the URI\npath of the resource without leading \"\/\". For instance, resource.name\nset for a bucket is \"projects\/project123\/buckets\/bucket456\".\nThis field is required for evaluating conditions with rules on resource\nnames. SYSContext.resource_name is not used by condition evaluation.\nSee https:\/\/cloud.google.com\/apis\/design\/resource_names for details.",
+          "type": "string"
+        },
+        "type": {
+          "description": "The public resource type name of the resource on which conditions will be\nevaluated. It is configured using the official_name of the ResourceType as\ndefined in service configurations under \/\/configs\/cloud\/resourcetypes.\nFor example, the official_name for GCP projects is set as\n'cloudresourcemanager.googleapis.com\/Project' according to\n\/\/configs\/cloud\/resourcetypes\/google\/cloud\/resourcemanager\/prod.yaml\nFor details see go\/iam-conditions-integration-guide.",
+          "type": "string"
+        },
+        "service": {
+          "description": "The name of the service this resource belongs to. It is configured using\nthe official_service_name of the Service as defined in service\nconfigurations under \/\/configs\/cloud\/resourcetypes.\nFor example, the official_service_name of cloud resource manager service\nis set as 'cloudresourcemanager.googleapis.com' according to\n\/\/configs\/cloud\/resourcetypes\/google\/cloud\/resourcemanager\/prod.yaml",
+          "type": "string"
+        },
+        "labels": {
+          "description": "The service defined labels of the resource on which the conditions will be\nevaluated. The semantics - including the key names - are vague to IAM.\nIf the effective condition has a reference to a `resource.labels[foo]`\nconstruct, IAM consults with this map to retrieve the values associated\nwith `foo` key for Conditions evaluation. If the provided key is not found\nin the labels map, the condition would evaluate to false.\n\nThis field is in limited use. If your intended use case is not expected\nto express resource.labels attribute in IAM Conditions, leave this field\nempty. Before planning on using this attribute please:\n* Read go\/iam-conditions-labels-comm and ensure your service can meet the\n  data availability and management requirements.\n* Talk to iam-conditions-eng@ about your use case.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "PolicyName": {
+      "id": "PolicyName",
+      "type": "object",
+      "properties": {
+        "type": {
+          "description": "Valid values for type might be 'gce', 'gcs', 'project', 'account' etc.",
+          "type": "string"
+        },
+        "id": {
+          "type": "string"
+        },
+        "region": {
+          "description": "For Cloud IAM:\nThe location of the Policy.\nMust be empty or \"global\" for Policies owned by global IAM.  Must name a\nregion from prodspec\/cloud-iam-cloudspec for Regional IAM Policies, see\nhttp:\/\/go\/iam-faq#where-is-iam-currently-deployed.\n\nFor Local IAM:\nThis field should be set to \"local\".",
           "type": "string"
         }
       }

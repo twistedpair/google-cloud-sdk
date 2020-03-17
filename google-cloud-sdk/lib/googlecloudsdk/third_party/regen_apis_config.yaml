@@ -138,6 +138,8 @@ apis:
       discovery_doc: cloudasset_v1p2beta1.json
     v1p4alpha1:
       discovery_doc: cloudasset_v1p4alpha1.json
+    v1p4beta1:
+      discovery_doc: cloudasset_v1p4beta1.json
     v1p5alpha1:
       discovery_doc: cloudasset_v1p5alpha1.json
   cloudbilling:
@@ -488,6 +490,8 @@ apis:
       discovery_doc: osconfig_v1alpha2.json
     v1beta:
       discovery_doc: osconfig_v1beta.json
+    v1:
+      discovery_doc: osconfig_v1.json
       default: true
   iam:
     v1:
@@ -587,8 +591,8 @@ apis:
   networkmanagement:
     v1:
       discovery_doc: networkmanagement_v1.json
-    v1beta1:
       default: true
+    v1beta1:
       discovery_doc: networkmanagement_v1beta1.json
   networkservices:
     v1alpha1:
@@ -665,6 +669,8 @@ apis:
           path: organizations/{organizationsId}/sources/{sourcesId}/findings/{findingId}
         organizations.assets:
           path: organizations/{organizationsId}/assets/{assetsId}
+        organizations.notificationConfigs:
+          path: organizations/{organizationsId}/notificationConfigs/{notificationConfigsId}
       default: true
     v1p1beta1:
       discovery_doc: securitycenter_v1p1beta1.json

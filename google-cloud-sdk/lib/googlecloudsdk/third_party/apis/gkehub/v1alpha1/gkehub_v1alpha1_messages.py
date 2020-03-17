@@ -232,12 +232,14 @@ class Condition(_messages.Message):
         the request's realms match one of the given values; with NOT_IN, "none
         of the realms match any of the given values". Note that a value can
         be:  - 'self' (i.e., allow connections from clients that are in the
-        same  security realm)  - a realm (e.g., 'campus-abc')  - a realm group
-        (e.g., 'realms-for-borg-cell-xx', see: go/realm-groups) A match is
-        determined by a realm group membership check performed by a
-        RealmAclRep object (go/realm-acl-howto). It is not permitted to grant
-        access based on the *absence* of a realm, so realm conditions can only
-        be used in a "positive" context (e.g., ALLOW/IN or DENY/NOT_IN).
+        same  security realm)  - 'self:cloud-region' (i.e., allow connections
+        from clients that are in  the same cloud region)  - a realm (e.g.,
+        'campus-abc')  - a realm group (e.g., 'realms-for-borg-cell-xx', see:
+        go/realm-groups) A match is determined by a realm group membership
+        check performed by a RealmAclRep object (go/realm-acl-howto). It is
+        not permitted to grant access based on the *absence* of a realm, so
+        realm conditions can only be used in a "positive" context (e.g.,
+        ALLOW/IN or DENY/NOT_IN).
       APPROVER: An approver (distinct from the requester) that has authorized
         this request. When used with IN, the condition indicates that one of
         the approvers associated with the request matches the specified
@@ -737,6 +739,8 @@ class FeatureState(_messages.Message):
       Example member name looks like
       `projects/12345/locations/global/memberships/bar`. This is scoped to
       feature-level messages (e.g. CSM state on clusters)
+    hasResources: Indicates this Feature has outstanding resources that need
+      to be cleaned up before it can be disabled.
     lifecycleState: A LifecycleStateValueValuesEnum attribute.
   """
 
@@ -790,7 +794,8 @@ class FeatureState(_messages.Message):
 
   details = _messages.MessageField('FeatureStateDetails', 1)
   detailsByMembership = _messages.MessageField('DetailsByMembershipValue', 2)
-  lifecycleState = _messages.EnumField('LifecycleStateValueValuesEnum', 3)
+  hasResources = _messages.BooleanField(3)
+  lifecycleState = _messages.EnumField('LifecycleStateValueValuesEnum', 4)
 
 
 class FeatureStateDetails(_messages.Message):
@@ -969,11 +974,15 @@ class GkehubProjectsLocationsGlobalFeaturesDeleteRequest(_messages.Message):
   r"""A GkehubProjectsLocationsGlobalFeaturesDeleteRequest object.
 
   Fields:
+    force: If set to true, then the delete will ignore any outstanding
+      resources for this Feature (`FeatureState.has_resources` is set to
+      true). These resources will NOT be cleaned up or modified in any way.
     name: The feature resource name in the format:
       `projects/[project_id]/locations/global/features/[feature_id]`
   """
 
-  name = _messages.StringField(1, required=True)
+  force = _messages.BooleanField(1)
+  name = _messages.StringField(2, required=True)
 
 
 class GkehubProjectsLocationsGlobalFeaturesGetRequest(_messages.Message):

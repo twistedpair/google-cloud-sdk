@@ -31,6 +31,7 @@ from googlecloudsdk.calliope import exceptions as calliope_exceptions
 from googlecloudsdk.command_lib.container.hub import api_util as api_util
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import execution_utils
+from googlecloudsdk.core import properties
 from googlecloudsdk.core.util import encoding
 from googlecloudsdk.core.util import files
 
@@ -138,9 +139,10 @@ class KubeconfigProcessor(object):
     # Warn if kubectl is not installed.
     if not c_util.CheckKubectlInstalled():
       raise exceptions.Error('kubectl not installed.')
+    self.gke_cluster_self_link = None
 
   def GetKubeconfigAndContext(self, flags, temp_kubeconfig_dir):
-    """Gets the kubeconfig and cluster context from arguments and defaults.
+    """Gets the kubeconfig, cluster context and resource link from arguments and defaults.
 
     Args:
       flags: the flags passed to the enclosing command. It must include
@@ -158,11 +160,17 @@ class KubeconfigProcessor(object):
     """
     # Parsing flags to get the name and location of the GKE cluster to register
     if flags.gke_uri or flags.gke_cluster:
-      location, name = _ParseGKEURI(
-          flags.gke_uri) if flags.gke_uri else _ParseGKECluster(
-              flags.gke_cluster)
+      cluster_project = None
+      if flags.gke_uri:
+        cluster_project, location, name = _ParseGKEURI(flags.gke_uri)
+      else:
+        cluster_project = properties.VALUES.core.project.GetOrFail()
+        location, name = _ParseGKECluster(flags.gke_cluster)
 
-      return _GetGKEKubeconfig(location, name, temp_kubeconfig_dir), None
+      self.gke_cluster_self_link = api_util.GetEffectiveResourceEndpoint(
+          cluster_project, location, name)
+      return _GetGKEKubeconfig(cluster_project, location, name,
+                               temp_kubeconfig_dir), None
 
     # We need to support in-cluster configuration so that gcloud can run from
     # a container on the Cluster we are registering. KUBERNETES_SERICE_PORT
@@ -510,8 +518,8 @@ class KubernetesClient(object):
     if flags and (flags.gke_uri or flags.gke_cluster):
       self.temp_kubeconfig_dir = files.TemporaryDirectory()
 
-    processor = KubeconfigProcessor()
-    self.kubeconfig, self.context = processor.GetKubeconfigAndContext(
+    self.processor = KubeconfigProcessor()
+    self.kubeconfig, self.context = self.processor.GetKubeconfigAndContext(
         flags, self.temp_kubeconfig_dir)
 
   def __enter__(self):
@@ -878,15 +886,17 @@ def _ParseGKEURI(gke_uri):
 
   zone_matcher = re.search(zonal_uri_pattern, gke_uri)
   if zone_matcher is not None:
-    return zone_matcher.group(2), zone_matcher.group(3)
+    return zone_matcher.group(1), zone_matcher.group(2), zone_matcher.group(3)
 
   region_matcher = re.search(regional_uri_pattern, gke_uri)
   if region_matcher is not None:
-    return region_matcher.group(2), region_matcher.group(3)
+    return region_matcher.group(1), region_matcher.group(
+        2), region_matcher.group(3)
 
   location_matcher = re.search(location_uri_pattern, gke_uri)
   if location_matcher is not None:
-    return location_matcher.group(2), location_matcher.group(3)
+    return location_matcher.group(1), location_matcher.group(
+        2), location_matcher.group(3)
 
   raise exceptions.Error(
       'argument --gke-uri: {} is invalid. '
@@ -906,7 +916,7 @@ def _ParseGKECluster(gke_cluster):
       '`{{REGION OR ZONE}}/{{CLUSTER_NAME`}}`'.format(gke_cluster))
 
 
-def _GetGKEKubeconfig(location_id,
+def _GetGKEKubeconfig(project, location_id,
                       cluster_id,
                       temp_kubeconfig_dir):
   """The kubeconfig of GKE Cluster is fetched using the GKE APIs.
@@ -921,6 +931,8 @@ def _GetGKEKubeconfig(location_id,
   persisted in the temporarily updated 'KUBECONFIG'.
 
   Args:
+    project: string, the project id of the cluster for which kube config is
+      to be fetched
     location_id: string, the id of the location to which the cluster belongs
     cluster_id: string, the id of the cluster
     temp_kubeconfig_dir: TemporaryDirectory object
@@ -937,7 +949,7 @@ def _GetGKEKubeconfig(location_id,
   try:
     encoding.SetEncodedValue(os.environ, 'KUBECONFIG', kubeconfig)
     gke_api = gke_api_adapter.NewAPIAdapter('v1')
-    cluster_ref = gke_api.ParseCluster(cluster_id, location_id)
+    cluster_ref = gke_api.ParseCluster(cluster_id, location_id, project)
     cluster = gke_api.GetCluster(cluster_ref)
     auth = cluster.masterAuth
     valid_creds = auth and auth.clientCertificate and auth.clientKey
@@ -954,35 +966,6 @@ def _GetGKEKubeconfig(location_id,
     else:
       del os.environ['KUBECONFIG']
   return kubeconfig
-
-
-def GKEClusterSelfLink(args, project):
-  """Returns the selfLink of a cluster, if it is a GKE cluster.
-
-     It also incidentally validates the args.
-
-  Args:
-    args: an argparse namespace. All arguments that were provided to this
-      command invocation.
-    project: project ID.
-
-  Returns:
-    the full OnePlatform resource path of a GKE cluster, e.g.,
-    //container.googleapis.com/project/p/location/l/cluster/c. If the cluster is
-    not a GKE cluster, returns None.
-  """
-  if args.context:
-    return None
-
-  if args.gke_uri:
-    location, cluster_name = _ParseGKEURI(args.gke_uri)
-    return api_util.GetEffectiveResourceEndpoint(project, location,
-                                                 cluster_name)
-
-  if args.gke_cluster:
-    location, cluster_name = _ParseGKECluster(args.gke_cluster)
-    return api_util.GetEffectiveResourceEndpoint(project, location,
-                                                 cluster_name)
 
 
 def ValidateClusterIdentifierFlags(kube_client, args):

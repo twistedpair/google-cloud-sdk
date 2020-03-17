@@ -44,7 +44,7 @@ class Settings(object):
 
   __slots__ = ('service_name', 'image_name', 'service_account', 'dockerfile',
                'build_context_directory', 'builder', 'local_port', 'env_vars',
-               'cloudsql_instances')
+               'cloudsql_instances', 'memory_limit', 'cpu_limit')
 
   @classmethod
   def FromArgs(cls, args):
@@ -66,11 +66,12 @@ class Settings(object):
 
     return cls(service_name, image_name, args.service_account, args.dockerfile,
                args.build_context_directory, args.builder, args.local_port,
-               args.env_vars or args.env_vars_file, args.cloudsql_instances)
+               args.env_vars or args.env_vars_file, args.cloudsql_instances,
+               args.memory_limit, args.cpu_limit)
 
   def __init__(self, service_name, image_name, service_account, dockerfile,
                build_context_directory, builder, local_port, env_vars,
-               cloudsql_instances):
+               cloudsql_instances, memory_limit, cpu_limit):
     """Initialize Settings.
 
     Args:
@@ -84,6 +85,8 @@ class Settings(object):
       local_port: Local port to which to forward the service connection.
       env_vars: Container environment variables.
       cloudsql_instances: Cloud SQL instances.
+      memory_limit: Memory limit.
+      cpu_limit: CPU limit.
     """
     super(Settings, self).__setattr__('service_name', service_name)
     super(Settings, self).__setattr__('image_name', image_name)
@@ -95,6 +98,8 @@ class Settings(object):
     super(Settings, self).__setattr__('local_port', local_port)
     super(Settings, self).__setattr__('env_vars', env_vars)
     super(Settings, self).__setattr__('cloudsql_instances', cloudsql_instances)
+    super(Settings, self).__setattr__('memory_limit', memory_limit)
+    super(Settings, self).__setattr__('cpu_limit', cpu_limit)
 
   def __setattr__(self, name, value):
     """Prevent modification of attributes."""
@@ -118,30 +123,50 @@ spec:
       labels:
         app: {service}
     spec:
-      containers:
-      - name: {service}-container
-        image: {image}
-        env:
-        - name: PORT
-          value: "8080"
-        ports:
-        - containerPort: 8080
+      containers: []
       terminationGracePeriodSeconds: 0
 """
 
+_CONTAINER_TEMPLATE = """
+name: {service}-container
+image: {image}
+env:
+- name: PORT
+  value: "8080"
+ports:
+- containerPort: 8080
+"""
 
-def CreateDeployment(service_name, image_name):
+
+def CreateDeployment(service_name,
+                     image_name,
+                     memory_limit=None,
+                     cpu_limit=None):
   """Create a deployment specification for a service.
 
   Args:
     service_name: Name of the service.
     image_name: Image tag.
+    memory_limit: Container memory limit.
+    cpu_limit: Container cpu limit.
 
   Returns:
     Dictionary object representing the deployment yaml.
   """
-  yaml_text = _POD_TEMPLATE.format(service=service_name, image=image_name)
-  return yaml.load(yaml_text)
+  deployment = yaml.load(_POD_TEMPLATE.format(service=service_name))
+  container = yaml.load(
+      _CONTAINER_TEMPLATE.format(service=service_name, image=image_name))
+  if memory_limit is not None:
+    limits = yaml_helper.GetOrCreate(container, ('resources', 'limits'))
+    limits['memory'] = memory_limit
+  if cpu_limit is not None:
+    limits = yaml_helper.GetOrCreate(container, ('resources', 'limits'))
+    limits['cpu'] = cpu_limit
+  containers = yaml_helper.GetOrCreate(
+      deployment, ('spec', 'template', 'spec', 'containers'), constructor=list)
+  containers.append(container)
+
+  return deployment
 
 
 _SERVICE_TEMPLATE = """
@@ -405,13 +430,21 @@ class KubeConfigGenerator(object):
 class AppContainerGenerator(KubeConfigGenerator):
   """Generate deployment and service for a developer's app."""
 
-  def __init__(self, service_name, image_name, env_vars=None):
+  def __init__(self,
+               service_name,
+               image_name,
+               env_vars=None,
+               memory_limit=None,
+               cpu_limit=None):
     self._service_name = service_name
     self._image_name = image_name
     self._env_vars = env_vars
+    self._memory_limit = memory_limit
+    self._cpu_limit = cpu_limit
 
   def CreateConfigs(self):
-    deployment = CreateDeployment(self._service_name, self._image_name)
+    deployment = CreateDeployment(self._service_name, self._image_name,
+                                  self._memory_limit, self._cpu_limit)
     if self._env_vars:
       AddEnvironmentVariables(deployment, self._service_name + '-container',
                               self._env_vars)
@@ -420,7 +453,6 @@ class AppContainerGenerator(KubeConfigGenerator):
 
 
 class SecretInfo(object):
-
   """Information about a generated secret."""
 
   def __init__(self):
@@ -439,7 +471,6 @@ class SecretGenerator(KubeConfigGenerator):
     return SecretInfo()
 
   def CreateConfigs(self):
-
     """Create a secret."""
     service_account = CreateDevelopmentServiceAccount(self._account_name)
     private_key_json = CreateServiceAccountKey(service_account)
@@ -578,7 +609,7 @@ def CreateServiceAccountKey(service_account_name):
 
   files.WriteFileContents(credential_file_path, key.privateKeyData)
 
-  return six.u(key.privateKeyData)
+  return six.ensure_text(key.privateKeyData)
 
 
 def LocalDevelopmentSecretSpec(key):

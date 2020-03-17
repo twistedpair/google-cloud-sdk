@@ -44,7 +44,9 @@ class AliasContext(_messages.Message):
 
 
 class Breakpoint(_messages.Message):
-  r"""Represents the breakpoint specification, status and results.
+  r"""------------------------------------------------------------------------
+  ------ ## Breakpoint (the resource)  Represents the breakpoint
+  specification, status and results.
 
   Enums:
     ActionValueValuesEnum: Action that the agent should perform when the code

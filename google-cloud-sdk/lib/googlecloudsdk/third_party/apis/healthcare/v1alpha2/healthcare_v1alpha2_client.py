@@ -572,6 +572,8 @@ within it.
     def Export(self, request, global_params=None):
       r"""Exports data to the specified destination by copying it from the DICOM.
 store.
+Errors are also logged to Stackdriver Logging. For more information,
+see [Viewing logs](/healthcare/docs/how-tos/stackdriver-logging).
 The metadata field type is
 OperationMetadata.
 
@@ -989,6 +991,9 @@ arbitrary interdependencies without considering grouping or ordering, but
 if the input data contains invalid references or if some resources fail to
 be imported, the FHIR store might be left in a state that violates
 referential integrity.
+
+The import process does not trigger PubSub notification or BigQuery
+streaming update, regardless of how those are configured on the FHIR store.
 
 If a resource with the specified ID already exists, the most recent
 version of the resource is overwritten without creating a new historical
@@ -1582,8 +1587,12 @@ If errors occur, the
 error
 details field type is
 DeidentifyErrorDetails.
-Errors are also logged to Stackdriver Logging. For more information, see
-[Viewing logs](/healthcare/docs/how-tos/stackdriver-logging).
+The LRO result may still be successful if de-identification fails for some
+DICOM instances. The new de-identified dataset will not contain these
+failed resources. Failed resource totals are tracked in
+DeidentifySummary.failure_resource_count.
+Error details are also logged to Stackdriver Logging. For more information,
+see [Viewing logs](/healthcare/docs/how-tos/stackdriver-logging).
 
       Args:
         request: (HealthcareProjectsLocationsDatasetsDeidentifyRequest) input message

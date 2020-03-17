@@ -1053,7 +1053,7 @@ class StorageV1(base_api.BaseApiClient):
         method_id=u'storage.objects.copy',
         ordered_params=[u'sourceBucket', u'sourceObject', u'destinationBucket', u'destinationObject'],
         path_params=[u'destinationBucket', u'destinationObject', u'sourceBucket', u'sourceObject'],
-        query_params=[u'destinationPredefinedAcl', u'ifGenerationMatch', u'ifGenerationNotMatch', u'ifMetagenerationMatch', u'ifMetagenerationNotMatch', u'ifSourceGenerationMatch', u'ifSourceGenerationNotMatch', u'ifSourceMetagenerationMatch', u'ifSourceMetagenerationNotMatch', u'projection', u'provisionalUserProject', u'sourceGeneration', u'userProject'],
+        query_params=[u'destinationKmsKeyName', u'destinationPredefinedAcl', u'ifGenerationMatch', u'ifGenerationNotMatch', u'ifMetagenerationMatch', u'ifMetagenerationNotMatch', u'ifSourceGenerationMatch', u'ifSourceGenerationNotMatch', u'ifSourceMetagenerationMatch', u'ifSourceMetagenerationNotMatch', u'projection', u'provisionalUserProject', u'sourceGeneration', u'userProject'],
         relative_path=u'b/{sourceBucket}/o/{sourceObject}/copyTo/b/{destinationBucket}/o/{destinationObject}',
         request_field=u'object',
         request_type_name=u'StorageObjectsCopyRequest',

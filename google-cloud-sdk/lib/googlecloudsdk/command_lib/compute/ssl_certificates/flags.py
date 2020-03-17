@@ -80,7 +80,8 @@ class SslCertificatesCompleterBeta(completers.MultiResourceCompleter):
 
 def SslCertificateArgument(required=True,
                            plural=False,
-                           include_l7_internal_load_balancing=False):
+                           include_l7_internal_load_balancing=False,
+                           global_help_text=None):
   return compute_flags.ResourceArgument(
       resource_name='SSL certificate',
       completer=SslCertificatesCompleterBeta
@@ -88,6 +89,7 @@ def SslCertificateArgument(required=True,
       plural=plural,
       required=required,
       global_collection='compute.sslCertificates',
+      global_help_text=global_help_text,
       regional_collection='compute.regionSslCertificates'
       if include_l7_internal_load_balancing else None,
       region_explanation=compute_flags.REGION_PROPERTY_EXPLANATION

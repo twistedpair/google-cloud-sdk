@@ -282,6 +282,18 @@
           "description": "Output only. Deletion time. This field is cleared on undelete.",
           "type": "string",
           "format": "google-datetime"
+        },
+        "purpose": {
+          "description": "Optional. A purpose denotes that this Label is intended for use in policies of a\nspecific policy engine, and will involve that policy engine in\nmanagement operations involving this Label. A purpose does not grant a\npolicy engine exclusive rights to the Label; it may be referenced by\nother policy engines.\n\nA purpose cannot be changed once set.",
+          "enumDescriptions": [
+            "Unspecified purpose.",
+            "Purpose for GCE firewalls."
+          ],
+          "type": "string",
+          "enum": [
+            "PURPOSE_UNSPECIFIED",
+            "GCE_FIREWALL"
+          ]
         }
       }
     },

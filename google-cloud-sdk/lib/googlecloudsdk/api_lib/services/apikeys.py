@@ -49,7 +49,7 @@ def ListKeys(project, deleted=None, page_size=None, limit=None):
   else:
     key_filter = None
   request = messages.ApikeysProjectsKeysListRequest(
-      parent=_PROJECT_RESOURCE % (project), filter=key_filter)
+      parent=GetParentResourceName(project), filter=key_filter)
   return list_pager.YieldFromList(
       client.projects_keys,
       request,
@@ -84,3 +84,29 @@ def GetOperation(name):
   except (apitools_exceptions.HttpForbiddenError,
           apitools_exceptions.HttpNotFoundError) as e:
     exceptions.ReraiseError(e, exceptions.OperationErrorException)
+
+
+def GetAllowedAndroidApplications(args, messages):
+  """Create list of allowed android applications."""
+  allowed_applications = []
+  for application in getattr(args, 'allowed_application', []) or []:
+    android_application = messages.V2alpha1AndroidApplication(
+        sha1Fingerprint=application['sha1_fingerprint'],
+        packageName=application['package_name'])
+    allowed_applications.append(android_application)
+  return allowed_applications
+
+
+def GetApiTargets(args, messages):
+  """Create list of target apis."""
+  api_targets = []
+  for api_target in getattr(args, 'api_target', []) or []:
+    api_targets.append(
+        messages.V2alpha1ApiTarget(
+            service=api_target.get('service'),
+            methods=api_target.get('methods', [])))
+  return api_targets
+
+
+def GetParentResourceName(project):
+  return _PROJECT_RESOURCE % (project)

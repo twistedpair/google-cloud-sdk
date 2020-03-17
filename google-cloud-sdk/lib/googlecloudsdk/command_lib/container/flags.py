@@ -712,7 +712,19 @@ def AddEnableStackdriverKubernetesFlag(parser):
   """Adds a --enable-stackdriver-kubernetes flag to parser."""
   help_text = """Enable Stackdriver Kubernetes monitoring and logging."""
   parser.add_argument(
-      '--enable-stackdriver-kubernetes', action='store_true', help=help_text)
+      '--enable-stackdriver-kubernetes',
+      action='store_true',
+      default=None,
+      help=help_text)
+
+
+def AddEnableLoggingMonitoringSystemOnlyFlag(parser):
+  """Adds a --enable-stackdriver-kubernetes-system flag to parser."""
+  help_text = """Enable Stackdriver Kubernetes system-only monitoring and logging."""
+  parser.add_argument(
+      '--enable-logging-monitoring-system-only',
+      action='store_true',
+      help=help_text)
 
 
 def AddNodeLabelsFlag(parser, for_node_pool=False):
@@ -1004,6 +1016,16 @@ def AddNetworkPolicyFlags(parser, hidden=False):
       'enabling network policy on an existing cluster the network policy '
       'addon must first be enabled on the master by using '
       '--update-addons=NetworkPolicy=ENABLED flag.')
+
+
+def AddILBSubsettingFlags(parser, hidden=True):
+  """Adds --enable-l4-ilb-subsetting flags to parser."""
+  parser.add_argument(
+      '--enable-l4-ilb-subsetting',
+      action='store_true',
+      default=None,
+      hidden=hidden,
+      help='Enable Subsetting for L4 ILB services created on this cluster.')
 
 
 def AddPrivateClusterFlags(parser, with_deprecated=False):

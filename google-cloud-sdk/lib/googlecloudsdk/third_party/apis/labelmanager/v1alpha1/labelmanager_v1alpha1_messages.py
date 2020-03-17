@@ -200,6 +200,12 @@ class LabelKey(_messages.Message):
   r"""A LabelKey, used to group a set of LabelValues.
 
   Enums:
+    PurposeValueValuesEnum: Optional. A purpose denotes that this Label is
+      intended for use in policies of a specific policy engine, and will
+      involve that policy engine in management operations involving this
+      Label. A purpose does not grant a policy engine exclusive rights to the
+      Label; it may be referenced by other policy engines.  A purpose cannot
+      be changed once set.
     StateValueValuesEnum: Output only. LabelKey lifecycle state.
 
   Fields:
@@ -219,8 +225,28 @@ class LabelKey(_messages.Message):
       Immutable.
     parent: The resource name of the new LabelKey's parent. Must be of the
       form `organizations/{org_id}`.  Immutable.
+    purpose: Optional. A purpose denotes that this Label is intended for use
+      in policies of a specific policy engine, and will involve that policy
+      engine in management operations involving this Label. A purpose does not
+      grant a policy engine exclusive rights to the Label; it may be
+      referenced by other policy engines.  A purpose cannot be changed once
+      set.
     state: Output only. LabelKey lifecycle state.
   """
+
+  class PurposeValueValuesEnum(_messages.Enum):
+    r"""Optional. A purpose denotes that this Label is intended for use in
+    policies of a specific policy engine, and will involve that policy engine
+    in management operations involving this Label. A purpose does not grant a
+    policy engine exclusive rights to the Label; it may be referenced by other
+    policy engines.  A purpose cannot be changed once set.
+
+    Values:
+      PURPOSE_UNSPECIFIED: Unspecified purpose.
+      GCE_FIREWALL: Purpose for GCE firewalls.
+    """
+    PURPOSE_UNSPECIFIED = 0
+    GCE_FIREWALL = 1
 
   class StateValueValuesEnum(_messages.Enum):
     r"""Output only. LabelKey lifecycle state.
@@ -245,7 +271,8 @@ class LabelKey(_messages.Message):
   etag = _messages.StringField(5)
   name = _messages.StringField(6)
   parent = _messages.StringField(7)
-  state = _messages.EnumField('StateValueValuesEnum', 8)
+  purpose = _messages.EnumField('PurposeValueValuesEnum', 8)
+  state = _messages.EnumField('StateValueValuesEnum', 9)
 
 
 class LabelValue(_messages.Message):

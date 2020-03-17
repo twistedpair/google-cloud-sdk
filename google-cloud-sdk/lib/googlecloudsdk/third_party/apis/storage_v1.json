@@ -4,7 +4,7 @@
  "id": "storage:v1",
  "name": "storage",
  "version": "v1",
- "revision": "20200203",
+ "revision": "20200306",
  "title": "Cloud Storage JSON API",
  "description": "Stores and retrieves potentially large, immutable data objects.",
  "ownerDomain": "google.com",
@@ -410,6 +410,13 @@
        "type": "string",
        "description": "If the requested object path is missing, and any mainPageSuffix object is missing, if applicable, the service will return the named object from this bucket as the content for a 404 Not Found result."
       }
+     }
+    },
+    "zoneAffinity": {
+     "type": "array",
+     "description": "The zone or zones from which the bucket is intended to use zonal quota. Requests for data from outside the specified affinities are still allowed but won't be able to use zonal quota. The zone or zones need to be within the bucket location otherwise the requests will fail with a 400 Bad Request response.",
+     "items": {
+      "type": "string"
      }
     }
    }
@@ -3088,6 +3095,11 @@
        "description": "Name of the bucket in which to store the new object. Overrides the provided object metadata's bucket value, if any.For information about how to URL encode object names to be path safe, see Encoding URI Path Parts.",
        "required": true,
        "location": "path"
+      },
+      "destinationKmsKeyName": {
+       "type": "string",
+       "description": "Resource name of the Cloud KMS key, of the form projects/my-project/locations/global/keyRings/my-kr/cryptoKeys/my-key, that will be used to encrypt the object. Overrides the object metadata's kms_key_name value, if any.",
+       "location": "query"
       },
       "destinationObject": {
        "type": "string",

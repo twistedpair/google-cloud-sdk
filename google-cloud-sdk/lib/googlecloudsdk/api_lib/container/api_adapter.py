@@ -228,7 +228,6 @@ Must specify sandbox type.
 SANDBOX_TYPE_NOT_SUPPORTED = """\
 Provided sandbox type '{type}' not supported.
 """
-
 TPU_SERVING_MODE_ERROR = """\
 Cannot specify --tpu-ipv4-cidr with --enable-tpu-service-networking."""
 
@@ -399,6 +398,7 @@ class CreateClusterOptions(object):
       enable_cloud_logging=None,
       enable_cloud_monitoring=None,
       enable_stackdriver_kubernetes=None,
+      enable_logging_monitoring_system_only=None,
       subnetwork=None,
       addons=None,
       istio_config=None,
@@ -430,6 +430,7 @@ class CreateClusterOptions(object):
       labels=None,
       disk_type=None,
       enable_network_policy=None,
+      enable_l4_ilb_subsetting=None,
       services_ipv4_cidr=None,
       enable_ip_alias=None,
       create_subnetwork=None,
@@ -511,6 +512,7 @@ class CreateClusterOptions(object):
     self.enable_cloud_logging = enable_cloud_logging
     self.enable_cloud_monitoring = enable_cloud_monitoring
     self.enable_stackdriver_kubernetes = enable_stackdriver_kubernetes
+    self.enable_logging_monitoring_system_only = enable_logging_monitoring_system_only
     self.subnetwork = subnetwork
     self.addons = addons
     self.istio_config = istio_config
@@ -539,6 +541,7 @@ class CreateClusterOptions(object):
     self.master_authorized_networks = master_authorized_networks
     self.enable_legacy_authorization = enable_legacy_authorization
     self.enable_network_policy = enable_network_policy
+    self.enable_l4_ilb_subsetting = enable_l4_ilb_subsetting
     self.labels = labels
     self.disk_type = disk_type
     self.services_ipv4_cidr = services_ipv4_cidr
@@ -619,6 +622,7 @@ class UpdateClusterOptions(object):
                monitoring_service=None,
                logging_service=None,
                enable_stackdriver_kubernetes=None,
+               enable_logging_monitoring_system_only=None,
                disable_addons=None,
                istio_config=None,
                enable_autoscaling=None,
@@ -677,6 +681,7 @@ class UpdateClusterOptions(object):
     self.monitoring_service = monitoring_service
     self.logging_service = logging_service
     self.enable_stackdriver_kubernetes = enable_stackdriver_kubernetes
+    self.enable_logging_monitoring_system_only = enable_logging_monitoring_system_only
     self.disable_addons = disable_addons
     self.istio_config = istio_config
     self.enable_autoscaling = enable_autoscaling
@@ -883,35 +888,38 @@ class APIAdapter(object):
     self.client = client
     self.messages = messages
 
-  def ParseCluster(self, name, location):
+  def ParseCluster(self, name, location, project=None):
     # TODO(b/63383536): Migrate to container.projects.locations.clusters when
     # apiserver supports it.
+    project = project or properties.VALUES.core.project.GetOrFail()
     return self.registry.Parse(
         name,
         params={
-            'projectId': properties.VALUES.core.project.GetOrFail,
+            'projectId': project,
             'zone': location,
         },
         collection='container.projects.zones.clusters')
 
-  def ParseOperation(self, operation_id, location):
+  def ParseOperation(self, operation_id, location, project=None):
     # TODO(b/63383536): Migrate to container.projects.locations.operations when
     # apiserver supports it.
+    project = project or properties.VALUES.core.project.GetOrFail()
     return self.registry.Parse(
         operation_id,
         params={
-            'projectId': properties.VALUES.core.project.GetOrFail,
+            'projectId': project,
             'zone': location,
         },
         collection='container.projects.zones.operations')
 
-  def ParseNodePool(self, node_pool_id, location):
+  def ParseNodePool(self, node_pool_id, location, project=None):
     # TODO(b/63383536): Migrate to container.projects.locations.nodePools when
     # apiserver supports it.
+    project = project or properties.VALUES.core.project.GetOrFail()
     return self.registry.Parse(
         node_pool_id,
         params={
-            'projectId': properties.VALUES.core.project.GetOrFail,
+            'projectId': project,
             'clusterId': properties.VALUES.container.cluster.GetOrFail,
             'zone': location,
         },
@@ -1133,6 +1141,13 @@ class APIAdapter(object):
             disableDefaultSnat=options.disable_default_snat)
       else:
         cluster.networkConfig.disableDefaultSnat = options.disable_default_snat
+
+    if options.enable_l4_ilb_subsetting:
+      if cluster.networkConfig is None:
+        cluster.networkConfig = self.messages.NetworkConfig(
+            enableL4ilbSubsetting=options.enable_l4_ilb_subsetting)
+      else:
+        cluster.networkConfig.enableL4ilbSubsetting = options.enable_l4_ilb_subsetting
 
     if options.enable_legacy_authorization is not None:
       cluster.legacyAbac = self.messages.LegacyAbac(
@@ -1402,8 +1417,6 @@ class APIAdapter(object):
           servicesSecondaryRangeName=options.services_secondary_range_name)
       if options.tpu_ipv4_cidr:
         policy.tpuIpv4CidrBlock = options.tpu_ipv4_cidr
-      if options.enable_tpu_service_networking:
-        policy.tpuUseServiceNetworking = options.enable_tpu_service_networking
       cluster.clusterIpv4Cidr = None
       cluster.ipAllocationPolicy = policy
     return cluster
@@ -1483,6 +1496,12 @@ class APIAdapter(object):
 
     if options.enable_tpu:
       cluster.enableTpu = options.enable_tpu
+      if options.enable_tpu_service_networking:
+        tpu_config = self.messages.TpuConfig(
+            enabled=options.enable_tpu,
+            ipv4CidrBlock=options.tpu_ipv4_cidr,
+            useServiceNetworking=options.enable_tpu_service_networking)
+        cluster.tpuConfig = tpu_config
 
   def ParseMasterAuthorizedNetworkOptions(self, options, cluster):
     """Parses the options for master authorized networks."""
@@ -2771,6 +2790,18 @@ class V1Beta1Adapter(V1Adapter):
           identityNamespace=options.identity_namespace)
     _AddReleaseChannelToCluster(cluster, options, self.messages)
 
+    cluster.loggingService = None
+    cluster.monitoringService = None
+    cluster.clusterTelemetry = self.messages.ClusterTelemetry()
+    if options.enable_stackdriver_kubernetes:
+      cluster.clusterTelemetry.type = self.messages.ClusterTelemetry.TypeValueValuesEnum.ENABLED
+    elif options.enable_logging_monitoring_system_only:
+      cluster.clusterTelemetry.type = self.messages.ClusterTelemetry.TypeValueValuesEnum.SYSTEM_ONLY
+    elif options.enable_stackdriver_kubernetes is not None:
+      cluster.clusterTelemetry.type = self.messages.ClusterTelemetry.TypeValueValuesEnum.DISABLED
+    else:
+      cluster.clusterTelemetry = None
+
     req = self.messages.CreateClusterRequest(
         parent=ProjectLocation(cluster_ref.projectId, cluster_ref.zone),
         cluster=cluster)
@@ -2797,6 +2828,20 @@ class V1Beta1Adapter(V1Adapter):
       update = self.messages.ClusterUpdate(
           desiredReleaseChannel=_GetReleaseChannelForClusterUpdate(
               options, self.messages))
+
+    if options.enable_stackdriver_kubernetes:
+      update = self.messages.ClusterUpdate(
+          desiredClusterTelemetry=self.messages.ClusterTelemetry(
+              type=self.messages.ClusterTelemetry.TypeValueValuesEnum.ENABLED))
+    elif options.enable_logging_monitoring_system_only:
+      update = self.messages.ClusterUpdate(
+          desiredClusterTelemetry=self.messages.ClusterTelemetry(
+              type=self.messages.ClusterTelemetry.TypeValueValuesEnum
+              .SYSTEM_ONLY))
+    elif options.enable_stackdriver_kubernetes is not None:
+      update = self.messages.ClusterUpdate(
+          desiredClusterTelemetry=self.messages.ClusterTelemetry(
+              type=self.messages.ClusterTelemetry.TypeValueValuesEnum.DISABLED))
 
     if not update:
       # if reached here, it's possible:
@@ -3090,6 +3135,18 @@ class V1Alpha1Adapter(V1Beta1Adapter):
       cluster.costManagementConfig = self.messages.CostManagementConfig(
           enabled=True)
 
+    cluster.loggingService = None
+    cluster.monitoringService = None
+    cluster.clusterTelemetry = self.messages.ClusterTelemetry()
+    if options.enable_stackdriver_kubernetes:
+      cluster.clusterTelemetry.type = self.messages.ClusterTelemetry.TypeValueValuesEnum.ENABLED
+    elif options.enable_logging_monitoring_system_only:
+      cluster.clusterTelemetry.type = self.messages.ClusterTelemetry.TypeValueValuesEnum.SYSTEM_ONLY
+    elif options.enable_stackdriver_kubernetes is not None:
+      cluster.clusterTelemetry.type = self.messages.ClusterTelemetry.TypeValueValuesEnum.DISABLED
+    else:
+      cluster.clusterTelemetry = None
+
     req = self.messages.CreateClusterRequest(
         parent=ProjectLocation(cluster_ref.projectId, cluster_ref.zone),
         cluster=cluster)
@@ -3127,6 +3184,20 @@ class V1Alpha1Adapter(V1Beta1Adapter):
       update = self.messages.ClusterUpdate(
           desiredReleaseChannel=_GetReleaseChannelForClusterUpdate(
               options, self.messages))
+
+    if options.enable_stackdriver_kubernetes:
+      update = self.messages.ClusterUpdate(
+          desiredClusterTelemetry=self.messages.ClusterTelemetry(
+              type=self.messages.ClusterTelemetry.TypeValueValuesEnum.ENABLED))
+    elif options.enable_logging_monitoring_system_only:
+      update = self.messages.ClusterUpdate(
+          desiredClusterTelemetry=self.messages.ClusterTelemetry(
+              type=self.messages.ClusterTelemetry.TypeValueValuesEnum
+              .SYSTEM_ONLY))
+    elif options.enable_stackdriver_kubernetes is not None:
+      update = self.messages.ClusterUpdate(
+          desiredClusterTelemetry=self.messages.ClusterTelemetry(
+              type=self.messages.ClusterTelemetry.TypeValueValuesEnum.DISABLED))
 
     if not update:
       # if reached here, it's possible:

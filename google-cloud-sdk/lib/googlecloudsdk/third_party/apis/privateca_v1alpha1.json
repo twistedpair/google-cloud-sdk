@@ -399,7 +399,7 @@
           "$ref": "ReusableConfigWrapper"
         },
         "publicKey": {
-          "description": "Optional. The public key that corresponds to this config. This is, for example, used\nwhen issuing Certificates, but not when creating a\nself-signed CertificateAuthority.",
+          "description": "Optional. The public key that corresponds to this config. This is, for example, used\nwhen issuing Certificates, but not when creating a\nself-signed CertificateAuthority or CertificateAuthority CSR.",
           "$ref": "PublicKey"
         }
       }

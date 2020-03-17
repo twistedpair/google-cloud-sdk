@@ -396,6 +396,33 @@ wipe operation returning success and the device being wiped.
       self._upload_configs = {
           }
 
+    def CheckTransitiveMembership(self, request, global_params=None):
+      r"""Check a potential member for membership in a group.
+
+      Args:
+        request: (CloudidentityGroupsMembershipsCheckTransitiveMembershipRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (CheckTransitiveMembershipResponse) The response message.
+      """
+      config = self.GetMethodConfig('CheckTransitiveMembership')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    CheckTransitiveMembership.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1beta1/groups/{groupsId}/memberships:checkTransitiveMembership',
+        http_method=u'GET',
+        method_id=u'cloudidentity.groups.memberships.checkTransitiveMembership',
+        ordered_params=[u'parent'],
+        path_params=[u'parent'],
+        query_params=[u'query'],
+        relative_path=u'v1beta1/{+parent}/memberships:checkTransitiveMembership',
+        request_field='',
+        request_type_name=u'CloudidentityGroupsMembershipsCheckTransitiveMembershipRequest',
+        response_type_name=u'CheckTransitiveMembershipResponse',
+        supports_download=False,
+    )
+
     def Create(self, request, global_params=None):
       r"""Creates a `Membership`.
 
@@ -474,6 +501,33 @@ wipe operation returning success and the device being wiped.
         request_field='',
         request_type_name=u'CloudidentityGroupsMembershipsGetRequest',
         response_type_name=u'Membership',
+        supports_download=False,
+    )
+
+    def GetMembershipGraph(self, request, global_params=None):
+      r"""Get a membership graph of a member or member/group.
+
+      Args:
+        request: (CloudidentityGroupsMembershipsGetMembershipGraphRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('GetMembershipGraph')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetMembershipGraph.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1beta1/groups/{groupsId}/memberships:getMembershipGraph',
+        http_method=u'GET',
+        method_id=u'cloudidentity.groups.memberships.getMembershipGraph',
+        ordered_params=[u'parent'],
+        path_params=[u'parent'],
+        query_params=[u'query'],
+        relative_path=u'v1beta1/{+parent}/memberships:getMembershipGraph',
+        request_field='',
+        request_type_name=u'CloudidentityGroupsMembershipsGetMembershipGraphRequest',
+        response_type_name=u'Operation',
         supports_download=False,
     )
 
@@ -584,6 +638,60 @@ name](https://cloud.google.com/apis/design/resource_names) of a
         request_field=u'membership',
         request_type_name=u'CloudidentityGroupsMembershipsPatchRequest',
         response_type_name=u'Operation',
+        supports_download=False,
+    )
+
+    def SearchTransitiveGroups(self, request, global_params=None):
+      r"""Search transitive groups of a member.
+
+      Args:
+        request: (CloudidentityGroupsMembershipsSearchTransitiveGroupsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (SearchTransitiveGroupsResponse) The response message.
+      """
+      config = self.GetMethodConfig('SearchTransitiveGroups')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SearchTransitiveGroups.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1beta1/groups/{groupsId}/memberships:searchTransitiveGroups',
+        http_method=u'GET',
+        method_id=u'cloudidentity.groups.memberships.searchTransitiveGroups',
+        ordered_params=[u'parent'],
+        path_params=[u'parent'],
+        query_params=[u'pageSize', u'pageToken', u'query'],
+        relative_path=u'v1beta1/{+parent}/memberships:searchTransitiveGroups',
+        request_field='',
+        request_type_name=u'CloudidentityGroupsMembershipsSearchTransitiveGroupsRequest',
+        response_type_name=u'SearchTransitiveGroupsResponse',
+        supports_download=False,
+    )
+
+    def SearchTransitiveMemberships(self, request, global_params=None):
+      r"""Search transitive memberships of a group.
+
+      Args:
+        request: (CloudidentityGroupsMembershipsSearchTransitiveMembershipsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (SearchTransitiveMembershipsResponse) The response message.
+      """
+      config = self.GetMethodConfig('SearchTransitiveMemberships')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SearchTransitiveMemberships.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1beta1/groups/{groupsId}/memberships:searchTransitiveMemberships',
+        http_method=u'GET',
+        method_id=u'cloudidentity.groups.memberships.searchTransitiveMemberships',
+        ordered_params=[u'parent'],
+        path_params=[u'parent'],
+        query_params=[u'pageSize', u'pageToken'],
+        relative_path=u'v1beta1/{+parent}/memberships:searchTransitiveMemberships',
+        request_field='',
+        request_type_name=u'CloudidentityGroupsMembershipsSearchTransitiveMembershipsRequest',
+        response_type_name=u'SearchTransitiveMembershipsResponse',
         supports_download=False,
     )
 

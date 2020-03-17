@@ -38,6 +38,8 @@ class MlV1(base_api.BaseApiClient):
         response_encoding=response_encoding)
     self.projects_jobs = self.ProjectsJobsService(self)
     self.projects_locations_operations = self.ProjectsLocationsOperationsService(self)
+    self.projects_locations_studies_trials = self.ProjectsLocationsStudiesTrialsService(self)
+    self.projects_locations_studies = self.ProjectsLocationsStudiesService(self)
     self.projects_locations = self.ProjectsLocationsService(self)
     self.projects_models_versions = self.ProjectsModelsVersionsService(self)
     self.projects_models = self.ProjectsModelsService(self)
@@ -358,6 +360,379 @@ service.
         request_field='',
         request_type_name=u'MlProjectsLocationsOperationsGetRequest',
         response_type_name=u'GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsStudiesTrialsService(base_api.BaseApiService):
+    """Service class for the projects_locations_studies_trials resource."""
+
+    _NAME = u'projects_locations_studies_trials'
+
+    def __init__(self, client):
+      super(MlV1.ProjectsLocationsStudiesTrialsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def AddMeasurement(self, request, global_params=None):
+      r"""Adds a measurement of the objective metrics to a Trial. This measurement.
+is assumed to have been taken before the Trial is complete.
+
+      Args:
+        request: (MlProjectsLocationsStudiesTrialsAddMeasurementRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudMlV1Trial) The response message.
+      """
+      config = self.GetMethodConfig('AddMeasurement')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    AddMeasurement.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1/projects/{projectsId}/locations/{locationsId}/studies/{studiesId}/trials/{trialsId}:addMeasurement',
+        http_method=u'POST',
+        method_id=u'ml.projects.locations.studies.trials.addMeasurement',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[],
+        relative_path=u'v1/{+name}:addMeasurement',
+        request_field=u'googleCloudMlV1AddTrialMeasurementRequest',
+        request_type_name=u'MlProjectsLocationsStudiesTrialsAddMeasurementRequest',
+        response_type_name=u'GoogleCloudMlV1Trial',
+        supports_download=False,
+    )
+
+    def CheckEarlyStoppingState(self, request, global_params=None):
+      r"""Checks whether a trial should stop or not.
+
+      Args:
+        request: (MlProjectsLocationsStudiesTrialsCheckEarlyStoppingStateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('CheckEarlyStoppingState')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    CheckEarlyStoppingState.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1/projects/{projectsId}/locations/{locationsId}/studies/{studiesId}/trials/{trialsId}:checkEarlyStoppingState',
+        http_method=u'POST',
+        method_id=u'ml.projects.locations.studies.trials.checkEarlyStoppingState',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[],
+        relative_path=u'v1/{+name}:checkEarlyStoppingState',
+        request_field=u'googleCloudMlV1CheckTrialEarlyStoppingStateRequest',
+        request_type_name=u'MlProjectsLocationsStudiesTrialsCheckEarlyStoppingStateRequest',
+        response_type_name=u'GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
+    def Complete(self, request, global_params=None):
+      r"""Marks a Trial as complete.
+
+      Args:
+        request: (MlProjectsLocationsStudiesTrialsCompleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudMlV1Trial) The response message.
+      """
+      config = self.GetMethodConfig('Complete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Complete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1/projects/{projectsId}/locations/{locationsId}/studies/{studiesId}/trials/{trialsId}:complete',
+        http_method=u'POST',
+        method_id=u'ml.projects.locations.studies.trials.complete',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[],
+        relative_path=u'v1/{+name}:complete',
+        request_field=u'googleCloudMlV1CompleteTrialRequest',
+        request_type_name=u'MlProjectsLocationsStudiesTrialsCompleteRequest',
+        response_type_name=u'GoogleCloudMlV1Trial',
+        supports_download=False,
+    )
+
+    def Create(self, request, global_params=None):
+      r"""Adds a user provided trial to a Study.
+
+      Args:
+        request: (MlProjectsLocationsStudiesTrialsCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudMlV1Trial) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1/projects/{projectsId}/locations/{locationsId}/studies/{studiesId}/trials',
+        http_method=u'POST',
+        method_id=u'ml.projects.locations.studies.trials.create',
+        ordered_params=[u'parent'],
+        path_params=[u'parent'],
+        query_params=[],
+        relative_path=u'v1/{+parent}/trials',
+        request_field=u'googleCloudMlV1Trial',
+        request_type_name=u'MlProjectsLocationsStudiesTrialsCreateRequest',
+        response_type_name=u'GoogleCloudMlV1Trial',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes a Trial.
+
+      Args:
+        request: (MlProjectsLocationsStudiesTrialsDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleProtobufEmpty) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1/projects/{projectsId}/locations/{locationsId}/studies/{studiesId}/trials/{trialsId}',
+        http_method=u'DELETE',
+        method_id=u'ml.projects.locations.studies.trials.delete',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[],
+        relative_path=u'v1/{+name}',
+        request_field='',
+        request_type_name=u'MlProjectsLocationsStudiesTrialsDeleteRequest',
+        response_type_name=u'GoogleProtobufEmpty',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Gets a Trial.
+
+      Args:
+        request: (MlProjectsLocationsStudiesTrialsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudMlV1Trial) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1/projects/{projectsId}/locations/{locationsId}/studies/{studiesId}/trials/{trialsId}',
+        http_method=u'GET',
+        method_id=u'ml.projects.locations.studies.trials.get',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[],
+        relative_path=u'v1/{+name}',
+        request_field='',
+        request_type_name=u'MlProjectsLocationsStudiesTrialsGetRequest',
+        response_type_name=u'GoogleCloudMlV1Trial',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists the trials associated with a Study.
+
+      Args:
+        request: (MlProjectsLocationsStudiesTrialsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudMlV1ListTrialsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1/projects/{projectsId}/locations/{locationsId}/studies/{studiesId}/trials',
+        http_method=u'GET',
+        method_id=u'ml.projects.locations.studies.trials.list',
+        ordered_params=[u'parent'],
+        path_params=[u'parent'],
+        query_params=[],
+        relative_path=u'v1/{+parent}/trials',
+        request_field='',
+        request_type_name=u'MlProjectsLocationsStudiesTrialsListRequest',
+        response_type_name=u'GoogleCloudMlV1ListTrialsResponse',
+        supports_download=False,
+    )
+
+    def Stop(self, request, global_params=None):
+      r"""Stops a trial.
+
+      Args:
+        request: (MlProjectsLocationsStudiesTrialsStopRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudMlV1Trial) The response message.
+      """
+      config = self.GetMethodConfig('Stop')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Stop.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1/projects/{projectsId}/locations/{locationsId}/studies/{studiesId}/trials/{trialsId}:stop',
+        http_method=u'POST',
+        method_id=u'ml.projects.locations.studies.trials.stop',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[],
+        relative_path=u'v1/{+name}:stop',
+        request_field=u'googleCloudMlV1StopTrialRequest',
+        request_type_name=u'MlProjectsLocationsStudiesTrialsStopRequest',
+        response_type_name=u'GoogleCloudMlV1Trial',
+        supports_download=False,
+    )
+
+    def Suggest(self, request, global_params=None):
+      r"""Returns a long-running operation associated with the generation of trial.
+suggestions.
+
+      Args:
+        request: (MlProjectsLocationsStudiesTrialsSuggestRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('Suggest')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Suggest.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1/projects/{projectsId}/locations/{locationsId}/studies/{studiesId}/trials:suggest',
+        http_method=u'POST',
+        method_id=u'ml.projects.locations.studies.trials.suggest',
+        ordered_params=[u'parent'],
+        path_params=[u'parent'],
+        query_params=[],
+        relative_path=u'v1/{+parent}/trials:suggest',
+        request_field=u'googleCloudMlV1SuggestTrialsRequest',
+        request_type_name=u'MlProjectsLocationsStudiesTrialsSuggestRequest',
+        response_type_name=u'GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsStudiesService(base_api.BaseApiService):
+    """Service class for the projects_locations_studies resource."""
+
+    _NAME = u'projects_locations_studies'
+
+    def __init__(self, client):
+      super(MlV1.ProjectsLocationsStudiesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Creates a study.
+
+      Args:
+        request: (MlProjectsLocationsStudiesCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudMlV1Study) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1/projects/{projectsId}/locations/{locationsId}/studies',
+        http_method=u'POST',
+        method_id=u'ml.projects.locations.studies.create',
+        ordered_params=[u'parent'],
+        path_params=[u'parent'],
+        query_params=[u'studyId'],
+        relative_path=u'v1/{+parent}/studies',
+        request_field=u'googleCloudMlV1Study',
+        request_type_name=u'MlProjectsLocationsStudiesCreateRequest',
+        response_type_name=u'GoogleCloudMlV1Study',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes a study.
+
+      Args:
+        request: (MlProjectsLocationsStudiesDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleProtobufEmpty) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1/projects/{projectsId}/locations/{locationsId}/studies/{studiesId}',
+        http_method=u'DELETE',
+        method_id=u'ml.projects.locations.studies.delete',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[],
+        relative_path=u'v1/{+name}',
+        request_field='',
+        request_type_name=u'MlProjectsLocationsStudiesDeleteRequest',
+        response_type_name=u'GoogleProtobufEmpty',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Gets a study.
+
+      Args:
+        request: (MlProjectsLocationsStudiesGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudMlV1Study) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1/projects/{projectsId}/locations/{locationsId}/studies/{studiesId}',
+        http_method=u'GET',
+        method_id=u'ml.projects.locations.studies.get',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[],
+        relative_path=u'v1/{+name}',
+        request_field='',
+        request_type_name=u'MlProjectsLocationsStudiesGetRequest',
+        response_type_name=u'GoogleCloudMlV1Study',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists all the studies in a region for an associated project.
+
+      Args:
+        request: (MlProjectsLocationsStudiesListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudMlV1ListStudiesResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1/projects/{projectsId}/locations/{locationsId}/studies',
+        http_method=u'GET',
+        method_id=u'ml.projects.locations.studies.list',
+        ordered_params=[u'parent'],
+        path_params=[u'parent'],
+        query_params=[],
+        relative_path=u'v1/{+parent}/studies',
+        request_field='',
+        request_type_name=u'MlProjectsLocationsStudiesListRequest',
+        response_type_name=u'GoogleCloudMlV1ListStudiesResponse',
         supports_download=False,
     )
 

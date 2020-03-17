@@ -61,6 +61,8 @@ GOOGLE_OAUTH2_PROVIDER_TOKEN_URI = (
     'https://accounts.google.com/o/oauth2/token')
 _GRANT_TYPE = 'urn:ietf:params:oauth:grant-type:jwt-bearer'
 
+_CREDENTIALS_EXPIRY_WINDOW = '300s'
+
 
 class Error(exceptions.Error):
   """Exceptions for the credentials module."""
@@ -301,7 +303,7 @@ def _TokenExpiresWithinWindow(expiry_window,
   """Determines if token_expiry_time is within expiry_window_duration.
 
   Calculates the amount of time between utcnow() and token_expiry_time and
-  returns true, if that amount is less thank the provided duration window. All
+  returns true, if that amount is less than the provided duration window. All
   calculations are done in number of seconds for consistency.
 
 
@@ -532,28 +534,26 @@ def _Load(account, scopes, prevent_refresh):
         cred.token_uri = token_uri_override
     # The credential override is not stored in credential store, but we still
     # want to cache access tokens between invocations.
-    return creds.MaybeAttachAccessTokenCacheStore(cred)
+    cred = creds.MaybeAttachAccessTokenCacheStore(cred)
+  else:
+    if not account:
+      account = properties.VALUES.core.account.Get()
 
-  if not account:
-    account = properties.VALUES.core.account.Get()
+    if not account:
+      raise NoActiveAccountException(
+          named_configs.ActiveConfig(False).file_path)
 
-  if not account:
-    raise NoActiveAccountException(named_configs.ActiveConfig(False).file_path)
+    cred = STATIC_CREDENTIAL_PROVIDERS.GetCredentials(account)
+    if cred is not None:
+      return cred
 
-  cred = STATIC_CREDENTIAL_PROVIDERS.GetCredentials(account)
-  if cred is not None:
-    return cred
+    store = creds.GetCredentialStore()
+    cred = store.Load(account)
+    if not cred:
+      raise NoCredentialsForAccountException(account)
 
-  store = creds.GetCredentialStore()
-  cred = store.Load(account)
-  if not cred:
-    raise NoCredentialsForAccountException(account)
-
-  # cred.token_expiry is in UTC time.
-  if (not prevent_refresh and
-      (not cred.token_expiry or
-       cred.token_expiry < cred.token_expiry.utcnow())):
-    Refresh(cred)
+  if not prevent_refresh:
+    _MaybeRefresh(cred)
 
   return cred
 
@@ -626,6 +626,13 @@ def Refresh(credentials,
     raise TokenRefreshError(six.text_type(e))
   except reauth_errors.ReauthError as e:
     raise TokenRefreshReauthError(str(e))
+
+
+def _MaybeRefresh(credentials):
+  """Refreshes credentials if they expire within the expiry window."""
+  if not credentials.token_expiry or _TokenExpiresWithinWindow(
+      _CREDENTIALS_EXPIRY_WINDOW, credentials.token_expiry):
+    Refresh(credentials)
 
 
 def _RefreshImpersonatedAccountIdToken(cred, include_email):

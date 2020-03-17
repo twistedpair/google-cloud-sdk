@@ -758,7 +758,8 @@
             "The database version is SQL Server 2017 Express.",
             "The database version is SQL Server 2017 Web.",
             "The database version is PostgreSQL 10.",
-            "The database version is PostgreSQL 12."
+            "The database version is PostgreSQL 12.",
+            "The database version is MySQL 8."
           ],
           "type": "array",
           "items": {
@@ -776,7 +777,8 @@
               "SQLSERVER_2017_EXPRESS",
               "SQLSERVER_2017_WEB",
               "POSTGRES_10",
-              "POSTGRES_12"
+              "POSTGRES_12",
+              "MYSQL_8_0"
             ]
           }
         },
@@ -1043,7 +1045,8 @@
             "The database version is SQL Server 2017 Express.",
             "The database version is SQL Server 2017 Web.",
             "The database version is PostgreSQL 10.",
-            "The database version is PostgreSQL 12."
+            "The database version is PostgreSQL 12.",
+            "The database version is MySQL 8."
           ],
           "type": "string",
           "enum": [
@@ -1059,7 +1062,8 @@
             "SQLSERVER_2017_EXPRESS",
             "SQLSERVER_2017_WEB",
             "POSTGRES_10",
-            "POSTGRES_12"
+            "POSTGRES_12",
+            "MYSQL_8_0"
           ]
         },
         "settings": {
@@ -1229,7 +1233,7 @@
     },
     "Settings": {
       "id": "Settings",
-      "description": "Database instance settings.",
+      "description": "LINT.IfChange(Settings)\nDatabase instance settings.",
       "type": "object",
       "properties": {
         "settingsVersion": {
@@ -1377,6 +1381,10 @@
           "description": "The size of data disk, in GB. The data disk size minimum is 10GB. Not used\nfor First Generation instances.",
           "type": "string",
           "format": "int64"
+        },
+        "activeDirectoryConfig": {
+          "description": "Active Directory configuration, for now relevant only for SQL Server",
+          "$ref": "SqlActiveDirectoryConfig"
         }
       }
     },
@@ -1531,6 +1539,21 @@
         "pointInTimeRecoveryEnabled": {
           "description": "Reserved for future use.",
           "type": "boolean"
+        }
+      }
+    },
+    "SqlActiveDirectoryConfig": {
+      "id": "SqlActiveDirectoryConfig",
+      "description": "Active Directory configuration, for now relevant only for SQL Server",
+      "type": "object",
+      "properties": {
+        "kind": {
+          "description": "This will be always sql#activeDirectoryConfig.",
+          "type": "string"
+        },
+        "domain": {
+          "description": "Domain name",
+          "type": "string"
         }
       }
     },

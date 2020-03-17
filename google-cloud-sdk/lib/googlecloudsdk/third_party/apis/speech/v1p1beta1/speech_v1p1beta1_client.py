@@ -37,10 +37,12 @@ class SpeechV1p1beta1(base_api.BaseApiClient):
         additional_http_headers=additional_http_headers,
         response_encoding=response_encoding)
     self.operations = self.OperationsService(self)
+    self.projects_locations_customClasses = self.ProjectsLocationsCustomClassesService(self)
     self.projects_locations_datasets = self.ProjectsLocationsDatasetsService(self)
     self.projects_locations_log_data_stats = self.ProjectsLocationsLogDataStatsService(self)
     self.projects_locations_models = self.ProjectsLocationsModelsService(self)
     self.projects_locations_operations = self.ProjectsLocationsOperationsService(self)
+    self.projects_locations_phraseSets = self.ProjectsLocationsPhraseSetsService(self)
     self.projects_locations = self.ProjectsLocationsService(self)
     self.projects = self.ProjectsService(self)
     self.speech = self.SpeechService(self)
@@ -116,6 +118,151 @@ is the parent resource, without the operations collection id.
         request_field='',
         request_type_name=u'SpeechOperationsListRequest',
         response_type_name=u'ListOperationsResponse',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsCustomClassesService(base_api.BaseApiService):
+    """Service class for the projects_locations_customClasses resource."""
+
+    _NAME = u'projects_locations_customClasses'
+
+    def __init__(self, client):
+      super(SpeechV1p1beta1.ProjectsLocationsCustomClassesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Create a custom class.
+
+      Args:
+        request: (SpeechProjectsLocationsCustomClassesCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (CustomClass) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1p1beta1/projects/{projectsId}/locations/{locationsId}/customClasses',
+        http_method=u'POST',
+        method_id=u'speech.projects.locations.customClasses.create',
+        ordered_params=[u'parent'],
+        path_params=[u'parent'],
+        query_params=[u'customClassId'],
+        relative_path=u'v1p1beta1/{+parent}/customClasses',
+        request_field=u'customClass',
+        request_type_name=u'SpeechProjectsLocationsCustomClassesCreateRequest',
+        response_type_name=u'CustomClass',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Delete a custom class.
+
+      Args:
+        request: (SpeechProjectsLocationsCustomClassesDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Empty) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1p1beta1/projects/{projectsId}/locations/{locationsId}/customClasses/{customClassesId}',
+        http_method=u'DELETE',
+        method_id=u'speech.projects.locations.customClasses.delete',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[],
+        relative_path=u'v1p1beta1/{+name}',
+        request_field='',
+        request_type_name=u'SpeechProjectsLocationsCustomClassesDeleteRequest',
+        response_type_name=u'Empty',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Get a custom class.
+
+      Args:
+        request: (SpeechProjectsLocationsCustomClassesGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (CustomClass) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1p1beta1/projects/{projectsId}/locations/{locationsId}/customClasses/{customClassesId}',
+        http_method=u'GET',
+        method_id=u'speech.projects.locations.customClasses.get',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[],
+        relative_path=u'v1p1beta1/{+name}',
+        request_field='',
+        request_type_name=u'SpeechProjectsLocationsCustomClassesGetRequest',
+        response_type_name=u'CustomClass',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""List custom classes.
+
+      Args:
+        request: (SpeechProjectsLocationsCustomClassesListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListCustomClassesResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1p1beta1/projects/{projectsId}/locations/{locationsId}/customClasses',
+        http_method=u'GET',
+        method_id=u'speech.projects.locations.customClasses.list',
+        ordered_params=[u'parent'],
+        path_params=[u'parent'],
+        query_params=[u'pageSize', u'pageToken'],
+        relative_path=u'v1p1beta1/{+parent}/customClasses',
+        request_field='',
+        request_type_name=u'SpeechProjectsLocationsCustomClassesListRequest',
+        response_type_name=u'ListCustomClassesResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Update a custom class.
+
+      Args:
+        request: (SpeechProjectsLocationsCustomClassesPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (CustomClass) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1p1beta1/projects/{projectsId}/locations/{locationsId}/customClasses/{customClassesId}',
+        http_method=u'PATCH',
+        method_id=u'speech.projects.locations.customClasses.patch',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[u'updateMask'],
+        relative_path=u'v1p1beta1/{+name}',
+        request_field=u'customClass',
+        request_type_name=u'SpeechProjectsLocationsCustomClassesPatchRequest',
+        response_type_name=u'CustomClass',
         supports_download=False,
     )
 
@@ -527,6 +674,153 @@ is the parent resource, without the operations collection id.
         request_field='',
         request_type_name=u'SpeechProjectsLocationsOperationsListRequest',
         response_type_name=u'ListOperationsResponse',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsPhraseSetsService(base_api.BaseApiService):
+    """Service class for the projects_locations_phraseSets resource."""
+
+    _NAME = u'projects_locations_phraseSets'
+
+    def __init__(self, client):
+      super(SpeechV1p1beta1.ProjectsLocationsPhraseSetsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Create a set of phrase hints. Each item in the set can be a single word or.
+a multi-word phrase. The items in the PhraseSet are favored by the
+recognition model when you send a call that includes the PhraseSet.
+
+      Args:
+        request: (SpeechProjectsLocationsPhraseSetsCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (PhraseSet) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1p1beta1/projects/{projectsId}/locations/{locationsId}/phraseSets',
+        http_method=u'POST',
+        method_id=u'speech.projects.locations.phraseSets.create',
+        ordered_params=[u'parent'],
+        path_params=[u'parent'],
+        query_params=[u'phraseSetId'],
+        relative_path=u'v1p1beta1/{+parent}/phraseSets',
+        request_field=u'phraseSet',
+        request_type_name=u'SpeechProjectsLocationsPhraseSetsCreateRequest',
+        response_type_name=u'PhraseSet',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Delete a phrase set.
+
+      Args:
+        request: (SpeechProjectsLocationsPhraseSetsDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Empty) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1p1beta1/projects/{projectsId}/locations/{locationsId}/phraseSets/{phraseSetsId}',
+        http_method=u'DELETE',
+        method_id=u'speech.projects.locations.phraseSets.delete',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[],
+        relative_path=u'v1p1beta1/{+name}',
+        request_field='',
+        request_type_name=u'SpeechProjectsLocationsPhraseSetsDeleteRequest',
+        response_type_name=u'Empty',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Get a phrase set.
+
+      Args:
+        request: (SpeechProjectsLocationsPhraseSetsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (PhraseSet) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1p1beta1/projects/{projectsId}/locations/{locationsId}/phraseSets/{phraseSetsId}',
+        http_method=u'GET',
+        method_id=u'speech.projects.locations.phraseSets.get',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[],
+        relative_path=u'v1p1beta1/{+name}',
+        request_field='',
+        request_type_name=u'SpeechProjectsLocationsPhraseSetsGetRequest',
+        response_type_name=u'PhraseSet',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""List phrase sets.
+
+      Args:
+        request: (SpeechProjectsLocationsPhraseSetsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListPhraseSetResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1p1beta1/projects/{projectsId}/locations/{locationsId}/phraseSets',
+        http_method=u'GET',
+        method_id=u'speech.projects.locations.phraseSets.list',
+        ordered_params=[u'parent'],
+        path_params=[u'parent'],
+        query_params=[u'pageSize', u'pageToken'],
+        relative_path=u'v1p1beta1/{+parent}/phraseSets',
+        request_field='',
+        request_type_name=u'SpeechProjectsLocationsPhraseSetsListRequest',
+        response_type_name=u'ListPhraseSetResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Update a phrase set.
+
+      Args:
+        request: (SpeechProjectsLocationsPhraseSetsPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (PhraseSet) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1p1beta1/projects/{projectsId}/locations/{locationsId}/phraseSets/{phraseSetsId}',
+        http_method=u'PATCH',
+        method_id=u'speech.projects.locations.phraseSets.patch',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[u'updateMask'],
+        relative_path=u'v1p1beta1/{+name}',
+        request_field=u'phraseSet',
+        request_type_name=u'SpeechProjectsLocationsPhraseSetsPatchRequest',
+        response_type_name=u'PhraseSet',
         supports_download=False,
     )
 

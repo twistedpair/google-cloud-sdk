@@ -605,6 +605,7 @@ class ManagedZone(_messages.Message):
     peeringConfig: A ManagedZonePeeringConfig attribute.
     privateVisibilityConfig: A ManagedZonePrivateVisibilityConfig attribute.
     reverseLookupConfig: A ManagedZoneReverseLookupConfig attribute.
+    serviceDirectoryConfig: A ManagedZoneServiceDirectoryConfig attribute.
     visibility: A VisibilityValueValuesEnum attribute.
   """
 
@@ -656,7 +657,8 @@ class ManagedZone(_messages.Message):
   peeringConfig = _messages.MessageField('ManagedZonePeeringConfig', 12)
   privateVisibilityConfig = _messages.MessageField('ManagedZonePrivateVisibilityConfig', 13)
   reverseLookupConfig = _messages.MessageField('ManagedZoneReverseLookupConfig', 14)
-  visibility = _messages.EnumField('VisibilityValueValuesEnum', 15)
+  serviceDirectoryConfig = _messages.MessageField('ManagedZoneServiceDirectoryConfig', 15)
+  visibility = _messages.EnumField('VisibilityValueValuesEnum', 16)
 
 
 class ManagedZoneDnsSecConfig(_messages.Message):
@@ -823,6 +825,34 @@ class ManagedZoneReverseLookupConfig(_messages.Message):
   """
 
   kind = _messages.StringField(1, default=u'dns#managedZoneReverseLookupConfig')
+
+
+class ManagedZoneServiceDirectoryConfig(_messages.Message):
+  r"""A ManagedZoneServiceDirectoryConfig object.
+
+  Fields:
+    kind: Identifies what kind of resource this is. Value: the fixed string
+      "dns#managedZoneServiceDirectoryConfig".
+    namespace: A ManagedZoneServiceDirectoryConfigNamespace attribute.
+  """
+
+  kind = _messages.StringField(1, default=u'dns#managedZoneServiceDirectoryConfig')
+  namespace = _messages.MessageField('ManagedZoneServiceDirectoryConfigNamespace', 2)
+
+
+class ManagedZoneServiceDirectoryConfigNamespace(_messages.Message):
+  r"""A ManagedZoneServiceDirectoryConfigNamespace object.
+
+  Fields:
+    deletionTime: A string attribute.
+    kind: Identifies what kind of resource this is. Value: the fixed string
+      "dns#managedZoneServiceDirectoryConfigNamespace".
+    namespaceUrl: A string attribute.
+  """
+
+  deletionTime = _messages.StringField(1)
+  kind = _messages.StringField(2, default=u'dns#managedZoneServiceDirectoryConfigNamespace')
+  namespaceUrl = _messages.StringField(3)
 
 
 class ManagedZonesListResponse(_messages.Message):

@@ -289,6 +289,11 @@
             "type": "string"
           }
         },
+        "queueTtl": {
+          "description": "TTL in queue for this build. If provided and the build is enqueued longer\nthan this value, the build will expire and the build status will be\n`EXPIRED`.\n\nThe TTL starts ticking from create_time.",
+          "type": "string",
+          "format": "google-duration"
+        },
         "artifacts": {
           "description": "Artifacts produced by the build that should be uploaded upon\nsuccessful completion of all build steps.",
           "$ref": "Artifacts"
@@ -406,6 +411,10 @@
         "dir": {
           "description": "Directory, relative to the source root, in which to run the build.\n\nThis must be a relative path. If a step's `dir` is specified and is an\nabsolute path, this value is ignored for that step's execution.",
           "type": "string"
+        },
+        "invertRegex": {
+          "description": "Only trigger a build if the revision regex does NOT match the revision\nregex.",
+          "type": "boolean"
         },
         "substitutions": {
           "description": "Substitutions to use in a triggered build.\nShould only be used with RunBuildTrigger",
@@ -999,6 +1008,10 @@
             "COMMENTS_DISABLED",
             "COMMENTS_ENABLED"
           ]
+        },
+        "invertRegex": {
+          "description": "If true, branches that do NOT match the git_ref will trigger a build.",
+          "type": "boolean"
         }
       }
     },
@@ -1014,6 +1027,10 @@
         "tag": {
           "description": "Regexes matching tags to build.\n\nThe syntax of the regular expressions accepted is the syntax accepted by\nRE2 and described at https:\/\/github.com\/google\/re2\/wiki\/Syntax",
           "type": "string"
+        },
+        "invertRegex": {
+          "description": "When true, only trigger a build if the revision regex does NOT match the\ngit_ref regex.",
+          "type": "boolean"
         }
       }
     },
