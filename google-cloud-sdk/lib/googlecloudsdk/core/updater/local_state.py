@@ -597,9 +597,6 @@ class InstallationState(object):
     """Attempts to compile all the python files into .pyc files.
 
     This does not raise exceptions if compiling a given file fails.
-
-    Returns:
-      int, number of 'platform' files with compilation errors.
     """
     # Use two different regex exclusions (passed to compile_dir)
     # based on the python runtime. We package some python code
@@ -610,7 +607,6 @@ class InstallationState(object):
     else:
       regex_exclusion = None
 
-    failure_count = 0
     # The self.sdk_root pathname could contain unicode chars and py_compile
     # chokes on unicode paths. Using relative paths from self.sdk_root works
     # around the problem.
@@ -619,6 +615,7 @@ class InstallationState(object):
           os.path.join('bin', 'bootstrapping'),
           os.path.join('data', 'cli'),
           'lib',
+          'platform',
       ]
       for d in to_compile:
         # Using rx to skip unused Python3 directory vendored with gsutil's copy
@@ -628,15 +625,6 @@ class InstallationState(object):
         # parameter was changed to a multilevel value, where 1 hides files
         # being processed and 2 suppresses output.
         compileall.compile_dir(d, rx=regex_exclusion, quiet=2, force=True)
-
-      # Repeat the same process as above, but if there is a Syntax Error found
-      # in code in the 'platform' path we should notify the caller.
-      success = compileall.compile_dir(
-          'platform', rx=regex_exclusion, quiet=2, force=True)
-      if not success:
-        failure_count += 1
-
-    return failure_count
 
 
 class InstallationManifest(object):

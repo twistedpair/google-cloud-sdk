@@ -4,6 +4,10 @@ Copyright 2014-2020 Google Inc. All rights reserved.
 
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 
+## 285.0.0 (2020-03-17)
+
+* Resolved issue that caused spurious post installation errors in 285.0.0.
+
 
 ## 285.0.0 (2020-03-17)
 
