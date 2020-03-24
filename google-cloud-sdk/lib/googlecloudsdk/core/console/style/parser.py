@@ -55,6 +55,9 @@ class TypedTextParser(object):
   SGR = 'm'  # Select Graphic Rendition, acts as a terminator for the sequence
   SET_FOREGROUND = '38;5;{}'
   RESET = '39;0'
+  # Adding 0x20 to a given attr value changes it from turning the attribute on,
+  # to turning the attribute off.
+  ATTR_OFF = 0x20
 
   def __init__(self, style_mappings, style_enabled):
     """Creates a styled logger used to print styled text to stdout.
@@ -72,21 +75,31 @@ class TypedTextParser(object):
   def _GetAnsiSequenceForAttribute(self, text_attributes, style_context):
     """Returns the ANSI start and reset sequences for the text_attributes."""
     style_sequence = ''
+    reset_sequence = ''
     attrs = (set(getattr(style_context, 'attrs', [])) |
              set(getattr(text_attributes, 'attrs', [])))
     if attrs:
       style_sequence += ';'.join(sorted([
           six.text_type(attr.value) for attr in attrs]))
+      reset_sequence += ';'.join(
+          sorted([
+              six.text_type('%02x' % (attr.value + self.ATTR_OFF))
+              for attr in attrs
+          ]))
     color = (getattr(text_attributes, 'color', None) or
              getattr(style_context, 'color', None))
     if color:
       if style_sequence:
         style_sequence += ';'
       style_sequence += self.SET_FOREGROUND.format(color.value)
+      if reset_sequence:
+        reset_sequence += ';'
+      reset_sequence += self.RESET
     begin_style, end_style = '', ''
     if style_sequence:
       begin_style = self.CSI + style_sequence + self.SGR
-      end_style = self.CSI + self.RESET + self.SGR
+    if reset_sequence:
+      end_style = self.CSI + reset_sequence + self.SGR
     return begin_style, end_style
 
   def ParseTypedTextToString(self, typed_text, style_context=None,
@@ -109,7 +122,6 @@ class TypedTextParser(object):
     if isinstance(typed_text, six.string_types):
       return typed_text
 
-    # TODO(b/113600762): Reset more selectively.
     stylize = stylize and self.style_enabled
 
     parsed_chunks = []

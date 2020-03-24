@@ -36,11 +36,25 @@ import six
 API_NAME = 'cloudasset'
 DEFAULT_API_VERSION = 'v1'
 V1P4ALPHA1_API_VERSION = 'v1p4alpha1'
+V1P4BETA1_API_VERSION = 'v1p4beta1'
 V1P5ALPHA1_API_VERSION = 'v1p5alpha1'
 BASE_URL = 'https://cloudasset.googleapis.com'
 _HEADERS = {'Content-Type': 'application/json', 'X-HTTP-Method-Override': 'GET'}
 _HTTP_ERROR_FORMAT = ('HTTP request failed with status code {}. '
                       'Response content: {}')
+# A dictionary that captures version differences for IAM Policy Analyzer.
+_IAM_POLICY_ANALYZER_VERSION_DICT = {
+    V1P4ALPHA1_API_VERSION: {
+        'resource_selector': 'resourceSelector',
+        'identity_selector': 'identitySelector',
+        'access_selector': 'accessSelector',
+    },
+    V1P4BETA1_API_VERSION: {
+        'resource_selector': 'analysisQuery.resourceSelector',
+        'identity_selector': 'analysisQuery.identitySelector',
+        'access_selector': 'analysisQuery.accessSelector',
+    },
+}
 
 
 class MessageDecodeError(core_exceptions.Error):
@@ -89,10 +103,10 @@ def MakeGetAssetsHistoryHttpRequests(args, api_version=DEFAULT_API_VERSION):
   query_params = [
       ('assetNames', asset_name) for asset_name in args.asset_names or []
   ]
-  query_params.extend([('contentType',
-                        ContentTypeTranslation(args.content_type)),
-                       ('readTimeWindow.startTime',
-                        times.FormatDateTime(args.start_time))])
+  query_params.extend([
+      ('contentType', ContentTypeTranslation(args.content_type)),
+      ('readTimeWindow.startTime', times.FormatDateTime(args.start_time))
+  ])
   if args.IsSpecified('end_time'):
     query_params.extend([('readTimeWindow.endTime',
                           times.FormatDateTime(args.end_time))])
@@ -123,26 +137,57 @@ def MakeGetAssetsHistoryHttpRequests(args, api_version=DEFAULT_API_VERSION):
     yield asset
 
 
+def _RenderResponseforAnalyzeIamPolicy(response, show_response=False):
+  """Renders the response of the AnalyzeIamPolicy request."""
+  for analysis_result in response.mainAnalysis.analysisResults:
+    entry = {}
+    entry['identities'] = analysis_result.identityList.identities
+    for acl in analysis_result.accessControlLists:
+      entry['resources'] = acl.resources
+      entry['accesses'] = acl.accesses
+      yield entry
+
+  if show_response:
+    yield response
+
+
 def MakeAnalyzeIamPolicyHttpRequests(args, api_version=V1P4ALPHA1_API_VERSION):
-  """Manually make the get assets history request."""
+  """Manually make the analyze IAM policy request."""
   http_client = http.Http()
 
-  parent = asset_utils.GetParentNameForAnalyzeIamPolicy(args.organization)
+  if api_version == V1P4ALPHA1_API_VERSION:
+    folder = None
+  else:
+    folder = args.folder
+
+  parent = asset_utils.GetParentNameForAnalyzeIamPolicy(args.organization,
+                                                        folder)
   url_base = '{0}/{1}/{2}:{3}'.format(BASE_URL, api_version, parent,
                                       'analyzeIamPolicy')
 
   params = []
   if args.IsSpecified('full_resource_name'):
-    params.extend([('resourceSelector.fullResourceName',
-                    args.full_resource_name)])
+    params.extend([
+        (_IAM_POLICY_ANALYZER_VERSION_DICT[api_version]['resource_selector'] +
+         '.fullResourceName', args.full_resource_name)
+    ])
 
   if args.IsSpecified('identity'):
-    params.extend([('identitySelector.identity', args.identity)])
+    params.extend([
+        (_IAM_POLICY_ANALYZER_VERSION_DICT[api_version]['identity_selector'] +
+         '.identity', args.identity)
+    ])
 
   if args.IsSpecified('roles'):
-    params.extend([('accessSelector.roles', r) for r in args.roles])
+    params.extend([
+        (_IAM_POLICY_ANALYZER_VERSION_DICT[api_version]['access_selector'] +
+         '.roles', r) for r in args.roles
+    ])
   if args.IsSpecified('permissions'):
-    params.extend([('accessSelector.permissions', p) for p in args.permissions])
+    params.extend([
+        (_IAM_POLICY_ANALYZER_VERSION_DICT[api_version]['access_selector'] +
+         '.permissions', p) for p in args.permissions
+    ])
 
   if args.IsSpecified('expand_groups'):
     params.extend([('options.expandGroups', args.expand_groups)])
@@ -155,9 +200,13 @@ def MakeAnalyzeIamPolicyHttpRequests(args, api_version=V1P4ALPHA1_API_VERSION):
     params.extend([('options.outputResourceEdges', args.output_resource_edges)])
   if args.IsSpecified('output_group_edges'):
     params.extend([('options.outputGroupEdges', args.output_group_edges)])
-  if args.IsSpecified('output_partial_result_before_timeout'):
+  if api_version == V1P4ALPHA1_API_VERSION and args.IsSpecified(
+      'output_partial_result_before_timeout'):
     params.extend([('options.outputPartialResultBeforeTimeout',
                     args.output_partial_result_before_timeout)])
+  if api_version == V1P4BETA1_API_VERSION and args.IsSpecified(
+      'execution_timeout'):
+    params.extend([('options.executionTimeout', args.execution_timeout)])
 
   url_query = six.moves.urllib.parse.urlencode(params)
   url = '?'.join([url_base, url_query])
@@ -172,12 +221,14 @@ def MakeAnalyzeIamPolicyHttpRequests(args, api_version=V1P4ALPHA1_API_VERSION):
   response_message_class = GetMessages(api_version).AnalyzeIamPolicyResponse
   try:
     response = encoding.JsonToMessage(response_message_class, content)
+    if api_version == V1P4BETA1_API_VERSION:
+      return _RenderResponseforAnalyzeIamPolicy(response, args.show_response)
+    else:
+      return response
   except ValueError as e:
     err_msg = ('Failed receiving proper response from server, cannot'
                'parse received assets. Error details: ' + six.text_type(e))
     raise MessageDecodeError(err_msg)
-
-  return response
 
 
 class AssetExportClient(object):

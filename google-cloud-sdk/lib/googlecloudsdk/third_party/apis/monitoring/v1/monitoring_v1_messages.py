@@ -434,7 +434,7 @@ class Dashboard(_messages.Message):
   Fields:
     columnLayout: The content is divided into equally spaced columns and the
       widgets are arranged vertically.
-    displayName: The mutable, human-readable name.
+    displayName: Required. The mutable, human-readable name.
     etag: etag is used for optimistic concurrency control as a way to help
       prevent simultaneous updates of a policy from overwriting each other. An
       etag is returned in the response to GetDashboard, and users are expected
@@ -443,7 +443,7 @@ class Dashboard(_messages.Message):
       configuration. The field should not be passed during dashboard creation.
     gridLayout: Content is arranged with a basic layout that re-flows a simple
       list of informational elements like widgets or tiles.
-    name: The resource name of the dashboard.
+    name: Immutable. The resource name of the dashboard.
     rowLayout: The content is divided into equally spaced rows and the widgets
       are arranged horizontally.
   """
@@ -473,8 +473,8 @@ class DataSet(_messages.Message):
       minutes. It would not make sense to fetch and align data at one minute
       intervals.
     plotType: How this data should be plotted on the chart.
-    timeSeriesQuery: Fields for querying time series data from the Stackdriver
-      metrics API.
+    timeSeriesQuery: Required. Fields for querying time series data from the
+      Stackdriver metrics API.
   """
 
   class PlotTypeValueValuesEnum(_messages.Enum):
@@ -774,7 +774,7 @@ class MonitoringProjectsDashboardsPatchRequest(_messages.Message):
 
   Fields:
     dashboard: A Dashboard resource to be passed as the request body.
-    name: The resource name of the dashboard.
+    name: Immutable. The resource name of the dashboard.
   """
 
   dashboard = _messages.MessageField('Dashboard', 1)
@@ -966,8 +966,8 @@ class Scorecard(_messages.Message):
       less than or equal to 20 a WARNING state, values strictly between 20 and
       70 an OK state, values greater than or equal to 70 but less than 90 a
       WARNING state, and values greater than or equal to 90 a DANGER state.
-    timeSeriesQuery: Fields for querying time series data from the Stackdriver
-      metrics API.
+    timeSeriesQuery: Required. Fields for querying time series data from the
+      Stackdriver metrics API.
   """
 
   gaugeView = _messages.MessageField('GaugeView', 1)
@@ -1012,8 +1012,8 @@ class SparkChartView(_messages.Message):
   show up on a Scorecard, showing recent trends of the scorecard's timeseries.
 
   Enums:
-    SparkChartTypeValueValuesEnum: The type of sparkchart to show in this
-      chartView.
+    SparkChartTypeValueValuesEnum: Required. The type of sparkchart to show in
+      this chartView.
 
   Fields:
     minAlignmentPeriod: The lower bound on data point frequency in the chart
@@ -1021,11 +1021,12 @@ class SparkChartView(_messages.Message):
       series query. For example, if the data is published once every 10
       minutes it would not make sense to fetch and align data at one minute
       intervals. This field is optional and exists only as a hint.
-    sparkChartType: The type of sparkchart to show in this chartView.
+    sparkChartType: Required. The type of sparkchart to show in this
+      chartView.
   """
 
   class SparkChartTypeValueValuesEnum(_messages.Enum):
-    r"""The type of sparkchart to show in this chartView.
+    r"""Required. The type of sparkchart to show in this chartView.
 
     Values:
       SPARK_CHART_TYPE_UNSPECIFIED: Not allowed in well-formed requests.
@@ -1298,7 +1299,7 @@ class XyChart(_messages.Message):
 
   Fields:
     chartOptions: Display options for the chart.
-    dataSets: The data displayed in this chart.
+    dataSets: Required. The data displayed in this chart.
     thresholds: Threshold lines drawn horizontally across the chart.
     timeshiftDuration: The duration used to display a comparison chart. A
       comparison chart simultaneously shows values from two similar-length

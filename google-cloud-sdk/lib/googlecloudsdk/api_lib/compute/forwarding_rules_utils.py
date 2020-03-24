@@ -27,7 +27,7 @@ from googlecloudsdk.command_lib.compute.forwarding_rules import flags
 from googlecloudsdk.core import properties
 
 
-def _ValidateGlobalArgs(args):
+def _ValidateGlobalArgs(args, support_target_grpc_proxy):
   """Validate the global forwarding rules args."""
   if args.target_instance:
     raise calliope_exceptions.ToolException(
@@ -54,12 +54,21 @@ def _ValidateGlobalArgs(args):
         'forwarding rule.')
 
   if getattr(args, 'load_balancing_scheme', None) == 'INTERNAL_SELF_MANAGED':
-    if not (getattr(args, 'target_http_proxy', None) or
-            getattr(args, 'target_https_proxy', None)):
-      raise calliope_exceptions.ToolException(
+    if (not getattr(args, 'target_http_proxy', None) and
+        not getattr(args, 'target_https_proxy', None) and
+        not (support_target_grpc_proxy and
+             getattr(args, 'target_grpc_proxy', None))):
+      target_error_message_with_grpc = (
+          'You must specify either [--target-http-proxy], '
+          '[--target-https-proxy] or [--target-grpc-proxy] for an '
+          'INTERNAL_SELF_MANAGED [--load-balancing-scheme].')
+      target_error_message = (
           'You must specify either [--target-http-proxy] or '
           '[--target-https-proxy] for an INTERNAL_SELF_MANAGED '
           '[--load-balancing-scheme].')
+      raise calliope_exceptions.ToolException(
+          target_error_message_with_grpc
+          if support_target_grpc_proxy else target_error_message)
 
     if getattr(args, 'subnet', None):
       raise calliope_exceptions.ToolException(
@@ -72,15 +81,18 @@ def _ValidateGlobalArgs(args):
           '[--load-balancing-scheme]')
 
 
-def GetGlobalTarget(resources, args):
+def GetGlobalTarget(resources, args, support_target_grpc_proxy):
   """Return the forwarding target for a globally scoped request."""
-  _ValidateGlobalArgs(args)
+  _ValidateGlobalArgs(args, support_target_grpc_proxy)
+
   if args.target_http_proxy:
     return flags.TargetHttpProxyArg().ResolveAsResource(
         args, resources, default_scope=compute_scope.ScopeEnum.GLOBAL)
-
   if args.target_https_proxy:
     return flags.TargetHttpsProxyArg().ResolveAsResource(
+        args, resources, default_scope=compute_scope.ScopeEnum.GLOBAL)
+  if support_target_grpc_proxy and args.target_grpc_proxy:
+    return flags.TargetGrpcProxyArg().ResolveAsResource(
         args, resources, default_scope=compute_scope.ScopeEnum.GLOBAL)
   if args.target_ssl_proxy:
     return flags.TARGET_SSL_PROXY_ARG.ResolveAsResource(args, resources)

@@ -174,7 +174,6 @@ class ServicePrinter(cp.CustomPrinterBase):
     fmt = cp.Lines([
         self._GetServiceHeader(record),
         self._GetLabels(record.labels),
-        record.status.url,
         ' ',
         traffic_printer.TransformTraffic(record),
         ' ',

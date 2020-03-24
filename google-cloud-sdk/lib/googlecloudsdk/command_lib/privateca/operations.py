@@ -24,7 +24,16 @@ from apitools.base.py import encoding
 from googlecloudsdk.api_lib.privateca import base
 from googlecloudsdk.api_lib.util import messages as messages_util
 from googlecloudsdk.api_lib.util import waiter
+from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import resources
+
+
+class OperationError(exceptions.Error):
+  """Exception for errors encountered from an operation."""
+
+
+class OperationTimeoutError(OperationError):
+  """Exception for when an operation times out."""
 
 
 def GetOperationRef(operation):
@@ -42,14 +51,24 @@ def Await(operation, progress_message):
 
   Returns:
     The resource that is the result of the operation.
+
+  Raises:
+    OperationError: if the operation did not complete successfully
   """
   if operation.done:
+    if operation.error:
+      raise OperationError(operation.error.message)
     return operation.response
 
   operation_ref = GetOperationRef(operation)
   poller = waiter.CloudOperationPollerNoResources(
       base.GetClientInstance().projects_locations_operations)
-  return waiter.WaitFor(poller, operation_ref, progress_message)
+  try:
+    return waiter.WaitFor(poller, operation_ref, progress_message)
+  except waiter.TimeoutError:
+    raise OperationTimeoutError(
+        'Requested action timed out. Please run the describe command on your resource to see if changes were successful, or try again in a few minutes.'
+    )
 
 
 def GetMessageFromResponse(response, message_type):

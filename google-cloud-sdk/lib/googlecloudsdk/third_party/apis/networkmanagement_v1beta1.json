@@ -287,7 +287,7 @@
       "type": "object",
       "properties": {
         "name": {
-          "description": "Required. Unique name of the resource using the form:\n    `projects\/{project_id}\/tests\/{test_id}`",
+          "description": "Required. Unique name of the resource using the form:\n    `projects\/{project_id}\/locations\/global\/connectivityTests\/{test}`",
           "type": "string"
         },
         "description": {
@@ -1356,7 +1356,7 @@
           "format": "google-datetime"
         },
         "target": {
-          "description": "Target of the operation - for example\nprojects\/project-1\/connectivityTests\/test-1",
+          "description": "Target of the operation - for example\nprojects\/project-1\/locations\/global\/connectivityTests\/test-1",
           "type": "string"
         },
         "verb": {
@@ -1604,7 +1604,7 @@
                           "type": "string"
                         },
                         "filter": {
-                          "description": "Lists the `ConnectivityTests` that match the filter expression. A filter\nexpression filters the resources listed in the response. The expression\nmust be of the form `<field> <operator> <value>` where operators: `<`, `>`,\n`<=`,\n`>=`,\n`!=`, `=`, `:` are supported (colon `:` represents a HAS operator which is\nroughly synonymous with equality). <field> can refer to a proto or JSON\nfield, or a synthetic field. Field names can be camelCase or snake_case.\n\nExamples:\n- Filter by name:\n  name = \"projects\/proj-1\/connectivityTests\/test-1\n\n- Filter by labels:\n  - Resources that have a key called `foo`\n    labels.foo:*\n  - Resources that have a key called `foo` whose value is `bar`\n    labels.foo = bar",
+                          "description": "Lists the `ConnectivityTests` that match the filter expression. A filter\nexpression filters the resources listed in the response. The expression\nmust be of the form `<field> <operator> <value>` where operators: `<`, `>`,\n`<=`,\n`>=`,\n`!=`, `=`, `:` are supported (colon `:` represents a HAS operator which is\nroughly synonymous with equality). <field> can refer to a proto or JSON\nfield, or a synthetic field. Field names can be camelCase or snake_case.\n\nExamples:\n- Filter by name:\n  name = \"projects\/proj-1\/locations\/global\/connectivityTests\/test-1\n\n- Filter by labels:\n  - Resources that have a key called `foo`\n    labels.foo:*\n  - Resources that have a key called `foo` whose value is `bar`\n    labels.foo = bar",
                           "location": "query",
                           "type": "string"
                         },
@@ -1690,7 +1690,7 @@
                       "httpMethod": "PATCH",
                       "parameters": {
                         "name": {
-                          "description": "Required. Unique name of the resource using the form:\n    `projects\/{project_id}\/tests\/{test_id}`",
+                          "description": "Required. Unique name of the resource using the form:\n    `projects\/{project_id}\/locations\/global\/connectivityTests\/{test}`",
                           "location": "path",
                           "required": true,
                           "pattern": "^projects\/[^\/]+\/locations\/global\/connectivityTests\/[^\/]+$",
@@ -1724,7 +1724,7 @@
                       "httpMethod": "POST",
                       "parameters": {
                         "name": {
-                          "description": "Required. Connectivity Test resource name using the form:\n    `projects\/{project_id}\/connectivityTests\/{test_id}`",
+                          "description": "Required. Connectivity Test resource name using the form:\n    `projects\/{project_id}\/locations\/global\/connectivityTests\/{test_id}`",
                           "location": "path",
                           "required": true,
                           "pattern": "^projects\/[^\/]+\/locations\/global\/connectivityTests\/[^\/]+$",
@@ -1752,7 +1752,7 @@
                       "httpMethod": "DELETE",
                       "parameters": {
                         "name": {
-                          "description": "Required. Connectivity Test resource name using the form:\n    `projects\/{project_id}\/connectivityTests\/{test_id}`",
+                          "description": "Required. Connectivity Test resource name using the form:\n    `projects\/{project_id}\/locations\/global\/connectivityTests\/{test_id}`",
                           "location": "path",
                           "required": true,
                           "pattern": "^projects\/[^\/]+\/locations\/global\/connectivityTests\/[^\/]+$",

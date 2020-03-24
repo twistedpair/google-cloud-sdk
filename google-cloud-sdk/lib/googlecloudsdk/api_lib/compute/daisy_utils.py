@@ -30,6 +30,7 @@ from googlecloudsdk.api_lib.compute import instance_utils
 from googlecloudsdk.api_lib.compute import utils
 from googlecloudsdk.api_lib.services import enable_api as services_api
 from googlecloudsdk.api_lib.storage import storage_util
+from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import base
 from googlecloudsdk.calliope import exceptions as calliope_exceptions
@@ -45,16 +46,40 @@ from googlecloudsdk.core.console import console_io
 import six
 
 _IMAGE_IMPORT_BUILDER = 'gcr.io/compute-image-tools/gce_vm_image_import:{}'
-
 _IMAGE_EXPORT_BUILDER = 'gcr.io/compute-image-tools/gce_vm_image_export:{}'
-
 _OVF_IMPORT_BUILDER = 'gcr.io/compute-image-tools/gce_ovf_import:{}'
 
 _DEFAULT_BUILDER_VERSION = 'release'
 
-SERVICE_ACCOUNT_ROLES = [
-    'roles/iam.serviceAccountUser',
-    'roles/iam.serviceAccountTokenCreator']
+ROLE_COMPUTE_STORAGE_ADMIN = 'roles/compute.storageAdmin'
+ROLE_STORAGE_OBJECT_VIEWER = 'roles/storage.objectViewer'
+ROLE_STORAGE_OBJECT_ADMIN = 'roles/storage.objectAdmin'
+ROLE_COMPUTE_ADMIN = 'roles/compute.admin'
+ROLE_IAM_SERVICE_ACCOUNT_USER = 'roles/iam.serviceAccountUser'
+ROLE_IAM_SERVICE_ACCOUNT_TOKEN_CREATOR = 'roles/iam.serviceAccountTokenCreator'
+ROLE_EDITOR = 'roles/editor'
+
+IMPORT_ROLES_FOR_COMPUTE_SERVICE_ACCOUNT = frozenset({
+    ROLE_COMPUTE_STORAGE_ADMIN,
+    ROLE_STORAGE_OBJECT_VIEWER,
+})
+
+EXPORT_ROLES_FOR_COMPUTE_SERVICE_ACCOUNT = frozenset({
+    ROLE_COMPUTE_STORAGE_ADMIN,
+    ROLE_STORAGE_OBJECT_ADMIN,
+})
+
+IMPORT_ROLES_FOR_CLOUDBUILD_SERVICE_ACCOUNT = frozenset({
+    ROLE_COMPUTE_ADMIN,
+    ROLE_IAM_SERVICE_ACCOUNT_TOKEN_CREATOR,
+    ROLE_IAM_SERVICE_ACCOUNT_USER,
+})
+
+EXPORT_ROLES_FOR_CLOUDBUILD_SERVICE_ACCOUNT = frozenset({
+    ROLE_COMPUTE_ADMIN,
+    ROLE_IAM_SERVICE_ACCOUNT_TOKEN_CREATOR,
+    ROLE_IAM_SERVICE_ACCOUNT_USER,
+})
 
 
 class FilteredLogTailer(cb_logs.LogTailer):
@@ -200,17 +225,23 @@ def AddGuestEnvironmentArg(parser, resource='instance'):
   )
 
 
-def _CheckIamPermissions(project_id):
+def _CheckIamPermissions(project_id, cloudbuild_service_account_roles,
+                         compute_service_account_roles):
   """Check for needed IAM permissions and prompt to add if missing.
 
   Args:
     project_id: A string with the id of the project.
+    cloudbuild_service_account_roles: A set of roles required for cloudbuild
+      service account.
+    compute_service_account_roles: A set of roles required for compute service
+      account.
   """
   project = projects_api.Get(project_id)
   # If the user's project doesn't have cloudbuild enabled yet, then the service
   # account won't even exist. If so, then ask to enable it before continuing.
   # Also prompt them to enable Stackdriver Logging if they haven't yet.
-  expected_services = ['cloudbuild.googleapis.com', 'logging.googleapis.com']
+  expected_services = ['cloudbuild.googleapis.com', 'logging.googleapis.com',
+                       'compute.googleapis.com']
   for service_name in expected_services:
     if not services_api.IsServiceEnabled(project.projectId, service_name):
       # TODO(b/112757283): Split this out into a separate library.
@@ -224,39 +255,39 @@ def _CheckIamPermissions(project_id):
           cancel_on_no=True)
       services_api.EnableService(project.projectId, service_name)
 
-  # Now that we're sure the service account exists, actually check permissions.
-  policy = projects_api.GetIamPolicy(project_id)
   build_account = 'serviceAccount:{0}@cloudbuild.gserviceaccount.com'.format(
       project.projectNumber)
-  _VerifyRolesAndPromptIfMissing(
-      project_id, build_account, _CurrentRolesForAccount(policy, build_account),
-      {
-          'roles/compute.admin', 'roles/iam.serviceAccountUser',
-          'roles/iam.serviceAccountTokenCreator'
-      })
-
   # https://cloud.google.com/compute/docs/access/service-accounts#default_service_account
   compute_account = (
       'serviceAccount:{0}-compute@developer.gserviceaccount.com'.format(
           project.projectNumber))
+
+  # Now that we're sure the service account exists, actually check permissions.
+  try:
+    policy = projects_api.GetIamPolicy(project_id)
+  except apitools_exceptions.HttpForbiddenError:
+    log.warning(
+        'Your account does not have permission to check roles for the '
+        'service account {0}. If import fails, '
+        'ensure "{0}" has the roles "{1}" and "{2}" has the roles "{3}" before '
+        'retrying.'.format(build_account, cloudbuild_service_account_roles,
+                           compute_account, compute_service_account_roles))
+    return
+
+  _VerifyRolesAndPromptIfMissing(project_id, build_account,
+                                 _CurrentRolesForAccount(policy, build_account),
+                                 cloudbuild_service_account_roles)
+
   current_compute_account_roles = _CurrentRolesForAccount(
       policy, compute_account)
 
   # By default, the Compute Engine service account has the role `roles/editor`
   # applied to it, which is sufficient for import and export. If that's not
   # present, then request the minimal number of permissions.
-  if 'roles/editor' not in current_compute_account_roles:
-    try:
-      _VerifyRolesAndPromptIfMissing(
-          project_id, compute_account, current_compute_account_roles,
-          {'roles/compute.storageAdmin', 'roles/storage.objectViewer'})
-    except apitools_exceptions.HttpForbiddenError:
-      log.warning(
-          'Your account does not have permission to add roles to the '
-          'default compute engine service account. If import fails, '
-          'ensure "{0}" has the roles "{1}" and "{2}" before retrying.'.format(
-              compute_account, 'roles/compute.storageAdmin',
-              'roles/storage.objectViewer'))
+  if ROLE_EDITOR not in current_compute_account_roles:
+    _VerifyRolesAndPromptIfMissing(
+        project_id, compute_account, current_compute_account_roles,
+        compute_service_account_roles)
 
 
 def _VerifyRolesAndPromptIfMissing(project_id, account, applied_roles,
@@ -271,9 +302,12 @@ def _VerifyRolesAndPromptIfMissing(project_id, account, applied_roles,
     required_roles: A set of strings containing the required roles for the
       account. If a role isn't found, then the user is prompted to add the role.
   """
-
   # If there were unsatisfied roles, then prompt the user to add them.
-  missing_roles = required_roles - applied_roles
+  try:
+    missing_roles = _FindMissingRoles(applied_roles, required_roles)
+  except apitools_exceptions.HttpForbiddenError:
+    missing_roles = required_roles - applied_roles
+
   if missing_roles:
     ep_table = ['{0} {1}'.format(role, account) for role in missing_roles]
     prompt_message = (
@@ -285,9 +319,60 @@ def _VerifyRolesAndPromptIfMissing(project_id, account, applied_roles,
         throw_if_unattended=True,
         cancel_on_no=False)
 
-    for role in missing_roles:
+    for role in sorted(missing_roles):
       log.info('Adding [{0}] to [{1}]'.format(account, role))
-      projects_api.AddIamPolicyBinding(project_id, account, role)
+      try:
+        projects_api.AddIamPolicyBinding(project_id, account, role)
+      except apitools_exceptions.HttpForbiddenError:
+        log.warning(
+            'Your account does not have permission to add roles to the '
+            'service account {0}. If import fails, '
+            'ensure "{0}" has the roles "{1}" before retrying.'.format(
+                account, required_roles))
+        return
+
+
+def _FindMissingRoles(applied_roles, required_roles):
+  """Check which required roles were not covered by given roles.
+
+  Args:
+    applied_roles: A set of strings containing the current roles for the
+      account.
+    required_roles: A set of strings containing the required roles for the
+      account.
+
+  Returns:
+    A set of missing roles that is not covered.
+  """
+  # A quick check without checking detailed permissions by IAM API.
+  if required_roles.issubset(applied_roles):
+    return None
+
+  iam_messages = apis.GetMessagesModule('iam', 'v1')
+  required_role_permissions = {}
+  required_permissions = set()
+  applied_permissions = set()
+  unsatisfied_roles = set()
+  for role in sorted(required_roles):
+    request = iam_messages.IamRolesGetRequest(name=role)
+    role_permissions = set(apis.GetClientInstance(
+        'iam', 'v1').roles.Get(request).includedPermissions)
+    required_role_permissions[role] = role_permissions
+    required_permissions = required_permissions.union(role_permissions)
+
+  for applied_role in sorted(applied_roles):
+    request = iam_messages.IamRolesGetRequest(name=applied_role)
+    applied_role_permissions = set(apis.GetClientInstance(
+        'iam', 'v1').roles.Get(request).includedPermissions)
+    applied_permissions = applied_permissions.union(
+        applied_role_permissions)
+
+  unsatisfied_permissions = required_permissions - applied_permissions
+  for role in required_roles:
+    if unsatisfied_permissions.intersection(required_role_permissions[role]):
+      unsatisfied_roles.add(role)
+
+  return unsatisfied_roles
 
 
 def _CurrentRolesForAccount(project_iam_policy, account):
@@ -424,7 +509,9 @@ def RunImageImport(args,
     FailedBuildException: If the build is completed and not 'SUCCESS'.
   """
   builder = _IMAGE_IMPORT_BUILDER.format(docker_image_tag)
-  return RunImageCloudBuild(args, builder, import_args, tags, output_filter)
+  return RunImageCloudBuild(args, builder, import_args, tags, output_filter,
+                            IMPORT_ROLES_FOR_CLOUDBUILD_SERVICE_ACCOUNT,
+                            IMPORT_ROLES_FOR_COMPUTE_SERVICE_ACCOUNT)
 
 
 def RunImageExport(args,
@@ -452,10 +539,14 @@ def RunImageExport(args,
     FailedBuildException: If the build is completed and not 'SUCCESS'.
   """
   builder = _IMAGE_EXPORT_BUILDER.format(docker_image_tag)
-  return RunImageCloudBuild(args, builder, export_args, tags, output_filter)
+  return RunImageCloudBuild(args, builder, export_args, tags, output_filter,
+                            EXPORT_ROLES_FOR_CLOUDBUILD_SERVICE_ACCOUNT,
+                            EXPORT_ROLES_FOR_COMPUTE_SERVICE_ACCOUNT)
 
 
-def RunImageCloudBuild(args, builder, builder_args, tags, output_filter):
+def RunImageCloudBuild(args, builder, builder_args, tags, output_filter,
+                       cloudbuild_service_account_roles,
+                       compute_service_account_roles):
   """Run a build related to image on Google Cloud Builder.
 
   Args:
@@ -467,6 +558,9 @@ def RunImageCloudBuild(args, builder, builder_args, tags, output_filter):
     output_filter: A list of strings indicating what lines from the log should
       be output. Only lines that start with one of the strings in output_filter
       will be displayed.
+    cloudbuild_service_account_roles: roles required for cloudbuild service
+      account.
+    compute_service_account_roles: roles required for compute service account.
 
   Returns:
     A build object that either streams the output or is displayed as a
@@ -478,7 +572,8 @@ def RunImageCloudBuild(args, builder, builder_args, tags, output_filter):
   project_id = projects_util.ParseProject(
       properties.VALUES.core.project.GetOrFail())
 
-  _CheckIamPermissions(project_id)
+  _CheckIamPermissions(project_id, cloudbuild_service_account_roles,
+                       compute_service_account_roles)
 
   return _RunCloudBuild(args, builder, builder_args,
                         ['gce-daisy'] + tags, output_filter, args.log_location)
@@ -619,7 +714,8 @@ def RunOVFImportBuild(args, compute_client, instance_name, source_uri,
   project_id = projects_util.ParseProject(
       properties.VALUES.core.project.GetOrFail())
 
-  _CheckIamPermissions(project_id)
+  _CheckIamPermissions(project_id, IMPORT_ROLES_FOR_CLOUDBUILD_SERVICE_ACCOUNT,
+                       IMPORT_ROLES_FOR_COMPUTE_SERVICE_ACCOUNT)
 
   # Make OVF import time-out before gcloud by shaving off 2% from the timeout
   # time, up to a max of 5m (300s).
@@ -687,7 +783,8 @@ def RunMachineImageOVFImportBuild(args, output_filter, compute_release_track):
   project_id = projects_util.ParseProject(
       properties.VALUES.core.project.GetOrFail())
 
-  _CheckIamPermissions(project_id)
+  _CheckIamPermissions(project_id, IMPORT_ROLES_FOR_CLOUDBUILD_SERVICE_ACCOUNT,
+                       IMPORT_ROLES_FOR_COMPUTE_SERVICE_ACCOUNT)
 
   # Make OVF import time-out before gcloud by shaving off 2% from the timeout
   # time, up to a max of 5m (300s).

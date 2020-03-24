@@ -950,6 +950,10 @@
           "description": "Location data for document files.",
           "$ref": "GooglePrivacyDlpV2DocumentLocation"
         },
+        "metadataLocation": {
+          "description": "Location within the metadata for inspected content.",
+          "$ref": "GooglePrivacyDlpV2MetadataLocation"
+        },
         "containerTimestamp": {
           "description": "Findings container modification timestamp, if applicable.\nFor Google Cloud Storage contains last file modification timestamp.\nFor BigQuery table contains last_modified_time property.\nFor Datastore - not populated.",
           "type": "string",
@@ -1161,6 +1165,39 @@
           "description": "Offset of the line, from the beginning of the file, where the finding\nis located.",
           "type": "string",
           "format": "int64"
+        }
+      }
+    },
+    "GooglePrivacyDlpV2MetadataLocation": {
+      "id": "GooglePrivacyDlpV2MetadataLocation",
+      "description": "Metadata Location",
+      "type": "object",
+      "properties": {
+        "type": {
+          "description": "Type of metadata containing the finding.",
+          "enumDescriptions": [
+            "Unused",
+            "General file metadata provided by GCS."
+          ],
+          "type": "string",
+          "enum": [
+            "METADATATYPE_UNSPECIFIED",
+            "STORAGE_METADATA"
+          ]
+        },
+        "storageLabel": {
+          "description": "Storage metadata.",
+          "$ref": "GooglePrivacyDlpV2StorageMetadataLabel"
+        }
+      }
+    },
+    "GooglePrivacyDlpV2StorageMetadataLabel": {
+      "id": "GooglePrivacyDlpV2StorageMetadataLabel",
+      "description": "Storage metadata label to indicate which metadata entry contains findings.",
+      "type": "object",
+      "properties": {
+        "key": {
+          "type": "string"
         }
       }
     },

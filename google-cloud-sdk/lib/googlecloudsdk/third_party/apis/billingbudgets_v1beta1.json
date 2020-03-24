@@ -379,7 +379,7 @@
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform"
               ],
-              "description": "Updates a budget and returns the updated budget.\n\nWARNING: There are some fields exposed on the Google Cloud Console that\naren\u2019t available on this API. Budget fields that are not exposed in\nthis API will not be changed by this method."
+              "description": "Updates a budget and returns the updated budget.\n\nWARNING: There are some fields exposed on the Google Cloud Console that\naren't available on this API. Budget fields that are not exposed in\nthis API will not be changed by this method."
             },
             "get": {
               "id": "billingbudgets.billingAccounts.budgets.get",
@@ -404,7 +404,7 @@
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform"
               ],
-              "description": "Returns a budget.\n\nWARNING: There are some fields exposed on the Google Cloud Console that\naren\u2019t available on this API. When reading from the API, you will not\nsee these fields in the return value, though they may have been set\nin the Cloud Console."
+              "description": "Returns a budget.\n\nWARNING: There are some fields exposed on the Google Cloud Console that\naren't available on this API. When reading from the API, you will not\nsee these fields in the return value, though they may have been set\nin the Cloud Console."
             },
             "list": {
               "id": "billingbudgets.billingAccounts.budgets.list",
@@ -440,7 +440,7 @@
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform"
               ],
-              "description": "Returns a list of budgets for a billing account.\n\nWARNING: There are some fields exposed on the Google Cloud Console that\naren\u2019t available on this API. When reading from the API, you will not\nsee these fields in the return value, though they may have been set\nin the Cloud Console."
+              "description": "Returns a list of budgets for a billing account.\n\nWARNING: There are some fields exposed on the Google Cloud Console that\naren't available on this API. When reading from the API, you will not\nsee these fields in the return value, though they may have been set\nin the Cloud Console."
             },
             "delete": {
               "id": "billingbudgets.billingAccounts.budgets.delete",

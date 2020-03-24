@@ -320,7 +320,7 @@
         "type": {
           "description": "The type of the entry.\nOnly used for Entries with types in the EntryType enum.",
           "enumDescriptions": [
-            "Default unknown type",
+            "Default unknown type.",
             "Output only. The type of entry that has a GoogleSQL schema, including\nlogical views.",
             "Output only. The type of models, examples include\nhttps:\/\/cloud.google.com\/bigquery-ml\/docs\/bigqueryml-intro",
             "Output only. An entry type which is used for streaming entries. Example:\nCloud Pub\/Sub topic.",

@@ -396,34 +396,33 @@ class GoogleCloudMlV1ContainerSpec(_messages.Message):
   api/v1.10/#container-v1-core
 
   Fields:
-    args: Arguments to the entrypoint. The docker image's CMD is used if this
-      is not provided. Variable references $(VAR_NAME) are expanded using the
-      container's environment. If a variable cannot be resolved, the reference
-      in the input string will be unchanged. The $(VAR_NAME) syntax can be
-      escaped with a double $$, ie: $$(VAR_NAME). Escaped references will
-      never be expanded, regardless of whether the variable exists or not.
-      Cannot be updated. More info: https://kubernetes.io/docs/tasks/inject-
-      data-application/define-command-argument-container/#running-a-command-
-      in-a-shell
-    command: Entrypoint array. Not executed within a shell. The docker image's
-      ENTRYPOINT is used if this is not provided. Variable references
-      $(VAR_NAME) are expanded using the container's environment. If a
-      variable cannot be resolved, the reference in the input string will be
-      unchanged. The $(VAR_NAME) syntax can be escaped with a double $$, ie:
-      $$(VAR_NAME). Escaped references will never be expanded, regardless of
-      whether the variable exists or not. Cannot be updated. More info:
+    args: Immutable. Arguments to the entrypoint. The docker image's CMD is
+      used if this is not provided. Variable references $(VAR_NAME) are
+      expanded using the container's environment. If a variable cannot be
+      resolved, the reference in the input string will be unchanged. The
+      $(VAR_NAME) syntax can be escaped with a double $$, ie: $$(VAR_NAME).
+      Escaped references will never be expanded, regardless of whether the
+      variable exists or not. More info: https://kubernetes.io/docs/tasks
+      /inject-data-application/define-command-argument-container/#running-a
+      -command-in-a-shell
+    command: Immutable. Entrypoint array. Not executed within a shell. The
+      docker image's ENTRYPOINT is used if this is not provided. Variable
+      references $(VAR_NAME) are expanded using the container's environment.
+      If a variable cannot be resolved, the reference in the input string will
+      be unchanged. The $(VAR_NAME) syntax can be escaped with a double $$,
+      ie: $$(VAR_NAME). Escaped references will never be expanded, regardless
+      of whether the variable exists or not. More info:
       https://kubernetes.io/docs/tasks/inject-data-application/define-command-
       argument-container/#running-a-command-in-a-shell
-    env: List of environment variables to set in the container. Cannot be
-      updated.
+    env: Immutable. List of environment variables to set in the container.
     image: Docker image name. More info:
       https://kubernetes.io/docs/concepts/containers/images
-    ports: List of ports to expose from the container. Exposing a port here
-      gives the system additional information about the network connections a
-      container uses, but is primarily informational. Not specifying a port
-      here DOES NOT prevent that port from being exposed. Any port which is
-      listening on the default "0.0.0.0" address inside a container will be
-      accessible from the network. Cannot be updated.
+    ports: Immutable. List of ports to expose from the container. Exposing a
+      port here gives the system additional information about the network
+      connections a container uses, but is primarily informational. Not
+      specifying a port here DOES NOT prevent that port from being exposed.
+      Any port which is listening on the default "0.0.0.0" address inside a
+      container will be accessible from the network.
   """
 
   args = _messages.StringField(1, repeated=True)
@@ -1180,8 +1179,8 @@ class GoogleCloudMlV1Model(_messages.Message):
       prediction requests at a high queries per second rate (QPS). Estimate
       your costs before enabling this option.  Default is false.
     regions: Optional. The list of regions where the model is going to be
-      deployed. Currently only one region per model is supported. Defaults to
-      'us-central1' if nothing is set. See the <a href="/ml-
+      deployed. Only one region per model is supported. Defaults to 'us-
+      central1' if nothing is set. See the <a href="/ml-
       engine/docs/tensorflow/regions">available regions</a> for AI Platform
       services. Note: *   No matter where a model is deployed, it can always
       be accessed by     users from anywhere, both for online and batch
@@ -2339,9 +2338,12 @@ class GoogleCloudMlV1TrainingInput(_messages.Message):
     scaleTier: Required. Specifies the machine types, the number of replicas
       for workers and parameter servers.
     scheduling: Optional. Scheduling options for a training job.
-    useChiefInTfConfig: Optional. Use 'chief' instead of 'master' in TF_CONFIG
-      when Custom Container is used and evaluator is not specified.  Defaults
-      to false.
+    useChiefInTfConfig: Optional. Use `chief` instead of `master` in the
+      `TF_CONFIG` environment variable when training with a custom container.
+      Defaults to `false`. [Learn more about this field.](/ai-
+      platform/training/docs/distributed-training-details#chief-versus-master)
+      This field has no effect for training jobs that don't use a custom
+      container.
     workerConfig: Optional. The configuration for workers.  You should only
       set `workerConfig.acceleratorConfig` if `workerType` is set to a Compute
       Engine machine type. [Learn about restrictions on accelerator

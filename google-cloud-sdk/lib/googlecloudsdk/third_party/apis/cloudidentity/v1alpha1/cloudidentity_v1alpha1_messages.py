@@ -239,7 +239,7 @@ class CloudidentityGroupsLookupRequest(_messages.Message):
       specified, the `EntityKey` represents a Google-managed entity such as a
       Google user or a Google Group.  If specified, the `EntityKey` represents
       an external-identity-mapped group. The namespace must correspond to an
-      identity source created in Admin Console. Must be of the form
+      identity source created in Admin Console and must be in the form of
       `identitysources/{identity_source_id}.
   """
 
@@ -341,7 +341,7 @@ class CloudidentityGroupsMembershipsLookupRequest(_messages.Message):
       specified, the `EntityKey` represents a Google-managed entity such as a
       Google user or a Google Group.  If specified, the `EntityKey` represents
       an external-identity-mapped group. The namespace must correspond to an
-      identity source created in Admin Console. Must be of the form
+      identity source created in Admin Console and must be in the form of
       `identitysources/{identity_source_id}.
     parent: Required. The parent `Group` resource under which to lookup the
       `Membership` name.  Must be of the form `groups/{group_id}`.
@@ -734,8 +734,7 @@ class DynamicGroupStatus(_messages.Message):
 
 
 class EndpointApp(_messages.Message):
-  r"""An EndpointApp represents an app that is installed on a device Next ID
-  to use: 7
+  r"""An EndpointApp represents an app that is installed on a device
 
   Fields:
     displayName: Output only. Name of the app displayed to the user
@@ -774,7 +773,7 @@ class EntityKey(_messages.Message):
       the `EntityKey` represents a Google-managed entity such as a Google user
       or a Google Group.  If specified, the `EntityKey` represents an
       external-identity-mapped group. The namespace must correspond to an
-      identity source created in Admin Console. Must be of the form
+      identity source created in Admin Console and must be in the form of
       `identitysources/{identity_source_id}.
   """
 

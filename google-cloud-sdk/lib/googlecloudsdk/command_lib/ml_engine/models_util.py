@@ -137,7 +137,9 @@ def RemoveIamPolicyBinding(models_client, model, member, role):
   model_ref = ParseModel(model)
   policy = models_client.GetIamPolicy(model_ref)
   iam_util.RemoveBindingFromIamPolicy(policy, member, role)
-  return models_client.SetIamPolicy(model_ref, policy, 'bindings,etag')
+  ret = models_client.SetIamPolicy(model_ref, policy, 'bindings,etag')
+  iam_util.LogSetIamPolicy(model_ref.Name(), 'model')
+  return ret
 
 
 def AddIamPolicyBindingWithCondition(models_client, model, member, role,
@@ -153,3 +155,14 @@ def AddIamPolicyBindingWithCondition(models_client, model, member, role,
       role,
       condition)
   return models_client.SetIamPolicy(model_ref, policy, 'bindings,etag')
+
+
+def RemoveIamPolicyBindingWithCondition(models_client, model, member, role,
+                                        condition):
+  model_ref = ParseModel(model)
+  policy = models_client.GetIamPolicy(model_ref)
+  iam_util.RemoveBindingFromIamPolicyWithCondition(policy, member, role,
+                                                   condition)
+  ret = models_client.SetIamPolicy(model_ref, policy, 'bindings,etag')
+  iam_util.LogSetIamPolicy(model_ref.Name(), 'model')
+  return ret

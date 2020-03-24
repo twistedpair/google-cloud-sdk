@@ -24,3 +24,10 @@ MISSING_BINARY = ('Could not locate anthos executable [{binary}]'
                   'installed. '
                   'See https://cloud.google.com/sdk/docs/components for '
                   'more details.')
+
+MISSING_AUTH_BINARY = ('Could not locate anthos auth executable [{binary}]'
+                       ' on the system PATH. '
+                       'Please ensure gcloud anthos-auth component is properly '
+                       'installed. '
+                       'See https://cloud.google.com/sdk/docs/components for '
+                       'more details.')

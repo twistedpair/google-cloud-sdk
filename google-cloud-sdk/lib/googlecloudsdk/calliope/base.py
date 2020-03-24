@@ -39,6 +39,7 @@ import six
 # Category constants
 AI_AND_MACHINE_LEARNING_CATEGORY = 'AI and Machine Learning'
 API_PLATFORM_AND_ECOSYSTEMS_CATEGORY = 'API Platform and Ecosystems'
+ANTHOS_CLI_CATEGORY = 'Anthos CLI'
 COMPUTE_CATEGORY = 'Compute'
 DATA_ANALYTICS_CATEGORY = 'Data Analytics'
 DATABASES_CATEGORY = 'Databases'

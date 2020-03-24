@@ -836,7 +836,11 @@ class GroupAssetsRequest(_messages.Message):
       security_center_properties.resource_project: `=`, `:` *
       security_center_properties.resource_project_display_name: `=`, `:` *
       security_center_properties.resource_owners: `=`, `:`  For example,
-      `resource_properties.size = 100` is a valid filter string.
+      `resource_properties.size = 100` is a valid filter string.  Use a
+      partial match on the empty string to filter based on a property
+      existing: "resource_properties.my_property : \"\""  Use a negated
+      partial match on the empty string to filter based on a property not
+      existing: "-resource_properties.my_property : \"\""
     groupBy: Required. Expression that defines what assets fields to use for
       grouping. The string value should follow SQL syntax: comma separated
       list of fields. For example: "security_center_properties.resource_projec
@@ -936,7 +940,11 @@ class GroupFindingsRequest(_messages.Message):
       Examples:     "event_time = \"2019-06-10T16:07:18-07:00\""
       "event_time = 1560208038000"  * security_marks.marks: `=`, `:` *
       source_properties: `=`, `:`, `>`, `<`, `>=`, `<=`  For example,
-      `source_properties.size = 100` is a valid filter string.
+      `source_properties.size = 100` is a valid filter string.  Use a partial
+      match on the empty string to filter based on a property existing:
+      "source_properties.my_property : \"\""  Use a negated partial match on
+      the empty string to filter based on a property not existing:
+      "-source_properties.my_property : \"\""
     groupBy: Required. Expression that defines what assets fields to use for
       grouping (including `state_change`). The string value should follow SQL
       syntax: comma separated list of fields. For example:
@@ -1559,7 +1567,11 @@ class SecuritycenterOrganizationsAssetsListRequest(_messages.Message):
       security_center_properties.resource_project: `=`, `:` *
       security_center_properties.resource_project_display_name: `=`, `:` *
       security_center_properties.resource_owners: `=`, `:`  For example,
-      `resource_properties.size = 100` is a valid filter string.
+      `resource_properties.size = 100` is a valid filter string.  Use a
+      partial match on the empty string to filter based on a property
+      existing: "resource_properties.my_property : \"\""  Use a negated
+      partial match on the empty string to filter based on a property not
+      existing: "-resource_properties.my_property : \"\""
     orderBy: Expression that defines what fields and order to use for sorting.
       The string value should follow SQL syntax: comma separated list of
       fields. For example: "name,resource_properties.a_property". The default
@@ -1872,7 +1884,10 @@ class SecuritycenterOrganizationsSourcesFindingsListRequest(_messages.Message):
       "event_time = \"2019-06-10T16:07:18-07:00\""     "event_time =
       1560208038000"  security_marks.marks: `=`, `:` source_properties: `=`,
       `:`, `>`, `<`, `>=`, `<=`  For example, `source_properties.size = 100`
-      is a valid filter string.
+      is a valid filter string.  Use a partial match on the empty string to
+      filter based on a property existing: "source_properties.my_property :
+      \"\""  Use a negated partial match on the empty string to filter based
+      on a property not existing: "-source_properties.my_property : \"\""
     orderBy: Expression that defines what fields and order to use for sorting.
       The string value should follow SQL syntax: comma separated list of
       fields. For example: "name,resource_properties.a_property". The default

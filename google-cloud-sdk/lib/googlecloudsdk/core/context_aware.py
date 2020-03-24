@@ -162,8 +162,9 @@ class _ConfigImpl(object):
       except CertProvisionException as e:
         log.error('failed to provision client certificate - %s', e)
       if self.client_cert_path is None:
-        raise ConfigException('Use of client certificate requires endpoint '
-                              'verification agent')
+        raise ConfigException(
+            'Use of client certificate requires endpoint verification agent. '
+            'Run `gcloud topic client-certificate` for installation guide.')
 
   def Cleanup(self):
     """Cleanup any files or resource provisioned during config init."""

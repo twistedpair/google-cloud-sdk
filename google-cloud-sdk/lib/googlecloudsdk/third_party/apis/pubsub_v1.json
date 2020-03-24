@@ -450,7 +450,7 @@
           "$ref": "DeadLetterPolicy"
         },
         "retryPolicy": {
-          "description": "A policy that specifies how Cloud Pub\/Sub retries message delivery for this\nsubscription.\n\nIf not set, the default retry policy is applied. This generally implies\nthat messages will be retried as soon as possible for healthy subscribers.\nRetryPolicy will be triggered on NACKs or acknowledgement deadline\nexceeded events for a given message.",
+          "description": "A policy that specifies how Cloud Pub\/Sub retries message delivery for this\nsubscription.\n\nIf not set, the default retry policy is applied. This generally implies\nthat messages will be retried as soon as possible for healthy subscribers.\nRetryPolicy will be triggered on NACKs or acknowledgement deadline\nexceeded events for a given message.\n<b>EXPERIMENTAL:<\/b> This API might be changed in backward-incompatible\nways and is not recommended for production use. It is not subject to any\nSLA or deprecation policy.",
           "$ref": "RetryPolicy"
         }
       }

@@ -128,7 +128,7 @@ class GoogleCloudBillingBudgetsV1alpha1Budget(_messages.Message):
     name: Output only. Resource name of the budget. The resource name implies
       the scope of a budget. Values are of the form
       `billingAccounts/{billingAccountId}/budgets/{budgetId}`.
-    thresholdRules: Required. Rules that trigger alerts (notifications of
+    thresholdRules: Optional. Rules that trigger alerts (notifications of
       thresholds being crossed) when spend exceeds the specified percentages
       of the budget.
   """
@@ -177,7 +177,7 @@ class GoogleCloudBillingBudgetsV1alpha1Filter(_messages.Message):
   Fields:
     creditTypesTreatment: Optional. If not set, default behavior is
       `INCLUDE_ALL_CREDITS`.
-    projects: Optional. A set of projects of the form `projects/{project_id}`,
+    projects: Optional. A set of projects of the form `projects/{project}`,
       specifying that usage from only this set of projects should be included
       in the budget. If omitted, the report will include all usage for the
       billing account, regardless of which project the usage occurred on. Only

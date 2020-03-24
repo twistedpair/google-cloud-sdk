@@ -196,3 +196,38 @@ def ExpandLocalDirAndVersion(directory):
     full_dir += '@' + path[1]
 
   return full_dir
+
+
+# Anthos Auth
+def GetClusterFlag():
+  return base.Argument(
+      '--cluster',
+      required=False,
+      help='Cluster to authenticate against. If no cluster is specified, '
+           'the command will print a list of available options.')
+
+
+def GetLoginConfigFlag():
+  return base.Argument(
+      '--login-config',
+      required=False,
+      type=ExpandLocalDirAndVersion,
+      help='Specifies the configuration yaml '
+           'file for login. Can be a file path or a URL.')
+
+
+def GetLoginConfigCertFlag():
+  return base.Argument(
+      '--login-config-cert',
+      required=False,
+      type=ExpandLocalDirAndVersion,
+      help='Specifies the CA certificate file to be added to trusted pool '
+           'for making HTTPS connections to a `--login-config` URL.')
+
+
+def GetUserFlag():
+  return base.Argument(
+      '--user',
+      required=False,
+      help='If configuring multiple user accounts in the same kubecconfig '
+           'file, you can specify a user to differentiate between them.')

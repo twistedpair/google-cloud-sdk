@@ -51,6 +51,10 @@ from oauth2client.contrib import gce as oauth2client_gce
 from oauth2client.contrib import reauth_errors
 import six
 from six.moves import urllib
+from google.auth import credentials as google_auth_creds_base
+from google.auth import exceptions as google_auth_exceptions
+from google.auth.transport import requests
+from google.oauth2 import service_account as google_auth_service_account
 
 
 GOOGLE_OAUTH2_PROVIDER_AUTHORIZATION_URI = (
@@ -500,13 +504,13 @@ def Load(account=None,
     cred = IMPERSONATION_TOKEN_PROVIDER.GetElevationAccessToken(
         impersonate_service_account, scopes or config.CLOUDSDK_SCOPES)
   else:
-    cred = _Load(account, scopes, prevent_refresh)
+    cred = _Load(account, scopes, prevent_refresh, use_google_auth)
 
   cred = creds.MaybeConvertToGoogleAuthCredentials(cred, use_google_auth)
   return cred
 
 
-def _Load(account, scopes, prevent_refresh):
+def _Load(account, scopes, prevent_refresh, use_google_auth=False):
   """Helper for Load()."""
   # If a credential file is set, just use that and ignore the active account
   # and whatever is in the credential store.
@@ -548,12 +552,12 @@ def _Load(account, scopes, prevent_refresh):
       return cred
 
     store = creds.GetCredentialStore()
-    cred = store.Load(account)
+    cred = store.Load(account, use_google_auth)
     if not cred:
       raise NoCredentialsForAccountException(account)
 
   if not prevent_refresh:
-    _MaybeRefresh(cred)
+    _RefreshIfAlmostExpire(cred)
 
   return cred
 
@@ -571,8 +575,10 @@ def Refresh(credentials,
   issue an additional request to generate a fresh id_token.
 
   Args:
-    credentials: oauth2client.client.Credentials, The credentials to refresh.
-    http_client: httplib2.Http, The http transport to refresh with.
+    credentials: oauth2client.client.Credentials or
+      google.auth.credentials.Credentials, The credentials to refresh.
+    http_client: httplib2.Http or google.auth.transport.requests, The http
+      transport to refresh with.
     is_impersonated_credential: bool, True treat provided credential as an
       impersonated service account credential. If False, treat as service
       account or user credential. Needed to avoid circular dependency on
@@ -590,6 +596,20 @@ def Refresh(credentials,
     TokenRefreshError: If the credentials fail to refresh.
     TokenRefreshReauthError: If the credentials fail to refresh due to reauth.
   """
+  if isinstance(credentials, client.OAuth2Credentials):
+    _Refresh(credentials, http_client, is_impersonated_credential,
+             include_email, gce_token_format, gce_include_license)
+  else:
+    _RefreshGoogleAuth(credentials, http_client)
+
+
+def _Refresh(credentials,
+             http_client=None,
+             is_impersonated_credential=False,
+             include_email=False,
+             gce_token_format='standard',
+             gce_include_license=False):
+  """Refreshes oauth2client credentials."""
   response_encoding = None if six.PY2 else 'utf-8'
   request_client = http_client or http.Http(response_encoding=response_encoding)
   try:
@@ -628,10 +648,64 @@ def Refresh(credentials,
     raise TokenRefreshReauthError(str(e))
 
 
-def _MaybeRefresh(credentials):
-  """Refreshes credentials if they expire within the expiry window."""
-  if not credentials.token_expiry or _TokenExpiresWithinWindow(
-      _CREDENTIALS_EXPIRY_WINDOW, credentials.token_expiry):
+def _RefreshGoogleAuth(credentials, http_client=None):
+  """Refreshes google-auth credentials.
+
+  Args:
+    credentials: google.auth.credentials.Credentials, A google-auth credentials
+      to refresh.
+    http_client: google.auth.transport.requests, The http transport to refresh
+      with.
+  """
+  request_client = http_client or requests
+  try:
+    credentials.refresh(request_client.Request())
+
+    id_token = None
+    if isinstance(credentials, google_auth_service_account.Credentials):
+      id_token = _RefreshServiceAccountIdTokenGoogleAuth(
+          credentials, request_client)
+    else:
+      # TODO(b/151370064): ID token refresh should support GCE and impersonated
+      # credentials.
+      pass
+
+    if id_token:
+      # '_id_token' is the field supported in google-auth natively. gcloud
+      # keeps an additional field 'id_tokenb64' to store this information
+      # which is referenced in several places
+      credentials._id_token = id_token  # pylint: disable=protected-access
+      credentials.id_tokenb64 = id_token
+  except google_auth_exceptions.RefreshError as e:
+    raise TokenRefreshError(six.text_type(e))
+  # TODO(b/147893169): Throws TokenRefreshReauthError on reauth errors once
+  #   supporting reauth is ready for google-auth user credentials.
+
+
+def _RefreshIfAlmostExpire(credentials):
+  """Refreshes credentials if they are expired or will expire soon.
+
+  For oauth2client credentials, refreshes if they expire within the expiry
+  window. oauth2client credentials may be converted to google-auth credentials
+  later in the call stack. The latter do not currently support reauth. So it is
+  essential to ensure oauth2client credentials will remain valid during
+  a command.
+
+  For google-auth credentials, refreshes if they are expired.
+
+  Args:
+    credentials: google.auth.credentials.Credentials or
+      client.OAuth2Credentials, the credentials to refresh.
+  """
+  invalid_oauth2client_creds = isinstance(
+      credentials, client.OAuth2Credentials) and (
+          not credentials.token_expiry or _TokenExpiresWithinWindow(
+              _CREDENTIALS_EXPIRY_WINDOW, credentials.token_expiry))
+  invalid_google_auth_creds = isinstance(
+      credentials,
+      google_auth_creds_base.Credentials) and (not credentials.valid)
+
+  if invalid_oauth2client_creds or invalid_google_auth_creds:
     Refresh(credentials)
 
 
@@ -645,11 +719,11 @@ def _RefreshImpersonatedAccountIdToken(cred, include_email):
 
 
 def _RefreshServiceAccountIdToken(cred, http_client):
-  """Get a fresh id_token for the given service account.
+  """Get a fresh id_token for the given oauth2client credentials.
 
   Args:
-    cred: ServiceAccountCredentials, service account for which to refresh the
-        id_token.
+    cred: service_account.ServiceAccountCredentials, the credentials for which
+      to refresh the id_token.
     http_client: httplib2.Http, the http transport to refresh with.
 
   Returns:
@@ -685,11 +759,40 @@ def _RefreshServiceAccountIdToken(cred, http_client):
     return None
 
 
+def _RefreshServiceAccountIdTokenGoogleAuth(cred, http_client):
+  """Get a fresh id_token for the given google-auth credentials.
+
+  Args:
+    cred: service_account.ServiceAccountCredentials, the credentials for which
+      to refresh the id_token.
+    http_client: google.auth.transport.requests, the http transport to refresh
+      with.
+
+  Returns:
+    str, The id_token if refresh was successful. Otherwise None.
+  """
+  cred_dict = {
+      'client_email': cred.service_account_email,
+      'token_uri': cred._token_uri,  # pylint: disable=protected-access
+      'private_key': cred.private_key,
+      'private_key_id': cred.private_key_id,
+  }
+
+  id_token_credentails = (
+      google_auth_service_account.IDTokenCredentials.from_service_account_info)
+  id_token_cred = id_token_credentails(
+      cred_dict, target_audience=config.CLOUDSDK_CLIENT_ID)
+  id_token_cred.refresh(http_client.Request())
+
+  return id_token_cred.token
+
+
 def Store(credentials, account=None, scopes=None):
   """Store credentials according for an account address.
 
   Args:
-    credentials: oauth2client.client.Credentials, The credentials to be stored.
+    credentials: oauth2client.client.Credentials or
+      google.auth.credentials.Credentials, The credentials to be stored.
     account: str, The account address of the account they're being stored for.
         If None, the account stored in the core.account property is used.
     scopes: tuple, Custom auth scopes to request. By default CLOUDSDK_SCOPES
@@ -700,7 +803,11 @@ def Store(credentials, account=None, scopes=None):
         active account.
   """
 
-  cred_type = creds.CredentialType.FromCredentials(credentials)
+  if isinstance(credentials, client.OAuth2Credentials):
+    cred_type = creds.CredentialType.FromCredentials(credentials)
+  else:
+    cred_type = creds.CredentialTypeGoogleAuth.FromCredentials(credentials)
+
   if not cred_type.is_serializable:
     return
 
@@ -711,7 +818,11 @@ def Store(credentials, account=None, scopes=None):
 
   store = creds.GetCredentialStore()
   store.Store(account, credentials)
-  _LegacyGenerator(account, credentials, scopes).WriteTemplate()
+
+  # TODO(b/151574510): Removes this if check once _LegacyGenerator supports
+  # google-auth credentials.
+  if isinstance(credentials, client.OAuth2Credentials):
+    _LegacyGenerator(account, credentials, scopes).WriteTemplate()
 
 
 def ActivateCredentials(account, credentials):

@@ -402,6 +402,26 @@ class _RegionalConnectionContext(ConnectionInfo):
     return True
 
 
+def _GetApiVersion(product,
+                   release_track,
+                   is_cluster=False,
+                   version_override=None):
+  """Returns the api version to use depending on the current context."""
+  if version_override is not None:
+    return version_override
+
+  if product == flags.Product.RUN:
+    if is_cluster:
+      if release_track == base.ReleaseTrack.ALPHA:
+        return _CLUSTER_ALPHA_API_VERSION
+      return _CLUSTER_API_VERSION
+    return global_methods.SERVERLESS_API_VERSION
+  elif product == flags.Product.EVENTS:
+    return _EVENTS_API_VERSION
+  else:
+    raise ValueError('Unrecognized product: ' + six.u(product))
+
+
 def GetConnectionContext(args,
                          product=flags.Product.RUN,
                          release_track=base.ReleaseTrack.GA,
@@ -423,12 +443,12 @@ def GetConnectionContext(args,
   """
   if flags.GetPlatform() == flags.PLATFORM_KUBERNETES:
     kubeconfig = flags.GetKubeconfig(args)
-    if release_track == base.ReleaseTrack.ALPHA:
-      version = _CLUSTER_ALPHA_API_VERSION
-    else:
-      version = _CLUSTER_API_VERSION
-    return _KubeconfigConnectionContext(kubeconfig, version_override or version,
-                                        args.context)
+    api_version = _GetApiVersion(
+        product,
+        release_track,
+        is_cluster=True,
+        version_override=version_override)
+    return _KubeconfigConnectionContext(kubeconfig, api_version, args.context)
 
   if flags.GetPlatform() == flags.PLATFORM_GKE:
     cluster_ref = args.CONCEPTS.cluster.Parse()
@@ -437,11 +457,12 @@ def GetConnectionContext(args,
           'You must specify a cluster in a given location. '
           'Either use the `--cluster` and `--cluster-location` flags '
           'or set the run/cluster and run/cluster_location properties.')
-    if release_track == base.ReleaseTrack.ALPHA:
-      version = _CLUSTER_ALPHA_API_VERSION
-    else:
-      version = _CLUSTER_API_VERSION
-    return _GKEConnectionContext(cluster_ref, version_override or version)
+    api_version = _GetApiVersion(
+        product,
+        release_track,
+        is_cluster=True,
+        version_override=version_override)
+    return _GKEConnectionContext(cluster_ref, api_version)
 
   if flags.GetPlatform() == flags.PLATFORM_MANAGED:
     region = flags.GetRegion(args, prompt=True)
@@ -449,10 +470,6 @@ def GetConnectionContext(args,
       raise flags.ArgumentError(
           'You must specify a region. Either use the `--region` flag '
           'or set the run/region property.')
-    if product == flags.Product.RUN:
-      version = global_methods.SERVERLESS_API_VERSION
-    elif product == flags.Product.EVENTS:
-      version = _EVENTS_API_VERSION
-    else:
-      raise ValueError('Unrecognized product: ' + six.u(product))
-    return _RegionalConnectionContext(region, version_override or version)
+    api_version = _GetApiVersion(
+        product, release_track, version_override=version_override)
+    return _RegionalConnectionContext(region, api_version)

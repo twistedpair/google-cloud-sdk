@@ -39,10 +39,10 @@ def ResolveOrganizationSecurityPolicyId(org_security_policy, display_name,
     Security policy resource ID.
   """
 
-  all_sps = org_security_policy.List(
+  response = org_security_policy.List(
       parent_id=organization_id, only_generate_request=False)
   sp_id = None
-  for sp in all_sps:
+  for sp in response[0].items:
     if sp.displayName == display_name:
       sp_id = sp.name
       break

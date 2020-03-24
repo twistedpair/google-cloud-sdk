@@ -938,7 +938,7 @@
           "type": "boolean"
         },
         "substitutions": {
-          "description": "Substitutions data for Build resource.",
+          "description": "Substitutions for Build resource. The keys must match the following\nregular expression: `^_[A-Z0-9_]+$`.The keys cannot conflict with the\nkeys in bindings.",
           "type": "object",
           "additionalProperties": {
             "type": "string"

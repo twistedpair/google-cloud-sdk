@@ -24,6 +24,16 @@ from googlecloudsdk.calliope import base
 from googlecloudsdk.command_lib.util import completers
 
 
+class BackupCompleter(completers.ListCommandCompleter):
+
+  def __init__(self, **kwargs):
+    super(BackupCompleter, self).__init__(
+        collection='spanner.projects.instances.backups',
+        list_command='spanner backups list --uri',
+        flags=['instance'],
+        **kwargs)
+
+
 class DatabaseCompleter(completers.ListCommandCompleter):
 
   def __init__(self, **kwargs):
@@ -77,7 +87,7 @@ class DatabaseSessionCompleter(completers.ListCommandCompleter):
   def __init__(self, **kwargs):
     super(DatabaseSessionCompleter, self).__init__(
         collection='spanner.projects.instances.databases.sessions',
-        list_command='beta spanner databases sessions list --uri',
+        list_command='spanner databases sessions list --uri',
         flags=['database', 'instance'],
         **kwargs)
 
@@ -96,6 +106,14 @@ def Database(positional=True,
         required=required,
         completer=DatabaseCompleter,
         help=text)
+
+
+def Backup(positional=True, required=True, text='Cloud Spanner backup ID.'):
+  if positional:
+    return base.Argument('backup', completer=BackupCompleter, help=text)
+  else:
+    return base.Argument(
+        '--backup', required=required, completer=BackupCompleter, help=text)
 
 
 def Ddl(required=False, help_text=''):

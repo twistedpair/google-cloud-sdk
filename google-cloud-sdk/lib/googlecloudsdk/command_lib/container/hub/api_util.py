@@ -21,17 +21,300 @@ from __future__ import unicode_literals
 
 import re
 
+from apitools.base.py import exceptions as apitools_exceptions
+from apitools.base.py import transfer
 from googlecloudsdk.api_lib.container.hub import gkehub_api_util
 from googlecloudsdk.api_lib.util import apis as core_apis
 from googlecloudsdk.api_lib.util import waiter
 from googlecloudsdk.calliope import base
 from googlecloudsdk.core import exceptions
+from googlecloudsdk.core import log
 from googlecloudsdk.core import resources
+
+import six
+# import urlparse in a Python 2 and 3 compatible way
+from six.moves.urllib.parse import urlparse
 
 
 def _ComputeClient():
   api_version = core_apis.ResolveVersion('compute')
   return core_apis.GetClientInstance('compute', api_version)
+
+
+def _StorageClient():
+  return core_apis.GetClientInstance('storage', 'v1')
+
+
+def _ParseBucketIssuerURL(issuer_url):
+  """Parses a bucket-based issuer URL and returns the issuer name.
+
+  Args:
+    issuer_url: An issuer URL with the format
+                "https://storage.googleapis.com/gke-issuer-{UUID}"
+
+  Returns:
+    string: The issuer name parsed from the URL. This is the first path segment
+            following the domain. E.g. "gke-issuer-{UUID}"
+
+  Raises:
+    Error: If the URL could not be parsed.
+  """
+  parsed = urlparse(issuer_url)
+  if parsed.scheme != 'https':
+    raise exceptions.Error(
+        'invalid bucket-based issuer URL: {}, '
+        'expect scheme: https'.format(issuer_url))
+  if parsed.netloc != 'storage.googleapis.com':
+    raise exceptions.Error(
+        'invalid bucket-based issuer URL: {}, '
+        'expect domain: storage.googleapis.com'.format(issuer_url))
+  path = parsed.path
+  if not path:
+    raise exceptions.Error(
+        'invalid bucket-based issuer URL: {}, '
+        'expect non-empty path'.format(issuer_url))
+  # Strip the leading and trailing slash so we get an accurate segment count.
+  segments = path.strip('/').split('/')
+  if len(segments) != 1:
+    raise exceptions.Error(
+        'invalid bucket-based issuer URL: {}, '
+        'expect exactly one path segment'.format(issuer_url))
+  issuer_name = segments[0]
+  if issuer_name[:11] != 'gke-issuer-' or len(issuer_name) <= 11:
+    raise exceptions.Error(
+        'invalid bucket-based issuer URL: {}, '
+        'expect path format: gke-issuer-{{ID}}'.format(issuer_url))
+  return issuer_name
+
+
+def _CreateBucketIfNotExists(storage_client, bucket_name, project):
+  """Create a GCS bucket if it does not exist.
+
+  The bucket will be created with a Uniform Bucket Level Access policy, so that
+  access can be configured with IAM.
+
+  Does not raise any exceptions if the bucket already exists.
+
+  Args:
+    storage_client: v1 storage client
+    bucket_name: string, the name of the bucket to create
+    project: string, the project to create the bucket in
+
+  Raises:
+    Error: If unable to create the bucket, and the bucket does not already
+           exist.
+  """
+  m = storage_client.MESSAGES_MODULE
+  # TODO(b/150317886): Bucket location default seems to be US (multiple region).
+  # Unclear if this is based on request origin, gcloud settings, or just the
+  # overall default. We might consider letting customers set a location, but
+  # since we're also exploring having Gaia serve the keys, it's just as likely
+  # we will move away from the GCS bucket approach before our beta.
+  request = m.StorageBucketsInsertRequest(
+      bucket=m.Bucket(
+          iamConfiguration=m.Bucket.IamConfigurationValue(
+              uniformBucketLevelAccess=m.Bucket.IamConfigurationValue
+              .UniformBucketLevelAccessValue(enabled=True)),
+          name=bucket_name),
+      project=project)
+
+  try:
+    log.status.Print('Creating bucket {}'.format(bucket_name))
+    storage_client.buckets.Insert(request)
+    log.status.Print('Successfully created bucket {}'.format(bucket_name))
+  except apitools_exceptions.HttpConflictError:
+    # Bucket likely already exists, get the bucket to be sure.
+    request = m.StorageBucketsGetRequest(bucket=bucket_name)
+    storage_client.buckets.Get(request)
+    log.status.Print('Bucket {} already exists. '
+                     'Skipping creation.'.format(bucket_name))
+  except Exception as e:
+    raise exceptions.Error('Unable to create bucket {}: '
+                           '{}'.format(bucket_name, e))
+
+
+def _SetPublicBucket(storage_client, bucket_name):
+  """Adds the allUsers: roles/storage.objectViewer role binding to a bucket.
+
+  Args:
+    storage_client: v1 storage client
+    bucket_name: string, name of the bucket to configure
+
+  Raises:
+    Error: If unable to configure the bucket for public access.
+  """
+  m = storage_client.MESSAGES_MODULE
+  try:
+    log.status.Print('Configuring roles/storage.objectViewer for allUsers on '
+                     'bucket {}'.format(bucket_name))
+    # Ensure the bucket is public. We need to get the current (default) policy
+    # first so we don't overwrite other bindings.
+    request = m.StorageBucketsGetIamPolicyRequest(bucket=bucket_name)
+    policy = storage_client.buckets.GetIamPolicy(request)
+
+    # Update with our new binding to make the bucket public.
+    # GCS is smart enough to de-duplicate this binding, so we don't have
+    # to check if it already exists.
+    policy.bindings.append(m.Policy.BindingsValueListEntry(
+        members=['allUsers'], role='roles/storage.objectViewer'))
+    request = m.StorageBucketsSetIamPolicyRequest(
+        bucket=bucket_name, policy=policy)
+    storage_client.buckets.SetIamPolicy(request)
+    log.status.Print('Successfully configured roles/storage.objectViewer for'
+                     'allUsers on bucket {}'.format(bucket_name))
+  except Exception as e:
+    raise exceptions.Error('Unable to configure {} '
+                           'as a public bucket: {}'.format(bucket_name, e))
+
+
+def _UploadToBucket(storage_client, bucket_name, obj_name, str_data,
+                    content_type, cache_control):
+  """Uploads an object to a storage bucket.
+
+  Args:
+    storage_client: v1 storage client
+    bucket_name: string, name of the bucket to upload the object to
+    obj_name: string, name the object should be uploaded as (path in bucket)
+    str_data: string, the string that comprises the object data to upload
+    content_type: string, the Content-Type header the bucket will serve for the
+                  uploaded object.
+    cache_control: string, the Cache-Control header the bucket will serve for
+                   the uploaded object.
+
+  Raises:
+    Error: If unable to upload the object to the bucket.
+  """
+  m = storage_client.MESSAGES_MODULE
+
+  stream = six.StringIO(str_data)
+  upload = transfer.Upload.FromStream(stream,
+                                      mime_type=content_type,
+                                      # Use apitools default (1048576 B).
+                                      # GCS requires a multiple of 256 KiB.
+                                      chunksize=None)
+  request = m.StorageObjectsInsertRequest(
+      bucket=bucket_name, name=obj_name,
+      object=m.Object(contentType=content_type, cacheControl=cache_control))
+  try:
+    log.status.Print('Uploading object {} to bucket {}'.format(
+        obj_name, bucket_name))
+    # Uploading again just overwrites the object, so we don't have to worry
+    # about conflicts with pre-existing objects.
+    storage_client.objects.Insert(request, upload=upload)
+    log.status.Print('Successfully uploaded object {} to bucket {}'.format(
+        obj_name, bucket_name))
+  except Exception as e:
+    raise exceptions.Error('Unable to upload object to bucket {} at {}: '
+                           '{}'.format(bucket_name, obj_name, e))
+  finally:
+    # apitools doesn't automatically close the stream.
+    upload.stream.close()
+
+
+def _DeleteBucket(storage_client, bucket_name):
+  """Deletes a storage bucket.
+
+  Args:
+    storage_client: v1 storage client
+    bucket_name: string, the name of the bucket to delete
+
+  Raises:
+    Error: If unable to delete the bucket
+
+  """
+  m = storage_client.MESSAGES_MODULE
+  delete_bucket = m.StorageBucketsDeleteRequest(bucket=bucket_name)
+  list_objects = m.StorageObjectsListRequest(bucket=bucket_name)
+  try:
+    log.status.Print('Deleting bucket {}'.format(bucket_name))
+    # GCS does not allow the deletion of non-empty buckets, and there does not
+    # appear to be an option to force deletion. List all objects, delete every
+    # one, and then delete the bucket.
+    objects = storage_client.objects.List(list_objects)
+    for o in objects.items:
+      delete_object = m.StorageObjectsDeleteRequest(bucket=bucket_name,
+                                                    object=o.name)
+      storage_client.objects.Delete(delete_object)
+    storage_client.buckets.Delete(delete_bucket)
+    log.status.Print('Successfully deleted bucket {}'.format(bucket_name))
+  except Exception as e:
+    raise exceptions.Error('Unable to delete bucket {}: {}'.format(
+        bucket_name, e))
+
+
+def CreateWorkloadIdentityBucket(project, issuer_url, openid_config_json,
+                                 openid_keyset_json):
+  """Creates a storage bucket to serve the issuer's discovery information.
+
+  Creates a bucket named after the first path segment of issuer_url,
+  configures it as a public bucket, and uploads the provided OpenID Provider
+  Configuration and JSON Web Key Set to the bucket.
+
+  Args:
+    project: The same project as this cluster's Hub membership.
+    issuer_url: The issuer URL that uniquely identifies a cluster as an
+                OpenID Provider.
+    openid_config_json: The JSON OpenID Provider Configuration response from
+                        the cluster's built-in OIDC discovery endpoint.
+    openid_keyset_json: The OpenID Provider JSON Web Key Set response from the
+                        cluster's built-in JWKS endpoint.
+
+  Raises:
+    exceptions.Error: If it fails to create, configure, and populate
+                      the bucket.
+  """
+  try:
+    issuer_name = _ParseBucketIssuerURL(issuer_url)
+
+    storage_client = _StorageClient()
+    _CreateBucketIfNotExists(storage_client, issuer_name, project)
+    _SetPublicBucket(storage_client, issuer_name)
+
+    # Do NOT add leading slash, doing so nests the bucket path inside a subdir
+    # named "".
+    config_name = '.well-known/openid-configuration'
+    keyset_name = 'openid/v1/jwks'
+
+    # TODO(b/151111297): This is the hardcoded Cache-Control value in K8s
+    # clusters, but if the bucket approach makes it to beta (which it should
+    # not, it's a temporary solution until Google can serve the keys), we should
+    # read it out of the header from the cluster's response.
+    cache_control = 'public, max-age=3600'
+    config_content_type = 'application/json'
+    keyset_content_type = 'application/jwk-set+json'
+
+    _UploadToBucket(storage_client, issuer_name, config_name,
+                    openid_config_json, config_content_type, cache_control)
+    _UploadToBucket(storage_client, issuer_name, keyset_name,
+                    openid_keyset_json, keyset_content_type, cache_control)
+  except Exception as e:
+    raise exceptions.Error('Failed to configure bucket for '
+                           'Workload Identity: {}'.format(e))
+
+
+def DeleteWorkloadIdentityBucket(issuer_url):
+  """Deletes the storage bucket for the given issuer, if it exists.
+
+  If the bucket does not exist, logs a message but does not raise
+  an exception.
+
+  Args:
+    issuer_url: The issuer URL that uniquely identifies a cluster as an
+                OpenID Provider.
+
+  Raises:
+    exceptions.Error: If it fails to delete the bucket.
+  """
+  storage_client = _StorageClient()
+  try:
+    issuer_name = _ParseBucketIssuerURL(issuer_url)
+    _DeleteBucket(storage_client, issuer_name)
+  except apitools_exceptions.HttpNotFoundError:
+    log.status.Print('Bucket {} not found, '
+                     'it may have already been deleted'.format(issuer_name))
+  except Exception as e:
+    raise exceptions.Error('Failed to delete bucket for '
+                           'Workload Identity: {}'.format(e))
 
 
 def MembershipRef(project, location, membership_id):

@@ -833,10 +833,15 @@ class DataSource(_messages.Message):
       GOOGLE_PLUS_AUTHORIZATION_CODE: Return an authorization code for a given
         Google+ page that can then be exchanged for a refresh token on the
         backend.
+      FIRST_PARTY_OAUTH: Use First Party OAuth based on Loas Owned Clients.
+        First Party OAuth doesn't require a refresh token to get an offline
+        access token. Instead, it uses a client-signed JWT assertion to
+        retrieve an access token.
     """
     AUTHORIZATION_TYPE_UNSPECIFIED = 0
     AUTHORIZATION_CODE = 1
     GOOGLE_PLUS_AUTHORIZATION_CODE = 2
+    FIRST_PARTY_OAUTH = 3
 
   class DataRefreshTypeValueValuesEnum(_messages.Enum):
     r"""Specifies whether the data source supports automatic data refresh for

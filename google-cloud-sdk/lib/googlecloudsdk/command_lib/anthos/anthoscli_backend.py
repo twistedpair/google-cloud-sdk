@@ -157,3 +157,50 @@ def GetAuthToken(account, operation, impersonated=False):
         'Error retrieving auth credentials for {operation}: {error}. '.format(
             operation=operation, error=e))
   return json.dumps(output, sort_keys=True)
+
+
+class AnthosAuthWrapper(binary_operations.BinaryBackedOperation):
+  """Binary operation wrapper for anthoscli commands."""
+
+  def __init__(self, **kwargs):
+    custom_errors = {
+        'MISSING_EXEC': messages.MISSING_AUTH_BINARY.format(
+            binary='kubectl-anthos')
+    }
+    super(AnthosAuthWrapper, self).__init__(binary='kubectl-anthos',
+                                            custom_errors=custom_errors,
+                                            **kwargs)
+
+  def _ParseLoginArgs(self,
+                      cluster,
+                      kube_config=None,
+                      login_config=None,
+                      login_config_cert=None,
+                      user=None,
+                      dry_run=None,
+                      **kwargs):
+    del kwargs  # Not Used Here
+    exec_args = ['login']
+    if cluster:
+      exec_args.extend(['--cluster', cluster])
+    if kube_config:
+      exec_args.extend(['--kubeconfig', kube_config])
+    if login_config:
+      exec_args.extend(['--login-config', login_config])
+    if login_config_cert:
+      exec_args.extend(['--login-config-cert', login_config_cert])
+    if user:
+      exec_args.extend(['--user', user])
+    if dry_run:
+      exec_args.extend(['--dry-run'])
+
+    return exec_args
+
+  def _ParseArgsForCommand(self, command, **kwargs):
+    if command == 'login':
+      return self._ParseLoginArgs(**kwargs)
+    if command == 'version':
+      return ['version']
+
+    raise binary_operations.InvalidOperationForBinary(
+        'Invalid Operation [{}] for kubectl-anthos'.format(command))

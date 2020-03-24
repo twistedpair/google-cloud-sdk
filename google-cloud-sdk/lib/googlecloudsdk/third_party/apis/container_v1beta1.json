@@ -626,7 +626,7 @@
           "description": "Mode is the configuration for how to expose metadata to workloads running\non the node pool.",
           "enumDescriptions": [
             "Not set.",
-            "Expose all GCE metadata to pods.",
+            "Expose all Compute Engine metadata to pods.",
             "Run the GKE Metadata Server on this node. The GKE Metadata Server exposes\na metadata API to workloads that is compatible with the V1 Compute\nMetadata APIs exposed by the Compute Engine and App Engine Metadata\nServers. This feature can only be enabled if Workload Identity is enabled\nat the cluster level."
           ],
           "type": "string",
@@ -859,11 +859,11 @@
     },
     "GcePersistentDiskCsiDriverConfig": {
       "id": "GcePersistentDiskCsiDriverConfig",
-      "description": "Configuration for the GCE PD CSI driver. This option can only be enabled\nat cluster creation time.",
+      "description": "Configuration for the Compute Engine PD CSI driver. This option can only be\nenabled at cluster creation time.",
       "type": "object",
       "properties": {
         "enabled": {
-          "description": "Whether the GCE PD CSI driver is enabled for this cluster.",
+          "description": "Whether the Compute Engine PD CSI driver is enabled for this cluster.",
           "type": "boolean"
         }
       }
@@ -1523,6 +1523,21 @@
         "peeringName": {
           "description": "Output only. The peering name in the customer VPC used by this cluster.",
           "type": "string"
+        },
+        "masterGlobalAccessConfig": {
+          "description": "Controls master global access settings.",
+          "$ref": "PrivateClusterMasterGlobalAccessConfig"
+        }
+      }
+    },
+    "PrivateClusterMasterGlobalAccessConfig": {
+      "id": "PrivateClusterMasterGlobalAccessConfig",
+      "description": "Configuration for controlling master global access settings.",
+      "type": "object",
+      "properties": {
+        "enabled": {
+          "description": "Whenever master is accessible globally or not.",
+          "type": "boolean"
         }
       }
     },
@@ -1659,7 +1674,7 @@
           "enumDescriptions": [
             "Should never be set",
             "Secrets in etcd are encrypted.",
-            "Secrets in etcd are stored in plain text (at etcd level) - this is\nunrelated to Google Compute Engine level full disk encryption."
+            "Secrets in etcd are stored in plain text (at etcd level) - this is\nunrelated to Compute Engine level full disk encryption."
           ],
           "type": "string",
           "enum": [

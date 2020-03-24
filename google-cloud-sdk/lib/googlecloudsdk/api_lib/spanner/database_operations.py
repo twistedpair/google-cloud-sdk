@@ -69,8 +69,8 @@ def Get(instance, database, operation):
   return client.projects_instances_databases_operations.Get(req)
 
 
-def List(instance, database):
-  """List operations on the database."""
+def List(instance, database, type_filter=None):
+  """List operations on the database using the generic operation list API."""
   client = apis.GetClientInstance('spanner', 'v1')
   msgs = apis.GetMessagesModule('spanner', 'v1')
   ref = resources.REGISTRY.Parse(
@@ -81,9 +81,52 @@ def List(instance, database):
       },
       collection='spanner.projects.instances.databases')
   req = msgs.SpannerProjectsInstancesDatabasesOperationsListRequest(
-      name=ref.RelativeName()+'/operations')
+      name=ref.RelativeName()+'/operations',
+      filter=type_filter)
   return list_pager.YieldFromList(
       client.projects_instances_databases_operations,
+      req,
+      field='operations',
+      batch_size_attribute='pageSize')
+
+
+def BuildDatabaseOperationTypeFilter(op_type):
+  """Builds the filter for the different database operation metadata types."""
+  if op_type == 'DATABASE':
+    return ''
+
+  base_string = 'metadata.@type:type.googleapis.com/google.spanner.admin.database.v1.'
+  if op_type == 'DATABASE_RESTORE':
+    return '({}OptimizeRestoredDatabaseMetadata) OR ({}RestoreDatabaseMetadata)'.format(
+        base_string, base_string)
+
+  if op_type == 'DATABASE_CREATE':
+    return base_string + 'CreateDatabaseMetadata'
+
+  if op_type == 'DATABASE_UPDATE_DDL':
+    return base_string + 'UpdateDatabaseDdlMetadata'
+
+
+def ListDatabaseOperations(instance, database=None, type_filter=None):
+  """List database operations using the Cloud Spanner specific API."""
+  client = apis.GetClientInstance('spanner', 'v1')
+  msgs = apis.GetMessagesModule('spanner', 'v1')
+  instance_ref = resources.REGISTRY.Parse(
+      instance,
+      params={
+          'projectsId': properties.VALUES.core.project.GetOrFail,
+      },
+      collection='spanner.projects.instances')
+
+  # When the database is passed in, use the generic list command, so no
+  # operations are shown from previous incarnations of the database.
+  if database:
+    return List(instance, database, type_filter)
+
+  req = msgs.SpannerProjectsInstancesDatabaseOperationsListRequest(
+      parent=instance_ref.RelativeName(), filter=type_filter)
+  return list_pager.YieldFromList(
+      client.projects_instances_databaseOperations,
       req,
       field='operations',
       batch_size_attribute='pageSize')

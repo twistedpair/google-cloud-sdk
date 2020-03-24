@@ -89,12 +89,14 @@ class Queues(BaseQueues):
   """Client for queues service in the Cloud Tasks API."""
 
   def Create(self, parent_ref, queue_ref, retry_config=None,
-             rate_limits=None, app_engine_routing_override=None):
+             rate_limits=None, app_engine_routing_override=None,
+             stackdriver_logging_config=None):
     """Prepares and sends a Create request for creating a queue."""
     queue = self.messages.Queue(
         name=queue_ref.RelativeName(), retryConfig=retry_config,
         rateLimits=rate_limits,
-        appEngineRoutingOverride=app_engine_routing_override)
+        appEngineRoutingOverride=app_engine_routing_override,
+        stackdriverLoggingConfig=stackdriver_logging_config)
     request = self.messages.CloudtasksProjectsLocationsQueuesCreateRequest(
         parent=parent_ref.RelativeName(), queue=queue)
     return self.queues_service.Create(request)
@@ -104,10 +106,12 @@ class Queues(BaseQueues):
             updated_fields,
             retry_config=None,
             rate_limits=None,
-            app_engine_routing_override=None):
+            app_engine_routing_override=None,
+            stackdriver_logging_config=None):
     """Prepares and sends a Patch request for modifying a queue."""
 
-    if not any([retry_config, rate_limits, app_engine_routing_override]):
+    if not any([retry_config, rate_limits, app_engine_routing_override,
+                stackdriver_logging_config]):
       raise NoFieldsSpecifiedError('Must specify at least one field to update.')
 
     queue = self.messages.Queue(name=queue_ref.RelativeName())
@@ -122,6 +126,8 @@ class Queues(BaseQueues):
             self.messages.AppEngineRouting())
       else:
         queue.appEngineRoutingOverride = app_engine_routing_override
+    if stackdriver_logging_config is not None:
+      queue.stackdriverLoggingConfig = stackdriver_logging_config
     update_mask = ','.join(updated_fields)
 
     request = self.messages.CloudtasksProjectsLocationsQueuesPatchRequest(

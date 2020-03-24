@@ -1298,7 +1298,7 @@ class DatabaseEncryption(_messages.Message):
       UNKNOWN: Should never be set
       ENCRYPTED: Secrets in etcd are encrypted.
       DECRYPTED: Secrets in etcd are stored in plain text (at etcd level) -
-        this is unrelated to Google Compute Engine level full disk encryption.
+        this is unrelated to Compute Engine level full disk encryption.
     """
     UNKNOWN = 0
     ENCRYPTED = 1
@@ -1394,11 +1394,12 @@ class FeatureConfig(_messages.Message):
 
 
 class GcePersistentDiskCsiDriverConfig(_messages.Message):
-  r"""Configuration for the GCE PD CSI driver. This option can only be enabled
-  at cluster creation time.
+  r"""Configuration for the Compute Engine PD CSI driver. This option can only
+  be enabled at cluster creation time.
 
   Fields:
-    enabled: Whether the GCE PD CSI driver is enabled for this cluster.
+    enabled: Whether the Compute Engine PD CSI driver is enabled for this
+      cluster.
   """
 
   enabled = _messages.BooleanField(1)
@@ -2526,6 +2527,7 @@ class PrivateClusterConfig(_messages.Message):
     enablePrivateNodes: Whether nodes have internal IP addresses only. If
       enabled, all nodes are given only RFC 1918 private addresses and
       communicate with the master via private networking.
+    masterGlobalAccessConfig: Controls master global access settings.
     masterIpv4CidrBlock: The IP range in CIDR notation to use for the hosted
       master network. This range will be used for assigning internal IP
       addresses to the master or set of masters, as well as the ILB VIP. This
@@ -2541,10 +2543,21 @@ class PrivateClusterConfig(_messages.Message):
 
   enablePrivateEndpoint = _messages.BooleanField(1)
   enablePrivateNodes = _messages.BooleanField(2)
-  masterIpv4CidrBlock = _messages.StringField(3)
-  peeringName = _messages.StringField(4)
-  privateEndpoint = _messages.StringField(5)
-  publicEndpoint = _messages.StringField(6)
+  masterGlobalAccessConfig = _messages.MessageField('PrivateClusterMasterGlobalAccessConfig', 3)
+  masterIpv4CidrBlock = _messages.StringField(4)
+  peeringName = _messages.StringField(5)
+  privateEndpoint = _messages.StringField(6)
+  publicEndpoint = _messages.StringField(7)
+
+
+class PrivateClusterMasterGlobalAccessConfig(_messages.Message):
+  r"""Configuration for controlling master global access settings.
+
+  Fields:
+    enabled: Whenever master is accessible globally or not.
+  """
+
+  enabled = _messages.BooleanField(1)
 
 
 class RecurringTimeWindow(_messages.Message):
@@ -3725,7 +3738,7 @@ class WorkloadMetadataConfig(_messages.Message):
 
     Values:
       MODE_UNSPECIFIED: Not set.
-      GCE_METADATA: Expose all GCE metadata to pods.
+      GCE_METADATA: Expose all Compute Engine metadata to pods.
       GKE_METADATA: Run the GKE Metadata Server on this node. The GKE Metadata
         Server exposes a metadata API to workloads that is compatible with the
         V1 Compute Metadata APIs exposed by the Compute Engine and App Engine

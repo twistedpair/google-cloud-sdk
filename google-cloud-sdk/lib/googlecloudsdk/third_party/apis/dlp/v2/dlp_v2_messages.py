@@ -2404,6 +2404,7 @@ class GooglePrivacyDlpV2ContentLocation(_messages.Message):
       for Google Cloud Storage).
     documentLocation: Location data for document files.
     imageLocation: Location within an image's pixels.
+    metadataLocation: Location within the metadata for inspected content.
     recordLocation: Location within a row or record of a database table.
   """
 
@@ -2412,7 +2413,8 @@ class GooglePrivacyDlpV2ContentLocation(_messages.Message):
   containerVersion = _messages.StringField(3)
   documentLocation = _messages.MessageField('GooglePrivacyDlpV2DocumentLocation', 4)
   imageLocation = _messages.MessageField('GooglePrivacyDlpV2ImageLocation', 5)
-  recordLocation = _messages.MessageField('GooglePrivacyDlpV2RecordLocation', 6)
+  metadataLocation = _messages.MessageField('GooglePrivacyDlpV2MetadataLocation', 6)
+  recordLocation = _messages.MessageField('GooglePrivacyDlpV2RecordLocation', 7)
 
 
 class GooglePrivacyDlpV2CreateDeidentifyTemplateRequest(_messages.Message):
@@ -4579,6 +4581,31 @@ class GooglePrivacyDlpV2Manual(_messages.Message):
 
 
 
+class GooglePrivacyDlpV2MetadataLocation(_messages.Message):
+  r"""Metadata Location
+
+  Enums:
+    TypeValueValuesEnum: Type of metadata containing the finding.
+
+  Fields:
+    storageLabel: Storage metadata.
+    type: Type of metadata containing the finding.
+  """
+
+  class TypeValueValuesEnum(_messages.Enum):
+    r"""Type of metadata containing the finding.
+
+    Values:
+      METADATATYPE_UNSPECIFIED: Unused
+      STORAGE_METADATA: General file metadata provided by GCS.
+    """
+    METADATATYPE_UNSPECIFIED = 0
+    STORAGE_METADATA = 1
+
+  storageLabel = _messages.MessageField('GooglePrivacyDlpV2StorageMetadataLabel', 1)
+  type = _messages.EnumField('TypeValueValuesEnum', 2)
+
+
 class GooglePrivacyDlpV2NumericalStatsConfig(_messages.Message):
   r"""Compute numerical stats over an individual column, including min, max,
   and quantiles.
@@ -5222,6 +5249,17 @@ class GooglePrivacyDlpV2StorageConfig(_messages.Message):
   datastoreOptions = _messages.MessageField('GooglePrivacyDlpV2DatastoreOptions', 3)
   hybridOptions = _messages.MessageField('GooglePrivacyDlpV2HybridOptions', 4)
   timespanConfig = _messages.MessageField('GooglePrivacyDlpV2TimespanConfig', 5)
+
+
+class GooglePrivacyDlpV2StorageMetadataLabel(_messages.Message):
+  r"""Storage metadata label to indicate which metadata entry contains
+  findings.
+
+  Fields:
+    key: A string attribute.
+  """
+
+  key = _messages.StringField(1)
 
 
 class GooglePrivacyDlpV2StoredInfoType(_messages.Message):

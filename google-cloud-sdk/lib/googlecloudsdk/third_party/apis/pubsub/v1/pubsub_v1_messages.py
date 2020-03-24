@@ -1374,6 +1374,9 @@ class Subscription(_messages.Message):
       applied. This generally implies that messages will be retried as soon as
       possible for healthy subscribers. RetryPolicy will be triggered on NACKs
       or acknowledgement deadline exceeded events for a given message.
+      <b>EXPERIMENTAL:</b> This API might be changed in backward-incompatible
+      ways and is not recommended for production use. It is not subject to any
+      SLA or deprecation policy.
     topic: Required. The name of the topic from which this subscription is
       receiving messages. Format is `projects/{project}/topics/{topic}`. The
       value of this field will be `_deleted-topic_` if the topic has been

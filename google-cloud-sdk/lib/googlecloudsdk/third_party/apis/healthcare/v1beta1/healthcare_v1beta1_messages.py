@@ -490,6 +490,13 @@ class ExportDicomDataRequest(_messages.Message):
   gcsDestination = _messages.MessageField('GoogleCloudHealthcareV1beta1DicomGcsDestination', 2)
 
 
+class ExportDicomDataResponse(_messages.Message):
+  r"""Returns additional information in regards to a completed DICOM store
+  export.
+  """
+
+
+
 class ExportResourcesRequest(_messages.Message):
   r"""Request to export resources.
 
@@ -631,6 +638,19 @@ class FhirStore(_messages.Message):
       this FHIR store to this destination. The Cloud Pub/Sub message
       attributes contain a map with a string describing the action that has
       triggered the notification. For example, "action":"CreateResource".
+    streamConfigs: A list of streaming configs that configure the destinations
+      of streaming export for every resource mutation in this FHIR store. Each
+      store is allowed to have up to 10 streaming configs. After a new config
+      is added, the next resource mutation is streamed to the new location in
+      addition to the existing ones. When a location is removed from the list,
+      the server stops streaming to that location. Before adding a new config,
+      you must add the required
+      [`bigquery.dataEditor`](https://cloud.google.com/bigquery/docs/access-
+      control#bigquery.dataEditor) role to your project's **Cloud Healthcare
+      Service Agent** [service account](https://cloud.google.com/iam/docs
+      /service-accounts). Some lag (typically on the order of dozens of
+      seconds) is expected before the results show up in the streaming
+      destination.
     version: The FHIR specification version that this FHIR store supports
       natively. This field is immutable after store creation. Requests are
       rejected if they contain FHIR resources of a different version. An empty
@@ -693,7 +713,8 @@ class FhirStore(_messages.Message):
   labels = _messages.MessageField('LabelsValue', 4)
   name = _messages.StringField(5)
   notificationConfig = _messages.MessageField('NotificationConfig', 6)
-  version = _messages.EnumField('VersionValueValuesEnum', 7)
+  streamConfigs = _messages.MessageField('StreamConfig', 7, repeated=True)
+  version = _messages.EnumField('VersionValueValuesEnum', 8)
 
 
 class FieldMetadata(_messages.Message):
@@ -1947,6 +1968,22 @@ class HealthcareProjectsLocationsDatasetsFhirStoresPatchRequest(_messages.Messag
   updateMask = _messages.StringField(3)
 
 
+class HealthcareProjectsLocationsDatasetsFhirStoresSearchRequest(_messages.Message):
+  r"""A HealthcareProjectsLocationsDatasetsFhirStoresSearchRequest object.
+
+  Fields:
+    parent: Name of the FHIR store to retrieve resources from.
+    resourceType: The FHIR resource type to search, such as Patient or
+      Observation. For a complete list, see the FHIR Resource Index ([DSTU2](h
+      ttp://hl7.org/implement/standards/fhir/DSTU2/resourcelist.html),
+      [STU3](http://hl7.org/implement/standards/fhir/STU3/resourcelist.html),
+      [R4](http://hl7.org/implement/standards/fhir/R4/resourcelist.html)).
+  """
+
+  parent = _messages.StringField(1, required=True)
+  resourceType = _messages.StringField(2)
+
+
 class HealthcareProjectsLocationsDatasetsFhirStoresSetIamPolicyRequest(_messages.Message):
   r"""A HealthcareProjectsLocationsDatasetsFhirStoresSetIamPolicyRequest
   object.
@@ -2419,6 +2456,50 @@ class HealthcareProjectsLocationsListRequest(_messages.Message):
   pageToken = _messages.StringField(4)
 
 
+class Hl7V2NotificationConfig(_messages.Message):
+  r"""Specifies where and whether to send notifications upon changes to a data
+  store.
+
+  Fields:
+    filter: Restricts notifications sent for messages matching a filter. If
+      this is empty, all messages are matched. Syntax: https://cloud.google.co
+      m/appengine/docs/standard/python/search/query_strings  Fields/functions
+      available for filtering are:  *  `message_type`, from the MSH-9.1 field.
+      For example, `NOT message_type = "ADT"`. *  `send_date` or `sendDate`,
+      the YYYY-MM-DD date the message was sent in the dataset's time_zone,
+      from the MSH-7 segment. For example, `send_date < "2017-01-02"`. *
+      `send_time`, the timestamp when the message was sent, using the RFC3339
+      time format for comparisons, from the MSH-7 segment. For example,
+      `send_time < "2017-01-02T00:00:00-05:00"`. *  `send_facility`, the care
+      center that the message came from, from the MSH-4 segment. For example,
+      `send_facility = "ABC"`. *  `PatientId(value, type)`, which matches if
+      the message lists a patient having an ID of the given value and type in
+      the PID-2, PID-3, or PID-4 segments. For example, `PatientId("123456",
+      "MRN")`. *  `labels.x`, a string value of the label with key `x` as set
+      using the Message.labels map. For example, `labels."priority"="high"`.
+      The operator `:*` can be used to assert the existence of a label. For
+      example, `labels."priority":*`.
+    pubsubTopic: The [Cloud Pubsub](https://cloud.google.com/pubsub/docs/)
+      topic that notifications of changes are published on. Supplied by the
+      client. The notification is a `PubsubMessage` with the following fields:
+      *  `PubsubMessage.Data` contains the resource name. *
+      `PubsubMessage.MessageId` is the ID of this notification. It is
+      guaranteed to be unique within the topic. *  `PubsubMessage.PublishTime`
+      is the time at which the message was published.  Note that notifications
+      are only sent if the topic is non-empty. [Topic
+      names](https://cloud.google.com/pubsub/docs/overview#names) must be
+      scoped to a project. cloud-healthcare@system.gserviceaccount.com must
+      have publisher permissions on the given Pubsub topic. Not having
+      adequate permissions causes the calls that send notifications to fail.
+      If a notification cannot be published to Cloud Pub/Sub, errors will be
+      logged to Stackdriver (see [Viewing logs](/healthcare/docs/how- tos
+      /stackdriver-logging)).
+  """
+
+  filter = _messages.StringField(1)
+  pubsubTopic = _messages.StringField(2)
+
+
 class Hl7V2Store(_messages.Message):
   r"""Represents an HL7v2 store.
 
@@ -2447,6 +2528,10 @@ class Hl7V2Store(_messages.Message):
       & Create) are published on. Only the message name is sent as part of the
       notification. If this is unset, no notifications are sent. Supplied by
       the client.
+    notificationConfigs: A list of notification configs. Each configuration
+      uses a filter to determine whether to publish a message (both Ingest &
+      Create) on the corresponding notification destination. Only the message
+      name is sent as part of the notification. Supplied by the client.
     parserConfig: The configuration for the parser. It determines how the
       server parses the messages.
     rejectDuplicateMessage: Determines whether duplicate messages should be
@@ -2495,8 +2580,9 @@ class Hl7V2Store(_messages.Message):
   labels = _messages.MessageField('LabelsValue', 1)
   name = _messages.StringField(2)
   notificationConfig = _messages.MessageField('NotificationConfig', 3)
-  parserConfig = _messages.MessageField('ParserConfig', 4)
-  rejectDuplicateMessage = _messages.BooleanField(5)
+  notificationConfigs = _messages.MessageField('Hl7V2NotificationConfig', 4, repeated=True)
+  parserConfig = _messages.MessageField('ParserConfig', 5)
+  rejectDuplicateMessage = _messages.BooleanField(6)
 
 
 class HttpBody(_messages.Message):
@@ -2614,6 +2700,13 @@ class ImportDicomDataRequest(_messages.Message):
   """
 
   gcsSource = _messages.MessageField('GoogleCloudHealthcareV1beta1DicomGcsSource', 1)
+
+
+class ImportDicomDataResponse(_messages.Message):
+  r"""Returns additional information in regards to a completed DICOM store
+  import.
+  """
+
 
 
 class ImportResourcesRequest(_messages.Message):
@@ -3106,6 +3199,9 @@ class OperationMetadata(_messages.Message):
     counter: A ProgressCounter attribute.
     createTime: The time at which the operation was created by the API.
     endTime: The time at which execution was completed.
+    logsUrl: A link to audit and error logs in the log viewer. Error logs are
+      generated only by some operations, listed at
+      https://cloud.google.com/healthcare/docs/how-tos/stackdriver-logging.
   """
 
   apiMethodName = _messages.StringField(1)
@@ -3113,6 +3209,7 @@ class OperationMetadata(_messages.Message):
   counter = _messages.MessageField('ProgressCounter', 3)
   createTime = _messages.StringField(4)
   endTime = _messages.StringField(5)
+  logsUrl = _messages.StringField(6)
 
 
 class ParsedData(_messages.Message):
@@ -3512,6 +3609,44 @@ class Status(_messages.Message):
   code = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   details = _messages.MessageField('DetailsValueListEntry', 2, repeated=True)
   message = _messages.StringField(3)
+
+
+class StreamConfig(_messages.Message):
+  r"""This structure contains configuration for streaming FHIR export.
+
+  Fields:
+    bigqueryDestination: The destination BigQuery structure that contains both
+      the dataset location and corresponding schema config.  The output is
+      organized in one table per resource type. The server reuses the existing
+      tables (if any) that are named after the resource types, e.g. "Patient",
+      "Observation". When there is no existing table for a given resource
+      type, the server attempts to create one.  When a table schema doesn't
+      align with the schema config, either because of existing incompatible
+      schema or out of band incompatible modification, the server does not
+      stream in new data.  One resolution in this case is to delete the
+      incompatible table and let the server recreate one, though the newly
+      created table only contains data after the table recreation.  BigQuery
+      imposes a 1 MB limit on streaming insert row size, therefore any
+      resource mutation that generates more than 1 MB of BigQuery data will
+      not be streamed.  Results are appended to the corresponding BigQuery
+      tables. Different versions of the same resource are distinguishable by
+      the meta.versionId and meta.lastUpdated columns. The operation
+      (CREATE/UPDATE/DELETE) that results in the new version is recorded in
+      the meta.tag.  The tables contain all historical resource versions since
+      streaming was enabled. For query convenience, the server also creates
+      one view per table of the same name containing only the current resource
+      version.  If a resource mutation cannot be streamed to BigQuery, errors
+      will be logged to Stackdriver (see [Viewing logs](/healthcare/docs/how-
+      tos/stackdriver-logging)).
+    resourceTypes: Supply a FHIR resource type (such as "Patient" or
+      "Observation"). See https://www.hl7.org/fhir/valueset-resource-
+      types.html for a list of all FHIR resource types. The server treats an
+      empty list as an intent to stream all the supported resource types in
+      this FHIR store.
+  """
+
+  bigqueryDestination = _messages.MessageField('GoogleCloudHealthcareV1beta1FhirBigQueryDestination', 1)
+  resourceTypes = _messages.StringField(2, repeated=True)
 
 
 class TagFilterList(_messages.Message):

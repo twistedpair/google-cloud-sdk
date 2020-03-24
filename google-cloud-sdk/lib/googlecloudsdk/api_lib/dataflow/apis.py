@@ -229,6 +229,8 @@ class TemplateArguments(object):
   disable_public_ips = None
   parameters = None
   service_account_email = None
+  worker_region = None
+  worker_zone = None
 
   def __init__(self,
                project_id=None,
@@ -245,7 +247,9 @@ class TemplateArguments(object):
                kms_key_name=None,
                disable_public_ips=None,
                parameters=None,
-               service_account_email=None):
+               service_account_email=None,
+               worker_region=None,
+               worker_zone=None):
     self.project_id = project_id
     self.region_id = region_id
     self.job_name = job_name
@@ -261,6 +265,8 @@ class TemplateArguments(object):
     self.disable_public_ips = disable_public_ips
     self.parameters = parameters
     self.service_account_email = service_account_email
+    self.worker_region = worker_region
+    self.worker_zone = worker_zone
 
 
 class Templates(object):
@@ -342,7 +348,9 @@ class Templates(object):
             machineType=template_args.worker_machine_type,
             tempLocation=template_args.staging_location,
             kmsKeyName=template_args.kms_key_name,
-            ipConfiguration=ip_configuration),
+            ipConfiguration=ip_configuration,
+            workerRegion=template_args.worker_region,
+            workerZone=template_args.worker_zone),
         parameters=Templates.PARAMETERS_VALUE(
             additionalProperties=params_list) if parameters else None)
     request = GetMessagesModule(
@@ -393,7 +401,9 @@ class Templates(object):
             machineType=template_args.worker_machine_type,
             tempLocation=template_args.staging_location,
             kmsKeyName=template_args.kms_key_name,
-            ipConfiguration=ip_configuration),
+            ipConfiguration=ip_configuration,
+            workerRegion=template_args.worker_region,
+            workerZone=template_args.worker_zone),
         jobName=template_args.job_name,
         parameters=Templates.LAUNCH_TEMPLATE_PARAMETERS_VALUE(
             additionalProperties=params_list) if parameters else None,
@@ -452,7 +462,8 @@ class Templates(object):
         template_args.subnetwork or template_args.worker_machine_type or
         template_args.staging_location or template_args.kms_key_name or
         template_args.service_account_email or
-        template_args.disable_public_ips):
+        template_args.disable_public_ips or template_args.worker_region or
+        template_args.worker_zone):
       error = (
           'All pipeline options should be passed via parameters flag for '
           'Flex templates. Use right casing format according to the sdk. '

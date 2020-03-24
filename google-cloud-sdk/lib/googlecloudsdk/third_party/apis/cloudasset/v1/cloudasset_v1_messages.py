@@ -476,7 +476,7 @@ class Feed(_messages.Message):
   r"""An asset feed used to export asset updates to a destinations. An asset
   feed filter controls what updates are exported. The asset feed must be
   created within a project, organization, or folder. Supported destinations
-  are: Cloud Pub/Sub topics.
+  are: Pub/Sub topics.
 
   Enums:
     ContentTypeValueValuesEnum: Asset content type. If not specified, no
@@ -535,7 +535,7 @@ class FeedOutputConfig(_messages.Message):
   r"""Output configuration for asset feed destination.
 
   Fields:
-    pubsubDestination: Destination on Cloud Pubsub.
+    pubsubDestination: Destination on Pub/Sub.
   """
 
   pubsubDestination = _messages.MessageField('PubsubDestination', 1)
@@ -1362,10 +1362,10 @@ class Policy(_messages.Message):
 
 
 class PubsubDestination(_messages.Message):
-  r"""A Cloud Pubsub destination.
+  r"""A Pub/Sub destination.
 
   Fields:
-    topic: The name of the Cloud Pub/Sub topic to publish to. For example:
+    topic: The name of the Pub/Sub topic to publish to. For example:
       `projects/PROJECT_ID/topics/TOPIC_ID`.
   """
 

@@ -455,6 +455,10 @@
             "CSV",
             "BAK"
           ]
+        },
+        "offload": {
+          "description": "Option for export offload.",
+          "type": "boolean"
         }
       }
     },
@@ -1233,7 +1237,7 @@
     },
     "Settings": {
       "id": "Settings",
-      "description": "LINT.IfChange(Settings)\nDatabase instance settings.",
+      "description": "Database instance settings.",
       "type": "object",
       "properties": {
         "settingsVersion": {

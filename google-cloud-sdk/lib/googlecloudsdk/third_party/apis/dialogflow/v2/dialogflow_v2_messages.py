@@ -1833,12 +1833,11 @@ class GoogleCloudDialogflowV2InputAudioConfig(_messages.Message):
   Enums:
     AudioEncodingValueValuesEnum: Required. Audio encoding of the audio
       content to process.
-    ModelVariantValueValuesEnum: Optional. Which variant of the Speech model
-      to use.
+    ModelVariantValueValuesEnum: Which variant of the Speech model to use.
 
   Fields:
     audioEncoding: Required. Audio encoding of the audio content to process.
-    enableWordInfo: Optional. If `true`, Dialogflow returns SpeechWordInfo in
+    enableWordInfo: If `true`, Dialogflow returns SpeechWordInfo in
       StreamingRecognitionResult with information about the recognized speech
       words, e.g. start and end time offsets. If false or unspecified, Speech
       doesn't return any word-level information.
@@ -1848,18 +1847,18 @@ class GoogleCloudDialogflowV2InputAudioConfig(_messages.Message):
       for a list of the currently supported language codes. Note that queries
       in the same session do not necessarily need to specify the same
       language.
-    model: Optional. Which Speech model to select for the given request.
-      Select the model best suited to your domain to get best results. If a
-      model is not explicitly specified, then we auto-select a model based on
-      the parameters in the InputAudioConfig. If enhanced speech model is
-      enabled for the agent and an enhanced version of the specified model for
-      the language does not exist, then the speech is recognized using the
+    model: Which Speech model to select for the given request. Select the
+      model best suited to your domain to get best results. If a model is not
+      explicitly specified, then we auto-select a model based on the
+      parameters in the InputAudioConfig. If enhanced speech model is enabled
+      for the agent and an enhanced version of the specified model for the
+      language does not exist, then the speech is recognized using the
       standard version of the specified model. Refer to [Cloud Speech API
       documentation](https://cloud.google.com/speech-to-text/docs/basics
       #select-model) for more details.
-    modelVariant: Optional. Which variant of the Speech model to use.
-    phraseHints: Optional. A list of strings containing words and phrases that
-      the speech recognizer should recognize with higher likelihood.  See [the
+    modelVariant: Which variant of the Speech model to use.
+    phraseHints: A list of strings containing words and phrases that the
+      speech recognizer should recognize with higher likelihood.  See [the
       Cloud Speech documentation](https://cloud.google.com/speech-to-
       text/docs/basics#phrase-hints) for more details.  This field is
       deprecated. Please use [speech_contexts]() instead. If you specify both
@@ -1869,19 +1868,18 @@ class GoogleCloudDialogflowV2InputAudioConfig(_messages.Message):
       sent in the query. Refer to [Cloud Speech API
       documentation](https://cloud.google.com/speech-to-text/docs/basics) for
       more details.
-    singleUtterance: Optional. If `false` (default), recognition does not
-      cease until the client closes the stream. If `true`, the recognizer will
-      detect a single spoken utterance in input audio. Recognition ceases when
-      it detects the audio's voice has stopped or paused. In this case, once a
+    singleUtterance: If `false` (default), recognition does not cease until
+      the client closes the stream. If `true`, the recognizer will detect a
+      single spoken utterance in input audio. Recognition ceases when it
+      detects the audio's voice has stopped or paused. In this case, once a
       detected intent is received, the client should close the stream and
       start a new request with a new stream as needed. Note: This setting is
       relevant only for streaming methods. Note: When specified,
       InputAudioConfig.single_utterance takes precedence over
       StreamingDetectIntentRequest.single_utterance.
-    speechContexts: Optional. Context information to assist speech
-      recognition.  See [the Cloud Speech
-      documentation](https://cloud.google.com/speech-to-text/docs/basics
-      #phrase-hints) for more details.
+    speechContexts: Context information to assist speech recognition.  See
+      [the Cloud Speech documentation](https://cloud.google.com/speech-to-
+      text/docs/basics#phrase-hints) for more details.
   """
 
   class AudioEncodingValueValuesEnum(_messages.Enum):
@@ -1930,7 +1928,7 @@ class GoogleCloudDialogflowV2InputAudioConfig(_messages.Message):
     AUDIO_ENCODING_SPEEX_WITH_HEADER_BYTE = 7
 
   class ModelVariantValueValuesEnum(_messages.Enum):
-    r"""Optional. Which variant of the Speech model to use.
+    r"""Which variant of the Speech model to use.
 
     Values:
       SPEECH_MODEL_VARIANT_UNSPECIFIED: No model variant specified. In this
@@ -1989,7 +1987,7 @@ class GoogleCloudDialogflowV2Intent(_messages.Message):
     events: Optional. The collection of event names that trigger the intent.
       If the collection of input contexts is not empty, all of the contexts
       must be present in the active user session for an event to trigger this
-      intent.
+      intent. Event names are limited to 50 characters.
     followupIntentInfo: Read-only. Information about all followup intents that
       have this intent as a direct or indirect parent. We populate this field
       only in the output.
@@ -3995,7 +3993,7 @@ class GoogleCloudDialogflowV2beta1Intent(_messages.Message):
     events: Optional. The collection of event names that trigger the intent.
       If the collection of input contexts is not empty, all of the contexts
       must be present in the active user session for an event to trigger this
-      intent.
+      intent. Event names are limited to 50 characters.
     followupIntentInfo: Read-only. Information about all followup intents that
       have this intent as a direct or indirect parent. We populate this field
       only in the output.

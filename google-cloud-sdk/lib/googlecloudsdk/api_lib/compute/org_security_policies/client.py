@@ -18,13 +18,40 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+from googlecloudsdk.api_lib.compute.operations import poller
+from googlecloudsdk.api_lib.util import waiter
+
+OP_COLLECTION_NAME = 'compute.globalOrganizationOperations'
+API_COLLECTION_NAME = 'compute.organizationSecurityPolicies'
+
+
+class DeletePoller(poller.Poller):
+
+  def GetResult(self, operation):
+    # For delete operations, once the operation status is DONE, there is
+    # nothing further to fetch.
+    return
+
 
 class OrgSecurityPolicy(object):
   """Abstracts Organization SecurityPolicy resource."""
 
-  def __init__(self, ref=None, compute_client=None):
+  def __init__(self,
+               ref=None,
+               compute_client=None,
+               resources=None,
+               version='beta'):
     self.ref = ref
     self._compute_client = compute_client
+    self._resources = resources
+    self._version = version
+    self._op_has_project = self._HasProject(OP_COLLECTION_NAME)
+    self._api_has_project = self._HasProject(API_COLLECTION_NAME)
+
+  def _HasProject(self, collection):
+    collection_info = self._resources.GetCollectionInfo(collection,
+                                                        self._version)
+    return 'projects' in collection_info.path or 'projects' in collection_info.base_url
 
   @property
   def _client(self):
@@ -33,6 +60,10 @@ class OrgSecurityPolicy(object):
   @property
   def _messages(self):
     return self._compute_client.messages
+
+  @property
+  def _service(self):
+    return self._client.organizationSecurityPolicies
 
   def _MakeAddAssociationRequestTuple(self, association, security_policy_id,
                                       replace_existing_association):
@@ -106,145 +137,227 @@ class OrgSecurityPolicy(object):
                      association=None,
                      security_policy_id=None,
                      replace_existing_association=False,
+                     batch_mode=False,
                      only_generate_request=False):
     """Sends request to add an association."""
 
-    requests = [
+    if batch_mode:
+      requests = [
+          self._MakeAddAssociationRequestTuple(association, security_policy_id,
+                                               replace_existing_association)
+      ]
+      if not only_generate_request:
+        return self._compute_client.MakeRequests(requests)
+      return requests
+
+    op_res = self._service.AddAssociation(
         self._MakeAddAssociationRequestTuple(association, security_policy_id,
-                                             replace_existing_association)
-    ]
-    if not only_generate_request:
-      return self._compute_client.MakeRequests(requests)
-    return requests
+                                             replace_existing_association)[2])
+    return self.WaitOperation(
+        op_res, message='Add association of the organization Security Policy.')
 
   def DeleteAssociation(self,
                         security_policy_id=None,
+                        batch_mode=False,
                         only_generate_request=False):
     """Sends request to delete an association."""
 
-    requests = [self._MakeDeleteAssociationRequestTuple(security_policy_id)]
-    if not only_generate_request:
-      return self._compute_client.MakeRequests(requests)
-    return requests
+    if batch_mode:
+      requests = [self._MakeDeleteAssociationRequestTuple(security_policy_id)]
+      if not only_generate_request:
+        return self._compute_client.MakeRequests(requests)
+      return requests
 
-  def ListAssociations(self, target_resource=None, only_generate_request=False):
+    op_res = self._service.RemoveAssociation(
+        self._MakeDeleteAssociationRequestTuple(security_policy_id)[2])
+    return self.WaitOperation(
+        op_res,
+        message='Delete association of the organization Security Policy.')
+
+  def ListAssociations(self,
+                       target_resource=None,
+                       batch_mode=False,
+                       only_generate_request=False):
     """Sends request to list all the associations."""
 
-    requests = [self._MakeListAssociationsRequestTuple(target_resource)]
-    if not only_generate_request:
-      return self._compute_client.MakeRequests(requests)
-    return requests
+    if batch_mode:
+      requests = [self._MakeListAssociationsRequestTuple(target_resource)]
+      if not only_generate_request:
+        return self._compute_client.MakeRequests(requests)
+      return requests
 
-  def Delete(self, sp_id=None, only_generate_request=False):
+    return [
+        self._service.ListAssociations(
+            self._MakeListAssociationsRequestTuple(target_resource)[2])
+    ]
+
+  def Delete(self, sp_id=None, batch_mode=False, only_generate_request=False):
     """Sends request to delete a security policy."""
 
-    requests = [self._MakeDeleteRequestTuple(sp_id=sp_id)]
-    if not only_generate_request:
-      return self._compute_client.MakeRequests(requests)
-    return requests
+    if batch_mode:
+      requests = [self._MakeDeleteRequestTuple(sp_id=sp_id)]
+      if not only_generate_request:
+        return self._compute_client.MakeRequests(requests)
+      return requests
+
+    op_res = self._service.Delete(self._MakeDeleteRequestTuple(sp_id=sp_id)[2])
+    operation_poller = DeletePoller(self._service, self.ref)
+    return self.WaitOperation(
+        op_res,
+        operation_poller=operation_poller,
+        message='Delete the organization Security Policy.')
+
+  def WaitOperation(self, operation, operation_poller=None, message=None):
+    if not operation_poller:
+      operation_poller = poller.Poller(
+          self._service, self.ref, has_project=self._api_has_project)
+    if self._op_has_project and 'projects' not in operation.selfLink:
+      operation.selfLink = operation.selfLink.replace('locations',
+                                                      'projects/locations')
+    operation_ref = self._resources.Parse(
+        operation.selfLink, collection=OP_COLLECTION_NAME)
+    return waiter.WaitFor(operation_poller, operation_ref, message)
 
   def Update(self,
              sp_id=None,
              only_generate_request=False,
-             security_policy=None):
+             security_policy=None,
+             batch_mode=False):
     """Sends request to update a security policy."""
 
-    requests = [
+    if batch_mode:
+      requests = [
+          self._MakeUpdateRequestTuple(
+              sp_id=sp_id, security_policy=security_policy)
+      ]
+      if not only_generate_request:
+        return self._compute_client.MakeRequests(requests)
+      return requests
+
+    op_res = self._service.Patch(
         self._MakeUpdateRequestTuple(
-            sp_id=sp_id, security_policy=security_policy)
-    ]
-    if not only_generate_request:
-      return self._compute_client.MakeRequests(requests)
-    return requests
+            sp_id=sp_id, security_policy=security_policy)[2])
+    return self.WaitOperation(
+        op_res, message='Update the organization Security Policy.')
 
-  def Move(self, only_generate_request=False, sp_id=None, parent_id=None):
+  def Move(self,
+           only_generate_request=False,
+           sp_id=None,
+           parent_id=None,
+           batch_mode=False):
     """Sends request to move the security policy to anther parent."""
+    if batch_mode:
+      requests = [self._MakeMoveRequestTuple(sp_id=sp_id, parent_id=parent_id)]
+      if not only_generate_request:
+        return self._compute_client.MakeRequests(requests)
+      return requests
 
-    requests = [self._MakeMoveRequestTuple(sp_id=sp_id, parent_id=parent_id)]
-    if not only_generate_request:
-      return self._compute_client.MakeRequests(requests)
-    return requests
+    op_res = self._service.Move(
+        self._MakeMoveRequestTuple(sp_id=sp_id, parent_id=parent_id)[2])
+    return self.WaitOperation(
+        op_res, message='Move the organization Security Policy.')
 
   def CopyRules(self,
                 only_generate_request=False,
                 dest_sp_id=None,
-                source_security_policy=None):
+                source_security_policy=None,
+                batch_mode=False):
     """Sends request to copy all the rules from another security policy."""
 
-    requests = [
+    if batch_mode:
+      requests = [
+          self._MakeCopyRulesRequestTuple(
+              dest_sp_id=dest_sp_id,
+              source_security_policy=source_security_policy)
+      ]
+      if not only_generate_request:
+        return self._compute_client.MakeRequests(requests)
+      return requests
+
+    op_res = self._service.CopyRules(
         self._MakeCopyRulesRequestTuple(
             dest_sp_id=dest_sp_id,
-            source_security_policy=source_security_policy)
-    ]
-    if not only_generate_request:
-      return self._compute_client.MakeRequests(requests)
-    return requests
+            source_security_policy=source_security_policy)[2])
+    return self.WaitOperation(
+        op_res, message='Copy rules for the organization Security Policy.')
 
-  def Describe(self, sp_id=None, only_generate_request=False):
+  def Describe(self, sp_id=None, batch_mode=False, only_generate_request=False):
     """Sends request to describe a security policy."""
 
-    requests = [self._MakeDescribeRequestTuple(sp_id=sp_id)]
-    if not only_generate_request:
-      return self._compute_client.MakeRequests(requests)
-    return requests
+    if batch_mode:
+      requests = [self._MakeDescribeRequestTuple(sp_id=sp_id)]
+      if not only_generate_request:
+        return self._compute_client.MakeRequests(requests)
+      return requests
 
-  def List(self, parent_id=None, only_generate_request=False):
+    return [self._service.Get(self._MakeDescribeRequestTuple(sp_id=sp_id)[2])]
+
+  def List(self, parent_id=None, batch_mode=False, only_generate_request=False):
     """Sends request to list all the security policies."""
 
-    requests = [self._MakeListRequestTuple(parent_id)]
-    if not only_generate_request:
-      return self._compute_client.MakeRequests(requests)
-    return requests
+    if batch_mode:
+      requests = [self._MakeListRequestTuple(parent_id)]
+      if not only_generate_request:
+        return self._compute_client.MakeRequests(requests)
+      return requests
+
+    return [self._service.List(self._MakeListRequestTuple(parent_id)[2])]
 
   def Create(self,
              security_policy=None,
              parent_id=None,
+             batch_mode=False,
              only_generate_request=False):
     """Sends request to create a security policy."""
 
-    requests = [self._MakeCreateRequestTuple(security_policy, parent_id)]
-    if not only_generate_request:
-      return self._compute_client.MakeRequests(requests)
-    return requests
+    if batch_mode:
+      requests = [self._MakeCreateRequestTuple(security_policy, parent_id)]
+      if not only_generate_request:
+        return self._compute_client.MakeRequests(requests)
+      return requests
+
+    op_res = self._service.Insert(
+        self._MakeCreateRequestTuple(security_policy, parent_id)[2])
+    return self.WaitOperation(
+        op_res, message='Create the organization Security Policy.')
 
 
-class OrgSecurityPolicyRule(object):
+class OrgSecurityPolicyRule(OrgSecurityPolicy):
   """Abstracts Organization SecurityPolicy Rule."""
 
-  def __init__(self, ref=None, compute_client=None):
-    self.ref = ref
-    self._compute_client = compute_client
+  def __init__(self,
+               ref=None,
+               compute_client=None,
+               resources=None,
+               version='beta'):
+    super(OrgSecurityPolicyRule, self).__init__(
+        ref=ref,
+        compute_client=compute_client,
+        resources=resources,
+        version=version)
 
-  @property
-  def _client(self):
-    return self._compute_client.apitools_client
-
-  @property
-  def _messages(self):
-    return self._compute_client.messages
-
-  def _MakeCreateRequestTuple(self,
-                              security_policy=None,
-                              security_policy_rule=None):
+  def _MakeCreateRuleRequestTuple(self,
+                                  security_policy=None,
+                                  security_policy_rule=None):
     return (self._client.organizationSecurityPolicies, 'AddRule',
             self._messages.ComputeOrganizationSecurityPoliciesAddRuleRequest(
                 securityPolicy=security_policy,
                 securityPolicyRule=security_policy_rule))
 
-  def _MakeDeleteRequestTuple(self, priority=None, security_policy=None):
+  def _MakeDeleteRuleRequestTuple(self, priority=None, security_policy=None):
     return (self._client.organizationSecurityPolicies, 'RemoveRule',
             self._messages.ComputeOrganizationSecurityPoliciesRemoveRuleRequest(
                 securityPolicy=security_policy, priority=priority))
 
-  def _MakeDescribeRequestTuple(self, priority=None, security_policy=None):
+  def _MakeDescribeRuleRequestTuple(self, priority=None, security_policy=None):
     return (self._client.organizationSecurityPolicies, 'GetRule',
             self._messages.ComputeOrganizationSecurityPoliciesGetRuleRequest(
                 securityPolicy=security_policy, priority=priority))
 
-  def _MakeUpdateRequestTuple(self,
-                              priority=None,
-                              security_policy=None,
-                              security_policy_rule=None):
+  def _MakeUpdateRuleRequestTuple(self,
+                                  priority=None,
+                                  security_policy=None,
+                                  security_policy_rule=None):
     return (self._client.organizationSecurityPolicies, 'PatchRule',
             self._messages.ComputeOrganizationSecurityPoliciesPatchRuleRequest(
                 priority=priority,
@@ -254,59 +367,92 @@ class OrgSecurityPolicyRule(object):
   def Create(self,
              security_policy=None,
              security_policy_rule=None,
+             batch_mode=False,
              only_generate_request=False):
     """Sends request to create a security policy rule."""
 
-    requests = [
-        self._MakeCreateRequestTuple(
+    if batch_mode:
+      requests = [
+          self._MakeCreateRuleRequestTuple(
+              security_policy=security_policy,
+              security_policy_rule=security_policy_rule)
+      ]
+      if not only_generate_request:
+        return self._compute_client.MakeRequests(requests)
+      return requests
+
+    op_res = self._service.AddRule(
+        self._MakeCreateRuleRequestTuple(
             security_policy=security_policy,
-            security_policy_rule=security_policy_rule)
-    ]
-    if not only_generate_request:
-      return self._compute_client.MakeRequests(requests)
-    return requests
+            security_policy_rule=security_policy_rule)[2])
+    return self.WaitOperation(
+        op_res, message='Add a rule of the organization Security Policy.')
 
   def Delete(self,
              priority=None,
              security_policy_id=None,
+             batch_mode=False,
              only_generate_request=False):
     """Sends request to delete a security policy rule."""
 
-    requests = [
-        self._MakeDeleteRequestTuple(
-            priority=priority, security_policy=security_policy_id)
-    ]
-    if not only_generate_request:
-      return self._compute_client.MakeRequests(requests)
-    return requests
+    if batch_mode:
+      requests = [
+          self._MakeDeleteRuleRequestTuple(
+              priority=priority, security_policy=security_policy_id)
+      ]
+      if not only_generate_request:
+        return self._compute_client.MakeRequests(requests)
+      return requests
+
+    op_res = self._service.RemoveRule(
+        self._MakeDeleteRuleRequestTuple(
+            priority=priority, security_policy=security_policy_id)[2])
+    return self.WaitOperation(
+        op_res, message='Delete a rule of the organization Security Policy.')
 
   def Describe(self,
                priority=None,
                security_policy_id=None,
+               batch_mode=False,
                only_generate_request=False):
     """Sends request to describe a security policy rule."""
 
-    requests = [
-        self._MakeDescribeRequestTuple(
-            priority=priority, security_policy=security_policy_id)
-    ]
-    if not only_generate_request:
-      return self._compute_client.MakeRequests(requests)
-    return requests
+    if batch_mode:
+      requests = [
+          self._MakeDescribeRuleRequestTuple(
+              priority=priority, security_policy=security_policy_id)
+      ]
+      if not only_generate_request:
+        return self._compute_client.MakeRequests(requests)
+      return requests
+
+    return self._service.GetRule(
+        self._MakeDescribeRuleRequestTuple(
+            priority=priority, security_policy=security_policy_id)[2])
 
   def Update(self,
              priority=None,
              security_policy=None,
              security_policy_rule=None,
+             batch_mode=False,
              only_generate_request=False):
     """Sends request to update a security policy rule."""
 
-    requests = [
-        self._MakeUpdateRequestTuple(
+    if batch_mode:
+      requests = [
+          self._MakeUpdateRuleRequestTuple(
+              priority=priority,
+              security_policy=security_policy,
+              security_policy_rule=security_policy_rule)
+      ]
+      if not only_generate_request:
+        return self._compute_client.MakeRequests(requests)
+      return requests
+
+    op_res = self._service.PatchRule(
+        self._MakeUpdateRuleRequestTuple(
             priority=priority,
             security_policy=security_policy,
-            security_policy_rule=security_policy_rule)
-    ]
-    if not only_generate_request:
-      return self._compute_client.MakeRequests(requests)
-    return requests
+            security_policy_rule=security_policy_rule)[2])
+    return self.WaitOperation(
+        op_res, message='Update a rule of the organization Security Policy.')

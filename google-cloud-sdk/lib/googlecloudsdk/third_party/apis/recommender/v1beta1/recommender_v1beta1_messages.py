@@ -83,9 +83,7 @@ class GoogleCloudRecommenderV1beta1Insight(_messages.Message):
       a given subtype.
     lastRefreshTime: Timestamp of the latest data used to generate the
       insight.
-    name: Name of the insight.  * A project insight is represented as   projec
-      ts/[PROJECT_NUMBER]/locations/[LOCATION]/insightTypes/[INSIGHT_TYPE_ID]/
-      insights/[insight_id]
+    name: Name of the insight.
     observationPeriod: Observation period that led to the insight. The source
       data used to generate the insight ends at last_refresh_time and begins
       at (last_refresh_time - observation_period).
@@ -354,7 +352,8 @@ class GoogleCloudRecommenderV1beta1MarkRecommendationFailedRequest(_messages.Mes
       /^[a-zA-Z0-9_./-]{0,255}$/.
 
   Fields:
-    etag: Fingerprint of the Recommendation. Provides optimistic locking.
+    etag: Required. Fingerprint of the Recommendation. Provides optimistic
+      locking.
     stateMetadata: State properties to include with this state. Overwrites any
       existing `state_metadata`. Keys must match the regex /^a-z0-9{0,62}$/.
       Values must match the regex /^[a-zA-Z0-9_./-]{0,255}$/.

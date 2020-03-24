@@ -99,14 +99,29 @@ def MakeCommitmentArg(plural):
 
 def AddCreateFlags(parser):
   """Add general arguments for `commitments create` flag."""
-  parser.add_argument(
+  AddPlan(parser)
+  AddReservationArgGroup(parser)
+  AddResourcesArgGroup(parser)
+
+
+def AddPlan(parser):
+  return parser.add_argument(
       '--plan',
       required=True,
       choices=VALID_PLANS,
       help='Duration of the commitment.')
 
-  AddReservationArgGroup(parser)
-  AddResourcesArgGroup(parser)
+
+def AddLicenceBasedFlags(parser):
+  parser.add_argument('--license', required=True,
+                      help='Applicable license URI. For example: '
+                           '`https://www.googleapis.com/compute/v1/projects/suse-sap-cloud/global/licenses/sles-sap-12`')  #  pylint:disable=line-too-long
+  parser.add_argument('--cores-per-license', required=False, type=str,
+                      help='Core range of the instance. Must be one of: `1-2`,'
+                           ' `3-4`, `5+`. Required for SAP licenses.')
+  parser.add_argument('--amount', required=True, type=int,
+                      help='Number of licenses purchased.')
+  AddPlan(parser)
 
 
 # TODO(b/129054682): fix the format in text render.

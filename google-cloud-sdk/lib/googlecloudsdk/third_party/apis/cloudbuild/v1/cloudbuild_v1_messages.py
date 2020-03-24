@@ -506,7 +506,9 @@ class BuildTrigger(_messages.Message):
   changes.
 
   Messages:
-    SubstitutionsValue: Substitutions data for Build resource.
+    SubstitutionsValue: Substitutions for Build resource. The keys must match
+      the following regular expression: `^_[A-Z0-9_]+$`.The keys cannot
+      conflict with the keys in bindings.
 
   Fields:
     build: Contents of the build template.
@@ -537,7 +539,9 @@ class BuildTrigger(_messages.Message):
       must contain only alphanumeric characters and dashes. + They can be 1-64
       characters long. + They must begin and end with an alphanumeric
       character.
-    substitutions: Substitutions data for Build resource.
+    substitutions: Substitutions for Build resource. The keys must match the
+      following regular expression: `^_[A-Z0-9_]+$`.The keys cannot conflict
+      with the keys in bindings.
     tags: Tags for annotation of a `BuildTrigger`
     triggerTemplate: Template describing the types of source changes to
       trigger a build.  Branch and tag names in trigger templates are
@@ -548,7 +552,9 @@ class BuildTrigger(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class SubstitutionsValue(_messages.Message):
-    r"""Substitutions data for Build resource.
+    r"""Substitutions for Build resource. The keys must match the following
+    regular expression: `^_[A-Z0-9_]+$`.The keys cannot conflict with the keys
+    in bindings.
 
     Messages:
       AdditionalProperty: An additional property for a SubstitutionsValue

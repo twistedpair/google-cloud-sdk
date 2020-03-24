@@ -96,6 +96,7 @@ class TrafficTargetPair(object):
       referenced revision.
     displayTags: Human-readable representation of the current tags assigned to
       the referenced revision.
+    serviceUrl: The main URL for the service.
   """
   # This class has lower camel case public attribute names to implement our
   # desired style for json and yaml property names in structured output.
@@ -109,7 +110,7 @@ class TrafficTargetPair(object):
 
   def __init__(
       self, spec_targets, status_targets, revision_name, latest,
-      status_percent_override):
+      status_percent_override, service_url=''):
     """Creates a new TrafficTargetPair.
 
     Args:
@@ -122,6 +123,7 @@ class TrafficTargetPair(object):
         ready revision.
       status_percent_override: Percent to use for the status percent of this
         TrafficTargetPair, overriding the values in status_targets.
+      service_url: The main URL for the service. Optional.
 
     Returns:
       A new TrafficTargetPair instance.
@@ -131,6 +133,7 @@ class TrafficTargetPair(object):
     self._revision_name = revision_name
     self._latest = latest
     self._status_percent_override = status_percent_override
+    self._service_url = service_url
 
   @property
   def key(self):
@@ -206,6 +209,11 @@ class TrafficTargetPair(object):
     else:
       return '{} (currently {})'.format(spec_tags, status_tags)
 
+  @property
+  def serviceUrl(self):  # pylint: disable=invalid-name
+    """The main URL for the service."""
+    return self._service_url
+
 
 def _SplitManagedLatestStatusTarget(spec_dict, status_dict, is_platform_managed,
                                     latest_ready_revision_name):
@@ -258,7 +266,7 @@ def _PercentOverride(key, spec_dict, status_targets,
 
 
 def GetTrafficTargetPairs(spec_traffic, status_traffic, is_platform_managed,
-                          latest_ready_revision_name):
+                          latest_ready_revision_name, service_url=''):
   """Returns a list of TrafficTargetPairs for a Service.
 
   Given the spec and status traffic targets wrapped in a TrafficTargets instance
@@ -281,6 +289,7 @@ def GetTrafficTargetPairs(spec_traffic, status_traffic, is_platform_managed,
     is_platform_managed: Boolean indicating whether the current platform is
       fully-managed or Anthos/GKE.
     latest_ready_revision_name: The name of the service's latest ready revision.
+    service_url: The main URL for the service. Optional.
   Returns:
     A list of TrafficTargetPairs representing the current state of the service's
     traffic assignments. The TrafficTargetPairs are sorted by revision name,
@@ -311,5 +320,5 @@ def GetTrafficTargetPairs(spec_traffic, status_traffic, is_platform_managed,
 
     result.append(
         TrafficTargetPair(spec_targets, status_targets, revision_name, latest,
-                          percent_override))
+                          percent_override, service_url))
   return sorted(result, key=traffic.SortKeyFromTarget)

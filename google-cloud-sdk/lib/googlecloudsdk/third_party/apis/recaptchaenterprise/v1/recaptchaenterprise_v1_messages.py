@@ -271,7 +271,8 @@ class GoogleCloudRecaptchaenterpriseV1WebKeySettings(_messages.Message):
     allowAllDomains: If set to true, it means allowed_domains will not be
       enforced.
     allowAmpTraffic: Required. Whether this key can be used on AMP
-      (Accelerated Mobile Pages) websites.
+      (Accelerated Mobile Pages) websites. This can only be set for the SCORE
+      integration type.
     allowedDomains: Domains or subdomains of websites allowed to use the key.
       All subdomains of an allowed domain are automatically allowed. A valid
       domain requires a host and must not include any path, port, query or

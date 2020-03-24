@@ -905,7 +905,7 @@ class GoogleCloudDatacatalogV1Entry(_messages.Message):
     EntryType enum.
 
     Values:
-      ENTRY_TYPE_UNSPECIFIED: Default unknown type
+      ENTRY_TYPE_UNSPECIFIED: Default unknown type.
       TABLE: Output only. The type of entry that has a GoogleSQL schema,
         including logical views.
       MODEL: Output only. The type of models, examples include

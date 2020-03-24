@@ -51,3 +51,13 @@ snapshot:
     attribute_name: snapshot
     help: The name of the Filestore snapshot.
   disable_auto_completers: false
+
+backup:
+  name: backup
+  collection: file.projects.locations.backups
+  request_id_field: backupId
+  attributes:
+  - parameter_name: backupId
+    attribute_name: backup
+    help: The name of the Filestore backup.
+  disable_auto_completers: false

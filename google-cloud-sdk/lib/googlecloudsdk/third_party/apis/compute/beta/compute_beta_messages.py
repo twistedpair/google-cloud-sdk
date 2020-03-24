@@ -580,8 +580,8 @@ class Address(_messages.Message):
       being used by another resource and is not available.
 
   Messages:
-    LabelsValue: Labels to apply to this Address resource. These can be later
-      modified by the setLabels method. Each label key/value must comply with
+    LabelsValue: Labels for this resource. These can only be added or modified
+      by the setLabels method. Each label key/value pair must comply with
       RFC1035. Label values may be empty.
 
   Fields:
@@ -606,8 +606,8 @@ class Address(_messages.Message):
       change labels, otherwise the request will fail with error 412
       conditionNotMet.  To see the latest fingerprint, make a get() request to
       retrieve an Address.
-    labels: Labels to apply to this Address resource. These can be later
-      modified by the setLabels method. Each label key/value must comply with
+    labels: Labels for this resource. These can only be added or modified by
+      the setLabels method. Each label key/value pair must comply with
       RFC1035. Label values may be empty.
     name: Name of the resource. Provided by the client when the resource is
       created. The name must be 1-63 characters long, and comply with RFC1035.
@@ -734,8 +734,8 @@ class Address(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
-    r"""Labels to apply to this Address resource. These can be later modified
-    by the setLabels method. Each label key/value must comply with RFC1035.
+    r"""Labels for this resource. These can only be added or modified by the
+    setLabels method. Each label key/value pair must comply with RFC1035.
     Label values may be empty.
 
     Messages:
@@ -23178,9 +23178,9 @@ class ExternalVpnGateway(_messages.Message):
       of this external VPN gateway.
 
   Messages:
-    LabelsValue: Labels to apply to this ExternalVpnGateway resource. These
-      can be later modified by the setLabels method. Each label key/value must
-      comply with RFC1035. Label values may be empty.
+    LabelsValue: Labels for this resource. These can only be added or modified
+      by the setLabels method. Each label key/value pair must comply with
+      RFC1035. Label values may be empty.
 
   Fields:
     creationTimestamp: [Output Only] Creation timestamp in RFC3339 text
@@ -23200,9 +23200,9 @@ class ExternalVpnGateway(_messages.Message):
       to update or change labels, otherwise the request will fail with error
       412 conditionNotMet.  To see the latest fingerprint, make a get()
       request to retrieve an ExternalVpnGateway.
-    labels: Labels to apply to this ExternalVpnGateway resource. These can be
-      later modified by the setLabels method. Each label key/value must comply
-      with RFC1035. Label values may be empty.
+    labels: Labels for this resource. These can only be added or modified by
+      the setLabels method. Each label key/value pair must comply with
+      RFC1035. Label values may be empty.
     name: Name of the resource. Provided by the client when the resource is
       created. The name must be 1-63 characters long, and comply with RFC1035.
       Specifically, the name must be 1-63 characters long and match the
@@ -23230,9 +23230,9 @@ class ExternalVpnGateway(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
-    r"""Labels to apply to this ExternalVpnGateway resource. These can be
-    later modified by the setLabels method. Each label key/value must comply
-    with RFC1035. Label values may be empty.
+    r"""Labels for this resource. These can only be added or modified by the
+    setLabels method. Each label key/value pair must comply with RFC1035.
+    Label values may be empty.
 
     Messages:
       AdditionalProperty: An additional property for a LabelsValue object.
@@ -23850,7 +23850,7 @@ class ForwardingRule(_messages.Message):
       of the Address.
 
   Messages:
-    LabelsValue: Labels to apply to this resource. These can be later modified
+    LabelsValue: Labels for this resource. These can only be added or modified
       by the setLabels method. Each label key/value pair must comply with
       RFC1035. Label values may be empty.
 
@@ -23924,7 +23924,7 @@ class ForwardingRule(_messages.Message):
       change labels, otherwise the request will fail with error 412
       conditionNotMet.  To see the latest fingerprint, make a get() request to
       retrieve a ForwardingRule.
-    labels: Labels to apply to this resource. These can be later modified by
+    labels: Labels for this resource. These can only be added or modified by
       the setLabels method. Each label key/value pair must comply with
       RFC1035. Label values may be empty.
     loadBalancingScheme: Specifies the forwarding rule type.    - EXTERNAL is
@@ -24104,7 +24104,7 @@ class ForwardingRule(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
-    r"""Labels to apply to this resource. These can be later modified by the
+    r"""Labels for this resource. These can only be added or modified by the
     setLabels method. Each label key/value pair must comply with RFC1035.
     Label values may be empty.
 
@@ -30302,9 +30302,9 @@ class Interconnect(_messages.Message):
       this Interconnect.
 
   Messages:
-    LabelsValue: Labels to apply to this Interconnect resource. These can be
-      later modified by the setLabels method. Each label key/value must comply
-      with RFC1035. Label values may be empty.
+    LabelsValue: Labels for this resource. These can only be added or modified
+      by the setLabels method. Each label key/value pair must comply with
+      RFC1035. Label values may be empty.
 
   Fields:
     adminEnabled: Administrative status of the interconnect. When this is set
@@ -30345,8 +30345,8 @@ class Interconnect(_messages.Message):
       change labels, otherwise the request will fail with error 412
       conditionNotMet.  To see the latest fingerprint, make a get() request to
       retrieve an Interconnect.
-    labels: Labels to apply to this Interconnect resource. These can be later
-      modified by the setLabels method. Each label key/value must comply with
+    labels: Labels for this resource. These can only be added or modified by
+      the setLabels method. Each label key/value pair must comply with
       RFC1035. Label values may be empty.
     linkType: Type of link requested, which can take one of the following
       values:  - LINK_TYPE_ETHERNET_10G_LR: A 10G Ethernet with LR optics  -
@@ -30458,9 +30458,9 @@ class Interconnect(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
-    r"""Labels to apply to this Interconnect resource. These can be later
-    modified by the setLabels method. Each label key/value must comply with
-    RFC1035. Label values may be empty.
+    r"""Labels for this resource. These can only be added or modified by the
+    setLabels method. Each label key/value pair must comply with RFC1035.
+    Label values may be empty.
 
     Messages:
       AdditionalProperty: An additional property for a LabelsValue object.
@@ -30564,9 +30564,9 @@ class InterconnectAttachment(_messages.Message):
       attachment to a Partner Interconnect, created by the partner.
 
   Messages:
-    LabelsValue: Labels to apply to this InterconnectAttachment resource.
-      These can be later modified by the setLabels method. Each label
-      key/value must comply with RFC1035. Label values may be empty.
+    LabelsValue: Labels for this resource. These can only be added or modified
+      by the setLabels method. Each label key/value pair must comply with
+      RFC1035. Label values may be empty.
 
   Fields:
     adminEnabled: Determines whether this Attachment will carry packets. Not
@@ -30623,9 +30623,9 @@ class InterconnectAttachment(_messages.Message):
       to update or change labels, otherwise the request will fail with error
       412 conditionNotMet.  To see the latest fingerprint, make a get()
       request to retrieve an InterconnectAttachment.
-    labels: Labels to apply to this InterconnectAttachment resource. These can
-      be later modified by the setLabels method. Each label key/value must
-      comply with RFC1035. Label values may be empty.
+    labels: Labels for this resource. These can only be added or modified by
+      the setLabels method. Each label key/value pair must comply with
+      RFC1035. Label values may be empty.
     name: Name of the resource. Provided by the client when the resource is
       created. The name must be 1-63 characters long, and comply with RFC1035.
       Specifically, the name must be 1-63 characters long and match the
@@ -30810,9 +30810,9 @@ class InterconnectAttachment(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
-    r"""Labels to apply to this InterconnectAttachment resource. These can be
-    later modified by the setLabels method. Each label key/value must comply
-    with RFC1035. Label values may be empty.
+    r"""Labels for this resource. These can only be added or modified by the
+    setLabels method. Each label key/value pair must comply with RFC1035.
+    Label values may be empty.
 
     Messages:
       AdditionalProperty: An additional property for a LabelsValue object.
@@ -42794,9 +42794,9 @@ class SecurityPolicy(_messages.Message):
       policies apply to organizations.
 
   Messages:
-    LabelsValue: Labels to apply to this security policy resource. These can
-      be later modified by the setLabels method. Each label key/value must
-      comply with RFC1035. Label values may be empty.
+    LabelsValue: Labels for this resource. These can only be added or modified
+      by the setLabels method. Each label key/value pair must comply with
+      RFC1035. Label values may be empty.
 
   Fields:
     associations: A list of associations that belong to this policy.
@@ -42832,9 +42832,9 @@ class SecurityPolicy(_messages.Message):
       must always provide an up-to-date fingerprint hash in order to update or
       change labels.  To see the latest fingerprint, make get() request to the
       security policy.
-    labels: Labels to apply to this security policy resource. These can be
-      later modified by the setLabels method. Each label key/value must comply
-      with RFC1035. Label values may be empty.
+    labels: Labels for this resource. These can only be added or modified by
+      the setLabels method. Each label key/value pair must comply with
+      RFC1035. Label values may be empty.
     name: Name of the resource. Provided by the client when the resource is
       created. The name must be 1-63 characters long, and comply with RFC1035.
       Specifically, the name must be 1-63 characters long and match the
@@ -42871,9 +42871,9 @@ class SecurityPolicy(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
-    r"""Labels to apply to this security policy resource. These can be later
-    modified by the setLabels method. Each label key/value must comply with
-    RFC1035. Label values may be empty.
+    r"""Labels for this resource. These can only be added or modified by the
+    setLabels method. Each label key/value pair must comply with RFC1035.
+    Label values may be empty.
 
     Messages:
       AdditionalProperty: An additional property for a LabelsValue object.
@@ -48180,9 +48180,9 @@ class TargetVpnGateway(_messages.Message):
       can be one of the following: CREATING, READY, FAILED, or DELETING.
 
   Messages:
-    LabelsValue: Labels to apply to this TargetVpnGateway resource. These can
-      be later modified by the setLabels method. Each label key/value must
-      comply with RFC1035. Label values may be empty.
+    LabelsValue: Labels for this resource. These can only be added or modified
+      by the setLabels method. Each label key/value pair must comply with
+      RFC1035. Label values may be empty.
 
   Fields:
     creationTimestamp: [Output Only] Creation timestamp in RFC3339 text
@@ -48204,9 +48204,9 @@ class TargetVpnGateway(_messages.Message):
       change labels, otherwise the request will fail with error 412
       conditionNotMet.  To see the latest fingerprint, make a get() request to
       retrieve a TargetVpnGateway.
-    labels: Labels to apply to this TargetVpnGateway resource. These can be
-      later modified by the setLabels method. Each label key/value must comply
-      with RFC1035. Label values may be empty.
+    labels: Labels for this resource. These can only be added or modified by
+      the setLabels method. Each label key/value pair must comply with
+      RFC1035. Label values may be empty.
     name: Name of the resource. Provided by the client when the resource is
       created. The name must be 1-63 characters long, and comply with RFC1035.
       Specifically, the name must be 1-63 characters long and match the
@@ -48244,9 +48244,9 @@ class TargetVpnGateway(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
-    r"""Labels to apply to this TargetVpnGateway resource. These can be later
-    modified by the setLabels method. Each label key/value must comply with
-    RFC1035. Label values may be empty.
+    r"""Labels for this resource. These can only be added or modified by the
+    setLabels method. Each label key/value pair must comply with RFC1035.
+    Label values may be empty.
 
     Messages:
       AdditionalProperty: An additional property for a LabelsValue object.
@@ -49629,9 +49629,9 @@ class VpnGateway(_messages.Message):
   r"""Represents a VPN gateway resource. Next ID: 13
 
   Messages:
-    LabelsValue: Labels to apply to this VpnGateway resource. These can be
-      later modified by the setLabels method. Each label key/value must comply
-      with RFC1035. Label values may be empty.
+    LabelsValue: Labels for this resource. These can only be added or modified
+      by the setLabels method. Each label key/value pair must comply with
+      RFC1035. Label values may be empty.
 
   Fields:
     creationTimestamp: [Output Only] Creation timestamp in RFC3339 text
@@ -49650,8 +49650,8 @@ class VpnGateway(_messages.Message):
       change labels, otherwise the request will fail with error 412
       conditionNotMet.  To see the latest fingerprint, make a get() request to
       retrieve an VpnGateway.
-    labels: Labels to apply to this VpnGateway resource. These can be later
-      modified by the setLabels method. Each label key/value must comply with
+    labels: Labels for this resource. These can only be added or modified by
+      the setLabels method. Each label key/value pair must comply with
       RFC1035. Label values may be empty.
     name: Name of the resource. Provided by the client when the resource is
       created. The name must be 1-63 characters long, and comply with RFC1035.
@@ -49664,14 +49664,14 @@ class VpnGateway(_messages.Message):
       Provided by the client when the VPN gateway is created.
     region: [Output Only] URL of the region where the VPN gateway resides.
     selfLink: [Output Only] Server-defined URL for the resource.
-    vpnInterfaces: [Output Only] A list of interfaces on this VPN gateway.
+    vpnInterfaces: A list of interfaces on this VPN gateway.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
-    r"""Labels to apply to this VpnGateway resource. These can be later
-    modified by the setLabels method. Each label key/value must comply with
-    RFC1035. Label values may be empty.
+    r"""Labels for this resource. These can only be added or modified by the
+    setLabels method. Each label key/value pair must comply with RFC1035.
+    Label values may be empty.
 
     Messages:
       AdditionalProperty: An additional property for a LabelsValue object.
@@ -50083,7 +50083,8 @@ class VpnGatewayVpnGatewayInterface(_messages.Message):
 
   Fields:
     id: The numeric ID of this VPN gateway interface.
-    ipAddress: The external IP address for this VPN gateway interface.
+    ipAddress: [Output Only] The external IP address for this VPN gateway
+      interface.
   """
 
   id = _messages.IntegerField(1, variant=_messages.Variant.UINT32)
@@ -50243,9 +50244,9 @@ class VpnTunnel(_messages.Message):
       HA-VPN tunnel.
 
   Messages:
-    LabelsValue: Labels to apply to this VpnTunnel. These can be later
-      modified by the setLabels method. Each label key/value pair must comply
-      with RFC1035. Label values may be empty.
+    LabelsValue: Labels for this resource. These can only be added or modified
+      by the setLabels method. Each label key/value pair must comply with
+      RFC1035. Label values may be empty.
 
   Fields:
     creationTimestamp: [Output Only] Creation timestamp in RFC3339 text
@@ -50268,7 +50269,7 @@ class VpnTunnel(_messages.Message):
       change labels, otherwise the request will fail with error 412
       conditionNotMet.  To see the latest fingerprint, make a get() request to
       retrieve a VpnTunnel.
-    labels: Labels to apply to this VpnTunnel. These can be later modified by
+    labels: Labels for this resource. These can only be added or modified by
       the setLabels method. Each label key/value pair must comply with
       RFC1035. Label values may be empty.
     localTrafficSelector: Local traffic selector to use when establishing the
@@ -50390,7 +50391,7 @@ class VpnTunnel(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
-    r"""Labels to apply to this VpnTunnel. These can be later modified by the
+    r"""Labels for this resource. These can only be added or modified by the
     setLabels method. Each label key/value pair must comply with RFC1035.
     Label values may be empty.
 

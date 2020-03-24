@@ -88,8 +88,8 @@ FORWARDING_RULES_OVERVIEW_ALPHA = """\
         Different types of load balancers work at different layers of the OSI
         networking model (http://en.wikipedia.org/wiki/Network_layer). Layer 3
         targets include target pools, target SSL proxies, target TCP proxies,
-        and backend services. Layer 7 targets include target HTTP proxies and
-        target HTTPS proxies. For more information, refer to
+        and backend services. Layer 7 targets include target HTTP proxies,
+        target HTTPS and target gRPC proxies. For more information, refer to
         https://cloud.google.com/load-balancing/docs/forwarding-rule-concepts.
         """
 
@@ -205,6 +205,20 @@ SUBNET_ARG = compute_flags.ResourceArgument(
         """,
     region_explanation=('If not specified, the region is set to the'
                         ' region of the forwarding rule.'))
+
+
+def TargetGrpcProxyArg():
+  """Return a resource argument for parsing a target gRPC proxy."""
+
+  target_grpc_proxy_arg = compute_flags.ResourceArgument(
+      name='--target-grpc-proxy',
+      required=False,
+      resource_name='target gRPC proxy',
+      global_collection='compute.targetGrpcProxies',
+      short_help='Target gRPC proxy that receives the traffic.',
+      detailed_help=('Target gRPC proxy that receives the traffic.'),
+      region_explanation=None)
+  return target_grpc_proxy_arg
 
 
 def TargetHttpProxyArg(include_l7_internal_load_balancing=False):
@@ -356,9 +370,13 @@ def AddressArg(include_l7_internal_load_balancing):
 
 
 def AddUpdateArgs(parser,
-                  include_l7_internal_load_balancing=False):
+                  include_l7_internal_load_balancing=False,
+                  include_target_grpc_proxy=False):
   """Adds common flags for mutating forwarding rule targets."""
   target = parser.add_mutually_exclusive_group(required=True)
+
+  if include_target_grpc_proxy:
+    TargetGrpcProxyArg().AddArgument(parser, mutex_group=target)
 
   TargetHttpProxyArg(
       include_l7_internal_load_balancing=include_l7_internal_load_balancing
@@ -382,22 +400,28 @@ def AddUpdateArgs(parser,
 
   AddLoadBalancingScheme(
       parser,
-      include_l7_ilb=include_l7_internal_load_balancing)
+      include_l7_ilb=include_l7_internal_load_balancing,
+      include_target_grpc_proxy=include_target_grpc_proxy)
 
 
-def AddLoadBalancingScheme(parser, include_l7_ilb=False):
+def AddLoadBalancingScheme(parser,
+                           include_l7_ilb=False,
+                           include_target_grpc_proxy=False):
   """Adds the load-balancing-scheme flag."""
+  td_proxies = ('--target-http-proxy, --target-https-proxy, --target-grpc-proxy'
+                if include_target_grpc_proxy else
+                '--target-http-proxy, --target-https-proxy')
   load_balancing_choices = {
       'EXTERNAL':
           'External load balancing or forwarding, used with one of '
           '--target-http-proxy, --target-https-proxy, --target-tcp-proxy, '
           '--target-ssl-proxy, --target-pool, --target-vpn-gateway, '
           '--target-instance.',
-      'INTERNAL': 'Internal load balancing or forwarding, used with '
-                  '--backend-service.',
+      'INTERNAL':
+          'Internal load balancing or forwarding, used with --backend-service.',
       'INTERNAL_SELF_MANAGED':
-          'Traffic director load balancing or forwarding, used with '
-          '--target-http-proxy, --target-https-proxy.'
+          """Traffic director load balancing or forwarding, used with
+          {0}.""".format(td_proxies)
   }
 
   if include_l7_ilb:

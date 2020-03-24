@@ -20,16 +20,26 @@ from __future__ import print_function
 from __future__ import unicode_literals
 
 from googlecloudsdk.api_lib.run import traffic_pair
+from googlecloudsdk.core.console import console_attr
 from googlecloudsdk.core.resource import custom_printer_base as cp
 
 
-def _TransformTrafficPairs(traffic_pairs):
+TRAFFIC_PRINTER_FORMAT = 'traffic'
+
+
+def _TransformTrafficPair(pair):
+  """Transforms a single TrafficTargetPair into a marker class structure."""
+  console = console_attr.GetConsoleAttr()
+  return (pair.displayPercent, console.Emphasize(pair.displayRevisionId),
+          pair.displayTags, cp.Lines(pair.urls))
+
+
+def _TransformTrafficPairs(traffic_pairs, service_url):
   """Transforms a List[TrafficTargetPair] into a marker class structure."""
-  return cp.Labeled([
-      ('Traffic',
-       cp.Mapped(
-           (p.displayPercent, p.displayRevisionId) for p in traffic_pairs))
-  ])
+  traffic_section = cp.Section(
+      [cp.Table(_TransformTrafficPair(p) for p in traffic_pairs)])
+  return cp.Section([cp.Table([('Traffic:', service_url, traffic_section)])],
+                    max_column_width=60)
 
 
 def TransformTraffic(service):
@@ -47,7 +57,27 @@ def TransformTraffic(service):
   traffic_pairs = traffic_pair.GetTrafficTargetPairs(
       service.spec_traffic, service.status_traffic, service.is_managed,
       service.status.latestReadyRevisionName)
-  return _TransformTrafficPairs(traffic_pairs)
+  return _TransformTrafficPairs(traffic_pairs, service.status.url)
 
 
-# TODO(b/148901171) Add a traffic-specific custom printer.
+class TrafficPrinter(cp.CustomPrinterBase):
+  """Prints a service's traffic in a custom human-readable format."""
+
+  def Print(self, resources, single=False, intermediate=False):
+    """Overrides ResourcePrinter.Print to set single=True."""
+    # The update-traffic command returns a List[TrafficTargetPair] as its
+    # result. In order to print the custom human-readable format, this printer
+    # needs to process all records in the result at once (to compute column
+    # widths). By default, ResourcePrinter interprets a List[*] as a list of
+    # separate records and passes the contents of the list to this printer
+    # one-by-one. Setting single=True forces ResourcePrinter to treat the
+    # result as one record and pass the entire list to this printer in one call.
+    super(TrafficPrinter, self).Print(resources, True, intermediate)
+
+  def Transform(self, record):
+    """Transforms a List[TrafficTargetPair] into a marker class format."""
+    if record:
+      service_url = record[0].serviceUrl
+    else:
+      service_url = ''
+    return _TransformTrafficPairs(record, service_url)

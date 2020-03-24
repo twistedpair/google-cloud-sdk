@@ -19,6 +19,8 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+from googlecloudsdk.calliope import actions
+from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.command_lib.dataflow import dataflow_util
 from googlecloudsdk.core import properties
 from googlecloudsdk.core import resources
@@ -94,3 +96,72 @@ def ExtractJobRefs(args):
           },
           collection='dataflow.projects.locations.jobs') for job in jobs
   ]
+
+
+def CommonArgs(parser):
+  """Register flags applicable to all template launches.
+
+  Args:
+    parser: argparse.ArgumentParser to register arguments with.
+  """
+  parser.add_argument(
+      '--dataflow-kms-key',
+      help='The Cloud KMS key to protect the job resources.')
+
+  parser.add_argument(
+      '--disable-public-ips',
+      action=actions.StoreBooleanProperty(
+          properties.VALUES.dataflow.disable_public_ips),
+      help='The Cloud Dataflow workers must not use public IP addresses.')
+
+  parser.add_argument(
+      '--max-workers', type=int, help='The maximum number of workers to run.')
+
+  parser.add_argument(
+      '--network',
+      help='The Compute Engine network for launching instances to '
+      'run your pipeline.')
+
+  parser.add_argument(
+      '--num-workers', type=int, help='The initial number of workers to use.')
+
+  parser.add_argument(
+      '--service-account-email',
+      type=arg_parsers.RegexpValidator(r'.*@.*\..*',
+                                       'must provide a valid email address'),
+      help='The service account to run the workers as.')
+
+  parser.add_argument(
+      '--subnetwork',
+      help='The Compute Engine subnetwork for launching instances '
+      'to run your pipeline.')
+
+  parser.add_argument(
+      '--worker-machine-type',
+      help='The type of machine to use for workers. Defaults to '
+      'server-specified.')
+
+  group = parser.add_group(mutex=True, help='Worker location options.')
+
+  group.add_argument(
+      '--worker-region',
+      type=arg_parsers.RegexpValidator(r'\w+-\w+\d',
+                                       'must provide a valid region'),
+      help='The region to run the workers in.')
+
+  group.add_argument(
+      '--worker-zone',
+      type=arg_parsers.RegexpValidator(r'\w+-\w+\d-\w',
+                                       'must provide a valid zone'),
+      help='The zone to run the workers in.')
+
+  group.add_argument(
+      '--zone',
+      type=arg_parsers.RegexpValidator(r'\w+-\w+\d-\w',
+                                       'must provide a valid zone'),
+      help='The zone to run the workers in.',
+      action=actions.DeprecationAction(
+          '--zone',
+          warn=('The {flag_name} option is deprecated; '
+                'use --worker-region or --worker-zone instead.'),
+          removed=False))

@@ -38,17 +38,10 @@ class OperationErrors(Error):
     super(OperationErrors, self).__init__(', '.join(messages))
 
 
-def _IsGAOperation(operation_ref):
-  return (operation_ref.SelfLink().startswith(
-      'https://www.googleapis.com/compute/v1') or
-          operation_ref.SelfLink().startswith(
-              'https://compute.googleapis.com/compute/v1/'))
-
-
 class Poller(waiter.OperationPoller):
   """Compute operations poller."""
 
-  def __init__(self, resource_service, target_ref=None):
+  def __init__(self, resource_service, target_ref=None, has_project=False):
     """Initializes poller for compute operations.
 
     Args:
@@ -56,12 +49,15 @@ class Poller(waiter.OperationPoller):
           service representing the target of operation.
       target_ref: Resource, optional reference to the expected target of the
           operation. If not provided operation.targetLink will be used instead.
+      has_project: If 'projects' token should be in the target link for
+          organization operations.
     """
     self.resource_service = resource_service
     self.client = resource_service.client
     self.messages = self.client.MESSAGES_MODULE
     self.status_enum = self.messages.Operation.StatusValueValuesEnum
     self.target_ref = target_ref
+    self.has_project = has_project
 
   def IsDone(self, operation):
     """Overrides."""
@@ -70,29 +66,53 @@ class Poller(waiter.OperationPoller):
 
     return operation.status == self.status_enum.DONE
 
+  def IsGlobalOrganizationOperation(self, operation_ref):
+    return six.text_type(operation_ref.GetCollectionInfo()
+                        ) == 'compute.globalOrganizationOperations'
+
   def Poll(self, operation_ref):
     """Overrides."""
+    # For organization operations, need to get the organization ID from the
+    # operation name prefixed with 'org-'.
+    if self.IsGlobalOrganizationOperation(operation_ref) and hasattr(
+        operation_ref, 'operation') and 'org-' in operation_ref.operation:
+      service = self.client.globalOrganizationOperations
+      token_list = operation_ref.operation.split('-')
+      parent_id = 'organizations/' + token_list[1]
+      return service.Get(
+          service.GetRequestType('Get')(
+              operation=operation_ref.operation, parentId=parent_id))
+
     if hasattr(operation_ref, 'zone'):
       service = self.client.zoneOperations
     elif hasattr(operation_ref, 'region'):
       service = self.client.regionOperations
     else:
       service = self.client.globalOperations
-    # TODO(b/112841455) Switch GA to Wait
-    if _IsGAOperation(operation_ref):
-      return service.Get(
-          service.GetRequestType('Get')(**operation_ref.AsDict()))
-    else:
-      return service.Wait(
-          service.GetRequestType('Wait')(**operation_ref.AsDict()))
+    return service.Wait(
+        service.GetRequestType('Wait')(**operation_ref.AsDict()))
 
   def GetResult(self, operation):
     """Overrides."""
     request_type = self.resource_service.GetRequestType('Get')
-    target_ref = (self.target_ref
-                  or resources.REGISTRY.Parse(operation.targetLink))
-    return self.resource_service.Get(
-        request_type(**target_ref.AsDict()))
+    # Handle organization operations to only parse from target link if possible.
+    if operation.name and 'org-' in operation.name:
+      # Ignore the last get if no target link in organization operations.
+      if not operation.targetLink:
+        return None
+      # Check if needs to add 'projects' token in the target link to make it
+      # consistent with the discovery doc. Target link does not have 'projects'
+      # token. Currently, discovery doc has 'projects' token in the URL, but
+      # would remove it in the near future. TODO(b/136281960): remove after
+      # 'projects' is removed.
+      if self.has_project and 'projects' not in operation.targetLink:
+        operation.targetLink = operation.targetLink.replace(
+            'locations', 'projects/locations')
+      target_ref = resources.REGISTRY.Parse(operation.targetLink)
+    else:
+      target_ref = (
+          self.target_ref or resources.REGISTRY.Parse(operation.targetLink))
+    return self.resource_service.Get(request_type(**target_ref.AsDict()))
 
 
 class OperationBatch(object):
@@ -164,15 +184,8 @@ class BatchPoller(waiter.OperationPoller):
       else:
         service = self._client.globalOperations
 
-      # TODO(b/112841455) Switch GA to Wait
-      if _IsGAOperation(operation_ref):
-        request_type = service.GetRequestType('Get')
-        requests.append((service, 'Get',
-                         request_type(**operation_ref.AsDict())))
-      else:
-        request_type = service.GetRequestType('Wait')
-        requests.append((service, 'Wait',
-                         request_type(**operation_ref.AsDict())))
+      request_type = service.GetRequestType('Wait')
+      requests.append((service, 'Wait', request_type(**operation_ref.AsDict())))
 
     errors_to_collect = []
     responses = self._compute_adapter.BatchRequests(

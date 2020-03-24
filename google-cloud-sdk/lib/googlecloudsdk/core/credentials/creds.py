@@ -337,9 +337,8 @@ class AccessTokenStoreGoogleAuth(object):
 
   def Put(self):
     """Puts the short lived tokens of the credentials to the internal cache."""
-    id_token = getattr(self._credentials, 'id_tokenb64')
-    if not id_token:
-      id_token = getattr(self._credentials, 'id_token')
+    id_token = getattr(self._credentials, 'id_tokenb64', None) or getattr(
+        self._credentials, 'id_token', None)
     self._access_token_cache.Store(
         self._account_id, self._credentials.token, self._credentials.expiry,
         getattr(self._credentials, 'rapt_token', None), id_token)
@@ -378,30 +377,115 @@ def MaybeAttachAccessTokenCacheStore(credentials,
 
 
 class CredentialStoreWithCache(CredentialStore):
-  """Implements CredentialStore interface with access token caching."""
+  """Implements CredentialStore for caching credentials information.
+
+  Static credentials information, such as client ID and service account email,
+  are stored in credentials.db. The short lived credentials tokens, such as
+  access token, are cached in access_tokens.db.
+  """
 
   def __init__(self, credential_store, access_token_cache):
+    """Sets up credentials store for caching credentials.
+
+    Args:
+      credential_store: SqliteCredentialStore, for caching static credentials
+        information, such as client ID, service account email, etc.
+      access_token_cache: AccessTokenCache, for caching short lived credentials
+        tokens, such as access token.
+    """
     self._credential_store = credential_store
     self._access_token_cache = access_token_cache
 
+  def _WrapCredentialsRefreshWithAutoCaching(self, credentials, store):
+    """Wraps the refresh method of credentials with auto caching logic.
+
+    For auto caching short lived tokens of google-auth credentials, such as
+    access token, on credentials refresh.
+
+    Args:
+      credentials: google.auth.credentials.Credentials, the credentials updated
+        by this method.
+      store: AccessTokenStoreGoogleAuth, the store that caches the tokens of the
+        input credentials.
+
+    Returns:
+      google.auth.credentials.Credentials, the updated credentials.
+    """
+    orig_refresh = credentials.refresh
+
+    def _WrappedRefresh(request):
+      orig_refresh(request)
+      # credentials are part of store. Calling Put() on store caches the
+      # short lived tokens of the credentials.
+      store.Put()
+
+    credentials.refresh = _WrappedRefresh
+    return credentials
+
   def GetAccounts(self):
+    """Returns all the accounts stored in the cache."""
     return self._credential_store.GetAccounts()
 
-  def Load(self, account_id):
-    credentials = self._credential_store.Load(account_id)
+  def Load(self, account_id, use_google_auth=False):
+    """Loads the credentials of account_id from the cache.
+
+    Args:
+      account_id: string, ID of the account to load.
+      use_google_auth: bool, True to load google-auth credentials if the type of
+        the credentials is supported by the cache. False to load oauth2client
+        credentials.
+
+    Returns:
+      1. None, if credentials are not found in the cache.
+      2. google.auth.credentials.Credentials, if use_google_auth is true and
+         the credentials type is supported by the cache.
+      3. client.OAuth2Credentials.
+    """
+    # Loads static credentials information from self._credential_store.
+    credentials = self._credential_store.Load(account_id, use_google_auth)
     if credentials is None:
       return None
-    store = AccessTokenStore(self._access_token_cache, account_id, credentials)
-    credentials.set_store(store)
-    return store.get()
+
+    # Loads short lived tokens from self._access_token_cache.
+    if isinstance(credentials, client.OAuth2Credentials):
+      store = AccessTokenStore(self._access_token_cache, account_id,
+                               credentials)
+      credentials.set_store(store)
+      return store.get()
+    else:
+      store = AccessTokenStoreGoogleAuth(self._access_token_cache, account_id,
+                                         credentials)
+      credentials = store.Get()
+
+      # google-auth credentials do not support auto caching access token on
+      # credentials refresh. This logic needs to be implemented in gcloud.
+      return self._WrapCredentialsRefreshWithAutoCaching(credentials, store)
 
   def Store(self, account_id, credentials):
-    store = AccessTokenStore(self._access_token_cache, account_id, credentials)
-    credentials.set_store(store)
-    store.put(credentials)
-    return self._credential_store.Store(account_id, credentials)
+    """Stores credentials into the cache with account of account_id.
+
+    Args:
+      account_id: string, the account that will be associated with credentials
+        in the cache.
+      credentials: google.auth.credentials.Credentials or
+        client.OAuth2Credentials, the credentials to be stored.
+    """
+    # Stores short lived tokens to self._access_token_cache.
+    if isinstance(credentials, client.OAuth2Credentials):
+      store = AccessTokenStore(self._access_token_cache, account_id,
+                               credentials)
+      credentials.set_store(store)
+      store.put(credentials)
+    else:
+      store = AccessTokenStoreGoogleAuth(self._access_token_cache, account_id,
+                                         credentials)
+      store.Put()
+
+    # Stores static credentials information to self._credential_store.
+    self._credential_store.Store(account_id, credentials)
 
   def Remove(self, account_id):
+    """Removes credentials of account_id from the cache."""
     self._credential_store.Remove(account_id)
     self._access_token_cache.Remove(account_id)
 

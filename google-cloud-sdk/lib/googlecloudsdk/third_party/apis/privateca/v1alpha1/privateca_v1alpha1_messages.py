@@ -41,6 +41,19 @@ class ActivateCertificateAuthorityRequest(_messages.Message):
   pemCaCertificateChain = _messages.StringField(2, repeated=True)
 
 
+class AllowedConfigList(_messages.Message):
+  r"""A AllowedConfigList object.
+
+  Fields:
+    allowedConfigValues: Required. All Certificates issued by the
+      CertificateAuthority must match at least one listed
+      ReusableConfigWrapper. If a ReusableConfigWrapper has an empty field,
+      any value will be allowed for that field.
+  """
+
+  allowedConfigValues = _messages.MessageField('ReusableConfigWrapper', 1, repeated=True)
+
+
 class AuditConfig(_messages.Message):
   r"""Specifies the audit configuration for a service. The configuration
   determines which permission types are logged, and what identities, if any,
@@ -396,11 +409,9 @@ class CertificateAuthorityPolicy(_messages.Message):
   policy.
 
   Fields:
-    allowedConfigValues: Optional. If any ReusableConfigWrapper is specified
-      here, then all Certificates issued by the CertificateAuthority must
-      match at least one listed ReusableConfigWrapper. If a
-      ReusableConfigWrapper has an empty field,  any value will be allowed for
-      that field.
+    allowedConfigList: Optional. All Certificates issued by the
+      CertificateAuthority must match at least one listed
+      ReusableConfigWrapper in the list.
     allowedLocationsAndOrganizations: Optional. If any Subject is specified
       here, then all Certificates issued by the CertificateAuthority must
       match at least one listed Subject. If a Subject has an empty field, any
@@ -409,11 +420,15 @@ class CertificateAuthorityPolicy(_messages.Message):
       CertificateAuthority. Note that if the any part if the issuing chain
       expires before a Certificate's requested maximum_lifetime, the effective
       lifetime will be explicitly truncated.
+    overwriteConfigValues: Optional. All Certificates issued by the
+      CertificateAuthority will use the provided configuration values,
+      overwriting any requested configuration values.
   """
 
-  allowedConfigValues = _messages.MessageField('ReusableConfigWrapper', 1, repeated=True)
+  allowedConfigList = _messages.MessageField('AllowedConfigList', 1)
   allowedLocationsAndOrganizations = _messages.MessageField('Subject', 2, repeated=True)
   maximumLifetime = _messages.StringField(3)
+  overwriteConfigValues = _messages.MessageField('ReusableConfigWrapper', 4)
 
 
 class CertificateConfig(_messages.Message):

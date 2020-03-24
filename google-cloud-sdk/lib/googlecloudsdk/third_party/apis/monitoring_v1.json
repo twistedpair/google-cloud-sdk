@@ -125,11 +125,11 @@
       "type": "object",
       "properties": {
         "name": {
-          "description": "The resource name of the dashboard.",
+          "description": "Immutable. The resource name of the dashboard.",
           "type": "string"
         },
         "displayName": {
-          "description": "The mutable, human-readable name.",
+          "description": "Required. The mutable, human-readable name.",
           "type": "string"
         },
         "etag": {
@@ -202,7 +202,7 @@
       "type": "object",
       "properties": {
         "dataSets": {
-          "description": "The data displayed in this chart.",
+          "description": "Required. The data displayed in this chart.",
           "type": "array",
           "items": {
             "$ref": "DataSet"
@@ -240,7 +240,7 @@
       "type": "object",
       "properties": {
         "timeSeriesQuery": {
-          "description": "Fields for querying time series data from the Stackdriver metrics API.",
+          "description": "Required. Fields for querying time series data from the Stackdriver metrics API.",
           "$ref": "TimeSeriesQuery"
         },
         "plotType": {
@@ -593,7 +593,7 @@
       "type": "object",
       "properties": {
         "timeSeriesQuery": {
-          "description": "Fields for querying time series data from the Stackdriver metrics API.",
+          "description": "Required. Fields for querying time series data from the Stackdriver metrics API.",
           "$ref": "TimeSeriesQuery"
         },
         "gaugeView": {
@@ -636,7 +636,7 @@
       "type": "object",
       "properties": {
         "sparkChartType": {
-          "description": "The type of sparkchart to show in this chartView.",
+          "description": "Required. The type of sparkchart to show in this chartView.",
           "enumDescriptions": [
             "Not allowed in well-formed requests.",
             "The sparkline will be rendered as a small line chart.",
@@ -1116,7 +1116,7 @@
               "httpMethod": "PATCH",
               "parameters": {
                 "name": {
-                  "description": "The resource name of the dashboard.",
+                  "description": "Immutable. The resource name of the dashboard.",
                   "location": "path",
                   "required": true,
                   "pattern": "^projects\/[^\/]+\/dashboards\/[^\/]+$",

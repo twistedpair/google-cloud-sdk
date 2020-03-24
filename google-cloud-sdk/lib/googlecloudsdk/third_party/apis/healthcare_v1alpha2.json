@@ -1162,10 +1162,6 @@
             "type": "string"
           }
         },
-        "subscriptionConfig": {
-          "description": "Configuration of FHIR Subscription:\nhttps:\/\/www.hl7.org\/fhir\/subscription.html.",
-          "$ref": "SubscriptionConfig"
-        },
         "version": {
           "description": "The FHIR specification version that this FHIR store supports natively. This\nfield is immutable after store creation. Requests are rejected if they\ncontain FHIR resources of a different version.\nAn empty value is treated as STU3.",
           "enumDescriptions": [
@@ -1195,35 +1191,6 @@
         }
       }
     },
-    "SubscriptionConfig": {
-      "id": "SubscriptionConfig",
-      "description": "Configuration of FHIR Subscription:\nhttps:\/\/www.hl7.org\/fhir\/subscription.html.",
-      "type": "object",
-      "properties": {
-        "allowedRestHookEndpoints": {
-          "description": "REST hook endpoints that are allowed to receive subscription notifications.\nThe create or update operation on a FHIR Subscription resource fails if\nthe FHIR Subscription resource contains a REST hook endpoint that is not in\nthis list.\nA subscription notification push fails if the FHIR Subscription\nresource contains a REST hook endpoint that is not in this list.\nThe REST hook endpoint in a subscription resource is compared with the\nendpoints in this list by exact matching.\nUsers must verify their ownership of the domain of an endpoint before\nadding it to this list. To verify domain ownership, go to\nhttps:\/\/search.google.com\/search-console\/welcome.",
-          "type": "array",
-          "items": {
-            "$ref": "SubscriptionRestHookEndpoint"
-          }
-        }
-      }
-    },
-    "SubscriptionRestHookEndpoint": {
-      "id": "SubscriptionRestHookEndpoint",
-      "description": "REST hook endpoint of FHIR Subscription.",
-      "type": "object",
-      "properties": {
-        "endpoint": {
-          "description": "Address of the REST hook endpoint. It must be a valid HTTPS URL with TLS\ncertificate.",
-          "type": "string"
-        },
-        "allowResourcePayload": {
-          "description": "Whether this endpoint is allowed to receive full resource payloads. If set\nto false, the subscription notificiation sending to this endpoint with full\nresource payload is blocked.",
-          "type": "boolean"
-        }
-      }
-    },
     "StreamConfig": {
       "id": "StreamConfig",
       "description": "This structure contains configuration for streaming FHIR export.",
@@ -1237,7 +1204,7 @@
           }
         },
         "bigqueryDestination": {
-          "description": "The destination BigQuery structure that contains both the dataset\nlocation and corresponding schema config.\n\nThe output is organized in one table per resource type. The server\nreuses the existing tables (if any) that are named after the resource\ntypes, e.g. \"Patient\", \"Observation\". When there is no existing table\nfor a given resource type, the server attempts to create one.\n\nWhen a table schema doesn't align with the schema config, either\nbecause of existing incompatible schema or out of band incompatible\nmodification, the server does not stream in new data.\n\nOne resolution in this case is to delete the incompatible\ntable and let the server recreate one, though the newly created table\nonly contains data after the table recreation.\n\nBigQuery imposes a 1 MB limit on streaming insert row size, therefore\nany resource mutation that generates more than 1 MB of BigQuery data\nwill not be streamed.\n\nResults are appended to the corresponding BigQuery tables. Different\nversions of the same resource are distinguishable by the meta.versionId\nand meta.lastUpdated columns. The operation (CREATE\/UPDATE\/DELETE) that\nresults in the new version is recorded in the meta.tag.\n\nThe tables contain all historical resource versions since streaming was\nenabled. For query convenience, the server also creates one view per\ntable of the same name containing only the current resource version.",
+          "description": "The destination BigQuery structure that contains both the dataset\nlocation and corresponding schema config.\n\nThe output is organized in one table per resource type. The server\nreuses the existing tables (if any) that are named after the resource\ntypes, e.g. \"Patient\", \"Observation\". When there is no existing table\nfor a given resource type, the server attempts to create one.\n\nWhen a table schema doesn't align with the schema config, either\nbecause of existing incompatible schema or out of band incompatible\nmodification, the server does not stream in new data.\n\nOne resolution in this case is to delete the incompatible\ntable and let the server recreate one, though the newly created table\nonly contains data after the table recreation.\n\nBigQuery imposes a 1 MB limit on streaming insert row size, therefore\nany resource mutation that generates more than 1 MB of BigQuery data\nwill not be streamed.\n\nResults are appended to the corresponding BigQuery tables. Different\nversions of the same resource are distinguishable by the meta.versionId\nand meta.lastUpdated columns. The operation (CREATE\/UPDATE\/DELETE) that\nresults in the new version is recorded in the meta.tag.\n\nThe tables contain all historical resource versions since streaming was\nenabled. For query convenience, the server also creates one view per\ntable of the same name containing only the current resource version.\n\nIf a resource mutation cannot be streamed to BigQuery, errors will be\nlogged to Stackdriver (see [Viewing logs](\/healthcare\/docs\/how-\ntos\/stackdriver-logging)).",
           "$ref": "GoogleCloudHealthcareV1alpha2FhirBigQueryDestination"
         }
       }
@@ -1494,6 +1461,20 @@
           "description": "The status of the error.",
           "$ref": "Status"
         }
+      }
+    },
+    "ImportDicomDataResponse": {
+      "id": "ImportDicomDataResponse",
+      "description": "Returns additional information in regards to a completed DICOM store import.",
+      "type": "object",
+      "properties": {
+      }
+    },
+    "ExportDicomDataResponse": {
+      "id": "ExportDicomDataResponse",
+      "description": "Returns additional information in regards to a completed DICOM store export.",
+      "type": "object",
+      "properties": {
       }
     },
     "GoogleCloudHealthcareV1alpha2FhirRestImportResourcesResponse": {

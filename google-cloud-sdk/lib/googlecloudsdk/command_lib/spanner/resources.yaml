@@ -33,6 +33,31 @@ database:
       The name of the Cloud Spanner database.
   disable_auto_completers: false
 
+backup:
+  name: backup
+  collection: spanner.projects.instances.backups
+  attributes:
+  - *project
+  - *instance
+  - parameter_name: backupsId
+    attribute_name: backup
+    help: |
+      The name of the Cloud Spanner backup.
+  disable_auto_completers: false
+
+backupOperation:
+  name: backupOperation
+  collection: spanner.projects.instances.backups.operations
+  attributes:
+  - *project
+  - *instance
+  - &backup
+  - parameter_name: operationsId
+    attribute_name: operation
+    help: |
+      The name of the Cloud Spanner backup operation.
+  disable_auto_completers: false
+
 operation:
   name: operation
   collection: spanner.projects.instances.operations

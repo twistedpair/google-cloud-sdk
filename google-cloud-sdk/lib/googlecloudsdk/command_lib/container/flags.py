@@ -29,6 +29,11 @@ from googlecloudsdk.command_lib.container import constants
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 
+_DATAPATH_PROVIDER = {
+    'legacy': 'Selects legacy datatpath for the cluster.',
+    'advanced': 'Selects advanced datapath for the cluster.',
+}
+
 
 def AddBasicAuthFlags(parser):
   """Adds basic auth flags to the given parser.
@@ -193,7 +198,7 @@ Subscribe or unsubscribe this cluster to a release channel.
 
 """
   help_text = short_text + """\
-When a cluster is subscribed to a release channel, Google maintains both the
+When a cluster is subscribed to a release channel, GKE maintains both the
 master version and the node version. Node auto-upgrade defaults to true and
 cannot be disabled. Updates to version related fields (e.g. --cluster-version)
 return an error.
@@ -2908,3 +2913,29 @@ The type of the reservation for the {}.""".format(target)
       help="""
 The name of the reservation, required when `--reservation-affinity=specific`.
 """)
+
+
+def AddDatapathProviderFlag(parser):
+  """Adds --datapath-provider={legacy|advanced} flag."""
+  help_text = """
+Select datapath provider for the cluster. Defaults to `legacy`.
+
+$ {command} --datapath-provider=legacy
+$ {command} --datapath-provider=advanced
+"""
+  parser.add_argument(
+      '--datapath-provider', choices=_DATAPATH_PROVIDER, help=help_text)
+
+
+def AddMasterGlobalAccessFlag(parser):
+  help_text = """
+Use with private clusters to allow access to the master's private endpoint from any Google Cloud region or on-premises environment regardless of the
+private cluster's region.
+"""
+
+  parser.add_argument(
+      '--enable-master-global-access',
+      help=help_text,
+      default=None,
+      hidden=True,
+      action='store_true')

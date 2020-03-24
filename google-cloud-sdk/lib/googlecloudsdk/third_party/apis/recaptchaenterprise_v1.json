@@ -325,7 +325,7 @@
           }
         },
         "allowAmpTraffic": {
-          "description": "Required. Whether this key can be used on AMP (Accelerated Mobile Pages) websites.",
+          "description": "Required. Whether this key can be used on AMP (Accelerated Mobile Pages) websites.\nThis can only be set for the SCORE integration type.",
           "type": "boolean"
         },
         "integrationType": {

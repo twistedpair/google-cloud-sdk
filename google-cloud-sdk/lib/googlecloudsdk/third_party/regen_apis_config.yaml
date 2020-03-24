@@ -505,6 +505,12 @@ apis:
         simulator:
           path: simulator
       discovery_doc: iamassist_v1alpha2.json
+    v1alpha3:
+      default: true
+      resources:
+        simulator:
+          path: simulator
+      discovery_doc: iamassist_v1alpha3.json
   iamcredentials:
     v1:
       discovery_doc: iamcredentials_v1.json
@@ -622,6 +628,7 @@ apis:
   pubsub:
     v1:
       discovery_doc: pubsub_v1.json
+      enable_mtls:  true
       resources:
         projects.snapshots:
           path: projects/{projectsId}/snapshots/{snapshotsId}
@@ -718,6 +725,7 @@ apis:
   spanner:
     v1:
       discovery_doc: spanner_v1.json
+      enable_mtls: true
   speech:
     v1:
       discovery_doc: speech_v1.json

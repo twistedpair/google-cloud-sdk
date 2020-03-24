@@ -24,16 +24,6 @@ DOCS_URL = 'https://cloud.google.com/identity/'
 class Collections(enum.Enum):
   """Collections for all supported apis."""
 
-  DEVICES = (
-      'devices',
-      '{+name}',
-      {
-          '':
-              'devices/{devicesId}',
-      },
-      [u'name'],
-      True
-  )
   GROUPS = (
       'groups',
       '{+name}',

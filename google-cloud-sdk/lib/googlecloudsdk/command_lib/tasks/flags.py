@@ -276,7 +276,7 @@ def _PushQueueFlags(release_track=base.ReleaseTrack.GA):
           requests decreases.
           """),
   ]
-  if release_track == base.ReleaseTrack.BETA:
+  if release_track == base.ReleaseTrack.BETA or release_track == base.ReleaseTrack.GA:
     flags.append(base.Argument(
         '--log-sampling-ratio',
         type=float,

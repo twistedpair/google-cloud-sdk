@@ -1120,7 +1120,6 @@ def FlagIsExplicitlySet(args, flag):
 
 def VerifyOnePlatformFlags(args, release_track, product):
   """Raise ConfigurationError if args includes GKE only arguments."""
-  del release_track  # not currently checked by any flags
   error_msg = ('The `{flag}` flag is not supported on the fully managed '
                'version of Cloud Run. Specify `--platform {platform}` or run '
                '`gcloud config set run/platform {platform}` to work with '
@@ -1200,6 +1199,22 @@ def VerifyOnePlatformFlags(args, release_track, product):
     raise serverless_exceptions.ConfigurationError(
         error_msg.format(
             flag='--context',
+            platform=PLATFORM_KUBERNETES,
+            platform_desc=_PLATFORM_SHORT_DESCRIPTIONS[PLATFORM_KUBERNETES]))
+
+  if (FlagIsExplicitlySet(args, 'min_instances') and
+      release_track != base.ReleaseTrack.ALPHA):
+    raise serverless_exceptions.ConfigurationError(
+        error_msg.format(
+            flag='--min-instances',
+            platform=PLATFORM_KUBERNETES,
+            platform_desc=_PLATFORM_SHORT_DESCRIPTIONS[PLATFORM_KUBERNETES]))
+
+  if (FlagIsExplicitlySet(args, 'no_traffic') and
+      release_track != base.ReleaseTrack.ALPHA):
+    raise serverless_exceptions.ConfigurationError(
+        error_msg.format(
+            flag='--no-traffic',
             platform=PLATFORM_KUBERNETES,
             platform_desc=_PLATFORM_SHORT_DESCRIPTIONS[PLATFORM_KUBERNETES]))
 

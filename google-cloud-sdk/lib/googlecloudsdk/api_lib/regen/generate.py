@@ -134,9 +134,11 @@ def _MakeApiMap(root_package, api_config):
             _CamelCase(api_name) + _CamelCase(version)])
 
       messages_modulepath = '_'.join([api_name, version, 'messages'])
+      enable_mtls = api_config.get('enable_mtls', False)
+      mtls_endpoint_override = api_config.get('mtls_endpoint_override', '')
       api_versions_map[api_version] = api_def.APIDef(
-          '.'.join([root_package, api_name, api_version]),
-          client_classpath, messages_modulepath, default)
+          '.'.join([root_package, api_name, api_version]), client_classpath,
+          messages_modulepath, default, enable_mtls, mtls_endpoint_override)
     if has_default:
       apis_with_default.add(api_name)
 

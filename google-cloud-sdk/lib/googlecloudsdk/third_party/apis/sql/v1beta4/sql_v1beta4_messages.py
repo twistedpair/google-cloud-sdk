@@ -704,6 +704,7 @@ class ExportContext(_messages.Message):
       file contains SQL statements. <br><code>CSV</code>: The file contains
       CSV data.
     kind: This is always <code>sql#exportContext</code>.
+    offload: Option for export offload.
     sqlExportOptions: Options for exporting data as SQL statements.
     uri: The path to the file in Google Cloud Storage where the export will be
       stored. The URI is in the form <code>gs: //bucketName/fileName</code>.
@@ -771,8 +772,9 @@ class ExportContext(_messages.Message):
   databases = _messages.StringField(2, repeated=True)
   fileType = _messages.EnumField('FileTypeValueValuesEnum', 3)
   kind = _messages.StringField(4)
-  sqlExportOptions = _messages.MessageField('SqlExportOptionsValue', 5)
-  uri = _messages.StringField(6)
+  offload = _messages.BooleanField(5)
+  sqlExportOptions = _messages.MessageField('SqlExportOptionsValue', 6)
+  uri = _messages.StringField(7)
 
 
 class FailoverContext(_messages.Message):
@@ -1627,7 +1629,7 @@ class RotateServerCaContext(_messages.Message):
 
 
 class Settings(_messages.Message):
-  r"""LINT.IfChange(Settings) Database instance settings.
+  r"""Database instance settings.
 
   Enums:
     ActivationPolicyValueValuesEnum: The activation policy specifies when the

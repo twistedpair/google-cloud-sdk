@@ -553,8 +553,12 @@ def _CompareTopLevelField(status, spec, field_name):
   return _CompareField(status_val, spec_val, field_name)
 
 
-def GenerateDryRunConfigDiff(perimeter):
+def GenerateDryRunConfigDiff(perimeter, api_version):
   """Generates a diff string by comparing status with spec."""
+  if perimeter.spec is None and perimeter.useExplicitDryRunSpec:
+    return 'This Service Perimeter has been marked for deletion dry-run mode.'
+  if perimeter.status is None and perimeter.spec is None:
+    return 'This Service Perimeter has no dry-run or enforcement mode config.'
   output = []
   status = perimeter.status
   if not perimeter.useExplicitDryRunSpec:
@@ -564,6 +568,10 @@ def GenerateDryRunConfigDiff(perimeter):
                   'will be used as the dry-run mode configuration.')
   else:
     spec = perimeter.spec
+
+  if status is None:
+    messages = util.GetMessages(version=api_version)
+    status = messages.ServicePerimeterConfig()
 
   output.append('name: {}'.format(perimeter.name[perimeter.name.rfind('/') +
                                                  1:]))

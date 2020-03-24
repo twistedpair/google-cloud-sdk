@@ -110,50 +110,6 @@
     }
   },
   "schemas": {
-    "ListLabelBindingsResponse": {
-      "id": "ListLabelBindingsResponse",
-      "description": "The ListLabelBindings response.",
-      "type": "object",
-      "properties": {
-        "bindings": {
-          "description": "A possibly paginated list of LabelBindings for the specified LabelValue or\nresource.",
-          "type": "array",
-          "items": {
-            "$ref": "LabelBinding"
-          }
-        },
-        "nextPageToken": {
-          "description": "Optional. A pagination token returned from a previous call to `ListLabelBindings`\nthat indicates from where listing should continue. This is currently not\nused, but the server may at any point start supplying a valid token.",
-          "type": "string"
-        }
-      }
-    },
-    "LabelBinding": {
-      "id": "LabelBinding",
-      "description": "A LabelBinding represents a connection between a LabelValue and a cloud\nresource (currently Project, Folder, or Organization). Once a LabelBinding is\ncreated, the LabelValue is applied to all the descendents of the cloud\nresource.",
-      "type": "object",
-      "properties": {
-        "name": {
-          "description": "The name of the LabelBinding. This is a String of the form:\n'labelBindings\/{id}' (e.g. 'labelBindings\/bGFiZWx8vY2xvdWz').",
-          "type": "string"
-        },
-        "labelValue": {
-          "description": "The LabelValue of the LabelBinding.\nMust be of the form \"labelValues\/456.",
-          "type": "string"
-        },
-        "resource": {
-          "description": "The full resource name of the resource the LabelValue is bound to.\nE.g. \/\/cloudresourcemanager.googleapis.com\/organizations\/123",
-          "type": "string"
-        }
-      }
-    },
-    "Empty": {
-      "id": "Empty",
-      "description": "A generic empty message that you can re-use to avoid defining duplicated\nempty messages in your APIs. A typical example is to use it as the request\nor the response type of an API method. For instance:\n\n    service Foo {\n      rpc Bar(google.protobuf.Empty) returns (google.protobuf.Empty);\n    }\n\nThe JSON representation for `Empty` is empty JSON object `{}`.",
-      "type": "object",
-      "properties": {
-      }
-    },
     "Operation": {
       "id": "Operation",
       "description": "This resource represents a long-running operation that is the result of a\nnetwork API call.",
@@ -214,6 +170,50 @@
             }
           }
         }
+      }
+    },
+    "ListLabelBindingsResponse": {
+      "id": "ListLabelBindingsResponse",
+      "description": "The ListLabelBindings response.",
+      "type": "object",
+      "properties": {
+        "bindings": {
+          "description": "A possibly paginated list of LabelBindings for the specified LabelValue or\nresource.",
+          "type": "array",
+          "items": {
+            "$ref": "LabelBinding"
+          }
+        },
+        "nextPageToken": {
+          "description": "Optional. A pagination token returned from a previous call to `ListLabelBindings`\nthat indicates from where listing should continue. This is currently not\nused, but the server may at any point start supplying a valid token.",
+          "type": "string"
+        }
+      }
+    },
+    "LabelBinding": {
+      "id": "LabelBinding",
+      "description": "A LabelBinding represents a connection between a LabelValue and a cloud\nresource (currently Project, Folder, or Organization). Once a LabelBinding is\ncreated, the LabelValue is applied to all the descendents of the cloud\nresource.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "The name of the LabelBinding. This is a String of the form:\n'labelBindings\/{id}' (e.g. 'labelBindings\/bGFiZWx8vY2xvdWz').",
+          "type": "string"
+        },
+        "labelValue": {
+          "description": "The LabelValue of the LabelBinding.\nMust be of the form \"labelValues\/456.",
+          "type": "string"
+        },
+        "resource": {
+          "description": "The full resource name of the resource the LabelValue is bound to.\nE.g. \/\/cloudresourcemanager.googleapis.com\/organizations\/123",
+          "type": "string"
+        }
+      }
+    },
+    "Empty": {
+      "id": "Empty",
+      "description": "A generic empty message that you can re-use to avoid defining duplicated\nempty messages in your APIs. A typical example is to use it as the request\nor the response type of an API method. For instance:\n\n    service Foo {\n      rpc Bar(google.protobuf.Empty) returns (google.protobuf.Empty);\n    }\n\nThe JSON representation for `Empty` is empty JSON object `{}`.",
+      "type": "object",
+      "properties": {
       }
     },
     "ListLabelKeysResponse": {
@@ -550,6 +550,35 @@
     }
   },
   "resources": {
+    "operations": {
+      "methods": {
+        "get": {
+          "id": "labelmanager.operations.get",
+          "path": "v1alpha1/{+name}",
+          "flatPath": "v1alpha1/operations/{operationsId}",
+          "httpMethod": "GET",
+          "parameters": {
+            "name": {
+              "description": "The name of the operation resource.",
+              "location": "path",
+              "required": true,
+              "pattern": "^operations\/.*$",
+              "type": "string"
+            }
+          },
+          "parameterOrder": [
+            "name"
+          ],
+          "response": {
+            "$ref": "Operation"
+          },
+          "scopes": [
+            "https://www.googleapis.com/auth/cloud-platform"
+          ],
+          "description": "Gets the latest state of a long-running operation.  Clients can use this\nmethod to poll the operation result at intervals as recommended by the API\nservice."
+        }
+      }
+    },
     "labelBindings": {
       "methods": {
         "list": {
@@ -598,7 +627,7 @@
             "$ref": "LabelBinding"
           },
           "response": {
-            "$ref": "LabelBinding"
+            "$ref": "Operation"
           },
           "scopes": [
             "https://www.googleapis.com/auth/cloud-platform"
@@ -629,35 +658,6 @@
             "https://www.googleapis.com/auth/cloud-platform"
           ],
           "description": "Deletes a LabelBinding."
-        }
-      }
-    },
-    "operations": {
-      "methods": {
-        "get": {
-          "id": "labelmanager.operations.get",
-          "path": "v1alpha1/{+name}",
-          "flatPath": "v1alpha1/operations/{operationsId}",
-          "httpMethod": "GET",
-          "parameters": {
-            "name": {
-              "description": "The name of the operation resource.",
-              "location": "path",
-              "required": true,
-              "pattern": "^operations\/.*$",
-              "type": "string"
-            }
-          },
-          "parameterOrder": [
-            "name"
-          ],
-          "response": {
-            "$ref": "Operation"
-          },
-          "scopes": [
-            "https://www.googleapis.com/auth/cloud-platform"
-          ],
-          "description": "Gets the latest state of a long-running operation.  Clients can use this\nmethod to poll the operation result at intervals as recommended by the API\nservice."
         }
       }
     },
@@ -1024,7 +1024,7 @@
             "$ref": "LabelValue"
           },
           "response": {
-            "$ref": "LabelValue"
+            "$ref": "Operation"
           },
           "scopes": [
             "https://www.googleapis.com/auth/cloud-platform"

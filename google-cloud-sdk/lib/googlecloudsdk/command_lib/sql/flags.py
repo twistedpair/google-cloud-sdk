@@ -247,6 +247,15 @@ def AddBackupStartTime(parser):
             'format - HH:MM, in the UTC timezone.'))
 
 
+def AddBackupLocation(parser, allow_empty):
+  help_text = (
+      'Choose where to store your backups. Backups are stored in the closest '
+      'multi-region location to you by default. Only customize if needed.')
+  if allow_empty:
+    help_text += ' Specify empty string to revert to default.'
+  parser.add_argument('--backup-location', required=False, help=help_text)
+
+
 def AddDatabaseFlags(parser, update=False):
   """Adds the `--database-flags` flag."""
   help_ = ('Comma-separated list of database flags to set on the '
@@ -274,6 +283,7 @@ def AddDatabaseVersion(parser, restrict_choices=True):
       'MYSQL_5_6',
       'MYSQL_5_7',
       'POSTGRES_9_6',
+      'POSTGRES_10',
       'POSTGRES_11',
       'SQLSERVER_2017_EXPRESS',
       'SQLSERVER_2017_WEB',

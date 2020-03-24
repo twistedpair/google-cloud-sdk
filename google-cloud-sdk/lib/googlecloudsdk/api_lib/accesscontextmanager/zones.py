@@ -25,6 +25,8 @@ from googlecloudsdk.api_lib.util import waiter
 from googlecloudsdk.core import log
 from googlecloudsdk.core import resources as core_resources
 
+import six
+
 
 def _SetIfNotNone(field_name, field_value, obj, update_mask):
   """Sets specified field to the provided value and adds it to update mask.
@@ -58,7 +60,16 @@ def _CreateServicePerimeterConfig(messages, mask_prefix, resources,
   _SetIfNotNone('restrictedServices', restricted_services, config, mask)
   if levels is not None:
     mask.append('accessLevels')
-    config.accessLevels = [l.RelativeName() for l in levels]
+    level_names = []
+    for l in levels:
+      # If the caller supplies the levels as strings already, use them directly.
+      if isinstance(l, six.string_types):
+        level_names.append(l)
+      else:
+        # Otherwise, the caller needs to supply resource objects for Access
+        # Levels, and we extract the level name from those.
+        level_names.append(l.RelativeName())
+      config.accessLevels = level_names
 
   if (enable_vpc_accessible_services is not None or
       vpc_allowed_services is not None):

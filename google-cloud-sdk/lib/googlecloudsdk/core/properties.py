@@ -1837,6 +1837,7 @@ class _SectionApiEndpointOverrides(_Section):
     self.source = self._Add('source')
     self.sourcerepo = self._Add('sourcerepo')
     self.secrets = self._Add('secretmanager')
+    self.servicedirectory = self._Add('servicedirectory')
     self.spanner = self._Add('spanner')
     self.speech = self._Add('speech')
     self.sql = self._Add('sql')
@@ -1934,7 +1935,12 @@ class _SectionContextAware(_Section):
     self.use_client_certificate = self._AddBool(
         'use_client_certificate',
         help_text=('If True, use client certificate to authorize user '
-                   'device using context aware access.'))
+                   'device using Context-aware access. Some services may not '
+                   'support client certificate authorization. If a command '
+                   'sends requests to such services, the client certificate '
+                   'will not be validated. '
+                   'Run `gcloud topic client-certificate` for list of services '
+                   'supporting this feature.'))
     self.auto_discovery_file_path = self._Add(
         'auto_discovery_file_path',
         validator=ExistingAbsoluteFilepathValidator,

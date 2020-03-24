@@ -59,7 +59,7 @@ class LabelmanagerV1alpha1(base_api.BaseApiClient):
         request: (LabelBinding) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
-        (LabelBinding) The response message.
+        (Operation) The response message.
       """
       config = self.GetMethodConfig('Create')
       return self._RunMethod(
@@ -74,7 +74,7 @@ class LabelmanagerV1alpha1(base_api.BaseApiClient):
         relative_path=u'v1alpha1/labelBindings',
         request_field='<request>',
         request_type_name=u'LabelBinding',
-        response_type_name=u'LabelBinding',
+        response_type_name=u'Operation',
         supports_download=False,
     )
 
@@ -546,7 +546,7 @@ LabelValue does not exist or the user does not have permission to view it.
         request: (LabelmanagerLabelValuesPatchRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
-        (LabelValue) The response message.
+        (Operation) The response message.
       """
       config = self.GetMethodConfig('Patch')
       return self._RunMethod(
@@ -562,7 +562,7 @@ LabelValue does not exist or the user does not have permission to view it.
         relative_path=u'v1alpha1/{+name}',
         request_field=u'labelValue',
         request_type_name=u'LabelmanagerLabelValuesPatchRequest',
-        response_type_name=u'LabelValue',
+        response_type_name=u'Operation',
         supports_download=False,
     )
 

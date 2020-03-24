@@ -125,9 +125,13 @@ class QueueUpdatableConfiguration(object):
         config.app_engine_routing_override = {
             'routing_override': 'appEngineRoutingOverride',
         }
+        config.stackdriver_logging_config = {
+            'log_sampling_ratio': 'samplingRatio',
+        }
         config.retry_config_mask_prefix = 'retryConfig'
         config.rate_limits_mask_prefix = 'rateLimits'
         config.app_engine_routing_override_mask_prefix = ''
+        config.stackdriver_logging_config_mask_prefix = 'stackdriverLoggingConfig'
     return config
 
   def _InitializedConfigsAndPrefixTuples(self):
@@ -255,9 +259,11 @@ def ParseCreateOrUpdateQueueArgs(args,
                                                         messages, is_update))
   else:
     return messages.Queue(
-        retryConfig=_ParseRetryConfigArgs(args, queue_type, messages,
-                                          is_update, is_alpha=False),
+        retryConfig=_ParseRetryConfigArgs(
+            args, queue_type, messages, is_update, is_alpha=False),
         rateLimits=_ParseRateLimitsArgs(args, queue_type, messages, is_update),
+        stackdriverLoggingConfig=_ParseStackdriverLoggingConfigArgs(
+            args, queue_type, messages, is_update),
         appEngineRoutingOverride=_ParseAppEngineRoutingOverrideArgs(
             args, queue_type, messages, is_update))
 

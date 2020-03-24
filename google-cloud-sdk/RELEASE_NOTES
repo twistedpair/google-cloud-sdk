@@ -4,7 +4,136 @@ Copyright 2014-2020 Google Inc. All rights reserved.
 
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 
-## 285.0.0 (2020-03-17)
+
+## 286.0.0 (2020-03-24)
+
+### Breaking Changes
+
+*   **(Compute Engine)** Removed `SECURE_BOOT` from list of guest OS features.
+
+
+### Cloud SDK
+
+* Fixed issue where special characters in quoted arguments on Windows were not
+  being escaped properly. For example, a command invocation such as:
+  `gcloud compute ssh my-vm --zone=us-central1-c --command="echo 1 && echo 2"`
+  would fail with "unrecognized arguments: 1".
+
+### Anthos
+
+* Added `gcloud anthos auth login` command to GA. This command enables
+  authentication of Anthos clusters through a command line interface, given an
+  on-prem identity provider (IDP) is configured in an Anthos Kubernetes cluster
+  environment.
+
+### App Engine
+
+* Updated the Java SDK to version 1.9.79.
+  Please visit the following release notes for details:
+  <https://cloud.google.com/appengine/docs/java/release-notes>.
+
+### Cloud Access Context Manager
+
+* Added `gcloud beta access-context-manager perimeters dry-run` command group
+  for management of dry-run configurations for Service Perimeters.
+
+### Cloud Dataflow
+
+* Added `--worker-region` and `--worker-zone` parameters to `gcloud dataflow jobs run`.
+* Added deprecation notice for `--zone` parameter to `gcloud dataflow jobs run`.
+* Added `--num-workers`, `--worker-machine-type`, `--network`, `--subnetwork`, and `--dataflow-kms-key` parameters to `gcloud beta dataflow sql query`.
+* Promoted `--num-workers`, `--worker-machine-type`, `--network`, and `--subnetwork` parameters to GA in `gcloud dataflow jobs run`.
+
+### Cloud Firestore Emulator
+
+* Release Cloud Firestore emulator v1.11.1
+  * Allow service account tokens in Firestore Emulator.
+  * ListCollectionIds now correctly omits empty collections.
+  * The first request now correctly interacts with seed data.
+
+### Cloud Key Management Service
+
+*   Promoted changes related to external keys in `gcloud kms locations list`,
+    `gcloud kms keys create`, `gcloud kms keys versions create`, `gcloud kms
+    keys versions update` to GA.
+
+### Cloud Memorystore
+
+* Enabled support for Redis version 5.0 (beta). Added `redis_5_0` as a new option for `--redis_version` flag when using `gcloud beta redis instances create`.
+* Enabled support for Redis version 5.0 (beta) stream node configurations. Added `stream-node-max-bytes` and `stream-node-max-entries` as new options for `--redis-config` flag when using `gcloud beta redis instances create`.
+* Enabled support for `stream-node-max-bytes` and `stream-node-max-entries` for `--update-redis-config` flag when using `gcloud beta redis instances update`.
+
+### Cloud Run
+
+* Changed the default output format for `gcloud run services describe`. Moved
+  the service URL from its own line to next to the traffic section heading.
+* Changed the default output format for `gcloud run services update-traffic` to
+  use the same format as the traffic section of the output of
+  `gcloud run services describe`. To restore the previous output format,
+  specify `--format="table(displayPercent:label=TRAFFIC,displayRevisionId:label=REVISION)"`.
+* Promoted `--min-instances`, `--no-traffic`, `--use-http2`,
+  `--clear-config-maps`, `--set-config-maps`, `--remove-config-map`,
+  `--update-config-map`, `--clear-secrets`, `--set-secrets`,
+  `--remove-secrets`, `--update-secrets` flags of `gcloud run deploy` to beta
+  and GA for `--platform=gke` and `--platform=kubernetes` only.
+
+### Cloud SQL
+
+*   Promoted Postgres 10 to GA.
+*   Added support for specifying backup locations.
+
+
+### Cloud Spanner
+
+* Added `gcloud spanner backups` surface.
+* Added `gcloud spanner databases restore`.
+* Updated `gcloud spanner operations` for backup and restore operations, and ability to filter by operation type.
+* Added optimizer version to the query plan (PROFILE) output of `gcloud spanner databases execute-sql`.
+
+### Cloud Tasks
+
+* Promoted `--log-sampling-ratio` and `--clear-log-sampling-ratio` to GA.
+
+### Compute Engine
+
+* Promoted `--replacement-method` of `gcloud compute instance-groups managed rolling-action restart` to GA.
+* Promoted `--[no-]enable-logging` flag of `gcloud compute health-checks`
+  command group to beta.
+* Added `cpu-overcommit-type` flag to `gcloud beta compute sole-tenancy node-templates create`.
+* Promoted `gcloud compute org-security-policies` command group to beta.
+* Promoted `gcloud compute networks get-effective-firewalls` command to beta.
+* Promoted `gcloud compute instances network-interfaces get-effective-firewalls` command to beta.
+* Promoted `gcloud compute instance-groups managed update-instance` to GA.
+* Promoted `--failover-ratio`, `--drop-traffic-if-unhealthy`, and
+  `--connection-drain-on-failover` flags of
+  `gcloud compute backend-services create` and
+  `gcloud compute backend-services update` to GA.
+* Promoted `--failover` flag of
+  `gcloud compute backend-services add-backend` and
+  `gcloud compute backend-services update-backend` to GA.
+* Promoted global scope of `gcloud compute network-endpoint-groups` command group in global to GA.
+* Promoted `--global-network-endpoint-group` flag of `gcloud compute backend-services` to GA.
+
+### Kpt
+
+* Updated kpt from v0.12.0 to v0.14.0.
+* Updated import of cli-utils from v0.4.0 to v0.5.0.
+
+
+### Kubernetes Engine
+
+*   Added `--release-channel` flag to `gcloud beta container clusters update`
+    for subscribing an existing cluster to a release channel or removing a
+    cluster from a release channel.
+
+### Service Directory
+
+*   Promoted `gcloud service-directory locations` to beta.
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+## 285.0.1 (2020-03-18)
 
 * Resolved issue that caused spurious post installation errors in 285.0.0.
 

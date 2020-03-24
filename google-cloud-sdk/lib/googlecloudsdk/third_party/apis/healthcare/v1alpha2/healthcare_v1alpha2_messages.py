@@ -560,6 +560,13 @@ class ExportDicomDataRequest(_messages.Message):
   gcsDestination = _messages.MessageField('GoogleCloudHealthcareV1alpha2DicomGcsDestination', 2)
 
 
+class ExportDicomDataResponse(_messages.Message):
+  r"""Returns additional information in regards to a completed DICOM store
+  export.
+  """
+
+
+
 class ExportResourcesRequest(_messages.Message):
   r"""Request to export resources.
 
@@ -703,8 +710,6 @@ class FhirStore(_messages.Message):
       /service-accounts). Some lag (typically on the order of dozens of
       seconds) is expected before the results show up in the streaming
       destination.
-    subscriptionConfig: Configuration of FHIR Subscription:
-      https://www.hl7.org/fhir/subscription.html.
     validationConfig: Configuration for how to validate incoming FHIR
       resources against configured profiles.
     version: The FHIR specification version that this FHIR store supports
@@ -770,9 +775,8 @@ class FhirStore(_messages.Message):
   name = _messages.StringField(5)
   notificationConfig = _messages.MessageField('NotificationConfig', 6)
   streamConfigs = _messages.MessageField('StreamConfig', 7, repeated=True)
-  subscriptionConfig = _messages.MessageField('SubscriptionConfig', 8)
-  validationConfig = _messages.MessageField('ValidationConfig', 9)
-  version = _messages.EnumField('VersionValueValuesEnum', 10)
+  validationConfig = _messages.MessageField('ValidationConfig', 8)
+  version = _messages.EnumField('VersionValueValuesEnum', 9)
 
 
 class FieldMetadata(_messages.Message):
@@ -2115,6 +2119,13 @@ class ImportDicomDataRequest(_messages.Message):
   gcsSource = _messages.MessageField('GoogleCloudHealthcareV1alpha2DicomGcsSource', 1)
 
 
+class ImportDicomDataResponse(_messages.Message):
+  r"""Returns additional information in regards to a completed DICOM store
+  import.
+  """
+
+
+
 class ImportResourcesRequest(_messages.Message):
   r"""Request to import resources.
 
@@ -2823,7 +2834,9 @@ class StreamConfig(_messages.Message):
       the meta.tag.  The tables contain all historical resource versions since
       streaming was enabled. For query convenience, the server also creates
       one view per table of the same name containing only the current resource
-      version.
+      version.  If a resource mutation cannot be streamed to BigQuery, errors
+      will be logged to Stackdriver (see [Viewing logs](/healthcare/docs/how-
+      tos/stackdriver-logging)).
     resourceTypes: Supply a FHIR resource type (such as "Patient" or
       "Observation"). See https://www.hl7.org/fhir/valueset-resource-
       types.html for a list of all FHIR resource types. The server treats an
@@ -2833,41 +2846,6 @@ class StreamConfig(_messages.Message):
 
   bigqueryDestination = _messages.MessageField('GoogleCloudHealthcareV1alpha2FhirBigQueryDestination', 1)
   resourceTypes = _messages.StringField(2, repeated=True)
-
-
-class SubscriptionConfig(_messages.Message):
-  r"""Configuration of FHIR Subscription:
-  https://www.hl7.org/fhir/subscription.html.
-
-  Fields:
-    allowedRestHookEndpoints: REST hook endpoints that are allowed to receive
-      subscription notifications. The create or update operation on a FHIR
-      Subscription resource fails if the FHIR Subscription resource contains a
-      REST hook endpoint that is not in this list. A subscription notification
-      push fails if the FHIR Subscription resource contains a REST hook
-      endpoint that is not in this list. The REST hook endpoint in a
-      subscription resource is compared with the endpoints in this list by
-      exact matching. Users must verify their ownership of the domain of an
-      endpoint before adding it to this list. To verify domain ownership, go
-      to https://search.google.com/search-console/welcome.
-  """
-
-  allowedRestHookEndpoints = _messages.MessageField('SubscriptionRestHookEndpoint', 1, repeated=True)
-
-
-class SubscriptionRestHookEndpoint(_messages.Message):
-  r"""REST hook endpoint of FHIR Subscription.
-
-  Fields:
-    allowResourcePayload: Whether this endpoint is allowed to receive full
-      resource payloads. If set to false, the subscription notificiation
-      sending to this endpoint with full resource payload is blocked.
-    endpoint: Address of the REST hook endpoint. It must be a valid HTTPS URL
-      with TLS certificate.
-  """
-
-  allowResourcePayload = _messages.BooleanField(1)
-  endpoint = _messages.StringField(2)
 
 
 class TagFilterList(_messages.Message):

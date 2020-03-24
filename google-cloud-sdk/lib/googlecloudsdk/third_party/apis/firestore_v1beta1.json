@@ -5,7 +5,7 @@
   "name": "firestore",
   "canonicalName": "Firestore",
   "version": "v1beta1",
-  "revision": "20200306",
+  "revision": "20200313",
   "title": "Cloud Firestore API",
   "description": "Accesses the NoSQL document database built for automatic scaling, high performance, and ease of application development.\n",
   "ownerDomain": "google.com",
@@ -479,7 +479,7 @@
           "$ref": "TransactionOptions"
         },
         "readTime": {
-          "description": "Reads documents as they were at the given time.\nThis may not be older than 60 seconds.",
+          "description": "Reads documents as they were at the given time.\nThis may not be older than 270 seconds.",
           "type": "string",
           "format": "google-datetime"
         }
@@ -785,7 +785,7 @@
           "$ref": "TransactionOptions"
         },
         "readTime": {
-          "description": "Reads documents as they were at the given time.\nThis may not be older than 60 seconds.",
+          "description": "Reads documents as they were at the given time.\nThis may not be older than 270 seconds.",
           "type": "string",
           "format": "google-datetime"
         }
@@ -1818,7 +1818,7 @@
                       "format": "byte"
                     },
                     "readTime": {
-                      "description": "Reads the version of the document at the given time.\nThis may not be older than 60 seconds.",
+                      "description": "Reads the version of the document at the given time.\nThis may not be older than 270 seconds.",
                       "location": "query",
                       "type": "string",
                       "format": "google-datetime"
@@ -1884,7 +1884,7 @@
                       "format": "byte"
                     },
                     "readTime": {
-                      "description": "Reads documents as they were at the given time.\nThis may not be older than 60 seconds.",
+                      "description": "Reads documents as they were at the given time.\nThis may not be older than 270 seconds.",
                       "location": "query",
                       "type": "string",
                       "format": "google-datetime"

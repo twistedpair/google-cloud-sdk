@@ -49,7 +49,7 @@ class Settings(object):
   @classmethod
   def FromArgs(cls, args):
     """Create a LocalRuntimeFiles object from an args object."""
-    project_name = properties.VALUES.core.project.Get(required=True)
+    project_name = properties.VALUES.core.project.Get()
 
     if args.IsSpecified('service_name'):
       service_name = args.service_name
@@ -59,8 +59,12 @@ class Settings(object):
       service_name = dir_name.replace('_', '-')
 
     if not args.IsSpecified('image_name'):
-      image_name = 'gcr.io/{project}/{service}'.format(
-          project=project_name, service=service_name)
+      if project_name:
+        image_name = 'gcr.io/{project}/{service}'.format(
+            project=project_name, service=service_name)
+      else:
+        image_name = service_name
+
     else:
       image_name = args.image_name
 

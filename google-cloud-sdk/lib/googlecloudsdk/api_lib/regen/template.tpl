@@ -23,7 +23,9 @@ MAP = {
                 class_path='${api_def.class_path}',
                 client_classpath='${api_def.client_classpath}',
                 messages_modulepath='${api_def.messages_modulepath}',
-                default_version=${api_def.default_version}),
+                default_version=${api_def.default_version},
+                enable_mtls=${api_def.enable_mtls},
+                mtls_endpoint_override='${api_def.mtls_endpoint_override}'),
       % endfor
     },
 % endfor

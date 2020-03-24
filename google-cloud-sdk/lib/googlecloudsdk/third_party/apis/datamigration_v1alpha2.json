@@ -6,7 +6,7 @@
   "canonicalName": "Cloud Database Migration Service",
   "version": "v1alpha2",
   "revision": "0",
-  "title": "Data Migration API",
+  "title": "Database Migration API",
   "description": "Manage Cloud Database Migration Service resources on Google Cloud Platform.",
   "ownerDomain": "google.com",
   "ownerName": "Google",

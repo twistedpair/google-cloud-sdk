@@ -33,17 +33,24 @@ class APIDef(object):
       version.
     default_version: bool, Whether this API version is the default version for
       the API.
+    enable_mtls: bool, Whether this API version supports mTLS.
+    mtls_endpoint_override: str, The mTLS endpoint for this API version. If
+      empty, the MTLS_BASE_URL in the API client will be used.
   """
 
   def __init__(self,
                class_path,
                client_classpath,
                messages_modulepath,
-               default_version=False):
+               default_version=False,
+               enable_mtls=False,
+               mtls_endpoint_override=''):
     self.class_path = class_path
     self.client_classpath = client_classpath
     self.messages_modulepath = messages_modulepath
     self.default_version = default_version
+    self.enable_mtls = enable_mtls
+    self.mtls_endpoint_override = mtls_endpoint_override
 
   @property
   def client_full_classpath(self):
@@ -61,9 +68,10 @@ class APIDef(object):
     return not self.__eq__(other)
 
   def get_init_source(self):
-    src_fmt = 'APIDef("{0}", "{1}", "{2}", {3})'
+    src_fmt = 'APIDef("{0}", "{1}", "{2}", {3}, {4}, "{5}")'
     return src_fmt.format(self.class_path, self.client_classpath,
-                          self.messages_modulepath, self.default_version)
+                          self.messages_modulepath, self.default_version,
+                          self.enable_mtls, self.mtls_endpoint_override)
 
   def __repr__(self):
     return self.get_init_source()

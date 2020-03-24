@@ -22,10 +22,10 @@ from __future__ import unicode_literals
 import collections
 import json
 from googlecloudsdk.api_lib.dataflow import exceptions
-from googlecloudsdk.calliope import actions
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope.concepts import concepts
 from googlecloudsdk.command_lib.dataflow import dataflow_util
+from googlecloudsdk.command_lib.dataflow import job_utils
 from googlecloudsdk.command_lib.util.concepts import concept_parsers
 from googlecloudsdk.command_lib.util.concepts import presentation_specs
 from googlecloudsdk.core import properties
@@ -37,6 +37,8 @@ def ArgsForSqlQuery(parser):
   Args:
     parser: The argparse.ArgParser to configure with query arguments.
   """
+  job_utils.CommonArgs(parser)
+
   parser.add_argument(
       'query', metavar='QUERY', help='The SQL query to execute.')
 
@@ -52,21 +54,6 @@ def ArgsForSqlQuery(parser):
       help=('The region ID of the job\'s regional endpoint. '
             + dataflow_util.DEFAULT_REGION_MESSAGE),
       required=True)
-
-  parser.add_argument(
-      '--worker-zone',
-      type=arg_parsers.RegexpValidator(r'\w+-\w+\d-\w',
-                                       'must provide a valid zone'),
-      help='The zone to run the workers in.')
-
-  parser.add_argument(
-      '--service-account-email',
-      type=arg_parsers.RegexpValidator(r'.*@.*\..*',
-                                       'must provide a valid email address'),
-      help='The service account to run the workers as.')
-
-  parser.add_argument(
-      '--max-workers', type=int, help='The maximum number of workers to run.')
 
   output_group = parser.add_group(
       required=True, help='The destination(s) for the output of the query.')
@@ -129,12 +116,6 @@ def ArgsForSqlQuery(parser):
       ' e.g. [{"parameterType": {"type": "STRING"}, "parameterValue":'
       ' {"value": "foo"}, "name": "x"}, {"parameterType": {"type":'
       ' "FLOAT64"}, "parameterValue": {"value": "1.0"}, "name": "y"}]')
-  parser.add_argument(
-      '--disable-public-ips',
-      action=actions.StoreBooleanProperty(
-          properties.VALUES.dataflow.disable_public_ips),
-      help='Specifies that Cloud Dataflow workers must not use public IP addresses.'
-  )
 
   parser.add_argument(
       '--dry-run',

@@ -520,7 +520,7 @@
           "description": "Mode is the configuration for how to expose metadata to workloads running\non the node pool.",
           "enumDescriptions": [
             "Not set.",
-            "Expose all GCE metadata to pods.",
+            "Expose all Compute Engine metadata to pods.",
             "Run the GKE Metadata Server on this node. The GKE Metadata Server exposes\na metadata API to workloads that is compatible with the V1 Compute\nMetadata APIs exposed by the Compute Engine and App Engine Metadata\nServers. This feature can only be enabled if Workload Identity is enabled\nat the cluster level."
           ],
           "type": "string",
@@ -1379,7 +1379,7 @@
           "enumDescriptions": [
             "Should never be set",
             "Secrets in etcd are encrypted.",
-            "Secrets in etcd are stored in plain text (at etcd level) - this is\nunrelated to GCE level full disk encryption."
+            "Secrets in etcd are stored in plain text (at etcd level) - this is\nunrelated to Compute Engine level full disk encryption."
           ],
           "type": "string",
           "enum": [

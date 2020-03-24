@@ -25,9 +25,11 @@ from googlecloudsdk.calliope import base
 from googlecloudsdk.command_lib.util.args import labels_util
 import six
 
-VALID_REDIS_CONFIG_KEYS = ('maxmemory-gb', 'maxmemory-policy',
-                           'notify-keyspace-events', 'activedefrag',
-                           'lfu-log-factor', 'lfu-decay-time')
+VALID_REDIS_3_2_CONFIG_KEYS = ('maxmemory-policy', 'notify-keyspace-events')
+VALID_REDIS_4_0_CONFIG_KEYS = ('activedefrag', 'lfu-decay-time',
+                               'lfu-log-factor', 'maxmemory-gb')
+VALID_REDIS_5_0_CONFIG_KEYS = ('stream-node-max-bytes',
+                               'stream-node-max-entries')
 
 
 def GetClientForResource(resource_ref):
@@ -43,7 +45,10 @@ def GetMessagesForResource(resource_ref):
 
 
 def InstanceRedisConfigArgDictSpec():
-  return {k: six.text_type for k in VALID_REDIS_CONFIG_KEYS}
+  valid_redis_config_keys = (
+      VALID_REDIS_3_2_CONFIG_KEYS + VALID_REDIS_4_0_CONFIG_KEYS +
+      VALID_REDIS_5_0_CONFIG_KEYS)
+  return {k: six.text_type for k in valid_redis_config_keys}
 
 
 def InstanceRedisConfigArgType(value):
@@ -81,8 +86,13 @@ def InstanceUpdateRedisConfigFlag():
       A list of Redis config KEY=VALUE pairs to update according to
       http://cloud.google.com/memorystore/docs/reference/redis-configs. If a config parameter is already set,
       its value is modified; otherwise a new Redis config parameter is added.
-      Currently, the only supported parameters are: {}.
-      """.format(', '.join(VALID_REDIS_CONFIG_KEYS)))
+      Currently, the only supported parameters are:\n
+      Redis version 3.2 and newer: {}.\n
+      Redis version 4.0 and newer: {}.\n
+      Redis version 5.0 and newer: {}.
+      """.format(', '.join(VALID_REDIS_3_2_CONFIG_KEYS),
+                 ', '.join(VALID_REDIS_4_0_CONFIG_KEYS),
+                 ', '.join(VALID_REDIS_5_0_CONFIG_KEYS)))
 
 
 def InstanceRemoveRedisConfigFlag():

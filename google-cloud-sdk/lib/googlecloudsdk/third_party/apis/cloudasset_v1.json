@@ -987,7 +987,7 @@
     },
     "Feed": {
       "id": "Feed",
-      "description": "An asset feed used to export asset updates to a destinations.\nAn asset feed filter controls what updates are exported.\nThe asset feed must be created within a project, organization, or\nfolder. Supported destinations are:\nCloud Pub\/Sub topics.",
+      "description": "An asset feed used to export asset updates to a destinations.\nAn asset feed filter controls what updates are exported.\nThe asset feed must be created within a project, organization, or\nfolder. Supported destinations are:\nPub\/Sub topics.",
       "type": "object",
       "properties": {
         "name": {
@@ -1038,18 +1038,18 @@
       "type": "object",
       "properties": {
         "pubsubDestination": {
-          "description": "Destination on Cloud Pubsub.",
+          "description": "Destination on Pub\/Sub.",
           "$ref": "PubsubDestination"
         }
       }
     },
     "PubsubDestination": {
       "id": "PubsubDestination",
-      "description": "A Cloud Pubsub destination.",
+      "description": "A Pub\/Sub destination.",
       "type": "object",
       "properties": {
         "topic": {
-          "description": "The name of the Cloud Pub\/Sub topic to publish to.\nFor example: `projects\/PROJECT_ID\/topics\/TOPIC_ID`.",
+          "description": "The name of the Pub\/Sub topic to publish to.\nFor example: `projects\/PROJECT_ID\/topics\/TOPIC_ID`.",
           "type": "string"
         }
       }

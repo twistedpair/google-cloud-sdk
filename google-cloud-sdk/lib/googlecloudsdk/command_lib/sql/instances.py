@@ -317,6 +317,7 @@ class _BaseInstances(object):
             sql_messages,
             instance,
             backup=args.backup,
+            backup_location=args.backup_location,
             backup_start_time=args.backup_start_time,
             enable_bin_log=args.enable_bin_log,
             enable_point_in_time_recovery=enable_point_in_time_recovery))
@@ -385,6 +386,7 @@ class _BaseInstances(object):
             sql_messages,
             instance,
             no_backup=args.no_backup,
+            backup_location=args.backup_location,
             backup_start_time=args.backup_start_time,
             enable_bin_log=args.enable_bin_log,
             enable_point_in_time_recovery=enable_point_in_time_recovery))

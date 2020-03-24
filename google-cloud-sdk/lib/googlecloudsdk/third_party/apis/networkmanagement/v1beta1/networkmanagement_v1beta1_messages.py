@@ -213,7 +213,7 @@ class ConnectivityTest(_messages.Message):
     displayName: Output only. The display name of a Connectivity Test.
     labels: Resource labels to represent user-provided metadata.
     name: Required. Unique name of the resource using the form:
-      `projects/{project_id}/tests/{test_id}`
+      `projects/{project_id}/locations/global/connectivityTests/{test}`
     protocol: IP Protocol of the test. When not provided, "TCP" is assumed.
     reachabilityDetails: Output only. The reachability details of this test
       from the latest run. The details are updated when creating a new test,
@@ -891,7 +891,7 @@ class NetworkmanagementProjectsLocationsGlobalConnectivityTestsDeleteRequest(_me
 
   Fields:
     name: Required. Connectivity Test resource name using the form:
-      `projects/{project_id}/connectivityTests/{test_id}`
+      `projects/{project_id}/locations/global/connectivityTests/{test_id}`
   """
 
   name = _messages.StringField(1, required=True)
@@ -941,9 +941,10 @@ class NetworkmanagementProjectsLocationsGlobalConnectivityTestsListRequest(_mess
       represents a HAS operator which is roughly synonymous with equality).
       <field> can refer to a proto or JSON field, or a synthetic field. Field
       names can be camelCase or snake_case.  Examples: - Filter by name:
-      name = "projects/proj-1/connectivityTests/test-1  - Filter by labels:
-      - Resources that have a key called `foo`     labels.foo:*   - Resources
-      that have a key called `foo` whose value is `bar`     labels.foo = bar
+      name = "projects/proj-1/locations/global/connectivityTests/test-1  -
+      Filter by labels:   - Resources that have a key called `foo`
+      labels.foo:*   - Resources that have a key called `foo` whose value is
+      `bar`     labels.foo = bar
     orderBy: Field to use to sort the list.
     pageSize: Number of `ConnectivityTests` to return.
     pageToken: Page token from an earlier query, as returned in
@@ -967,7 +968,7 @@ class NetworkmanagementProjectsLocationsGlobalConnectivityTestsPatchRequest(_mes
     connectivityTest: A ConnectivityTest resource to be passed as the request
       body.
     name: Required. Unique name of the resource using the form:
-      `projects/{project_id}/tests/{test_id}`
+      `projects/{project_id}/locations/global/connectivityTests/{test}`
     updateMask: Required. Mask of fields to update. At least one path must be
       supplied in this field.
   """
@@ -983,7 +984,7 @@ class NetworkmanagementProjectsLocationsGlobalConnectivityTestsRerunRequest(_mes
 
   Fields:
     name: Required. Connectivity Test resource name using the form:
-      `projects/{project_id}/connectivityTests/{test_id}`
+      `projects/{project_id}/locations/global/connectivityTests/{test_id}`
     rerunConnectivityTestRequest: A RerunConnectivityTestRequest resource to
       be passed as the request body.
   """
@@ -1211,7 +1212,7 @@ class OperationMetadata(_messages.Message):
     endTime: The time the operation finished running.
     statusDetail: Human-readable status of the operation, if any.
     target: Target of the operation - for example
-      projects/project-1/connectivityTests/test-1
+      projects/project-1/locations/global/connectivityTests/test-1
     verb: Name of the verb executed by the operation.
   """
 

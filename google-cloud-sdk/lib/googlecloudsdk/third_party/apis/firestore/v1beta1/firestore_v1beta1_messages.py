@@ -38,7 +38,7 @@ class BatchGetDocumentsRequest(_messages.Message):
       to a read-only transaction. The new transaction ID will be returned as
       the first response in the stream.
     readTime: Reads documents as they were at the given time. This may not be
-      older than 60 seconds.
+      older than 270 seconds.
     transaction: Reads documents in a transaction.
   """
 
@@ -629,7 +629,7 @@ class FirestoreProjectsDatabasesDocumentsGetRequest(_messages.Message):
       `projects/{project_id}/databases/{database_id}/documents/{document_path}
       `.
     readTime: Reads the version of the document at the given time. This may
-      not be older than 60 seconds.
+      not be older than 270 seconds.
     transaction: Reads the document in a transaction.
   """
 
@@ -674,7 +674,7 @@ class FirestoreProjectsDatabasesDocumentsListRequest(_messages.Message):
       `projects/my-project/databases/my-database/documents/chatrooms/my-
       chatroom`
     readTime: Reads documents as they were at the given time. This may not be
-      older than 60 seconds.
+      older than 270 seconds.
     showMissing: If the list should show missing documents. A missing document
       is a document that does not exist but has sub-documents. These documents
       will be returned with a key but will not have fields,
@@ -1534,7 +1534,7 @@ class RunQueryRequest(_messages.Message):
       to a read-only transaction. The new transaction ID will be returned as
       the first response in the stream.
     readTime: Reads documents as they were at the given time. This may not be
-      older than 60 seconds.
+      older than 270 seconds.
     structuredQuery: A structured query.
     transaction: Reads documents in a transaction.
   """

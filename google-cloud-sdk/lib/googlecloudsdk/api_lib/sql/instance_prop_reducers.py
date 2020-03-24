@@ -32,6 +32,7 @@ def BackupConfiguration(sql_messages,
                         instance=None,
                         backup=None,
                         no_backup=None,
+                        backup_location=None,
                         backup_start_time=None,
                         enable_bin_log=None,
                         enable_point_in_time_recovery=None):
@@ -43,6 +44,7 @@ def BackupConfiguration(sql_messages,
       previous state is needed.
     backup: boolean, True if backup should be enabled.
     no_backup: boolean, True if backup should be disabled.
+    backup_location: string, location where to store backups by default.
     backup_start_time: string, start time of backup specified in 24-hour format.
     enable_bin_log: boolean, True if binary logging should be enabled.
     enable_point_in_time_recovery: boolean, True if point-in-time recovery
@@ -56,8 +58,11 @@ def BackupConfiguration(sql_messages,
   """
   backup_enabled = no_backup is False or backup
   should_generate_config = any([
-      backup_start_time, enable_bin_log is not None,
-      enable_point_in_time_recovery is not None, not backup_enabled
+      backup_location is not None,
+      backup_start_time,
+      enable_bin_log is not None,
+      enable_point_in_time_recovery is not None,
+      not backup_enabled,
   ])
 
   if not should_generate_config:
@@ -70,14 +75,17 @@ def BackupConfiguration(sql_messages,
   else:
     backup_config = instance.settings.backupConfiguration
 
+  if backup_location is not None:
+    backup_config.location = backup_location
+    backup_config.enabled = True
   if backup_start_time:
     backup_config.startTime = backup_start_time
     backup_config.enabled = True
   if no_backup:
-    if backup_start_time or enable_bin_log is not None:
+    if backup_location is not None or backup_start_time or enable_bin_log is not None:
       raise exceptions.ToolException(
           ('Argument --no-backup not allowed with'
-           ' --backup-start-time or --enable-bin-log'))
+           ' --backup_location, --backup-start-time, or --enable-bin-log'))
     backup_config.enabled = False
 
   if enable_bin_log is not None:

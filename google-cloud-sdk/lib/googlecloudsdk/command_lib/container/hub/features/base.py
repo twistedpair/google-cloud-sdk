@@ -50,12 +50,20 @@ class EnableCommand(base.CreateCommand):
 class DisableCommand(base.DeleteCommand):
   """Base class for the command that disables a Feature."""
 
+  @classmethod
+  def Args(cls, parser):
+    parser.add_argument(
+        '--force',
+        action='store_true',
+        help='Completely disable this feature, even if it is currently in use. '
+        'Force disablement may result in unexpected behavior.')
+
   def RunCommand(self, args):
     try:
       project_id = properties.VALUES.core.project.GetOrFail()
       name = 'projects/{0}/locations/global/features/{1}'.format(
           project_id, self.FEATURE_NAME)
-      DeleteFeature(name, self.FEATURE_DISPLAY_NAME)
+      DeleteFeature(name, self.FEATURE_DISPLAY_NAME, force=args.force)
     except apitools_exceptions.HttpUnauthorizedError as e:
       raise exceptions.Error(
           'You are not authorized to disable {} Feature from project [{}]. '
@@ -158,13 +166,14 @@ def GetFeature(name):
           name=name))
 
 
-def DeleteFeature(name, feature_display_name):
+def DeleteFeature(name, feature_display_name, force=False):
   """Deletes a Feature resource in Hub.
 
   Args:
     name: the full resource name of the Feature to delete, e.g.,
       projects/foo/locations/global/features/name.
     feature_display_name: the FEATURE_DISPLAY_NAME of this Feature
+    force: flag to trigger force deletion of the Feature.
 
   Raises:
     apitools.base.py.HttpError: if the request returns an HTTP error
@@ -173,7 +182,7 @@ def DeleteFeature(name, feature_display_name):
   client = core_apis.GetClientInstance('gkehub', 'v1alpha1')
   op = client.projects_locations_global_features.Delete(
       client.MESSAGES_MODULE.GkehubProjectsLocationsGlobalFeaturesDeleteRequest(
-          name=name))
+          name=name, force=force))
   op_resource = resources.REGISTRY.ParseRelativeName(
       op.name, collection='gkehub.projects.locations.operations')
   waiter.WaitFor(

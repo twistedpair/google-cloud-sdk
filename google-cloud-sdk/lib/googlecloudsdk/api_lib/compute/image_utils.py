@@ -30,20 +30,17 @@ from googlecloudsdk.core.util import files as file_utils
 
 FAMILY_PREFIX = 'family/'
 GUEST_OS_FEATURES = ['MULTI_IP_SUBNET',
-                     'SECURE_BOOT',
                      'UEFI_COMPATIBLE',
                      'VIRTIO_SCSI_MULTIQUEUE',
                      'WINDOWS',
                     ]
 GUEST_OS_FEATURES_BETA = ['MULTI_IP_SUBNET',
-                          'SECURE_BOOT',
                           'UEFI_COMPATIBLE',
                           'VIRTIO_SCSI_MULTIQUEUE',
                           'WINDOWS',
                           'GVNIC'
                          ]
 GUEST_OS_FEATURES_ALPHA = ['MULTI_IP_SUBNET',
-                           'SECURE_BOOT',
                            'UEFI_COMPATIBLE',
                            'VIRTIO_SCSI_MULTIQUEUE',
                            'WINDOWS',
@@ -354,10 +351,6 @@ def AddGuestOsFeaturesArg(parser, release_track):
 
        * MULTI_IP_SUBNET - For configuring interfaces with a netmask other than
          /32.
-
-       * SECURE_BOOT - Enables UEFI secure boot, which restrics unsigned
-         software from booting or unsigned drivers from loading on the VM
-         instance.
 
        * UEFI_COMPATIBLE - Enables UEFI booting, which is an alternative system
          boot method. Most public images use the GRUB bootloader as their

@@ -21,6 +21,7 @@ from __future__ import unicode_literals
 from googlecloudsdk.calliope.concepts import concepts
 from googlecloudsdk.calliope.concepts import deps
 from googlecloudsdk.command_lib.util.concepts import concept_parsers
+from googlecloudsdk.command_lib.util.concepts import presentation_specs
 from googlecloudsdk.core import properties
 
 _PROJECT = properties.VALUES.core.project
@@ -42,6 +43,13 @@ def DatabaseAttributeConfig():
       help_text='The Cloud Spanner database for the {resource}.')
 
 
+def BackupAttributeConfig():
+  """Get backup resource attribute."""
+  return concepts.ResourceParameterAttributeConfig(
+      name='backup',
+      help_text='The Cloud Spanner backup for the {resource}.')
+
+
 def SessionAttributeConfig():
   """Get session resource attribute."""
   return concepts.ResourceParameterAttributeConfig(
@@ -61,6 +69,15 @@ def GetDatabaseResourceSpec():
       'spanner.projects.instances.databases',
       resource_name='database',
       databasesId=DatabaseAttributeConfig(),
+      instancesId=InstanceAttributeConfig(),
+      projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG)
+
+
+def GetBackupResourceSpec():
+  return concepts.ResourceSpec(
+      'spanner.projects.instances.backups',
+      resource_name='backup',
+      backupsId=BackupAttributeConfig(),
       instancesId=InstanceAttributeConfig(),
       projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG)
 
@@ -130,3 +147,49 @@ def AddSessionResourceArg(parser, verb, positional=True):
       GetSessionResourceSpec(),
       'The Cloud Spanner session {}.'.format(verb),
       required=True).AddToParser(parser)
+
+
+def AddBackupResourceArg(parser, verb, positional=True):
+  """Add a resource argument for a Cloud Spanner backup.
+
+  NOTE: Must be used only if it's the only resource arg in the command.
+
+  Args:
+    parser: the argparse parser for the command.
+    verb: str, the verb to describe the resource, such as 'to update'.
+    positional: bool, if True, means that the backup ID is a positional rather
+      than a flag.
+  """
+  name = 'backup' if positional else '--backup'
+
+  concept_parsers.ConceptParser.ForResource(
+      name,
+      GetBackupResourceSpec(),
+      'The Cloud Spanner backup {}.'.format(verb),
+      required=True).AddToParser(parser)
+
+
+def AddRestoreResourceArgs(parser):
+  """Add backup resource args (source, destination) for restore command."""
+  arg_specs = [
+      presentation_specs.ResourcePresentationSpec(
+          '--source',
+          GetBackupResourceSpec(),
+          'TEXT',
+          required=True,
+          flag_name_overrides={
+              'instance': '--source-instance',
+              'backup': '--source-backup'
+          }),
+      presentation_specs.ResourcePresentationSpec(
+          '--destination',
+          GetDatabaseResourceSpec(),
+          'TEXT',
+          required=True,
+          flag_name_overrides={
+              'instance': '--destination-instance',
+              'database': '--destination-database',
+          }),
+  ]
+
+  concept_parsers.ConceptParser(arg_specs).AddToParser(parser)

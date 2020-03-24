@@ -1168,7 +1168,7 @@ class DatabaseEncryption(_messages.Message):
       UNKNOWN: Should never be set
       ENCRYPTED: Secrets in etcd are encrypted.
       DECRYPTED: Secrets in etcd are stored in plain text (at etcd level) -
-        this is unrelated to GCE level full disk encryption.
+        this is unrelated to Compute Engine level full disk encryption.
     """
     UNKNOWN = 0
     ENCRYPTED = 1
@@ -3187,7 +3187,7 @@ class WorkloadMetadataConfig(_messages.Message):
 
     Values:
       MODE_UNSPECIFIED: Not set.
-      GCE_METADATA: Expose all GCE metadata to pods.
+      GCE_METADATA: Expose all Compute Engine metadata to pods.
       GKE_METADATA: Run the GKE Metadata Server on this node. The GKE Metadata
         Server exposes a metadata API to workloads that is compatible with the
         V1 Compute Metadata APIs exposed by the Compute Engine and App Engine

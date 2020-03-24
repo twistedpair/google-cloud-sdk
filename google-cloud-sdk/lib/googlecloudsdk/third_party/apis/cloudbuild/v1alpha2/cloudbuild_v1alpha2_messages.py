@@ -116,6 +116,9 @@ class Build(_messages.Message):
       `${logs_bucket}/log-${build_id}.txt`.
     options: Special options for this build.
     projectId: Output only. ID of the project.
+    queueTtl: TTL in queue for this build. If provided and the build is
+      enqueued longer than this value, the build will expire and the build
+      status will be `EXPIRED`.  The TTL starts ticking from create_time.
     results: Output only. Results of the build.
     secrets: Secrets to decrypt using Cloud Key Management Service.
     source: The location of the source files to build.
@@ -224,18 +227,19 @@ class Build(_messages.Message):
   logsBucket = _messages.StringField(8)
   options = _messages.MessageField('BuildOptions', 9)
   projectId = _messages.StringField(10)
-  results = _messages.MessageField('Results', 11)
-  secrets = _messages.MessageField('Secret', 12, repeated=True)
-  source = _messages.MessageField('Source', 13)
-  sourceProvenance = _messages.MessageField('SourceProvenance', 14)
-  startTime = _messages.StringField(15)
-  status = _messages.EnumField('StatusValueValuesEnum', 16)
-  statusDetail = _messages.StringField(17)
-  steps = _messages.MessageField('BuildStep', 18, repeated=True)
-  substitutions = _messages.MessageField('SubstitutionsValue', 19)
-  tags = _messages.StringField(20, repeated=True)
-  timeout = _messages.StringField(21)
-  timing = _messages.MessageField('TimingValue', 22)
+  queueTtl = _messages.StringField(11)
+  results = _messages.MessageField('Results', 12)
+  secrets = _messages.MessageField('Secret', 13, repeated=True)
+  source = _messages.MessageField('Source', 14)
+  sourceProvenance = _messages.MessageField('SourceProvenance', 15)
+  startTime = _messages.StringField(16)
+  status = _messages.EnumField('StatusValueValuesEnum', 17)
+  statusDetail = _messages.StringField(18)
+  steps = _messages.MessageField('BuildStep', 19, repeated=True)
+  substitutions = _messages.MessageField('SubstitutionsValue', 20)
+  tags = _messages.StringField(21, repeated=True)
+  timeout = _messages.StringField(22)
+  timing = _messages.MessageField('TimingValue', 23)
 
 
 class BuildOperationMetadata(_messages.Message):

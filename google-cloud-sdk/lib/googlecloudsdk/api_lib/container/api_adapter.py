@@ -221,6 +221,10 @@ RESERVATION_AFFINITY_NON_SPECIFIC_WITH_RESERVATION_NAME_ERROR_MSG = """\
 Cannot specify --reservation for --reservation-affinity={affinity}.
 """
 
+DATAPATH_PROVIDER_ILL_SPECIFIED_ERROR_MSG = """\
+Invalid provider '{provider}' for argument --datapath-provider. Valid providers are legacy, advanced.
+"""
+
 SANDBOX_TYPE_NOT_PROVIDED = """\
 Must specify sandbox type.
 """
@@ -495,6 +499,7 @@ class CreateClusterOptions(object):
       reservation_affinity=None,
       reservation=None,
       autoprovisioning_min_cpu_platform=None,
+      enable_master_global_access=None,
   ):
     self.node_machine_type = node_machine_type
     self.node_source_image = node_source_image
@@ -609,6 +614,7 @@ class CreateClusterOptions(object):
     self.reservation_affinity = reservation_affinity
     self.reservation = reservation
     self.autoprovisioning_min_cpu_platform = autoprovisioning_min_cpu_platform
+    self.enable_master_global_access = enable_master_global_access
 
 
 class UpdateClusterOptions(object):
@@ -673,6 +679,7 @@ class UpdateClusterOptions(object):
                autoprovisioning_min_cpu_platform=None,
                enable_tpu=None,
                tpu_ipv4_cidr=None,
+               enable_master_global_access=None,
                enable_tpu_service_networking=None):
     self.version = version
     self.update_master = bool(update_master)
@@ -734,6 +741,7 @@ class UpdateClusterOptions(object):
     self.enable_tpu = enable_tpu
     self.tpu_ipv4_cidr = tpu_ipv4_cidr
     self.enable_tpu_service_networking = enable_tpu_service_networking
+    self.enable_master_global_access = enable_master_global_access
 
 
 class SetMasterAuthOptions(object):
@@ -1796,6 +1804,14 @@ class APIAdapter(object):
           enabled=options.enable_intra_node_visibility)
       update = self.messages.ClusterUpdate(
           desiredIntraNodeVisibilityConfig=intra_node_visibility_config)
+    elif options.enable_master_global_access is not None:
+      # For update, we can either enable or disable.
+      master_global_access_config = self.messages.PrivateClusterMasterGlobalAccessConfig(
+          enabled=options.enable_master_global_access)
+      private_cluster_config = self.messages.PrivateClusterConfig(
+          masterGlobalAccessConfig=master_global_access_config)
+      update = self.messages.ClusterUpdate(
+          desiredPrivateClusterConfig=private_cluster_config)
 
     if (options.security_profile is not None and
         options.security_profile_runtime_rules is not None):
@@ -2788,6 +2804,15 @@ class V1Beta1Adapter(V1Adapter):
     elif options.identity_namespace:
       cluster.workloadIdentityConfig = self.messages.WorkloadIdentityConfig(
           identityNamespace=options.identity_namespace)
+    if options.enable_master_global_access is not None:
+      if not options.enable_private_nodes:
+        raise util.Error(
+            PREREQUISITE_OPTION_ERROR_MSG.format(
+                prerequisite='enable-private-nodes',
+                opt='enable-master-global-access'))
+      cluster.privateClusterConfig.masterGlobalAccessConfig = \
+          self.messages.PrivateClusterMasterGlobalAccessConfig(
+              enabled=options.enable_master_global_access)
     _AddReleaseChannelToCluster(cluster, options, self.messages)
 
     cluster.loggingService = None
@@ -3130,6 +3155,15 @@ class V1Alpha1Adapter(V1Beta1Adapter):
       else:
         cluster.networkConfig.enablePrivateIpv6Access = \
             options.enable_private_ipv6_access
+    if options.enable_master_global_access is not None:
+      if not options.enable_private_nodes:
+        raise util.Error(
+            PREREQUISITE_OPTION_ERROR_MSG.format(
+                prerequisite='enable-private-nodes',
+                opt='enable-master-global-access'))
+      cluster.privateClusterConfig.masterGlobalAccessConfig = \
+          self.messages.PrivateClusterMasterGlobalAccessConfig(
+              enabled=options.enable_master_global_access)
     _AddReleaseChannelToCluster(cluster, options, self.messages)
     if options.enable_cost_management:
       cluster.costManagementConfig = self.messages.CostManagementConfig(
@@ -3146,6 +3180,20 @@ class V1Alpha1Adapter(V1Beta1Adapter):
       cluster.clusterTelemetry.type = self.messages.ClusterTelemetry.TypeValueValuesEnum.DISABLED
     else:
       cluster.clusterTelemetry = None
+
+    if options.datapath_provider is not None:
+      if cluster.networkConfig is None:
+        cluster.networkConfig = self.messages.NetworkConfig()
+      if options.datapath_provider.lower() == 'legacy':
+        cluster.networkConfig.datapathProvider = \
+            self.messages.NetworkConfig.DatapathProviderValueValuesEnum.LEGACY_DATAPATH
+      elif options.datapath_provider.lower() == 'advanced':
+        cluster.networkConfig.datapathProvider = \
+            self.messages.NetworkConfig.DatapathProviderValueValuesEnum.ADVANCED_DATAPATH
+      else:
+        raise util.Error(
+            DATAPATH_PROVIDER_ILL_SPECIFIED_ERROR_MSG.format(
+                provider=options.datapath_provider))
 
     req = self.messages.CreateClusterRequest(
         parent=ProjectLocation(cluster_ref.projectId, cluster_ref.zone),

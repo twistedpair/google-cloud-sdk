@@ -134,7 +134,7 @@
       "type": "object",
       "properties": {
         "name": {
-          "description": "Name of the insight.\n\n* A project insight is represented as\n  projects\/[PROJECT_NUMBER]\/locations\/[LOCATION]\/insightTypes\/[INSIGHT_TYPE_ID]\/insights\/[insight_id]",
+          "description": "Name of the insight.",
           "type": "string"
         },
         "description": {
@@ -588,7 +588,7 @@
           }
         },
         "etag": {
-          "description": "Fingerprint of the Recommendation. Provides optimistic locking.",
+          "description": "Required. Fingerprint of the Recommendation. Provides optimistic locking.",
           "type": "string"
         }
       }

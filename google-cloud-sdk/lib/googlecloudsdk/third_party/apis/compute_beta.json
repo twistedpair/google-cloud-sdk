@@ -4,7 +4,7 @@
  "id": "compute:beta",
  "name": "compute",
  "version": "beta",
- "revision": "20200312",
+ "revision": "20200313",
  "title": "Compute Engine API",
  "description": "Creates and runs virtual machines on Google Cloud Platform.",
  "ownerDomain": "google.com",
@@ -584,7 +584,7 @@
     },
     "labels": {
      "type": "object",
-     "description": "Labels to apply to this Address resource. These can be later modified by the setLabels method. Each label key/value must comply with RFC1035. Label values may be empty.",
+     "description": "Labels for this resource. These can only be added or modified by the setLabels method. Each label key/value pair must comply with RFC1035. Label values may be empty.",
      "additionalProperties": {
       "type": "string"
      }
@@ -5101,7 +5101,7 @@
     },
     "labels": {
      "type": "object",
-     "description": "Labels to apply to this ExternalVpnGateway resource. These can be later modified by the setLabels method. Each label key/value must comply with RFC1035. Label values may be empty.",
+     "description": "Labels for this resource. These can only be added or modified by the setLabels method. Each label key/value pair must comply with RFC1035. Label values may be empty.",
      "additionalProperties": {
       "type": "string"
      }
@@ -5692,7 +5692,7 @@
     },
     "labels": {
      "type": "object",
-     "description": "Labels to apply to this resource. These can be later modified by the setLabels method. Each label key/value pair must comply with RFC1035. Label values may be empty.",
+     "description": "Labels for this resource. These can only be added or modified by the setLabels method. Each label key/value pair must comply with RFC1035. Label values may be empty.",
      "additionalProperties": {
       "type": "string"
      }
@@ -11123,7 +11123,7 @@
     },
     "labels": {
      "type": "object",
-     "description": "Labels to apply to this Interconnect resource. These can be later modified by the setLabels method. Each label key/value must comply with RFC1035. Label values may be empty.",
+     "description": "Labels for this resource. These can only be added or modified by the setLabels method. Each label key/value pair must comply with RFC1035. Label values may be empty.",
      "additionalProperties": {
       "type": "string"
      }
@@ -11305,7 +11305,7 @@
     },
     "labels": {
      "type": "object",
-     "description": "Labels to apply to this InterconnectAttachment resource. These can be later modified by the setLabels method. Each label key/value must comply with RFC1035. Label values may be empty.",
+     "description": "Labels for this resource. These can only be added or modified by the setLabels method. Each label key/value pair must comply with RFC1035. Label values may be empty.",
      "additionalProperties": {
       "type": "string"
      }
@@ -21910,7 +21910,7 @@
     },
     "labels": {
      "type": "object",
-     "description": "Labels to apply to this security policy resource. These can be later modified by the setLabels method. Each label key/value must comply with RFC1035. Label values may be empty.",
+     "description": "Labels for this resource. These can only be added or modified by the setLabels method. Each label key/value pair must comply with RFC1035. Label values may be empty.",
      "additionalProperties": {
       "type": "string"
      }
@@ -26333,7 +26333,7 @@
     },
     "labels": {
      "type": "object",
-     "description": "Labels to apply to this TargetVpnGateway resource. These can be later modified by the setLabels method. Each label key/value must comply with RFC1035. Label values may be empty.",
+     "description": "Labels for this resource. These can only be added or modified by the setLabels method. Each label key/value pair must comply with RFC1035. Label values may be empty.",
      "additionalProperties": {
       "type": "string"
      }
@@ -27608,7 +27608,7 @@
     },
     "labels": {
      "type": "object",
-     "description": "Labels to apply to this VpnGateway resource. These can be later modified by the setLabels method. Each label key/value must comply with RFC1035. Label values may be empty.",
+     "description": "Labels for this resource. These can only be added or modified by the setLabels method. Each label key/value pair must comply with RFC1035. Label values may be empty.",
      "additionalProperties": {
       "type": "string"
      }
@@ -27642,7 +27642,7 @@
     },
     "vpnInterfaces": {
      "type": "array",
-     "description": "[Output Only] A list of interfaces on this VPN gateway.",
+     "description": "A list of interfaces on this VPN gateway.",
      "items": {
       "$ref": "VpnGatewayVpnGatewayInterface"
      }
@@ -27974,7 +27974,7 @@
     },
     "ipAddress": {
      "type": "string",
-     "description": "The external IP address for this VPN gateway interface."
+     "description": "[Output Only] The external IP address for this VPN gateway interface."
     }
    }
   },
@@ -28120,7 +28120,7 @@
     },
     "labels": {
      "type": "object",
-     "description": "Labels to apply to this VpnTunnel. These can be later modified by the setLabels method. Each label key/value pair must comply with RFC1035. Label values may be empty.",
+     "description": "Labels for this resource. These can only be added or modified by the setLabels method. Each label key/value pair must comply with RFC1035. Label values may be empty.",
      "additionalProperties": {
       "type": "string"
      }

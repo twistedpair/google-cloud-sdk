@@ -114,7 +114,7 @@ def _StripVal(val):
   return six.text_type(val).strip()
 
 
-def AddSubjectAlternativeNameFlags(parser):
+def _AddSubjectAlternativeNameFlags(parser):
   """Adds the Subject Alternative Name (san) flags.
 
   This will add --ip-san, --email-san, --dns-san, and --uri-san to the parser.
@@ -144,16 +144,26 @@ def AddSubjectAlternativeNameFlags(parser):
       metavar='URI_SAN').AddToParser(parser)
 
 
-def AddSubjectFlag(parser, required=False):
+def _AddSubjectFlag(parser, required):
   base.Argument(
       '--subject',
       required=required,
       metavar='SUBJECT',
       help='X.501 name of the certificate subject. Example:'
       '--subject \"C=US,ST=California,L=Mountain View,O=Google LLC,CN=google.com\"',
-      type=arg_parsers.ArgDict(
-          required_keys=['CN'], key_type=_StripVal,
-          value_type=_StripVal)).AddToParser(parser)
+      type=arg_parsers.ArgDict(key_type=_StripVal,
+                               value_type=_StripVal)).AddToParser(parser)
+
+
+def AddSubjectFlags(parser, subject_required=False):
+  """Adds subject flags to the parser including subject string and SAN flags.
+
+  Args:
+    parser: The parser to add the flags to.
+    subject_required: Whether the subject flag should be required.
+  """
+  _AddSubjectFlag(parser, subject_required)
+  _AddSubjectAlternativeNameFlags(parser)
 
 
 def AddValidityFlag(parser,
@@ -282,17 +292,21 @@ def ParseReusableConfig(args):
                                      ) if is_ca_val else None)))
 
 
-def ParseSubject(subject_args):
+def _ParseSubject(args):
   """Parses a dictionary with subject attributes into a API Subject type and common name.
 
   Args:
-    subject_args: A string->string dict with subject attributes and values.
+    args: The argparse namespace that contains the flag values.
 
   Returns:
     A tuple with (common_name, Subject) where common name is a string and
     Subject is the Subject type represented in the api.
   """
-  common_name = subject_args['CN']
+  subject_args = args.subject
+  if 'CN' in subject_args:
+    common_name = subject_args['CN']
+  else:
+    common_name = None
   remap_args = {
       'C': 'countryCode',
       'ST': 'province',
@@ -319,7 +333,7 @@ def ParseSubject(subject_args):
         '--subject', 'Unrecognized subject attribute.')
 
 
-def ParseSanFlags(args):
+def _ParseSanFlags(args):
   """Validates the san flags and creates a SubjectAltNames message from them.
 
   Args:
@@ -345,7 +359,45 @@ def ParseSanFlags(args):
       uris=uris)
 
 
-def SanFlagsAreSpecified(args):
+def ParseSubjectFlags(args, is_ca):
+  """Parses subject flags into a subject config.
+
+  Args:
+    args: The parser that contains all the flag values
+    is_ca: Whether to parse this subject as a CA or not.
+
+  Returns:
+    A subject config representing the parsed flags.
+  """
+  messages = privateca_base.GetMessagesModule()
+  subject_config = messages.SubjectConfig(
+      subject=messages.Subject(), subjectAltName=messages.SubjectAltNames())
+
+  if args.IsSpecified('subject'):
+    subject_config.commonName, subject_config.subject = _ParseSubject(args)
+  if _SanFlagsAreSpecified(args):
+    subject_config.subjectAltName = _ParseSanFlags(args)
+
+  if not subject_config.commonName and not _SanFlagsAreSpecified(args):
+    raise exceptions.InvalidArgumentException(
+        '--subject',
+        'The certificate you are creating does not contain a common name or a subject alternative name.'
+    )
+
+  if is_ca and not subject_config.commonName:
+    raise exceptions.InvalidArgumentException(
+        '--subject',
+        'A common name must be provided for a certificate authority certificate.'
+    )
+  if is_ca and not subject_config.subject.organization:
+    raise exceptions.InvalidArgumentException(
+        '--subject',
+        'An organization must be provided for a certificate authority certificate.'
+    )
+  return subject_config
+
+
+def _SanFlagsAreSpecified(args):
   """Returns true if any san flags are specified."""
   return args.IsSpecified('email_san') or args.IsSpecified(
       'dns_san') or args.IsSpecified('ip_san') or args.IsSpecified('uri_san')

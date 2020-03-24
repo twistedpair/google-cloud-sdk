@@ -143,7 +143,7 @@
           "$ref": "GoogleCloudBillingBudgetsV1alpha1BudgetAmount"
         },
         "thresholdRules": {
-          "description": "Required. Rules that trigger alerts (notifications of thresholds\nbeing crossed) when spend exceeds the specified percentages of the budget.",
+          "description": "Optional. Rules that trigger alerts (notifications of thresholds\nbeing crossed) when spend exceeds the specified percentages of the budget.",
           "type": "array",
           "items": {
             "$ref": "GoogleCloudBillingBudgetsV1alpha1ThresholdRule"
@@ -165,7 +165,7 @@
       "type": "object",
       "properties": {
         "projects": {
-          "description": "Optional. A set of projects of the form `projects\/{project_id}`,\nspecifying that usage from only this set of projects should be\nincluded in the budget. If omitted, the report will include all usage for\nthe billing account, regardless of which project the usage occurred on.\nOnly zero or one project can be specified currently.",
+          "description": "Optional. A set of projects of the form `projects\/{project}`,\nspecifying that usage from only this set of projects should be\nincluded in the budget. If omitted, the report will include all usage for\nthe billing account, regardless of which project the usage occurred on.\nOnly zero or one project can be specified currently.",
           "type": "array",
           "items": {
             "type": "string"
@@ -379,7 +379,7 @@
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform"
               ],
-              "description": "Updates a budget and returns the updated budget."
+              "description": "Updates a budget and returns the updated budget.\n\nWARNING: There are some fields exposed on the Google Cloud Console that\naren't available on this API. Budget fields that are not exposed in\nthis API will not be changed by this method."
             },
             "get": {
               "id": "billingbudgets.billingAccounts.budgets.get",
@@ -404,7 +404,7 @@
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform"
               ],
-              "description": "Returns a budget."
+              "description": "Returns a budget.\n\nWARNING: There are some fields exposed on the Google Cloud Console that\naren't available on this API. When reading from the API, you will not\nsee these fields in the return value, though they may have been set\nin the Cloud Console."
             },
             "list": {
               "id": "billingbudgets.billingAccounts.budgets.list",
@@ -440,7 +440,7 @@
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform"
               ],
-              "description": "Returns a list of budgets for a billing account."
+              "description": "Returns a list of budgets for a billing account.\n\nWARNING: There are some fields exposed on the Google Cloud Console that\naren't available on this API. When reading from the API, you will not\nsee these fields in the return value, though they may have been set\nin the Cloud Console."
             },
             "delete": {
               "id": "billingbudgets.billingAccounts.budgets.delete",
