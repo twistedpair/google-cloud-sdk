@@ -16,7 +16,7 @@ class ToolresultsV1beta3(base_api.BaseApiClient):
   _VERSION = u'v1beta3'
   _CLIENT_ID = '1042881264118.apps.googleusercontent.com'
   _CLIENT_SECRET = 'x_Tw5K8nnjoRAqULM9PFAC2b'
-  _USER_AGENT = 'x_Tw5K8nnjoRAqULM9PFAC2b'
+  _USER_AGENT = u'google-cloud-sdk'
   _CLIENT_CLASS_NAME = u'ToolresultsV1beta3'
   _URL_VERSION = u'v1beta3'
   _API_KEY = None
@@ -501,6 +501,36 @@ May return any of the following canonical error codes: - PERMISSION_DENIED - if 
       super(ToolresultsV1beta3.ProjectsHistoriesExecutionsStepsService, self).__init__(client)
       self._upload_configs = {
           }
+
+    def AccessibilityClusters(self, request, global_params=None):
+      r"""Lists accessibility clusters for a given Step.
+
+May return any of the following canonical error codes:
+
+- PERMISSION_DENIED - if the user is not authorized to read project - INVALID_ARGUMENT - if the request is malformed - FAILED_PRECONDITION - if an argument in the request happens to be invalid; e.g. if the locale format is incorrect - NOT_FOUND - if the containing Step does not exist
+
+      Args:
+        request: (ToolresultsProjectsHistoriesExecutionsStepsAccessibilityClustersRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListStepAccessibilityClustersResponse) The response message.
+      """
+      config = self.GetMethodConfig('AccessibilityClusters')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    AccessibilityClusters.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'toolresults.projects.histories.executions.steps.accessibilityClusters',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[u'locale'],
+        relative_path=u'{+name}:accessibilityClusters',
+        request_field='',
+        request_type_name=u'ToolresultsProjectsHistoriesExecutionsStepsAccessibilityClustersRequest',
+        response_type_name=u'ListStepAccessibilityClustersResponse',
+        supports_download=False,
+    )
 
     def Create(self, request, global_params=None):
       r"""Creates a Step.

@@ -112,10 +112,6 @@ apis:
     v1beta1:
       discovery_doc: billingbudgets_v1beta1.json
       default: true
-  buildartifacts:
-    v1alpha2:
-      discovery_doc: buildartifacts_v1alpha2.json
-      default: true
   cloudasset:
     v1beta1:
       default: true

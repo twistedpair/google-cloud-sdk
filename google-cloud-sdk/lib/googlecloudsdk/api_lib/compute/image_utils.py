@@ -22,30 +22,12 @@ from googlecloudsdk.api_lib.compute import constants
 from googlecloudsdk.api_lib.compute import request_helper
 from googlecloudsdk.api_lib.compute import utils
 from googlecloudsdk.calliope import arg_parsers
-from googlecloudsdk.calliope import base
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 from googlecloudsdk.core.console import console_io
 from googlecloudsdk.core.util import files as file_utils
 
 FAMILY_PREFIX = 'family/'
-GUEST_OS_FEATURES = ['MULTI_IP_SUBNET',
-                     'UEFI_COMPATIBLE',
-                     'VIRTIO_SCSI_MULTIQUEUE',
-                     'WINDOWS',
-                    ]
-GUEST_OS_FEATURES_BETA = ['MULTI_IP_SUBNET',
-                          'UEFI_COMPATIBLE',
-                          'VIRTIO_SCSI_MULTIQUEUE',
-                          'WINDOWS',
-                          'GVNIC'
-                         ]
-GUEST_OS_FEATURES_ALPHA = ['MULTI_IP_SUBNET',
-                           'UEFI_COMPATIBLE',
-                           'VIRTIO_SCSI_MULTIQUEUE',
-                           'WINDOWS',
-                           'GVNIC'
-                          ]
 
 
 class ImageExpander(object):
@@ -327,16 +309,15 @@ def WarnAlias(alias):
   log.warning(msg)
 
 
-def AddGuestOsFeaturesArg(parser, release_track):
+def AddGuestOsFeaturesArg(parser, messages):
   """Add the guest-os-features arg."""
-  # Alpha and Beta Args
-  guest_os_features = []
-  if release_track == base.ReleaseTrack.GA:
-    guest_os_features = GUEST_OS_FEATURES
-  elif release_track == base.ReleaseTrack.BETA:
-    guest_os_features = GUEST_OS_FEATURES_BETA
-  elif release_track == base.ReleaseTrack.ALPHA:
-    guest_os_features = GUEST_OS_FEATURES_ALPHA
+  features_enum_type = messages.GuestOsFeature.TypeValueValuesEnum
+  excluded_enums = [
+      'FEATURE_TYPE_UNSPECIFIED',
+      'SECURE_BOOT',  # Still exists in API but deprecated and has no effect.
+  ]
+  guest_os_features = sorted([
+      e for e in features_enum_type.names() if e not in excluded_enums])
 
   if not guest_os_features:
     return
@@ -347,26 +328,9 @@ def AddGuestOsFeaturesArg(parser, release_track):
           element_type=lambda x: x.upper(), choices=guest_os_features),
       help="""\
       This parameter enables one or more features for VM instances that use the
-      image for their boot disks. The following features are available:
-
-       * MULTI_IP_SUBNET - For configuring interfaces with a netmask other than
-         /32.
-
-       * UEFI_COMPATIBLE - Enables UEFI booting, which is an alternative system
-         boot method. Most public images use the GRUB bootloader as their
-         primary boot method.
-
-       * VIRTIO_SCSI_MULTIQUEUE - Enables multiqueue SCSI capabilities for
-         Local SSD devices. This option is an alternative to NVMe.
-          * For Linux images, you can enable VIRTIO_SCSI_MULTIQUEUE on images
-            with kernel versions 3.17 and higher.
-          * For Windows images, you can enable VIRTIO_SCSI_MULTIQUEUE on images
-            with driver version 1.2.0.1621 or higher.
-
-       * WINDOWS - Required for Windows Server images. Newer public images for
-         Windows server include the WINDOWS parameter to indicate that it is a
-         Windows image.
-        """)
+      image for their boot disks. See
+      https://cloud.google.com/compute/docs/images/create-delete-deprecate-private-images#guest-os-features
+      for descriptions of the supported features.""")
 
 
 def GetFileContentAndFileType(file_path):

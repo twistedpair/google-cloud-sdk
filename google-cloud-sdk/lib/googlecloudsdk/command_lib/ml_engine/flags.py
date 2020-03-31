@@ -224,15 +224,23 @@ Storage bucket given by `--staging-bucket`, or Cloud Storage URLs
 ('gs://bucket-name/path/to/package.tar.gz').
 """)
 
+_REGION_FLAG_HELPTEXT = """\
+Google Cloud region of the regional endpoint to use for this command.
+If unspecified, the command uses the global endpoint of the AI Platform Training
+and Prediction API.
 
-# TODO(b/150109532) Find a better description.
+Learn more about regional endpoints and see a list of available regions:
+ https://cloud.google.com/ai-platform/prediction/docs/regional-endpoints
+"""
+
+
 # TODO(b/150923506) Add autocompletion.
-def GetRegionArg(noun):
+def GetRegionArg(hidden=True):
   """Adds --region flag to determine endpoint for models and versions."""
   return base.Argument(
       '--region',
-      hidden=True,
-      help='Google Cloud Region to use for {0}.'.format(noun))
+      hidden=hidden,
+      help=_REGION_FLAG_HELPTEXT)
 
 
 SERVICE_ACCOUNT = base.Argument(

@@ -35,6 +35,7 @@ class LinterRenderer(text_renderer.TextRenderer):
   # gcloud does not recognize the following flags as not requiring a value so
   # they would be marked as violations in _analyze_example_flags_equals.
   _NON_BOOL_FLAGS_WHITELIST = ["--quiet", "--help"]
+  _NON_COMMAND_SURFACE_GROUPS = ["gcloud topic"]
 
   def __init__(self, *args, **kwargs):
     super(LinterRenderer, self).__init__(*args, **kwargs)
@@ -86,15 +87,26 @@ class LinterRenderer(text_renderer.TextRenderer):
       self.json_object[key_object] = value_object
     return found_pronouns
 
+  def needs_example(self):
+    """Check whether command requires an example."""
+    # alpha commands, groups, and certain directories do not need examples."""
+    if self.command_metadata and self.command_metadata.is_group:
+      return False
+    if "alpha" in self.command_name:
+      return False
+    for name in self._NON_COMMAND_SURFACE_GROUPS:
+      if self.command_name.startswith(name):
+        return False
+    return True
+
   def Finish(self):
     if self._buffer.getvalue() and self._prev_heading:
       self._Analyze(self._prev_heading, self._buffer.getvalue())
     self._buffer.close()
     self._null_out.close()
-    # exclude alpha commands from this requirement
-    if ("alpha" not in self.command_name and self.command_metadata and not
-        self.command_metadata.is_group and not self.example):
-      value_object = "You have not included an example in the Examples section."
+    if self.needs_example() and not self.example:
+      value_object = (
+          "You have not included an example in the Examples section.")
       self.json_object["# EXAMPLE_PRESENT_CHECK FAILED"] = value_object
     for element in self.json_object:
       if self.json_object[element]:

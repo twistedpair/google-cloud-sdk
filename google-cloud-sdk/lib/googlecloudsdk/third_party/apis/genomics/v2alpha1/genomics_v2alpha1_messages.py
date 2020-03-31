@@ -753,6 +753,19 @@ class GenomicsProjectsOperationsListRequest(_messages.Message):
   pageToken = _messages.StringField(4)
 
 
+class GenomicsProjectsWorkersCheckInRequest(_messages.Message):
+  r"""A GenomicsProjectsWorkersCheckInRequest object.
+
+  Fields:
+    checkInRequest: A CheckInRequest resource to be passed as the request
+      body.
+    id: The worker id, assigned when it was created.
+  """
+
+  checkInRequest = _messages.MessageField('CheckInRequest', 1)
+  id = _messages.StringField(2, required=True)
+
+
 class GenomicsWorkersCheckInRequest(_messages.Message):
   r"""A GenomicsWorkersCheckInRequest object.
 

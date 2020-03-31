@@ -71,7 +71,7 @@ def SecurityPolicyFromFile(input_file, messages, file_format):
       match.versionedExpr = ConvertToEnum(rule['match']['versionedExpr'],
                                           messages)
     if 'expr' in rule['match']:
-      match.expr = messages.Expr(expression=rule['match']['expr'])
+      match.expr = messages.Expr(expression=rule['match']['expr']['expression'])
     if 'config' in rule['match']:
       if 'srcIpRanges' in rule['match']['config']:
         match.config = messages.SecurityPolicyRuleMatcherConfig(

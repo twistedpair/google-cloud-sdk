@@ -717,7 +717,7 @@ class CommandBuilder(object):
               # Configure command to use fallback create async configuration.
               if self.spec.import_.no_create_async:
                 self.spec.async_ = None
-              else:
+              elif self.spec.import_.create_async:
                 self.spec.async_ = self.spec.import_.create_async
               # Reset command with updated configuration.
               self.ConfigureCommand()
@@ -1198,6 +1198,8 @@ class CommandBuilder(object):
       command = base.Hidden(command)
     if self.spec.release_tracks:
       command = base.ReleaseTracks(*self.spec.release_tracks)(command)
+    if self.spec.deprecated_data:
+      command = base.Deprecate(**self.spec.deprecated_data)(command)
     if not hasattr(command, 'detailed_help'):
       key_map = {
           'description': 'DESCRIPTION',

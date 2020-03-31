@@ -51,10 +51,12 @@ class InvalidReturnValueError(core_exceptions.Error):
   pass
 
 
-def RunPredict(model_dir, json_instances=None, text_instances=None,
-               framework='tensorflow', signature_name=None):
+def RunPredict(model_dir, json_request=None, json_instances=None,
+               text_instances=None, framework='tensorflow',
+               signature_name=None):
   """Run ML Engine local prediction."""
-  instances = predict_utilities.ReadInstancesFromArgs(json_instances,
+  instances = predict_utilities.ReadInstancesFromArgs(json_request,
+                                                      json_instances,
                                                       text_instances)
   sdk_root = config.Paths().sdk_root
   if not sdk_root:

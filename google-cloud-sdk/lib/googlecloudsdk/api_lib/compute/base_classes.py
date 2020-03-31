@@ -49,7 +49,7 @@ import six
 class ComputeApiHolder(object):
   """Convenience class to hold lazy initialized client and resources."""
 
-  def __init__(self, release_track):
+  def __init__(self, release_track, no_http=False):
     if release_track == base.ReleaseTrack.ALPHA:
       self._api_version = 'alpha'
     elif release_track == base.ReleaseTrack.BETA:
@@ -58,12 +58,14 @@ class ComputeApiHolder(object):
       self._api_version = 'v1'
     self._client = None
     self._resources = None
+    self._no_http = no_http
 
   @property
   def client(self):
     """Specifies the compute client."""
     if self._client is None:
-      self._client = client_adapter.ClientAdapter(self._api_version)
+      self._client = client_adapter.ClientAdapter(
+          self._api_version, self._no_http)
     return self._client
 
   @property

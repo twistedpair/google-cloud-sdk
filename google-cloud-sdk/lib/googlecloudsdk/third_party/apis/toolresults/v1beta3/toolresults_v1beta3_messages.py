@@ -735,6 +735,24 @@ class ListScreenshotClustersResponse(_messages.Message):
   clusters = _messages.MessageField('ScreenshotCluster', 1, repeated=True)
 
 
+class ListStepAccessibilityClustersResponse(_messages.Message):
+  r"""Response message for AccessibilityService.ListStepAccessibilityClusters.
+
+  Fields:
+    clusters: A sequence of accessibility suggestions, grouped into clusters.
+      Within the sequence, clusters that belong to the same SuggestionCategory
+      should be adjacent. Within each category, clusters should be ordered by
+      their SuggestionPriority (ERRORs first). The categories should be
+      ordered by their highest priority cluster.
+    name: A full resource name of the step. For example, projects/my-
+      project/histories/bh.1234567890abcdef/executions/
+      1234567890123456789/steps/bs.1234567890abcdef  Always presents.
+  """
+
+  clusters = _messages.MessageField('SuggestionClusterProto', 1, repeated=True)
+  name = _messages.StringField(2)
+
+
 class ListStepThumbnailsResponse(_messages.Message):
   r"""A response containing the thumbnails in a step.
 
@@ -1055,6 +1073,22 @@ class PublishXunitXmlFilesRequest(_messages.Message):
   xunitXmlFiles = _messages.MessageField('FileReference', 1, repeated=True)
 
 
+class RegionProto(_messages.Message):
+  r"""A rectangular region.
+
+  Fields:
+    heightPx: The height, in pixels. Always set.
+    leftPx: The left side of the rectangle, in pixels. Always set.
+    topPx: The top of the rectangle, in pixels. Always set.
+    widthPx: The width, in pixels. Always set.
+  """
+
+  heightPx = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  leftPx = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  topPx = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  widthPx = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+
+
 class ResultsStorage(_messages.Message):
   r"""The storage for test results.
 
@@ -1065,6 +1099,24 @@ class ResultsStorage(_messages.Message):
 
   resultsStoragePath = _messages.MessageField('FileReference', 1)
   xunitXmlFile = _messages.MessageField('FileReference', 2)
+
+
+class SafeHtmlProto(_messages.Message):
+  r"""IMPORTANT: It is unsafe to accept this message from an untrusted source,
+  since it's trivial for an attacker to forge serialized messages that don't
+  fulfill the type's safety contract -- for example, it could contain attacker
+  controlled script. A system which receives a SafeHtmlProto implicitly trusts
+  the producer of the SafeHtmlProto. So, it's generally safe to return this
+  message in RPC responses, but generally unsafe to accept it in RPC requests.
+
+  Fields:
+    privateDoNotAccessOrElseSafeHtmlWrappedValue: IMPORTANT: Never set or read
+      this field, even from tests, it is private. See documentation at the top
+      of .proto file for programming language packages with which to create or
+      read this message.
+  """
+
+  privateDoNotAccessOrElseSafeHtmlWrappedValue = _messages.StringField(1)
 
 
 class Screen(_messages.Message):
@@ -1397,6 +1449,106 @@ class SuccessDetail(_messages.Message):
   """
 
   otherNativeCrash = _messages.BooleanField(1)
+
+
+class SuggestionClusterProto(_messages.Message):
+  r"""A set of similar suggestions that we suspect are closely related.  This
+  proto and most of the nested protos are branched from
+  foxandcrown.prelaunchreport.service.SuggestionClusterProto, replacing PLR's
+  dependencies with FTL's.
+
+  Enums:
+    CategoryValueValuesEnum: Category in which these types of suggestions
+      should appear. Always set.
+
+  Fields:
+    category: Category in which these types of suggestions should appear.
+      Always set.
+    suggestions: A sequence of suggestions. All of the suggestions within a
+      cluster must have the same SuggestionPriority and belong to the same
+      SuggestionCategory. Suggestions with the same screenshot URL should be
+      adjacent.
+  """
+
+  class CategoryValueValuesEnum(_messages.Enum):
+    r"""Category in which these types of suggestions should appear. Always
+    set.
+
+    Values:
+      contentLabeling: <no description>
+      implementation: <no description>
+      lowContrast: <no description>
+      touchTargetSize: <no description>
+      unknownCategory: <no description>
+    """
+    contentLabeling = 0
+    implementation = 1
+    lowContrast = 2
+    touchTargetSize = 3
+    unknownCategory = 4
+
+  category = _messages.EnumField('CategoryValueValuesEnum', 1)
+  suggestions = _messages.MessageField('SuggestionProto', 2, repeated=True)
+
+
+class SuggestionProto(_messages.Message):
+  r"""A SuggestionProto object.
+
+  Enums:
+    PriorityValueValuesEnum: Relative importance of a suggestion. Always set.
+
+  Fields:
+    helpUrl: Reference to a help center article concerning this type of
+      suggestion. Always set.
+    longMessage: Message, in the user's language, explaining the suggestion,
+      which may contain markup. Always set.
+    priority: Relative importance of a suggestion. Always set.
+    pseudoResourceId: A somewhat human readable identifier of the source view,
+      if it does not have a resource_name. This is a path within the
+      accessibility hierarchy, an element with resource name; similar to an
+      XPath.
+    region: Region within the screenshot that is relevant to this suggestion.
+      Optional.
+    resourceName: Reference to a view element, identified by its resource
+      name, if it has one.
+    screenId: ID of the screen for the suggestion. It is used for getting the
+      corresponding screenshot path. For example, screen_id "1" corresponds to
+      "1.png" file in GCS. Always set.
+    secondaryPriority: Relative importance of a suggestion as compared with
+      other suggestions that have the same priority and category. This is a
+      meaningless value that can be used to order suggestions that are in the
+      same category and have the same priority. The larger values have higher
+      priority (i.e., are more important). Optional.
+    shortMessage: Concise message, in the user's language, representing the
+      suggestion, which may contain markup. Always set.
+    title: General title for the suggestion, in the user's language, without
+      markup. Always set.
+  """
+
+  class PriorityValueValuesEnum(_messages.Enum):
+    r"""Relative importance of a suggestion. Always set.
+
+    Values:
+      error: <no description>
+      info: <no description>
+      unknownPriority: <no description>
+      warning: <no description>
+    """
+    error = 0
+    info = 1
+    unknownPriority = 2
+    warning = 3
+
+  helpUrl = _messages.StringField(1)
+  longMessage = _messages.MessageField('SafeHtmlProto', 2)
+  priority = _messages.EnumField('PriorityValueValuesEnum', 3)
+  pseudoResourceId = _messages.StringField(4)
+  region = _messages.MessageField('RegionProto', 5)
+  resourceName = _messages.StringField(6)
+  screenId = _messages.StringField(7)
+  secondaryPriority = _messages.FloatField(8)
+  shortMessage = _messages.MessageField('SafeHtmlProto', 9)
+  title = _messages.StringField(10)
 
 
 class TestCase(_messages.Message):
@@ -1986,6 +2138,26 @@ class ToolresultsProjectsHistoriesExecutionsPatchRequest(_messages.Message):
   historyId = _messages.StringField(3, required=True)
   projectId = _messages.StringField(4, required=True)
   requestId = _messages.StringField(5)
+
+
+class ToolresultsProjectsHistoriesExecutionsStepsAccessibilityClustersRequest(_messages.Message):
+  r"""A
+  ToolresultsProjectsHistoriesExecutionsStepsAccessibilityClustersRequest
+  object.
+
+  Fields:
+    locale: The accepted format is the canonical Unicode format with hyphen as
+      a delimiter. Language must be lowercase, Language Script - Capitalized,
+      Region - UPPERCASE. See
+      http://www.unicode.org/reports/tr35/#Unicode_locale_identifier for
+      details.  Required.
+    name: A full resource name of the step. For example, projects/my-
+      project/histories/bh.1234567890abcdef/executions/
+      1234567890123456789/steps/bs.1234567890abcdef  Required.
+  """
+
+  locale = _messages.StringField(1)
+  name = _messages.StringField(2, required=True)
 
 
 class ToolresultsProjectsHistoriesExecutionsStepsCreateRequest(_messages.Message):

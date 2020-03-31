@@ -38,36 +38,35 @@ class PrestoBase(job_base.JobBase):
         dest='queries',
         action='append',
         default=[],
-        help='A Presto query to execute as the job.')
+        help='A Presto query to execute.')
     driver.add_argument(
         '--file',
         '-f',
-        help='HCFS URI of file containing Presto script to execute as the job')
-
+        help='HCFS URI of file containing the Presto script to execute.')
     parser.add_argument(
         '--properties',
         type=arg_parsers.ArgDict(),
         metavar='PARAM=VALUE',
-        help='A list of key value pairs to set Presto session properties')
+        help='A list of key value pairs to set Presto session properties.')
     parser.add_argument(
         '--driver-log-levels',
         type=arg_parsers.ArgDict(),
         metavar='PACKAGE=LEVEL',
-        help=('A list of package to log4j log level pairs to configure driver '
+        help=('A list of package-to-log4j log level pairs to configure driver '
               'logging. For example: root=FATAL,com.example=INFO'))
     parser.add_argument(
         '--continue-on-failure',
         action='store_true',
-        help='Whether to continue if a single query fails.')
+        help='Whether to continue if a query fails.')
     parser.add_argument(
         '--query-output-format',
-        help=('The format in which query output will be displayed. See the '
-              'Presto documentation for supported output formats.'))
+        help=('The query output display format. See the Presto documentation '
+              'for supported output formats.'))
     parser.add_argument(
         '--client-tags',
         type=arg_parsers.ArgList(),
         metavar='CLIENT_TAG',
-        help='List of Presto client tags to attach to this query.')
+        help='A list of Presto client tags to attach to this query.')
 
   @staticmethod
   def GetFilesByType(args):

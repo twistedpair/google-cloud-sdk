@@ -283,12 +283,12 @@ class DatabaseInstance(_messages.Message):
   r"""A Cloud SQL instance resource.
 
   Enums:
-    BackendTypeValueValuesEnum: <code>FIRST_GEN</code>: First Generation
-      instance. MySQL only. <br /><code>SECOND_GEN</code>: Second Generation
-      instance or PostgreSQL instance. <br /><code>EXTERNAL</code>: A database
-      server that is not managed by Google. <br>This property is read-only;
-      use the <code>tier</code> property in the <code>settings</code> object
-      to determine the database type and Second or First Generation.
+    BackendTypeValueValuesEnum: FIRST_GEN: First Generation instance. MySQL
+      only. SECOND_GEN: Second Generation MySQL instance, PostgreSQL or SQL
+      Server instance. EXTERNAL: A database server that is not managed by
+      Google. This property is read-only; use the tier property in the
+      settings object to determine the database type and Second or First
+      Generation.
     DatabaseVersionValueValuesEnum: The database engine type and version. The
       <code>databaseVersion</code> field can not be changed after instance
       creation.  MySQL Second Generation instances: <code>MYSQL_5_7</code>
@@ -297,11 +297,10 @@ class DatabaseInstance(_messages.Message):
       MySQL First Generation instances: <code>MYSQL_5_6</code> (default) or
       <code>MYSQL_5_5</code>
     InstanceTypeValueValuesEnum: The instance type. This can be one of the
-      following. <br><code>CLOUD_SQL_INSTANCE</code>: A Cloud SQL instance
-      that is not replicating from a master.
-      <br><code>ON_PREMISES_INSTANCE</code>: An instance running on the
-      customer's premises. <br><code>READ_REPLICA_INSTANCE</code>: A Cloud SQL
-      instance configured as a read-replica.
+      following. CLOUD_SQL_INSTANCE: A Cloud SQL instance that is not
+      replicating from a master. ON_PREMISES_INSTANCE: An instance running on
+      the customer's premises. READ_REPLICA_INSTANCE: A Cloud SQL instance
+      configured as a read-replica.
     StateValueValuesEnum: The current serving state of the Cloud SQL instance.
       This can be one of the following. <br><code>RUNNABLE</code>: The
       instance is running, or is ready to run when accessed.
@@ -318,12 +317,11 @@ class DatabaseInstance(_messages.Message):
       property is applicable only to Second Generation instances.
 
   Fields:
-    backendType: <code>FIRST_GEN</code>: First Generation instance. MySQL
-      only. <br /><code>SECOND_GEN</code>: Second Generation instance or
-      PostgreSQL instance. <br /><code>EXTERNAL</code>: A database server that
-      is not managed by Google. <br>This property is read-only; use the
-      <code>tier</code> property in the <code>settings</code> object to
-      determine the database type and Second or First Generation.
+    backendType: FIRST_GEN: First Generation instance. MySQL only. SECOND_GEN:
+      Second Generation MySQL instance, PostgreSQL or SQL Server instance.
+      EXTERNAL: A database server that is not managed by Google. This property
+      is read-only; use the tier property in the settings object to determine
+      the database type and Second or First Generation.
     connectionName: Connection name of the Cloud SQL instance used in
       connection strings.
     currentDiskSize: The current disk usage of the instance in bytes. This
@@ -352,11 +350,10 @@ class DatabaseInstance(_messages.Message):
       when the instance was created if the instance has failed over to its
       secondary zone.
     instanceType: The instance type. This can be one of the following.
-      <br><code>CLOUD_SQL_INSTANCE</code>: A Cloud SQL instance that is not
-      replicating from a master. <br><code>ON_PREMISES_INSTANCE</code>: An
-      instance running on the customer's premises.
-      <br><code>READ_REPLICA_INSTANCE</code>: A Cloud SQL instance configured
-      as a read-replica.
+      CLOUD_SQL_INSTANCE: A Cloud SQL instance that is not replicating from a
+      master. ON_PREMISES_INSTANCE: An instance running on the customer's
+      premises. READ_REPLICA_INSTANCE: A Cloud SQL instance configured as a
+      read-replica.
     ipAddresses: The assigned IP addresses for the instance.
     ipv6Address: The IPv6 address assigned to the instance. This property is
       applicable only to First Generation instances.
@@ -401,12 +398,11 @@ class DatabaseInstance(_messages.Message):
   """
 
   class BackendTypeValueValuesEnum(_messages.Enum):
-    r"""<code>FIRST_GEN</code>: First Generation instance. MySQL only. <br
-    /><code>SECOND_GEN</code>: Second Generation instance or PostgreSQL
-    instance. <br /><code>EXTERNAL</code>: A database server that is not
-    managed by Google. <br>This property is read-only; use the
-    <code>tier</code> property in the <code>settings</code> object to
-    determine the database type and Second or First Generation.
+    r"""FIRST_GEN: First Generation instance. MySQL only. SECOND_GEN: Second
+    Generation MySQL instance, PostgreSQL or SQL Server instance. EXTERNAL: A
+    database server that is not managed by Google. This property is read-only;
+    use the tier property in the settings object to determine the database
+    type and Second or First Generation.
 
     Values:
       SQL_BACKEND_TYPE_UNSPECIFIED: This is an unknown backend type for
@@ -463,11 +459,10 @@ class DatabaseInstance(_messages.Message):
 
   class InstanceTypeValueValuesEnum(_messages.Enum):
     r"""The instance type. This can be one of the following.
-    <br><code>CLOUD_SQL_INSTANCE</code>: A Cloud SQL instance that is not
-    replicating from a master. <br><code>ON_PREMISES_INSTANCE</code>: An
-    instance running on the customer's premises.
-    <br><code>READ_REPLICA_INSTANCE</code>: A Cloud SQL instance configured as
-    a read-replica.
+    CLOUD_SQL_INSTANCE: A Cloud SQL instance that is not replicating from a
+    master. ON_PREMISES_INSTANCE: An instance running on the customer's
+    premises. READ_REPLICA_INSTANCE: A Cloud SQL instance configured as a
+    read-replica.
 
     Values:
       SQL_INSTANCE_TYPE_UNSPECIFIED: This is an unknown Cloud SQL instance

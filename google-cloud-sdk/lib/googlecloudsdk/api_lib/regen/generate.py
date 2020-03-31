@@ -76,6 +76,7 @@ def GenerateApi(base_dir, root_dir, api_name, api_version, api_config):
                                          api_version)),
       '--overwrite',
       '--apitools_version=CloudSDK',
+      '--user_agent=google-cloud-sdk',
       '--root_package',
       '{0}.{1}.{2}'.format(
           root_dir.replace('/', '.'), api_name, api_version),

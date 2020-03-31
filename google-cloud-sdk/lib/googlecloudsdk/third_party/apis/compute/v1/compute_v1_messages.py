@@ -24402,15 +24402,19 @@ class InstanceGroup(_messages.Message):
       name instead of a port number. Named ports can also contain multiple
       ports. For example: [{name: "http", port: 80},{name: "http", port:
       8080}]   Named ports apply to all instances in this instance group.
-    network: The URL of the network to which all instances in the instance
-      group belong.
+    network: [Output Only] The URL of the network to which all instances in
+      the instance group belong. If your instance has multiple network
+      interfaces, then the network and subnetwork fields only refer to the
+      network and subnet used by your primary interface (nic0).
     region: [Output Only] The URL of the region where the instance group is
       located (for regional resources).
     selfLink: [Output Only] The URL for this instance group. The server
       generates this URL.
     size: [Output Only] The total number of instances in the instance group.
     subnetwork: [Output Only] The URL of the subnetwork to which all instances
-      in the instance group belong.
+      in the instance group belong. If your instance has multiple network
+      interfaces, then the network and subnetwork fields only refer to the
+      network and subnet used by your primary interface (nic0).
     zone: [Output Only] The URL of the zone where the instance group is
       located (for zonal resources).
   """
@@ -30590,7 +30594,16 @@ class NetworkPeering(_messages.Message):
       create and manage subnetwork routes between two networks when peering
       state is ACTIVE.
     exportCustomRoutes: Whether to export the custom routes to peer network.
+    exportSubnetRoutesWithPublicIp: Whether subnet routes with public IP range
+      are exported. The default value is true, all subnet routes are exported.
+      The IPv4 special-use ranges
+      (https://en.wikipedia.org/wiki/IPv4#Special_addresses) are always
+      exported to peers and are not controlled by this field.
     importCustomRoutes: Whether to import the custom routes from peer network.
+    importSubnetRoutesWithPublicIp: Whether subnet routes with public IP range
+      are imported. The default value is false. The IPv4 special-use ranges
+      (https://en.wikipedia.org/wiki/IPv4#Special_addresses) are always
+      imported from peers and are not controlled by this field.
     name: Name of this peering. Provided by the client when the peering is
       created. The name must comply with RFC1035. Specifically, the name must
       be 1-63 characters long and match regular expression
@@ -30623,11 +30636,13 @@ class NetworkPeering(_messages.Message):
   autoCreateRoutes = _messages.BooleanField(1)
   exchangeSubnetRoutes = _messages.BooleanField(2)
   exportCustomRoutes = _messages.BooleanField(3)
-  importCustomRoutes = _messages.BooleanField(4)
-  name = _messages.StringField(5)
-  network = _messages.StringField(6)
-  state = _messages.EnumField('StateValueValuesEnum', 7)
-  stateDetails = _messages.StringField(8)
+  exportSubnetRoutesWithPublicIp = _messages.BooleanField(4)
+  importCustomRoutes = _messages.BooleanField(5)
+  importSubnetRoutesWithPublicIp = _messages.BooleanField(6)
+  name = _messages.StringField(7)
+  network = _messages.StringField(8)
+  state = _messages.EnumField('StateValueValuesEnum', 9)
+  stateDetails = _messages.StringField(10)
 
 
 class NetworkRoutingConfig(_messages.Message):
@@ -38850,6 +38865,11 @@ class SslCertificate(_messages.Message):
   limits. (== resource_for {$api_version}.sslCertificates ==) (== resource_for
   {$api_version}.regionSslCertificates ==)
 
+  Enums:
+    TypeValueValuesEnum: (Optional) Specifies the type of SSL certificate,
+      either "SELF_MANAGED" or "MANAGED". If not specified, the certificate is
+      self-managed and the fields certificate and private_key are used.
+
   Fields:
     certificate: A local certificate file. The certificate must be in PEM
       format. The certificate chain must be no greater than 5 certs long. The
@@ -38858,10 +38878,12 @@ class SslCertificate(_messages.Message):
       format.
     description: An optional description of this resource. Provide this
       property when you create the resource.
+    expireTime: [Output Only] Expire time of the certificate. RFC3339
     id: [Output Only] The unique identifier for the resource. This identifier
       is defined by the server.
     kind: [Output Only] Type of the resource. Always compute#sslCertificate
       for SSL certificates.
+    managed: Configuration and status of a managed SSL certificate.
     name: Name of the resource. Provided by the client when the resource is
       created. The name must be 1-63 characters long, and comply with RFC1035.
       Specifically, the name must be 1-63 characters long and match the
@@ -38874,17 +38896,42 @@ class SslCertificate(_messages.Message):
     region: [Output Only] URL of the region where the regional SSL Certificate
       resides. This field is not applicable to global SSL Certificate.
     selfLink: [Output only] Server-defined URL for the resource.
+    selfManaged: Configuration and status of a self-managed SSL certificate.
+    subjectAlternativeNames: [Output Only] Domains associated with the
+      certificate via Subject Alternative Name.
+    type: (Optional) Specifies the type of SSL certificate, either
+      "SELF_MANAGED" or "MANAGED". If not specified, the certificate is self-
+      managed and the fields certificate and private_key are used.
   """
+
+  class TypeValueValuesEnum(_messages.Enum):
+    r"""(Optional) Specifies the type of SSL certificate, either
+    "SELF_MANAGED" or "MANAGED". If not specified, the certificate is self-
+    managed and the fields certificate and private_key are used.
+
+    Values:
+      MANAGED: <no description>
+      SELF_MANAGED: <no description>
+      TYPE_UNSPECIFIED: <no description>
+    """
+    MANAGED = 0
+    SELF_MANAGED = 1
+    TYPE_UNSPECIFIED = 2
 
   certificate = _messages.StringField(1)
   creationTimestamp = _messages.StringField(2)
   description = _messages.StringField(3)
-  id = _messages.IntegerField(4, variant=_messages.Variant.UINT64)
-  kind = _messages.StringField(5, default=u'compute#sslCertificate')
-  name = _messages.StringField(6)
-  privateKey = _messages.StringField(7)
-  region = _messages.StringField(8)
-  selfLink = _messages.StringField(9)
+  expireTime = _messages.StringField(4)
+  id = _messages.IntegerField(5, variant=_messages.Variant.UINT64)
+  kind = _messages.StringField(6, default=u'compute#sslCertificate')
+  managed = _messages.MessageField('SslCertificateManagedSslCertificate', 7)
+  name = _messages.StringField(8)
+  privateKey = _messages.StringField(9)
+  region = _messages.StringField(10)
+  selfLink = _messages.StringField(11)
+  selfManaged = _messages.MessageField('SslCertificateSelfManagedSslCertificate', 12)
+  subjectAlternativeNames = _messages.StringField(13, repeated=True)
+  type = _messages.EnumField('TypeValueValuesEnum', 14)
 
 
 class SslCertificateAggregatedList(_messages.Message):
@@ -39160,6 +39207,112 @@ class SslCertificateList(_messages.Message):
   nextPageToken = _messages.StringField(4)
   selfLink = _messages.StringField(5)
   warning = _messages.MessageField('WarningValue', 6)
+
+
+class SslCertificateManagedSslCertificate(_messages.Message):
+  r"""Configuration and status of a managed SSL certificate.
+
+  Enums:
+    StatusValueValuesEnum: [Output only] Status of the managed certificate
+      resource.
+
+  Messages:
+    DomainStatusValue: [Output only] Detailed statuses of the domains
+      specified for managed certificate resource.
+
+  Fields:
+    domainStatus: [Output only] Detailed statuses of the domains specified for
+      managed certificate resource.
+    domains: The domains for which a managed SSL certificate will be
+      generated. Currently only single-domain certs are supported.
+    status: [Output only] Status of the managed certificate resource.
+  """
+
+  class StatusValueValuesEnum(_messages.Enum):
+    r"""[Output only] Status of the managed certificate resource.
+
+    Values:
+      ACTIVE: <no description>
+      MANAGED_CERTIFICATE_STATUS_UNSPECIFIED: <no description>
+      PROVISIONING: <no description>
+      PROVISIONING_FAILED: <no description>
+      PROVISIONING_FAILED_PERMANENTLY: <no description>
+      RENEWAL_FAILED: <no description>
+    """
+    ACTIVE = 0
+    MANAGED_CERTIFICATE_STATUS_UNSPECIFIED = 1
+    PROVISIONING = 2
+    PROVISIONING_FAILED = 3
+    PROVISIONING_FAILED_PERMANENTLY = 4
+    RENEWAL_FAILED = 5
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class DomainStatusValue(_messages.Message):
+    r"""[Output only] Detailed statuses of the domains specified for managed
+    certificate resource.
+
+    Messages:
+      AdditionalProperty: An additional property for a DomainStatusValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type DomainStatusValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a DomainStatusValue object.
+
+      Enums:
+        ValueValueValuesEnum:
+
+      Fields:
+        key: Name of the additional property.
+        value: A ValueValueValuesEnum attribute.
+      """
+
+      class ValueValueValuesEnum(_messages.Enum):
+        r"""ValueValueValuesEnum enum type.
+
+        Values:
+          ACTIVE: <no description>
+          DOMAIN_STATUS_UNSPECIFIED: <no description>
+          FAILED_CAA_CHECKING: <no description>
+          FAILED_CAA_FORBIDDEN: <no description>
+          FAILED_NOT_VISIBLE: <no description>
+          FAILED_RATE_LIMITED: <no description>
+          PROVISIONING: <no description>
+        """
+        ACTIVE = 0
+        DOMAIN_STATUS_UNSPECIFIED = 1
+        FAILED_CAA_CHECKING = 2
+        FAILED_CAA_FORBIDDEN = 3
+        FAILED_NOT_VISIBLE = 4
+        FAILED_RATE_LIMITED = 5
+        PROVISIONING = 6
+
+      key = _messages.StringField(1)
+      value = _messages.EnumField('ValueValueValuesEnum', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  domainStatus = _messages.MessageField('DomainStatusValue', 1)
+  domains = _messages.StringField(2, repeated=True)
+  status = _messages.EnumField('StatusValueValuesEnum', 3)
+
+
+class SslCertificateSelfManagedSslCertificate(_messages.Message):
+  r"""Configuration and status of a self-managed SSL certificate.
+
+  Fields:
+    certificate: A local certificate file. The certificate must be in PEM
+      format. The certificate chain must be no greater than 5 certs long. The
+      chain must include at least one intermediate cert.
+    privateKey: A write-only private key in PEM format. Only insert requests
+      will include this field.
+  """
+
+  certificate = _messages.StringField(1)
+  privateKey = _messages.StringField(2)
 
 
 class SslCertificatesScopedList(_messages.Message):

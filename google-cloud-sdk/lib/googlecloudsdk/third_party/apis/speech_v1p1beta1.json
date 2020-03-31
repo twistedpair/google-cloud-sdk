@@ -1016,7 +1016,7 @@
       "description": "Message returned to the client by the `ListPhraseSet` method.",
       "type": "object",
       "properties": {
-        "phraseSet": {
+        "phraseSets": {
           "description": "The phrase set.",
           "type": "array",
           "items": {

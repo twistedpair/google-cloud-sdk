@@ -1912,7 +1912,7 @@ class ReusableConfigValues(_messages.Message):
     additionalExtensions: Optional. Describes custom X.509 extensions.
     authorityInformationAccess: Optional. Describes how to access information
       and services for the issuer of the  certificate.
-    caOptions: Required. Describes options in this ReusableConfigValues that
+    caOptions: Optional. Describes options in this ReusableConfigValues that
       are relevant in a CA certificate.
     crlDistributionPoints: Optional. Describes a list of locations to obtain
       CRL information, i.e. the DistributionPoint.fullName described by
@@ -1937,9 +1937,10 @@ class ReusableConfigWrapper(_messages.Message):
   X.509 certificate, or a reference to a pre-defined set of values.
 
   Fields:
-    reusableConfig: A resource path to a ReusableConfig in the format
-      `projects/*/locations/*/reusableConfigs/*`.
-    reusableConfigValues: A user-specified inline ReusableConfigValues.
+    reusableConfig: Required. A resource path to a ReusableConfig in the
+      format `projects/*/locations/*/reusableConfigs/*`.
+    reusableConfigValues: Required. A user-specified inline
+      ReusableConfigValues.
   """
 
   reusableConfig = _messages.StringField(1)

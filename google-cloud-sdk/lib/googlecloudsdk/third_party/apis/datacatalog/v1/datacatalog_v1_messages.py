@@ -819,8 +819,8 @@ class GoogleCloudDatacatalogV1ColumnSchema(_messages.Message):
 
 class GoogleCloudDatacatalogV1Entry(_messages.Message):
   r"""Entry Metadata.  A Data Catalog Entry resource represents another
-  resource in Google Cloud Platform (such as a BigQuery dataset or a Cloud
-  Pub/Sub topic) or outside of Google Cloud Platform. Clients can use the
+  resource in Google Cloud Platform (such as a BigQuery dataset or a Pub/Sub
+  topic) or outside of Google Cloud Platform. Clients can use the
   `linked_resource` field in the Entry resource to refer to the original
   resource ID of the source system.  An Entry resource contains resource
   details, such as its schema. An Entry can also be used to attach flexible
@@ -829,7 +829,7 @@ class GoogleCloudDatacatalogV1Entry(_messages.Message):
   Enums:
     IntegratedSystemValueValuesEnum: Output only. This field indicates the
       entry's source system that Data Catalog integrates with, such as
-      BigQuery or Cloud Pub/Sub.
+      BigQuery or Pub/Sub.
     TypeValueValuesEnum: The type of the entry. Only used for Entries with
       types in the EntryType enum.
 
@@ -849,8 +849,7 @@ class GoogleCloudDatacatalogV1Entry(_messages.Message):
     gcsFilesetSpec: Specification that applies to a Cloud Storage fileset.
       This is only valid on entries of type FILESET.
     integratedSystem: Output only. This field indicates the entry's source
-      system that Data Catalog integrates with, such as BigQuery or Cloud
-      Pub/Sub.
+      system that Data Catalog integrates with, such as BigQuery or Pub/Sub.
     linkedResource: The resource this metadata entry refers to.  For Google
       Cloud Platform resources, `linked_resource` is the [full name of the res
       ource](https://cloud.google.com/apis/design/resource_names#full_resource
@@ -889,7 +888,7 @@ class GoogleCloudDatacatalogV1Entry(_messages.Message):
 
   class IntegratedSystemValueValuesEnum(_messages.Enum):
     r"""Output only. This field indicates the entry's source system that Data
-    Catalog integrates with, such as BigQuery or Cloud Pub/Sub.
+    Catalog integrates with, such as BigQuery or Pub/Sub.
 
     Values:
       INTEGRATED_SYSTEM_UNSPECIFIED: Default unknown system.
@@ -911,7 +910,7 @@ class GoogleCloudDatacatalogV1Entry(_messages.Message):
       MODEL: Output only. The type of models, examples include
         https://cloud.google.com/bigquery-ml/docs/bigqueryml-intro
       DATA_STREAM: Output only. An entry type which is used for streaming
-        entries. Example: Cloud Pub/Sub topic.
+        entries. Example: Pub/Sub topic.
       FILESET: An entry type which is a set of files or objects. Example:
         Cloud Storage fileset.
     """

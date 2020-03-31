@@ -1044,6 +1044,28 @@
           "$ref": "Device"
         }
       }
+    },
+    "LookupSelfDeviceUsersResponse": {
+      "id": "LookupSelfDeviceUsersResponse",
+      "description": "Response containing resource names of the DeviceUsers associated with the\ncaller's credentials.",
+      "type": "object",
+      "properties": {
+        "names": {
+          "description": "[Resource names](https:\/\/cloud.google.com\/apis\/design\/resource_names) of\nthe DeviceUsers in the format:\n`devices\/{device_id}\/deviceUsers\/{user_resource_id}`, where\ndevice_id is the unique ID assigned to a Device and\nuser_resource_id is the unique user ID",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "customer": {
+          "description": "The obfuscated customer Id that may be passed back to other\nDevices API methods such as List, Get, etc.",
+          "type": "string"
+        },
+        "nextPageToken": {
+          "description": "Token to retrieve the next page of results. Empty if there are no more\nresults.",
+          "type": "string"
+        }
+      }
     }
   },
   "resources": {

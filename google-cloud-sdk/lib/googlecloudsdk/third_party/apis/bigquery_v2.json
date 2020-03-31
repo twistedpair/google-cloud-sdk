@@ -4,7 +4,7 @@
  "id": "bigquery:v2",
  "name": "bigquery",
  "version": "v2",
- "revision": "20200313",
+ "revision": "20200325",
  "title": "BigQuery API",
  "description": "A data platform for customers to create, manage, share and query data.",
  "ownerDomain": "google.com",
@@ -1201,6 +1201,13 @@
      "$ref": "Clustering",
      "description": "[Beta] Clustering specification for the destination table. Must be specified with time-based partitioning, data in the table will be first partitioned and subsequently clustered."
     },
+    "connectionProperties": {
+     "type": "array",
+     "description": "Connection properties.",
+     "items": {
+      "type": "any"
+     }
+    },
     "createDisposition": {
      "type": "string",
      "description": "[Optional] Specifies whether the job is allowed to create new tables. The following values are supported: CREATE_IF_NEEDED: If the table does not exist, BigQuery creates the table. CREATE_NEVER: The table must already exist. If it does not, a 'notFound' error is returned in the job result. The default value is CREATE_IF_NEEDED. Creation, truncation and append actions occur as one atomic update upon job completion."
@@ -1496,6 +1503,10 @@
      "type": "string",
      "description": "[Output-only] Name of the primary reservation assigned to this job. Note that this could be different than reservations reported in the reservation usage field if parent reservations were used to execute this job."
     },
+    "rowLevelSecurityStatistics": {
+     "$ref": "RowLevelSecurityStatistics",
+     "description": "[Output-only] [Preview] Statistics for row-level security. Present only for query and extract jobs."
+    },
     "scriptStatistics": {
      "$ref": "ScriptStatistics",
      "description": "[Output-only] Statistics for a child job of a script."
@@ -1530,6 +1541,11 @@
      "type": "boolean",
      "description": "[Output-only] Whether the query result was fetched from the query cache."
     },
+    "ddlAffectedRowAccessPolicyCount": {
+     "type": "string",
+     "description": "[Output-only] [Preview] The number of row access policies affected by a DDL statement. Present only for DROP ALL ROW ACCESS POLICIES queries.",
+     "format": "int64"
+    },
     "ddlOperationPerformed": {
      "type": "string",
      "description": "The DDL operation performed, possibly dependent on the pre-existence of the DDL target. Possible values (new values might be added in the future): \"CREATE\": The query created the DDL target. \"SKIP\": No-op. Example cases: the query is CREATE TABLE IF NOT EXISTS while the table already exists, or the query is DROP TABLE IF EXISTS while the table does not exist. \"REPLACE\": The query replaced the DDL target. Example case: the query is CREATE OR REPLACE TABLE, and the table already exists. \"DROP\": The query deleted the DDL target."
@@ -1538,9 +1554,13 @@
      "$ref": "RoutineReference",
      "description": "The DDL target routine. Present only for CREATE/DROP FUNCTION/PROCEDURE queries."
     },
+    "ddlTargetRowAccessPolicy": {
+     "$ref": "RowAccessPolicyReference",
+     "description": "[Output-only] [Preview] The DDL target row access policy. Present only for CREATE/DROP ROW ACCESS POLICY queries."
+    },
     "ddlTargetTable": {
      "$ref": "TableReference",
-     "description": "The DDL target table. Present only for CREATE/DROP TABLE/VIEW queries."
+     "description": "[Output-only] The DDL target table. Present only for CREATE/DROP TABLE/VIEW and DROP ALL ROW ACCESS POLICIES queries."
     },
     "estimatedBytesProcessed": {
      "type": "string",
@@ -1955,6 +1975,13 @@
    "id": "QueryRequest",
    "type": "object",
    "properties": {
+    "connectionProperties": {
+     "type": "array",
+     "description": "Connection properties.",
+     "items": {
+      "type": "any"
+     }
+    },
     "defaultDataset": {
      "$ref": "DatasetReference",
      "description": "[Optional] Specifies the default datasetId and projectId to assume for any unqualified table names in the query. If not set, all table names in the query string must be qualified in the format 'datasetId.tableId'."
@@ -2155,6 +2182,38 @@
     "routineId": {
      "type": "string",
      "description": "[Required] The ID of the routine. The ID must contain only letters (a-z, A-Z), numbers (0-9), or underscores (_). The maximum length is 256 characters."
+    }
+   }
+  },
+  "RowAccessPolicyReference": {
+   "id": "RowAccessPolicyReference",
+   "type": "object",
+   "properties": {
+    "datasetId": {
+     "type": "string",
+     "description": "[Required] The ID of the dataset containing this row access policy."
+    },
+    "policyId": {
+     "type": "string",
+     "description": "[Required] The ID of the row access policy. The ID must contain only letters (a-z, A-Z), numbers (0-9), or underscores (_). The maximum length is 256 characters."
+    },
+    "projectId": {
+     "type": "string",
+     "description": "[Required] The ID of the project containing this row access policy."
+    },
+    "tableId": {
+     "type": "string",
+     "description": "[Required] The ID of the table containing this row access policy."
+    }
+   }
+  },
+  "RowLevelSecurityStatistics": {
+   "id": "RowLevelSecurityStatistics",
+   "type": "object",
+   "properties": {
+    "rowLevelSecurityApplied": {
+     "type": "boolean",
+     "description": "[Output-only] [Preview] Whether any accessed data was protected by row access policies."
     }
    }
   },

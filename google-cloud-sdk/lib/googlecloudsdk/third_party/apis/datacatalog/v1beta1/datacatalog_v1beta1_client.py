@@ -16,7 +16,7 @@ class DatacatalogV1beta1(base_api.BaseApiClient):
   _VERSION = u'v1beta1'
   _CLIENT_ID = '1042881264118.apps.googleusercontent.com'
   _CLIENT_SECRET = 'x_Tw5K8nnjoRAqULM9PFAC2b'
-  _USER_AGENT = 'x_Tw5K8nnjoRAqULM9PFAC2b'
+  _USER_AGENT = u'google-cloud-sdk'
   _CLIENT_CLASS_NAME = u'DatacatalogV1beta1'
   _URL_VERSION = u'v1beta1'
   _API_KEY = None
@@ -373,9 +373,8 @@ Supported resources are:
   - Tag templates.
   - Entries.
   - Entry groups.
-Note, this method cannot be used to manage policies for BigQuery, Cloud
-Pub/Sub and any external Google Cloud Platform resources synced to Cloud
-Data Catalog.
+Note, this method cannot be used to manage policies for BigQuery, Pub/Sub
+and any external Google Cloud Platform resources synced to Data Catalog.
 
 Callers must have following Google IAM permission
   - `datacatalog.tagTemplates.getIamPolicy` to get policies on tag
@@ -473,9 +472,8 @@ Supported resources are:
   - Tag templates.
   - Entries.
   - Entry groups.
-Note, this method cannot be used to manage policies for BigQuery, Cloud
-Pub/Sub and any external Google Cloud Platform resources synced to Cloud
-Data Catalog.
+Note, this method cannot be used to manage policies for BigQuery, Pub/Sub
+and any external Google Cloud Platform resources synced to Data Catalog.
 
 A caller is not required to have Google IAM permission to make this
 request.
@@ -736,9 +734,8 @@ Supported resources are:
   - Tag templates.
   - Entries.
   - Entry groups.
-Note, this method cannot be used to manage policies for BigQuery, Cloud
-Pub/Sub and any external Google Cloud Platform resources synced to Cloud
-Data Catalog.
+Note, this method cannot be used to manage policies for BigQuery, Pub/Sub
+and any external Google Cloud Platform resources synced to Data Catalog.
 
 Callers must have following Google IAM permission
   - `datacatalog.tagTemplates.getIamPolicy` to get policies on tag
@@ -834,9 +831,8 @@ Supported resources are:
   - Tag templates.
   - Entries.
   - Entry groups.
-Note, this method cannot be used to manage policies for BigQuery, Cloud
-Pub/Sub and any external Google Cloud Platform resources synced to Cloud
-Data Catalog.
+Note, this method cannot be used to manage policies for BigQuery, Pub/Sub
+and any external Google Cloud Platform resources synced to Data Catalog.
 
 Callers must have following Google IAM permission
   - `datacatalog.tagTemplates.setIamPolicy` to set policies on tag
@@ -877,9 +873,8 @@ Supported resources are:
   - Tag templates.
   - Entries.
   - Entry groups.
-Note, this method cannot be used to manage policies for BigQuery, Cloud
-Pub/Sub and any external Google Cloud Platform resources synced to Cloud
-Data Catalog.
+Note, this method cannot be used to manage policies for BigQuery, Pub/Sub
+and any external Google Cloud Platform resources synced to Data Catalog.
 
 A caller is not required to have Google IAM permission to make this
 request.
@@ -1145,9 +1140,8 @@ Supported resources are:
   - Tag templates.
   - Entries.
   - Entry groups.
-Note, this method cannot be used to manage policies for BigQuery, Cloud
-Pub/Sub and any external Google Cloud Platform resources synced to Cloud
-Data Catalog.
+Note, this method cannot be used to manage policies for BigQuery, Pub/Sub
+and any external Google Cloud Platform resources synced to Data Catalog.
 
 Callers must have following Google IAM permission
   - `datacatalog.tagTemplates.getIamPolicy` to get policies on tag
@@ -1218,9 +1212,8 @@ Supported resources are:
   - Tag templates.
   - Entries.
   - Entry groups.
-Note, this method cannot be used to manage policies for BigQuery, Cloud
-Pub/Sub and any external Google Cloud Platform resources synced to Cloud
-Data Catalog.
+Note, this method cannot be used to manage policies for BigQuery, Pub/Sub
+and any external Google Cloud Platform resources synced to Data Catalog.
 
 Callers must have following Google IAM permission
   - `datacatalog.tagTemplates.setIamPolicy` to set policies on tag
@@ -1261,9 +1254,8 @@ Supported resources are:
   - Tag templates.
   - Entries.
   - Entry groups.
-Note, this method cannot be used to manage policies for BigQuery, Cloud
-Pub/Sub and any external Google Cloud Platform resources synced to Cloud
-Data Catalog.
+Note, this method cannot be used to manage policies for BigQuery, Pub/Sub
+and any external Google Cloud Platform resources synced to Data Catalog.
 
 A caller is not required to have Google IAM permission to make this
 request.

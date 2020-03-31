@@ -48,7 +48,6 @@ from googlecloudsdk.core import resources
 from googlecloudsdk.core.console import console_io
 from googlecloudsdk.core.util import encoding
 from googlecloudsdk.core.util import files
-from googlecloudsdk.core.util import times
 
 _VISIBILITY_MODES = {
     'internal': 'Visible only within the cluster.',
@@ -79,6 +78,8 @@ _PLATFORM_SHORT_DESCRIPTIONS = {
 }
 
 _DEFAULT_KUBECONFIG_PATH = '~/.kube/config'
+
+_FIFTEEN_MINUTES = 15 * 60
 
 
 class ArgumentError(exceptions.Error):
@@ -249,12 +250,12 @@ def AddTrafficTagsFlags(parser):
                   'myservice-v1 assigns the tag "candidate" '
                   'to the latest ready revision and the tag'
                   ' "current" to the revision with name '
-                  '"service-nw9hs" and clears any existing tags. '
+                  '"myservice-v1" and clears any existing tags. '
                   'Changing tags does not '
                   'affect the traffic percentage assigned to '
                   'revisions. When using a tags flag and '
-                  'one or more of --to-latest and --to-revisions, in the same '
-                  'command, the tags change occurs first, then the traffic '
+                  'one or more of --to-latest and --to-revisions in the same '
+                  'command, the tags change occurs first then the traffic '
                   'percentage change occurs.'),
       flag_name='tags')
 
@@ -419,6 +420,7 @@ def AddConcurrencyFlag(parser):
 def AddTimeoutFlag(parser):
   parser.add_argument(
       '--timeout',
+      type=arg_parsers.Duration(lower_bound='1s'),
       help='Set the maximum request execution time (timeout). It is specified '
       'as a duration; for example, "10m5s" is ten minutes, and five seconds. '
       'If you don\'t specify a unit, seconds is assumed. For example, "10" is '
@@ -912,16 +914,7 @@ def GetConfigurationChanges(args):
     changes.append(config_changes.ConcurrencyChanges(
         concurrency=args.concurrency))
   if 'timeout' in args and args.timeout:
-    try:
-      # A bare number is interpreted as seconds.
-      timeout_secs = int(args.timeout)
-    except ValueError:
-      timeout_duration = times.ParseDuration(args.timeout)
-      timeout_secs = int(timeout_duration.total_seconds)
-    if timeout_secs <= 0:
-      raise ArgumentError(
-          'The --timeout argument must be a positive time duration.')
-    changes.append(config_changes.TimeoutChanges(timeout=timeout_secs))
+    changes.append(config_changes.TimeoutChanges(timeout=args.timeout))
   if 'service_account' in args and args.service_account:
     changes.append(
         config_changes.ServiceAccountChanges(
@@ -1217,6 +1210,12 @@ def VerifyOnePlatformFlags(args, release_track, product):
             flag='--no-traffic',
             platform=PLATFORM_KUBERNETES,
             platform_desc=_PLATFORM_SHORT_DESCRIPTIONS[PLATFORM_KUBERNETES]))
+
+  if (FlagIsExplicitlySet(args, 'timeout') and
+      release_track == base.ReleaseTrack.GA):
+    if args.timeout > _FIFTEEN_MINUTES:
+      raise serverless_exceptions.ConfigurationError(
+          'Timeout duration must be less than 15m.')
 
 
 def VerifyGKEFlags(args, release_track, product):

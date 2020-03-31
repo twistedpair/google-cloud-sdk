@@ -16,7 +16,7 @@ class GenomicsV2alpha1(base_api.BaseApiClient):
   _VERSION = u'v2alpha1'
   _CLIENT_ID = '1042881264118.apps.googleusercontent.com'
   _CLIENT_SECRET = 'x_Tw5K8nnjoRAqULM9PFAC2b'
-  _USER_AGENT = 'x_Tw5K8nnjoRAqULM9PFAC2b'
+  _USER_AGENT = u'google-cloud-sdk'
   _CLIENT_CLASS_NAME = u'GenomicsV2alpha1'
   _URL_VERSION = u'v2alpha1'
   _API_KEY = None
@@ -38,6 +38,7 @@ class GenomicsV2alpha1(base_api.BaseApiClient):
         response_encoding=response_encoding)
     self.pipelines = self.PipelinesService(self)
     self.projects_operations = self.ProjectsOperationsService(self)
+    self.projects_workers = self.ProjectsWorkersService(self)
     self.projects = self.ProjectsService(self)
     self.workers = self.WorkersService(self)
 
@@ -198,6 +199,44 @@ Authorization requires the following [Google IAM](https://cloud.google.com/iam) 
         request_field='',
         request_type_name=u'GenomicsProjectsOperationsListRequest',
         response_type_name=u'ListOperationsResponse',
+        supports_download=False,
+    )
+
+  class ProjectsWorkersService(base_api.BaseApiService):
+    """Service class for the projects_workers resource."""
+
+    _NAME = u'projects_workers'
+
+    def __init__(self, client):
+      super(GenomicsV2alpha1.ProjectsWorkersService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def CheckIn(self, request, global_params=None):
+      r"""The worker uses this method to retrieve the assigned operation and.
+provide periodic status updates.
+
+      Args:
+        request: (GenomicsProjectsWorkersCheckInRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (CheckInResponse) The response message.
+      """
+      config = self.GetMethodConfig('CheckIn')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    CheckIn.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v2alpha1/projects/{projectsId}/workers/{workersId}:checkIn',
+        http_method=u'POST',
+        method_id=u'genomics.projects.workers.checkIn',
+        ordered_params=[u'id'],
+        path_params=[u'id'],
+        query_params=[],
+        relative_path=u'v2alpha1/{+id}:checkIn',
+        request_field=u'checkInRequest',
+        request_type_name=u'GenomicsProjectsWorkersCheckInRequest',
+        response_type_name=u'CheckInResponse',
         supports_download=False,
     )
 

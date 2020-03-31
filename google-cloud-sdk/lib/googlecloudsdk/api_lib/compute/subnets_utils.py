@@ -26,7 +26,6 @@ import six
 def MakeSubnetworkUpdateRequest(
     client,
     subnet_ref,
-    include_alpha_logging,
     enable_private_ip_google_access=None,
     add_secondary_ranges=None,
     remove_secondary_ranges=None,
@@ -46,7 +45,6 @@ def MakeSubnetworkUpdateRequest(
   Args:
     client: GCE API client
     subnet_ref: Reference to a subnetwork
-    include_alpha_logging: Include alpha-specific logging args.
     enable_private_ip_google_access: Enable/disable access to Google Cloud APIs
       from this subnet for instances without a public ip address.
     add_secondary_ranges: List of secondary IP ranges to add to the subnetwork
@@ -129,8 +127,8 @@ def MakeSubnetworkUpdateRequest(
         aggregation_interval is not None or
         flow_sampling is not None or
         metadata is not None or
-        (include_alpha_logging and filter_expr is not None) or
-        (include_alpha_logging and metadata_fields is not None)):
+        filter_expr is not None or
+        metadata_fields is not None):
     subnetwork = client.messages.Subnetwork()
     original_subnetwork = client.MakeRequests([
         (client.apitools_client.subnetworks, 'Get',
@@ -145,15 +143,11 @@ def MakeSubnetworkUpdateRequest(
     if flow_sampling is not None:
       log_config.flowSampling = flow_sampling
     if metadata is not None:
-      if include_alpha_logging:
-        log_config.metadata = flags.GetLoggingMetadataArgAlpha(
-            client.messages).GetEnumForChoice(metadata)
-      else:
-        log_config.metadata = flags.GetLoggingMetadataArg(
-            client.messages).GetEnumForChoice(metadata)
-    if include_alpha_logging and filter_expr is not None:
+      log_config.metadata = flags.GetLoggingMetadataArg(
+          client.messages).GetEnumForChoice(metadata)
+    if filter_expr is not None:
       log_config.filterExpr = filter_expr
-    if include_alpha_logging and metadata_fields is not None:
+    if metadata_fields is not None:
       log_config.metadataFields = metadata_fields
     subnetwork.logConfig = log_config
 

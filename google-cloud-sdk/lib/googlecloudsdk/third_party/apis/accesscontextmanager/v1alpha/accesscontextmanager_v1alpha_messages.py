@@ -380,6 +380,85 @@ class AccesscontextmanagerOperationsGetRequest(_messages.Message):
   name = _messages.StringField(1, required=True)
 
 
+class AccesscontextmanagerOrganizationsGcpUserAccessBindingsCreateRequest(_messages.Message):
+  r"""A AccesscontextmanagerOrganizationsGcpUserAccessBindingsCreateRequest
+  object.
+
+  Fields:
+    gcpUserAccessBinding: A GcpUserAccessBinding resource to be passed as the
+      request body.
+    parent: Required. Example: "organizations/256"
+  """
+
+  gcpUserAccessBinding = _messages.MessageField('GcpUserAccessBinding', 1)
+  parent = _messages.StringField(2, required=True)
+
+
+class AccesscontextmanagerOrganizationsGcpUserAccessBindingsDeleteRequest(_messages.Message):
+  r"""A AccesscontextmanagerOrganizationsGcpUserAccessBindingsDeleteRequest
+  object.
+
+  Fields:
+    name: Required. Example:
+      "organizations/256/gcpUserAccessBindings/b3-BhcX_Ud5N"
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class AccesscontextmanagerOrganizationsGcpUserAccessBindingsGetRequest(_messages.Message):
+  r"""A AccesscontextmanagerOrganizationsGcpUserAccessBindingsGetRequest
+  object.
+
+  Fields:
+    name: Required. Example:
+      "organizations/256/gcpUserAccessBindings/b3-BhcX_Ud5N"
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class AccesscontextmanagerOrganizationsGcpUserAccessBindingsListRequest(_messages.Message):
+  r"""A AccesscontextmanagerOrganizationsGcpUserAccessBindingsListRequest
+  object.
+
+  Fields:
+    pageSize: Optional. Maximum number of items to return. The server may
+      return fewer items. If left blank, the server may return any number of
+      items.
+    pageToken: Optional. If left blank, returns the first page. To enumerate
+      all items, use the next_page_token from your previous list operation.
+    parent: Required. Example: "organizations/256"
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class AccesscontextmanagerOrganizationsGcpUserAccessBindingsPatchRequest(_messages.Message):
+  r"""A AccesscontextmanagerOrganizationsGcpUserAccessBindingsPatchRequest
+  object.
+
+  Fields:
+    gcpUserAccessBinding: A GcpUserAccessBinding resource to be passed as the
+      request body.
+    name: Immutable. Assigned by the server during creation. The last segment
+      has an arbitrary length and has only URI unreserved characters (as
+      defined by [RFC 3986 Section
+      2.3](https://tools.ietf.org/html/rfc3986#section-2.3)). Should not be
+      specified by the client during creation. Example:
+      "organizations/256/gcpUserAccessBindings/b3-BhcX_Ud5N"
+    updateMask: Required. Only the fields specified in this mask are updated.
+      Because name and group_key cannot be changed, update_mask is required
+      and must always be:  update_mask { paths: "access_levels" }
+  """
+
+  gcpUserAccessBinding = _messages.MessageField('GcpUserAccessBinding', 1)
+  name = _messages.StringField(2, required=True)
+  updateMask = _messages.StringField(3)
+
+
 class BasicLevel(_messages.Message):
   r"""`BasicLevel` is an `AccessLevel` using a set of recommended features.
 
@@ -604,6 +683,35 @@ class Expr(_messages.Message):
   title = _messages.StringField(4)
 
 
+class GcpUserAccessBinding(_messages.Message):
+  r"""Restricts access to Cloud Console and Google Cloud APIs for a set of
+  users using Context-Aware Access.
+
+  Fields:
+    accessLevels: Required. Access levels that a user must have to be granted
+      access. This list is ORed, so the user only needs one (or more) of these
+      access levels. Example:
+      "accessPolicies/9522/accessLevels/device_trusted"
+    groupKey: Required. Immutable. Google Group id whose members are subject
+      to this binding's restrictions. See "id" in the [G Suite Directory API's
+      Groups resource] (https://developers.google.com/admin-
+      sdk/directory/v1/reference/groups#resource). If a group's email
+      address/alias is changed, this resource will continue to point at the
+      changed group. This field does not accept group email addresses or
+      aliases. Example: "01d520gv4vjcrht"
+    name: Immutable. Assigned by the server during creation. The last segment
+      has an arbitrary length and has only URI unreserved characters (as
+      defined by [RFC 3986 Section
+      2.3](https://tools.ietf.org/html/rfc3986#section-2.3)). Should not be
+      specified by the client during creation. Example:
+      "organizations/256/gcpUserAccessBindings/b3-BhcX_Ud5N"
+  """
+
+  accessLevels = _messages.StringField(1, repeated=True)
+  groupKey = _messages.StringField(2)
+  name = _messages.StringField(3)
+
+
 class ListAccessLevelsResponse(_messages.Message):
   r"""A response to `ListAccessLevelsRequest`.
 
@@ -627,6 +735,19 @@ class ListAccessPoliciesResponse(_messages.Message):
   """
 
   accessPolicies = _messages.MessageField('AccessPolicy', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+
+
+class ListGcpUserAccessBindingsResponse(_messages.Message):
+  r"""Response of ListGcpUserAccessBindings.
+
+  Fields:
+    gcpUserAccessBindings: GcpUserAccessBinding
+    nextPageToken: Token to get the next page of items. If blank, there are no
+      more items.
+  """
+
+  gcpUserAccessBindings = _messages.MessageField('GcpUserAccessBinding', 1, repeated=True)
   nextPageToken = _messages.StringField(2)
 
 

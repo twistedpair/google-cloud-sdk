@@ -174,7 +174,7 @@ The ConfigConnector-on-GKE addon (--addons=ConfigConnector) requires Cloud Loggi
 """
 
 CONFIGCONNECTOR_WORKLOAD_IDENTITY_DISABLED_ERROR_MSG = """\
-The ConfigConnector-on-GKE addon (--addons=ConfigConnector) requires workload identity to be enabled via the --identity-namespace=IDENTITY_NAMESPACE flag.
+The ConfigConnector-on-GKE addon (--addons=ConfigConnector) requires workload identity to be enabled via the --workload-pool=WORKLOAD_POOL flag.
 """
 
 CLOUDBUILD_STACKDRIVER_KUBERNETES_DISABLED_ERROR_MSG = """\
@@ -500,6 +500,7 @@ class CreateClusterOptions(object):
       reservation=None,
       autoprovisioning_min_cpu_platform=None,
       enable_master_global_access=None,
+      enable_gvnic=None,
   ):
     self.node_machine_type = node_machine_type
     self.node_source_image = node_source_image
@@ -615,6 +616,7 @@ class CreateClusterOptions(object):
     self.reservation = reservation
     self.autoprovisioning_min_cpu_platform = autoprovisioning_min_cpu_platform
     self.enable_master_global_access = enable_master_global_access
+    self.enable_gvnic = enable_gvnic
 
 
 class UpdateClusterOptions(object):
@@ -680,7 +682,8 @@ class UpdateClusterOptions(object):
                enable_tpu=None,
                tpu_ipv4_cidr=None,
                enable_master_global_access=None,
-               enable_tpu_service_networking=None):
+               enable_tpu_service_networking=None,
+               enable_gvnic=None):
     self.version = version
     self.update_master = bool(update_master)
     self.update_nodes = bool(update_nodes)
@@ -742,6 +745,7 @@ class UpdateClusterOptions(object):
     self.tpu_ipv4_cidr = tpu_ipv4_cidr
     self.enable_tpu_service_networking = enable_tpu_service_networking
     self.enable_master_global_access = enable_master_global_access
+    self.enable_gvnic = enable_gvnic
 
 
 class SetMasterAuthOptions(object):
@@ -1123,7 +1127,7 @@ class APIAdapter(object):
         if not options.enable_stackdriver_kubernetes:
           raise util.Error(
               CONFIGCONNECTOR_STACKDRIVER_KUBERNETES_DISABLED_ERROR_MSG)
-        if options.identity_namespace is None:
+        if options.workload_pool is None:
           raise util.Error(CONFIGCONNECTOR_WORKLOAD_IDENTITY_DISABLED_ERROR_MSG)
         addons.configConnectorConfig = self.messages.ConfigConnectorConfig(
             enabled=True)
@@ -1197,8 +1201,9 @@ class APIAdapter(object):
       cluster.authenticatorGroupsConfig = (
           self.messages.AuthenticatorGroupsConfig(
               enabled=True, securityGroup=options.security_group))
-    if options.enable_shielded_nodes:
-      cluster.shieldedNodes = self.messages.ShieldedNodes(enabled=True)
+    if options.enable_shielded_nodes is not None:
+      cluster.shieldedNodes = self.messages.ShieldedNodes(
+          enabled=options.enable_shielded_nodes)
 
     self.ParseIPAliasOptions(options, cluster)
     self.ParseAllowRouteOverlapOptions(options, cluster)
@@ -1250,6 +1255,9 @@ class APIAdapter(object):
       cluster.databaseEncryption = self.messages.DatabaseEncryption(
           keyName=options.database_encryption_key,
           state=self.messages.DatabaseEncryption.StateValueValuesEnum.ENCRYPTED)
+
+    if options.enable_gvnic:
+      cluster.enableGvnic = options.enable_gvnic
 
     return cluster
 
@@ -1844,6 +1852,9 @@ class APIAdapter(object):
       update = self.messages.ClusterUpdate(
           desiredTpuConfig=_GetTpuConfigForClusterUpdate(
               options, self.messages))
+    if options.enable_gvnic is not None:
+      update = self.messages.ClusterUpdate(
+          desiredEnableGvnic=options.enable_gvnic)
 
     return update
 

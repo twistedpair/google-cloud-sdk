@@ -37,6 +37,44 @@ class InvalidInstancesFileError(core_exceptions.Error):
   pass
 
 
+def ReadRequest(input_file):
+  """Reads a JSON request from the specified input file.
+
+  Args:
+    input_file: An open file-like object for the input file.
+
+  Returns:
+    A list of instances.
+
+  Raises:
+    InvalidInstancesFileError: If the input file is invalid.
+  """
+  # `json.loads doesn't always work with binary / UTF-8 data in
+  # Python 3.5, so we'll read the file and use `json.loads` instead.
+  contents = input_file.read()
+  if isinstance(contents, six.binary_type):
+    # Handle UTF8-BOM
+    contents = encoding.Decode(contents, encoding='utf-8-sig')
+
+  try:
+    request = json.loads(contents)
+  except ValueError:
+    raise InvalidInstancesFileError(
+        'Input instances are not in JSON format. '
+        'See "gcloud ml-engine predict --help" for details.')
+
+  if 'instances' not in request:
+    raise InvalidInstancesFileError(
+        'Invalid JSON request: missing "instances" attribute')
+
+  instances = request['instances']
+  if not isinstance(instances, list):
+    raise InvalidInstancesFileError(
+        'Invalid JSON request: "instances" must be a list')
+
+  return instances
+
+
 def ReadInstances(input_file, data_format, limit=None):
   """Reads the instances from input file.
 
@@ -82,12 +120,17 @@ def ReadInstances(input_file, data_format, limit=None):
   return instances
 
 
-def ReadInstancesFromArgs(json_instances, text_instances, limit=None):
+def ReadInstancesFromArgs(json_request,
+                          json_instances,
+                          text_instances,
+                          limit=None):
   """Reads the instances from the given file path ('-' for stdin).
 
-  Exactly one of json_instances, text_instances must be given.
+  Exactly one of json_request, json_instances, text_instances must be given.
 
   Args:
+    json_request: str or None, a path to a file ('-' for stdin) containing
+        the JSON body of a prediction request.
     json_instances: str or None, a path to a file ('-' for stdin) containing
         instances in JSON format.
     text_instances: str or None, a path to a file ('-' for stdin) containing
@@ -102,12 +145,15 @@ def ReadInstancesFromArgs(json_instances, text_instances, limit=None):
         contains too many/zero instances), or an improper combination of input
         files was given.
   """
-  if (json_instances and text_instances or
-      not (json_instances or text_instances)):
+  mutex_args = [json_request, json_instances, text_instances]
+  if len({arg for arg in mutex_args if arg}) != 1:
     raise InvalidInstancesFileError(
-        'Exactly one of --json-instances and --text-instances must be '
-        'specified.')
+        'Exactly one of --json-request, --json-instances and --text-instances '
+        'must be specified.')
 
+  if json_request:
+    data_format = 'json_request'
+    input_file = json_request
   if json_instances:
     data_format = 'json'
     input_file = json_instances
@@ -117,7 +163,10 @@ def ReadInstancesFromArgs(json_instances, text_instances, limit=None):
 
   data = console_io.ReadFromFileOrStdin(input_file, binary=True)
   with io.BytesIO(data) as f:
-    return ReadInstances(f, data_format, limit=limit)
+    if data_format == 'json_request':
+      return ReadRequest(f)
+    else:
+      return ReadInstances(f, data_format, limit=limit)
 
 
 def ParseModelOrVersionRef(model_id, version_id):

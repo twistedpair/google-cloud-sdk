@@ -12,7 +12,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-"""API client library for Cloud Domains operations."""
+"""API client library for Cloud IAM Simulator Replay Operations."""
 
 from __future__ import absolute_import
 from __future__ import division
@@ -28,7 +28,7 @@ _MAX_WAIT_TIME_MS = 60 * 60 * 1000  # 60 minutes.
 
 
 class Client(object):
-  """API client for Cloud IAM Simulator operations."""
+  """API client for Cloud IAM Simulator Replay Operations."""
 
   def __init__(self, client, messages=None):
     self._client = client
@@ -40,12 +40,12 @@ class Client(object):
     return cls(apis.GetClientInstance('iamassist', version))
 
   def Get(self, operation_ref):
-    request = self._messages.IamassistGetOperationsRequest(
+    request = self._messages.IamassistOperationsGetRequest(
         name=operation_ref.RelativeName())
     return self._service.Get(request)
 
   def List(self, parent_ref, limit=None, page_size=None, list_filter=None):
-    request = self._messages.IamassistOperationsListRequest(
+    request = self._messages.IamassistReplaysListRequest(
         name=parent_ref.RelativeName(), filter=list_filter)
     return list_pager.YieldFromList(
         self._service,
@@ -57,7 +57,7 @@ class Client(object):
 
   def WaitForOperation(self, operation, message):
     registry = resources.REGISTRY.Clone()
-    registry.RegisterApiByName('iamassist', 'v1alpha2')
+    registry.RegisterApiByName('iamassist', 'v1alpha3')
     operation_ref = registry.Parse(
         operation.name, collection='iamassist.operations')
     poller = waiter.CloudOperationPollerNoResources(self._service)

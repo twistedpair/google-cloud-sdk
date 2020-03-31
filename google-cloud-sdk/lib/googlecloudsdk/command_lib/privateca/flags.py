@@ -234,11 +234,13 @@ def AddInlineReusableConfigFlags(parser, is_ca):
 # Flag parsing
 
 
-def ParseReusableConfig(args):
+def ParseReusableConfig(args, is_ca):
   """Parses the reusable config flags into an API ReusableConfigWrapper.
 
   Args:
     args: The parsed argument values.
+    is_ca: Whether the current operation is on a CA. If so, certSign and crlSign
+      key usages are added.
 
   Returns:
     A ReusableConfigWrapper object.
@@ -263,21 +265,18 @@ def ParseReusableConfig(args):
     return messages.ReusableConfigWrapper(
         reusableConfig=resource.RelativeName())
 
+  base_key_usages = args.key_usages or []
+  if is_ca:
+    # A CA should have these KeyUsages to be RFC 5280 compliant.
+    base_key_usages.extend(['cert_sign', 'crl_sign'])
   key_usage_dict = {}
-  for key_usage in args.key_usages or []:
+  for key_usage in base_key_usages:
     key_usage = text_utils.SnakeCaseToCamelCase(key_usage)
     key_usage_dict[key_usage] = True
   extended_key_usage_dict = {}
   for extended_key_usage in args.extended_key_usages or []:
     extended_key_usage = text_utils.SnakeCaseToCamelCase(extended_key_usage)
     extended_key_usage_dict[extended_key_usage] = True
-
-  if 'is_ca_cert' in vars(args):
-    is_ca_val = args.is_ca_cert
-  else:
-    # For Reusable Configs in CA commands, the command is always creating a
-    # CA certificate.
-    is_ca_val = True
 
   return messages.ReusableConfigWrapper(
       reusableConfigValues=messages.ReusableConfigValues(
@@ -287,9 +286,9 @@ def ParseReusableConfig(args):
               extendedKeyUsage=messages_util.DictToMessageWithErrorCheck(
                   extended_key_usage_dict, messages.ExtendedKeyUsageOptions)),
           caOptions=messages.CaOptions(
-              isCa=is_ca_val,
-              maxIssuerPathLength=int(args.max_chain_length
-                                     ) if is_ca_val else None)))
+              isCa=is_ca,
+              maxIssuerPathLength=int(args.max_chain_length) if is_ca else None)
+      ))
 
 
 def _ParseSubject(args):

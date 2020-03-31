@@ -305,11 +305,11 @@ class ListPhraseSetResponse(_messages.Message):
   Fields:
     nextPageToken: A token, which can be sent as `page_token` to retrieve the
       next page. If this field is omitted, there are no subsequent pages.
-    phraseSet: The phrase set.
+    phraseSets: The phrase set.
   """
 
   nextPageToken = _messages.StringField(1)
-  phraseSet = _messages.MessageField('PhraseSet', 2, repeated=True)
+  phraseSets = _messages.MessageField('PhraseSet', 2, repeated=True)
 
 
 class LogBucketStats(_messages.Message):

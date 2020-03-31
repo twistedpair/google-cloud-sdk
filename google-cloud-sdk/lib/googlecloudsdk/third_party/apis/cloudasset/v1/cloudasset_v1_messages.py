@@ -152,11 +152,11 @@ class BigQueryDestination(_messages.Message):
     dataset: Required. The BigQuery dataset in format
       "projects/projectId/datasets/datasetId", to which the snapshot result
       should be exported. If this dataset does not exist, the export call
-      returns an error.
+      returns an INVALID_ARGUMENT error.
     force: If the destination table already exists and this flag is `TRUE`,
       the table will be overwritten by the contents of assets snapshot. If the
-      flag is not set and the destination table already exists, the export
-      call returns an error.
+      flag is `FALSE` or unset and the destination table already exists, the
+      export call returns an INVALID_ARGUMEMT error.
     table: Required. The BigQuery table to which the snapshot result should be
       written. If this table does not exist, a new table with the given name
       will be created.

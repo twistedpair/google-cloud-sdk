@@ -193,8 +193,8 @@ class Instance(_messages.Message):
   r"""A Google Cloud Redis instance.
 
   Enums:
-    ConnectModeValueValuesEnum: Optional. The connect mode of Redis instance.
-      If not provided, default one will be used. Current default:
+    ConnectModeValueValuesEnum: Optional. The network connect mode of the
+      Redis instance. If not provided, the connect mode defaults to
       DIRECT_PEERING.
     StateValueValuesEnum: Output only. The current state of this instance.
     TierValueValuesEnum: Required. The service tier of the instance.
@@ -217,8 +217,8 @@ class Instance(_messages.Message):
       [network](/compute/docs/networks-and-firewalls#networks) to which the
       instance is connected. If left unspecified, the `default` network will
       be used.
-    connectMode: Optional. The connect mode of Redis instance. If not
-      provided, default one will be used. Current default: DIRECT_PEERING.
+    connectMode: Optional. The network connect mode of the Redis instance. If
+      not provided, the connect mode defaults to DIRECT_PEERING.
     createTime: Output only. The time the instance was created.
     currentLocationId: Output only. The current zone where the Redis endpoint
       is placed. For Basic Tier instances, this will always be the same as the
@@ -273,15 +273,17 @@ class Instance(_messages.Message):
   """
 
   class ConnectModeValueValuesEnum(_messages.Enum):
-    r"""Optional. The connect mode of Redis instance. If not provided, default
-    one will be used. Current default: DIRECT_PEERING.
+    r"""Optional. The network connect mode of the Redis instance. If not
+    provided, the connect mode defaults to DIRECT_PEERING.
 
     Values:
       CONNECT_MODE_UNSPECIFIED: Not set.
-      DIRECT_PEERING: Connect via directly peering with memorystore redis
+      DIRECT_PEERING: Connect via direct peering to the Memorystore for Redis
         hosted service.
-      PRIVATE_SERVICE_ACCESS: Connect with google via private service access
-        and share connection across google managed services.
+      PRIVATE_SERVICE_ACCESS: Connect your Memorystore for Redis instance
+        using Private Service Access. Private services access provides an IP
+        address range for multiple Google Cloud services, including
+        Memorystore.
     """
     CONNECT_MODE_UNSPECIFIED = 0
     DIRECT_PEERING = 1

@@ -5,7 +5,7 @@
  "name": "deploymentmanager",
  "canonicalName": "Deployment Manager",
  "version": "v2",
- "revision": "20200313",
+ "revision": "20200325",
  "title": "Google Cloud Deployment Manager API",
  "description": "Declares, configures, and deploys complex solutions on Google Cloud Platform.",
  "ownerDomain": "google.com",
@@ -237,7 +237,7 @@
     },
     "manifest": {
      "type": "string",
-     "description": "Output only. URL of the manifest representing the last manifest that was successfully deployed."
+     "description": "Output only. URL of the manifest representing the last manifest that was successfully deployed. If no manifest has been successfully deployed, this field will be absent."
     },
     "name": {
      "type": "string",

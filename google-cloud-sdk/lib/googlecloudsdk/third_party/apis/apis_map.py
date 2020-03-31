@@ -254,16 +254,6 @@ MAP = {
                 enable_mtls=False,
                 mtls_endpoint_override=''),
     },
-    'buildartifacts': {
-        'v1alpha2':
-            APIDef(
-                class_path='googlecloudsdk.third_party.apis.buildartifacts.v1alpha2',
-                client_classpath='buildartifacts_v1alpha2_client.BuildartifactsV1alpha2',
-                messages_modulepath='buildartifacts_v1alpha2_messages',
-                default_version=True,
-                enable_mtls=False,
-                mtls_endpoint_override=''),
-    },
     'cloudasset': {
         'v1':
             APIDef(

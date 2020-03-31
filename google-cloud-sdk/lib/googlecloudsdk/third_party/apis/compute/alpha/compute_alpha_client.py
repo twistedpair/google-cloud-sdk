@@ -16,7 +16,7 @@ class ComputeAlpha(base_api.BaseApiClient):
   _VERSION = u'alpha'
   _CLIENT_ID = '1042881264118.apps.googleusercontent.com'
   _CLIENT_SECRET = 'x_Tw5K8nnjoRAqULM9PFAC2b'
-  _USER_AGENT = 'x_Tw5K8nnjoRAqULM9PFAC2b'
+  _USER_AGENT = u'google-cloud-sdk'
   _CLIENT_CLASS_NAME = u'ComputeAlpha'
   _URL_VERSION = u'alpha'
   _API_KEY = None
@@ -101,6 +101,7 @@ class ComputeAlpha(base_api.BaseApiClient):
     self.routers = self.RoutersService(self)
     self.routes = self.RoutesService(self)
     self.securityPolicies = self.SecurityPoliciesService(self)
+    self.serviceAttachments = self.ServiceAttachmentsService(self)
     self.snapshots = self.SnapshotsService(self)
     self.sslCertificates = self.SslCertificatesService(self)
     self.sslPolicies = self.SslPoliciesService(self)
@@ -14968,6 +14969,198 @@ This method is called on a best-effort basis. Specifically:
         relative_path=u'projects/{project}/global/securityPolicies/{resource}/testIamPermissions',
         request_field=u'testPermissionsRequest',
         request_type_name=u'ComputeSecurityPoliciesTestIamPermissionsRequest',
+        response_type_name=u'TestPermissionsResponse',
+        supports_download=False,
+    )
+
+  class ServiceAttachmentsService(base_api.BaseApiService):
+    """Service class for the serviceAttachments resource."""
+
+    _NAME = u'serviceAttachments'
+
+    def __init__(self, client):
+      super(ComputeAlpha.ServiceAttachmentsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes the specified ServiceAttachment in the given scope.
+
+      Args:
+        request: (ComputeServiceAttachmentsDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'DELETE',
+        method_id=u'compute.serviceAttachments.delete',
+        ordered_params=[u'project', u'region', u'serviceAttachment'],
+        path_params=[u'project', u'region', u'serviceAttachment'],
+        query_params=[u'requestId'],
+        relative_path=u'projects/{project}/regions/{region}/serviceAttachments/{serviceAttachment}',
+        request_field='',
+        request_type_name=u'ComputeServiceAttachmentsDeleteRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Returns the specified ServiceAttachment resource in the given scope.
+
+      Args:
+        request: (ComputeServiceAttachmentsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ServiceAttachment) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'compute.serviceAttachments.get',
+        ordered_params=[u'project', u'region', u'serviceAttachment'],
+        path_params=[u'project', u'region', u'serviceAttachment'],
+        query_params=[],
+        relative_path=u'projects/{project}/regions/{region}/serviceAttachments/{serviceAttachment}',
+        request_field='',
+        request_type_name=u'ComputeServiceAttachmentsGetRequest',
+        response_type_name=u'ServiceAttachment',
+        supports_download=False,
+    )
+
+    def GetIamPolicy(self, request, global_params=None):
+      r"""Gets the access control policy for a resource. May be empty if no such policy or resource exists.
+
+      Args:
+        request: (ComputeServiceAttachmentsGetIamPolicyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Policy) The response message.
+      """
+      config = self.GetMethodConfig('GetIamPolicy')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'compute.serviceAttachments.getIamPolicy',
+        ordered_params=[u'project', u'region', u'resource'],
+        path_params=[u'project', u'region', u'resource'],
+        query_params=[u'optionsRequestedPolicyVersion'],
+        relative_path=u'projects/{project}/regions/{region}/serviceAttachments/{resource}/getIamPolicy',
+        request_field='',
+        request_type_name=u'ComputeServiceAttachmentsGetIamPolicyRequest',
+        response_type_name=u'Policy',
+        supports_download=False,
+    )
+
+    def Insert(self, request, global_params=None):
+      r"""Creates a ServiceAttachment in the specified project in the given scope using the parameters that are included in the request.
+
+      Args:
+        request: (ComputeServiceAttachmentsInsertRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Insert')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Insert.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'compute.serviceAttachments.insert',
+        ordered_params=[u'project', u'region'],
+        path_params=[u'project', u'region'],
+        query_params=[u'requestId'],
+        relative_path=u'projects/{project}/regions/{region}/serviceAttachments',
+        request_field=u'serviceAttachment',
+        request_type_name=u'ComputeServiceAttachmentsInsertRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists the ServiceAttachments for a project in the given scope.
+
+      Args:
+        request: (ComputeServiceAttachmentsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ServiceAttachmentList) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'compute.serviceAttachments.list',
+        ordered_params=[u'project', u'region'],
+        path_params=[u'project', u'region'],
+        query_params=[u'filter', u'maxResults', u'orderBy', u'pageToken', u'returnPartialSuccess'],
+        relative_path=u'projects/{project}/regions/{region}/serviceAttachments',
+        request_field='',
+        request_type_name=u'ComputeServiceAttachmentsListRequest',
+        response_type_name=u'ServiceAttachmentList',
+        supports_download=False,
+    )
+
+    def SetIamPolicy(self, request, global_params=None):
+      r"""Sets the access control policy on the specified resource. Replaces any existing policy.
+
+      Args:
+        request: (ComputeServiceAttachmentsSetIamPolicyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Policy) The response message.
+      """
+      config = self.GetMethodConfig('SetIamPolicy')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'compute.serviceAttachments.setIamPolicy',
+        ordered_params=[u'project', u'region', u'resource'],
+        path_params=[u'project', u'region', u'resource'],
+        query_params=[],
+        relative_path=u'projects/{project}/regions/{region}/serviceAttachments/{resource}/setIamPolicy',
+        request_field=u'regionSetPolicyRequest',
+        request_type_name=u'ComputeServiceAttachmentsSetIamPolicyRequest',
+        response_type_name=u'Policy',
+        supports_download=False,
+    )
+
+    def TestIamPermissions(self, request, global_params=None):
+      r"""Returns permissions that a caller has on the specified resource.
+
+      Args:
+        request: (ComputeServiceAttachmentsTestIamPermissionsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (TestPermissionsResponse) The response message.
+      """
+      config = self.GetMethodConfig('TestIamPermissions')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    TestIamPermissions.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'compute.serviceAttachments.testIamPermissions',
+        ordered_params=[u'project', u'region', u'resource'],
+        path_params=[u'project', u'region', u'resource'],
+        query_params=[],
+        relative_path=u'projects/{project}/regions/{region}/serviceAttachments/{resource}/testIamPermissions',
+        request_field=u'testPermissionsRequest',
+        request_type_name=u'ComputeServiceAttachmentsTestIamPermissionsRequest',
         response_type_name=u'TestPermissionsResponse',
         supports_download=False,
     )

@@ -23,6 +23,7 @@ import os
 from apitools.base.py import encoding
 from apitools.base.py import exceptions as apitools_exceptions
 from googlecloudsdk.api_lib.util import apis as core_apis
+from googlecloudsdk.api_lib.util import exceptions as core_api_exceptions
 from googlecloudsdk.api_lib.util import waiter
 from googlecloudsdk.calliope import base
 from googlecloudsdk.core import exceptions
@@ -41,10 +42,25 @@ class EnableCommand(base.CreateCommand):
                            self.FEATURE_DISPLAY_NAME, **kwargs)
     except apitools_exceptions.HttpUnauthorizedError as e:
       raise exceptions.Error(
-          'You are not authorized to disable {} Feature from project [{}]. '
+          'You are not authorized to enable {} Feature from project [{}]. '
           'Underlying error: {}'.format(self.FEATURE_DISPLAY_NAME, project, e))
     except properties.RequiredPropertyError as e:
       raise exceptions.Error('Failed to retrieve the project ID.')
+    except apitools_exceptions.HttpConflictError as e:
+      # If the error is not due to the object already existing, re-raise.
+      error = core_api_exceptions.HttpErrorPayload(e)
+      if error.status_description != 'ALREADY_EXISTS':
+        raise
+      else:
+        log.status.Print(
+            '{} Feature for project [{}] is already enabled'.format(
+                self.FEATURE_DISPLAY_NAME, project))
+    except apitools_exceptions.HttpBadRequestError as e:
+      error = core_api_exceptions.HttpErrorPayload(e)
+      if error.status_description != 'FAILED_PRECONDITION':
+        raise
+      else:
+        log.status.Print(error.status_message)
 
 
 class DisableCommand(base.DeleteCommand):
@@ -89,6 +105,22 @@ class DescribeCommand(base.DescribeCommand):
               self.FEATURE_DISPLAY_NAME, project_id, e))
 
 
+class UpdateCommand(base.UpdateCommand):
+  """Base class for the command that updates a Feature."""
+
+  def RunCommand(self, mask, **kwargs):
+    try:
+      project = properties.VALUES.core.project.GetOrFail()
+      return UpdateFeature(project, self.FEATURE_NAME,
+                           self.FEATURE_DISPLAY_NAME, mask, **kwargs)
+    except apitools_exceptions.HttpUnauthorizedError as e:
+      raise exceptions.Error(
+          'You are not authorized to update {} Feature from project [{}]. '
+          'Underlying error: {}'.format(self.FEATURE_DISPLAY_NAME, project, e))
+    except properties.RequiredPropertyError as e:
+      raise exceptions.Error('Failed to retrieve the project ID.')
+
+
 def CreateMultiClusterIngressFeatureSpec(config_membership):
   client = core_apis.GetClientInstance('gkehub', 'v1alpha1')
   messages = client.MESSAGES_MODULE
@@ -100,6 +132,12 @@ def CreateMultiClusterServiceDiscoveryFeatureSpec():
   client = core_apis.GetClientInstance('gkehub', 'v1alpha1')
   messages = client.MESSAGES_MODULE
   return messages.MultiClusterServiceDiscoveryFeatureSpec()
+
+
+def CreateConfigManagementFeatureSpec():
+  client = core_apis.GetClientInstance('gkehub', 'v1alpha1')
+  messages = client.MESSAGES_MODULE
+  return messages.ConfigManagementFeatureSpec()
 
 
 def CreateFeature(project, feature_id, feature_display_name, **kwargs):
@@ -189,6 +227,44 @@ def DeleteFeature(name, feature_display_name, force=False):
       waiter.CloudOperationPollerNoResources(
           client.projects_locations_operations), op_resource,
       'Waiting for Feature {} to be deleted'.format(feature_display_name))
+
+
+def UpdateFeature(project, feature_id, feature_display_name, mask, **kwargs):
+  """Updates a Feature resource in Hub.
+
+  Args:
+    project: the project in which to update the Feature
+    feature_id: the value to use for the feature_id
+    feature_display_name: the FEATURE_DISPLAY_NAME of this Feature
+    mask: resource fields to be updated. For eg. multiclusterFeatureSpec
+    **kwargs: arguments for Feature object. For eg, multiclusterFeatureSpec
+
+  Returns:
+    the updated Feature resource.
+
+  Raises:
+    - apitools.base.py.HttpError: if the request returns an HTTP error
+    - exceptions raised by waiter.WaitFor()
+  """
+  client = core_apis.GetClientInstance('gkehub', 'v1alpha1')
+  messages = client.MESSAGES_MODULE
+  request = messages.GkehubProjectsLocationsGlobalFeaturesPatchRequest(
+      name='projects/{0}/locations/global/features/{1}'.format(project,
+                                                               feature_id),
+      updateMask=mask,
+      feature=messages.Feature(**kwargs),
+  )
+
+  op = client.projects_locations_global_features.Patch(request)
+  op_resource = resources.REGISTRY.ParseRelativeName(
+      op.name, collection='gkehub.projects.locations.operations')
+  result = waiter.WaitFor(
+      waiter.CloudOperationPoller(client.projects_locations_global_features,
+                                  client.projects_locations_operations),
+      op_resource,
+      'Waiting for Feature {} to be updated'.format(feature_display_name))
+
+  return result
 
 
 def ListMemberships(project):

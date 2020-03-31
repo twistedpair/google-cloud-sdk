@@ -81,7 +81,8 @@ class ClientAdapter(object):
                    requests,
                    errors_to_collect=None,
                    progress_tracker=None,
-                   followup_overrides=None):
+                   followup_overrides=None,
+                   log_result=True):
     """Sends given request in batch mode."""
     errors = errors_to_collect if errors_to_collect is not None else []
     objects = list(
@@ -91,7 +92,8 @@ class ClientAdapter(object):
             batch_url=self._batch_url,
             errors=errors,
             progress_tracker=progress_tracker,
-            followup_overrides=followup_overrides))
+            followup_overrides=followup_overrides,
+            log_result=log_result))
     if errors_to_collect is None and errors:
       utils.RaiseToolException(
           errors, error_message='Could not fetch resource:')

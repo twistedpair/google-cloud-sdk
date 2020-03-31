@@ -16,7 +16,7 @@ class VpcaccessV1alpha1(base_api.BaseApiClient):
   _VERSION = u'v1alpha1'
   _CLIENT_ID = '1042881264118.apps.googleusercontent.com'
   _CLIENT_SECRET = 'x_Tw5K8nnjoRAqULM9PFAC2b'
-  _USER_AGENT = 'x_Tw5K8nnjoRAqULM9PFAC2b'
+  _USER_AGENT = u'google-cloud-sdk'
   _CLIENT_CLASS_NAME = u'VpcaccessV1alpha1'
   _URL_VERSION = u'v1alpha1'
   _API_KEY = None
@@ -158,6 +158,33 @@ does not exist.
         request_field='',
         request_type_name=u'VpcaccessProjectsLocationsConnectorsListRequest',
         response_type_name=u'ListConnectorsResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Updates a Serverless VPC Access connector, returns an operation.
+
+      Args:
+        request: (VpcaccessProjectsLocationsConnectorsPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1alpha1/projects/{projectsId}/locations/{locationsId}/connectors/{connectorsId}',
+        http_method=u'PATCH',
+        method_id=u'vpcaccess.projects.locations.connectors.patch',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[u'updateMask'],
+        relative_path=u'v1alpha1/{+name}',
+        request_field=u'connector',
+        request_type_name=u'VpcaccessProjectsLocationsConnectorsPatchRequest',
+        response_type_name=u'Operation',
         supports_download=False,
     )
 

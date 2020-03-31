@@ -2472,11 +2472,13 @@ class AutoscalingPolicy(_messages.Message):
     Values:
       OFF: <no description>
       ON: <no description>
+      ONLY_SCALE_OUT: <no description>
       ONLY_UP: <no description>
     """
     OFF = 0
     ON = 1
-    ONLY_UP = 2
+    ONLY_SCALE_OUT = 2
+    ONLY_UP = 3
 
   coolDownPeriodSec = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   cpuUtilization = _messages.MessageField('AutoscalingPolicyCpuUtilization', 2)
@@ -20379,6 +20381,174 @@ class ComputeSecurityPoliciesTestIamPermissionsRequest(_messages.Message):
   testPermissionsRequest = _messages.MessageField('TestPermissionsRequest', 3)
 
 
+class ComputeServiceAttachmentsDeleteRequest(_messages.Message):
+  r"""A ComputeServiceAttachmentsDeleteRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    region: Name of the region of this request.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
+    serviceAttachment: Name of the ServiceAttachment resource to delete.
+  """
+
+  project = _messages.StringField(1, required=True)
+  region = _messages.StringField(2, required=True)
+  requestId = _messages.StringField(3)
+  serviceAttachment = _messages.StringField(4, required=True)
+
+
+class ComputeServiceAttachmentsGetIamPolicyRequest(_messages.Message):
+  r"""A ComputeServiceAttachmentsGetIamPolicyRequest object.
+
+  Fields:
+    optionsRequestedPolicyVersion: Requested IAM Policy version.
+    project: Project ID for this request.
+    region: The name of the region for this request.
+    resource: Name or id of the resource for this request.
+  """
+
+  optionsRequestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  project = _messages.StringField(2, required=True)
+  region = _messages.StringField(3, required=True)
+  resource = _messages.StringField(4, required=True)
+
+
+class ComputeServiceAttachmentsGetRequest(_messages.Message):
+  r"""A ComputeServiceAttachmentsGetRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    region: Name of the region of this request.
+    serviceAttachment: Name of the ServiceAttachment resource to return.
+  """
+
+  project = _messages.StringField(1, required=True)
+  region = _messages.StringField(2, required=True)
+  serviceAttachment = _messages.StringField(3, required=True)
+
+
+class ComputeServiceAttachmentsInsertRequest(_messages.Message):
+  r"""A ComputeServiceAttachmentsInsertRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    region: Name of the region of this request.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
+    serviceAttachment: A ServiceAttachment resource to be passed as the
+      request body.
+  """
+
+  project = _messages.StringField(1, required=True)
+  region = _messages.StringField(2, required=True)
+  requestId = _messages.StringField(3)
+  serviceAttachment = _messages.MessageField('ServiceAttachment', 4)
+
+
+class ComputeServiceAttachmentsListRequest(_messages.Message):
+  r"""A ComputeServiceAttachmentsListRequest object.
+
+  Fields:
+    filter: A filter expression that filters resources listed in the response.
+      The expression must specify the field name, a comparison operator, and
+      the value that you want to use for filtering. The value must be a
+      string, a number, or a boolean. The comparison operator must be either
+      `=`, `!=`, `>`, or `<`.  For example, if you are filtering Compute
+      Engine instances, you can exclude instances named `example-instance` by
+      specifying `name != example-instance`.  You can also filter nested
+      fields. For example, you could specify `scheduling.automaticRestart =
+      false` to include instances only if they are not scheduled for automatic
+      restarts. You can use filtering on nested fields to filter based on
+      resource labels.  To filter on multiple expressions, provide each
+      separate expression within parentheses. For example: ```
+      (scheduling.automaticRestart = true) (cpuPlatform = "Intel Skylake") ```
+      By default, each expression is an `AND` expression. However, you can
+      include `AND` and `OR` expressions explicitly. For example: ```
+      (cpuPlatform = "Intel Skylake") OR (cpuPlatform = "Intel Broadwell") AND
+      (scheduling.automaticRestart = true) ```
+    maxResults: The maximum number of results per page that should be
+      returned. If the number of available results is larger than
+      `maxResults`, Compute Engine returns a `nextPageToken` that can be used
+      to get the next page of results in subsequent list requests. Acceptable
+      values are `0` to `500`, inclusive. (Default: `500`)
+    orderBy: Sorts list results by a certain order. By default, results are
+      returned in alphanumerical order based on the resource name.  You can
+      also sort results in descending order based on the creation timestamp
+      using `orderBy="creationTimestamp desc"`. This sorts results based on
+      the `creationTimestamp` field in reverse chronological order (newest
+      result first). Use this to sort resources like operations so that the
+      newest operation is returned first.  Currently, only sorting by `name`
+      or `creationTimestamp desc` is supported.
+    pageToken: Specifies a page token to use. Set `pageToken` to the
+      `nextPageToken` returned by a previous list request to get the next page
+      of results.
+    project: Project ID for this request.
+    region: Name of the region of this request.
+    returnPartialSuccess: Opt-in for partial success behavior which provides
+      partial results in case of failure. The default value is false and the
+      logic is the same as today.
+  """
+
+  filter = _messages.StringField(1)
+  maxResults = _messages.IntegerField(2, variant=_messages.Variant.UINT32, default=500)
+  orderBy = _messages.StringField(3)
+  pageToken = _messages.StringField(4)
+  project = _messages.StringField(5, required=True)
+  region = _messages.StringField(6, required=True)
+  returnPartialSuccess = _messages.BooleanField(7)
+
+
+class ComputeServiceAttachmentsSetIamPolicyRequest(_messages.Message):
+  r"""A ComputeServiceAttachmentsSetIamPolicyRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    region: The name of the region for this request.
+    regionSetPolicyRequest: A RegionSetPolicyRequest resource to be passed as
+      the request body.
+    resource: Name or id of the resource for this request.
+  """
+
+  project = _messages.StringField(1, required=True)
+  region = _messages.StringField(2, required=True)
+  regionSetPolicyRequest = _messages.MessageField('RegionSetPolicyRequest', 3)
+  resource = _messages.StringField(4, required=True)
+
+
+class ComputeServiceAttachmentsTestIamPermissionsRequest(_messages.Message):
+  r"""A ComputeServiceAttachmentsTestIamPermissionsRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    region: The name of the region for this request.
+    resource: Name or id of the resource for this request.
+    testPermissionsRequest: A TestPermissionsRequest resource to be passed as
+      the request body.
+  """
+
+  project = _messages.StringField(1, required=True)
+  region = _messages.StringField(2, required=True)
+  resource = _messages.StringField(3, required=True)
+  testPermissionsRequest = _messages.MessageField('TestPermissionsRequest', 4)
+
+
 class ComputeSnapshotsDeleteRequest(_messages.Message):
   r"""A ComputeSnapshotsDeleteRequest object.
 
@@ -27661,6 +27831,7 @@ class GuestOsFeature(_messages.Message):
     features to see a list of available options.
 
     Values:
+      BARE_METAL_LINUX_COMPATIBLE: <no description>
       FEATURE_TYPE_UNSPECIFIED: <no description>
       GVNIC: <no description>
       MULTI_IP_SUBNET: <no description>
@@ -27669,13 +27840,14 @@ class GuestOsFeature(_messages.Message):
       VIRTIO_SCSI_MULTIQUEUE: <no description>
       WINDOWS: <no description>
     """
-    FEATURE_TYPE_UNSPECIFIED = 0
-    GVNIC = 1
-    MULTI_IP_SUBNET = 2
-    SECURE_BOOT = 3
-    UEFI_COMPATIBLE = 4
-    VIRTIO_SCSI_MULTIQUEUE = 5
-    WINDOWS = 6
+    BARE_METAL_LINUX_COMPATIBLE = 0
+    FEATURE_TYPE_UNSPECIFIED = 1
+    GVNIC = 2
+    MULTI_IP_SUBNET = 3
+    SECURE_BOOT = 4
+    UEFI_COMPATIBLE = 5
+    VIRTIO_SCSI_MULTIQUEUE = 6
+    WINDOWS = 7
 
   type = _messages.EnumField('TypeValueValuesEnum', 1)
 
@@ -30776,8 +30948,10 @@ class InstanceGroup(_messages.Message):
       name instead of a port number. Named ports can also contain multiple
       ports. For example: [{name: "http", port: 80},{name: "http", port:
       8080}]   Named ports apply to all instances in this instance group.
-    network: The URL of the network to which all instances in the instance
-      group belong.
+    network: [Output Only] The URL of the network to which all instances in
+      the instance group belong. If your instance has multiple network
+      interfaces, then the network and subnetwork fields only refer to the
+      network and subnet used by your primary interface (nic0).
     region: [Output Only] The URL of the region where the instance group is
       located (for regional resources).
     selfLink: [Output Only] The URL for this instance group. The server
@@ -30786,7 +30960,9 @@ class InstanceGroup(_messages.Message):
       the resource id.
     size: [Output Only] The total number of instances in the instance group.
     subnetwork: [Output Only] The URL of the subnetwork to which all instances
-      in the instance group belong.
+      in the instance group belong. If your instance has multiple network
+      interfaces, then the network and subnetwork fields only refer to the
+      network and subnet used by your primary interface (nic0).
     zone: [Output Only] The URL of the zone where the instance group is
       located (for zonal resources).
   """
@@ -36436,7 +36612,12 @@ class MachineType(_messages.Message):
   more information, read Machine Types. (== resource_for
   {$api_version}.machineTypes ==)
 
+  Messages:
+    AcceleratorsValueListEntry: A AcceleratorsValueListEntry object.
+
   Fields:
+    accelerators: [Output Only] A list of accelerator configurations assigned
+      to this machine type.
     creationTimestamp: [Output Only] Creation timestamp in RFC3339 text
       format.
     deprecated: [Output Only] The deprecation status associated with this
@@ -36464,20 +36645,33 @@ class MachineType(_messages.Message):
       such as us-central1-a.
   """
 
-  creationTimestamp = _messages.StringField(1)
-  deprecated = _messages.MessageField('DeprecationStatus', 2)
-  description = _messages.StringField(3)
-  guestCpus = _messages.IntegerField(4, variant=_messages.Variant.INT32)
-  id = _messages.IntegerField(5, variant=_messages.Variant.UINT64)
-  isSharedCpu = _messages.BooleanField(6)
-  kind = _messages.StringField(7, default=u'compute#machineType')
-  maximumPersistentDisks = _messages.IntegerField(8, variant=_messages.Variant.INT32)
-  maximumPersistentDisksSizeGb = _messages.IntegerField(9)
-  memoryMb = _messages.IntegerField(10, variant=_messages.Variant.INT32)
-  name = _messages.StringField(11)
-  selfLink = _messages.StringField(12)
-  selfLinkWithId = _messages.StringField(13)
-  zone = _messages.StringField(14)
+  class AcceleratorsValueListEntry(_messages.Message):
+    r"""A AcceleratorsValueListEntry object.
+
+    Fields:
+      guestAcceleratorCount: Number of accelerator cards exposed to the guest.
+      guestAcceleratorType: The accelerator type resource name, not a full
+        URL, e.g. 'nvidia-tesla-k80'.
+    """
+
+    guestAcceleratorCount = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+    guestAcceleratorType = _messages.StringField(2)
+
+  accelerators = _messages.MessageField('AcceleratorsValueListEntry', 1, repeated=True)
+  creationTimestamp = _messages.StringField(2)
+  deprecated = _messages.MessageField('DeprecationStatus', 3)
+  description = _messages.StringField(4)
+  guestCpus = _messages.IntegerField(5, variant=_messages.Variant.INT32)
+  id = _messages.IntegerField(6, variant=_messages.Variant.UINT64)
+  isSharedCpu = _messages.BooleanField(7)
+  kind = _messages.StringField(8, default=u'compute#machineType')
+  maximumPersistentDisks = _messages.IntegerField(9, variant=_messages.Variant.INT32)
+  maximumPersistentDisksSizeGb = _messages.IntegerField(10)
+  memoryMb = _messages.IntegerField(11, variant=_messages.Variant.INT32)
+  name = _messages.StringField(12)
+  selfLink = _messages.StringField(13)
+  selfLinkWithId = _messages.StringField(14)
+  zone = _messages.StringField(15)
 
 
 class MachineTypeAggregatedList(_messages.Message):
@@ -38681,6 +38875,10 @@ class NodeGroup(_messages.Message):
       is defined by the server.
     kind: [Output Only] The type of the resource. Always compute#nodeGroup for
       node group.
+    locationHint: An opaque location hint used to place the Node close to
+      other resources. This field is for use by internal tools that use the
+      public API. The location hint here on the NodeGroup overrides any
+      location_hint present in the NodeTemplate.
     maintenancePolicy: Specifies how to handle instances when a node in the
       group undergoes maintenance.
     maintenanceWindow: A NodeGroupMaintenanceWindow attribute.
@@ -38737,15 +38935,16 @@ class NodeGroup(_messages.Message):
   fingerprint = _messages.BytesField(4)
   id = _messages.IntegerField(5, variant=_messages.Variant.UINT64)
   kind = _messages.StringField(6, default=u'compute#nodeGroup')
-  maintenancePolicy = _messages.EnumField('MaintenancePolicyValueValuesEnum', 7)
-  maintenanceWindow = _messages.MessageField('NodeGroupMaintenanceWindow', 8)
-  name = _messages.StringField(9)
-  nodeTemplate = _messages.StringField(10)
-  selfLink = _messages.StringField(11)
-  selfLinkWithId = _messages.StringField(12)
-  size = _messages.IntegerField(13, variant=_messages.Variant.INT32)
-  status = _messages.EnumField('StatusValueValuesEnum', 14)
-  zone = _messages.StringField(15)
+  locationHint = _messages.StringField(7)
+  maintenancePolicy = _messages.EnumField('MaintenancePolicyValueValuesEnum', 8)
+  maintenanceWindow = _messages.MessageField('NodeGroupMaintenanceWindow', 9)
+  name = _messages.StringField(10)
+  nodeTemplate = _messages.StringField(11)
+  selfLink = _messages.StringField(12)
+  selfLinkWithId = _messages.StringField(13)
+  size = _messages.IntegerField(14, variant=_messages.Variant.INT32)
+  status = _messages.EnumField('StatusValueValuesEnum', 15)
+  zone = _messages.StringField(16)
 
 
 class NodeGroupAggregatedList(_messages.Message):
@@ -47394,6 +47593,7 @@ class RouterNat(_messages.Message):
     drainNatIps: A list of URLs of the IP resources to be drained. These IPs
       must be valid static external IPs that have been assigned to the NAT.
       These IPs should be used for updating/patching a NAT only.
+    enableEndpointIndependentMapping: A boolean attribute.
     icmpIdleTimeoutSec: Timeout (in seconds) for ICMP connections. Defaults to
       30s if not set.
     logConfig: Configure logging on this NAT.
@@ -47412,6 +47612,7 @@ class RouterNat(_messages.Message):
     natIps: A list of URLs of the IP resources used for this Nat service.
       These IP addresses must be valid static external IP addresses assigned
       to the project.
+    rules: A list of rules associated with this NAT.
     sourceSubnetworkIpRangesToNat: Specify the Nat option, which can take one
       of the following values:  - ALL_SUBNETWORKS_ALL_IP_RANGES: All of the IP
       ranges in every Subnetwork are allowed to Nat.  -
@@ -47427,6 +47628,8 @@ class RouterNat(_messages.Message):
       selected for the SubnetworkIpRangeToNatOption above.
     tcpEstablishedIdleTimeoutSec: Timeout (in seconds) for TCP established
       connections. Defaults to 1200s if not set.
+    tcpTimeWaitTimeoutSec: Timeout (in seconds) for TCP connections that are
+      in TIME_WAIT state. Defaults to 120s if not set.
     tcpTransitoryIdleTimeoutSec: Timeout (in seconds) for TCP transitory
       connections. Defaults to 30s if not set.
     udpIdleTimeoutSec: Timeout (in seconds) for UDP connections. Defaults to
@@ -47470,17 +47673,20 @@ class RouterNat(_messages.Message):
     LIST_OF_SUBNETWORKS = 2
 
   drainNatIps = _messages.StringField(1, repeated=True)
-  icmpIdleTimeoutSec = _messages.IntegerField(2, variant=_messages.Variant.INT32)
-  logConfig = _messages.MessageField('RouterNatLogConfig', 3)
-  minPortsPerVm = _messages.IntegerField(4, variant=_messages.Variant.INT32)
-  name = _messages.StringField(5)
-  natIpAllocateOption = _messages.EnumField('NatIpAllocateOptionValueValuesEnum', 6)
-  natIps = _messages.StringField(7, repeated=True)
-  sourceSubnetworkIpRangesToNat = _messages.EnumField('SourceSubnetworkIpRangesToNatValueValuesEnum', 8)
-  subnetworks = _messages.MessageField('RouterNatSubnetworkToNat', 9, repeated=True)
-  tcpEstablishedIdleTimeoutSec = _messages.IntegerField(10, variant=_messages.Variant.INT32)
-  tcpTransitoryIdleTimeoutSec = _messages.IntegerField(11, variant=_messages.Variant.INT32)
-  udpIdleTimeoutSec = _messages.IntegerField(12, variant=_messages.Variant.INT32)
+  enableEndpointIndependentMapping = _messages.BooleanField(2)
+  icmpIdleTimeoutSec = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  logConfig = _messages.MessageField('RouterNatLogConfig', 4)
+  minPortsPerVm = _messages.IntegerField(5, variant=_messages.Variant.INT32)
+  name = _messages.StringField(6)
+  natIpAllocateOption = _messages.EnumField('NatIpAllocateOptionValueValuesEnum', 7)
+  natIps = _messages.StringField(8, repeated=True)
+  rules = _messages.MessageField('RouterNatRule', 9, repeated=True)
+  sourceSubnetworkIpRangesToNat = _messages.EnumField('SourceSubnetworkIpRangesToNatValueValuesEnum', 10)
+  subnetworks = _messages.MessageField('RouterNatSubnetworkToNat', 11, repeated=True)
+  tcpEstablishedIdleTimeoutSec = _messages.IntegerField(12, variant=_messages.Variant.INT32)
+  tcpTimeWaitTimeoutSec = _messages.IntegerField(13, variant=_messages.Variant.INT32)
+  tcpTransitoryIdleTimeoutSec = _messages.IntegerField(14, variant=_messages.Variant.INT32)
+  udpIdleTimeoutSec = _messages.IntegerField(15, variant=_messages.Variant.INT32)
 
 
 class RouterNatLogConfig(_messages.Message):
@@ -47523,6 +47729,45 @@ class RouterNatLogConfig(_messages.Message):
 
   enable = _messages.BooleanField(1)
   filter = _messages.EnumField('FilterValueValuesEnum', 2)
+
+
+class RouterNatRule(_messages.Message):
+  r"""A RouterNatRule object.
+
+  Fields:
+    action: The action to be enforced for traffic that matches this rule.
+    description: An optional description of this rule.
+    match: CEL expression that specifies the match condition that egress
+      traffic from a VM is evaluated against. If it evaluates to true, the
+      corresponding ?action? is enforced.  The following examples are valid
+      match expressions:  "inIpRange(destination.ip, '1.1.0.0/16') ||
+      inIpRange(destination.ip, '2.2.0.0/16')"  "destination.ip == '1.1.0.1'
+      || destination.ip == '8.8.8.8'"
+    priority: An integer indicating the priority of a rule in the list. The
+      priority must be a positive value between 0 and 65000. The priority must
+      be unique among rules within a NAT.
+  """
+
+  action = _messages.MessageField('RouterNatRuleAction', 1)
+  description = _messages.StringField(2)
+  match = _messages.StringField(3)
+  priority = _messages.IntegerField(4, variant=_messages.Variant.UINT32)
+
+
+class RouterNatRuleAction(_messages.Message):
+  r"""A RouterNatRuleAction object.
+
+  Fields:
+    sourceNatActiveIps: A list of URLs of the IP resources used for this NAT
+      rule. These IP addresses must be valid static external IP addresses
+      assigned to the project.
+    sourceNatDrainIps: A list of URLs of the IP resources to be drained. These
+      IPs must be valid static external IPs that have been assigned to the
+      NAT. These IPs should be used for updating/patching a NAT rule only.
+  """
+
+  sourceNatActiveIps = _messages.StringField(1, repeated=True)
+  sourceNatDrainIps = _messages.StringField(2, repeated=True)
 
 
 class RouterNatSubnetworkToNat(_messages.Message):
@@ -48837,6 +49082,227 @@ class ServiceAccount(_messages.Message):
 
   email = _messages.StringField(1)
   scopes = _messages.StringField(2, repeated=True)
+
+
+class ServiceAttachment(_messages.Message):
+  r"""Represents a ServiceAttachment resource.  A service attachment
+  represents a service that a producer has exposed. It encapsulates the load
+  balancer which fronts the service runs and a list of NAT IP ranges that the
+  producers uses to represent the consumers connecting to the service.
+
+  Enums:
+    ConnectionPreferenceValueValuesEnum:
+
+  Fields:
+    connectionPreference: A ConnectionPreferenceValueValuesEnum attribute.
+    consumerForwardingRules: An array of forwarding rules for all the
+      consumers connected to this service attachment.
+    creationTimestamp: [Output Only] Creation timestamp in RFC3339 text
+      format.
+    description: An optional description of this resource. Provide this
+      property when you create the resource.
+    id: [Output Only] The unique identifier for the resource type. The server
+      generates this identifier.
+    kind: [Output Only] Type of the resource. Always compute#serviceAttachment
+      for service attachments.
+    name: Name of the resource. Provided by the client when the resource is
+      created. The name must be 1-63 characters long, and comply with RFC1035.
+      Specifically, the name must be 1-63 characters long and match the
+      regular expression `[a-z]([-a-z0-9]*[a-z0-9])?` which means the first
+      character must be a lowercase letter, and all following characters must
+      be a dash, lowercase letter, or digit, except the last character, which
+      cannot be a dash.
+    natIpCidrRanges: An array of IP CIDR ranges where each range is the url of
+      the address resource which represents the range provided by the service
+      producer to use for NAT in this service attachment.
+    producerForwardingRule: The URL of a forwarding rule with
+      loadBalancingScheme INTERNAL* that is serving the endpoint identified by
+      this service attachment.
+    region: [Output Only] URL of the region where the service attachment
+      resides. This field applies only to the region resource. You must
+      specify this field as part of the HTTP request URL. It is not settable
+      as a field in the request body.
+    selfLink: [Output Only] Server-defined URL for the resource.
+  """
+
+  class ConnectionPreferenceValueValuesEnum(_messages.Enum):
+    r"""ConnectionPreferenceValueValuesEnum enum type.
+
+    Values:
+      ACCEPT_AUTOMATIC: <no description>
+      CONNECTION_PREFERENCE_UNSPECIFIED: <no description>
+    """
+    ACCEPT_AUTOMATIC = 0
+    CONNECTION_PREFERENCE_UNSPECIFIED = 1
+
+  connectionPreference = _messages.EnumField('ConnectionPreferenceValueValuesEnum', 1)
+  consumerForwardingRules = _messages.MessageField('ServiceAttachmentConsumerForwardingRule', 2, repeated=True)
+  creationTimestamp = _messages.StringField(3)
+  description = _messages.StringField(4)
+  id = _messages.IntegerField(5, variant=_messages.Variant.UINT64)
+  kind = _messages.StringField(6, default=u'compute#serviceAttachment')
+  name = _messages.StringField(7)
+  natIpCidrRanges = _messages.StringField(8, repeated=True)
+  producerForwardingRule = _messages.StringField(9)
+  region = _messages.StringField(10)
+  selfLink = _messages.StringField(11)
+
+
+class ServiceAttachmentConsumerForwardingRule(_messages.Message):
+  r"""[Output Only] A consumer forwarding rule connected to this service
+  attachment.
+
+  Enums:
+    StatusValueValuesEnum: The status of the forwarding rule.
+
+  Fields:
+    forwardingRule: The url of a consumer forwarding rule.
+    status: The status of the forwarding rule.
+  """
+
+  class StatusValueValuesEnum(_messages.Enum):
+    r"""The status of the forwarding rule.
+
+    Values:
+      ACTIVE: <no description>
+      INACTIVE: <no description>
+      PENDING: <no description>
+      STATUS_UNSPECIFIED: <no description>
+    """
+    ACTIVE = 0
+    INACTIVE = 1
+    PENDING = 2
+    STATUS_UNSPECIFIED = 3
+
+  forwardingRule = _messages.StringField(1)
+  status = _messages.EnumField('StatusValueValuesEnum', 2)
+
+
+class ServiceAttachmentList(_messages.Message):
+  r"""A ServiceAttachmentList object.
+
+  Messages:
+    WarningValue: [Output Only] Informational warning message.
+
+  Fields:
+    id: [Output Only] Unique identifier for the resource; defined by the
+      server.
+    items: A list of ServiceAttachment resources.
+    kind: [Output Only] Type of the resource. Always compute#serviceAttachment
+      for service attachments.
+    nextPageToken: [Output Only] This token allows you to get the next page of
+      results for list requests. If the number of results is larger than
+      maxResults, use the nextPageToken as a value for the query parameter
+      pageToken in the next list request. Subsequent list requests will have
+      their own nextPageToken to continue paging through the results.
+    selfLink: [Output Only] Server-defined URL for this resource.
+    warning: [Output Only] Informational warning message.
+  """
+
+  class WarningValue(_messages.Message):
+    r"""[Output Only] Informational warning message.
+
+    Enums:
+      CodeValueValuesEnum: [Output Only] A warning code, if applicable. For
+        example, Compute Engine returns NO_RESULTS_ON_PAGE if there are no
+        results in the response.
+
+    Messages:
+      DataValueListEntry: A DataValueListEntry object.
+
+    Fields:
+      code: [Output Only] A warning code, if applicable. For example, Compute
+        Engine returns NO_RESULTS_ON_PAGE if there are no results in the
+        response.
+      data: [Output Only] Metadata about this warning in key: value format.
+        For example: "data": [ { "key": "scope", "value": "zones/us-east1-d" }
+      message: [Output Only] A human-readable description of the warning code.
+    """
+
+    class CodeValueValuesEnum(_messages.Enum):
+      r"""[Output Only] A warning code, if applicable. For example, Compute
+      Engine returns NO_RESULTS_ON_PAGE if there are no results in the
+      response.
+
+      Values:
+        CLEANUP_FAILED: <no description>
+        DEPRECATED_RESOURCE_USED: <no description>
+        DEPRECATED_TYPE_USED: <no description>
+        DISK_SIZE_LARGER_THAN_IMAGE_SIZE: <no description>
+        EXPERIMENTAL_TYPE_USED: <no description>
+        EXTERNAL_API_WARNING: <no description>
+        FIELD_VALUE_OVERRIDEN: <no description>
+        INJECTED_KERNELS_DEPRECATED: <no description>
+        MISSING_TYPE_DEPENDENCY: <no description>
+        NEXT_HOP_ADDRESS_NOT_ASSIGNED: <no description>
+        NEXT_HOP_CANNOT_IP_FORWARD: <no description>
+        NEXT_HOP_INSTANCE_NOT_FOUND: <no description>
+        NEXT_HOP_INSTANCE_NOT_ON_NETWORK: <no description>
+        NEXT_HOP_NOT_RUNNING: <no description>
+        NOT_CRITICAL_ERROR: <no description>
+        NO_RESULTS_ON_PAGE: <no description>
+        PARTIAL_SUCCESS: <no description>
+        REQUIRED_TOS_AGREEMENT: <no description>
+        RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: <no description>
+        RESOURCE_NOT_DELETED: <no description>
+        SCHEMA_VALIDATION_IGNORED: <no description>
+        SINGLE_INSTANCE_PROPERTY_TEMPLATE: <no description>
+        UNDECLARED_PROPERTIES: <no description>
+        UNREACHABLE: <no description>
+      """
+      CLEANUP_FAILED = 0
+      DEPRECATED_RESOURCE_USED = 1
+      DEPRECATED_TYPE_USED = 2
+      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 3
+      EXPERIMENTAL_TYPE_USED = 4
+      EXTERNAL_API_WARNING = 5
+      FIELD_VALUE_OVERRIDEN = 6
+      INJECTED_KERNELS_DEPRECATED = 7
+      MISSING_TYPE_DEPENDENCY = 8
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 9
+      NEXT_HOP_CANNOT_IP_FORWARD = 10
+      NEXT_HOP_INSTANCE_NOT_FOUND = 11
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 12
+      NEXT_HOP_NOT_RUNNING = 13
+      NOT_CRITICAL_ERROR = 14
+      NO_RESULTS_ON_PAGE = 15
+      PARTIAL_SUCCESS = 16
+      REQUIRED_TOS_AGREEMENT = 17
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 18
+      RESOURCE_NOT_DELETED = 19
+      SCHEMA_VALIDATION_IGNORED = 20
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 21
+      UNDECLARED_PROPERTIES = 22
+      UNREACHABLE = 23
+
+    class DataValueListEntry(_messages.Message):
+      r"""A DataValueListEntry object.
+
+      Fields:
+        key: [Output Only] A key that provides more detail on the warning
+          being returned. For example, for warnings where there are no results
+          in a list request for a particular zone, this key might be scope and
+          the key value might be the zone name. Other examples might be a key
+          indicating a deprecated resource and a suggested replacement, or a
+          warning about invalid network settings (for example, if an instance
+          attempts to perform IP forwarding but is not enabled for IP
+          forwarding).
+        value: [Output Only] A warning data value corresponding to the key.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    code = _messages.EnumField('CodeValueValuesEnum', 1)
+    data = _messages.MessageField('DataValueListEntry', 2, repeated=True)
+    message = _messages.StringField(3)
+
+  id = _messages.StringField(1)
+  items = _messages.MessageField('ServiceAttachment', 2, repeated=True)
+  kind = _messages.StringField(3, default=u'compute#serviceAttachmentList')
+  nextPageToken = _messages.StringField(4)
+  selfLink = _messages.StringField(5)
+  warning = _messages.MessageField('WarningValue', 6)
 
 
 class ShieldedInstanceConfig(_messages.Message):

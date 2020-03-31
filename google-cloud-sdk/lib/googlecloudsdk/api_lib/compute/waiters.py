@@ -327,7 +327,7 @@ class OperationData(object):
 
 def WaitForOperations(
     operations_data, http, batch_url, warnings, errors,
-    progress_tracker=None, timeout=None):
+    progress_tracker=None, timeout=None, log_result=True):
   """Blocks until the given operations are done or until a timeout is reached.
 
   Args:
@@ -340,6 +340,8 @@ def WaitForOperations(
                       finish.
     timeout: The maximum amount of time, in seconds, to wait for the
       operations to reach the DONE state.
+    log_result: Whether the Operation Waiter should print the result in past
+      tense of each request.
 
   Yields:
     The resources pointed to by the operations' targetLink fields if
@@ -413,7 +415,7 @@ def WaitForOperations(
             resource_requests.append((resource_service, 'Get', request))
 
         # Only log when there is target link in the operation.
-        if operation.targetLink:
+        if operation.targetLink and log_result:
           log.status.write('{0} [{1}].\n'.format(
               _HumanFriendlyNameForOpPastTense(
                   operation.operationType).capitalize(), operation.targetLink))

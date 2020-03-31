@@ -137,6 +137,11 @@ def _AddVpcAccessibleServicesFilter(args, req, version):
   return req
 
 
+def AddVpcAccessibleServicesGA(ref, args, req):
+  del ref  # Unused
+  return AddVpcAccessibleServices(args, req, 'v1')
+
+
 def AddVpcAccessibleServicesAlpha(ref, args, req):
   del ref  # Unused
   return AddVpcAccessibleServices(args, req, 'v1alpha')
@@ -282,7 +287,7 @@ def AddPerimeterUpdateArgs(parser, version=None, track=None):
   _AddResources(parser)
   _AddRestrictedServices(parser)
   _AddLevelsUpdate(parser)
-  if track == 'ALPHA':
+  if track == 'ALPHA' or track == 'BETA':
     _AddVpcRestrictionArgs(parser)
 
 

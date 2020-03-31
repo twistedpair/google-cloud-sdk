@@ -24,7 +24,7 @@ fleet_configs_file:
     the format of the field in Agones Fleet cusomt resource. Please
     see https://github.com/googleforgames/agones/blob/master/examples/simple-udp/fleet.yaml for
     example and
-    https://github.com/googleforgames/agones/blob/master/pkg/apis/agones/v1/fleet.go for fleet_spec
+    https://agones.dev/site/docs/reference/fleet/ for fleet_spec
     definition.
 scaling_configs_file:
   arg_name: scaling-configs-file
@@ -34,5 +34,5 @@ scaling_configs_file:
     field in configs file follows Agones Fleet Autoscaler custom resource. Please see
     https://github.com/googleforgames/agones/blob/master/examples/simple-udp/fleetautoscaler.yaml
     for example and
-    https://github.com/googleforgames/agones/blob/master/pkg/apis/autoscaling/v1/fleetautoscaler.go
+    https://agones.dev/site/docs/reference/fleetautoscaler/
     for Fleet Autoscaler Spec definition. Scaling config file can also specifies schedules.

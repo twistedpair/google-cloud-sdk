@@ -128,7 +128,7 @@
           "type": "string"
         },
         "locationId": {
-          "description": "The geographic location to process content inspection. Reserved for future\nextensions.",
+          "description": "The geographic location to process content inspection. Reserved for future\nextensions.\nWhen inspecting images location is restricted to 'global', 'us', 'asia',\nand 'europe'.",
           "type": "string"
         }
       }
@@ -677,14 +677,14 @@
         "dayOfWeekValue": {
           "description": "day of week",
           "enumDescriptions": [
-            "The unspecified day-of-week.",
-            "The day-of-week of Monday.",
-            "The day-of-week of Tuesday.",
-            "The day-of-week of Wednesday.",
-            "The day-of-week of Thursday.",
-            "The day-of-week of Friday.",
-            "The day-of-week of Saturday.",
-            "The day-of-week of Sunday."
+            "The day of the week is unspecified.",
+            "Monday",
+            "Tuesday",
+            "Wednesday",
+            "Thursday",
+            "Friday",
+            "Saturday",
+            "Sunday"
           ],
           "type": "string",
           "enum": [
@@ -764,6 +764,8 @@
             "png",
             "svg",
             "plain text",
+            "docx, docm, dotx, dotm",
+            "pdf",
             "avro"
           ],
           "type": "string",
@@ -775,6 +777,8 @@
             "IMAGE_PNG",
             "IMAGE_SVG",
             "TEXT_UTF8",
+            "WORD_DOCUMENT",
+            "PDF",
             "AVRO"
           ]
         },
@@ -909,6 +913,10 @@
           "items": {
             "$ref": "GooglePrivacyDlpV2ContentLocation"
           }
+        },
+        "container": {
+          "description": "Information about the container where this finding occurred, if available.",
+          "$ref": "GooglePrivacyDlpV2Container"
         }
       }
     },
@@ -1201,6 +1209,42 @@
         }
       }
     },
+    "GooglePrivacyDlpV2Container": {
+      "id": "GooglePrivacyDlpV2Container",
+      "description": "Represents a container that may contain DLP findings.\nExamples of a container include a file, table, or database record.",
+      "type": "object",
+      "properties": {
+        "type": {
+          "description": "Container type, for example BigQuery or Google Cloud Storage.",
+          "type": "string"
+        },
+        "projectId": {
+          "description": "Project where the finding was found.\nCan be different from the project that owns the finding.",
+          "type": "string"
+        },
+        "fullPath": {
+          "description": "A string representation of the full container name.\nExamples:\n- BigQuery: 'Project:DataSetId.TableId'\n- Google Cloud Storage: 'gs:\/\/Bucket\/folders\/filename.txt'",
+          "type": "string"
+        },
+        "rootPath": {
+          "description": "The root of the container.\nExamples:\n- For BigQuery table `project_id:dataset_id.table_id`, the root is\n `dataset_id`\n- For Google Cloud Storage file `gs:\/\/bucket\/folder\/filename.txt`, the root\n is `gs:\/\/bucket`",
+          "type": "string"
+        },
+        "relativePath": {
+          "description": "The rest of the path after the root.\nExamples:\n- For BigQuery table `project_id:dataset_id.table_id`, the relative path is\n `table_id`\n- Google Cloud Storage file `gs:\/\/bucket\/folder\/filename.txt`, the relative\n path is `folder\/filename.txt`",
+          "type": "string"
+        },
+        "updateTime": {
+          "description": "Findings container modification timestamp, if applicable.\nFor Google Cloud Storage contains last file modification timestamp.\nFor BigQuery table contains last_modified_time property.\nFor Datastore - not populated.",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "version": {
+          "description": "Findings container version, if available\n(\"generation\" for Google Cloud Storage).",
+          "type": "string"
+        }
+      }
+    },
     "GooglePrivacyDlpV2QuoteInfo": {
       "id": "GooglePrivacyDlpV2QuoteInfo",
       "description": "Message for infoType-dependent details parsed from quote.",
@@ -1224,14 +1268,14 @@
         "dayOfWeek": {
           "description": "Day of week",
           "enumDescriptions": [
-            "The unspecified day-of-week.",
-            "The day-of-week of Monday.",
-            "The day-of-week of Tuesday.",
-            "The day-of-week of Wednesday.",
-            "The day-of-week of Thursday.",
-            "The day-of-week of Friday.",
-            "The day-of-week of Saturday.",
-            "The day-of-week of Sunday."
+            "The day of the week is unspecified.",
+            "Monday",
+            "Tuesday",
+            "Wednesday",
+            "Thursday",
+            "Friday",
+            "Saturday",
+            "Sunday"
           ],
           "type": "string",
           "enum": [
@@ -1273,7 +1317,7 @@
       "type": "object",
       "properties": {
         "locationId": {
-          "description": "The geographic location to process the request. Reserved for future\nextensions.",
+          "description": "The geographic location to process the request. Reserved for future\nextensions.\nLocation is restricted to 'global', 'us', 'asia', and 'europe'.",
           "type": "string"
         },
         "inspectConfig": {
@@ -2555,12 +2599,12 @@
           "format": "int32"
         },
         "fileTypes": {
-          "description": "List of file type groups to include in the scan.\nIf empty, all files are scanned and available data format processors\nare applied. In addition, the binary content of the selected files\nis always scanned as well.",
+          "description": "List of file type groups to include in the scan.\nIf empty, all files are scanned and available data format processors\nare applied. In addition, the binary content of the selected files\nis always scanned as well.\nImages are scanned only as binary if the specified region\ndoes not support image inspection and no file_types were specified.\nImage inspection is restricted to 'global', 'us', 'asia', and 'europe'.",
           "enumDescriptions": [
             "Includes all files.",
             "Includes all file extensions not covered by text file types.",
             "Included file extensions:\n  asc, brf, c, cc, cpp, csv, cxx, c++, cs, css, dart, eml, go, h, hh, hpp,\n  hxx, h++, hs, html, htm, shtml, shtm, xhtml, lhs, ini, java, js, json,\n  ocaml, md, mkd, markdown, m, ml, mli, pl, pm, php, phtml, pht, py, pyw,\n  rb, rbw, rs, rc, scala, sh, sql, tex, txt, text, tsv, vcard, vcs, wml,\n  xml, xsl, xsd, yml, yaml.",
-            "Included file extensions:\n  bmp, gif, jpg, jpeg, jpe, png.\nbytes_limit_per_file has no effect on image files.",
+            "Included file extensions:\n  bmp, gif, jpg, jpeg, jpe, png.\nbytes_limit_per_file has no effect on image files.\nImage inspection is restricted to 'global', 'us', 'asia', and 'europe'.",
             "Included file extensions:\n  docx, dotx, docm, dotm",
             "Included file extensions:\n  pdf",
             "Included file extensions:\n  avro"
@@ -3018,42 +3062,6 @@
           "additionalProperties": {
             "type": "string"
           }
-        }
-      }
-    },
-    "GooglePrivacyDlpV2Container": {
-      "id": "GooglePrivacyDlpV2Container",
-      "description": "Represents a container that may contain DLP findings.\nExamples of a container include a file, table, or database record.",
-      "type": "object",
-      "properties": {
-        "type": {
-          "description": "Container type, for example BigQuery or Google Cloud Storage.",
-          "type": "string"
-        },
-        "projectId": {
-          "description": "Project where the finding was found.\nCan be different from the project that owns the finding.",
-          "type": "string"
-        },
-        "fullPath": {
-          "description": "A string representation of the full container name.\nExamples:\n- BigQuery: 'Project:DataSetId.TableId'\n- Google Cloud Storage: 'gs:\/\/Bucket\/folders\/filename.txt'",
-          "type": "string"
-        },
-        "rootPath": {
-          "description": "The root of the container.\nExamples:\n- For BigQuery table `project_id:dataset_id.table_id`, the root is\n `dataset_id`\n- For Google Cloud Storage file `gs:\/\/bucket\/folder\/filename.txt`, the root\n is `gs:\/\/bucket`",
-          "type": "string"
-        },
-        "relativePath": {
-          "description": "The rest of the path after the root.\nExamples:\n- For BigQuery table `project_id:dataset_id.table_id`, the relative path is\n `table_id`\n- Google Cloud Storage file `gs:\/\/bucket\/folder\/filename.txt`, the relative\n path is `folder\/filename.txt`",
-          "type": "string"
-        },
-        "updateTime": {
-          "description": "Findings container modification timestamp, if applicable.\nFor Google Cloud Storage contains last file modification timestamp.\nFor BigQuery table contains last_modified_time property.\nFor Datastore - not populated.",
-          "type": "string",
-          "format": "google-datetime"
-        },
-        "version": {
-          "description": "Findings container version, if available\n(\"generation\" for Google Cloud Storage).",
-          "type": "string"
         }
       }
     },
@@ -4354,7 +4362,7 @@
                       "type": "string"
                     },
                     "locationId": {
-                      "description": "The geographic location to process content inspection. Reserved for future\nextensions.",
+                      "description": "The geographic location to process content inspection. Reserved for future\nextensions.\nWhen inspecting images location is restricted to 'global', 'us', 'asia',\nand 'europe'.",
                       "location": "path",
                       "required": true,
                       "type": "string"
@@ -4463,7 +4471,7 @@
                       "type": "string"
                     },
                     "locationId": {
-                      "description": "The geographic location to process the request. Reserved for future\nextensions.",
+                      "description": "The geographic location to process the request. Reserved for future\nextensions.\nLocation is restricted to 'global', 'us', 'asia', and 'europe'.",
                       "location": "path",
                       "required": true,
                       "type": "string"

@@ -1388,9 +1388,9 @@ class GoogleCloudDialogflowV2Context(_messages.Message):
 
   Fields:
     lifespanCount: Optional. The number of conversational query requests after
-      which the context expires. If set to `0` (the default) the context
-      expires immediately. Contexts expire automatically after 20 minutes if
-      there are no matching queries.
+      which the context expires. The default is `0`. If set to `0`, the
+      context expires immediately. Contexts expire automatically after 20
+      minutes if there are no matching queries.
     name: Required. The unique identifier of the context. Format:
       `projects/<Project ID>/agent/sessions/<Session ID>/contexts/<Context
       ID>`, or `projects/<Project ID>/agent/environments/<Environment
@@ -1987,7 +1987,7 @@ class GoogleCloudDialogflowV2Intent(_messages.Message):
     events: Optional. The collection of event names that trigger the intent.
       If the collection of input contexts is not empty, all of the contexts
       must be present in the active user session for an event to trigger this
-      intent. Event names are limited to 50 characters.
+      intent. Event names are limited to 150 characters.
     followupIntentInfo: Read-only. Information about all followup intents that
       have this intent as a direct or indirect parent. We populate this field
       only in the output.
@@ -3775,9 +3775,9 @@ class GoogleCloudDialogflowV2beta1Context(_messages.Message):
 
   Fields:
     lifespanCount: Optional. The number of conversational query requests after
-      which the context expires. If set to `0` (the default) the context
-      expires immediately. Contexts expire automatically after 20 minutes if
-      there are no matching queries.
+      which the context expires. The default is `0`. If set to `0`, the
+      context expires immediately. Contexts expire automatically after 20
+      minutes if there are no matching queries.
     name: Required. The unique identifier of the context. Format:
       `projects/<Project ID>/agent/sessions/<Session ID>/contexts/<Context
       ID>`, or `projects/<Project ID>/agent/environments/<Environment
@@ -3993,7 +3993,7 @@ class GoogleCloudDialogflowV2beta1Intent(_messages.Message):
     events: Optional. The collection of event names that trigger the intent.
       If the collection of input contexts is not empty, all of the contexts
       must be present in the active user session for an event to trigger this
-      intent. Event names are limited to 50 characters.
+      intent. Event names are limited to 150 characters.
     followupIntentInfo: Read-only. Information about all followup intents that
       have this intent as a direct or indirect parent. We populate this field
       only in the output.

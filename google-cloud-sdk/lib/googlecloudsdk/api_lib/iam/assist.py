@@ -22,7 +22,7 @@ from __future__ import unicode_literals
 from googlecloudsdk.api_lib.util import apis
 
 _API_NAME = 'iamassist'
-_API_VERSION = 'v1alpha2'
+_API_VERSION = 'v1alpha3'
 
 
 def GetClientAndMessages():

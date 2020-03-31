@@ -58,6 +58,16 @@ def GetMinCpuPlatform():
       help='Optional minimum CPU platform of the reservation to create.')
 
 
+def GetLocationHint():
+  """Gets the --location-hint flag."""
+  return base.Argument(
+      '--location-hint',
+      hidden=True,
+      help="""\
+      Used by internal tools to control sub-zone location of the instance.
+      """)
+
+
 def GetMachineType(required=True):
   """Gets the --machine-type flag."""
   help_text = """\
@@ -107,7 +117,7 @@ to learn about all available accelerator types.
       help=help_text)
 
 
-def AddCreateFlags(parser):
+def AddCreateFlags(parser, support_location_hint=False):
   """Adds all flags needed for the create command."""
   GetDescriptionFlag().AddToParser(parser)
 
@@ -120,5 +130,6 @@ def AddCreateFlags(parser):
   group.AddArgument(GetMachineType())
   group.AddArgument(GetLocalSsdFlag())
   group.AddArgument(GetAcceleratorFlag())
-
+  if support_location_hint:
+    group.AddArgument(GetLocationHint())
   group.AddToParser(parser)

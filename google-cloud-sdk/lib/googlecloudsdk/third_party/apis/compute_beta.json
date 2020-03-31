@@ -4,7 +4,7 @@
  "id": "compute:beta",
  "name": "compute",
  "version": "beta",
- "revision": "20200313",
+ "revision": "20200327",
  "title": "Compute Engine API",
  "description": "Creates and runs virtual machines on Google Cloud Platform.",
  "ownerDomain": "google.com",
@@ -8590,7 +8590,7 @@
     },
     "network": {
      "type": "string",
-     "description": "The URL of the network to which all instances in the instance group belong."
+     "description": "[Output Only] The URL of the network to which all instances in the instance group belong. If your instance has multiple network interfaces, then the network and subnetwork fields only refer to the network and subnet used by your primary interface (nic0)."
     },
     "region": {
      "type": "string",
@@ -8607,7 +8607,7 @@
     },
     "subnetwork": {
      "type": "string",
-     "description": "[Output Only] The URL of the subnetwork to which all instances in the instance group belong."
+     "description": "[Output Only] The URL of the subnetwork to which all instances in the instance group belong. If your instance has multiple network interfaces, then the network and subnetwork fields only refer to the network and subnet used by your primary interface (nic0)."
     },
     "zone": {
      "type": "string",
@@ -20629,7 +20629,8 @@
      "description": "URI of the network to which this router belongs.",
      "annotations": {
       "required": [
-       "compute.routers.insert"
+       "compute.routers.insert",
+       "compute.routers.update"
       ]
      }
     },

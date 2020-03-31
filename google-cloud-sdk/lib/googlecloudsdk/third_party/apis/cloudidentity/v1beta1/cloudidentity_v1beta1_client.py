@@ -16,7 +16,7 @@ class CloudidentityV1beta1(base_api.BaseApiClient):
   _VERSION = u'v1beta1'
   _CLIENT_ID = '1042881264118.apps.googleusercontent.com'
   _CLIENT_SECRET = 'x_Tw5K8nnjoRAqULM9PFAC2b'
-  _USER_AGENT = 'x_Tw5K8nnjoRAqULM9PFAC2b'
+  _USER_AGENT = u'google-cloud-sdk'
   _CLIENT_CLASS_NAME = u'CloudidentityV1beta1'
   _URL_VERSION = u'v1beta1'
   _API_KEY = None
@@ -36,9 +36,500 @@ class CloudidentityV1beta1(base_api.BaseApiClient):
         default_global_params=default_global_params,
         additional_http_headers=additional_http_headers,
         response_encoding=response_encoding)
+    self.devices___deviceUsers = self.DevicesDeviceUsersService(self)
+    self.devices__ = self.DevicesService(self)
+    self.devices_deviceUsers_clientStates = self.DevicesDeviceUsersClientStatesService(self)
+    self.devices_deviceUsers_endpointApps = self.DevicesDeviceUsersEndpointAppsService(self)
+    self.devices_deviceUsers = self.DevicesDeviceUsersService(self)
     self.devices = self.DevicesService(self)
     self.groups_memberships = self.GroupsMembershipsService(self)
     self.groups = self.GroupsService(self)
+
+  class DevicesDeviceUsersService(base_api.BaseApiService):
+    """Service class for the devices___deviceUsers resource."""
+
+    _NAME = u'devices___deviceUsers'
+
+    def __init__(self, client):
+      super(CloudidentityV1beta1.DevicesDeviceUsersService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def LookupSelf(self, request, global_params=None):
+      r"""Looks up resource names of the DeviceUsers associated with the.
+caller's credentials, as well as the properties provided in the request.
+
+      Args:
+        request: (CloudidentityDevicesDeviceUsersLookupSelfRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('LookupSelf')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    LookupSelf.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'cloudidentity.devices.-.deviceUsers.lookupSelf',
+        ordered_params=[],
+        path_params=[],
+        query_params=[u'androidId', u'pageSize', u'pageToken', u'rawResourceId'],
+        relative_path=u'v1beta1/devices/-/deviceUsers:lookupSelf',
+        request_field='',
+        request_type_name=u'CloudidentityDevicesDeviceUsersLookupSelfRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
+  class DevicesService(base_api.BaseApiService):
+    """Service class for the devices__ resource."""
+
+    _NAME = u'devices__'
+
+    def __init__(self, client):
+      super(CloudidentityV1beta1.DevicesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+  class DevicesDeviceUsersClientStatesService(base_api.BaseApiService):
+    """Service class for the devices_deviceUsers_clientStates resource."""
+
+    _NAME = u'devices_deviceUsers_clientStates'
+
+    def __init__(self, client):
+      super(CloudidentityV1beta1.DevicesDeviceUsersClientStatesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Get(self, request, global_params=None):
+      r"""Get client state for a device user.
+
+      Args:
+        request: (CloudidentityDevicesDeviceUsersClientStatesGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1beta1/devices/{devicesId}/deviceUsers/{deviceUsersId}/clientStates/{clientStatesId}',
+        http_method=u'GET',
+        method_id=u'cloudidentity.devices.deviceUsers.clientStates.get',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[u'customer'],
+        relative_path=u'v1beta1/{+name}',
+        request_field='',
+        request_type_name=u'CloudidentityDevicesDeviceUsersClientStatesGetRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Update client state for a device user.
+
+      Args:
+        request: (CloudidentityDevicesDeviceUsersClientStatesPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1beta1/devices/{devicesId}/deviceUsers/{deviceUsersId}/clientStates/{clientStatesId}',
+        http_method=u'PATCH',
+        method_id=u'cloudidentity.devices.deviceUsers.clientStates.patch',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[u'customer', u'updateMask'],
+        relative_path=u'v1beta1/{+name}',
+        request_field=u'clientState',
+        request_type_name=u'CloudidentityDevicesDeviceUsersClientStatesPatchRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
+  class DevicesDeviceUsersEndpointAppsService(base_api.BaseApiService):
+    """Service class for the devices_deviceUsers_endpointApps resource."""
+
+    _NAME = u'devices_deviceUsers_endpointApps'
+
+    def __init__(self, client):
+      super(CloudidentityV1beta1.DevicesDeviceUsersEndpointAppsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def List(self, request, global_params=None):
+      r"""Lists all managed apps intalled on the device.
+
+      Args:
+        request: (CloudidentityDevicesDeviceUsersEndpointAppsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1beta1/devices/{devicesId}/deviceUsers/{deviceUsersId}/endpointApps',
+        http_method=u'GET',
+        method_id=u'cloudidentity.devices.deviceUsers.endpointApps.list',
+        ordered_params=[u'parent'],
+        path_params=[u'parent'],
+        query_params=[u'customer', u'orderBy', u'pageSize', u'pageToken'],
+        relative_path=u'v1beta1/{+parent}/endpointApps',
+        request_field='',
+        request_type_name=u'CloudidentityDevicesDeviceUsersEndpointAppsListRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
+  class DevicesDeviceUsersService(base_api.BaseApiService):
+    """Service class for the devices_deviceUsers resource."""
+
+    _NAME = u'devices_deviceUsers'
+
+    def __init__(self, client):
+      super(CloudidentityV1beta1.DevicesDeviceUsersService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Approve(self, request, global_params=None):
+      r"""Approves device to access user data.
+
+      Args:
+        request: (CloudidentityDevicesDeviceUsersApproveRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Approve')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Approve.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1beta1/devices/{devicesId}/deviceUsers/{deviceUsersId}:approve',
+        http_method=u'POST',
+        method_id=u'cloudidentity.devices.deviceUsers.approve',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[],
+        relative_path=u'v1beta1/{+name}:approve',
+        request_field=u'approveDeviceUserRequest',
+        request_type_name=u'CloudidentityDevicesDeviceUsersApproveRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
+    def Block(self, request, global_params=None):
+      r"""Blocks device from accessing user data.
+
+      Args:
+        request: (CloudidentityDevicesDeviceUsersBlockRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Block')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Block.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1beta1/devices/{devicesId}/deviceUsers/{deviceUsersId}:block',
+        http_method=u'POST',
+        method_id=u'cloudidentity.devices.deviceUsers.block',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[],
+        relative_path=u'v1beta1/{+name}:block',
+        request_field=u'blockDeviceUserRequest',
+        request_type_name=u'CloudidentityDevicesDeviceUsersBlockRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
+    def CancelWipe(self, request, global_params=None):
+      r"""Cancels an unfinished user account wipe.
+This operation can be used to cancel device wipe in the gap between the
+wipe operation returning success and the device being wiped.
+
+      Args:
+        request: (CloudidentityDevicesDeviceUsersCancelWipeRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('CancelWipe')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    CancelWipe.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1beta1/devices/{devicesId}/deviceUsers/{deviceUsersId}:cancelWipe',
+        http_method=u'POST',
+        method_id=u'cloudidentity.devices.deviceUsers.cancelWipe',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[],
+        relative_path=u'v1beta1/{+name}:cancelWipe',
+        request_field=u'cancelWipeDeviceUserRequest',
+        request_type_name=u'CloudidentityDevicesDeviceUsersCancelWipeRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
+    def CollectBugReport(self, request, global_params=None):
+      r"""Collects bug report on a device, which can be later downloaded from.
+[Admin Console](https://admin.google.com).
+
+      Args:
+        request: (CloudidentityDevicesDeviceUsersCollectBugReportRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('CollectBugReport')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    CollectBugReport.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1beta1/devices/{devicesId}/deviceUsers/{deviceUsersId}:collectBugReport',
+        http_method=u'POST',
+        method_id=u'cloudidentity.devices.deviceUsers.collectBugReport',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[],
+        relative_path=u'v1beta1/{+name}:collectBugReport',
+        request_field=u'collectBugReportRequest',
+        request_type_name=u'CloudidentityDevicesDeviceUsersCollectBugReportRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes a DeviceUser. This also revokes the user's access to device data.
+
+      Args:
+        request: (CloudidentityDevicesDeviceUsersDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1beta1/devices/{devicesId}/deviceUsers/{deviceUsersId}',
+        http_method=u'DELETE',
+        method_id=u'cloudidentity.devices.deviceUsers.delete',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[u'customer'],
+        relative_path=u'v1beta1/{+name}',
+        request_field='',
+        request_type_name=u'CloudidentityDevicesDeviceUsersDeleteRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Retrieves a DeviceUser.
+
+      Args:
+        request: (CloudidentityDevicesDeviceUsersGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1beta1/devices/{devicesId}/deviceUsers/{deviceUsersId}',
+        http_method=u'GET',
+        method_id=u'cloudidentity.devices.deviceUsers.get',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[u'customer'],
+        relative_path=u'v1beta1/{+name}',
+        request_field='',
+        request_type_name=u'CloudidentityDevicesDeviceUsersGetRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists/Searches DeviceUsers.
+
+      Args:
+        request: (CloudidentityDevicesDeviceUsersListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1beta1/devices/{devicesId}/deviceUsers',
+        http_method=u'GET',
+        method_id=u'cloudidentity.devices.deviceUsers.list',
+        ordered_params=[u'parent'],
+        path_params=[u'parent'],
+        query_params=[u'customer', u'filter', u'orderBy', u'pageSize', u'pageToken'],
+        relative_path=u'v1beta1/{+parent}/deviceUsers',
+        request_field='',
+        request_type_name=u'CloudidentityDevicesDeviceUsersListRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Updates a DeviceUser.
+
+      Args:
+        request: (CloudidentityDevicesDeviceUsersPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1beta1/devices/{devicesId}/deviceUsers/{deviceUsersId}',
+        http_method=u'PATCH',
+        method_id=u'cloudidentity.devices.deviceUsers.patch',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[u'customer', u'name1', u'updateMask'],
+        relative_path=u'v1beta1/{+name}',
+        request_field=u'deviceUser',
+        request_type_name=u'CloudidentityDevicesDeviceUsersPatchRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
+    def Signout(self, request, global_params=None):
+      r"""Signs out the user from the device.
+
+      Args:
+        request: (CloudidentityDevicesDeviceUsersSignoutRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Signout')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Signout.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1beta1/devices/{devicesId}/deviceUsers/{deviceUsersId}:signout',
+        http_method=u'POST',
+        method_id=u'cloudidentity.devices.deviceUsers.signout',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[],
+        relative_path=u'v1beta1/{+name}:signout',
+        request_field=u'signoutDeviceUserRequest',
+        request_type_name=u'CloudidentityDevicesDeviceUsersSignoutRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
+    def Sync(self, request, global_params=None):
+      r"""Syncs the device to company's policy.
+
+      Args:
+        request: (CloudidentityDevicesDeviceUsersSyncRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Sync')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Sync.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1beta1/devices/{devicesId}/deviceUsers/{deviceUsersId}:sync',
+        http_method=u'POST',
+        method_id=u'cloudidentity.devices.deviceUsers.sync',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[],
+        relative_path=u'v1beta1/{+name}:sync',
+        request_field=u'syncDeviceUserRequest',
+        request_type_name=u'CloudidentityDevicesDeviceUsersSyncRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
+    def Unenroll(self, request, global_params=None):
+      r"""Unenrolls the user from Advanced Windows Management without affecting.
+their user account.
+
+      Args:
+        request: (CloudidentityDevicesDeviceUsersUnenrollRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Unenroll')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Unenroll.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1beta1/devices/{devicesId}/deviceUsers/{deviceUsersId}:unenroll',
+        http_method=u'POST',
+        method_id=u'cloudidentity.devices.deviceUsers.unenroll',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[],
+        relative_path=u'v1beta1/{+name}:unenroll',
+        request_field=u'unenrollDeviceUserRequest',
+        request_type_name=u'CloudidentityDevicesDeviceUsersUnenrollRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
+    def Wipe(self, request, global_params=None):
+      r"""Wipes the user's account on a device.
+
+      Args:
+        request: (CloudidentityDevicesDeviceUsersWipeRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Wipe')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Wipe.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1beta1/devices/{devicesId}/deviceUsers/{deviceUsersId}:wipe',
+        http_method=u'POST',
+        method_id=u'cloudidentity.devices.deviceUsers.wipe',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[],
+        relative_path=u'v1beta1/{+name}:wipe',
+        request_field=u'wipeDeviceUserRequest',
+        request_type_name=u'CloudidentityDevicesDeviceUsersWipeRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
 
   class DevicesService(base_api.BaseApiService):
     """Service class for the devices resource."""
@@ -49,6 +540,115 @@ class CloudidentityV1beta1(base_api.BaseApiClient):
       super(CloudidentityV1beta1.DevicesService, self).__init__(client)
       self._upload_configs = {
           }
+
+    def CancelWipe(self, request, global_params=None):
+      r"""Cancels an unfinished device wipe.
+This operation can be used to cancel device wipe in the gap between the
+wipe operation returning success and the device being wiped.
+
+      Args:
+        request: (CloudidentityDevicesCancelWipeRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('CancelWipe')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    CancelWipe.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1beta1/devices/{devicesId}:cancelWipe',
+        http_method=u'POST',
+        method_id=u'cloudidentity.devices.cancelWipe',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[],
+        relative_path=u'v1beta1/{+name}:cancelWipe',
+        request_field=u'cancelWipeDeviceRequest',
+        request_type_name=u'CloudidentityDevicesCancelWipeRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
+    def Create(self, request, global_params=None):
+      r"""Creates a device. Only company-owned device may be created.
+
+      Args:
+        request: (CreateDeviceRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'cloudidentity.devices.create',
+        ordered_params=[],
+        path_params=[],
+        query_params=[],
+        relative_path=u'v1beta1/devices',
+        request_field='<request>',
+        request_type_name=u'CreateDeviceRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes a device.
+
+      Args:
+        request: (CloudidentityDevicesDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1beta1/devices/{devicesId}',
+        http_method=u'DELETE',
+        method_id=u'cloudidentity.devices.delete',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[u'customer'],
+        relative_path=u'v1beta1/{+name}',
+        request_field='',
+        request_type_name=u'CloudidentityDevicesDeleteRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Retrieves a device.
+
+      Args:
+        request: (CloudidentityDevicesGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1beta1/devices/{devicesId}',
+        http_method=u'GET',
+        method_id=u'cloudidentity.devices.get',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[u'customer'],
+        relative_path=u'v1beta1/{+name}',
+        request_field='',
+        request_type_name=u'CloudidentityDevicesGetRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
 
     def GetSettings(self, request, global_params=None):
       r"""Returns the effective settings compiled for the requested entity.
@@ -77,6 +677,140 @@ class CloudidentityV1beta1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def List(self, request, global_params=None):
+      r"""Lists/Searches devices.
+
+      Args:
+        request: (CloudidentityDevicesListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'cloudidentity.devices.list',
+        ordered_params=[],
+        path_params=[],
+        query_params=[u'customer', u'filter', u'orderBy', u'pageSize', u'pageToken', u'view'],
+        relative_path=u'v1beta1/devices',
+        request_field='',
+        request_type_name=u'CloudidentityDevicesListRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
+    def Lock(self, request, global_params=None):
+      r"""Locks the device, without signing out the user.
+
+      Args:
+        request: (CloudidentityDevicesLockRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Lock')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Lock.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1beta1/devices:lock',
+        http_method=u'POST',
+        method_id=u'cloudidentity.devices.lock',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[],
+        relative_path=u'v1beta1/{+name}:lock',
+        request_field=u'lockDeviceRequest',
+        request_type_name=u'CloudidentityDevicesLockRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Updates a device.
+
+      Args:
+        request: (CloudidentityDevicesPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1beta1/devices/{devicesId}',
+        http_method=u'PATCH',
+        method_id=u'cloudidentity.devices.patch',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[u'customer', u'name1', u'updateMask'],
+        relative_path=u'v1beta1/{+name}',
+        request_field=u'device',
+        request_type_name=u'CloudidentityDevicesPatchRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
+    def ResetPin(self, request, global_params=None):
+      r"""Resets the device's pin.
+
+      Args:
+        request: (CloudidentityDevicesResetPinRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('ResetPin')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    ResetPin.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1beta1/devices:resetPin',
+        http_method=u'POST',
+        method_id=u'cloudidentity.devices.resetPin',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[],
+        relative_path=u'v1beta1/{+name}:resetPin',
+        request_field=u'resetPinRequest',
+        request_type_name=u'CloudidentityDevicesResetPinRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
+    def Ring(self, request, global_params=None):
+      r"""Rings the device.
+
+      Args:
+        request: (CloudidentityDevicesRingRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Ring')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Ring.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1beta1/devices:ring',
+        http_method=u'POST',
+        method_id=u'cloudidentity.devices.ring',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[],
+        relative_path=u'v1beta1/{+name}:ring',
+        request_field=u'ringDeviceRequest',
+        request_type_name=u'CloudidentityDevicesRingRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
     def Settings(self, request, global_params=None):
       r"""Returns the effective settings compiled for the requested entity.
 
@@ -101,6 +835,33 @@ class CloudidentityV1beta1(base_api.BaseApiClient):
         request_field=u'getEffectiveSettingsRequest',
         request_type_name=u'CloudidentityDevicesSettingsRequest',
         response_type_name=u'GetEffectiveSettingsResponse',
+        supports_download=False,
+    )
+
+    def Wipe(self, request, global_params=None):
+      r"""Wipes all data on a device.
+
+      Args:
+        request: (CloudidentityDevicesWipeRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Wipe')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Wipe.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1beta1/devices/{devicesId}:wipe',
+        http_method=u'POST',
+        method_id=u'cloudidentity.devices.wipe',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[],
+        relative_path=u'v1beta1/{+name}:wipe',
+        request_field=u'wipeDeviceRequest',
+        request_type_name=u'CloudidentityDevicesWipeRequest',
+        response_type_name=u'Operation',
         supports_download=False,
     )
 

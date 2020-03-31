@@ -25,7 +25,7 @@ def MakeReservationMessageFromArgs(messages, args, allocation_ref):
   local_ssds = MakeLocalSsds(messages, getattr(args, 'local_ssd', None))
   specific_reservation = MakeSpecificSKUReservationMessage(
       messages, args.vm_count, accelerators, local_ssds, args.machine_type,
-      args.min_cpu_platform)
+      args.min_cpu_platform, getattr(args, 'location_hint', None))
   return MakeReservationMessage(
       messages, allocation_ref.Name(), specific_reservation,
       args.require_specific_reservation, allocation_ref.zone)
@@ -70,17 +70,20 @@ def MakeLocalSsds(messages, ssd_configs):
 
 def MakeSpecificSKUReservationMessage(messages, vm_count, accelerators,
                                       local_ssds, machine_type,
-                                      min_cpu_platform):
+                                      min_cpu_platform, location_hint=None):
   """Constructs a single specific sku reservation message object."""
   prop_msgs = (
       messages.AllocationSpecificSKUAllocationReservedInstanceProperties)
+  instance_properties = prop_msgs(
+      guestAccelerators=accelerators,
+      localSsds=local_ssds,
+      machineType=machine_type,
+      minCpuPlatform=min_cpu_platform)
+  if location_hint:
+    instance_properties.locationHint = location_hint
+
   return messages.AllocationSpecificSKUReservation(
-      count=vm_count,
-      instanceProperties=prop_msgs(
-          guestAccelerators=accelerators,
-          localSsds=local_ssds,
-          machineType=machine_type,
-          minCpuPlatform=min_cpu_platform))
+      count=vm_count, instanceProperties=instance_properties)
 
 
 def MakeReservationMessage(messages, reservation_name, specific_reservation,

@@ -635,12 +635,12 @@ class Instance(_messages.Message):
       PREMIUM: PREMIUM tier. BASIC_SSD is the preferred term for this tier.
       BASIC_HDD: BASIC instances offer a maximum capacity of 63.9 TB.
         BASIC_HDD is an alias for STANDARD Tier, offering economical
-        performance backed by Persistent Disk HDD.
+        performance backed by HDD.
       BASIC_SSD: BASIC instances offer a maximum capacity of 63.9 TB.
         BASIC_SSD is an alias for PREMIUM Tier, and offers improved
-        performance backed by Persistent Disk SSD.
-      HIGH_SCALE_SSD: HIGH_SCALE instances offer larger capacity and
-        professional performance backed by Persistent Disk SSD.
+        performance backed by SSD.
+      HIGH_SCALE_SSD: HIGH_SCALE instances offer expanded capacity and
+        performance scaling capabilities.
     """
     TIER_UNSPECIFIED = 0
     STANDARD = 1

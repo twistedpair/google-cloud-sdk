@@ -111,6 +111,8 @@ class Bucket(_messages.Message):
       still allowed but won't be able to use zonal quota. The zone or zones
       need to be within the bucket location otherwise the requests will fail
       with a 400 Bad Request response.
+    zoneSeparation: If set, objects placed in this bucket are required to be
+      separated by disaster domain.
   """
 
   class BillingValue(_messages.Message):
@@ -425,6 +427,7 @@ class Bucket(_messages.Message):
   versioning = _messages.MessageField('VersioningValue', 25)
   website = _messages.MessageField('WebsiteValue', 26)
   zoneAffinity = _messages.StringField(27, repeated=True)
+  zoneSeparation = _messages.BooleanField(28)
 
 
 class BucketAccessControl(_messages.Message):

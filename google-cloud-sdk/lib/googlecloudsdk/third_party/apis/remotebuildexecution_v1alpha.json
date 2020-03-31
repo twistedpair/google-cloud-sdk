@@ -272,7 +272,7 @@
           "$ref": "GoogleDevtoolsRemotebuildexecutionAdminV1alphaWorkerConfig"
         },
         "workerCount": {
-          "description": "The desired number of workers in the worker pool. Must be a value between\n0 and 1000.",
+          "description": "The desired number of workers in the worker pool. Must be a value between\n0 and 15000.",
           "type": "string",
           "format": "int64"
         },
@@ -1032,7 +1032,7 @@
           "format": "google-datetime"
         },
         "dockerPrepStartTime": {
-          "description": "The timestamp when docker prepartion begins.",
+          "description": "The timestamp when docker preparation begins.",
           "type": "string",
           "format": "google-datetime"
         }
@@ -1103,7 +1103,8 @@
             "The command failed with unknown docker errors.",
             "Docker failed to run containers with CreateComputeSystem error.",
             "Docker failed to run containers with hcsshim::PrepareLayer error.",
-            "Docker incompatible operating system error."
+            "Docker incompatible operating system error.",
+            "Docker failed to create OCI runtime because of file not found."
           ],
           "type": "string",
           "enum": [
@@ -1138,7 +1139,8 @@
             "DOCKER_UNKNOWN_ERROR",
             "DOCKER_CREATE_COMPUTE_SYSTEM_ERROR",
             "DOCKER_PREPARELAYER_ERROR",
-            "DOCKER_INCOMPATIBLE_OS_ERROR"
+            "DOCKER_INCOMPATIBLE_OS_ERROR",
+            "DOCKER_CREATE_RUNTIME_FILE_NOT_FOUND"
           ]
         },
         "message": {

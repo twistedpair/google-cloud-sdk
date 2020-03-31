@@ -1690,14 +1690,14 @@ class WeekDayOfMonth(_messages.Message):
     r"""Required. A day of the week.
 
     Values:
-      DAY_OF_WEEK_UNSPECIFIED: The unspecified day-of-week.
-      MONDAY: The day-of-week of Monday.
-      TUESDAY: The day-of-week of Tuesday.
-      WEDNESDAY: The day-of-week of Wednesday.
-      THURSDAY: The day-of-week of Thursday.
-      FRIDAY: The day-of-week of Friday.
-      SATURDAY: The day-of-week of Saturday.
-      SUNDAY: The day-of-week of Sunday.
+      DAY_OF_WEEK_UNSPECIFIED: The day of the week is unspecified.
+      MONDAY: Monday
+      TUESDAY: Tuesday
+      WEDNESDAY: Wednesday
+      THURSDAY: Thursday
+      FRIDAY: Friday
+      SATURDAY: Saturday
+      SUNDAY: Sunday
     """
     DAY_OF_WEEK_UNSPECIFIED = 0
     MONDAY = 1
@@ -1726,14 +1726,14 @@ class WeeklySchedule(_messages.Message):
     r"""Required. Day of the week.
 
     Values:
-      DAY_OF_WEEK_UNSPECIFIED: The unspecified day-of-week.
-      MONDAY: The day-of-week of Monday.
-      TUESDAY: The day-of-week of Tuesday.
-      WEDNESDAY: The day-of-week of Wednesday.
-      THURSDAY: The day-of-week of Thursday.
-      FRIDAY: The day-of-week of Friday.
-      SATURDAY: The day-of-week of Saturday.
-      SUNDAY: The day-of-week of Sunday.
+      DAY_OF_WEEK_UNSPECIFIED: The day of the week is unspecified.
+      MONDAY: Monday
+      TUESDAY: Tuesday
+      WEDNESDAY: Wednesday
+      THURSDAY: Thursday
+      FRIDAY: Friday
+      SATURDAY: Saturday
+      SUNDAY: Sunday
     """
     DAY_OF_WEEK_UNSPECIFIED = 0
     MONDAY = 1

@@ -67,6 +67,12 @@ _ENV_VAR_NAME_ERROR = (
     'Environment variable names may not start with a digit.')
 
 _INVALID_IPV4_CIDR_BLOCK_ERROR = ('Invalid format of IPV4 CIDR block.')
+_INVALID_GKE_MASTER_IPV4_CIDR_BLOCK_ERROR = (
+    'Not a valid IPV4 CIDR block value for the kubernetes master')
+_INVALID_WEB_SERVER_IPV4_CIDR_BLOCK_ERROR = (
+    'Not a valid IPV4 CIDR block value for the Airflow web server')
+_INVALID_CLOUD_SQL_IPV4_CIDR_BLOCK_ERROR = (
+    'Not a valid IPV4 CIDR block value for the Cloud SQL instance')
 
 AIRFLOW_CONFIGS_FLAG_GROUP_DESCRIPTION = (
     'Group of arguments for modifying the Airflow configuration.')
@@ -428,31 +434,78 @@ def _GetIpv4CidrMaskSize(ipv4_cidr_block):
   return 32 - (network.num_addresses.bit_length() - 1)
 
 
-def _IsValidMasterIpv4CidrBlock(ipv4_cidr_block):
-  """Validates that IPV4 CIDR block arg for the master network has valid format.
-
-  Intended to be used as an argparse validator.
+def _IsValidMasterIpv4CidrBlockWithMaskSize(ipv4_cidr_block, min_mask_size,
+                                            max_mask_size):
+  """Validates that IPV4 CIDR block arg for the cluster master is a valid value.
 
   Args:
     ipv4_cidr_block: str, the IPV4 CIDR block string to validate.
+    min_mask_size: int, minimum allowed netmask size for CIDR block.
+    max_mask_size: int, maximum allowed netmask size for CIDR block.
 
   Returns:
-    bool, True if and only if the IPV4 CIDR block is valid and has the 28-bit
-    size mask.
+    bool, True if and only if the IPV4 CIDR block is valid and has the mask
+    size between min_mask_size and max_mask_size.
   """
-  return _IsValidIpv4CidrBlock(ipv4_cidr_block) and \
-    _GetIpv4CidrMaskSize(ipv4_cidr_block) == 28
+  is_valid = _IsValidIpv4CidrBlock(ipv4_cidr_block)
+  if not is_valid:
+    return False
+
+  mask_size = _GetIpv4CidrMaskSize(ipv4_cidr_block)
+  return min_mask_size <= mask_size and mask_size <= max_mask_size
+
+
+_IS_VALID_MASTER_IPV4_CIDR_BLOCK = (
+    lambda cidr: _IsValidMasterIpv4CidrBlockWithMaskSize(cidr, 23, 28))
 
 MASTER_IPV4_CIDR_BLOCK_FORMAT_VALIDATOR = arg_parsers.CustomFunctionValidator(
-    _IsValidMasterIpv4CidrBlock, _INVALID_IPV4_CIDR_BLOCK_ERROR)
+    _IS_VALID_MASTER_IPV4_CIDR_BLOCK, _INVALID_GKE_MASTER_IPV4_CIDR_BLOCK_ERROR)
 
 MASTER_IPV4_CIDR_FLAG = base.Argument(
     '--master-ipv4-cidr',
     default=None,
     type=MASTER_IPV4_CIDR_BLOCK_FORMAT_VALIDATOR,
     help="""\
-    IPv4 CIDR range to use for the master network. This should have a netmask
-    of size /28.
+    IPv4 CIDR range to use for the cluste master network. This should have a
+    size of the netmask between 23 and 28.
+
+    Cannot be specified unless '--enable-private-environnment' is also
+    specified.
+    """)
+
+_IS_VALID_WEB_SERVER_IPV4_CIDR_BLOCK = (
+    lambda cidr: _IsValidMasterIpv4CidrBlockWithMaskSize(cidr, 24, 29))
+
+WEB_SERVER_IPV4_CIDR_BLOCK_FORMAT_VALIDATOR = arg_parsers.CustomFunctionValidator(
+    _IS_VALID_WEB_SERVER_IPV4_CIDR_BLOCK,
+    _INVALID_WEB_SERVER_IPV4_CIDR_BLOCK_ERROR)
+
+WEB_SERVER_IPV4_CIDR_FLAG = base.Argument(
+    '--web-server-ipv4-cidr',
+    default=None,
+    type=WEB_SERVER_IPV4_CIDR_BLOCK_FORMAT_VALIDATOR,
+    help="""\
+    IPv4 CIDR range to use for the Airflow web server network. This should have
+    a size of the netmask between 24 and 29.
+
+    Cannot be specified unless '--enable-private-environnment' is also
+    specified.
+    """)
+
+_IS_VALID_CLOUD_SQL_IPV4_CIDR_BLOCK = (
+    lambda cidr: _IsValidMasterIpv4CidrBlockWithMaskSize(cidr, 0, 24))
+
+CLOUD_SQL_IPV4_CIDR_BLOCK_FORMAT_VALIDATOR = arg_parsers.CustomFunctionValidator(
+    _IS_VALID_CLOUD_SQL_IPV4_CIDR_BLOCK,
+    _INVALID_CLOUD_SQL_IPV4_CIDR_BLOCK_ERROR)
+
+CLOUD_SQL_IPV4_CIDR_FLAG = base.Argument(
+    '--cloud-sql-ipv4-cidr',
+    default=None,
+    type=CLOUD_SQL_IPV4_CIDR_BLOCK_FORMAT_VALIDATOR,
+    help="""\
+    IPv4 CIDR range to use for the Cloud SQL network. This should have a size
+    of the netmask not greater than 24.
 
     Cannot be specified unless '--enable-private-environnment' is also
     specified.
@@ -663,7 +716,8 @@ def AddIpAliasEnvironmentFlags(update_type_group):
   SERVICES_SECONDARY_RANGE_NAME_FLAG.AddToParser(group)
 
 
-def AddPrivateIpEnvironmentFlags(update_type_group):
+def AddPrivateIpEnvironmentFlags(update_type_group,
+                                 web_server_cloud_sql_flags):
   """Adds flags related to private clusters to parser.
 
   Private cluster flags are related to similar flags found within GKE SDK:
@@ -671,11 +725,15 @@ def AddPrivateIpEnvironmentFlags(update_type_group):
 
   Args:
     update_type_group: argument group, the group to which flag should be added.
+    web_server_cloud_sql_flags: boolean, indicates if API includes new flags.
   """
   group = update_type_group.add_group(help='Private Clusters')
   ENABLE_PRIVATE_ENVIRONMENT_FLAG.AddToParser(group)
   ENABLE_PRIVATE_ENDPOINT_FLAG.AddToParser(group)
   MASTER_IPV4_CIDR_FLAG.AddToParser(group)
+  if web_server_cloud_sql_flags:
+    WEB_SERVER_IPV4_CIDR_FLAG.AddToParser(group)
+    CLOUD_SQL_IPV4_CIDR_FLAG.AddToParser(group)
 
 
 def AddPypiUpdateFlagsToGroup(update_type_group):

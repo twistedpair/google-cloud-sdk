@@ -164,3 +164,16 @@ def AddPolicyFileArgToParser(parser):
           'policy. The output of the `get-iam-policy` command is a valid '
           'file, as is any JSON or YAML file conforming to the structure of '
           'a [Policy](https://cloud.google.com/iam/reference/rest/v1/Policy).'))
+
+
+def AddShowDeletedArgToParser(
+    parser,
+    message=('Show deleted resources when listing.')):
+  """Adds argument for to show deleted resources when listing.
+
+  Args:
+    parser: ArgumentInterceptor, An argparse parser.
+    message: String, help text for flag.
+  """
+  parser.add_argument(
+      '--show-deleted', required=False, metavar='SHOW_DELETED', help=message)

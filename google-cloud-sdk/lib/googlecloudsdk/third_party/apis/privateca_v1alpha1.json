@@ -541,11 +541,11 @@
       "type": "object",
       "properties": {
         "reusableConfig": {
-          "description": "A resource path to a ReusableConfig in the format\n`projects\/*\/locations\/*\/reusableConfigs\/*`.",
+          "description": "Required. A resource path to a ReusableConfig in the format\n`projects\/*\/locations\/*\/reusableConfigs\/*`.",
           "type": "string"
         },
         "reusableConfigValues": {
-          "description": "A user-specified inline ReusableConfigValues.",
+          "description": "Required. A user-specified inline ReusableConfigValues.",
           "$ref": "ReusableConfigValues"
         }
       }
@@ -560,7 +560,7 @@
           "$ref": "KeyUsage"
         },
         "caOptions": {
-          "description": "Required. Describes options in this ReusableConfigValues that are\nrelevant in a CA certificate.",
+          "description": "Optional. Describes options in this ReusableConfigValues that are\nrelevant in a CA certificate.",
           "$ref": "CaOptions"
         },
         "policyIds": {

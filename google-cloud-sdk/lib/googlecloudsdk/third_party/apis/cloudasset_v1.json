@@ -249,7 +249,7 @@
       "type": "object",
       "properties": {
         "dataset": {
-          "description": "Required. The BigQuery dataset in format\n\"projects\/projectId\/datasets\/datasetId\", to which the snapshot result\nshould be exported. If this dataset does not exist, the export call returns\nan error.",
+          "description": "Required. The BigQuery dataset in format\n\"projects\/projectId\/datasets\/datasetId\", to which the snapshot result\nshould be exported. If this dataset does not exist, the export call returns\nan INVALID_ARGUMENT error.",
           "type": "string"
         },
         "table": {
@@ -257,7 +257,7 @@
           "type": "string"
         },
         "force": {
-          "description": "If the destination table already exists and this flag is `TRUE`, the\ntable will be overwritten by the contents of assets snapshot. If the flag\nis not set and the destination table already exists, the export call\nreturns an error.",
+          "description": "If the destination table already exists and this flag is `TRUE`, the\ntable will be overwritten by the contents of assets snapshot. If the flag\nis `FALSE` or unset and the destination table already exists, the export\ncall returns an INVALID_ARGUMEMT error.",
           "type": "boolean"
         }
       }

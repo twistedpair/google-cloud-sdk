@@ -130,16 +130,6 @@ class Binding(_messages.Message):
   role = _messages.StringField(3)
 
 
-class Empty(_messages.Message):
-  r"""A generic empty message that you can re-use to avoid defining duplicated
-  empty messages in your APIs. A typical example is to use it as the request
-  or the response type of an API method. For instance:      service Foo {
-  rpc Bar(google.protobuf.Empty) returns (google.protobuf.Empty);     }  The
-  JSON representation for `Empty` is empty JSON object `{}`.
-  """
-
-
-
 class Expr(_messages.Message):
   r"""Represents a textual expression in the Common Expression Language (CEL)
   syntax. CEL is a C-like expression language. The syntax and semantics of CEL
@@ -420,11 +410,14 @@ class LabelmanagerLabelKeysListRequest(_messages.Message):
       This is currently not used by the server.
     parent: The resource name of the new LabelKey's parent. Must be of the
       form `folders/{folder_id}` or `organizations/{org_id}`.
+    showDeleted: Optional. Controls whether LabelKeys in the DELETE_REQUESTED
+      state should be returned. Defaults to false.
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(2)
   parent = _messages.StringField(3)
+  showDeleted = _messages.BooleanField(4)
 
 
 class LabelmanagerLabelKeysPatchRequest(_messages.Message):
@@ -520,11 +513,14 @@ class LabelmanagerLabelValuesListRequest(_messages.Message):
       from. This is currently not used by the server.
     parent: Resource name for LabelKey, parent of the LabelValues to be
       listed, in the format labelKeys/123.
+    showDeleted: Optional. Controls whether LabelValues in the
+      DELETE_REQUESTED state should be returned. Defaults to false.
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(2)
   parent = _messages.StringField(3)
+  showDeleted = _messages.BooleanField(4)
 
 
 class LabelmanagerLabelValuesPatchRequest(_messages.Message):

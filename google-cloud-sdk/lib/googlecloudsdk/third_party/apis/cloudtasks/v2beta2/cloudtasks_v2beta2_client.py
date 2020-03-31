@@ -16,7 +16,7 @@ class CloudtasksV2beta2(base_api.BaseApiClient):
   _VERSION = u'v2beta2'
   _CLIENT_ID = '1042881264118.apps.googleusercontent.com'
   _CLIENT_SECRET = 'x_Tw5K8nnjoRAqULM9PFAC2b'
-  _USER_AGENT = 'x_Tw5K8nnjoRAqULM9PFAC2b'
+  _USER_AGENT = u'google-cloud-sdk'
   _CLIENT_CLASS_NAME = u'CloudtasksV2beta2'
   _URL_VERSION = u'v2beta2'
   _API_KEY = None
@@ -486,7 +486,7 @@ this method.
         method_id=u'cloudtasks.projects.locations.queues.get',
         ordered_params=[u'name'],
         path_params=[u'name'],
-        query_params=[],
+        query_params=[u'readMask'],
         relative_path=u'v2beta2/{+name}',
         request_field='',
         request_type_name=u'CloudtasksProjectsLocationsQueuesGetRequest',

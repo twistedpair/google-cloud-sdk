@@ -2923,7 +2923,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Sets the locations for a specific cluster.\nDeprecated. Use\n[projects.locations.clusters.update](\/kubernetes-engine\/docs\/reference\/rest\/v1\/projects.locations.clusters.update)\ninstead."
+                  "description": "Sets the locations for a specific cluster.\nDeprecated. Use\n[projects.locations.clusters.update](\/kubernetes-engine\/docs\/reference\/rest\/v1\/projects.locations.clusters\/update)\ninstead."
                 },
                 "updateMaster": {
                   "id": "container.projects.locations.clusters.updateMaster",
@@ -4012,7 +4012,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Sets the locations for a specific cluster.\nDeprecated. Use\n[projects.locations.clusters.update](\/kubernetes-engine\/docs\/reference\/rest\/v1\/projects.locations.clusters.update)\ninstead."
+                  "description": "Sets the locations for a specific cluster.\nDeprecated. Use\n[projects.locations.clusters.update](\/kubernetes-engine\/docs\/reference\/rest\/v1\/projects.locations.clusters\/update)\ninstead."
                 },
                 "master": {
                   "id": "container.projects.zones.clusters.master",

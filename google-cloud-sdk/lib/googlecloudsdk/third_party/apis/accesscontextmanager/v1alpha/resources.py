@@ -66,6 +66,24 @@ class Collections(enum.Enum):
       [u'name'],
       True
   )
+  ORGANIZATIONS = (
+      'organizations',
+      'organizations/{organizationsId}',
+      {},
+      [u'organizationsId'],
+      True
+  )
+  ORGANIZATIONS_GCPUSERACCESSBINDINGS = (
+      'organizations.gcpUserAccessBindings',
+      '{+name}',
+      {
+          '':
+              'organizations/{organizationsId}/gcpUserAccessBindings/'
+              '{gcpUserAccessBindingsId}',
+      },
+      [u'name'],
+      True
+  )
 
   def __init__(self, collection_name, path, flat_paths, params,
                enable_uri_parsing):

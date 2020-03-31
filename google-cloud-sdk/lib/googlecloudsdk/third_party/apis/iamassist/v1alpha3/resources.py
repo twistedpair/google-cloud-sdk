@@ -24,6 +24,16 @@ DOCS_URL = 'https://cloud.google.com/iam/'
 class Collections(enum.Enum):
   """Collections for all supported apis."""
 
+  OPERATIONS = (
+      'operations',
+      '{+name}',
+      {
+          '':
+              'operations/{operationsId}',
+      },
+      [u'name'],
+      True
+  )
   REPLAYS = (
       'replays',
       '{+name}',

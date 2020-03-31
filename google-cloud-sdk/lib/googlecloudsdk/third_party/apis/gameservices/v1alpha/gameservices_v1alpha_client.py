@@ -16,7 +16,7 @@ class GameservicesV1alpha(base_api.BaseApiClient):
   _VERSION = u'v1alpha'
   _CLIENT_ID = '1042881264118.apps.googleusercontent.com'
   _CLIENT_SECRET = 'x_Tw5K8nnjoRAqULM9PFAC2b'
-  _USER_AGENT = 'x_Tw5K8nnjoRAqULM9PFAC2b'
+  _USER_AGENT = u'google-cloud-sdk'
   _CLIENT_CLASS_NAME = u'GameservicesV1alpha'
   _URL_VERSION = u'v1alpha'
   _API_KEY = None

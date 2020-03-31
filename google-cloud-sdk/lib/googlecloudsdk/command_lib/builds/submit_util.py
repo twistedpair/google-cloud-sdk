@@ -43,6 +43,8 @@ import six
 
 _ALLOWED_SOURCE_EXT = ['.zip', '.tgz', '.gz']
 
+_DEFAULT_BUILDPACK_BUILDER = 'gcr.io/buildpacks/builder'
+
 
 class FailedBuildException(core_exceptions.Error):
   """Exception for builds that did not succeed."""
@@ -53,12 +55,8 @@ class FailedBuildException(core_exceptions.Error):
               id=build.id, status=build.status))
 
 
-def CreateBuildConfig(tag, no_cache, messages, substitutions, arg_config,
-                      is_specified_source, no_source, source,
-                      gcs_source_staging_dir, ignore_file, arg_gcs_log_dir,
-                      arg_machine_type, arg_disk_size):
-  """Returns a build config."""
-  # Get the build timeout.
+def _GetBuildTimeout():
+  """Get the build timeout."""
   build_timeout = properties.VALUES.builds.timeout.Get()
   if build_timeout is not None:
     try:
@@ -71,6 +69,12 @@ def CreateBuildConfig(tag, no_cache, messages, substitutions, arg_config,
   else:
     timeout_str = None
 
+  return timeout_str
+
+
+def _SetBuildSteps(tag, no_cache, messages, substitutions, arg_config,
+                   timeout_str):
+  """Set build steps."""
   if tag is not None:
     if (properties.VALUES.builds.check_tag.GetBool() and 'gcr.io/' not in tag):
       raise c_exceptions.InvalidArgumentException(
@@ -134,7 +138,117 @@ def CreateBuildConfig(tag, no_cache, messages, substitutions, arg_config,
   if timeout_str:
     build_config.timeout = timeout_str
 
-  # Set the source for the build config.
+  return build_config
+
+
+def _SetBuildStepsAlpha(tag, no_cache, messages, substitutions, arg_config,
+                        timeout_str, buildpack):
+  """Set build steps."""
+  if tag is not None:
+    if (properties.VALUES.builds.check_tag.GetBool() and 'gcr.io/' not in tag):
+      raise c_exceptions.InvalidArgumentException(
+          '--tag', 'Tag value must be in the gcr.io/* or *.gcr.io/* namespace.')
+    if properties.VALUES.builds.use_kaniko.GetBool():
+      if no_cache:
+        ttl = '0h'
+      else:
+        ttl = '{}h'.format(properties.VALUES.builds.kaniko_cache_ttl.Get())
+      build_config = messages.Build(
+          steps=[
+              messages.BuildStep(
+                  name=properties.VALUES.builds.kaniko_image.Get(),
+                  args=[
+                      '--destination',
+                      tag,
+                      '--cache',
+                      '--cache-ttl',
+                      ttl,
+                      '--cache-dir',
+                      '',
+                  ],
+              ),
+          ],
+          timeout=timeout_str,
+          substitutions=cloudbuild_util.EncodeSubstitutions(
+              substitutions, messages))
+    else:
+      if no_cache:
+        raise c_exceptions.InvalidArgumentException(
+            'no-cache',
+            'Cannot specify --no-cache if builds/use_kaniko property is '
+            'False')
+      build_config = messages.Build(
+          images=[tag],
+          steps=[
+              messages.BuildStep(
+                  name='gcr.io/cloud-builders/docker',
+                  args=[
+                      'build', '--network', 'cloudbuild', '--no-cache', '-t',
+                      tag, '.'
+                  ],
+              ),
+          ],
+          timeout=timeout_str,
+          substitutions=cloudbuild_util.EncodeSubstitutions(
+              substitutions, messages))
+  elif buildpack is not None:
+    if not buildpack:
+      raise c_exceptions.InvalidArgumentException(
+          '--pack', 'Image value must not be empty.')
+    if buildpack[0].get('builder') is None:
+      builder = _DEFAULT_BUILDPACK_BUILDER
+    else:
+      builder = buildpack[0].get('builder')
+    if buildpack[0].get('image') is None:
+      raise c_exceptions.InvalidArgumentException(
+          '--pack', 'Image value must not be empty.')
+    image = buildpack[0].get('image')
+    if (properties.VALUES.builds.check_tag.GetBool() and
+        'gcr.io/' not in image and 'pkg.dev' not in image):
+      raise c_exceptions.InvalidArgumentException(
+          '--pack',
+          'Image value must be in the gcr.io/*, *.gcr.io/*, or *pkg.dev/* namespace.'
+      )
+    env = buildpack[0].get('env')
+    pack_args = ['build', image, '--builder', builder]
+    if env is not None:
+      pack_args.append('--env')
+      pack_args.append(env)
+    build_config = messages.Build(
+        images=[image],
+        steps=[
+            messages.BuildStep(
+                name='gcr.io/k8s-skaffold/pack',
+                entrypoint='pack',
+                args=pack_args,
+            ),
+        ],
+        timeout=timeout_str,
+        substitutions=cloudbuild_util.EncodeSubstitutions(
+            substitutions, messages))
+  elif arg_config is not None:
+    if no_cache:
+      raise c_exceptions.ConflictingArgumentsException('--config', '--no-cache')
+    if not arg_config:
+      raise c_exceptions.InvalidArgumentException(
+          '--config', 'Config file path must not be empty.')
+    build_config = config.LoadCloudbuildConfigFromPath(
+        arg_config, messages, params=substitutions)
+  else:
+    raise c_exceptions.OneOfArgumentsRequiredException(
+        ['--tag', '--config', '--pack'],
+        'Requires either a docker tag, a config file, or pack argument.')
+
+  # If timeout was set by flag, overwrite the config file.
+  if timeout_str:
+    build_config.timeout = timeout_str
+
+  return build_config
+
+
+def _SetSource(build_config, messages, is_specified_source, no_source, source,
+               gcs_source_staging_dir, ignore_file):
+  """Set the source for the build config."""
   default_gcs_source = False
   default_bucket_name = None
   if gcs_source_staging_dir is None:
@@ -239,26 +353,76 @@ def CreateBuildConfig(tag, no_cache, messages, substitutions, arg_config,
       raise c_exceptions.InvalidArgumentException(
           '--no-source', 'To omit source, use the --no-source flag.')
 
-  # Set a Google Cloud Storage directory to hold build logs.
+  return build_config
+
+
+def _SetLogsBucket(build_config, arg_gcs_log_dir):
+  """Set a Google Cloud Storage directory to hold build logs."""
   if arg_gcs_log_dir:
     gcs_log_dir = resources.REGISTRY.Parse(
         arg_gcs_log_dir, collection='storage.objects')
     build_config.logsBucket = ('gs://' + gcs_log_dir.bucket + '/' +
                                gcs_log_dir.object)
 
-  # Set the machine type used to run the build.
+  return build_config
+
+
+def _SetMachineType(build_config, messages, arg_machine_type):
+  """Set the machine type used to run the build."""
   if arg_machine_type is not None:
     machine_type = flags.GetMachineType(arg_machine_type)
     if not build_config.options:
       build_config.options = messages.BuildOptions()
     build_config.options.machineType = machine_type
 
-  # Set the disk size used to run the build.
+  return build_config
+
+
+def _SetDiskSize(build_config, messages, arg_disk_size):
+  """Set the disk size used to run the build."""
   if arg_disk_size is not None:
     disk_size = compute_utils.BytesToGb(arg_disk_size)
     if not build_config.options:
       build_config.options = messages.BuildOptions()
     build_config.options.diskSizeGb = int(disk_size)
+
+  return build_config
+
+
+def CreateBuildConfig(tag, no_cache, messages, substitutions, arg_config,
+                      is_specified_source, no_source, source,
+                      gcs_source_staging_dir, ignore_file, arg_gcs_log_dir,
+                      arg_machine_type, arg_disk_size):
+  """Returns a build config."""
+
+  timeout_str = _GetBuildTimeout()
+  build_config = _SetBuildSteps(tag, no_cache, messages, substitutions,
+                                arg_config, timeout_str)
+  build_config = _SetSource(build_config, messages, is_specified_source,
+                            no_source, source, gcs_source_staging_dir,
+                            ignore_file)
+  build_config = _SetLogsBucket(build_config, arg_gcs_log_dir)
+  build_config = _SetMachineType(build_config, messages, arg_machine_type)
+  build_config = _SetDiskSize(build_config, messages, arg_disk_size)
+
+  return build_config
+
+
+def CreateBuildConfigAlpha(tag, no_cache, messages, substitutions, arg_config,
+                           is_specified_source, no_source, source,
+                           gcs_source_staging_dir, ignore_file, arg_gcs_log_dir,
+                           arg_machine_type, arg_disk_size, buildpack):
+  """Returns a build config."""
+  timeout_str = _GetBuildTimeout()
+
+  build_config = _SetBuildStepsAlpha(tag, no_cache, messages, substitutions,
+                                     arg_config, timeout_str, buildpack)
+  build_config = _SetSource(build_config, messages, is_specified_source,
+                            no_source, source, gcs_source_staging_dir,
+                            ignore_file)
+  build_config = _SetLogsBucket(build_config, arg_gcs_log_dir)
+  build_config = _SetMachineType(build_config, messages, arg_machine_type)
+  build_config = _SetDiskSize(build_config, messages, arg_disk_size)
 
   return build_config
 

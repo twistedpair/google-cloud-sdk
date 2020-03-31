@@ -11,6 +11,19 @@ from apitools.base.py import encoding
 package = 'iap'
 
 
+class AccessDeniedPageSettings(_messages.Message):
+  r"""Custom content configuration for access denied page. IAP allows
+  customers to define a custom URI to use as the error page when access is
+  denied to users. If IAP prevents access to this page, the default IAP error
+  page will be displayed instead.
+
+  Fields:
+    accessDeniedPageUri: The URI to be redirected to when access is denied.
+  """
+
+  accessDeniedPageUri = _messages.StringField(1)
+
+
 class AccessSettings(_messages.Message):
   r"""Access related settings for IAP protected apps.
 
@@ -33,10 +46,12 @@ class ApplicationSettings(_messages.Message):
   r"""Wrapper over application specific settings for IAP.
 
   Fields:
+    accessDeniedPageSettings: Customization for Access Denied page.
     csmSettings: Settings to configure IAP's behavior for a CSM mesh.
   """
 
-  csmSettings = _messages.MessageField('CsmSettings', 1)
+  accessDeniedPageSettings = _messages.MessageField('AccessDeniedPageSettings', 1)
+  csmSettings = _messages.MessageField('CsmSettings', 2)
 
 
 class Binding(_messages.Message):
@@ -630,13 +645,15 @@ class Resource(_messages.Message):
       attribute please: * Read go/iam-conditions-labels-comm and ensure your
       service can meet the   data availability and management requirements. *
       Talk to iam-conditions-eng@ about your use case.
-    name: Name of the resource on which conditions will be evaluated. Relative
-      Resource Name of the resource should be set, which is the URI path of
-      the resource without leading "/". For instance, resource.name set for a
-      bucket is "projects/project123/buckets/bucket456". This field is
-      required for evaluating conditions with rules on resource names.
-      SYSContext.resource_name is not used by condition evaluation. See
-      https://cloud.google.com/apis/design/resource_names for details.
+    name: Name of the resource on which conditions will be evaluated. Must use
+      the Relative Resource Name of the resource, which is the URI path of the
+      resource without the leading "/". Examples are "projects/_/buckets
+      /[BUCKET-ID]" for storage buckets or "projects/[PROJECT-
+      ID]/global/firewalls/[FIREWALL-ID]" for a firewall.  This field is
+      required for evaluating conditions with rules on resource names. For a
+      `list` permission check, the resource.name value must be set to the
+      parent resource. If the parent resource is a project, this field should
+      be left unset.
     service: The name of the service this resource belongs to. It is
       configured using the official_service_name of the Service as defined in
       service configurations under //configs/cloud/resourcetypes. For example,

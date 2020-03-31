@@ -674,6 +674,603 @@
         }
       }
     },
+    "CreateDeviceRequest": {
+      "id": "CreateDeviceRequest",
+      "description": "Request message for creating a Company Owned device.",
+      "type": "object",
+      "properties": {
+        "device": {
+          "description": "Required. The device to be created. The name field within this device is ignored\nin the create method. A new name is created by the method, and returned\nwithin the response. Only the fields `device_type`, `serial_number` and\n`asset_tag` (if present) are used to create the device.`device_type` and\n`serial_number` are required.",
+          "$ref": "Device"
+        },
+        "customer": {
+          "description": "Required. [Resource name](https:\/\/cloud.google.com\/apis\/design\/resource_names) of\nthe customer. To find the customer ID for your organization, use the\ncommand:\n```\ngcloud alpha organizations list\n```\nThe customer ID you need to use appears under the heading\n`DIRECTORY_CUSTOMER_ID`. The value is the letter \"C\" followed by\nletters and numbers. Use the value after the letter \"C\". So if\nthe Directory Customer ID displayed is, say `C00zqsgyx`, then the\ncustomer ID value to use in the API is: `customers\/00zqsgyx`.\nIf you're using this API to manage another\norganization, use `customers\/{customer_id}`, where `customer_id` is the\ncustomer to whom the device belongs.",
+          "type": "string"
+        }
+      }
+    },
+    "Device": {
+      "id": "Device",
+      "description": "Represents a Device known to Google Cloud, independent of the device\nownership, type, and whether it is assigned or in use by a user.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Output only. [Resource name](https:\/\/cloud.google.com\/apis\/design\/resource_names)\nof the Device in format: `devices\/{device_id}`, where device_id is\nthe unique id assigned to the Device.",
+          "type": "string"
+        },
+        "createTime": {
+          "description": "Output only. When the Company-Owned device was imported. This field is empty for BYOD\ndevices.",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "lastSyncTime": {
+          "description": "Most recent time when device synced with this service.",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "ownerType": {
+          "description": "Whether the device is owned by the company or an individual",
+          "enumDescriptions": [
+            "Default value. The value is unused.",
+            "Company owns the device.",
+            "Bring Your Own Device (i.e. individual owns the device)"
+          ],
+          "type": "string",
+          "enum": [
+            "DEVICE_OWNERSHIP_UNSPECIFIED",
+            "COMPANY",
+            "BYOD"
+          ]
+        },
+        "model": {
+          "description": "Output only. Model name of device. Example: Pixel 3.",
+          "type": "string"
+        },
+        "osVersion": {
+          "description": "Output only. OS version of the device. Example: Android 8.1.0.",
+          "type": "string"
+        },
+        "deviceType": {
+          "description": "Output only. Type of device.",
+          "enumDescriptions": [
+            "Unknown device type",
+            "Device is an Android device",
+            "Device is an iOS device",
+            "Device is a Google Sync device.",
+            "Device is a Windows device.",
+            "Device is a MacOS device.",
+            "Device is a Linux device.",
+            "Device is a ChromeOS device."
+          ],
+          "type": "string",
+          "enum": [
+            "DEVICE_TYPE_UNSPECIFIED",
+            "ANDROID",
+            "IOS",
+            "GOOGLE_SYNC",
+            "WINDOWS",
+            "MAC_OS",
+            "LINUX",
+            "CHROME_OS"
+          ]
+        },
+        "serialNumber": {
+          "description": "Serial Number of device. Example: HT82V1A01076.",
+          "type": "string"
+        },
+        "assetTag": {
+          "description": "Asset tag of the device.",
+          "type": "string"
+        },
+        "imei": {
+          "description": "Output only. IMEI number of device if GSM device; empty otherwise.",
+          "type": "string"
+        },
+        "meid": {
+          "description": "Output only. MEID number of device if CDMA device; empty otherwise.",
+          "type": "string"
+        },
+        "wifiMacAddresses": {
+          "description": "WiFi MAC addresses of device.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "networkOperator": {
+          "description": "Output only. Mobile or network operator of device, if available.",
+          "type": "string"
+        },
+        "manufacturer": {
+          "description": "Output only. Device manufacturer. Example: Motorola.",
+          "type": "string"
+        },
+        "releaseVersion": {
+          "description": "Output only. OS release version. Example: 6.0.",
+          "type": "string"
+        },
+        "brand": {
+          "description": "Output only. Device brand. Example: Samsung.",
+          "type": "string"
+        },
+        "androidSpecificAttributes": {
+          "description": "Output only. Attributes specific to Android devices.",
+          "$ref": "AndroidAttributes"
+        },
+        "managementState": {
+          "description": "Output only. Management state of the device",
+          "enumDescriptions": [
+            "Default value. This value is unused.",
+            "Device is approved.",
+            "Device is blocked.",
+            "Device is pending approval.",
+            "The device is not provisioned. Device will start from this state until\nsome action is taken (i.e. a user starts using the device).",
+            "Data and settings on the device are being removed.",
+            "All data and settings on the device are removed."
+          ],
+          "type": "string",
+          "enum": [
+            "MANAGEMENT_STATE_UNSPECIFIED",
+            "APPROVED",
+            "BLOCKED",
+            "PENDING",
+            "UNPROVISIONED",
+            "WIPING",
+            "WIPED"
+          ]
+        },
+        "compromisedState": {
+          "description": "Output only. Represents whether the Device is compromised.",
+          "enumDescriptions": [
+            "Default value.",
+            "The device is compromised (currently, this means Android device is\nrooted).",
+            "The device is safe (currently, this means Android device is unrooted)."
+          ],
+          "type": "string",
+          "enum": [
+            "COMPROMISED_STATE_UNSPECIFIED",
+            "COMPROMISED",
+            "UNCOMPROMISED"
+          ]
+        }
+      }
+    },
+    "AndroidAttributes": {
+      "id": "AndroidAttributes",
+      "description": "Resource representing the Android specific attributes of a Device.",
+      "type": "object",
+      "properties": {
+        "buildNumber": {
+          "description": "Build number of Android device.",
+          "type": "string"
+        },
+        "kernelVersion": {
+          "description": "Kernel version of Android device.",
+          "type": "string"
+        },
+        "basebandVersion": {
+          "description": "Baseband version of Android device.",
+          "type": "string"
+        },
+        "enabledUnknownSources": {
+          "description": "Whether applications from unknown sources can be installed on device.",
+          "type": "boolean"
+        },
+        "enabledDeveloperOptions": {
+          "description": "Whether developer options is enabled on device.",
+          "type": "boolean"
+        },
+        "otherAccounts": {
+          "description": "Domain name for Google accounts on device. Type for other accounts on\ndevice. Will only be populated if |ownership_privilege| is\n|PROFILE_OWNER| or |DEVICE_OWNER|. Does not include the account signed in\nto the device policy app if that account's domain has only one account.\nExamples: \"com.example\", \"xyz.com\".",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "enabledUsbDebugging": {
+          "description": "Whether adb (USB debugging) is enabled on device.",
+          "type": "boolean"
+        },
+        "supportsWorkProfile": {
+          "description": "Whether device supports Android work profiles. If false, this service\nwill not block access to corp data even if an administrator turns on the\n\"Enforce Work Profile\" policy.",
+          "type": "boolean"
+        },
+        "ownerProfileAccount": {
+          "description": "Whether this account is on an owner\/primary profile.\nFor phones, only true for owner profiles. Android 4+ devices\ncan have secondary or restricted user profiles.",
+          "type": "boolean"
+        },
+        "ownershipPrivilege": {
+          "description": "Ownership privileges on device.",
+          "enumDescriptions": [
+            "Ownership privilege is not set.",
+            "Active device administrator privileges on the device.",
+            "Profile Owner privileges.\nThe account is in a managed corporate profile.",
+            "Device Owner privileges on the device."
+          ],
+          "type": "string",
+          "enum": [
+            "OWNERSHIP_PRIVILEGE_UNSPECIFIED",
+            "DEVICE_ADMINISTRATOR",
+            "PROFILE_OWNER",
+            "DEVICE_OWNER"
+          ]
+        },
+        "securityPatchTime": {
+          "description": "OS security patch update time on device.",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "bootloaderVersion": {
+          "description": "Device bootloader version. Example: 0.6.7.",
+          "type": "string"
+        },
+        "hardware": {
+          "description": "Device hardware. Example: Sprout.",
+          "type": "string"
+        },
+        "encryptionState": {
+          "description": "Device encryption state.",
+          "enumDescriptions": [
+            "Encryption Status is not set.",
+            "Device doesn't support encryption.",
+            "Device is encrypted.",
+            "Device is not encrypted."
+          ],
+          "type": "string",
+          "enum": [
+            "ENCRYPTION_STATE_UNSPECIFIED",
+            "UNSUPPORTED_BY_DEVICE",
+            "ENCRYPTED",
+            "NOT_ENCRYPTED"
+          ]
+        }
+      }
+    },
+    "RingDeviceRequest": {
+      "id": "RingDeviceRequest",
+      "description": "Request message for ringing device.",
+      "type": "object",
+      "properties": {
+        "customer": {
+          "description": "Required. [Resource name](https:\/\/cloud.google.com\/apis\/design\/resource_names) of\nthe Customer in format: `customers\/{customer_id}`, where\ncustomer_id is the customer to whom the device belongs.\nTo find the customer ID for your organization, use the\ncommand:\n```\ngcloud alpha organizations list\n```\nThe customer ID you need to use appears under the heading\n`DIRECTORY_CUSTOMER_ID`. The value is the letter \"C\" followed by\nletters and numbers. Use the value after the letter \"C\". So if\nthe Directory Customer ID displayed is, say `C00zqsgyx`, then the\ncustomer ID value to use in the API is: `customers\/00zqsgyx`.",
+          "type": "string"
+        }
+      }
+    },
+    "LockDeviceRequest": {
+      "id": "LockDeviceRequest",
+      "description": "Request message for locking the device.",
+      "type": "object",
+      "properties": {
+        "customer": {
+          "description": "Required. [Resource name](https:\/\/cloud.google.com\/apis\/design\/resource_names) of\nthe Customer in format: `customers\/{customer_id}`, where\ncustomer_id is the customer to whom the device belongs.\nTo find the customer ID for your organization, use the\ncommand:\n```\ngcloud alpha organizations list\n```\nThe customer ID you need to use appears under the heading\n`DIRECTORY_CUSTOMER_ID`. The value is the letter \"C\" followed by\nletters and numbers. Use the value after the letter \"C\". So if\nthe Directory Customer ID displayed is, say `C00zqsgyx`, then the\ncustomer ID value to use in the API is: `customers\/00zqsgyx`.",
+          "type": "string"
+        }
+      }
+    },
+    "ResetPinRequest": {
+      "id": "ResetPinRequest",
+      "description": "Request message for resetting the pin on the device.",
+      "type": "object",
+      "properties": {
+        "customer": {
+          "description": "Required. [Resource name](https:\/\/cloud.google.com\/apis\/design\/resource_names) of\nthe Customer in format: `customers\/{customer_id}`, where\ncustomer_id is the customer to whom the device belongs.\nTo find the customer ID for your organization, use the\ncommand:\n```\ngcloud alpha organizations list\n```\nThe customer ID you need to use appears under the heading\n`DIRECTORY_CUSTOMER_ID`. The value is the letter \"C\" followed by\nletters and numbers. Use the value after the letter \"C\". So if\nthe Directory Customer ID displayed is, say `C00zqsgyx`, then the\ncustomer ID value to use in the API is: `customers\/00zqsgyx`.",
+          "type": "string"
+        },
+        "pin": {
+          "description": "Required. New pin number to set for the device.",
+          "type": "string"
+        }
+      }
+    },
+    "WipeDeviceRequest": {
+      "id": "WipeDeviceRequest",
+      "description": "Request message for wiping all data on the device.",
+      "type": "object",
+      "properties": {
+        "customer": {
+          "description": "Required. [Resource name](https:\/\/cloud.google.com\/apis\/design\/resource_names) of\nthe Customer in format: `customers\/{customer_id}`, where\ncustomer_id is the customer to whom the device belongs.\nTo find the customer ID for your organization, use the\ncommand:\n```\ngcloud alpha organizations list\n```\nThe customer ID you need to use appears under the heading\n`DIRECTORY_CUSTOMER_ID`. The value is the letter \"C\" followed by\nletters and numbers. Use the value after the letter \"C\". So if\nthe Directory Customer ID displayed is, say `C00zqsgyx`, then the\ncustomer ID value to use in the API is: `customers\/00zqsgyx`.",
+          "type": "string"
+        }
+      }
+    },
+    "CancelWipeDeviceRequest": {
+      "id": "CancelWipeDeviceRequest",
+      "description": "Request message for cancelling an unfinished device wipe.",
+      "type": "object",
+      "properties": {
+        "customer": {
+          "description": "Required. [Resource name](https:\/\/cloud.google.com\/apis\/design\/resource_names) of\nthe Customer in format: `customers\/{customer_id}`, where\ncustomer_id is the customer to whom the device belongs.\nTo find the customer ID for your organization, use the\ncommand:\n```\ngcloud alpha organizations list\n```\nThe customer ID you need to use appears under the heading\n`DIRECTORY_CUSTOMER_ID`. The value is the letter \"C\" followed by\nletters and numbers. Use the value after the letter \"C\". So if\nthe Directory Customer ID displayed is, say `C00zqsgyx`, then the\ncustomer ID value to use in the API is: `customers\/00zqsgyx`.",
+          "type": "string"
+        }
+      }
+    },
+    "DeviceUser": {
+      "id": "DeviceUser",
+      "description": "A DeviceUser is a resource representing a user's use of a Device",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Output only. [Resource name](https:\/\/cloud.google.com\/apis\/design\/resource_names) of\nthe DeviceUser in format: `devices\/{device_id}\/deviceUsers\/{user_id}`,\nwhere user_id is the ID of the user associated with the user session.",
+          "type": "string"
+        },
+        "userEmail": {
+          "description": "Email address of the user registered on the device.",
+          "type": "string"
+        },
+        "managementState": {
+          "description": "Output only. Management state of the user on the device.",
+          "enumDescriptions": [
+            "Default value. This value is unused.",
+            "This user's data and profile is being removed from the device.",
+            "This user's data and profile is removed from the device.",
+            "User is approved to access data on the device.",
+            "User is blocked from accessing data on the device.",
+            "User is awaiting approval.",
+            "User is unenrolled from Advanced Windows Management, but the Windows\naccount is still intact."
+          ],
+          "type": "string",
+          "enum": [
+            "MANAGEMENT_STATE_UNSPECIFIED",
+            "WIPING",
+            "WIPED",
+            "APPROVED",
+            "BLOCKED",
+            "PENDING_APPROVAL",
+            "UNENROLLED"
+          ]
+        },
+        "firstSyncTime": {
+          "description": "Output only. Most recent time when user registered with this service.",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "lastSyncTime": {
+          "description": "Output only. Last time when user synced with policies.",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "userAgent": {
+          "description": "Output only. User agent on the device for this specific user",
+          "type": "string"
+        },
+        "languageCode": {
+          "description": "Output only. Default locale used on device, in IETF BCP-47 format.",
+          "type": "string"
+        },
+        "compromisedState": {
+          "description": "Compromised State of the DeviceUser object",
+          "enumDescriptions": [
+            "Compromised state of Device User account is unknown or unspecified.",
+            "Device User Account is compromised.",
+            "Device User Account is not compromised."
+          ],
+          "type": "string",
+          "enum": [
+            "COMPROMISED_STATE_UNSPECIFIED",
+            "COMPROMISED",
+            "NOT_COMPROMISED"
+          ]
+        },
+        "passwordState": {
+          "description": "Password state of the DeviceUser object",
+          "enumDescriptions": [
+            "Password state not set.",
+            "Password set in object.",
+            "Password not set in object."
+          ],
+          "type": "string",
+          "enum": [
+            "PASSWORD_STATE_UNSPECIFIED",
+            "PASSWORD_SET",
+            "PASSWORD_NOT_SET"
+          ]
+        }
+      }
+    },
+    "CollectBugReportRequest": {
+      "id": "CollectBugReportRequest",
+      "description": "Request message for collecting the bugreport for the user.",
+      "type": "object",
+      "properties": {
+        "customer": {
+          "description": "Required. [Resource name](https:\/\/cloud.google.com\/apis\/design\/resource_names) of\nthe Customer in format: `customers\/{customer_id}`, where\ncustomer_id is the customer to whom the device belongs.\nTo find the customer ID for your organization, use the\ncommand:\n```\ngcloud alpha organizations list\n```\nThe customer ID you need to use appears under the heading\n`DIRECTORY_CUSTOMER_ID`. The value is the letter \"C\" followed by\nletters and numbers. Use the value after the letter \"C\". So if\nthe Directory Customer ID displayed is, say `C00zqsgyx`, then the\ncustomer ID value to use in the API is: `customers\/00zqsgyx`.",
+          "type": "string"
+        }
+      }
+    },
+    "SyncDeviceUserRequest": {
+      "id": "SyncDeviceUserRequest",
+      "description": "Request message for syncing the user's device management policies.",
+      "type": "object",
+      "properties": {
+        "customer": {
+          "description": "Required. [Resource name](https:\/\/cloud.google.com\/apis\/design\/resource_names) of\nthe Customer in format: `customers\/{customer_id}`, where\ncustomer_id is the customer to whom the device belongs.\nTo find the customer ID for your organization, use the\ncommand:\n```\ngcloud alpha organizations list\n```\nThe customer ID you need to use appears under the heading\n`DIRECTORY_CUSTOMER_ID`. The value is the letter \"C\" followed by\nletters and numbers. Use the value after the letter \"C\". So if\nthe Directory Customer ID displayed is, say `C00zqsgyx`, then the\ncustomer ID value to use in the API is: `customers\/00zqsgyx`.",
+          "type": "string"
+        }
+      }
+    },
+    "SignoutDeviceUserRequest": {
+      "id": "SignoutDeviceUserRequest",
+      "description": "Request message for signing out of the device.",
+      "type": "object",
+      "properties": {
+        "customer": {
+          "description": "Required. [Resource name](https:\/\/cloud.google.com\/apis\/design\/resource_names) of\nthe Customer in format: `customers\/{customer_id}`, where\ncustomer_id is the customer to whom the device belongs.\nTo find the customer ID for your organization, use the\ncommand:\n```\ngcloud alpha organizations list\n```\nThe customer ID you need to use appears under the heading\n`DIRECTORY_CUSTOMER_ID`. The value is the letter \"C\" followed by\nletters and numbers. Use the value after the letter \"C\". So if\nthe Directory Customer ID displayed is, say `C00zqsgyx`, then the\ncustomer ID value to use in the API is: `customers\/00zqsgyx`.",
+          "type": "string"
+        }
+      }
+    },
+    "ApproveDeviceUserRequest": {
+      "id": "ApproveDeviceUserRequest",
+      "description": "Request message for approving the device to access user data.",
+      "type": "object",
+      "properties": {
+        "customer": {
+          "description": "Required. [Resource name](https:\/\/cloud.google.com\/apis\/design\/resource_names) of\nthe Customer in format: `customers\/{customer_id}`, where\ncustomer_id is the customer to whom the device belongs.\nTo find the customer ID for your organization, use the\ncommand:\n```\ngcloud alpha organizations list\n```\nThe customer ID you need to use appears under the heading\n`DIRECTORY_CUSTOMER_ID`. The value is the letter \"C\" followed by\nletters and numbers. Use the value after the letter \"C\". So if\nthe Directory Customer ID displayed is, say `C00zqsgyx`, then the\ncustomer ID value to use in the API is: `customers\/00zqsgyx`.",
+          "type": "string"
+        }
+      }
+    },
+    "BlockDeviceUserRequest": {
+      "id": "BlockDeviceUserRequest",
+      "description": "Request message for blocking account on device.",
+      "type": "object",
+      "properties": {
+        "customer": {
+          "description": "Required. [Resource name](https:\/\/cloud.google.com\/apis\/design\/resource_names) of\nthe Customer in format: `customers\/{customer_id}`, where\ncustomer_id is the customer to whom the device belongs.\nTo find the customer ID for your organization, use the\ncommand:\n```\ngcloud alpha organizations list\n```\nThe customer ID you need to use appears under the heading\n`DIRECTORY_CUSTOMER_ID`. The value is the letter \"C\" followed by\nletters and numbers. Use the value after the letter \"C\". So if\nthe Directory Customer ID displayed is, say `C00zqsgyx`, then the\ncustomer ID value to use in the API is: `customers\/00zqsgyx`.",
+          "type": "string"
+        }
+      }
+    },
+    "UnenrollDeviceUserRequest": {
+      "id": "UnenrollDeviceUserRequest",
+      "description": "Request message to unenroll the user from Advanced Windows Management.",
+      "type": "object",
+      "properties": {
+        "customer": {
+          "description": "Required. [Resource name](https:\/\/cloud.google.com\/apis\/design\/resource_names) of\nthe Customer in format: `customers\/{customer_id}`, where\ncustomer_id is the customer to whom the device belongs.\nTo find the customer ID for your organization, use the\ncommand:\n```\ngcloud alpha organizations list\n```\nThe customer ID you need to use appears under the heading\n`DIRECTORY_CUSTOMER_ID`. The value is the letter \"C\" followed by\nletters and numbers. Use the value after the letter \"C\". So if\nthe Directory Customer ID displayed is, say `C00zqsgyx`, then the\ncustomer ID value to use in the API is: `customers\/00zqsgyx`.",
+          "type": "string"
+        }
+      }
+    },
+    "WipeDeviceUserRequest": {
+      "id": "WipeDeviceUserRequest",
+      "description": "Request message for starting an account wipe on device.",
+      "type": "object",
+      "properties": {
+        "customer": {
+          "description": "Required. [Resource name](https:\/\/cloud.google.com\/apis\/design\/resource_names) of\nthe Customer in format: `customers\/{customer_id}`, where\ncustomer_id is the customer to whom the device belongs.\nTo find the customer ID for your organization, use the\ncommand:\n```\ngcloud alpha organizations list\n```\nThe customer ID you need to use appears under the heading\n`DIRECTORY_CUSTOMER_ID`. The value is the letter \"C\" followed by\nletters and numbers. Use the value after the letter \"C\". So if\nthe Directory Customer ID displayed is, say `C00zqsgyx`, then the\ncustomer ID value to use in the API is: `customers\/00zqsgyx`.",
+          "type": "string"
+        }
+      }
+    },
+    "CancelWipeDeviceUserRequest": {
+      "id": "CancelWipeDeviceUserRequest",
+      "description": "Request message for cancelling an unfinished user account wipe.",
+      "type": "object",
+      "properties": {
+        "customer": {
+          "description": "Required. [Resource name](https:\/\/cloud.google.com\/apis\/design\/resource_names) of\nthe Customer in format: `customers\/{customer_id}`, where\ncustomer_id is the customer to whom the device belongs.\nTo find the customer ID for your organization, use the\ncommand:\n```\ngcloud alpha organizations list\n```\nThe customer ID you need to use appears under the heading\n`DIRECTORY_CUSTOMER_ID`. The value is the letter \"C\" followed by\nletters and numbers. Use the value after the letter \"C\". So if\nthe Directory Customer ID displayed is, say `C00zqsgyx`, then the\ncustomer ID value to use in the API is: `customers\/00zqsgyx`.",
+          "type": "string"
+        }
+      }
+    },
+    "ClientState": {
+      "id": "ClientState",
+      "description": "Resource representing ClientState and supports updates from API users",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Output only. [Resource name](https:\/\/cloud.google.com\/apis\/design\/resource_names) of\nthe ClientState in format:\n`devices\/{device_id}\/deviceUsers\/{device_user_id}\/clientState\/{partner_id}`,\nwhere partner_id corresponds to the partner storing the data.",
+          "type": "string"
+        },
+        "createTime": {
+          "description": "Output only. The time the client state data was created.",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "lastUpdateTime": {
+          "description": "Output only. The time the client state data was last updated.",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "etag": {
+          "description": "The token that needs to be passed back for\nconcurrency control in updates. Token needs to be passed back\nin UpdateRequest",
+          "type": "string"
+        },
+        "customId": {
+          "description": "This field may be used to store a unique identifier for the API resource\nwithin which these CustomAttributes are a field.",
+          "type": "string"
+        },
+        "assetTags": {
+          "description": "The caller can specify asset tags for this resource",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "healthScore": {
+          "description": "The Health score of the resource",
+          "enumDescriptions": [
+            "Default value",
+            "The object is in very poor health as defined by the caller.",
+            "The object is in poor health as defined by the caller.",
+            "The object health is neither good nor poor, as defined by the caller.",
+            "The object is in good health as defined by the caller.",
+            "The object is in very good health as defined by the caller."
+          ],
+          "type": "string",
+          "enum": [
+            "HEALTH_SCORE_UNSPECIFIED",
+            "VERY_POOR",
+            "POOR",
+            "NEUTRAL",
+            "GOOD",
+            "VERY_GOOD"
+          ]
+        },
+        "scoreReason": {
+          "description": "A descriptive cause of the health score.",
+          "type": "string"
+        },
+        "managed": {
+          "description": "The management state of the resource as specified by the API client.",
+          "enumDescriptions": [
+            "The management state of the resource is unknown or unspecified.",
+            "The resource is managed.",
+            "The resource is not managed."
+          ],
+          "type": "string",
+          "enum": [
+            "MANAGED_STATE_UNSPECIFIED",
+            "MANAGED",
+            "UNMANAGED"
+          ]
+        },
+        "complianceState": {
+          "description": "The compliance state of the resource as specified by the API client.",
+          "enumDescriptions": [
+            "The compliance state of the resource is unknown or unspecified.",
+            "Device is compliant with third party policies",
+            "Device is not compliant with third party policies"
+          ],
+          "type": "string",
+          "enum": [
+            "COMPLIANCE_STATE_UNSPECIFIED",
+            "COMPLIANT",
+            "NON_COMPLIANT"
+          ]
+        },
+        "keyValuePairs": {
+          "description": "The map of key-value attributes stored by callers specific to a\ndevice. The total serialized length of this map may not exceed 10KB. No\nlimit is placed on the number of attributes in a map.",
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "CustomAttributeValue"
+          }
+        }
+      }
+    },
+    "CustomAttributeValue": {
+      "id": "CustomAttributeValue",
+      "description": "Additional custom attribute values may be one of these types",
+      "type": "object",
+      "properties": {
+        "numberValue": {
+          "description": "Represents a double value.",
+          "type": "number",
+          "format": "double"
+        },
+        "stringValue": {
+          "description": "Represents a string value.",
+          "type": "string"
+        },
+        "boolValue": {
+          "description": "Represents a boolean value.",
+          "type": "boolean"
+        }
+      }
+    },
     "GetEffectiveSettingsResponse": {
       "id": "GetEffectiveSettingsResponse",
       "type": "object",
@@ -784,6 +1381,183 @@
           "items": {
             "$ref": "Membership"
           }
+        }
+      }
+    },
+    "ListDevicesResponse": {
+      "id": "ListDevicesResponse",
+      "description": "Response message that is returned in LRO result of ListDevices Operation.",
+      "type": "object",
+      "properties": {
+        "devices": {
+          "description": "Devices meeting the list restrictions.",
+          "type": "array",
+          "items": {
+            "$ref": "Device"
+          }
+        },
+        "nextPageToken": {
+          "description": "Token to retrieve the next page of results. Empty if there are no more\nresults.",
+          "type": "string"
+        }
+      }
+    },
+    "ListDeviceUsersResponse": {
+      "id": "ListDeviceUsersResponse",
+      "description": "Response message that is returned in LRO result of ListDeviceUsers Operation.",
+      "type": "object",
+      "properties": {
+        "deviceUsers": {
+          "description": "Devices meeting the list restrictions.",
+          "type": "array",
+          "items": {
+            "$ref": "DeviceUser"
+          }
+        },
+        "nextPageToken": {
+          "description": "Token to retrieve the next page of results. Empty if there are no more\nresults.",
+          "type": "string"
+        }
+      }
+    },
+    "ListEndpointAppsResponse": {
+      "id": "ListEndpointAppsResponse",
+      "description": "Response message for listing all apps on the device.",
+      "type": "object",
+      "properties": {
+        "endpointApps": {
+          "description": "The list of matching EndpointApps found as a result of the request.",
+          "type": "array",
+          "items": {
+            "$ref": "EndpointApp"
+          }
+        },
+        "nextPageToken": {
+          "description": "Token to retrieve the next page of results. Empty if there are no more\nresults.",
+          "type": "string"
+        }
+      }
+    },
+    "EndpointApp": {
+      "id": "EndpointApp",
+      "description": "An EndpointApp represents an app that is installed on a device",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Output only. [Resource name](https:\/\/cloud.google.com\/apis\/design\/resource_names) of\nthe EndpointApp in format:\n`devices\/{device}\/deviceUsers\/{device_user}\/endpointApps\/{endpoint_app}`,\nwhere client_app_id is the ID of the app associated with the Device.",
+          "type": "string"
+        },
+        "packageName": {
+          "description": "Output only. Full package name of the installed app",
+          "type": "string"
+        },
+        "displayName": {
+          "description": "Output only. Name of the app displayed to the user",
+          "type": "string"
+        },
+        "versionName": {
+          "description": "Output only. Version name of the installed app",
+          "type": "string"
+        },
+        "versionCode": {
+          "description": "Output only. Version code of the installed app",
+          "type": "integer",
+          "format": "int32"
+        },
+        "permissions": {
+          "description": "Output only. Names of all permissions granted to the installed app",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "ApproveDeviceUserResponse": {
+      "id": "ApproveDeviceUserResponse",
+      "description": "Response message for approving the device to access user data.",
+      "type": "object",
+      "properties": {
+        "deviceUser": {
+          "description": "Resultant DeviceUser object for the action.",
+          "$ref": "DeviceUser"
+        }
+      }
+    },
+    "BlockDeviceUserResponse": {
+      "id": "BlockDeviceUserResponse",
+      "description": "Response message for blocking the device from accessing user data.",
+      "type": "object",
+      "properties": {
+        "deviceUser": {
+          "description": "Resultant DeviceUser object for the action.",
+          "$ref": "DeviceUser"
+        }
+      }
+    },
+    "WipeDeviceUserResponse": {
+      "id": "WipeDeviceUserResponse",
+      "description": "Response message for wiping the user's account from the device.",
+      "type": "object",
+      "properties": {
+        "deviceUser": {
+          "description": "Resultant DeviceUser object for the action.",
+          "$ref": "DeviceUser"
+        }
+      }
+    },
+    "CancelWipeDeviceUserResponse": {
+      "id": "CancelWipeDeviceUserResponse",
+      "description": "Response message for cancelling an unfinished user account wipe.",
+      "type": "object",
+      "properties": {
+        "deviceUser": {
+          "description": "Resultant DeviceUser object for the action.",
+          "$ref": "DeviceUser"
+        }
+      }
+    },
+    "WipeDeviceResponse": {
+      "id": "WipeDeviceResponse",
+      "description": "Response message for wiping all data on the device.",
+      "type": "object",
+      "properties": {
+        "device": {
+          "description": "Resultant Device object for the action. Note that asset tags will not be\nreturned in the device object.",
+          "$ref": "Device"
+        }
+      }
+    },
+    "CancelWipeDeviceResponse": {
+      "id": "CancelWipeDeviceResponse",
+      "description": "Response message for cancelling an unfinished device wipe.",
+      "type": "object",
+      "properties": {
+        "device": {
+          "description": "Resultant Device object for the action. Note that asset tags will not be\nreturned in the device object.",
+          "$ref": "Device"
+        }
+      }
+    },
+    "LookupSelfDeviceUsersResponse": {
+      "id": "LookupSelfDeviceUsersResponse",
+      "description": "Response containing resource names of the DeviceUsers associated with the\ncaller's credentials.",
+      "type": "object",
+      "properties": {
+        "names": {
+          "description": "[Resource names](https:\/\/cloud.google.com\/apis\/design\/resource_names) of\nthe DeviceUsers in the format:\n`devices\/{device_id}\/deviceUsers\/{user_resource_id}`, where\ndevice_id is the unique ID assigned to a Device and\nuser_resource_id is the unique user ID",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "customer": {
+          "description": "The obfuscated customer Id that may be passed back to other\nDevices API methods such as List, Get, etc.",
+          "type": "string"
+        },
+        "nextPageToken": {
+          "description": "Token to retrieve the next page of results. Empty if there are no more\nresults.",
+          "type": "string"
         }
       }
     }
@@ -1414,6 +2188,293 @@
     },
     "devices": {
       "methods": {
+        "create": {
+          "id": "cloudidentity.devices.create",
+          "path": "v1beta1/devices",
+          "flatPath": "v1beta1/devices",
+          "httpMethod": "POST",
+          "parameters": {
+          },
+          "parameterOrder": [
+          ],
+          "request": {
+            "$ref": "CreateDeviceRequest"
+          },
+          "response": {
+            "$ref": "Operation"
+          },
+          "description": "Creates a device. Only company-owned device may be created."
+        },
+        "get": {
+          "id": "cloudidentity.devices.get",
+          "path": "v1beta1/{+name}",
+          "flatPath": "v1beta1/devices/{devicesId}",
+          "httpMethod": "GET",
+          "parameters": {
+            "name": {
+              "description": "Required. [Resource name](https:\/\/cloud.google.com\/apis\/design\/resource_names) of\nthe Device in format: `devices\/{device_id}`, where\ndevice_id is the unique ID assigned to the Device.",
+              "location": "path",
+              "required": true,
+              "pattern": "^devices\/[^\/]+$",
+              "type": "string"
+            },
+            "customer": {
+              "description": "Required. [Resource name](https:\/\/cloud.google.com\/apis\/design\/resource_names) of\nthe Customer in format: `customers\/{customer_id}`, where\ncustomer_id is the customer to whom the device belongs.",
+              "location": "query",
+              "type": "string"
+            }
+          },
+          "parameterOrder": [
+            "name"
+          ],
+          "response": {
+            "$ref": "Operation"
+          },
+          "description": "Retrieves a device."
+        },
+        "list": {
+          "id": "cloudidentity.devices.list",
+          "path": "v1beta1/devices",
+          "flatPath": "v1beta1/devices",
+          "httpMethod": "GET",
+          "parameters": {
+            "customer": {
+              "description": "Required. [Resource name](https:\/\/cloud.google.com\/apis\/design\/resource_names) of\nthe customer.",
+              "location": "query",
+              "type": "string"
+            },
+            "filter": {
+              "description": "Optional. Additional restrictions when fetching list of devices.\n[HC article link](https:\/\/support.google.com\/a\/answer\/7549103)",
+              "location": "query",
+              "type": "string"
+            },
+            "pageSize": {
+              "description": "Optional. The maximum number of Devices to return.\nIf unspecified, at most 20 Devices will be returned.\nThe maximum value is 100; values above 100 will be coerced to 100.",
+              "location": "query",
+              "type": "integer",
+              "format": "int32"
+            },
+            "pageToken": {
+              "description": "Optional. A page token, received from a previous `ListDevices` call.\nProvide this to retrieve the subsequent page.\n\nWhen paginating, all other parameters provided to `ListDevices` must match\nthe call that provided the page token.",
+              "location": "query",
+              "type": "string"
+            },
+            "orderBy": {
+              "description": "Optional. Order specification for devices in the response. Only one of the following\nfield names may be used to specify the order:\n`create_time`, `last_sync_time`, `model`, `os_version`, `device_type` and\n`serial_number`. `desc` may be specified optionally to specify results\nto be sorted in descending order. Default order is ascending.",
+              "location": "query",
+              "type": "string"
+            },
+            "view": {
+              "description": "Optional. The view to use for the List request.",
+              "location": "query",
+              "type": "string",
+              "enum": [
+                "VIEW_UNSPECIFIED",
+                "COMPANY_INVENTORY",
+                "USER_ASSIGNED_DEVICES"
+              ]
+            }
+          },
+          "parameterOrder": [
+          ],
+          "response": {
+            "$ref": "Operation"
+          },
+          "description": "Lists\/Searches devices."
+        },
+        "patch": {
+          "id": "cloudidentity.devices.patch",
+          "path": "v1beta1/{+name}",
+          "flatPath": "v1beta1/devices/{devicesId}",
+          "httpMethod": "PATCH",
+          "parameters": {
+            "name": {
+              "description": "Output only. [Resource name](https:\/\/cloud.google.com\/apis\/design\/resource_names)\nof the Device in format: `devices\/{device_id}`, where device_id is\nthe unique id assigned to the Device.",
+              "location": "path",
+              "required": true,
+              "pattern": "^devices\/[^\/]+$",
+              "type": "string"
+            },
+            "name1": {
+              "description": "Required. [Resource name](https:\/\/cloud.google.com\/apis\/design\/resource_names) of\nthe Device in format: `devices\/{device_id}`, where\ndevice_id is the unique ID assigned to the Device.",
+              "location": "query",
+              "type": "string"
+            },
+            "customer": {
+              "description": "Required. [Resource name](https:\/\/cloud.google.com\/apis\/design\/resource_names) of\nthe Customer in format: `customers\/{customer_id}`, where\ncustomer_id is the customer to whom the device belongs.\nTo find the customer ID for your organization, use the\ncommand:\n```\ngcloud alpha organizations list\n```\nThe customer ID you need to use appears under the heading\n`DIRECTORY_CUSTOMER_ID`. The value is the letter \"C\" followed by\nletters and numbers. Use the value after the letter \"C\". So if\nthe Directory Customer ID displayed is, say `C00zqsgyx`, then the\ncustomer ID value to use in the API is: `customers\/00zqsgyx`.\ncustomer to whom the device belongs.",
+              "location": "query",
+              "type": "string"
+            },
+            "updateMask": {
+              "description": "Required. Fully qualified names of fields to update. Only \"custom_attributes\" is\nsupported.",
+              "location": "query",
+              "type": "string",
+              "format": "google-fieldmask"
+            }
+          },
+          "parameterOrder": [
+            "name"
+          ],
+          "request": {
+            "$ref": "Device"
+          },
+          "response": {
+            "$ref": "Operation"
+          },
+          "description": "Updates a device."
+        },
+        "delete": {
+          "id": "cloudidentity.devices.delete",
+          "path": "v1beta1/{+name}",
+          "flatPath": "v1beta1/devices/{devicesId}",
+          "httpMethod": "DELETE",
+          "parameters": {
+            "name": {
+              "description": "Required. [Resource name](https:\/\/cloud.google.com\/apis\/design\/resource_names) of\nthe Device in format: `devices\/{device_id}`, where\ndevice_id is the unique ID assigned to the Device.",
+              "location": "path",
+              "required": true,
+              "pattern": "^devices\/[^\/]+$",
+              "type": "string"
+            },
+            "customer": {
+              "description": "Required. [Resource name](https:\/\/cloud.google.com\/apis\/design\/resource_names) of\nthe customer. To find the customer ID for your organization, use the\ncommand:\n```\ngcloud alpha organizations list\n```\nThe customer ID you need to use appears under the heading\n`DIRECTORY_CUSTOMER_ID`. The value is the letter \"C\" followed by\nletters and numbers. Use the value after the letter \"C\". So if\nthe Directory Customer ID displayed is, say `C00zqsgyx`, then the\ncustomer ID value to use in the API is: `customers\/00zqsgyx`.\nIf you're using this API to manage another\norganization, use `customers\/{customer_id}`, where `customer_id` is the\ncustomer to whom the device belongs.",
+              "location": "query",
+              "type": "string"
+            }
+          },
+          "parameterOrder": [
+            "name"
+          ],
+          "response": {
+            "$ref": "Operation"
+          },
+          "description": "Deletes a device."
+        },
+        "ring": {
+          "id": "cloudidentity.devices.ring",
+          "path": "v1beta1/{+name}:ring",
+          "flatPath": "v1beta1/devices:ring",
+          "httpMethod": "POST",
+          "parameters": {
+            "name": {
+              "description": "Required. [Resource name](https:\/\/cloud.google.com\/apis\/design\/resource_names) of\nthe Device in format: `devices\/{device_id}\/deviceUsers\/{device_user_id}`,\nwhere device_id is the unique ID assigned to the Device, and device_user_id\nis the unique ID assigned to the User.",
+              "location": "path",
+              "required": true,
+              "pattern": "^devices$",
+              "type": "string"
+            }
+          },
+          "parameterOrder": [
+            "name"
+          ],
+          "request": {
+            "$ref": "RingDeviceRequest"
+          },
+          "response": {
+            "$ref": "Operation"
+          },
+          "description": "Rings the device"
+        },
+        "lock": {
+          "id": "cloudidentity.devices.lock",
+          "path": "v1beta1/{+name}:lock",
+          "flatPath": "v1beta1/devices:lock",
+          "httpMethod": "POST",
+          "parameters": {
+            "name": {
+              "description": "Required. [Resource name](https:\/\/cloud.google.com\/apis\/design\/resource_names) of\nthe Device in format: `devices\/{device_id}`,\nwhere device_id is the unique ID assigned to the Device.",
+              "location": "path",
+              "required": true,
+              "pattern": "^devices$",
+              "type": "string"
+            }
+          },
+          "parameterOrder": [
+            "name"
+          ],
+          "request": {
+            "$ref": "LockDeviceRequest"
+          },
+          "response": {
+            "$ref": "Operation"
+          },
+          "description": "Locks the device, without signing out the user"
+        },
+        "resetPin": {
+          "id": "cloudidentity.devices.resetPin",
+          "path": "v1beta1/{+name}:resetPin",
+          "flatPath": "v1beta1/devices:resetPin",
+          "httpMethod": "POST",
+          "parameters": {
+            "name": {
+              "description": "Required. [Resource name](https:\/\/cloud.google.com\/apis\/design\/resource_names) of\nthe Device in format: `devices\/{device_id}`,\nwhere device_id is the unique ID assigned to the Device, and device_user_id\nis the unique ID assigned to the User.",
+              "location": "path",
+              "required": true,
+              "pattern": "^devices$",
+              "type": "string"
+            }
+          },
+          "parameterOrder": [
+            "name"
+          ],
+          "request": {
+            "$ref": "ResetPinRequest"
+          },
+          "response": {
+            "$ref": "Operation"
+          },
+          "description": "Resets the device's pin"
+        },
+        "wipe": {
+          "id": "cloudidentity.devices.wipe",
+          "path": "v1beta1/{+name}:wipe",
+          "flatPath": "v1beta1/devices/{devicesId}:wipe",
+          "httpMethod": "POST",
+          "parameters": {
+            "name": {
+              "description": "Required. [Resource name](https:\/\/cloud.google.com\/apis\/design\/resource_names) of\nthe Device in format: `devices\/{device_id}\/deviceUsers\/{device_user_id}`,\nwhere device_id is the unique ID assigned to the Device, and device_user_id\nis the unique ID assigned to the User.",
+              "location": "path",
+              "required": true,
+              "pattern": "^devices\/[^\/]+$",
+              "type": "string"
+            }
+          },
+          "parameterOrder": [
+            "name"
+          ],
+          "request": {
+            "$ref": "WipeDeviceRequest"
+          },
+          "response": {
+            "$ref": "Operation"
+          },
+          "description": "Wipes all data on a device."
+        },
+        "cancelWipe": {
+          "id": "cloudidentity.devices.cancelWipe",
+          "path": "v1beta1/{+name}:cancelWipe",
+          "flatPath": "v1beta1/devices/{devicesId}:cancelWipe",
+          "httpMethod": "POST",
+          "parameters": {
+            "name": {
+              "description": "Required. [Resource name](https:\/\/cloud.google.com\/apis\/design\/resource_names) of\nthe Device in format: `devices\/{device_id}`,\nwhere device_id is the unique ID assigned to the Device, and device_user_id\nis the unique ID assigned to the User.",
+              "location": "path",
+              "required": true,
+              "pattern": "^devices\/[^\/]+$",
+              "type": "string"
+            }
+          },
+          "parameterOrder": [
+            "name"
+          ],
+          "request": {
+            "$ref": "CancelWipeDeviceRequest"
+          },
+          "response": {
+            "$ref": "Operation"
+          },
+          "description": "Cancels an unfinished device wipe.\nThis operation can be used to cancel device wipe in the gap between the\nwipe operation returning success and the device being wiped."
+        },
         "getSettings": {
           "id": "cloudidentity.devices.getSettings",
           "path": "v1beta1/{+resourceId}/settings",
@@ -1480,6 +2541,516 @@
             "$ref": "GetEffectiveSettingsResponse"
           },
           "description": "Returns the effective settings compiled for the requested entity."
+        }
+      }
+      ,
+      "resources": {
+        "deviceUsers": {
+          "methods": {
+            "get": {
+              "id": "cloudidentity.devices.deviceUsers.get",
+              "path": "v1beta1/{+name}",
+              "flatPath": "v1beta1/devices/{devicesId}/deviceUsers/{deviceUsersId}",
+              "httpMethod": "GET",
+              "parameters": {
+                "name": {
+                  "description": "Required. [Resource name](https:\/\/cloud.google.com\/apis\/design\/resource_names) of\nthe Device in format: `devices\/{device_id}\/deviceUsers\/{device_user_id}`,\nwhere device_id is the unique ID assigned to the Device, and device_user_id\nis the unique ID assigned to the User.",
+                  "location": "path",
+                  "required": true,
+                  "pattern": "^devices\/[^\/]+\/deviceUsers\/[^\/]+$",
+                  "type": "string"
+                },
+                "customer": {
+                  "description": "Required. [Resource name](https:\/\/cloud.google.com\/apis\/design\/resource_names) of\nthe Customer in format: `customers\/{customer_id}`, where\ncustomer_id is the customer to whom the device belongs.\nTo find the customer ID for your organization, use the\ncommand:\n```\ngcloud alpha organizations list\n```\nThe customer ID you need to use appears under the heading\n`DIRECTORY_CUSTOMER_ID`. The value is the letter \"C\" followed by\nletters and numbers. Use the value after the letter \"C\". So if\nthe Directory Customer ID displayed is, say `C00zqsgyx`, then the\ncustomer ID value to use in the API is: `customers\/00zqsgyx`.",
+                  "location": "query",
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "name"
+              ],
+              "response": {
+                "$ref": "Operation"
+              },
+              "description": "Retrieves a DeviceUser"
+            },
+            "list": {
+              "id": "cloudidentity.devices.deviceUsers.list",
+              "path": "v1beta1/{+parent}/deviceUsers",
+              "flatPath": "v1beta1/devices/{devicesId}/deviceUsers",
+              "httpMethod": "GET",
+              "parameters": {
+                "parent": {
+                  "description": "Required. To list all DeviceUsers, set this to \"devices\/-\".\nTo list all DeviceUsers owned by a device, set this to the resource name of\nthe device.\nFormat: devices\/{device}",
+                  "location": "path",
+                  "required": true,
+                  "pattern": "^devices\/[^\/]+$",
+                  "type": "string"
+                },
+                "customer": {
+                  "description": "Required. [Resource name](https:\/\/cloud.google.com\/apis\/design\/resource_names) of\nthe Customer in format: `customers\/{customer_id}`, where\ncustomer_id is the customer to whom the device belongs.\nTo find the customer ID for your organization, use the\ncommand:\n```\ngcloud alpha organizations list\n```\nThe customer ID you need to use appears under the heading\n`DIRECTORY_CUSTOMER_ID`. The value is the letter \"C\" followed by\nletters and numbers. Use the value after the letter \"C\". So if\nthe Directory Customer ID displayed is, say `C00zqsgyx`, then the\ncustomer ID value to use in the API is: `customers\/00zqsgyx`.",
+                  "location": "query",
+                  "type": "string"
+                },
+                "filter": {
+                  "description": "Optional. Additional restrictions when fetching list of devices.\n[HC article](https:\/\/support.google.com\/a\/answer\/7549103)",
+                  "location": "query",
+                  "type": "string"
+                },
+                "pageSize": {
+                  "description": "Optional. The maximum number of DeviceUsers to return.\nIf unspecified, at most 5 DeviceUsers will be returned.\nThe maximum value is 20; values above 20 will be coerced to 20.",
+                  "location": "query",
+                  "type": "integer",
+                  "format": "int32"
+                },
+                "pageToken": {
+                  "description": "Optional. A page token, received from a previous `ListDeviceUsers` call.\nProvide this to retrieve the subsequent page.\n\nWhen paginating, all other parameters provided to `ListBooks` must match\nthe call that provided the page token.",
+                  "location": "query",
+                  "type": "string"
+                },
+                "orderBy": {
+                  "description": "Optional. Order specification for devices in the response.",
+                  "location": "query",
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "parent"
+              ],
+              "response": {
+                "$ref": "Operation"
+              },
+              "description": "Lists\/Searches DeviceUsers."
+            },
+            "patch": {
+              "id": "cloudidentity.devices.deviceUsers.patch",
+              "path": "v1beta1/{+name}",
+              "flatPath": "v1beta1/devices/{devicesId}/deviceUsers/{deviceUsersId}",
+              "httpMethod": "PATCH",
+              "parameters": {
+                "name": {
+                  "description": "Output only. [Resource name](https:\/\/cloud.google.com\/apis\/design\/resource_names) of\nthe DeviceUser in format: `devices\/{device_id}\/deviceUsers\/{user_id}`,\nwhere user_id is the ID of the user associated with the user session.",
+                  "location": "path",
+                  "required": true,
+                  "pattern": "^devices\/[^\/]+\/deviceUsers\/[^\/]+$",
+                  "type": "string"
+                },
+                "name1": {
+                  "description": "Required. [Resource name](https:\/\/cloud.google.com\/apis\/design\/resource_names) of\nthe Device in format: `devices\/{device_id}\/deviceUsers\/{device_user_id}`,\nwhere device_id is the unique ID assigned to the Device, and device_user_id\nis the unique ID assigned to the User.",
+                  "location": "query",
+                  "type": "string"
+                },
+                "customer": {
+                  "description": "Required. [Resource name](https:\/\/cloud.google.com\/apis\/design\/resource_names) of\nthe Customer in format: `customers\/{customer_id}`, where\ncustomer_id is the customer to whom the device belongs.\nTo find the customer ID for your organization, use the\ncommand:\n```\ngcloud alpha organizations list\n```\nThe customer ID you need to use appears under the heading\n`DIRECTORY_CUSTOMER_ID`. The value is the letter \"C\" followed by\nletters and numbers. Use the value after the letter \"C\". So if\nthe Directory Customer ID displayed is, say `C00zqsgyx`, then the\ncustomer ID value to use in the API is: `customers\/00zqsgyx`.",
+                  "location": "query",
+                  "type": "string"
+                },
+                "updateMask": {
+                  "description": "Required. Fully qualified names of fields to update. Only \"custom_attributes\" is\nsupported.",
+                  "location": "query",
+                  "type": "string",
+                  "format": "google-fieldmask"
+                }
+              },
+              "parameterOrder": [
+                "name"
+              ],
+              "request": {
+                "$ref": "DeviceUser"
+              },
+              "response": {
+                "$ref": "Operation"
+              },
+              "description": "Updates a DeviceUser."
+            },
+            "delete": {
+              "id": "cloudidentity.devices.deviceUsers.delete",
+              "path": "v1beta1/{+name}",
+              "flatPath": "v1beta1/devices/{devicesId}/deviceUsers/{deviceUsersId}",
+              "httpMethod": "DELETE",
+              "parameters": {
+                "name": {
+                  "description": "Required. [Resource name](https:\/\/cloud.google.com\/apis\/design\/resource_names) of\nthe Device in format: `devices\/{device_id}\/deviceUsers\/{device_user_id}`,\nwhere device_id is the unique ID assigned to the Device, and device_user_id\nis the unique ID assigned to the User.",
+                  "location": "path",
+                  "required": true,
+                  "pattern": "^devices\/[^\/]+\/deviceUsers\/[^\/]+$",
+                  "type": "string"
+                },
+                "customer": {
+                  "description": "Required. [Resource name](https:\/\/cloud.google.com\/apis\/design\/resource_names) of\nthe Customer in format: `customers\/{customer_id}`, where\ncustomer_id is the customer to whom the device belongs.\nTo find the customer ID for your organization, use the\ncommand:\n```\ngcloud alpha organizations list\n```\nThe customer ID you need to use appears under the heading\n`DIRECTORY_CUSTOMER_ID`. The value is the letter \"C\" followed by\nletters and numbers. Use the value after the letter \"C\". So if\nthe Directory Customer ID displayed is, say `C00zqsgyx`, then the\ncustomer ID value to use in the API is: `customers\/00zqsgyx`.",
+                  "location": "query",
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "name"
+              ],
+              "response": {
+                "$ref": "Operation"
+              },
+              "description": "Deletes a DeviceUser. This also revokes the user's access to device data."
+            },
+            "collectBugReport": {
+              "id": "cloudidentity.devices.deviceUsers.collectBugReport",
+              "path": "v1beta1/{+name}:collectBugReport",
+              "flatPath": "v1beta1/devices/{devicesId}/deviceUsers/{deviceUsersId}:collectBugReport",
+              "httpMethod": "POST",
+              "parameters": {
+                "name": {
+                  "description": "Required. [Resource name](https:\/\/cloud.google.com\/apis\/design\/resource_names) of\nthe Device in format: `devices\/{device_id}\/deviceUsers\/{device_user_id}`,\nwhere device_id is the unique ID assigned to the Device, and device_user_id\nis the unique ID assigned to the User.",
+                  "location": "path",
+                  "required": true,
+                  "pattern": "^devices\/[^\/]+\/deviceUsers\/[^\/]+$",
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "name"
+              ],
+              "request": {
+                "$ref": "CollectBugReportRequest"
+              },
+              "response": {
+                "$ref": "Operation"
+              },
+              "description": "Collects bug report on a device, which can be later downloaded from\n[Admin Console](https:\/\/admin.google.com)."
+            },
+            "sync": {
+              "id": "cloudidentity.devices.deviceUsers.sync",
+              "path": "v1beta1/{+name}:sync",
+              "flatPath": "v1beta1/devices/{devicesId}/deviceUsers/{deviceUsersId}:sync",
+              "httpMethod": "POST",
+              "parameters": {
+                "name": {
+                  "description": "Required. [Resource name](https:\/\/cloud.google.com\/apis\/design\/resource_names) of\nthe Device in format: `devices\/{device_id}\/deviceUsers\/{device_user_id}`,\nwhere device_id is the unique ID assigned to the Device, and device_user_id\nis the unique ID assigned to the User.",
+                  "location": "path",
+                  "required": true,
+                  "pattern": "^devices\/[^\/]+\/deviceUsers\/[^\/]+$",
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "name"
+              ],
+              "request": {
+                "$ref": "SyncDeviceUserRequest"
+              },
+              "response": {
+                "$ref": "Operation"
+              },
+              "description": "Syncs the device to company's policy"
+            },
+            "signout": {
+              "id": "cloudidentity.devices.deviceUsers.signout",
+              "path": "v1beta1/{+name}:signout",
+              "flatPath": "v1beta1/devices/{devicesId}/deviceUsers/{deviceUsersId}:signout",
+              "httpMethod": "POST",
+              "parameters": {
+                "name": {
+                  "description": "Required. [Resource name](https:\/\/cloud.google.com\/apis\/design\/resource_names) of\nthe Device in format: `devices\/{device_id}\/deviceUsers\/{device_user_id}`,\nwhere device_id is the unique ID assigned to the Device, and device_user_id\nis the unique ID assigned to the User.",
+                  "location": "path",
+                  "required": true,
+                  "pattern": "^devices\/[^\/]+\/deviceUsers\/[^\/]+$",
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "name"
+              ],
+              "request": {
+                "$ref": "SignoutDeviceUserRequest"
+              },
+              "response": {
+                "$ref": "Operation"
+              },
+              "description": "Signs out the user from the device"
+            },
+            "approve": {
+              "id": "cloudidentity.devices.deviceUsers.approve",
+              "path": "v1beta1/{+name}:approve",
+              "flatPath": "v1beta1/devices/{devicesId}/deviceUsers/{deviceUsersId}:approve",
+              "httpMethod": "POST",
+              "parameters": {
+                "name": {
+                  "description": "Required. [Resource name](https:\/\/cloud.google.com\/apis\/design\/resource_names) of\nthe Device in format: `devices\/{device_id}\/deviceUsers\/{device_user_id}`,\nwhere device_id is the unique ID assigned to the Device, and device_user_id\nis the unique ID assigned to the User.",
+                  "location": "path",
+                  "required": true,
+                  "pattern": "^devices\/[^\/]+\/deviceUsers\/[^\/]+$",
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "name"
+              ],
+              "request": {
+                "$ref": "ApproveDeviceUserRequest"
+              },
+              "response": {
+                "$ref": "Operation"
+              },
+              "description": "Approves device to access user data."
+            },
+            "block": {
+              "id": "cloudidentity.devices.deviceUsers.block",
+              "path": "v1beta1/{+name}:block",
+              "flatPath": "v1beta1/devices/{devicesId}/deviceUsers/{deviceUsersId}:block",
+              "httpMethod": "POST",
+              "parameters": {
+                "name": {
+                  "description": "Required. [Resource name](https:\/\/cloud.google.com\/apis\/design\/resource_names) of\nthe Device in format: `devices\/{device_id}\/deviceUsers\/{device_user_id}`,\nwhere device_id is the unique ID assigned to the Device, and device_user_id\nis the unique ID assigned to the User.",
+                  "location": "path",
+                  "required": true,
+                  "pattern": "^devices\/[^\/]+\/deviceUsers\/[^\/]+$",
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "name"
+              ],
+              "request": {
+                "$ref": "BlockDeviceUserRequest"
+              },
+              "response": {
+                "$ref": "Operation"
+              },
+              "description": "Blocks device from accessing user data"
+            },
+            "unenroll": {
+              "id": "cloudidentity.devices.deviceUsers.unenroll",
+              "path": "v1beta1/{+name}:unenroll",
+              "flatPath": "v1beta1/devices/{devicesId}/deviceUsers/{deviceUsersId}:unenroll",
+              "httpMethod": "POST",
+              "parameters": {
+                "name": {
+                  "description": "Required. [Resource name](https:\/\/cloud.google.com\/apis\/design\/resource_names) of\nthe Device in format: `devices\/{device_id}\/deviceUsers\/{device_user_id}`,\nwhere device_id is the unfique ID assigned to the Device, and\ndevice_user_id is the unique ID assigned to the User.",
+                  "location": "path",
+                  "required": true,
+                  "pattern": "^devices\/[^\/]+\/deviceUsers\/[^\/]+$",
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "name"
+              ],
+              "request": {
+                "$ref": "UnenrollDeviceUserRequest"
+              },
+              "response": {
+                "$ref": "Operation"
+              },
+              "description": "Unenrolls the user from Advanced Windows Management without affecting\ntheir user account."
+            },
+            "wipe": {
+              "id": "cloudidentity.devices.deviceUsers.wipe",
+              "path": "v1beta1/{+name}:wipe",
+              "flatPath": "v1beta1/devices/{devicesId}/deviceUsers/{deviceUsersId}:wipe",
+              "httpMethod": "POST",
+              "parameters": {
+                "name": {
+                  "description": "Required. [Resource name](https:\/\/cloud.google.com\/apis\/design\/resource_names) of\nthe Device in format: `devices\/{device_id}\/deviceUsers\/{device_user_id}`,\nwhere device_id is the unique ID assigned to the Device, and device_user_id\nis the unique ID assigned to the User.",
+                  "location": "path",
+                  "required": true,
+                  "pattern": "^devices\/[^\/]+\/deviceUsers\/[^\/]+$",
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "name"
+              ],
+              "request": {
+                "$ref": "WipeDeviceUserRequest"
+              },
+              "response": {
+                "$ref": "Operation"
+              },
+              "description": "Wipes the user's account on a device."
+            },
+            "cancelWipe": {
+              "id": "cloudidentity.devices.deviceUsers.cancelWipe",
+              "path": "v1beta1/{+name}:cancelWipe",
+              "flatPath": "v1beta1/devices/{devicesId}/deviceUsers/{deviceUsersId}:cancelWipe",
+              "httpMethod": "POST",
+              "parameters": {
+                "name": {
+                  "description": "Required. [Resource name](https:\/\/cloud.google.com\/apis\/design\/resource_names) of\nthe Device in format: `devices\/{device_id}\/deviceUsers\/{device_user_id}`,\nwhere device_id is the unique ID assigned to the Device, and device_user_id\nis the unique ID assigned to the User.",
+                  "location": "path",
+                  "required": true,
+                  "pattern": "^devices\/[^\/]+\/deviceUsers\/[^\/]+$",
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "name"
+              ],
+              "request": {
+                "$ref": "CancelWipeDeviceUserRequest"
+              },
+              "response": {
+                "$ref": "Operation"
+              },
+              "description": "Cancels an unfinished user account wipe.\nThis operation can be used to cancel device wipe in the gap between the\nwipe operation returning success and the device being wiped."
+            }
+          }
+          ,
+          "resources": {
+            "endpointApps": {
+              "methods": {
+                "list": {
+                  "id": "cloudidentity.devices.deviceUsers.endpointApps.list",
+                  "path": "v1beta1/{+parent}/endpointApps",
+                  "flatPath": "v1beta1/devices/{devicesId}/deviceUsers/{deviceUsersId}/endpointApps",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "parent": {
+                      "description": "Required. The parent, which owns this collection of EndpointApps.\nSupported Format: devices\/{device}\/deviceUsers\/{deviceUser}\nNote: wildcards in parent path are not supported.",
+                      "location": "path",
+                      "required": true,
+                      "pattern": "^devices\/[^\/]+\/deviceUsers\/[^\/]+$",
+                      "type": "string"
+                    },
+                    "customer": {
+                      "description": "Required. [Resource name](https:\/\/cloud.google.com\/apis\/design\/resource_names) of\nthe Customer in format: `customers\/{customer_id}`, where\ncustomer_id is the customer to whom the device belongs.\nTo find the customer ID for your organization, use the\ncommand:\n```\ngcloud alpha organizations list\n```\nThe customer ID you need to use appears under the heading\n`DIRECTORY_CUSTOMER_ID`. The value is the letter \"C\" followed by\nletters and numbers. Use the value after the letter \"C\". So if\nthe Directory Customer ID displayed is, say `C00zqsgyx`, then the\ncustomer ID value to use in the API is: `customers\/00zqsgyx`.",
+                      "location": "query",
+                      "type": "string"
+                    },
+                    "pageSize": {
+                      "description": "Optional. The maximum number of Apps to return.\nIf unspecified, at most 20 Apps will be returned.\nThe maximum value is 20; values above 20 will be coerced to 20.",
+                      "location": "query",
+                      "type": "integer",
+                      "format": "int32"
+                    },
+                    "pageToken": {
+                      "description": "Optional. page_token to get subsequent pages in the response starting at this\ntoken. This should be filled with the value provided by a previous call\nto ListDevices.",
+                      "location": "query",
+                      "type": "string"
+                    },
+                    "orderBy": {
+                      "description": "Optional. Order specification for devices in the response.",
+                      "location": "query",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "parent"
+                  ],
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "description": "Lists all managed apps intalled on the device."
+                }
+              }
+            },
+            "clientStates": {
+              "methods": {
+                "get": {
+                  "id": "cloudidentity.devices.deviceUsers.clientStates.get",
+                  "path": "v1beta1/{+name}",
+                  "flatPath": "v1beta1/devices/{devicesId}/deviceUsers/{deviceUsersId}/clientStates/{clientStatesId}",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. [Resource name](https:\/\/cloud.google.com\/apis\/design\/resource_names) of\nthe ClientState in format:\n`devices\/{device_id}\/deviceUsers\/{device_user_id}\/clientStates\/{partner_id}`,\nwhere device_id is the unique ID assigned to the Device, device_user_id\nis the unique ID assigned to the User and partner_id identifies the partner\nstoring the data.",
+                      "location": "path",
+                      "required": true,
+                      "pattern": "^devices\/[^\/]+\/deviceUsers\/[^\/]+\/clientStates\/[^\/]+$",
+                      "type": "string"
+                    },
+                    "customer": {
+                      "description": "Required. [Resource name](https:\/\/cloud.google.com\/apis\/design\/resource_names) of\nthe Customer in format: `customers\/{customer_id}`, where\ncustomer_id is the customer to whom the device belongs.\nTo find the customer ID for your organization, use the\ncommand:\n```\ngcloud alpha organizations list\n```\nThe customer ID you need to use appears under the heading\n`DIRECTORY_CUSTOMER_ID`. The value is the letter \"C\" followed by\nletters and numbers. Use the value after the letter \"C\". So if\nthe Directory Customer ID displayed is, say `C00zqsgyx`, then the\ncustomer ID value to use in the API is: `customers\/00zqsgyx`.",
+                      "location": "query",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "description": "Get client state for a device user"
+                },
+                "patch": {
+                  "id": "cloudidentity.devices.deviceUsers.clientStates.patch",
+                  "path": "v1beta1/{+name}",
+                  "flatPath": "v1beta1/devices/{devicesId}/deviceUsers/{deviceUsersId}/clientStates/{clientStatesId}",
+                  "httpMethod": "PATCH",
+                  "parameters": {
+                    "name": {
+                      "description": "Output only. [Resource name](https:\/\/cloud.google.com\/apis\/design\/resource_names) of\nthe ClientState in format:\n`devices\/{device_id}\/deviceUsers\/{device_user_id}\/clientState\/{partner_id}`,\nwhere partner_id corresponds to the partner storing the data.",
+                      "location": "path",
+                      "required": true,
+                      "pattern": "^devices\/[^\/]+\/deviceUsers\/[^\/]+\/clientStates\/[^\/]+$",
+                      "type": "string"
+                    },
+                    "customer": {
+                      "description": "Required. [Resource name](https:\/\/cloud.google.com\/apis\/design\/resource_names) of\nthe Customer in format: `customers\/{customer_id}`, where\ncustomer_id is the customer to whom the device belongs.\nTo find the customer ID for your organization, use the\ncommand:\n```\ngcloud alpha organizations list\n```\nThe customer ID you need to use appears under the heading\n`DIRECTORY_CUSTOMER_ID`. The value is the letter \"C\" followed by\nletters and numbers. Use the value after the letter \"C\". So if\nthe Directory Customer ID displayed is, say `C00zqsgyx`, then the\ncustomer ID value to use in the API is: `customers\/00zqsgyx`.",
+                      "location": "query",
+                      "type": "string"
+                    },
+                    "updateMask": {
+                      "description": "Optional. Comma-separated list of fully qualified names of fields to be updated. If\nnot specified, all updatable fields in ClientState are updated.",
+                      "location": "query",
+                      "type": "string",
+                      "format": "google-fieldmask"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "request": {
+                    "$ref": "ClientState"
+                  },
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "description": "Update client state for a device user"
+                }
+              }
+            }
+          }
+        },
+        "-": {
+          "resources": {
+            "deviceUsers": {
+              "methods": {
+                "lookupSelf": {
+                  "id": "cloudidentity.devices.-.deviceUsers.lookupSelf",
+                  "path": "v1beta1/devices/-/deviceUsers:lookupSelf",
+                  "flatPath": "v1beta1/devices/-/deviceUsers:lookupSelf",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "pageSize": {
+                      "description": "The maximum number of DeviceUsers to return.\nIf unspecified, at most 20 DeviceUsers will be returned.\nThe maximum value is 20; values above 20 will be coerced to 20.",
+                      "location": "query",
+                      "type": "integer",
+                      "format": "int32"
+                    },
+                    "pageToken": {
+                      "description": "A page token, received from a previous `LookupDeviceUsers` call.\nProvide this to retrieve the subsequent page.\n\nWhen paginating, all other parameters provided to `LookupDeviceUsers` must\nmatch the call that provided the page token.",
+                      "location": "query",
+                      "type": "string"
+                    },
+                    "androidId": {
+                      "description": "Android Id returned by\n[Settings.Secure#ANDROID_ID](https:\/\/developer.android.com\/reference\/android\/provider\/Settings.Secure.html#ANDROID_ID).",
+                      "location": "query",
+                      "type": "string"
+                    },
+                    "rawResourceId": {
+                      "description": "Raw Resource Id used by Google Endpoint Verification.\n\nIf the user is enrolled into Google Endpoint Verification, this id will be\nsaved as the 'device_resource_id' field in the following platform dependent\nfiles.\n\nMac: ~\/.secureConnect\/context_aware_config.json\nWindows: C:\\Users\\%USERPROFILE%\\.secureConnect\\context_aware_config.json\nLinux: ~\/.secureConnect\/context_aware_config.json",
+                      "location": "query",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                  ],
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "description": "Looks up resource names of the DeviceUsers associated with the\ncaller's credentials, as well as the properties provided in the request."
+                }
+              }
+            }
+          }
         }
       }
     }

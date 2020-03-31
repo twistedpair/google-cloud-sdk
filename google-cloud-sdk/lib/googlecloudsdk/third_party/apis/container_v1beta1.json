@@ -282,10 +282,6 @@
           "description": "Release channel configuration.",
           "$ref": "ReleaseChannel"
         },
-        "tierSettings": {
-          "description": "Cluster tier settings.",
-          "$ref": "TierSettings"
-        },
         "workloadIdentityConfig": {
           "description": "Configuration for the use of Kubernetes Service Accounts in GCP IAM\npolicies.",
           "$ref": "WorkloadIdentityConfig"
@@ -399,6 +395,10 @@
           "items": {
             "$ref": "StatusCondition"
           }
+        },
+        "enableGvnic": {
+          "description": "Enable or disable gvnic on this cluster. This field is not yet used.",
+          "type": "boolean"
         }
       }
     },
@@ -759,7 +759,7 @@
           "$ref": "DnsCacheConfig"
         },
         "gcePersistentDiskCsiDriverConfig": {
-          "description": "Configuration for the GCP Compute Persistent Disk CSI driver.",
+          "description": "Configuration for the Compute Engine Persistent Disk CSI driver.",
           "$ref": "GcePersistentDiskCsiDriverConfig"
         },
         "kalmConfig": {
@@ -1586,27 +1586,6 @@
         }
       }
     },
-    "TierSettings": {
-      "id": "TierSettings",
-      "description": "Cluster tier settings.",
-      "type": "object",
-      "properties": {
-        "tier": {
-          "description": "Cluster tier.",
-          "enumDescriptions": [
-            "TIER_UNSPECIFIED is the default value. If this value is set during create\nor update, it defaults to the project level tier setting.",
-            "Represents the standard tier or base Google Kubernetes Engine offering.",
-            "Represents the advanced tier."
-          ],
-          "type": "string",
-          "enum": [
-            "TIER_UNSPECIFIED",
-            "STANDARD",
-            "ADVANCED"
-          ]
-        }
-      }
-    },
     "WorkloadIdentityConfig": {
       "id": "WorkloadIdentityConfig",
       "description": "Configuration for the use of Kubernetes Service Accounts in GCP IAM\npolicies.",
@@ -2016,6 +1995,10 @@
           "description": "The desired Cloud TPU configuration.",
           "$ref": "TpuConfig"
         },
+        "desiredEnableGvnic": {
+          "description": "Enable or disable gvnic on this cluster. This field is not yet used.",
+          "type": "boolean"
+        },
         "desiredMasterVersion": {
           "description": "The Kubernetes version to change the master to. The only valid value is the\nlatest supported version.\n\nUsers may specify either explicit versions offered by\nKubernetes Engine or version aliases, which have the following behavior:\n\n- \"latest\": picks the highest valid Kubernetes version\n- \"1.X\": picks the highest valid patch+gke.N patch in the 1.X version\n- \"1.X.Y\": picks the highest valid gke.N patch in the 1.X.Y version\n- \"1.X.Y-gke.N\": picks an explicit Kubernetes version\n- \"-\": picks the default Kubernetes version",
           "type": "string"
@@ -2419,115 +2402,12 @@
             "type": "string"
           }
         },
-        "premiumConfig": {
-          "description": "Premium configuration for service.",
-          "$ref": "PremiumConfig"
-        },
         "channels": {
           "description": "List of release channel configurations.",
           "type": "array",
           "items": {
             "$ref": "ReleaseChannelConfig"
           }
-        }
-      }
-    },
-    "PremiumConfig": {
-      "id": "PremiumConfig",
-      "description": "PremiumConfig is the configuration for all premium features and tiers.",
-      "type": "object",
-      "properties": {
-        "tiers": {
-          "description": "The tiers that are part of the premium offering.",
-          "type": "array",
-          "items": {
-            "$ref": "TierConfig"
-          }
-        },
-        "features": {
-          "description": "The features that GKE provides.",
-          "type": "array",
-          "items": {
-            "$ref": "FeatureConfig"
-          }
-        }
-      }
-    },
-    "TierConfig": {
-      "id": "TierConfig",
-      "description": "TierConfig is the configuration for a tier offering.  For example the GKE\nstandard or advanced offerings which contain different levels of\nfunctionality and possibly cost.",
-      "type": "object",
-      "properties": {
-        "parent": {
-          "description": "The tier from which the tier being configured inherits.  The configured\ntier will inherit all the features from its parent tier.",
-          "enumDescriptions": [
-            "TIER_UNSPECIFIED is the default value. If this value is set during create\nor update, it defaults to the project level tier setting.",
-            "Represents the standard tier or base Google Kubernetes Engine offering.",
-            "Represents the advanced tier."
-          ],
-          "type": "string",
-          "enum": [
-            "TIER_UNSPECIFIED",
-            "STANDARD",
-            "ADVANCED"
-          ]
-        },
-        "tier": {
-          "description": "The tier that is being configured with this value.",
-          "enumDescriptions": [
-            "TIER_UNSPECIFIED is the default value. If this value is set during create\nor update, it defaults to the project level tier setting.",
-            "Represents the standard tier or base Google Kubernetes Engine offering.",
-            "Represents the advanced tier."
-          ],
-          "type": "string",
-          "enum": [
-            "TIER_UNSPECIFIED",
-            "STANDARD",
-            "ADVANCED"
-          ]
-        }
-      }
-    },
-    "FeatureConfig": {
-      "id": "FeatureConfig",
-      "description": "FeatureConfig is the configuration for a specific feature including the\ndefinition of the feature as well as the tier in which it resides.",
-      "type": "object",
-      "properties": {
-        "feature": {
-          "description": "The feature that is being configured with this value.",
-          "enumDescriptions": [
-            "DEFAULT_FEATURE is the default zero value of the Feature.  This value is\nvalid.",
-            "The vertical pod autoscaling feature.",
-            "The node auto provisioning feature.",
-            "The binary authorization feature.",
-            "The resource labels feature.",
-            "The GKE usage metering feature.",
-            "The Cloud Run on GKE feature."
-          ],
-          "type": "string",
-          "enum": [
-            "DEFAULT_FEATURE",
-            "VERTICAL_POD_AUTOSCALER",
-            "NODE_AUTO_PROVISIONING",
-            "BINARY_AUTHORIZATION",
-            "RESOURCE_LABELS",
-            "USAGE_METERING",
-            "CLOUD_RUN_ON_GKE"
-          ]
-        },
-        "tier": {
-          "description": "The tier in which the configured feature resides.",
-          "enumDescriptions": [
-            "TIER_UNSPECIFIED is the default value. If this value is set during create\nor update, it defaults to the project level tier setting.",
-            "Represents the standard tier or base Google Kubernetes Engine offering.",
-            "Represents the advanced tier."
-          ],
-          "type": "string",
-          "enum": [
-            "TIER_UNSPECIFIED",
-            "STANDARD",
-            "ADVANCED"
-          ]
         }
       }
     },
@@ -3451,7 +3331,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Sets the locations for a specific cluster.\nDeprecated. Use\n[projects.locations.clusters.update](\/kubernetes-engine\/docs\/reference\/rest\/v1beta1\/projects.locations.clusters.update)\ninstead."
+                  "description": "Sets the locations for a specific cluster.\nDeprecated. Use\n[projects.locations.clusters.update](\/kubernetes-engine\/docs\/reference\/rest\/v1beta1\/projects.locations.clusters\/update)\ninstead."
                 },
                 "updateMaster": {
                   "id": "container.projects.locations.clusters.updateMaster",
@@ -4540,7 +4420,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Sets the locations for a specific cluster.\nDeprecated. Use\n[projects.locations.clusters.update](\/kubernetes-engine\/docs\/reference\/rest\/v1beta1\/projects.locations.clusters.update)\ninstead."
+                  "description": "Sets the locations for a specific cluster.\nDeprecated. Use\n[projects.locations.clusters.update](\/kubernetes-engine\/docs\/reference\/rest\/v1beta1\/projects.locations.clusters\/update)\ninstead."
                 },
                 "master": {
                   "id": "container.projects.zones.clusters.master",

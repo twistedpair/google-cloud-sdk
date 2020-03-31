@@ -357,13 +357,24 @@
       "type": "object",
       "properties": {
         "configSync": {
-          "description": "Git repo configuration for the cluster.",
+          "description": "Config Sync configuration for the cluster.",
           "$ref": "ConfigSync"
         }
       }
     },
     "ConfigSync": {
       "id": "ConfigSync",
+      "description": "Configuration for Config Sync",
+      "type": "object",
+      "properties": {
+        "git": {
+          "description": "Git repo configuration for the cluster.",
+          "$ref": "GitConfig"
+        }
+      }
+    },
+    "GitConfig": {
+      "id": "GitConfig",
       "description": "Git repo configuration for a single cluster.",
       "type": "object",
       "properties": {

@@ -886,36 +886,38 @@ def AddShieldedInstanceInitialStateKeyArg(parser):
   parser.add_argument(
       '--platform-key-file',
       help="""\
-      File path pointing to an X.509 certificate or raw binary file to be used
-      as the platform key (PK) when creating a shielded instance from this
-      image.
+      File path that points to an X.509 certificate or raw binary file. When
+      you create a shielded VM from this image, this certificate or raw binary
+      file is used as the platform key (PK).
         """)
   parser.add_argument(
       '--key-exchange-key-file',
       type=arg_parsers.ArgList(),
       metavar='KEK_VALUE',
       help="""\
-      Comma-separated list of file paths pointing to X.509 certificates or raw
-      binary files to be used as key exchange keys (KEK) when creating a
-      shielded instance from this image.
+      Comma-separated list of file paths that point to X.509 certificates or raw
+      binary files. When you create a shielded VM from this image,
+      these certificates or files are used as key exchange keys (KEK).
         """)
   parser.add_argument(
       '--signature-database-file',
       type=arg_parsers.ArgList(),
       metavar='DB_VALUE',
       help="""\
-      Comma-separated list of file paths pointing to valid X.509 certificates or
-      raw binary files to be added to the signature database (db) when creating
-      a shielded instance from this image.
+      Comma-separated list of file paths that point to valid X.509 certificates
+      or raw binary files. When you create a shielded VM from this
+      image, these certificates or files are  added to the signature database
+      (db).
         """)
   parser.add_argument(
       '--forbidden-database-file',
       type=arg_parsers.ArgList(),
       metavar='DBX_VALUE',
       help="""\
-      Comma-separated list of file paths pointing to revoked X.509 certificates
-      or raw binary files to be added to the forbidden signature database (dbx)
-      when creating a shielded instance from this image.
+      Comma-separated list of file paths that point to revoked X.509
+      certificates or raw binary files. When you create a shielded VM
+      from this image, these certificates or files are added to the forbidden
+      signature database (dbx).
         """)
 
 

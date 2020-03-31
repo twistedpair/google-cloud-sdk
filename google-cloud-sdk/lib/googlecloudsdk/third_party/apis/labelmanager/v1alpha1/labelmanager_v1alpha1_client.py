@@ -16,7 +16,7 @@ class LabelmanagerV1alpha1(base_api.BaseApiClient):
   _VERSION = u'v1alpha1'
   _CLIENT_ID = '1042881264118.apps.googleusercontent.com'
   _CLIENT_SECRET = 'x_Tw5K8nnjoRAqULM9PFAC2b'
-  _USER_AGENT = 'x_Tw5K8nnjoRAqULM9PFAC2b'
+  _USER_AGENT = u'google-cloud-sdk'
   _CLIENT_CLASS_NAME = u'LabelmanagerV1alpha1'
   _URL_VERSION = u'v1alpha1'
   _API_KEY = None
@@ -85,7 +85,7 @@ class LabelmanagerV1alpha1(base_api.BaseApiClient):
         request: (LabelmanagerLabelBindingsDeleteRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
-        (Empty) The response message.
+        (Operation) The response message.
       """
       config = self.GetMethodConfig('Delete')
       return self._RunMethod(
@@ -101,7 +101,7 @@ class LabelmanagerV1alpha1(base_api.BaseApiClient):
         relative_path=u'v1alpha1/{+name}',
         request_field='',
         request_type_name=u'LabelmanagerLabelBindingsDeleteRequest',
-        response_type_name=u'Empty',
+        response_type_name=u'Operation',
         supports_download=False,
     )
 
@@ -287,7 +287,7 @@ set.
         method_id=u'labelmanager.labelKeys.list',
         ordered_params=[],
         path_params=[],
-        query_params=[u'pageSize', u'pageToken', u'parent'],
+        query_params=[u'pageSize', u'pageToken', u'parent', u'showDeleted'],
         relative_path=u'v1alpha1/labelKeys',
         request_field='',
         request_type_name=u'LabelmanagerLabelKeysListRequest',
@@ -302,7 +302,7 @@ set.
         request: (LabelmanagerLabelKeysPatchRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
-        (LabelKey) The response message.
+        (Operation) The response message.
       """
       config = self.GetMethodConfig('Patch')
       return self._RunMethod(
@@ -318,7 +318,7 @@ set.
         relative_path=u'v1alpha1/{+name}',
         request_field=u'labelKey',
         request_type_name=u'LabelmanagerLabelKeysPatchRequest',
-        response_type_name=u'LabelKey',
+        response_type_name=u'Operation',
         supports_download=False,
     )
 
@@ -531,7 +531,7 @@ LabelValue does not exist or the user does not have permission to view it.
         method_id=u'labelmanager.labelValues.list',
         ordered_params=[],
         path_params=[],
-        query_params=[u'pageSize', u'pageToken', u'parent'],
+        query_params=[u'pageSize', u'pageToken', u'parent', u'showDeleted'],
         relative_path=u'v1alpha1/labelValues',
         request_field='',
         request_type_name=u'LabelmanagerLabelValuesListRequest',

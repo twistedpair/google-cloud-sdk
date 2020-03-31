@@ -61,6 +61,7 @@ class CommandData(object):
     self.update = UpdateData(update_data) if update_data else None
     self.import_ = ImportData(import_data, request_data,
                               async_data) if import_data else None
+    self.deprecated_data = data.get('deprecate')
 
 
 class CommandType(Enum):

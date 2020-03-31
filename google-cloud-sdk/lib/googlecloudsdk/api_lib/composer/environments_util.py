@@ -53,6 +53,8 @@ def Create(environment_ref,
            private_environment=None,
            private_endpoint=None,
            master_ipv4_cidr=None,
+           web_server_ipv4_cidr=None,
+           cloud_sql_ipv4_cidr=None,
            web_server_access_control=None,
            release_track=base.ReleaseTrack.GA):
   """Calls the Composer Environments.Create method.
@@ -99,7 +101,9 @@ def Create(environment_ref,
         IP addresses.
     private_endpoint: bool or None, managed env cluster using the private IP
         address of the master API endpoint.
-    master_ipv4_cidr: IPv4 CIDR range to use for the master network.
+    master_ipv4_cidr: IPv4 CIDR range to use for the cluster master network.
+    web_server_ipv4_cidr: IPv4 CIDR range to use for Web Server network.
+    cloud_sql_ipv4_cidr: IPv4 CIDR range to use for Cloud SQL network.
     web_server_access_control: [{string: string}], List of IP ranges with
         descriptions to allow access to the web server.
     release_track: base.ReleaseTrack, the release track of command. Will dictate
@@ -168,9 +172,18 @@ def Create(environment_ref,
             enablePrivateEndpoint=private_endpoint,
             masterIpv4CidrBlock=master_ipv4_cidr)
 
+      private_env_config_args = {
+          'enablePrivateEnvironment': private_environment,
+          'privateClusterConfig': private_cluster_config,
+      }
+
+      if web_server_ipv4_cidr is not None:
+        private_env_config_args['webServerIpv4CidrBlock'] = web_server_ipv4_cidr
+      if cloud_sql_ipv4_cidr is not None:
+        private_env_config_args['cloudSqlIpv4CidrBlock'] = cloud_sql_ipv4_cidr
+
       config.privateEnvironmentConfig = messages.PrivateEnvironmentConfig(
-          enablePrivateEnvironment=private_environment,
-          privateClusterConfig=private_cluster_config)
+          **private_env_config_args)
 
   # Builds webServerNetworkAccessControl, if necessary.
   if web_server_access_control is not None:

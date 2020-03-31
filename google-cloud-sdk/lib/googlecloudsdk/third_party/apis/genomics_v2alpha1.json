@@ -1172,6 +1172,39 @@
               "description": "Starts asynchronous cancellation on a long-running operation.\nThe server makes a best effort to cancel the operation, but success is not\nguaranteed. Clients may use Operations.GetOperation\nor Operations.ListOperations\nto check whether the cancellation succeeded or the operation completed\ndespite cancellation.\nAuthorization requires the following [Google IAM](https:\/\/cloud.google.com\/iam) permission&#58;\n\n* `genomics.operations.cancel`"
             }
           }
+        },
+        "workers": {
+          "methods": {
+            "checkIn": {
+              "id": "genomics.projects.workers.checkIn",
+              "path": "v2alpha1/{+id}:checkIn",
+              "flatPath": "v2alpha1/projects/{projectsId}/workers/{workersId}:checkIn",
+              "httpMethod": "POST",
+              "parameters": {
+                "id": {
+                  "description": "The worker id, assigned when it was created.",
+                  "location": "path",
+                  "required": true,
+                  "pattern": "^projects\/[^\/]+\/workers\/[^\/]+$",
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "id"
+              ],
+              "request": {
+                "$ref": "CheckInRequest"
+              },
+              "response": {
+                "$ref": "CheckInResponse"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform",
+                "https://www.googleapis.com/auth/genomics"
+              ],
+              "description": "The worker uses this method to retrieve the assigned operation and\nprovide periodic status updates."
+            }
+          }
         }
       }
     },

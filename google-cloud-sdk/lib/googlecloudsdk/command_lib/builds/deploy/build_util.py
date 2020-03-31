@@ -332,7 +332,9 @@ def CreateBuild(
           '--annotation=gcb-build-id=$BUILD_ID,${}'.format(
               _K8S_ANNOTATIONS_SUB_VAR),  # You cannot embed a substitution
           # variable in another, so gcb-build-id=$BUILD_ID must be hard-coded.
-          '--expose=${}'.format(_EXPOSE_PORT_SUB_VAR)
+          '--expose=${}'.format(_EXPOSE_PORT_SUB_VAR),
+          '--create-application-cr',
+          '--links="Build details=https://console.cloud.google.com/cloud-build/builds/$BUILD_ID?project=$PROJECT_ID"',
       ],
   ))
   build.steps.append(_SaveConfigsBuildStep(messages))

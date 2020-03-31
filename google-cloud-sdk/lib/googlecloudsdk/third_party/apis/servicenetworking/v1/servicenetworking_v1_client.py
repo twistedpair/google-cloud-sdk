@@ -16,7 +16,7 @@ class ServicenetworkingV1(base_api.BaseApiClient):
   _VERSION = u'v1'
   _CLIENT_ID = '1042881264118.apps.googleusercontent.com'
   _CLIENT_SECRET = 'x_Tw5K8nnjoRAqULM9PFAC2b'
-  _USER_AGENT = 'x_Tw5K8nnjoRAqULM9PFAC2b'
+  _USER_AGENT = u'google-cloud-sdk'
   _CLIENT_CLASS_NAME = u'ServicenetworkingV1'
   _URL_VERSION = u'v1'
   _API_KEY = None
@@ -38,6 +38,7 @@ class ServicenetworkingV1(base_api.BaseApiClient):
         response_encoding=response_encoding)
     self.operations = self.OperationsService(self)
     self.services_connections = self.ServicesConnectionsService(self)
+    self.services_roles = self.ServicesRolesService(self)
     self.services = self.ServicesService(self)
 
   class OperationsService(base_api.BaseApiService):
@@ -279,6 +280,46 @@ operation successfully completes.
         relative_path=u'v1/{+name}',
         request_field=u'connection',
         request_type_name=u'ServicenetworkingServicesConnectionsPatchRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
+  class ServicesRolesService(base_api.BaseApiService):
+    """Service class for the services_roles resource."""
+
+    _NAME = u'services_roles'
+
+    def __init__(self, client):
+      super(ServicenetworkingV1.ServicesRolesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Add(self, request, global_params=None):
+      r"""Service producers can use this method to add roles in the shared VPC host.
+project. Each role is bound to the provided member. Each role must be
+selected from within a whitelisted set of roles. Each role is applied at
+only the granularity specified in the whitelist.
+
+      Args:
+        request: (ServicenetworkingServicesRolesAddRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Add')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Add.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1/services/{servicesId}/roles:add',
+        http_method=u'POST',
+        method_id=u'servicenetworking.services.roles.add',
+        ordered_params=[u'parent'],
+        path_params=[u'parent'],
+        query_params=[],
+        relative_path=u'v1/{+parent}/roles:add',
+        request_field=u'addRolesRequest',
+        request_type_name=u'ServicenetworkingServicesRolesAddRequest',
         response_type_name=u'Operation',
         supports_download=False,
     )

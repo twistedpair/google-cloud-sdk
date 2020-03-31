@@ -12,6 +12,202 @@ from apitools.base.py import extra_types
 package = 'cloudidentity'
 
 
+class AndroidAttributes(_messages.Message):
+  r"""Resource representing the Android specific attributes of a Device.
+
+  Enums:
+    EncryptionStateValueValuesEnum: Device encryption state.
+    OwnershipPrivilegeValueValuesEnum: Ownership privileges on device.
+
+  Fields:
+    basebandVersion: Baseband version of Android device.
+    bootloaderVersion: Device bootloader version. Example: 0.6.7.
+    buildNumber: Build number of Android device.
+    enabledDeveloperOptions: Whether developer options is enabled on device.
+    enabledUnknownSources: Whether applications from unknown sources can be
+      installed on device.
+    enabledUsbDebugging: Whether adb (USB debugging) is enabled on device.
+    encryptionState: Device encryption state.
+    hardware: Device hardware. Example: Sprout.
+    kernelVersion: Kernel version of Android device.
+    otherAccounts: Domain name for Google accounts on device. Type for other
+      accounts on device. Will only be populated if |ownership_privilege| is
+      |PROFILE_OWNER| or |DEVICE_OWNER|. Does not include the account signed
+      in to the device policy app if that account's domain has only one
+      account. Examples: "com.example", "xyz.com".
+    ownerProfileAccount: Whether this account is on an owner/primary profile.
+      For phones, only true for owner profiles. Android 4+ devices can have
+      secondary or restricted user profiles.
+    ownershipPrivilege: Ownership privileges on device.
+    securityPatchTime: OS security patch update time on device.
+    supportsWorkProfile: Whether device supports Android work profiles. If
+      false, this service will not block access to corp data even if an
+      administrator turns on the "Enforce Work Profile" policy.
+  """
+
+  class EncryptionStateValueValuesEnum(_messages.Enum):
+    r"""Device encryption state.
+
+    Values:
+      ENCRYPTION_STATE_UNSPECIFIED: Encryption Status is not set.
+      UNSUPPORTED_BY_DEVICE: Device doesn't support encryption.
+      ENCRYPTED: Device is encrypted.
+      NOT_ENCRYPTED: Device is not encrypted.
+    """
+    ENCRYPTION_STATE_UNSPECIFIED = 0
+    UNSUPPORTED_BY_DEVICE = 1
+    ENCRYPTED = 2
+    NOT_ENCRYPTED = 3
+
+  class OwnershipPrivilegeValueValuesEnum(_messages.Enum):
+    r"""Ownership privileges on device.
+
+    Values:
+      OWNERSHIP_PRIVILEGE_UNSPECIFIED: Ownership privilege is not set.
+      DEVICE_ADMINISTRATOR: Active device administrator privileges on the
+        device.
+      PROFILE_OWNER: Profile Owner privileges. The account is in a managed
+        corporate profile.
+      DEVICE_OWNER: Device Owner privileges on the device.
+    """
+    OWNERSHIP_PRIVILEGE_UNSPECIFIED = 0
+    DEVICE_ADMINISTRATOR = 1
+    PROFILE_OWNER = 2
+    DEVICE_OWNER = 3
+
+  basebandVersion = _messages.StringField(1)
+  bootloaderVersion = _messages.StringField(2)
+  buildNumber = _messages.StringField(3)
+  enabledDeveloperOptions = _messages.BooleanField(4)
+  enabledUnknownSources = _messages.BooleanField(5)
+  enabledUsbDebugging = _messages.BooleanField(6)
+  encryptionState = _messages.EnumField('EncryptionStateValueValuesEnum', 7)
+  hardware = _messages.StringField(8)
+  kernelVersion = _messages.StringField(9)
+  otherAccounts = _messages.StringField(10, repeated=True)
+  ownerProfileAccount = _messages.BooleanField(11)
+  ownershipPrivilege = _messages.EnumField('OwnershipPrivilegeValueValuesEnum', 12)
+  securityPatchTime = _messages.StringField(13)
+  supportsWorkProfile = _messages.BooleanField(14)
+
+
+class ApproveDeviceUserRequest(_messages.Message):
+  r"""Request message for approving the device to access user data.
+
+  Fields:
+    customer: Required. [Resource
+      name](https://cloud.google.com/apis/design/resource_names) of the
+      Customer in format: `customers/{customer_id}`, where customer_id is the
+      customer to whom the device belongs. To find the customer ID for your
+      organization, use the command: ``` gcloud alpha organizations list ```
+      The customer ID you need to use appears under the heading
+      `DIRECTORY_CUSTOMER_ID`. The value is the letter "C" followed by letters
+      and numbers. Use the value after the letter "C". So if the Directory
+      Customer ID displayed is, say `C00zqsgyx`, then the customer ID value to
+      use in the API is: `customers/00zqsgyx`.
+  """
+
+  customer = _messages.StringField(1)
+
+
+class ApproveDeviceUserResponse(_messages.Message):
+  r"""Response message for approving the device to access user data.
+
+  Fields:
+    deviceUser: Resultant DeviceUser object for the action.
+  """
+
+  deviceUser = _messages.MessageField('DeviceUser', 1)
+
+
+class BlockDeviceUserRequest(_messages.Message):
+  r"""Request message for blocking account on device.
+
+  Fields:
+    customer: Required. [Resource
+      name](https://cloud.google.com/apis/design/resource_names) of the
+      Customer in format: `customers/{customer_id}`, where customer_id is the
+      customer to whom the device belongs. To find the customer ID for your
+      organization, use the command: ``` gcloud alpha organizations list ```
+      The customer ID you need to use appears under the heading
+      `DIRECTORY_CUSTOMER_ID`. The value is the letter "C" followed by letters
+      and numbers. Use the value after the letter "C". So if the Directory
+      Customer ID displayed is, say `C00zqsgyx`, then the customer ID value to
+      use in the API is: `customers/00zqsgyx`.
+  """
+
+  customer = _messages.StringField(1)
+
+
+class BlockDeviceUserResponse(_messages.Message):
+  r"""Response message for blocking the device from accessing user data.
+
+  Fields:
+    deviceUser: Resultant DeviceUser object for the action.
+  """
+
+  deviceUser = _messages.MessageField('DeviceUser', 1)
+
+
+class CancelWipeDeviceRequest(_messages.Message):
+  r"""Request message for cancelling an unfinished device wipe.
+
+  Fields:
+    customer: Required. [Resource
+      name](https://cloud.google.com/apis/design/resource_names) of the
+      Customer in format: `customers/{customer_id}`, where customer_id is the
+      customer to whom the device belongs. To find the customer ID for your
+      organization, use the command: ``` gcloud alpha organizations list ```
+      The customer ID you need to use appears under the heading
+      `DIRECTORY_CUSTOMER_ID`. The value is the letter "C" followed by letters
+      and numbers. Use the value after the letter "C". So if the Directory
+      Customer ID displayed is, say `C00zqsgyx`, then the customer ID value to
+      use in the API is: `customers/00zqsgyx`.
+  """
+
+  customer = _messages.StringField(1)
+
+
+class CancelWipeDeviceResponse(_messages.Message):
+  r"""Response message for cancelling an unfinished device wipe.
+
+  Fields:
+    device: Resultant Device object for the action. Note that asset tags will
+      not be returned in the device object.
+  """
+
+  device = _messages.MessageField('Device', 1)
+
+
+class CancelWipeDeviceUserRequest(_messages.Message):
+  r"""Request message for cancelling an unfinished user account wipe.
+
+  Fields:
+    customer: Required. [Resource
+      name](https://cloud.google.com/apis/design/resource_names) of the
+      Customer in format: `customers/{customer_id}`, where customer_id is the
+      customer to whom the device belongs. To find the customer ID for your
+      organization, use the command: ``` gcloud alpha organizations list ```
+      The customer ID you need to use appears under the heading
+      `DIRECTORY_CUSTOMER_ID`. The value is the letter "C" followed by letters
+      and numbers. Use the value after the letter "C". So if the Directory
+      Customer ID displayed is, say `C00zqsgyx`, then the customer ID value to
+      use in the API is: `customers/00zqsgyx`.
+  """
+
+  customer = _messages.StringField(1)
+
+
+class CancelWipeDeviceUserResponse(_messages.Message):
+  r"""Response message for cancelling an unfinished user account wipe.
+
+  Fields:
+    deviceUser: Resultant DeviceUser object for the action.
+  """
+
+  deviceUser = _messages.MessageField('DeviceUser', 1)
+
+
 class CheckTransitiveMembershipResponse(_messages.Message):
   r"""The response message for MembershipsService.CheckTransitiveMembership.
 
@@ -42,6 +238,567 @@ class ClientContext(_messages.Message):
   osVersion = _messages.StringField(4)
 
 
+class ClientState(_messages.Message):
+  r"""Resource representing ClientState and supports updates from API users
+
+  Enums:
+    ComplianceStateValueValuesEnum: The compliance state of the resource as
+      specified by the API client.
+    HealthScoreValueValuesEnum: The Health score of the resource
+    ManagedValueValuesEnum: The management state of the resource as specified
+      by the API client.
+
+  Messages:
+    KeyValuePairsValue: The map of key-value attributes stored by callers
+      specific to a device. The total serialized length of this map may not
+      exceed 10KB. No limit is placed on the number of attributes in a map.
+
+  Fields:
+    assetTags: The caller can specify asset tags for this resource
+    complianceState: The compliance state of the resource as specified by the
+      API client.
+    createTime: Output only. The time the client state data was created.
+    customId: This field may be used to store a unique identifier for the API
+      resource within which these CustomAttributes are a field.
+    etag: The token that needs to be passed back for concurrency control in
+      updates. Token needs to be passed back in UpdateRequest
+    healthScore: The Health score of the resource
+    keyValuePairs: The map of key-value attributes stored by callers specific
+      to a device. The total serialized length of this map may not exceed
+      10KB. No limit is placed on the number of attributes in a map.
+    lastUpdateTime: Output only. The time the client state data was last
+      updated.
+    managed: The management state of the resource as specified by the API
+      client.
+    name: Output only. [Resource
+      name](https://cloud.google.com/apis/design/resource_names) of the
+      ClientState in format: `devices/{device_id}/deviceUsers/{device_user_id}
+      /clientState/{partner_id}`, where partner_id corresponds to the partner
+      storing the data.
+    scoreReason: A descriptive cause of the health score.
+  """
+
+  class ComplianceStateValueValuesEnum(_messages.Enum):
+    r"""The compliance state of the resource as specified by the API client.
+
+    Values:
+      COMPLIANCE_STATE_UNSPECIFIED: The compliance state of the resource is
+        unknown or unspecified.
+      COMPLIANT: Device is compliant with third party policies
+      NON_COMPLIANT: Device is not compliant with third party policies
+    """
+    COMPLIANCE_STATE_UNSPECIFIED = 0
+    COMPLIANT = 1
+    NON_COMPLIANT = 2
+
+  class HealthScoreValueValuesEnum(_messages.Enum):
+    r"""The Health score of the resource
+
+    Values:
+      HEALTH_SCORE_UNSPECIFIED: Default value
+      VERY_POOR: The object is in very poor health as defined by the caller.
+      POOR: The object is in poor health as defined by the caller.
+      NEUTRAL: The object health is neither good nor poor, as defined by the
+        caller.
+      GOOD: The object is in good health as defined by the caller.
+      VERY_GOOD: The object is in very good health as defined by the caller.
+    """
+    HEALTH_SCORE_UNSPECIFIED = 0
+    VERY_POOR = 1
+    POOR = 2
+    NEUTRAL = 3
+    GOOD = 4
+    VERY_GOOD = 5
+
+  class ManagedValueValuesEnum(_messages.Enum):
+    r"""The management state of the resource as specified by the API client.
+
+    Values:
+      MANAGED_STATE_UNSPECIFIED: The management state of the resource is
+        unknown or unspecified.
+      MANAGED: The resource is managed.
+      UNMANAGED: The resource is not managed.
+    """
+    MANAGED_STATE_UNSPECIFIED = 0
+    MANAGED = 1
+    UNMANAGED = 2
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class KeyValuePairsValue(_messages.Message):
+    r"""The map of key-value attributes stored by callers specific to a
+    device. The total serialized length of this map may not exceed 10KB. No
+    limit is placed on the number of attributes in a map.
+
+    Messages:
+      AdditionalProperty: An additional property for a KeyValuePairsValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type KeyValuePairsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a KeyValuePairsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A CustomAttributeValue attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('CustomAttributeValue', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  assetTags = _messages.StringField(1, repeated=True)
+  complianceState = _messages.EnumField('ComplianceStateValueValuesEnum', 2)
+  createTime = _messages.StringField(3)
+  customId = _messages.StringField(4)
+  etag = _messages.StringField(5)
+  healthScore = _messages.EnumField('HealthScoreValueValuesEnum', 6)
+  keyValuePairs = _messages.MessageField('KeyValuePairsValue', 7)
+  lastUpdateTime = _messages.StringField(8)
+  managed = _messages.EnumField('ManagedValueValuesEnum', 9)
+  name = _messages.StringField(10)
+  scoreReason = _messages.StringField(11)
+
+
+class CloudidentityDevicesCancelWipeRequest(_messages.Message):
+  r"""A CloudidentityDevicesCancelWipeRequest object.
+
+  Fields:
+    cancelWipeDeviceRequest: A CancelWipeDeviceRequest resource to be passed
+      as the request body.
+    name: Required. [Resource
+      name](https://cloud.google.com/apis/design/resource_names) of the Device
+      in format: `devices/{device_id}`, where device_id is the unique ID
+      assigned to the Device, and device_user_id is the unique ID assigned to
+      the User.
+  """
+
+  cancelWipeDeviceRequest = _messages.MessageField('CancelWipeDeviceRequest', 1)
+  name = _messages.StringField(2, required=True)
+
+
+class CloudidentityDevicesDeleteRequest(_messages.Message):
+  r"""A CloudidentityDevicesDeleteRequest object.
+
+  Fields:
+    customer: Required. [Resource
+      name](https://cloud.google.com/apis/design/resource_names) of the
+      customer. To find the customer ID for your organization, use the
+      command: ``` gcloud alpha organizations list ``` The customer ID you
+      need to use appears under the heading `DIRECTORY_CUSTOMER_ID`. The value
+      is the letter "C" followed by letters and numbers. Use the value after
+      the letter "C". So if the Directory Customer ID displayed is, say
+      `C00zqsgyx`, then the customer ID value to use in the API is:
+      `customers/00zqsgyx`. If you're using this API to manage another
+      organization, use `customers/{customer_id}`, where `customer_id` is the
+      customer to whom the device belongs.
+    name: Required. [Resource
+      name](https://cloud.google.com/apis/design/resource_names) of the Device
+      in format: `devices/{device_id}`, where device_id is the unique ID
+      assigned to the Device.
+  """
+
+  customer = _messages.StringField(1)
+  name = _messages.StringField(2, required=True)
+
+
+class CloudidentityDevicesDeviceUsersApproveRequest(_messages.Message):
+  r"""A CloudidentityDevicesDeviceUsersApproveRequest object.
+
+  Fields:
+    approveDeviceUserRequest: A ApproveDeviceUserRequest resource to be passed
+      as the request body.
+    name: Required. [Resource
+      name](https://cloud.google.com/apis/design/resource_names) of the Device
+      in format: `devices/{device_id}/deviceUsers/{device_user_id}`, where
+      device_id is the unique ID assigned to the Device, and device_user_id is
+      the unique ID assigned to the User.
+  """
+
+  approveDeviceUserRequest = _messages.MessageField('ApproveDeviceUserRequest', 1)
+  name = _messages.StringField(2, required=True)
+
+
+class CloudidentityDevicesDeviceUsersBlockRequest(_messages.Message):
+  r"""A CloudidentityDevicesDeviceUsersBlockRequest object.
+
+  Fields:
+    blockDeviceUserRequest: A BlockDeviceUserRequest resource to be passed as
+      the request body.
+    name: Required. [Resource
+      name](https://cloud.google.com/apis/design/resource_names) of the Device
+      in format: `devices/{device_id}/deviceUsers/{device_user_id}`, where
+      device_id is the unique ID assigned to the Device, and device_user_id is
+      the unique ID assigned to the User.
+  """
+
+  blockDeviceUserRequest = _messages.MessageField('BlockDeviceUserRequest', 1)
+  name = _messages.StringField(2, required=True)
+
+
+class CloudidentityDevicesDeviceUsersCancelWipeRequest(_messages.Message):
+  r"""A CloudidentityDevicesDeviceUsersCancelWipeRequest object.
+
+  Fields:
+    cancelWipeDeviceUserRequest: A CancelWipeDeviceUserRequest resource to be
+      passed as the request body.
+    name: Required. [Resource
+      name](https://cloud.google.com/apis/design/resource_names) of the Device
+      in format: `devices/{device_id}/deviceUsers/{device_user_id}`, where
+      device_id is the unique ID assigned to the Device, and device_user_id is
+      the unique ID assigned to the User.
+  """
+
+  cancelWipeDeviceUserRequest = _messages.MessageField('CancelWipeDeviceUserRequest', 1)
+  name = _messages.StringField(2, required=True)
+
+
+class CloudidentityDevicesDeviceUsersClientStatesGetRequest(_messages.Message):
+  r"""A CloudidentityDevicesDeviceUsersClientStatesGetRequest object.
+
+  Fields:
+    customer: Required. [Resource
+      name](https://cloud.google.com/apis/design/resource_names) of the
+      Customer in format: `customers/{customer_id}`, where customer_id is the
+      customer to whom the device belongs. To find the customer ID for your
+      organization, use the command: ``` gcloud alpha organizations list ```
+      The customer ID you need to use appears under the heading
+      `DIRECTORY_CUSTOMER_ID`. The value is the letter "C" followed by letters
+      and numbers. Use the value after the letter "C". So if the Directory
+      Customer ID displayed is, say `C00zqsgyx`, then the customer ID value to
+      use in the API is: `customers/00zqsgyx`.
+    name: Required. [Resource
+      name](https://cloud.google.com/apis/design/resource_names) of the
+      ClientState in format: `devices/{device_id}/deviceUsers/{device_user_id}
+      /clientStates/{partner_id}`, where device_id is the unique ID assigned
+      to the Device, device_user_id is the unique ID assigned to the User and
+      partner_id identifies the partner storing the data.
+  """
+
+  customer = _messages.StringField(1)
+  name = _messages.StringField(2, required=True)
+
+
+class CloudidentityDevicesDeviceUsersClientStatesPatchRequest(_messages.Message):
+  r"""A CloudidentityDevicesDeviceUsersClientStatesPatchRequest object.
+
+  Fields:
+    clientState: A ClientState resource to be passed as the request body.
+    customer: Required. [Resource
+      name](https://cloud.google.com/apis/design/resource_names) of the
+      Customer in format: `customers/{customer_id}`, where customer_id is the
+      customer to whom the device belongs. To find the customer ID for your
+      organization, use the command: ``` gcloud alpha organizations list ```
+      The customer ID you need to use appears under the heading
+      `DIRECTORY_CUSTOMER_ID`. The value is the letter "C" followed by letters
+      and numbers. Use the value after the letter "C". So if the Directory
+      Customer ID displayed is, say `C00zqsgyx`, then the customer ID value to
+      use in the API is: `customers/00zqsgyx`.
+    name: Output only. [Resource
+      name](https://cloud.google.com/apis/design/resource_names) of the
+      ClientState in format: `devices/{device_id}/deviceUsers/{device_user_id}
+      /clientState/{partner_id}`, where partner_id corresponds to the partner
+      storing the data.
+    updateMask: Optional. Comma-separated list of fully qualified names of
+      fields to be updated. If not specified, all updatable fields in
+      ClientState are updated.
+  """
+
+  clientState = _messages.MessageField('ClientState', 1)
+  customer = _messages.StringField(2)
+  name = _messages.StringField(3, required=True)
+  updateMask = _messages.StringField(4)
+
+
+class CloudidentityDevicesDeviceUsersCollectBugReportRequest(_messages.Message):
+  r"""A CloudidentityDevicesDeviceUsersCollectBugReportRequest object.
+
+  Fields:
+    collectBugReportRequest: A CollectBugReportRequest resource to be passed
+      as the request body.
+    name: Required. [Resource
+      name](https://cloud.google.com/apis/design/resource_names) of the Device
+      in format: `devices/{device_id}/deviceUsers/{device_user_id}`, where
+      device_id is the unique ID assigned to the Device, and device_user_id is
+      the unique ID assigned to the User.
+  """
+
+  collectBugReportRequest = _messages.MessageField('CollectBugReportRequest', 1)
+  name = _messages.StringField(2, required=True)
+
+
+class CloudidentityDevicesDeviceUsersDeleteRequest(_messages.Message):
+  r"""A CloudidentityDevicesDeviceUsersDeleteRequest object.
+
+  Fields:
+    customer: Required. [Resource
+      name](https://cloud.google.com/apis/design/resource_names) of the
+      Customer in format: `customers/{customer_id}`, where customer_id is the
+      customer to whom the device belongs. To find the customer ID for your
+      organization, use the command: ``` gcloud alpha organizations list ```
+      The customer ID you need to use appears under the heading
+      `DIRECTORY_CUSTOMER_ID`. The value is the letter "C" followed by letters
+      and numbers. Use the value after the letter "C". So if the Directory
+      Customer ID displayed is, say `C00zqsgyx`, then the customer ID value to
+      use in the API is: `customers/00zqsgyx`.
+    name: Required. [Resource
+      name](https://cloud.google.com/apis/design/resource_names) of the Device
+      in format: `devices/{device_id}/deviceUsers/{device_user_id}`, where
+      device_id is the unique ID assigned to the Device, and device_user_id is
+      the unique ID assigned to the User.
+  """
+
+  customer = _messages.StringField(1)
+  name = _messages.StringField(2, required=True)
+
+
+class CloudidentityDevicesDeviceUsersEndpointAppsListRequest(_messages.Message):
+  r"""A CloudidentityDevicesDeviceUsersEndpointAppsListRequest object.
+
+  Fields:
+    customer: Required. [Resource
+      name](https://cloud.google.com/apis/design/resource_names) of the
+      Customer in format: `customers/{customer_id}`, where customer_id is the
+      customer to whom the device belongs. To find the customer ID for your
+      organization, use the command: ``` gcloud alpha organizations list ```
+      The customer ID you need to use appears under the heading
+      `DIRECTORY_CUSTOMER_ID`. The value is the letter "C" followed by letters
+      and numbers. Use the value after the letter "C". So if the Directory
+      Customer ID displayed is, say `C00zqsgyx`, then the customer ID value to
+      use in the API is: `customers/00zqsgyx`.
+    orderBy: Optional. Order specification for devices in the response.
+    pageSize: Optional. The maximum number of Apps to return. If unspecified,
+      at most 20 Apps will be returned. The maximum value is 20; values above
+      20 will be coerced to 20.
+    pageToken: Optional. page_token to get subsequent pages in the response
+      starting at this token. This should be filled with the value provided by
+      a previous call to ListDevices.
+    parent: Required. The parent, which owns this collection of EndpointApps.
+      Supported Format: devices/{device}/deviceUsers/{deviceUser} Note:
+      wildcards in parent path are not supported.
+  """
+
+  customer = _messages.StringField(1)
+  orderBy = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
+
+
+class CloudidentityDevicesDeviceUsersGetRequest(_messages.Message):
+  r"""A CloudidentityDevicesDeviceUsersGetRequest object.
+
+  Fields:
+    customer: Required. [Resource
+      name](https://cloud.google.com/apis/design/resource_names) of the
+      Customer in format: `customers/{customer_id}`, where customer_id is the
+      customer to whom the device belongs. To find the customer ID for your
+      organization, use the command: ``` gcloud alpha organizations list ```
+      The customer ID you need to use appears under the heading
+      `DIRECTORY_CUSTOMER_ID`. The value is the letter "C" followed by letters
+      and numbers. Use the value after the letter "C". So if the Directory
+      Customer ID displayed is, say `C00zqsgyx`, then the customer ID value to
+      use in the API is: `customers/00zqsgyx`.
+    name: Required. [Resource
+      name](https://cloud.google.com/apis/design/resource_names) of the Device
+      in format: `devices/{device_id}/deviceUsers/{device_user_id}`, where
+      device_id is the unique ID assigned to the Device, and device_user_id is
+      the unique ID assigned to the User.
+  """
+
+  customer = _messages.StringField(1)
+  name = _messages.StringField(2, required=True)
+
+
+class CloudidentityDevicesDeviceUsersListRequest(_messages.Message):
+  r"""A CloudidentityDevicesDeviceUsersListRequest object.
+
+  Fields:
+    customer: Required. [Resource
+      name](https://cloud.google.com/apis/design/resource_names) of the
+      Customer in format: `customers/{customer_id}`, where customer_id is the
+      customer to whom the device belongs. To find the customer ID for your
+      organization, use the command: ``` gcloud alpha organizations list ```
+      The customer ID you need to use appears under the heading
+      `DIRECTORY_CUSTOMER_ID`. The value is the letter "C" followed by letters
+      and numbers. Use the value after the letter "C". So if the Directory
+      Customer ID displayed is, say `C00zqsgyx`, then the customer ID value to
+      use in the API is: `customers/00zqsgyx`.
+    filter: Optional. Additional restrictions when fetching list of devices.
+      [HC article](https://support.google.com/a/answer/7549103)
+    orderBy: Optional. Order specification for devices in the response.
+    pageSize: Optional. The maximum number of DeviceUsers to return. If
+      unspecified, at most 5 DeviceUsers will be returned. The maximum value
+      is 20; values above 20 will be coerced to 20.
+    pageToken: Optional. A page token, received from a previous
+      `ListDeviceUsers` call. Provide this to retrieve the subsequent page.
+      When paginating, all other parameters provided to `ListBooks` must match
+      the call that provided the page token.
+    parent: Required. To list all DeviceUsers, set this to "devices/-". To
+      list all DeviceUsers owned by a device, set this to the resource name of
+      the device. Format: devices/{device}
+  """
+
+  customer = _messages.StringField(1)
+  filter = _messages.StringField(2)
+  orderBy = _messages.StringField(3)
+  pageSize = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(5)
+  parent = _messages.StringField(6, required=True)
+
+
+class CloudidentityDevicesDeviceUsersLookupSelfRequest(_messages.Message):
+  r"""A CloudidentityDevicesDeviceUsersLookupSelfRequest object.
+
+  Fields:
+    androidId: Android Id returned by [Settings.Secure#ANDROID_ID](https://dev
+      eloper.android.com/reference/android/provider/Settings.Secure.html#ANDRO
+      ID_ID).
+    pageSize: The maximum number of DeviceUsers to return. If unspecified, at
+      most 20 DeviceUsers will be returned. The maximum value is 20; values
+      above 20 will be coerced to 20.
+    pageToken: A page token, received from a previous `LookupDeviceUsers`
+      call. Provide this to retrieve the subsequent page.  When paginating,
+      all other parameters provided to `LookupDeviceUsers` must match the call
+      that provided the page token.
+    rawResourceId: Raw Resource Id used by Google Endpoint Verification.  If
+      the user is enrolled into Google Endpoint Verification, this id will be
+      saved as the 'device_resource_id' field in the following platform
+      dependent files.  Mac: ~/.secureConnect/context_aware_config.json
+      Windows: C:\Users\%USERPROFILE%\.secureConnect\context_aware_config.json
+      Linux: ~/.secureConnect/context_aware_config.json
+  """
+
+  androidId = _messages.StringField(1)
+  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(3)
+  rawResourceId = _messages.StringField(4)
+
+
+class CloudidentityDevicesDeviceUsersPatchRequest(_messages.Message):
+  r"""A CloudidentityDevicesDeviceUsersPatchRequest object.
+
+  Fields:
+    customer: Required. [Resource
+      name](https://cloud.google.com/apis/design/resource_names) of the
+      Customer in format: `customers/{customer_id}`, where customer_id is the
+      customer to whom the device belongs. To find the customer ID for your
+      organization, use the command: ``` gcloud alpha organizations list ```
+      The customer ID you need to use appears under the heading
+      `DIRECTORY_CUSTOMER_ID`. The value is the letter "C" followed by letters
+      and numbers. Use the value after the letter "C". So if the Directory
+      Customer ID displayed is, say `C00zqsgyx`, then the customer ID value to
+      use in the API is: `customers/00zqsgyx`.
+    deviceUser: A DeviceUser resource to be passed as the request body.
+    name: Output only. [Resource
+      name](https://cloud.google.com/apis/design/resource_names) of the
+      DeviceUser in format: `devices/{device_id}/deviceUsers/{user_id}`, where
+      user_id is the ID of the user associated with the user session.
+    name1: Required. [Resource
+      name](https://cloud.google.com/apis/design/resource_names) of the Device
+      in format: `devices/{device_id}/deviceUsers/{device_user_id}`, where
+      device_id is the unique ID assigned to the Device, and device_user_id is
+      the unique ID assigned to the User.
+    updateMask: Required. Fully qualified names of fields to update. Only
+      "custom_attributes" is supported.
+  """
+
+  customer = _messages.StringField(1)
+  deviceUser = _messages.MessageField('DeviceUser', 2)
+  name = _messages.StringField(3, required=True)
+  name1 = _messages.StringField(4)
+  updateMask = _messages.StringField(5)
+
+
+class CloudidentityDevicesDeviceUsersSignoutRequest(_messages.Message):
+  r"""A CloudidentityDevicesDeviceUsersSignoutRequest object.
+
+  Fields:
+    name: Required. [Resource
+      name](https://cloud.google.com/apis/design/resource_names) of the Device
+      in format: `devices/{device_id}/deviceUsers/{device_user_id}`, where
+      device_id is the unique ID assigned to the Device, and device_user_id is
+      the unique ID assigned to the User.
+    signoutDeviceUserRequest: A SignoutDeviceUserRequest resource to be passed
+      as the request body.
+  """
+
+  name = _messages.StringField(1, required=True)
+  signoutDeviceUserRequest = _messages.MessageField('SignoutDeviceUserRequest', 2)
+
+
+class CloudidentityDevicesDeviceUsersSyncRequest(_messages.Message):
+  r"""A CloudidentityDevicesDeviceUsersSyncRequest object.
+
+  Fields:
+    name: Required. [Resource
+      name](https://cloud.google.com/apis/design/resource_names) of the Device
+      in format: `devices/{device_id}/deviceUsers/{device_user_id}`, where
+      device_id is the unique ID assigned to the Device, and device_user_id is
+      the unique ID assigned to the User.
+    syncDeviceUserRequest: A SyncDeviceUserRequest resource to be passed as
+      the request body.
+  """
+
+  name = _messages.StringField(1, required=True)
+  syncDeviceUserRequest = _messages.MessageField('SyncDeviceUserRequest', 2)
+
+
+class CloudidentityDevicesDeviceUsersUnenrollRequest(_messages.Message):
+  r"""A CloudidentityDevicesDeviceUsersUnenrollRequest object.
+
+  Fields:
+    name: Required. [Resource
+      name](https://cloud.google.com/apis/design/resource_names) of the Device
+      in format: `devices/{device_id}/deviceUsers/{device_user_id}`, where
+      device_id is the unfique ID assigned to the Device, and device_user_id
+      is the unique ID assigned to the User.
+    unenrollDeviceUserRequest: A UnenrollDeviceUserRequest resource to be
+      passed as the request body.
+  """
+
+  name = _messages.StringField(1, required=True)
+  unenrollDeviceUserRequest = _messages.MessageField('UnenrollDeviceUserRequest', 2)
+
+
+class CloudidentityDevicesDeviceUsersWipeRequest(_messages.Message):
+  r"""A CloudidentityDevicesDeviceUsersWipeRequest object.
+
+  Fields:
+    name: Required. [Resource
+      name](https://cloud.google.com/apis/design/resource_names) of the Device
+      in format: `devices/{device_id}/deviceUsers/{device_user_id}`, where
+      device_id is the unique ID assigned to the Device, and device_user_id is
+      the unique ID assigned to the User.
+    wipeDeviceUserRequest: A WipeDeviceUserRequest resource to be passed as
+      the request body.
+  """
+
+  name = _messages.StringField(1, required=True)
+  wipeDeviceUserRequest = _messages.MessageField('WipeDeviceUserRequest', 2)
+
+
+class CloudidentityDevicesGetRequest(_messages.Message):
+  r"""A CloudidentityDevicesGetRequest object.
+
+  Fields:
+    customer: Required. [Resource
+      name](https://cloud.google.com/apis/design/resource_names) of the
+      Customer in format: `customers/{customer_id}`, where customer_id is the
+      customer to whom the device belongs.
+    name: Required. [Resource
+      name](https://cloud.google.com/apis/design/resource_names) of the Device
+      in format: `devices/{device_id}`, where device_id is the unique ID
+      assigned to the Device.
+  """
+
+  customer = _messages.StringField(1)
+  name = _messages.StringField(2, required=True)
+
+
 class CloudidentityDevicesGetSettingsRequest(_messages.Message):
   r"""A CloudidentityDevicesGetSettingsRequest object.
 
@@ -64,6 +821,138 @@ class CloudidentityDevicesGetSettingsRequest(_messages.Message):
   resourceId = _messages.StringField(5, required=True)
 
 
+class CloudidentityDevicesListRequest(_messages.Message):
+  r"""A CloudidentityDevicesListRequest object.
+
+  Enums:
+    ViewValueValuesEnum: Optional. The view to use for the List request.
+
+  Fields:
+    customer: Required. [Resource
+      name](https://cloud.google.com/apis/design/resource_names) of the
+      customer.
+    filter: Optional. Additional restrictions when fetching list of devices.
+      [HC article link](https://support.google.com/a/answer/7549103)
+    orderBy: Optional. Order specification for devices in the response. Only
+      one of the following field names may be used to specify the order:
+      `create_time`, `last_sync_time`, `model`, `os_version`, `device_type`
+      and `serial_number`. `desc` may be specified optionally to specify
+      results to be sorted in descending order. Default order is ascending.
+    pageSize: Optional. The maximum number of Devices to return. If
+      unspecified, at most 20 Devices will be returned. The maximum value is
+      100; values above 100 will be coerced to 100.
+    pageToken: Optional. A page token, received from a previous `ListDevices`
+      call. Provide this to retrieve the subsequent page.  When paginating,
+      all other parameters provided to `ListDevices` must match the call that
+      provided the page token.
+    view: Optional. The view to use for the List request.
+  """
+
+  class ViewValueValuesEnum(_messages.Enum):
+    r"""Optional. The view to use for the List request.
+
+    Values:
+      VIEW_UNSPECIFIED: <no description>
+      COMPANY_INVENTORY: <no description>
+      USER_ASSIGNED_DEVICES: <no description>
+    """
+    VIEW_UNSPECIFIED = 0
+    COMPANY_INVENTORY = 1
+    USER_ASSIGNED_DEVICES = 2
+
+  customer = _messages.StringField(1)
+  filter = _messages.StringField(2)
+  orderBy = _messages.StringField(3)
+  pageSize = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(5)
+  view = _messages.EnumField('ViewValueValuesEnum', 6)
+
+
+class CloudidentityDevicesLockRequest(_messages.Message):
+  r"""A CloudidentityDevicesLockRequest object.
+
+  Fields:
+    lockDeviceRequest: A LockDeviceRequest resource to be passed as the
+      request body.
+    name: Required. [Resource
+      name](https://cloud.google.com/apis/design/resource_names) of the Device
+      in format: `devices/{device_id}`, where device_id is the unique ID
+      assigned to the Device.
+  """
+
+  lockDeviceRequest = _messages.MessageField('LockDeviceRequest', 1)
+  name = _messages.StringField(2, required=True)
+
+
+class CloudidentityDevicesPatchRequest(_messages.Message):
+  r"""A CloudidentityDevicesPatchRequest object.
+
+  Fields:
+    customer: Required. [Resource
+      name](https://cloud.google.com/apis/design/resource_names) of the
+      Customer in format: `customers/{customer_id}`, where customer_id is the
+      customer to whom the device belongs. To find the customer ID for your
+      organization, use the command: ``` gcloud alpha organizations list ```
+      The customer ID you need to use appears under the heading
+      `DIRECTORY_CUSTOMER_ID`. The value is the letter "C" followed by letters
+      and numbers. Use the value after the letter "C". So if the Directory
+      Customer ID displayed is, say `C00zqsgyx`, then the customer ID value to
+      use in the API is: `customers/00zqsgyx`. customer to whom the device
+      belongs.
+    device: A Device resource to be passed as the request body.
+    name: Output only. [Resource
+      name](https://cloud.google.com/apis/design/resource_names) of the Device
+      in format: `devices/{device_id}`, where device_id is the unique id
+      assigned to the Device.
+    name1: Required. [Resource
+      name](https://cloud.google.com/apis/design/resource_names) of the Device
+      in format: `devices/{device_id}`, where device_id is the unique ID
+      assigned to the Device.
+    updateMask: Required. Fully qualified names of fields to update. Only
+      "custom_attributes" is supported.
+  """
+
+  customer = _messages.StringField(1)
+  device = _messages.MessageField('Device', 2)
+  name = _messages.StringField(3, required=True)
+  name1 = _messages.StringField(4)
+  updateMask = _messages.StringField(5)
+
+
+class CloudidentityDevicesResetPinRequest(_messages.Message):
+  r"""A CloudidentityDevicesResetPinRequest object.
+
+  Fields:
+    name: Required. [Resource
+      name](https://cloud.google.com/apis/design/resource_names) of the Device
+      in format: `devices/{device_id}`, where device_id is the unique ID
+      assigned to the Device, and device_user_id is the unique ID assigned to
+      the User.
+    resetPinRequest: A ResetPinRequest resource to be passed as the request
+      body.
+  """
+
+  name = _messages.StringField(1, required=True)
+  resetPinRequest = _messages.MessageField('ResetPinRequest', 2)
+
+
+class CloudidentityDevicesRingRequest(_messages.Message):
+  r"""A CloudidentityDevicesRingRequest object.
+
+  Fields:
+    name: Required. [Resource
+      name](https://cloud.google.com/apis/design/resource_names) of the Device
+      in format: `devices/{device_id}/deviceUsers/{device_user_id}`, where
+      device_id is the unique ID assigned to the Device, and device_user_id is
+      the unique ID assigned to the User.
+    ringDeviceRequest: A RingDeviceRequest resource to be passed as the
+      request body.
+  """
+
+  name = _messages.StringField(1, required=True)
+  ringDeviceRequest = _messages.MessageField('RingDeviceRequest', 2)
+
+
 class CloudidentityDevicesSettingsRequest(_messages.Message):
   r"""A CloudidentityDevicesSettingsRequest object.
 
@@ -76,6 +965,23 @@ class CloudidentityDevicesSettingsRequest(_messages.Message):
 
   getEffectiveSettingsRequest = _messages.MessageField('GetEffectiveSettingsRequest', 1)
   resourceId = _messages.StringField(2, required=True)
+
+
+class CloudidentityDevicesWipeRequest(_messages.Message):
+  r"""A CloudidentityDevicesWipeRequest object.
+
+  Fields:
+    name: Required. [Resource
+      name](https://cloud.google.com/apis/design/resource_names) of the Device
+      in format: `devices/{device_id}/deviceUsers/{device_user_id}`, where
+      device_id is the unique ID assigned to the Device, and device_user_id is
+      the unique ID assigned to the User.
+    wipeDeviceRequest: A WipeDeviceRequest resource to be passed as the
+      request body.
+  """
+
+  name = _messages.StringField(1, required=True)
+  wipeDeviceRequest = _messages.MessageField('WipeDeviceRequest', 2)
 
 
 class CloudidentityGroupsCreateRequest(_messages.Message):
@@ -476,6 +1382,282 @@ class CloudidentityGroupsSearchRequest(_messages.Message):
   view = _messages.EnumField('ViewValueValuesEnum', 4)
 
 
+class CollectBugReportRequest(_messages.Message):
+  r"""Request message for collecting the bugreport for the user.
+
+  Fields:
+    customer: Required. [Resource
+      name](https://cloud.google.com/apis/design/resource_names) of the
+      Customer in format: `customers/{customer_id}`, where customer_id is the
+      customer to whom the device belongs. To find the customer ID for your
+      organization, use the command: ``` gcloud alpha organizations list ```
+      The customer ID you need to use appears under the heading
+      `DIRECTORY_CUSTOMER_ID`. The value is the letter "C" followed by letters
+      and numbers. Use the value after the letter "C". So if the Directory
+      Customer ID displayed is, say `C00zqsgyx`, then the customer ID value to
+      use in the API is: `customers/00zqsgyx`.
+  """
+
+  customer = _messages.StringField(1)
+
+
+class CreateDeviceRequest(_messages.Message):
+  r"""Request message for creating a Company Owned device.
+
+  Fields:
+    customer: Required. [Resource
+      name](https://cloud.google.com/apis/design/resource_names) of the
+      customer. To find the customer ID for your organization, use the
+      command: ``` gcloud alpha organizations list ``` The customer ID you
+      need to use appears under the heading `DIRECTORY_CUSTOMER_ID`. The value
+      is the letter "C" followed by letters and numbers. Use the value after
+      the letter "C". So if the Directory Customer ID displayed is, say
+      `C00zqsgyx`, then the customer ID value to use in the API is:
+      `customers/00zqsgyx`. If you're using this API to manage another
+      organization, use `customers/{customer_id}`, where `customer_id` is the
+      customer to whom the device belongs.
+    device: Required. The device to be created. The name field within this
+      device is ignored in the create method. A new name is created by the
+      method, and returned within the response. Only the fields `device_type`,
+      `serial_number` and `asset_tag` (if present) are used to create the
+      device.`device_type` and `serial_number` are required.
+  """
+
+  customer = _messages.StringField(1)
+  device = _messages.MessageField('Device', 2)
+
+
+class CustomAttributeValue(_messages.Message):
+  r"""Additional custom attribute values may be one of these types
+
+  Fields:
+    boolValue: Represents a boolean value.
+    numberValue: Represents a double value.
+    stringValue: Represents a string value.
+  """
+
+  boolValue = _messages.BooleanField(1)
+  numberValue = _messages.FloatField(2)
+  stringValue = _messages.StringField(3)
+
+
+class Device(_messages.Message):
+  r"""Represents a Device known to Google Cloud, independent of the device
+  ownership, type, and whether it is assigned or in use by a user.
+
+  Enums:
+    CompromisedStateValueValuesEnum: Output only. Represents whether the
+      Device is compromised.
+    DeviceTypeValueValuesEnum: Output only. Type of device.
+    ManagementStateValueValuesEnum: Output only. Management state of the
+      device
+    OwnerTypeValueValuesEnum: Whether the device is owned by the company or an
+      individual
+
+  Fields:
+    androidSpecificAttributes: Output only. Attributes specific to Android
+      devices.
+    assetTag: Asset tag of the device.
+    brand: Output only. Device brand. Example: Samsung.
+    compromisedState: Output only. Represents whether the Device is
+      compromised.
+    createTime: Output only. When the Company-Owned device was imported. This
+      field is empty for BYOD devices.
+    deviceType: Output only. Type of device.
+    imei: Output only. IMEI number of device if GSM device; empty otherwise.
+    lastSyncTime: Most recent time when device synced with this service.
+    managementState: Output only. Management state of the device
+    manufacturer: Output only. Device manufacturer. Example: Motorola.
+    meid: Output only. MEID number of device if CDMA device; empty otherwise.
+    model: Output only. Model name of device. Example: Pixel 3.
+    name: Output only. [Resource
+      name](https://cloud.google.com/apis/design/resource_names) of the Device
+      in format: `devices/{device_id}`, where device_id is the unique id
+      assigned to the Device.
+    networkOperator: Output only. Mobile or network operator of device, if
+      available.
+    osVersion: Output only. OS version of the device. Example: Android 8.1.0.
+    ownerType: Whether the device is owned by the company or an individual
+    releaseVersion: Output only. OS release version. Example: 6.0.
+    serialNumber: Serial Number of device. Example: HT82V1A01076.
+    wifiMacAddresses: WiFi MAC addresses of device.
+  """
+
+  class CompromisedStateValueValuesEnum(_messages.Enum):
+    r"""Output only. Represents whether the Device is compromised.
+
+    Values:
+      COMPROMISED_STATE_UNSPECIFIED: Default value.
+      COMPROMISED: The device is compromised (currently, this means Android
+        device is rooted).
+      UNCOMPROMISED: The device is safe (currently, this means Android device
+        is unrooted).
+    """
+    COMPROMISED_STATE_UNSPECIFIED = 0
+    COMPROMISED = 1
+    UNCOMPROMISED = 2
+
+  class DeviceTypeValueValuesEnum(_messages.Enum):
+    r"""Output only. Type of device.
+
+    Values:
+      DEVICE_TYPE_UNSPECIFIED: Unknown device type
+      ANDROID: Device is an Android device
+      IOS: Device is an iOS device
+      GOOGLE_SYNC: Device is a Google Sync device.
+      WINDOWS: Device is a Windows device.
+      MAC_OS: Device is a MacOS device.
+      LINUX: Device is a Linux device.
+      CHROME_OS: Device is a ChromeOS device.
+    """
+    DEVICE_TYPE_UNSPECIFIED = 0
+    ANDROID = 1
+    IOS = 2
+    GOOGLE_SYNC = 3
+    WINDOWS = 4
+    MAC_OS = 5
+    LINUX = 6
+    CHROME_OS = 7
+
+  class ManagementStateValueValuesEnum(_messages.Enum):
+    r"""Output only. Management state of the device
+
+    Values:
+      MANAGEMENT_STATE_UNSPECIFIED: Default value. This value is unused.
+      APPROVED: Device is approved.
+      BLOCKED: Device is blocked.
+      PENDING: Device is pending approval.
+      UNPROVISIONED: The device is not provisioned. Device will start from
+        this state until some action is taken (i.e. a user starts using the
+        device).
+      WIPING: Data and settings on the device are being removed.
+      WIPED: All data and settings on the device are removed.
+    """
+    MANAGEMENT_STATE_UNSPECIFIED = 0
+    APPROVED = 1
+    BLOCKED = 2
+    PENDING = 3
+    UNPROVISIONED = 4
+    WIPING = 5
+    WIPED = 6
+
+  class OwnerTypeValueValuesEnum(_messages.Enum):
+    r"""Whether the device is owned by the company or an individual
+
+    Values:
+      DEVICE_OWNERSHIP_UNSPECIFIED: Default value. The value is unused.
+      COMPANY: Company owns the device.
+      BYOD: Bring Your Own Device (i.e. individual owns the device)
+    """
+    DEVICE_OWNERSHIP_UNSPECIFIED = 0
+    COMPANY = 1
+    BYOD = 2
+
+  androidSpecificAttributes = _messages.MessageField('AndroidAttributes', 1)
+  assetTag = _messages.StringField(2)
+  brand = _messages.StringField(3)
+  compromisedState = _messages.EnumField('CompromisedStateValueValuesEnum', 4)
+  createTime = _messages.StringField(5)
+  deviceType = _messages.EnumField('DeviceTypeValueValuesEnum', 6)
+  imei = _messages.StringField(7)
+  lastSyncTime = _messages.StringField(8)
+  managementState = _messages.EnumField('ManagementStateValueValuesEnum', 9)
+  manufacturer = _messages.StringField(10)
+  meid = _messages.StringField(11)
+  model = _messages.StringField(12)
+  name = _messages.StringField(13)
+  networkOperator = _messages.StringField(14)
+  osVersion = _messages.StringField(15)
+  ownerType = _messages.EnumField('OwnerTypeValueValuesEnum', 16)
+  releaseVersion = _messages.StringField(17)
+  serialNumber = _messages.StringField(18)
+  wifiMacAddresses = _messages.StringField(19, repeated=True)
+
+
+class DeviceUser(_messages.Message):
+  r"""A DeviceUser is a resource representing a user's use of a Device
+
+  Enums:
+    CompromisedStateValueValuesEnum: Compromised State of the DeviceUser
+      object
+    ManagementStateValueValuesEnum: Output only. Management state of the user
+      on the device.
+    PasswordStateValueValuesEnum: Password state of the DeviceUser object
+
+  Fields:
+    compromisedState: Compromised State of the DeviceUser object
+    firstSyncTime: Output only. Most recent time when user registered with
+      this service.
+    languageCode: Output only. Default locale used on device, in IETF BCP-47
+      format.
+    lastSyncTime: Output only. Last time when user synced with policies.
+    managementState: Output only. Management state of the user on the device.
+    name: Output only. [Resource
+      name](https://cloud.google.com/apis/design/resource_names) of the
+      DeviceUser in format: `devices/{device_id}/deviceUsers/{user_id}`, where
+      user_id is the ID of the user associated with the user session.
+    passwordState: Password state of the DeviceUser object
+    userAgent: Output only. User agent on the device for this specific user
+    userEmail: Email address of the user registered on the device.
+  """
+
+  class CompromisedStateValueValuesEnum(_messages.Enum):
+    r"""Compromised State of the DeviceUser object
+
+    Values:
+      COMPROMISED_STATE_UNSPECIFIED: Compromised state of Device User account
+        is unknown or unspecified.
+      COMPROMISED: Device User Account is compromised.
+      NOT_COMPROMISED: Device User Account is not compromised.
+    """
+    COMPROMISED_STATE_UNSPECIFIED = 0
+    COMPROMISED = 1
+    NOT_COMPROMISED = 2
+
+  class ManagementStateValueValuesEnum(_messages.Enum):
+    r"""Output only. Management state of the user on the device.
+
+    Values:
+      MANAGEMENT_STATE_UNSPECIFIED: Default value. This value is unused.
+      WIPING: This user's data and profile is being removed from the device.
+      WIPED: This user's data and profile is removed from the device.
+      APPROVED: User is approved to access data on the device.
+      BLOCKED: User is blocked from accessing data on the device.
+      PENDING_APPROVAL: User is awaiting approval.
+      UNENROLLED: User is unenrolled from Advanced Windows Management, but the
+        Windows account is still intact.
+    """
+    MANAGEMENT_STATE_UNSPECIFIED = 0
+    WIPING = 1
+    WIPED = 2
+    APPROVED = 3
+    BLOCKED = 4
+    PENDING_APPROVAL = 5
+    UNENROLLED = 6
+
+  class PasswordStateValueValuesEnum(_messages.Enum):
+    r"""Password state of the DeviceUser object
+
+    Values:
+      PASSWORD_STATE_UNSPECIFIED: Password state not set.
+      PASSWORD_SET: Password set in object.
+      PASSWORD_NOT_SET: Password not set in object.
+    """
+    PASSWORD_STATE_UNSPECIFIED = 0
+    PASSWORD_SET = 1
+    PASSWORD_NOT_SET = 2
+
+  compromisedState = _messages.EnumField('CompromisedStateValueValuesEnum', 1)
+  firstSyncTime = _messages.StringField(2)
+  languageCode = _messages.StringField(3)
+  lastSyncTime = _messages.StringField(4)
+  managementState = _messages.EnumField('ManagementStateValueValuesEnum', 5)
+  name = _messages.StringField(6)
+  passwordState = _messages.EnumField('PasswordStateValueValuesEnum', 7)
+  userAgent = _messages.StringField(8)
+  userEmail = _messages.StringField(9)
+
+
 class DynamicGroupMetadata(_messages.Message):
   r"""Dynamic group metadata like queries and status.
 
@@ -558,6 +1740,31 @@ class EffectiveSetting(_messages.Message):
   """
 
   mamDataProtectionSetting = _messages.MessageField('MamDataProtectionSetting', 1)
+
+
+class EndpointApp(_messages.Message):
+  r"""An EndpointApp represents an app that is installed on a device
+
+  Fields:
+    displayName: Output only. Name of the app displayed to the user
+    name: Output only. [Resource
+      name](https://cloud.google.com/apis/design/resource_names) of the
+      EndpointApp in format: `devices/{device}/deviceUsers/{device_user}/endpo
+      intApps/{endpoint_app}`, where client_app_id is the ID of the app
+      associated with the Device.
+    packageName: Output only. Full package name of the installed app
+    permissions: Output only. Names of all permissions granted to the
+      installed app
+    versionCode: Output only. Version code of the installed app
+    versionName: Output only. Version name of the installed app
+  """
+
+  displayName = _messages.StringField(1)
+  name = _messages.StringField(2)
+  packageName = _messages.StringField(3)
+  permissions = _messages.StringField(4, repeated=True)
+  versionCode = _messages.IntegerField(5, variant=_messages.Variant.INT32)
+  versionName = _messages.StringField(6)
 
 
 class EntityKey(_messages.Message):
@@ -775,6 +1982,48 @@ class GroupRelation(_messages.Message):
   roles = _messages.MessageField('TransitiveMembershipRole', 6, repeated=True)
 
 
+class ListDeviceUsersResponse(_messages.Message):
+  r"""Response message that is returned in LRO result of ListDeviceUsers
+  Operation.
+
+  Fields:
+    deviceUsers: Devices meeting the list restrictions.
+    nextPageToken: Token to retrieve the next page of results. Empty if there
+      are no more results.
+  """
+
+  deviceUsers = _messages.MessageField('DeviceUser', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+
+
+class ListDevicesResponse(_messages.Message):
+  r"""Response message that is returned in LRO result of ListDevices
+  Operation.
+
+  Fields:
+    devices: Devices meeting the list restrictions.
+    nextPageToken: Token to retrieve the next page of results. Empty if there
+      are no more results.
+  """
+
+  devices = _messages.MessageField('Device', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+
+
+class ListEndpointAppsResponse(_messages.Message):
+  r"""Response message for listing all apps on the device.
+
+  Fields:
+    endpointApps: The list of matching EndpointApps found as a result of the
+      request.
+    nextPageToken: Token to retrieve the next page of results. Empty if there
+      are no more results.
+  """
+
+  endpointApps = _messages.MessageField('EndpointApp', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+
+
 class ListGroupsResponse(_messages.Message):
   r"""The response message for GroupsService.ListGroups.
 
@@ -801,6 +2050,25 @@ class ListMembershipsResponse(_messages.Message):
   nextPageToken = _messages.StringField(2)
 
 
+class LockDeviceRequest(_messages.Message):
+  r"""Request message for locking the device.
+
+  Fields:
+    customer: Required. [Resource
+      name](https://cloud.google.com/apis/design/resource_names) of the
+      Customer in format: `customers/{customer_id}`, where customer_id is the
+      customer to whom the device belongs. To find the customer ID for your
+      organization, use the command: ``` gcloud alpha organizations list ```
+      The customer ID you need to use appears under the heading
+      `DIRECTORY_CUSTOMER_ID`. The value is the letter "C" followed by letters
+      and numbers. Use the value after the letter "C". So if the Directory
+      Customer ID displayed is, say `C00zqsgyx`, then the customer ID value to
+      use in the API is: `customers/00zqsgyx`.
+  """
+
+  customer = _messages.StringField(1)
+
+
 class LookupGroupNameResponse(_messages.Message):
   r"""The response message for GroupsService.LookupGroupName.
 
@@ -824,6 +2092,28 @@ class LookupMembershipNameResponse(_messages.Message):
   """
 
   name = _messages.StringField(1)
+
+
+class LookupSelfDeviceUsersResponse(_messages.Message):
+  r"""Response containing resource names of the DeviceUsers associated with
+  the caller's credentials.
+
+  Fields:
+    customer: The obfuscated customer Id that may be passed back to other
+      Devices API methods such as List, Get, etc.
+    names: [Resource
+      names](https://cloud.google.com/apis/design/resource_names) of the
+      DeviceUsers in the format:
+      `devices/{device_id}/deviceUsers/{user_resource_id}`, where device_id is
+      the unique ID assigned to a Device and user_resource_id is the unique
+      user ID
+    nextPageToken: Token to retrieve the next page of results. Empty if there
+      are no more results.
+  """
+
+  customer = _messages.StringField(1)
+  names = _messages.StringField(2, repeated=True)
+  nextPageToken = _messages.StringField(3)
 
 
 class MamDataProtectionSetting(_messages.Message):
@@ -1108,6 +2398,46 @@ class Operation(_messages.Message):
   response = _messages.MessageField('ResponseValue', 5)
 
 
+class ResetPinRequest(_messages.Message):
+  r"""Request message for resetting the pin on the device.
+
+  Fields:
+    customer: Required. [Resource
+      name](https://cloud.google.com/apis/design/resource_names) of the
+      Customer in format: `customers/{customer_id}`, where customer_id is the
+      customer to whom the device belongs. To find the customer ID for your
+      organization, use the command: ``` gcloud alpha organizations list ```
+      The customer ID you need to use appears under the heading
+      `DIRECTORY_CUSTOMER_ID`. The value is the letter "C" followed by letters
+      and numbers. Use the value after the letter "C". So if the Directory
+      Customer ID displayed is, say `C00zqsgyx`, then the customer ID value to
+      use in the API is: `customers/00zqsgyx`.
+    pin: Required. New pin number to set for the device.
+  """
+
+  customer = _messages.StringField(1)
+  pin = _messages.StringField(2)
+
+
+class RingDeviceRequest(_messages.Message):
+  r"""Request message for ringing device.
+
+  Fields:
+    customer: Required. [Resource
+      name](https://cloud.google.com/apis/design/resource_names) of the
+      Customer in format: `customers/{customer_id}`, where customer_id is the
+      customer to whom the device belongs. To find the customer ID for your
+      organization, use the command: ``` gcloud alpha organizations list ```
+      The customer ID you need to use appears under the heading
+      `DIRECTORY_CUSTOMER_ID`. The value is the letter "C" followed by letters
+      and numbers. Use the value after the letter "C". So if the Directory
+      Customer ID displayed is, say `C00zqsgyx`, then the customer ID value to
+      use in the API is: `customers/00zqsgyx`.
+  """
+
+  customer = _messages.StringField(1)
+
+
 class SearchGroupsResponse(_messages.Message):
   r"""The response message for GroupsService.SearchGroups.
 
@@ -1145,6 +2475,25 @@ class SearchTransitiveMembershipsResponse(_messages.Message):
 
   memberships = _messages.MessageField('MemberRelation', 1, repeated=True)
   nextPageToken = _messages.StringField(2)
+
+
+class SignoutDeviceUserRequest(_messages.Message):
+  r"""Request message for signing out of the device.
+
+  Fields:
+    customer: Required. [Resource
+      name](https://cloud.google.com/apis/design/resource_names) of the
+      Customer in format: `customers/{customer_id}`, where customer_id is the
+      customer to whom the device belongs. To find the customer ID for your
+      organization, use the command: ``` gcloud alpha organizations list ```
+      The customer ID you need to use appears under the heading
+      `DIRECTORY_CUSTOMER_ID`. The value is the letter "C" followed by letters
+      and numbers. Use the value after the letter "C". So if the Directory
+      Customer ID displayed is, say `C00zqsgyx`, then the customer ID value to
+      use in the API is: `customers/00zqsgyx`.
+  """
+
+  customer = _messages.StringField(1)
 
 
 class StandardQueryParameters(_messages.Message):
@@ -1261,6 +2610,25 @@ class Status(_messages.Message):
   message = _messages.StringField(3)
 
 
+class SyncDeviceUserRequest(_messages.Message):
+  r"""Request message for syncing the user's device management policies.
+
+  Fields:
+    customer: Required. [Resource
+      name](https://cloud.google.com/apis/design/resource_names) of the
+      Customer in format: `customers/{customer_id}`, where customer_id is the
+      customer to whom the device belongs. To find the customer ID for your
+      organization, use the command: ``` gcloud alpha organizations list ```
+      The customer ID you need to use appears under the heading
+      `DIRECTORY_CUSTOMER_ID`. The value is the letter "C" followed by letters
+      and numbers. Use the value after the letter "C". So if the Directory
+      Customer ID displayed is, say `C00zqsgyx`, then the customer ID value to
+      use in the API is: `customers/00zqsgyx`.
+  """
+
+  customer = _messages.StringField(1)
+
+
 class TransitiveMembershipRole(_messages.Message):
   r"""Message representing the role of a TransitiveMembership.
 
@@ -1270,6 +2638,25 @@ class TransitiveMembershipRole(_messages.Message):
   """
 
   role = _messages.StringField(1)
+
+
+class UnenrollDeviceUserRequest(_messages.Message):
+  r"""Request message to unenroll the user from Advanced Windows Management.
+
+  Fields:
+    customer: Required. [Resource
+      name](https://cloud.google.com/apis/design/resource_names) of the
+      Customer in format: `customers/{customer_id}`, where customer_id is the
+      customer to whom the device belongs. To find the customer ID for your
+      organization, use the command: ``` gcloud alpha organizations list ```
+      The customer ID you need to use appears under the heading
+      `DIRECTORY_CUSTOMER_ID`. The value is the letter "C" followed by letters
+      and numbers. Use the value after the letter "C". So if the Directory
+      Customer ID displayed is, say `C00zqsgyx`, then the customer ID value to
+      use in the API is: `customers/00zqsgyx`.
+  """
+
+  customer = _messages.StringField(1)
 
 
 class UpdateMembershipRolesParams(_messages.Message):
@@ -1285,6 +2672,65 @@ class UpdateMembershipRolesParams(_messages.Message):
 
   fieldMask = _messages.StringField(1)
   membershipRole = _messages.MessageField('MembershipRole', 2)
+
+
+class WipeDeviceRequest(_messages.Message):
+  r"""Request message for wiping all data on the device.
+
+  Fields:
+    customer: Required. [Resource
+      name](https://cloud.google.com/apis/design/resource_names) of the
+      Customer in format: `customers/{customer_id}`, where customer_id is the
+      customer to whom the device belongs. To find the customer ID for your
+      organization, use the command: ``` gcloud alpha organizations list ```
+      The customer ID you need to use appears under the heading
+      `DIRECTORY_CUSTOMER_ID`. The value is the letter "C" followed by letters
+      and numbers. Use the value after the letter "C". So if the Directory
+      Customer ID displayed is, say `C00zqsgyx`, then the customer ID value to
+      use in the API is: `customers/00zqsgyx`.
+  """
+
+  customer = _messages.StringField(1)
+
+
+class WipeDeviceResponse(_messages.Message):
+  r"""Response message for wiping all data on the device.
+
+  Fields:
+    device: Resultant Device object for the action. Note that asset tags will
+      not be returned in the device object.
+  """
+
+  device = _messages.MessageField('Device', 1)
+
+
+class WipeDeviceUserRequest(_messages.Message):
+  r"""Request message for starting an account wipe on device.
+
+  Fields:
+    customer: Required. [Resource
+      name](https://cloud.google.com/apis/design/resource_names) of the
+      Customer in format: `customers/{customer_id}`, where customer_id is the
+      customer to whom the device belongs. To find the customer ID for your
+      organization, use the command: ``` gcloud alpha organizations list ```
+      The customer ID you need to use appears under the heading
+      `DIRECTORY_CUSTOMER_ID`. The value is the letter "C" followed by letters
+      and numbers. Use the value after the letter "C". So if the Directory
+      Customer ID displayed is, say `C00zqsgyx`, then the customer ID value to
+      use in the API is: `customers/00zqsgyx`.
+  """
+
+  customer = _messages.StringField(1)
+
+
+class WipeDeviceUserResponse(_messages.Message):
+  r"""Response message for wiping the user's account from the device.
+
+  Fields:
+    deviceUser: Resultant DeviceUser object for the action.
+  """
+
+  deviceUser = _messages.MessageField('DeviceUser', 1)
 
 
 encoding.AddCustomJsonFieldMapping(

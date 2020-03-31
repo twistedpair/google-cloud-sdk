@@ -16,7 +16,7 @@ class AccesscontextmanagerV1alpha(base_api.BaseApiClient):
   _VERSION = u'v1alpha'
   _CLIENT_ID = '1042881264118.apps.googleusercontent.com'
   _CLIENT_SECRET = 'x_Tw5K8nnjoRAqULM9PFAC2b'
-  _USER_AGENT = 'x_Tw5K8nnjoRAqULM9PFAC2b'
+  _USER_AGENT = u'google-cloud-sdk'
   _CLIENT_CLASS_NAME = u'AccesscontextmanagerV1alpha'
   _URL_VERSION = u'v1alpha'
   _API_KEY = None
@@ -40,6 +40,8 @@ class AccesscontextmanagerV1alpha(base_api.BaseApiClient):
     self.accessPolicies_servicePerimeters = self.AccessPoliciesServicePerimetersService(self)
     self.accessPolicies = self.AccessPoliciesService(self)
     self.operations = self.OperationsService(self)
+    self.organizations_gcpUserAccessBindings = self.OrganizationsGcpUserAccessBindingsService(self)
+    self.organizations = self.OrganizationsService(self)
 
   class AccessPoliciesAccessLevelsService(base_api.BaseApiService):
     """Service class for the accessPolicies_accessLevels resource."""
@@ -662,3 +664,173 @@ service.
         response_type_name=u'Operation',
         supports_download=False,
     )
+
+  class OrganizationsGcpUserAccessBindingsService(base_api.BaseApiService):
+    """Service class for the organizations_gcpUserAccessBindings resource."""
+
+    _NAME = u'organizations_gcpUserAccessBindings'
+
+    def __init__(self, client):
+      super(AccesscontextmanagerV1alpha.OrganizationsGcpUserAccessBindingsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Creates a GcpUserAccessBinding. If the.
+client specifies a name,
+the server will ignore it. Fails if a resource already exists with the same
+group_key.
+To add more access levels to a group, update the existing resource instead.
+Completion of this long-running operation does not necessarily signify that
+the new binding is deployed onto all affected users, which may take more
+time.
+
+      Args:
+        request: (AccesscontextmanagerOrganizationsGcpUserAccessBindingsCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1alpha/organizations/{organizationsId}/gcpUserAccessBindings',
+        http_method=u'POST',
+        method_id=u'accesscontextmanager.organizations.gcpUserAccessBindings.create',
+        ordered_params=[u'parent'],
+        path_params=[u'parent'],
+        query_params=[],
+        relative_path=u'v1alpha/{+parent}/gcpUserAccessBindings',
+        request_field=u'gcpUserAccessBinding',
+        request_type_name=u'AccesscontextmanagerOrganizationsGcpUserAccessBindingsCreateRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes a GcpUserAccessBinding.
+Completion of this long-running operation does not necessarily signify that
+the binding deletion is deployed onto all affected users, which may take
+more time.
+
+      Args:
+        request: (AccesscontextmanagerOrganizationsGcpUserAccessBindingsDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1alpha/organizations/{organizationsId}/gcpUserAccessBindings/{gcpUserAccessBindingsId}',
+        http_method=u'DELETE',
+        method_id=u'accesscontextmanager.organizations.gcpUserAccessBindings.delete',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[],
+        relative_path=u'v1alpha/{+name}',
+        request_field='',
+        request_type_name=u'AccesscontextmanagerOrganizationsGcpUserAccessBindingsDeleteRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Gets the GcpUserAccessBinding with.
+the given name.
+
+      Args:
+        request: (AccesscontextmanagerOrganizationsGcpUserAccessBindingsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GcpUserAccessBinding) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1alpha/organizations/{organizationsId}/gcpUserAccessBindings/{gcpUserAccessBindingsId}',
+        http_method=u'GET',
+        method_id=u'accesscontextmanager.organizations.gcpUserAccessBindings.get',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[],
+        relative_path=u'v1alpha/{+name}',
+        request_field='',
+        request_type_name=u'AccesscontextmanagerOrganizationsGcpUserAccessBindingsGetRequest',
+        response_type_name=u'GcpUserAccessBinding',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists all GcpUserAccessBindings for a.
+Google Cloud organization.
+
+      Args:
+        request: (AccesscontextmanagerOrganizationsGcpUserAccessBindingsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListGcpUserAccessBindingsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1alpha/organizations/{organizationsId}/gcpUserAccessBindings',
+        http_method=u'GET',
+        method_id=u'accesscontextmanager.organizations.gcpUserAccessBindings.list',
+        ordered_params=[u'parent'],
+        path_params=[u'parent'],
+        query_params=[u'pageSize', u'pageToken'],
+        relative_path=u'v1alpha/{+parent}/gcpUserAccessBindings',
+        request_field='',
+        request_type_name=u'AccesscontextmanagerOrganizationsGcpUserAccessBindingsListRequest',
+        response_type_name=u'ListGcpUserAccessBindingsResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Updates a GcpUserAccessBinding.
+Completion of this long-running operation does not necessarily signify that
+the changed binding is deployed onto all affected users, which may take
+more time.
+
+      Args:
+        request: (AccesscontextmanagerOrganizationsGcpUserAccessBindingsPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1alpha/organizations/{organizationsId}/gcpUserAccessBindings/{gcpUserAccessBindingsId}',
+        http_method=u'PATCH',
+        method_id=u'accesscontextmanager.organizations.gcpUserAccessBindings.patch',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[u'updateMask'],
+        relative_path=u'v1alpha/{+name}',
+        request_field=u'gcpUserAccessBinding',
+        request_type_name=u'AccesscontextmanagerOrganizationsGcpUserAccessBindingsPatchRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
+  class OrganizationsService(base_api.BaseApiService):
+    """Service class for the organizations resource."""
+
+    _NAME = u'organizations'
+
+    def __init__(self, client):
+      super(AccesscontextmanagerV1alpha.OrganizationsService, self).__init__(client)
+      self._upload_configs = {
+          }

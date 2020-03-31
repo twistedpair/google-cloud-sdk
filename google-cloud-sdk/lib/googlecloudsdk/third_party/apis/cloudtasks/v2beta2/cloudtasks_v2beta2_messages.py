@@ -522,9 +522,13 @@ class CloudtasksProjectsLocationsQueuesGetRequest(_messages.Message):
   Fields:
     name: Required. The resource name of the queue. For example:
       `projects/PROJECT_ID/locations/LOCATION_ID/queues/QUEUE_ID`
+    readMask: Optional. Read mask is used for a more granular control over
+      what the API returns. By it includes all fields in Queue except for
+      stats.
   """
 
   name = _messages.StringField(1, required=True)
+  readMask = _messages.StringField(2)
 
 
 class CloudtasksProjectsLocationsQueuesListRequest(_messages.Message):

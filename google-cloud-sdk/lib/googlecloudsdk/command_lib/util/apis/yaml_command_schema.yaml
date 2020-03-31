@@ -353,6 +353,22 @@ properties:
       examples: {type: string}
       .*: {type: string}
 
+  # Determines whether the command is deprecated.
+  # If is_removed is false, a warning will be logged when *command* is run,
+  # otherwise an *exception* will be thrown containing error message.
+  # Command help output will be modified to include warning/error message
+  # depending on value of is_removed.
+  # Command help text will automatically hidden from the reference
+  # documentation if is_removed is True.
+  deprecate:
+    type: object
+    additionalProperties: false
+    required: [is_removed]
+    patternProperties:
+      is_removed: {type: boolean}
+      warning: {type: string}
+      error: {type: string}
+
   # Attributes about the API request the command will make.
   request: &request
     description: Describes information about the API that this command calls

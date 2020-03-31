@@ -528,6 +528,40 @@
                   ],
                   "description": "Creates a Serverless VPC Access connector, returns an operation."
                 },
+                "patch": {
+                  "id": "vpcaccess.projects.locations.connectors.patch",
+                  "path": "v1alpha1/{+name}",
+                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/connectors/{connectorsId}",
+                  "httpMethod": "PATCH",
+                  "parameters": {
+                    "name": {
+                      "description": "The resource name in the format `projects\/*\/locations\/*\/connectors\/*`.",
+                      "location": "path",
+                      "required": true,
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/connectors\/[^\/]+$",
+                      "type": "string"
+                    },
+                    "updateMask": {
+                      "description": "The fields to update on the entry group. If absent or empty, all modifiable\nfields are updated.",
+                      "location": "query",
+                      "type": "string",
+                      "format": "google-fieldmask"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "request": {
+                    "$ref": "Connector"
+                  },
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Updates a Serverless VPC Access connector, returns an operation."
+                },
                 "get": {
                   "id": "vpcaccess.projects.locations.connectors.get",
                   "path": "v1alpha1/{+name}",

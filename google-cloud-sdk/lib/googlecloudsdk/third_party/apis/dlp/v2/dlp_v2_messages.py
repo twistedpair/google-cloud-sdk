@@ -1063,7 +1063,8 @@ class DlpProjectsLocationsContentInspectRequest(_messages.Message):
       GooglePrivacyDlpV2InspectContentRequest resource to be passed as the
       request body.
     locationId: The geographic location to process content inspection.
-      Reserved for future extensions.
+      Reserved for future extensions. When inspecting images location is
+      restricted to 'global', 'us', 'asia', and 'europe'.
     parent: The parent resource name, for example projects/my-project-id.
   """
 
@@ -1331,7 +1332,8 @@ class DlpProjectsLocationsImageRedactRequest(_messages.Message):
       GooglePrivacyDlpV2RedactImageRequest resource to be passed as the
       request body.
     locationId: The geographic location to process the request. Reserved for
-      future extensions.
+      future extensions. Location is restricted to 'global', 'us', 'asia', and
+      'europe'.
     parent: The parent resource name, for example projects/my-project-id.
   """
 
@@ -1980,6 +1982,8 @@ class GooglePrivacyDlpV2ByteContentItem(_messages.Message):
       IMAGE_PNG: png
       IMAGE_SVG: svg
       TEXT_UTF8: plain text
+      WORD_DOCUMENT: docx, docm, dotx, dotm
+      PDF: pdf
       AVRO: avro
     """
     BYTES_TYPE_UNSPECIFIED = 0
@@ -1989,7 +1993,9 @@ class GooglePrivacyDlpV2ByteContentItem(_messages.Message):
     IMAGE_PNG = 4
     IMAGE_SVG = 5
     TEXT_UTF8 = 6
-    AVRO = 7
+    WORD_DOCUMENT = 7
+    PDF = 8
+    AVRO = 9
 
   data = _messages.BytesField(1)
   type = _messages.EnumField('TypeValueValuesEnum', 2)
@@ -2149,7 +2155,9 @@ class GooglePrivacyDlpV2CloudStorageOptions(_messages.Message):
     fileTypes: List of file type groups to include in the scan. If empty, all
       files are scanned and available data format processors are applied. In
       addition, the binary content of the selected files is always scanned as
-      well.
+      well. Images are scanned only as binary if the specified region does not
+      support image inspection and no file_types were specified. Image
+      inspection is restricted to 'global', 'us', 'asia', and 'europe'.
     filesLimitPercent: Limits the number of files to scan to this percentage
       of the input FileSet. Number of files scanned is rounded down. Must be
       between 0 and 100, inclusively. Both 0 and 100 means no limit. Defaults
@@ -2825,14 +2833,14 @@ class GooglePrivacyDlpV2DateTime(_messages.Message):
     r"""Day of week
 
     Values:
-      DAY_OF_WEEK_UNSPECIFIED: The unspecified day-of-week.
-      MONDAY: The day-of-week of Monday.
-      TUESDAY: The day-of-week of Tuesday.
-      WEDNESDAY: The day-of-week of Wednesday.
-      THURSDAY: The day-of-week of Thursday.
-      FRIDAY: The day-of-week of Friday.
-      SATURDAY: The day-of-week of Saturday.
-      SUNDAY: The day-of-week of Sunday.
+      DAY_OF_WEEK_UNSPECIFIED: The day of the week is unspecified.
+      MONDAY: Monday
+      TUESDAY: Tuesday
+      WEDNESDAY: Wednesday
+      THURSDAY: Thursday
+      FRIDAY: Friday
+      SATURDAY: Saturday
+      SUNDAY: Sunday
     """
     DAY_OF_WEEK_UNSPECIFIED = 0
     MONDAY = 1
@@ -3943,7 +3951,8 @@ class GooglePrivacyDlpV2InspectContentRequest(_messages.Message):
       messages and groups are recursively merged.
     item: The item to inspect.
     locationId: The geographic location to process content inspection.
-      Reserved for future extensions.
+      Reserved for future extensions. When inspecting images location is
+      restricted to 'global', 'us', 'asia', and 'europe'.
   """
 
   inspectConfig = _messages.MessageField('GooglePrivacyDlpV2InspectConfig', 1)
@@ -4565,13 +4574,16 @@ class GooglePrivacyDlpV2Location(_messages.Message):
     codepointRange: Unicode character offsets delimiting the finding. These
       are relative to the finding's containing element. Provided when the
       content is text.
+    container: Information about the container where this finding occurred, if
+      available.
     contentLocations: List of nested objects pointing to the precise location
       of the finding within the file or record.
   """
 
   byteRange = _messages.MessageField('GooglePrivacyDlpV2Range', 1)
   codepointRange = _messages.MessageField('GooglePrivacyDlpV2Range', 2)
-  contentLocations = _messages.MessageField('GooglePrivacyDlpV2ContentLocation', 3, repeated=True)
+  container = _messages.MessageField('GooglePrivacyDlpV2Container', 3)
+  contentLocations = _messages.MessageField('GooglePrivacyDlpV2ContentLocation', 4, repeated=True)
 
 
 class GooglePrivacyDlpV2Manual(_messages.Message):
@@ -5017,7 +5029,8 @@ class GooglePrivacyDlpV2RedactImageRequest(_messages.Message):
       the redacted image.
     inspectConfig: Configuration for the inspector.
     locationId: The geographic location to process the request. Reserved for
-      future extensions.
+      future extensions. Location is restricted to 'global', 'us', 'asia', and
+      'europe'.
   """
 
   byteItem = _messages.MessageField('GooglePrivacyDlpV2ByteContentItem', 1)
@@ -5739,14 +5752,14 @@ class GooglePrivacyDlpV2Value(_messages.Message):
     r"""day of week
 
     Values:
-      DAY_OF_WEEK_UNSPECIFIED: The unspecified day-of-week.
-      MONDAY: The day-of-week of Monday.
-      TUESDAY: The day-of-week of Tuesday.
-      WEDNESDAY: The day-of-week of Wednesday.
-      THURSDAY: The day-of-week of Thursday.
-      FRIDAY: The day-of-week of Friday.
-      SATURDAY: The day-of-week of Saturday.
-      SUNDAY: The day-of-week of Sunday.
+      DAY_OF_WEEK_UNSPECIFIED: The day of the week is unspecified.
+      MONDAY: Monday
+      TUESDAY: Tuesday
+      WEDNESDAY: Wednesday
+      THURSDAY: Thursday
+      FRIDAY: Friday
+      SATURDAY: Saturday
+      SUNDAY: Sunday
     """
     DAY_OF_WEEK_UNSPECIFIED = 0
     MONDAY = 1

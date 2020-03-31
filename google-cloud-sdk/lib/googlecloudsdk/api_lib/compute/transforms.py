@@ -78,6 +78,32 @@ def TransformFirewallRule(r, undefined=''):
   return ','.join(rule)
 
 
+def TransformOrganizationFirewallRule(rule, undefined=''):
+  """Returns a compact string describing an organization firewall rule.
+
+  The compact string is a comma-separated list of PROTOCOL:PORT_RANGE items.
+  If a particular protocol has no port ranges then only the protocol is listed.
+
+  Args:
+    rule: JSON-serializable object.
+    undefined: Returns this value if the resource cannot be formatted.
+
+  Returns:
+    A compact string describing the organizatin firewall rule in the rule.
+  """
+  protocol = resource_transform.GetKeyValue(rule, 'ipProtocol', None)
+  if protocol is None:
+    return undefined
+  result = []
+  port_ranges = resource_transform.GetKeyValue(rule, 'ports', None)
+  try:
+    for port_range in port_ranges:
+      result.append('{0}:{1}'.format(protocol, port_range))
+  except TypeError:
+    result.append(protocol)
+  return ','.join(result)
+
+
 def TransformImageAlias(r, undefined=''):
   """Returns a comma-separated list of alias names for an image.
 
@@ -333,6 +359,7 @@ def TransformTypeSuffix(uri, undefined=''):
 
 _TRANSFORMS = {
     'firewall_rule': TransformFirewallRule,
+    'org_firewall_rule': TransformOrganizationFirewallRule,
     'image_alias': TransformImageAlias,
     'location': TransformLocation,
     'location_scope': TransformLocationScope,

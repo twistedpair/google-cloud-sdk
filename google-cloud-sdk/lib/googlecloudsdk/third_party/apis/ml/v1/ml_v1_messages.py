@@ -2228,7 +2228,10 @@ class GoogleCloudMlV1TrainingInput(_messages.Message):
       number of replicas for workers and parameter servers.
 
   Fields:
-    args: Optional. Command line arguments to pass to the program.
+    args: Optional. Arguments passed to the training. - If it is a python
+      package training:   It will be passed as command line argument to the
+      program. - If it is a custom container training,   It will be passed as
+      an argument to the custom container   image.
     encryptionConfig: Custom encryption key options for a training job. If
       this is set, then all resources created by the training job will be
       encrypted with the provided encryption key.
@@ -2239,9 +2242,9 @@ class GoogleCloudMlV1TrainingInput(_messages.Message):
       /using-gpus#compute-engine-machine-types-with-gpu)  Set
       `evaluatorConfig.imageUri` only if you build a custom image for your
       evaluator. If `evaluatorConfig.imageUri` has not been set, AI Platform
-      uses the value of `masterConfig.imageUri`. Learn more about [configuring
-      custom containers](/ai-platform/training/docs/distributed-training-
-      containers).
+      uses the value of `masterConfig.imageUri` . Learn more about
+      [configuring custom containers](/ai-platform/training/docs/distributed-
+      training-containers).
     evaluatorCount: Optional. The number of evaluator replicas to use for the
       training job. Each replica in the cluster will be of the type specified
       in `evaluator_type`.  This value can only be used when `scale_tier` is
@@ -2301,7 +2304,7 @@ class GoogleCloudMlV1TrainingInput(_messages.Message):
       platform/training/docs/using-gpus#compute-engine-machine-types-with-gpu)
       Set `parameterServerConfig.imageUri` only if you build a custom image
       for your parameter server. If `parameterServerConfig.imageUri` has not
-      been set, AI Platform uses the value of `masterConfig.imageUri`. Learn
+      been set, AI Platform uses the value of `masterConfig.imageUri` . Learn
       more about [configuring custom containers](/ai-platform/training/docs
       /distributed-training-containers).
     parameterServerCount: Optional. The number of parameter server replicas to
@@ -2351,8 +2354,8 @@ class GoogleCloudMlV1TrainingInput(_messages.Message):
       #compute-engine-machine-types-with-gpu)  Set `workerConfig.imageUri`
       only if you build a custom image for your worker. If
       `workerConfig.imageUri` has not been set, AI Platform uses the value of
-      `masterConfig.imageUri`. Learn more about [configuring custom containers
-      ](/ai-platform/training/docs/distributed-training-containers).
+      `masterConfig.imageUri` . Learn more about [configuring custom
+      containers](/ai-platform/training/docs/distributed-training-containers).
     workerCount: Optional. The number of worker replicas to use for the
       training job. Each replica in the cluster will be of the type specified
       in `worker_type`.  This value can only be used when `scale_tier` is set

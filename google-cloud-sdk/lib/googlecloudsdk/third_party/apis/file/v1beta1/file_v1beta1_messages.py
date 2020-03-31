@@ -635,12 +635,12 @@ class Instance(_messages.Message):
       PREMIUM: PREMIUM tier. BASIC_SSD is the preferred term for this tier.
       BASIC_HDD: BASIC instances offer a maximum capacity of 63.9 TB.
         BASIC_HDD is an alias for STANDARD Tier, offering economical
-        performance backed by Persistent Disk HDD.
+        performance backed by HDD.
       BASIC_SSD: BASIC instances offer a maximum capacity of 63.9 TB.
         BASIC_SSD is an alias for PREMIUM Tier, and offers improved
-        performance backed by Persistent Disk SSD.
-      HIGH_SCALE_SSD: HIGH_SCALE instances offer larger capacity and
-        professional performance backed by Persistent Disk SSD.
+        performance backed by SSD.
+      HIGH_SCALE_SSD: HIGH_SCALE instances offer expanded capacity and
+        performance scaling capabilities.
     """
     TIER_UNSPECIFIED = 0
     STANDARD = 1
@@ -825,10 +825,11 @@ class NetworkConfig(_messages.Message):
       assigned. For this version, only MODE_IPV4 is supported.
     network: The name of the Google Compute Engine [VPC network](/compute/docs
       /networks-and-firewalls#networks) to which the instance is connected.
-    reservedIpRange: A /29 CIDR block in one of the [internal IP address
+    reservedIpRange: A /29 CIDR block for Basic or a /23 CIDR block for High
+      Scale in one of the [internal IP address
       ranges](https://www.arin.net/knowledge/address_filters.html) that
       identifies the range of IP addresses reserved for this instance. For
-      example, 10.0.0.0/29 or 192.168.0.0/29. The range you specify can't
+      example, 10.0.0.0/29 or 192.168.0.0/23. The range you specify can't
       overlap with either existing subnets or assigned IP address ranges for
       other Cloud Filestore instances in the selected VPC network.
   """

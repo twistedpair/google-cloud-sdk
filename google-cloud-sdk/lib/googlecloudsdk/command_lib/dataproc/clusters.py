@@ -101,12 +101,12 @@ def ArgsForClusterRef(parser,
       help='The number of worker nodes in the cluster. Defaults to '
       'server-specified.')
   worker_group.add_argument(
-      '--secondary-worker-preemptibility',
+      '--secondary-worker-type',
       hidden=True,
-      metavar='PREEMPTIBILITY',
+      metavar='TYPE',
       choices=['preemptible', 'non-preemptible', 'unspecified'],
       default='unspecified',
-      help='The preemptibility of the secondary worker group.')
+      help='The type of the secondary worker group.')
   num_secondary_workers = worker_group.add_argument_group(mutex=True)
   num_secondary_workers.add_argument(
       '--num-preemptible-workers',
@@ -802,7 +802,7 @@ def GetClusterConfig(args,
       secondary_worker_boot_disk_type is not None or
       num_secondary_worker_local_ssds is not None or
       args.worker_min_cpu_platform is not None or
-      args.secondary_worker_preemptibility != 'unspecified'):
+      args.secondary_worker_type != 'unspecified'):
     cluster_config.secondaryWorkerConfig = (
         dataproc.messages.InstanceGroupConfig(
             numInstances=num_secondary_workers,
@@ -814,8 +814,7 @@ def GetClusterConfig(args,
                 num_secondary_worker_local_ssds,
             ),
             minCpuPlatform=args.worker_min_cpu_platform,
-            preemptibility=_GetPreemptibility(
-                dataproc, args.secondary_worker_preemptibility)))
+            preemptibility=_GetType(dataproc, args.secondary_worker_type)))
 
   if include_gke_platform_args:
     if args.enable_component_gateway:
@@ -842,11 +841,11 @@ def _FirstNonNone(first, second):
   return first if first is not None else second
 
 
-def _GetPreemptibility(dataproc, secondary_worker_preemptibility):
-  if secondary_worker_preemptibility == 'preemptible':
+def _GetType(dataproc, secondary_worker_type):
+  if secondary_worker_type == 'preemptible':
     return dataproc.messages.InstanceGroupConfig.PreemptibilityValueValuesEnum(
         'PREEMPTIBLE')
-  elif secondary_worker_preemptibility == 'non-preemptible':
+  elif secondary_worker_type == 'non-preemptible':
     return dataproc.messages.InstanceGroupConfig.PreemptibilityValueValuesEnum(
         'NON_PREEMPTIBLE')
   else:

@@ -1037,6 +1037,19 @@ class GoogleIamV1Policy(_messages.Message):
   version = _messages.IntegerField(4, variant=_messages.Variant.INT32)
 
 
+class GoogleLongrunningListOperationsResponse(_messages.Message):
+  r"""The response message for Operations.ListOperations.
+
+  Fields:
+    nextPageToken: The standard List next-page token.
+    operations: A list of operations that matches the specified filter in the
+      request.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  operations = _messages.MessageField('GoogleLongrunningOperation', 2, repeated=True)
+
+
 class GoogleLongrunningOperation(_messages.Message):
   r"""This resource represents a long-running operation that is the result of
   a network API call.
@@ -1657,6 +1670,32 @@ class GoogleTypeExpr(_messages.Message):
   expression = _messages.StringField(2)
   location = _messages.StringField(3)
   title = _messages.StringField(4)
+
+
+class IamassistOperationsGetRequest(_messages.Message):
+  r"""A IamassistOperationsGetRequest object.
+
+  Fields:
+    name: The name of the operation resource.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class IamassistOperationsListRequest(_messages.Message):
+  r"""A IamassistOperationsListRequest object.
+
+  Fields:
+    filter: The standard list filter.
+    name: The name of the operation's parent resource.
+    pageSize: The standard list page size.
+    pageToken: The standard list page token.
+  """
+
+  filter = _messages.StringField(1)
+  name = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
 
 
 class IamassistReplaysGetRequest(_messages.Message):

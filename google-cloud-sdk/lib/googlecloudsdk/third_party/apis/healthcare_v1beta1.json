@@ -881,7 +881,7 @@
           "type": "string"
         },
         "mimeType": {
-          "description": "MIME types supported by DICOM spec.\nEach file is written in the following format:\n`...\/{study_id}\/{series_id}\/{instance_id}[\/{frame_number}].{extension}`\nThe frame_number component exists only for multi-frame instances.\n\nRefer to the DICOM conformance statement for permissible MIME types:\nhttps:\/\/cloud.google.com\/healthcare\/docs\/dicom#retrieve_transaction\n\nThe following extensions are used for output files:\n  application\/dicom -> .dcm\n  image\/jpeg -> .jpg\n  image\/png -> .png\n\nIf unspecified, the instances are exported in their original\nDICOM format.",
+          "description": "MIME types supported by DICOM spec.\nEach file is written in the following format:\n`...\/{study_id}\/{series_id}\/{instance_id}[\/{frame_number}].{extension}`\nThe frame_number component exists only for multi-frame instances.\n\nSupported MIME types are consistent with supported formats in DICOMweb:\nhttps:\/\/cloud.google.com\/healthcare\/docs\/dicom#retrieve_transaction.\nSpecifically, the following are supported:\n\n  - application\/dicom; transfer-syntax=1.2.840.10008.1.2.1\n    (uncompressed DICOM)\n  - application\/dicom; transfer-syntax=1.2.840.10008.1.2.4.50\n    (DICOM with embedded JPEG Baseline)\n  - application\/dicom; transfer-syntax=1.2.840.10008.1.2.4.90\n    (DICOM with embedded JPEG 2000 Lossless Only)\n  - application\/dicom; transfer-syntax=1.2.840.10008.1.2.4.91\n    (DICOM with embedded JPEG 2000)h\n  - application\/dicom; transfer-syntax=*\n    (DICOM with no transcoding)\n  - application\/octet-stream; transfer-syntax=1.2.840.10008.1.2.1\n    (raw uncompressed PixelData)\n  - application\/octet-stream; transfer-syntax=*\n    (raw PixelData in whatever format it was uploaded in)\n  - image\/jpeg; transfer-syntax=1.2.840.10008.1.2.4.50\n    (Consumer JPEG)\n  - image\/png\n\nThe following extensions are used for output files:\n\n - application\/dicom -> .dcm\n - image\/jpeg -> .jpg\n - image\/png -> .png\n - application\/octet-stream -> no extension\n\nIf unspecified, the instances are exported in the original\nDICOM format they were uploaded in.",
           "type": "string"
         }
       }
@@ -975,9 +975,238 @@
           "type": "boolean"
         },
         "segmentTerminator": {
-          "description": "Byte(s) to use as the segment terminator. If this is unset, '\\r' is\nused as segment terminator.",
+          "description": "Byte(s) to use as the segment terminator. If this is unset, '\\r' is\nused as segment terminator, matching the HL7 version 2\nspecification.",
           "type": "string",
           "format": "byte"
+        },
+        "schema": {
+          "description": "Schemas used to parse messages in this store, if schematized parsing is\ndesired.",
+          "$ref": "SchemaPackage"
+        }
+      }
+    },
+    "SchemaPackage": {
+      "id": "SchemaPackage",
+      "description": "A schema package contains a set of schemas and type definitions.",
+      "type": "object",
+      "properties": {
+        "schematizedParsingType": {
+          "description": "Determines how messages that don't parse successfully are handled.",
+          "enumDescriptions": [
+            "Unspecified schematized parsing type, equivalent to `SOFT_FAIL`.",
+            "Messages that fail to parse are still stored and ACKed but a parser error\nis stored in place of the schematized data.",
+            "Messages that fail to parse are rejected from ingestion\/insertion and\nreturn an error code."
+          ],
+          "type": "string",
+          "enum": [
+            "SCHEMATIZED_PARSING_TYPE_UNSPECIFIED",
+            "SOFT_FAIL",
+            "HARD_FAIL"
+          ]
+        },
+        "schemas": {
+          "description": "Schema configs that are layered based on their VersionSources that\nmatch the incoming message. Schema configs present in higher indices\noverride those in lower indices with the same message type and trigger\nevent if their VersionSources all match an incoming message.",
+          "type": "array",
+          "items": {
+            "$ref": "Hl7SchemaConfig"
+          }
+        },
+        "types": {
+          "description": "Schema type definitions that are layered based on their VersionSources\nthat match the incoming message. Type definitions present in higher indices\noverride those in lower indices with the same type name if their\nVersionSources all match an incoming message.",
+          "type": "array",
+          "items": {
+            "$ref": "Hl7TypesConfig"
+          }
+        },
+        "ignoreMinOccurs": {
+          "description": "Flag to ignore all min_occurs restrictions in the schema. This means that\nincoming messages can omit any group, segment, field, component, or\nsubcomponent.",
+          "type": "boolean"
+        }
+      }
+    },
+    "Hl7SchemaConfig": {
+      "id": "Hl7SchemaConfig",
+      "description": "Root config message for HL7v2 schema. This contains a schema structure of\ngroups and segments, and filters that determine which messages to apply the\nschema structure to.",
+      "type": "object",
+      "properties": {
+        "version": {
+          "description": "Each VersionSource is tested and only if they all match is the schema used\nfor the message.",
+          "type": "array",
+          "items": {
+            "$ref": "VersionSource"
+          }
+        },
+        "messageSchemaConfigs": {
+          "description": "Map from each HL7v2 message type and trigger event pair, such as ADT_A04,\nto its schema configuration root group.",
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "SchemaGroup"
+          }
+        }
+      }
+    },
+    "VersionSource": {
+      "id": "VersionSource",
+      "description": "Describes a selector for extracting and matching an MSH field to a value.",
+      "type": "object",
+      "properties": {
+        "mshField": {
+          "description": "The field to extract from the MSH segment. For example, \"3.1\" or \"18[1].1\".",
+          "type": "string"
+        },
+        "value": {
+          "description": "The value to match with the field. For example, \"My Application Name\" or\n\"2.3\".",
+          "type": "string"
+        }
+      }
+    },
+    "SchemaGroup": {
+      "id": "SchemaGroup",
+      "description": "An HL7v2 logical group construct.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "The name of this group. For example, \"ORDER_DETAIL\".",
+          "type": "string"
+        },
+        "choice": {
+          "description": "True indicates that this is a choice group, meaning that only one of its\nsegments can exist in a given message.",
+          "type": "boolean"
+        },
+        "minOccurs": {
+          "description": "The minimum number of times this group must be present\/repeated.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "maxOccurs": {
+          "description": "The maximum number of times this group can be repeated. 0 or -1 means\nunbounded.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "members": {
+          "description": "Nested groups and\/or segments.",
+          "type": "array",
+          "items": {
+            "$ref": "GroupOrSegment"
+          }
+        }
+      }
+    },
+    "GroupOrSegment": {
+      "id": "GroupOrSegment",
+      "description": "Construct representing a logical group or a segment.",
+      "type": "object",
+      "properties": {
+        "segment": {
+          "$ref": "SchemaSegment"
+        },
+        "group": {
+          "$ref": "SchemaGroup"
+        }
+      }
+    },
+    "SchemaSegment": {
+      "id": "SchemaSegment",
+      "description": "An HL7v2 Segment.",
+      "type": "object",
+      "properties": {
+        "type": {
+          "description": "The Segment type. For example, \"PID\".",
+          "type": "string"
+        },
+        "minOccurs": {
+          "description": "The minimum number of times this segment can be present in this group.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "maxOccurs": {
+          "description": "The maximum number of times this segment can be present in this group.\n0 or -1 means unbounded.",
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "Hl7TypesConfig": {
+      "id": "Hl7TypesConfig",
+      "description": "Root config for HL7v2 datatype definitions for a specific HL7v2 version.",
+      "type": "object",
+      "properties": {
+        "version": {
+          "description": "The version selectors that this config applies to. A message must match\nALL version sources to apply.",
+          "type": "array",
+          "items": {
+            "$ref": "VersionSource"
+          }
+        },
+        "type": {
+          "description": "The HL7v2 type definitions.",
+          "type": "array",
+          "items": {
+            "$ref": "Type"
+          }
+        }
+      }
+    },
+    "Type": {
+      "id": "Type",
+      "description": "A type definition for some HL7v2 type (incl. Segments and Datatypes).",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "The name of this type. This would be the segment or datatype name.\nFor example, \"PID\" or \"XPN\".",
+          "type": "string"
+        },
+        "primitive": {
+          "description": "If this is a primitive type then this field is the type of the primitive\nFor example, STRING. Leave unspecified for composite types.",
+          "enumDescriptions": [
+            "Not a primitive.",
+            "String primitive.",
+            "Element that can have unschematized children.",
+            "Like STRING, but all delimiters below this element are ignored."
+          ],
+          "type": "string",
+          "enum": [
+            "PRIMITIVE_UNSPECIFIED",
+            "STRING",
+            "VARIES",
+            "UNESCAPED_STRING"
+          ]
+        },
+        "fields": {
+          "description": "The (sub) fields this type has (if not primitive).",
+          "type": "array",
+          "items": {
+            "$ref": "Field"
+          }
+        }
+      }
+    },
+    "Field": {
+      "id": "Field",
+      "description": "A (sub) field of a type.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "The name of the field. For example, \"PID-1\" or just \"1\".",
+          "type": "string"
+        },
+        "type": {
+          "description": "The type of this field. A Type with this name must be defined in an\nHl7TypesConfig.",
+          "type": "string"
+        },
+        "table": {
+          "description": "The HL7v2 table this field refers to. For example, PID-15 (Patient's\nPrimary Language) usually refers to table \"0296\".",
+          "type": "string"
+        },
+        "minOccurs": {
+          "description": "The minimum number of times this field must be present\/repeated.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "maxOccurs": {
+          "description": "The maximum number of times this field can be repeated. 0 or -1 means\nunbounded.",
+          "type": "integer",
+          "format": "int32"
         }
       }
     },
@@ -1074,6 +1303,10 @@
         "parsedData": {
           "description": "Output only. The parsed version of the raw message data.",
           "$ref": "ParsedData"
+        },
+        "schematizedData": {
+          "description": "The parsed version of the raw message data schematized according to this\nstore's schemas and type definitions.",
+          "$ref": "SchematizedData"
         }
       }
     },
@@ -1094,7 +1327,7 @@
     },
     "ParsedData": {
       "id": "ParsedData",
-      "description": "The content of a HL7v2 message in a structured format.",
+      "description": "The content of an HL7v2 message in a structured format.",
       "type": "object",
       "properties": {
         "segments": {
@@ -1124,6 +1357,21 @@
           "additionalProperties": {
             "type": "string"
           }
+        }
+      }
+    },
+    "SchematizedData": {
+      "id": "SchematizedData",
+      "description": "The content of an HL7v2 message in a structured format as specified by a\nschema.",
+      "type": "object",
+      "properties": {
+        "data": {
+          "description": "JSON output of the parser.",
+          "type": "string"
+        },
+        "error": {
+          "description": "The error output of the parser.",
+          "type": "string"
         }
       }
     },
@@ -1348,6 +1596,10 @@
           "items": {
             "$ref": "StreamConfig"
           }
+        },
+        "defaultSearchHandlingStrict": {
+          "description": "If true, overrides the default search behavior for this FHIR store to\n`handling=strict` which returns an error for unrecognized search\nparameters. If false, uses the FHIR specification default\n`handling=lenient` which ignores unrecognized search parameters.\nThe handling can always be changed from the default on an individual API\ncall by setting the HTTP header `Prefer: handling=strict` or\n`Prefer: handling=lenient`.",
+          "type": "boolean"
         }
       }
     },
@@ -3425,7 +3677,7 @@
                               "type": "string"
                             },
                             "view": {
-                              "description": "Specifies the parts of the Message to return in the response.\nWhen unspecified, equivalent to BASIC.",
+                              "description": "Specifies the parts of the Message to return in the response.\nWhen unspecified, equivalent to BASIC. Setting this to anything other than\nBASIC with a `page_size` larger than the default can generate a large\nresponse, which impacts the performance of this method.",
                               "location": "query",
                               "type": "string",
                               "enum": [

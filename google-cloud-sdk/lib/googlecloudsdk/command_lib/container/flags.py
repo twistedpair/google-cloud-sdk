@@ -2939,3 +2939,17 @@ private cluster's region.
       default=None,
       hidden=True,
       action='store_true')
+
+
+def AddEnableGvnicFlag(parser):
+  help_text = """
+Enable the use of GVNIC for this cluster. Requires re-creation of nodes using
+either a node-pool upgrade or node-pool creation.
+"""
+
+  parser.add_argument(
+      '--enable-gvnic',
+      help=help_text,
+      default=None,
+      hidden=True,
+      action='store_true')

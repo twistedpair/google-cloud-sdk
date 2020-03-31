@@ -772,7 +772,7 @@ class GoogleDevtoolsRemotebuildbotCommandDurations(_messages.Message):
   Fields:
     dockerPrep: The time spent preparing the command to be run in a Docker
       container (includes pulling the Docker image, if necessary).
-    dockerPrepStartTime: The timestamp when docker prepartion begins.
+    dockerPrepStartTime: The timestamp when docker preparation begins.
     download: The time spent downloading the input files and constructing the
       working directory.
     downloadStartTime: The timestamp when downloading the input files begins.
@@ -876,6 +876,8 @@ class GoogleDevtoolsRemotebuildbotCommandStatus(_messages.Message):
         hcsshim::PrepareLayer error.
       DOCKER_INCOMPATIBLE_OS_ERROR: Docker incompatible operating system
         error.
+      DOCKER_CREATE_RUNTIME_FILE_NOT_FOUND: Docker failed to create OCI
+        runtime because of file not found.
     """
     OK = 0
     INVALID_ARGUMENT = 1
@@ -909,6 +911,7 @@ class GoogleDevtoolsRemotebuildbotCommandStatus(_messages.Message):
     DOCKER_CREATE_COMPUTE_SYSTEM_ERROR = 29
     DOCKER_PREPARELAYER_ERROR = 30
     DOCKER_INCOMPATIBLE_OS_ERROR = 31
+    DOCKER_CREATE_RUNTIME_FILE_NOT_FOUND = 32
 
   code = _messages.EnumField('CodeValueValuesEnum', 1)
   message = _messages.StringField(2)
@@ -1274,7 +1277,7 @@ class GoogleDevtoolsRemotebuildexecutionAdminV1alphaWorkerPool(_messages.Message
     workerConfig: Specifies the properties, such as machine type and disk
       size, used for creating workers in a worker pool.
     workerCount: The desired number of workers in the worker pool. Must be a
-      value between 0 and 1000.
+      value between 0 and 15000.
   """
 
   class StateValueValuesEnum(_messages.Enum):

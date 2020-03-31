@@ -38,12 +38,11 @@ def ArgsForSnapshotRef(parser):
       'snapshot',
       metavar='SNAPSHOT_ID',
       help='ID of the Cloud Dataflow snapshot.')
-  # TODO(b/139889563): Mark as required when default region is removed
   parser.add_argument(
       '--region',
+      required=True,
       metavar='REGION_ID',
-      help=('Region ID of the snapshot regional endpoint. ' +
-            dataflow_util.DEFAULT_REGION_MESSAGE))
+      help='Region ID of the snapshot regional endpoint.')
 
 
 def ArgsForSnapshotJobRef(parser):
@@ -57,12 +56,11 @@ def ArgsForSnapshotJobRef(parser):
       required=True,
       metavar='JOB_ID',
       help='The job ID to snapshot.')
-  # TODO(b/139889563): Mark as required when default region is removed
   parser.add_argument(
       '--region',
+      required=True,
       metavar='REGION_ID',
-      help=('The region ID of the snapshot and job\'s regional endpoint. ' +
-            dataflow_util.DEFAULT_REGION_MESSAGE))
+      help='The region ID of the snapshot and job\'s regional endpoint.')
 
 
 def ArgsForListSnapshot(parser):
@@ -76,12 +74,11 @@ def ArgsForListSnapshot(parser):
       required=False,
       metavar='JOB_ID',
       help='The job ID to use to filter the snapshots list.')
-  # TODO(b/139889563): Mark as required when default region is removed
   parser.add_argument(
       '--region',
+      required=True,
       metavar='REGION_ID',
-      help=('The region ID of the snapshot and job\'s regional endpoint. ' +
-            dataflow_util.DEFAULT_REGION_MESSAGE))
+      help='The region ID of the snapshot and job\'s regional endpoint.')
 
 
 def ArgsForSnapshotTtl(parser):

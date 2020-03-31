@@ -6,7 +6,7 @@
   "canonicalName": "Game Services",
   "version": "v1beta",
   "revision": "0",
-  "title": "Game Servers API",
+  "title": "Game Services API",
   "description": "Deploy and manage infrastructure for global multiplayer gaming experiences.",
   "ownerDomain": "google.com",
   "ownerName": "Google",

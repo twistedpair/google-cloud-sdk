@@ -375,25 +375,13 @@ class ConfigManagementFeatureState(_messages.Message):
 
 
 class ConfigSync(_messages.Message):
-  r"""Git repo configuration for a single cluster.
+  r"""Configuration for Config Sync
 
   Fields:
-    policyDir: The path within the Git repository that represents the top
-      level of the repo to sync. Default: the root directory of the
-      repository.
-    secretType: Git revision (tag or hash) to check out. Default HEAD.
-    syncBranch: The branch of the repository to sync from. Default: master.
-    syncRepo: The URL of the Git repository to use as the source of truth.
-    syncRev: Git revision (tag or hash) to check out. Default HEAD.
-    syncWaitSecs: Period in seconds between consecutive syncs. Default: 15.
+    git: Git repo configuration for the cluster.
   """
 
-  policyDir = _messages.StringField(1)
-  secretType = _messages.StringField(2)
-  syncBranch = _messages.StringField(3)
-  syncRepo = _messages.StringField(4)
-  syncRev = _messages.StringField(5)
-  syncWaitSecs = _messages.IntegerField(6)
+  git = _messages.MessageField('GitConfig', 1)
 
 
 class ConfigSyncDeploymentState(_messages.Message):
@@ -858,6 +846,28 @@ class GenerateConnectAgentManifestResponse(_messages.Message):
   """
 
   manifest = _messages.StringField(1)
+
+
+class GitConfig(_messages.Message):
+  r"""Git repo configuration for a single cluster.
+
+  Fields:
+    policyDir: The path within the Git repository that represents the top
+      level of the repo to sync. Default: the root directory of the
+      repository.
+    secretType: Git revision (tag or hash) to check out. Default HEAD.
+    syncBranch: The branch of the repository to sync from. Default: master.
+    syncRepo: The URL of the Git repository to use as the source of truth.
+    syncRev: Git revision (tag or hash) to check out. Default HEAD.
+    syncWaitSecs: Period in seconds between consecutive syncs. Default: 15.
+  """
+
+  policyDir = _messages.StringField(1)
+  secretType = _messages.StringField(2)
+  syncBranch = _messages.StringField(3)
+  syncRepo = _messages.StringField(4)
+  syncRev = _messages.StringField(5)
+  syncWaitSecs = _messages.IntegerField(6)
 
 
 class GkehubProjectsLocationsFeaturesGetIamPolicyRequest(_messages.Message):
@@ -1343,7 +1353,7 @@ class MembershipConfig(_messages.Message):
   ConfigManagement CR.
 
   Fields:
-    configSync: Git repo configuration for the cluster.
+    configSync: Config Sync configuration for the cluster.
   """
 
   configSync = _messages.MessageField('ConfigSync', 1)

@@ -16,7 +16,7 @@ class DataflowV1b3(base_api.BaseApiClient):
   _VERSION = u'v1b3'
   _CLIENT_ID = '1042881264118.apps.googleusercontent.com'
   _CLIENT_SECRET = 'x_Tw5K8nnjoRAqULM9PFAC2b'
-  _USER_AGENT = 'x_Tw5K8nnjoRAqULM9PFAC2b'
+  _USER_AGENT = u'google-cloud-sdk'
   _CLIENT_CLASS_NAME = u'DataflowV1b3'
   _URL_VERSION = u'v1b3'
   _API_KEY = None

@@ -1622,6 +1622,7 @@ class JobConfigurationQuery(_messages.Message):
     clustering: [Beta] Clustering specification for the destination table.
       Must be specified with time-based partitioning, data in the table will
       be first partitioned and subsequently clustered.
+    connectionProperties: Connection properties.
     createDisposition: [Optional] Specifies whether the job is allowed to
       create new tables. The following values are supported: CREATE_IF_NEEDED:
       If the table does not exist, BigQuery creates the table. CREATE_NEVER:
@@ -1734,26 +1735,27 @@ class JobConfigurationQuery(_messages.Message):
 
   allowLargeResults = _messages.BooleanField(1, default=False)
   clustering = _messages.MessageField('Clustering', 2)
-  createDisposition = _messages.StringField(3)
-  defaultDataset = _messages.MessageField('DatasetReference', 4)
-  destinationEncryptionConfiguration = _messages.MessageField('EncryptionConfiguration', 5)
-  destinationTable = _messages.MessageField('TableReference', 6)
-  flattenResults = _messages.BooleanField(7, default=True)
-  maximumBillingTier = _messages.IntegerField(8, variant=_messages.Variant.INT32, default=1)
-  maximumBytesBilled = _messages.IntegerField(9)
-  parameterMode = _messages.StringField(10)
-  preserveNulls = _messages.BooleanField(11)
-  priority = _messages.StringField(12)
-  query = _messages.StringField(13)
-  queryParameters = _messages.MessageField('QueryParameter', 14, repeated=True)
-  rangePartitioning = _messages.MessageField('RangePartitioning', 15)
-  schemaUpdateOptions = _messages.StringField(16, repeated=True)
-  tableDefinitions = _messages.MessageField('TableDefinitionsValue', 17)
-  timePartitioning = _messages.MessageField('TimePartitioning', 18)
-  useLegacySql = _messages.BooleanField(19, default=True)
-  useQueryCache = _messages.BooleanField(20, default=True)
-  userDefinedFunctionResources = _messages.MessageField('UserDefinedFunctionResource', 21, repeated=True)
-  writeDisposition = _messages.StringField(22)
+  connectionProperties = _messages.MessageField('extra_types.JsonValue', 3, repeated=True)
+  createDisposition = _messages.StringField(4)
+  defaultDataset = _messages.MessageField('DatasetReference', 5)
+  destinationEncryptionConfiguration = _messages.MessageField('EncryptionConfiguration', 6)
+  destinationTable = _messages.MessageField('TableReference', 7)
+  flattenResults = _messages.BooleanField(8, default=True)
+  maximumBillingTier = _messages.IntegerField(9, variant=_messages.Variant.INT32, default=1)
+  maximumBytesBilled = _messages.IntegerField(10)
+  parameterMode = _messages.StringField(11)
+  preserveNulls = _messages.BooleanField(12)
+  priority = _messages.StringField(13)
+  query = _messages.StringField(14)
+  queryParameters = _messages.MessageField('QueryParameter', 15, repeated=True)
+  rangePartitioning = _messages.MessageField('RangePartitioning', 16)
+  schemaUpdateOptions = _messages.StringField(17, repeated=True)
+  tableDefinitions = _messages.MessageField('TableDefinitionsValue', 18)
+  timePartitioning = _messages.MessageField('TimePartitioning', 19)
+  useLegacySql = _messages.BooleanField(20, default=True)
+  useQueryCache = _messages.BooleanField(21, default=True)
+  userDefinedFunctionResources = _messages.MessageField('UserDefinedFunctionResource', 22, repeated=True)
+  writeDisposition = _messages.StringField(23)
 
 
 class JobConfigurationTableCopy(_messages.Message):
@@ -1882,6 +1884,8 @@ class JobStatistics(_messages.Message):
       this job. Note that this could be different than reservations reported
       in the reservation usage field if parent reservations were used to
       execute this job.
+    rowLevelSecurityStatistics: [Output-only] [Preview] Statistics for row-
+      level security. Present only for query and extract jobs.
     scriptStatistics: [Output-only] Statistics for a child job of a script.
     startTime: [Output-only] Start time of this job, in milliseconds since the
       epoch. This field will be present when the job transitions from the
@@ -1915,10 +1919,11 @@ class JobStatistics(_messages.Message):
   quotaDeferments = _messages.StringField(9, repeated=True)
   reservationUsage = _messages.MessageField('ReservationUsageValueListEntry', 10, repeated=True)
   reservation_id = _messages.StringField(11)
-  scriptStatistics = _messages.MessageField('ScriptStatistics', 12)
-  startTime = _messages.IntegerField(13)
-  totalBytesProcessed = _messages.IntegerField(14)
-  totalSlotMs = _messages.IntegerField(15)
+  rowLevelSecurityStatistics = _messages.MessageField('RowLevelSecurityStatistics', 12)
+  scriptStatistics = _messages.MessageField('ScriptStatistics', 13)
+  startTime = _messages.IntegerField(14)
+  totalBytesProcessed = _messages.IntegerField(15)
+  totalSlotMs = _messages.IntegerField(16)
 
 
 class JobStatistics2(_messages.Message):
@@ -1931,6 +1936,9 @@ class JobStatistics2(_messages.Message):
     billingTier: [Output-only] Billing tier for the job.
     cacheHit: [Output-only] Whether the query result was fetched from the
       query cache.
+    ddlAffectedRowAccessPolicyCount: [Output-only] [Preview] The number of row
+      access policies affected by a DDL statement. Present only for DROP ALL
+      ROW ACCESS POLICIES queries.
     ddlOperationPerformed: The DDL operation performed, possibly dependent on
       the pre-existence of the DDL target. Possible values (new values might
       be added in the future): "CREATE": The query created the DDL target.
@@ -1941,8 +1949,10 @@ class JobStatistics2(_messages.Message):
       table already exists. "DROP": The query deleted the DDL target.
     ddlTargetRoutine: The DDL target routine. Present only for CREATE/DROP
       FUNCTION/PROCEDURE queries.
-    ddlTargetTable: The DDL target table. Present only for CREATE/DROP
-      TABLE/VIEW queries.
+    ddlTargetRowAccessPolicy: [Output-only] [Preview] The DDL target row
+      access policy. Present only for CREATE/DROP ROW ACCESS POLICY queries.
+    ddlTargetTable: [Output-only] The DDL target table. Present only for
+      CREATE/DROP TABLE/VIEW and DROP ALL ROW ACCESS POLICIES queries.
     estimatedBytesProcessed: [Output-only] The original estimate of bytes
       processed for the job.
     modelTraining: [Output-only, Beta] Information about create model query
@@ -2010,27 +2020,29 @@ class JobStatistics2(_messages.Message):
 
   billingTier = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   cacheHit = _messages.BooleanField(2)
-  ddlOperationPerformed = _messages.StringField(3)
-  ddlTargetRoutine = _messages.MessageField('RoutineReference', 4)
-  ddlTargetTable = _messages.MessageField('TableReference', 5)
-  estimatedBytesProcessed = _messages.IntegerField(6)
-  modelTraining = _messages.MessageField('BigQueryModelTraining', 7)
-  modelTrainingCurrentIteration = _messages.IntegerField(8, variant=_messages.Variant.INT32)
-  modelTrainingExpectedTotalIteration = _messages.IntegerField(9)
-  numDmlAffectedRows = _messages.IntegerField(10)
-  queryPlan = _messages.MessageField('ExplainQueryStage', 11, repeated=True)
-  referencedRoutines = _messages.MessageField('RoutineReference', 12, repeated=True)
-  referencedTables = _messages.MessageField('TableReference', 13, repeated=True)
-  reservationUsage = _messages.MessageField('ReservationUsageValueListEntry', 14, repeated=True)
-  schema = _messages.MessageField('TableSchema', 15)
-  statementType = _messages.StringField(16)
-  timeline = _messages.MessageField('QueryTimelineSample', 17, repeated=True)
-  totalBytesBilled = _messages.IntegerField(18)
-  totalBytesProcessed = _messages.IntegerField(19)
-  totalBytesProcessedAccuracy = _messages.StringField(20)
-  totalPartitionsProcessed = _messages.IntegerField(21)
-  totalSlotMs = _messages.IntegerField(22)
-  undeclaredQueryParameters = _messages.MessageField('QueryParameter', 23, repeated=True)
+  ddlAffectedRowAccessPolicyCount = _messages.IntegerField(3)
+  ddlOperationPerformed = _messages.StringField(4)
+  ddlTargetRoutine = _messages.MessageField('RoutineReference', 5)
+  ddlTargetRowAccessPolicy = _messages.MessageField('RowAccessPolicyReference', 6)
+  ddlTargetTable = _messages.MessageField('TableReference', 7)
+  estimatedBytesProcessed = _messages.IntegerField(8)
+  modelTraining = _messages.MessageField('BigQueryModelTraining', 9)
+  modelTrainingCurrentIteration = _messages.IntegerField(10, variant=_messages.Variant.INT32)
+  modelTrainingExpectedTotalIteration = _messages.IntegerField(11)
+  numDmlAffectedRows = _messages.IntegerField(12)
+  queryPlan = _messages.MessageField('ExplainQueryStage', 13, repeated=True)
+  referencedRoutines = _messages.MessageField('RoutineReference', 14, repeated=True)
+  referencedTables = _messages.MessageField('TableReference', 15, repeated=True)
+  reservationUsage = _messages.MessageField('ReservationUsageValueListEntry', 16, repeated=True)
+  schema = _messages.MessageField('TableSchema', 17)
+  statementType = _messages.StringField(18)
+  timeline = _messages.MessageField('QueryTimelineSample', 19, repeated=True)
+  totalBytesBilled = _messages.IntegerField(20)
+  totalBytesProcessed = _messages.IntegerField(21)
+  totalBytesProcessedAccuracy = _messages.StringField(22)
+  totalPartitionsProcessed = _messages.IntegerField(23)
+  totalSlotMs = _messages.IntegerField(24)
+  undeclaredQueryParameters = _messages.MessageField('QueryParameter', 25, repeated=True)
 
 
 class JobStatistics3(_messages.Message):
@@ -2340,6 +2352,7 @@ class QueryRequest(_messages.Message):
   r"""A QueryRequest object.
 
   Fields:
+    connectionProperties: Connection properties.
     defaultDataset: [Optional] Specifies the default datasetId and projectId
       to assume for any unqualified table names in the query. If not set, all
       table names in the query string must be qualified in the format
@@ -2384,18 +2397,19 @@ class QueryRequest(_messages.Message):
       whenever tables in the query are modified. The default value is true.
   """
 
-  defaultDataset = _messages.MessageField('DatasetReference', 1)
-  dryRun = _messages.BooleanField(2)
-  kind = _messages.StringField(3, default=u'bigquery#queryRequest')
-  location = _messages.StringField(4)
-  maxResults = _messages.IntegerField(5, variant=_messages.Variant.UINT32)
-  parameterMode = _messages.StringField(6)
-  preserveNulls = _messages.BooleanField(7)
-  query = _messages.StringField(8)
-  queryParameters = _messages.MessageField('QueryParameter', 9, repeated=True)
-  timeoutMs = _messages.IntegerField(10, variant=_messages.Variant.UINT32)
-  useLegacySql = _messages.BooleanField(11, default=True)
-  useQueryCache = _messages.BooleanField(12, default=True)
+  connectionProperties = _messages.MessageField('extra_types.JsonValue', 1, repeated=True)
+  defaultDataset = _messages.MessageField('DatasetReference', 2)
+  dryRun = _messages.BooleanField(3)
+  kind = _messages.StringField(4, default=u'bigquery#queryRequest')
+  location = _messages.StringField(5)
+  maxResults = _messages.IntegerField(6, variant=_messages.Variant.UINT32)
+  parameterMode = _messages.StringField(7)
+  preserveNulls = _messages.BooleanField(8)
+  query = _messages.StringField(9)
+  queryParameters = _messages.MessageField('QueryParameter', 10, repeated=True)
+  timeoutMs = _messages.IntegerField(11, variant=_messages.Variant.UINT32)
+  useLegacySql = _messages.BooleanField(12, default=True)
+  useQueryCache = _messages.BooleanField(13, default=True)
 
 
 class QueryResponse(_messages.Message):
@@ -2515,6 +2529,37 @@ class RoutineReference(_messages.Message):
   datasetId = _messages.StringField(1)
   projectId = _messages.StringField(2)
   routineId = _messages.StringField(3)
+
+
+class RowAccessPolicyReference(_messages.Message):
+  r"""A RowAccessPolicyReference object.
+
+  Fields:
+    datasetId: [Required] The ID of the dataset containing this row access
+      policy.
+    policyId: [Required] The ID of the row access policy. The ID must contain
+      only letters (a-z, A-Z), numbers (0-9), or underscores (_). The maximum
+      length is 256 characters.
+    projectId: [Required] The ID of the project containing this row access
+      policy.
+    tableId: [Required] The ID of the table containing this row access policy.
+  """
+
+  datasetId = _messages.StringField(1)
+  policyId = _messages.StringField(2)
+  projectId = _messages.StringField(3)
+  tableId = _messages.StringField(4)
+
+
+class RowLevelSecurityStatistics(_messages.Message):
+  r"""A RowLevelSecurityStatistics object.
+
+  Fields:
+    rowLevelSecurityApplied: [Output-only] [Preview] Whether any accessed data
+      was protected by row access policies.
+  """
+
+  rowLevelSecurityApplied = _messages.BooleanField(1)
 
 
 class ScriptStackFrame(_messages.Message):

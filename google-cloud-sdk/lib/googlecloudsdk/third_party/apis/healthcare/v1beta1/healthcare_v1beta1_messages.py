@@ -597,6 +597,13 @@ class FhirStore(_messages.Message):
       with a given store.
 
   Fields:
+    defaultSearchHandlingStrict: If true, overrides the default search
+      behavior for this FHIR store to `handling=strict` which returns an error
+      for unrecognized search parameters. If false, uses the FHIR
+      specification default `handling=lenient` which ignores unrecognized
+      search parameters. The handling can always be changed from the default
+      on an individual API call by setting the HTTP header `Prefer:
+      handling=strict` or `Prefer: handling=lenient`.
     disableReferentialIntegrity: Whether to disable referential integrity in
       this FHIR store. This field is immutable after FHIR store creation. The
       default value is false, meaning that the API enforces referential
@@ -707,14 +714,37 @@ class FhirStore(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  disableReferentialIntegrity = _messages.BooleanField(1)
-  disableResourceVersioning = _messages.BooleanField(2)
-  enableUpdateCreate = _messages.BooleanField(3)
-  labels = _messages.MessageField('LabelsValue', 4)
-  name = _messages.StringField(5)
-  notificationConfig = _messages.MessageField('NotificationConfig', 6)
-  streamConfigs = _messages.MessageField('StreamConfig', 7, repeated=True)
-  version = _messages.EnumField('VersionValueValuesEnum', 8)
+  defaultSearchHandlingStrict = _messages.BooleanField(1)
+  disableReferentialIntegrity = _messages.BooleanField(2)
+  disableResourceVersioning = _messages.BooleanField(3)
+  enableUpdateCreate = _messages.BooleanField(4)
+  labels = _messages.MessageField('LabelsValue', 5)
+  name = _messages.StringField(6)
+  notificationConfig = _messages.MessageField('NotificationConfig', 7)
+  streamConfigs = _messages.MessageField('StreamConfig', 8, repeated=True)
+  version = _messages.EnumField('VersionValueValuesEnum', 9)
+
+
+class Field(_messages.Message):
+  r"""A (sub) field of a type.
+
+  Fields:
+    maxOccurs: The maximum number of times this field can be repeated. 0 or -1
+      means unbounded.
+    minOccurs: The minimum number of times this field must be
+      present/repeated.
+    name: The name of the field. For example, "PID-1" or just "1".
+    table: The HL7v2 table this field refers to. For example, PID-15
+      (Patient's Primary Language) usually refers to table "0296".
+    type: The type of this field. A Type with this name must be defined in an
+      Hl7TypesConfig.
+  """
+
+  maxOccurs = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  minOccurs = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  name = _messages.StringField(3)
+  table = _messages.StringField(4)
+  type = _messages.StringField(5)
 
 
 class FieldMetadata(_messages.Message):
@@ -810,12 +840,25 @@ class GoogleCloudHealthcareV1beta1DicomGcsDestination(_messages.Message):
     mimeType: MIME types supported by DICOM spec. Each file is written in the
       following format:
       `.../{study_id}/{series_id}/{instance_id}[/{frame_number}].{extension}`
-      The frame_number component exists only for multi-frame instances.  Refer
-      to the DICOM conformance statement for permissible MIME types:
-      https://cloud.google.com/healthcare/docs/dicom#retrieve_transaction  The
-      following extensions are used for output files:   application/dicom ->
-      .dcm   image/jpeg -> .jpg   image/png -> .png  If unspecified, the
-      instances are exported in their original DICOM format.
+      The frame_number component exists only for multi-frame instances.
+      Supported MIME types are consistent with supported formats in DICOMweb:
+      https://cloud.google.com/healthcare/docs/dicom#retrieve_transaction.
+      Specifically, the following are supported:    - application/dicom;
+      transfer-syntax=1.2.840.10008.1.2.1     (uncompressed DICOM)   -
+      application/dicom; transfer-syntax=1.2.840.10008.1.2.4.50     (DICOM
+      with embedded JPEG Baseline)   - application/dicom; transfer-
+      syntax=1.2.840.10008.1.2.4.90     (DICOM with embedded JPEG 2000
+      Lossless Only)   - application/dicom; transfer-
+      syntax=1.2.840.10008.1.2.4.91     (DICOM with embedded JPEG 2000)h   -
+      application/dicom; transfer-syntax=*     (DICOM with no transcoding)   -
+      application/octet-stream; transfer-syntax=1.2.840.10008.1.2.1     (raw
+      uncompressed PixelData)   - application/octet-stream; transfer-syntax=*
+      (raw PixelData in whatever format it was uploaded in)   - image/jpeg;
+      transfer-syntax=1.2.840.10008.1.2.4.50     (Consumer JPEG)   - image/png
+      The following extensions are used for output files:   -
+      application/dicom -> .dcm  - image/jpeg -> .jpg  - image/png -> .png  -
+      application/octet-stream -> no extension  If unspecified, the instances
+      are exported in the original DICOM format they were uploaded in.
     uriPrefix: The Cloud Storage destination to export to.  URI for a Cloud
       Storage directory where the server writes the result files, in the
       format `gs://{bucket-id}/{path/to/destination/dir}`). If there is no
@@ -976,6 +1019,18 @@ class GoogleCloudHealthcareV1beta1FhirRestImportResourcesResponse(_messages.Mess
 
   fhirStore = _messages.StringField(1)
   inputSize = _messages.IntegerField(2)
+
+
+class GroupOrSegment(_messages.Message):
+  r"""Construct representing a logical group or a segment.
+
+  Fields:
+    group: A SchemaGroup attribute.
+    segment: A SchemaSegment attribute.
+  """
+
+  group = _messages.MessageField('SchemaGroup', 1)
+  segment = _messages.MessageField('SchemaSegment', 2)
 
 
 class HealthcareProjectsLocationsDatasetsAnnotationStoresGetIamPolicyRequest(_messages.Message):
@@ -2199,7 +2254,9 @@ class HealthcareProjectsLocationsDatasetsHl7V2StoresMessagesListRequest(_message
 
   Enums:
     ViewValueValuesEnum: Specifies the parts of the Message to return in the
-      response. When unspecified, equivalent to BASIC.
+      response. When unspecified, equivalent to BASIC. Setting this to
+      anything other than BASIC with a `page_size` larger than the default can
+      generate a large response, which impacts the performance of this method.
 
   Fields:
     filter: Restricts messages returned to those matching a filter. Syntax: ht
@@ -2230,12 +2287,16 @@ class HealthcareProjectsLocationsDatasetsHl7V2StoresMessagesListRequest(_message
       request, if any.
     parent: Name of the HL7v2 store to retrieve messages from.
     view: Specifies the parts of the Message to return in the response. When
-      unspecified, equivalent to BASIC.
+      unspecified, equivalent to BASIC. Setting this to anything other than
+      BASIC with a `page_size` larger than the default can generate a large
+      response, which impacts the performance of this method.
   """
 
   class ViewValueValuesEnum(_messages.Enum):
     r"""Specifies the parts of the Message to return in the response. When
-    unspecified, equivalent to BASIC.
+    unspecified, equivalent to BASIC. Setting this to anything other than
+    BASIC with a `page_size` larger than the default can generate a large
+    response, which impacts the performance of this method.
 
     Values:
       MESSAGE_VIEW_UNSPECIFIED: <no description>
@@ -2454,6 +2515,66 @@ class HealthcareProjectsLocationsListRequest(_messages.Message):
   name = _messages.StringField(2, required=True)
   pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(4)
+
+
+class Hl7SchemaConfig(_messages.Message):
+  r"""Root config message for HL7v2 schema. This contains a schema structure
+  of groups and segments, and filters that determine which messages to apply
+  the schema structure to.
+
+  Messages:
+    MessageSchemaConfigsValue: Map from each HL7v2 message type and trigger
+      event pair, such as ADT_A04, to its schema configuration root group.
+
+  Fields:
+    messageSchemaConfigs: Map from each HL7v2 message type and trigger event
+      pair, such as ADT_A04, to its schema configuration root group.
+    version: Each VersionSource is tested and only if they all match is the
+      schema used for the message.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class MessageSchemaConfigsValue(_messages.Message):
+    r"""Map from each HL7v2 message type and trigger event pair, such as
+    ADT_A04, to its schema configuration root group.
+
+    Messages:
+      AdditionalProperty: An additional property for a
+        MessageSchemaConfigsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type
+        MessageSchemaConfigsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a MessageSchemaConfigsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A SchemaGroup attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('SchemaGroup', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  messageSchemaConfigs = _messages.MessageField('MessageSchemaConfigsValue', 1)
+  version = _messages.MessageField('VersionSource', 2, repeated=True)
+
+
+class Hl7TypesConfig(_messages.Message):
+  r"""Root config for HL7v2 datatype definitions for a specific HL7v2 version.
+
+  Fields:
+    type: The HL7v2 type definitions.
+    version: The version selectors that this config applies to. A message must
+      match ALL version sources to apply.
+  """
+
+  type = _messages.MessageField('Type', 1, repeated=True)
+  version = _messages.MessageField('VersionSource', 2, repeated=True)
 
 
 class Hl7V2NotificationConfig(_messages.Message):
@@ -3010,6 +3131,8 @@ class Message(_messages.Message):
     parsedData: Output only. The parsed version of the raw message data.
     patientIds: All patient IDs listed in the PID-2, PID-3, and PID-4 segments
       of this message.
+    schematizedData: The parsed version of the raw message data schematized
+      according to this store's schemas and type definitions.
     sendFacility: The hospital that this message came from. MSH-4.
     sendTime: The datetime the sending application sent this message. MSH-7.
   """
@@ -3052,8 +3175,9 @@ class Message(_messages.Message):
   name = _messages.StringField(5)
   parsedData = _messages.MessageField('ParsedData', 6)
   patientIds = _messages.MessageField('PatientId', 7, repeated=True)
-  sendFacility = _messages.StringField(8)
-  sendTime = _messages.StringField(9)
+  schematizedData = _messages.MessageField('SchematizedData', 8)
+  sendFacility = _messages.StringField(9)
+  sendTime = _messages.StringField(10)
 
 
 class NotificationConfig(_messages.Message):
@@ -3213,7 +3337,7 @@ class OperationMetadata(_messages.Message):
 
 
 class ParsedData(_messages.Message):
-  r"""The content of a HL7v2 message in a structured format.
+  r"""The content of an HL7v2 message in a structured format.
 
   Fields:
     segments: A Segment attribute.
@@ -3228,12 +3352,16 @@ class ParserConfig(_messages.Message):
 
   Fields:
     allowNullHeader: Determines whether messages with no header are allowed.
+    schema: Schemas used to parse messages in this store, if schematized
+      parsing is desired.
     segmentTerminator: Byte(s) to use as the segment terminator. If this is
-      unset, '\r' is used as segment terminator.
+      unset, '\r' is used as segment terminator, matching the HL7 version 2
+      specification.
   """
 
   allowNullHeader = _messages.BooleanField(1)
-  segmentTerminator = _messages.BytesField(2)
+  schema = _messages.MessageField('SchemaPackage', 2)
+  segmentTerminator = _messages.BytesField(3)
 
 
 class PatientId(_messages.Message):
@@ -3393,6 +3521,100 @@ class SchemaConfig(_messages.Message):
 
   recursiveStructureDepth = _messages.IntegerField(1)
   schemaType = _messages.EnumField('SchemaTypeValueValuesEnum', 2)
+
+
+class SchemaGroup(_messages.Message):
+  r"""An HL7v2 logical group construct.
+
+  Fields:
+    choice: True indicates that this is a choice group, meaning that only one
+      of its segments can exist in a given message.
+    maxOccurs: The maximum number of times this group can be repeated. 0 or -1
+      means unbounded.
+    members: Nested groups and/or segments.
+    minOccurs: The minimum number of times this group must be
+      present/repeated.
+    name: The name of this group. For example, "ORDER_DETAIL".
+  """
+
+  choice = _messages.BooleanField(1)
+  maxOccurs = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  members = _messages.MessageField('GroupOrSegment', 3, repeated=True)
+  minOccurs = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  name = _messages.StringField(5)
+
+
+class SchemaPackage(_messages.Message):
+  r"""A schema package contains a set of schemas and type definitions.
+
+  Enums:
+    SchematizedParsingTypeValueValuesEnum: Determines how messages that don't
+      parse successfully are handled.
+
+  Fields:
+    ignoreMinOccurs: Flag to ignore all min_occurs restrictions in the schema.
+      This means that incoming messages can omit any group, segment, field,
+      component, or subcomponent.
+    schemas: Schema configs that are layered based on their VersionSources
+      that match the incoming message. Schema configs present in higher
+      indices override those in lower indices with the same message type and
+      trigger event if their VersionSources all match an incoming message.
+    schematizedParsingType: Determines how messages that don't parse
+      successfully are handled.
+    types: Schema type definitions that are layered based on their
+      VersionSources that match the incoming message. Type definitions present
+      in higher indices override those in lower indices with the same type
+      name if their VersionSources all match an incoming message.
+  """
+
+  class SchematizedParsingTypeValueValuesEnum(_messages.Enum):
+    r"""Determines how messages that don't parse successfully are handled.
+
+    Values:
+      SCHEMATIZED_PARSING_TYPE_UNSPECIFIED: Unspecified schematized parsing
+        type, equivalent to `SOFT_FAIL`.
+      SOFT_FAIL: Messages that fail to parse are still stored and ACKed but a
+        parser error is stored in place of the schematized data.
+      HARD_FAIL: Messages that fail to parse are rejected from
+        ingestion/insertion and return an error code.
+    """
+    SCHEMATIZED_PARSING_TYPE_UNSPECIFIED = 0
+    SOFT_FAIL = 1
+    HARD_FAIL = 2
+
+  ignoreMinOccurs = _messages.BooleanField(1)
+  schemas = _messages.MessageField('Hl7SchemaConfig', 2, repeated=True)
+  schematizedParsingType = _messages.EnumField('SchematizedParsingTypeValueValuesEnum', 3)
+  types = _messages.MessageField('Hl7TypesConfig', 4, repeated=True)
+
+
+class SchemaSegment(_messages.Message):
+  r"""An HL7v2 Segment.
+
+  Fields:
+    maxOccurs: The maximum number of times this segment can be present in this
+      group. 0 or -1 means unbounded.
+    minOccurs: The minimum number of times this segment can be present in this
+      group.
+    type: The Segment type. For example, "PID".
+  """
+
+  maxOccurs = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  minOccurs = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  type = _messages.StringField(3)
+
+
+class SchematizedData(_messages.Message):
+  r"""The content of an HL7v2 message in a structured format as specified by a
+  schema.
+
+  Fields:
+    data: JSON output of the parser.
+    error: The error output of the parser.
+  """
+
+  data = _messages.StringField(1)
+  error = _messages.StringField(2)
 
 
 class SearchResourcesRequest(_messages.Message):
@@ -3695,6 +3917,58 @@ class TextConfig(_messages.Message):
   """
 
   transformations = _messages.MessageField('InfoTypeTransformation', 1, repeated=True)
+
+
+class Type(_messages.Message):
+  r"""A type definition for some HL7v2 type (incl. Segments and Datatypes).
+
+  Enums:
+    PrimitiveValueValuesEnum: If this is a primitive type then this field is
+      the type of the primitive For example, STRING. Leave unspecified for
+      composite types.
+
+  Fields:
+    fields: The (sub) fields this type has (if not primitive).
+    name: The name of this type. This would be the segment or datatype name.
+      For example, "PID" or "XPN".
+    primitive: If this is a primitive type then this field is the type of the
+      primitive For example, STRING. Leave unspecified for composite types.
+  """
+
+  class PrimitiveValueValuesEnum(_messages.Enum):
+    r"""If this is a primitive type then this field is the type of the
+    primitive For example, STRING. Leave unspecified for composite types.
+
+    Values:
+      PRIMITIVE_UNSPECIFIED: Not a primitive.
+      STRING: String primitive.
+      VARIES: Element that can have unschematized children.
+      UNESCAPED_STRING: Like STRING, but all delimiters below this element are
+        ignored.
+    """
+    PRIMITIVE_UNSPECIFIED = 0
+    STRING = 1
+    VARIES = 2
+    UNESCAPED_STRING = 3
+
+  fields = _messages.MessageField('Field', 1, repeated=True)
+  name = _messages.StringField(2)
+  primitive = _messages.EnumField('PrimitiveValueValuesEnum', 3)
+
+
+class VersionSource(_messages.Message):
+  r"""Describes a selector for extracting and matching an MSH field to a
+  value.
+
+  Fields:
+    mshField: The field to extract from the MSH segment. For example, "3.1" or
+      "18[1].1".
+    value: The value to match with the field. For example, "My Application
+      Name" or "2.3".
+  """
+
+  mshField = _messages.StringField(1)
+  value = _messages.StringField(2)
 
 
 encoding.AddCustomJsonFieldMapping(

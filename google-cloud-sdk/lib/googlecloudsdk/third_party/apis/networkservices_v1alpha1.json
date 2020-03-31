@@ -6,7 +6,7 @@
   "canonicalName": "NetworkServices",
   "version": "v1alpha1",
   "revision": "0",
-  "title": "NetworkServices API",
+  "title": "Network Services API",
   "description": "",
   "ownerDomain": "google.com",
   "ownerName": "Google",
@@ -14,7 +14,7 @@
     "x16": "http://www.google.com/images/icons/product/search-16.gif",
     "x32": "http://www.google.com/images/icons/product/search-32.gif"
    },
-  "documentationLink": "",
+  "documentationLink": "https://cloud.google.com/networking",
   "protocol": "rest",
   "rootUrl": "https://networkservices.googleapis.com/",
   "mtlsRootUrl": "https://networkservices.mtls.googleapis.com/",
@@ -22,6 +22,7 @@
   "baseUrl": "https://networkservices.googleapis.com/",
   "batchPath": "batch",
   "version_module": true,
+  "fullyEncodeReservedExpansion": true,
   "parameters": {
     "access_token": {
       "type": "string",
@@ -260,7 +261,7 @@
       "description": "Response returned by the ListHttpFilters method.",
       "type": "object",
       "properties": {
-        "resources": {
+        "httpFilters": {
           "description": "List of HttpFilter resources.",
           "type": "array",
           "items": {
@@ -318,7 +319,7 @@
       "description": "Response returned by the ListEndpointConfigSelectors method.",
       "type": "object",
       "properties": {
-        "resources": {
+        "endpointConfigSelectors": {
           "description": "List of EndpointConfigSelector resources.",
           "type": "array",
           "items": {
@@ -1230,7 +1231,7 @@
                       "type": "string"
                     },
                     "updateMask": {
-                      "description": "Field mask is used to specify the fields to be overwritten in the\nEndpointConfigSelector resource by the update.\nThe fields specified in the update_mask are relative to the resource, not\nthe full request. A field will be overwritten if it is in the mask. If the\nuser does not provide a mask then all fields will be overwritten.",
+                      "description": "Optional. Field mask is used to specify the fields to be overwritten in the\nEndpointConfigSelector resource by the update.\nThe fields specified in the update_mask are relative to the resource, not\nthe full request. A field will be overwritten if it is in the mask. If the\nuser does not provide a mask then all fields will be overwritten.",
                       "location": "query",
                       "type": "string",
                       "format": "google-fieldmask"

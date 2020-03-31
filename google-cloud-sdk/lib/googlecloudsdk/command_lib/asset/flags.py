@@ -262,6 +262,13 @@ def AddFeedCriteriaArgs(parser):
   AddFeedAssetNamesArgs(parent_group)
 
 
+def FeedContentTypeArgs(parser, help_text):
+  parser.add_argument(
+      '--content-type',
+      choices=['resource', 'iam-policy', 'org-policy', 'access-policy'],
+      help=help_text)
+
+
 def AddFeedContentTypeArgs(parser):
   help_text = (
       'Asset content type. If not specified, no content but the asset name and'
@@ -269,8 +276,7 @@ def AddFeedContentTypeArgs(parser):
       'https://cloud.google.com/resource-manager/docs/cloud-asset-inventory/overview#asset_content_type'
   )
 
-  parser.add_argument(
-      '--content-type', choices=['resource', 'iam-policy'], help=help_text)
+  FeedContentTypeArgs(parser, help_text)
 
 
 def AddFeedPubSubTopicArgs(parser, required):
@@ -290,8 +296,7 @@ def AddChangeFeedContentTypeArgs(parser):
       'https://cloud.google.com/resource-manager/docs/cloud-asset-inventory/overview#asset_content_type'
   )
 
-  parser.add_argument(
-      '--content-type', choices=['resource', 'iam-policy'], help=help_text)
+  FeedContentTypeArgs(parser, help_text)
 
 
 def AddClearFeedContentTypeArgs(parser):

@@ -36,7 +36,7 @@ def WaitForOperation(operation, message, service):
     apitools.base.py.HttpError: if the request returns an HTTP error
 
   Returns:
-    The created LabelKey or LabelValue resource.
+    The LabelKey or LabelValue resource.
   """
   operation_ref = resources.REGISTRY.Parse(
       operation.name, collection='labelmanager.operations')

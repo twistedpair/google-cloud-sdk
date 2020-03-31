@@ -1125,7 +1125,7 @@
           "$ref": "SslCert"
         },
         "instanceType": {
-          "description": "The instance type. This can be one of the following.\n<br><code>CLOUD_SQL_INSTANCE<\/code>: A Cloud SQL instance that is not\nreplicating from a master. <br><code>ON_PREMISES_INSTANCE<\/code>: An\ninstance running on the\ncustomer's premises. <br><code>READ_REPLICA_INSTANCE<\/code>: A Cloud SQL\ninstance configured as a read-replica.",
+          "description": "The instance type. This can be one of the following.\nCLOUD_SQL_INSTANCE: A Cloud SQL instance that is not replicating from a\nmaster. ON_PREMISES_INSTANCE: An instance running on the customer's\npremises. READ_REPLICA_INSTANCE: A Cloud SQL instance configured as a\nread-replica.",
           "enumDescriptions": [
             "This is an unknown Cloud SQL instance type.",
             "A regular Cloud SQL instance.",
@@ -1161,7 +1161,7 @@
           "$ref": "ReplicaConfiguration"
         },
         "backendType": {
-          "description": "<code>FIRST_GEN<\/code>: First Generation instance. MySQL only. <br\n\/><code>SECOND_GEN<\/code>: Second Generation instance or PostgreSQL\ninstance. <br \/><code>EXTERNAL<\/code>: A database server that is not\nmanaged by Google. <br>This property is read-only; use the\n<code>tier<\/code> property in the <code>settings<\/code> object to determine\nthe database type and Second or First Generation.",
+          "description": "FIRST_GEN: First Generation instance. MySQL only.\nSECOND_GEN: Second Generation MySQL instance, PostgreSQL or SQL Server\ninstance. EXTERNAL: A database server that is not managed by Google. This\nproperty is read-only; use the tier property in the settings object to\ndetermine the database type and Second or First Generation.",
           "enumDescriptions": [
             "This is an unknown backend type for instance.",
             "V1 speckle instance.",

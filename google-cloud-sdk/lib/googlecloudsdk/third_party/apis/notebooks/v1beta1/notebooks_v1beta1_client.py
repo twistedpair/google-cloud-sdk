@@ -16,7 +16,7 @@ class NotebooksV1beta1(base_api.BaseApiClient):
   _VERSION = u'v1beta1'
   _CLIENT_ID = '1042881264118.apps.googleusercontent.com'
   _CLIENT_SECRET = 'x_Tw5K8nnjoRAqULM9PFAC2b'
-  _USER_AGENT = 'x_Tw5K8nnjoRAqULM9PFAC2b'
+  _USER_AGENT = u'google-cloud-sdk'
   _CLIENT_CLASS_NAME = u'NotebooksV1beta1'
   _URL_VERSION = u'v1beta1'
   _API_KEY = None
@@ -338,9 +338,10 @@ call makes these instances manageable by the Notebooks API.
     )
 
     def Report(self, request, global_params=None):
-      r"""ReportInstanceInfo allows notebook instances to report their latest.
-instance information to the Notebooks API server. The server will merge
-the reported information to the instance metadata store.
+      r"""Allows notebook instances to.
+report their latest instance information to the Notebooks
+API server. The server will merge the reported information to
+the instance metadata store. Do not use this method directly.
 
       Args:
         request: (NotebooksProjectsLocationsInstancesReportRequest) input message
@@ -619,8 +620,8 @@ may "fail open" without warning.
     )
 
     def UpgradeInternal(self, request, global_params=None):
-      r"""UpgradeInstanceInternal allows notebook instances to call this endpoint to.
-upgrade themselves
+      r"""Allows notebook instances to.
+call this endpoint to upgrade themselves. Do not use this method directly.
 
       Args:
         request: (NotebooksProjectsLocationsInstancesUpgradeInternalRequest) input message

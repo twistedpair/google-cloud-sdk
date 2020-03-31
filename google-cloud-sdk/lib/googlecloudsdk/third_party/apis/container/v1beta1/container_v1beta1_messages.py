@@ -36,7 +36,7 @@ class AddonsConfig(_messages.Message):
       can only be enabled at cluster creation time.
     dnsCacheConfig: Configuration for NodeLocalDNS, a dns cache running on
       cluster nodes
-    gcePersistentDiskCsiDriverConfig: Configuration for the GCP Compute
+    gcePersistentDiskCsiDriverConfig: Configuration for the Compute Engine
       Persistent Disk CSI driver.
     horizontalPodAutoscaling: Configuration for the horizontal pod autoscaling
       feature, which increases or decreases the number of replica pods a
@@ -262,6 +262,8 @@ class Cluster(_messages.Message):
       pods that can be run simultaneously on a node in the node pool of this
       cluster. Only honored if cluster created with IP Alias support.
     description: An optional description of this cluster.
+    enableGvnic: Enable or disable gvnic on this cluster. This field is not
+      yet used.
     enableKubernetesAlpha: Kubernetes alpha features are enabled on this
       cluster. This includes alpha API groups (e.g. v1beta1) and features that
       may not be production ready in the kubernetes version of the master and
@@ -385,7 +387,6 @@ class Cluster(_messages.Message):
     subnetwork: The name of the Google Compute Engine
       [subnetwork](/compute/docs/subnetworks) to which the cluster is
       connected. On output this shows the subnetwork ID instead of the name.
-    tierSettings: Cluster tier settings.
     tpuConfig: Configuration for Cloud TPU support;
     tpuIpv4CidrBlock: [Output only] The IP address range of the Cloud TPUs in
       this cluster, in [CIDR](http://en.wikipedia.org/wiki/Classless_Inter-
@@ -466,44 +467,44 @@ class Cluster(_messages.Message):
   databaseEncryption = _messages.MessageField('DatabaseEncryption', 12)
   defaultMaxPodsConstraint = _messages.MessageField('MaxPodsConstraint', 13)
   description = _messages.StringField(14)
-  enableKubernetesAlpha = _messages.BooleanField(15)
-  enableTpu = _messages.BooleanField(16)
-  endpoint = _messages.StringField(17)
-  expireTime = _messages.StringField(18)
-  initialClusterVersion = _messages.StringField(19)
-  initialNodeCount = _messages.IntegerField(20, variant=_messages.Variant.INT32)
-  instanceGroupUrls = _messages.StringField(21, repeated=True)
-  ipAllocationPolicy = _messages.MessageField('IPAllocationPolicy', 22)
-  labelFingerprint = _messages.StringField(23)
-  legacyAbac = _messages.MessageField('LegacyAbac', 24)
-  location = _messages.StringField(25)
-  locations = _messages.StringField(26, repeated=True)
-  loggingService = _messages.StringField(27)
-  maintenancePolicy = _messages.MessageField('MaintenancePolicy', 28)
-  masterAuth = _messages.MessageField('MasterAuth', 29)
-  masterAuthorizedNetworksConfig = _messages.MessageField('MasterAuthorizedNetworksConfig', 30)
-  masterIpv4CidrBlock = _messages.StringField(31)
-  monitoringService = _messages.StringField(32)
-  name = _messages.StringField(33)
-  network = _messages.StringField(34)
-  networkConfig = _messages.MessageField('NetworkConfig', 35)
-  networkPolicy = _messages.MessageField('NetworkPolicy', 36)
-  nodeConfig = _messages.MessageField('NodeConfig', 37)
-  nodeIpv4CidrSize = _messages.IntegerField(38, variant=_messages.Variant.INT32)
-  nodePools = _messages.MessageField('NodePool', 39, repeated=True)
-  podSecurityPolicyConfig = _messages.MessageField('PodSecurityPolicyConfig', 40)
-  privateCluster = _messages.BooleanField(41)
-  privateClusterConfig = _messages.MessageField('PrivateClusterConfig', 42)
-  releaseChannel = _messages.MessageField('ReleaseChannel', 43)
-  resourceLabels = _messages.MessageField('ResourceLabelsValue', 44)
-  resourceUsageExportConfig = _messages.MessageField('ResourceUsageExportConfig', 45)
-  selfLink = _messages.StringField(46)
-  servicesIpv4Cidr = _messages.StringField(47)
-  shieldedNodes = _messages.MessageField('ShieldedNodes', 48)
-  status = _messages.EnumField('StatusValueValuesEnum', 49)
-  statusMessage = _messages.StringField(50)
-  subnetwork = _messages.StringField(51)
-  tierSettings = _messages.MessageField('TierSettings', 52)
+  enableGvnic = _messages.BooleanField(15)
+  enableKubernetesAlpha = _messages.BooleanField(16)
+  enableTpu = _messages.BooleanField(17)
+  endpoint = _messages.StringField(18)
+  expireTime = _messages.StringField(19)
+  initialClusterVersion = _messages.StringField(20)
+  initialNodeCount = _messages.IntegerField(21, variant=_messages.Variant.INT32)
+  instanceGroupUrls = _messages.StringField(22, repeated=True)
+  ipAllocationPolicy = _messages.MessageField('IPAllocationPolicy', 23)
+  labelFingerprint = _messages.StringField(24)
+  legacyAbac = _messages.MessageField('LegacyAbac', 25)
+  location = _messages.StringField(26)
+  locations = _messages.StringField(27, repeated=True)
+  loggingService = _messages.StringField(28)
+  maintenancePolicy = _messages.MessageField('MaintenancePolicy', 29)
+  masterAuth = _messages.MessageField('MasterAuth', 30)
+  masterAuthorizedNetworksConfig = _messages.MessageField('MasterAuthorizedNetworksConfig', 31)
+  masterIpv4CidrBlock = _messages.StringField(32)
+  monitoringService = _messages.StringField(33)
+  name = _messages.StringField(34)
+  network = _messages.StringField(35)
+  networkConfig = _messages.MessageField('NetworkConfig', 36)
+  networkPolicy = _messages.MessageField('NetworkPolicy', 37)
+  nodeConfig = _messages.MessageField('NodeConfig', 38)
+  nodeIpv4CidrSize = _messages.IntegerField(39, variant=_messages.Variant.INT32)
+  nodePools = _messages.MessageField('NodePool', 40, repeated=True)
+  podSecurityPolicyConfig = _messages.MessageField('PodSecurityPolicyConfig', 41)
+  privateCluster = _messages.BooleanField(42)
+  privateClusterConfig = _messages.MessageField('PrivateClusterConfig', 43)
+  releaseChannel = _messages.MessageField('ReleaseChannel', 44)
+  resourceLabels = _messages.MessageField('ResourceLabelsValue', 45)
+  resourceUsageExportConfig = _messages.MessageField('ResourceUsageExportConfig', 46)
+  selfLink = _messages.StringField(47)
+  servicesIpv4Cidr = _messages.StringField(48)
+  shieldedNodes = _messages.MessageField('ShieldedNodes', 49)
+  status = _messages.EnumField('StatusValueValuesEnum', 50)
+  statusMessage = _messages.StringField(51)
+  subnetwork = _messages.StringField(52)
   tpuConfig = _messages.MessageField('TpuConfig', 53)
   tpuIpv4CidrBlock = _messages.StringField(54)
   verticalPodAutoscaling = _messages.MessageField('VerticalPodAutoscaling', 55)
@@ -594,6 +595,8 @@ class ClusterUpdate(_messages.Message):
     desiredDatabaseEncryption: Configuration of etcd encryption.
     desiredDefaultSnatStatus: The desired status of whether to disable default
       sNAT for this cluster.
+    desiredEnableGvnic: Enable or disable gvnic on this cluster. This field is
+      not yet used.
     desiredImage: The desired name of the image to use for this node. This is
       used to create clusters using a custom image.
     desiredImageProject: The project containing the desired image to use for
@@ -669,26 +672,27 @@ class ClusterUpdate(_messages.Message):
   desiredClusterTelemetry = _messages.MessageField('ClusterTelemetry', 4)
   desiredDatabaseEncryption = _messages.MessageField('DatabaseEncryption', 5)
   desiredDefaultSnatStatus = _messages.MessageField('DefaultSnatStatus', 6)
-  desiredImage = _messages.StringField(7)
-  desiredImageProject = _messages.StringField(8)
-  desiredImageType = _messages.StringField(9)
-  desiredIntraNodeVisibilityConfig = _messages.MessageField('IntraNodeVisibilityConfig', 10)
-  desiredLocations = _messages.StringField(11, repeated=True)
-  desiredLoggingService = _messages.StringField(12)
-  desiredMasterAuthorizedNetworksConfig = _messages.MessageField('MasterAuthorizedNetworksConfig', 13)
-  desiredMasterVersion = _messages.StringField(14)
-  desiredMonitoringService = _messages.StringField(15)
-  desiredNodePoolAutoscaling = _messages.MessageField('NodePoolAutoscaling', 16)
-  desiredNodePoolId = _messages.StringField(17)
-  desiredNodeVersion = _messages.StringField(18)
-  desiredPodSecurityPolicyConfig = _messages.MessageField('PodSecurityPolicyConfig', 19)
-  desiredPrivateClusterConfig = _messages.MessageField('PrivateClusterConfig', 20)
-  desiredReleaseChannel = _messages.MessageField('ReleaseChannel', 21)
-  desiredResourceUsageExportConfig = _messages.MessageField('ResourceUsageExportConfig', 22)
-  desiredShieldedNodes = _messages.MessageField('ShieldedNodes', 23)
-  desiredTpuConfig = _messages.MessageField('TpuConfig', 24)
-  desiredVerticalPodAutoscaling = _messages.MessageField('VerticalPodAutoscaling', 25)
-  desiredWorkloadIdentityConfig = _messages.MessageField('WorkloadIdentityConfig', 26)
+  desiredEnableGvnic = _messages.BooleanField(7)
+  desiredImage = _messages.StringField(8)
+  desiredImageProject = _messages.StringField(9)
+  desiredImageType = _messages.StringField(10)
+  desiredIntraNodeVisibilityConfig = _messages.MessageField('IntraNodeVisibilityConfig', 11)
+  desiredLocations = _messages.StringField(12, repeated=True)
+  desiredLoggingService = _messages.StringField(13)
+  desiredMasterAuthorizedNetworksConfig = _messages.MessageField('MasterAuthorizedNetworksConfig', 14)
+  desiredMasterVersion = _messages.StringField(15)
+  desiredMonitoringService = _messages.StringField(16)
+  desiredNodePoolAutoscaling = _messages.MessageField('NodePoolAutoscaling', 17)
+  desiredNodePoolId = _messages.StringField(18)
+  desiredNodeVersion = _messages.StringField(19)
+  desiredPodSecurityPolicyConfig = _messages.MessageField('PodSecurityPolicyConfig', 20)
+  desiredPrivateClusterConfig = _messages.MessageField('PrivateClusterConfig', 21)
+  desiredReleaseChannel = _messages.MessageField('ReleaseChannel', 22)
+  desiredResourceUsageExportConfig = _messages.MessageField('ResourceUsageExportConfig', 23)
+  desiredShieldedNodes = _messages.MessageField('ShieldedNodes', 24)
+  desiredTpuConfig = _messages.MessageField('TpuConfig', 25)
+  desiredVerticalPodAutoscaling = _messages.MessageField('VerticalPodAutoscaling', 26)
+  desiredWorkloadIdentityConfig = _messages.MessageField('WorkloadIdentityConfig', 27)
 
 
 class CompleteIPRotationRequest(_messages.Message):
@@ -1337,60 +1341,6 @@ class Empty(_messages.Message):
   JSON representation for `Empty` is empty JSON object `{}`.
   """
 
-
-
-class FeatureConfig(_messages.Message):
-  r"""FeatureConfig is the configuration for a specific feature including the
-  definition of the feature as well as the tier in which it resides.
-
-  Enums:
-    FeatureValueValuesEnum: The feature that is being configured with this
-      value.
-    TierValueValuesEnum: The tier in which the configured feature resides.
-
-  Fields:
-    feature: The feature that is being configured with this value.
-    tier: The tier in which the configured feature resides.
-  """
-
-  class FeatureValueValuesEnum(_messages.Enum):
-    r"""The feature that is being configured with this value.
-
-    Values:
-      DEFAULT_FEATURE: DEFAULT_FEATURE is the default zero value of the
-        Feature.  This value is valid.
-      VERTICAL_POD_AUTOSCALER: The vertical pod autoscaling feature.
-      NODE_AUTO_PROVISIONING: The node auto provisioning feature.
-      BINARY_AUTHORIZATION: The binary authorization feature.
-      RESOURCE_LABELS: The resource labels feature.
-      USAGE_METERING: The GKE usage metering feature.
-      CLOUD_RUN_ON_GKE: The Cloud Run on GKE feature.
-    """
-    DEFAULT_FEATURE = 0
-    VERTICAL_POD_AUTOSCALER = 1
-    NODE_AUTO_PROVISIONING = 2
-    BINARY_AUTHORIZATION = 3
-    RESOURCE_LABELS = 4
-    USAGE_METERING = 5
-    CLOUD_RUN_ON_GKE = 6
-
-  class TierValueValuesEnum(_messages.Enum):
-    r"""The tier in which the configured feature resides.
-
-    Values:
-      TIER_UNSPECIFIED: TIER_UNSPECIFIED is the default value. If this value
-        is set during create or update, it defaults to the project level tier
-        setting.
-      STANDARD: Represents the standard tier or base Google Kubernetes Engine
-        offering.
-      ADVANCED: Represents the advanced tier.
-    """
-    TIER_UNSPECIFIED = 0
-    STANDARD = 1
-    ADVANCED = 2
-
-  feature = _messages.EnumField('FeatureValueValuesEnum', 1)
-  tier = _messages.EnumField('TierValueValuesEnum', 2)
 
 
 class GcePersistentDiskCsiDriverConfig(_messages.Message):
@@ -2506,18 +2456,6 @@ class PodSecurityPolicyConfig(_messages.Message):
   enabled = _messages.BooleanField(1)
 
 
-class PremiumConfig(_messages.Message):
-  r"""PremiumConfig is the configuration for all premium features and tiers.
-
-  Fields:
-    features: The features that GKE provides.
-    tiers: The tiers that are part of the premium offering.
-  """
-
-  features = _messages.MessageField('FeatureConfig', 1, repeated=True)
-  tiers = _messages.MessageField('TierConfig', 2, repeated=True)
-
-
 class PrivateClusterConfig(_messages.Message):
   r"""Configuration options for private clusters.
 
@@ -2812,7 +2750,6 @@ class ServerConfig(_messages.Message):
     defaultClusterVersion: Version of Kubernetes the service deploys by
       default.
     defaultImageType: Default image type.
-    premiumConfig: Premium configuration for service.
     validImageTypes: List of valid image types.
     validMasterVersions: List of valid master versions.
     validNodeVersions: List of valid node upgrade target versions.
@@ -2821,10 +2758,9 @@ class ServerConfig(_messages.Message):
   channels = _messages.MessageField('ReleaseChannelConfig', 1, repeated=True)
   defaultClusterVersion = _messages.StringField(2)
   defaultImageType = _messages.StringField(3)
-  premiumConfig = _messages.MessageField('PremiumConfig', 4)
-  validImageTypes = _messages.StringField(5, repeated=True)
-  validMasterVersions = _messages.StringField(6, repeated=True)
-  validNodeVersions = _messages.StringField(7, repeated=True)
+  validImageTypes = _messages.StringField(4, repeated=True)
+  validMasterVersions = _messages.StringField(5, repeated=True)
+  validNodeVersions = _messages.StringField(6, repeated=True)
 
 
 class SetAddonsConfigRequest(_messages.Message):
@@ -3371,86 +3307,6 @@ class StatusCondition(_messages.Message):
 
   code = _messages.EnumField('CodeValueValuesEnum', 1)
   message = _messages.StringField(2)
-
-
-class TierConfig(_messages.Message):
-  r"""TierConfig is the configuration for a tier offering.  For example the
-  GKE standard or advanced offerings which contain different levels of
-  functionality and possibly cost.
-
-  Enums:
-    ParentValueValuesEnum: The tier from which the tier being configured
-      inherits.  The configured tier will inherit all the features from its
-      parent tier.
-    TierValueValuesEnum: The tier that is being configured with this value.
-
-  Fields:
-    parent: The tier from which the tier being configured inherits.  The
-      configured tier will inherit all the features from its parent tier.
-    tier: The tier that is being configured with this value.
-  """
-
-  class ParentValueValuesEnum(_messages.Enum):
-    r"""The tier from which the tier being configured inherits.  The
-    configured tier will inherit all the features from its parent tier.
-
-    Values:
-      TIER_UNSPECIFIED: TIER_UNSPECIFIED is the default value. If this value
-        is set during create or update, it defaults to the project level tier
-        setting.
-      STANDARD: Represents the standard tier or base Google Kubernetes Engine
-        offering.
-      ADVANCED: Represents the advanced tier.
-    """
-    TIER_UNSPECIFIED = 0
-    STANDARD = 1
-    ADVANCED = 2
-
-  class TierValueValuesEnum(_messages.Enum):
-    r"""The tier that is being configured with this value.
-
-    Values:
-      TIER_UNSPECIFIED: TIER_UNSPECIFIED is the default value. If this value
-        is set during create or update, it defaults to the project level tier
-        setting.
-      STANDARD: Represents the standard tier or base Google Kubernetes Engine
-        offering.
-      ADVANCED: Represents the advanced tier.
-    """
-    TIER_UNSPECIFIED = 0
-    STANDARD = 1
-    ADVANCED = 2
-
-  parent = _messages.EnumField('ParentValueValuesEnum', 1)
-  tier = _messages.EnumField('TierValueValuesEnum', 2)
-
-
-class TierSettings(_messages.Message):
-  r"""Cluster tier settings.
-
-  Enums:
-    TierValueValuesEnum: Cluster tier.
-
-  Fields:
-    tier: Cluster tier.
-  """
-
-  class TierValueValuesEnum(_messages.Enum):
-    r"""Cluster tier.
-
-    Values:
-      TIER_UNSPECIFIED: TIER_UNSPECIFIED is the default value. If this value
-        is set during create or update, it defaults to the project level tier
-        setting.
-      STANDARD: Represents the standard tier or base Google Kubernetes Engine
-        offering.
-      ADVANCED: Represents the advanced tier.
-    """
-    TIER_UNSPECIFIED = 0
-    STANDARD = 1
-    ADVANCED = 2
-
-  tier = _messages.EnumField('TierValueValuesEnum', 1)
 
 
 class TimeWindow(_messages.Message):

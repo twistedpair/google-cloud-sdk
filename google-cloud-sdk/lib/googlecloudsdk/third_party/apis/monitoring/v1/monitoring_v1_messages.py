@@ -36,9 +36,8 @@ class Aggregation(_messages.Message):
   and representative collection of data, for example "the 95% latency across
   the average of all tasks in a cluster". This representative data can be more
   easily graphed and comprehended, and the individual time series data is
-  still available for later drilldown. For more details, see Aggregating Time
-  Series (https://cloud.google.com/monitoring/api/v3/metrics#aggregating_time_
-  series).
+  still available for later drilldown. For more details, see Filtering and
+  aggregation (https://cloud.google.com/monitoring/api/v3/aggregation).
 
   Enums:
     CrossSeriesReducerValueValuesEnum: The reduction operation to be used to

@@ -5,6 +5,87 @@ Copyright 2014-2020 Google Inc. All rights reserved.
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 
 
+## 287.0.0 (2020-03-31)
+
+### App Engine
+
+* Updated the Python SDK to version 1.9.89.
+  Please visit the following release notes for details:
+  <https://cloud.google.com/appengine/docs/python/release-notes>.
+
+### BigQuery
+
+* Added support to update capacity_commitment plan and renewal_plan.
+* Modified DTS CreateTransferConfig and UpdateTransferConfig CLI to accept a
+  version_info instead of an authorization_code.
+* Added support for ROW ACCESS POLICY DDL statements.
+* Fixed a bug with None auth_info in UpdateTransferConfig.
+
+### Cloud Access Context Manager
+
+* Added the following flags to `gcloud beta access-context-manager perimeters create`:
+  * `--enable-vpc-accessible-services`
+  * `--vpc-allowed-services`
+* Added the following flags to `gcloud beta access-context-manager perimeters update`:
+  * `--enable-vpc-accessible-services`
+  * `--add-vpc-allowed-services`
+  * `--clear-vpc-allowed-services`
+  * `--remove-vpc-allowed-services`
+
+### Cloud Asset Inventory
+
+* Support `org-policy` and `access-policy` in the real-time feed API.
+
+### Cloud Composer
+
+* Added the following flags to `gcloud beta composer environments` commands to
+specify IP ranges for Web Server and Cloud SQL network subranges:
+  * `--web-server-ipv4-cidr`
+  * `--cloud-sql-ipv4-cidr`
+* Require explicitly specifying web server access control when using
+`--enable-private-environment` in
+`gcloud beta composer environments create`.
+
+### Cloud Dataproc
+
+*   Promoted `gcloud dataproc jobs submit presto` command group to GA.
+
+### Cloud Machine Learning Engine
+
+* Added `--json-request` flag to `gcloud ml-engine predict` and `gcloud ml-engine local predict` to improve the UX by matching the input format to that used in actual requests.
+
+### Cloud Spanner Emulator
+
+* Added `gcloud beta emulators spanner` command group which allows starting
+  a Cloud Spanner emulator for local development and unit testing.
+
+### Cloud Storage
+
+* Updated gsutil component to 4.49.
+
+### Compute Engine
+
+* Promoted centos-8, opensuse-15, rhel-8, rhel-8-byol, sles-12-byol, and
+  sles-15-byol options of `--os` flag for `gcloud compute images import`
+  and `gcloud compute instances import` to GA.
+* Promoted `--resource-policies` flag of `gcloud compute instances create`
+  to GA.
+* Promoted `--logging-filter-expr` and `--logging-metadata-fields` flags of
+  `gcloud compute networks subnets create` and
+  `gcloud compute networks subnets update` to GA.
+* Promoted `--platform-key-file`, `--key-exchange-key-file`,
+  `--signature-database-file`, and `--forbidden-database-file` flags of
+  `gcloud compute images create` command to GA.
+* Updated "list-rules" command of Organization Firewalls to add more fields.
+
+### Stackdriver Monitoring
+
+* Promote `gcloud monitoring dashboards` command group to GA.
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+
 ## 286.0.0 (2020-03-24)
 
 ### Breaking Changes

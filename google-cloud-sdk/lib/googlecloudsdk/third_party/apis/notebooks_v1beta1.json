@@ -7,7 +7,7 @@
   "version": "v1beta1",
   "revision": "0",
   "title": "Notebooks API",
-  "description": "AI Platform Notebooks API is used to manage notebook resources in Google Cloud.",
+  "description": "AI Platform Notebooks API (beta) is used to manage notebook resources in Google Cloud. AI Platform Notebooks API is in a pre-release state and might change or have limited support. For more information, see the <a href=\"\/products#product-launch-stages\">product launch stages<\/a>.",
   "ownerDomain": "google.com",
   "ownerName": "Google",
   "icons": {
@@ -314,7 +314,7 @@
           }
         },
         "serviceAccount": {
-          "description": "The service account on this instance, giving access to other GCP services.\nYou can use any service account within the same project, but you\nmust have the service account user permission to use the instance.\n\nIf not specified, the [Compute Engine default service\naccount](\/compute\/docs\/access\/service-accounts#default_service_account)\nis used.",
+          "description": "The service account on this instance, giving access to other Google\nCloud services.\nYou can use any service account within the same project, but you\nmust have the service account user permission to use the instance.\n\nIf not specified, the [Compute Engine default service\naccount](\/compute\/docs\/access\/service-accounts#default_service_account)\nis used.",
           "type": "string"
         },
         "machineType": {
@@ -348,7 +348,7 @@
           ]
         },
         "installGpuDriver": {
-          "description": "Whether the end user authorizes GCP to install GPU driver on this instance.\nIf this field is empty or set to false, the GPU driver won't be installed.\nOnly applicable to instances with GPUs.",
+          "description": "Whether the end user authorizes Google Cloud to install GPU driver\non this instance.\nIf this field is empty or set to false, the GPU driver won't be installed.\nOnly applicable to instances with GPUs.",
           "type": "boolean"
         },
         "customGpuDriverPath": {
@@ -463,7 +463,7 @@
       "type": "object",
       "properties": {
         "project": {
-          "description": "Required. The name of the GCP project that this VM image belongs to.\nFormat: `projects\/{project_id}`",
+          "description": "Required. The name of the Google Cloud project that this VM image belongs to.\nFormat: `projects\/{project_id}`",
           "type": "string"
         },
         "imageName": {
@@ -719,7 +719,7 @@
           "$ref": "ContainerImage"
         },
         "postStartupScript": {
-          "description": "Path to a Bash script that automatically runs after a notebook instance\nfully boots up. The path must be a URL or\nCloud Storage path (gs:\/\/path-to-file\/file-name).",
+          "description": "Path to a Bash script that automatically runs after a notebook instance\nfully boots up. The path must be a URL or\nCloud Storage path. Example: `\"gs:\/\/path-to-file\/file-name\"`",
           "type": "string"
         },
         "createTime": {
@@ -1415,7 +1415,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "ReportInstanceInfo allows notebook instances to report their latest\ninstance information to the Notebooks API server. The server will merge\nthe reported information to the instance metadata store."
+                  "description": "Allows notebook instances to\nreport their latest instance information to the Notebooks\nAPI server. The server will merge the reported information to\nthe instance metadata store. Do not use this method directly."
                 },
                 "upgrade": {
                   "id": "notebooks.projects.locations.instances.upgrade",
@@ -1471,7 +1471,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "UpgradeInstanceInternal allows notebook instances to call this endpoint to\nupgrade themselves"
+                  "description": "Allows notebook instances to\ncall this endpoint to upgrade themselves. Do not use this method directly."
                 },
                 "setIamPolicy": {
                   "id": "notebooks.projects.locations.instances.setIamPolicy",
@@ -1571,7 +1571,7 @@
                   "httpMethod": "GET",
                   "parameters": {
                     "parent": {
-                      "description": "Required. `Format: projects\/{project_id}\/locations\/{location}`",
+                      "description": "Required. Format: `projects\/{project_id}\/locations\/{location}`",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",

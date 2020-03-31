@@ -253,8 +253,6 @@ class _Sections(object):
     billing: Section, The section containing billing properties for the Cloud
       SDK.
     builds: Section, The section containing builds properties for the Cloud SDK.
-    build_artifacts: Section, The section containing build artifacts properties
-      for the Cloud SDK.
     artifacts: Section, The section containing artifacts properties for the
       Cloud SDK.
     component_manager: Section, The section containing properties for the
@@ -338,7 +336,6 @@ class _Sections(object):
     self.auth = _SectionAuth()
     self.billing = _SectionBilling()
     self.builds = _SectionBuilds()
-    self.build_artifacts = _SectionBuildArtifacts()
     self.component_manager = _SectionComponentManager()
     self.composer = _SectionComposer()
     self.compute = _SectionCompute()
@@ -385,7 +382,6 @@ class _Sections(object):
         self.billing,
         self.builds,
         self.artifacts,
-        self.build_artifacts,
         self.component_manager,
         self.composer,
         self.compute,
@@ -1037,19 +1033,6 @@ class _SectionBuilds(_Section):
         hidden=True,
         help_text='Kaniko builder image to use when use_kaniko=True. Defaults '
         'to gcr.io/kaniko-project/executor:latest')
-
-
-class _SectionBuildArtifacts(_Section):
-  """Contains the properties for the 'build_artifacts' section."""
-
-  def __init__(self):
-    super(_SectionBuildArtifacts, self).__init__('build_artifacts')
-
-    self.repository = self._Add(
-        'repository',
-        help_text='Default repository to use when working with Cloud '
-        'Build Artifacts resources. When a `repository` is required but not '
-        'provided by a flag, the command will fall back to this value, if set.')
 
 
 class _SectionArtifacts(_Section):
@@ -1769,7 +1752,6 @@ class _SectionApiEndpointOverrides(_Section):
     self.appengine = self._Add('appengine')
     self.bigtableadmin = self._Add('bigtableadmin')
     self.binaryauthorization = self._Add('binaryauthorization')
-    self.buildartifacts = self._Add('buildartifacts')
     self.artifactregistry = self._Add('artifactregistry')
     self.categorymanager = self._Add('categorymanager')
     self.cloudasset = self._Add('cloudasset')

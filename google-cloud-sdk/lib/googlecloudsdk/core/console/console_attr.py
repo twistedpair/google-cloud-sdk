@@ -91,6 +91,7 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+import locale
 import os
 import sys
 import unicodedata
@@ -316,9 +317,15 @@ class ConsoleAttr(object):
       return None
     console_encoding = console_encoding.lower()
     if 'utf-8' in console_encoding:
+      # use ascii for windows code page 1252
+      locale_encoding = locale.getpreferredencoding()
+      if locale_encoding and 'cp1252' in locale_encoding:
+        return None
       return 'utf8'
     elif 'cp437' in console_encoding:
       return 'cp437'
+    elif 'cp1252' in console_encoding:
+      return None
     return None
 
   def Colorize(self, string, color, justify=None):

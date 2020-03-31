@@ -48,7 +48,7 @@ def GetLabelKeyFromDisplayName(display_name, label_parent):
   labelmanager_messages = labelmanager.LabelManagerMessages()
 
   list_request = labelmanager_messages.LabelmanagerLabelKeysListRequest(
-      parent=label_parent)
+      parent=label_parent, showDeleted=True)
   response = labelkeys_service.List(list_request)
 
   for key in response.keys:
@@ -78,7 +78,7 @@ def GetLabelValueFromDisplayName(display_name, label_key):
   labelmanager_messages = labelmanager.LabelManagerMessages()
 
   list_request = labelmanager_messages.LabelmanagerLabelValuesListRequest(
-      parent=label_key)
+      parent=label_key, showDeleted=True)
   response = labelvalues_service.List(list_request)
 
   for value in response.values:

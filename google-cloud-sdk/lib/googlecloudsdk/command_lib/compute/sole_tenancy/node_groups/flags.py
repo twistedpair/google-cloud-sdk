@@ -102,6 +102,16 @@ def AddMaintenanceWindowArgToParser(parser):
             '16:00, 20:00.'))
 
 
+def AddLocationHintArgToParser(parser):
+  """Add --location-hint flag."""
+  parser.add_argument(
+      '--location-hint',
+      hidden=True,
+      help=(
+          'Used by internal tools to control sub-zone location of node groups.'
+      ))
+
+
 def GetMaintenancePolicyEnumMapper(messages):
   return arg_utils.ChoiceEnumMapper(
       '--maintenance-policy',

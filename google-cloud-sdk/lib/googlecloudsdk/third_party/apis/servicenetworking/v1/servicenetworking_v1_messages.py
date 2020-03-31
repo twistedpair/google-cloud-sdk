@@ -13,6 +13,34 @@ from apitools.base.py import extra_types
 package = 'servicenetworking'
 
 
+class AddRolesRequest(_messages.Message):
+  r"""Request for AddRoles to allow Service Producers to add roles in the
+  shared VPC host project for them to use.
+
+  Fields:
+    consumerNetwork: Required. The network that the consumer is using to
+      connect with services. Must be in the form of
+      projects/{project}/global/networks/{network} {project} is a project
+      number, as in '12345' {network} is a network name.
+    policyBinding: Required. List of policy bindings to add to shared VPC host
+      project.
+  """
+
+  consumerNetwork = _messages.StringField(1)
+  policyBinding = _messages.MessageField('PolicyBinding', 2, repeated=True)
+
+
+class AddRolesResponse(_messages.Message):
+  r"""Represents IAM roles added to the shared VPC host project.
+
+  Fields:
+    policyBinding: Required. List of policy bindings that were added to the
+      shared VPC host project.
+  """
+
+  policyBinding = _messages.MessageField('PolicyBinding', 1, repeated=True)
+
+
 class AddSubnetworkRequest(_messages.Message):
   r"""Request to create a subnetwork in a previously peered service network.
 
@@ -296,6 +324,27 @@ class BackendRule(_messages.Message):
       https://www.iana.org/assignments/tls-extensiontype-values/tls-
       extensiontype-values.xhtml#alpn-protocol-ids for more details on the
       supported values.
+    renameTo: Unimplemented. Do not use.  The new name the selected proto
+      elements should be renamed to.  The package, the service and the method
+      can all be renamed. The backend server should implement the renamed
+      proto. However, clients should call the original method, and ESF routes
+      the traffic to the renamed method.  HTTP clients should call the URL
+      mapped to the original method. gRPC and Stubby clients should call the
+      original method with package name.  For legacy reasons, ESF allows
+      Stubby clients to call with the short name (without the package name).
+      However, for API Versioning(or multiple methods mapped to the same short
+      name), all Stubby clients must call the method's full name with the
+      package name, otherwise the first one (selector) wins.  If this
+      `rename_to` is specified with a trailing `*`, the `selector` must be
+      specified with a trailing `*` as well. The all element short names
+      matched by the `*` in the selector will be kept in the `rename_to`.  For
+      example,     rename_rules:     - selector: |-
+      google.example.library.v1.*       rename_to: google.example.library.*
+      The selector matches `google.example.library.v1.Library.CreateShelf` and
+      `google.example.library.v1.Library.CreateBook`, they will be renamed to
+      `google.example.library.Library.CreateShelf` and
+      `google.example.library.Library.CreateBook`. It essentially renames the
+      proto package name section of the matched proto service and methods.
     selector: Selects the methods to which this rule applies.  Refer to
       selector for syntax details.
   """
@@ -342,7 +391,8 @@ class BackendRule(_messages.Message):
   operationDeadline = _messages.FloatField(6)
   pathTranslation = _messages.EnumField('PathTranslationValueValuesEnum', 7)
   protocol = _messages.StringField(8)
-  selector = _messages.StringField(9)
+  renameTo = _messages.StringField(9)
+  selector = _messages.StringField(10)
 
 
 class Billing(_messages.Message):
@@ -1962,6 +2012,24 @@ class Page(_messages.Message):
   subpages = _messages.MessageField('Page', 3, repeated=True)
 
 
+class PolicyBinding(_messages.Message):
+  r"""Grouping of IAM role and IAM member.
+
+  Fields:
+    member: Required. Member to bind the role with. See
+      /iam/docs/reference/rest/v1/Policy#Binding for how to format each
+      member. Eg.   - user:myuser@mydomain.com   - serviceAccount:my-service-
+      account@app.gserviceaccount.com
+    role: Required. Role to apply. Only whitelisted roles can be used at the
+      specified granularity. The role must be one of the following:   -
+      'roles/container.hostServiceAgentUser' applied on the shared VPC host
+      project
+  """
+
+  member = _messages.StringField(1)
+  role = _messages.StringField(2)
+
+
 class Quota(_messages.Message):
   r"""Quota configuration helps to achieve fairness and budgeting in service
   usage.  The metric based quota configuration works this way: - The service
@@ -2127,6 +2195,27 @@ class RangeReservation(_messages.Message):
 
   ipPrefixLength = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   secondaryRangeIpPrefixLengths = _messages.IntegerField(2, repeated=True, variant=_messages.Variant.INT32)
+
+
+class Route(_messages.Message):
+  r"""Represents a route that was created or discovered by a private access
+  management service.
+
+  Fields:
+    destRange: Destination CIDR range that this route applies to.
+    name: Route name. See https://cloud.google.com/vpc/docs/routes
+    network: Fully-qualified URL of the VPC network in the producer host
+      tenant project that this route applies to. For example:
+      `projects/123456/global/networks/host-network`
+    nextHopGateway: Fully-qualified URL of the gateway that should handle
+      matching packets that this route applies to. For example:
+      `projects/123456/global/gateways/default-internet-gateway`
+  """
+
+  destRange = _messages.StringField(1)
+  name = _messages.StringField(2)
+  network = _messages.StringField(3)
+  nextHopGateway = _messages.StringField(4)
 
 
 class SearchRangeRequest(_messages.Message):
@@ -2430,6 +2519,21 @@ class ServicenetworkingServicesEnableVpcServiceControlsRequest(_messages.Message
   """
 
   enableVpcServiceControlsRequest = _messages.MessageField('EnableVpcServiceControlsRequest', 1)
+  parent = _messages.StringField(2, required=True)
+
+
+class ServicenetworkingServicesRolesAddRequest(_messages.Message):
+  r"""A ServicenetworkingServicesRolesAddRequest object.
+
+  Fields:
+    addRolesRequest: A AddRolesRequest resource to be passed as the request
+      body.
+    parent: Required. This is in a form services/{service} where {service} is
+      the name of the private access management service. For example 'service-
+      peering.example.com'.
+  """
+
+  addRolesRequest = _messages.MessageField('AddRolesRequest', 1)
   parent = _messages.StringField(2, required=True)
 
 

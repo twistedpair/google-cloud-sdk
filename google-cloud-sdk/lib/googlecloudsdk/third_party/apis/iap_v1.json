@@ -355,7 +355,7 @@
       "type": "object",
       "properties": {
         "name": {
-          "description": "Name of the resource on which conditions will be evaluated.\nRelative Resource Name of the resource should be set, which is the URI\npath of the resource without leading \"\/\". For instance, resource.name\nset for a bucket is \"projects\/project123\/buckets\/bucket456\".\nThis field is required for evaluating conditions with rules on resource\nnames. SYSContext.resource_name is not used by condition evaluation.\nSee https:\/\/cloud.google.com\/apis\/design\/resource_names for details.",
+          "description": "Name of the resource on which conditions will be evaluated.\nMust use the Relative Resource Name of the resource, which is the URI\npath of the resource without the leading \"\/\". Examples are\n\"projects\/_\/buckets\/[BUCKET-ID]\" for storage buckets or\n\"projects\/[PROJECT-ID]\/global\/firewalls\/[FIREWALL-ID]\" for a firewall.\n\nThis field is required for evaluating conditions with rules on resource\nnames. For a `list` permission check, the resource.name value must be set\nto the parent resource. If the parent resource is a project, this field\nshould be left unset.",
           "type": "string"
         },
         "type": {
@@ -400,6 +400,10 @@
         "csmSettings": {
           "description": "Settings to configure IAP's behavior for a CSM mesh.",
           "$ref": "CsmSettings"
+        },
+        "accessDeniedPageSettings": {
+          "description": "Customization for Access Denied page.",
+          "$ref": "AccessDeniedPageSettings"
         }
       }
     },
@@ -410,6 +414,17 @@
       "properties": {
         "rctokenAud": {
           "description": "Audience claim set in the generated RCToken. This value is not validated by\nIAP.",
+          "type": "string"
+        }
+      }
+    },
+    "AccessDeniedPageSettings": {
+      "id": "AccessDeniedPageSettings",
+      "description": "Custom content configuration for access denied page.\nIAP allows customers to define a custom URI to use as the error page when\naccess is denied to users. If IAP prevents access to this page, the default\nIAP error page will be displayed instead.",
+      "type": "object",
+      "properties": {
+        "accessDeniedPageUri": {
+          "description": "The URI to be redirected to when access is denied.",
           "type": "string"
         }
       }

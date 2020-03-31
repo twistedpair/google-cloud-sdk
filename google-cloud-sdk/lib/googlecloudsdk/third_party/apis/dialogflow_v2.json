@@ -439,7 +439,7 @@
           "type": "string"
         },
         "lifespanCount": {
-          "description": "Optional. The number of conversational query requests after which the\ncontext expires. If set to `0` (the default) the context expires\nimmediately. Contexts expire automatically after 20 minutes if there\nare no matching queries.",
+          "description": "Optional. The number of conversational query requests after which the\ncontext expires. The default is `0`. If set to `0`, the context expires\nimmediately. Contexts expire automatically after 20 minutes if there\nare no matching queries.",
           "type": "integer",
           "format": "int32"
         },
@@ -519,7 +519,7 @@
           }
         },
         "events": {
-          "description": "Optional. The collection of event names that trigger the intent.\nIf the collection of input contexts is not empty, all of the contexts must\nbe present in the active user session for an event to trigger this intent.\nEvent names are limited to 50 characters.",
+          "description": "Optional. The collection of event names that trigger the intent.\nIf the collection of input contexts is not empty, all of the contexts must\nbe present in the active user session for an event to trigger this intent.\nEvent names are limited to 150 characters.",
           "type": "array",
           "items": {
             "type": "string"
@@ -2678,7 +2678,7 @@
           }
         },
         "events": {
-          "description": "Optional. The collection of event names that trigger the intent.\nIf the collection of input contexts is not empty, all of the contexts must\nbe present in the active user session for an event to trigger this intent.\nEvent names are limited to 50 characters.",
+          "description": "Optional. The collection of event names that trigger the intent.\nIf the collection of input contexts is not empty, all of the contexts must\nbe present in the active user session for an event to trigger this intent.\nEvent names are limited to 150 characters.",
           "type": "array",
           "items": {
             "type": "string"
@@ -2840,7 +2840,7 @@
           "type": "string"
         },
         "lifespanCount": {
-          "description": "Optional. The number of conversational query requests after which the\ncontext expires. If set to `0` (the default) the context expires\nimmediately. Contexts expire automatically after 20 minutes if there\nare no matching queries.",
+          "description": "Optional. The number of conversational query requests after which the\ncontext expires. The default is `0`. If set to `0`, the context expires\nimmediately. Contexts expire automatically after 20 minutes if there\nare no matching queries.",
           "type": "integer",
           "format": "int32"
         },

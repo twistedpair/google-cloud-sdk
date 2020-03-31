@@ -27448,15 +27448,19 @@ class InstanceGroup(_messages.Message):
       name instead of a port number. Named ports can also contain multiple
       ports. For example: [{name: "http", port: 80},{name: "http", port:
       8080}]   Named ports apply to all instances in this instance group.
-    network: The URL of the network to which all instances in the instance
-      group belong.
+    network: [Output Only] The URL of the network to which all instances in
+      the instance group belong. If your instance has multiple network
+      interfaces, then the network and subnetwork fields only refer to the
+      network and subnet used by your primary interface (nic0).
     region: [Output Only] The URL of the region where the instance group is
       located (for regional resources).
     selfLink: [Output Only] The URL for this instance group. The server
       generates this URL.
     size: [Output Only] The total number of instances in the instance group.
     subnetwork: [Output Only] The URL of the subnetwork to which all instances
-      in the instance group belong.
+      in the instance group belong. If your instance has multiple network
+      interfaces, then the network and subnetwork fields only refer to the
+      network and subnet used by your primary interface (nic0).
     zone: [Output Only] The URL of the zone where the instance group is
       located (for zonal resources).
   """

@@ -31,14 +31,14 @@ from googlecloudsdk.core.util import files
 from six.moves import range
 
 
-def _GetPrimaryNodeName():
+def GetPrimaryNodeName():
   """Get the primary node name.
 
   Returns:
     str, the name of the primary node. If running in tensorflow 1.x,
     return 'master'. If running in tensorflow 2.x, return 'chief'.
     If tensorflow is not installed in local envrionment, it will return
-    the default name 'master'.
+    the default name 'chief'.
   Raises:
     RuntimeError: if there is no python executable on the user system.
   """
@@ -49,7 +49,8 @@ def _GetPrimaryNodeName():
   cmd = [python_executable,
          '-c',
          'import tensorflow as tf; print(tf.version.VERSION)']
-  proc = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+  with files.FileWriter(os.devnull) as f:
+    proc = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=f)
   return_code = proc.wait()
   if return_code != 0:
     log.warning('''
@@ -126,7 +127,7 @@ def MakeProcess(module_name,
   # configuration options to the training module. the module specific
   # arguments are passed as command line arguments.
   env['TF_CONFIG'] = json.dumps(config)
-  if task_type == _GetPrimaryNodeName():
+  if task_type == GetPrimaryNodeName():
     return execution_utils.Exec(
         cmd, env=env, no_exit=True, cwd=package_root, **extra_popen_args)
   else:
@@ -165,14 +166,14 @@ def RunDistributed(module_name,
   """
   ports = list(range(start_port, start_port + num_ps + num_workers + 1))
   cluster = {
-      _GetPrimaryNodeName(): ['localhost:{port}'.format(port=ports[0])],
+      GetPrimaryNodeName(): ['localhost:{port}'.format(port=ports[0])],
       'ps': ['localhost:{port}'.format(port=p)
              for p in ports[1:num_ps + 1]],
       'worker': ['localhost:{port}'.format(port=p)
                  for p in ports[num_ps + 1:]]
   }
   for task_type, addresses in cluster.items():
-    if task_type != _GetPrimaryNodeName():
+    if task_type != GetPrimaryNodeName():
       for i in range(len(addresses)):
         MakeProcess(module_name,
                     package_root,
@@ -190,6 +191,6 @@ def RunDistributed(module_name,
   return MakeProcess(module_name,
                      package_root,
                      args=user_args,
-                     task_type=_GetPrimaryNodeName(),
+                     task_type=GetPrimaryNodeName(),
                      index=0,
                      cluster=cluster)

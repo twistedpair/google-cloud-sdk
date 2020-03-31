@@ -371,30 +371,30 @@ class ListEndpointConfigSelectorsResponse(_messages.Message):
   r"""Response returned by the ListEndpointConfigSelectors method.
 
   Fields:
+    endpointConfigSelectors: List of EndpointConfigSelector resources.
     nextPageToken: If there might be more results than those appearing in this
       response, then `next_page_token` is included. To get the next set of
       results, call this method again using the value of `next_page_token` as
       `page_token`.
-    resources: List of EndpointConfigSelector resources.
   """
 
-  nextPageToken = _messages.StringField(1)
-  resources = _messages.MessageField('EndpointConfigSelector', 2, repeated=True)
+  endpointConfigSelectors = _messages.MessageField('EndpointConfigSelector', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
 
 
 class ListHttpFiltersResponse(_messages.Message):
   r"""Response returned by the ListHttpFilters method.
 
   Fields:
+    httpFilters: List of HttpFilter resources.
     nextPageToken: If there might be more results than those appearing in this
       response, then `next_page_token` is included. To get the next set of
       results, call this method again using the value of `next_page_token` as
       `page_token`.
-    resources: List of HttpFilter resources.
   """
 
-  nextPageToken = _messages.StringField(1)
-  resources = _messages.MessageField('HttpFilter', 2, repeated=True)
+  httpFilters = _messages.MessageField('HttpFilter', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
 
 
 class ListLocationsResponse(_messages.Message):
@@ -678,11 +678,11 @@ class NetworkservicesProjectsLocationsEndpointConfigSelectorsPatchRequest(_messa
     name: Required. Name of the EndpointConfigSelector resource. It matches
       pattern `projects/*/locations/global/endpointConfigSelectors/<endpoint_c
       onfig_selector>`.
-    updateMask: Field mask is used to specify the fields to be overwritten in
-      the EndpointConfigSelector resource by the update. The fields specified
-      in the update_mask are relative to the resource, not the full request. A
-      field will be overwritten if it is in the mask. If the user does not
-      provide a mask then all fields will be overwritten.
+    updateMask: Optional. Field mask is used to specify the fields to be
+      overwritten in the EndpointConfigSelector resource by the update. The
+      fields specified in the update_mask are relative to the resource, not
+      the full request. A field will be overwritten if it is in the mask. If
+      the user does not provide a mask then all fields will be overwritten.
   """
 
   endpointConfigSelector = _messages.MessageField('EndpointConfigSelector', 1)

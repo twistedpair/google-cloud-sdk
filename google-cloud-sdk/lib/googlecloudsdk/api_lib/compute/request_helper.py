@@ -210,7 +210,8 @@ def MakeRequests(requests,
                  batch_url,
                  errors,
                  progress_tracker=None,
-                 followup_overrides=None):
+                 followup_overrides=None,
+                 log_result=True):
   """Makes one or more requests to the API.
 
   Each request can be either a synchronous API call or an asynchronous
@@ -241,6 +242,8 @@ def MakeRequests(requests,
       to finish.
     followup_overrides: A list of new resource names to GET once the operation
       finishes. Generally used in renaming calls.
+    log_result: Whether the Operation Waiter should print the result in past
+      tense of each request.
 
   Yields:
     A response for each request. For deletion requests, no corresponding
@@ -309,7 +312,8 @@ def MakeRequests(requests,
         batch_url=batch_url,
         warnings=warnings,
         progress_tracker=progress_tracker,
-        errors=errors):
+        errors=errors,
+        log_result=log_result):
       yield response
 
     if warnings:

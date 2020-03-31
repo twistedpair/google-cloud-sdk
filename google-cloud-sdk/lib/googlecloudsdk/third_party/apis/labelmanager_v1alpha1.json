@@ -209,13 +209,6 @@
         }
       }
     },
-    "Empty": {
-      "id": "Empty",
-      "description": "A generic empty message that you can re-use to avoid defining duplicated\nempty messages in your APIs. A typical example is to use it as the request\nor the response type of an API method. For instance:\n\n    service Foo {\n      rpc Bar(google.protobuf.Empty) returns (google.protobuf.Empty);\n    }\n\nThe JSON representation for `Empty` is empty JSON object `{}`.",
-      "type": "object",
-      "properties": {
-      }
-    },
     "ListLabelKeysResponse": {
       "id": "ListLabelKeysResponse",
       "description": "The ListLabelKeys response message.",
@@ -652,7 +645,7 @@
             "name"
           ],
           "response": {
-            "$ref": "Empty"
+            "$ref": "Operation"
           },
           "scopes": [
             "https://www.googleapis.com/auth/cloud-platform"
@@ -684,6 +677,11 @@
               "description": "Optional. A pagination token returned from a previous call to `ListLabelKey`\nthat indicates where this listing should continue from. This is currently\nnot used by the server.",
               "location": "query",
               "type": "string"
+            },
+            "showDeleted": {
+              "description": "Optional. Controls whether LabelKeys in the\nDELETE_REQUESTED\nstate should be returned. Defaults to false.",
+              "location": "query",
+              "type": "boolean"
             }
           },
           "parameterOrder": [
@@ -768,7 +766,7 @@
             "$ref": "LabelKey"
           },
           "response": {
-            "$ref": "LabelKey"
+            "$ref": "Operation"
           },
           "scopes": [
             "https://www.googleapis.com/auth/cloud-platform"
@@ -940,6 +938,11 @@
               "description": "Optional. A pagination token returned from a previous call to `ListLabelValues`\nthat indicates where this listing should continue from. This is currently\nnot used by the server.",
               "location": "query",
               "type": "string"
+            },
+            "showDeleted": {
+              "description": "Optional. Controls whether LabelValues in the\nDELETE_REQUESTED\nstate should be returned. Defaults to false.",
+              "location": "query",
+              "type": "boolean"
             }
           },
           "parameterOrder": [

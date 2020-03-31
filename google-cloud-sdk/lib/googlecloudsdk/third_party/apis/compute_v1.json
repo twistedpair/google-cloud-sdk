@@ -4,7 +4,7 @@
  "id": "compute:v1",
  "name": "compute",
  "version": "v1",
- "revision": "20200313",
+ "revision": "20200327",
  "title": "Compute Engine API",
  "description": "Creates and runs virtual machines on Google Cloud Platform.",
  "ownerDomain": "google.com",
@@ -7950,7 +7950,7 @@
     },
     "network": {
      "type": "string",
-     "description": "The URL of the network to which all instances in the instance group belong."
+     "description": "[Output Only] The URL of the network to which all instances in the instance group belong. If your instance has multiple network interfaces, then the network and subnetwork fields only refer to the network and subnet used by your primary interface (nic0)."
     },
     "region": {
      "type": "string",
@@ -7967,7 +7967,7 @@
     },
     "subnetwork": {
      "type": "string",
-     "description": "[Output Only] The URL of the subnetwork to which all instances in the instance group belong."
+     "description": "[Output Only] The URL of the subnetwork to which all instances in the instance group belong. If your instance has multiple network interfaces, then the network and subnetwork fields only refer to the network and subnet used by your primary interface (nic0)."
     },
     "zone": {
      "type": "string",
@@ -13213,9 +13213,17 @@
      "type": "boolean",
      "description": "Whether to export the custom routes to peer network."
     },
+    "exportSubnetRoutesWithPublicIp": {
+     "type": "boolean",
+     "description": "Whether subnet routes with public IP range are exported. The default value is true, all subnet routes are exported. The IPv4 special-use ranges (https://en.wikipedia.org/wiki/IPv4#Special_addresses) are always exported to peers and are not controlled by this field."
+    },
     "importCustomRoutes": {
      "type": "boolean",
      "description": "Whether to import the custom routes from peer network."
+    },
+    "importSubnetRoutesWithPublicIp": {
+     "type": "boolean",
+     "description": "Whether subnet routes with public IP range are imported. The default value is false. The IPv4 special-use ranges (https://en.wikipedia.org/wiki/IPv4#Special_addresses) are always imported from peers and are not controlled by this field."
     },
     "name": {
      "type": "string",
@@ -18843,7 +18851,8 @@
      "description": "URI of the network to which this router belongs.",
      "annotations": {
       "required": [
-       "compute.routers.insert"
+       "compute.routers.insert",
+       "compute.routers.update"
       ]
      }
     },
@@ -20541,6 +20550,10 @@
      "type": "string",
      "description": "An optional description of this resource. Provide this property when you create the resource."
     },
+    "expireTime": {
+     "type": "string",
+     "description": "[Output Only] Expire time of the certificate. RFC3339"
+    },
     "id": {
      "type": "string",
      "description": "[Output Only] The unique identifier for the resource. This identifier is defined by the server.",
@@ -20550,6 +20563,10 @@
      "type": "string",
      "description": "[Output Only] Type of the resource. Always compute#sslCertificate for SSL certificates.",
      "default": "compute#sslCertificate"
+    },
+    "managed": {
+     "$ref": "SslCertificateManagedSslCertificate",
+     "description": "Configuration and status of a managed SSL certificate."
     },
     "name": {
      "type": "string",
@@ -20567,6 +20584,31 @@
     "selfLink": {
      "type": "string",
      "description": "[Output only] Server-defined URL for the resource."
+    },
+    "selfManaged": {
+     "$ref": "SslCertificateSelfManagedSslCertificate",
+     "description": "Configuration and status of a self-managed SSL certificate."
+    },
+    "subjectAlternativeNames": {
+     "type": "array",
+     "description": "[Output Only] Domains associated with the certificate via Subject Alternative Name.",
+     "items": {
+      "type": "string"
+     }
+    },
+    "type": {
+     "type": "string",
+     "description": "(Optional) Specifies the type of SSL certificate, either \"SELF_MANAGED\" or \"MANAGED\". If not specified, the certificate is self-managed and the fields certificate and private_key are used.",
+     "enum": [
+      "MANAGED",
+      "SELF_MANAGED",
+      "TYPE_UNSPECIFIED"
+     ],
+     "enumDescriptions": [
+      "",
+      "",
+      ""
+     ]
     }
    }
   },
@@ -20791,6 +20833,80 @@
        "description": "[Output Only] A human-readable description of the warning code."
       }
      }
+    }
+   }
+  },
+  "SslCertificateManagedSslCertificate": {
+   "id": "SslCertificateManagedSslCertificate",
+   "type": "object",
+   "description": "Configuration and status of a managed SSL certificate.",
+   "properties": {
+    "domainStatus": {
+     "type": "object",
+     "description": "[Output only] Detailed statuses of the domains specified for managed certificate resource.",
+     "additionalProperties": {
+      "type": "string",
+      "enum": [
+       "ACTIVE",
+       "DOMAIN_STATUS_UNSPECIFIED",
+       "FAILED_CAA_CHECKING",
+       "FAILED_CAA_FORBIDDEN",
+       "FAILED_NOT_VISIBLE",
+       "FAILED_RATE_LIMITED",
+       "PROVISIONING"
+      ],
+      "enumDescriptions": [
+       "",
+       "",
+       "",
+       "",
+       "",
+       "",
+       ""
+      ]
+     }
+    },
+    "domains": {
+     "type": "array",
+     "description": "The domains for which a managed SSL certificate will be generated. Currently only single-domain certs are supported.",
+     "items": {
+      "type": "string"
+     }
+    },
+    "status": {
+     "type": "string",
+     "description": "[Output only] Status of the managed certificate resource.",
+     "enum": [
+      "ACTIVE",
+      "MANAGED_CERTIFICATE_STATUS_UNSPECIFIED",
+      "PROVISIONING",
+      "PROVISIONING_FAILED",
+      "PROVISIONING_FAILED_PERMANENTLY",
+      "RENEWAL_FAILED"
+     ],
+     "enumDescriptions": [
+      "",
+      "",
+      "",
+      "",
+      "",
+      ""
+     ]
+    }
+   }
+  },
+  "SslCertificateSelfManagedSslCertificate": {
+   "id": "SslCertificateSelfManagedSslCertificate",
+   "type": "object",
+   "description": "Configuration and status of a self-managed SSL certificate.",
+   "properties": {
+    "certificate": {
+     "type": "string",
+     "description": "A local certificate file. The certificate must be in PEM format. The certificate chain must be no greater than 5 certs long. The chain must include at least one intermediate cert."
+    },
+    "privateKey": {
+     "type": "string",
+     "description": "A write-only private key in PEM format. Only insert requests will include this field."
     }
    }
   },

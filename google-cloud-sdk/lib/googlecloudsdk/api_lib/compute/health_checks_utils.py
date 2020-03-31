@@ -210,7 +210,11 @@ def AddGrpcRelatedCreationArgs(parser):
   """Adds parser arguments for creation related to gRPC."""
 
   _AddPortRelatedCreationArgs(
-      parser, use_serving_port=True, port_type='TCP', default_port=None)
+      parser,
+      use_port_name=False,
+      use_serving_port=True,
+      port_type='TCP',
+      default_port=None)
 
   parser.add_argument(
       '--grpc-service-name',
@@ -222,7 +226,7 @@ def AddGrpcRelatedCreationArgs(parser):
 def AddGrpcRelatedUpdateArgs(parser):
   """Adds parser arguments for update subcommands related to gRPC."""
 
-  _AddPortRelatedUpdateArgs(parser)
+  _AddPortRelatedUpdateArgs(parser, use_port_name=False)
 
   parser.add_argument(
       '--grpc-service-name',
@@ -256,6 +260,7 @@ def AddUdpRelatedArgs(parser, request_and_response_required=True):
 
 
 def _AddPortRelatedCreationArgs(parser,
+                                use_port_name=True,
                                 use_serving_port=True,
                                 port_type='TCP',
                                 default_port=80):
@@ -266,13 +271,13 @@ def _AddPortRelatedCreationArgs(parser,
   ]
   if default_port:
     port_group_help.append(
-        'If none is specified, the default port of 80 is used; if'
+        'If none is specified, the default port of 80 is used.'
     )
-  else:
-    port_group_help.append('If')
-  port_group_help.append(
-      'both `--port` and `--port-name` are specified, `--port` takes '
-      'precedence.')
+
+  if use_port_name:
+    port_group_help.append(
+        'If both `--port` and `--port-name` are specified, `--port` takes '
+        'precedence.')
   port_group = parser.add_group(help=' '.join(port_group_help))
   port_group.add_argument(
       '--port',
@@ -282,39 +287,41 @@ def _AddPortRelatedCreationArgs(parser,
       The {} port number that this health check monitors.
       """.format(port_type))
 
-  port_group.add_argument(
-      '--port-name',
-      help="""\
-      The port name that this health check monitors. By default, this is
-      empty.
-      """)
+  if use_port_name:
+    port_group.add_argument(
+        '--port-name',
+        help="""\
+        The port name that this health check monitors. By default, this is
+        empty.
+        """)
 
   if use_serving_port:
-    _AddUseServingPortFlag(port_group)
+    _AddUseServingPortFlag(port_group, use_port_name)
 
 
-def _AddPortRelatedUpdateArgs(parser):
+def _AddPortRelatedUpdateArgs(parser, use_port_name=True):
   """Adds parser update subcommand arguments --port and --port-name."""
 
-  port_group = parser.add_group(help=(
-      'These flags configure the port that the health check monitors. '
-      'If both `--port` and `--port-name` are specified, `--port` takes '
-      'precedence.'))
+  port_group = parser.add_group(
+      help=('These flags configure the port that the health check monitors.%s' %
+            (' If both `--port` and `--port-name` are specified, `--port` takes'
+             ' precedence.' if use_port_name else '')))
 
   port_group.add_argument(
       '--port',
       type=int,
       help='The TCP port number that this health check monitors.')
 
-  port_group.add_argument(
-      '--port-name',
-      help="""\
-      The port name that this health check monitors. By default, this is
-      empty. Setting this to an empty string will clear any existing
-      port-name value.
-      """)
+  if use_port_name:
+    port_group.add_argument(
+        '--port-name',
+        help="""\
+        The port name that this health check monitors. By default, this is
+        empty. Setting this to an empty string will clear any existing
+        port-name value.
+        """)
 
-  _AddUseServingPortFlag(port_group)
+  _AddUseServingPortFlag(port_group, use_port_name)
 
 
 def _AddTcpRelatedArgsImpl(add_info_about_clearing, parser):
@@ -449,6 +456,20 @@ def ValidateAndAddPortSpecificationToHealthCheck(args, x_health_check):
       x_health_check.portSpecification = enum_class.USE_FIXED_PORT
 
 
+def ValidateAndAddPortSpecificationToGRPCHealthCheck(args, x_health_check):
+  """Modifies the gRPC health check as needed and adds port specification."""
+
+  enum_class = type(x_health_check).PortSpecificationValueValuesEnum
+  if args.use_serving_port:
+    if args.IsSpecified('port'):
+      _RaiseBadPortSpecificationError('--port', '--use-serving-port',
+                                      '--use-serving-port')
+    x_health_check.portSpecification = enum_class.USE_SERVING_PORT
+    x_health_check.port = None
+  else:
+    x_health_check.portSpecification = enum_class.USE_FIXED_PORT
+
+
 def HandlePortRelatedFlagsForUpdate(args, x_health_check):
   """Calculate port, port_name and port_specification for HC update."""
   port = x_health_check.port
@@ -488,7 +509,30 @@ def HandlePortRelatedFlagsForUpdate(args, x_health_check):
   return port, port_name, port_specification
 
 
-def _AddUseServingPortFlag(parser):
+def HandlePortRelatedFlagsForGRPCUpdate(args, x_health_check):
+  """Calculate port and port_specification for gRPC HC update."""
+  port = x_health_check.port
+  port_specification = x_health_check.portSpecification
+  enum_class = type(x_health_check).PortSpecificationValueValuesEnum
+
+  if args.use_serving_port:
+    if args.IsSpecified('port'):
+      _RaiseBadPortSpecificationError('--port', '--use-serving-port',
+                                      '--use-serving-port')
+    port = None
+    port_specification = enum_class.USE_SERVING_PORT
+
+  if args.IsSpecified('port'):
+    port = args.port
+    port_specification = enum_class.USE_FIXED_PORT
+  else:
+    # Inherited values from existing health check should remain.
+    pass
+
+  return port, port_specification
+
+
+def _AddUseServingPortFlag(parser, use_port_name=True):
   """Adds parser argument for using serving port option."""
   parser.add_argument(
       '--use-serving-port',
@@ -498,8 +542,8 @@ def _AddUseServingPortFlag(parser):
 
         - When health checking network endpoints in a Network Endpoint
           Group, use the port specified with each endpoint.
-        - When health checking other backends, use the port or named port of
-          the backend service.""")
+        - When health checking other backends, use the port%s of
+          the backend service.""" % (' or named port' if use_port_name else ''))
 
 
 def IsRegionalHealthCheckRef(health_check_ref):
