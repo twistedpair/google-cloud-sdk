@@ -47,3 +47,18 @@ def TargetInstanceArgument(required=True, plural=False):
       required=required,
       zonal_collection='compute.targetInstances',
       zone_explanation=compute_flags.ZONE_PROPERTY_EXPLANATION)
+
+
+NETWORK_ARG = compute_flags.ResourceArgument(
+    name='--network',
+    required=False,
+    resource_name='network',
+    global_collection='compute.networks',
+    short_help='Network that this target instance applies to.',
+    detailed_help="""\
+        Network that this target instance applies to.
+        """)
+
+
+def AddNetwork(parser):
+  NETWORK_ARG.AddArgument(parser)

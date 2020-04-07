@@ -54,6 +54,39 @@ class AllowedConfigList(_messages.Message):
   allowedConfigValues = _messages.MessageField('ReusableConfigWrapper', 1, repeated=True)
 
 
+class AllowedSubjectAltNames(_messages.Message):
+  r"""AllowedSubjectAltNames specifies the allowed values for SubjectAltNames
+  by the CertificateAuthority when issuing Certificates.
+
+  Fields:
+    allowCustomSans: Specifies if to allow custom X509Extension values.
+    allowGlobbingDnsWildcards: Specifies if glob patterns used for
+      allowed_dns_names allows wildcard certificates.
+    allowedDnsNames: Contains valid, fully-qualified host names. Glob patterns
+      are also supported. To allow an explicit wildcard certificate, escape
+      with backlash (i.e. "\*"). E.g. for globbed entries: '*bar.com' will
+      allow foo.bar.com, but not *.bar.com, unless the
+      allow_globbing_dns_wildcards field is set. E.g. for wildcard entries:
+      '\*.bar.com' will allow '*.bar.com', but not 'foo.bar.com'.
+    allowedEmailAddresses: Contains valid RFC 2822 E-mail addresses. Glob
+      patterns are also supported.
+    allowedIps: Contains valid 32-bit IPv4 addresses and subnet ranges or RFC
+      4291 IPv6 addresses and subnet ranges. Subnet ranges are specified using
+      the '/' notation (e.g. 10.0.0.0/8, 2001:700:300:1800::/64). Glob
+      patterns are supported only for ip address entries (i.e. not for subnet
+      ranges).
+    allowedUris: Contains valid RFC 3986 URIs. Glob patterns are also
+      supported.
+  """
+
+  allowCustomSans = _messages.BooleanField(1)
+  allowGlobbingDnsWildcards = _messages.BooleanField(2)
+  allowedDnsNames = _messages.StringField(3, repeated=True)
+  allowedEmailAddresses = _messages.StringField(4, repeated=True)
+  allowedIps = _messages.StringField(5, repeated=True)
+  allowedUris = _messages.StringField(6, repeated=True)
+
+
 class AuditConfig(_messages.Message):
   r"""Specifies the audit configuration for a service. The configuration
   determines which permission types are logged, and what identities, if any,
@@ -294,8 +327,8 @@ class CertificateAuthority(_messages.Message):
       CertificateAuthority's CA cert.
     certificatePolicy: Optional. The CertificateAuthorityPolicy to enforce
       when issuing Certificates from this CertificateAuthority.
-    cloudKmsKeyVersion: Immutable. The resource name for the Cloud KMS
-      CryptoKeyVersion in the format
+    cloudKmsKeyVersion: Required. Immutable. The resource name for the Cloud
+      KMS CryptoKeyVersion in the format
       `projects/*/locations/*/keyRings/*/cryptoKeys/*/cryptoKeyVersions/*`.
       Used when issuing certificates for this CertificateAuthority. If this
       CertificateAuthority is a self-signed CertificateAuthority, this key
@@ -305,11 +338,11 @@ class CertificateAuthority(_messages.Message):
       certificate or CSR.
     createTime: Output only. The time at which this CertificateAuthority was
       created.
-    gcsBucket: Immutable. The name of a GCS bucket where this
-      CertificateAuthority will publish content, such as the CA certificate
-      and CRLs. This must be a bucket name, without any prefixes (such as
-      `gs://`) or suffixes (such as `.googleapis.com`). For example, to use a
-      bucket named `my-bucket`, you would simply specify `my-bucket`.
+    gcsBucket: Required. Immutable. The name of a Cloud Storage bucket where
+      this CertificateAuthority will publish content, such as the CA
+      certificate and CRLs. This must be a bucket name, without any prefixes
+      (such as `gs://`) or suffixes (such as `.googleapis.com`). For example,
+      to use a bucket named `my-bucket`, you would simply specify `my-bucket`.
     issuingOptions: Optional. The IssuingOptions to follow when issuing
       Certificates from this CertificateAuthority.
     labels: Optional. Labels with user-defined metadata.
@@ -409,6 +442,10 @@ class CertificateAuthorityPolicy(_messages.Message):
   policy.
 
   Fields:
+    allowedCommonNames: Optional. If any value is specified here, then all
+      Certificates issued by the CertificateAuthority must match at least one
+      listed value. If no value is specified, all values will be allowed for
+      this fied. Glob patterns are also supported.
     allowedConfigList: Optional. All Certificates issued by the
       CertificateAuthority must match at least one listed
       ReusableConfigWrapper in the list.
@@ -416,6 +453,10 @@ class CertificateAuthorityPolicy(_messages.Message):
       here, then all Certificates issued by the CertificateAuthority must
       match at least one listed Subject. If a Subject has an empty field, any
       value will be allowed for that field.
+    allowedSans: Optional. If a AllowedSubjectAltNames is specified here, then
+      all Certificates issued by the CertificateAuthority must match
+      AllowedSubjectAltNames. If no value is specified, any value will be
+      allowed for the SubjectAltNames field.
     maximumLifetime: Optional. The maximum lifetime allowed by the
       CertificateAuthority. Note that if the any part if the issuing chain
       expires before a Certificate's requested maximum_lifetime, the effective
@@ -425,10 +466,12 @@ class CertificateAuthorityPolicy(_messages.Message):
       overwriting any requested configuration values.
   """
 
-  allowedConfigList = _messages.MessageField('AllowedConfigList', 1)
-  allowedLocationsAndOrganizations = _messages.MessageField('Subject', 2, repeated=True)
-  maximumLifetime = _messages.StringField(3)
-  overwriteConfigValues = _messages.MessageField('ReusableConfigWrapper', 4)
+  allowedCommonNames = _messages.StringField(1, repeated=True)
+  allowedConfigList = _messages.MessageField('AllowedConfigList', 2)
+  allowedLocationsAndOrganizations = _messages.MessageField('Subject', 3, repeated=True)
+  allowedSans = _messages.MessageField('AllowedSubjectAltNames', 4)
+  maximumLifetime = _messages.StringField(5)
+  overwriteConfigValues = _messages.MessageField('ReusableConfigWrapper', 6)
 
 
 class CertificateConfig(_messages.Message):

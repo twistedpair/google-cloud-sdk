@@ -35,7 +35,7 @@ class GatewayClient(base.BaseClient):
     self.DefineDelete()
     self.DefineList('gateways')
     self.DefineUpdate('apigatewayGateway')
-    self.DefineGetIamPolicy()
+    self.DefineIamPolicyFunctions()
 
   def Create(self, gateway_ref, api_config, display_name=None, labels=None):
     """Creates a new gateway object.

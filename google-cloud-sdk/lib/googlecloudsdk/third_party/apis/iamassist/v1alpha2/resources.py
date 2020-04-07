@@ -17,23 +17,13 @@
 import enum
 
 
-BASE_URL = 'https://iamassist.googleapis.com/v1alpha2/'
+BASE_URL = 'https://iamassist.googleapis.com/'
 DOCS_URL = 'https://cloud.google.com/iam/'
 
 
 class Collections(enum.Enum):
   """Collections for all supported apis."""
 
-  OPERATIONS = (
-      'operations',
-      '{+name}',
-      {
-          '':
-              'operations/{operationsId}',
-      },
-      [u'name'],
-      True
-  )
   SIMULATOR = (
       'simulator',
       'simulator',

@@ -110,86 +110,6 @@
     }
   },
   "schemas": {
-    "GoogleLongrunningListOperationsResponse": {
-      "id": "GoogleLongrunningListOperationsResponse",
-      "description": "The response message for Operations.ListOperations.",
-      "type": "object",
-      "properties": {
-        "operations": {
-          "description": "A list of operations that matches the specified filter in the request.",
-          "type": "array",
-          "items": {
-            "$ref": "GoogleLongrunningOperation"
-          }
-        },
-        "nextPageToken": {
-          "description": "The standard List next-page token.",
-          "type": "string"
-        }
-      }
-    },
-    "GoogleLongrunningOperation": {
-      "id": "GoogleLongrunningOperation",
-      "description": "This resource represents a long-running operation that is the result of a\nnetwork API call.",
-      "type": "object",
-      "properties": {
-        "name": {
-          "description": "The server-assigned name, which is only unique within the same service that\noriginally returns it. If you use the default HTTP mapping, the\n`name` should be a resource name ending with `operations\/{unique_id}`.",
-          "type": "string"
-        },
-        "metadata": {
-          "description": "Service-specific metadata associated with the operation.  It typically\ncontains progress information and common metadata such as create time.\nSome services might not provide such metadata.  Any method that returns a\nlong-running operation should document the metadata type, if any.",
-          "type": "object",
-          "additionalProperties": {
-            "type": "any",
-            "description": "Properties of the object. Contains field @type with type URL."
-          }
-        },
-        "done": {
-          "description": "If the value is `false`, it means the operation is still in progress.\nIf `true`, the operation is completed, and either `error` or `response` is\navailable.",
-          "type": "boolean"
-        },
-        "error": {
-          "description": "The error result of the operation in case of failure or cancellation.",
-          "$ref": "GoogleRpcStatus"
-        },
-        "response": {
-          "description": "The normal response of the operation in case of success.  If the original\nmethod returns no data on success, such as `Delete`, the response is\n`google.protobuf.Empty`.  If the original method is standard\n`Get`\/`Create`\/`Update`, the response should be the resource.  For other\nmethods, the response should have the type `XxxResponse`, where `Xxx`\nis the original method name.  For example, if the original method name\nis `TakeSnapshot()`, the inferred response type is\n`TakeSnapshotResponse`.",
-          "type": "object",
-          "additionalProperties": {
-            "type": "any",
-            "description": "Properties of the object. Contains field @type with type URL."
-          }
-        }
-      }
-    },
-    "GoogleRpcStatus": {
-      "id": "GoogleRpcStatus",
-      "description": "The `Status` type defines a logical error model that is suitable for\ndifferent programming environments, including REST APIs and RPC APIs. It is\nused by [gRPC](https:\/\/github.com\/grpc). Each `Status` message contains\nthree pieces of data: error code, error message, and error details.\n\nYou can find out more about this error model and how to work with it in the\n[API Design Guide](https:\/\/cloud.google.com\/apis\/design\/errors).",
-      "type": "object",
-      "properties": {
-        "code": {
-          "description": "The status code, which should be an enum value of google.rpc.Code.",
-          "type": "integer",
-          "format": "int32"
-        },
-        "message": {
-          "description": "A developer-facing error message, which should be in English. Any\nuser-facing error message should be localized and sent in the\ngoogle.rpc.Status.details field, or localized by the client.",
-          "type": "string"
-        },
-        "details": {
-          "description": "A list of messages that carry the error details.  There is a common set of\nmessage types for APIs to use.",
-          "type": "array",
-          "items": {
-            "type": "object",
-            "additionalProperties": {
-              "type": "any",
-              "description": "Properties of the object. Contains field @type with type URL."
-            }
-          }
-        }
-      }
-    },
     "GoogleIamAssistV1alpha2CheckAccessRequest": {
       "id": "GoogleIamAssistV1alpha2CheckAccessRequest",
       "description": "CheckAccessRequest is the request for CheckAccess",
@@ -635,6 +555,68 @@
         }
       }
     },
+    "GoogleLongrunningOperation": {
+      "id": "GoogleLongrunningOperation",
+      "description": "This resource represents a long-running operation that is the result of a\nnetwork API call.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "The server-assigned name, which is only unique within the same service that\noriginally returns it. If you use the default HTTP mapping, the\n`name` should be a resource name ending with `operations\/{unique_id}`.",
+          "type": "string"
+        },
+        "metadata": {
+          "description": "Service-specific metadata associated with the operation.  It typically\ncontains progress information and common metadata such as create time.\nSome services might not provide such metadata.  Any method that returns a\nlong-running operation should document the metadata type, if any.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "any",
+            "description": "Properties of the object. Contains field @type with type URL."
+          }
+        },
+        "done": {
+          "description": "If the value is `false`, it means the operation is still in progress.\nIf `true`, the operation is completed, and either `error` or `response` is\navailable.",
+          "type": "boolean"
+        },
+        "error": {
+          "description": "The error result of the operation in case of failure or cancellation.",
+          "$ref": "GoogleRpcStatus"
+        },
+        "response": {
+          "description": "The normal response of the operation in case of success.  If the original\nmethod returns no data on success, such as `Delete`, the response is\n`google.protobuf.Empty`.  If the original method is standard\n`Get`\/`Create`\/`Update`, the response should be the resource.  For other\nmethods, the response should have the type `XxxResponse`, where `Xxx`\nis the original method name.  For example, if the original method name\nis `TakeSnapshot()`, the inferred response type is\n`TakeSnapshotResponse`.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "any",
+            "description": "Properties of the object. Contains field @type with type URL."
+          }
+        }
+      }
+    },
+    "GoogleRpcStatus": {
+      "id": "GoogleRpcStatus",
+      "description": "The `Status` type defines a logical error model that is suitable for\ndifferent programming environments, including REST APIs and RPC APIs. It is\nused by [gRPC](https:\/\/github.com\/grpc). Each `Status` message contains\nthree pieces of data: error code, error message, and error details.\n\nYou can find out more about this error model and how to work with it in the\n[API Design Guide](https:\/\/cloud.google.com\/apis\/design\/errors).",
+      "type": "object",
+      "properties": {
+        "code": {
+          "description": "The status code, which should be an enum value of google.rpc.Code.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "message": {
+          "description": "A developer-facing error message, which should be in English. Any\nuser-facing error message should be localized and sent in the\ngoogle.rpc.Status.details field, or localized by the client.",
+          "type": "string"
+        },
+        "details": {
+          "description": "A list of messages that carry the error details.  There is a common set of\nmessage types for APIs to use.",
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "any",
+              "description": "Properties of the object. Contains field @type with type URL."
+            }
+          }
+        }
+      }
+    },
     "GoogleIamAssistV1alpha2ReplayOperationMetadata": {
       "id": "GoogleIamAssistV1alpha2ReplayOperationMetadata",
       "description": "Metadata about a ReplayAccessLogs operation.",
@@ -799,76 +781,469 @@
           ]
         }
       }
-    }
-  },
-  "resources": {
-    "operations": {
-      "methods": {
-        "list": {
-          "id": "iamassist.operations.list",
-          "path": "v1alpha2/operations",
-          "flatPath": "v1alpha2/operations",
-          "httpMethod": "GET",
-          "parameters": {
-            "name": {
-              "description": "The name of the operation's parent resource.",
-              "location": "query",
-              "type": "string"
-            },
-            "filter": {
-              "description": "The standard list filter.",
-              "location": "query",
-              "type": "string"
-            },
-            "pageSize": {
-              "description": "The standard list page size.",
-              "location": "query",
-              "type": "integer",
-              "format": "int32"
-            },
-            "pageToken": {
-              "description": "The standard list page token.",
-              "location": "query",
-              "type": "string"
-            }
-          },
-          "parameterOrder": [
-          ],
-          "response": {
-            "$ref": "GoogleLongrunningListOperationsResponse"
-          },
-          "scopes": [
-            "https://www.googleapis.com/auth/cloud-platform"
-          ],
-          "description": "Lists operations that match the specified filter in the request. If the\nserver doesn't support this method, it returns `UNIMPLEMENTED`.\n\nNOTE: the `name` binding allows API services to override the binding\nto use different resource name schemes, such as `users\/*\/operations`. To\noverride the binding, API services can add a binding such as\n`\"\/v1\/{name=users\/*}\/operations\"` to their service configuration.\nFor backwards compatibility, the default name includes the operations\ncollection id, however overriding users must ensure the name binding\nis the parent resource, without the operations collection id."
-        },
-        "get": {
-          "id": "iamassist.operations.get",
-          "path": "v1alpha2/{+name}",
-          "flatPath": "v1alpha2/operations/{operationsId}",
-          "httpMethod": "GET",
-          "parameters": {
-            "name": {
-              "description": "The name of the operation resource.",
-              "location": "path",
-              "required": true,
-              "pattern": "^operations\/[^\/]+$",
-              "type": "string"
-            }
-          },
-          "parameterOrder": [
-            "name"
-          ],
-          "response": {
-            "$ref": "GoogleLongrunningOperation"
-          },
-          "scopes": [
-            "https://www.googleapis.com/auth/cloud-platform"
-          ],
-          "description": "Gets the latest state of a long-running operation.  Clients can use this\nmethod to poll the operation result at intervals as recommended by the API\nservice."
+    },
+    "GoogleIamAssistV1alpha3ReplayOperationMetadata": {
+      "id": "GoogleIamAssistV1alpha3ReplayOperationMetadata",
+      "description": "Metadata about a ReplayAccessLogs operation.",
+      "type": "object",
+      "properties": {
+        "startTime": {
+          "description": "Time when the request was received.",
+          "type": "string",
+          "format": "google-datetime"
         }
       }
     },
+    "GoogleIamAssistV1alpha3Replay": {
+      "id": "GoogleIamAssistV1alpha3Replay",
+      "description": "A Replay of Accesses against a simulated state.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "The resource name of the replay.\nThe replay id is randomly generated on creation.\nFormat: replays\/{replay}.",
+          "type": "string"
+        },
+        "state": {
+          "description": "Output only. The current state of the replay.\nhttps:\/\/aip.dev\/216",
+          "enumDescriptions": [
+            "Reserved.",
+            "Replay has not started yet.",
+            "Replay is currently running.",
+            "Replay has successfully completed.",
+            "Replay has finished with an error."
+          ],
+          "type": "string",
+          "enum": [
+            "STATE_UNSPECIFIED",
+            "PENDING",
+            "RUNNING",
+            "SUCCEEDED",
+            "FAILED"
+          ]
+        },
+        "config": {
+          "description": "Required. The configuration used for the replay.",
+          "$ref": "GoogleIamAssistV1alpha3ReplayConfig"
+        },
+        "logsMetadata": {
+          "description": "Output only. Metadata about the replayed log entries.",
+          "$ref": "GoogleIamAssistV1alpha3ReplayLogsMetadata"
+        },
+        "diffs": {
+          "description": "Output only. The ReplayResults that resulted in diffs being found.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleIamAssistV1alpha3ReplayResult"
+          }
+        },
+        "errors": {
+          "description": "Output only. The ReplayResults that resulted in an error.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleIamAssistV1alpha3ReplayResult"
+          }
+        }
+      }
+    },
+    "GoogleIamAssistV1alpha3ReplayConfig": {
+      "id": "GoogleIamAssistV1alpha3ReplayConfig",
+      "description": "The configuration used for the replay.",
+      "type": "object",
+      "properties": {
+        "policyOverlay": {
+          "description": "The policy overlay used during the replay.\nKeys are full resource names and the values are the policies to apply on\nthese resources in the simulated state.",
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "GoogleIamV1Policy"
+          }
+        },
+        "logSource": {
+          "description": "The logs to use as input for the replay.",
+          "enumDescriptions": [
+            "An unspecified log source.\nReplay will default to using RECENT_ACCESSES.",
+            "Retrieves the 5000 most recent accesses from the last 90 days from\nan internal log source.\n\nNote that the log freshness (i.e. the date of the newest log\nentry) may be up to 7 days stale.  In other words, an access attempt that\nonly occurred within the past 7 days may not be captured by the replay."
+          ],
+          "type": "string",
+          "enum": [
+            "LOG_SOURCE_UNSPECIFIED",
+            "RECENT_ACCESSES"
+          ]
+        }
+      }
+    },
+    "GoogleIamAssistV1alpha3ReplayLogsMetadata": {
+      "id": "GoogleIamAssistV1alpha3ReplayLogsMetadata",
+      "description": "Metadata about the replayed log entries.",
+      "type": "object",
+      "properties": {
+        "logCount": {
+          "description": "Number of log entries replayed.\nlog_count == unchanged_count + difference_count + error_count",
+          "type": "integer",
+          "format": "int32"
+        },
+        "unchangedCount": {
+          "description": "Number of replayed log entries with no difference between\nbaseline and simulated",
+          "type": "integer",
+          "format": "int32"
+        },
+        "differenceCount": {
+          "description": "Number of replayed log entries with a difference between baseline and\nsimulated policies.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "errorCount": {
+          "description": "Number of log entries with an error during replay.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "oldestDate": {
+          "description": "Date of oldest log entry replayed.",
+          "$ref": "GoogleTypeDate"
+        },
+        "newestDate": {
+          "description": "Date of newest log entry replayed.",
+          "$ref": "GoogleTypeDate"
+        }
+      }
+    },
+    "GoogleTypeDate": {
+      "id": "GoogleTypeDate",
+      "description": "Represents a whole or partial calendar date, e.g. a birthday. The time of day\nand time zone are either specified elsewhere or are not significant. The date\nis relative to the Proleptic Gregorian Calendar. This can represent:\n\n* A full date, with non-zero year, month and day values\n* A month and day value, with a zero year, e.g. an anniversary\n* A year on its own, with zero month and day values\n* A year and month value, with a zero day, e.g. a credit card expiration date\n\nRelated types are google.type.TimeOfDay and `google.protobuf.Timestamp`.",
+      "type": "object",
+      "properties": {
+        "year": {
+          "description": "Year of date. Must be from 1 to 9999, or 0 if specifying a date without\na year.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "month": {
+          "description": "Month of year. Must be from 1 to 12, or 0 if specifying a year without a\nmonth and day.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "day": {
+          "description": "Day of month. Must be from 1 to 31 and valid for the year and month, or 0\nif specifying a year by itself or a year and month where the day is not\nsignificant.",
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "GoogleIamAssistV1alpha3ReplayResult": {
+      "id": "GoogleIamAssistV1alpha3ReplayResult",
+      "description": "The result of replaying a single access tuple against a simulated state.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "The resource name of the replay result.\nFormat: replays\/{replay}\/results\/{replay_result}",
+          "type": "string"
+        },
+        "parent": {
+          "description": "The replay the access tuple was included in.",
+          "type": "string"
+        },
+        "accessTuple": {
+          "description": "The access replayed.",
+          "$ref": "GoogleIamAssistV1alpha3AccessTuple"
+        },
+        "lastSeenDate": {
+          "description": "The late date this access was seen in the logs.",
+          "$ref": "GoogleTypeDate"
+        },
+        "diff": {
+          "description": "The tuple was successfully replayed and had a difference.",
+          "$ref": "GoogleIamAssistV1alpha3ReplayDiff"
+        },
+        "error": {
+          "description": "The tuple was not successfully replayed.",
+          "$ref": "GoogleRpcStatus"
+        }
+      }
+    },
+    "GoogleIamAssistV1alpha3AccessTuple": {
+      "id": "GoogleIamAssistV1alpha3AccessTuple",
+      "description": "Information about the member, resource, and permission to check.",
+      "type": "object",
+      "properties": {
+        "principal": {
+          "description": "Required. The member, or principal, whose access you want to check, in the form of\nthe email address that represents that member. For example,\n`alice@example.com` or\n`my-service-account@my-project.iam.gserviceaccount.com`.\n\nThe member must be a Google Account or a service account. Other types of\nmembers are not supported.",
+          "type": "string"
+        },
+        "fullResourceName": {
+          "description": "Required. The full resource name that identifies the resource. For example,\n`\/\/compute.googleapis.com\/projects\/my-project\/zones\/us-central1-a\/instances\/my-instance`.\n\nFor examples of full resource names for Google Cloud services, see\nhttps:\/\/cloud.google.com\/iam\/help\/troubleshooter\/full-resource-names.",
+          "type": "string"
+        },
+        "permission": {
+          "description": "Required. The IAM permission to check for the specified member and resource.\n\nFor a complete list of IAM permissions, see\nhttps:\/\/cloud.google.com\/iam\/help\/permissions\/reference.\n\nFor a complete list of predefined IAM roles and the permissions in each\nrole, see https:\/\/cloud.google.com\/iam\/help\/roles\/reference.",
+          "type": "string"
+        }
+      }
+    },
+    "GoogleIamAssistV1alpha3ReplayDiff": {
+      "id": "GoogleIamAssistV1alpha3ReplayDiff",
+      "description": "A successful replay of an AccessTuple that resulted in a difference between\nbaseline and simulated.",
+      "type": "object",
+      "properties": {
+        "accessDiff": {
+          "description": "The difference in AccessState between replays.",
+          "$ref": "GoogleIamAssistV1alpha3AccessStateDiff"
+        }
+      }
+    },
+    "GoogleIamAssistV1alpha3AccessStateDiff": {
+      "id": "GoogleIamAssistV1alpha3AccessStateDiff",
+      "description": "Container for ExplainedAccess of baseline and simulated policies.\nFor both baseline and simulated, the ExplainedAccess.policies are filtered\nto only include the UNKNOWN infromation. If the AccessState is known, e.g.\nGRANTED or NOT_GRANTED, the policy list will be empty.\nOnly policies with an AccessState of UNKNOWN are included.",
+      "type": "object",
+      "properties": {
+        "baseline": {
+          "description": "The explained access when replayed against the baseline policies.",
+          "$ref": "GoogleIamAssistV1alpha3ExplainedAccess"
+        },
+        "simulated": {
+          "description": "The explained access when replayed against the simulated policies.",
+          "$ref": "GoogleIamAssistV1alpha3ExplainedAccess"
+        },
+        "accessChange": {
+          "description": "A single value interpretation of the difference between baseline and\nsimulated.",
+          "enumDescriptions": [
+            "Reserved",
+            "The two ExplainedAccesses are equal.\nThis includes the case where both baseline and simulated are UNKNOWN,\nbut the unknown information is equivalent.",
+            "The baseline and simulated accesses are both UNKNOWN, but the\nunknown information differs between them.",
+            "The baseline access state is GRANTED and\nthe simulated access state is NOT_GRANTED",
+            "The baseline access state is NOT_GRANTED and\nthe simulated access state is GRANTED.",
+            "The baseline access state is GRANTED and\nthe simulated access state is UNKNOWN.",
+            "The baseline state is NOT_GRANTED and\nthe simulated state is UNKNOWN."
+          ],
+          "type": "string",
+          "enum": [
+            "ACCESS_CHANGE_TYPE_UNSPECIFIED",
+            "NO_CHANGE",
+            "UNKNOWN_CHANGE",
+            "ACCESS_REVOKED",
+            "ACCESS_GAINED",
+            "ACCESS_MAYBE_REVOKED",
+            "ACCESS_MAYBE_GRANTED"
+          ]
+        }
+      }
+    },
+    "GoogleIamAssistV1alpha3ExplainedAccess": {
+      "id": "GoogleIamAssistV1alpha3ExplainedAccess",
+      "description": "Details about how the set of\nExplained Policies\nresulted in the Access State.",
+      "type": "object",
+      "properties": {
+        "accessState": {
+          "description": "The overall access state for the included set of policies.",
+          "enumDescriptions": [
+            "Reserved for future use.",
+            "The member has the permission.",
+            "The member does not have the permission.",
+            "The member has the permission only if a condition expression evaluates to\n`true`.",
+            "The sender of the request does not have access to all of the policies that\nPolicy Troubleshooter needs to evaluate."
+          ],
+          "type": "string",
+          "enum": [
+            "ACCESS_STATE_UNSPECIFIED",
+            "GRANTED",
+            "NOT_GRANTED",
+            "UNKNOWN_CONDITIONAL",
+            "UNKNOWN_INFO_DENIED"
+          ]
+        },
+        "policies": {
+          "description": "The set of policies contributing to the listed AccessState.\nAn ExplainedPolicy with UNKNOWN_INFO_DENIED and nothing else means\nthe user did not have permission to get one or more policies.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleIamAssistV1alpha3ExplainedPolicy"
+          }
+        },
+        "errors": {
+          "description": "The list of problems encountered when explaining this access.\nThis list provides the reason why UNKNOWN information in `policies` was\nunknown.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleRpcStatus"
+          }
+        }
+      }
+    },
+    "GoogleIamAssistV1alpha3ExplainedPolicy": {
+      "id": "GoogleIamAssistV1alpha3ExplainedPolicy",
+      "description": "Details about how a specific IAM Policy contributed\nto the access check.",
+      "type": "object",
+      "properties": {
+        "access": {
+          "description": "Indicates whether _this policy_ provides the specified permission to the\nspecified member for the specified resource.\n\nThis field does _not_ indicate whether the member actually has the\npermission for the resource. There might be another policy that overrides\nthis policy. To determine whether the member actually has the permission,\nuse the `access` field in the\nTroubleshootIamPolicyResponse.",
+          "enumDescriptions": [
+            "Reserved for future use.",
+            "The member has the permission.",
+            "The member does not have the permission.",
+            "The member has the permission only if a condition expression evaluates to\n`true`.",
+            "The sender of the request does not have access to all of the policies that\nPolicy Troubleshooter needs to evaluate."
+          ],
+          "type": "string",
+          "enum": [
+            "ACCESS_STATE_UNSPECIFIED",
+            "GRANTED",
+            "NOT_GRANTED",
+            "UNKNOWN_CONDITIONAL",
+            "UNKNOWN_INFO_DENIED"
+          ]
+        },
+        "fullResourceName": {
+          "description": "The full resource name that identifies the resource. For example,\n`\/\/compute.googleapis.com\/projects\/my-project\/zones\/us-central1-a\/instances\/my-instance`.\n\nIf the sender of the request does not have access to the policy, this field\nis omitted.\n\nFor examples of full resource names for Google Cloud services, see\nhttps:\/\/cloud.google.com\/iam\/help\/troubleshooter\/full-resource-names.",
+          "type": "string"
+        },
+        "policy": {
+          "description": "The IAM policy attached to the resource.\n\nIf the sender of the request does not have access to the policy, this field\nis empty.",
+          "$ref": "GoogleIamV1Policy"
+        },
+        "bindingExplanations": {
+          "description": "Details about how each binding in the policy affects the member's ability,\nor inability, to use the permission for the resource.\n\nIf the sender of the request does not have access to the policy, this field\nis omitted.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleIamAssistV1alpha3BindingExplanation"
+          }
+        },
+        "relevance": {
+          "description": "The relevance of this policy to the overall determination in the\nTroubleshootIamPolicyResponse.\n\nIf the sender of the request does not have access to the policy, this field\nis omitted.",
+          "enumDescriptions": [
+            "Reserved for future use.",
+            "The data point has a limited effect on the result. Changing the data point\nis unlikely to affect the overall determination.",
+            "The data point has a strong effect on the result. Changing the data point\nis likely to affect the overall determination."
+          ],
+          "type": "string",
+          "enum": [
+            "HEURISTIC_RELEVANCE_UNSPECIFIED",
+            "NORMAL",
+            "HIGH"
+          ]
+        }
+      }
+    },
+    "GoogleIamAssistV1alpha3BindingExplanation": {
+      "id": "GoogleIamAssistV1alpha3BindingExplanation",
+      "description": "Details about how a binding in a policy affects a member's ability to use a\npermission.",
+      "type": "object",
+      "properties": {
+        "access": {
+          "description": "Required. Indicates whether _this binding_ provides the specified permission to the\nspecified member for the specified resource.\n\nThis field does _not_ indicate whether the member actually has the\npermission for the resource. There might be another binding that overrides\nthis binding. To determine whether the member actually has the permission,\nuse the `access` field in the\nTroubleshootIamPolicyResponse.",
+          "enumDescriptions": [
+            "Reserved for future use.",
+            "The member has the permission.",
+            "The member does not have the permission.",
+            "The member has the permission only if a condition expression evaluates to\n`true`.",
+            "The sender of the request does not have access to all of the policies that\nPolicy Troubleshooter needs to evaluate."
+          ],
+          "type": "string",
+          "enum": [
+            "ACCESS_STATE_UNSPECIFIED",
+            "GRANTED",
+            "NOT_GRANTED",
+            "UNKNOWN_CONDITIONAL",
+            "UNKNOWN_INFO_DENIED"
+          ]
+        },
+        "role": {
+          "description": "The role that this binding grants. For example,\n`roles\/compute.serviceAgent`.\n\nFor a complete list of predefined IAM roles, as well as the permissions in\neach role, see https:\/\/cloud.google.com\/iam\/help\/roles\/reference.",
+          "type": "string"
+        },
+        "rolePermission": {
+          "description": "Indicates whether the role granted by this binding contains the specified\npermission.",
+          "enumDescriptions": [
+            "Reserved for future use.",
+            "The permission is included in the role.",
+            "The permission is not included in the role.",
+            "The sender of the request is not allowed to access the binding."
+          ],
+          "type": "string",
+          "enum": [
+            "ROLE_PERMISSION_UNSPECIFIED",
+            "ROLE_PERMISSION_INCLUDED",
+            "ROLE_PERMISSION_NOT_INCLUDED",
+            "ROLE_PERMISSION_UNKNOWN_INFO_DENIED"
+          ]
+        },
+        "rolePermissionRelevance": {
+          "description": "The relevance of the permission's existence, or nonexistence, in the role\nto the overall determination for the entire policy.",
+          "enumDescriptions": [
+            "Reserved for future use.",
+            "The data point has a limited effect on the result. Changing the data point\nis unlikely to affect the overall determination.",
+            "The data point has a strong effect on the result. Changing the data point\nis likely to affect the overall determination."
+          ],
+          "type": "string",
+          "enum": [
+            "HEURISTIC_RELEVANCE_UNSPECIFIED",
+            "NORMAL",
+            "HIGH"
+          ]
+        },
+        "memberships": {
+          "description": "Indicates whether each member in the binding includes the member specified\nin the request, either directly or indirectly. Each key identifies a member\nin the binding, and each value indicates whether the member in the binding\nincludes the member in the request.\n\nFor example, suppose that a binding includes the following members:\n\n* `user:alice@example.com`\n* `group:product-eng@example.com`\n\nYou want to troubleshoot access for `user:bob@example.com`. This user is a\nmember of the group `group:product-eng@example.com`.\n\nFor the first member in the binding, the key is `user:alice@example.com`,\nand the `membership` field in the value is set to\n`MEMBERSHIP_NOT_INCLUDED`.\n\nFor the second member in the binding, the key is\n`group:product-eng@example.com`, and the `membership` field in the value is\nset to `MEMBERSHIP_INCLUDED`.",
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "GoogleIamAssistV1alpha3BindingExplanationAnnotatedMembership"
+          }
+        },
+        "relevance": {
+          "description": "The relevance of this binding to the overall determination for the entire\npolicy.",
+          "enumDescriptions": [
+            "Reserved for future use.",
+            "The data point has a limited effect on the result. Changing the data point\nis unlikely to affect the overall determination.",
+            "The data point has a strong effect on the result. Changing the data point\nis likely to affect the overall determination."
+          ],
+          "type": "string",
+          "enum": [
+            "HEURISTIC_RELEVANCE_UNSPECIFIED",
+            "NORMAL",
+            "HIGH"
+          ]
+        },
+        "condition": {
+          "description": "A condition expression that prevents access unless the expression evaluates\nto `true`.\n\nTo learn about IAM Conditions, see\nhttp:\/\/cloud.google.com\/iam\/help\/conditions\/overview.",
+          "$ref": "GoogleTypeExpr"
+        }
+      }
+    },
+    "GoogleIamAssistV1alpha3BindingExplanationAnnotatedMembership": {
+      "id": "GoogleIamAssistV1alpha3BindingExplanationAnnotatedMembership",
+      "description": "Details about whether the binding includes the member.",
+      "type": "object",
+      "properties": {
+        "membership": {
+          "description": "Indicates whether the binding includes the member.",
+          "enumDescriptions": [
+            "Reserved for future use.",
+            "The binding includes the member. The member can be included directly\nor indirectly. For example:\n\n* A member is included directly if that member is listed in the binding.\n* A member is included indirectly if that member is in a Google group or\n  G Suite domain that is listed in the binding.",
+            "The binding does not include the member.",
+            "The sender of the request is not allowed to access the binding.",
+            "The member is an unsupported type. Only Google Accounts and service\naccounts are supported."
+          ],
+          "type": "string",
+          "enum": [
+            "MEMBERSHIP_UNSPECIFIED",
+            "MEMBERSHIP_INCLUDED",
+            "MEMBERSHIP_NOT_INCLUDED",
+            "MEMBERSHIP_UNKNOWN_INFO_DENIED",
+            "MEMBERSHIP_UNKNOWN_UNSUPPORTED"
+          ]
+        },
+        "relevance": {
+          "description": "The relevance of the member's status to the overall determination for the\nbinding.",
+          "enumDescriptions": [
+            "Reserved for future use.",
+            "The data point has a limited effect on the result. Changing the data point\nis unlikely to affect the overall determination.",
+            "The data point has a strong effect on the result. Changing the data point\nis likely to affect the overall determination."
+          ],
+          "type": "string",
+          "enum": [
+            "HEURISTIC_RELEVANCE_UNSPECIFIED",
+            "NORMAL",
+            "HIGH"
+          ]
+        }
+      }
+    }
+  },
+  "resources": {
     "simulator": {
       "methods": {
         "checkAccess": {

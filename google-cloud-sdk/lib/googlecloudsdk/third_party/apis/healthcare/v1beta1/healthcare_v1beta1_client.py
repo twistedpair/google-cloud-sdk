@@ -2114,7 +2114,7 @@ if the input data contains invalid references or if some resources fail to
 be imported, the FHIR store might be left in a state that violates
 referential integrity.
 
-The import process does not trigger PubSub notification or BigQuery
+The import process does not trigger Cloud Pub/Sub notification or BigQuery
 streaming update, regardless of how those are configured on the FHIR store.
 
 If a resource with the specified ID already exists, the most recent

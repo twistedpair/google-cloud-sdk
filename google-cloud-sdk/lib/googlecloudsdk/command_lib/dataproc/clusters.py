@@ -823,7 +823,7 @@ def GetClusterConfig(args,
     if args.gke_cluster is not None:
       location = args.zone or args.region
       target_gke_cluster = 'projects/{0}/locations/{1}/clusters/{2}'.format(
-          args.project, location, args.gke_cluster)
+          project_id, location, args.gke_cluster)
       cluster_config.gkeClusterConfig = dataproc.messages.GkeClusterConfig(
           namespacedGkeDeploymentTarget=dataproc.messages
           .NamespacedGkeDeploymentTarget(

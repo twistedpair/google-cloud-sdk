@@ -27,8 +27,8 @@ class Backup(_messages.Message):
     capacityGb: Output only. Capacity of the backup. This would be the size of
       the file share when the backup is restored.
     createTime: Output only. The time when the backup was created.
-    description: Optional. A description of the backup with 2048 characters or
-      less. Requests with longer descriptions will be rejected.
+    description: A description of the backup with 2048 characters or less.
+      Requests with longer descriptions will be rejected.
     labels: Resource labels to represent user provided metadata.
     name: Output only. The resource name of the backup, in the format
       projects/{project_id}/locations/{location_id}/backups/{backup_id}.
@@ -155,9 +155,9 @@ class FileProjectsLocationsBackupsCreateRequest(_messages.Message):
 
   Fields:
     backup: A Backup resource to be passed as the request body.
-    backupId: The ID to use for the backup. The ID must be unique within the
-      specified project and location.
-    parent: The backup's project and location, in the format
+    backupId: Required. The ID to use for the backup. The ID must be unique
+      within the specified project and location.
+    parent: Required. The backup's project and location, in the format
       projects/{project_id}/locations/{location}. In Cloud Filestore, backup
       locations map to GCP regions, for example **us-west1**.
   """
@@ -171,7 +171,7 @@ class FileProjectsLocationsBackupsDeleteRequest(_messages.Message):
   r"""A FileProjectsLocationsBackupsDeleteRequest object.
 
   Fields:
-    name: The backup resource name, in the format
+    name: Required. The backup resource name, in the format
       projects/{project_id}/locations/{location}/backups/{backup_id}
   """
 
@@ -182,7 +182,7 @@ class FileProjectsLocationsBackupsGetRequest(_messages.Message):
   r"""A FileProjectsLocationsBackupsGetRequest object.
 
   Fields:
-    name: The backup resource name, in the format
+    name: Required. The backup resource name, in the format
       projects/{project_id}/locations/{location}/backups/{backup_id}.
   """
 
@@ -199,11 +199,11 @@ class FileProjectsLocationsBackupsListRequest(_messages.Message):
     pageSize: The maximum number of items to return.
     pageToken: The next_page_token value to use if there are additional
       results to retrieve for this list request.
-    parent: The project and location for which to retrieve backup information,
-      in the format projects/{project_id}/locations/{location}. In Cloud
-      Filestore, backup locations map to GCP regions, for example **us-
-      west1**. To retrieve backup information for all locations, use "-" for
-      the {location} value.
+    parent: Required. The project and location for which to retrieve backup
+      information, in the format projects/{project_id}/locations/{location}.
+      In Cloud Filestore, backup locations map to GCP regions, for example
+      **us-west1**. To retrieve backup information for all locations, use "-"
+      for the {location} value.
   """
 
   filter = _messages.StringField(1)
@@ -244,9 +244,9 @@ class FileProjectsLocationsInstancesCreateRequest(_messages.Message):
 
   Fields:
     instance: A Instance resource to be passed as the request body.
-    instanceId: The name of the instance to create. The name must be unique
-      for the specified project and location.
-    parent: The instance's project and location, in the format
+    instanceId: Required. The name of the instance to create. The name must be
+      unique for the specified project and location.
+    parent: Required. The instance's project and location, in the format
       projects/{project_id}/locations/{location}. In Cloud Filestore,
       locations map to GCP zones, for example **us-west1-b**.
   """
@@ -260,7 +260,7 @@ class FileProjectsLocationsInstancesDeleteRequest(_messages.Message):
   r"""A FileProjectsLocationsInstancesDeleteRequest object.
 
   Fields:
-    name: The instance resource name, in the format
+    name: Required. The instance resource name, in the format
       projects/{project_id}/locations/{location}/instances/{instance_id}
   """
 
@@ -271,7 +271,7 @@ class FileProjectsLocationsInstancesGetRequest(_messages.Message):
   r"""A FileProjectsLocationsInstancesGetRequest object.
 
   Fields:
-    name: The instance resource name, in the format
+    name: Required. The instance resource name, in the format
       projects/{project_id}/locations/{location}/instances/{instance_id}.
   """
 
@@ -288,7 +288,7 @@ class FileProjectsLocationsInstancesListRequest(_messages.Message):
     pageSize: The maximum number of items to return.
     pageToken: The next_page_token value to use if there are additional
       results to retrieve for this list request.
-    parent: The project and location for which to retrieve instance
+    parent: Required. The project and location for which to retrieve instance
       information, in the format projects/{project_id}/locations/{location}.
       In Cloud Filestore, locations map to GCP zones, for example **us-
       west1-b**. To retrieve instance information for all locations, use "-"
@@ -323,7 +323,7 @@ class FileProjectsLocationsInstancesRestoreRequest(_messages.Message):
   r"""A FileProjectsLocationsInstancesRestoreRequest object.
 
   Fields:
-    name: The resource name of the instance, in the format
+    name: Required. The resource name of the instance, in the format
       projects/{project_id}/locations/{location_id}/instances/{instance_id}.
     restoreInstanceRequest: A RestoreInstanceRequest resource to be passed as
       the request body.
@@ -405,13 +405,13 @@ class FileProjectsLocationsSnapshotsCreateRequest(_messages.Message):
   r"""A FileProjectsLocationsSnapshotsCreateRequest object.
 
   Fields:
-    parent: The snapshot's project and location, in the format
+    parent: Required. The snapshot's project and location, in the format
       projects/{project_id}/locations/{location}. In Cloud Filestore, snapshot
       locations map to GCP zones, for example **us-west1-b**, for local
       snapshots and to GCP regions, for example **us-west1**, otherwise.
     snapshot: A Snapshot resource to be passed as the request body.
-    snapshotId: The ID to use for the snapshot. The ID must be unique within
-      the specified project and location.
+    snapshotId: Required. The ID to use for the snapshot. The ID must be
+      unique within the specified project and location.
   """
 
   parent = _messages.StringField(1, required=True)
@@ -423,7 +423,7 @@ class FileProjectsLocationsSnapshotsDeleteRequest(_messages.Message):
   r"""A FileProjectsLocationsSnapshotsDeleteRequest object.
 
   Fields:
-    name: The snapshot resource name, in the format
+    name: Required. The snapshot resource name, in the format
       projects/{project_id}/locations/{location}/snapshots/{snapshot_id}
   """
 
@@ -434,7 +434,7 @@ class FileProjectsLocationsSnapshotsGetRequest(_messages.Message):
   r"""A FileProjectsLocationsSnapshotsGetRequest object.
 
   Fields:
-    name: The snapshot resource name, in the format
+    name: Required. The snapshot resource name, in the format
       projects/{project_id}/locations/{location}/snapshots/{snapshot_id}.
   """
 
@@ -451,7 +451,7 @@ class FileProjectsLocationsSnapshotsListRequest(_messages.Message):
     pageSize: The maximum number of items to return.
     pageToken: The next_page_token value to use if there are additional
       results to retrieve for this list request.
-    parent: The project and location for which to retrieve snapshot
+    parent: Required. The project and location for which to retrieve snapshot
       information, in the format projects/{project_id}/locations/{location}.
       In Cloud Filestore, snapshot locations map to GCP zones, for example
       **us-west1-b**, for local snapshots and to GCP regions, for example
@@ -908,8 +908,7 @@ class Instance(_messages.Message):
 
   Fields:
     createTime: Output only. The time when the instance was created.
-    description: Optional. A description of the instance (2048 characters or
-      less).
+    description: A description of the instance (2048 characters or less).
     etag: Server-specified ETag for the instance resource to prevent
       simultaneous updates from overwriting each other.
     fileShares: File system shares on the instance. For this version, only a
@@ -1425,8 +1424,8 @@ class RestoreInstanceRequest(_messages.Message):
   Fields:
     backup: The resource name of the backup, in the format
       projects/{project_id}/locations/{location_id}/backups/{backup_id}.
-    fileShare: Name of the file share in the Cloud Filestore instance that the
-      snapshot is being restored to.
+    fileShare: Required. Name of the file share in the Cloud Filestore
+      instance that the snapshot is being restored to.
     snapshot: The resource name of the snapshot, in the format
       projects/{project_id}/locations/{location_id}/snapshots/{snapshot_id}.
     sourceSnapshot: The resource name of the snapshot, in the format
@@ -1455,8 +1454,8 @@ class Snapshot(_messages.Message):
     capacityGb: Output only. Capacity of the snapshot. This would be the size
       of the file share when the snapshot is restored.
     createTime: Output only. The time when the snapshot was created.
-    description: Optional. A description of the snapshot with 2048 characters
-      or less. Requests with longer descriptions will be rejected.
+    description: A description of the snapshot with 2048 characters or less.
+      Requests with longer descriptions will be rejected.
     labels: Resource labels to represent user provided metadata.
     name: Output only. The resource name of the snapshot, in the format
       projects/{project_id}/locations/{location_id}/snapshots/{snapshot_id}.

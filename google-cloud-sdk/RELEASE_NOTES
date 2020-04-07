@@ -5,7 +5,82 @@ Copyright 2014-2020 Google Inc. All rights reserved.
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 
 
-## 287.0.0 (2020-03-31)
+## 288.0.0 (2020-04-07)
+
+### Breaking Changes
+
+*   **(Secret Manager)** Removed newline from the end of the output of `gcloud secrets versions access` command.
+
+
+### AI Platform
+
+* Added support for `--region` flag for `gcloud beta ai-platform`.
+
+### Cloud Access Context Manager
+
+* Renamed `gcloud beta access-context-manager perimeters dry-run reset` as
+  `gcloud beta access-context-manager perimeters dry-run drop`.
+
+### Cloud Composer
+
+* Added the following flags to `gcloud composer environments create` to handle
+IP aliasing:
+  * `--enable-ip-alias`
+  * `--cluster-ipv4-cidr`
+  * `--services-ipv4-cidr`
+  * `--cluster-secondary-range-name`
+  * `--services-secondary-range-name`
+
+* Added the following flags to `gcloud composer environments create` to handle
+Private IP:
+  * `--enable-private-environment`
+  * `--enable-private-endpoint`
+  * `--master-ipv4-cidr`
+
+* Added the following flags to `gcloud composer environments create` to handle
+Private IP:
+  * `--web-server-ipv4-cidr`
+  * `--cloud-sql-ipv4-cidr`
+
+* Fixed a bug that could cause flags passed to `gcloud composer environments
+run` to be interpreted incorrectly.
+
+### Cloud Dataflow
+
+* Added `gcloud beta dataflow snapshots` command group which provides the ability to create and manage Cloud Dataflow snapshots.
+
+### Cloud Dataproc
+
+* Fixed bug where the default project was not automatically used as the GKE
+  cluster project for GKE-based Dataproc clusters.
+* Changed the default value for `--timeout` in `gcloud dataproc clusters update`
+  from 3h to 25h. This prevents client-side timeouts during long graceful
+  decommissioning operations.
+
+### Cloud Run
+
+* Promoted `--no-traffic` flag of `gcloud run deploy` to GA for `--platform=managed`.
+
+### Compute Engine
+
+* Promoted `--scale-in-control` flag of `gcloud compute instance-groups managed set-autoscaling` to beta.
+* Promoted `--scale-in-control` and `--clear-scale-in-control` flags of `gcloud compute instance-groups managed update-autoscaling` to beta.
+* Added support of tabular display format of command
+  `gcloud compute networks get-effective-firewalls` and
+  `gcloud compute instances network-interfaces get-effective-firewalls`.
+
+### Kpt
+
+* Updated kpt from v0.14.0 to v0.17.0.
+* Updated import of cli-utils from v0.5.0 to v0.6.0.
+* Updated import of kyaml from v0.1.3 to v0.1.4.
+* Updated import of cmd/config from v0.1.3 to v0.1.4.
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+
+## 287.0.0 (2020-04-01)
 
 ### App Engine
 

@@ -16,7 +16,7 @@ class ApikeysGetKeyStringNameRequest(_messages.Message):
   r"""A ApikeysGetKeyStringNameRequest object.
 
   Fields:
-    keyString: Finds the project that owns the key string value.
+    keyString: Required. Finds the project that owns the key string value.
   """
 
   keyString = _messages.StringField(1)
@@ -36,9 +36,9 @@ class ApikeysProjectsKeysCloneRequest(_messages.Message):
   r"""A ApikeysProjectsKeysCloneRequest object.
 
   Fields:
-    name: The resource name of the Api key to be cloned under same parent.
-      `apikeys.keys.get permission` and `apikeys.keys.create permission` are
-      required for parent resource.
+    name: Required. The resource name of the Api key to be cloned under same
+      parent. `apikeys.keys.get permission` and `apikeys.keys.create
+      permission` are required for parent resource.
     v2alpha1CloneKeyRequest: A V2alpha1CloneKeyRequest resource to be passed
       as the request body.
   """
@@ -51,7 +51,7 @@ class ApikeysProjectsKeysCreateRequest(_messages.Message):
   r"""A ApikeysProjectsKeysCreateRequest object.
 
   Fields:
-    parent: The project for which this API key will be created.
+    parent: Required. The project for which this API key will be created.
     v2alpha1ApiKey: A V2alpha1ApiKey resource to be passed as the request
       body.
   """
@@ -64,7 +64,7 @@ class ApikeysProjectsKeysDeleteRequest(_messages.Message):
   r"""A ApikeysProjectsKeysDeleteRequest object.
 
   Fields:
-    name: The resource name of the API key to be deleted.
+    name: Required. The resource name of the API key to be deleted.
   """
 
   name = _messages.StringField(1, required=True)
@@ -74,7 +74,7 @@ class ApikeysProjectsKeysGetKeyStringRequest(_messages.Message):
   r"""A ApikeysProjectsKeysGetKeyStringRequest object.
 
   Fields:
-    name: The resource name of the API key to be retrieved.
+    name: Required. The resource name of the API key to be retrieved.
   """
 
   name = _messages.StringField(1, required=True)
@@ -84,7 +84,7 @@ class ApikeysProjectsKeysGetRequest(_messages.Message):
   r"""A ApikeysProjectsKeysGetRequest object.
 
   Fields:
-    name: The resource name of the API key to be retrieved.
+    name: Required. The resource name of the API key to be retrieved.
   """
 
   name = _messages.StringField(1, required=True)
@@ -94,13 +94,13 @@ class ApikeysProjectsKeysListRequest(_messages.Message):
   r"""A ApikeysProjectsKeysListRequest object.
 
   Fields:
-    filter: Only list keys that conform to the given filter. The allowed
-      filter strings are `state:ACTIVE` and `state:DELETED`. By default,
-      ListKeys will return active keys.
-    pageSize: Specifies the maximum number of results to be returned at a
-      time.
-    pageToken: Requests a specific page of results.
-    parent: Lists all API keys associated with this project.
+    filter: Optional. Only list keys that conform to the given filter. The
+      allowed filter strings are `state:ACTIVE` and `state:DELETED`. By
+      default, ListKeys will return active keys.
+    pageSize: Optional. Specifies the maximum number of results to be returned
+      at a time.
+    pageToken: Optional. Requests a specific page of results.
+    parent: Required. Lists all API keys associated with this project.
   """
 
   filter = _messages.StringField(1)
@@ -113,10 +113,10 @@ class ApikeysProjectsKeysPatchRequest(_messages.Message):
   r"""A ApikeysProjectsKeysPatchRequest object.
 
   Fields:
-    name: The resource name of the API key to be modified.
-    updateMask: The field mask specifies which fields should be updated as
-      part of this request. All other fields will be ignored. Allowed field
-      mask: `display_name` and `restrictions`
+    name: Required. The resource name of the API key to be modified.
+    updateMask: Required. The field mask specifies which fields should be
+      updated as part of this request. All other fields will be ignored.
+      Allowed field mask: `display_name` and `restrictions`
     v2alpha1ApiKey: A V2alpha1ApiKey resource to be passed as the request
       body.
   """
@@ -130,7 +130,7 @@ class ApikeysProjectsKeysUndeleteRequest(_messages.Message):
   r"""A ApikeysProjectsKeysUndeleteRequest object.
 
   Fields:
-    name: The resource name of the API key to be undeleted.
+    name: Required. The resource name of the API key to be undeleted.
     v2alpha1UndeleteKeyRequest: A V2alpha1UndeleteKeyRequest resource to be
       passed as the request body.
   """
@@ -397,8 +397,7 @@ class V2alpha1ApiKey(_messages.Message):
   Fields:
     createTime: Output only. A timestamp identifying the time this API key was
       originally created.
-    creator: Output only. Email address of the user who originally created
-      this API key.
+    creator: Email address of the user who originally created this API key.
     displayName: Human-readable display name of this API key. Modifiable by
       user.
     keyString: Output only. An encrypted and signed value held by this API
@@ -440,7 +439,7 @@ class V2alpha1ApiTarget(_messages.Message):
   specific methods. Both fields are not case sensitive.
 
   Fields:
-    methods: An optional list of one or more methods that can be called. If
+    methods: Optional. List of one or more methods that can be called. If
       empty, all methods for the service are allowed. A wildcard (*) can be
       used as the last symbol. Valid examples:
       google.cloud.translate.v2.TranslateService.GetSupportedLanguage

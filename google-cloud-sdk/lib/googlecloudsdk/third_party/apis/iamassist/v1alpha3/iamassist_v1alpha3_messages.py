@@ -831,6 +831,16 @@ class GoogleIamAssistV1alpha3ReplayLogsMetadata(_messages.Message):
   unchangedCount = _messages.IntegerField(6, variant=_messages.Variant.INT32)
 
 
+class GoogleIamAssistV1alpha3ReplayOperationMetadata(_messages.Message):
+  r"""Metadata about a ReplayAccessLogs operation.
+
+  Fields:
+    startTime: Time when the request was received.
+  """
+
+  startTime = _messages.StringField(1)
+
+
 class GoogleIamAssistV1alpha3ReplayResult(_messages.Message):
   r"""The result of replaying a single access tuple against a simulated state.
 

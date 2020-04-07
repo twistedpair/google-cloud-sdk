@@ -274,10 +274,11 @@ class ClusterConfig(_messages.Message):
     endpointConfig: Optional. Port/endpoint configuration for this cluster
     gceClusterConfig: Optional. The shared Compute Engine config settings for
       all instances in a cluster.
-    gkeClusterConfig: Optional. The GKE config for Dataproc clusters deployed
-      to Kubernetes. Setting this is considered mutually exclusive with GCE-
-      based options such as gce_cluster_config, master_config, worker_config,
-      secondary_worker_config, and autoscaling_config.
+    gkeClusterConfig: Optional. The Kubernetes Engine config for Dataproc
+      clusters deployed to Kubernetes. Setting this is considered mutually
+      exclusive with Compute Engine-based options such as gce_cluster_config,
+      master_config, worker_config, secondary_worker_config, and
+      autoscaling_config.
     initializationActions: Optional. Commands to execute on each node after
       config is completed. By default, executables are run on master and all
       worker nodes. You can test a node's <code>role</code> metadata to run an
@@ -1278,27 +1279,17 @@ class DataprocProjectsRegionsClustersStartRequest(_messages.Message):
 
   Fields:
     clusterName: Required. The cluster name.
-    clusterUuid: Optional. Specifying the cluster_uuid means the RPC should
-      fail (with error NOT_FOUND) if cluster with specified UUID does not
-      exist.
     projectId: Required. The ID of the Google Cloud Platform project the
       cluster belongs to.
     region: Required. The Dataproc region in which to handle the request.
-    requestId: Optional. A unique id used to identify the request. If the
-      server receives two StartClusterRequest requests with the same id, then
-      the second request will be ignored and the first
-      google.longrunning.Operation created and stored in the backend is
-      returned.It is recommended to always set this value to a UUID
-      (https://en.wikipedia.org/wiki/Universally_unique_identifier).The id
-      must contain only letters (a-z, A-Z), numbers (0-9), underscores (_),
-      and hyphens (-). The maximum length is 40 characters.
+    startClusterRequest: A StartClusterRequest resource to be passed as the
+      request body.
   """
 
   clusterName = _messages.StringField(1, required=True)
-  clusterUuid = _messages.StringField(2)
-  projectId = _messages.StringField(3, required=True)
-  region = _messages.StringField(4, required=True)
-  requestId = _messages.StringField(5)
+  projectId = _messages.StringField(2, required=True)
+  region = _messages.StringField(3, required=True)
+  startClusterRequest = _messages.MessageField('StartClusterRequest', 4)
 
 
 class DataprocProjectsRegionsClustersStopRequest(_messages.Message):
@@ -1306,27 +1297,17 @@ class DataprocProjectsRegionsClustersStopRequest(_messages.Message):
 
   Fields:
     clusterName: Required. The cluster name.
-    clusterUuid: Optional. Specifying the cluster_uuid means the RPC should
-      fail (with error NOT_FOUND) if cluster with specified UUID does not
-      exist.
     projectId: Required. The ID of the Google Cloud Platform project the
       cluster belongs to.
     region: Required. The Dataproc region in which to handle the request.
-    requestId: Optional. A unique id used to identify the request. If the
-      server receives two StopClusterRequest requests with the same id, then
-      the second request will be ignored and the first
-      google.longrunning.Operation created and stored in the backend is
-      returned.It is recommended to always set this value to a UUID
-      (https://en.wikipedia.org/wiki/Universally_unique_identifier).The id
-      must contain only letters (a-z, A-Z), numbers (0-9), underscores (_),
-      and hyphens (-). The maximum length is 40 characters.
+    stopClusterRequest: A StopClusterRequest resource to be passed as the
+      request body.
   """
 
   clusterName = _messages.StringField(1, required=True)
-  clusterUuid = _messages.StringField(2)
-  projectId = _messages.StringField(3, required=True)
-  region = _messages.StringField(4, required=True)
-  requestId = _messages.StringField(5)
+  projectId = _messages.StringField(2, required=True)
+  region = _messages.StringField(3, required=True)
+  stopClusterRequest = _messages.MessageField('StopClusterRequest', 4)
 
 
 class DataprocProjectsRegionsClustersTestIamPermissionsRequest(_messages.Message):
@@ -2308,7 +2289,9 @@ class InstanceGroupConfig(_messages.Message):
 
   Enums:
     PreemptibilityValueValuesEnum: Optional. Specifies the preemptibility of
-      the instance group.
+      the instance group.The default value for master and worker groups is
+      NON_PREEMPTIBLE. This default cannot be changed.The default value for
+      secondary instances is PREEMPTIBLE.
 
   Fields:
     accelerators: Optional. The Compute Engine accelerator configuration for
@@ -2319,7 +2302,7 @@ class InstanceGroupConfig(_messages.Message):
       SoftwareConfig.image_version.
     instanceNames: Output only. The list of instance names. Dataproc derives
       the names from cluster_name, num_instances, and the instance group.
-    isPreemptible: Optional. Specifies that this instance group contains
+    isPreemptible: Output only. Specifies that this instance group contains
       preemptible instances.
     machineTypeUri: Optional. The Compute Engine machine type used for cluster
       instances.A full URL, partial URI, or short name are valid. Examples:
@@ -2336,11 +2319,16 @@ class InstanceGroupConfig(_messages.Message):
     numInstances: Optional. The number of VM instances in the instance group.
       For master instance groups, must be set to 1.
     preemptibility: Optional. Specifies the preemptibility of the instance
-      group.
+      group.The default value for master and worker groups is NON_PREEMPTIBLE.
+      This default cannot be changed.The default value for secondary instances
+      is PREEMPTIBLE.
   """
 
   class PreemptibilityValueValuesEnum(_messages.Enum):
-    r"""Optional. Specifies the preemptibility of the instance group.
+    r"""Optional. Specifies the preemptibility of the instance group.The
+    default value for master and worker groups is NON_PREEMPTIBLE. This
+    default cannot be changed.The default value for secondary instances is
+    PREEMPTIBLE.
 
     Values:
       PREEMPTIBILITY_UNSPECIFIED: Preemptibility is unspecified, the system
@@ -2349,7 +2337,7 @@ class InstanceGroupConfig(_messages.Message):
         for all instance groups and is the only valid value for Master and
         Worker instance groups.
       PREEMPTIBLE: Instances are preemptible.This option is allowed only for
-        secondary worker group.
+        secondary worker groups.
     """
     PREEMPTIBILITY_UNSPECIFIED = 0
     NON_PREEMPTIBLE = 1
@@ -2680,6 +2668,7 @@ class KerberosConfig(_messages.Message):
       Kerberos realm and the remote trusted realm, in a cross realm trust
       relationship.
     enableKerberos: Optional. Flag to indicate whether to Kerberize the
+      cluster (default: false). Set this field to true to enable Kerberos on a
       cluster.
     kdcDbKeyUri: Optional. The Cloud Storage URI of a KMS encrypted file
       containing the master key of the KDC database.
@@ -3134,11 +3123,11 @@ class OrderedJob(_messages.Message):
     prerequisiteStepIds: Optional. The optional list of prerequisite job
       step_ids. If not specified, the job will start at the beginning of
       workflow.
-    prestoJob: A PrestoJob attribute.
+    prestoJob: Presto job
     pysparkJob: A PySparkJob attribute.
     scheduling: Optional. Job scheduling configuration.
     sparkJob: A SparkJob attribute.
-    sparkRJob: A SparkRJob attribute.
+    sparkRJob: Spark R job
     sparkSqlJob: A SparkSqlJob attribute.
     stepId: Required. The step id. The id must be unique among all jobs within
       the template.The step id is used as prefix for job id, as job goog-
@@ -3608,33 +3597,33 @@ class SoftwareConfig(_messages.Message):
     Values:
       COMPONENT_UNSPECIFIED: <no description>
       ANACONDA: <no description>
+      DOCKER: <no description>
       DRUID: <no description>
+      FLINK: <no description>
+      HBASE: <no description>
       HIVE_WEBHCAT: <no description>
       JUPYTER: <no description>
       KERBEROS: <no description>
       PRESTO: <no description>
+      RANGER: <no description>
+      SOLR: <no description>
       ZEPPELIN: <no description>
       ZOOKEEPER: <no description>
-      SOLR: <no description>
-      HBASE: <no description>
-      RANGER: <no description>
-      DOCKER: <no description>
-      FLINK: <no description>
     """
     COMPONENT_UNSPECIFIED = 0
     ANACONDA = 1
-    DRUID = 2
-    HIVE_WEBHCAT = 3
-    JUPYTER = 4
-    KERBEROS = 5
-    PRESTO = 6
-    ZEPPELIN = 7
-    ZOOKEEPER = 8
-    SOLR = 9
-    HBASE = 10
-    RANGER = 11
-    DOCKER = 12
-    FLINK = 13
+    DOCKER = 2
+    DRUID = 3
+    FLINK = 4
+    HBASE = 5
+    HIVE_WEBHCAT = 6
+    JUPYTER = 7
+    KERBEROS = 8
+    PRESTO = 9
+    RANGER = 10
+    SOLR = 11
+    ZEPPELIN = 12
+    ZOOKEEPER = 13
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class PropertiesValue(_messages.Message):
@@ -3956,6 +3945,27 @@ class StandardQueryParameters(_messages.Message):
   upload_protocol = _messages.StringField(12)
 
 
+class StartClusterRequest(_messages.Message):
+  r"""A request to start a cluster.
+
+  Fields:
+    clusterUuid: Optional. Specifying the cluster_uuid means the RPC should
+      fail (with error NOT_FOUND) if cluster with specified UUID does not
+      exist.
+    requestId: Optional. A unique id used to identify the request. If the
+      server receives two StartClusterRequest requests with the same id, then
+      the second request will be ignored and the first
+      google.longrunning.Operation created and stored in the backend is
+      returned.It is recommended to always set this value to a UUID
+      (https://en.wikipedia.org/wiki/Universally_unique_identifier).The id
+      must contain only letters (a-z, A-Z), numbers (0-9), underscores (_),
+      and hyphens (-). The maximum length is 40 characters.
+  """
+
+  clusterUuid = _messages.StringField(1)
+  requestId = _messages.StringField(2)
+
+
 class Status(_messages.Message):
   r"""The Status type defines a logical error model that is suitable for
   different programming environments, including REST APIs and RPC APIs. It is
@@ -4005,6 +4015,27 @@ class Status(_messages.Message):
   code = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   details = _messages.MessageField('DetailsValueListEntry', 2, repeated=True)
   message = _messages.StringField(3)
+
+
+class StopClusterRequest(_messages.Message):
+  r"""A request to stop a cluster.
+
+  Fields:
+    clusterUuid: Optional. Specifying the cluster_uuid means the RPC should
+      fail (with error NOT_FOUND) if cluster with specified UUID does not
+      exist.
+    requestId: Optional. A unique id used to identify the request. If the
+      server receives two StopClusterRequest requests with the same id, then
+      the second request will be ignored and the first
+      google.longrunning.Operation created and stored in the backend is
+      returned.It is recommended to always set this value to a UUID
+      (https://en.wikipedia.org/wiki/Universally_unique_identifier).The id
+      must contain only letters (a-z, A-Z), numbers (0-9), underscores (_),
+      and hyphens (-). The maximum length is 40 characters.
+  """
+
+  clusterUuid = _messages.StringField(1)
+  requestId = _messages.StringField(2)
 
 
 class SubmitJobRequest(_messages.Message):

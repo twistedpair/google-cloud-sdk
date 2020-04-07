@@ -165,7 +165,7 @@ def CreateDeployment(service_name,
     limits['memory'] = memory_limit
   if cpu_limit is not None:
     limits = yaml_helper.GetOrCreate(container, ('resources', 'limits'))
-    limits['cpu'] = cpu_limit
+    limits['cpu'] = six.text_type(cpu_limit)
   containers = yaml_helper.GetOrCreate(
       deployment, ('spec', 'template', 'spec', 'containers'), constructor=list)
   containers.append(container)

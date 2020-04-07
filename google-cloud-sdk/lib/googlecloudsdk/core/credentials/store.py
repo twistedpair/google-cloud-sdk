@@ -51,7 +51,6 @@ from oauth2client.contrib import gce as oauth2client_gce
 from oauth2client.contrib import reauth_errors
 import six
 from six.moves import urllib
-from google.auth import credentials as google_auth_creds_base
 from google.auth import exceptions as google_auth_exceptions
 from google.auth.transport import requests
 from google.oauth2 import service_account as google_auth_service_account
@@ -596,7 +595,7 @@ def Refresh(credentials,
     TokenRefreshError: If the credentials fail to refresh.
     TokenRefreshReauthError: If the credentials fail to refresh due to reauth.
   """
-  if isinstance(credentials, client.OAuth2Credentials):
+  if creds.IsOauth2ClientCredentials(credentials):
     _Refresh(credentials, http_client, is_impersonated_credential,
              include_email, gce_token_format, gce_include_license)
   else:
@@ -697,15 +696,13 @@ def _RefreshIfAlmostExpire(credentials):
     credentials: google.auth.credentials.Credentials or
       client.OAuth2Credentials, the credentials to refresh.
   """
-  invalid_oauth2client_creds = isinstance(
-      credentials, client.OAuth2Credentials) and (
-          not credentials.token_expiry or _TokenExpiresWithinWindow(
-              _CREDENTIALS_EXPIRY_WINDOW, credentials.token_expiry))
-  invalid_google_auth_creds = isinstance(
-      credentials,
-      google_auth_creds_base.Credentials) and (not credentials.valid)
+  if creds.IsOauth2ClientCredentials(credentials):
+    almost_expire = not credentials.token_expiry or _TokenExpiresWithinWindow(
+        _CREDENTIALS_EXPIRY_WINDOW, credentials.token_expiry)
+  else:
+    almost_expire = not credentials.valid
 
-  if invalid_oauth2client_creds or invalid_google_auth_creds:
+  if almost_expire:
     Refresh(credentials)
 
 
@@ -790,6 +787,10 @@ def _RefreshServiceAccountIdTokenGoogleAuth(cred, http_client):
 def Store(credentials, account=None, scopes=None):
   """Store credentials according for an account address.
 
+  gcloud only stores user account credentials, service account credentials and
+  p12 service account credentials. GCE, IAM impersonation, and Devshell
+  credentials are generated in runtime.
+
   Args:
     credentials: oauth2client.client.Credentials or
       google.auth.credentials.Credentials, The credentials to be stored.
@@ -803,7 +804,7 @@ def Store(credentials, account=None, scopes=None):
         active account.
   """
 
-  if isinstance(credentials, client.OAuth2Credentials):
+  if creds.IsOauth2ClientCredentials(credentials):
     cred_type = creds.CredentialType.FromCredentials(credentials)
   else:
     cred_type = creds.CredentialTypeGoogleAuth.FromCredentials(credentials)
@@ -819,10 +820,7 @@ def Store(credentials, account=None, scopes=None):
   store = creds.GetCredentialStore()
   store.Store(account, credentials)
 
-  # TODO(b/151574510): Removes this if check once _LegacyGenerator supports
-  # google-auth credentials.
-  if isinstance(credentials, client.OAuth2Credentials):
-    _LegacyGenerator(account, credentials, scopes).WriteTemplate()
+  _LegacyGenerator(account, credentials, scopes).WriteTemplate()
 
 
 def ActivateCredentials(account, credentials):
@@ -1013,25 +1011,46 @@ def AcquireFromGCE(account=None):
 
 
 class _LegacyGenerator(object):
-  """A class to generate the credential file for legacy tools."""
+  """A class to generate the credential file for other tools, like gsutil & bq.
+
+  The supported credentials types are user account credentials, service account
+  credentials, and p12 service account credentials. Gcloud supports two auth
+  libraries - oauth2client and google-auth. Eventually, we will deprecate
+  oauth2client.
+  """
 
   def __init__(self, account, credentials, scopes=None):
     self.credentials = credentials
-    self.credentials_type = creds.CredentialType.FromCredentials(credentials)
-    if self.credentials_type == creds.CredentialType.UNKNOWN:
-      raise creds.UnknownCredentialsType('Unknown credentials type.')
+    if self._cred_type not in (creds.USER_ACCOUNT_CREDS_NAME,
+                               creds.SERVICE_ACCOUNT_CREDS_NAME,
+                               creds.P12_SERVICE_ACCOUNT_CREDS_NAME):
+      raise creds.CredentialFileSaveError(
+          'Unsupported credentials type {0}'.format(type(self.credentials)))
     if scopes is None:
       self.scopes = config.CLOUDSDK_SCOPES
     else:
       self.scopes = scopes
 
     paths = config.Paths()
-    # Bq file while not generated here is created for caching
-    # credentials, register so it is cleaned up.
+    # Bq file is not generated here. bq CLI generates it using the adc at
+    # self._adc_path and uses it as the cache.
+    # Register so it is cleaned up.
     self._bq_path = paths.LegacyCredentialsBqPath(account)
     self._gsutil_path = paths.LegacyCredentialsGSUtilPath(account)
     self._p12_key_path = paths.LegacyCredentialsP12KeyPath(account)
     self._adc_path = paths.LegacyCredentialsAdcPath(account)
+
+  @property
+  def _is_oauth2client(self):
+    return creds.IsOauth2ClientCredentials(self.credentials)
+
+  @property
+  def _cred_type(self):
+    if self._is_oauth2client:
+      return creds.CredentialType.FromCredentials(self.credentials).key
+    else:
+      return creds.CredentialTypeGoogleAuth.FromCredentials(
+          self.credentials).key
 
   def Clean(self):
     """Remove the credential file."""
@@ -1052,37 +1071,8 @@ class _LegacyGenerator(object):
   def WriteTemplate(self):
     """Write the credential file."""
 
-    # General credentials used by bq and gsutil.
-    if self.credentials_type != creds.CredentialType.P12_SERVICE_ACCOUNT:
-      creds.ADC(self.credentials).DumpADCToFile(file_path=self._adc_path)
-
-      if self.credentials_type == creds.CredentialType.USER_ACCOUNT:
-        # We create a small .boto file for gsutil, to be put in BOTO_PATH.
-        # Our client_id and client_secret should accompany our refresh token;
-        # if a user loaded any other .boto files that specified a different
-        # id and secret, those would override our id and secret, causing any
-        # attempts to obtain an access token with our refresh token to fail.
-        self._WriteFileContents(
-            self._gsutil_path, '\n'.join([
-                '[OAuth2]',
-                'client_id = {cid}',
-                'client_secret = {secret}',
-                '',
-                '[Credentials]',
-                'gs_oauth2_refresh_token = {token}',
-            ]).format(cid=config.CLOUDSDK_CLIENT_ID,
-                      secret=config.CLOUDSDK_CLIENT_NOTSOSECRET,
-                      token=self.credentials.refresh_token))
-      elif self.credentials_type == creds.CredentialType.SERVICE_ACCOUNT:
-        self._WriteFileContents(
-            self._gsutil_path, '\n'.join([
-                '[Credentials]',
-                'gs_service_key_file = {key_file}',
-            ]).format(key_file=self._adc_path))
-      else:
-        raise creds.CredentialFileSaveError(
-            'Unsupported credentials type {0}'.format(type(self.credentials)))
-    else:  # P12 service account
+    # Generates credentials used by bq and gsutil.
+    if self._cred_type == creds.P12_SERVICE_ACCOUNT_CREDS_NAME:
       cred = self.credentials
       key = cred._private_key_pkcs12  # pylint: disable=protected-access
       password = cred._private_key_password  # pylint: disable=protected-access
@@ -1098,6 +1088,32 @@ class _LegacyGenerator(object):
           ]).format(account=self.credentials.service_account_email,
                     key_file=self._p12_key_path,
                     key_password=password))
+      return
+    creds.ADC(self.credentials).DumpADCToFile(file_path=self._adc_path)
+
+    if self._cred_type == creds.USER_ACCOUNT_CREDS_NAME:
+      # We create a small .boto file for gsutil, to be put in BOTO_PATH.
+      # Our client_id and client_secret should accompany our refresh token;
+      # if a user loaded any other .boto files that specified a different
+      # id and secret, those would override our id and secret, causing any
+      # attempts to obtain an access token with our refresh token to fail.
+      self._WriteFileContents(
+          self._gsutil_path, '\n'.join([
+              '[OAuth2]',
+              'client_id = {cid}',
+              'client_secret = {secret}',
+              '',
+              '[Credentials]',
+              'gs_oauth2_refresh_token = {token}',
+          ]).format(cid=config.CLOUDSDK_CLIENT_ID,
+                    secret=config.CLOUDSDK_CLIENT_NOTSOSECRET,
+                    token=self.credentials.refresh_token))
+    else:
+      self._WriteFileContents(
+          self._gsutil_path, '\n'.join([
+              '[Credentials]',
+              'gs_service_key_file = {key_file}',
+          ]).format(key_file=self._adc_path))
 
   def _WriteFileContents(self, filepath, contents):
     """Writes contents to a path, ensuring mkdirs.

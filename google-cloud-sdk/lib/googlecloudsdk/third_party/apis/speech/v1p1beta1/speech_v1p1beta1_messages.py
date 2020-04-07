@@ -335,11 +335,14 @@ class LongRunningRecognizeMetadata(_messages.Message):
       Guaranteed to be 100 when the audio is fully processed and the results
       are available.
     startTime: Time when the request was received.
+    uri: The URI of the audio file being transcribed. Empty if the audio was
+      sent as byte content.
   """
 
   lastUpdateTime = _messages.StringField(1)
   progressPercent = _messages.IntegerField(2, variant=_messages.Variant.INT32)
   startTime = _messages.StringField(3)
+  uri = _messages.StringField(4)
 
 
 class LongRunningRecognizeRequest(_messages.Message):

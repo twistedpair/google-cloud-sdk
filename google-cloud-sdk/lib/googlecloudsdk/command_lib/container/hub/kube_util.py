@@ -35,6 +35,7 @@ from googlecloudsdk.calliope import exceptions as calliope_exceptions
 from googlecloudsdk.command_lib.container.hub import api_util as api_util
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import execution_utils
+from googlecloudsdk.core import http
 from googlecloudsdk.core import properties
 from googlecloudsdk.core.util import encoding
 from googlecloudsdk.core.util import files
@@ -643,6 +644,13 @@ class KubernetesClient(object):
     self.kubeconfig, self.context = self.processor.GetKubeconfigAndContext(
         flags, self.temp_kubeconfig_dir)
 
+    # If --public-issuer-url is set, we must not attempt to construct the
+    # cluster client, because it may use a kubeconfig that we don't fully
+    # support yet. See: b/152465794.
+    # TODO(b/149872627): Switch to official client to fully support kubeconfig.
+    if hasattr(flags, 'public_issuer_url') and flags.public_issuer_url:
+      return
+
     # Due to an issue between the gcloud third_party yaml library, which the
     # official K8s client depends on, and python3 (b/149872627), we construct
     # our own client below. Since this is not as robust a solution as using the
@@ -655,6 +663,7 @@ class KubernetesClient(object):
           flags.enable_workload_identity) or
          (hasattr(flags, 'manage_workload_identity_bucket') and
           flags.manage_workload_identity_bucket))):
+
       # If processor.GetKubeconfigAndContext returns `None` for the kubeconfig
       # path, that indicates we should be using in-cluster config. Otherwise,
       # the first return value is the path to the kubeconfig file. Since the
@@ -701,14 +710,6 @@ class KubernetesClient(object):
             ca_certs=ca_file,
             cert_file=cert_file,
             key_file=key_file,
-            **{})
-        # The above cluster_pool_manager trusts the cluster, but not the
-        # internet, whereas the web_pool_manager trusts the internet, but not
-        # the cluster.
-        self.web_pool_manager = urllib3.PoolManager(
-            num_pools=4,
-            maxsize=4,
-            cert_reqs=ssl.CERT_REQUIRED,
             **{})
       else:
         raise exceptions.Error('Workload Identity feature does not support '
@@ -913,10 +914,15 @@ class KubernetesClient(object):
     return self._RunKubectl(['logs', '-n', namespace, log_target])
 
   def _WebRequest(self, method, url, headers=None):
-    return self.web_pool_manager.request(method, url, headers=headers)
+    _, content = http.Http().request(url, method, headers=headers)
+    return content
 
   def _ClusterRequest(self, method, url, headers=None):
-    return self.cluster_pool_manager.request(method, url, headers=headers)
+    r = self.cluster_pool_manager.request(method, url, headers=headers)
+    if r and hasattr(r, 'data'):
+      return r.data.decode('utf-8')
+    else:
+      raise exceptions.Error('missing response data: {}'.format(r))
 
   def GetOpenIDConfiguration(self, issuer_url=None):
     """Get the OpenID Provider Configuration for the K8s API server.
@@ -938,13 +944,13 @@ class KubernetesClient(object):
     url = None
     try:
       if issuer_url is not None:
-        url = issuer_url
-        r = self._WebRequest('GET', url, headers=headers)
+        url = issuer_url.rstrip('/') + '/.well-known/openid-configuration'
+        return self._WebRequest('GET', url, headers=headers)
       else:
+        # Here, urljoin is ok, the full path is explicitly defined by K8s API.
         url = urljoin(self.apiserver,
                       '/.well-known/openid-configuration')
-        r = self._ClusterRequest('GET', url, headers=headers)
-      return r.data.decode('utf-8')
+        return self._ClusterRequest('GET', url, headers=headers)
     except Exception as e:  # pylint: disable=broad-except
       raise exceptions.Error('Failed to get OpenID Provider Configuration '
                              'from {}: {}'.format(url, e))
@@ -969,11 +975,10 @@ class KubernetesClient(object):
     try:
       if jwks_uri is not None:
         url = jwks_uri
-        r = self._WebRequest('GET', url, headers=headers)
+        return self._WebRequest('GET', url, headers=headers)
       else:
         url = urljoin(self.apiserver, '/openid/v1/jwks')
-        r = self._ClusterRequest('GET', url, headers=headers)
-      return r.data.decode('utf-8')
+        return self._ClusterRequest('GET', url, headers=headers)
     except Exception as e:  # pylint: disable=broad-except
       raise exceptions.Error('Failed to get JSON Web Key Set '
                              'from {}: {}'.format(url, e))

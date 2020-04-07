@@ -19,6 +19,7 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+from googlecloudsdk.command_lib.iam import completers as iam_completers
 from googlecloudsdk.command_lib.util.args import labels_util
 
 
@@ -60,3 +61,12 @@ def ProcessLabelsFlag(labels, message):
         message)
 
   return labels
+
+
+class GatewayIamRolesCompleter(iam_completers.IamRolesCompleter):
+
+  def __init__(self, **kwargs):
+    super(GatewayIamRolesCompleter, self).__init__(
+        resource_collection='apigateway.projects.locations.gateways',
+        resource_dest='gateway',
+        **kwargs)

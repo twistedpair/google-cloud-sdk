@@ -580,7 +580,9 @@ def AddCollation(parser):
       '--collation',
       help='Cloud SQL database collation setting, which specifies '
       'the set of rules for comparing characters in a character set. Each'
-      ' database version may support a different set of collations.')
+      ' database version may support a different set of collations. For '
+      'PostgreSQL database versions, this may only be set to the collation of '
+      'the template database.')
 
 
 def AddOperationArgument(parser):

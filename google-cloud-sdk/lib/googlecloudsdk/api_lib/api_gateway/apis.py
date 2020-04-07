@@ -37,7 +37,7 @@ class ApiClient(base.BaseClient):
     self.DefineList('apis')
     self.DefineUpdate('apigatewayApi')
     self.DefineDelete()
-    self.DefineGetIamPolicy()
+    self.DefineIamPolicyFunctions()
 
   def DoesExist(self, api_ref):
     """Checks if an Api object exists.

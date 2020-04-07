@@ -734,7 +734,7 @@ properties:
       abort_if_equivalent: {type: boolean}
       # True when the import command should create the resource if it does not already exist
       # on the service.
-      create_if_not_exist: {type: boolean}
+      create_if_not_exists: {type: boolean}
       # Attributes about the create request the command will make if the resource does not already
       # exist on the service. The create request will use all configuration from the parent
       # request configuration unless explicitly specified here.

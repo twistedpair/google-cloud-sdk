@@ -198,7 +198,7 @@
           "format": "google-datetime"
         },
         "creator": {
-          "description": "Output only. Email address of the user who originally created this API key.",
+          "description": "Email address of the user who originally created this API key.",
           "type": "string"
         },
         "updateTime": {
@@ -337,7 +337,7 @@
           "type": "string"
         },
         "methods": {
-          "description": "An optional list of one or more methods that can be called.\nIf empty, all methods for the service are allowed. A wildcard\n(*) can be used as the last symbol.\nValid examples:\n  google.cloud.translate.v2.TranslateService.GetSupportedLanguage\n  TranslateText\n  Get*\n  google.cloud.translate.v2.TranslateService.Get*",
+          "description": "Optional. List of one or more methods that can be called.\nIf empty, all methods for the service are allowed. A wildcard\n(*) can be used as the last symbol.\nValid examples:\n  google.cloud.translate.v2.TranslateService.GetSupportedLanguage\n  TranslateText\n  Get*\n  google.cloud.translate.v2.TranslateService.Get*",
           "type": "array",
           "items": {
             "type": "string"
@@ -446,7 +446,7 @@
               "httpMethod": "POST",
               "parameters": {
                 "parent": {
-                  "description": "The project for which this API key will be created.",
+                  "description": "Required. The project for which this API key will be created.",
                   "location": "path",
                   "required": true,
                   "pattern": "^projects\/[^\/]+$",
@@ -474,7 +474,7 @@
               "httpMethod": "POST",
               "parameters": {
                 "name": {
-                  "description": "The resource name of the Api key to be cloned under same parent.\n`apikeys.keys.get permission` and `apikeys.keys.create permission` are\nrequired for parent resource.",
+                  "description": "Required. The resource name of the Api key to be cloned under same parent.\n`apikeys.keys.get permission` and `apikeys.keys.create permission` are\nrequired for parent resource.",
                   "location": "path",
                   "required": true,
                   "pattern": "^projects\/[^\/]+\/keys\/[^\/]+$",
@@ -502,25 +502,25 @@
               "httpMethod": "GET",
               "parameters": {
                 "parent": {
-                  "description": "Lists all API keys associated with this project.",
+                  "description": "Required. Lists all API keys associated with this project.",
                   "location": "path",
                   "required": true,
                   "pattern": "^projects\/[^\/]+$",
                   "type": "string"
                 },
                 "pageSize": {
-                  "description": "Specifies the maximum number of results to be returned at a time.",
+                  "description": "Optional. Specifies the maximum number of results to be returned at a time.",
                   "location": "query",
                   "type": "integer",
                   "format": "int32"
                 },
                 "pageToken": {
-                  "description": "Requests a specific page of results.",
+                  "description": "Optional. Requests a specific page of results.",
                   "location": "query",
                   "type": "string"
                 },
                 "filter": {
-                  "description": "Only list keys that conform to the given filter.\nThe allowed filter strings are `state:ACTIVE` and `state:DELETED`. By\ndefault, ListKeys will return active keys.",
+                  "description": "Optional. Only list keys that conform to the given filter.\nThe allowed filter strings are `state:ACTIVE` and `state:DELETED`. By\ndefault, ListKeys will return active keys.",
                   "location": "query",
                   "type": "string"
                 }
@@ -544,7 +544,7 @@
               "httpMethod": "GET",
               "parameters": {
                 "name": {
-                  "description": "The resource name of the API key to be retrieved.",
+                  "description": "Required. The resource name of the API key to be retrieved.",
                   "location": "path",
                   "required": true,
                   "pattern": "^projects\/[^\/]+\/keys\/[^\/]+$",
@@ -570,7 +570,7 @@
               "httpMethod": "GET",
               "parameters": {
                 "name": {
-                  "description": "The resource name of the API key to be retrieved.",
+                  "description": "Required. The resource name of the API key to be retrieved.",
                   "location": "path",
                   "required": true,
                   "pattern": "^projects\/[^\/]+\/keys\/[^\/]+$",
@@ -596,14 +596,14 @@
               "httpMethod": "PATCH",
               "parameters": {
                 "name": {
-                  "description": "The resource name of the API key to be modified.",
+                  "description": "Required. The resource name of the API key to be modified.",
                   "location": "path",
                   "required": true,
                   "pattern": "^projects\/[^\/]+\/keys\/[^\/]+$",
                   "type": "string"
                 },
                 "updateMask": {
-                  "description": "The field mask specifies which fields should be updated as part of this\nrequest. All other fields will be ignored.\nAllowed field mask: `display_name` and `restrictions`",
+                  "description": "Required. The field mask specifies which fields should be updated as part of this\nrequest. All other fields will be ignored.\nAllowed field mask: `display_name` and `restrictions`",
                   "location": "query",
                   "type": "string",
                   "format": "google-fieldmask"
@@ -630,7 +630,7 @@
               "httpMethod": "DELETE",
               "parameters": {
                 "name": {
-                  "description": "The resource name of the API key to be deleted.",
+                  "description": "Required. The resource name of the API key to be deleted.",
                   "location": "path",
                   "required": true,
                   "pattern": "^projects\/[^\/]+\/keys\/[^\/]+$",
@@ -655,7 +655,7 @@
               "httpMethod": "POST",
               "parameters": {
                 "name": {
-                  "description": "The resource name of the API key to be undeleted.",
+                  "description": "Required. The resource name of the API key to be undeleted.",
                   "location": "path",
                   "required": true,
                   "pattern": "^projects\/[^\/]+\/keys\/[^\/]+$",
@@ -689,7 +689,7 @@
           "httpMethod": "GET",
           "parameters": {
             "keyString": {
-              "description": "Finds the project that owns the key string value.",
+              "description": "Required. Finds the project that owns the key string value.",
               "location": "query",
               "type": "string"
             }

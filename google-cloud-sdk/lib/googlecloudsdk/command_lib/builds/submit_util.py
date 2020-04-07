@@ -45,6 +45,8 @@ _ALLOWED_SOURCE_EXT = ['.zip', '.tgz', '.gz']
 
 _DEFAULT_BUILDPACK_BUILDER = 'gcr.io/buildpacks/builder'
 
+_SUPPORTED_REGISTRIES = ['gcr.io', 'pkg.dev']
+
 
 class FailedBuildException(core_exceptions.Error):
   """Exception for builds that did not succeed."""
@@ -76,9 +78,11 @@ def _SetBuildSteps(tag, no_cache, messages, substitutions, arg_config,
                    timeout_str):
   """Set build steps."""
   if tag is not None:
-    if (properties.VALUES.builds.check_tag.GetBool() and 'gcr.io/' not in tag):
+    if (properties.VALUES.builds.check_tag.GetBool() and
+        not any(reg in tag for reg in _SUPPORTED_REGISTRIES)):
       raise c_exceptions.InvalidArgumentException(
-          '--tag', 'Tag value must be in the gcr.io/* or *.gcr.io/* namespace.')
+          '--tag', 'Tag value must be in the gcr.io/*, *.gcr.io/*, '
+                   'or *.pkg.dev/* namespace.')
     if properties.VALUES.builds.use_kaniko.GetBool():
       if no_cache:
         ttl = '0h'
@@ -145,9 +149,11 @@ def _SetBuildStepsAlpha(tag, no_cache, messages, substitutions, arg_config,
                         timeout_str, buildpack):
   """Set build steps."""
   if tag is not None:
-    if (properties.VALUES.builds.check_tag.GetBool() and 'gcr.io/' not in tag):
+    if (properties.VALUES.builds.check_tag.GetBool() and
+        not any(reg in tag for reg in _SUPPORTED_REGISTRIES)):
       raise c_exceptions.InvalidArgumentException(
-          '--tag', 'Tag value must be in the gcr.io/* or *.gcr.io/* namespace.')
+          '--tag', 'Tag value must be in the gcr.io/*, *.gcr.io/*, '
+          'or *.pkg.dev/* namespace.')
     if properties.VALUES.builds.use_kaniko.GetBool():
       if no_cache:
         ttl = '0h'
@@ -204,10 +210,10 @@ def _SetBuildStepsAlpha(tag, no_cache, messages, substitutions, arg_config,
           '--pack', 'Image value must not be empty.')
     image = buildpack[0].get('image')
     if (properties.VALUES.builds.check_tag.GetBool() and
-        'gcr.io/' not in image and 'pkg.dev' not in image):
+        not any(reg in image for reg in _SUPPORTED_REGISTRIES)):
       raise c_exceptions.InvalidArgumentException(
           '--pack',
-          'Image value must be in the gcr.io/*, *.gcr.io/*, or *pkg.dev/* namespace.'
+          'Image value must be in the gcr.io/*, *.gcr.io/*, or *.pkg.dev/* namespace.'
       )
     env = buildpack[0].get('env')
     pack_args = ['build', image, '--builder', builder]

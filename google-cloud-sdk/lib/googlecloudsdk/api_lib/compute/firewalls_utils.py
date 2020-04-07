@@ -38,6 +38,26 @@ LEGAL_SPECS = re.compile(
     $                             # End of input marker.
     """,
     re.VERBOSE)
+EFFECTIVE_FIREWALL_LIST_FORMAT = """\
+  table(
+    type,
+    priority,
+    action,
+    direction,
+    src_ip_ranges,
+    dest_ip_ranges,
+    target_svc_acct,
+    enableLogging,
+    description,
+    name,
+    disabled,
+    security_policy_id,
+    target_tags,
+    src_svc_acct,
+    src_tags,
+    ruleTupleCount,
+    targetResources:label=TARGET_RESOURCES
+  )"""
 
 
 class ArgumentValidationError(exceptions.Error):
@@ -408,3 +428,91 @@ def ParseRules(rules, message_classes, action=ActionType.ALLOW):
           IPProtocol=match.group('protocol'), ports=ports)
     rule_value_list.append(rule)
   return rule_value_list
+
+
+def SortNetworkFirewallRules(client, rules):
+  """Sort the network firewall rules by direction and priority."""
+  ingress_network_firewall = [
+      item for item in rules if item.direction ==
+      client.messages.Firewall.DirectionValueValuesEnum.INGRESS
+  ]
+  ingress_network_firewall.sort(key=lambda x: x.priority, reverse=False)
+  egress_network_firewall = [
+      item for item in rules if item.direction ==
+      client.messages.Firewall.DirectionValueValuesEnum.EGRESS
+  ]
+  egress_network_firewall.sort(key=lambda x: x.priority, reverse=False)
+  return ingress_network_firewall + egress_network_firewall
+
+
+def SortOrgFirewallRules(client, rules):
+  """Sort the organization firewall rules by direction and priority."""
+  ingress_org_firewall_rule = [
+      item for item in rules if item.direction ==
+      client.messages.SecurityPolicyRule.DirectionValueValuesEnum.INGRESS
+  ]
+  ingress_org_firewall_rule.sort(key=lambda x: x.priority, reverse=False)
+  egress_org_firewall_rule = [
+      item for item in rules if item.direction ==
+      client.messages.SecurityPolicyRule.DirectionValueValuesEnum.EGRESS
+  ]
+  egress_org_firewall_rule.sort(key=lambda x: x.priority, reverse=False)
+  return ingress_org_firewall_rule + egress_org_firewall_rule
+
+
+def ConvertOrgSecurityPolicyRulesToEffectiveFwRules(security_policy):
+  """Convert organization security policy rules to effective firewall rules."""
+  result = []
+  for rule in security_policy.rules:
+    item = {}
+    item.update({'type': 'org-firewall'})
+    item.update({'description': rule.description})
+    item.update({'security_policy_id': security_policy.id})
+    item.update({'priority': rule.priority})
+    item.update({'direction': rule.direction})
+    item.update({'action': rule.action})
+    item.update({'disabled': 'False'})
+    if rule.match.config.srcIpRanges:
+      item.update({'src_ip_ranges': rule.match.config.srcIpRanges})
+    if rule.match.config.destIpRanges:
+      item.update({'dest_ip_ranges': rule.match.config.destIpRanges})
+    if rule.targetServiceAccounts:
+      item.update({'target_svc_acct': rule.targetServiceAccounts})
+    if rule.targetResources:
+      item.update({'target_resources': rule.targetResources})
+    result.append(item)
+  return result
+
+
+def ConvertNetworkFirewallRulesToEffectiveFwRules(network_firewalls):
+  """Convert network firewall rules to effective firewall rules."""
+  result = []
+  for rule in network_firewalls:
+    item = {}
+    item.update({'type': 'network-firewall'})
+    item.update({'description': rule.description})
+    item.update({'priority': rule.priority})
+    item.update({'direction': rule.direction})
+    if rule.allowed:
+      item.update({'action': 'ALLOW'})
+    else:
+      item.update({'action': 'DENY'})
+    if rule.sourceRanges:
+      item.update({'src_ip_ranges': rule.sourceRanges})
+    if rule.destinationRanges:
+      item.update({'dest_ip_ranges': rule.destinationRanges})
+    if rule.targetServiceAccounts:
+      item.update({'target_svc_acct': rule.targetServiceAccounts})
+    if rule.targetTags:
+      item.update({'target_tags': rule.targetTags})
+    if rule.sourceTags:
+      item.update({'src_tags': rule.sourceTags})
+    if rule.sourceServiceAccounts:
+      item.update({'src_svc_acct': rule.sourceTags})
+    if rule.disabled:
+      item.update({'disabled': True})
+    else:
+      item.update({'disabled': False})
+    item.update({'name': rule.name})
+    result.append(item)
+  return result

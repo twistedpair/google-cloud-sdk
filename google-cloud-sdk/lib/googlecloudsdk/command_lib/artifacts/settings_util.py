@@ -183,7 +183,7 @@ Please insert following snippet into your pom.xml
   data = {
       "location": location,
       "server_id": "artifact-registry",
-      "extension_version": "2.0.0",
+      "extension_version": "2.0.1",
       "repo_path": repo_path,
   }
   return mvn_template.format(**data)
@@ -232,6 +232,6 @@ repositories {{
   data = {
       "location": location,
       "repo_path": repo_path,
-      "extension_version": "2.0.0",
+      "extension_version": "2.0.1",
   }
   return gradle_template.format(**data)

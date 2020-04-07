@@ -330,8 +330,9 @@ def AddScaleInControlFlag(parser, include_clear=False):
         with  'max-scaled-in-replicas'.
 
         *time-window*::: How long back autoscaling should look when computing
-        recommendations to include directives regarding slower scale in.
-        Measured in seconds.
+        recommendations. The autoscaler will not resize below the maximum
+        allowed deduction subtracted from the peak size observed in this
+        period. Measured in seconds.
         """)
 
 

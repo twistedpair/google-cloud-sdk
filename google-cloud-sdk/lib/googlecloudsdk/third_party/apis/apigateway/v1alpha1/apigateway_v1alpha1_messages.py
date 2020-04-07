@@ -15,7 +15,7 @@ class ApigatewayApi(_messages.Message):
   r"""A consumable API that can be used by multiple Gateways.
 
   Enums:
-    StateValueValuesEnum: Optional. State of the API.
+    StateValueValuesEnum: Output only. State of the API.
 
   Messages:
     LabelsValue: Optional. Resource labels to represent user-provided
@@ -31,12 +31,12 @@ class ApigatewayApi(_messages.Message):
       https://cloud.google.com/compute/docs/labeling-resources
     name: Output only. Resource name of the API. Format:
       projects/{project}/locations/global/apis/{api}
-    state: Optional. State of the API.
+    state: Output only. State of the API.
     updateTime: Output only. Updated time.
   """
 
   class StateValueValuesEnum(_messages.Enum):
-    r"""Optional. State of the API.
+    r"""Output only. State of the API.
 
     Values:
       STATE_UNSPECIFIED: API does not have a state yet.
@@ -90,15 +90,15 @@ class ApigatewayApi(_messages.Message):
 
 class ApigatewayApiApiController(_messages.Message):
   r"""An API Controller enforces global rules related to API methods and
-  consumers, such as API Key checking, quota enforcement, and usage
-  statistics.
+  consumers, such as API Key checking, quota enforcement, and collections of
+  usage statistics.
 
   Fields:
     managedService: The name of a Google Managed Service (
       https://cloud.google.com/service-infrastructure/docs/glossary#managed).
       The API Gateway Service Identity must be granted the
-      `services.configs.get` permission for this Service (
-      https://cloud.google.com/service-infrastructure/docs/service-management
+      `services.configs.get` permission for this Service (  https:
+      //cloud.google.com/service-infrastructur // e/docs/service-management
       /access-control#permissions ).
   """
 
@@ -123,7 +123,7 @@ class ApigatewayApiConfig(_messages.Message):
   Fields:
     createTime: Output only. Created time.
     displayName: Optional. Display name.
-    gatewayConfig: Optional. Immutable. Gateway specific configuration. If not
+    gatewayConfig: Immutable. Gateway specific configuration. If not
       specified, backend authentication will be set to use OIDC authentication
       using the default compute service account.
     labels: Optional. Resource labels to represent user-provided metadata.
@@ -279,8 +279,8 @@ class ApigatewayBackendConfig(_messages.Message):
 
   Fields:
     googleServiceAccount: Google Cloud IAM service account used to sign OIDC
-      tokens for backends that have authentication configured
-      (https://cloud.google.com/service-infrastructure/docs/service-
+      tokens for backends that have authentication configured  (https:
+      //cloud.google.com/service-infrastructur // e/docs/service-
       management/reference/rest/v1/services.configs#backend). This may either
       be the Service Account's email (i.e.
       "{ACCOUNT_ID}@{PROJECT}.iam.gserviceaccount.com") or its full resource
@@ -289,8 +289,8 @@ class ApigatewayBackendConfig(_messages.Message):
       Service or an IAP-secured service. Note that this token is always sent
       as an authorization header bearer token. The audience of the OIDC token
       is configured in the associated Service Config in the BackendRule option
-      (https://github.com/googleapis/googleapis/blob/master/google/api/backend
-      .proto#L125).
+      (https: //github.com/googleapis/googleapis/blob/ //
+      master/google/api/backend.proto#L125).
   """
 
   googleServiceAccount = _messages.StringField(1)
@@ -834,11 +834,11 @@ class ApigatewayProjectsLocationsApisConfigsCreateRequest(_messages.Message):
   r"""A ApigatewayProjectsLocationsApisConfigsCreateRequest object.
 
   Fields:
-    apiConfigId: Optional. Identifier to assign to the API Config. Must be
+    apiConfigId: Required. Identifier to assign to the API Config. Must be
       unique within scope of the parent resource.
     apigatewayApiConfig: A ApigatewayApiConfig resource to be passed as the
       request body.
-    parent: Parent resource of the API Config, of the form:
+    parent: Required. Parent resource of the API Config, of the form:
       `projects/*/locations/global/apis/*`
   """
 
@@ -851,7 +851,7 @@ class ApigatewayProjectsLocationsApisConfigsDeleteRequest(_messages.Message):
   r"""A ApigatewayProjectsLocationsApisConfigsDeleteRequest object.
 
   Fields:
-    name: Resource name of the form:
+    name: Required. Resource name of the form:
       `projects/*/locations/global/apis/*/configs/*`
   """
 
@@ -880,7 +880,7 @@ class ApigatewayProjectsLocationsApisConfigsGetRequest(_messages.Message):
   r"""A ApigatewayProjectsLocationsApisConfigsGetRequest object.
 
   Fields:
-    name: Resource name of the form:
+    name: Required. Resource name of the form:
       `projects/*/locations/global/apis/*/configs/*`
   """
 
@@ -895,7 +895,7 @@ class ApigatewayProjectsLocationsApisConfigsListRequest(_messages.Message):
     orderBy: Order by parameters.
     pageSize: Page size.
     pageToken: Page token.
-    parent: Parent resource of the API Config, of the form:
+    parent: Required. Parent resource of the API Config, of the form:
       `projects/*/locations/global/apis/*`
   """
 
@@ -961,10 +961,10 @@ class ApigatewayProjectsLocationsApisCreateRequest(_messages.Message):
   r"""A ApigatewayProjectsLocationsApisCreateRequest object.
 
   Fields:
-    apiId: Optional. Identifier to assign to the API. Must be unique within
+    apiId: Required. Identifier to assign to the API. Must be unique within
       scope of the parent resource.
     apigatewayApi: A ApigatewayApi resource to be passed as the request body.
-    parent: Parent resource of the API, of the form:
+    parent: Required. Parent resource of the API, of the form:
       `projects/*/locations/global`
   """
 
@@ -977,7 +977,8 @@ class ApigatewayProjectsLocationsApisDeleteRequest(_messages.Message):
   r"""A ApigatewayProjectsLocationsApisDeleteRequest object.
 
   Fields:
-    name: Resource name of the form: `projects/*/locations/global/apis/*`
+    name: Required. Resource name of the form:
+      `projects/*/locations/global/apis/*`
   """
 
   name = _messages.StringField(1, required=True)
@@ -1005,7 +1006,8 @@ class ApigatewayProjectsLocationsApisGetRequest(_messages.Message):
   r"""A ApigatewayProjectsLocationsApisGetRequest object.
 
   Fields:
-    name: Resource name of the form: `projects/*/locations/global/apis/*`
+    name: Required. Resource name of the form:
+      `projects/*/locations/global/apis/*`
   """
 
   name = _messages.StringField(1, required=True)
@@ -1019,7 +1021,7 @@ class ApigatewayProjectsLocationsApisListRequest(_messages.Message):
     orderBy: Order by parameters.
     pageSize: Page size.
     pageToken: Page token.
-    parent: Parent resource of the API, of the form:
+    parent: Required. Parent resource of the API, of the form:
       `projects/*/locations/global`
   """
 
@@ -1085,9 +1087,9 @@ class ApigatewayProjectsLocationsGatewaysCreateRequest(_messages.Message):
   Fields:
     apigatewayGateway: A ApigatewayGateway resource to be passed as the
       request body.
-    gatewayId: Optional. Identifier to assign to the Gateway. Must be unique
+    gatewayId: Required. Identifier to assign to the Gateway. Must be unique
       within scope of the parent resource.
-    parent: Parent resource of the Gateway, of the form:
+    parent: Required. Parent resource of the Gateway, of the form:
       `projects/*/locations/*`
   """
 
@@ -1100,7 +1102,8 @@ class ApigatewayProjectsLocationsGatewaysDeleteRequest(_messages.Message):
   r"""A ApigatewayProjectsLocationsGatewaysDeleteRequest object.
 
   Fields:
-    name: Resource name of the form: `projects/*/locations/*/gateways/*`
+    name: Required. Resource name of the form:
+      `projects/*/locations/*/gateways/*`
   """
 
   name = _messages.StringField(1, required=True)
@@ -1128,7 +1131,8 @@ class ApigatewayProjectsLocationsGatewaysGetRequest(_messages.Message):
   r"""A ApigatewayProjectsLocationsGatewaysGetRequest object.
 
   Fields:
-    name: Resource name of the form: `projects/*/locations/*/gateways/*`
+    name: Required. Resource name of the form:
+      `projects/*/locations/*/gateways/*`
   """
 
   name = _messages.StringField(1, required=True)
@@ -1142,7 +1146,7 @@ class ApigatewayProjectsLocationsGatewaysListRequest(_messages.Message):
     orderBy: Order by parameters.
     pageSize: Page size.
     pageToken: Page token.
-    parent: Parent resource of the Gateway, of the form:
+    parent: Required. Parent resource of the Gateway, of the form:
       `projects/*/locations/*`
   """
 

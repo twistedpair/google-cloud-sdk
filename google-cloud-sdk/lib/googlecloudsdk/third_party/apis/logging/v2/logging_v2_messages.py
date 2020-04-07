@@ -3930,6 +3930,9 @@ class MetricDescriptor(_messages.Message):
 
     Values:
       LAUNCH_STAGE_UNSPECIFIED: Do not use this default value.
+      UNIMPLEMENTED: The feature is not yet implemented. Users can not use it.
+      PRELAUNCH: Prelaunch features are hidden from users and are only visible
+        internally.
       EARLY_ACCESS: Early Access features are limited to a closed group of
         testers. To use these features, you must sign up in advance and sign a
         Trusted Tester agreement (which includes confidentiality provisions).
@@ -3958,11 +3961,13 @@ class MetricDescriptor(_messages.Message):
         (https://cloud.google.com/terms/deprecation) documentation.
     """
     LAUNCH_STAGE_UNSPECIFIED = 0
-    EARLY_ACCESS = 1
-    ALPHA = 2
-    BETA = 3
-    GA = 4
-    DEPRECATED = 5
+    UNIMPLEMENTED = 1
+    PRELAUNCH = 2
+    EARLY_ACCESS = 3
+    ALPHA = 4
+    BETA = 5
+    GA = 6
+    DEPRECATED = 7
 
   class MetricKindValueValuesEnum(_messages.Enum):
     r"""Whether the metric records instantaneous values, changes to a value,
@@ -4043,6 +4048,9 @@ class MetricDescriptorMetadata(_messages.Message):
 
     Values:
       LAUNCH_STAGE_UNSPECIFIED: Do not use this default value.
+      UNIMPLEMENTED: The feature is not yet implemented. Users can not use it.
+      PRELAUNCH: Prelaunch features are hidden from users and are only visible
+        internally.
       EARLY_ACCESS: Early Access features are limited to a closed group of
         testers. To use these features, you must sign up in advance and sign a
         Trusted Tester agreement (which includes confidentiality provisions).
@@ -4071,11 +4079,13 @@ class MetricDescriptorMetadata(_messages.Message):
         (https://cloud.google.com/terms/deprecation) documentation.
     """
     LAUNCH_STAGE_UNSPECIFIED = 0
-    EARLY_ACCESS = 1
-    ALPHA = 2
-    BETA = 3
-    GA = 4
-    DEPRECATED = 5
+    UNIMPLEMENTED = 1
+    PRELAUNCH = 2
+    EARLY_ACCESS = 3
+    ALPHA = 4
+    BETA = 5
+    GA = 6
+    DEPRECATED = 7
 
   ingestDelay = _messages.StringField(1)
   launchStage = _messages.EnumField('LaunchStageValueValuesEnum', 2)
@@ -4180,6 +4190,9 @@ class MonitoredResourceDescriptor(_messages.Message):
 
     Values:
       LAUNCH_STAGE_UNSPECIFIED: Do not use this default value.
+      UNIMPLEMENTED: The feature is not yet implemented. Users can not use it.
+      PRELAUNCH: Prelaunch features are hidden from users and are only visible
+        internally.
       EARLY_ACCESS: Early Access features are limited to a closed group of
         testers. To use these features, you must sign up in advance and sign a
         Trusted Tester agreement (which includes confidentiality provisions).
@@ -4208,11 +4221,13 @@ class MonitoredResourceDescriptor(_messages.Message):
         (https://cloud.google.com/terms/deprecation) documentation.
     """
     LAUNCH_STAGE_UNSPECIFIED = 0
-    EARLY_ACCESS = 1
-    ALPHA = 2
-    BETA = 3
-    GA = 4
-    DEPRECATED = 5
+    UNIMPLEMENTED = 1
+    PRELAUNCH = 2
+    EARLY_ACCESS = 3
+    ALPHA = 4
+    BETA = 5
+    GA = 6
+    DEPRECATED = 7
 
   description = _messages.StringField(1)
   displayName = _messages.StringField(2)

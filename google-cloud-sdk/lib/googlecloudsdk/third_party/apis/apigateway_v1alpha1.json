@@ -348,7 +348,7 @@
           "$ref": "ApigatewayApiApiController"
         },
         "state": {
-          "description": "Optional. State of the API.",
+          "description": "Output only. State of the API.",
           "enumDescriptions": [
             "API does not have a state yet.",
             "API is being created.",
@@ -371,11 +371,11 @@
     },
     "ApigatewayApiApiController": {
       "id": "ApigatewayApiApiController",
-      "description": "An API Controller enforces global rules related to API methods and\nconsumers, such as API Key checking, quota enforcement, and usage\nstatistics.",
+      "description": "An API Controller enforces global rules related to API methods and\nconsumers, such as API Key checking, quota enforcement, and collections of\nusage statistics.",
       "type": "object",
       "properties": {
         "managedService": {
-          "description": "The name of a Google Managed Service (\nhttps:\/\/cloud.google.com\/service-infrastructure\/docs\/glossary#managed).\nThe API Gateway Service Identity must be granted the\n`services.configs.get` permission for this Service (\nhttps:\/\/cloud.google.com\/service-infrastructure\/docs\/service-management\/access-control#permissions\n).",
+          "description": "The name of a Google Managed Service (\nhttps:\/\/cloud.google.com\/service-infrastructure\/docs\/glossary#managed).\nThe API Gateway Service Identity must be granted the\n`services.configs.get` permission for this Service (\n\nhttps:\n\/\/cloud.google.com\/service-infrastructur\n\/\/ e\/docs\/service-management\/access-control#permissions\n).",
           "type": "string"
         }
       }
@@ -410,6 +410,10 @@
       "description": "An API Configuration is an association of an API Controller Config and a\nGateway Config. For APIs with a Managed Service API Controller, this resource\nis associated with one or more Service Configs and a Service Rollout.\nInitially, this resource will extract the Gateway Config from the API\nController Config.",
       "type": "object",
       "properties": {
+        "serviceRollout": {
+          "description": "Immutable. A Managed Service Rollout. The associated API Controller of this\nAPI Config's parent must be a Managed Service (\nhttps:\/\/cloud.google.com\/service-infrastructure\/docs\/glossary#managed).",
+          "$ref": "ApigatewayApiConfigManagedServiceRollout"
+        },
         "name": {
           "description": "Output only. Resource name of the API Config.\nFormat: projects\/{project}\/locations\/global\/apis\/{api}\/configs\/{api_config}",
           "type": "string"
@@ -436,12 +440,8 @@
           "type": "string"
         },
         "gatewayConfig": {
-          "description": "Optional. Immutable. Gateway specific configuration. If not specified, backend authentication\nwill be set to use OIDC authentication using the default compute service\naccount.",
+          "description": "Immutable. Gateway specific configuration. If not specified, backend authentication\nwill be set to use OIDC authentication using the default compute service\naccount.",
           "$ref": "ApigatewayGatewayConfig"
-        },
-        "serviceRollout": {
-          "description": "Immutable. A Managed Service Rollout. The associated API Controller of this\nAPI Config's parent must be a Managed Service (\nhttps:\/\/cloud.google.com\/service-infrastructure\/docs\/glossary#managed).",
-          "$ref": "ApigatewayApiConfigManagedServiceRollout"
         },
         "state": {
           "description": "Output only. State of the API Config.",
@@ -465,6 +465,17 @@
         }
       }
     },
+    "ApigatewayApiConfigManagedServiceRollout": {
+      "id": "ApigatewayApiConfigManagedServiceRollout",
+      "description": "Rollout for a Managed Service (\nhttps:\/\/cloud.google.com\/service-infrastructure\/docs\/glossary#managed).",
+      "type": "object",
+      "properties": {
+        "rolloutId": {
+          "description": "Required. The Rollout ID for the Managed Service. See\nhttps:\/\/cloud.google.com\/service-infrastructure\/docs\/rollout for more\ninfo.",
+          "type": "string"
+        }
+      }
+    },
     "ApigatewayGatewayConfig": {
       "id": "ApigatewayGatewayConfig",
       "description": "Configuration settings for Gateways.",
@@ -482,18 +493,7 @@
       "type": "object",
       "properties": {
         "googleServiceAccount": {
-          "description": "Google Cloud IAM service account used to sign OIDC tokens for backends\nthat have authentication configured\n(https:\/\/cloud.google.com\/service-infrastructure\/docs\/service-management\/reference\/rest\/v1\/services.configs#backend).\nThis may either be the Service Account's email\n(i.e. \"{ACCOUNT_ID}@{PROJECT}.iam.gserviceaccount.com\") or its full\nresource name (i.e. \"projects\/{PROJECT}\/accounts\/{UNIQUE_ID}\"). This is\nmost often used when the backend is a GCP resource such as a Cloud Run\nService or an IAP-secured service. Note that this token is always sent as\nan authorization header bearer token. The audience of the OIDC token is\nconfigured in the associated Service Config in the BackendRule option\n(https:\/\/github.com\/googleapis\/googleapis\/blob\/master\/google\/api\/backend.proto#L125).",
-          "type": "string"
-        }
-      }
-    },
-    "ApigatewayApiConfigManagedServiceRollout": {
-      "id": "ApigatewayApiConfigManagedServiceRollout",
-      "description": "Rollout for a Managed Service (\nhttps:\/\/cloud.google.com\/service-infrastructure\/docs\/glossary#managed).",
-      "type": "object",
-      "properties": {
-        "rolloutId": {
-          "description": "Required. The Rollout ID for the Managed Service. See\nhttps:\/\/cloud.google.com\/service-infrastructure\/docs\/rollout for more\ninfo.",
+          "description": "Google Cloud IAM service account used to sign OIDC tokens for backends\nthat have authentication configured\n\n(https:\n\/\/cloud.google.com\/service-infrastructur\n\/\/ e\/docs\/service-management\/reference\/rest\/v1\/services.configs#backend).\nThis may either be the Service Account's email\n(i.e. \"{ACCOUNT_ID}@{PROJECT}.iam.gserviceaccount.com\") or its full\nresource name (i.e. \"projects\/{PROJECT}\/accounts\/{UNIQUE_ID}\"). This is\nmost often used when the backend is a GCP resource such as a Cloud Run\nService or an IAP-secured service. Note that this token is always sent as\nan authorization header bearer token. The audience of the OIDC token is\nconfigured in the associated Service Config in the BackendRule option\n\n(https:\n\/\/github.com\/googleapis\/googleapis\/blob\/\n\/\/ master\/google\/api\/backend.proto#L125).",
           "type": "string"
         }
       }
@@ -962,7 +962,7 @@
                   "httpMethod": "GET",
                   "parameters": {
                     "parent": {
-                      "description": "Parent resource of the Gateway, of the form:\n`projects\/*\/locations\/*`",
+                      "description": "Required. Parent resource of the Gateway, of the form:\n`projects\/*\/locations\/*`",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
@@ -980,7 +980,7 @@
                       "type": "string"
                     },
                     "filter": {
-                      "description": "Filter. ",
+                      "description": "Filter.",
                       "location": "query",
                       "type": "string"
                     },
@@ -1008,7 +1008,7 @@
                   "httpMethod": "GET",
                   "parameters": {
                     "name": {
-                      "description": "Resource name of the form:\n`projects\/*\/locations\/*\/gateways\/*`",
+                      "description": "Required. Resource name of the form:\n`projects\/*\/locations\/*\/gateways\/*`",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/gateways\/[^\/]+$",
@@ -1033,14 +1033,14 @@
                   "httpMethod": "POST",
                   "parameters": {
                     "parent": {
-                      "description": "Parent resource of the Gateway, of the form:\n`projects\/*\/locations\/*`",
+                      "description": "Required. Parent resource of the Gateway, of the form:\n`projects\/*\/locations\/*`",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "type": "string"
                     },
                     "gatewayId": {
-                      "description": "Optional. Identifier to assign to the Gateway. Must be unique within scope of\nthe parent resource.",
+                      "description": "Required. Identifier to assign to the Gateway. Must be unique within scope of\nthe parent resource.",
                       "location": "query",
                       "type": "string"
                     }
@@ -1100,7 +1100,7 @@
                   "httpMethod": "DELETE",
                   "parameters": {
                     "name": {
-                      "description": "Resource name of the form:\n`projects\/*\/locations\/*\/gateways\/*`",
+                      "description": "Required. Resource name of the form:\n`projects\/*\/locations\/*\/gateways\/*`",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/gateways\/[^\/]+$",
@@ -1216,7 +1216,7 @@
                   "httpMethod": "GET",
                   "parameters": {
                     "parent": {
-                      "description": "Parent resource of the API, of the form:\n`projects\/*\/locations\/global`",
+                      "description": "Required. Parent resource of the API, of the form:\n`projects\/*\/locations\/global`",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
@@ -1234,7 +1234,7 @@
                       "type": "string"
                     },
                     "filter": {
-                      "description": "Filter. ",
+                      "description": "Filter.",
                       "location": "query",
                       "type": "string"
                     },
@@ -1262,7 +1262,7 @@
                   "httpMethod": "GET",
                   "parameters": {
                     "name": {
-                      "description": "Resource name of the form:\n`projects\/*\/locations\/global\/apis\/*`",
+                      "description": "Required. Resource name of the form:\n`projects\/*\/locations\/global\/apis\/*`",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/apis\/[^\/]+$",
@@ -1287,14 +1287,14 @@
                   "httpMethod": "POST",
                   "parameters": {
                     "parent": {
-                      "description": "Parent resource of the API, of the form:\n`projects\/*\/locations\/global`",
+                      "description": "Required. Parent resource of the API, of the form:\n`projects\/*\/locations\/global`",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "type": "string"
                     },
                     "apiId": {
-                      "description": "Optional. Identifier to assign to the API. Must be unique within scope of\nthe parent resource.",
+                      "description": "Required. Identifier to assign to the API. Must be unique within scope of\nthe parent resource.",
                       "location": "query",
                       "type": "string"
                     }
@@ -1354,7 +1354,7 @@
                   "httpMethod": "DELETE",
                   "parameters": {
                     "name": {
-                      "description": "Resource name of the form:\n`projects\/*\/locations\/global\/apis\/*`",
+                      "description": "Required. Resource name of the form:\n`projects\/*\/locations\/global\/apis\/*`",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/apis\/[^\/]+$",
@@ -1471,7 +1471,7 @@
                       "httpMethod": "GET",
                       "parameters": {
                         "parent": {
-                          "description": "Parent resource of the API Config, of the form:\n`projects\/*\/locations\/global\/apis\/*`",
+                          "description": "Required. Parent resource of the API Config, of the form:\n`projects\/*\/locations\/global\/apis\/*`",
                           "location": "path",
                           "required": true,
                           "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/apis\/[^\/]+$",
@@ -1489,7 +1489,7 @@
                           "type": "string"
                         },
                         "filter": {
-                          "description": "Filter. ",
+                          "description": "Filter.",
                           "location": "query",
                           "type": "string"
                         },
@@ -1517,7 +1517,7 @@
                       "httpMethod": "GET",
                       "parameters": {
                         "name": {
-                          "description": "Resource name of the form:\n`projects\/*\/locations\/global\/apis\/*\/configs\/*`",
+                          "description": "Required. Resource name of the form:\n`projects\/*\/locations\/global\/apis\/*\/configs\/*`",
                           "location": "path",
                           "required": true,
                           "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/apis\/[^\/]+\/configs\/[^\/]+$",
@@ -1542,14 +1542,14 @@
                       "httpMethod": "POST",
                       "parameters": {
                         "parent": {
-                          "description": "Parent resource of the API Config, of the form:\n`projects\/*\/locations\/global\/apis\/*`",
+                          "description": "Required. Parent resource of the API Config, of the form:\n`projects\/*\/locations\/global\/apis\/*`",
                           "location": "path",
                           "required": true,
                           "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/apis\/[^\/]+$",
                           "type": "string"
                         },
                         "apiConfigId": {
-                          "description": "Optional. Identifier to assign to the API Config. Must be unique within scope of\nthe parent resource.",
+                          "description": "Required. Identifier to assign to the API Config. Must be unique within scope of\nthe parent resource.",
                           "location": "query",
                           "type": "string"
                         }
@@ -1609,7 +1609,7 @@
                       "httpMethod": "DELETE",
                       "parameters": {
                         "name": {
-                          "description": "Resource name of the form:\n`projects\/*\/locations\/global\/apis\/*\/configs\/*`",
+                          "description": "Required. Resource name of the form:\n`projects\/*\/locations\/global\/apis\/*\/configs\/*`",
                           "location": "path",
                           "required": true,
                           "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/apis\/[^\/]+\/configs\/[^\/]+$",

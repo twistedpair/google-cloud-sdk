@@ -15,6 +15,7 @@
 """Library for generating the files for local development environment."""
 from __future__ import absolute_import
 from __future__ import division
+from __future__ import print_function
 from __future__ import unicode_literals
 
 import json
@@ -66,8 +67,8 @@ class _KubeCluster(object):
   Attributes:
     context_name: Kubernetes context name.
     env_vars: Docker env vars.
-    shared_docker: Whether the kubernetes cluster shares a docker instance
-        with the developer's machine.
+    shared_docker: Whether the kubernetes cluster shares a docker instance with
+      the developer's machine.
   """
 
   def __init__(self, context_name, shared_docker):
@@ -92,8 +93,8 @@ class KindCluster(_KubeCluster):
   Attributes:
     context_name: Kubernetes context name.
     env_vars: Docker env vars.
-    shared_docker: Whether the kubernetes cluster shares a docker instance
-        with the developer's machine.
+    shared_docker: Whether the kubernetes cluster shares a docker instance with
+      the developer's machine.
   """
 
   def __init__(self, cluster_name):
@@ -137,7 +138,9 @@ def _StartKindCluster(cluster_name):
   """
   if not _IsKindClusterUp(cluster_name):
     cmd = [_FindKind(), 'create', 'cluster', '--name', cluster_name]
-    subprocess.check_call(cmd)
+    print("Creating local development environment '%s' ..." % cluster_name)
+    subprocess.check_call(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    print('Development environment created.')
 
 
 def _IsKindClusterUp(cluster_name):
@@ -150,7 +153,7 @@ def _IsKindClusterUp(cluster_name):
     True if a cluster with the given name is running.
   """
   cmd = [_FindKind(), 'get', 'clusters']
-  p = subprocess.Popen(cmd, stdout=subprocess.PIPE)
+  p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
   stdout, _ = p.communicate()
   lines = six.ensure_text(stdout).strip().splitlines()
   return cluster_name in lines
@@ -163,7 +166,9 @@ def _DeleteKindCluster(cluster_name):
     cluster_name: Name of the cluster.
   """
   cmd = [_FindKind(), 'delete', 'cluster', '--name', cluster_name]
-  subprocess.check_call(cmd)
+  print("Deleting development environment '%s' ..." % cluster_name)
+  _RunWithoutOutput(cmd)
+  print('Development environment deleted.')
 
 
 def _FindKind():
@@ -177,8 +182,8 @@ class MinikubeCluster(_KubeCluster):
   Attributes:
     context_name: Kubernetes context name.
     env_vars: Docker environment variables.
-    shared_docker: Whether the kubernetes cluster shares a docker instance
-        with the developer's machine.
+    shared_docker: Whether the kubernetes cluster shares a docker instance with
+      the developer's machine.
   """
 
   @property
@@ -222,7 +227,9 @@ def _StartMinkubeCluster(cluster_name, vm_driver):
       if vm_driver == 'docker':
         cmd.append('--container-runtime=docker')
 
-    subprocess.check_call(cmd)
+    print("Starting development environment '%s' ..." % cluster_name)
+    _RunWithoutOutput(cmd)
+    print('Development environment created.')
 
 
 def _GetMinikubeDockerEnvs(cluster_name):
@@ -239,7 +246,7 @@ def _GetMinikubeDockerEnvs(cluster_name):
 def _IsMinikubeClusterUp(cluster_name):
   """Checks if a minikube cluster is running."""
   cmd = [_FindMinikube(), 'status', '-p', cluster_name, '-o', 'json']
-  p = subprocess.Popen(cmd, stdout=subprocess.PIPE)
+  p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
   stdout, _ = p.communicate()
   try:
     status = json.loads(six.ensure_text(stdout).strip())
@@ -251,7 +258,9 @@ def _IsMinikubeClusterUp(cluster_name):
 def _StopMinikube(cluster_name):
   """Stop a minikube cluster."""
   cmd = [_FindMinikube(), 'stop', '-p', cluster_name]
-  subprocess.check_call(cmd)
+  print("Stopping development environment '%s' ..." % cluster_name)
+  _RunWithoutOutput(cmd)
+  print('Development environment stopped.')
 
 
 class ExternalCluster(_KubeCluster):
@@ -260,8 +269,8 @@ class ExternalCluster(_KubeCluster):
   Attributes:
     context_name: Kubernetes context name.
     env_vars: Docker environment variables.
-    shared_docker: Whether the kubernetes cluster shares a docker instance
-        with the developer's machine.
+    shared_docker: Whether the kubernetes cluster shares a docker instance with
+      the developer's machine.
   """
 
   def __init__(self, cluster_name):
@@ -296,7 +305,8 @@ def _NamespaceExists(namespace, context_name=None):
     cmd += ['--context', context_name]
   cmd += ['get', 'namespaces', '-o', 'name']
 
-  process = subprocess.Popen(cmd, stdout=subprocess.PIPE)
+  process = subprocess.Popen(
+      cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
   out, _ = process.communicate()
   return 'namespace/' + namespace in six.ensure_text(out).splitlines()
 
@@ -306,7 +316,7 @@ def _CreateNamespace(namespace, context_name=None):
   if context_name:
     cmd += ['--context', context_name]
   cmd += ['create', 'namespace', namespace]
-  subprocess.check_call(cmd)
+  _RunWithoutOutput(cmd)
 
 
 def _DeleteNamespace(namespace, context_name=None):
@@ -314,7 +324,7 @@ def _DeleteNamespace(namespace, context_name=None):
   if context_name:
     cmd += ['--context', context_name]
   cmd += ['delete', 'namespace', namespace]
-  subprocess.check_call(cmd)
+  _RunWithoutOutput(cmd)
 
 
 class KubeNamespace(object):
@@ -339,3 +349,9 @@ class KubeNamespace(object):
   def __exit__(self, exc_type, exc_value, tb):
     if self._delete_namespace:
       _DeleteNamespace(self._namespace, self._context_name)
+
+
+def _RunWithoutOutput(cmd):
+  """Run command and send the output to /dev/null or nul."""
+  with file_utils.FileWriter(os.devnull) as devnull:
+    subprocess.check_call(cmd, stdout=devnull, stderr=devnull)

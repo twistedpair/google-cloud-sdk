@@ -314,7 +314,7 @@
           "format": "google-duration"
         },
         "cloudKmsKeyVersion": {
-          "description": "Immutable. The resource name for the Cloud KMS CryptoKeyVersion in the\nformat\n`projects\/*\/locations\/*\/keyRings\/*\/cryptoKeys\/*\/cryptoKeyVersions\/*`. Used\nwhen issuing certificates for this CertificateAuthority. If this\nCertificateAuthority is a self-signed CertificateAuthority, this key\nversion is also used to sign the self-signed CA certificate. Otherwise,\nit is used to sign a CSR.",
+          "description": "Required. Immutable. The resource name for the Cloud KMS CryptoKeyVersion in the\nformat\n`projects\/*\/locations\/*\/keyRings\/*\/cryptoKeys\/*\/cryptoKeyVersions\/*`. Used\nwhen issuing certificates for this CertificateAuthority. If this\nCertificateAuthority is a self-signed CertificateAuthority, this key\nversion is also used to sign the self-signed CA certificate. Otherwise,\nit is used to sign a CSR.",
           "type": "string"
         },
         "certificatePolicy": {
@@ -359,7 +359,7 @@
           "$ref": "CertificateDescription"
         },
         "gcsBucket": {
-          "description": "Immutable. The name of a GCS bucket where this CertificateAuthority will publish\ncontent, such as the CA certificate and CRLs. This must be a bucket name,\nwithout any prefixes (such as `gs:\/\/`) or suffixes (such as\n`.googleapis.com`). For example, to use a bucket named `my-bucket`, you\nwould simply specify `my-bucket`.",
+          "description": "Required. Immutable. The name of a Cloud Storage bucket where this CertificateAuthority will\npublish content, such as the CA certificate and CRLs. This must be a bucket\nname, without any prefixes (such as `gs:\/\/`) or suffixes (such as\n`.googleapis.com`). For example, to use a bucket named `my-bucket`, you\nwould simply specify `my-bucket`.",
           "type": "string"
         },
         "accessUrls": {
@@ -769,6 +769,17 @@
             "$ref": "Subject"
           }
         },
+        "allowedCommonNames": {
+          "description": "Optional. If any value is specified here, then all\nCertificates issued by the CertificateAuthority must\nmatch at least one listed value. If no value is specified, all values\nwill be allowed for this fied. Glob patterns are also supported.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "allowedSans": {
+          "description": "Optional. If a AllowedSubjectAltNames is specified here, then all\nCertificates issued by the CertificateAuthority must\nmatch AllowedSubjectAltNames. If no value\nis specified, any value will be allowed for the SubjectAltNames\nfield.",
+          "$ref": "AllowedSubjectAltNames"
+        },
         "maximumLifetime": {
           "description": "Optional. The maximum lifetime allowed by the CertificateAuthority. Note that\nif the any part if the issuing chain expires before a Certificate's\nrequested maximum_lifetime, the effective lifetime will be explicitly\ntruncated.",
           "type": "string",
@@ -786,6 +797,49 @@
           "items": {
             "$ref": "ReusableConfigWrapper"
           }
+        }
+      }
+    },
+    "AllowedSubjectAltNames": {
+      "id": "AllowedSubjectAltNames",
+      "description": "AllowedSubjectAltNames specifies the allowed values for\nSubjectAltNames by the CertificateAuthority when issuing\nCertificates.",
+      "type": "object",
+      "properties": {
+        "allowedDnsNames": {
+          "description": "Contains valid, fully-qualified host names. Glob patterns are also\nsupported. To allow an explicit wildcard certificate, escape with\nbacklash (i.e. \"\\*\").\nE.g. for globbed entries: '*bar.com' will allow foo.bar.com, but not\n*.bar.com, unless the allow_globbing_dns_wildcards field is set.\nE.g. for wildcard entries: '\\*.bar.com' will allow '*.bar.com', but not\n'foo.bar.com'.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "allowedUris": {
+          "description": "Contains valid RFC 3986 URIs. Glob patterns are also supported.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "allowedEmailAddresses": {
+          "description": "Contains valid RFC 2822 E-mail addresses. Glob patterns are also\nsupported.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "allowedIps": {
+          "description": "Contains valid 32-bit IPv4 addresses and subnet ranges or RFC 4291 IPv6\naddresses and subnet ranges. Subnet ranges are specified using the\n'\/' notation (e.g. 10.0.0.0\/8, 2001:700:300:1800::\/64). Glob patterns\nare supported only for ip address entries (i.e. not for subnet ranges).",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "allowGlobbingDnsWildcards": {
+          "description": "Specifies if glob patterns used for allowed_dns_names allows\nwildcard certificates.",
+          "type": "boolean"
+        },
+        "allowCustomSans": {
+          "description": "Specifies if to allow custom X509Extension values.",
+          "type": "boolean"
         }
       }
     },

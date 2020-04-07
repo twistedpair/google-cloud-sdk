@@ -2900,7 +2900,7 @@ class TestIamPermissionsResponse(_messages.Message):
 
 
 class TextConfig(_messages.Message):
-  r"""A TextConfig object.
+  r"""Configures how to transform sensitive text `InfoTypes`.
 
   Fields:
     transformations: The transformations to apply to the detected data.

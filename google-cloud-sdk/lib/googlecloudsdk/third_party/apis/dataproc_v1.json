@@ -350,7 +350,7 @@
           "type": "string"
         },
         "metrics": {
-          "description": "Contains cluster daemon metrics such as HDFS and YARN stats.Beta Feature: This report is available for testing purposes only. It may be changed before final release.",
+          "description": "Output only. Contains cluster daemon metrics such as HDFS and YARN stats.Beta Feature: This report is available for testing purposes only. It may be changed before final release.",
           "$ref": "ClusterMetrics"
         }
       }
@@ -525,15 +525,15 @@
           "$ref": "DiskConfig"
         },
         "isPreemptible": {
-          "description": "Optional. Specifies that this instance group contains preemptible instances.",
+          "description": "Output only. Specifies that this instance group contains preemptible instances.",
           "type": "boolean"
         },
         "preemptibility": {
-          "description": "Optional. Specifies the preemptibility of the instance group.",
+          "description": "Optional. Specifies the preemptibility of the instance group.The default value for master and worker groups is NON_PREEMPTIBLE. This default cannot be changed.The default value for secondary instances is PREEMPTIBLE.",
           "enumDescriptions": [
             "Preemptibility is unspecified, the system will choose the appropriate setting for each instance group.",
             "Instances are non-preemptible.This option is allowed for all instance groups and is the only valid value for Master and Worker instance groups.",
-            "Instances are preemptible.This option is allowed only for secondary worker group."
+            "Instances are preemptible.This option is allowed only for secondary worker groups."
           ],
           "type": "string",
           "enum": [
@@ -632,18 +632,18 @@
           "enumDescriptions": [
             "Unspecified component.",
             "The Anaconda python distribution.",
+            "Docker",
             "The Druid query engine.",
+            "Flink",
+            "HBase.",
             "The Hive Web HCatalog (the REST service for accessing HCatalog).",
             "The Jupyter Notebook.",
             "The Kerberos security feature.",
             "The Presto query engine.",
-            "The Zeppelin notebook.",
-            "The Zookeeper service.",
-            "The Solr service.",
-            "HBase.",
             "The Ranger service.",
-            "Docker",
-            "Docker"
+            "The Solr service.",
+            "The Zeppelin notebook.",
+            "The Zookeeper service."
           ],
           "type": "array",
           "items": {
@@ -651,18 +651,18 @@
             "enum": [
               "COMPONENT_UNSPECIFIED",
               "ANACONDA",
+              "DOCKER",
               "DRUID",
+              "FLINK",
+              "HBASE",
               "HIVE_WEBHCAT",
               "JUPYTER",
               "KERBEROS",
               "PRESTO",
-              "ZEPPELIN",
-              "ZOOKEEPER",
-              "SOLR",
-              "HBASE",
               "RANGER",
-              "DOCKER",
-              "FLINK"
+              "SOLR",
+              "ZEPPELIN",
+              "ZOOKEEPER"
             ]
           }
         }
@@ -723,7 +723,7 @@
       "type": "object",
       "properties": {
         "enableKerberos": {
-          "description": "Optional. Flag to indicate whether to Kerberize the cluster.",
+          "description": "Optional. Flag to indicate whether to Kerberize the cluster (default: false). Set this field to true to enable Kerberos on a cluster.",
           "type": "boolean"
         },
         "rootPrincipalPasswordUri": {
@@ -1742,12 +1742,14 @@
           "$ref": "PigJob"
         },
         "sparkRJob": {
+          "description": "Spark R job",
           "$ref": "SparkRJob"
         },
         "sparkSqlJob": {
           "$ref": "SparkSqlJob"
         },
         "prestoJob": {
+          "description": "Presto job",
           "$ref": "PrestoJob"
         },
         "labels": {

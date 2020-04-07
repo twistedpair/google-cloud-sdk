@@ -223,6 +223,18 @@ class ComposerProjectsLocationsOperationsListRequest(_messages.Message):
   pageToken = _messages.StringField(4)
 
 
+class DatabaseConfig(_messages.Message):
+  r"""The configuration of Cloud SQL instance that is used by the Apache
+  Airflow software.
+
+  Fields:
+    tier: Optional. Cloud SQL tier used by Airflow database. If not specified,
+      db-n1-standard-2 will be used.
+  """
+
+  tier = _messages.StringField(1)
+
+
 class Empty(_messages.Message):
   r"""A generic empty message that you can re-use to avoid defining duplicated
   empty messages in your APIs. A typical example is to use it as the request
@@ -338,6 +350,8 @@ class EnvironmentConfig(_messages.Message):
       a hierarchical file tree can be simulated using "/"-delimited object
       name prefixes. DAG objects for this environment reside in a simulated
       directory with the given prefix.
+    databaseConfig: Optional. The configuration settings for Cloud SQL
+      instance used internally by Apache Airflow software.
     gkeCluster: Output only. The Kubernetes Engine cluster used to run this
       environment.
     nodeConfig: The configuration used for the Kubernetes Engine cluster.
@@ -351,11 +365,12 @@ class EnvironmentConfig(_messages.Message):
 
   airflowUri = _messages.StringField(1)
   dagGcsPrefix = _messages.StringField(2)
-  gkeCluster = _messages.StringField(3)
-  nodeConfig = _messages.MessageField('NodeConfig', 4)
-  nodeCount = _messages.IntegerField(5, variant=_messages.Variant.INT32)
-  privateEnvironmentConfig = _messages.MessageField('PrivateEnvironmentConfig', 6)
-  softwareConfig = _messages.MessageField('SoftwareConfig', 7)
+  databaseConfig = _messages.MessageField('DatabaseConfig', 3)
+  gkeCluster = _messages.StringField(4)
+  nodeConfig = _messages.MessageField('NodeConfig', 5)
+  nodeCount = _messages.IntegerField(6, variant=_messages.Variant.INT32)
+  privateEnvironmentConfig = _messages.MessageField('PrivateEnvironmentConfig', 7)
+  softwareConfig = _messages.MessageField('SoftwareConfig', 8)
 
 
 class IPAllocationPolicy(_messages.Message):

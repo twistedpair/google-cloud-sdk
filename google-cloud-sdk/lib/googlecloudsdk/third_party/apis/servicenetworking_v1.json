@@ -1385,7 +1385,7 @@
           "type": "string"
         },
         "audiences": {
-          "description": "The list of JWT\n[audiences](https:\/\/tools.ietf.org\/html\/draft-ietf-oauth-json-web-token-32#section-4.1.3).\nthat are allowed to access. A JWT containing any of these audiences will\nbe accepted. When this setting is absent, only JWTs with audience\n\"https:\/\/Service_name\/API_name\"\nwill be accepted. For example, if no audiences are in the setting,\nLibraryService API will only accept JWTs with the following audience\n\"https:\/\/library-example.googleapis.com\/google.example.library.v1.LibraryService\".\n\nExample:\n\n    audiences: bookstore_android.apps.googleusercontent.com,\n               bookstore_web.apps.googleusercontent.com",
+          "description": "The list of JWT\n[audiences](https:\/\/tools.ietf.org\/html\/draft-ietf-oauth-json-web-token-32#section-4.1.3).\nthat are allowed to access. A JWT containing any of these audiences will\nbe accepted. When this setting is absent, JWTs with audiences:\n  - \"https:\/\/[service.name]\/[google.protobuf.Api.name]\"\n  - \"https:\/\/[service.name]\/\"\nwill be accepted.\nFor example, if no audiences are in the setting, LibraryService API will\naccept JWTs with the following audiences:\n  -\n  https:\/\/library-example.googleapis.com\/google.example.library.v1.LibraryService\n  - https:\/\/library-example.googleapis.com\/\n\nExample:\n\n    audiences: bookstore_android.apps.googleusercontent.com,\n               bookstore_web.apps.googleusercontent.com",
           "type": "string"
         },
         "authorizationUrl": {
@@ -1753,6 +1753,8 @@
           "description": "Optional. The launch stage of the metric definition.",
           "enumDescriptions": [
             "Do not use this default value.",
+            "The feature is not yet implemented. Users can not use it.",
+            "Prelaunch features are hidden from users and are only visible internally.",
             "Early Access features are limited to a closed group of testers. To use\nthese features, you must sign up in advance and sign a Trusted Tester\nagreement (which includes confidentiality provisions). These features may\nbe unstable, changed in backward-incompatible ways, and are not\nguaranteed to be released.",
             "Alpha is a limited availability test for releases before they are cleared\nfor widespread use. By Alpha, all significant design issues are resolved\nand we are in the process of verifying functionality. Alpha customers\nneed to apply for access, agree to applicable terms, and have their\nprojects whitelisted. Alpha releases don\u2019t have to be feature complete,\nno SLAs are provided, and there are no technical support obligations, but\nthey will be far enough along that customers can actually use them in\ntest environments or for limited-use tests -- just like they would in\nnormal production cases.",
             "Beta is the point at which we are ready to open a release for any\ncustomer to use. There are no SLA or technical support obligations in a\nBeta release. Products will be complete from a feature perspective, but\nmay have some open outstanding issues. Beta releases are suitable for\nlimited production use cases.",
@@ -1762,6 +1764,8 @@
           "type": "string",
           "enum": [
             "LAUNCH_STAGE_UNSPECIFIED",
+            "UNIMPLEMENTED",
+            "PRELAUNCH",
             "EARLY_ACCESS",
             "ALPHA",
             "BETA",
@@ -1787,6 +1791,8 @@
           "description": "Deprecated. Must use the MetricDescriptor.launch_stage instead.",
           "enumDescriptions": [
             "Do not use this default value.",
+            "The feature is not yet implemented. Users can not use it.",
+            "Prelaunch features are hidden from users and are only visible internally.",
             "Early Access features are limited to a closed group of testers. To use\nthese features, you must sign up in advance and sign a Trusted Tester\nagreement (which includes confidentiality provisions). These features may\nbe unstable, changed in backward-incompatible ways, and are not\nguaranteed to be released.",
             "Alpha is a limited availability test for releases before they are cleared\nfor widespread use. By Alpha, all significant design issues are resolved\nand we are in the process of verifying functionality. Alpha customers\nneed to apply for access, agree to applicable terms, and have their\nprojects whitelisted. Alpha releases don\u2019t have to be feature complete,\nno SLAs are provided, and there are no technical support obligations, but\nthey will be far enough along that customers can actually use them in\ntest environments or for limited-use tests -- just like they would in\nnormal production cases.",
             "Beta is the point at which we are ready to open a release for any\ncustomer to use. There are no SLA or technical support obligations in a\nBeta release. Products will be complete from a feature perspective, but\nmay have some open outstanding issues. Beta releases are suitable for\nlimited production use cases.",
@@ -1796,6 +1802,8 @@
           "type": "string",
           "enum": [
             "LAUNCH_STAGE_UNSPECIFIED",
+            "UNIMPLEMENTED",
+            "PRELAUNCH",
             "EARLY_ACCESS",
             "ALPHA",
             "BETA",
@@ -1847,6 +1855,8 @@
           "description": "Optional. The launch stage of the monitored resource definition.",
           "enumDescriptions": [
             "Do not use this default value.",
+            "The feature is not yet implemented. Users can not use it.",
+            "Prelaunch features are hidden from users and are only visible internally.",
             "Early Access features are limited to a closed group of testers. To use\nthese features, you must sign up in advance and sign a Trusted Tester\nagreement (which includes confidentiality provisions). These features may\nbe unstable, changed in backward-incompatible ways, and are not\nguaranteed to be released.",
             "Alpha is a limited availability test for releases before they are cleared\nfor widespread use. By Alpha, all significant design issues are resolved\nand we are in the process of verifying functionality. Alpha customers\nneed to apply for access, agree to applicable terms, and have their\nprojects whitelisted. Alpha releases don\u2019t have to be feature complete,\nno SLAs are provided, and there are no technical support obligations, but\nthey will be far enough along that customers can actually use them in\ntest environments or for limited-use tests -- just like they would in\nnormal production cases.",
             "Beta is the point at which we are ready to open a release for any\ncustomer to use. There are no SLA or technical support obligations in a\nBeta release. Products will be complete from a feature perspective, but\nmay have some open outstanding issues. Beta releases are suitable for\nlimited production use cases.",
@@ -1856,6 +1866,8 @@
           "type": "string",
           "enum": [
             "LAUNCH_STAGE_UNSPECIFIED",
+            "UNIMPLEMENTED",
+            "PRELAUNCH",
             "EARLY_ACCESS",
             "ALPHA",
             "BETA",

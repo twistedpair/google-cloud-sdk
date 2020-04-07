@@ -1229,6 +1229,7 @@ class TimeSeriesQuery(_messages.Message):
     timeSeriesFilter: Filter parameters to fetch time series.
     timeSeriesFilterRatio: Parameters to fetch a ratio between two time series
       filters.
+    timeSeriesQueryLanguage: A query used to fetch time series.
     unitOverride: The unit of data contained in fetched time series. If non-
       empty, this unit will override any unit that accompanies fetched data.
       The format is the same as the unit (https://cloud.google.com/monitoring/
@@ -1238,7 +1239,8 @@ class TimeSeriesQuery(_messages.Message):
 
   timeSeriesFilter = _messages.MessageField('TimeSeriesFilter', 1)
   timeSeriesFilterRatio = _messages.MessageField('TimeSeriesFilterRatio', 2)
-  unitOverride = _messages.StringField(3)
+  timeSeriesQueryLanguage = _messages.StringField(3)
+  unitOverride = _messages.StringField(4)
 
 
 class Type(_messages.Message):

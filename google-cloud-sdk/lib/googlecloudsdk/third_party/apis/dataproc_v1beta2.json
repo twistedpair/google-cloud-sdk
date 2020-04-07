@@ -413,7 +413,7 @@
           "$ref": "SecurityConfig"
         },
         "gkeClusterConfig": {
-          "description": "Optional. The GKE config for Dataproc clusters deployed to Kubernetes. Setting this is considered mutually exclusive with GCE-based options such as gce_cluster_config, master_config, worker_config, secondary_worker_config, and autoscaling_config.",
+          "description": "Optional. The Kubernetes Engine config for Dataproc clusters deployed to Kubernetes. Setting this is considered mutually exclusive with Compute Engine-based options such as gce_cluster_config, master_config, worker_config, secondary_worker_config, and autoscaling_config.",
           "$ref": "GkeClusterConfig"
         }
       }
@@ -534,15 +534,15 @@
           "$ref": "DiskConfig"
         },
         "isPreemptible": {
-          "description": "Optional. Specifies that this instance group contains preemptible instances.",
+          "description": "Output only. Specifies that this instance group contains preemptible instances.",
           "type": "boolean"
         },
         "preemptibility": {
-          "description": "Optional. Specifies the preemptibility of the instance group.",
+          "description": "Optional. Specifies the preemptibility of the instance group.The default value for master and worker groups is NON_PREEMPTIBLE. This default cannot be changed.The default value for secondary instances is PREEMPTIBLE.",
           "enumDescriptions": [
             "Preemptibility is unspecified, the system will choose the appropriate setting for each instance group.",
             "Instances are non-preemptible.This option is allowed for all instance groups and is the only valid value for Master and Worker instance groups.",
-            "Instances are preemptible.This option is allowed only for secondary worker group."
+            "Instances are preemptible.This option is allowed only for secondary worker groups."
           ],
           "type": "string",
           "enum": [
@@ -641,18 +641,18 @@
           "enumDescriptions": [
             "Unspecified component.",
             "The Anaconda python distribution.",
+            "Docker",
             "The Druid query engine.",
+            "Flink",
+            "HBase.",
             "The Hive Web HCatalog (the REST service for accessing HCatalog).",
             "The Jupyter Notebook.",
             "The Kerberos security feature.",
             "The Presto query engine.",
-            "The Zeppelin notebook.",
-            "The Zookeeper service.",
-            "The Solr service.",
-            "HBase.",
             "The Ranger service.",
-            "Docker",
-            "Flink"
+            "The Solr service.",
+            "The Zeppelin notebook.",
+            "The Zookeeper service."
           ],
           "type": "array",
           "items": {
@@ -660,18 +660,18 @@
             "enum": [
               "COMPONENT_UNSPECIFIED",
               "ANACONDA",
+              "DOCKER",
               "DRUID",
+              "FLINK",
+              "HBASE",
               "HIVE_WEBHCAT",
               "JUPYTER",
               "KERBEROS",
               "PRESTO",
-              "ZEPPELIN",
-              "ZOOKEEPER",
-              "SOLR",
-              "HBASE",
               "RANGER",
-              "DOCKER",
-              "FLINK"
+              "SOLR",
+              "ZEPPELIN",
+              "ZOOKEEPER"
             ]
           }
         }
@@ -777,7 +777,7 @@
       "type": "object",
       "properties": {
         "enableKerberos": {
-          "description": "Optional. Flag to indicate whether to Kerberize the cluster.",
+          "description": "Optional. Flag to indicate whether to Kerberize the cluster (default: false). Set this field to true to enable Kerberos on a cluster.",
           "type": "boolean"
         },
         "rootPrincipalPasswordUri": {
@@ -941,6 +941,36 @@
             "type": "string",
             "format": "int64"
           }
+        }
+      }
+    },
+    "StopClusterRequest": {
+      "id": "StopClusterRequest",
+      "description": "A request to stop a cluster.",
+      "type": "object",
+      "properties": {
+        "clusterUuid": {
+          "description": "Optional. Specifying the cluster_uuid means the RPC should fail (with error NOT_FOUND) if cluster with specified UUID does not exist.",
+          "type": "string"
+        },
+        "requestId": {
+          "description": "Optional. A unique id used to identify the request. If the server receives two StopClusterRequest requests with the same id, then the second request will be ignored and the first google.longrunning.Operation created and stored in the backend is returned.It is recommended to always set this value to a UUID (https:\/\/en.wikipedia.org\/wiki\/Universally_unique_identifier).The id must contain only letters (a-z, A-Z), numbers (0-9), underscores (_), and hyphens (-). The maximum length is 40 characters.",
+          "type": "string"
+        }
+      }
+    },
+    "StartClusterRequest": {
+      "id": "StartClusterRequest",
+      "description": "A request to start a cluster.",
+      "type": "object",
+      "properties": {
+        "clusterUuid": {
+          "description": "Optional. Specifying the cluster_uuid means the RPC should fail (with error NOT_FOUND) if cluster with specified UUID does not exist.",
+          "type": "string"
+        },
+        "requestId": {
+          "description": "Optional. A unique id used to identify the request. If the server receives two StartClusterRequest requests with the same id, then the second request will be ignored and the first google.longrunning.Operation created and stored in the backend is returned.It is recommended to always set this value to a UUID (https:\/\/en.wikipedia.org\/wiki\/Universally_unique_identifier).The id must contain only letters (a-z, A-Z), numbers (0-9), underscores (_), and hyphens (-). The maximum length is 40 characters.",
+          "type": "string"
         }
       }
     },
@@ -1792,12 +1822,14 @@
           "$ref": "PigJob"
         },
         "sparkRJob": {
+          "description": "Spark R job",
           "$ref": "SparkRJob"
         },
         "sparkSqlJob": {
           "$ref": "SparkSqlJob"
         },
         "prestoJob": {
+          "description": "Presto job",
           "$ref": "PrestoJob"
         },
         "labels": {
@@ -2977,16 +3009,6 @@
                       "location": "path",
                       "required": true,
                       "type": "string"
-                    },
-                    "clusterUuid": {
-                      "description": "Optional. Specifying the cluster_uuid means the RPC should fail (with error NOT_FOUND) if cluster with specified UUID does not exist.",
-                      "location": "query",
-                      "type": "string"
-                    },
-                    "requestId": {
-                      "description": "Optional. A unique id used to identify the request. If the server receives two StopClusterRequest requests with the same id, then the second request will be ignored and the first google.longrunning.Operation created and stored in the backend is returned.It is recommended to always set this value to a UUID (https:\/\/en.wikipedia.org\/wiki\/Universally_unique_identifier).The id must contain only letters (a-z, A-Z), numbers (0-9), underscores (_), and hyphens (-). The maximum length is 40 characters.",
-                      "location": "query",
-                      "type": "string"
                     }
                   },
                   "parameterOrder": [
@@ -2994,6 +3016,9 @@
                     "region",
                     "clusterName"
                   ],
+                  "request": {
+                    "$ref": "StopClusterRequest"
+                  },
                   "response": {
                     "$ref": "Operation"
                   },
@@ -3025,16 +3050,6 @@
                       "location": "path",
                       "required": true,
                       "type": "string"
-                    },
-                    "clusterUuid": {
-                      "description": "Optional. Specifying the cluster_uuid means the RPC should fail (with error NOT_FOUND) if cluster with specified UUID does not exist.",
-                      "location": "query",
-                      "type": "string"
-                    },
-                    "requestId": {
-                      "description": "Optional. A unique id used to identify the request. If the server receives two StartClusterRequest requests with the same id, then the second request will be ignored and the first google.longrunning.Operation created and stored in the backend is returned.It is recommended to always set this value to a UUID (https:\/\/en.wikipedia.org\/wiki\/Universally_unique_identifier).The id must contain only letters (a-z, A-Z), numbers (0-9), underscores (_), and hyphens (-). The maximum length is 40 characters.",
-                      "location": "query",
-                      "type": "string"
                     }
                   },
                   "parameterOrder": [
@@ -3042,6 +3057,9 @@
                     "region",
                     "clusterName"
                   ],
+                  "request": {
+                    "$ref": "StartClusterRequest"
+                  },
                   "response": {
                     "$ref": "Operation"
                   },

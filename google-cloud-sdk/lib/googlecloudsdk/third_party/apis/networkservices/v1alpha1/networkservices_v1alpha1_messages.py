@@ -176,6 +176,8 @@ class EndpointConfigSelector(_messages.Message):
       the matched endpoints. Refer to Authorization. If this field is not
       specified, authorization is disabled(no authz checks) for this endpoint.
     createTime: Output only. The timestamp when the resource was created.
+    description: Optional. A free-text description of the resource. Max length
+      1024 characters.
     endpointMatcher: Required. A matcher that selects endpoints to which the
       policies should be applied.
     httpFilters: Optional. HTTP filters configuration for the endpoint.
@@ -231,13 +233,14 @@ class EndpointConfigSelector(_messages.Message):
   authentication = _messages.StringField(1)
   authorization = _messages.StringField(2)
   createTime = _messages.StringField(3)
-  endpointMatcher = _messages.MessageField('EndpointMatcher', 4)
-  httpFilters = _messages.MessageField('HttpFilters', 5)
-  labels = _messages.MessageField('LabelsValue', 6)
-  name = _messages.StringField(7)
-  trafficPortSelector = _messages.MessageField('TrafficPortSelector', 8)
-  type = _messages.EnumField('TypeValueValuesEnum', 9)
-  updateTime = _messages.StringField(10)
+  description = _messages.StringField(4)
+  endpointMatcher = _messages.MessageField('EndpointMatcher', 5)
+  httpFilters = _messages.MessageField('HttpFilters', 6)
+  labels = _messages.MessageField('LabelsValue', 7)
+  name = _messages.StringField(8)
+  trafficPortSelector = _messages.MessageField('TrafficPortSelector', 9)
+  type = _messages.EnumField('TypeValueValuesEnum', 10)
+  updateTime = _messages.StringField(11)
 
 
 class EndpointMatcher(_messages.Message):
@@ -304,6 +307,8 @@ class HttpFilter(_messages.Message):
       that the filter expects for its configuration. For example:
       'type.googleapis.com/envoy.config.wasm.v2.WasmService'.
     createTime: Output only. The timestamp when the resource was created.
+    description: Optional. A free-text description of the resource. Max length
+      1024 characters.
     filterName: Required. Name of the HTTP filter defined in the `config`
       field. It is used by the xDS API client to identify specific filter
       implementation the `config` must be applied to.  It is different from
@@ -343,10 +348,11 @@ class HttpFilter(_messages.Message):
   config = _messages.StringField(1)
   configTypeUrl = _messages.StringField(2)
   createTime = _messages.StringField(3)
-  filterName = _messages.StringField(4)
-  labels = _messages.MessageField('LabelsValue', 5)
-  name = _messages.StringField(6)
-  updateTime = _messages.StringField(7)
+  description = _messages.StringField(4)
+  filterName = _messages.StringField(5)
+  labels = _messages.MessageField('LabelsValue', 6)
+  name = _messages.StringField(7)
+  updateTime = _messages.StringField(8)
 
 
 class HttpFilters(_messages.Message):

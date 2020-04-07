@@ -51,17 +51,13 @@ def AddValidateForProxyless(parser):
       action='store_true',
       default=False,
       help="""\
-      If specified, indicates that the BackendServices referenced by the urlMap
-      may be accessed by gRPC applications without using a sidecar proxy. This
-      will enable configuration checks on urlMap and its referenced
-      BackendServices to not allow unsupported features. A gRPC application must
-      use "xds-experimental:///" scheme in the target URI of the service it is
-      connecting to.
+      If specified, configuration in the associated urlMap and the
+      BackendServices is checked to allow only the features that are supported
+      in the latest release of gRPC.
 
-      If unspecified, indicates that the BackendServices referenced by the
-      urlMap will be accessed by gRPC applications via a sidecar proxy. In this
-      case, a gRPC application must not use "xds-experimental:///" scheme in the
-      target URI of the service it is connecting to.
+      If unspecified, no such configuration checks are performed. This may cause
+      unexpected behavior in gRPC applications if unsupported features are
+      configured.
       """)
 
 

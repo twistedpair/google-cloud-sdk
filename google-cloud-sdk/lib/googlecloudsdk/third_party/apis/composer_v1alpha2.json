@@ -290,6 +290,10 @@
           "description": "The configuration used for the Private IP Cloud Composer environment.",
           "$ref": "PrivateEnvironmentConfig"
         },
+        "databaseConfig": {
+          "description": "Optional. The configuration settings for Cloud SQL instance used internally by Apache\nAirflow software.",
+          "$ref": "DatabaseConfig"
+        },
         "airflowUri": {
           "description": "Output only. The URI of the Apache Airflow Web UI hosted within this environment (see\n[Airflow web\ninterface](\/composer\/docs\/how-to\/accessing\/airflow-web-interface)).",
           "type": "string"
@@ -449,6 +453,17 @@
         },
         "masterIpv4CidrBlock": {
           "description": "The IP range in CIDR notation to use for the hosted master network. This\nrange is used for assigning internal IP addresses to the cluster\nmaster or set of masters and to the internal load balancer virtual IP.\nThis range must not overlap with any other ranges in use\nwithin the cluster's network. If left blank, the default value of\n'172.16.0.0\/28' is used.",
+          "type": "string"
+        }
+      }
+    },
+    "DatabaseConfig": {
+      "id": "DatabaseConfig",
+      "description": "The configuration of Cloud SQL instance that is used by the Apache Airflow\nsoftware.",
+      "type": "object",
+      "properties": {
+        "tier": {
+          "description": "Optional. Cloud SQL tier used by Airflow database.\nIf not specified, db-n1-standard-2 will be used.",
           "type": "string"
         }
       }

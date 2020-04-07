@@ -239,7 +239,7 @@
           "type": "string"
         },
         "description": {
-          "description": "Optional. A description of the instance (2048 characters or less).",
+          "description": "A description of the instance (2048 characters or less).",
           "type": "string"
         },
         "state": {
@@ -471,7 +471,7 @@
       "type": "object",
       "properties": {
         "fileShare": {
-          "description": "Name of the file share in the Cloud Filestore instance that the snapshot\nis being restored to.",
+          "description": "Required. Name of the file share in the Cloud Filestore instance that the snapshot\nis being restored to.",
           "type": "string"
         },
         "sourceSnapshot": {
@@ -523,7 +523,7 @@
           "type": "string"
         },
         "description": {
-          "description": "Optional. A description of the snapshot with 2048 characters or less.\nRequests with longer descriptions will be rejected.",
+          "description": "A description of the snapshot with 2048 characters or less.\nRequests with longer descriptions will be rejected.",
           "type": "string"
         },
         "state": {
@@ -647,7 +647,7 @@
           "type": "string"
         },
         "description": {
-          "description": "Optional. A description of the backup with 2048 characters or less.\nRequests with longer descriptions will be rejected.",
+          "description": "A description of the backup with 2048 characters or less.\nRequests with longer descriptions will be rejected.",
           "type": "string"
         },
         "state": {
@@ -1252,7 +1252,7 @@
                   "httpMethod": "GET",
                   "parameters": {
                     "parent": {
-                      "description": "The project and location for which to retrieve instance information,\nin the format projects\/{project_id}\/locations\/{location}. In Cloud\nFilestore, locations map to GCP zones, for example **us-west1-b**. To\nretrieve instance information for all locations, use \"-\" for the {location}\nvalue.",
+                      "description": "Required. The project and location for which to retrieve instance information,\nin the format projects\/{project_id}\/locations\/{location}. In Cloud\nFilestore, locations map to GCP zones, for example **us-west1-b**. To\nretrieve instance information for all locations, use \"-\" for the {location}\nvalue.",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
@@ -1298,7 +1298,7 @@
                   "httpMethod": "GET",
                   "parameters": {
                     "name": {
-                      "description": "The instance resource name, in the format\nprojects\/{project_id}\/locations\/{location}\/instances\/{instance_id}.",
+                      "description": "Required. The instance resource name, in the format\nprojects\/{project_id}\/locations\/{location}\/instances\/{instance_id}.",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/instances\/[^\/]+$",
@@ -1323,14 +1323,14 @@
                   "httpMethod": "POST",
                   "parameters": {
                     "parent": {
-                      "description": "The instance's project and location, in the format\nprojects\/{project_id}\/locations\/{location}. In Cloud Filestore,\nlocations map to GCP zones, for example **us-west1-b**.",
+                      "description": "Required. The instance's project and location, in the format\nprojects\/{project_id}\/locations\/{location}. In Cloud Filestore,\nlocations map to GCP zones, for example **us-west1-b**.",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "type": "string"
                     },
                     "instanceId": {
-                      "description": "The name of the instance to create.\nThe name must be unique for the specified project and location.",
+                      "description": "Required. The name of the instance to create.\nThe name must be unique for the specified project and location.",
                       "location": "query",
                       "type": "string"
                     }
@@ -1390,7 +1390,7 @@
                   "httpMethod": "POST",
                   "parameters": {
                     "name": {
-                      "description": "The resource name of the instance, in the format\nprojects\/{project_id}\/locations\/{location_id}\/instances\/{instance_id}.",
+                      "description": "Required. The resource name of the instance, in the format\nprojects\/{project_id}\/locations\/{location_id}\/instances\/{instance_id}.",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/instances\/[^\/]+$",
@@ -1418,7 +1418,7 @@
                   "httpMethod": "DELETE",
                   "parameters": {
                     "name": {
-                      "description": "The instance resource name, in the format\nprojects\/{project_id}\/locations\/{location}\/instances\/{instance_id}",
+                      "description": "Required. The instance resource name, in the format\nprojects\/{project_id}\/locations\/{location}\/instances\/{instance_id}",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/instances\/[^\/]+$",
@@ -1447,7 +1447,7 @@
                   "httpMethod": "GET",
                   "parameters": {
                     "parent": {
-                      "description": "The project and location for which to retrieve snapshot information,\nin the format projects\/{project_id}\/locations\/{location}.\nIn Cloud Filestore, snapshot locations map to GCP zones,\nfor example **us-west1-b**, for local snapshots and to GCP regions,\nfor example **us-west1**, otherwise.\nTo retrieve snapshot information for all locations, use \"-\" for the\n{location} value.",
+                      "description": "Required. The project and location for which to retrieve snapshot information,\nin the format projects\/{project_id}\/locations\/{location}.\nIn Cloud Filestore, snapshot locations map to GCP zones,\nfor example **us-west1-b**, for local snapshots and to GCP regions,\nfor example **us-west1**, otherwise.\nTo retrieve snapshot information for all locations, use \"-\" for the\n{location} value.",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
@@ -1493,7 +1493,7 @@
                   "httpMethod": "GET",
                   "parameters": {
                     "name": {
-                      "description": "The snapshot resource name, in the format\nprojects\/{project_id}\/locations\/{location}\/snapshots\/{snapshot_id}.",
+                      "description": "Required. The snapshot resource name, in the format\nprojects\/{project_id}\/locations\/{location}\/snapshots\/{snapshot_id}.",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/snapshots\/[^\/]+$",
@@ -1518,14 +1518,14 @@
                   "httpMethod": "POST",
                   "parameters": {
                     "parent": {
-                      "description": "The snapshot's project and location, in the format\nprojects\/{project_id}\/locations\/{location}. In Cloud Filestore,\nsnapshot locations map to GCP zones, for example **us-west1-b**,\nfor local snapshots and to GCP regions, for example **us-west1**,\notherwise.",
+                      "description": "Required. The snapshot's project and location, in the format\nprojects\/{project_id}\/locations\/{location}. In Cloud Filestore,\nsnapshot locations map to GCP zones, for example **us-west1-b**,\nfor local snapshots and to GCP regions, for example **us-west1**,\notherwise.",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "type": "string"
                     },
                     "snapshotId": {
-                      "description": "The ID to use for the snapshot.\nThe ID must be unique within the specified project and location.",
+                      "description": "Required. The ID to use for the snapshot.\nThe ID must be unique within the specified project and location.",
                       "location": "query",
                       "type": "string"
                     }
@@ -1551,7 +1551,7 @@
                   "httpMethod": "DELETE",
                   "parameters": {
                     "name": {
-                      "description": "The snapshot resource name, in the format\nprojects\/{project_id}\/locations\/{location}\/snapshots\/{snapshot_id}",
+                      "description": "Required. The snapshot resource name, in the format\nprojects\/{project_id}\/locations\/{location}\/snapshots\/{snapshot_id}",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/snapshots\/[^\/]+$",
@@ -1614,7 +1614,7 @@
                   "httpMethod": "GET",
                   "parameters": {
                     "parent": {
-                      "description": "The project and location for which to retrieve backup information,\nin the format projects\/{project_id}\/locations\/{location}.\nIn Cloud Filestore, backup locations map to GCP regions,\nfor example **us-west1**.\nTo retrieve backup information for all locations, use \"-\" for the\n{location} value.",
+                      "description": "Required. The project and location for which to retrieve backup information,\nin the format projects\/{project_id}\/locations\/{location}.\nIn Cloud Filestore, backup locations map to GCP regions,\nfor example **us-west1**.\nTo retrieve backup information for all locations, use \"-\" for the\n{location} value.",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
@@ -1660,7 +1660,7 @@
                   "httpMethod": "GET",
                   "parameters": {
                     "name": {
-                      "description": "The backup resource name, in the format\nprojects\/{project_id}\/locations\/{location}\/backups\/{backup_id}.",
+                      "description": "Required. The backup resource name, in the format\nprojects\/{project_id}\/locations\/{location}\/backups\/{backup_id}.",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/backups\/[^\/]+$",
@@ -1685,14 +1685,14 @@
                   "httpMethod": "POST",
                   "parameters": {
                     "parent": {
-                      "description": "The backup's project and location, in the format\nprojects\/{project_id}\/locations\/{location}. In Cloud Filestore,\nbackup locations map to GCP regions, for example **us-west1**.",
+                      "description": "Required. The backup's project and location, in the format\nprojects\/{project_id}\/locations\/{location}. In Cloud Filestore,\nbackup locations map to GCP regions, for example **us-west1**.",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "type": "string"
                     },
                     "backupId": {
-                      "description": "The ID to use for the backup.\nThe ID must be unique within the specified project and location.",
+                      "description": "Required. The ID to use for the backup.\nThe ID must be unique within the specified project and location.",
                       "location": "query",
                       "type": "string"
                     }
@@ -1718,7 +1718,7 @@
                   "httpMethod": "DELETE",
                   "parameters": {
                     "name": {
-                      "description": "The backup resource name, in the format\nprojects\/{project_id}\/locations\/{location}\/backups\/{backup_id}",
+                      "description": "Required. The backup resource name, in the format\nprojects\/{project_id}\/locations\/{location}\/backups\/{backup_id}",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/backups\/[^\/]+$",

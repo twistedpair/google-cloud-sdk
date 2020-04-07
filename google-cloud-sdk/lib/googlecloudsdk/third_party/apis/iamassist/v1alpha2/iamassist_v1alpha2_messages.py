@@ -327,6 +327,620 @@ class GoogleIamAssistV1alpha2ReplayRecentAccessesResponse(_messages.Message):
   logsMetadata = _messages.MessageField('GoogleIamAssistV1alpha2LogsMetadata', 3)
 
 
+class GoogleIamAssistV1alpha3AccessStateDiff(_messages.Message):
+  r"""Container for ExplainedAccess of baseline and simulated policies. For
+  both baseline and simulated, the ExplainedAccess.policies are filtered to
+  only include the UNKNOWN infromation. If the AccessState is known, e.g.
+  GRANTED or NOT_GRANTED, the policy list will be empty. Only policies with an
+  AccessState of UNKNOWN are included.
+
+  Enums:
+    AccessChangeValueValuesEnum: A single value interpretation of the
+      difference between baseline and simulated.
+
+  Fields:
+    accessChange: A single value interpretation of the difference between
+      baseline and simulated.
+    baseline: The explained access when replayed against the baseline
+      policies.
+    simulated: The explained access when replayed against the simulated
+      policies.
+  """
+
+  class AccessChangeValueValuesEnum(_messages.Enum):
+    r"""A single value interpretation of the difference between baseline and
+    simulated.
+
+    Values:
+      ACCESS_CHANGE_TYPE_UNSPECIFIED: Reserved
+      NO_CHANGE: The two ExplainedAccesses are equal. This includes the case
+        where both baseline and simulated are UNKNOWN, but the unknown
+        information is equivalent.
+      UNKNOWN_CHANGE: The baseline and simulated accesses are both UNKNOWN,
+        but the unknown information differs between them.
+      ACCESS_REVOKED: The baseline access state is GRANTED and the simulated
+        access state is NOT_GRANTED
+      ACCESS_GAINED: The baseline access state is NOT_GRANTED and the
+        simulated access state is GRANTED.
+      ACCESS_MAYBE_REVOKED: The baseline access state is GRANTED and the
+        simulated access state is UNKNOWN.
+      ACCESS_MAYBE_GRANTED: The baseline state is NOT_GRANTED and the
+        simulated state is UNKNOWN.
+    """
+    ACCESS_CHANGE_TYPE_UNSPECIFIED = 0
+    NO_CHANGE = 1
+    UNKNOWN_CHANGE = 2
+    ACCESS_REVOKED = 3
+    ACCESS_GAINED = 4
+    ACCESS_MAYBE_REVOKED = 5
+    ACCESS_MAYBE_GRANTED = 6
+
+  accessChange = _messages.EnumField('AccessChangeValueValuesEnum', 1)
+  baseline = _messages.MessageField('GoogleIamAssistV1alpha3ExplainedAccess', 2)
+  simulated = _messages.MessageField('GoogleIamAssistV1alpha3ExplainedAccess', 3)
+
+
+class GoogleIamAssistV1alpha3AccessTuple(_messages.Message):
+  r"""Information about the member, resource, and permission to check.
+
+  Fields:
+    fullResourceName: Required. The full resource name that identifies the
+      resource. For example, `//compute.googleapis.com/projects/my-
+      project/zones/us-central1-a/instances/my-instance`.  For examples of
+      full resource names for Google Cloud services, see
+      https://cloud.google.com/iam/help/troubleshooter/full-resource-names.
+    permission: Required. The IAM permission to check for the specified member
+      and resource.  For a complete list of IAM permissions, see
+      https://cloud.google.com/iam/help/permissions/reference.  For a complete
+      list of predefined IAM roles and the permissions in each role, see
+      https://cloud.google.com/iam/help/roles/reference.
+    principal: Required. The member, or principal, whose access you want to
+      check, in the form of the email address that represents that member. For
+      example, `alice@example.com` or `my-service-account@my-
+      project.iam.gserviceaccount.com`.  The member must be a Google Account
+      or a service account. Other types of members are not supported.
+  """
+
+  fullResourceName = _messages.StringField(1)
+  permission = _messages.StringField(2)
+  principal = _messages.StringField(3)
+
+
+class GoogleIamAssistV1alpha3BindingExplanation(_messages.Message):
+  r"""Details about how a binding in a policy affects a member's ability to
+  use a permission.
+
+  Enums:
+    AccessValueValuesEnum: Required. Indicates whether _this binding_ provides
+      the specified permission to the specified member for the specified
+      resource.  This field does _not_ indicate whether the member actually
+      has the permission for the resource. There might be another binding that
+      overrides this binding. To determine whether the member actually has the
+      permission, use the `access` field in the TroubleshootIamPolicyResponse.
+    RelevanceValueValuesEnum: The relevance of this binding to the overall
+      determination for the entire policy.
+    RolePermissionValueValuesEnum: Indicates whether the role granted by this
+      binding contains the specified permission.
+    RolePermissionRelevanceValueValuesEnum: The relevance of the permission's
+      existence, or nonexistence, in the role to the overall determination for
+      the entire policy.
+
+  Messages:
+    MembershipsValue: Indicates whether each member in the binding includes
+      the member specified in the request, either directly or indirectly. Each
+      key identifies a member in the binding, and each value indicates whether
+      the member in the binding includes the member in the request.  For
+      example, suppose that a binding includes the following members:  *
+      `user:alice@example.com` * `group:product-eng@example.com`  You want to
+      troubleshoot access for `user:bob@example.com`. This user is a member of
+      the group `group:product-eng@example.com`.  For the first member in the
+      binding, the key is `user:alice@example.com`, and the `membership` field
+      in the value is set to `MEMBERSHIP_NOT_INCLUDED`.  For the second member
+      in the binding, the key is `group:product-eng@example.com`, and the
+      `membership` field in the value is set to `MEMBERSHIP_INCLUDED`.
+
+  Fields:
+    access: Required. Indicates whether _this binding_ provides the specified
+      permission to the specified member for the specified resource.  This
+      field does _not_ indicate whether the member actually has the permission
+      for the resource. There might be another binding that overrides this
+      binding. To determine whether the member actually has the permission,
+      use the `access` field in the TroubleshootIamPolicyResponse.
+    condition: A condition expression that prevents access unless the
+      expression evaluates to `true`.  To learn about IAM Conditions, see
+      http://cloud.google.com/iam/help/conditions/overview.
+    memberships: Indicates whether each member in the binding includes the
+      member specified in the request, either directly or indirectly. Each key
+      identifies a member in the binding, and each value indicates whether the
+      member in the binding includes the member in the request.  For example,
+      suppose that a binding includes the following members:  *
+      `user:alice@example.com` * `group:product-eng@example.com`  You want to
+      troubleshoot access for `user:bob@example.com`. This user is a member of
+      the group `group:product-eng@example.com`.  For the first member in the
+      binding, the key is `user:alice@example.com`, and the `membership` field
+      in the value is set to `MEMBERSHIP_NOT_INCLUDED`.  For the second member
+      in the binding, the key is `group:product-eng@example.com`, and the
+      `membership` field in the value is set to `MEMBERSHIP_INCLUDED`.
+    relevance: The relevance of this binding to the overall determination for
+      the entire policy.
+    role: The role that this binding grants. For example,
+      `roles/compute.serviceAgent`.  For a complete list of predefined IAM
+      roles, as well as the permissions in each role, see
+      https://cloud.google.com/iam/help/roles/reference.
+    rolePermission: Indicates whether the role granted by this binding
+      contains the specified permission.
+    rolePermissionRelevance: The relevance of the permission's existence, or
+      nonexistence, in the role to the overall determination for the entire
+      policy.
+  """
+
+  class AccessValueValuesEnum(_messages.Enum):
+    r"""Required. Indicates whether _this binding_ provides the specified
+    permission to the specified member for the specified resource.  This field
+    does _not_ indicate whether the member actually has the permission for the
+    resource. There might be another binding that overrides this binding. To
+    determine whether the member actually has the permission, use the `access`
+    field in the TroubleshootIamPolicyResponse.
+
+    Values:
+      ACCESS_STATE_UNSPECIFIED: Reserved for future use.
+      GRANTED: The member has the permission.
+      NOT_GRANTED: The member does not have the permission.
+      UNKNOWN_CONDITIONAL: The member has the permission only if a condition
+        expression evaluates to `true`.
+      UNKNOWN_INFO_DENIED: The sender of the request does not have access to
+        all of the policies that Policy Troubleshooter needs to evaluate.
+    """
+    ACCESS_STATE_UNSPECIFIED = 0
+    GRANTED = 1
+    NOT_GRANTED = 2
+    UNKNOWN_CONDITIONAL = 3
+    UNKNOWN_INFO_DENIED = 4
+
+  class RelevanceValueValuesEnum(_messages.Enum):
+    r"""The relevance of this binding to the overall determination for the
+    entire policy.
+
+    Values:
+      HEURISTIC_RELEVANCE_UNSPECIFIED: Reserved for future use.
+      NORMAL: The data point has a limited effect on the result. Changing the
+        data point is unlikely to affect the overall determination.
+      HIGH: The data point has a strong effect on the result. Changing the
+        data point is likely to affect the overall determination.
+    """
+    HEURISTIC_RELEVANCE_UNSPECIFIED = 0
+    NORMAL = 1
+    HIGH = 2
+
+  class RolePermissionRelevanceValueValuesEnum(_messages.Enum):
+    r"""The relevance of the permission's existence, or nonexistence, in the
+    role to the overall determination for the entire policy.
+
+    Values:
+      HEURISTIC_RELEVANCE_UNSPECIFIED: Reserved for future use.
+      NORMAL: The data point has a limited effect on the result. Changing the
+        data point is unlikely to affect the overall determination.
+      HIGH: The data point has a strong effect on the result. Changing the
+        data point is likely to affect the overall determination.
+    """
+    HEURISTIC_RELEVANCE_UNSPECIFIED = 0
+    NORMAL = 1
+    HIGH = 2
+
+  class RolePermissionValueValuesEnum(_messages.Enum):
+    r"""Indicates whether the role granted by this binding contains the
+    specified permission.
+
+    Values:
+      ROLE_PERMISSION_UNSPECIFIED: Reserved for future use.
+      ROLE_PERMISSION_INCLUDED: The permission is included in the role.
+      ROLE_PERMISSION_NOT_INCLUDED: The permission is not included in the
+        role.
+      ROLE_PERMISSION_UNKNOWN_INFO_DENIED: The sender of the request is not
+        allowed to access the binding.
+    """
+    ROLE_PERMISSION_UNSPECIFIED = 0
+    ROLE_PERMISSION_INCLUDED = 1
+    ROLE_PERMISSION_NOT_INCLUDED = 2
+    ROLE_PERMISSION_UNKNOWN_INFO_DENIED = 3
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class MembershipsValue(_messages.Message):
+    r"""Indicates whether each member in the binding includes the member
+    specified in the request, either directly or indirectly. Each key
+    identifies a member in the binding, and each value indicates whether the
+    member in the binding includes the member in the request.  For example,
+    suppose that a binding includes the following members:  *
+    `user:alice@example.com` * `group:product-eng@example.com`  You want to
+    troubleshoot access for `user:bob@example.com`. This user is a member of
+    the group `group:product-eng@example.com`.  For the first member in the
+    binding, the key is `user:alice@example.com`, and the `membership` field
+    in the value is set to `MEMBERSHIP_NOT_INCLUDED`.  For the second member
+    in the binding, the key is `group:product-eng@example.com`, and the
+    `membership` field in the value is set to `MEMBERSHIP_INCLUDED`.
+
+    Messages:
+      AdditionalProperty: An additional property for a MembershipsValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type MembershipsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a MembershipsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A GoogleIamAssistV1alpha3BindingExplanationAnnotatedMembership
+          attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('GoogleIamAssistV1alpha3BindingExplanationAnnotatedMembership', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  access = _messages.EnumField('AccessValueValuesEnum', 1)
+  condition = _messages.MessageField('GoogleTypeExpr', 2)
+  memberships = _messages.MessageField('MembershipsValue', 3)
+  relevance = _messages.EnumField('RelevanceValueValuesEnum', 4)
+  role = _messages.StringField(5)
+  rolePermission = _messages.EnumField('RolePermissionValueValuesEnum', 6)
+  rolePermissionRelevance = _messages.EnumField('RolePermissionRelevanceValueValuesEnum', 7)
+
+
+class GoogleIamAssistV1alpha3BindingExplanationAnnotatedMembership(_messages.Message):
+  r"""Details about whether the binding includes the member.
+
+  Enums:
+    MembershipValueValuesEnum: Indicates whether the binding includes the
+      member.
+    RelevanceValueValuesEnum: The relevance of the member's status to the
+      overall determination for the binding.
+
+  Fields:
+    membership: Indicates whether the binding includes the member.
+    relevance: The relevance of the member's status to the overall
+      determination for the binding.
+  """
+
+  class MembershipValueValuesEnum(_messages.Enum):
+    r"""Indicates whether the binding includes the member.
+
+    Values:
+      MEMBERSHIP_UNSPECIFIED: Reserved for future use.
+      MEMBERSHIP_INCLUDED: The binding includes the member. The member can be
+        included directly or indirectly. For example:  * A member is included
+        directly if that member is listed in the binding. * A member is
+        included indirectly if that member is in a Google group or   G Suite
+        domain that is listed in the binding.
+      MEMBERSHIP_NOT_INCLUDED: The binding does not include the member.
+      MEMBERSHIP_UNKNOWN_INFO_DENIED: The sender of the request is not allowed
+        to access the binding.
+      MEMBERSHIP_UNKNOWN_UNSUPPORTED: The member is an unsupported type. Only
+        Google Accounts and service accounts are supported.
+    """
+    MEMBERSHIP_UNSPECIFIED = 0
+    MEMBERSHIP_INCLUDED = 1
+    MEMBERSHIP_NOT_INCLUDED = 2
+    MEMBERSHIP_UNKNOWN_INFO_DENIED = 3
+    MEMBERSHIP_UNKNOWN_UNSUPPORTED = 4
+
+  class RelevanceValueValuesEnum(_messages.Enum):
+    r"""The relevance of the member's status to the overall determination for
+    the binding.
+
+    Values:
+      HEURISTIC_RELEVANCE_UNSPECIFIED: Reserved for future use.
+      NORMAL: The data point has a limited effect on the result. Changing the
+        data point is unlikely to affect the overall determination.
+      HIGH: The data point has a strong effect on the result. Changing the
+        data point is likely to affect the overall determination.
+    """
+    HEURISTIC_RELEVANCE_UNSPECIFIED = 0
+    NORMAL = 1
+    HIGH = 2
+
+  membership = _messages.EnumField('MembershipValueValuesEnum', 1)
+  relevance = _messages.EnumField('RelevanceValueValuesEnum', 2)
+
+
+class GoogleIamAssistV1alpha3ExplainedAccess(_messages.Message):
+  r"""Details about how the set of Explained Policies resulted in the Access
+  State.
+
+  Enums:
+    AccessStateValueValuesEnum: The overall access state for the included set
+      of policies.
+
+  Fields:
+    accessState: The overall access state for the included set of policies.
+    errors: The list of problems encountered when explaining this access. This
+      list provides the reason why UNKNOWN information in `policies` was
+      unknown.
+    policies: The set of policies contributing to the listed AccessState. An
+      ExplainedPolicy with UNKNOWN_INFO_DENIED and nothing else means the user
+      did not have permission to get one or more policies.
+  """
+
+  class AccessStateValueValuesEnum(_messages.Enum):
+    r"""The overall access state for the included set of policies.
+
+    Values:
+      ACCESS_STATE_UNSPECIFIED: Reserved for future use.
+      GRANTED: The member has the permission.
+      NOT_GRANTED: The member does not have the permission.
+      UNKNOWN_CONDITIONAL: The member has the permission only if a condition
+        expression evaluates to `true`.
+      UNKNOWN_INFO_DENIED: The sender of the request does not have access to
+        all of the policies that Policy Troubleshooter needs to evaluate.
+    """
+    ACCESS_STATE_UNSPECIFIED = 0
+    GRANTED = 1
+    NOT_GRANTED = 2
+    UNKNOWN_CONDITIONAL = 3
+    UNKNOWN_INFO_DENIED = 4
+
+  accessState = _messages.EnumField('AccessStateValueValuesEnum', 1)
+  errors = _messages.MessageField('GoogleRpcStatus', 2, repeated=True)
+  policies = _messages.MessageField('GoogleIamAssistV1alpha3ExplainedPolicy', 3, repeated=True)
+
+
+class GoogleIamAssistV1alpha3ExplainedPolicy(_messages.Message):
+  r"""Details about how a specific IAM Policy contributed to the access check.
+
+  Enums:
+    AccessValueValuesEnum: Indicates whether _this policy_ provides the
+      specified permission to the specified member for the specified resource.
+      This field does _not_ indicate whether the member actually has the
+      permission for the resource. There might be another policy that
+      overrides this policy. To determine whether the member actually has the
+      permission, use the `access` field in the TroubleshootIamPolicyResponse.
+    RelevanceValueValuesEnum: The relevance of this policy to the overall
+      determination in the TroubleshootIamPolicyResponse.  If the sender of
+      the request does not have access to the policy, this field is omitted.
+
+  Fields:
+    access: Indicates whether _this policy_ provides the specified permission
+      to the specified member for the specified resource.  This field does
+      _not_ indicate whether the member actually has the permission for the
+      resource. There might be another policy that overrides this policy. To
+      determine whether the member actually has the permission, use the
+      `access` field in the TroubleshootIamPolicyResponse.
+    bindingExplanations: Details about how each binding in the policy affects
+      the member's ability, or inability, to use the permission for the
+      resource.  If the sender of the request does not have access to the
+      policy, this field is omitted.
+    fullResourceName: The full resource name that identifies the resource. For
+      example, `//compute.googleapis.com/projects/my-project/zones/us-
+      central1-a/instances/my-instance`.  If the sender of the request does
+      not have access to the policy, this field is omitted.  For examples of
+      full resource names for Google Cloud services, see
+      https://cloud.google.com/iam/help/troubleshooter/full-resource-names.
+    policy: The IAM policy attached to the resource.  If the sender of the
+      request does not have access to the policy, this field is empty.
+    relevance: The relevance of this policy to the overall determination in
+      the TroubleshootIamPolicyResponse.  If the sender of the request does
+      not have access to the policy, this field is omitted.
+  """
+
+  class AccessValueValuesEnum(_messages.Enum):
+    r"""Indicates whether _this policy_ provides the specified permission to
+    the specified member for the specified resource.  This field does _not_
+    indicate whether the member actually has the permission for the resource.
+    There might be another policy that overrides this policy. To determine
+    whether the member actually has the permission, use the `access` field in
+    the TroubleshootIamPolicyResponse.
+
+    Values:
+      ACCESS_STATE_UNSPECIFIED: Reserved for future use.
+      GRANTED: The member has the permission.
+      NOT_GRANTED: The member does not have the permission.
+      UNKNOWN_CONDITIONAL: The member has the permission only if a condition
+        expression evaluates to `true`.
+      UNKNOWN_INFO_DENIED: The sender of the request does not have access to
+        all of the policies that Policy Troubleshooter needs to evaluate.
+    """
+    ACCESS_STATE_UNSPECIFIED = 0
+    GRANTED = 1
+    NOT_GRANTED = 2
+    UNKNOWN_CONDITIONAL = 3
+    UNKNOWN_INFO_DENIED = 4
+
+  class RelevanceValueValuesEnum(_messages.Enum):
+    r"""The relevance of this policy to the overall determination in the
+    TroubleshootIamPolicyResponse.  If the sender of the request does not have
+    access to the policy, this field is omitted.
+
+    Values:
+      HEURISTIC_RELEVANCE_UNSPECIFIED: Reserved for future use.
+      NORMAL: The data point has a limited effect on the result. Changing the
+        data point is unlikely to affect the overall determination.
+      HIGH: The data point has a strong effect on the result. Changing the
+        data point is likely to affect the overall determination.
+    """
+    HEURISTIC_RELEVANCE_UNSPECIFIED = 0
+    NORMAL = 1
+    HIGH = 2
+
+  access = _messages.EnumField('AccessValueValuesEnum', 1)
+  bindingExplanations = _messages.MessageField('GoogleIamAssistV1alpha3BindingExplanation', 2, repeated=True)
+  fullResourceName = _messages.StringField(3)
+  policy = _messages.MessageField('GoogleIamV1Policy', 4)
+  relevance = _messages.EnumField('RelevanceValueValuesEnum', 5)
+
+
+class GoogleIamAssistV1alpha3Replay(_messages.Message):
+  r"""A Replay of Accesses against a simulated state.
+
+  Enums:
+    StateValueValuesEnum: Output only. The current state of the replay.
+      https://aip.dev/216
+
+  Fields:
+    config: Required. The configuration used for the replay.
+    diffs: Output only. The ReplayResults that resulted in diffs being found.
+    errors: Output only. The ReplayResults that resulted in an error.
+    logsMetadata: Output only. Metadata about the replayed log entries.
+    name: The resource name of the replay. The replay id is randomly generated
+      on creation. Format: replays/{replay}.
+    state: Output only. The current state of the replay. https://aip.dev/216
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Output only. The current state of the replay. https://aip.dev/216
+
+    Values:
+      STATE_UNSPECIFIED: Reserved.
+      PENDING: Replay has not started yet.
+      RUNNING: Replay is currently running.
+      SUCCEEDED: Replay has successfully completed.
+      FAILED: Replay has finished with an error.
+    """
+    STATE_UNSPECIFIED = 0
+    PENDING = 1
+    RUNNING = 2
+    SUCCEEDED = 3
+    FAILED = 4
+
+  config = _messages.MessageField('GoogleIamAssistV1alpha3ReplayConfig', 1)
+  diffs = _messages.MessageField('GoogleIamAssistV1alpha3ReplayResult', 2, repeated=True)
+  errors = _messages.MessageField('GoogleIamAssistV1alpha3ReplayResult', 3, repeated=True)
+  logsMetadata = _messages.MessageField('GoogleIamAssistV1alpha3ReplayLogsMetadata', 4)
+  name = _messages.StringField(5)
+  state = _messages.EnumField('StateValueValuesEnum', 6)
+
+
+class GoogleIamAssistV1alpha3ReplayConfig(_messages.Message):
+  r"""The configuration used for the replay.
+
+  Enums:
+    LogSourceValueValuesEnum: The logs to use as input for the replay.
+
+  Messages:
+    PolicyOverlayValue: The policy overlay used during the replay. Keys are
+      full resource names and the values are the policies to apply on these
+      resources in the simulated state.
+
+  Fields:
+    logSource: The logs to use as input for the replay.
+    policyOverlay: The policy overlay used during the replay. Keys are full
+      resource names and the values are the policies to apply on these
+      resources in the simulated state.
+  """
+
+  class LogSourceValueValuesEnum(_messages.Enum):
+    r"""The logs to use as input for the replay.
+
+    Values:
+      LOG_SOURCE_UNSPECIFIED: An unspecified log source. Replay will default
+        to using RECENT_ACCESSES.
+      RECENT_ACCESSES: Retrieves the 5000 most recent accesses from the last
+        90 days from an internal log source.  Note that the log freshness
+        (i.e. the date of the newest log entry) may be up to 7 days stale.  In
+        other words, an access attempt that only occurred within the past 7
+        days may not be captured by the replay.
+    """
+    LOG_SOURCE_UNSPECIFIED = 0
+    RECENT_ACCESSES = 1
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class PolicyOverlayValue(_messages.Message):
+    r"""The policy overlay used during the replay. Keys are full resource
+    names and the values are the policies to apply on these resources in the
+    simulated state.
+
+    Messages:
+      AdditionalProperty: An additional property for a PolicyOverlayValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type PolicyOverlayValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a PolicyOverlayValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A GoogleIamV1Policy attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('GoogleIamV1Policy', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  logSource = _messages.EnumField('LogSourceValueValuesEnum', 1)
+  policyOverlay = _messages.MessageField('PolicyOverlayValue', 2)
+
+
+class GoogleIamAssistV1alpha3ReplayDiff(_messages.Message):
+  r"""A successful replay of an AccessTuple that resulted in a difference
+  between baseline and simulated.
+
+  Fields:
+    accessDiff: The difference in AccessState between replays.
+  """
+
+  accessDiff = _messages.MessageField('GoogleIamAssistV1alpha3AccessStateDiff', 1)
+
+
+class GoogleIamAssistV1alpha3ReplayLogsMetadata(_messages.Message):
+  r"""Metadata about the replayed log entries.
+
+  Fields:
+    differenceCount: Number of replayed log entries with a difference between
+      baseline and simulated policies.
+    errorCount: Number of log entries with an error during replay.
+    logCount: Number of log entries replayed. log_count == unchanged_count +
+      difference_count + error_count
+    newestDate: Date of newest log entry replayed.
+    oldestDate: Date of oldest log entry replayed.
+    unchangedCount: Number of replayed log entries with no difference between
+      baseline and simulated
+  """
+
+  differenceCount = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  errorCount = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  logCount = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  newestDate = _messages.MessageField('GoogleTypeDate', 4)
+  oldestDate = _messages.MessageField('GoogleTypeDate', 5)
+  unchangedCount = _messages.IntegerField(6, variant=_messages.Variant.INT32)
+
+
+class GoogleIamAssistV1alpha3ReplayOperationMetadata(_messages.Message):
+  r"""Metadata about a ReplayAccessLogs operation.
+
+  Fields:
+    startTime: Time when the request was received.
+  """
+
+  startTime = _messages.StringField(1)
+
+
+class GoogleIamAssistV1alpha3ReplayResult(_messages.Message):
+  r"""The result of replaying a single access tuple against a simulated state.
+
+  Fields:
+    accessTuple: The access replayed.
+    diff: The tuple was successfully replayed and had a difference.
+    error: The tuple was not successfully replayed.
+    lastSeenDate: The late date this access was seen in the logs.
+    name: The resource name of the replay result. Format:
+      replays/{replay}/results/{replay_result}
+    parent: The replay the access tuple was included in.
+  """
+
+  accessTuple = _messages.MessageField('GoogleIamAssistV1alpha3AccessTuple', 1)
+  diff = _messages.MessageField('GoogleIamAssistV1alpha3ReplayDiff', 2)
+  error = _messages.MessageField('GoogleRpcStatus', 3)
+  lastSeenDate = _messages.MessageField('GoogleTypeDate', 4)
+  name = _messages.StringField(5)
+  parent = _messages.StringField(6)
+
+
 class GoogleIamV1AuditConfig(_messages.Message):
   r"""Specifies the audit configuration for a service. The configuration
   determines which permission types are logged, and what identities, if any,
@@ -510,19 +1124,6 @@ class GoogleIamV1Policy(_messages.Message):
   bindings = _messages.MessageField('GoogleIamV1Binding', 2, repeated=True)
   etag = _messages.BytesField(3)
   version = _messages.IntegerField(4, variant=_messages.Variant.INT32)
-
-
-class GoogleLongrunningListOperationsResponse(_messages.Message):
-  r"""The response message for Operations.ListOperations.
-
-  Fields:
-    nextPageToken: The standard List next-page token.
-    operations: A list of operations that matches the specified filter in the
-      request.
-  """
-
-  nextPageToken = _messages.StringField(1)
-  operations = _messages.MessageField('GoogleLongrunningOperation', 2, repeated=True)
 
 
 class GoogleLongrunningOperation(_messages.Message):
@@ -1086,6 +1687,31 @@ class GoogleRpcStatus(_messages.Message):
   message = _messages.StringField(3)
 
 
+class GoogleTypeDate(_messages.Message):
+  r"""Represents a whole or partial calendar date, e.g. a birthday. The time
+  of day and time zone are either specified elsewhere or are not significant.
+  The date is relative to the Proleptic Gregorian Calendar. This can
+  represent:  * A full date, with non-zero year, month and day values * A
+  month and day value, with a zero year, e.g. an anniversary * A year on its
+  own, with zero month and day values * A year and month value, with a zero
+  day, e.g. a credit card expiration date  Related types are
+  google.type.TimeOfDay and `google.protobuf.Timestamp`.
+
+  Fields:
+    day: Day of month. Must be from 1 to 31 and valid for the year and month,
+      or 0 if specifying a year by itself or a year and month where the day is
+      not significant.
+    month: Month of year. Must be from 1 to 12, or 0 if specifying a year
+      without a month and day.
+    year: Year of date. Must be from 1 to 9999, or 0 if specifying a date
+      without a year.
+  """
+
+  day = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  month = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  year = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+
+
 class GoogleTypeExpr(_messages.Message):
   r"""Represents a textual expression in the Common Expression Language (CEL)
   syntax. CEL is a C-like expression language. The syntax and semantics of CEL
@@ -1120,32 +1746,6 @@ class GoogleTypeExpr(_messages.Message):
   expression = _messages.StringField(2)
   location = _messages.StringField(3)
   title = _messages.StringField(4)
-
-
-class IamassistOperationsGetRequest(_messages.Message):
-  r"""A IamassistOperationsGetRequest object.
-
-  Fields:
-    name: The name of the operation resource.
-  """
-
-  name = _messages.StringField(1, required=True)
-
-
-class IamassistOperationsListRequest(_messages.Message):
-  r"""A IamassistOperationsListRequest object.
-
-  Fields:
-    filter: The standard list filter.
-    name: The name of the operation's parent resource.
-    pageSize: The standard list page size.
-    pageToken: The standard list page token.
-  """
-
-  filter = _messages.StringField(1)
-  name = _messages.StringField(2)
-  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(4)
 
 
 class StandardQueryParameters(_messages.Message):

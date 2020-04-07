@@ -444,7 +444,7 @@
           "format": "int32"
         },
         "parameters": {
-          "description": "Optional. The collection of parameters associated with this context.\nRefer to [this\ndoc](https:\/\/cloud.google.com\/dialogflow\/docs\/intents-actions-parameters)\nfor syntax.",
+          "description": "Optional. The collection of parameters associated with this context.\n\nDepending on your protocol or client library language, this is a\nmap, associative array, symbol table, dictionary, or JSON object\ncomposed of a collection of (MapKey, MapValue) pairs:\n\n-   MapKey type: string\n-   MapKey value: parameter name\n-   MapValue type:\n    -   If parameter's entity type is a composite entity: map\n    -   Else: string\n-   MapValue value:\n    -   If parameter's entity type is a composite entity:\n        map from composite entity property names to property values\n    -   Else: parameter value",
           "type": "object",
           "additionalProperties": {
             "type": "any",
@@ -1385,7 +1385,7 @@
           "$ref": "GoogleCloudDialogflowV2IntentBatch"
         },
         "languageCode": {
-          "description": "Optional. The language of training phrases, parameters and rich messages\ndefined in `intents`. If not specified, the agent's default language is\nused. [Many\nlanguages](https:\/\/cloud.google.com\/dialogflow\/docs\/reference\/language)\nare supported. Note: languages must be enabled in the agent before they can\nbe used.",
+          "description": "Optional. The language used to access language-specific data.\nIf not specified, the agent's default language is used.\nFor more information, see\n[Multilingual intent and entity\ndata](https:\/\/cloud.google.com\/dialogflow\/docs\/agents-multilingual#intent-entity).",
           "type": "string"
         },
         "updateMask": {
@@ -1539,7 +1539,7 @@
           "$ref": "GoogleCloudDialogflowV2EntityTypeBatch"
         },
         "languageCode": {
-          "description": "Optional. The language of entity synonyms defined in `entity_types`. If not\nspecified, the agent's default language is used.\n[Many\nlanguages](https:\/\/cloud.google.com\/dialogflow\/docs\/reference\/language)\nare supported. Note: languages must be enabled in the agent before they can\nbe used.",
+          "description": "Optional. The language used to access language-specific data.\nIf not specified, the agent's default language is used.\nFor more information, see\n[Multilingual intent and entity\ndata](https:\/\/cloud.google.com\/dialogflow\/docs\/agents-multilingual#intent-entity).",
           "type": "string"
         },
         "updateMask": {
@@ -1590,7 +1590,7 @@
           }
         },
         "languageCode": {
-          "description": "Optional. The language of entity synonyms defined in `entities`. If not\nspecified, the agent's default language is used.\n[Many\nlanguages](https:\/\/cloud.google.com\/dialogflow\/docs\/reference\/language)\nare supported. Note: languages must be enabled in the agent before they can\nbe used.",
+          "description": "Optional. The language used to access language-specific data.\nIf not specified, the agent's default language is used.\nFor more information, see\n[Multilingual intent and entity\ndata](https:\/\/cloud.google.com\/dialogflow\/docs\/agents-multilingual#intent-entity).",
           "type": "string"
         }
       }
@@ -1608,7 +1608,7 @@
           }
         },
         "languageCode": {
-          "description": "Optional. The language of entity synonyms defined in `entities`. If not\nspecified, the agent's default language is used.\n[Many\nlanguages](https:\/\/cloud.google.com\/dialogflow\/docs\/reference\/language)\nare supported. Note: languages must be enabled in the agent before they can\nbe used.",
+          "description": "Optional. The language used to access language-specific data.\nIf not specified, the agent's default language is used.\nFor more information, see\n[Multilingual intent and entity\ndata](https:\/\/cloud.google.com\/dialogflow\/docs\/agents-multilingual#intent-entity).",
           "type": "string"
         },
         "updateMask": {
@@ -1631,7 +1631,7 @@
           }
         },
         "languageCode": {
-          "description": "Optional. The language of entity synonyms defined in `entities`. If not\nspecified, the agent's default language is used.\n[Many\nlanguages](https:\/\/cloud.google.com\/dialogflow\/docs\/reference\/language)\nare supported. Note: languages must be enabled in the agent before they can\nbe used.",
+          "description": "Optional. The language used to access language-specific data.\nIf not specified, the agent's default language is used.\nFor more information, see\n[Multilingual intent and entity\ndata](https:\/\/cloud.google.com\/dialogflow\/docs\/agents-multilingual#intent-entity).",
           "type": "string"
         }
       }
@@ -1688,7 +1688,7 @@
     },
     "GoogleCloudDialogflowV2DetectIntentRequest": {
       "id": "GoogleCloudDialogflowV2DetectIntentRequest",
-      "description": "============================================================================\nRequests and responses for custom methods.\nThe request to detect user's intent.",
+      "description": "Requests and responses for custom methods.\nThe request to detect user's intent.",
       "type": "object",
       "properties": {
         "queryParams": {
@@ -2845,7 +2845,7 @@
           "format": "int32"
         },
         "parameters": {
-          "description": "Optional. The collection of parameters associated with this context.\nRefer to [this\ndoc](https:\/\/cloud.google.com\/dialogflow\/docs\/intents-actions-parameters)\nfor syntax.",
+          "description": "Optional. The collection of parameters associated with this context.\n\nDepending on your protocol or client library language, this is a\nmap, associative array, symbol table, dictionary, or JSON object\ncomposed of a collection of (MapKey, MapValue) pairs:\n\n-   MapKey type: string\n-   MapKey value: parameter name\n-   MapValue type:\n    -   If parameter's entity type is a composite entity: map\n    -   Else: string\n-   MapValue value:\n    -   If parameter's entity type is a composite entity:\n        map from composite entity property names to property values\n    -   Else: parameter value",
           "type": "object",
           "additionalProperties": {
             "type": "any",
@@ -3542,7 +3542,7 @@
     },
     "GoogleCloudDialogflowV2beta1IntentMessageRbmCardContentRbmMedia": {
       "id": "GoogleCloudDialogflowV2beta1IntentMessageRbmCardContentRbmMedia",
-      "description": "Rich Business Messaging (RBM) Media displayed in Cards\nThe following media-types are currently supported:\n\n## Image Types\n\n image\/jpeg\n image\/jpg'\n image\/gif\n image\/png\n\n## Video Types\n\n video\/h263\n video\/m4v\n video\/mp4\n video\/mpeg\n video\/mpeg4\n video\/webm",
+      "description": "Rich Business Messaging (RBM) Media displayed in Cards\nThe following media-types are currently supported:\n\nImage Types\n\n* image\/jpeg\n* image\/jpg'\n* image\/gif\n* image\/png\n\nVideo Types\n\n* video\/h263\n* video\/m4v\n* video\/mp4\n* video\/mpeg\n* video\/mpeg4\n* video\/webm",
       "type": "object",
       "properties": {
         "fileUri": {
@@ -5588,7 +5588,7 @@
                       "type": "string"
                     },
                     "languageCode": {
-                      "description": "Optional. The language to list training phrases, parameters and rich\nmessages for. If not specified, the agent's default language is used.\n[Many\nlanguages](https:\/\/cloud.google.com\/dialogflow\/docs\/reference\/language)\nare supported. Note: languages must be enabled in the agent before they can\nbe used.",
+                      "description": "Optional. The language used to access language-specific data.\nIf not specified, the agent's default language is used.\nFor more information, see\n[Multilingual intent and entity\ndata](https:\/\/cloud.google.com\/dialogflow\/docs\/agents-multilingual#intent-entity).",
                       "location": "query",
                       "type": "string"
                     },
@@ -5639,7 +5639,7 @@
                       "type": "string"
                     },
                     "languageCode": {
-                      "description": "Optional. The language to retrieve training phrases, parameters and rich\nmessages for. If not specified, the agent's default language is used.\n[Many\nlanguages](https:\/\/cloud.google.com\/dialogflow\/docs\/reference\/language)\nare supported. Note: languages must be enabled in the agent before they can\nbe used.",
+                      "description": "Optional. The language used to access language-specific data.\nIf not specified, the agent's default language is used.\nFor more information, see\n[Multilingual intent and entity\ndata](https:\/\/cloud.google.com\/dialogflow\/docs\/agents-multilingual#intent-entity).",
                       "location": "query",
                       "type": "string"
                     },
@@ -5679,7 +5679,7 @@
                       "type": "string"
                     },
                     "languageCode": {
-                      "description": "Optional. The language of training phrases, parameters and rich messages\ndefined in `intent`. If not specified, the agent's default language is\nused. [Many\nlanguages](https:\/\/cloud.google.com\/dialogflow\/docs\/reference\/language)\nare supported. Note: languages must be enabled in the agent before they can\nbe used.",
+                      "description": "Optional. The language used to access language-specific data.\nIf not specified, the agent's default language is used.\nFor more information, see\n[Multilingual intent and entity\ndata](https:\/\/cloud.google.com\/dialogflow\/docs\/agents-multilingual#intent-entity).",
                       "location": "query",
                       "type": "string"
                     },
@@ -5722,7 +5722,7 @@
                       "type": "string"
                     },
                     "languageCode": {
-                      "description": "Optional. The language of training phrases, parameters and rich messages\ndefined in `intent`. If not specified, the agent's default language is\nused. [Many\nlanguages](https:\/\/cloud.google.com\/dialogflow\/docs\/reference\/language)\nare supported. Note: languages must be enabled in the agent before they can\nbe used.",
+                      "description": "Optional. The language used to access language-specific data.\nIf not specified, the agent's default language is used.\nFor more information, see\n[Multilingual intent and entity\ndata](https:\/\/cloud.google.com\/dialogflow\/docs\/agents-multilingual#intent-entity).",
                       "location": "query",
                       "type": "string"
                     },
@@ -5859,7 +5859,7 @@
                       "type": "string"
                     },
                     "languageCode": {
-                      "description": "Optional. The language to list entity synonyms for. If not specified,\nthe agent's default language is used.\n[Many\nlanguages](https:\/\/cloud.google.com\/dialogflow\/docs\/reference\/language)\nare supported. Note: languages must be enabled in the agent before they can\nbe used.",
+                      "description": "Optional. The language used to access language-specific data.\nIf not specified, the agent's default language is used.\nFor more information, see\n[Multilingual intent and entity\ndata](https:\/\/cloud.google.com\/dialogflow\/docs\/agents-multilingual#intent-entity).",
                       "location": "query",
                       "type": "string"
                     },
@@ -5901,7 +5901,7 @@
                       "type": "string"
                     },
                     "languageCode": {
-                      "description": "Optional. The language to retrieve entity synonyms for. If not specified,\nthe agent's default language is used.\n[Many\nlanguages](https:\/\/cloud.google.com\/dialogflow\/docs\/reference\/language)\nare supported. Note: languages must be enabled in the agent before they can\nbe used.",
+                      "description": "Optional. The language used to access language-specific data.\nIf not specified, the agent's default language is used.\nFor more information, see\n[Multilingual intent and entity\ndata](https:\/\/cloud.google.com\/dialogflow\/docs\/agents-multilingual#intent-entity).",
                       "location": "query",
                       "type": "string"
                     }
@@ -5932,7 +5932,7 @@
                       "type": "string"
                     },
                     "languageCode": {
-                      "description": "Optional. The language of entity synonyms defined in `entity_type`. If not\nspecified, the agent's default language is used.\n[Many\nlanguages](https:\/\/cloud.google.com\/dialogflow\/docs\/reference\/language)\nare supported. Note: languages must be enabled in the agent before they can\nbe used.",
+                      "description": "Optional. The language used to access language-specific data.\nIf not specified, the agent's default language is used.\nFor more information, see\n[Multilingual intent and entity\ndata](https:\/\/cloud.google.com\/dialogflow\/docs\/agents-multilingual#intent-entity).",
                       "location": "query",
                       "type": "string"
                     }
@@ -5966,7 +5966,7 @@
                       "type": "string"
                     },
                     "languageCode": {
-                      "description": "Optional. The language of entity synonyms defined in `entity_type`. If not\nspecified, the agent's default language is used.\n[Many\nlanguages](https:\/\/cloud.google.com\/dialogflow\/docs\/reference\/language)\nare supported. Note: languages must be enabled in the agent before they can\nbe used.",
+                      "description": "Optional. The language used to access language-specific data.\nIf not specified, the agent's default language is used.\nFor more information, see\n[Multilingual intent and entity\ndata](https:\/\/cloud.google.com\/dialogflow\/docs\/agents-multilingual#intent-entity).",
                       "location": "query",
                       "type": "string"
                     },

@@ -209,9 +209,9 @@ class Cluster(_messages.Message):
       if present, must contain 1 to 63 characters, and must conform to RFC
       1035 (https://www.ietf.org/rfc/rfc1035.txt). No more than 32 labels can
       be associated with a cluster.
-    metrics: Contains cluster daemon metrics such as HDFS and YARN stats.Beta
-      Feature: This report is available for testing purposes only. It may be
-      changed before final release.
+    metrics: Output only. Contains cluster daemon metrics such as HDFS and
+      YARN stats.Beta Feature: This report is available for testing purposes
+      only. It may be changed before final release.
     projectId: Required. The Google Cloud Platform project ID that the cluster
       belongs to.
     status: Output only. Cluster status.
@@ -2126,7 +2126,9 @@ class InstanceGroupConfig(_messages.Message):
 
   Enums:
     PreemptibilityValueValuesEnum: Optional. Specifies the preemptibility of
-      the instance group.
+      the instance group.The default value for master and worker groups is
+      NON_PREEMPTIBLE. This default cannot be changed.The default value for
+      secondary instances is PREEMPTIBLE.
 
   Fields:
     accelerators: Optional. The Compute Engine accelerator configuration for
@@ -2137,7 +2139,7 @@ class InstanceGroupConfig(_messages.Message):
       SoftwareConfig.image_version.
     instanceNames: Output only. The list of instance names. Dataproc derives
       the names from cluster_name, num_instances, and the instance group.
-    isPreemptible: Optional. Specifies that this instance group contains
+    isPreemptible: Output only. Specifies that this instance group contains
       preemptible instances.
     machineTypeUri: Optional. The Compute Engine machine type used for cluster
       instances.A full URL, partial URI, or short name are valid. Examples:
@@ -2154,11 +2156,16 @@ class InstanceGroupConfig(_messages.Message):
     numInstances: Optional. The number of VM instances in the instance group.
       For master instance groups, must be set to 1.
     preemptibility: Optional. Specifies the preemptibility of the instance
-      group.
+      group.The default value for master and worker groups is NON_PREEMPTIBLE.
+      This default cannot be changed.The default value for secondary instances
+      is PREEMPTIBLE.
   """
 
   class PreemptibilityValueValuesEnum(_messages.Enum):
-    r"""Optional. Specifies the preemptibility of the instance group.
+    r"""Optional. Specifies the preemptibility of the instance group.The
+    default value for master and worker groups is NON_PREEMPTIBLE. This
+    default cannot be changed.The default value for secondary instances is
+    PREEMPTIBLE.
 
     Values:
       PREEMPTIBILITY_UNSPECIFIED: Preemptibility is unspecified, the system
@@ -2167,7 +2174,7 @@ class InstanceGroupConfig(_messages.Message):
         for all instance groups and is the only valid value for Master and
         Worker instance groups.
       PREEMPTIBLE: Instances are preemptible.This option is allowed only for
-        secondary worker group.
+        secondary worker groups.
     """
     PREEMPTIBILITY_UNSPECIFIED = 0
     NON_PREEMPTIBLE = 1
@@ -2492,6 +2499,7 @@ class KerberosConfig(_messages.Message):
       Kerberos realm and the remote trusted realm, in a cross realm trust
       relationship.
     enableKerberos: Optional. Flag to indicate whether to Kerberize the
+      cluster (default: false). Set this field to true to enable Kerberos on a
       cluster.
     kdcDbKeyUri: Optional. The Cloud Storage URI of a KMS encrypted file
       containing the master key of the KDC database.
@@ -2930,11 +2938,11 @@ class OrderedJob(_messages.Message):
     prerequisiteStepIds: Optional. The optional list of prerequisite job
       step_ids. If not specified, the job will start at the beginning of
       workflow.
-    prestoJob: A PrestoJob attribute.
+    prestoJob: Presto job
     pysparkJob: A PySparkJob attribute.
     scheduling: Optional. Job scheduling configuration.
     sparkJob: A SparkJob attribute.
-    sparkRJob: A SparkRJob attribute.
+    sparkRJob: Spark R job
     sparkSqlJob: A SparkSqlJob attribute.
     stepId: Required. The step id. The id must be unique among all jobs within
       the template.The step id is used as prefix for job id, as job goog-
@@ -3404,33 +3412,33 @@ class SoftwareConfig(_messages.Message):
     Values:
       COMPONENT_UNSPECIFIED: <no description>
       ANACONDA: <no description>
+      DOCKER: <no description>
       DRUID: <no description>
+      FLINK: <no description>
+      HBASE: <no description>
       HIVE_WEBHCAT: <no description>
       JUPYTER: <no description>
       KERBEROS: <no description>
       PRESTO: <no description>
+      RANGER: <no description>
+      SOLR: <no description>
       ZEPPELIN: <no description>
       ZOOKEEPER: <no description>
-      SOLR: <no description>
-      HBASE: <no description>
-      RANGER: <no description>
-      DOCKER: <no description>
-      FLINK: <no description>
     """
     COMPONENT_UNSPECIFIED = 0
     ANACONDA = 1
-    DRUID = 2
-    HIVE_WEBHCAT = 3
-    JUPYTER = 4
-    KERBEROS = 5
-    PRESTO = 6
-    ZEPPELIN = 7
-    ZOOKEEPER = 8
-    SOLR = 9
-    HBASE = 10
-    RANGER = 11
-    DOCKER = 12
-    FLINK = 13
+    DOCKER = 2
+    DRUID = 3
+    FLINK = 4
+    HBASE = 5
+    HIVE_WEBHCAT = 6
+    JUPYTER = 7
+    KERBEROS = 8
+    PRESTO = 9
+    RANGER = 10
+    SOLR = 11
+    ZEPPELIN = 12
+    ZOOKEEPER = 13
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class PropertiesValue(_messages.Message):

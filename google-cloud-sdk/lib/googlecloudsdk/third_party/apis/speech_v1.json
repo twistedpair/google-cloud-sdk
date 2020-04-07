@@ -568,6 +568,10 @@
           "description": "Time of the most recent processing update.",
           "type": "string",
           "format": "google-datetime"
+        },
+        "uri": {
+          "description": "The URI of the audio file being transcribed. Empty if the audio was sent\nas byte content. ",
+          "type": "string"
         }
       }
     },

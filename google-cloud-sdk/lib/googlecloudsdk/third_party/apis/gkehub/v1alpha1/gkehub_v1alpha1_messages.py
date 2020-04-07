@@ -818,10 +818,12 @@ class FeatureStateDetails(_messages.Message):
       CODE_UNSPECIFIED: Not set.
       OK: <no description>
       FAILED: <no description>
+      WARNING: <no description>
     """
     CODE_UNSPECIFIED = 0
     OK = 1
     FAILED = 2
+    WARNING = 3
 
   authorizerFeatureState = _messages.MessageField('AuthorizerFeatureState', 1)
   code = _messages.EnumField('CodeValueValuesEnum', 2)

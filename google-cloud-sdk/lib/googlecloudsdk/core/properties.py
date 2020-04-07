@@ -1015,7 +1015,7 @@ class _SectionBuilds(_Section):
         default=True,
         hidden=True,
         help_text='If True, validate that the --tag value to builds '
-        'submit is in the gcr.io or *.gcr.io namespace.')
+        'submit is in the gcr.io, *.gcr.io, or *.pkg.dev namespace.')
     # TODO(b/118509363): Remove this after its default is True.
     self.use_kaniko = self._AddBool(
         'use_kaniko',
@@ -1800,6 +1800,7 @@ class _SectionApiEndpointOverrides(_Section):
     self.ml = self._Add('ml')
     self.monitoring = self._Add('monitoring')
     self.networkmanagement = self._Add('networkmanagement')
+    self.networkservices = self._Add('networkservices')
     self.orgpolicy = self._Add('orgpolicy')
     self.osconfig = self._Add('osconfig')
     self.oslogin = self._Add('oslogin')

@@ -24,9 +24,11 @@ from apitools.base.py import list_pager
 
 from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.api_lib.util import exceptions
+from googlecloudsdk.calliope import exceptions as gcloud_exceptions
 from googlecloudsdk.command_lib.asset import utils as asset_utils
 from googlecloudsdk.command_lib.util.args import repeated
 from googlecloudsdk.core import exceptions as core_exceptions
+from googlecloudsdk.core import log
 from googlecloudsdk.core.credentials import http
 from googlecloudsdk.core.util import encoding as core_encoding
 from googlecloudsdk.core.util import times
@@ -139,13 +141,28 @@ def MakeGetAssetsHistoryHttpRequests(args, api_version=DEFAULT_API_VERSION):
 
 def _RenderResponseforAnalyzeIamPolicy(response):
   """Renders the response of the AnalyzeIamPolicy request."""
-  for analysis_result in response.mainAnalysis.analysisResults:
-    entry = {}
-    entry['identities'] = analysis_result.identityList.identities
-    for acl in analysis_result.accessControlLists:
-      entry['resources'] = acl.resources
-      entry['accesses'] = acl.accesses
-      yield entry
+  analysis = response.mainAnalysis
+
+  if analysis.fullyExplored:
+    msg = 'Your analysis request is fully explored. '
+  else:
+    msg = ('Your analysis request is NOT fully explored. You can use the '
+           '--show-response option to see the unexplored part. ')
+
+  if not analysis.analysisResults:
+    msg += 'No matching ACL is found.'
+  else:
+    msg += ('The ACLs matching your requests are listed per IAM policy binding'
+            ', so there could be duplications.')
+    for analysis_result in analysis.analysisResults:
+      entry = {}
+      entry['identities'] = analysis_result.identityList.identities
+      for acl in analysis_result.accessControlLists:
+        entry['accesses'] = acl.accesses
+        entry['resources'] = acl.resources
+        yield entry
+
+  log.status.Print(msg)
 
 
 def MakeAnalyzeIamPolicyHttpRequests(args, api_version=V1P4ALPHA1_API_VERSION):
@@ -186,16 +203,24 @@ def MakeAnalyzeIamPolicyHttpRequests(args, api_version=V1P4ALPHA1_API_VERSION):
          '.permissions', p) for p in args.permissions
     ])
 
-  if args.IsSpecified('expand_groups'):
+  if args.expand_groups:
     params.extend([('options.expandGroups', args.expand_groups)])
-  if args.IsSpecified('expand_resources'):
+  if args.expand_resources:
     params.extend([('options.expandResources', args.expand_resources)])
-  if args.IsSpecified('expand_roles'):
+  if args.expand_roles:
     params.extend([('options.expandRoles', args.expand_roles)])
 
-  if args.IsSpecified('output_resource_edges'):
+  if args.output_resource_edges:
+    if api_version == V1P4BETA1_API_VERSION and (not args.show_response):
+      raise gcloud_exceptions.InvalidArgumentException(
+          '--output-resource-edges',
+          'Must be set together with --show-response to take effect.')
     params.extend([('options.outputResourceEdges', args.output_resource_edges)])
-  if args.IsSpecified('output_group_edges'):
+  if args.output_group_edges:
+    if api_version == V1P4BETA1_API_VERSION and (not args.show_response):
+      raise gcloud_exceptions.InvalidArgumentException(
+          '--output-group-edges',
+          'Must be set together with --show-response to take effect.')
     params.extend([('options.outputGroupEdges', args.output_group_edges)])
   if api_version == V1P4ALPHA1_API_VERSION and args.IsSpecified(
       'output_partial_result_before_timeout'):
@@ -437,16 +462,16 @@ class IamPolicyAnalysisExportClient(object):
         gcsDestination=self.message_module.GcsDestination(uri=args.output_path))
 
     options = self.message_module.Options()
-    if args.IsSpecified('expand_groups'):
+    if args.expand_groups:
       options.expandGroups = args.expand_groups
-    if args.IsSpecified('expand_resources'):
+    if args.expand_resources:
       options.expandResources = args.expand_resources
-    if args.IsSpecified('expand_roles'):
+    if args.expand_roles:
       options.expandRoles = args.expand_roles
 
-    if args.IsSpecified('output_resource_edges'):
+    if args.output_resource_edges:
       options.outputResourceEdges = args.output_resource_edges
-    if args.IsSpecified('output_group_edges'):
+    if args.output_group_edges:
       options.outputGroupEdges = args.output_group_edges
 
     export_iam_policy_analysis_request = self.message_module.ExportIamPolicyAnalysisRequest(

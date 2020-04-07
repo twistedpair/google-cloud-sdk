@@ -456,13 +456,15 @@
           "enumDescriptions": [
             "Not set.",
             "",
+            "",
             ""
           ],
           "type": "string",
           "enum": [
             "CODE_UNSPECIFIED",
             "OK",
-            "FAILED"
+            "FAILED",
+            "WARNING"
           ]
         },
         "description": {

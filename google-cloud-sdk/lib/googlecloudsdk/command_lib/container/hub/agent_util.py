@@ -67,7 +67,7 @@ metadata:
   name: {gcp_sa_key_secret_name}
   namespace: {namespace}
 data:
-  {gcp_sa_key_secret_name}.json: {gcp_sa_key}
+  {gcp_sa_key_secret_name}.json: "{gcp_sa_key}"
 """
 
 NAMESPACE_TEMPLATE = """\
@@ -247,6 +247,9 @@ def _GenerateManifest(args, service_account_key_data, image_pull_secret_data,
     for resource in manifest_resources:
       full_manifest = full_manifest + resource['manifest'] + delimeter
   else:
+    # If Workload Identity is enabled, the Hub API will detect the issuer on
+    # the membership resource and seamlessly return a manifest that correctly
+    # configures the Connect Agent to use Workload Identity.
     manifest_resources = api_util.GenerateConnectAgentManifest(
         membership_ref,
         image_pull_secret_content=image_pull_secret_data,

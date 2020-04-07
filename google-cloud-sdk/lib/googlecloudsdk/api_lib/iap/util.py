@@ -160,7 +160,7 @@ class IAPWeb(IapIamResource):
     project = _GetProject(self.project)
     return self.registry.Parse(
         None, params={
-            'project': project.projectNumber,
+            'projectsId': '{}/iap_web'.format(project.projectNumber),
         }, collection=PROJECTS_COLLECTION)
 
 

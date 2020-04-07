@@ -311,6 +311,10 @@
         "config": {
           "description": "Required. The configuration needed to enable the HTTP filter. The configuration must\nbe JSON formatted and only contain fields defined in the protobuf\nidentified in config_type_url.",
           "type": "string"
+        },
+        "description": {
+          "description": "Optional. A free-text description of the resource. Max length 1024 characters.",
+          "type": "string"
         }
       }
     },
@@ -389,6 +393,10 @@
         "trafficPortSelector": {
           "description": "Optional. Port selector for the (matched) endpoints. If no port selector is\nprovided, the matched config is applied to all ports.",
           "$ref": "TrafficPortSelector"
+        },
+        "description": {
+          "description": "Optional. A free-text description of the resource. Max length 1024 characters.",
+          "type": "string"
         }
       }
     },

@@ -31,7 +31,6 @@ from googlecloudsdk.core.credentials import store
 from googlecloudsdk.core.util import files
 from oauth2client import client
 import six
-from google.auth import credentials
 
 ENCODING = None if six.PY2 else 'utf8'
 
@@ -98,7 +97,7 @@ def Http(timeout='unset',
         handlers.append(http.Modifiers.Handler(
             http.Modifiers.SetHeader('X-Goog-User-Project', quota_project)))
 
-    if isinstance(creds, credentials.Credentials):
+    if core_creds.IsGoogleAuthCredentials(creds):
       http_client = google_auth_httplib2.AuthorizedHttp(creds, http_client)
     else:
       http_client = creds.authorize(http_client)
