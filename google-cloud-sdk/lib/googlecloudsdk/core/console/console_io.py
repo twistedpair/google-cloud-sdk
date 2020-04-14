@@ -551,7 +551,7 @@ def PromptChoice(options, default=None, message=None,
 
   while True:
     answer = _GetInput()
-    if answer is None or (answer is '' and default is not None):
+    if answer is None or (not answer and default is not None):
       # Return default if we failed to read from stdin.
       # Return default if the user hit enter and there is a valid default,
       # or raise OperationCancelledError if default is the cancel option.

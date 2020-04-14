@@ -21,12 +21,14 @@ from __future__ import unicode_literals
 import re
 
 from googlecloudsdk.api_lib.privateca import base as privateca_base
+from googlecloudsdk.api_lib.privateca import constants as api_constants
 from googlecloudsdk.api_lib.util import messages as messages_util
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import base
 from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.command_lib.privateca import text_utils
 from googlecloudsdk.command_lib.util.apis import arg_utils
+from googlecloudsdk.core import resources
 from googlecloudsdk.core.util import times
 
 import ipaddress
@@ -234,34 +236,42 @@ def AddInlineReusableConfigFlags(parser, is_ca):
 # Flag parsing
 
 
-def ParseReusableConfig(args, is_ca):
+def ParseReusableConfig(args, location, is_ca):
   """Parses the reusable config flags into an API ReusableConfigWrapper.
 
   Args:
     args: The parsed argument values.
+    location: The location of the resource with which this reusable config
+      will be used.
     is_ca: Whether the current operation is on a CA. If so, certSign and crlSign
       key usages are added.
 
   Returns:
     A ReusableConfigWrapper object.
   """
-  resource = args.CONCEPTS.reusable_config.Parse()
-  # If key_usages or extended_usages or max_chain_length or is_ca_cert are
-  # provided OR nothing was provided, use inline values (with defaults).
-  has_inline = args.IsSpecified('key_usages') or args.IsSpecified(
-      'extended_key_usages') or args.IsSpecified('max_chain_length') or (
-          'is_ca_cert' in vars(args) and args.IsSpecified('is_ca_cert'))
-
   messages = privateca_base.GetMessagesModule()
+  has_resource = args.IsSpecified('reusable_config')
+  has_inline_values = any([
+      flag in vars(args) and args.IsSpecified(flag) for flag in
+      ['key_usages', 'extended_key_usages', 'max_chain_length', 'is_ca_cert']
+  ])
 
-  if resource and has_inline:
+  if has_resource and has_inline_values:
     raise exceptions.InvalidArgumentException(
         '--reusable-config',
         '--reusable-config may not be specified if one or more of '
         '--key-usages, --extended-key-usages or --max-chain-length are '
         'specified.')
 
-  if resource:
+  if has_resource:
+    # TODO(b/149316889): Use concepts library once attribute fallthroughs work.
+    resource = resources.REGISTRY.Parse(
+        args.reusable_config,
+        collection='privateca.projects.locations.reusableConfigs',
+        params={
+            'projectsId': api_constants.PREDEFINED_REUSABLE_CONFIG_PROJECT,
+            'locationsId': location,
+        })
     return messages.ReusableConfigWrapper(
         reusableConfig=resource.RelativeName())
 

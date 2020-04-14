@@ -149,7 +149,7 @@ class ReauthenticationException(Error):
 
           $ gcloud auth login
 
-        To obtain new credentials.""".format(message=message)))
+        to obtain new credentials.""".format(message=message)))
 
 
 class TokenRefreshReauthError(ReauthenticationException):
@@ -159,6 +159,23 @@ class TokenRefreshReauthError(ReauthenticationException):
     message = ('There was a problem reauthenticating while refreshing your '
                'current auth tokens: {0}').format(error)
     super(TokenRefreshReauthError, self).__init__(message)
+
+
+class WebLoginRequiredReauthError(Error):
+  """An exception raised when login through browser is required for reauth.
+
+  This applies to SAML users who set password as their reauth method today.
+  Since SAML uers do not have knowledge of their Google password, we require
+  web login and allow users to be authenticated by their IDP.
+  """
+
+  def __init__(self):
+    super(WebLoginRequiredReauthError, self).__init__(textwrap.dedent("""\
+        Please run:
+
+          $ gcloud auth login
+
+        to complete reauthentication."""))
 
 
 class InvalidCredentialFileException(Error):
@@ -643,6 +660,8 @@ def _Refresh(credentials,
 
   except (client.AccessTokenRefreshError, httplib2.ServerNotFoundError) as e:
     raise TokenRefreshError(six.text_type(e))
+  except reauth_errors.ReauthSamlLoginRequiredError:
+    raise WebLoginRequiredReauthError()
   except reauth_errors.ReauthError as e:
     raise TokenRefreshReauthError(str(e))
 

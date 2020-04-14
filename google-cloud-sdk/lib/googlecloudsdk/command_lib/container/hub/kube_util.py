@@ -1269,7 +1269,8 @@ def IsGKECluster(kube_client):
   There is no straightforward way to obtain this information from the cluster
   API server directly. This method uses metadata on the Kubernetes nodes to
   determine the instance ID. The instance ID field is unique to GKE clusters:
-  Kubernetes-on-GCE clusters do not have this field.
+  Kubernetes-on-GCE clusters do not have this field. This test doesn't work in
+  identifing a GKE cluster with zero nodes.
 
   Args:
     kube_client: A Kubernetes client for the cluster to be registered.
@@ -1281,9 +1282,15 @@ def IsGKECluster(kube_client):
   Returns:
     bool: True if kubeclient communicates with a GKE Cluster, false otherwise.
   """
+  # gke_cluster_self_link is sufficient to test for a GKE cluster.
+  # If gke_cluster_self_link is not populated, then use metadata on the
+  # Kubernetes nodes to identify a GKE cluster.
+  if kube_client.processor and kube_client.processor.gke_cluster_self_link:
+    return True
+
   vm_instance_id, err = kube_client.GetResourceField(
       None, 'nodes',
-      '.items[0].metadata.annotations.container\\.googleapis\\.com/instance_id')
+      '.items[*].metadata.annotations.container\\.googleapis\\.com/instance_id')
 
   if err:
     raise exceptions.Error(

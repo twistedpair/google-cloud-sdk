@@ -22,9 +22,11 @@ from __future__ import unicode_literals
 import contextlib
 import datetime
 import functools
+
 from apitools.base.py import encoding
 from apitools.base.py import exceptions as api_exceptions
 from apitools.base.py import list_pager
+from googlecloudsdk.api_lib.cloudbuild import cloudbuild_util
 from googlecloudsdk.api_lib.run import condition as run_condition
 from googlecloudsdk.api_lib.run import configuration
 from googlecloudsdk.api_lib.run import domain_mapping
@@ -962,16 +964,23 @@ class ServerlessOperations(object):
         str(curr_generation + 1).zfill(5), name_generator.GenerateName())
     config_changes.insert(0, _NewRevisionForcingChange(revision_suffix))
 
-  def ReleaseService(self, service_ref, config_changes, tracker=None,
-                     asyn=False, allow_unauthenticated=None, for_replace=False,
-                     prefetch=False):
+  def ReleaseService(self,
+                     service_ref,
+                     config_changes,
+                     tracker=None,
+                     asyn=False,
+                     allow_unauthenticated=None,
+                     for_replace=False,
+                     prefetch=False,
+                     build_op_ref=None,
+                     build_log_url=None):
     """Change the given service in prod using the given config_changes.
 
     Ensures a new revision is always created, even if the spec of the revision
     has not changed.
 
     Arguments:
-      service_ref: Resource, the service to release
+      service_ref: Resource, the service to release.
       config_changes: list, objects that implement Adjust().
       tracker: StagedProgressTracker, to report on the progress of releasing.
       asyn: bool, if True, return without waiting for the service to be updated.
@@ -984,11 +993,33 @@ class ServerlessOperations(object):
       prefetch: the service, pre-fetched for ReleaseService. `False` indicates
         the caller did not perform a prefetch; `None` indicates a nonexistant
         service.
+      build_op_ref: The reference to the build.
+      build_log_url: The log url of the build result.
     """
     if tracker is None:
       tracker = progress_tracker.NoOpStagedProgressTracker(
           stages.ServiceStages(allow_unauthenticated is not None),
           interruptable=True, aborted_message='aborted')
+    if build_op_ref is not None:
+      tracker.StartStage(stages.BUILD_READY)
+      tracker.UpdateHeaderMessage('Building Container.')
+      tracker.UpdateStage(
+          stages.BUILD_READY, 'Logs are available at [{build_log_url}].'.format(
+              build_log_url=build_log_url))
+      client = cloudbuild_util.GetClientInstance()
+      poller = waiter.CloudOperationPoller(client.projects_builds,
+                                           client.operations)
+      operation = waiter.PollUntilDone(poller, build_op_ref)
+      response_dict = encoding.MessageToPyValue(operation.response)
+      if response_dict and response_dict['status'] != 'SUCCESS':
+        tracker.FailStage(
+            stages.BUILD_READY, None,
+            message='Container build failed and '
+            'logs are available at [{build_log_url}].'.format(
+                build_log_url=build_log_url))
+        return
+      else:
+        tracker.CompleteStage(stages.BUILD_READY)
     if prefetch is None:
       serv = None
     else:

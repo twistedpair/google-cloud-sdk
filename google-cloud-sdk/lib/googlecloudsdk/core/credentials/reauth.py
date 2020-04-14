@@ -22,6 +22,7 @@ from __future__ import unicode_literals
 import json
 
 from googlecloudsdk.core import exceptions as core_exceptions
+from googlecloudsdk.core import http
 from googlecloudsdk.core.util import retry
 
 from oauth2client import client as oauth2client_client
@@ -43,6 +44,9 @@ class ReauthRequiredError(Error):
   """Exceptions when reauth is required."""
 
 
+# In gcloud, UserCredWithReauth should be used for user account credentials.
+# Do not use its parent class credentials.Credentials because it
+# does not support reauth.
 class UserCredWithReauth(credentials.Credentials):
   """Extended user credentials of the google auth library for reauth.
 
@@ -80,7 +84,12 @@ class UserCredWithReauth(credentials.Credentials):
     try:
       return self._Refresh(request)
     except ReauthRequiredError:
-      self._rapt_token = reauth.GetRaptToken(request, self._client_id,
+      # reauth.GetRaptToken is implemented in oauth2client and it is built on
+      # httplib2. GetRaptToken does not work with
+      # google.auth.transport.Request.
+      response_encoding = None if six.PY2 else 'utf-8'
+      http_request = http.Http(response_encoding=response_encoding).request
+      self._rapt_token = reauth.GetRaptToken(http_request, self._client_id,
                                              self._client_secret,
                                              self._refresh_token,
                                              self._token_uri, list(self.scopes))
@@ -102,16 +111,41 @@ class UserCredWithReauth(credentials.Credentials):
     self.expiry = expiry
     self._refresh_token = refresh_token
     self._id_token = grant_response.get('id_token')
+    # id_token in oauth2client creds is decoded and it uses id_tokenb64 to
+    # store the encoded copy. id_token in google-auth creds is encoded.
+    # Here, we add id_tokenb64 to google-auth creds for consistency.
+    self.id_tokenb64 = grant_response.get('id_token')
 
-    if self._scopes and 'scopes' in grant_response:
+    if self._scopes and 'scope' in grant_response:
       requested_scopes = frozenset(self._scopes)
-      granted_scopes = frozenset(grant_response['scopes'].split())
+      granted_scopes = frozenset(grant_response['scope'].split())
       scopes_requested_but_not_granted = requested_scopes - granted_scopes
       if scopes_requested_but_not_granted:
         raise google_auth_exceptions.RefreshError(
             'Not all requested scopes were granted by the '
             'authorization server, missing scopes {}.'.format(
                 ', '.join(scopes_requested_but_not_granted)))
+
+  @classmethod
+  def FromGoogleAuthUserCredentials(cls, creds):
+    """Creates an object from creds of google.oauth2.credentials.Credentials.
+
+    Args:
+      creds: google.oauth2.credentials.Credentials, The input credentials.
+    Returns:
+      Credentials of UserCredWithReauth.
+    """
+    res = cls(
+        creds.token,
+        refresh_token=creds.refresh_token,
+        id_token=creds.id_token,
+        token_uri=creds.token_uri,
+        client_id=creds.client_id,
+        client_secret=creds.client_secret,
+        scopes=creds.scopes,
+        quota_project_id=creds.quota_project_id)
+    res.expiry = creds.expiry
+    return res
 
 
 def _RefreshGrant(request,
@@ -131,7 +165,7 @@ def _RefreshGrant(request,
   if scopes:
     body.append(('scope', ' '.join(scopes)))
   if rapt_token:
-    body.append(('rapt_token', rapt_token))
+    body.append(('rapt', rapt_token))
   response_data = _TokenEndpointRequestWithRetry(request, token_uri, body)
 
   try:

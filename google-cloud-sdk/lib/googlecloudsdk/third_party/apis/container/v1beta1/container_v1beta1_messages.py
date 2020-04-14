@@ -34,6 +34,9 @@ class AddonsConfig(_messages.Message):
     cloudRunConfig: Configuration for the Cloud Run addon. The `IstioConfig`
       addon must be enabled in order to enable Cloud Run addon. This option
       can only be enabled at cluster creation time.
+    configConnectorConfig: Configuration for the ConfigConnector add-on, a
+      Kubernetes extension to manage hosted GCP services through the
+      Kubernetes API
     dnsCacheConfig: Configuration for NodeLocalDNS, a dns cache running on
       cluster nodes
     gcePersistentDiskCsiDriverConfig: Configuration for the Compute Engine
@@ -60,14 +63,15 @@ class AddonsConfig(_messages.Message):
   """
 
   cloudRunConfig = _messages.MessageField('CloudRunConfig', 1)
-  dnsCacheConfig = _messages.MessageField('DnsCacheConfig', 2)
-  gcePersistentDiskCsiDriverConfig = _messages.MessageField('GcePersistentDiskCsiDriverConfig', 3)
-  horizontalPodAutoscaling = _messages.MessageField('HorizontalPodAutoscaling', 4)
-  httpLoadBalancing = _messages.MessageField('HttpLoadBalancing', 5)
-  istioConfig = _messages.MessageField('IstioConfig', 6)
-  kalmConfig = _messages.MessageField('KalmConfig', 7)
-  kubernetesDashboard = _messages.MessageField('KubernetesDashboard', 8)
-  networkPolicyConfig = _messages.MessageField('NetworkPolicyConfig', 9)
+  configConnectorConfig = _messages.MessageField('ConfigConnectorConfig', 2)
+  dnsCacheConfig = _messages.MessageField('DnsCacheConfig', 3)
+  gcePersistentDiskCsiDriverConfig = _messages.MessageField('GcePersistentDiskCsiDriverConfig', 4)
+  horizontalPodAutoscaling = _messages.MessageField('HorizontalPodAutoscaling', 5)
+  httpLoadBalancing = _messages.MessageField('HttpLoadBalancing', 6)
+  istioConfig = _messages.MessageField('IstioConfig', 7)
+  kalmConfig = _messages.MessageField('KalmConfig', 8)
+  kubernetesDashboard = _messages.MessageField('KubernetesDashboard', 9)
+  networkPolicyConfig = _messages.MessageField('NetworkPolicyConfig', 10)
 
 
 class AuthenticatorGroupsConfig(_messages.Message):
@@ -718,6 +722,16 @@ class CompleteIPRotationRequest(_messages.Message):
   name = _messages.StringField(2)
   projectId = _messages.StringField(3)
   zone = _messages.StringField(4)
+
+
+class ConfigConnectorConfig(_messages.Message):
+  r"""Configuration options for the Config Connector add-on.
+
+  Fields:
+    enabled: Whether Cloud Connector is enabled for this cluster.
+  """
+
+  enabled = _messages.BooleanField(1)
 
 
 class ConsumptionMeteringConfig(_messages.Message):
@@ -1508,6 +1522,13 @@ class IPAllocationPolicy(_messages.Message):
       range to use. This field is deprecated, use
       cluster.tpu_config.ipv4_cidr_block instead.
     useIpAliases: Whether alias IPs will be used for pod IPs in the cluster.
+      This is used in conjunction with use_routes. It cannot be true if
+      use_routes is true. If both use_ip_aliases and use_routes are false,
+      then the server picks the default IP allocation mode
+    useRoutes: Whether routes will be used for pod IPs in the cluster. This is
+      used in conjunction with use_ip_aliases. It cannot be true if
+      use_ip_aliases is true. If both use_ip_aliases and use_routes are false,
+      then the server picks the default IP allocation mode
   """
 
   allowRouteOverlap = _messages.BooleanField(1)
@@ -1523,6 +1544,7 @@ class IPAllocationPolicy(_messages.Message):
   subnetworkName = _messages.StringField(11)
   tpuIpv4CidrBlock = _messages.StringField(12)
   useIpAliases = _messages.BooleanField(13)
+  useRoutes = _messages.BooleanField(14)
 
 
 class IntraNodeVisibilityConfig(_messages.Message):

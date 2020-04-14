@@ -41,9 +41,9 @@ class FileProjectsLocationsInstancesCreateRequest(_messages.Message):
 
   Fields:
     instance: A Instance resource to be passed as the request body.
-    instanceId: The name of the instance to create. The name must be unique
-      for the specified project and location.
-    parent: The instance's project and location, in the format
+    instanceId: Required. The name of the instance to create. The name must be
+      unique for the specified project and location.
+    parent: Required. The instance's project and location, in the format
       projects/{project_id}/locations/{location}. In Cloud Filestore,
       locations map to GCP zones, for example **us-west1-b**.
   """
@@ -57,7 +57,7 @@ class FileProjectsLocationsInstancesDeleteRequest(_messages.Message):
   r"""A FileProjectsLocationsInstancesDeleteRequest object.
 
   Fields:
-    name: The instance resource name, in the format
+    name: Required. The instance resource name, in the format
       projects/{project_id}/locations/{location}/instances/{instance_id}
   """
 
@@ -68,7 +68,7 @@ class FileProjectsLocationsInstancesGetRequest(_messages.Message):
   r"""A FileProjectsLocationsInstancesGetRequest object.
 
   Fields:
-    name: The instance resource name, in the format
+    name: Required. The instance resource name, in the format
       projects/{project_id}/locations/{location}/instances/{instance_id}.
   """
 
@@ -85,7 +85,7 @@ class FileProjectsLocationsInstancesListRequest(_messages.Message):
     pageSize: The maximum number of items to return.
     pageToken: The next_page_token value to use if there are additional
       results to retrieve for this list request.
-    parent: The project and location for which to retrieve instance
+    parent: Required. The project and location for which to retrieve instance
       information, in the format projects/{project_id}/locations/{location}.
       In Cloud Filestore, locations map to GCP zones, for example **us-
       west1-b**. To retrieve instance information for all locations, use "-"
@@ -588,8 +588,7 @@ class Instance(_messages.Message):
 
   Fields:
     createTime: Output only. The time when the instance was created.
-    description: Optional. The description of the instance (2048 characters or
-      less).
+    description: The description of the instance (2048 characters or less).
     etag: Server-specified ETag for the instance resource to prevent
       simultaneous updates from overwriting each other.
     fileShares: File system shares on the instance. For this version, only a

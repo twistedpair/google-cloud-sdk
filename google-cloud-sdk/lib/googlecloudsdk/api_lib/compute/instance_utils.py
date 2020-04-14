@@ -40,7 +40,6 @@ from googlecloudsdk.core import log
 import ipaddress
 import six
 
-
 EMAIL_REGEX = re.compile(r'(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$)')
 
 _DEFAULT_DEVICE_NAME_CONTAINER_WARNING = (
@@ -80,6 +79,7 @@ def GetNameForCustom(custom_cpu, custom_memory_mib, ext=False, vm_type=False):
       type instance
     ext: extended custom machine type should be used if true
     vm_type: VM instance generation
+
   Returns:
     The custom machine type name for the 'instance create' call
   """
@@ -93,7 +93,10 @@ def GetNameForCustom(custom_cpu, custom_memory_mib, ext=False, vm_type=False):
   return machine_type
 
 
-def InterpretMachineType(machine_type, custom_cpu, custom_memory, ext=True,
+def InterpretMachineType(machine_type,
+                         custom_cpu,
+                         custom_memory,
+                         ext=True,
                          vm_type=False):
   """Interprets the machine type for the instance.
 
@@ -164,21 +167,18 @@ def CheckCustomCpuRamRatio(compute_client, project, zone, machine_type_name):
   compute = compute_client.apitools_client
   if 'custom' in machine_type_name:
     mt_get_pb = messages.ComputeMachineTypesGetRequest(
-        machineType=machine_type_name,
-        project=project,
-        zone=zone)
+        machineType=machine_type_name, project=project, zone=zone)
     mt_get_reqs = [(compute.machineTypes, 'Get', mt_get_pb)]
     errors = []
 
     # Makes a 'machine-types describe' request to check the bounds
-    _ = list(compute_client.MakeRequests(
-        requests=mt_get_reqs,
-        errors_to_collect=errors))
+    _ = list(
+        compute_client.MakeRequests(
+            requests=mt_get_reqs, errors_to_collect=errors))
 
     if errors:
       utils.RaiseToolException(
-          errors,
-          error_message='Could not fetch machine type:')
+          errors, error_message='Could not fetch machine type:')
 
 
 def CreateServiceAccountMessages(messages, scopes, service_account):
@@ -219,8 +219,7 @@ def CreateServiceAccountMessages(messages, scopes, service_account):
 
   res = []
   for account, scopes in sorted(six.iteritems(accounts_to_scopes)):
-    res.append(messages.ServiceAccount(email=account,
-                                       scopes=sorted(scopes)))
+    res.append(messages.ServiceAccount(email=account, scopes=sorted(scopes)))
   return res
 
 
@@ -234,9 +233,13 @@ def CreateOnHostMaintenanceMessage(messages, maintenance_policy):
   return on_host_maintenance
 
 
-def CreateSchedulingMessage(
-    messages, maintenance_policy, preemptible, restart_on_failure,
-    node_affinities=None, min_node_cpu=None, location_hint=None):
+def CreateSchedulingMessage(messages,
+                            maintenance_policy,
+                            preemptible,
+                            restart_on_failure,
+                            node_affinities=None,
+                            min_node_cpu=None,
+                            location_hint=None):
   """Create scheduling message for VM."""
   # Note: We always specify automaticRestart=False for preemptible VMs. This
   # makes sense, since no-restart-on-failure is defined as "store-true", and
@@ -247,12 +250,14 @@ def CreateSchedulingMessage(
   on_host_maintenance = CreateOnHostMaintenanceMessage(messages,
                                                        maintenance_policy)
   if preemptible:
-    scheduling = messages.Scheduling(automaticRestart=False,
-                                     onHostMaintenance=on_host_maintenance,
-                                     preemptible=True)
+    scheduling = messages.Scheduling(
+        automaticRestart=False,
+        onHostMaintenance=on_host_maintenance,
+        preemptible=True)
   else:
-    scheduling = messages.Scheduling(automaticRestart=restart_on_failure,
-                                     onHostMaintenance=on_host_maintenance)
+    scheduling = messages.Scheduling(
+        automaticRestart=restart_on_failure,
+        onHostMaintenance=on_host_maintenance)
   if node_affinities:
     scheduling.nodeAffinities = node_affinities
 
@@ -264,8 +269,9 @@ def CreateSchedulingMessage(
   return scheduling
 
 
-def CreateShieldedInstanceConfigMessage(
-    messages, enable_secure_boot, enable_vtpm, enable_integrity_monitoring):
+def CreateShieldedInstanceConfigMessage(messages, enable_secure_boot,
+                                        enable_vtpm,
+                                        enable_integrity_monitoring):
   """Create shieldedInstanceConfig message for VM."""
 
   shielded_instance_config = messages.ShieldedInstanceConfig(
@@ -294,40 +300,6 @@ def CreateConfidentialInstanceMessage(messages, enable_confidential_compute):
   return confidential_instance_config
 
 
-def CreateMachineTypeUris(
-    resources, compute_client,
-    machine_type, custom_cpu, custom_memory, vm_type, ext, instance_refs):
-  """Create machine type URIs for given args and instance references."""
-  # The element at index i is the machine type URI for instance
-  # i. We build this list here because we want to delay work that
-  # requires API calls as much as possible. This leads to a better
-  # user experience because the tool can fail fast upon a spelling
-  # mistake instead of delaying the user by making API calls whose
-  # purpose has already been rendered moot by the spelling mistake.
-  machine_type_uris = []
-
-  # Setting the machine type
-  machine_type_name = InterpretMachineType(
-      machine_type, custom_cpu, custom_memory, ext, vm_type)
-
-  for instance_ref in instance_refs:
-    # Check to see if the custom machine type ratio is supported
-    CheckCustomCpuRamRatio(compute_client,
-                           instance_ref.project,
-                           instance_ref.zone,
-                           machine_type_name)
-    machine_type_uris.append(
-        resources.Parse(
-            machine_type_name,
-            collection='compute.machineTypes',
-            params={
-                'project': instance_ref.project,
-                'zone': instance_ref.zone
-            }).SelfLink())
-
-  return machine_type_uris
-
-
 def CreateNetworkInterfaceMessage(resources,
                                   compute_client,
                                   network,
@@ -335,7 +307,8 @@ def CreateNetworkInterfaceMessage(resources,
                                   private_network_ip,
                                   no_address,
                                   address,
-                                  instance_refs,
+                                  project,
+                                  zone,
                                   alias_ip_ranges_string=None,
                                   network_tier=None,
                                   no_public_dns=None,
@@ -346,7 +319,7 @@ def CreateNetworkInterfaceMessage(resources,
                                   public_ptr_domain=None):
   """Returns a new NetworkInterface message."""
   # TODO(b/30460572): instance reference should have zone name, not zone URI.
-  region = utils.ZoneNameToRegionName(instance_refs[0].zone.split('/')[-1])
+  region = utils.ZoneNameToRegionName(zone.split('/')[-1])
   messages = compute_client.messages
   network_interface = messages.NetworkInterface()
   # By default interface is attached to default network. If network or subnet
@@ -356,22 +329,20 @@ def CreateNetworkInterfaceMessage(resources,
         subnet,
         collection='compute.subnetworks',
         params={
-            'project': instance_refs[0].project,
+            'project': project,
             'region': region
         })
     network_interface.subnetwork = subnet_ref.SelfLink()
   if network is not None:
     network_ref = resources.Parse(
-        network,
-        params={
-            'project': instance_refs[0].project,
-        },
-        collection='compute.networks')
+        network, params={
+            'project': project,
+        }, collection='compute.networks')
     network_interface.network = network_ref.SelfLink()
   elif subnet is None:
     network_ref = resources.Parse(
         constants.DEFAULT_NETWORK,
-        params={'project': instance_refs[0].project},
+        params={'project': project},
         collection='compute.networks')
     network_interface.network = network_ref.SelfLink()
 
@@ -383,8 +354,9 @@ def CreateNetworkInterfaceMessage(resources,
       network_interface.networkIP = private_network_ip
     except ValueError:
       # ipaddress could not resolve as an IPv4 or IPv6 address.
-      network_interface.networkIP = flags.GetAddressRef(
-          resources, private_network_ip, region).SelfLink()
+      network_interface.networkIP = flags.GetAddressRef(resources,
+                                                        private_network_ip,
+                                                        region).SelfLink()
 
   if alias_ip_ranges_string:
     network_interface.aliasIpRanges = (
@@ -396,17 +368,16 @@ def CreateNetworkInterfaceMessage(resources,
         name=constants.DEFAULT_ACCESS_CONFIG_NAME,
         type=messages.AccessConfig.TypeValueValuesEnum.ONE_TO_ONE_NAT)
     if network_tier is not None:
-      access_config.networkTier = (messages.AccessConfig.
-                                   NetworkTierValueValuesEnum(network_tier))
+      access_config.networkTier = (
+          messages.AccessConfig.NetworkTierValueValuesEnum(network_tier))
 
     # If the user provided an external IP, populate the access
     # config with it.
     # TODO(b/25278937): plays poorly when creating multiple instances
-    if len(instance_refs) == 1:
-      address_resource = flags.ExpandAddressFlag(
-          resources, compute_client, address, region)
-      if address_resource:
-        access_config.natIP = address_resource
+    address_resource = flags.ExpandAddressFlag(resources, compute_client,
+                                               address, region)
+    if address_resource:
+      access_config.natIP = address_resource
 
     if no_public_dns is True:
       access_config.setPublicDns = False
@@ -427,15 +398,17 @@ def CreateNetworkInterfaceMessage(resources,
 
 
 def CreateNetworkInterfaceMessages(resources, compute_client,
-                                   network_interface_arg, instance_refs):
+                                   network_interface_arg, project, zone):
   """Create network interface messages.
 
   Args:
     resources: generates resource references.
     compute_client: creates resources.
     network_interface_arg: CLI argument specyfying network interfaces.
-    instance_refs: reference to instances that will own the generated
-                   interfaces.
+    project: project of the instance that will own the generated network
+      interfaces.
+    zone: zone of the instance that will own the generated network interfaces.
+
   Returns:
     list, items are NetworkInterfaceMessages.
   """
@@ -446,11 +419,12 @@ def CreateNetworkInterfaceMessages(resources, compute_client,
       no_address = 'no-address' in interface
       network_tier = interface.get('network-tier', None)
 
-      result.append(CreateNetworkInterfaceMessage(
-          resources, compute_client, interface.get('network', None),
-          interface.get('subnet', None),
-          interface.get('private-network-ip', None), no_address,
-          address, instance_refs, interface.get('aliases', None), network_tier))
+      result.append(
+          CreateNetworkInterfaceMessage(
+              resources, compute_client, interface.get('network', None),
+              interface.get('subnet', None),
+              interface.get('private-network-ip', None), no_address, address,
+              project, zone, interface.get('aliases', None), network_tier))
   return result
 
 
@@ -476,9 +450,8 @@ def ParseDiskResource(resources, name, project, zone, type_):
 
 def GetDiskDeviceName(disk, name, container_mount_disk):
   """Helper method to get device-name for a disk message."""
-  if (container_mount_disk and
-      filter(bool,
-             [d.get('name', name) == name for d in container_mount_disk])):
+  if (container_mount_disk and filter(
+      bool, [d.get('name', name) == name for d in container_mount_disk])):
     # device-name must be the same as name if it is being mounted to a
     # container.
     if not disk.get('device-name'):
@@ -494,12 +467,15 @@ def GetDiskDeviceName(disk, name, container_mount_disk):
   return disk.get('device-name')
 
 
-def CreatePersistentAttachedDiskMessages(
-    resources, compute_client, csek_keys, disks, instance_ref,
-    container_mount_disk=None):
+def CreatePersistentAttachedDiskMessages(resources,
+                                         compute_client,
+                                         csek_keys,
+                                         disks,
+                                         project,
+                                         zone,
+                                         container_mount_disk=None):
   """Returns a list of AttachedDisk messages and the boot disk's reference."""
   disks_messages = []
-  boot_disk_ref = None
 
   messages = compute_client.messages
   compute = compute_client.apitools_client
@@ -520,11 +496,7 @@ def CreatePersistentAttachedDiskMessages(
       scope = compute_scopes.ScopeEnum.REGION
     else:
       scope = compute_scopes.ScopeEnum.ZONE
-    disk_ref = ParseDiskResource(resources, name, instance_ref.project,
-                                 instance_ref.zone, scope)
-
-    if boot:
-      boot_disk_ref = disk_ref
+    disk_ref = ParseDiskResource(resources, name, project, zone, scope)
 
     # TODO(b/36051031) drop test after CSEK goes GA
     if csek_keys:
@@ -551,12 +523,16 @@ def CreatePersistentAttachedDiskMessages(
     else:
       disks_messages.append(attached_disk)
 
-  return disks_messages, boot_disk_ref
+  return disks_messages
 
 
 def CreatePersistentCreateDiskMessages(compute_client,
-                                       resources, csek_keys, create_disks,
-                                       instance_ref, enable_kms=False,
+                                       resources,
+                                       csek_keys,
+                                       create_disks,
+                                       project,
+                                       zone,
+                                       enable_kms=False,
                                        enable_snapshots=False,
                                        container_mount_disk=None,
                                        resource_policy=False,
@@ -585,7 +561,8 @@ def CreatePersistentCreateDiskMessages(compute_client,
              * disk-resource-policy - resource policies applied to disk.
              * enable_source_snapshot_csek - CSK file for snapshot,
              * enable_image_csek - CSK file for image
-    instance_ref: reference to the instance that will own the new disks.
+    project: Project of instance that will own the new disks.
+    zone: Zone of the instance that will own the new disks.
     enable_kms: True if KMS keys are supported for the disk.
     enable_snapshots: True if snapshot initialization is supported for the disk.
     container_mount_disk: list of disks to be mounted to container, if any.
@@ -616,12 +593,13 @@ def CreatePersistentCreateDiskMessages(compute_client,
     disk_size_gb = utils.BytesToGb(disk.get('size'))
     disk_type = disk.get('type')
     if disk_type:
-      disk_type_ref = resources.Parse(disk_type,
-                                      collection='compute.diskTypes',
-                                      params={
-                                          'project': instance_ref.project,
-                                          'zone': instance_ref.zone
-                                      })
+      disk_type_ref = resources.Parse(
+          disk_type,
+          collection='compute.diskTypes',
+          params={
+              'project': project,
+              'zone': zone
+          })
 
       disk_type_uri = disk_type_ref.SelfLink()
     else:
@@ -635,7 +613,7 @@ def CreatePersistentCreateDiskMessages(compute_client,
     if img or img_family:
       image_expander = image_utils.ImageExpander(compute_client, resources)
       image_uri, _ = image_expander.ExpandImageFlag(
-          user_project=instance_ref.project,
+          user_project=project,
           image=img,
           image_family=img_family,
           image_project=img_project,
@@ -644,14 +622,11 @@ def CreatePersistentCreateDiskMessages(compute_client,
     image_key = None
     disk_key = None
     if csek_keys:
-      image_key = csek_utils.MaybeLookupKeyMessagesByUri(csek_keys,
-                                                         resources,
-                                                         [image_uri],
-                                                         compute)
+      image_key = csek_utils.MaybeLookupKeyMessagesByUri(
+          csek_keys, resources, [image_uri], compute)
       if name:
-        disk_ref = resources.Parse(name,
-                                   collection='compute.disks',
-                                   params={'zone': instance_ref.zone})
+        disk_ref = resources.Parse(
+            name, collection='compute.disks', params={'zone': zone})
         disk_key = csek_utils.MaybeLookupKeyMessage(csek_keys, disk_ref,
                                                     compute)
 
@@ -669,7 +644,8 @@ def CreatePersistentCreateDiskMessages(compute_client,
     if enable_snapshots:
       snapshot_name = disk.get('source-snapshot')
       attached_snapshot_uri = ResolveSnapshotURI(
-          snapshot=snapshot_name, user_project=instance_ref.project,
+          snapshot=snapshot_name,
+          user_project=project,
           resource_parser=resources)
       if attached_snapshot_uri:
         initialize_params.sourceImage = None
@@ -725,10 +701,21 @@ def CreateAcceleratorConfigMessages(msgs, accelerator_type_ref,
   return [accelerator_config]
 
 
-def CreateDefaultBootAttachedDiskMessage(
-    compute_client, resources, disk_type, disk_device_name, disk_auto_delete,
-    disk_size_gb, require_csek_key_create, image_uri, instance_ref,
-    csek_keys=None, kms_args=None, enable_kms=False, snapshot_uri=None):
+def CreateDefaultBootAttachedDiskMessage(compute_client,
+                                         resources,
+                                         disk_type,
+                                         disk_device_name,
+                                         disk_auto_delete,
+                                         disk_size_gb,
+                                         require_csek_key_create,
+                                         image_uri,
+                                         instance_name,
+                                         project,
+                                         zone,
+                                         csek_keys=None,
+                                         kms_args=None,
+                                         enable_kms=False,
+                                         snapshot_uri=None):
   """Returns an AttachedDisk message for creating a new boot disk."""
   messages = compute_client.messages
   compute = compute_client.apitools_client
@@ -738,8 +725,8 @@ def CreateDefaultBootAttachedDiskMessage(
         disk_type,
         collection='compute.diskTypes',
         params={
-            'project': instance_ref.project,
-            'zone': instance_ref.zone
+            'project': project,
+            'zone': zone
         })
     disk_type_uri = disk_type_ref.SelfLink()
   else:
@@ -765,20 +752,20 @@ def CreateDefaultBootAttachedDiskMessage(
     # Instead it's better for gcloud to force a specific disk name in the
     # instance create, and fail if that name isn't available.
 
-    effective_boot_disk_name = (
-        disk_device_name or instance_ref.Name())
+    effective_boot_disk_name = (disk_device_name or instance_name)
 
-    disk_ref = resources.Parse(effective_boot_disk_name,
-                               collection='compute.disks',
-                               params={
-                                   'project': instance_ref.project,
-                                   'zone': instance_ref.zone
-                               })
+    disk_ref = resources.Parse(
+        effective_boot_disk_name,
+        collection='compute.disks',
+        params={
+            'project': project,
+            'zone': zone
+        })
     disk_key_or_none = csek_utils.MaybeToMessage(
-        csek_keys.LookupKey(disk_ref, require_csek_key_create),
-        compute)
-    [image_key_or_none] = csek_utils.MaybeLookupKeyMessagesByUri(
-        csek_keys, resources, [image_uri], compute)
+        csek_keys.LookupKey(disk_ref, require_csek_key_create), compute)
+    [image_key_or_none
+    ] = csek_utils.MaybeLookupKeyMessagesByUri(csek_keys, resources,
+                                               [image_uri], compute)
     kwargs_init_parms = {'sourceImageEncryptionKey': image_key_or_none}
     kwargs_disk = {'diskEncryptionKey': disk_key_or_none}
   else:
@@ -788,7 +775,9 @@ def CreateDefaultBootAttachedDiskMessage(
 
   if enable_kms:
     kms_key = kms_utils.MaybeGetKmsKey(
-        kms_args, messages, kwargs_disk.get('diskEncryptionKey', None),
+        kms_args,
+        messages,
+        kwargs_disk.get('diskEncryptionKey', None),
         boot_disk_prefix=True)
     if kms_key:
       kwargs_disk = {'diskEncryptionKey': kms_key}
@@ -822,23 +811,25 @@ def UseExistingBootDisk(disks):
 NVDIMM_DISK_TYPE = 'aep-nvdimm'
 
 
-def CreateLocalNvdimmMessages(args, resources, messages, zone=None,
+def CreateLocalNvdimmMessages(args,
+                              resources,
+                              messages,
+                              zone=None,
                               project=None):
   """Create messages representing local NVDIMMs."""
   local_nvdimms = []
   for local_nvdimm_disk in getattr(args, 'local_nvdimm', []) or []:
-    local_nvdimm = _CreateLocalNvdimmMessage(
-        resources,
-        messages,
-        local_nvdimm_disk.get('size'),
-        zone,
-        project
-    )
+    local_nvdimm = _CreateLocalNvdimmMessage(resources, messages,
+                                             local_nvdimm_disk.get('size'),
+                                             zone, project)
     local_nvdimms.append(local_nvdimm)
   return local_nvdimms
 
 
-def _CreateLocalNvdimmMessage(resources, messages, size_bytes=None, zone=None,
+def _CreateLocalNvdimmMessage(resources,
+                              messages,
+                              size_bytes=None,
+                              zone=None,
                               project=None):
   """Create a message representing a local NVDIMM."""
 
@@ -861,7 +852,7 @@ def _CreateLocalNvdimmMessage(resources, messages, size_bytes=None, zone=None,
       mode=messages.AttachedDisk.ModeValueValuesEnum.READ_WRITE,
       initializeParams=messages.AttachedDiskInitializeParams(
           diskType=disk_type),
-      )
+  )
 
   if size_bytes is not None:
     local_nvdimm.diskSizeGb = utils.BytesToGb(size_bytes)
@@ -869,26 +860,26 @@ def _CreateLocalNvdimmMessage(resources, messages, size_bytes=None, zone=None,
   return local_nvdimm
 
 
-def CreateLocalSsdMessages(args, resources, messages, zone=None,
-                           project=None):
+def CreateLocalSsdMessages(args, resources, messages, zone=None, project=None):
   """Create messages representing local ssds."""
   local_ssds = []
   for local_ssd_disk in getattr(args, 'local_ssd', []) or []:
-    local_ssd = _CreateLocalSsdMessage(
-        resources,
-        messages,
-        local_ssd_disk.get('device-name'),
-        local_ssd_disk.get('interface'),
-        local_ssd_disk.get('size'),
-        zone,
-        project
-    )
+    local_ssd = _CreateLocalSsdMessage(resources, messages,
+                                       local_ssd_disk.get('device-name'),
+                                       local_ssd_disk.get('interface'),
+                                       local_ssd_disk.get('size'), zone,
+                                       project)
     local_ssds.append(local_ssd)
   return local_ssds
 
 
-def _CreateLocalSsdMessage(resources, messages, device_name, interface,
-                           size_bytes=None, zone=None, project=None):
+def _CreateLocalSsdMessage(resources,
+                           messages,
+                           device_name,
+                           interface,
+                           size_bytes=None,
+                           zone=None,
+                           project=None):
   """Create a message representing a local ssd."""
 
   if zone:
@@ -898,8 +889,7 @@ def _CreateLocalSsdMessage(resources, messages, device_name, interface,
         params={
             'project': project,
             'zone': zone
-        }
-    )
+        })
     disk_type = disk_type_ref.SelfLink()
   else:
     disk_type = 'local-ssd'
@@ -944,8 +934,12 @@ def GetSkipDefaults(source_instance_template):
   return source_instance_template is not None
 
 
-def GetScheduling(args, client, skip_defaults, support_node_affinity=False,
-                  support_min_node_cpu=False, support_location_hint=False):
+def GetScheduling(args,
+                  client,
+                  skip_defaults,
+                  support_node_affinity=False,
+                  support_min_node_cpu=False,
+                  support_location_hint=False):
   """Generate a Scheduling Message or None based on specified args."""
   node_affinities = None
   if support_node_affinity:
@@ -957,9 +951,8 @@ def GetScheduling(args, client, skip_defaults, support_node_affinity=False,
   location_hint = None
   if support_location_hint:
     location_hint = args.location_hint
-  if (skip_defaults and
-      not IsAnySpecified(
-          args, 'maintenance_policy', 'preemptible', 'restart_on_failure') and
+  if (skip_defaults and not IsAnySpecified(
+      args, 'maintenance_policy', 'preemptible', 'restart_on_failure') and
       not node_affinities):
     return None
   return CreateSchedulingMessage(
@@ -1032,8 +1025,7 @@ def GetSourceMachineImageKey(args, source_image, compute_client, holder):
   return disk_key_or_none
 
 
-def GetNetworkInterfaces(
-    args, client, holder, instance_refs, skip_defaults):
+def GetNetworkInterfaces(args, client, holder, project, zone, skip_defaults):
   """Get network interfaces."""
   if (skip_defaults and not args.IsSpecified('network') and not IsAnySpecified(
       args,
@@ -1057,7 +1049,8 @@ def GetNetworkInterfaces(
           private_network_ip=args.private_network_ip,
           no_address=args.no_address,
           address=args.address,
-          instance_refs=instance_refs,
+          project=project,
+          zone=zone,
           no_public_ptr=args.no_public_ptr,
           public_ptr=args.public_ptr,
           no_public_ptr_domain=args.no_public_ptr_domain,
@@ -1067,14 +1060,12 @@ def GetNetworkInterfaces(
   ]
 
 
-def GetNetworkInterfacesAlpha(
-    args, client, holder, instance_refs, skip_defaults):
-  if (skip_defaults and
-      not IsAnySpecified(
-          args, 'network', 'subnet', 'private_network_ip', 'no_address',
-          'address', 'network_tier', 'no_public_dns', 'public_dns',
-          'no_public_ptr', 'public_ptr', 'no_public_ptr_domain',
-          'public_ptr_domain')):
+def GetNetworkInterfacesAlpha(args, client, holder, project, zone,
+                              skip_defaults):
+  if (skip_defaults and not IsAnySpecified(
+      args, 'network', 'subnet', 'private_network_ip', 'no_address', 'address',
+      'network_tier', 'no_public_dns', 'public_dns', 'no_public_ptr',
+      'public_ptr', 'no_public_ptr_domain', 'public_ptr_domain')):
     return []
   return [
       CreateNetworkInterfaceMessage(
@@ -1085,20 +1076,19 @@ def GetNetworkInterfacesAlpha(
           private_network_ip=args.private_network_ip,
           no_address=args.no_address,
           address=args.address,
-          instance_refs=instance_refs,
+          project=project,
+          zone=zone,
           network_tier=getattr(args, 'network_tier', None),
           no_public_dns=getattr(args, 'no_public_dns', None),
           public_dns=getattr(args, 'public_dns', None),
           no_public_ptr=getattr(args, 'no_public_ptr', None),
           public_ptr=getattr(args, 'public_ptr', None),
           no_public_ptr_domain=getattr(args, 'no_public_ptr_domain', None),
-          public_ptr_domain=getattr(args, 'public_ptr_domain', None)
-      )
+          public_ptr_domain=getattr(args, 'public_ptr_domain', None))
   ]
 
 
-def GetMachineTypeUris(
-    args, client, holder, instance_refs, skip_defaults):
+def GetMachineTypeUris(args, client, holder, instance_refs, skip_defaults):
   if (skip_defaults and
       not IsAnySpecified(args, 'machine_type', 'custom_cpu', 'custom_memory')):
     return [None for _ in instance_refs]
@@ -1113,63 +1103,129 @@ def GetMachineTypeUris(
       instance_refs=instance_refs)
 
 
+def GetMachineTypeUri(args, client, holder, project, zone, skip_defaults):
+  if (skip_defaults and
+      not IsAnySpecified(args, 'machine_type', 'custom_cpu', 'custom_memory')):
+    return None
+  return CreateMachineTypeUri(
+      resources=holder.resources,
+      compute_client=client,
+      machine_type=args.machine_type,
+      custom_cpu=args.custom_cpu,
+      custom_memory=args.custom_memory,
+      vm_type=getattr(args, 'custom_vm_type', None),
+      ext=getattr(args, 'custom_extensions', None),
+      project=project,
+      zone=zone)
+
+
+def CreateMachineTypeUris(resources, compute_client, machine_type, custom_cpu,
+                          custom_memory, vm_type, ext, instance_refs):
+  """Create machine type URIs for given args and instance references."""
+  # The element at index i is the machine type URI for instance
+  # i. We build this list here because we want to delay work that
+  # requires API calls as much as possible. This leads to a better
+  # user experience because the tool can fail fast upon a spelling
+  # mistake instead of delaying the user by making API calls whose
+  # purpose has already been rendered moot by the spelling mistake.
+  machine_type_uris = []
+
+  for instance_ref in instance_refs:
+    machine_type_uris.append(
+        CreateMachineTypeUri(resources, compute_client, machine_type,
+                             custom_cpu, custom_memory, vm_type, ext,
+                             instance_ref.project, instance_ref.zone))
+  return machine_type_uris
+
+
+def CreateMachineTypeUri(resources, compute_client, machine_type, custom_cpu,
+                         custom_memory, vm_type, ext, project, zone):
+  """Create a machine type URI for given args and instance reference."""
+
+  # Setting the machine type
+  machine_type_name = InterpretMachineType(machine_type, custom_cpu,
+                                           custom_memory, ext, vm_type)
+
+  # Check to see if the custom machine type ratio is supported
+  CheckCustomCpuRamRatio(compute_client, project, zone, machine_type_name)
+
+  return resources.Parse(
+      machine_type_name,
+      collection='compute.machineTypes',
+      params={
+          'project': project,
+          'zone': zone
+      }).SelfLink()
+
+
 def GetCanIpForward(args, skip_defaults):
   if skip_defaults and not args.IsSpecified('can_ip_forward'):
     return None
   return args.can_ip_forward
 
 
-def CreateDiskMessages(
-    holder, args, boot_disk_size_gb, image_uri, instance_ref, skip_defaults,
-    match_container_mount_disks=False):
+def CreateDiskMessages(holder,
+                       args,
+                       boot_disk_size_gb,
+                       image_uri,
+                       instance_ref,
+                       skip_defaults,
+                       match_container_mount_disks=False):
   """Creates API messages with disks attached to VM instance."""
-  flags_to_check = ['create_disk', 'local_ssd',
-                    'boot_disk_type', 'boot_disk_device_name',
-                    'boot_disk_auto_delete']
+  flags_to_check = [
+      'create_disk', 'local_ssd', 'boot_disk_type', 'boot_disk_device_name',
+      'boot_disk_auto_delete'
+  ]
   if hasattr(args, 'local_nvdimm'):
     flags_to_check.append('local_nvdimm')
-  if (skip_defaults and not args.IsSpecified('disk') and not
-      IsAnySpecified(args, *flags_to_check)):
+  if (skip_defaults and not args.IsSpecified('disk') and
+      not IsAnySpecified(args, *flags_to_check)):
     return []
   else:
     if match_container_mount_disks:
       container_mount_disk = args.container_mount_disk
     else:
       container_mount_disk = []
-    persistent_disks, _ = (
+    persistent_disks = (
         CreatePersistentAttachedDiskMessages(
-            holder.resources, holder.client, None, args.disk or [],
-            instance_ref, container_mount_disk=container_mount_disk))
+            holder.resources,
+            holder.client,
+            None,
+            args.disk or [],
+            instance_ref.project,
+            instance_ref.zone,
+            container_mount_disk=container_mount_disk))
     persistent_create_disks = (
         CreatePersistentCreateDiskMessages(
-            holder.client, holder.resources, None,
-            getattr(args, 'create_disk', []), instance_ref,
+            holder.client,
+            holder.resources,
+            None,
+            getattr(args, 'create_disk', []),
+            instance_ref.project,
+            instance_ref.zone,
             container_mount_disk=container_mount_disk))
-    local_nvdimms = CreateLocalNvdimmMessages(
-        args,
-        holder.resources,
-        holder.client.messages,
-        instance_ref.zone,
-        instance_ref.project)
-    local_ssds = CreateLocalSsdMessages(
-        args,
-        holder.resources,
-        holder.client.messages,
-        instance_ref.zone,
-        instance_ref.project)
+    local_nvdimms = CreateLocalNvdimmMessages(args, holder.resources,
+                                              holder.client.messages,
+                                              instance_ref.zone,
+                                              instance_ref.project)
+    local_ssds = CreateLocalSsdMessages(args, holder.resources,
+                                        holder.client.messages,
+                                        instance_ref.zone, instance_ref.project)
     boot_disk = CreateDefaultBootAttachedDiskMessage(
-        holder.client, holder.resources,
+        holder.client,
+        holder.resources,
         disk_type=args.boot_disk_type,
         disk_device_name=args.boot_disk_device_name,
         disk_auto_delete=args.boot_disk_auto_delete,
         disk_size_gb=boot_disk_size_gb,
         require_csek_key_create=None,
         image_uri=image_uri,
-        instance_ref=instance_ref,
+        instance_name=instance_ref.Name(),
+        project=instance_ref.project,
+        zone=instance_ref.zone,
         csek_keys=None)
-    return (
-        [boot_disk] + persistent_disks + persistent_create_disks + local_nvdimms
-        + local_ssds)
+    return ([boot_disk] + persistent_disks + persistent_create_disks +
+            local_nvdimms + local_ssds)
 
 
 def GetTags(args, client):
@@ -1188,27 +1244,31 @@ def GetLabels(args, client):
   return None
 
 
-def GetAccelerators(args, client, resource_parser, instance_ref):
+def GetAccelerators(args, client, resource_parser, project, zone):
   """Returns list of messages with accelerators for the instance."""
   if args.accelerator:
     accelerator_type_name = args.accelerator['type']
     accelerator_type_ref = resource_parser.Parse(
         accelerator_type_name,
         collection='compute.acceleratorTypes',
-        params={'project': instance_ref.project,
-                'zone': instance_ref.zone})
+        params={
+            'project': project,
+            'zone': zone
+        })
     # Accelerator count is default to 1.
     accelerator_count = int(args.accelerator.get('count', 1))
-    return CreateAcceleratorConfigMessages(
-        client.messages, accelerator_type_ref, accelerator_count)
+    return CreateAcceleratorConfigMessages(client.messages,
+                                           accelerator_type_ref,
+                                           accelerator_count)
   return []
 
 
 def ResolveSnapshotURI(user_project, snapshot, resource_parser):
   if user_project and snapshot and resource_parser:
-    snapshot_ref = resource_parser.Parse(snapshot,
-                                         collection='compute.snapshots',
-                                         params={'project': user_project})
+    snapshot_ref = resource_parser.Parse(
+        snapshot,
+        collection='compute.snapshots',
+        params={'project': user_project})
     return snapshot_ref.SelfLink()
   return None
 

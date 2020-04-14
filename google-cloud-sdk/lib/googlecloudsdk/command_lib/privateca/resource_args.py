@@ -20,15 +20,13 @@ from __future__ import division
 from __future__ import unicode_literals
 
 from googlecloudsdk.api_lib.privateca import base
+from googlecloudsdk.api_lib.privateca import constants as api_constants
 from googlecloudsdk.api_lib.privateca import locations
 from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.calliope.concepts import concepts
 from googlecloudsdk.calliope.concepts import deps
 from googlecloudsdk.command_lib.privateca import exceptions as privateca_exceptions
 from googlecloudsdk.command_lib.util.concepts import concept_parsers
-
-PREDEFINED_REUSABLE_CONFIG_LOCATION = 'us-west1'
-PREDEFINED_REUSABLE_CONFIG_PROJECT = 'privateca-data'
 
 
 def ReusableConfigAttributeConfig():
@@ -73,26 +71,29 @@ def ProjectAttributeConfig(fallthroughs=None):
       fallthroughs=fallthroughs or [])
 
 
-def CreateReusableConfigResourceSpec():
+def CreateReusableConfigResourceSpec(associated_resource):
   """Create a resource spec for a ReusableConfig.
 
-  Defaults to the predefined location + project for reusable configs.
+  Defaults to the predefined project for reusable configs.
+
+  Args:
+    associated_resource: The name of the resource that this reusable config
+      is associated with. This will be used in the helptext.
 
   Returns:
     A concepts.ResourceSpec for a reusable config.
   """
-
-  # For now, reusable configs exist in a single location and project.
+  # For now, reusable configs exist in a single project.
   location_fallthrough = deps.Fallthrough(
-      function=lambda: PREDEFINED_REUSABLE_CONFIG_LOCATION,
-      hint='location will default to {}'.format(
-          PREDEFINED_REUSABLE_CONFIG_LOCATION),
+      function=lambda: '',
+      hint='location will default to the same location as the {}'.format(
+          associated_resource),
       active=False,
       plural=False)
   project_fallthrough = deps.Fallthrough(
-      function=lambda: PREDEFINED_REUSABLE_CONFIG_PROJECT,
+      function=lambda: api_constants.PREDEFINED_REUSABLE_CONFIG_PROJECT,
       hint='project will default to {}'.format(
-          PREDEFINED_REUSABLE_CONFIG_PROJECT),
+          api_constants.PREDEFINED_REUSABLE_CONFIG_PROJECT),
       active=False,
       plural=False)
   return concepts.ResourceSpec(

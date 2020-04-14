@@ -326,7 +326,7 @@
           "$ref": "IssuingOptions"
         },
         "pemIssuerCertChain": {
-          "description": "Optional. This CertificateAuthority's issuer chain. If self-signed, will be the\nsame as 'pem_cert'. This may be updated (e.g., if an issuer's cert was\nreplaced).",
+          "description": "Optional. This CertificateAuthority's issuer chain. If self-signed, will be the\nsame as 'pem_cert'. This may be updated (e.g., if an issuer's cert was\nreplaced). Expected to be in issuer-to-root order according to RFC 5246.",
           "type": "array",
           "items": {
             "type": "string"
@@ -622,7 +622,7 @@
           "type": "boolean"
         },
         "contentCommitment": {
-          "description": "The key may be used for cryptographic commitments.",
+          "description": "The key may be used for cryptographic commitments. Note that this may\nalso be referred to as \"non-repudiation\".",
           "type": "boolean"
         },
         "keyEncipherment": {
@@ -1137,7 +1137,7 @@
           "$ref": "CertificateDescription"
         },
         "pemCertificateChain": {
-          "description": "Output only. The chain that may be used to verify the X.509 certificate.",
+          "description": "Output only. The chain that may be used to verify the X.509 certificate. Expected to be\nin issuer-to-root order according to RFC 5246.",
           "type": "array",
           "items": {
             "type": "string"
@@ -1238,6 +1238,10 @@
           "description": "Required. The config values.",
           "$ref": "ReusableConfigValues"
         },
+        "description": {
+          "description": "Optional. A human-readable description of scenarios these ReusableConfigValues may be\ncompatible with.",
+          "type": "string"
+        },
         "createTime": {
           "description": "Output only. The time at which this ReusableConfig was created.",
           "type": "string",
@@ -1278,11 +1282,48 @@
           "type": "string"
         },
         "pemCaCertificateChain": {
-          "description": "Required. Must include the issuer of 'pem_ca_certificate', and any further issuers\nuntil the self-signed CA.",
+          "description": "Required. Must include the issuer of 'pem_ca_certificate', and any further issuers\nuntil the self-signed CA. Expected to be in issuer-to-root order according\nto RFC 5246.",
           "type": "array",
           "items": {
             "type": "string"
           }
+        },
+        "requestId": {
+          "description": "Optional. An ID to identify requests. Specify a unique request ID so that if you must\nretry your request, the server will know to ignore the request if it has\nalready been completed. The server will guarantee that for at least 60\nminutes since the first request.\n\nFor example, consider a situation where you make an initial request and t\nhe request times out. If you make the request again with the same request\nID, the server can check if original operation with the same request ID\nwas received, and if so, will ignore the second request. This prevents\nclients from accidentally creating duplicate commitments.\n\nThe request ID must be a valid UUID with the exception that zero UUID is\nnot supported (00000000-0000-0000-0000-000000000000).",
+          "type": "string"
+        }
+      }
+    },
+    "DisableCertificateAuthorityRequest": {
+      "id": "DisableCertificateAuthorityRequest",
+      "description": "Request message for\nCertificateAuthorityService.DisableCertificateAuthority.",
+      "type": "object",
+      "properties": {
+        "requestId": {
+          "description": "Optional. An ID to identify requests. Specify a unique request ID so that if you must\nretry your request, the server will know to ignore the request if it has\nalready been completed. The server will guarantee that for at least 60\nminutes since the first request.\n\nFor example, consider a situation where you make an initial request and t\nhe request times out. If you make the request again with the same request\nID, the server can check if original operation with the same request ID\nwas received, and if so, will ignore the second request. This prevents\nclients from accidentally creating duplicate commitments.\n\nThe request ID must be a valid UUID with the exception that zero UUID is\nnot supported (00000000-0000-0000-0000-000000000000).",
+          "type": "string"
+        }
+      }
+    },
+    "EnableCertificateAuthorityRequest": {
+      "id": "EnableCertificateAuthorityRequest",
+      "description": "Request message for\nCertificateAuthorityService.EnableCertificateAuthority.",
+      "type": "object",
+      "properties": {
+        "requestId": {
+          "description": "Optional. An ID to identify requests. Specify a unique request ID so that if you must\nretry your request, the server will know to ignore the request if it has\nalready been completed. The server will guarantee that for at least 60\nminutes since the first request.\n\nFor example, consider a situation where you make an initial request and t\nhe request times out. If you make the request again with the same request\nID, the server can check if original operation with the same request ID\nwas received, and if so, will ignore the second request. This prevents\nclients from accidentally creating duplicate commitments.\n\nThe request ID must be a valid UUID with the exception that zero UUID is\nnot supported (00000000-0000-0000-0000-000000000000).",
+          "type": "string"
+        }
+      }
+    },
+    "ScheduleDeleteCertificateAuthorityRequest": {
+      "id": "ScheduleDeleteCertificateAuthorityRequest",
+      "description": "Request message for\nCertificateAuthorityService.ScheduleDeleteCertificateAuthority.",
+      "type": "object",
+      "properties": {
+        "requestId": {
+          "description": "Optional. An ID to identify requests. Specify a unique request ID so that if you must\nretry your request, the server will know to ignore the request if it has\nalready been completed. The server will guarantee that for at least 60\nminutes since the first request.\n\nFor example, consider a situation where you make an initial request and t\nhe request times out. If you make the request again with the same request\nID, the server can check if original operation with the same request ID\nwas received, and if so, will ignore the second request. This prevents\nclients from accidentally creating duplicate commitments.\n\nThe request ID must be a valid UUID with the exception that zero UUID is\nnot supported (00000000-0000-0000-0000-000000000000).",
+          "type": "string"
         }
       }
     },
@@ -1316,6 +1357,28 @@
             "PRIVILEGE_WITHDRAWN",
             "ATTRIBUTE_AUTHORITY_COMPROMISE"
           ]
+        },
+        "requestId": {
+          "description": "Optional. An ID to identify requests. Specify a unique request ID so that if you must\nretry your request, the server will know to ignore the request if it has\nalready been completed. The server will guarantee that for at least 60\nminutes since the first request.\n\nFor example, consider a situation where you make an initial request and t\nhe request times out. If you make the request again with the same request\nID, the server can check if original operation with the same request ID\nwas received, and if so, will ignore the second request. This prevents\nclients from accidentally creating duplicate commitments.\n\nThe request ID must be a valid UUID with the exception that zero UUID is\nnot supported (00000000-0000-0000-0000-000000000000).",
+          "type": "string"
+        }
+      }
+    },
+    "PublishCertificateRevocationListRequest": {
+      "id": "PublishCertificateRevocationListRequest",
+      "description": "Request message for\nCertificateAuthorityService.PublishCertificateRevocationList.",
+      "type": "object",
+      "properties": {
+      }
+    },
+    "PublishCertificateRevocationListResponse": {
+      "id": "PublishCertificateRevocationListResponse",
+      "description": "Response message for\nCertificateAuthorityService.PublishCertificateRevocationList.",
+      "type": "object",
+      "properties": {
+        "pemCrl": {
+          "description": "Output only. The PEM-encoded signed certificate revocation list (CRL).",
+          "type": "string"
         }
       }
     },
@@ -1954,6 +2017,118 @@
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
                   "description": "Activate a pending CertificateAuthority."
+                },
+                "disable": {
+                  "id": "privateca.projects.locations.certificateAuthorities.disable",
+                  "path": "v1alpha1/{+name}:disable",
+                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/certificateAuthorities/{certificateAuthoritiesId}:disable",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. The resource name for this CertificateAuthority in the\nformat `projects\/*\/locations\/*\/certificateAuthorities\/*`.",
+                      "location": "path",
+                      "required": true,
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/certificateAuthorities\/[^\/]+$",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "request": {
+                    "$ref": "DisableCertificateAuthorityRequest"
+                  },
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Disable a CertificateAuthority."
+                },
+                "enable": {
+                  "id": "privateca.projects.locations.certificateAuthorities.enable",
+                  "path": "v1alpha1/{+name}:enable",
+                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/certificateAuthorities/{certificateAuthoritiesId}:enable",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. The resource name for this CertificateAuthority in the\nformat `projects\/*\/locations\/*\/certificateAuthorities\/*`.",
+                      "location": "path",
+                      "required": true,
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/certificateAuthorities\/[^\/]+$",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "request": {
+                    "$ref": "EnableCertificateAuthorityRequest"
+                  },
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Enable a CertificateAuthority."
+                },
+                "scheduleDelete": {
+                  "id": "privateca.projects.locations.certificateAuthorities.scheduleDelete",
+                  "path": "v1alpha1/{+name}:scheduleDelete",
+                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/certificateAuthorities/{certificateAuthoritiesId}:scheduleDelete",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. The resource name for this CertificateAuthority in the\nformat `projects\/*\/locations\/*\/certificateAuthorities\/*`.",
+                      "location": "path",
+                      "required": true,
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/certificateAuthorities\/[^\/]+$",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "request": {
+                    "$ref": "ScheduleDeleteCertificateAuthorityRequest"
+                  },
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Schedule a CertificateAuthority for deletion."
+                },
+                "publishCrl": {
+                  "id": "privateca.projects.locations.certificateAuthorities.publishCrl",
+                  "path": "v1alpha1/{+name}:publishCrl",
+                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/certificateAuthorities/{certificateAuthoritiesId}:publishCrl",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. The resource name of the location and CertificateAuthority, in the\nformat `projects\/*\/locations\/*\/certificateAuthorities\/*`.",
+                      "location": "path",
+                      "required": true,
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/certificateAuthorities\/[^\/]+$",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "request": {
+                    "$ref": "PublishCertificateRevocationListRequest"
+                  },
+                  "response": {
+                    "$ref": "PublishCertificateRevocationListResponse"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Publish a CertificateRevocationList."
                 },
                 "setIamPolicy": {
                   "id": "privateca.projects.locations.certificateAuthorities.setIamPolicy",

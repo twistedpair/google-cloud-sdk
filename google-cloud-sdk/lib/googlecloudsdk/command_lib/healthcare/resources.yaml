@@ -43,6 +43,18 @@ annotation_store:
     attribute_name: annotation_store
     help: Cloud Healthcare annotation store.
 
+consent_store:
+  name: consentStore
+  collection: healthcare.projects.locations.datasets.consentStores
+  request_id_field: consentStoreId
+  attributes:
+  - *location
+  - *dataset
+  - &consent-store
+    parameter_name: consentStoresId
+    attribute_name: consent_store
+    help: Cloud Healthcare consent store.
+
 dicom_store:
   name: dicomStore
   collection: healthcare.projects.locations.datasets.dicomStores

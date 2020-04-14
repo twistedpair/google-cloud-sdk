@@ -237,9 +237,10 @@ Learn more about regional endpoints and see a list of available regions:
 # TODO(b/150923506) Add autocompletion.
 def GetRegionArg(hidden=True):
   """Adds --region flag to determine endpoint for models and versions."""
+  del hidden
   return base.Argument(
       '--region',
-      hidden=hidden,
+      hidden=True,
       help=_REGION_FLAG_HELPTEXT)
 
 
@@ -316,9 +317,9 @@ VERSION_NAME = base.Argument('version', help='Name of the model version.')
 RUNTIME_VERSION = base.Argument(
     '--runtime-version',
     help=(
-        'AI Platform runtime version for this job. Defaults '
-        'to a stable version, which is defined in documentation along '
-        'with the list of supported versions: '
+        'AI Platform runtime version for this job. Must be specified unless '
+        '--master-image-uri is specified instead. It is defined in '
+        'documentation along with the list of supported versions: '
         'https://cloud.google.com/ml-engine/docs/tensorflow/runtime-version-list'  # pylint: disable=line-too-long
     ))
 
@@ -520,6 +521,27 @@ def GetModelResourceArg(positional=True, required=False, verb=''):
       GetModelResourceSpec(),
       'The AI Platform model {}.'.format(verb),
       required=required)
+
+
+def GetLocationResourceSpec():
+  return concepts.ResourceSpec(
+      'ml.projects.locations',
+      resource_name='location',
+      projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
+      disable_auto_completers=True)
+
+
+def GetLocationResourceArg():
+  """Add a resource argument for AI Platform location.
+
+  Returns:
+    An argparse.ArgumentParse object.
+  """
+  return concept_parsers.ConceptParser.ForResource(
+      'location',
+      GetLocationResourceSpec(),
+      'The location you want to show details for.',
+      required=True)
 
 
 def AddUserCodeArgs(parser):

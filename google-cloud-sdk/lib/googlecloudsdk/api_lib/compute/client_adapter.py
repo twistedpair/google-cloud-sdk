@@ -49,9 +49,9 @@ class ClientAdapter(object):
   """Encapsulates compute apitools interactions."""
   _API_NAME = 'compute'
 
-  def __init__(self, api_default_version='v1', no_http=False, client=None):
-    self._api_version = core_apis.ResolveVersion(self._API_NAME,
-                                                 api_default_version)
+  def __init__(self, api_version=None, no_http=False, client=None):
+    self._api_version = core_apis.ResolveVersion(
+        self._API_NAME, api_version=api_version)
     self._client = client or core_apis.GetClientInstance(
         self._API_NAME, self._api_version, no_http=no_http)
 

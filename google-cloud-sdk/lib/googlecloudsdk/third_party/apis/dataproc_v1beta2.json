@@ -522,7 +522,7 @@
           }
         },
         "imageUri": {
-          "description": "Optional. The Compute Engine image resource used for cluster instances. It can be specified or may be inferred from SoftwareConfig.image_version.",
+          "description": "Optional. The Compute Engine image resource used for cluster instances.The URI can represent an image or image family.Image examples:\nhttps:\/\/www.googleapis.com\/compute\/beta\/projects\/[project_id]\/global\/images\/[image-id]\nprojects\/[project_id]\/global\/images\/[image-id]\nimage-idImage family examples. Dataproc will use the most recent image from the family:\nhttps:\/\/www.googleapis.com\/compute\/beta\/projects\/[project_id]\/global\/images\/family\/[custom-image-family-name]\nprojects\/[project_id]\/global\/images\/family\/[custom-image-family-name]If the URI is unspecified, it will be inferred from SoftwareConfig.image_version or the system default.",
           "type": "string"
         },
         "machineTypeUri": {
@@ -1028,27 +1028,35 @@
           "$ref": "JobPlacement"
         },
         "hadoopJob": {
+          "description": "Optional. Job is a Hadoop job.",
           "$ref": "HadoopJob"
         },
         "sparkJob": {
+          "description": "Optional. Job is a Spark job.",
           "$ref": "SparkJob"
         },
         "pysparkJob": {
+          "description": "Optional. Job is a PySpark job.",
           "$ref": "PySparkJob"
         },
         "hiveJob": {
+          "description": "Optional. Job is a Hive job.",
           "$ref": "HiveJob"
         },
         "pigJob": {
+          "description": "Optional. Job is a Pig job.",
           "$ref": "PigJob"
         },
         "sparkRJob": {
+          "description": "Optional. Job is a SparkR job.",
           "$ref": "SparkRJob"
         },
         "sparkSqlJob": {
+          "description": "Optional. Job is a SparkSql job.",
           "$ref": "SparkSqlJob"
         },
         "prestoJob": {
+          "description": "Optional. Job is a Presto job.",
           "$ref": "PrestoJob"
         },
         "status": {
@@ -1505,7 +1513,7 @@
     },
     "PrestoJob": {
       "id": "PrestoJob",
-      "description": "A Dataproc job for running Presto (https:\/\/prestosql.io\/) queries",
+      "description": "A Dataproc job for running Presto (https:\/\/prestosql.io\/) queries. IMPORTANT: The Dataproc Presto Optional Component must be enabled when the cluster is created to submit a Presto job to the cluster.",
       "type": "object",
       "properties": {
         "queryFileUri": {

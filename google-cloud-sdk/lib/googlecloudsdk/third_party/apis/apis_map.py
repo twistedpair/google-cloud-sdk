@@ -421,7 +421,7 @@ MAP = {
                 client_classpath='cloudkms_v1_client.CloudkmsV1',
                 messages_modulepath='cloudkms_v1_messages',
                 default_version=True,
-                enable_mtls=False,
+                enable_mtls=True,
                 mtls_endpoint_override=''),
     },
     'cloudresourcemanager': {
@@ -625,7 +625,7 @@ MAP = {
                 client_classpath='container_v1_client.ContainerV1',
                 messages_modulepath='container_v1_messages',
                 default_version=True,
-                enable_mtls=False,
+                enable_mtls=True,
                 mtls_endpoint_override=''),
         'v1alpha1':
             APIDef(
@@ -995,6 +995,14 @@ MAP = {
                 mtls_endpoint_override=''),
     },
     'healthcare': {
+        'v1':
+            APIDef(
+                class_path='googlecloudsdk.third_party.apis.healthcare.v1',
+                client_classpath='healthcare_v1_client.HealthcareV1',
+                messages_modulepath='healthcare_v1_messages',
+                default_version=True,
+                enable_mtls=False,
+                mtls_endpoint_override=''),
         'v1alpha2':
             APIDef(
                 class_path='googlecloudsdk.third_party.apis.healthcare.v1alpha2',
@@ -1008,7 +1016,7 @@ MAP = {
                 class_path='googlecloudsdk.third_party.apis.healthcare.v1beta1',
                 client_classpath='healthcare_v1beta1_client.HealthcareV1beta1',
                 messages_modulepath='healthcare_v1beta1_messages',
-                default_version=True,
+                default_version=False,
                 enable_mtls=False,
                 mtls_endpoint_override=''),
     },
@@ -1324,6 +1332,16 @@ MAP = {
                 messages_modulepath='pubsub_v1_messages',
                 default_version=True,
                 enable_mtls=True,
+                mtls_endpoint_override=''),
+    },
+    'pubsublite': {
+        'v1':
+            APIDef(
+                class_path='googlecloudsdk.third_party.apis.pubsublite.v1',
+                client_classpath='pubsublite_v1_client.PubsubliteV1',
+                messages_modulepath='pubsublite_v1_messages',
+                default_version=True,
+                enable_mtls=False,
                 mtls_endpoint_override=''),
     },
     'recaptchaenterprise': {

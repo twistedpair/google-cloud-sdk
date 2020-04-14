@@ -460,7 +460,7 @@ def ParseServicePerimetersAlpha(path):
   return ParseServicePerimetersBase(path, version='v1alpha')
 
 
-def ParseServicePerimetersBeta(path):
+def ParseServicePerimetersGA(path):
   return ParseServicePerimetersBase(path, version='v1')
 
 
@@ -497,7 +497,7 @@ def ParseReplaceServicePerimetersResponseAlpha(lro, unused_args):
   return ParseReplaceServicePerimetersResponseBase(lro, version='v1alpha')
 
 
-def ParseReplaceServicePerimetersResponseBeta(lro, unused_args):
+def ParseReplaceServicePerimetersResponseGA(lro, unused_args):
   return ParseReplaceServicePerimetersResponseBase(lro, version='v1')
 
 

@@ -248,6 +248,7 @@ def AddRuntimeFlag(parser):
           - `nodejs8`: Node.js 8
           - `nodejs10`: Node.js 10
           - `python37`: Python 3.7
+          - `python38`: Python 3.8
           - `go111`: Go 1.11
           - `go113`: Go 1.13
           - `nodejs6`: Node.js 6 (deprecated)

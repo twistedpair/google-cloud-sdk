@@ -156,7 +156,9 @@ class FileProjectsLocationsBackupsCreateRequest(_messages.Message):
   Fields:
     backup: A Backup resource to be passed as the request body.
     backupId: Required. The ID to use for the backup. The ID must be unique
-      within the specified project and location.
+      within the specified project and location.  This value must start with a
+      lowercase letter followed by up to 62 lowercase letters, numbers, or
+      hyphens, and cannot end with a hyphen.
     parent: Required. The backup's project and location, in the format
       projects/{project_id}/locations/{location}. In Cloud Filestore, backup
       locations map to GCP regions, for example **us-west1**.
@@ -220,8 +222,8 @@ class FileProjectsLocationsBackupsPatchRequest(_messages.Message):
     backup: A Backup resource to be passed as the request body.
     name: Output only. The resource name of the backup, in the format
       projects/{project_id}/locations/{location_id}/backups/{backup_id}.
-    updateMask: Mask of fields to update.  At least one path must be supplied
-      in this field.
+    updateMask: Required. Mask of fields to update.  At least one path must be
+      supplied in this field.
   """
 
   backup = _messages.MessageField('Backup', 1)
@@ -244,8 +246,10 @@ class FileProjectsLocationsInstancesCreateRequest(_messages.Message):
 
   Fields:
     instance: A Instance resource to be passed as the request body.
-    instanceId: Required. The name of the instance to create. The name must be
-      unique for the specified project and location.
+    instanceId: Required. The ID of the instance to create. The ID must be
+      unique within the specified project and location.  This value must start
+      with a lowercase letter followed by up to 62 lowercase letters, numbers,
+      or hyphens, and cannot end with a hyphen.
     parent: Required. The instance's project and location, in the format
       projects/{project_id}/locations/{location}. In Cloud Filestore,
       locations map to GCP zones, for example **us-west1-b**.
@@ -309,9 +313,9 @@ class FileProjectsLocationsInstancesPatchRequest(_messages.Message):
     instance: A Instance resource to be passed as the request body.
     name: Output only. The resource name of the instance, in the format
       projects/{project_id}/locations/{location_id}/instances/{instance_id}.
-    updateMask: Mask of fields to update.  At least one path must be supplied
-      in this field.  The elements of the repeated paths field may only
-      include these fields:  * "description" * "file_shares" * "labels"
+    updateMask: Required. Mask of fields to update.  At least one path must be
+      supplied in this field.  The elements of the repeated paths field may
+      only include these fields:  * "description" * "file_shares" * "labels"
   """
 
   instance = _messages.MessageField('Instance', 1)
@@ -411,7 +415,9 @@ class FileProjectsLocationsSnapshotsCreateRequest(_messages.Message):
       snapshots and to GCP regions, for example **us-west1**, otherwise.
     snapshot: A Snapshot resource to be passed as the request body.
     snapshotId: Required. The ID to use for the snapshot. The ID must be
-      unique within the specified project and location.
+      unique within the specified project and location.  This value must start
+      with a lowercase letter followed by up to 62 lowercase letters, numbers,
+      or hyphens, and cannot end with a hyphen.
   """
 
   parent = _messages.StringField(1, required=True)
@@ -473,8 +479,8 @@ class FileProjectsLocationsSnapshotsPatchRequest(_messages.Message):
     name: Output only. The resource name of the snapshot, in the format
       projects/{project_id}/locations/{location_id}/snapshots/{snapshot_id}.
     snapshot: A Snapshot resource to be passed as the request body.
-    updateMask: Mask of fields to update.  At least one path must be supplied
-      in this field.
+    updateMask: Required. Mask of fields to update.  At least one path must be
+      supplied in this field.
   """
 
   name = _messages.StringField(1, required=True)
@@ -502,6 +508,10 @@ class FileShareConfig(_messages.Message):
       projects/{project_id}/locations/{location_id}/snapshots/{snapshot_id},
       that this file share has been restored from. Empty, if the file share is
       created from scratch and not restored from a snapshot.
+    sourceBackup: The resource name of the backup, in the format
+      projects/{project_id}/locations/{location_id}/backups/{backup_id}, that
+      this file share has been restored from. Empty, if the file share is
+      created from scratch and not restored from a backup.
     sourceSnapshot: The resource name of the snapshot, in the format
       projects/{project_id}/locations/{location_id}/snapshots/{snapshot_id},
       that this file share has been restored from. Empty, if the file share is
@@ -514,7 +524,8 @@ class FileShareConfig(_messages.Message):
   name = _messages.StringField(4)
   nfsExportOptions = _messages.MessageField('NfsExportOptions', 5, repeated=True)
   snapshot = _messages.StringField(6)
-  sourceSnapshot = _messages.StringField(7)
+  sourceBackup = _messages.StringField(7)
+  sourceSnapshot = _messages.StringField(8)
 
 
 class GoogleCloudSaasacceleratorManagementProvidersV1Instance(_messages.Message):
@@ -1428,6 +1439,8 @@ class RestoreInstanceRequest(_messages.Message):
       instance that the snapshot is being restored to.
     snapshot: The resource name of the snapshot, in the format
       projects/{project_id}/locations/{location_id}/snapshots/{snapshot_id}.
+    sourceBackup: The resource name of the backup, in the format
+      projects/{project_id}/locations/{location_id}/backups/{backup_id}.
     sourceSnapshot: The resource name of the snapshot, in the format
       projects/{project_id}/locations/{location_id}/snapshots/{snapshot_id}.
   """
@@ -1435,7 +1448,8 @@ class RestoreInstanceRequest(_messages.Message):
   backup = _messages.StringField(1)
   fileShare = _messages.StringField(2)
   snapshot = _messages.StringField(3)
-  sourceSnapshot = _messages.StringField(4)
+  sourceBackup = _messages.StringField(4)
+  sourceSnapshot = _messages.StringField(5)
 
 
 class Snapshot(_messages.Message):

@@ -211,6 +211,7 @@ apis:
   cloudkms:
     v1:
       discovery_doc: cloudkms_v1.json
+      enable_mtls: true
       default: true
   cloudresourcemanager:
     v1beta1:
@@ -297,6 +298,7 @@ apis:
     v1:
       discovery_doc: container_v1.json
       default: true
+      enable_mtls: true
       resources:
         projects.zones:
           path: projects/{projectId}/zones/{zoneId}
@@ -461,6 +463,8 @@ apis:
       discovery_doc: healthcare_v1alpha2.json
     v1beta1:
       discovery_doc: healthcare_v1beta1.json
+    v1:
+      discovery_doc: healthcare_v1.json
       default: true
   oslogin:
     v1alpha:
@@ -628,6 +632,12 @@ apis:
       resources:
         projects.snapshots:
           path: projects/{projectsId}/snapshots/{snapshotsId}
+  pubsublite:
+    v1:
+      discovery_doc: pubsublite_v1.json
+      resources:
+        admin.projects.locations.topics.subscriptions:
+          path: admin/projects/{projectsId}/locations/{locationsId}/topics/{topicsId}/subscriptions
   recaptchaenterprise:
     v1:
       discovery_doc: recaptchaenterprise_v1.json

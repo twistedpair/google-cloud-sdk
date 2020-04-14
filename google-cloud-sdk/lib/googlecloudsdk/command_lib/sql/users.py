@@ -19,12 +19,6 @@ from __future__ import division
 from __future__ import unicode_literals
 
 
-# TODO(b/110486599): Remove support for deprecated host.
-def GetHostValue(args):
-  """Returns the host value, if specified, or None."""
-  return args.host or args.deprecated_host or None
-
-
 def ParseUserType(sql_messages, args):
   if args.type:
     return sql_messages.User.TypeValueValuesEnum.lookup_by_name(

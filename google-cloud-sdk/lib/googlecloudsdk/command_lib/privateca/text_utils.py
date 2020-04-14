@@ -19,6 +19,9 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+from dateutil import tz
+from googlecloudsdk.core.util import times
+
 
 def SnakeCaseToCamelCase(name):
   words = name.split('_')
@@ -37,3 +40,21 @@ def ToSnakeCaseDict(dictionary):
       new_dict[snaked_key] = val
 
   return new_dict
+
+
+def TransformNotBeforeTime(subject_description):
+  """Use this function in a display transform to truncate anything smaller than days from ISO8601 timestamp."""
+  if 'notBeforeTime' in subject_description:
+    return times.ParseDateTime(
+        subject_description.get('notBeforeTime')).astimezone(
+            tz.tzutc()).strftime('%Y-%m-%dT%H:%MZ')
+  return ''
+
+
+def TransformNotAfterTime(subject_description):
+  """Use this function in a display transform to truncate anything smaller than days from ISO8601 timestamp."""
+  if 'notAfterTime' in subject_description:
+    return times.ParseDateTime(
+        subject_description.get('notAfterTime')).astimezone(
+            tz.tzutc()).strftime('%Y-%m-%dT%H:%MZ')
+  return ''

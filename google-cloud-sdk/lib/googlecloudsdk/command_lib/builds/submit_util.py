@@ -433,7 +433,7 @@ def CreateBuildConfigAlpha(tag, no_cache, messages, substitutions, arg_config,
   return build_config
 
 
-def Build(messages, async_, build_config):
+def Build(messages, async_, build_config, show_logs=False):
   """Starts the build."""
   log.debug('submitting build: ' + repr(build_config))
   client = cloudbuild_util.GetClientInstance()
@@ -448,16 +448,17 @@ def Build(messages, async_, build_config):
       projectId=build.projectId,
       id=build.id)
 
-  log.CreatedResource(build_ref)
-  if build.logUrl:
-    log.status.Print(
-        'Logs are available at [{log_url}].'.format(log_url=build.logUrl))
-  else:
-    log.status.Print('Logs are available in the Cloud Console.')
+  if not show_logs:
+    log.CreatedResource(build_ref)
+    if build.logUrl:
+      log.status.Print(
+          'Logs are available at [{log_url}].'.format(log_url=build.logUrl))
+    else:
+      log.status.Print('Logs are available in the Cloud Console.')
 
   # If the command is run --async, we just print out a reference to the build.
   if async_:
-    return build
+    return build, op
 
   mash_handler = execution.MashHandler(
       execution.GetCancelBuildHandler(client, messages, build_ref))
@@ -474,4 +475,4 @@ def Build(messages, async_, build_config):
   if build.status != messages.Build.StatusValueValuesEnum.SUCCESS:
     raise FailedBuildException(build)
 
-  return build
+  return build, op

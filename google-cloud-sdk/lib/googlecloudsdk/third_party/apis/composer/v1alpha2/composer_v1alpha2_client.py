@@ -187,6 +187,33 @@ class ComposerV1alpha2(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def RestartWebServer(self, request, global_params=None):
+      r"""Restart Airflow web server.
+
+      Args:
+        request: (ComposerProjectsLocationsEnvironmentsRestartWebServerRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('RestartWebServer')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    RestartWebServer.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1alpha2/projects/{projectsId}/locations/{locationsId}/environments/{environmentsId}:restartWebServer',
+        http_method=u'POST',
+        method_id=u'composer.projects.locations.environments.restartWebServer',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[],
+        relative_path=u'v1alpha2/{+name}:restartWebServer',
+        request_field=u'restartWebServerRequest',
+        request_type_name=u'ComposerProjectsLocationsEnvironmentsRestartWebServerRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
   class ProjectsLocationsImageVersionsService(base_api.BaseApiService):
     """Service class for the projects_locations_imageVersions resource."""
 

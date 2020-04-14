@@ -486,6 +486,13 @@
         }
       }
     },
+    "RestartWebServerRequest": {
+      "id": "RestartWebServerRequest",
+      "description": "Restart Airflow web server.",
+      "type": "object",
+      "properties": {
+      }
+    },
     "ListImageVersionsResponse": {
       "id": "ListImageVersionsResponse",
       "description": "The ImageVersions in a project and location.",
@@ -865,6 +872,34 @@
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
                   "description": "Delete an environment."
+                },
+                "restartWebServer": {
+                  "id": "composer.projects.locations.environments.restartWebServer",
+                  "path": "v1alpha2/{+name}:restartWebServer",
+                  "flatPath": "v1alpha2/projects/{projectsId}/locations/{locationsId}/environments/{environmentsId}:restartWebServer",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "name": {
+                      "description": "The resource name of the environment to restart the web server for, in the\nform:\n\"projects\/{projectId}\/locations\/{locationId}\/environments\/{environmentId}\"",
+                      "location": "path",
+                      "required": true,
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/environments\/[^\/]+$",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "request": {
+                    "$ref": "RestartWebServerRequest"
+                  },
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Restart Airflow web server."
                 }
               }
             },

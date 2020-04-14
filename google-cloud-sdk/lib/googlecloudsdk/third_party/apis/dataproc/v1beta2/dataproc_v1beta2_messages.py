@@ -2298,8 +2298,15 @@ class InstanceGroupConfig(_messages.Message):
       these instances.
     diskConfig: Optional. Disk option config settings.
     imageUri: Optional. The Compute Engine image resource used for cluster
-      instances. It can be specified or may be inferred from
-      SoftwareConfig.image_version.
+      instances.The URI can represent an image or image family.Image examples:
+      https://www.googleapis.com/compute/beta/projects/[project_id]/global/ima
+      ges/[image-id] projects/[project_id]/global/images/[image-id] image-
+      idImage family examples. Dataproc will use the most recent image from
+      the family: https://www.googleapis.com/compute/beta/projects/[project_id
+      ]/global/images/family/[custom-image-family-name]
+      projects/[project_id]/global/images/family/[custom-image-family-name]If
+      the URI is unspecified, it will be inferred from
+      SoftwareConfig.image_version or the system default.
     instanceNames: Output only. The list of instance names. Dataproc derives
       the names from cluster_name, num_instances, and the instance group.
     isPreemptible: Output only. Specifies that this instance group contains
@@ -2432,8 +2439,8 @@ class Job(_messages.Message):
       location as driver_output_uri.
     driverOutputResourceUri: Output only. A URI pointing to the location of
       the stdout of the job's driver program.
-    hadoopJob: A HadoopJob attribute.
-    hiveJob: A HiveJob attribute.
+    hadoopJob: Optional. Job is a Hadoop job.
+    hiveJob: Optional. Job is a Hive job.
     jobUuid: Output only. A UUID that uniquely identifies a job within the
       project over time. This is in contrast to a user-settable
       reference.job_id that may be reused over time.
@@ -2443,19 +2450,19 @@ class Job(_messages.Message):
       if present, must contain 1 to 63 characters, and must conform to RFC
       1035 (https://www.ietf.org/rfc/rfc1035.txt). No more than 32 labels can
       be associated with a job.
-    pigJob: A PigJob attribute.
+    pigJob: Optional. Job is a Pig job.
     placement: Required. Job information, including how, when, and where to
       run the job.
-    prestoJob: A PrestoJob attribute.
-    pysparkJob: A PySparkJob attribute.
+    prestoJob: Optional. Job is a Presto job.
+    pysparkJob: Optional. Job is a PySpark job.
     reference: Optional. The fully qualified reference to the job, which can
       be used to obtain the equivalent REST path of the job resource. If this
       property is not specified when a job is created, the server generates a
       <code>job_id</code>.
     scheduling: Optional. Job scheduling configuration.
-    sparkJob: A SparkJob attribute.
-    sparkRJob: A SparkRJob attribute.
-    sparkSqlJob: A SparkSqlJob attribute.
+    sparkJob: Optional. Job is a Spark job.
+    sparkRJob: Optional. Job is a SparkR job.
+    sparkSqlJob: Optional. Job is a SparkSql job.
     status: Output only. The job status. Additional application-specific
       status information may be contained in the <code>type_job</code> and
       <code>yarn_applications</code> fields.
@@ -3350,7 +3357,9 @@ class Policy(_messages.Message):
 
 
 class PrestoJob(_messages.Message):
-  r"""A Dataproc job for running Presto (https://prestosql.io/) queries
+  r"""A Dataproc job for running Presto (https://prestosql.io/) queries.
+  IMPORTANT: The Dataproc Presto Optional Component must be enabled when the
+  cluster is created to submit a Presto job to the cluster.
 
   Messages:
     PropertiesValue: Optional. A mapping of property names to values. Used to

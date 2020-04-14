@@ -781,7 +781,6 @@ class GoogleIdentityAccesscontextmanagerV1AccessLevel(_messages.Message):
 
   Fields:
     basic: A `BasicLevel` composed of `Conditions`.
-    createTime: Output only. Time the `AccessLevel` was created in UTC.
     custom: A `CustomLevel` written in the Common Expression Language.
     description: Description of the `AccessLevel` and its use. Does not affect
       behavior.
@@ -790,16 +789,13 @@ class GoogleIdentityAccesscontextmanagerV1AccessLevel(_messages.Message):
       '_'. Format: `accessPolicies/{policy_id}/accessLevels/{short_name}`. The
       maximum length of the `short_name` component is 50 characters.
     title: Human readable title. Must be unique within the Policy.
-    updateTime: Output only. Time the `AccessLevel` was updated in UTC.
   """
 
   basic = _messages.MessageField('GoogleIdentityAccesscontextmanagerV1BasicLevel', 1)
-  createTime = _messages.StringField(2)
-  custom = _messages.MessageField('GoogleIdentityAccesscontextmanagerV1CustomLevel', 3)
-  description = _messages.StringField(4)
-  name = _messages.StringField(5)
-  title = _messages.StringField(6)
-  updateTime = _messages.StringField(7)
+  custom = _messages.MessageField('GoogleIdentityAccesscontextmanagerV1CustomLevel', 2)
+  description = _messages.StringField(3)
+  name = _messages.StringField(4)
+  title = _messages.StringField(5)
 
 
 class GoogleIdentityAccesscontextmanagerV1AccessPolicy(_messages.Message):
@@ -810,7 +806,6 @@ class GoogleIdentityAccesscontextmanagerV1AccessPolicy(_messages.Message):
   the restrictions it specifies apply to all projects within an organization.
 
   Fields:
-    createTime: Output only. Time the `AccessPolicy` was created in UTC.
     etag: Output only. An opaque identifier for the current version of the
       `AccessPolicy`. This will always be a strongly validated etag, meaning
       that two Access Polices will be identical if and only if their etags are
@@ -821,15 +816,12 @@ class GoogleIdentityAccesscontextmanagerV1AccessPolicy(_messages.Message):
       Hierarchy. Currently immutable once created. Format:
       `organizations/{organization_id}`
     title: Required. Human readable title. Does not affect behavior.
-    updateTime: Output only. Time the `AccessPolicy` was updated in UTC.
   """
 
-  createTime = _messages.StringField(1)
-  etag = _messages.StringField(2)
-  name = _messages.StringField(3)
-  parent = _messages.StringField(4)
-  title = _messages.StringField(5)
-  updateTime = _messages.StringField(6)
+  etag = _messages.StringField(1)
+  name = _messages.StringField(2)
+  parent = _messages.StringField(3)
+  title = _messages.StringField(4)
 
 
 class GoogleIdentityAccesscontextmanagerV1BasicLevel(_messages.Message):
@@ -1055,7 +1047,6 @@ class GoogleIdentityAccesscontextmanagerV1ServicePerimeter(_messages.Message):
       be empty.
 
   Fields:
-    createTime: Output only. Time the `ServicePerimeter` was created in UTC.
     description: Description of the `ServicePerimeter` and its use. Does not
       affect behavior.
     name: Required. Resource name for the ServicePerimeter.  The `short_name`
@@ -1074,7 +1065,6 @@ class GoogleIdentityAccesscontextmanagerV1ServicePerimeter(_messages.Message):
       resources, restricted services and access levels that determine
       perimeter content and boundaries.
     title: Human readable title. Must be unique within the Policy.
-    updateTime: Output only. Time the `ServicePerimeter` was updated in UTC.
     useExplicitDryRunSpec: Use explicit dry run spec flag. Ordinarily, a dry-
       run spec implicitly exists  for all Service Perimeters, and that spec is
       identical to the status for those Service Perimeters. When this flag is
@@ -1102,15 +1092,13 @@ class GoogleIdentityAccesscontextmanagerV1ServicePerimeter(_messages.Message):
     PERIMETER_TYPE_REGULAR = 0
     PERIMETER_TYPE_BRIDGE = 1
 
-  createTime = _messages.StringField(1)
-  description = _messages.StringField(2)
-  name = _messages.StringField(3)
-  perimeterType = _messages.EnumField('PerimeterTypeValueValuesEnum', 4)
-  spec = _messages.MessageField('GoogleIdentityAccesscontextmanagerV1ServicePerimeterConfig', 5)
-  status = _messages.MessageField('GoogleIdentityAccesscontextmanagerV1ServicePerimeterConfig', 6)
-  title = _messages.StringField(7)
-  updateTime = _messages.StringField(8)
-  useExplicitDryRunSpec = _messages.BooleanField(9)
+  description = _messages.StringField(1)
+  name = _messages.StringField(2)
+  perimeterType = _messages.EnumField('PerimeterTypeValueValuesEnum', 3)
+  spec = _messages.MessageField('GoogleIdentityAccesscontextmanagerV1ServicePerimeterConfig', 4)
+  status = _messages.MessageField('GoogleIdentityAccesscontextmanagerV1ServicePerimeterConfig', 5)
+  title = _messages.StringField(6)
+  useExplicitDryRunSpec = _messages.BooleanField(7)
 
 
 class GoogleIdentityAccesscontextmanagerV1ServicePerimeterConfig(_messages.Message):

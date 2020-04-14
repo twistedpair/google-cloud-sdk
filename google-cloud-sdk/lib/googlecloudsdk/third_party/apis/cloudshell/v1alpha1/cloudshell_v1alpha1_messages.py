@@ -462,6 +462,10 @@ class StartEnvironmentMetadata(_messages.Message):
         environment. This should normally happen very quickly, but an
         environment might stay in this state for an extended period of time if
         the system is experiencing heavy load.
+      AWAITING_COMPUTE_RESOURCES: Startup is waiting for compute resources to
+        be assigned to the environment. This should normally happen very
+        quickly, but an environment might stay in this state for an extended
+        period of time if the system is experiencing heavy load.
       FINISHED: Startup is complete and the user should be able to establish
         an SSH connection to their environment.
     """
@@ -469,7 +473,8 @@ class StartEnvironmentMetadata(_messages.Message):
     STARTING = 1
     UNARCHIVING_DISK = 2
     AWAITING_VM = 3
-    FINISHED = 4
+    AWAITING_COMPUTE_RESOURCES = 4
+    FINISHED = 5
 
   state = _messages.EnumField('StateValueValuesEnum', 1)
 

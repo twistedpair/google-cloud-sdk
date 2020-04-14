@@ -158,6 +158,21 @@ class ComposerProjectsLocationsEnvironmentsPatchRequest(_messages.Message):
   updateMask = _messages.StringField(3)
 
 
+class ComposerProjectsLocationsEnvironmentsRestartWebServerRequest(_messages.Message):
+  r"""A ComposerProjectsLocationsEnvironmentsRestartWebServerRequest object.
+
+  Fields:
+    name: The resource name of the environment to restart the web server for,
+      in the form: "projects/{projectId}/locations/{locationId}/environments/{
+      environmentId}"
+    restartWebServerRequest: A RestartWebServerRequest resource to be passed
+      as the request body.
+  """
+
+  name = _messages.StringField(1, required=True)
+  restartWebServerRequest = _messages.MessageField('RestartWebServerRequest', 2)
+
+
 class ComposerProjectsLocationsImageVersionsListRequest(_messages.Message):
   r"""A ComposerProjectsLocationsImageVersionsListRequest object.
 
@@ -750,6 +765,10 @@ class PrivateEnvironmentConfig(_messages.Message):
 
   enablePrivateEnvironment = _messages.BooleanField(1)
   privateClusterConfig = _messages.MessageField('PrivateClusterConfig', 2)
+
+
+class RestartWebServerRequest(_messages.Message):
+  r"""Restart Airflow web server."""
 
 
 class SoftwareConfig(_messages.Message):

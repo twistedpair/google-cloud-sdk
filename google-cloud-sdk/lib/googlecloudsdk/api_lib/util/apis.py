@@ -123,12 +123,12 @@ def GetVersions(api_name):
   return apis_internal._GetVersions(api_name)
 
 
-def ResolveVersion(api_name, default_override=None):
+def ResolveVersion(api_name, api_version=None):
   """Resolves the version for an API based on the APIs map and API overrides.
 
   Args:
     api_name: str, The API name (or the command surface name, if different).
-    default_override: str, The override for the default version.
+    api_version: str, The API version.
 
   Raises:
     apis_internal.UnknownAPIError: If api_name does not exist in the APIs map.
@@ -142,8 +142,16 @@ def ResolveVersion(api_name, default_override=None):
     raise apis_util.UnknownAPIError(api_name)
 
   version_overrides = properties.VALUES.api_client_overrides.AllValues()
-  version_override = version_overrides.get(api_name_alias, None)
-  return (version_override or default_override or
+
+  # First try to get api specific override, then try full surface override.
+  api_version_override = None
+  if api_version:
+    api_version_override = version_overrides.get(
+        '{}/{}'.format(api_name_alias, api_version), None)
+  if not api_version_override:
+    api_version_override = version_overrides.get(api_name_alias, api_version)
+
+  return (api_version_override or
           # pylint:disable=protected-access
           apis_internal._GetDefaultVersion(api_name))
 

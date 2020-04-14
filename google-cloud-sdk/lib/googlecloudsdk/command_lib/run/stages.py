@@ -25,6 +25,12 @@ READY = 'Ready'
 SERVICE_IAM_POLICY_SET = 'IamPolicySet'
 SERVICE_ROUTES_READY = 'RoutesReady'
 SERVICE_CONFIGURATIONS_READY = 'ConfigurationsReady'
+BUILD_READY = 'BuildReady'
+
+
+def _BuildFromSourceStage():
+  return progress_tracker.Stage(
+      'Building Container...', key=BUILD_READY)
 
 
 def _NewRoutingTrafficStage():
@@ -39,10 +45,15 @@ def UpdateTrafficStages():
 # Because some terminals cannot update multiple lines of output simultaneously,
 # the order of conditions in this dictionary should match the order in which we
 # expect cloud run resources to complete deployment.
-def ServiceStages(include_iam_policy_set=False, include_route=True):
+def ServiceStages(include_iam_policy_set=False,
+                  include_route=True,
+                  include_build=False):
   """Return the progress tracker Stages for conditions of a Service."""
-  stages = [progress_tracker.Stage(
-      'Creating Revision...', key=SERVICE_CONFIGURATIONS_READY)]
+  stages = []
+  if include_build:
+    stages.append(_BuildFromSourceStage())
+  stages.append(progress_tracker.Stage(
+      'Creating Revision...', key=SERVICE_CONFIGURATIONS_READY))
   if include_route:
     stages.append(_NewRoutingTrafficStage())
   if include_iam_policy_set:

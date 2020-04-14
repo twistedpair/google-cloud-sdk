@@ -586,6 +586,60 @@ and CertificateRevocationLists.
         supports_download=False,
     )
 
+    def Disable(self, request, global_params=None):
+      r"""Disable a CertificateAuthority.
+
+      Args:
+        request: (PrivatecaProjectsLocationsCertificateAuthoritiesDisableRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Disable')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Disable.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1alpha1/projects/{projectsId}/locations/{locationsId}/certificateAuthorities/{certificateAuthoritiesId}:disable',
+        http_method=u'POST',
+        method_id=u'privateca.projects.locations.certificateAuthorities.disable',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[],
+        relative_path=u'v1alpha1/{+name}:disable',
+        request_field=u'disableCertificateAuthorityRequest',
+        request_type_name=u'PrivatecaProjectsLocationsCertificateAuthoritiesDisableRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
+    def Enable(self, request, global_params=None):
+      r"""Enable a CertificateAuthority.
+
+      Args:
+        request: (PrivatecaProjectsLocationsCertificateAuthoritiesEnableRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Enable')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Enable.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1alpha1/projects/{projectsId}/locations/{locationsId}/certificateAuthorities/{certificateAuthoritiesId}:enable',
+        http_method=u'POST',
+        method_id=u'privateca.projects.locations.certificateAuthorities.enable',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[],
+        relative_path=u'v1alpha1/{+name}:enable',
+        request_field=u'enableCertificateAuthorityRequest',
+        request_type_name=u'PrivatecaProjectsLocationsCertificateAuthoritiesEnableRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
     def Get(self, request, global_params=None):
       r"""Returns a CertificateAuthority.
 
@@ -719,6 +773,60 @@ set.
         relative_path=u'v1alpha1/{+name}',
         request_field=u'certificateAuthority',
         request_type_name=u'PrivatecaProjectsLocationsCertificateAuthoritiesPatchRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
+    def PublishCrl(self, request, global_params=None):
+      r"""Publish a CertificateRevocationList.
+
+      Args:
+        request: (PrivatecaProjectsLocationsCertificateAuthoritiesPublishCrlRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (PublishCertificateRevocationListResponse) The response message.
+      """
+      config = self.GetMethodConfig('PublishCrl')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    PublishCrl.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1alpha1/projects/{projectsId}/locations/{locationsId}/certificateAuthorities/{certificateAuthoritiesId}:publishCrl',
+        http_method=u'POST',
+        method_id=u'privateca.projects.locations.certificateAuthorities.publishCrl',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[],
+        relative_path=u'v1alpha1/{+name}:publishCrl',
+        request_field=u'publishCertificateRevocationListRequest',
+        request_type_name=u'PrivatecaProjectsLocationsCertificateAuthoritiesPublishCrlRequest',
+        response_type_name=u'PublishCertificateRevocationListResponse',
+        supports_download=False,
+    )
+
+    def ScheduleDelete(self, request, global_params=None):
+      r"""Schedule a CertificateAuthority for deletion.
+
+      Args:
+        request: (PrivatecaProjectsLocationsCertificateAuthoritiesScheduleDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('ScheduleDelete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    ScheduleDelete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1alpha1/projects/{projectsId}/locations/{locationsId}/certificateAuthorities/{certificateAuthoritiesId}:scheduleDelete',
+        http_method=u'POST',
+        method_id=u'privateca.projects.locations.certificateAuthorities.scheduleDelete',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[],
+        relative_path=u'v1alpha1/{+name}:scheduleDelete',
+        request_field=u'scheduleDeleteCertificateAuthorityRequest',
+        request_type_name=u'PrivatecaProjectsLocationsCertificateAuthoritiesScheduleDeleteRequest',
         response_type_name=u'Operation',
         supports_download=False,
     )

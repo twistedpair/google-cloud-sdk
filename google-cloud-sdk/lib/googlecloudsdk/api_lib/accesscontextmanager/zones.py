@@ -266,6 +266,24 @@ class Client(object):
     update_mask.append('useExplicitDryRunSpec')
     return self._ApplyPatch(perimeter_ref, perimeter, update_mask)
 
+  def EnforceDryRunConfig(self, perimeter_ref):
+    """Promotes a Service Perimeter's dry-run config to enforcement config.
+
+    Args:
+      perimeter_ref: resources.Resource, reference to the perimeter to patch
+
+    Returns:
+      ServicePerimeter, the updated Service Perimeter.
+    """
+    original_perimeter = self.Get(perimeter_ref)
+    m = self.messages
+    perimeter = m.ServicePerimeter()
+    update_mask = ['status', 'spec', 'useExplicitDryRunSpec']
+    perimeter.status = original_perimeter.spec
+    perimeter.spec = None
+    perimeter.useExplicitDryRunSpec = False
+    return self._ApplyPatch(perimeter_ref, perimeter, update_mask)
+
   def UnsetSpec(self, perimeter_ref, use_explicit_dry_run_spec):
     """Unsets the spec for a Service Perimeter.
 

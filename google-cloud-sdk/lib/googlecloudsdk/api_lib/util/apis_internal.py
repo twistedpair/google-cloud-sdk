@@ -90,7 +90,13 @@ def _GetApiDef(api_name, api_version):
     raise apis_util.UnknownAPIError(api_name)
 
   version_overrides = properties.VALUES.api_client_overrides.AllValues()
-  version_override = version_overrides.get(api_name_alias, None)
+
+  # First attempt to get api specific override, then full surface override.
+  version_override = version_overrides.get('{}/{}'.format(
+      api_name, api_version))
+  if not version_override:
+    version_override = version_overrides.get(api_name_alias, None)
+
   api_version = version_override or api_version
 
   api_versions = apis_map.MAP[api_name]

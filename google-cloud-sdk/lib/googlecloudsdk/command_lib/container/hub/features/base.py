@@ -137,7 +137,10 @@ def CreateMultiClusterServiceDiscoveryFeatureSpec():
 def CreateConfigManagementFeatureSpec():
   client = core_apis.GetClientInstance('gkehub', 'v1alpha1')
   messages = client.MESSAGES_MODULE
-  return messages.ConfigManagementFeatureSpec()
+  empty_config_map = messages.ConfigManagementFeatureSpec.MembershipConfigsValue(
+      additionalProperties=[])
+  return messages.ConfigManagementFeatureSpec(
+      membershipConfigs=empty_config_map)
 
 
 def CreateFeature(project, feature_id, feature_display_name, **kwargs):
@@ -254,8 +257,17 @@ def UpdateFeature(project, feature_id, feature_display_name, mask, **kwargs):
       updateMask=mask,
       feature=messages.Feature(**kwargs),
   )
-
-  op = client.projects_locations_global_features.Patch(request)
+  try:
+    op = client.projects_locations_global_features.Patch(request)
+  except apitools_exceptions.HttpUnauthorizedError as e:
+    raise exceptions.Error(
+        'You are not authorized to see the status of {} '
+        'feature from project [{}]. Underlying error: {}'.format(
+            feature_display_name, project, e))
+  except apitools_exceptions.HttpNotFoundError as e:
+    raise exceptions.Error(
+        '{} Feature for project [{}] is not enabled'.format(
+            feature_display_name, project))
   op_resource = resources.REGISTRY.ParseRelativeName(
       op.name, collection='gkehub.projects.locations.operations')
   result = waiter.WaitFor(

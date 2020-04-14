@@ -103,7 +103,8 @@ def AddVersion(parser, purpose, positional=False, **kwargs):
   concept_parsers.ConceptParser.ForResource(
       name=_ArgOrFlag('version', positional),
       resource_spec=GetVersionResourceSpec(),
-      group_help='Numeric secret version {}.'.format(purpose),
+      group_help=('Numeric secret version {} or `latest` to use the latest '
+                  'version.').format(purpose),
       **kwargs).AddToParser(parser)
 
 
@@ -112,7 +113,8 @@ def AddBetaVersion(parser, purpose, positional=False, **kwargs):
   concept_parsers.ConceptParser.ForResource(
       name=_ArgOrFlag('version', positional),
       resource_spec=GetBetaVersionResourceSpec(),
-      group_help='Numeric secret version {}.'.format(purpose),
+      group_help=('Numeric secret version {} or `latest` to use the '
+                  'latest version.').format(purpose),
       **kwargs).AddToParser(parser)
 
 

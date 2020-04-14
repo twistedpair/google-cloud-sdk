@@ -758,6 +758,10 @@
           "description": "Configuration for NodeLocalDNS, a dns cache running on cluster nodes",
           "$ref": "DnsCacheConfig"
         },
+        "configConnectorConfig": {
+          "description": "Configuration for the ConfigConnector add-on, a Kubernetes\nextension to manage hosted GCP services through the Kubernetes API",
+          "$ref": "ConfigConnectorConfig"
+        },
         "gcePersistentDiskCsiDriverConfig": {
           "description": "Configuration for the Compute Engine Persistent Disk CSI driver.",
           "$ref": "GcePersistentDiskCsiDriverConfig"
@@ -853,6 +857,17 @@
       "properties": {
         "enabled": {
           "description": "Whether NodeLocal DNSCache is enabled for this cluster.",
+          "type": "boolean"
+        }
+      }
+    },
+    "ConfigConnectorConfig": {
+      "id": "ConfigConnectorConfig",
+      "description": "Configuration options for the Config Connector add-on.",
+      "type": "object",
+      "properties": {
+        "enabled": {
+          "description": "Whether Cloud Connector is enabled for this cluster.",
           "type": "boolean"
         }
       }
@@ -1134,7 +1149,7 @@
       "type": "object",
       "properties": {
         "useIpAliases": {
-          "description": "Whether alias IPs will be used for pod IPs in the cluster.",
+          "description": "Whether alias IPs will be used for pod IPs in the cluster.\nThis is used in conjunction with use_routes. It cannot\nbe true if use_routes is true. If both use_ip_aliases and use_routes are\nfalse, then the server picks the default IP allocation mode",
           "type": "boolean"
         },
         "createSubnetwork": {
@@ -1184,6 +1199,10 @@
         "tpuIpv4CidrBlock": {
           "description": "The IP address range of the Cloud TPUs in this cluster. If unspecified, a\nrange will be automatically chosen with the default size.\n\nThis field is only applicable when `use_ip_aliases` is true.\n\nIf unspecified, the range will use the default size.\n\nSet to \/netmask (e.g. `\/14`) to have a range chosen with a specific\nnetmask.\n\nSet to a\n[CIDR](http:\/\/en.wikipedia.org\/wiki\/Classless_Inter-Domain_Routing)\nnotation (e.g. `10.96.0.0\/14`) from the RFC-1918 private networks (e.g.\n`10.0.0.0\/8`, `172.16.0.0\/12`, `192.168.0.0\/16`) to pick a specific range\nto use.\nThis field is deprecated, use cluster.tpu_config.ipv4_cidr_block instead.",
           "type": "string"
+        },
+        "useRoutes": {
+          "description": "Whether routes will be used for pod IPs in the cluster.\nThis is used in conjunction with use_ip_aliases. It cannot be true if\nuse_ip_aliases is true. If both use_ip_aliases and use_routes are false,\nthen the server picks the default IP allocation mode",
+          "type": "boolean"
         }
       }
     },

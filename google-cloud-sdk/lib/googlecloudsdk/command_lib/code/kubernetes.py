@@ -200,7 +200,7 @@ class Minikube(object):
     self._vm_driver = vm_driver
 
   def __enter__(self):
-    _StartMinkubeCluster(self._cluster_name, self._vm_driver)
+    _StartMinikubeCluster(self._cluster_name, self._vm_driver)
     return MinikubeCluster(self._cluster_name, self._vm_driver == 'docker')
 
   def __exit__(self, exc_type, exc_value, tb):
@@ -212,7 +212,7 @@ def _FindMinikube():
   return _FindExecutable('minikube')
 
 
-def _StartMinkubeCluster(cluster_name, vm_driver):
+def _StartMinikubeCluster(cluster_name, vm_driver):
   """Starts a minikube cluster."""
   if not _IsMinikubeClusterUp(cluster_name):
     cmd = [
@@ -221,6 +221,8 @@ def _StartMinkubeCluster(cluster_name, vm_driver):
         '-p',
         cluster_name,
         '--keep-context',
+        '--delete-on-failure',
+        '--install-addons=false',
     ]
     if vm_driver:
       cmd.append('--vm-driver=' + vm_driver)

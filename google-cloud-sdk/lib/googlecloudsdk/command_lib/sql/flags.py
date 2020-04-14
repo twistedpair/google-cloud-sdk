@@ -109,28 +109,17 @@ def AddUsername(parser):
 
 
 def AddHost(parser):
-  """Add the 'deprecated_host' arg and '--host' flag to the parser."""
-  help_text = ('Cloud SQL user\'s host name expressed as a specific IP address'
-               ' or address range. `%` denotes an unrestricted host name. '
-               'Applicable flag for MySQL instances; ignored for PostgreSQL '
-               'instances. Note, if you connect to your instance using IP '
-               'addresses, you must add your client IP address as an Authorized'
-               ' Address, even if your host name is unrestricted. For help on '
-               'how to do so, read: '
-               'https://cloud.google.com/sql/docs/mysql/configure-ip')
-
-  host = parser.add_argument_group(mutex=True)
-  # NOTICE: is_required = False is a short-term solution -- don't use elsewhere.
-  host.add_argument(
-      'deprecated_host',
-      help=help_text,
-      action=actions.DeprecationAction(
-          'deprecated_host',
-          removed=True,
-          error='Positional argument {flag_name} has been removed. Use '
-          '--host instead.'),
-      hidden=True).is_required = False
-  host.add_argument('--host', help=help_text)
+  """Add the '--host' flag to the parser."""
+  parser.add_argument(
+      '--host',
+      help=('Cloud SQL user\'s host name expressed as a specific IP address'
+            ' or address range. `%` denotes an unrestricted host name. '
+            'Applicable flag for MySQL instances; ignored for all other '
+            'engines. Note, if you connect to your instance using IP '
+            'addresses, you must add your client IP address as an Authorized'
+            ' Address, even if your host name is unrestricted. For help on '
+            'how to do so, read: '
+            'https://cloud.google.com/sql/docs/mysql/configure-ip'))
 
 
 def AddAvailabilityType(parser):

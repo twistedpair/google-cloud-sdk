@@ -469,14 +469,13 @@ _STAGING_REGISTRY = {
             mapper=_JavaStagingMapper),
     runtime_registry.RegistryEntry('java-jar', {env.STANDARD}):
         CreateJava11YamlCommand(),
+    runtime_registry.RegistryEntry('java-maven-project', {env.STANDARD}):
+        CreateJava11MavenProjectCommand(),
 }
 
 # _STAGING_REGISTRY_BETA extends _STAGING_REGISTRY, overriding entries if the
 # same key is used.
-_STAGING_REGISTRY_BETA = {
-    runtime_registry.RegistryEntry('java-maven-project', {env.STANDARD}):
-        CreateJava11MavenProjectCommand(),
-}
+_STAGING_REGISTRY_BETA = {}
 
 
 class Stager(object):

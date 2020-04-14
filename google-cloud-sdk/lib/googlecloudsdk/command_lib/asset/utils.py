@@ -43,19 +43,30 @@ def SetDefaultScopeIfEmpty(unused_ref, args, request):
   if args.IsSpecified('scope'):
     VerifyScopeForSearch(request.scope)
   else:
-    project_id = properties.VALUES.core.project.GetOrFail()
     request.scope = 'projects/{0}'.format(
-        project_util.GetProjectNumber(project_id))
+        properties.VALUES.core.project.GetOrFail())
   return request
 
 
 def VerifyScopeForSearch(scope):
-  """Verify the scope is a project number, folder number or org number."""
-  if not re.match('^(projects|folders|organizations)/[1-9][0-9]{0,18}$', scope):
+  """Perform permissive validation of the search scope.
+
+  This validation is required although the API server contains similar request
+  validation.
+  The reason is that a malformed scope will be translated into an
+  invalid URL, resulting in 404. For example, scope "projects/123/abc/" is
+  translated to
+  "https://cloudasset.googleapis.com/v1p1beta1/projects/123/abc/resources:searchAll".(404)
+  However our OnePlatform API only accepts URL in format:
+  "https://cloudasset.googleapis.com/v1p1beta1/*/*/resources:searchAll"
+
+  Args:
+    scope: the scope string of a search request.
+  """
+  if not re.match('^[^/]+/[^/]+$', scope):
     raise gcloud_exceptions.InvalidArgumentException(
-        '--scope',
-        'A valid scope should be: projects/<number>, organizations/<number> or '
-        'folders/<number>.')
+        '--scope', 'A valid scope should be: projects/<number>, projects/<id>, '
+        'organizations/<number> or folders/<number>.')
 
 
 def VerifyParentForExport(organization,

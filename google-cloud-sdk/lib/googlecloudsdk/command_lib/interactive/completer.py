@@ -567,8 +567,7 @@ class InteractiveCliCompleter(completion.Completer):
       prefix = arg.value
       if (self.manpage_generator and not prefix and
           len(args) == 2 and args[0].value):
-        node = generate_cli_trees.LoadOrGenerate(args[0].value,
-                                                 allow_extensions=True)
+        node = generate_cli_trees.LoadOrGenerate(args[0].value)
         if not node:
           return None, 0
         self.parser.root[parser.LOOKUP_COMMANDS][args[0].value] = node

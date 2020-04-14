@@ -35,10 +35,23 @@ class ActivateCertificateAuthorityRequest(_messages.Message):
       GetCertificateAuthorityCsrResponse.pem_csr.
     pemCaCertificateChain: Required. Must include the issuer of
       'pem_ca_certificate', and any further issuers until the self-signed CA.
+      Expected to be in issuer-to-root order according to RFC 5246.
+    requestId: Optional. An ID to identify requests. Specify a unique request
+      ID so that if you must retry your request, the server will know to
+      ignore the request if it has already been completed. The server will
+      guarantee that for at least 60 minutes since the first request.  For
+      example, consider a situation where you make an initial request and t he
+      request times out. If you make the request again with the same request
+      ID, the server can check if original operation with the same request ID
+      was received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
   """
 
   pemCaCertificate = _messages.StringField(1)
   pemCaCertificateChain = _messages.StringField(2, repeated=True)
+  requestId = _messages.StringField(3)
 
 
 class AllowedConfigList(_messages.Message):
@@ -263,7 +276,8 @@ class Certificate(_messages.Message):
       `projects/*/locations/*/certificateAuthorities/*/certificates/*`.
     pemCertificate: Output only. The pem-encoded, signed X.509 certificate.
     pemCertificateChain: Output only. The chain that may be used to verify the
-      X.509 certificate.
+      X.509 certificate. Expected to be in issuer-to-root order according to
+      RFC 5246.
     pemCsr: Immutable. A pem-encoded X.509 certificate signing request (CSR).
     revocationDetails: Output only. Details regarding the revocation of this
       Certificate. This Certificate is considered revoked if and only if this
@@ -354,7 +368,8 @@ class CertificateAuthority(_messages.Message):
     pemCert: Output only. This CertificateAuthority's CA cert.
     pemIssuerCertChain: Optional. This CertificateAuthority's issuer chain. If
       self-signed, will be the same as 'pem_cert'. This may be updated (e.g.,
-      if an issuer's cert was replaced).
+      if an issuer's cert was replaced). Expected to be in issuer-to-root
+      order according to RFC 5246.
     state: Output only. The State for this CertificateAuthority.
     type: Immutable. The Type of this CertificateAuthority.
     updateTime: Output only. The time at which this CertificateAuthority was
@@ -593,6 +608,27 @@ class CertificateRevocationList(_messages.Message):
   updateTime = _messages.StringField(9)
 
 
+class DisableCertificateAuthorityRequest(_messages.Message):
+  r"""Request message for
+  CertificateAuthorityService.DisableCertificateAuthority.
+
+  Fields:
+    requestId: Optional. An ID to identify requests. Specify a unique request
+      ID so that if you must retry your request, the server will know to
+      ignore the request if it has already been completed. The server will
+      guarantee that for at least 60 minutes since the first request.  For
+      example, consider a situation where you make an initial request and t he
+      request times out. If you make the request again with the same request
+      ID, the server can check if original operation with the same request ID
+      was received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
+  """
+
+  requestId = _messages.StringField(1)
+
+
 class Empty(_messages.Message):
   r"""A generic empty message that you can re-use to avoid defining duplicated
   empty messages in your APIs. A typical example is to use it as the request
@@ -601,6 +637,27 @@ class Empty(_messages.Message):
   JSON representation for `Empty` is empty JSON object `{}`.
   """
 
+
+
+class EnableCertificateAuthorityRequest(_messages.Message):
+  r"""Request message for
+  CertificateAuthorityService.EnableCertificateAuthority.
+
+  Fields:
+    requestId: Optional. An ID to identify requests. Specify a unique request
+      ID so that if you must retry your request, the server will know to
+      ignore the request if it has already been completed. The server will
+      guarantee that for at least 60 minutes since the first request.  For
+      example, consider a situation where you make an initial request and t he
+      request times out. If you make the request again with the same request
+      ID, the server can check if original operation with the same request ID
+      was received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
+  """
+
+  requestId = _messages.StringField(1)
 
 
 class Expr(_messages.Message):
@@ -728,7 +785,8 @@ class KeyUsageOptions(_messages.Message):
 
   Fields:
     certSign: The key may be used to sign certificates.
-    contentCommitment: The key may be used for cryptographic commitments.
+    contentCommitment: The key may be used for cryptographic commitments. Note
+      that this may also be referred to as "non-repudiation".
     crlSign: The key may be used sign certificate revocation lists.
     dataEncipherment: The key may be used to encipher data.
     decipherOnly: The key may be used to decipher only.
@@ -1524,6 +1582,34 @@ class PrivatecaProjectsLocationsCertificateAuthoritiesDeleteRequest(_messages.Me
   requestId = _messages.StringField(2)
 
 
+class PrivatecaProjectsLocationsCertificateAuthoritiesDisableRequest(_messages.Message):
+  r"""A PrivatecaProjectsLocationsCertificateAuthoritiesDisableRequest object.
+
+  Fields:
+    disableCertificateAuthorityRequest: A DisableCertificateAuthorityRequest
+      resource to be passed as the request body.
+    name: Required. The resource name for this CertificateAuthority in the
+      format `projects/*/locations/*/certificateAuthorities/*`.
+  """
+
+  disableCertificateAuthorityRequest = _messages.MessageField('DisableCertificateAuthorityRequest', 1)
+  name = _messages.StringField(2, required=True)
+
+
+class PrivatecaProjectsLocationsCertificateAuthoritiesEnableRequest(_messages.Message):
+  r"""A PrivatecaProjectsLocationsCertificateAuthoritiesEnableRequest object.
+
+  Fields:
+    enableCertificateAuthorityRequest: A EnableCertificateAuthorityRequest
+      resource to be passed as the request body.
+    name: Required. The resource name for this CertificateAuthority in the
+      format `projects/*/locations/*/certificateAuthorities/*`.
+  """
+
+  enableCertificateAuthorityRequest = _messages.MessageField('EnableCertificateAuthorityRequest', 1)
+  name = _messages.StringField(2, required=True)
+
+
 class PrivatecaProjectsLocationsCertificateAuthoritiesGetCsrRequest(_messages.Message):
   r"""A PrivatecaProjectsLocationsCertificateAuthoritiesGetCsrRequest object.
 
@@ -1615,6 +1701,39 @@ class PrivatecaProjectsLocationsCertificateAuthoritiesPatchRequest(_messages.Mes
   name = _messages.StringField(2, required=True)
   requestId = _messages.StringField(3)
   updateMask = _messages.StringField(4)
+
+
+class PrivatecaProjectsLocationsCertificateAuthoritiesPublishCrlRequest(_messages.Message):
+  r"""A PrivatecaProjectsLocationsCertificateAuthoritiesPublishCrlRequest
+  object.
+
+  Fields:
+    name: Required. The resource name of the location and
+      CertificateAuthority, in the format
+      `projects/*/locations/*/certificateAuthorities/*`.
+    publishCertificateRevocationListRequest: A
+      PublishCertificateRevocationListRequest resource to be passed as the
+      request body.
+  """
+
+  name = _messages.StringField(1, required=True)
+  publishCertificateRevocationListRequest = _messages.MessageField('PublishCertificateRevocationListRequest', 2)
+
+
+class PrivatecaProjectsLocationsCertificateAuthoritiesScheduleDeleteRequest(_messages.Message):
+  r"""A PrivatecaProjectsLocationsCertificateAuthoritiesScheduleDeleteRequest
+  object.
+
+  Fields:
+    name: Required. The resource name for this CertificateAuthority in the
+      format `projects/*/locations/*/certificateAuthorities/*`.
+    scheduleDeleteCertificateAuthorityRequest: A
+      ScheduleDeleteCertificateAuthorityRequest resource to be passed as the
+      request body.
+  """
+
+  name = _messages.StringField(1, required=True)
+  scheduleDeleteCertificateAuthorityRequest = _messages.MessageField('ScheduleDeleteCertificateAuthorityRequest', 2)
 
 
 class PrivatecaProjectsLocationsCertificateAuthoritiesSetIamPolicyRequest(_messages.Message):
@@ -1895,6 +2014,25 @@ class PublicKey(_messages.Message):
   type = _messages.EnumField('TypeValueValuesEnum', 2)
 
 
+class PublishCertificateRevocationListRequest(_messages.Message):
+  r"""Request message for
+  CertificateAuthorityService.PublishCertificateRevocationList.
+  """
+
+
+
+class PublishCertificateRevocationListResponse(_messages.Message):
+  r"""Response message for
+  CertificateAuthorityService.PublishCertificateRevocationList.
+
+  Fields:
+    pemCrl: Output only. The PEM-encoded signed certificate revocation list
+      (CRL).
+  """
+
+  pemCrl = _messages.StringField(1)
+
+
 class ReusableConfig(_messages.Message):
   r"""A ReusableConfig refers to a managed ReusableConfigValues. Those, in
   turn, are used to describe certain fields of an X.509 certificate, such as
@@ -1907,6 +2045,8 @@ class ReusableConfig(_messages.Message):
   Fields:
     createTime: Output only. The time at which this ReusableConfig was
       created.
+    description: Optional. A human-readable description of scenarios these
+      ReusableConfigValues may be compatible with.
     labels: Optional. Labels with user-defined metadata.
     name: Output only. The resource path for this ReusableConfig in the format
       `projects/*/locations/*/reusableConfigs/*`.
@@ -1940,10 +2080,11 @@ class ReusableConfig(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   createTime = _messages.StringField(1)
-  labels = _messages.MessageField('LabelsValue', 2)
-  name = _messages.StringField(3)
-  updateTime = _messages.StringField(4)
-  values = _messages.MessageField('ReusableConfigValues', 5)
+  description = _messages.StringField(2)
+  labels = _messages.MessageField('LabelsValue', 3)
+  name = _messages.StringField(4)
+  updateTime = _messages.StringField(5)
+  values = _messages.MessageField('ReusableConfigValues', 6)
 
 
 class ReusableConfigValues(_messages.Message):
@@ -2046,6 +2187,17 @@ class RevokeCertificateRequest(_messages.Message):
 
   Fields:
     reason: Required. The RevocationReason for revoking this certificate.
+    requestId: Optional. An ID to identify requests. Specify a unique request
+      ID so that if you must retry your request, the server will know to
+      ignore the request if it has already been completed. The server will
+      guarantee that for at least 60 minutes since the first request.  For
+      example, consider a situation where you make an initial request and t he
+      request times out. If you make the request again with the same request
+      ID, the server can check if original operation with the same request ID
+      was received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
   """
 
   class ReasonValueValuesEnum(_messages.Enum):
@@ -2081,6 +2233,7 @@ class RevokeCertificateRequest(_messages.Message):
     ATTRIBUTE_AUTHORITY_COMPROMISE = 8
 
   reason = _messages.EnumField('ReasonValueValuesEnum', 1)
+  requestId = _messages.StringField(2)
 
 
 class RevokedCertificate(_messages.Message):
@@ -2131,6 +2284,27 @@ class RevokedCertificate(_messages.Message):
   certificate = _messages.StringField(1)
   revocationReason = _messages.EnumField('RevocationReasonValueValuesEnum', 2)
   serialNumber = _messages.StringField(3)
+
+
+class ScheduleDeleteCertificateAuthorityRequest(_messages.Message):
+  r"""Request message for
+  CertificateAuthorityService.ScheduleDeleteCertificateAuthority.
+
+  Fields:
+    requestId: Optional. An ID to identify requests. Specify a unique request
+      ID so that if you must retry your request, the server will know to
+      ignore the request if it has already been completed. The server will
+      guarantee that for at least 60 minutes since the first request.  For
+      example, consider a situation where you make an initial request and t he
+      request times out. If you make the request again with the same request
+      ID, the server can check if original operation with the same request ID
+      was received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
+  """
+
+  requestId = _messages.StringField(1)
 
 
 class SetIamPolicyRequest(_messages.Message):

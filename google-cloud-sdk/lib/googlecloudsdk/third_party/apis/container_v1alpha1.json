@@ -1343,6 +1343,10 @@
         "tpuUseServiceNetworking": {
           "description": "Enable Cloud TPU's Service Networking mode. In this mode, the CIDR blocks\nused by the Cloud TPUs will be allocated and managed by Service Networking,\ninstead of GKE.\n\nThis field must be `false` when `tpu_ipv4_cidr_block` is specified.\nThis field is deprecated, use cluster.tpu_config.use_service_networking\ninstead.",
           "type": "boolean"
+        },
+        "useRoutes": {
+          "description": "Whether routes will be used for pod IPs in the cluster.\nThis is used in conjunction with use_ip_aliases. It cannot be true if\nuse_ip_aliases is true. If both use_ip_aliases and use_routes are false,\nthen the server picks the default IP allocation mode",
+          "type": "boolean"
         }
       }
     },

@@ -1800,7 +1800,7 @@ def AddDeletionProtectionFlag(parser, use_default_value=True):
 def AddShieldedInstanceConfigArgs(parser,
                                   use_default_value=True,
                                   for_update=False):
-  """Adds flags for shielded Instance configuration.
+  """Adds flags for Shielded VM configuration.
 
   Args:
     parser: ArgumentParser, parser to which flags will be added.
@@ -1818,11 +1818,14 @@ def AddShieldedInstanceConfigArgs(parser,
 
   # --shielded-secure-boot
   secure_boot_help = """\
-      The instance will boot with secure boot enabled.
+      The instance boots with secure boot enabled. On Shielded VMs, Secure
+      Boot is not enabled by default. For information about how to modify
+      Shielded VM options, see
+      https://cloud.google.com/compute/docs/instances/modifying-shielded-vm.
       """
   if for_update:
     secure_boot_help += """\
-      Changes to this setting (via the update command) will only take effect
+      Changes to this setting with the update command only take effect
       after stopping and starting the instance.
       """
 
@@ -1835,13 +1838,16 @@ def AddShieldedInstanceConfigArgs(parser,
 
   # --shielded-vtpm
   vtpm_help = """\
-      The instance will boot with the TPM (Trusted Platform Module) enabled.
+      The instance boots with the TPM (Trusted Platform Module) enabled.
       A TPM is a hardware module that can be used for different security
-      operations such as remote attestation, encryption and sealing of keys.
+      operations such as remote attestation, encryption, and sealing of keys.
+      On Shielded VMs, vTPM is enabled by default. For information about how
+      to modify Shielded VM options, see
+      https://cloud.google.com/compute/docs/instances/modifying-shielded-vm.
       """
   if for_update:
     vtpm_help += """\
-      Changes to this setting (via the update command) will only take effect
+      Changes to this setting with the update command only take effect
       after stopping and starting the instance.
       """
 
@@ -1858,11 +1864,14 @@ def AddShieldedInstanceConfigArgs(parser,
       instance. The attestation is performed against the integrity policy
       baseline. This baseline is initially derived from the implicitly
       trusted boot image when the instance is created. This baseline can be
-      updated by using `--shielded-vm-learn-integrity-policy`.
+      updated by using `--shielded-vm-learn-integrity-policy`. On Shielded
+      VMs, integrity monitoring is enabled by default. For information about
+      how to modify Shielded VM options, see
+      https://cloud.google.com/compute/docs/instances/modifying-shielded-vm.
       """
   if for_update:
     integrity_monitoring_help += """\
-      Changes to this setting (via the update command) will only take effect
+      Changes to this setting with the update command only take effect
       after stopping and starting the instance.
       """
 

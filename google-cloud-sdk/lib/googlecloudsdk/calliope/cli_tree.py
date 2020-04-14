@@ -612,7 +612,7 @@ def _Serialize(tree):
         six.text_type(flag.name),
         six.text_type(flag.attr),
         six.text_type(flag.category),
-        six.text_type(flag.choices),
+        '[{}]'.format(', '.join(six.text_type(c) for c in flag.choices)),
         six.text_type(flag.completer),
         six.text_type(flag.default),
         six.text_type(flag.description),

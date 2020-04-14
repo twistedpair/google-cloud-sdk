@@ -41,9 +41,6 @@ import six
 from six.moves.urllib import parse as urlparse
 
 
-_CLUSTER_API_VERSION = 'v1alpha1'
-_CLUSTER_ALPHA_API_VERSION = 'v1'
-
 _EVENTS_API_VERSION = 'v1alpha1'
 
 
@@ -407,14 +404,13 @@ def _GetApiVersion(product,
                    is_cluster=False,
                    version_override=None):
   """Returns the api version to use depending on the current context."""
+  del release_track
+  del is_cluster
+
   if version_override is not None:
     return version_override
 
   if product == flags.Product.RUN:
-    if is_cluster:
-      if release_track == base.ReleaseTrack.ALPHA:
-        return _CLUSTER_ALPHA_API_VERSION
-      return _CLUSTER_API_VERSION
     return global_methods.SERVERLESS_API_VERSION
   elif product == flags.Product.EVENTS:
     return _EVENTS_API_VERSION

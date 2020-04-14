@@ -1632,6 +1632,10 @@ class IPAllocationPolicy(_messages.Message):
       This is used in conjunction with use_routes. It cannot be true if
       use_routes is true. If both use_ip_aliases and use_routes are false,
       then the server picks the default IP allocation mode
+    useRoutes: Whether routes will be used for pod IPs in the cluster. This is
+      used in conjunction with use_ip_aliases. It cannot be true if
+      use_ip_aliases is true. If both use_ip_aliases and use_routes are false,
+      then the server picks the default IP allocation mode
   """
 
   allowRouteOverlap = _messages.BooleanField(1)
@@ -1648,6 +1652,7 @@ class IPAllocationPolicy(_messages.Message):
   tpuIpv4CidrBlock = _messages.StringField(12)
   tpuUseServiceNetworking = _messages.BooleanField(13)
   useIpAliases = _messages.BooleanField(14)
+  useRoutes = _messages.BooleanField(15)
 
 
 class IntraNodeVisibilityConfig(_messages.Message):

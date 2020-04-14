@@ -30,8 +30,8 @@ class AppEngineHttpRequest(_messages.Message):
   The request to the handler, however, will appear to have used the HTTP
   protocol.  The AppEngineRouting used to construct the URL that the task is
   delivered to can be set at the queue-level or task-level:  * If
-  app_engine_routing_override is set on the    queue, this value is used for
-  all    tasks in the queue, no matter what the setting is for the task-level
+  app_engine_routing_override is set on the   queue, this value is used for
+  all   tasks in the queue, no matter what the setting is for the task-level
   app_engine_routing.   The `url` that the task will be sent to is:  * `url =`
   host `+`   relative_uri  Tasks can be dispatched to secure app handlers,
   unsecure app handlers, and URIs restricted with [`login: admin`](https://clo
@@ -54,13 +54,13 @@ class AppEngineHttpRequest(_messages.Message):
     HttpMethodValueValuesEnum: The HTTP method to use for the request. The
       default is POST.  The app's request handler for the task's target URL
       must be able to handle HTTP requests with this http_method, otherwise
-      the task attempt will fail with error code 405 (Method Not Allowed). See
+      the task attempt fails with error code 405 (Method Not Allowed). See
       [Writing a push task request
       handler](https://cloud.google.com/appengine/docs/java/taskqueue/push
-      /creating-handlers#writing_a_push_task_request_handler) and the
-      documentation for the request handlers in the language your app is
-      written in e.g. [Python Request Handler](https://cloud.google.com/appeng
-      ine/docs/python/tools/webapp/requesthandlerclass).
+      /creating-handlers#writing_a_push_task_request_handler) and the App
+      Engine documentation for your runtime on [How Requests are
+      Handled](https://cloud.google.com/appengine/docs/standard/python3/how-
+      requests-are-handled).
 
   Messages:
     HeadersValue: HTTP request headers.  This map contains the header field
@@ -91,9 +91,9 @@ class AppEngineHttpRequest(_messages.Message):
 
   Fields:
     appEngineRouting: Task-level setting for App Engine routing.  * If
-      app_engine_routing_override is set on the    queue, this value is used
-      for all    tasks in the queue, no matter what the setting is for the
-      task-level    app_engine_routing.
+      app_engine_routing_override is set on the   queue, this value is used
+      for all   tasks in the queue, no matter what the setting is for the
+      task-level   app_engine_routing.
     body: HTTP request body.  A request body is allowed only if the HTTP
       method is POST or PUT. It is an error to set a body on a task with an
       incompatible HttpMethod.
@@ -125,13 +125,13 @@ class AppEngineHttpRequest(_messages.Message):
     httpMethod: The HTTP method to use for the request. The default is POST.
       The app's request handler for the task's target URL must be able to
       handle HTTP requests with this http_method, otherwise the task attempt
-      will fail with error code 405 (Method Not Allowed). See [Writing a push
-      task request
+      fails with error code 405 (Method Not Allowed). See [Writing a push task
+      request
       handler](https://cloud.google.com/appengine/docs/java/taskqueue/push
-      /creating-handlers#writing_a_push_task_request_handler) and the
-      documentation for the request handlers in the language your app is
-      written in e.g. [Python Request Handler](https://cloud.google.com/appeng
-      ine/docs/python/tools/webapp/requesthandlerclass).
+      /creating-handlers#writing_a_push_task_request_handler) and the App
+      Engine documentation for your runtime on [How Requests are
+      Handled](https://cloud.google.com/appengine/docs/standard/python3/how-
+      requests-are-handled).
     relativeUri: The relative URI.  The relative URI must begin with "/" and
       must be a valid HTTP relative URI. It can contain a path and query
       string arguments. If the relative URI is empty, then the root path "/"
@@ -142,13 +142,13 @@ class AppEngineHttpRequest(_messages.Message):
   class HttpMethodValueValuesEnum(_messages.Enum):
     r"""The HTTP method to use for the request. The default is POST.  The
     app's request handler for the task's target URL must be able to handle
-    HTTP requests with this http_method, otherwise the task attempt will fail
-    with error code 405 (Method Not Allowed). See [Writing a push task request
+    HTTP requests with this http_method, otherwise the task attempt fails with
+    error code 405 (Method Not Allowed). See [Writing a push task request
     handler](https://cloud.google.com/appengine/docs/java/taskqueue/push
-    /creating-handlers#writing_a_push_task_request_handler) and the
-    documentation for the request handlers in the language your app is written
-    in e.g. [Python Request Handler](https://cloud.google.com/appengine/docs/p
-    ython/tools/webapp/requesthandlerclass).
+    /creating-handlers#writing_a_push_task_request_handler) and the App Engine
+    documentation for your runtime on [How Requests are
+    Handled](https://cloud.google.com/appengine/docs/standard/python3/how-
+    requests-are-handled).
 
     Values:
       HTTP_METHOD_UNSPECIFIED: HTTP method unspecified
@@ -1407,18 +1407,17 @@ class RetryConfig(_messages.Message):
       com/appengine/docs/standard/python/config/queueref#retry_parameters).
     maxDoublings: The time between retries will double `max_doublings` times.
       A task's retry interval starts at min_backoff, then doubles
-      `max_doublings` times, then increases linearly, and finally retries
-      retries at intervals of max_backoff up to max_attempts times.  For
-      example, if min_backoff is 10s, max_backoff is 300s, and `max_doublings`
-      is 3, then the a task will first be retried in 10s. The retry interval
-      will double three times, and then increase linearly by 2^3 * 10s.
-      Finally, the task will retry at intervals of max_backoff until the task
-      has been attempted max_attempts times. Thus, the requests will retry at
-      10s, 20s, 40s, 80s, 160s, 240s, 300s, 300s, ....  If unspecified when
-      the queue is created, Cloud Tasks will pick the default.   This field
-      has the same meaning as [max_doublings in queue.yaml/xml](https://cloud.
-      google.com/appengine/docs/standard/python/config/queueref#retry_paramete
-      rs).
+      `max_doublings` times, then increases linearly, and finally retries at
+      intervals of max_backoff up to max_attempts times.  For example, if
+      min_backoff is 10s, max_backoff is 300s, and `max_doublings` is 3, then
+      the a task will first be retried in 10s. The retry interval will double
+      three times, and then increase linearly by 2^3 * 10s.  Finally, the task
+      will retry at intervals of max_backoff until the task has been attempted
+      max_attempts times. Thus, the requests will retry at 10s, 20s, 40s, 80s,
+      160s, 240s, 300s, 300s, ....  If unspecified when the queue is created,
+      Cloud Tasks will pick the default.   This field has the same meaning as
+      [max_doublings in queue.yaml/xml](https://cloud.google.com/appengine/doc
+      s/standard/python/config/queueref#retry_parameters).
     maxRetryDuration: If positive, `max_retry_duration` specifies the time
       limit for retrying a failed task, measured from when the task was first
       attempted. Once `max_retry_duration` time has passed *and* the task has

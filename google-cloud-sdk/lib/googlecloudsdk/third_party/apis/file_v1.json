@@ -239,7 +239,7 @@
           "type": "string"
         },
         "description": {
-          "description": "Optional. The description of the instance (2048 characters or less).",
+          "description": "The description of the instance (2048 characters or less).",
           "type": "string"
         },
         "state": {
@@ -903,7 +903,7 @@
                   "httpMethod": "GET",
                   "parameters": {
                     "parent": {
-                      "description": "The project and location for which to retrieve instance information,\nin the format projects\/{project_id}\/locations\/{location}. In Cloud\nFilestore, locations map to GCP zones, for example **us-west1-b**. To\nretrieve instance information for all locations, use \"-\" for the {location}\nvalue.",
+                      "description": "Required. The project and location for which to retrieve instance information,\nin the format projects\/{project_id}\/locations\/{location}. In Cloud\nFilestore, locations map to GCP zones, for example **us-west1-b**. To\nretrieve instance information for all locations, use \"-\" for the {location}\nvalue.",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
@@ -949,7 +949,7 @@
                   "httpMethod": "GET",
                   "parameters": {
                     "name": {
-                      "description": "The instance resource name, in the format\nprojects\/{project_id}\/locations\/{location}\/instances\/{instance_id}.",
+                      "description": "Required. The instance resource name, in the format\nprojects\/{project_id}\/locations\/{location}\/instances\/{instance_id}.",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/instances\/[^\/]+$",
@@ -974,14 +974,14 @@
                   "httpMethod": "POST",
                   "parameters": {
                     "parent": {
-                      "description": "The instance's project and location, in the format\nprojects\/{project_id}\/locations\/{location}. In Cloud Filestore,\nlocations map to GCP zones, for example **us-west1-b**.",
+                      "description": "Required. The instance's project and location, in the format\nprojects\/{project_id}\/locations\/{location}. In Cloud Filestore,\nlocations map to GCP zones, for example **us-west1-b**.",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "type": "string"
                     },
                     "instanceId": {
-                      "description": "The name of the instance to create.\nThe name must be unique for the specified project and location.",
+                      "description": "Required. The name of the instance to create.\nThe name must be unique for the specified project and location.",
                       "location": "query",
                       "type": "string"
                     }
@@ -1041,7 +1041,7 @@
                   "httpMethod": "DELETE",
                   "parameters": {
                     "name": {
-                      "description": "The instance resource name, in the format\nprojects\/{project_id}\/locations\/{location}\/instances\/{instance_id}",
+                      "description": "Required. The instance resource name, in the format\nprojects\/{project_id}\/locations\/{location}\/instances\/{instance_id}",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/instances\/[^\/]+$",

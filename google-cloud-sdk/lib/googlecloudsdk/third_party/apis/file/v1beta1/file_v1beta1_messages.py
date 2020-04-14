@@ -41,9 +41,11 @@ class FileProjectsLocationsInstancesCreateRequest(_messages.Message):
 
   Fields:
     instance: A Instance resource to be passed as the request body.
-    instanceId: The name of the instance to create. The name must be unique
-      for the specified project and location.
-    parent: The instance's project and location, in the format
+    instanceId: Required. The ID of the instance to create. The ID must be
+      unique within the specified project and location.  This value must start
+      with a lowercase letter followed by up to 62 lowercase letters, numbers,
+      or hyphens, and cannot end with a hyphen.
+    parent: Required. The instance's project and location, in the format
       projects/{project_id}/locations/{location}. In Cloud Filestore,
       locations map to GCP zones, for example **us-west1-b**.
   """
@@ -57,7 +59,7 @@ class FileProjectsLocationsInstancesDeleteRequest(_messages.Message):
   r"""A FileProjectsLocationsInstancesDeleteRequest object.
 
   Fields:
-    name: The instance resource name, in the format
+    name: Required. The instance resource name, in the format
       projects/{project_id}/locations/{location}/instances/{instance_id}
   """
 
@@ -68,7 +70,7 @@ class FileProjectsLocationsInstancesGetRequest(_messages.Message):
   r"""A FileProjectsLocationsInstancesGetRequest object.
 
   Fields:
-    name: The instance resource name, in the format
+    name: Required. The instance resource name, in the format
       projects/{project_id}/locations/{location}/instances/{instance_id}.
   """
 
@@ -85,7 +87,7 @@ class FileProjectsLocationsInstancesListRequest(_messages.Message):
     pageSize: The maximum number of items to return.
     pageToken: The next_page_token value to use if there are additional
       results to retrieve for this list request.
-    parent: The project and location for which to retrieve instance
+    parent: Required. The project and location for which to retrieve instance
       information, in the format projects/{project_id}/locations/{location}.
       In Cloud Filestore, locations map to GCP zones, for example **us-
       west1-b**. To retrieve instance information for all locations, use "-"
@@ -106,9 +108,9 @@ class FileProjectsLocationsInstancesPatchRequest(_messages.Message):
     instance: A Instance resource to be passed as the request body.
     name: Output only. The resource name of the instance, in the format
       projects/{project_id}/locations/{location_id}/instances/{instance_id}.
-    updateMask: Mask of fields to update.  At least one path must be supplied
-      in this field.  The elements of the repeated paths field may only
-      include these fields:  * "description" * "file_shares" * "labels"
+    updateMask: Required. Mask of fields to update.  At least one path must be
+      supplied in this field.  The elements of the repeated paths field may
+      only include these fields:  * "description" * "file_shares" * "labels"
   """
 
   instance = _messages.MessageField('Instance', 1)
@@ -588,8 +590,7 @@ class Instance(_messages.Message):
 
   Fields:
     createTime: Output only. The time when the instance was created.
-    description: Optional. The description of the instance (2048 characters or
-      less).
+    description: The description of the instance (2048 characters or less).
     etag: Server-specified ETag for the instance resource to prevent
       simultaneous updates from overwriting each other.
     fileShares: File system shares on the instance. For this version, only a
@@ -618,6 +619,8 @@ class Instance(_messages.Message):
       ERROR: The instance is experiencing an issue and might be unusable. You
         can get further details from the `statusMessage` field of the
         `Instance` resource.
+      RESTORING: The instance is restoring a snapshot or backup to an existing
+        file share and may be unusable during this time.
     """
     STATE_UNSPECIFIED = 0
     CREATING = 1
@@ -625,6 +628,7 @@ class Instance(_messages.Message):
     REPAIRING = 3
     DELETING = 4
     ERROR = 5
+    RESTORING = 6
 
   class TierValueValuesEnum(_messages.Enum):
     r"""The service tier of the instance.

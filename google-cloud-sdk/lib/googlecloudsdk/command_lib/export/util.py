@@ -28,52 +28,52 @@ from googlecloudsdk.api_lib.dataproc import exceptions
 from googlecloudsdk.core import log
 from googlecloudsdk.core import yaml
 from googlecloudsdk.core import yaml_validator
-from googlecloudsdk.core.resource import resource_property
 from googlecloudsdk.core.util import encoding
 
 
-def _GetSchemaResourceName(schema_path):
-  """Returns the schema resource name given the schema path."""
-  basename = os.path.basename(schema_path).split('.')[0]
-  return resource_property.ConvertToSnakeCase(basename).replace('_', ' ')
-
-
-def AddExportFlags(parser, schema_path):
+def AddExportFlags(parser, schema_path=None):
   """Add common export flags to the arg parser.
 
   Args:
     parser: The argparse parser object.
-    schema_path: The resource instance schema file path.
+    schema_path: The resource instance schema file path if there is one.
   """
-  parser.add_argument(
-      '--destination',
-      help=textwrap.dedent("""\
-          Path to a YAML file where the {} configuration will be exported.
+
+  help_text = """Path to a YAML file where the configuration will be exported.
           The exported data will not contain any output-only fields.
-          Alternatively, you may omit this flag to write to standard output. A
+          Alternatively, you may omit this flag to write to standard output."""
+  if schema_path is not None:
+    help_text += """ A
           schema describing the export/import format can be found in:
           {}.
-      """).format(_GetSchemaResourceName(schema_path), schema_path),
+      """.format(schema_path)
+  parser.add_argument(
+      '--destination',
+      help=textwrap.dedent(help_text),
       # Allow writing to stdout.
       required=False)
 
 
-def AddImportFlags(parser, schema_path):
+def AddImportFlags(parser, schema_path=None):
   """Add common import flags to the arg parser.
 
   Args:
     parser: The argparse parser object.
-    schema_path: The resource instance schema file path.
+    schema_path: The resource instance schema file path if there is one.
   """
-  parser.add_argument(
-      '--source',
-      help=textwrap.dedent("""\
-          Path to a YAML file containing {} configuration export data. The
+
+  help_text = """Path to a YAML file containing configuration export data. The
           YAML file must not contain any output-only fields. Alternatively, you
-          may omit this flag to read from standard input. A schema describing
+          may omit this flag to read from standard input."""
+  if schema_path is not None:
+    help_text += """ A schema describing
           the export/import format can be found in:
           {}.
-      """).format(_GetSchemaResourceName(schema_path), schema_path),
+      """.format(schema_path)
+
+  parser.add_argument(
+      '--source',
+      help=textwrap.dedent(help_text),
       # Allow reading from stdin.
       required=False)
 

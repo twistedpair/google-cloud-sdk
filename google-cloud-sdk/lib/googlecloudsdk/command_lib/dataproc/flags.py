@@ -22,7 +22,6 @@ from googlecloudsdk.calliope import actions
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope.concepts import concepts
 from googlecloudsdk.calliope.concepts import deps
-from googlecloudsdk.command_lib.export import util as export_util
 from googlecloudsdk.command_lib.util.concepts import concept_parsers
 from googlecloudsdk.core import properties
 
@@ -313,22 +312,6 @@ def AddAutoscalingPolicyResourceArgForCluster(parser, api_version):
           'region': ''
       },
       required=False).AddToParser(parser)
-
-
-def AddImportArgs(parser, verb, api_version, resource_message_name):
-  AddAutoscalingPolicyResourceArg(parser, verb, api_version)
-
-  schema_path = export_util.GetSchemaPath(
-      'dataproc', api_version, resource_message_name, for_help=True)
-  export_util.AddImportFlags(parser, schema_path)
-
-
-def AddExportArgs(parser, verb, api_version, resource_message_name):
-  AddAutoscalingPolicyResourceArg(parser, verb, api_version)
-
-  schema_path = export_util.GetSchemaPath(
-      'dataproc', api_version, resource_message_name, for_help=True)
-  export_util.AddExportFlags(parser, schema_path)
 
 
 def AddListOperationsFormat(parser):

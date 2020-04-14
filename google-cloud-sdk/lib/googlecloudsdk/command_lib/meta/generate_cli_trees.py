@@ -35,15 +35,14 @@ import abc
 import json
 import os
 import re
+import shlex
 import subprocess
-import sys
 import tarfile
 import textwrap
 
 from googlecloudsdk.calliope import cli_tree
 from googlecloudsdk.command_lib.static_completion import generate as generate_static
 from googlecloudsdk.command_lib.static_completion import lookup
-from googlecloudsdk.core import argv_utils
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import http
 from googlecloudsdk.core import log
@@ -51,7 +50,6 @@ from googlecloudsdk.core.console import progress_tracker
 from googlecloudsdk.core.resource import resource_printer
 from googlecloudsdk.core.util import encoding
 from googlecloudsdk.core.util import files
-from googlecloudsdk.core.util import text as text_utils
 
 import six
 from six.moves import range
@@ -61,31 +59,20 @@ class Error(exceptions.Error):
   """Exceptions for this module."""
 
 
-class NoCliTreeForCommand(Error):
+class CommandInvocationError(Error):
+  """Command could not be invoked."""
+
+
+class NoCliTreeForCommandError(Error):
   """Command does not have a CLI tree."""
 
 
-class NoCliTreeGeneratorForCommand(Error):
-  """Command does not have a CLI tree generator."""
+class CliTreeGenerationError(Error):
+  """CLI tree generation failed for command."""
 
 
-class NoManPageTextForCommand(Error):
+class NoManPageTextForCommandError(Error):
   """Could not get man page text for command."""
-
-
-# TODO(b/69033748): disable until issues resolved
-def _DisableLongRunningCliTreeGeneration(command):
-  """Returns True if long running CLI tree generation is disabled."""
-  # Only a few command generators are long running.
-  if command not in ('bq', 'gsutil', 'kubectl'):
-    return False
-  # Only generate these CLI trees on the fly for explicit requests.
-  # It can take ~1minute, not good, especially at the interactive prompt.
-  decoded_argv = argv_utils.GetDecodedArgv()
-  if 'update-cli-trees' in decoded_argv or '--update-cli-trees' in decoded_argv:
-    return False
-  # It's a long running generator, not explicitly requested -- disable.
-  return True
 
 
 def _NormalizeSpace(text):
@@ -165,7 +152,11 @@ def _GetDirectories(directory=None, warn_on_exceptions=False):
 
 
 class CliTreeGenerator(six.with_metaclass(abc.ABCMeta, object)):
-  """Base CLI tree generator."""
+  """Base CLI tree generator.
+
+  Attributes:
+    command_name: str, The name of the CLI tree command.
+  """
 
   _FAILURES = None
 
@@ -185,21 +176,48 @@ class CliTreeGenerator(six.with_metaclass(abc.ABCMeta, object)):
     if cls._FAILURES is not None:
       cls._FAILURES.add(command)
 
-  def __init__(self, command, command_name=None, tarball=None):
-    self.command = command
-    self.command_name = command_name or command
+  def __init__(self, command_name, root_command_args=None):
+    """Initializes the CLI tree generator.
+
+    Args:
+      command_name: str, The name of the CLI tree command (e.g. 'gsutil').
+      root_command_args: [str], The argument list to invoke the root CLI tree
+        command. Examples:
+        * ['gcloud']
+        * ['python', '/tmp/tarball_dir/gsutil/gsutil']
+    Raises:
+      CommandInvocationError: If the provided root command cannot be invoked.
+    """
+    if root_command_args:
+      with files.FileWriter(os.devnull) as devnull:
+        try:
+          # We don't actually care about whether the root command succeeds here;
+          # we just want to see if it can be invoked.
+          subprocess.Popen(root_command_args, stdin=devnull, stdout=devnull,
+                           stderr=devnull).communicate()
+        except OSError as e:
+          raise CommandInvocationError(e)
+
+    self.command_name = command_name
+    self._root_command_args = root_command_args or [command_name]
     self._cli_version = None  # For memoizing GetVersion()
-    self._tarball = tarball
 
   def Run(self, cmd):
-    """Runs cmd and returns the output as a string."""
-    return encoding.Decode(subprocess.check_output([self.command] + cmd[1:]))
+    """Runs the root command with args given by cmd and returns the output.
+
+    Args:
+      cmd: [str], List of arguments to the root command.
+    Returns:
+      str, Output of the given command.
+    """
+    return encoding.Decode(
+        subprocess.check_output(self._root_command_args + cmd))
 
   def GetVersion(self):
     """Returns the CLI_VERSION string."""
     if not self._cli_version:
       try:
-        self._cli_version = self.Run([self.command, 'version']).split()[-1]
+        self._cli_version = self.Run(['version']).split()[-1]
       except:  # pylint: disable=bare-except
         self._cli_version = cli_tree.CLI_VERSION_UNKNOWN
     return self._cli_version
@@ -244,7 +262,7 @@ class CliTreeGenerator(six.with_metaclass(abc.ABCMeta, object)):
     # Schema and CLI versions are up to date.
     if verbose:
       log.status.Print('[{}] CLI tree version [{}] is up to date.'.format(
-          self.command, actual_cli_version))
+          self.command_name, actual_cli_version))
     return readonly, True
 
   def LoadOrGenerate(self, directories=None, force=False, generate=True,
@@ -254,11 +272,7 @@ class CliTreeGenerator(six.with_metaclass(abc.ABCMeta, object)):
     f = None
     try:
       path, f = self.FindTreeFile(directories)
-      if not f:
-        # TODO(b/69033748): disable until issues resolved
-        if _DisableLongRunningCliTreeGeneration(self.command):
-          return None
-      else:
+      if f:
         up_to_date = False
         try:
           tree = json.load(f)
@@ -305,12 +319,13 @@ class CliTreeGenerator(six.with_metaclass(abc.ABCMeta, object)):
     #   (3) we have a generator for the tree
 
     if not generate:
-      raise NoCliTreeForCommand('No CLI tree for [{}].'.format(self.command))
+      raise NoCliTreeForCommandError(
+          'No CLI tree for [{}].'.format(self.command_name))
     if not verbose:
       return _Generate()
     with progress_tracker.ProgressTracker(
         '{} the [{}] CLI tree'.format(
-            'Updating' if f else 'Generating', self.command)):
+            'Updating' if f else 'Generating', self.command_name)):
       return _Generate()
 
 
@@ -348,9 +363,15 @@ class BqCliTreeGenerator(CliTreeGenerator):
   """bq CLI tree generator."""
 
   def Run(self, cmd):
-    """Runs cmd and returns the output as a string."""
+    """Runs the root command with args given by cmd and returns the output.
+
+    Args:
+      cmd: [str], List of arguments to the root command.
+    Returns:
+      str, Output of the given command.
+    """
     try:
-      output = subprocess.check_output([self.command] + cmd[1:])
+      output = subprocess.check_output(self._root_command_args + cmd)
     except subprocess.CalledProcessError as e:
       # bq exit code is 1 for help and --help. How do you know if help failed?
       if e.returncode != 1:
@@ -393,7 +414,7 @@ class BqCliTreeGenerator(CliTreeGenerator):
     """Generates and returns the CLI subtree rooted at path."""
     command = _Command(path)
     command[cli_tree.LOOKUP_IS_GROUP] = True
-    text = self.Run([self.command, 'help'] + path[1:])
+    text = self.Run(['help'] + path[1:])
 
     # `bq help` lists help for all commands. Command flags are "defined"
     # by example. We don't attempt to suss that out.
@@ -427,13 +448,13 @@ class BqCliTreeGenerator(CliTreeGenerator):
     return command
 
   def Generate(self):
-    """Generates and returns the CLI tree rooted at self.command."""
+    """Generates and returns the CLI tree rooted at self.command_name."""
 
     # Construct the tree minus the global flags.
     tree = self.SubTree([self.command_name])
 
     # Add the global flags to the root.
-    text = self.Run([self.command, '--help'])
+    text = self.Run(['--help'])
     collector = _BqCollector(text)
     _, content = collector.Collect(strip_headings=True)
     self.AddFlags(tree, content, is_global=True)
@@ -520,12 +541,15 @@ class GsutilCliTreeGenerator(CliTreeGenerator):
     self.topics = []
 
   def Run(self, cmd):
-    """Runs the command in cmd and returns the output as a string."""
+    """Runs the root command with args given by cmd and returns the output.
+
+    Args:
+      cmd: [str], List of arguments to the root command.
+    Returns:
+      str, Output of the given command.
+    """
     try:
-      if self._tarball:
-        # package time invocation requires explicit #! override
-        cmd = [sys.executable, self.command] + cmd[1:]
-      output = subprocess.check_output(cmd)
+      output = subprocess.check_output(self._root_command_args + cmd)
     except subprocess.CalledProcessError as e:
       # gsutil exit code is 1 for --help depending on the context.
       if e.returncode != 1:
@@ -570,9 +594,9 @@ class GsutilCliTreeGenerator(CliTreeGenerator):
     command = _Command(path)
     is_help_command = len(path) > 1 and path[1] == 'help'
     if is_help_command:
-      cmd = path
+      cmd = path[1:]
     else:
-      cmd = path + ['--help']
+      cmd = path[1:] + ['--help']
     text = self.Run(cmd)
     collector = _GsutilCollector(text)
 
@@ -629,11 +653,11 @@ class GsutilCliTreeGenerator(CliTreeGenerator):
     return command
 
   def Generate(self):
-    """Generates and returns the CLI tree rooted at self.command."""
+    """Generates and returns the CLI tree rooted at self.command_name."""
     tree = self.SubTree([self.command_name])
 
     # Add the global flags to the root.
-    text = self.Run([self.command, 'help', 'options'])
+    text = self.Run(['help', 'options'])
     collector = _GsutilCollector(text)
     while True:
       heading, content = collector.Collect()
@@ -732,7 +756,7 @@ class KubectlCliTreeGenerator(CliTreeGenerator):
   def SubTree(self, path):
     """Generates and returns the CLI subtree rooted at path."""
     command = _Command(path)
-    text = self.Run(path + ['--help'])
+    text = self.Run(path[1:] + ['--help'])
     collector = _KubectlCollector(text)
 
     while True:
@@ -757,7 +781,7 @@ class KubectlCliTreeGenerator(CliTreeGenerator):
     """Returns the CLI_VERSION string."""
     if not self._cli_version:
       try:
-        verbose_version = self.Run([self.command, 'version', '--client'])
+        verbose_version = self.Run(['version', '--client'])
         match = re.search('GitVersion:"([^"]*)"', verbose_version)
         self._cli_version = match.group(1)
       except:  # pylint: disable=bare-except
@@ -765,13 +789,13 @@ class KubectlCliTreeGenerator(CliTreeGenerator):
     return self._cli_version
 
   def Generate(self):
-    """Generates and returns the CLI tree rooted at self.command."""
+    """Generates and returns the CLI tree rooted at self.command_name."""
 
     # Construct the tree minus the global flags.
     tree = self.SubTree([self.command_name])
 
     # Add the global flags to the root.
-    text = self.Run([self.command, 'options'])
+    text = self.Run(['options'])
     collector = _KubectlCollector(text)
     _, content = collector.Collect(strip_headings=True)
     content.append('  --help=true: List detailed command help.')
@@ -788,7 +812,7 @@ class _ManPageCollector(six.with_metaclass(abc.ABCMeta, object)):
   """man page help document section collector base class.
 
   Attributes:
-    command: The man page command name.
+    command_name: The man page command name.
     content_indent: A string of space characters representing the indent of
       the first line of content for any section.
     heading: The heading for the next call to Collect().
@@ -796,8 +820,8 @@ class _ManPageCollector(six.with_metaclass(abc.ABCMeta, object)):
     version: The collector CLI_VERSION string.
   """
 
-  def __init__(self, command):
-    self.command = command
+  def __init__(self, command_name):
+    self.command_name = command_name
     self.content_indent = None
     self.heading = None
     self.text = self.GetManPageText().split('\n')
@@ -879,12 +903,12 @@ class _ManCommandCollector(_ManPageCollector):
     """Returns the raw man page text."""
     try:
       with files.FileWriter(os.devnull) as f:
-        return encoding.Decode(subprocess.check_output(['man', self.command],
-                                                       stderr=f))
+        return encoding.Decode(subprocess.check_output(
+            ['man', self.command_name], stderr=f))
     except (OSError, subprocess.CalledProcessError):
-      raise NoManPageTextForCommand(
+      raise NoManPageTextForCommandError(
           'Cannot get man(1) command man page text for [{}].'.format(
-              self.command))
+              self.command_name))
 
   def GetManPageText(self):
     """Returns the preprocessed man page text."""
@@ -905,15 +929,16 @@ class _ManUrlCollector(_ManPageCollector):
 
   def _GetRawManPageText(self):
     """Returns the raw man page text."""
-    url = 'http://man7.org/linux/man-pages/man1/{}.1.html'.format(self.command)
+    url = 'http://man7.org/linux/man-pages/man1/{}.1.html'.format(
+        self.command_name)
     response, content = http.HttpClient().request(url)
     if response.status != 200:
-      raise NoManPageTextForCommand(
-          'Cannot get URL man page text for [{}].'.format(self.command))
+      raise NoManPageTextForCommandError(
+          'Cannot get URL man page text for [{}].'.format(self.command_name))
     return content.decode('utf-8')
 
   def GetManPageText(self):
-    """Returns the text man page for self.command from a URL."""
+    """Returns the text man page for self.command_name from a URL."""
     text = self._GetRawManPageText()
 
     # A little sed(1) to clean up the html header/trailer and anchors.
@@ -986,8 +1011,8 @@ class ManPageCliTreeGenerator(CliTreeGenerator):
       return _ManCommandCollector
     return _ManUrlCollector
 
-  def __init__(self, command):
-    super(ManPageCliTreeGenerator, self).__init__(command)
+  def __init__(self, command_name):
+    super(ManPageCliTreeGenerator, self).__init__(command_name)
     self.collector_type = self._GetManPageCollectorType()
 
   def GetVersion(self):
@@ -1111,13 +1136,13 @@ class ManPageCliTreeGenerator(CliTreeGenerator):
     return command
 
   def Generate(self):
-    """Generates and returns the CLI tree rooted at self.command."""
+    """Generates and returns the CLI tree rooted at self.command_name."""
     if not self.collector_type:
       return None
-    collector = self.collector_type(self.command)
+    collector = self.collector_type(self.command_name)
     if not collector:
       return None
-    tree = self._Generate([self.command], collector)
+    tree = self._Generate([self.command_name], collector)
     if not tree:
       return None
 
@@ -1137,11 +1162,17 @@ GENERATORS = {
 
 def LoadOrGenerate(command, directories=None, tarball=None, force=False,
                    generate=True, ignore_out_of_date=False, verbose=False,
-                   warn_on_exceptions=False, allow_extensions=False):
+                   warn_on_exceptions=False):
   """Returns the CLI tree for command, generating it if it does not exist.
 
   Args:
-    command: The CLI root command name.
+    command: The CLI root command. This has the form:
+      [executable] [tarball_path/]command_name
+      where [executable] and [tarball_path/] are used only for packaging CLI
+      trees and may be empty. Examples:
+      * gcloud
+      * kubectl/kubectl
+      * python gsutil/gsutil
     directories: The list of directories containing the CLI tree JSON files.
       If None then the default installation directories are used.
     tarball: For packaging CLI trees. --commands specifies one command that is
@@ -1154,13 +1185,14 @@ def LoadOrGenerate(command, directories=None, tarball=None, force=False,
     verbose: Display a status line for up to date CLI trees if True.
     warn_on_exceptions: Emits warning messages in lieu of generator exceptions.
       Used during installation.
-    allow_extensions: Whether or not to allow extensions in executable names.
 
   Returns:
     The CLI tree for command or None if command not found or there is no
       generator.
   """
-  command_dir, command_name = os.path.split(command)
+  parts = shlex.split(command)
+  command_executable_args, command_relative_path = parts[:-1], parts[-1]
+  _, command_name = os.path.split(command_relative_path)
 
   # Handle package time command names.
   if command_name.endswith('_lite'):
@@ -1169,29 +1201,27 @@ def LoadOrGenerate(command, directories=None, tarball=None, force=False,
   # Don't repeat failed attempts.
   if CliTreeGenerator.AlreadyFailed(command_name):
     if verbose:
-      log.status.Print('No CLI tree generator for [{}].'.format(command))
+      log.status.Print(
+          'Skipping CLI tree generation for [{}] due to previous '
+          'failure.'.format(command_name))
     return None
 
-  def _LoadOrGenerate(command, command_dir, command_name):
+  def _LoadOrGenerate(command_path, command_name):
     """Helper."""
 
-    # The command must exist.
-    if (command_dir and not os.path.exists(command) or
-        not command_dir
-        and not files.FindExecutableOnPath(command_name,
-                                           allow_extensions=allow_extensions)):
-      if verbose:
-        log.status.Print('Command [{}] not found.'.format(command))
-      return None
-
     # Instantiate the appropriate generator.
-    try:
-      generator = GENERATORS[command_name](
-          command, command_name=command_name, tarball=tarball)
-    except KeyError:
+    if command_name in GENERATORS:
+      command_args = command_executable_args + [command_path]
+      try:
+        generator = GENERATORS[command_name](
+            command_name, root_command_args=command_args)
+      except CommandInvocationError as e:
+        if verbose:
+          log.status.Print('Command [{}] could not be invoked:\n{}'.format(
+              command, e))
+        return None
+    else:
       generator = ManPageCliTreeGenerator(command_name)
-    if not generator:
-      return None
 
     # Load or (re)generate the CLI tree if possible.
     try:
@@ -1202,7 +1232,7 @@ def LoadOrGenerate(command, directories=None, tarball=None, force=False,
           ignore_out_of_date=ignore_out_of_date,
           verbose=verbose,
           warn_on_exceptions=warn_on_exceptions)
-    except NoManPageTextForCommand:
+    except NoManPageTextForCommandError:
       pass
 
     return None
@@ -1213,11 +1243,11 @@ def LoadOrGenerate(command, directories=None, tarball=None, force=False,
     with files.TemporaryDirectory() as tmp:
       tar = tarfile.open(tarball)
       tar.extractall(tmp)
-      command = os.path.join(tmp, command)
-      command_dir = os.path.join(tmp, command_dir)
-      tree = _LoadOrGenerate(command, command_dir, command_name)
+      tree = _LoadOrGenerate(
+          os.path.join(tmp, command_relative_path),
+          command_name)
   else:
-    tree = _LoadOrGenerate(command, command_dir, command_name)
+    tree = _LoadOrGenerate(command_relative_path, command_name)
   if not tree:
     CliTreeGenerator.AddFailure(command_name)
   return tree
@@ -1245,8 +1275,8 @@ def UpdateCliTrees(cli=None, commands=None, directory=None, tarball=None,
       during installation.
 
   Raises:
-    NoCliTreeGeneratorForCommand: A command in commands is not supported
-      (doesn't have a generator).
+    CliTreeGenerationError: CLI tree generation failed for a command in
+      commands.
   """
   directories = _GetDirectories(
       directory=directory, warn_on_exceptions=warn_on_exceptions)
@@ -1293,11 +1323,10 @@ def UpdateCliTrees(cli=None, commands=None, directory=None, tarball=None,
             '[{}] static completion CLI tree is up to date.'.format(command))
 
   if failed:
-    message = 'No CLI tree {} for [{}].'.format(
-        text_utils.Pluralize(len(failed), 'generator'),
+    message = 'CLI tree generation failed for [{}].'.format(
         ', '.join(sorted(failed)))
     if not warn_on_exceptions:
-      raise NoCliTreeGeneratorForCommand(message)
+      raise CliTreeGenerationError(message)
     log.warning(message)
 
 
