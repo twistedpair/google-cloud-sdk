@@ -206,16 +206,6 @@
         "title": {
           "description": "Required. Human readable title. Does not affect behavior.",
           "type": "string"
-        },
-        "createTime": {
-          "description": "Output only. Time the `AccessPolicy` was created in UTC.",
-          "type": "string",
-          "format": "google-datetime"
-        },
-        "updateTime": {
-          "description": "Output only. Time the `AccessPolicy` was updated in UTC.",
-          "type": "string",
-          "format": "google-datetime"
         }
       }
     },
@@ -261,16 +251,6 @@
         "custom": {
           "description": "A `CustomLevel` written in the Common Expression Language.",
           "$ref": "CustomLevel"
-        },
-        "createTime": {
-          "description": "Output only. Time the `AccessLevel` was created in UTC.",
-          "type": "string",
-          "format": "google-datetime"
-        },
-        "updateTime": {
-          "description": "Output only. Time the `AccessLevel` was updated in UTC.",
-          "type": "string",
-          "format": "google-datetime"
         }
       }
     },
@@ -512,16 +492,6 @@
         "description": {
           "description": "Description of the `ServicePerimeter` and its use. Does not affect\nbehavior.",
           "type": "string"
-        },
-        "createTime": {
-          "description": "Output only. Time the `ServicePerimeter` was created in UTC.",
-          "type": "string",
-          "format": "google-datetime"
-        },
-        "updateTime": {
-          "description": "Output only. Time the `ServicePerimeter` was updated in UTC.",
-          "type": "string",
-          "format": "google-datetime"
         },
         "perimeterType": {
           "description": "Perimeter type indicator. A single project is\nallowed to be a member of single regular perimeter, but multiple service\nperimeter bridges. A project cannot be a included in a perimeter bridge\nwithout being included in regular perimeter. For perimeter bridges,\nrestricted\/unrestricted service lists as well as access lists must be\nempty.",

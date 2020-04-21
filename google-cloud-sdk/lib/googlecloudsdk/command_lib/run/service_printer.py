@@ -111,26 +111,30 @@ class ServicePrinter(cp.CustomPrinterBase):
   def _RevisionPrinters(self, record):
     """Adds printers for the revision."""
     limits = self._GetLimits(record.template)
+    revision_properties = cp.Labeled([
+        ('Image', record.UserImage()),
+        ('Command', ' '.join(record.template.container.command)),
+        ('Args', ' '.join(record.template.container.args)),
+        ('Port', ' '.join(
+            six.text_type(cp.containerPort)
+            for cp in record.template.container.ports)),
+        ('Memory', limits['memory']),
+        ('CPU', limits['cpu']),
+        ('Service account', record.template.spec.serviceAccountName),
+        ('Env vars', self._GetUserEnvironmentVariables(record)),
+        ('Secrets', self._GetSecrets(record)),
+        ('Config Maps', self._GetConfigMaps(record)),
+        ('Concurrency', record.template.concurrency),
+        ('SQL connections', self._GetCloudSqlInstances(record)),
+        ('Timeout', self._GetTimeout(record)),
+    ])
+    if self._GetVpcConnector(record):
+      revision_properties.append(
+          ('VPC connector', self._GetVpcConnector(record)))
     return cp.Lines([
         self._GetRevisionHeader(record),
         self._GetLabels(record.template.labels),
-        cp.Labeled([
-            ('Image', record.UserImage()),
-            ('Command', ' '.join(record.template.container.command)),
-            ('Args', ' '.join(record.template.container.args)),
-            ('Port', ' '.join(
-                six.text_type(cp.containerPort)
-                for cp in record.template.container.ports)),
-            ('Memory', limits['memory']),
-            ('CPU', limits['cpu']),
-            ('Service account', record.template.spec.serviceAccountName),
-            ('Env vars', self._GetUserEnvironmentVariables(record)),
-            ('Secrets', self._GetSecrets(record)),
-            ('Config Maps', self._GetConfigMaps(record)),
-            ('Concurrency', record.template.concurrency),
-            ('SQL connections', self._GetCloudSqlInstances(record)),
-            ('Timeout', self._GetTimeout(record)),
-        ]),
+        revision_properties,
     ])
 
   def _GetServiceHeader(self, record):
@@ -151,6 +155,9 @@ class ServicePrinter(cp.CustomPrinterBase):
       return ''
     return ' '.join(sorted(['{}:{}'.format(k, v) for k, v in labels.items()
                             if not k.startswith(k8s_object.INTERNAL_GROUPS)]))
+
+  def _GetVpcConnector(self, record):
+    return record.template.annotations.get(revision.VPC_ACCESS_ANNOTATION)
 
   def _GetLastUpdated(self, record):
     modifier = record.last_modifier or '?'

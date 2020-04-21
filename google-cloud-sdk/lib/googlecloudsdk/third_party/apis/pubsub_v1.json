@@ -461,7 +461,7 @@
       "type": "object",
       "properties": {
         "pushEndpoint": {
-          "description": "A URL locating the endpoint to which messages should be pushed.\nFor example, a Webhook endpoint might use \"https:\/\/example.com\/push\".",
+          "description": "A URL locating the endpoint to which messages should be pushed.\nFor example, a Webhook endpoint might use `https:\/\/example.com\/push`.",
           "type": "string"
         },
         "attributes": {

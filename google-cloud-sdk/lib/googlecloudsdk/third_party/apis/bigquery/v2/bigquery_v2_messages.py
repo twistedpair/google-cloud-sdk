@@ -1123,8 +1123,6 @@ class ExternalDataConfiguration(_messages.Message):
     csvOptions: Additional properties to set if sourceFormat is set to CSV.
     googleSheetsOptions: [Optional] Additional options if sourceFormat is set
       to GOOGLE_SHEETS.
-    hivePartitioningMode: [Optional, Trusted Tester] Deprecated, do not use.
-      Please set hivePartitioningOptions instead.
     hivePartitioningOptions: [Optional, Trusted Tester] Options to configure
       hive partitioning support.
     ignoreUnknownValues: [Optional] Indicates if BigQuery should allow extra
@@ -1165,13 +1163,12 @@ class ExternalDataConfiguration(_messages.Message):
   compression = _messages.StringField(3)
   csvOptions = _messages.MessageField('CsvOptions', 4)
   googleSheetsOptions = _messages.MessageField('GoogleSheetsOptions', 5)
-  hivePartitioningMode = _messages.StringField(6)
-  hivePartitioningOptions = _messages.MessageField('HivePartitioningOptions', 7)
-  ignoreUnknownValues = _messages.BooleanField(8)
-  maxBadRecords = _messages.IntegerField(9, variant=_messages.Variant.INT32)
-  schema = _messages.MessageField('TableSchema', 10)
-  sourceFormat = _messages.StringField(11)
-  sourceUris = _messages.StringField(12, repeated=True)
+  hivePartitioningOptions = _messages.MessageField('HivePartitioningOptions', 6)
+  ignoreUnknownValues = _messages.BooleanField(7)
+  maxBadRecords = _messages.IntegerField(8, variant=_messages.Variant.INT32)
+  schema = _messages.MessageField('TableSchema', 9)
+  sourceFormat = _messages.StringField(10)
+  sourceUris = _messages.StringField(11, repeated=True)
 
 
 class GetQueryResultsResponse(_messages.Message):
@@ -1482,8 +1479,6 @@ class JobConfigurationLoad(_messages.Message):
       first byte of the encoded string to split the data in its raw, binary
       state. BigQuery also supports the escape sequence "\t" to specify a tab
       separator. The default value is a comma (',').
-    hivePartitioningMode: [Optional, Trusted Tester] Deprecated, do not use.
-      Please set hivePartitioningOptions instead.
     hivePartitioningOptions: [Optional, Trusted Tester] Options to configure
       hive partitioning support.
     ignoreUnknownValues: [Optional] Indicates if BigQuery should allow extra
@@ -1583,24 +1578,23 @@ class JobConfigurationLoad(_messages.Message):
   destinationTableProperties = _messages.MessageField('DestinationTableProperties', 8)
   encoding = _messages.StringField(9)
   fieldDelimiter = _messages.StringField(10)
-  hivePartitioningMode = _messages.StringField(11)
-  hivePartitioningOptions = _messages.MessageField('HivePartitioningOptions', 12)
-  ignoreUnknownValues = _messages.BooleanField(13)
-  maxBadRecords = _messages.IntegerField(14, variant=_messages.Variant.INT32)
-  nullMarker = _messages.StringField(15)
-  projectionFields = _messages.StringField(16, repeated=True)
-  quote = _messages.StringField(17, default=u'"')
-  rangePartitioning = _messages.MessageField('RangePartitioning', 18)
-  schema = _messages.MessageField('TableSchema', 19)
-  schemaInline = _messages.StringField(20)
-  schemaInlineFormat = _messages.StringField(21)
-  schemaUpdateOptions = _messages.StringField(22, repeated=True)
-  skipLeadingRows = _messages.IntegerField(23, variant=_messages.Variant.INT32)
-  sourceFormat = _messages.StringField(24)
-  sourceUris = _messages.StringField(25, repeated=True)
-  timePartitioning = _messages.MessageField('TimePartitioning', 26)
-  useAvroLogicalTypes = _messages.BooleanField(27)
-  writeDisposition = _messages.StringField(28)
+  hivePartitioningOptions = _messages.MessageField('HivePartitioningOptions', 11)
+  ignoreUnknownValues = _messages.BooleanField(12)
+  maxBadRecords = _messages.IntegerField(13, variant=_messages.Variant.INT32)
+  nullMarker = _messages.StringField(14)
+  projectionFields = _messages.StringField(15, repeated=True)
+  quote = _messages.StringField(16, default=u'"')
+  rangePartitioning = _messages.MessageField('RangePartitioning', 17)
+  schema = _messages.MessageField('TableSchema', 18)
+  schemaInline = _messages.StringField(19)
+  schemaInlineFormat = _messages.StringField(20)
+  schemaUpdateOptions = _messages.StringField(21, repeated=True)
+  skipLeadingRows = _messages.IntegerField(22, variant=_messages.Variant.INT32)
+  sourceFormat = _messages.StringField(23)
+  sourceUris = _messages.StringField(24, repeated=True)
+  timePartitioning = _messages.MessageField('TimePartitioning', 25)
+  useAvroLogicalTypes = _messages.BooleanField(26)
+  writeDisposition = _messages.StringField(27)
 
 
 class JobConfigurationQuery(_messages.Message):

@@ -1424,6 +1424,16 @@ MAP = {
                 enable_mtls=False,
                 mtls_endpoint_override=''),
     },
+    'resourcesettings': {
+        'v1alpha1':
+            APIDef(
+                class_path='googlecloudsdk.third_party.apis.resourcesettings.v1alpha1',
+                client_classpath='resourcesettings_v1alpha1_client.ResourcesettingsV1alpha1',
+                messages_modulepath='resourcesettings_v1alpha1_messages',
+                default_version=True,
+                enable_mtls=False,
+                mtls_endpoint_override=''),
+    },
     'run': {
         'v1':
             APIDef(
@@ -1691,6 +1701,14 @@ MAP = {
                 client_classpath='tpu_v1alpha1_client.TpuV1alpha1',
                 messages_modulepath='tpu_v1alpha1_messages',
                 default_version=True,
+                enable_mtls=False,
+                mtls_endpoint_override=''),
+        'v2alpha1':
+            APIDef(
+                class_path='googlecloudsdk.third_party.apis.tpu.v2alpha1',
+                client_classpath='tpu_v2alpha1_client.TpuV2alpha1',
+                messages_modulepath='tpu_v2alpha1_messages',
+                default_version=False,
                 enable_mtls=False,
                 mtls_endpoint_override=''),
     },

@@ -15,3 +15,27 @@ topic:
     attribute_name: topic
     help: |
       The topic name.
+
+location:
+  name: location
+  collection: pubsublite.admin.projects.locations
+  disable_auto_completers: false
+  attributes:
+  - &location
+    parameter_name: locationsId
+    attribute_name: zone
+    help: |
+      The pubsub/lite_zone of the Pub/Sub Lite resource.
+
+      If not specified, will use `default` pubsub/lite_zone.
+    property: pubsub/lite_zone
+
+lite-topic:
+  name: topic
+  collection: pubsublite.admin.projects.locations.topics
+  attributes:
+  - *location
+  - parameter_name: topicsId
+    attribute_name: topic
+    help: |
+      The topic name.

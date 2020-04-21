@@ -649,7 +649,7 @@ class DialogflowProjectsAgentIntentsPatchRequest(_messages.Message):
       information, see [Multilingual intent and entity
       data](https://cloud.google.com/dialogflow/docs/agents-multilingual
       #intent-entity).
-    name: The unique identifier of this intent. Required for
+    name: Optional. The unique identifier of this intent. Required for
       Intents.UpdateIntent and Intents.BatchUpdateIntents methods. Format:
       `projects/<Project ID>/agent/intents/<Intent ID>`.
     updateMask: Optional. The mask to control which fields get updated.
@@ -1317,7 +1317,7 @@ class GoogleCloudDialogflowV2BatchUpdateEntityTypesResponse(_messages.Message):
 
 
 class GoogleCloudDialogflowV2BatchUpdateIntentsRequest(_messages.Message):
-  r"""The request message for Intents.BatchUpdateIntents.
+  r"""A GoogleCloudDialogflowV2BatchUpdateIntentsRequest object.
 
   Enums:
     IntentViewValueValuesEnum: Optional. The resource view to apply to the
@@ -1376,9 +1376,10 @@ class GoogleCloudDialogflowV2Context(_messages.Message):
       object composed of a collection of (MapKey, MapValue) pairs:  -   MapKey
       type: string -   MapKey value: parameter name -   MapValue type:     -
       If parameter's entity type is a composite entity: map     -   Else:
-      string -   MapValue value:     -   If parameter's entity type is a
-      composite entity:         map from composite entity property names to
-      property values     -   Else: parameter value
+      string or number, depending on parameter value type -   MapValue value:
+      -   If parameter's entity type is a composite entity:         map from
+      composite entity property names to property values     -   Else:
+      parameter value
 
   Fields:
     lifespanCount: Optional. The number of conversational query requests after
@@ -1402,9 +1403,10 @@ class GoogleCloudDialogflowV2Context(_messages.Message):
       composed of a collection of (MapKey, MapValue) pairs:  -   MapKey type:
       string -   MapKey value: parameter name -   MapValue type:     -   If
       parameter's entity type is a composite entity: map     -   Else: string
-      -   MapValue value:     -   If parameter's entity type is a composite
-      entity:         map from composite entity property names to property
-      values     -   Else: parameter value
+      or number, depending on parameter value type -   MapValue value:     -
+      If parameter's entity type is a composite entity:         map from
+      composite entity property names to property values     -   Else:
+      parameter value
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
@@ -1414,10 +1416,10 @@ class GoogleCloudDialogflowV2Context(_messages.Message):
     associative array, symbol table, dictionary, or JSON object composed of a
     collection of (MapKey, MapValue) pairs:  -   MapKey type: string -
     MapKey value: parameter name -   MapValue type:     -   If parameter's
-    entity type is a composite entity: map     -   Else: string -   MapValue
-    value:     -   If parameter's entity type is a composite entity:
-    map from composite entity property names to property values     -   Else:
-    parameter value
+    entity type is a composite entity: map     -   Else: string or number,
+    depending on parameter value type -   MapValue value:     -   If
+    parameter's entity type is a composite entity:         map from composite
+    entity property names to property values     -   Else: parameter value
 
     Messages:
       AdditionalProperty: An additional property for a ParametersValue object.
@@ -1499,8 +1501,7 @@ class GoogleCloudDialogflowV2ConversationEvent(_messages.Message):
 
 
 class GoogleCloudDialogflowV2DetectIntentRequest(_messages.Message):
-  r"""Requests and responses for custom methods. The request to detect user's
-  intent.
+  r"""The request to detect user's intent.
 
   Fields:
     inputAudio: The natural language speech audio to be processed. This field
@@ -1655,6 +1656,15 @@ class GoogleCloudDialogflowV2EventInput(_messages.Message):
 
   Messages:
     ParametersValue: The collection of parameters associated with the event.
+      Depending on your protocol or client library language, this is a map,
+      associative array, symbol table, dictionary, or JSON object composed of
+      a collection of (MapKey, MapValue) pairs:  -   MapKey type: string -
+      MapKey value: parameter name -   MapValue type:     -   If parameter's
+      entity type is a composite entity: map     -   Else: string or number,
+      depending on parameter value type -   MapValue value:     -   If
+      parameter's entity type is a composite entity:         map from
+      composite entity property names to property values     -   Else:
+      parameter value
 
   Fields:
     languageCode: Required. The language of this query. See [Language
@@ -1664,11 +1674,28 @@ class GoogleCloudDialogflowV2EventInput(_messages.Message):
       language.
     name: Required. The unique identifier of the event.
     parameters: The collection of parameters associated with the event.
+      Depending on your protocol or client library language, this is a map,
+      associative array, symbol table, dictionary, or JSON object composed of
+      a collection of (MapKey, MapValue) pairs:  -   MapKey type: string -
+      MapKey value: parameter name -   MapValue type:     -   If parameter's
+      entity type is a composite entity: map     -   Else: string or number,
+      depending on parameter value type -   MapValue value:     -   If
+      parameter's entity type is a composite entity:         map from
+      composite entity property names to property values     -   Else:
+      parameter value
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class ParametersValue(_messages.Message):
-    r"""The collection of parameters associated with the event.
+    r"""The collection of parameters associated with the event.  Depending on
+    your protocol or client library language, this is a map, associative
+    array, symbol table, dictionary, or JSON object composed of a collection
+    of (MapKey, MapValue) pairs:  -   MapKey type: string -   MapKey value:
+    parameter name -   MapValue type:     -   If parameter's entity type is a
+    composite entity: map     -   Else: string or number, depending on
+    parameter value type -   MapValue value:     -   If parameter's entity
+    type is a composite entity:         map from composite entity property
+    names to property values     -   Else: parameter value
 
     Messages:
       AdditionalProperty: An additional property for a ParametersValue object.
@@ -2006,7 +2033,7 @@ class GoogleCloudDialogflowV2Intent(_messages.Message):
       the intent. Note: If `ml_disabled` setting is set to true, then this
       intent is not taken into account during inference in `ML ONLY` match
       mode. Also, auto-markup in the UI is turned off.
-    name: The unique identifier of this intent. Required for
+    name: Optional. The unique identifier of this intent. Required for
       Intents.UpdateIntent and Intents.BatchUpdateIntents methods. Format:
       `projects/<Project ID>/agent/intents/<Intent ID>`.
     outputContexts: Optional. The collection of contexts that are activated
@@ -2126,16 +2153,16 @@ class GoogleCloudDialogflowV2IntentFollowupIntentInfo(_messages.Message):
 
 
 class GoogleCloudDialogflowV2IntentMessage(_messages.Message):
-  r"""Corresponds to the `Response` field in the Dialogflow console.
+  r"""A rich response message. Corresponds to the intent `Response` field in
+  the Dialogflow console. For more information, see [Rich response
+  messages](https://cloud.google.com/dialogflow/docs/intents-rich-messages).
 
   Enums:
     PlatformValueValuesEnum: Optional. The platform that this message is
       intended for.
 
   Messages:
-    PayloadValue: Returns a response containing a custom, platform-specific
-      payload. See the Intent.Message.Platform type for a description of the
-      structure that may be required for your platform.
+    PayloadValue: A custom platform-specific response.
 
   Fields:
     basicCard: The basic card response for Actions on Google.
@@ -2146,9 +2173,7 @@ class GoogleCloudDialogflowV2IntentMessage(_messages.Message):
     linkOutSuggestion: The link out suggestion chip for Actions on Google.
     listSelect: The list card response for Actions on Google.
     mediaContent: The media content card for Actions on Google.
-    payload: Returns a response containing a custom, platform-specific
-      payload. See the Intent.Message.Platform type for a description of the
-      structure that may be required for your platform.
+    payload: A custom platform-specific response.
     platform: Optional. The platform that this message is intended for.
     quickReplies: The quick replies response.
     simpleResponses: The voice and text-only responses for Actions on Google.
@@ -2161,7 +2186,7 @@ class GoogleCloudDialogflowV2IntentMessage(_messages.Message):
     r"""Optional. The platform that this message is intended for.
 
     Values:
-      PLATFORM_UNSPECIFIED: Not specified.
+      PLATFORM_UNSPECIFIED: Default platform.
       FACEBOOK: Facebook.
       SLACK: Slack.
       TELEGRAM: Telegram.
@@ -2169,30 +2194,9 @@ class GoogleCloudDialogflowV2IntentMessage(_messages.Message):
       SKYPE: Skype.
       LINE: Line.
       VIBER: Viber.
-      ACTIONS_ON_GOOGLE: Actions on Google. When using Actions on Google, you
-        can choose one of the specific Intent.Message types that mention
-        support for Actions on Google, or you can use the advanced
-        Intent.Message.payload field. The payload field provides access to AoG
-        features not available in the specific message types. If using the
-        Intent.Message.payload field, it should have a structure similar to
-        the JSON message shown here. For more information, see [Actions on
-        Google Webhook
-        Format](https://developers.google.com/actions/dialogflow/webhook)
-        <pre>{   "expectUserResponse": true,   "isSsml": false,
-        "noInputPrompts": [],   "richResponse": {     "items": [       {
-        "simpleResponse": {           "displayText": "hi",
-        "textToSpeech": "hello"         }       }     ],     "suggestions": [
-        {         "title": "Say this"       },       {         "title": "or
-        this"       }     ]   },   "systemIntent": {     "data": {
-        "@type": "type.googleapis.com/google.actions.v2.OptionValueSpec",
-        "listSelect": {         "items": [           {
-        "optionInfo": {               "key": "key1",               "synonyms":
-        [                 "key one"               ]             },
-        "title": "must not be empty, but unique"           },           {
-        "optionInfo": {               "key": "key2",               "synonyms":
-        [                 "key two"               ]             },
-        "title": "must not be empty, but unique"           }         ]       }
-        },     "intent": "actions.intent.OPTION"   } }</pre>
+      ACTIONS_ON_GOOGLE: Google Assistant See [Dialogflow webhook
+        format](https://developers.google.com/assistant/actions/build/json
+        /dialogflow-webhook-json)
       GOOGLE_HANGOUTS: Google Hangouts.
     """
     PLATFORM_UNSPECIFIED = 0
@@ -2208,9 +2212,7 @@ class GoogleCloudDialogflowV2IntentMessage(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class PayloadValue(_messages.Message):
-    r"""Returns a response containing a custom, platform-specific payload. See
-    the Intent.Message.Platform type for a description of the structure that
-    may be required for your platform.
+    r"""A custom platform-specific response.
 
     Messages:
       AdditionalProperty: An additional property for a PayloadValue object.
@@ -2937,23 +2939,23 @@ class GoogleCloudDialogflowV2OriginalDetectIntentRequest(_messages.Message):
     PayloadValue: Optional. This field is set to the value of the
       `QueryParameters.payload` field passed in the request. Some integrations
       that query a Dialogflow agent may provide additional information in the
-      payload.  In particular for the Telephony Gateway this field has the
-      form: <pre>{  "telephony": {    "caller_id": "+18558363987"  } }</pre>
-      Note: The caller ID field (`caller_id`) will be redacted for Standard
-      Edition agents and populated with the caller ID in [E.164
-      format](https://en.wikipedia.org/wiki/E.164) for Enterprise Edition
-      agents.
+      payload.  In particular, for the Dialogflow Phone Gateway integration,
+      this field has the form: <pre>{  "telephony": {    "caller_id":
+      "+18558363987"  } }</pre> Note: The caller ID field (`caller_id`) will
+      be redacted for Standard Edition agents and populated with the caller ID
+      in [E.164 format](https://en.wikipedia.org/wiki/E.164) for Enterprise
+      Edition agents.
 
   Fields:
     payload: Optional. This field is set to the value of the
       `QueryParameters.payload` field passed in the request. Some integrations
       that query a Dialogflow agent may provide additional information in the
-      payload.  In particular for the Telephony Gateway this field has the
-      form: <pre>{  "telephony": {    "caller_id": "+18558363987"  } }</pre>
-      Note: The caller ID field (`caller_id`) will be redacted for Standard
-      Edition agents and populated with the caller ID in [E.164
-      format](https://en.wikipedia.org/wiki/E.164) for Enterprise Edition
-      agents.
+      payload.  In particular, for the Dialogflow Phone Gateway integration,
+      this field has the form: <pre>{  "telephony": {    "caller_id":
+      "+18558363987"  } }</pre> Note: The caller ID field (`caller_id`) will
+      be redacted for Standard Edition agents and populated with the caller ID
+      in [E.164 format](https://en.wikipedia.org/wiki/E.164) for Enterprise
+      Edition agents.
     source: The source of this request, e.g., `google`, `facebook`, `slack`.
       It is set by Dialogflow-owned servers.
     version: Optional. The version of the protocol used for this request. This
@@ -2965,11 +2967,11 @@ class GoogleCloudDialogflowV2OriginalDetectIntentRequest(_messages.Message):
     r"""Optional. This field is set to the value of the
     `QueryParameters.payload` field passed in the request. Some integrations
     that query a Dialogflow agent may provide additional information in the
-    payload.  In particular for the Telephony Gateway this field has the form:
-    <pre>{  "telephony": {    "caller_id": "+18558363987"  } }</pre> Note: The
-    caller ID field (`caller_id`) will be redacted for Standard Edition agents
-    and populated with the caller ID in [E.164
-    format](https://en.wikipedia.org/wiki/E.164) for Enterprise Edition
+    payload.  In particular, for the Dialogflow Phone Gateway integration,
+    this field has the form: <pre>{  "telephony": {    "caller_id":
+    "+18558363987"  } }</pre> Note: The caller ID field (`caller_id`) will be
+    redacted for Standard Edition agents and populated with the caller ID in
+    [E.164 format](https://en.wikipedia.org/wiki/E.164) for Enterprise Edition
     agents.
 
     Messages:
@@ -3064,15 +3066,19 @@ class GoogleCloudDialogflowV2QueryParameters(_messages.Message):
   r"""Represents the parameters of the conversational query.
 
   Messages:
-    PayloadValue: This field can be used to pass custom data into the webhook
-      associated with the agent. Arbitrary JSON objects are supported.
+    PayloadValue: This field can be used to pass custom data to your webhook.
+      Arbitrary JSON objects are supported. If supplied, the value is used to
+      populate the `WebhookRequest.original_detect_intent_request.payload`
+      field sent to your webhook.
 
   Fields:
     contexts: The collection of contexts to be activated before this query is
       executed.
     geoLocation: The geo location of this conversational query.
-    payload: This field can be used to pass custom data into the webhook
-      associated with the agent. Arbitrary JSON objects are supported.
+    payload: This field can be used to pass custom data to your webhook.
+      Arbitrary JSON objects are supported. If supplied, the value is used to
+      populate the `WebhookRequest.original_detect_intent_request.payload`
+      field sent to your webhook.
     resetContexts: Specifies whether to delete all contexts in the current
       session before the new ones are activated.
     sentimentAnalysisRequestConfig: Configures the type of sentiment analysis
@@ -3088,8 +3094,10 @@ class GoogleCloudDialogflowV2QueryParameters(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class PayloadValue(_messages.Message):
-    r"""This field can be used to pass custom data into the webhook associated
-    with the agent. Arbitrary JSON objects are supported.
+    r"""This field can be used to pass custom data to your webhook. Arbitrary
+    JSON objects are supported. If supplied, the value is used to populate the
+    `WebhookRequest.original_detect_intent_request.payload` field sent to your
+    webhook.
 
     Messages:
       AdditionalProperty: An additional property for a PayloadValue object.
@@ -3128,7 +3136,15 @@ class GoogleCloudDialogflowV2QueryResult(_messages.Message):
       detect intent request. The fields of this data can change without
       notice, so you should not write code that depends on its structure. The
       data may contain:  - webhook call latency - webhook errors
-    ParametersValue: The collection of extracted parameters.
+    ParametersValue: The collection of extracted parameters.  Depending on
+      your protocol or client library language, this is a map, associative
+      array, symbol table, dictionary, or JSON object composed of a collection
+      of (MapKey, MapValue) pairs:  -   MapKey type: string -   MapKey value:
+      parameter name -   MapValue type:     -   If parameter's entity type is
+      a composite entity: map     -   Else: string or number, depending on
+      parameter value type -   MapValue value:     -   If parameter's entity
+      type is a composite entity:         map from composite entity property
+      names to property values     -   Else: parameter value
     WebhookPayloadValue: If the query was fulfilled by a webhook call, this
       field is set to the value of the `payload` field returned in the webhook
       response.
@@ -3168,7 +3184,15 @@ class GoogleCloudDialogflowV2QueryResult(_messages.Message):
       `output_contexts.parameters` contains entries with name `<parameter
       name>.original` containing the original parameter values before the
       query.
-    parameters: The collection of extracted parameters.
+    parameters: The collection of extracted parameters.  Depending on your
+      protocol or client library language, this is a map, associative array,
+      symbol table, dictionary, or JSON object composed of a collection of
+      (MapKey, MapValue) pairs:  -   MapKey type: string -   MapKey value:
+      parameter name -   MapValue type:     -   If parameter's entity type is
+      a composite entity: map     -   Else: string or number, depending on
+      parameter value type -   MapValue value:     -   If parameter's entity
+      type is a composite entity:         map from composite entity property
+      names to property values     -   Else: parameter value
     queryText: The original conversational query text:  - If natural language
       text was provided as input, `query_text` contains   a copy of the input.
       - If natural language speech audio was provided as input, `query_text`
@@ -3223,7 +3247,15 @@ class GoogleCloudDialogflowV2QueryResult(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class ParametersValue(_messages.Message):
-    r"""The collection of extracted parameters.
+    r"""The collection of extracted parameters.  Depending on your protocol or
+    client library language, this is a map, associative array, symbol table,
+    dictionary, or JSON object composed of a collection of (MapKey, MapValue)
+    pairs:  -   MapKey type: string -   MapKey value: parameter name -
+    MapValue type:     -   If parameter's entity type is a composite entity:
+    map     -   Else: string or number, depending on parameter value type -
+    MapValue value:     -   If parameter's entity type is a composite entity:
+    map from composite entity property names to property values     -   Else:
+    parameter value
 
     Messages:
       AdditionalProperty: An additional property for a ParametersValue object.
@@ -3623,17 +3655,16 @@ class GoogleCloudDialogflowV2WebhookResponse(_messages.Message):
   Guide](https://developers.google.com/protocol-buffers/docs/proto3#json).
 
   Messages:
-    PayloadValue: Optional. This value is passed directly to
-      `QueryResult.webhook_payload`. See the related
-      `fulfillment_messages[i].payload field`, which may be used as an
-      alternative to this field.  This field can be used for Actions on Google
-      responses. It should have a structure similar to the JSON message shown
-      here. For more information, see [Actions on Google Webhook
-      Format](https://developers.google.com/actions/dialogflow/webhook) <pre>{
-      "google": {     "expectUserResponse": true,     "richResponse": {
-      "items": [         {           "simpleResponse": {
-      "textToSpeech": "this is a simple response"           }         }
-      ]     }   } }</pre>
+    PayloadValue: Optional. This field can be used to pass custom data from
+      your webhook to the API caller. Arbitrary JSON objects are supported.
+      When provided, Dialogflow uses this field to populate
+      `QueryResult.webhook_payload` sent to the API caller. This field is also
+      used by the [Google Assistant
+      integration](https://cloud.google.com/dialogflow/docs/integrations/aog)
+      for rich response messages. See the format definition at [Google
+      Assistant Dialogflow webhook
+      format](https://developers.google.com/assistant/actions/build/json
+      /dialogflow-webhook-json)
 
   Fields:
     followupEventInput: Optional. Makes the platform immediately invoke
@@ -3647,17 +3678,16 @@ class GoogleCloudDialogflowV2WebhookResponse(_messages.Message):
       is passed directly to `QueryResult.fulfillment_text`.
     outputContexts: Optional. The collection of output contexts. This value is
       passed directly to `QueryResult.output_contexts`.
-    payload: Optional. This value is passed directly to
-      `QueryResult.webhook_payload`. See the related
-      `fulfillment_messages[i].payload field`, which may be used as an
-      alternative to this field.  This field can be used for Actions on Google
-      responses. It should have a structure similar to the JSON message shown
-      here. For more information, see [Actions on Google Webhook
-      Format](https://developers.google.com/actions/dialogflow/webhook) <pre>{
-      "google": {     "expectUserResponse": true,     "richResponse": {
-      "items": [         {           "simpleResponse": {
-      "textToSpeech": "this is a simple response"           }         }
-      ]     }   } }</pre>
+    payload: Optional. This field can be used to pass custom data from your
+      webhook to the API caller. Arbitrary JSON objects are supported. When
+      provided, Dialogflow uses this field to populate
+      `QueryResult.webhook_payload` sent to the API caller. This field is also
+      used by the [Google Assistant
+      integration](https://cloud.google.com/dialogflow/docs/integrations/aog)
+      for rich response messages. See the format definition at [Google
+      Assistant Dialogflow webhook
+      format](https://developers.google.com/assistant/actions/build/json
+      /dialogflow-webhook-json)
     sessionEntityTypes: Optional. Additional session entity types to replace
       or extend developer entity types with. The entity synonyms apply to all
       languages and persist for the session of this query. Setting the session
@@ -3670,17 +3700,15 @@ class GoogleCloudDialogflowV2WebhookResponse(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class PayloadValue(_messages.Message):
-    r"""Optional. This value is passed directly to
-    `QueryResult.webhook_payload`. See the related
-    `fulfillment_messages[i].payload field`, which may be used as an
-    alternative to this field.  This field can be used for Actions on Google
-    responses. It should have a structure similar to the JSON message shown
-    here. For more information, see [Actions on Google Webhook
-    Format](https://developers.google.com/actions/dialogflow/webhook) <pre>{
-    "google": {     "expectUserResponse": true,     "richResponse": {
-    "items": [         {           "simpleResponse": {
-    "textToSpeech": "this is a simple response"           }         }       ]
-    }   } }</pre>
+    r"""Optional. This field can be used to pass custom data from your webhook
+    to the API caller. Arbitrary JSON objects are supported. When provided,
+    Dialogflow uses this field to populate `QueryResult.webhook_payload` sent
+    to the API caller. This field is also used by the [Google Assistant
+    integration](https://cloud.google.com/dialogflow/docs/integrations/aog)
+    for rich response messages. See the format definition at [Google Assistant
+    Dialogflow webhook
+    format](https://developers.google.com/assistant/actions/build/json
+    /dialogflow-webhook-json)
 
     Messages:
       AdditionalProperty: An additional property for a PayloadValue object.
@@ -3779,9 +3807,10 @@ class GoogleCloudDialogflowV2beta1Context(_messages.Message):
       object composed of a collection of (MapKey, MapValue) pairs:  -   MapKey
       type: string -   MapKey value: parameter name -   MapValue type:     -
       If parameter's entity type is a composite entity: map     -   Else:
-      string -   MapValue value:     -   If parameter's entity type is a
-      composite entity:         map from composite entity property names to
-      property values     -   Else: parameter value
+      string or number, depending on parameter value type -   MapValue value:
+      -   If parameter's entity type is a composite entity:         map from
+      composite entity property names to property values     -   Else:
+      parameter value
 
   Fields:
     lifespanCount: Optional. The number of conversational query requests after
@@ -3805,9 +3834,10 @@ class GoogleCloudDialogflowV2beta1Context(_messages.Message):
       composed of a collection of (MapKey, MapValue) pairs:  -   MapKey type:
       string -   MapKey value: parameter name -   MapValue type:     -   If
       parameter's entity type is a composite entity: map     -   Else: string
-      -   MapValue value:     -   If parameter's entity type is a composite
-      entity:         map from composite entity property names to property
-      values     -   Else: parameter value
+      or number, depending on parameter value type -   MapValue value:     -
+      If parameter's entity type is a composite entity:         map from
+      composite entity property names to property values     -   Else:
+      parameter value
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
@@ -3817,10 +3847,10 @@ class GoogleCloudDialogflowV2beta1Context(_messages.Message):
     associative array, symbol table, dictionary, or JSON object composed of a
     collection of (MapKey, MapValue) pairs:  -   MapKey type: string -
     MapKey value: parameter name -   MapValue type:     -   If parameter's
-    entity type is a composite entity: map     -   Else: string -   MapValue
-    value:     -   If parameter's entity type is a composite entity:
-    map from composite entity property names to property values     -   Else:
-    parameter value
+    entity type is a composite entity: map     -   Else: string or number,
+    depending on parameter value type -   MapValue value:     -   If
+    parameter's entity type is a composite entity:         map from composite
+    entity property names to property values     -   Else: parameter value
 
     Messages:
       AdditionalProperty: An additional property for a ParametersValue object.
@@ -3938,6 +3968,15 @@ class GoogleCloudDialogflowV2beta1EventInput(_messages.Message):
 
   Messages:
     ParametersValue: The collection of parameters associated with the event.
+      Depending on your protocol or client library language, this is a map,
+      associative array, symbol table, dictionary, or JSON object composed of
+      a collection of (MapKey, MapValue) pairs:  -   MapKey type: string -
+      MapKey value: parameter name -   MapValue type:     -   If parameter's
+      entity type is a composite entity: map     -   Else: string or number,
+      depending on parameter value type -   MapValue value:     -   If
+      parameter's entity type is a composite entity:         map from
+      composite entity property names to property values     -   Else:
+      parameter value
 
   Fields:
     languageCode: Required. The language of this query. See [Language
@@ -3947,11 +3986,28 @@ class GoogleCloudDialogflowV2beta1EventInput(_messages.Message):
       language.
     name: Required. The unique identifier of the event.
     parameters: The collection of parameters associated with the event.
+      Depending on your protocol or client library language, this is a map,
+      associative array, symbol table, dictionary, or JSON object composed of
+      a collection of (MapKey, MapValue) pairs:  -   MapKey type: string -
+      MapKey value: parameter name -   MapValue type:     -   If parameter's
+      entity type is a composite entity: map     -   Else: string or number,
+      depending on parameter value type -   MapValue value:     -   If
+      parameter's entity type is a composite entity:         map from
+      composite entity property names to property values     -   Else:
+      parameter value
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class ParametersValue(_messages.Message):
-    r"""The collection of parameters associated with the event.
+    r"""The collection of parameters associated with the event.  Depending on
+    your protocol or client library language, this is a map, associative
+    array, symbol table, dictionary, or JSON object composed of a collection
+    of (MapKey, MapValue) pairs:  -   MapKey type: string -   MapKey value:
+    parameter name -   MapValue type:     -   If parameter's entity type is a
+    composite entity: map     -   Else: string or number, depending on
+    parameter value type -   MapValue value:     -   If parameter's entity
+    type is a composite entity:         map from composite entity property
+    names to property values     -   Else: parameter value
 
     Messages:
       AdditionalProperty: An additional property for a ParametersValue object.
@@ -4159,9 +4215,7 @@ class GoogleCloudDialogflowV2beta1IntentMessage(_messages.Message):
       intended for.
 
   Messages:
-    PayloadValue: Returns a response containing a custom, platform-specific
-      payload. See the Intent.Message.Platform type for a description of the
-      structure that may be required for your platform.
+    PayloadValue: A custom platform-specific response.
 
   Fields:
     basicCard: Displays a basic card for Actions on Google.
@@ -4173,9 +4227,7 @@ class GoogleCloudDialogflowV2beta1IntentMessage(_messages.Message):
       Google.
     listSelect: Displays a list card for Actions on Google.
     mediaContent: The media content card for Actions on Google.
-    payload: Returns a response containing a custom, platform-specific
-      payload. See the Intent.Message.Platform type for a description of the
-      structure that may be required for your platform.
+    payload: A custom platform-specific response.
     platform: Optional. The platform that this message is intended for.
     quickReplies: Displays quick replies.
     rbmCarouselRichCard: Rich Business Messaging (RBM) carousel rich card
@@ -4207,30 +4259,9 @@ class GoogleCloudDialogflowV2beta1IntentMessage(_messages.Message):
       SKYPE: Skype.
       LINE: Line.
       VIBER: Viber.
-      ACTIONS_ON_GOOGLE: Actions on Google. When using Actions on Google, you
-        can choose one of the specific Intent.Message types that mention
-        support for Actions on Google, or you can use the advanced
-        Intent.Message.payload field. The payload field provides access to AoG
-        features not available in the specific message types. If using the
-        Intent.Message.payload field, it should have a structure similar to
-        the JSON message shown here. For more information, see [Actions on
-        Google Webhook
-        Format](https://developers.google.com/actions/dialogflow/webhook)
-        <pre>{   "expectUserResponse": true,   "isSsml": false,
-        "noInputPrompts": [],   "richResponse": {     "items": [       {
-        "simpleResponse": {           "displayText": "hi",
-        "textToSpeech": "hello"         }       }     ],     "suggestions": [
-        {         "title": "Say this"       },       {         "title": "or
-        this"       }     ]   },   "systemIntent": {     "data": {
-        "@type": "type.googleapis.com/google.actions.v2.OptionValueSpec",
-        "listSelect": {         "items": [           {
-        "optionInfo": {               "key": "key1",               "synonyms":
-        [                 "key one"               ]             },
-        "title": "must not be empty, but unique"           },           {
-        "optionInfo": {               "key": "key2",               "synonyms":
-        [                 "key two"               ]             },
-        "title": "must not be empty, but unique"           }         ]       }
-        },     "intent": "actions.intent.OPTION"   } }</pre>
+      ACTIONS_ON_GOOGLE: Google Assistant See [Dialogflow webhook
+        format](https://developers.google.com/assistant/actions/build/json
+        /dialogflow-webhook-json)
       TELEPHONY: Telephony Gateway.
       GOOGLE_HANGOUTS: Google Hangouts.
     """
@@ -4248,9 +4279,7 @@ class GoogleCloudDialogflowV2beta1IntentMessage(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class PayloadValue(_messages.Message):
-    r"""Returns a response containing a custom, platform-specific payload. See
-    the Intent.Message.Platform type for a description of the structure that
-    may be required for your platform.
+    r"""A custom platform-specific response.
 
     Messages:
       AdditionalProperty: An additional property for a PayloadValue object.
@@ -5276,23 +5305,23 @@ class GoogleCloudDialogflowV2beta1OriginalDetectIntentRequest(_messages.Message)
     PayloadValue: Optional. This field is set to the value of the
       `QueryParameters.payload` field passed in the request. Some integrations
       that query a Dialogflow agent may provide additional information in the
-      payload.  In particular for the Telephony Gateway this field has the
-      form: <pre>{  "telephony": {    "caller_id": "+18558363987"  } }</pre>
-      Note: The caller ID field (`caller_id`) will be redacted for Standard
-      Edition agents and populated with the caller ID in [E.164
-      format](https://en.wikipedia.org/wiki/E.164) for Enterprise Edition
-      agents.
+      payload.  In particular, for the Dialogflow Phone Gateway integration,
+      this field has the form: <pre>{  "telephony": {    "caller_id":
+      "+18558363987"  } }</pre> Note: The caller ID field (`caller_id`) will
+      be redacted for Standard Edition agents and populated with the caller ID
+      in [E.164 format](https://en.wikipedia.org/wiki/E.164) for Enterprise
+      Edition agents.
 
   Fields:
     payload: Optional. This field is set to the value of the
       `QueryParameters.payload` field passed in the request. Some integrations
       that query a Dialogflow agent may provide additional information in the
-      payload.  In particular for the Telephony Gateway this field has the
-      form: <pre>{  "telephony": {    "caller_id": "+18558363987"  } }</pre>
-      Note: The caller ID field (`caller_id`) will be redacted for Standard
-      Edition agents and populated with the caller ID in [E.164
-      format](https://en.wikipedia.org/wiki/E.164) for Enterprise Edition
-      agents.
+      payload.  In particular, for the Dialogflow Phone Gateway integration,
+      this field has the form: <pre>{  "telephony": {    "caller_id":
+      "+18558363987"  } }</pre> Note: The caller ID field (`caller_id`) will
+      be redacted for Standard Edition agents and populated with the caller ID
+      in [E.164 format](https://en.wikipedia.org/wiki/E.164) for Enterprise
+      Edition agents.
     source: The source of this request, e.g., `google`, `facebook`, `slack`.
       It is set by Dialogflow-owned servers.
     version: Optional. The version of the protocol used for this request. This
@@ -5304,11 +5333,11 @@ class GoogleCloudDialogflowV2beta1OriginalDetectIntentRequest(_messages.Message)
     r"""Optional. This field is set to the value of the
     `QueryParameters.payload` field passed in the request. Some integrations
     that query a Dialogflow agent may provide additional information in the
-    payload.  In particular for the Telephony Gateway this field has the form:
-    <pre>{  "telephony": {    "caller_id": "+18558363987"  } }</pre> Note: The
-    caller ID field (`caller_id`) will be redacted for Standard Edition agents
-    and populated with the caller ID in [E.164
-    format](https://en.wikipedia.org/wiki/E.164) for Enterprise Edition
+    payload.  In particular, for the Dialogflow Phone Gateway integration,
+    this field has the form: <pre>{  "telephony": {    "caller_id":
+    "+18558363987"  } }</pre> Note: The caller ID field (`caller_id`) will be
+    redacted for Standard Edition agents and populated with the caller ID in
+    [E.164 format](https://en.wikipedia.org/wiki/E.164) for Enterprise Edition
     agents.
 
     Messages:
@@ -5344,7 +5373,15 @@ class GoogleCloudDialogflowV2beta1QueryResult(_messages.Message):
       detect intent request. The fields of this data can change without
       notice, so you should not write code that depends on its structure. The
       data may contain:  - webhook call latency - webhook errors
-    ParametersValue: The collection of extracted parameters.
+    ParametersValue: The collection of extracted parameters.  Depending on
+      your protocol or client library language, this is a map, associative
+      array, symbol table, dictionary, or JSON object composed of a collection
+      of (MapKey, MapValue) pairs:  -   MapKey type: string -   MapKey value:
+      parameter name -   MapValue type:     -   If parameter's entity type is
+      a composite entity: map     -   Else: string or number, depending on
+      parameter value type -   MapValue value:     -   If parameter's entity
+      type is a composite entity:         map from composite entity property
+      names to property values     -   Else: parameter value
     WebhookPayloadValue: If the query was fulfilled by a webhook call, this
       field is set to the value of the `payload` field returned in the webhook
       response.
@@ -5386,7 +5423,15 @@ class GoogleCloudDialogflowV2beta1QueryResult(_messages.Message):
       `output_contexts.parameters` contains entries with name `<parameter
       name>.original` containing the original parameter values before the
       query.
-    parameters: The collection of extracted parameters.
+    parameters: The collection of extracted parameters.  Depending on your
+      protocol or client library language, this is a map, associative array,
+      symbol table, dictionary, or JSON object composed of a collection of
+      (MapKey, MapValue) pairs:  -   MapKey type: string -   MapKey value:
+      parameter name -   MapValue type:     -   If parameter's entity type is
+      a composite entity: map     -   Else: string or number, depending on
+      parameter value type -   MapValue value:     -   If parameter's entity
+      type is a composite entity:         map from composite entity property
+      names to property values     -   Else: parameter value
     queryText: The original conversational query text:  - If natural language
       text was provided as input, `query_text` contains   a copy of the input.
       - If natural language speech audio was provided as input, `query_text`
@@ -5441,7 +5486,15 @@ class GoogleCloudDialogflowV2beta1QueryResult(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class ParametersValue(_messages.Message):
-    r"""The collection of extracted parameters.
+    r"""The collection of extracted parameters.  Depending on your protocol or
+    client library language, this is a map, associative array, symbol table,
+    dictionary, or JSON object composed of a collection of (MapKey, MapValue)
+    pairs:  -   MapKey type: string -   MapKey value: parameter name -
+    MapValue type:     -   If parameter's entity type is a composite entity:
+    map     -   Else: string or number, depending on parameter value type -
+    MapValue value:     -   If parameter's entity type is a composite entity:
+    map from composite entity property names to property values     -   Else:
+    parameter value
 
     Messages:
       AdditionalProperty: An additional property for a ParametersValue object.
@@ -5625,17 +5678,16 @@ class GoogleCloudDialogflowV2beta1WebhookResponse(_messages.Message):
   Guide](https://developers.google.com/protocol-buffers/docs/proto3#json).
 
   Messages:
-    PayloadValue: Optional. This value is passed directly to
-      `QueryResult.webhook_payload`. See the related
-      `fulfillment_messages[i].payload field`, which may be used as an
-      alternative to this field.  This field can be used for Actions on Google
-      responses. It should have a structure similar to the JSON message shown
-      here. For more information, see [Actions on Google Webhook
-      Format](https://developers.google.com/actions/dialogflow/webhook) <pre>{
-      "google": {     "expectUserResponse": true,     "richResponse": {
-      "items": [         {           "simpleResponse": {
-      "textToSpeech": "this is a simple response"           }         }
-      ]     }   } }</pre>
+    PayloadValue: Optional. This field can be used to pass custom data from
+      your webhook to the API caller. Arbitrary JSON objects are supported.
+      When provided, Dialogflow uses this field to populate
+      `QueryResult.webhook_payload` sent to the API caller. This field is also
+      used by the [Google Assistant
+      integration](https://cloud.google.com/dialogflow/docs/integrations/aog)
+      for rich response messages. See the format definition at [Google
+      Assistant Dialogflow webhook
+      format](https://developers.google.com/assistant/actions/build/json
+      /dialogflow-webhook-json)
 
   Fields:
     endInteraction: Optional. Indicates that this intent ends an interaction.
@@ -5653,17 +5705,16 @@ class GoogleCloudDialogflowV2beta1WebhookResponse(_messages.Message):
       is passed directly to `QueryResult.fulfillment_text`.
     outputContexts: Optional. The collection of output contexts. This value is
       passed directly to `QueryResult.output_contexts`.
-    payload: Optional. This value is passed directly to
-      `QueryResult.webhook_payload`. See the related
-      `fulfillment_messages[i].payload field`, which may be used as an
-      alternative to this field.  This field can be used for Actions on Google
-      responses. It should have a structure similar to the JSON message shown
-      here. For more information, see [Actions on Google Webhook
-      Format](https://developers.google.com/actions/dialogflow/webhook) <pre>{
-      "google": {     "expectUserResponse": true,     "richResponse": {
-      "items": [         {           "simpleResponse": {
-      "textToSpeech": "this is a simple response"           }         }
-      ]     }   } }</pre>
+    payload: Optional. This field can be used to pass custom data from your
+      webhook to the API caller. Arbitrary JSON objects are supported. When
+      provided, Dialogflow uses this field to populate
+      `QueryResult.webhook_payload` sent to the API caller. This field is also
+      used by the [Google Assistant
+      integration](https://cloud.google.com/dialogflow/docs/integrations/aog)
+      for rich response messages. See the format definition at [Google
+      Assistant Dialogflow webhook
+      format](https://developers.google.com/assistant/actions/build/json
+      /dialogflow-webhook-json)
     sessionEntityTypes: Optional. Additional session entity types to replace
       or extend developer entity types with. The entity synonyms apply to all
       languages and persist for the session of this query. Setting the session
@@ -5676,17 +5727,15 @@ class GoogleCloudDialogflowV2beta1WebhookResponse(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class PayloadValue(_messages.Message):
-    r"""Optional. This value is passed directly to
-    `QueryResult.webhook_payload`. See the related
-    `fulfillment_messages[i].payload field`, which may be used as an
-    alternative to this field.  This field can be used for Actions on Google
-    responses. It should have a structure similar to the JSON message shown
-    here. For more information, see [Actions on Google Webhook
-    Format](https://developers.google.com/actions/dialogflow/webhook) <pre>{
-    "google": {     "expectUserResponse": true,     "richResponse": {
-    "items": [         {           "simpleResponse": {
-    "textToSpeech": "this is a simple response"           }         }       ]
-    }   } }</pre>
+    r"""Optional. This field can be used to pass custom data from your webhook
+    to the API caller. Arbitrary JSON objects are supported. When provided,
+    Dialogflow uses this field to populate `QueryResult.webhook_payload` sent
+    to the API caller. This field is also used by the [Google Assistant
+    integration](https://cloud.google.com/dialogflow/docs/integrations/aog)
+    for rich response messages. See the format definition at [Google Assistant
+    Dialogflow webhook
+    format](https://developers.google.com/assistant/actions/build/json
+    /dialogflow-webhook-json)
 
     Messages:
       AdditionalProperty: An additional property for a PayloadValue object.

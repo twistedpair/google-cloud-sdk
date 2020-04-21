@@ -156,11 +156,22 @@ def _RenderResponseforAnalyzeIamPolicy(response):
             ', so there could be duplications.')
     for analysis_result in analysis.analysisResults:
       entry = {}
-      entry['identities'] = analysis_result.identityList.identities
+
+      policy = {
+          'attachedResource': analysis_result.attachedResourceFullName,
+          'binding': analysis_result.iamBinding,
+      }
+      entry['policy'] = policy
+
+      entry['ACLs'] = []
       for acl in analysis_result.accessControlLists:
-        entry['accesses'] = acl.accesses
-        entry['resources'] = acl.resources
-        yield entry
+        acls = {}
+        acls['identities'] = analysis_result.identityList.identities
+        acls['accesses'] = acl.accesses
+        acls['resources'] = acl.resources
+        entry['ACLs'].append(acls)
+
+      yield entry
 
   log.status.Print(msg)
 

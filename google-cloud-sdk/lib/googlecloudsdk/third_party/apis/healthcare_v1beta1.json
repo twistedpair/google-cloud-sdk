@@ -1616,7 +1616,7 @@
           }
         },
         "bigqueryDestination": {
-          "description": "The destination BigQuery structure that contains both the dataset\nlocation and corresponding schema config.\n\nThe output is organized in one table per resource type. The server\nreuses the existing tables (if any) that are named after the resource\ntypes, e.g. \"Patient\", \"Observation\". When there is no existing table\nfor a given resource type, the server attempts to create one.\n\nWhen a table schema doesn't align with the schema config, either\nbecause of existing incompatible schema or out of band incompatible\nmodification, the server does not stream in new data.\n\nOne resolution in this case is to delete the incompatible\ntable and let the server recreate one, though the newly created table\nonly contains data after the table recreation.\n\nBigQuery imposes a 1 MB limit on streaming insert row size, therefore\nany resource mutation that generates more than 1 MB of BigQuery data\nwill not be streamed.\n\nResults are appended to the corresponding BigQuery tables. Different\nversions of the same resource are distinguishable by the meta.versionId\nand meta.lastUpdated columns. The operation (CREATE\/UPDATE\/DELETE) that\nresults in the new version is recorded in the meta.tag.\n\nThe tables contain all historical resource versions since streaming was\nenabled. For query convenience, the server also creates one view per\ntable of the same name containing only the current resource version.\n\nIf a resource mutation cannot be streamed to BigQuery, errors will be\nlogged to Stackdriver (see [Viewing logs](\/healthcare\/docs\/how-\ntos\/stackdriver-logging)).",
+          "description": "The destination BigQuery structure that contains both the dataset\nlocation and corresponding schema config.\n\nThe output is organized in one table per resource type. The server\nreuses the existing tables (if any) that are named after the resource\ntypes, e.g. \"Patient\", \"Observation\". When there is no existing table\nfor a given resource type, the server attempts to create one.\n\nWhen a table schema doesn't align with the schema config, either\nbecause of existing incompatible schema or out of band incompatible\nmodification, the server does not stream in new data.\n\nOne resolution in this case is to delete the incompatible\ntable and let the server recreate one, though the newly created table\nonly contains data after the table recreation.\n\nBigQuery imposes a 1 MB limit on streaming insert row size, therefore\nany resource mutation that generates more than 1 MB of BigQuery data\nwill not be streamed.\n\nResults are appended to the corresponding BigQuery tables. Different\nversions of the same resource are distinguishable by the meta.versionId\nand meta.lastUpdated columns. The operation (CREATE\/UPDATE\/DELETE) that\nresults in the new version is recorded in the meta.tag.\n\nThe tables contain all historical resource versions since streaming was\nenabled. For query convenience, the server also creates one view per\ntable of the same name containing only the current resource version.\n\nThe streamed data in the BigQuery dataset is not guaranteed to be\ncompletely unique. The combination of the id and meta.versionId columns\nshould ideally identify a single unique row. But in rare cases,\nduplicates may exist. At query time, users may use the SQL select\nstatement to keep only one of the duplicate rows given an id and\nmeta.versionId pair. Alternatively, the server created view mentioned\nabove also filters out duplicates.\n\nIf a resource mutation cannot be streamed to BigQuery, errors will be\nlogged to Stackdriver (see [Viewing logs](\/healthcare\/docs\/how-\ntos\/stackdriver-logging)).",
           "$ref": "GoogleCloudHealthcareV1beta1FhirBigQueryDestination"
         }
       }
@@ -3855,36 +3855,6 @@
                       ],
                       "description": "De-identifies data from the source store and writes it to the destination\nstore. The metadata field type\nis OperationMetadata.\nIf the request is successful, the\nresponse field type is\nDeidentifyFhirStoreSummary. If errors occur,\nerror\ndetails field type is\nDeidentifyErrorDetails.\nErrors are also logged to Stackdriver\n(see [Viewing logs](\/healthcare\/docs\/how-tos\/stackdriver-logging))."
                     },
-                    "search": {
-                      "id": "healthcare.projects.locations.datasets.fhirStores.search",
-                      "path": "v1beta1/{+parent}/fhir",
-                      "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/fhirStores/{fhirStoresId}/fhir",
-                      "httpMethod": "GET",
-                      "parameters": {
-                        "parent": {
-                          "description": "Name of the FHIR store to retrieve resources from.",
-                          "location": "path",
-                          "required": true,
-                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/datasets\/[^\/]+\/fhirStores\/[^\/]+$",
-                          "type": "string"
-                        },
-                        "resourceType": {
-                          "description": "The FHIR resource type to search, such as Patient or Observation. For a\ncomplete list, see the FHIR Resource Index\n([DSTU2](http:\/\/hl7.org\/implement\/standards\/fhir\/DSTU2\/resourcelist.html),\n[STU3](http:\/\/hl7.org\/implement\/standards\/fhir\/STU3\/resourcelist.html),\n[R4](http:\/\/hl7.org\/implement\/standards\/fhir\/R4\/resourcelist.html)).",
-                          "location": "query",
-                          "type": "string"
-                        }
-                      },
-                      "parameterOrder": [
-                        "parent"
-                      ],
-                      "response": {
-                        "$ref": "HttpBody"
-                      },
-                      "scopes": [
-                        "https://www.googleapis.com/auth/cloud-platform"
-                      ],
-                      "description": "Searches for resources in the given FHIR store according to criteria\nspecified as query parameters.\n\nImplements the FHIR standard search interaction\n([DSTU2](http:\/\/hl7.org\/implement\/standards\/fhir\/DSTU2\/http.html#search),\n[STU3](http:\/\/hl7.org\/implement\/standards\/fhir\/STU3\/http.html#search),\n[R4](http:\/\/hl7.org\/implement\/standards\/fhir\/R4\/http.html#search))\nusing the search semantics described in the FHIR Search specification\n([DSTU2](http:\/\/hl7.org\/implement\/standards\/fhir\/DSTU2\/search.html),\n[STU3](http:\/\/hl7.org\/implement\/standards\/fhir\/STU3\/search.html),\n[R4](http:\/\/hl7.org\/implement\/standards\/fhir\/R4\/search.html)).\n\nSupports three methods of search defined by the specification:\n\n*  `GET [base]?[parameters]` to search across all resources.\n*  `GET [base]\/[type]?[parameters]` to search resources of a specified\ntype.\n*  `POST [base]\/[type]\/_search?[parameters]` as an alternate form having\nthe same semantics as the `GET` method.\n\nThe `GET` methods do not support compartment searches. The `POST` method\ndoes not support `application\/x-www-form-urlencoded` search parameters.\n\nOn success, the response body will contain a JSON-encoded representation\nof a `Bundle` resource of type `searchset`, containing the results of the\nsearch.\nErrors generated by the FHIR store will contain a JSON-encoded\n`OperationOutcome` resource describing the reason for the error. If the\nrequest cannot be mapped to a valid API method on a FHIR store, a generic\nGCP error might be returned instead.\n\nThe server's capability statement, retrieved through\ncapabilities, indicates what search parameters\nare supported on each FHIR resource. A list of all search parameters\ndefined by the specification can be found in the FHIR Search Parameter\nRegistry\n([STU3](http:\/\/hl7.org\/implement\/standards\/fhir\/STU3\/searchparameter-registry.html),\n[R4](http:\/\/hl7.org\/implement\/standards\/fhir\/R4\/searchparameter-registry.html)).\nFHIR search parameters for DSTU2 can be found on each resource's definition\npage.\n\nSupported search modifiers: `:missing`, `:exact`, `:contains`, `:text`,\n`:in`, `:not-in`, `:above`, `:below`, `:[type]`, `:not`, and `:recurse`.\n\nSupported search result parameters: `_sort`, `_count`, `_include`,\n`_revinclude`, `_summary=text`, `_summary=data`, and `_elements`.\n\nThe maximum number of search results returned defaults to 100, which can\nbe overridden by the `_count` parameter up to a maximum limit of 1000. If\nthere are additional results, the returned `Bundle` will contain\npagination links.\n\nResources with a total size larger than 5MB or a field count larger than\n50,000 might not be fully searchable as the server might trim its generated\nsearch index in those cases.\n\nNote: FHIR resources are indexed asynchronously, so there might be a slight\ndelay between the time a resource is created or changes and when the change\nis reflected in search results."
-                    },
                     "import": {
                       "id": "healthcare.projects.locations.datasets.fhirStores.import",
                       "path": "v1beta1/{+name}:import",
@@ -4246,7 +4216,7 @@
                           "scopes": [
                             "https://www.googleapis.com/auth/cloud-platform"
                           ],
-                          "description": "Deletes FHIR resources that match a search query.\n\nImplements the FHIR standard conditional delete interaction\n([DSTU2](http:\/\/hl7.org\/implement\/standards\/fhir\/DSTU2\/http.html#2.1.0.12.1),\n[STU3](http:\/\/hl7.org\/implement\/standards\/fhir\/STU3\/http.html#2.21.0.13.1),\n[R4](http:\/\/hl7.org\/implement\/standards\/fhir\/R4\/http.html#3.1.0.7.1)).\nIf multiple resources match, all of them will be deleted.\n\nSearch terms are provided as query parameters following the same pattern as\nthe search method.\n\nNote: Unless resource versioning is disabled by setting the\ndisable_resource_versioning flag\non the FHIR store, the deleted resources will be moved to a history\nrepository that can still be retrieved through vread\nand related methods, unless they are removed by the\npurge method."
+                          "description": "Deletes FHIR resources that match a search query.\n\nImplements the FHIR standard conditional delete interaction\n([DSTU2](http:\/\/hl7.org\/implement\/standards\/fhir\/DSTU2\/http.html#2.1.0.12.1),\n[STU3](http:\/\/hl7.org\/implement\/standards\/fhir\/STU3\/http.html#2.21.0.13.1),\n[R4](http:\/\/hl7.org\/implement\/standards\/fhir\/R4\/http.html#3.1.0.7.1)).\nIf multiple resources match, all of them will be deleted.\n\nSearch terms are provided as query parameters following the same pattern as\nthe search method.\n\nNote: Unless resource versioning is disabled by setting the\ndisable_resource_versioning flag\non the FHIR store, the deleted resources will be moved to a history\nrepository that can still be retrieved through vread\nand related methods, unless they are removed by the\npurge method.\n\nThis method requires the`healthcare.fhirStores.searchResources` and\n`healthcare.fhirResources.delete` permissions on the parent FHIR store."
                         },
                         "update": {
                           "id": "healthcare.projects.locations.datasets.fhirStores.fhir.update",
@@ -4310,7 +4280,7 @@
                           "scopes": [
                             "https://www.googleapis.com/auth/cloud-platform"
                           ],
-                          "description": "If a resource is found based on the search criteria specified in the query\nparameters, updates the entire contents of that resource.\n\nImplements the FHIR standard conditional update interaction\n([DSTU2](http:\/\/hl7.org\/implement\/standards\/fhir\/DSTU2\/http.html#2.1.0.10.2),\n[STU3](http:\/\/hl7.org\/implement\/standards\/fhir\/STU3\/http.html#cond-update),\n[R4](http:\/\/hl7.org\/implement\/standards\/fhir\/R4\/http.html#cond-update)).\n\nSearch terms are provided as query parameters following the same pattern as\nthe search method.\n\nIf the search criteria identify more than one match, the request will\nreturn a `412 Precondition Failed` error.\nIf the search criteria identify zero matches, and the supplied resource\nbody contains an `id`, and the FHIR store has\nenable_update_create set, creates the\nresource with the client-specified ID. If the search criteria identify zero\nmatches, and the supplied resource body does not contain an `id`, the\nresource will be created with a server-assigned ID as per the\ncreate method.\n\nThe request body must contain a JSON-encoded FHIR resource, and the request\nheaders must contain `Content-Type: application\/fhir+json`.\n\nOn success, the response body will contain a JSON-encoded representation\nof the updated resource, including the server-assigned version ID.\nErrors generated by the FHIR store will contain a JSON-encoded\n`OperationOutcome` resource describing the reason for the error. If the\nrequest cannot be mapped to a valid API method on a FHIR store, a generic\nGCP error might be returned instead."
+                          "description": "If a resource is found based on the search criteria specified in the query\nparameters, updates the entire contents of that resource.\n\nImplements the FHIR standard conditional update interaction\n([DSTU2](http:\/\/hl7.org\/implement\/standards\/fhir\/DSTU2\/http.html#2.1.0.10.2),\n[STU3](http:\/\/hl7.org\/implement\/standards\/fhir\/STU3\/http.html#cond-update),\n[R4](http:\/\/hl7.org\/implement\/standards\/fhir\/R4\/http.html#cond-update)).\n\nSearch terms are provided as query parameters following the same pattern as\nthe search method.\n\nIf the search criteria identify more than one match, the request will\nreturn a `412 Precondition Failed` error.\nIf the search criteria identify zero matches, and the supplied resource\nbody contains an `id`, and the FHIR store has\nenable_update_create set, creates the\nresource with the client-specified ID. If the search criteria identify zero\nmatches, and the supplied resource body does not contain an `id`, the\nresource will be created with a server-assigned ID as per the\ncreate method.\n\nThe request body must contain a JSON-encoded FHIR resource, and the request\nheaders must contain `Content-Type: application\/fhir+json`.\n\nOn success, the response body will contain a JSON-encoded representation\nof the updated resource, including the server-assigned version ID.\nErrors generated by the FHIR store will contain a JSON-encoded\n`OperationOutcome` resource describing the reason for the error. If the\nrequest cannot be mapped to a valid API method on a FHIR store, a generic\nGCP error might be returned instead.\n\nThis method requires the`healthcare.fhirStores.searchResources` and\n`healthcare.fhirResources.update` permissions on the parent FHIR store."
                         },
                         "patch": {
                           "id": "healthcare.projects.locations.datasets.fhirStores.fhir.patch",
@@ -4374,7 +4344,7 @@
                           "scopes": [
                             "https://www.googleapis.com/auth/cloud-platform"
                           ],
-                          "description": "If a resource is found based on the search criteria specified in the query\nparameters, updates part of that resource by applying the operations\nspecified in a [JSON Patch](http:\/\/jsonpatch.com\/) document.\n\nImplements the FHIR standard conditional patch interaction\n([STU3](http:\/\/hl7.org\/implement\/standards\/fhir\/STU3\/http.html#patch),\n[R4](http:\/\/hl7.org\/implement\/standards\/fhir\/R4\/http.html#patch)).\n\nDSTU2 doesn't define a conditional patch method, but the server supports it\nin the same way it supports STU3.\n\nSearch terms are provided as query parameters following the same pattern as\nthe search method.\n\nIf the search criteria identify more than one match, the request will\nreturn a `412 Precondition Failed` error.\n\nThe request body must contain a JSON Patch document, and the request\nheaders must contain `Content-Type: application\/json-patch+json`.\n\nOn success, the response body will contain a JSON-encoded representation\nof the updated resource, including the server-assigned version ID.\nErrors generated by the FHIR store will contain a JSON-encoded\n`OperationOutcome` resource describing the reason for the error. If the\nrequest cannot be mapped to a valid API method on a FHIR store, a generic\nGCP error might be returned instead."
+                          "description": "If a resource is found based on the search criteria specified in the query\nparameters, updates part of that resource by applying the operations\nspecified in a [JSON Patch](http:\/\/jsonpatch.com\/) document.\n\nImplements the FHIR standard conditional patch interaction\n([STU3](http:\/\/hl7.org\/implement\/standards\/fhir\/STU3\/http.html#patch),\n[R4](http:\/\/hl7.org\/implement\/standards\/fhir\/R4\/http.html#patch)).\n\nDSTU2 doesn't define a conditional patch method, but the server supports it\nin the same way it supports STU3.\n\nSearch terms are provided as query parameters following the same pattern as\nthe search method.\n\nIf the search criteria identify more than one match, the request will\nreturn a `412 Precondition Failed` error.\n\nThe request body must contain a JSON Patch document, and the request\nheaders must contain `Content-Type: application\/json-patch+json`.\n\nOn success, the response body will contain a JSON-encoded representation\nof the updated resource, including the server-assigned version ID.\nErrors generated by the FHIR store will contain a JSON-encoded\n`OperationOutcome` resource describing the reason for the error. If the\nrequest cannot be mapped to a valid API method on a FHIR store, a generic\nGCP error might be returned instead.\n\nThis method requires the`healthcare.fhirStores.searchResources` permission\non the parent FHIR store and the `healthcare.fhirResources.patch`\npermission on the requested FHIR store resource."
                         },
                         "search": {
                           "id": "healthcare.projects.locations.datasets.fhirStores.fhir.search",
@@ -4399,6 +4369,36 @@
                           "parameterOrder": [
                             "parent",
                             "resourceType"
+                          ],
+                          "response": {
+                            "$ref": "HttpBody"
+                          },
+                          "scopes": [
+                            "https://www.googleapis.com/auth/cloud-platform"
+                          ],
+                          "description": "Searches for resources in the given FHIR store according to criteria\nspecified as query parameters.\n\nImplements the FHIR standard search interaction\n([DSTU2](http:\/\/hl7.org\/implement\/standards\/fhir\/DSTU2\/http.html#search),\n[STU3](http:\/\/hl7.org\/implement\/standards\/fhir\/STU3\/http.html#search),\n[R4](http:\/\/hl7.org\/implement\/standards\/fhir\/R4\/http.html#search))\nusing the search semantics described in the FHIR Search specification\n([DSTU2](http:\/\/hl7.org\/implement\/standards\/fhir\/DSTU2\/search.html),\n[STU3](http:\/\/hl7.org\/implement\/standards\/fhir\/STU3\/search.html),\n[R4](http:\/\/hl7.org\/implement\/standards\/fhir\/R4\/search.html)).\n\nSupports three methods of search defined by the specification:\n\n*  `GET [base]?[parameters]` to search across all resources.\n*  `GET [base]\/[type]?[parameters]` to search resources of a specified\ntype.\n*  `POST [base]\/[type]\/_search?[parameters]` as an alternate form having\nthe same semantics as the `GET` method.\n\nThe `GET` methods do not support compartment searches. The `POST` method\ndoes not support `application\/x-www-form-urlencoded` search parameters.\n\nOn success, the response body will contain a JSON-encoded representation\nof a `Bundle` resource of type `searchset`, containing the results of the\nsearch.\nErrors generated by the FHIR store will contain a JSON-encoded\n`OperationOutcome` resource describing the reason for the error. If the\nrequest cannot be mapped to a valid API method on a FHIR store, a generic\nGCP error might be returned instead.\n\nThe server's capability statement, retrieved through\ncapabilities, indicates what search parameters\nare supported on each FHIR resource. A list of all search parameters\ndefined by the specification can be found in the FHIR Search Parameter\nRegistry\n([STU3](http:\/\/hl7.org\/implement\/standards\/fhir\/STU3\/searchparameter-registry.html),\n[R4](http:\/\/hl7.org\/implement\/standards\/fhir\/R4\/searchparameter-registry.html)).\nFHIR search parameters for DSTU2 can be found on each resource's definition\npage.\n\nSupported search modifiers: `:missing`, `:exact`, `:contains`, `:text`,\n`:in`, `:not-in`, `:above`, `:below`, `:[type]`, `:not`, and `:recurse`.\n\nSupported search result parameters: `_sort`, `_count`, `_include`,\n`_revinclude`, `_summary=text`, `_summary=data`, and `_elements`.\n\nThe maximum number of search results returned defaults to 100, which can\nbe overridden by the `_count` parameter up to a maximum limit of 1000. If\nthere are additional results, the returned `Bundle` will contain\npagination links.\n\nResources with a total size larger than 5MB or a field count larger than\n50,000 might not be fully searchable as the server might trim its generated\nsearch index in those cases.\n\nNote: FHIR resources are indexed asynchronously, so there might be a slight\ndelay between the time a resource is created or changes and when the change\nis reflected in search results."
+                        },
+                        "search": {
+                          "id": "healthcare.projects.locations.datasets.fhirStores.fhir.search",
+                          "path": "v1beta1/{+parent}/fhir",
+                          "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/fhirStores/{fhirStoresId}/fhir",
+                          "httpMethod": "GET",
+                          "parameters": {
+                            "parent": {
+                              "description": "Name of the FHIR store to retrieve resources from.",
+                              "location": "path",
+                              "required": true,
+                              "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/datasets\/[^\/]+\/fhirStores\/[^\/]+$",
+                              "type": "string"
+                            },
+                            "resourceType": {
+                              "description": "The FHIR resource type to search, such as Patient or Observation. For a\ncomplete list, see the FHIR Resource Index\n([DSTU2](http:\/\/hl7.org\/implement\/standards\/fhir\/DSTU2\/resourcelist.html),\n[STU3](http:\/\/hl7.org\/implement\/standards\/fhir\/STU3\/resourcelist.html),\n[R4](http:\/\/hl7.org\/implement\/standards\/fhir\/R4\/resourcelist.html)).",
+                              "location": "query",
+                              "type": "string"
+                            }
+                          },
+                          "parameterOrder": [
+                            "parent"
                           ],
                           "response": {
                             "$ref": "HttpBody"
@@ -4515,7 +4515,7 @@
                           "scopes": [
                             "https://www.googleapis.com/auth/cloud-platform"
                           ],
-                          "description": "On success, the response body will contain a JSON-encoded representation\nof a `Bundle` resource of type `searchset`, containing the results of the\noperation.\nErrors generated by the FHIR store will contain a JSON-encoded\n`OperationOutcome` resource describing the reason for the error. If the\nrequest cannot be mapped to a valid API method on a FHIR store, a generic\nGCP error might be returned instead."
+                          "description": "Retrieves all the resources directly referenced by a patient, as well as\nall of the resources in the patient compartment.\n\nImplements the FHIR extended operation Patient-everything\n([DSTU2](http:\/\/hl7.org\/implement\/standards\/fhir\/DSTU2\/patient-operations.html#everything),\n[STU3](http:\/\/hl7.org\/implement\/standards\/fhir\/STU3\/patient-operations.html#everything),\n[R4](http:\/\/hl7.org\/implement\/standards\/fhir\/R4\/patient-operations.html#everything)).\n\nOn success, the response body will contain a JSON-encoded representation\nof a `Bundle` resource of type `searchset`, containing the results of the\noperation.\nErrors generated by the FHIR store will contain a JSON-encoded\n`OperationOutcome` resource describing the reason for the error. If the\nrequest cannot be mapped to a valid API method on a FHIR store, a generic\nGCP error might be returned instead."
                         },
                         "Observation-lastn": {
                           "id": "healthcare.projects.locations.datasets.fhirStores.fhir.Observation-lastn",
@@ -4593,7 +4593,7 @@
                           "scopes": [
                             "https://www.googleapis.com/auth/cloud-platform"
                           ],
-                          "description": "Executes all the requests in the given Bundle.\n\nImplements the FHIR standard batch\/transaction interaction\n([DSTU2](http:\/\/hl7.org\/implement\/standards\/fhir\/DSTU2\/http.html#transaction),\n[STU3](http:\/\/hl7.org\/implement\/standards\/fhir\/STU3\/http.html#transaction),\n[R4](http:\/\/hl7.org\/implement\/standards\/fhir\/R4\/http.html#transaction)).\n\nSupports all interactions within a bundle, except search. This method\naccepts Bundles of type `batch` and `transaction`, processing them\naccording to the batch processing rules\n([DSTU2](http:\/\/hl7.org\/implement\/standards\/fhir\/DSTU2\/http.html#2.1.0.16.1),\n[STU3](http:\/\/hl7.org\/implement\/standards\/fhir\/STU3\/http.html#2.21.0.17.1),\n[R4](http:\/\/hl7.org\/implement\/standards\/fhir\/R4\/http.html#brules))\nand transaction processing rules\n([DSTU2](http:\/\/hl7.org\/implement\/standards\/fhir\/DSTU2\/http.html#2.1.0.16.2),\n[STU3](http:\/\/hl7.org\/implement\/standards\/fhir\/STU3\/http.html#2.21.0.17.2),\n[R4](http:\/\/hl7.org\/implement\/standards\/fhir\/R4\/http.html#trules)).\n\nThe request body must contain a JSON-encoded FHIR `Bundle` resource, and\nthe request headers must contain `Content-Type: application\/fhir+json`.\n\nFor a batch bundle or a successful transaction the response body will\ncontain a JSON-encoded representation of a `Bundle` resource of type\n`batch-response` or `transaction-response` containing one entry for each\nentry in the request, with the outcome of processing the entry. In the\ncase of an error for a transaction bundle, the response body will contain\na JSON-encoded `OperationOutcome` resource describing the reason for the\nerror. If the request cannot be mapped to a valid API method on a FHIR\nstore, a generic GCP error might be returned instead."
+                          "description": "Executes all the requests in the given Bundle.\n\nImplements the FHIR standard batch\/transaction interaction\n([DSTU2](http:\/\/hl7.org\/implement\/standards\/fhir\/DSTU2\/http.html#transaction),\n[STU3](http:\/\/hl7.org\/implement\/standards\/fhir\/STU3\/http.html#transaction),\n[R4](http:\/\/hl7.org\/implement\/standards\/fhir\/R4\/http.html#transaction)).\n\nSupports all interactions within a bundle, except search. This method\naccepts Bundles of type `batch` and `transaction`, processing them\naccording to the batch processing rules\n([DSTU2](http:\/\/hl7.org\/implement\/standards\/fhir\/DSTU2\/http.html#2.1.0.16.1),\n[STU3](http:\/\/hl7.org\/implement\/standards\/fhir\/STU3\/http.html#2.21.0.17.1),\n[R4](http:\/\/hl7.org\/implement\/standards\/fhir\/R4\/http.html#brules))\nand transaction processing rules\n([DSTU2](http:\/\/hl7.org\/implement\/standards\/fhir\/DSTU2\/http.html#2.1.0.16.2),\n[STU3](http:\/\/hl7.org\/implement\/standards\/fhir\/STU3\/http.html#2.21.0.17.2),\n[R4](http:\/\/hl7.org\/implement\/standards\/fhir\/R4\/http.html#trules)).\n\nThe request body must contain a JSON-encoded FHIR `Bundle` resource, and\nthe request headers must contain `Content-Type: application\/fhir+json`.\n\nFor a batch bundle or a successful transaction the response body will\ncontain a JSON-encoded representation of a `Bundle` resource of type\n`batch-response` or `transaction-response` containing one entry for each\nentry in the request, with the outcome of processing the entry. In the\ncase of an error for a transaction bundle, the response body will contain\na JSON-encoded `OperationOutcome` resource describing the reason for the\nerror. If the request cannot be mapped to a valid API method on a FHIR\nstore, a generic GCP error might be returned instead.\n\nThis method requires permission for executing the requests in the bundle.\nThe `executeBundle` permission grants permission to execute the request in\nthe bundle but you must grant sufficient permissions to execute the\nindividual requests in the bundle. For example, if the bundle contains a\n`create` request, you must have permission to execute the `create` request.\n\nLogging is available for the `executeBundle` permission."
                         },
                         "history": {
                           "id": "healthcare.projects.locations.datasets.fhirStores.fhir.history",
@@ -4665,6 +4665,101 @@
                             "https://www.googleapis.com/auth/cloud-platform"
                           ],
                           "description": "Deletes all the historical versions of a resource (excluding the current\nversion) from the FHIR store. To remove all versions of a resource, first\ndelete the current version and then call this method.\n\nThis is not a FHIR standard operation."
+                        },
+                        "ConceptMap-translate": {
+                          "id": "healthcare.projects.locations.datasets.fhirStores.fhir.ConceptMap-translate",
+                          "path": "v1beta1/{+name}/$translate",
+                          "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/fhirStores/{fhirStoresId}/fhir/ConceptMap/{ConceptMapId}/$translate",
+                          "httpMethod": "GET",
+                          "parameters": {
+                            "name": {
+                              "description": "The URL for the concept map to use for the translation.",
+                              "location": "path",
+                              "required": true,
+                              "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/datasets\/[^\/]+\/fhirStores\/[^\/]+\/fhir\/ConceptMap\/[^\/]+$",
+                              "type": "string"
+                            },
+                            "code": {
+                              "description": "The code to translate.",
+                              "location": "query",
+                              "type": "string"
+                            },
+                            "system": {
+                              "description": "The system for the code to be translated.",
+                              "location": "query",
+                              "type": "string"
+                            },
+                            "conceptMapVersion": {
+                              "description": "The version of the concept map to use. If unset, the most current version\nis used.",
+                              "location": "query",
+                              "type": "string"
+                            }
+                          },
+                          "parameterOrder": [
+                            "name"
+                          ],
+                          "response": {
+                            "$ref": "HttpBody"
+                          },
+                          "scopes": [
+                            "https://www.googleapis.com/auth/cloud-platform"
+                          ],
+                          "description": "Translates a code from one value set to another using a concept map.\n\nImplements the FHIR standard $translate operation\n([DSTU2](https:\/\/www.hl7.org\/fhir\/DSTU2\/operation-conceptmap-translate.html),\n[STU3](https:\/\/www.hl7.org\/fhir\/STU3\/operation-conceptmap-translate.html),\n[R4](https:\/\/www.hl7.org\/fhir\/R4\/operation-conceptmap-translate.html)).\n\nOn success, the response body contains a JSON-encoded representation\nof a FHIR Parameters resource, which includes the translation result.\nErrors generated by the FHIR store contain a JSON-encoded\n`OperationOutcome` resource describing the reason for the error. If the\nrequest cannot be mapped to a valid API method on a FHIR store, a generic\nGCP error might be returned instead."
+                        },
+                        "ConceptMap-search-translate": {
+                          "id": "healthcare.projects.locations.datasets.fhirStores.fhir.ConceptMap-search-translate",
+                          "path": "v1beta1/{+parent}/fhir/ConceptMap/$translate",
+                          "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/fhirStores/{fhirStoresId}/fhir/ConceptMap/$translate",
+                          "httpMethod": "GET",
+                          "parameters": {
+                            "parent": {
+                              "description": "The name for the FHIR store containing the concept map(s) to use for the\ntranslation.",
+                              "location": "path",
+                              "required": true,
+                              "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/datasets\/[^\/]+\/fhirStores\/[^\/]+$",
+                              "type": "string"
+                            },
+                            "url": {
+                              "description": "The canonical url of the concept map to use. If unset, the source and\ntarget is used to search for concept maps.",
+                              "location": "query",
+                              "type": "string"
+                            },
+                            "code": {
+                              "description": "The code to translate.",
+                              "location": "query",
+                              "type": "string"
+                            },
+                            "system": {
+                              "description": "The system for the code to be translated.",
+                              "location": "query",
+                              "type": "string"
+                            },
+                            "source": {
+                              "description": "The source value set of the concept map to be used. If unset, target is\nused to search for concept maps.",
+                              "location": "query",
+                              "type": "string"
+                            },
+                            "target": {
+                              "description": "The target value set of the concept map to be used. If unset, source is\nused to search for concept maps.",
+                              "location": "query",
+                              "type": "string"
+                            },
+                            "conceptMapVersion": {
+                              "description": "The version of the concept map to use. If unset, the most current version\nis used.",
+                              "location": "query",
+                              "type": "string"
+                            }
+                          },
+                          "parameterOrder": [
+                            "parent"
+                          ],
+                          "response": {
+                            "$ref": "HttpBody"
+                          },
+                          "scopes": [
+                            "https://www.googleapis.com/auth/cloud-platform"
+                          ],
+                          "description": "Translates a code from one value set to another by searching for\nappropriate concept maps.\n\nImplements the FHIR standard $translate operation\n([DSTU2](https:\/\/www.hl7.org\/fhir\/DSTU2\/operation-conceptmap-translate.html),\n[STU3](https:\/\/www.hl7.org\/fhir\/STU3\/operation-conceptmap-translate.html),\n[R4](https:\/\/www.hl7.org\/fhir\/R4\/operation-conceptmap-translate.html)).\n\nOn success, the response body contains a JSON-encoded representation\nof a FHIR Parameters resource, which includes the translation result.\nErrors generated by the FHIR store contain a JSON-encoded\n`OperationOutcome` resource describing the reason for the error. If the\nrequest cannot be mapped to a valid API method on a FHIR store, a generic\nGCP error might be returned instead."
                         }
                       }
                     }

@@ -137,7 +137,8 @@
             "This represents a package installed via a package manager.",
             "The note and occurrence track deployment events.",
             "The note and occurrence track the initial discovery status of a resource.",
-            "This represents a logical \"role\" that can attest to artifacts."
+            "This represents a logical \"role\" that can attest to artifacts.",
+            "This represents an in-toto link."
           ],
           "type": "string",
           "enum": [
@@ -148,7 +149,8 @@
             "PACKAGE",
             "DEPLOYMENT",
             "DISCOVERY",
-            "ATTESTATION"
+            "ATTESTATION",
+            "INTOTO"
           ]
         },
         "remediation": {
@@ -192,6 +194,10 @@
         "attestation": {
           "description": "Describes an attestation of an artifact.",
           "$ref": "Details"
+        },
+        "intoto": {
+          "description": "Describes a specific in-toto link.",
+          "$ref": "GrafeasV1beta1IntotoDetails"
         }
       }
     },
@@ -1149,6 +1155,119 @@
         }
       }
     },
+    "GrafeasV1beta1IntotoDetails": {
+      "id": "GrafeasV1beta1IntotoDetails",
+      "description": "This corresponds to a signed in-toto link - it is made up of one or more\nsignatures and the in-toto link itself. This is used for occurrences of a\nGrafeas in-toto note.",
+      "type": "object",
+      "properties": {
+        "signatures": {
+          "type": "array",
+          "items": {
+            "$ref": "GrafeasV1beta1IntotoSignature"
+          }
+        },
+        "signed": {
+          "$ref": "Link"
+        }
+      }
+    },
+    "GrafeasV1beta1IntotoSignature": {
+      "id": "GrafeasV1beta1IntotoSignature",
+      "description": "A signature object consists of the KeyID used and the signature itself.",
+      "type": "object",
+      "properties": {
+        "keyid": {
+          "type": "string"
+        },
+        "sig": {
+          "type": "string"
+        }
+      }
+    },
+    "Link": {
+      "id": "Link",
+      "description": "This corresponds to an in-toto link.",
+      "type": "object",
+      "properties": {
+        "command": {
+          "description": "This field contains the full command executed for the step. This can also\nbe empty if links are generated for operations that aren't directly mapped\nto a specific command. Each term in the command is an independent string\nin the list. An example of a command in the in-toto metadata field is:\n\"command\": [\"git\", \"clone\", \"https:\/\/github.com\/in-toto\/demo-project.git\"]",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "materials": {
+          "description": "Materials are the supply chain artifacts that go into the step and are used\nfor the operation performed. The key of the map is the path of the artifact\nand the structure contains the recorded hash information. An example is:\n\"materials\": [\n  {\n    \"resource_uri\": \"foo\/bar\",\n    \"hashes\": {\n      \"sha256\": \"ebebf...\",\n      <OTHER HASH ALGORITHMS>: <HASH VALUE>\n    }\n  }\n]",
+          "type": "array",
+          "items": {
+            "$ref": "GrafeasV1beta1IntotoArtifact"
+          }
+        },
+        "products": {
+          "description": "Products are the supply chain artifacts generated as a result of the step.\nThe structure is identical to that of materials.",
+          "type": "array",
+          "items": {
+            "$ref": "GrafeasV1beta1IntotoArtifact"
+          }
+        },
+        "byproducts": {
+          "description": "ByProducts are data generated as part of a software supply chain step, but\nare not the actual result of the step.",
+          "$ref": "ByProducts"
+        },
+        "environment": {
+          "description": "This is a field that can be used to capture information about the\nenvironment. It is suggested for this field to contain information that\ndetails environment variables, filesystem information, and the present\nworking directory. The recommended structure of this field is:\n\"environment\": {\n  \"custom_values\": {\n    \"variables\": \"<ENV>\",\n    \"filesystem\": \"<FS>\",\n    \"workdir\": \"<CWD>\",\n    \"<ANY OTHER RELEVANT FIELDS>\": \"...\"\n  }\n}",
+          "$ref": "Environment"
+        }
+      }
+    },
+    "GrafeasV1beta1IntotoArtifact": {
+      "id": "GrafeasV1beta1IntotoArtifact",
+      "type": "object",
+      "properties": {
+        "resourceUri": {
+          "type": "string"
+        },
+        "hashes": {
+          "$ref": "ArtifactHashes"
+        }
+      }
+    },
+    "ArtifactHashes": {
+      "id": "ArtifactHashes",
+      "description": "Defines a hash object for use in Materials and Products.",
+      "type": "object",
+      "properties": {
+        "sha256": {
+          "type": "string"
+        }
+      }
+    },
+    "ByProducts": {
+      "id": "ByProducts",
+      "description": "Defines an object for the byproducts field in in-toto links. The suggested\nfields are \"stderr\", \"stdout\", and \"return-value\".",
+      "type": "object",
+      "properties": {
+        "customValues": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "Environment": {
+      "id": "Environment",
+      "description": "Defines an object for the environment field in in-toto links. The suggested\nfields are \"variables\", \"filesystem\", and \"workdir\".",
+      "type": "object",
+      "properties": {
+        "customValues": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        }
+      }
+    },
     "ListOccurrencesResponse": {
       "id": "ListOccurrencesResponse",
       "description": "Response for listing occurrences.",
@@ -1229,7 +1348,8 @@
             "This represents a package installed via a package manager.",
             "The note and occurrence track deployment events.",
             "The note and occurrence track the initial discovery status of a resource.",
-            "This represents a logical \"role\" that can attest to artifacts."
+            "This represents a logical \"role\" that can attest to artifacts.",
+            "This represents an in-toto link."
           ],
           "type": "string",
           "enum": [
@@ -1240,7 +1360,8 @@
             "PACKAGE",
             "DEPLOYMENT",
             "DISCOVERY",
-            "ATTESTATION"
+            "ATTESTATION",
+            "INTOTO"
           ]
         },
         "relatedUrl": {
@@ -1299,6 +1420,10 @@
         "attestationAuthority": {
           "description": "A note describing an attestation role.",
           "$ref": "Authority"
+        },
+        "intoto": {
+          "description": "A note describing an in-toto link.",
+          "$ref": "InToto"
         }
       }
     },
@@ -1733,7 +1858,8 @@
             "This represents a package installed via a package manager.",
             "The note and occurrence track deployment events.",
             "The note and occurrence track the initial discovery status of a resource.",
-            "This represents a logical \"role\" that can attest to artifacts."
+            "This represents a logical \"role\" that can attest to artifacts.",
+            "This represents an in-toto link."
           ],
           "type": "string",
           "enum": [
@@ -1744,7 +1870,8 @@
             "PACKAGE",
             "DEPLOYMENT",
             "DISCOVERY",
-            "ATTESTATION"
+            "ATTESTATION",
+            "INTOTO"
           ]
         }
       }
@@ -1768,6 +1895,85 @@
         "humanReadableName": {
           "description": "Required. The human readable name of this attestation authority, for\nexample \"qa\".",
           "type": "string"
+        }
+      }
+    },
+    "InToto": {
+      "id": "InToto",
+      "description": "This contains the fields corresponding to the definition of a software supply\nchain step in an in-toto layout. This information goes into a Grafeas note.",
+      "type": "object",
+      "properties": {
+        "stepName": {
+          "description": "This field identifies the name of the step in the supply chain.",
+          "type": "string"
+        },
+        "signingKeys": {
+          "description": "This field contains the public keys that can be used to verify the\nsignatures on the step metadata.",
+          "type": "array",
+          "items": {
+            "$ref": "SigningKey"
+          }
+        },
+        "expectedMaterials": {
+          "description": "The following fields contain in-toto artifact rules identifying the\nartifacts that enter this supply chain step, and exit the supply chain\nstep, i.e. materials and products of the step.",
+          "type": "array",
+          "items": {
+            "$ref": "ArtifactRule"
+          }
+        },
+        "expectedProducts": {
+          "type": "array",
+          "items": {
+            "$ref": "ArtifactRule"
+          }
+        },
+        "expectedCommand": {
+          "description": "This field contains the expected command used to perform the step.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "threshold": {
+          "description": "This field contains a value that indicates the minimum number of keys that\nneed to be used to sign the step's in-toto link.",
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
+    "SigningKey": {
+      "id": "SigningKey",
+      "description": "This defines the format used to record keys used in the software supply\nchain. An in-toto link is attested using one or more keys defined in the\nin-toto layout. An example of this is:\n{\n  \"key_id\": \"776a00e29f3559e0141b3b096f696abc6cfb0c657ab40f441132b345b0...\",\n  \"key_type\": \"rsa\",\n  \"public_key_value\": \"-----BEGIN PUBLIC KEY-----\\nMIIBojANBgkqhkiG9w0B...\",\n  \"key_scheme\": \"rsassa-pss-sha256\"\n}\nThe format for in-toto's key definition can be found in section 4.2 of the\nin-toto specification.",
+      "type": "object",
+      "properties": {
+        "keyId": {
+          "description": "key_id is an identifier for the signing key.",
+          "type": "string"
+        },
+        "keyType": {
+          "description": "This field identifies the specific signing method. Eg: \"rsa\", \"ed25519\",\nand \"ecdsa\".",
+          "type": "string"
+        },
+        "publicKeyValue": {
+          "description": "This field contains the actual public key.",
+          "type": "string"
+        },
+        "keyScheme": {
+          "description": "This field contains the corresponding signature scheme.\nEg: \"rsassa-pss-sha256\".",
+          "type": "string"
+        }
+      }
+    },
+    "ArtifactRule": {
+      "id": "ArtifactRule",
+      "description": "Defines an object to declare an in-toto artifact rule",
+      "type": "object",
+      "properties": {
+        "artifactRule": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
         }
       }
     },

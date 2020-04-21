@@ -34,6 +34,8 @@ from googlecloudsdk.core.util import pkg_resources
 
 from oauth2client import client
 from oauth2client import tools
+
+import six
 from six.moves import input  # pylint: disable=redefined-builtin
 from six.moves.http_client import ResponseNotReady
 from six.moves.urllib import parse
@@ -95,10 +97,7 @@ class ClientRedirectHandler(tools.ClientRedirectHandler):
 
 
 def PromptForAuthCode(message, authorize_url):
-  log.err.Print('{message}\n\n    {url}\n\n'.format(
-      message=message,
-      url=authorize_url,
-  ))
+  log.err.Print(message.format(url=authorize_url))
   return input('Enter verification code: ').strip()
 
 
@@ -177,7 +176,7 @@ def Run(flow, launch_browser=True, http=None,
   if not launch_browser:
     flow.redirect_uri = client.OOB_CALLBACK_URN
     authorize_url = flow.step1_get_authorize_url()
-    message = 'Go to the following link in your browser:'
+    message = 'Go to the following link in your browser:\n\n    {url}\n\n'
     try:
       code = PromptForAuthCode(message, authorize_url)
     except EOFError as e:
@@ -262,11 +261,13 @@ class InstalledAppFlow(google_auth_flow.InstalledAppFlow):
 
   This class overrides base class's run_local_server() method to provide
   customized behaviors for gcloud auth login:
+    1. Try to find an available port for the local server which handles the
+       redirect.
+    2. A WSGI app on the local server which can direct browser to
+       Google's confirmation pages for authentication.
 
-  1. Try to find an available port for the local server which handles the
-     redirect.
-  2. A WSGI app on the local server which can direct browser to
-     Google's confirmation pages for authentication.
+  This class overrides base class's run_console() method so that the auth code
+  fetching step can be easily mocked in login integration testing.
   """
 
   def run_local_server(self,
@@ -297,7 +298,7 @@ class InstalledAppFlow(google_auth_flow.InstalledAppFlow):
 
     Returns:
         google.oauth2.credentials.Credentials: The OAuth 2.0 credentials
-            for the user.
+          for the user.
     """
 
     wsgi_app = _RedirectWSGIApp()
@@ -319,6 +320,39 @@ class InstalledAppFlow(google_auth_flow.InstalledAppFlow):
     authorization_response = wsgi_app.last_request_uri.replace(
         'http:', 'https:')
     self.fetch_token(authorization_response=authorization_response)
+
+    return self.credentials
+
+  def run_console(self,
+                  authorization_prompt_message=google_auth_flow.InstalledAppFlow
+                  ._DEFAULT_AUTH_PROMPT_MESSAGE,
+                  **kwargs):
+    """Run the flow using the console strategy.
+
+    The console strategy instructs the user to open the authorization URL
+    in their browser. Once the authorization is complete the authorization
+    server will give the user a code. The user then must copy & paste this
+    code into the application. The code is then exchanged for a token.
+
+    Args:
+        authorization_prompt_message: str, The message to display to tell the
+          user to navigate to the authorization URL.
+        **kwargs: Additional keyword arguments passed through to
+          'authorization_url'.
+
+    Returns:
+        google.oauth2.credentials.Credentials: The OAuth 2.0 credentials
+          for the user.
+    """
+    kwargs.setdefault('prompt', 'consent')
+
+    self.redirect_uri = self._OOB_REDIRECT_URI
+
+    auth_url, _ = self.authorization_url(**kwargs)
+
+    code = PromptForAuthCode(authorization_prompt_message, auth_url)
+
+    self.fetch_token(code=code)
 
     return self.credentials
 
@@ -378,7 +412,9 @@ class _RedirectWSGIApp(object):
     Returns:
         Iterable[bytes]: The response body.
     """
-    start_response('200 OK', [('Content-type', 'text/html')])
+    start_response(
+        six.ensure_str('200 OK'),
+        [(six.ensure_str('Content-type'), six.ensure_str('text/html'))])
     self.last_request_uri = wsgiref.util.request_uri(environ)
     query = self.last_request_uri.split('?', 1)[-1]
     query = dict(parse.parse_qsl(query))

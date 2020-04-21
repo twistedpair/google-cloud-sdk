@@ -813,7 +813,7 @@
           }
         },
         "allowedUris": {
-          "description": "Contains valid RFC 3986 URIs. Glob patterns are also supported.",
+          "description": "Contains valid RFC 3986 URIs. Glob patterns are also supported. To\nmatch across path seperators (i.e. '\/') use the double star glob\npattern (i.e. '**').",
           "type": "array",
           "items": {
             "type": "string"

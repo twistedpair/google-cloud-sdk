@@ -211,7 +211,8 @@ def MakeRequests(requests,
                  errors,
                  progress_tracker=None,
                  followup_overrides=None,
-                 log_result=True):
+                 log_result=True,
+                 timeout=None):
   """Makes one or more requests to the API.
 
   Each request can be either a synchronous API call or an asynchronous
@@ -244,6 +245,8 @@ def MakeRequests(requests,
       finishes. Generally used in renaming calls.
     log_result: Whether the Operation Waiter should print the result in past
       tense of each request.
+    timeout: The maximum amount of time, in seconds, to wait for the
+      operations to reach the DONE state.
 
   Yields:
     A response for each request. For deletion requests, no corresponding
@@ -313,7 +316,8 @@ def MakeRequests(requests,
         warnings=warnings,
         progress_tracker=progress_tracker,
         errors=errors,
-        log_result=log_result):
+        log_result=log_result,
+        timeout=timeout):
       yield response
 
     if warnings:

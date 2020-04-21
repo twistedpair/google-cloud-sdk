@@ -449,6 +449,13 @@ class AppContainerGenerator(KubeConfigGenerator):
   def CreateConfigs(self):
     deployment = CreateDeployment(self._service_name, self._image_name,
                                   self._memory_limit, self._cpu_limit)
+    default_env_vars = {
+        'K_SERVICE': self._service_name,
+        'K_CONFIGURATION': 'dev',
+        'K_REVISION': 'dev-0001',
+    }
+    AddEnvironmentVariables(deployment, self._service_name + '-container',
+                            default_env_vars)
     if self._env_vars:
       AddEnvironmentVariables(deployment, self._service_name + '-container',
                               self._env_vars)

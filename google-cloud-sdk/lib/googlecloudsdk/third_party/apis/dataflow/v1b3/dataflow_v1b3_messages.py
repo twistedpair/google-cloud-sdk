@@ -87,6 +87,20 @@ class ApproximateSplitRequest(_messages.Message):
   position = _messages.MessageField('Position', 3)
 
 
+class Artifact(_messages.Message):
+  r"""Job information for templates.
+
+  Fields:
+    containerSpec: Container image path set for flex Template.
+    jobGraphGcsPath: job_graph_gcs_path set for legacy Template.
+    metadata: Metadata set for legacy Template.
+  """
+
+  containerSpec = _messages.MessageField('ContainerSpec', 1)
+  jobGraphGcsPath = _messages.StringField(2)
+  metadata = _messages.MessageField('TemplateMetadata', 3)
+
+
 class AutoscalingEvent(_messages.Message):
   r"""A structured message reporting an autoscaling decision made by the
   Dataflow service.
@@ -217,6 +231,16 @@ class CPUTime(_messages.Message):
   rate = _messages.FloatField(1)
   timestamp = _messages.StringField(2)
   totalMs = _messages.IntegerField(3, variant=_messages.Variant.UINT64)
+
+
+class CommitTemplateVersionRequest(_messages.Message):
+  r"""Commit will add a new TemplateVersion to an existing template.
+
+  Fields:
+    templateVersion: TemplateVersion obejct to create.
+  """
+
+  templateVersion = _messages.MessageField('TemplateVersion', 1)
 
 
 class ComponentSource(_messages.Message):
@@ -544,6 +568,16 @@ class CreateJobFromTemplateRequest(_messages.Message):
   parameters = _messages.MessageField('ParametersValue', 5)
 
 
+class CreateTemplateVersionRequest(_messages.Message):
+  r"""Creates a new Template with TemplateVersions.
+
+  Fields:
+    templateVersion: The TemplateVersion object to create.
+  """
+
+  templateVersion = _messages.MessageField('TemplateVersion', 1)
+
+
 class CustomSourceLocation(_messages.Message):
   r"""Identifies the location of a custom souce.
 
@@ -569,6 +603,93 @@ class DataDiskAssignment(_messages.Message):
 
   dataDisks = _messages.StringField(1, repeated=True)
   vmInstance = _messages.StringField(2)
+
+
+class DataflowProjectsCatalogTemplatesCommitRequest(_messages.Message):
+  r"""A DataflowProjectsCatalogTemplatesCommitRequest object.
+
+  Fields:
+    commitTemplateVersionRequest: A CommitTemplateVersionRequest resource to
+      be passed as the request body.
+    name: The location of the template, name includes project_id and
+      display_name.  Commit using project_id(pid1) and display_name(tid1).
+      Format: projects/{pid1}/catalogTemplates/{tid1}
+  """
+
+  commitTemplateVersionRequest = _messages.MessageField('CommitTemplateVersionRequest', 1)
+  name = _messages.StringField(2, required=True)
+
+
+class DataflowProjectsCatalogTemplatesDeleteRequest(_messages.Message):
+  r"""A DataflowProjectsCatalogTemplatesDeleteRequest object.
+
+  Fields:
+    name: name includes project_id and display_name.  Delete by
+      project_id(pid1) and display_name(tid1).   Format:
+      projects/{pid1}/catalogTemplates/{tid1}
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class DataflowProjectsCatalogTemplatesGetRequest(_messages.Message):
+  r"""A DataflowProjectsCatalogTemplatesGetRequest object.
+
+  Fields:
+    name: Resource name includes project_id and display_name. version_id is
+      optional. Get the latest TemplateVersion if version_id not set.  Get by
+      project_id(pid1) and display_name(tid1):   Format:
+      projects/{pid1}/catalogTemplates/{tid1}  Get by project_id(pid1),
+      display_name(tid1), and version_id(vid1):   Format:
+      projects/{pid1}/catalogTemplates/{tid1@vid}
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class DataflowProjectsCatalogTemplatesLabelRequest(_messages.Message):
+  r"""A DataflowProjectsCatalogTemplatesLabelRequest object.
+
+  Fields:
+    modifyTemplateVersionLabelRequest: A ModifyTemplateVersionLabelRequest
+      resource to be passed as the request body.
+    name: Resource name includes project_id, display_name, and version_id.
+      Updates by project_id(pid1), display_name(tid1), and version_id(vid1):
+      Format: projects/{pid1}/catalogTemplates/{tid1@vid}
+  """
+
+  modifyTemplateVersionLabelRequest = _messages.MessageField('ModifyTemplateVersionLabelRequest', 1)
+  name = _messages.StringField(2, required=True)
+
+
+class DataflowProjectsCatalogTemplatesTagRequest(_messages.Message):
+  r"""A DataflowProjectsCatalogTemplatesTagRequest object.
+
+  Fields:
+    modifyTemplateVersionTagRequest: A ModifyTemplateVersionTagRequest
+      resource to be passed as the request body.
+    name: Resource name includes project_id, display_name, and version_id.
+      Updates by project_id(pid1), display_name(tid1), and version_id(vid1):
+      Format: projects/{pid1}/catalogTemplates/{tid1@vid}
+  """
+
+  modifyTemplateVersionTagRequest = _messages.MessageField('ModifyTemplateVersionTagRequest', 1)
+  name = _messages.StringField(2, required=True)
+
+
+class DataflowProjectsCatalogTemplatesTemplateVersionsCreateRequest(_messages.Message):
+  r"""A DataflowProjectsCatalogTemplatesTemplateVersionsCreateRequest object.
+
+  Fields:
+    createTemplateVersionRequest: A CreateTemplateVersionRequest resource to
+      be passed as the request body.
+    parent: The parent project and template that the TemplateVersion will be
+      created under.  Create using project_id(pid1) and display_name(tid1).
+      Format: projects/{pid1}/catalogTemplates/{tid1}
+  """
+
+  createTemplateVersionRequest = _messages.MessageField('CreateTemplateVersionRequest', 1)
+  parent = _messages.StringField(2, required=True)
 
 
 class DataflowProjectsDeleteSnapshotsRequest(_messages.Message):
@@ -1480,6 +1601,24 @@ class DataflowProjectsSnapshotsListRequest(_messages.Message):
   projectId = _messages.StringField(3, required=True)
 
 
+class DataflowProjectsTemplateVersionsListRequest(_messages.Message):
+  r"""A DataflowProjectsTemplateVersionsListRequest object.
+
+  Fields:
+    pageSize: The maximum number of TemplateVersions to return per page.
+    pageToken: The page token, received from a previous ListTemplateVersions
+      call. Provide this to retrieve the subsequent page.
+    parent: parent includes project_id, and display_name is optional.  List by
+      project_id(pid1) and display_name(tid1).   Format:
+      projects/{pid1}/catalogTemplates/{tid1}  List by project_id(pid1).
+      Format: projects/{pid1}
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
 class DataflowProjectsTemplatesCreateRequest(_messages.Message):
   r"""A DataflowProjectsTemplatesCreateRequest object.
 
@@ -1725,6 +1864,16 @@ class DynamicSourceSplit(_messages.Message):
 
   primary = _messages.MessageField('DerivedSource', 1)
   residual = _messages.MessageField('DerivedSource', 2)
+
+
+class Empty(_messages.Message):
+  r"""A generic empty message that you can re-use to avoid defining duplicated
+  empty messages in your APIs. A typical example is to use it as the request
+  or the response type of an API method. For instance:      service Foo {
+  rpc Bar(google.protobuf.Empty) returns (google.protobuf.Empty);     }  The
+  JSON representation for `Empty` is empty JSON object `{}`.
+  """
+
 
 
 class Environment(_messages.Message):
@@ -3153,6 +3302,19 @@ class ListSnapshotsResponse(_messages.Message):
   snapshots = _messages.MessageField('Snapshot', 1, repeated=True)
 
 
+class ListTemplateVersionsResponse(_messages.Message):
+  r"""Respond a list of TemplateVersions.
+
+  Fields:
+    nextPageToken: A token that can be sent as `page_token` to retrieve the
+      next page. If this field is omitted, there are no subsequent pages.
+    templateVersions: A list of TemplateVersions.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  templateVersions = _messages.MessageField('TemplateVersion', 2, repeated=True)
+
+
 class MapTask(_messages.Message):
   r"""MapTask consists of an ordered set of instructions, each of which
   describes one particular low-level operation for the worker to perform in
@@ -3315,6 +3477,102 @@ class MetricUpdate(_messages.Message):
   scalar = _messages.MessageField('extra_types.JsonValue', 9)
   set = _messages.MessageField('extra_types.JsonValue', 10)
   updateTime = _messages.StringField(11)
+
+
+class ModifyTemplateVersionLabelRequest(_messages.Message):
+  r"""Either add the label to TemplateVersion or remove it from the
+  TemplateVersion.
+
+  Enums:
+    OpValueValuesEnum: Requests for add label to TemplateVersion or remove
+      label from TemplateVersion.
+
+  Fields:
+    key: The label key for update.
+    op: Requests for add label to TemplateVersion or remove label from
+      TemplateVersion.
+    value: The label value for update.
+  """
+
+  class OpValueValuesEnum(_messages.Enum):
+    r"""Requests for add label to TemplateVersion or remove label from
+    TemplateVersion.
+
+    Values:
+      OPERATION_UNSPECIFIED: Default value.
+      ADD: Add the label to the TemplateVersion object.
+      REMOVE: Remove the label from the TemplateVersion object.
+    """
+    OPERATION_UNSPECIFIED = 0
+    ADD = 1
+    REMOVE = 2
+
+  key = _messages.StringField(1)
+  op = _messages.EnumField('OpValueValuesEnum', 2)
+  value = _messages.StringField(3)
+
+
+class ModifyTemplateVersionLabelResponse(_messages.Message):
+  r"""Respond the labels in the TemplateVersion.
+
+  Messages:
+    LabelsValue: All the label in the TemplateVersion.
+
+  Fields:
+    labels: All the label in the TemplateVersion.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""All the label in the TemplateVersion.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  labels = _messages.MessageField('LabelsValue', 1)
+
+
+class ModifyTemplateVersionTagRequest(_messages.Message):
+  r"""Add a tag to the current TemplateVersion. If tag exist in another
+  TemplateVersion in the Template, remove the tag before add it to the current
+  TemplateVersion. If remove_only set, remove the tag from the current
+  TemplateVersion.
+
+  Fields:
+    removeOnly: The flag that indicates if the request is only for remove tag
+      from TemplateVersion.
+    tag: The tag for update.
+  """
+
+  removeOnly = _messages.BooleanField(1)
+  tag = _messages.StringField(2)
+
+
+class ModifyTemplateVersionTagResponse(_messages.Message):
+  r"""Respond the current tags in the TemplateVersion.
+
+  Fields:
+    tags: All the tags in the TemplateVersion.
+  """
+
+  tags = _messages.StringField(1, repeated=True)
 
 
 class MountedDataDisk(_messages.Message):
@@ -5298,6 +5556,87 @@ class TemplateMetadata(_messages.Message):
   description = _messages.StringField(1)
   name = _messages.StringField(2)
   parameters = _messages.MessageField('ParameterMetadata', 3, repeated=True)
+
+
+class TemplateVersion(_messages.Message):
+  r"""////////////////////////////////////////////////////////////////////////
+  ///// //// Template Catalog is used to organize user TemplateVersions. ////
+  TemplateVersions that have the same project_id and display_name are ////
+  belong to the same Template. //// Templates with the same project_id belong
+  to the same Project. //// TemplateVersion may have labels and multiple
+  labels are allowed. //// Duplicated labels in the same `TemplateVersion` are
+  not allowed. //// TemplateVersion may have tags and multiple tags are
+  allowed. Duplicated //// tags in the same `Template` are not allowed!
+
+  Enums:
+    TypeValueValuesEnum: Either LEGACY or FLEX. This should match with the
+      type of artifact.
+
+  Messages:
+    LabelsValue: Labels for the Template Version. Labels can be duplicate
+      within Template.
+
+  Fields:
+    artifact: Job graph and metadata if it is a legacy Template. Container
+      image path and metadata if it is flex Template.
+    createTime: Creation time of this TemplateVersion.
+    description: Template description from the user.
+    displayName: A customized name for Template. Multiple TemplateVersions per
+      Template.
+    labels: Labels for the Template Version. Labels can be duplicate within
+      Template.
+    projectId: A unique project_id. Multiple Templates per Project.
+    tags: Alias for version_id, helps locate a TemplateVersion.
+    type: Either LEGACY or FLEX. This should match with the type of artifact.
+    versionId: An auto generated version_id for TemplateVersion.
+  """
+
+  class TypeValueValuesEnum(_messages.Enum):
+    r"""Either LEGACY or FLEX. This should match with the type of artifact.
+
+    Values:
+      TEMPLATE_TYPE_UNSPECIFIED: Default value. Not a useful zero case.
+      LEGACY: Legacy Template.
+      FLEX: Flex Template.
+    """
+    TEMPLATE_TYPE_UNSPECIFIED = 0
+    LEGACY = 1
+    FLEX = 2
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Labels for the Template Version. Labels can be duplicate within
+    Template.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  artifact = _messages.MessageField('Artifact', 1)
+  createTime = _messages.StringField(2)
+  description = _messages.StringField(3)
+  displayName = _messages.StringField(4)
+  labels = _messages.MessageField('LabelsValue', 5)
+  projectId = _messages.StringField(6)
+  tags = _messages.StringField(7, repeated=True)
+  type = _messages.EnumField('TypeValueValuesEnum', 8)
+  versionId = _messages.StringField(9)
 
 
 class TopologyConfig(_messages.Message):

@@ -212,6 +212,7 @@ class Arguments(object):
     self.params = [
         Argument.FromData(param_data) for param_data in data.get('params', [])]
     self.labels = Labels(data.get('labels')) if data.get('labels') else None
+    self.exclude = data.get('exclude', [])
 
 
 class Labels(object):

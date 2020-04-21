@@ -241,7 +241,7 @@
           "type": "string"
         },
         "workerConfig": {
-          "description": "Optional. The configuration for workers.\n\nYou should only set `workerConfig.acceleratorConfig` if `workerType` is set\nto a Compute Engine machine type. [Learn about restrictions on accelerator\nconfigurations for\ntraining.](\/ai-platform\/training\/docs\/using-gpus#compute-engine-machine-types-with-gpu)\n\nSet `workerConfig.imageUri` only if you build a custom image for your\nworker. If `workerConfig.imageUri` has not been set, AI Platform uses\nthe value of `masterConfig.imageUri` .\nLearn more about [configuring custom\ncontainers](\/ai-platform\/training\/docs\/distributed-training-containers).",
+          "description": "Optional. The configuration for workers.\n\nYou should only set `workerConfig.acceleratorConfig` if `workerType` is set\nto a Compute Engine machine type. [Learn about restrictions on accelerator\nconfigurations for\ntraining.](\/ai-platform\/training\/docs\/using-gpus#compute-engine-machine-types-with-gpu)\n\nSet `workerConfig.imageUri` only if you build a custom image for your\nworker. If `workerConfig.imageUri` has not been set, AI Platform uses\nthe value of `masterConfig.imageUri`. Learn more about [configuring custom\ncontainers](\/ai-platform\/training\/docs\/distributed-training-containers).",
           "$ref": "GoogleCloudMlV1__ReplicaConfig"
         },
         "parameterServerType": {
@@ -249,7 +249,7 @@
           "type": "string"
         },
         "parameterServerConfig": {
-          "description": "Optional. The configuration for parameter servers.\n\nYou should only set `parameterServerConfig.acceleratorConfig` if\n`parameterServerType` is set to a Compute Engine machine type. [Learn\nabout restrictions on accelerator configurations for\ntraining.](\/ai-platform\/training\/docs\/using-gpus#compute-engine-machine-types-with-gpu)\n\nSet `parameterServerConfig.imageUri` only if you build a custom image for\nyour parameter server. If `parameterServerConfig.imageUri` has not been\nset, AI Platform uses the value of `masterConfig.imageUri` .\nLearn more about [configuring custom\ncontainers](\/ai-platform\/training\/docs\/distributed-training-containers).",
+          "description": "Optional. The configuration for parameter servers.\n\nYou should only set `parameterServerConfig.acceleratorConfig` if\n`parameterServerType` is set to a Compute Engine machine type. [Learn\nabout restrictions on accelerator configurations for\ntraining.](\/ai-platform\/training\/docs\/using-gpus#compute-engine-machine-types-with-gpu)\n\nSet `parameterServerConfig.imageUri` only if you build a custom image for\nyour parameter server. If `parameterServerConfig.imageUri` has not been\nset, AI Platform uses the value of `masterConfig.imageUri`. Learn more about [configuring custom\ncontainers](\/ai-platform\/training\/docs\/distributed-training-containers).",
           "$ref": "GoogleCloudMlV1__ReplicaConfig"
         },
         "evaluatorType": {
@@ -257,7 +257,7 @@
           "type": "string"
         },
         "evaluatorConfig": {
-          "description": "Optional. The configuration for evaluators.\n\nYou should only set `evaluatorConfig.acceleratorConfig` if\n`evaluatorType` is set to a Compute Engine machine type. [Learn\nabout restrictions on accelerator configurations for\ntraining.](\/ai-platform\/training\/docs\/using-gpus#compute-engine-machine-types-with-gpu)\n\nSet `evaluatorConfig.imageUri` only if you build a custom image for\nyour evaluator. If `evaluatorConfig.imageUri` has not been\nset, AI Platform uses the value of `masterConfig.imageUri` .\nLearn more about [configuring custom\ncontainers](\/ai-platform\/training\/docs\/distributed-training-containers).",
+          "description": "Optional. The configuration for evaluators.\n\nYou should only set `evaluatorConfig.acceleratorConfig` if\n`evaluatorType` is set to a Compute Engine machine type. [Learn\nabout restrictions on accelerator configurations for\ntraining.](\/ai-platform\/training\/docs\/using-gpus#compute-engine-machine-types-with-gpu)\n\nSet `evaluatorConfig.imageUri` only if you build a custom image for\nyour evaluator. If `evaluatorConfig.imageUri` has not been\nset, AI Platform uses the value of `masterConfig.imageUri`. Learn more about [configuring custom\ncontainers](\/ai-platform\/training\/docs\/distributed-training-containers).",
           "$ref": "GoogleCloudMlV1__ReplicaConfig"
         },
         "workerCount": {
@@ -287,7 +287,7 @@
           "type": "string"
         },
         "args": {
-          "description": "Optional. Arguments passed to the training.\n- If it is a python package training:\n  It will be passed as command line argument to the program.\n- If it is a custom container training,\n  It will be passed as an argument to the custom container\n  image.",
+          "description": "Optional. Command-line arguments passed to the training application when it\nstarts. If your job uses a custom container, then the arguments are passed\nto the container's <a class=\"external\" target=\"_blank\"\nhref=\"https:\/\/docs.docker.com\/engine\/reference\/builder\/#entrypoint\">\n`ENTRYPOINT`<\/a> command.",
           "type": "array",
           "items": {
             "type": "string"
@@ -318,7 +318,7 @@
           "type": "string"
         },
         "encryptionConfig": {
-          "description": "Custom encryption key options for a training job. If this is set,\nthen all resources created by the training job will be encrypted with the\nprovided encryption key.",
+          "description": "Optional. Options for using customer-managed encryption keys (CMEK) to\nprotect resources created by a training job, instead of using Google's\ndefault encryption. If this is set, then all resources created by the\ntraining job will be encrypted with the customer-managed encryption key\nthat you specify.\n\n[Learn how and when to use CMEK with AI Platform\nTraining](\/ai-platform\/training\/docs\/cmek).",
           "$ref": "GoogleCloudMlV1__EncryptionConfig"
         },
         "scheduling": {
@@ -613,7 +613,7 @@
       "type": "object",
       "properties": {
         "kmsKeyName": {
-          "description": "The Cloud KMS resource identifier of the customer managed encryption key\nused to protect a resource, such as a training job. Has the form:\n`projects\/my-project\/locations\/my-region\/keyRings\/my-kr\/cryptoKeys\/my-key`.",
+          "description": "The Cloud KMS resource identifier of the customer-managed encryption key\nused to protect a resource, such as a training job. It has the following\nformat:\n`projects\/{PROJECT_ID}\/locations\/{REGION}\/keyRings\/{KEY_RING_NAME}\/cryptoKeys\/{KEY_NAME}`",
           "type": "string"
         }
       }
@@ -624,7 +624,7 @@
       "type": "object",
       "properties": {
         "maxRunningTime": {
-          "description": "Optional. The maximum job running time, expressed in seconds. The field can\ncontain up to nine fractional digits, terminated by `s`. By default there\nis no limit to the running time.\n\nIf the training job is still running after this duration, AI Platform\nTraining cancels it.\n\nFor example, if you want to ensure your job runs for no more than 2 hours,\nset this field to `7200s` (2 hours * 60 minutes \/ hour * 60 seconds \/\nminute).\n\nIf you submit your training job using the `gcloud` tool, you can [provide\nthis field in a `config.yaml`\nfile](\/ai-platform\/training\/docs\/training-jobs#formatting_your_configuration_parameters).\nFor example:\n\n```yaml\ntrainingInput:\n  ...\n  scheduling:\n    maxRunningTime: 7200s\n  ...\n```",
+          "description": "Optional. The maximum job running time, expressed in seconds. The field can\ncontain up to nine fractional digits, terminated by `s`. If not specified,\nthis field defaults to `604800s` (seven days).\n\nIf the training job is still running after this duration, AI Platform\nTraining cancels it.\n\nFor example, if you want to ensure your job runs for no more than 2 hours,\nset this field to `7200s` (2 hours * 60 minutes \/ hour * 60 seconds \/\nminute).\n\nIf you submit your training job using the `gcloud` tool, you can [provide\nthis field in a `config.yaml`\nfile](\/ai-platform\/training\/docs\/training-jobs#formatting_your_configuration_parameters).\nFor example:\n\n```yaml\ntrainingInput:\n  ...\n  scheduling:\n    maxRunningTime: 7200s\n  ...\n```",
           "type": "string",
           "format": "google-duration"
         }
@@ -1943,7 +1943,7 @@
           ]
         },
         "createTime": {
-          "description": "Output only. Time that the study was created.",
+          "description": "Output only. Time at which the study was created.",
           "type": "string",
           "format": "google-datetime"
         },
@@ -1959,6 +1959,7 @@
       "type": "object",
       "properties": {
         "metrics": {
+          "description": "Metric specs for the study.",
           "type": "array",
           "items": {
             "$ref": "GoogleCloudMlV1_StudyConfig_MetricSpec"
@@ -2216,7 +2217,7 @@
       "type": "object",
       "properties": {
         "useElapsedTime": {
-          "description": "True if measurement.elapsed_time is used as the x-axis of each\nTrials Decay Curve. Otherwise, Measurement.steps will be used as the\nx-axis.",
+          "description": "If true, measurement.elapsed_time is used as the x-axis of each\nTrials Decay Curve. Otherwise, Measurement.steps will be used as the\nx-axis.",
           "type": "boolean"
         }
       }
@@ -2227,7 +2228,7 @@
       "type": "object",
       "properties": {
         "useElapsedTime": {
-          "description": "True if median automated stopping rule applies on\nmeasurement.use_elapsed_time. it means that elapsed_time field of\nlatest measurement of current trial is used to compute median objective\nvalue for each completed trials.",
+          "description": "If true, the median automated stopping rule applies to\nmeasurement.use_elapsed_time, which means the elapsed_time field of\nthe current trial's\nlatest measurement is used to compute the median objective\nvalue for each completed trial.",
           "type": "boolean"
         }
       }
@@ -2237,7 +2238,7 @@
       "type": "object",
       "properties": {
         "studies": {
-          "description": "The Studies associated with the project.",
+          "description": "The studies associated with the project.",
           "type": "array",
           "items": {
             "$ref": "GoogleCloudMlV1__Study"
@@ -2263,7 +2264,7 @@
     },
     "GoogleCloudMlV1__Trial": {
       "id": "GoogleCloudMlV1__Trial",
-      "description": "A message representing a Trial.",
+      "description": "A message representing a trial.",
       "type": "object",
       "properties": {
         "name": {
@@ -2274,10 +2275,10 @@
           "description": "The detailed state of a trial.",
           "enumDescriptions": [
             "The trial state is unspecified.",
-            "Indicates that a specific Trial has been requested, but it has not yet\nbeen suggested by the service.",
-            "Indicates that the Trial has been suggested.",
-            "Indicates that the Trial is done, and either has a final_measurement\nset, or is marked as trial_infeasible.",
-            "Indicates that the Trial should stop according to the service."
+            "Indicates that a specific trial has been requested, but it has not yet\nbeen suggested by the service.",
+            "Indicates that the trial has been suggested.",
+            "Indicates that the trial is done, and either has a final_measurement\nset, or is marked as trial_infeasible.",
+            "Indicates that the trial should stop according to the service."
           ],
           "type": "string",
           "enum": [
@@ -2289,14 +2290,14 @@
           ]
         },
         "parameters": {
-          "description": "The parameters of the Trial.",
+          "description": "The parameters of the trial.",
           "type": "array",
           "items": {
             "$ref": "GoogleCloudMlV1_Trial_Parameter"
           }
         },
         "finalMeasurement": {
-          "description": "The final Measurement containing the objective value.",
+          "description": "The final measurement containing the objective value.",
           "$ref": "GoogleCloudMlV1__Measurement"
         },
         "measurements": {
@@ -2307,12 +2308,12 @@
           }
         },
         "startTime": {
-          "description": "Output only. Time the Trial was started.",
+          "description": "Output only. Time at which the trial was started.",
           "type": "string",
           "format": "google-datetime"
         },
         "endTime": {
-          "description": "Output only. Time the Trial's status changed to COMPLETED.",
+          "description": "Output only. Time at which the trial's status changed to COMPLETED.",
           "type": "string",
           "format": "google-datetime"
         },
@@ -2321,18 +2322,18 @@
           "type": "string"
         },
         "trialInfeasible": {
-          "description": "Output only. True if the parameters in this trial should not be attempted again.",
+          "description": "Output only. If true, the parameters in this trial are not attempted again.",
           "type": "boolean"
         },
         "infeasibleReason": {
-          "description": "Output only. A human readable string describing why the Trial is\ninfeasible. This should only be set if trial_infeasible is true.",
+          "description": "Output only. A human readable string describing why the trial is\ninfeasible. This should only be set if trial_infeasible is true.",
           "type": "string"
         }
       }
     },
     "GoogleCloudMlV1_Trial_Parameter": {
       "id": "GoogleCloudMlV1_Trial_Parameter",
-      "description": "A message representing a parameter to be tuned.",
+      "description": "A message representing a parameter to be tuned. Contains the name of\nthe parameter and the suggested value to use for this trial.",
       "type": "object",
       "properties": {
         "parameter": {
@@ -2357,11 +2358,11 @@
     },
     "GoogleCloudMlV1__Measurement": {
       "id": "GoogleCloudMlV1__Measurement",
-      "description": "A message representing a Measurement.",
+      "description": "A message representing a measurement.",
       "type": "object",
       "properties": {
         "elapsedTime": {
-          "description": "Time that the Trial has been running at the point of this Measurement.",
+          "description": "Output only. Time that the trial has been running at the point of\nthis measurement.",
           "type": "string",
           "format": "google-duration"
         },
@@ -2434,7 +2435,7 @@
           "type": "boolean"
         },
         "infeasibleReason": {
-          "description": "Optional. A human readable reason why the Trial was infeasible. This should\nonly be provided if `trial_infeasible` is true.",
+          "description": "Optional. A human readable reason why the trial was infeasible. This should\nonly be provided if `trial_infeasible` is true.",
           "type": "string"
         }
       }
@@ -2719,7 +2720,7 @@
       "type": "object",
       "properties": {
         "trials": {
-          "description": "A list of Trials.",
+          "description": "A list of trials.",
           "type": "array",
           "items": {
             "$ref": "GoogleCloudMlV1__Trial"
@@ -2742,12 +2743,12 @@
           ]
         },
         "startTime": {
-          "description": "The time operation was started.",
+          "description": "The time at which the operation was started.",
           "type": "string",
           "format": "google-datetime"
         },
         "endTime": {
-          "description": "The time operation processing completed.",
+          "description": "The time at which operation processing completed.",
           "type": "string",
           "format": "google-datetime"
         }
@@ -2763,11 +2764,11 @@
           "type": "string"
         },
         "trial": {
-          "description": "The Trial name.",
+          "description": "The trial name.",
           "type": "string"
         },
         "createTime": {
-          "description": "The time operation was submitted.",
+          "description": "The time at which the operation was submitted.",
           "type": "string",
           "format": "google-datetime"
         }
@@ -2783,12 +2784,12 @@
           "type": "boolean"
         },
         "startTime": {
-          "description": "The time operation was started.",
+          "description": "The time at which the operation was started.",
           "type": "string",
           "format": "google-datetime"
         },
         "endTime": {
-          "description": "The time operation processing completed.",
+          "description": "The time at which operation processing completed.",
           "type": "string",
           "format": "google-datetime"
         }
@@ -3394,7 +3395,7 @@
                       "scopes": [
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
-                      "description": "Returns a long-running operation associated with the generation of trial\nsuggestions."
+                      "description": "Adds one or more trials to a study, with parameter values\nsuggested by AI Platform Optimizer. Returns a long-running\noperation associated with the generation of trial suggestions.\nWhen this long-running operation succeeds, it will contain\na SuggestTrialsResponse."
                     },
                     "create": {
                       "id": "ml.projects.locations.studies.trials.create",
@@ -3422,7 +3423,7 @@
                       "scopes": [
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
-                      "description": "Adds a user provided trial to a Study."
+                      "description": "Adds a user provided trial to a study."
                     },
                     "get": {
                       "id": "ml.projects.locations.studies.trials.get",
@@ -3447,7 +3448,7 @@
                       "scopes": [
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
-                      "description": "Gets a Trial."
+                      "description": "Gets a trial."
                     },
                     "list": {
                       "id": "ml.projects.locations.studies.trials.list",
@@ -3472,7 +3473,7 @@
                       "scopes": [
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
-                      "description": "Lists the trials associated with a Study."
+                      "description": "Lists the trials associated with a study."
                     },
                     "addMeasurement": {
                       "id": "ml.projects.locations.studies.trials.addMeasurement",
@@ -3500,7 +3501,7 @@
                       "scopes": [
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
-                      "description": "Adds a measurement of the objective metrics to a Trial. This measurement\nis assumed to have been taken before the Trial is complete."
+                      "description": "Adds a measurement of the objective metrics to a trial. This measurement\nis assumed to have been taken before the trial is complete."
                     },
                     "complete": {
                       "id": "ml.projects.locations.studies.trials.complete",
@@ -3509,7 +3510,7 @@
                       "httpMethod": "POST",
                       "parameters": {
                         "name": {
-                          "description": "Required. The trial name.",
+                          "description": "Required. The trial name.metat",
                           "location": "path",
                           "required": true,
                           "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/studies\/[^\/]+\/trials\/[^\/]+$",
@@ -3528,7 +3529,7 @@
                       "scopes": [
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
-                      "description": "Marks a Trial as complete."
+                      "description": "Marks a trial as complete."
                     },
                     "delete": {
                       "id": "ml.projects.locations.studies.trials.delete",
@@ -3553,7 +3554,7 @@
                       "scopes": [
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
-                      "description": "Deletes a Trial."
+                      "description": "Deletes a trial."
                     },
                     "checkEarlyStoppingState": {
                       "id": "ml.projects.locations.studies.trials.checkEarlyStoppingState",
@@ -3581,7 +3582,7 @@
                       "scopes": [
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
-                      "description": "Checks whether a trial should stop or not."
+                      "description": "Checks  whether a trial should stop or not. Returns a\nlong-running operation. When the operation is successful,\nit will contain a\nCheckTrialEarlyStoppingStateResponse."
                     },
                     "stop": {
                       "id": "ml.projects.locations.studies.trials.stop",

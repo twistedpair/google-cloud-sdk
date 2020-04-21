@@ -26,51 +26,52 @@ class DeliveryConfig(_messages.Message):
   r"""The settings for a subscription's message delivery.
 
   Enums:
-    SendModeValueValuesEnum: The SendMode for this subscription.
+    DeliveryRequirementValueValuesEnum: The DeliveryRequirement for this
+      subscription.
 
   Fields:
-    sendMode: The SendMode for this subscription.
+    deliveryRequirement: The DeliveryRequirement for this subscription.
   """
 
-  class SendModeValueValuesEnum(_messages.Enum):
-    r"""The SendMode for this subscription.
+  class DeliveryRequirementValueValuesEnum(_messages.Enum):
+    r"""The DeliveryRequirement for this subscription.
 
     Values:
-      SEND_MODE_UNSPECIFIED: Default value. This value is unused.
-      SEND_IMMEDIATELY: The server does not wait for a published message to be
-        successfully written to storage before delivering it to subscribers.
-        As such, a subscriber may receive a message for which the write to
-        storage failed. If the subscriber re-reads the offset of that message
-        later on (e.g., after a `Seek` operation), there may be a gap at that
-        offset. Even if not re-reading messages, the delivery of messages for
-        which the write to storage fails may be inconsistent across
-        subscriptions, with some receiving the message (e.g., those connected
-        at the time the message is published) and others not receiving it
-        (e.g., those disconnected at publish time). Note that offsets are
-        never reused, so even if SEND_IMMEDIATELY is used, subscribers will
-        not receive different messages when re-reading, they will just see
-        gaps. EXAMPLE:   (0) Topic 'topic1' is created with a single
-        partition.   (1) Two subscriptions 'sub1' and 'sub2' are created on
-        topic1. sub1       has 'SEND_IMMEDIATELY', sub2 has
-        'SEND_AFTER_STORED'.   (2) A stream is opened for sub1 but not sub2.
-        (3) A stream is opened for a publisher client using pub1.   (4) pub1
-        successfully publishes m0 at offset 0 and m0 is delivered to
+      DELIVERY_REQUIREMENT_UNSPECIFIED: Default value. This value is unused.
+      DELIVER_IMMEDIATELY: The server does not wait for a published message to
+        be successfully written to storage before delivering it to
+        subscribers. As such, a subscriber may receive a message for which the
+        write to storage failed. If the subscriber re-reads the offset of that
+        message later on (e.g., after a `Seek` operation), there may be a gap
+        at that offset. Even if not re-reading messages, the delivery of
+        messages for which the write to storage fails may be inconsistent
+        across subscriptions, with some receiving the message (e.g., those
+        connected at the time the message is published) and others not
+        receiving it (e.g., those disconnected at publish time). Note that
+        offsets are never reused, so even if DELIVER_IMMEDIATELY is used,
+        subscribers will not receive different messages when re-reading, they
+        will just see gaps. EXAMPLE:   (0) Topic 'topic1' is created with a
+        single partition.   (1) Two subscriptions 'sub1' and 'sub2' are
+        created on topic1. sub1       has 'DELIVER_IMMEDIATELY', sub2 has
+        'DELIVER_AFTER_STORED'.   (2) A stream is opened for sub1 but not
+        sub2.   (3) A stream is opened for a publisher client using pub1.
+        (4) pub1 successfully publishes m0 at offset 0 and m0 is delivered to
         sub1.   (5) pub1 publishes m1 at offset 1 and m1 is delivered to sub1
         but the       write to storage fails (their stream then breaks).   (6)
         A stream is reopened for pub1.   (6) pub1 successfully publishes m2 at
         offset 2 and m2 is delivered to       sub1.   (some time elapses...)
         (7) A stream is opened for sub2 and it receives m0 and m2 but not m1.
         (8) sub1 seeks to offset 1 but only receives m2 and not m1.
-      SEND_AFTER_STORED: The server will not deliver a published message to
+      DELIVER_AFTER_STORED: The server will not deliver a published message to
         subscribers until the message has been successfully written to
         storage. This will result in higher end-to-end latency, but consistent
         delivery.
     """
-    SEND_MODE_UNSPECIFIED = 0
-    SEND_IMMEDIATELY = 1
-    SEND_AFTER_STORED = 2
+    DELIVERY_REQUIREMENT_UNSPECIFIED = 0
+    DELIVER_IMMEDIATELY = 1
+    DELIVER_AFTER_STORED = 2
 
-  sendMode = _messages.EnumField('SendModeValueValuesEnum', 1)
+  deliveryRequirement = _messages.EnumField('DeliveryRequirementValueValuesEnum', 1)
 
 
 class Empty(_messages.Message):

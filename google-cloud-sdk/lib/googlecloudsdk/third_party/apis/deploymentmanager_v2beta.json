@@ -5,7 +5,7 @@
  "name": "deploymentmanager",
  "canonicalName": "Deployment Manager V2Beta",
  "version": "v2beta",
- "revision": "20200330",
+ "revision": "20200410",
  "title": "Google Cloud Deployment Manager API V2Beta Methods",
  "description": "The Deployment Manager API allows users to declaratively configure, deploy and run complex solutions on the Google Cloud Platform.",
  "ownerDomain": "google.com",
@@ -692,7 +692,7 @@
    "properties": {
     "logMode": {
      "type": "string",
-     "description": "Whether Gin logging should happen in a fail-closed manner at the caller. This is currently supported in the LocalIAM implementation, Stubby C++, and Stubby Java. For Apps Framework, see go/af-audit-logging#failclosed. TODO(b/77591626): Add support for Stubby Go. TODO(b/129671387): Add support for Scaffolding."
+     "description": ""
     }
    }
   },

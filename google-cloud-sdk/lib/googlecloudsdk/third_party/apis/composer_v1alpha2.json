@@ -462,7 +462,7 @@
       "description": "The configuration of Cloud SQL instance that is used by the Apache Airflow\nsoftware.",
       "type": "object",
       "properties": {
-        "tier": {
+        "machineType": {
           "description": "Optional. Cloud SQL tier used by Airflow database.\nIf not specified, db-n1-standard-2 will be used.",
           "type": "string"
         }

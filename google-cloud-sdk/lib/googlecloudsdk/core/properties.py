@@ -411,6 +411,7 @@ class _Sections(object):
         self.metrics,
         self.ml_engine,
         self.notebooks,
+        self.pubsub,
         self.proxy,
         self.redis,
         self.run,
@@ -1523,9 +1524,20 @@ class _SectionPubsub(_Section):
     self.legacy_output = self._AddBool(
         'legacy_output',
         default=False,
+        internal=True,
+        hidden=True,
         help_text=('Use the legacy output for beta pubsub commands. The legacy '
                    'output from beta is being deprecated. This property will '
                    'eventually be removed.'))
+    self.zone = self._Add(
+        'lite_zone',
+        # TODO(b/152969311): Create a Completer for the active zones.
+        # TODO(b/149560300): Add this to
+        # https://cloud.google.com/sdk/docs/properties.
+        help_text='Default zone to use when working with zonal Pub/Sub Lite '
+        'resources. When a `--zone` flag is required but not provided, '
+        'the command will fall back to this value, if set.',
+        hidden=True)
 
 
 class _SectionComposer(_Section):
@@ -1811,6 +1823,7 @@ class _SectionApiEndpointOverrides(_Section):
     self.policytroubleshooter = self._Add('policytroubleshooter')
     self.privateca = self._Add('privateca')
     self.pubsub = self._Add('pubsub')
+    self.pubsublite = self._Add('pubsublite')
     self.recommender = self._Add('recommender')
     self.replicapoolupdater = self._Add('replicapoolupdater')
     self.runtimeconfig = self._Add('runtimeconfig')

@@ -289,6 +289,13 @@ class Bucket(_messages.Message):
           createdBefore: A date in RFC 3339 format with only the date part
             (for instance, "2013-01-15"). This condition is satisfied when an
             object is created before midnight of the specified date in UTC.
+          customTimeBefore: A timestamp in RFC 3339 format. This condition is
+            satisfied when the custom time on an object is before this
+            timestamp.
+          daysSinceCustomTime: Number of days elapsed since the user-specified
+            timestamp set on an object. The condition is satisfied if the days
+            elapsed is at least this number. If no custom timestamp is
+            specified on an object, the condition does not apply.
           isLive: Relevant only for versioned objects. If the value is true,
             this condition matches live objects; if the value is false, it
             matches archived objects.
@@ -310,10 +317,12 @@ class Bucket(_messages.Message):
 
         age = _messages.IntegerField(1, variant=_messages.Variant.INT32)
         createdBefore = extra_types.DateField(2)
-        isLive = _messages.BooleanField(3)
-        matchesPattern = _messages.StringField(4)
-        matchesStorageClass = _messages.StringField(5, repeated=True)
-        numNewerVersions = _messages.IntegerField(6, variant=_messages.Variant.INT32)
+        customTimeBefore = _message_types.DateTimeField(3)
+        daysSinceCustomTime = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+        isLive = _messages.BooleanField(5)
+        matchesPattern = _messages.StringField(6)
+        matchesStorageClass = _messages.StringField(7, repeated=True)
+        numNewerVersions = _messages.IntegerField(8, variant=_messages.Variant.INT32)
 
       action = _messages.MessageField('ActionValue', 1)
       condition = _messages.MessageField('ConditionValue', 2)
@@ -847,6 +856,8 @@ class Object(_messages.Message):
     crc32c: CRC32c checksum, as described in RFC 4960, Appendix B; encoded
       using base64 in big-endian byte order. For more information about using
       the CRC32c checksum, see Hashes and ETags: Best Practices.
+    customTime: A timestamp in RFC 3339 format specified by the user for an
+      object.
     customerEncryption: Metadata of customer-supplied encryption key, if the
       object is encrypted by such a key.
     etag: HTTP 1.1 Entity tag for the object.
@@ -963,28 +974,29 @@ class Object(_messages.Message):
   contentLanguage = _messages.StringField(7)
   contentType = _messages.StringField(8)
   crc32c = _messages.StringField(9)
-  customerEncryption = _messages.MessageField('CustomerEncryptionValue', 10)
-  etag = _messages.StringField(11)
-  eventBasedHold = _messages.BooleanField(12)
-  generation = _messages.IntegerField(13)
-  id = _messages.StringField(14)
-  kind = _messages.StringField(15, default=u'storage#object')
-  kmsKeyName = _messages.StringField(16)
-  md5Hash = _messages.StringField(17)
-  mediaLink = _messages.StringField(18)
-  metadata = _messages.MessageField('MetadataValue', 19)
-  metageneration = _messages.IntegerField(20)
-  name = _messages.StringField(21)
-  owner = _messages.MessageField('OwnerValue', 22)
-  retentionExpirationTime = _message_types.DateTimeField(23)
-  selfLink = _messages.StringField(24)
-  size = _messages.IntegerField(25, variant=_messages.Variant.UINT64)
-  storageClass = _messages.StringField(26)
-  temporaryHold = _messages.BooleanField(27)
-  timeCreated = _message_types.DateTimeField(28)
-  timeDeleted = _message_types.DateTimeField(29)
-  timeStorageClassUpdated = _message_types.DateTimeField(30)
-  updated = _message_types.DateTimeField(31)
+  customTime = _message_types.DateTimeField(10)
+  customerEncryption = _messages.MessageField('CustomerEncryptionValue', 11)
+  etag = _messages.StringField(12)
+  eventBasedHold = _messages.BooleanField(13)
+  generation = _messages.IntegerField(14)
+  id = _messages.StringField(15)
+  kind = _messages.StringField(16, default=u'storage#object')
+  kmsKeyName = _messages.StringField(17)
+  md5Hash = _messages.StringField(18)
+  mediaLink = _messages.StringField(19)
+  metadata = _messages.MessageField('MetadataValue', 20)
+  metageneration = _messages.IntegerField(21)
+  name = _messages.StringField(22)
+  owner = _messages.MessageField('OwnerValue', 23)
+  retentionExpirationTime = _message_types.DateTimeField(24)
+  selfLink = _messages.StringField(25)
+  size = _messages.IntegerField(26, variant=_messages.Variant.UINT64)
+  storageClass = _messages.StringField(27)
+  temporaryHold = _messages.BooleanField(28)
+  timeCreated = _message_types.DateTimeField(29)
+  timeDeleted = _message_types.DateTimeField(30)
+  timeStorageClassUpdated = _message_types.DateTimeField(31)
+  updated = _message_types.DateTimeField(32)
 
 
 class ObjectAccessControl(_messages.Message):

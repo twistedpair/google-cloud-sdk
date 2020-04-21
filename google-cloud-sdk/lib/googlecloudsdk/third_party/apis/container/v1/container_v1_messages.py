@@ -134,7 +134,7 @@ class CancelOperationRequest(_messages.Message):
 
   Fields:
     name: The name (project, location, operation id) of the operation to
-      cancel. Specified in the format 'projects/*/locations/*/operations/*'.
+      cancel. Specified in the format `projects/*/locations/*/operations/*`.
     operationId: Deprecated. The server-assigned `name` of the operation. This
       field has been deprecated and replaced by the name field.
     projectId: Deprecated. The Google Developers Console [project ID or
@@ -583,7 +583,7 @@ class CompleteIPRotationRequest(_messages.Message):
       deprecated and replaced by the name field.
     name: The name (project, location, cluster id) of the cluster to complete
       IP rotation. Specified in the format
-      'projects/*/locations/*/clusters/*'.
+      `projects/*/locations/*/clusters/*`.
     projectId: Deprecated. The Google Developers Console [project ID or
       project
       number](https://developers.google.com/console/help/new/#projectnumber).
@@ -628,7 +628,7 @@ class ContainerProjectsAggregatedUsableSubnetworksListRequest(_messages.Message)
     pageToken: Specifies a page token to use. Set this to the nextPageToken
       returned by previous list requests to get the next page of results.
     parent: The parent project where subnetworks are usable. Specified in the
-      format 'projects/*'.
+      format `projects/*`.
   """
 
   filter = _messages.StringField(1)
@@ -644,7 +644,7 @@ class ContainerProjectsLocationsClustersDeleteRequest(_messages.Message):
     clusterId: Deprecated. The name of the cluster to delete. This field has
       been deprecated and replaced by the name field.
     name: The name (project, location, cluster) of the cluster to delete.
-      Specified in the format 'projects/*/locations/*/clusters/*'.
+      Specified in the format `projects/*/locations/*/clusters/*`.
     projectId: Deprecated. The Google Developers Console [project ID or
       project number](https://support.google.com/cloud/answer/6158840). This
       field has been deprecated and replaced by the name field.
@@ -665,7 +665,7 @@ class ContainerProjectsLocationsClustersGetJwksRequest(_messages.Message):
 
   Fields:
     parent: The cluster (project, location, cluster id) to get keys for.
-      Specified in the format 'projects/*/locations/*/clusters/*'.
+      Specified in the format `projects/*/locations/*/clusters/*`.
   """
 
   parent = _messages.StringField(1, required=True)
@@ -678,7 +678,7 @@ class ContainerProjectsLocationsClustersGetRequest(_messages.Message):
     clusterId: Deprecated. The name of the cluster to retrieve. This field has
       been deprecated and replaced by the name field.
     name: The name (project, location, cluster) of the cluster to retrieve.
-      Specified in the format 'projects/*/locations/*/clusters/*'.
+      Specified in the format `projects/*/locations/*/clusters/*`.
     projectId: Deprecated. The Google Developers Console [project ID or
       project number](https://support.google.com/cloud/answer/6158840). This
       field has been deprecated and replaced by the name field.
@@ -699,7 +699,7 @@ class ContainerProjectsLocationsClustersListRequest(_messages.Message):
 
   Fields:
     parent: The parent (project and location) where the clusters will be
-      listed. Specified in the format 'projects/*/locations/*'. Location "-"
+      listed. Specified in the format `projects/*/locations/*`. Location "-"
       matches all zones and all regions.
     projectId: Deprecated. The Google Developers Console [project ID or
       project number](https://support.google.com/cloud/answer/6158840). This
@@ -723,7 +723,7 @@ class ContainerProjectsLocationsClustersNodePoolsDeleteRequest(_messages.Message
       deprecated and replaced by the name field.
     name: The name (project, location, cluster, node pool id) of the node pool
       to delete. Specified in the format
-      'projects/*/locations/*/clusters/*/nodePools/*'.
+      `projects/*/locations/*/clusters/*/nodePools/*`.
     nodePoolId: Deprecated. The name of the node pool to delete. This field
       has been deprecated and replaced by the name field.
     projectId: Deprecated. The Google Developers Console [project ID or
@@ -751,7 +751,7 @@ class ContainerProjectsLocationsClustersNodePoolsGetRequest(_messages.Message):
       deprecated and replaced by the name field.
     name: The name (project, location, cluster, node pool id) of the node pool
       to get. Specified in the format
-      'projects/*/locations/*/clusters/*/nodePools/*'.
+      `projects/*/locations/*/clusters/*/nodePools/*`.
     nodePoolId: Deprecated. The name of the node pool. This field has been
       deprecated and replaced by the name field.
     projectId: Deprecated. The Google Developers Console [project ID or
@@ -779,7 +779,7 @@ class ContainerProjectsLocationsClustersNodePoolsListRequest(_messages.Message):
       deprecated and replaced by the parent field.
     parent: The parent (project, location, cluster id) where the node pools
       will be listed. Specified in the format
-      'projects/*/locations/*/clusters/*'.
+      `projects/*/locations/*/clusters/*`.
     projectId: Deprecated. The Google Developers Console [project ID or
       project
       number](https://developers.google.com/console/help/new/#projectnumber).
@@ -804,7 +804,7 @@ class ContainerProjectsLocationsClustersWellKnownGetOpenidConfigurationRequest(_
   Fields:
     parent: The cluster (project, location, cluster id) to get the discovery
       document for. Specified in the format
-      'projects/*/locations/*/clusters/*'.
+      `projects/*/locations/*/clusters/*`.
   """
 
   parent = _messages.StringField(1, required=True)
@@ -815,7 +815,7 @@ class ContainerProjectsLocationsGetServerConfigRequest(_messages.Message):
 
   Fields:
     name: The name (project and location) of the server config to get,
-      specified in the format 'projects/*/locations/*'.
+      specified in the format `projects/*/locations/*`.
     projectId: Deprecated. The Google Developers Console [project ID or
       project number](https://support.google.com/cloud/answer/6158840). This
       field has been deprecated and replaced by the name field.
@@ -835,7 +835,7 @@ class ContainerProjectsLocationsOperationsGetRequest(_messages.Message):
 
   Fields:
     name: The name (project, location, operation id) of the operation to get.
-      Specified in the format 'projects/*/locations/*/operations/*'.
+      Specified in the format `projects/*/locations/*/operations/*`.
     operationId: Deprecated. The server-assigned `name` of the operation. This
       field has been deprecated and replaced by the name field.
     projectId: Deprecated. The Google Developers Console [project ID or
@@ -858,7 +858,7 @@ class ContainerProjectsLocationsOperationsListRequest(_messages.Message):
 
   Fields:
     parent: The parent (project and location) where the operations will be
-      listed. Specified in the format 'projects/*/locations/*'. Location "-"
+      listed. Specified in the format `projects/*/locations/*`. Location "-"
       matches all zones and all regions.
     projectId: Deprecated. The Google Developers Console [project ID or
       project number](https://support.google.com/cloud/answer/6158840). This
@@ -881,7 +881,7 @@ class ContainerProjectsZonesClustersDeleteRequest(_messages.Message):
     clusterId: Deprecated. The name of the cluster to delete. This field has
       been deprecated and replaced by the name field.
     name: The name (project, location, cluster) of the cluster to delete.
-      Specified in the format 'projects/*/locations/*/clusters/*'.
+      Specified in the format `projects/*/locations/*/clusters/*`.
     projectId: Deprecated. The Google Developers Console [project ID or
       project number](https://support.google.com/cloud/answer/6158840). This
       field has been deprecated and replaced by the name field.
@@ -904,7 +904,7 @@ class ContainerProjectsZonesClustersGetRequest(_messages.Message):
     clusterId: Deprecated. The name of the cluster to retrieve. This field has
       been deprecated and replaced by the name field.
     name: The name (project, location, cluster) of the cluster to retrieve.
-      Specified in the format 'projects/*/locations/*/clusters/*'.
+      Specified in the format `projects/*/locations/*/clusters/*`.
     projectId: Deprecated. The Google Developers Console [project ID or
       project number](https://support.google.com/cloud/answer/6158840). This
       field has been deprecated and replaced by the name field.
@@ -925,7 +925,7 @@ class ContainerProjectsZonesClustersListRequest(_messages.Message):
 
   Fields:
     parent: The parent (project and location) where the clusters will be
-      listed. Specified in the format 'projects/*/locations/*'. Location "-"
+      listed. Specified in the format `projects/*/locations/*`. Location "-"
       matches all zones and all regions.
     projectId: Deprecated. The Google Developers Console [project ID or
       project number](https://support.google.com/cloud/answer/6158840). This
@@ -949,7 +949,7 @@ class ContainerProjectsZonesClustersNodePoolsDeleteRequest(_messages.Message):
       deprecated and replaced by the name field.
     name: The name (project, location, cluster, node pool id) of the node pool
       to delete. Specified in the format
-      'projects/*/locations/*/clusters/*/nodePools/*'.
+      `projects/*/locations/*/clusters/*/nodePools/*`.
     nodePoolId: Deprecated. The name of the node pool to delete. This field
       has been deprecated and replaced by the name field.
     projectId: Deprecated. The Google Developers Console [project ID or
@@ -977,7 +977,7 @@ class ContainerProjectsZonesClustersNodePoolsGetRequest(_messages.Message):
       deprecated and replaced by the name field.
     name: The name (project, location, cluster, node pool id) of the node pool
       to get. Specified in the format
-      'projects/*/locations/*/clusters/*/nodePools/*'.
+      `projects/*/locations/*/clusters/*/nodePools/*`.
     nodePoolId: Deprecated. The name of the node pool. This field has been
       deprecated and replaced by the name field.
     projectId: Deprecated. The Google Developers Console [project ID or
@@ -1005,7 +1005,7 @@ class ContainerProjectsZonesClustersNodePoolsListRequest(_messages.Message):
       deprecated and replaced by the parent field.
     parent: The parent (project, location, cluster id) where the node pools
       will be listed. Specified in the format
-      'projects/*/locations/*/clusters/*'.
+      `projects/*/locations/*/clusters/*`.
     projectId: Deprecated. The Google Developers Console [project ID or
       project
       number](https://developers.google.com/console/help/new/#projectnumber).
@@ -1027,7 +1027,7 @@ class ContainerProjectsZonesGetServerconfigRequest(_messages.Message):
 
   Fields:
     name: The name (project and location) of the server config to get,
-      specified in the format 'projects/*/locations/*'.
+      specified in the format `projects/*/locations/*`.
     projectId: Deprecated. The Google Developers Console [project ID or
       project number](https://support.google.com/cloud/answer/6158840). This
       field has been deprecated and replaced by the name field.
@@ -1047,7 +1047,7 @@ class ContainerProjectsZonesOperationsGetRequest(_messages.Message):
 
   Fields:
     name: The name (project, location, operation id) of the operation to get.
-      Specified in the format 'projects/*/locations/*/operations/*'.
+      Specified in the format `projects/*/locations/*/operations/*`.
     operationId: Deprecated. The server-assigned `name` of the operation. This
       field has been deprecated and replaced by the name field.
     projectId: Deprecated. The Google Developers Console [project ID or
@@ -1070,7 +1070,7 @@ class ContainerProjectsZonesOperationsListRequest(_messages.Message):
 
   Fields:
     parent: The parent (project and location) where the operations will be
-      listed. Specified in the format 'projects/*/locations/*'. Location "-"
+      listed. Specified in the format `projects/*/locations/*`. Location "-"
       matches all zones and all regions.
     projectId: Deprecated. The Google Developers Console [project ID or
       project number](https://support.google.com/cloud/answer/6158840). This
@@ -1093,7 +1093,7 @@ class CreateClusterRequest(_messages.Message):
     cluster: Required. A [cluster resource](https://cloud.google.com
       /container-engine/reference/rest/v1/projects.zones.clusters)
     parent: The parent (project and location) where the cluster will be
-      created. Specified in the format 'projects/*/locations/*'.
+      created. Specified in the format `projects/*/locations/*`.
     projectId: Deprecated. The Google Developers Console [project ID or
       project number](https://support.google.com/cloud/answer/6158840). This
       field has been deprecated and replaced by the parent field.
@@ -1118,7 +1118,7 @@ class CreateNodePoolRequest(_messages.Message):
     nodePool: Required. The node pool to create.
     parent: The parent (project, location, cluster id) where the node pool
       will be created. Specified in the format
-      'projects/*/locations/*/clusters/*'.
+      `projects/*/locations/*/clusters/*`.
     projectId: Deprecated. The Google Developers Console [project ID or
       project
       number](https://developers.google.com/console/help/new/#projectnumber).
@@ -2340,7 +2340,7 @@ class RollbackNodePoolUpgradeRequest(_messages.Message):
       been deprecated and replaced by the name field.
     name: The name (project, location, cluster, node pool id) of the node poll
       to rollback upgrade. Specified in the format
-      'projects/*/locations/*/clusters/*/nodePools/*'.
+      `projects/*/locations/*/clusters/*/nodePools/*`.
     nodePoolId: Deprecated. The name of the node pool to rollback. This field
       has been deprecated and replaced by the name field.
     projectId: Deprecated. The Google Developers Console [project ID or
@@ -2411,7 +2411,7 @@ class SetAddonsConfigRequest(_messages.Message):
     clusterId: Deprecated. The name of the cluster to upgrade. This field has
       been deprecated and replaced by the name field.
     name: The name (project, location, cluster) of the cluster to set addons.
-      Specified in the format 'projects/*/locations/*/clusters/*'.
+      Specified in the format `projects/*/locations/*/clusters/*`.
     projectId: Deprecated. The Google Developers Console [project ID or
       project number](https://support.google.com/cloud/answer/6158840). This
       field has been deprecated and replaced by the name field.
@@ -2447,7 +2447,7 @@ class SetLabelsRequest(_messages.Message):
       <code>get()</code> request to the resource to get the latest
       fingerprint.
     name: The name (project, location, cluster id) of the cluster to set
-      labels. Specified in the format 'projects/*/locations/*/clusters/*'.
+      labels. Specified in the format `projects/*/locations/*/clusters/*`.
     projectId: Deprecated. The Google Developers Console [project ID or
       project
       number](https://developers.google.com/console/help/new/#projectnumber).
@@ -2503,7 +2503,7 @@ class SetLegacyAbacRequest(_messages.Message):
       cluster.
     name: The name (project, location, cluster id) of the cluster to set
       legacy abac. Specified in the format
-      'projects/*/locations/*/clusters/*'.
+      `projects/*/locations/*/clusters/*`.
     projectId: Deprecated. The Google Developers Console [project ID or
       project number](https://support.google.com/cloud/answer/6158840). This
       field has been deprecated and replaced by the name field.
@@ -2533,7 +2533,7 @@ class SetLocationsRequest(_messages.Message):
       cluster, depending on whether locations are being added or removed.
       This list must always include the cluster's primary zone.
     name: The name (project, location, cluster) of the cluster to set
-      locations. Specified in the format 'projects/*/locations/*/clusters/*'.
+      locations. Specified in the format `projects/*/locations/*/clusters/*`.
     projectId: Deprecated. The Google Developers Console [project ID or
       project number](https://support.google.com/cloud/answer/6158840). This
       field has been deprecated and replaced by the name field.
@@ -2565,7 +2565,7 @@ class SetLoggingServiceRequest(_messages.Message):
       string,`logging.googleapis.com/kubernetes` will be used for GKE 1.14+ or
       `logging.googleapis.com` for earlier versions.
     name: The name (project, location, cluster) of the cluster to set logging.
-      Specified in the format 'projects/*/locations/*/clusters/*'.
+      Specified in the format `projects/*/locations/*/clusters/*`.
     projectId: Deprecated. The Google Developers Console [project ID or
       project number](https://support.google.com/cloud/answer/6158840). This
       field has been deprecated and replaced by the name field.
@@ -2591,7 +2591,7 @@ class SetMaintenancePolicyRequest(_messages.Message):
       cluster. An empty field clears the existing maintenance policy.
     name: The name (project, location, cluster id) of the cluster to set
       maintenance policy. Specified in the format
-      'projects/*/locations/*/clusters/*'.
+      `projects/*/locations/*/clusters/*`.
     projectId: Required. The Google Developers Console [project ID or project
       number](https://support.google.com/cloud/answer/6158840).
     zone: Required. The name of the Google Compute Engine
@@ -2618,7 +2618,7 @@ class SetMasterAuthRequest(_messages.Message):
     clusterId: Deprecated. The name of the cluster to upgrade. This field has
       been deprecated and replaced by the name field.
     name: The name (project, location, cluster) of the cluster to set auth.
-      Specified in the format 'projects/*/locations/*/clusters/*'.
+      Specified in the format `projects/*/locations/*/clusters/*`.
     projectId: Deprecated. The Google Developers Console [project ID or
       project number](https://support.google.com/cloud/answer/6158840). This
       field has been deprecated and replaced by the name field.
@@ -2669,7 +2669,7 @@ class SetMonitoringServiceRequest(_messages.Message):
       as an empty string,`monitoring.googleapis.com/kubernetes` will be used
       for GKE 1.14+ or `monitoring.googleapis.com` for earlier versions.
     name: The name (project, location, cluster) of the cluster to set
-      monitoring. Specified in the format 'projects/*/locations/*/clusters/*'.
+      monitoring. Specified in the format `projects/*/locations/*/clusters/*`.
     projectId: Deprecated. The Google Developers Console [project ID or
       project number](https://support.google.com/cloud/answer/6158840). This
       field has been deprecated and replaced by the name field.
@@ -2694,7 +2694,7 @@ class SetNetworkPolicyRequest(_messages.Message):
       deprecated and replaced by the name field.
     name: The name (project, location, cluster id) of the cluster to set
       networking policy. Specified in the format
-      'projects/*/locations/*/clusters/*'.
+      `projects/*/locations/*/clusters/*`.
     networkPolicy: Required. Configuration options for the NetworkPolicy
       feature.
     projectId: Deprecated. The Google Developers Console [project ID or
@@ -2724,7 +2724,7 @@ class SetNodePoolAutoscalingRequest(_messages.Message):
       been deprecated and replaced by the name field.
     name: The name (project, location, cluster, node pool) of the node pool to
       set autoscaler settings. Specified in the format
-      'projects/*/locations/*/clusters/*/nodePools/*'.
+      `projects/*/locations/*/clusters/*/nodePools/*`.
     nodePoolId: Deprecated. The name of the node pool to upgrade. This field
       has been deprecated and replaced by the name field.
     projectId: Deprecated. The Google Developers Console [project ID or
@@ -2754,7 +2754,7 @@ class SetNodePoolManagementRequest(_messages.Message):
     management: Required. NodeManagement configuration for the node pool.
     name: The name (project, location, cluster, node pool id) of the node pool
       to set management properties. Specified in the format
-      'projects/*/locations/*/clusters/*/nodePools/*'.
+      `projects/*/locations/*/clusters/*/nodePools/*`.
     nodePoolId: Deprecated. The name of the node pool to update. This field
       has been deprecated and replaced by the name field.
     projectId: Deprecated. The Google Developers Console [project ID or
@@ -2782,7 +2782,7 @@ class SetNodePoolSizeRequest(_messages.Message):
       been deprecated and replaced by the name field.
     name: The name (project, location, cluster, node pool id) of the node pool
       to set size. Specified in the format
-      'projects/*/locations/*/clusters/*/nodePools/*'.
+      `projects/*/locations/*/clusters/*/nodePools/*`.
     nodeCount: Required. The desired node count for the pool.
     nodePoolId: Deprecated. The name of the node pool to update. This field
       has been deprecated and replaced by the name field.
@@ -2904,7 +2904,7 @@ class StartIPRotationRequest(_messages.Message):
     clusterId: Deprecated. The name of the cluster. This field has been
       deprecated and replaced by the name field.
     name: The name (project, location, cluster id) of the cluster to start IP
-      rotation. Specified in the format 'projects/*/locations/*/clusters/*'.
+      rotation. Specified in the format `projects/*/locations/*/clusters/*`.
     projectId: Deprecated. The Google Developers Console [project ID or
       project
       number](https://developers.google.com/console/help/new/#projectnumber).
@@ -2981,7 +2981,7 @@ class UpdateClusterRequest(_messages.Message):
     clusterId: Deprecated. The name of the cluster to upgrade. This field has
       been deprecated and replaced by the name field.
     name: The name (project, location, cluster) of the cluster to update.
-      Specified in the format 'projects/*/locations/*/clusters/*'.
+      Specified in the format `projects/*/locations/*/clusters/*`.
     projectId: Deprecated. The Google Developers Console [project ID or
       project number](https://support.google.com/cloud/answer/6158840). This
       field has been deprecated and replaced by the name field.
@@ -3013,7 +3013,7 @@ class UpdateMasterRequest(_messages.Message):
       valid gke.N patch in the 1.X.Y version - "1.X.Y-gke.N": picks an
       explicit Kubernetes version - "-": picks the default Kubernetes version
     name: The name (project, location, cluster) of the cluster to update.
-      Specified in the format 'projects/*/locations/*/clusters/*'.
+      Specified in the format `projects/*/locations/*/clusters/*`.
     projectId: Deprecated. The Google Developers Console [project ID or
       project number](https://support.google.com/cloud/answer/6158840). This
       field has been deprecated and replaced by the name field.
@@ -3048,7 +3048,7 @@ class UpdateNodePoolRequest(_messages.Message):
       node pool, depending on whether locations are being added or removed.
     name: The name (project, location, cluster, node pool) of the node pool to
       update. Specified in the format
-      'projects/*/locations/*/clusters/*/nodePools/*'.
+      `projects/*/locations/*/clusters/*/nodePools/*`.
     nodePoolId: Deprecated. The name of the node pool to upgrade. This field
       has been deprecated and replaced by the name field.
     nodeVersion: Required. The Kubernetes version to change the nodes to

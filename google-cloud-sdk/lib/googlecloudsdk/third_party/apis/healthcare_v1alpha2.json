@@ -549,6 +549,477 @@
         }
       }
     },
+    "ConsentStore": {
+      "id": "ConsentStore",
+      "description": "Represents a Consent store.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Output only. Resource name of the Consent store, of the form\n`projects\/{project_id}\/locations\/{location_id}\/datasets\/{dataset_id}\/consentStores\/{consent_store_id}`.",
+          "type": "string"
+        },
+        "labels": {
+          "description": "Optional. User-supplied key-value pairs used to organize Consent stores.\n\nLabel keys must be between 1 and 63 characters long, have a UTF-8 encoding\nof maximum 128 bytes, and must conform to the\nfollowing PCRE regular expression:\n\\p{Ll}\\p{Lo}{0,62}\n\nLabel values must be between 1 and 63 characters long, have\na UTF-8 encoding of maximum 128 bytes, and must conform to the\nfollowing PCRE regular expression: [\\p{Ll}\\p{Lo}\\p{N}_-]{0,63}\n\nNo more than 64 labels can be associated with a given store.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "ListConsentStoresResponse": {
+      "id": "ListConsentStoresResponse",
+      "description": "Lists the Consent stores in the given\ndataset.",
+      "type": "object",
+      "properties": {
+        "consentStores": {
+          "description": "The returned Consent stores. The maximum number of stores returned\nis determined by the value of page_size in the ListConsentStoresRequest.",
+          "type": "array",
+          "items": {
+            "$ref": "ConsentStore"
+          }
+        },
+        "nextPageToken": {
+          "description": "Token to retrieve the next page of results or empty if there are no more\nresults in the list.",
+          "type": "string"
+        }
+      }
+    },
+    "AttributeDefinition": {
+      "id": "AttributeDefinition",
+      "description": "A client-defined consent attribute.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Output only. Resource name of the attribute definition, of the form\n`projects\/{project_id}\/locations\/{location_id}\/datasets\/{dataset_id}\/consentStores\/{consent_store_id}\/attributeDefinitions\/{attribute_definition_id}`.",
+          "type": "string"
+        },
+        "description": {
+          "description": "Optional. A description of the attribute.",
+          "type": "string"
+        },
+        "category": {
+          "description": "The category of the attribute. The value of this field cannot be changed\nafter creation.",
+          "enumDescriptions": [
+            "No category specified. This option is invalid.",
+            "Specify when this attribute captures properties of data resources. For\nexample, data anonmity or data type.",
+            "Specify when this attribute captures properties of access requests. For\nexample, requester's role or requester's organization."
+          ],
+          "type": "string",
+          "enum": [
+            "CATEGORY_UNSPECIFIED",
+            "RESOURCE",
+            "REQUEST"
+          ]
+        },
+        "allowedValues": {
+          "description": "Possible values for the attribute. An empty list is invalid. The list can\nonly be expanded after creation.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "consentDefaultValues": {
+          "description": "Default values of the attribute in consents. If no default values\nare specified, it defaults to an empty value.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "dataMappingDefaultValue": {
+          "description": "Default value of the attribute in user data mappings. If no default value\nis specified, it defaults to an empty value. This field is only applicable\nto attributes of the category `RESOURCE`.",
+          "type": "string"
+        }
+      }
+    },
+    "ListAttributeDefinitionsResponse": {
+      "id": "ListAttributeDefinitionsResponse",
+      "description": "Lists the Attribute definitions in the given\nConsent store.",
+      "type": "object",
+      "properties": {
+        "attributeDefinitions": {
+          "description": "The returned attribute definitions. The maximum number of attributes\nreturned is determined by the value of page_size in the\nListAttributeDefinitionsRequest.",
+          "type": "array",
+          "items": {
+            "$ref": "AttributeDefinition"
+          }
+        },
+        "nextPageToken": {
+          "description": "Token to retrieve the next page of results or empty if there are no more\nresults in the list.",
+          "type": "string"
+        }
+      }
+    },
+    "ConsentArtifact": {
+      "id": "ConsentArtifact",
+      "description": "Proof of an end user's consent.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Output only. Resource name of the Consent artifact, of the form\n`projects\/{project_id}\/locations\/{location_id}\/datasets\/{dataset_id}\/consentStores\/{consent_store_id}\/consentArtifacts\/{consent_artifact_id}`.",
+          "type": "string"
+        },
+        "userId": {
+          "description": "User's UUID provided by the client.",
+          "type": "string"
+        },
+        "userSignature": {
+          "description": "User's signature.",
+          "$ref": "Signature"
+        },
+        "guardianSignature": {
+          "description": "Optional. A signature from guardian.",
+          "$ref": "Signature"
+        },
+        "witnessSignature": {
+          "description": "Optional. A signature from a witness.",
+          "$ref": "Signature"
+        },
+        "consentContentScreenshots": {
+          "description": "Optional. Screenshots of the consent content.",
+          "type": "array",
+          "items": {
+            "$ref": "Image"
+          }
+        },
+        "consentContentVersion": {
+          "description": "Optional. An string indicating the version of the consent content.",
+          "type": "string"
+        },
+        "metadata": {
+          "description": "Optional. Metadata associated with the consent artifact. For example, the\nconsent locale or user agent version.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "Signature": {
+      "id": "Signature",
+      "description": "User signature.",
+      "type": "object",
+      "properties": {
+        "userId": {
+          "description": "User's UUID provided by the client.",
+          "type": "string"
+        },
+        "image": {
+          "description": "Optional. An image of the user's signature.",
+          "$ref": "Image"
+        },
+        "metadata": {
+          "description": "Optional. Metadata associated with the user's signature. For example, the\nuser's name or the user's title.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "signatureTime": {
+          "description": "Optional. Timestamp of the signature.",
+          "type": "string",
+          "format": "google-datetime"
+        }
+      }
+    },
+    "Image": {
+      "id": "Image",
+      "description": "An image.",
+      "type": "object",
+      "properties": {
+        "rawBytes": {
+          "description": "Image content represented as a stream of bytes. This field is populated\nwhen returned in GetConsentArtifact response, but not included in\nCreateConsentArtifact and ListConsentArtifact response.",
+          "type": "string",
+          "format": "byte"
+        },
+        "gcsUri": {
+          "description": "Input only. Points to a Cloud Storage URI containing the image. The URI must be in\nthe following format: `gs:\/\/{bucket_id}\/{object_id}`. The Cloud\nHealthcare API service account must have the `roles\/storage.objectViewer`\nCloud IAM role for this Cloud Storage location.\nThe image at this URI is copied to a Cloud Storage location managed\nby the Cloud Healthcare API. Responses to image fetching requests\nreturn the image in raw_bytes.",
+          "type": "string"
+        }
+      }
+    },
+    "ListConsentArtifactsResponse": {
+      "id": "ListConsentArtifactsResponse",
+      "description": "Lists the Consent artifacts in the given\nConsent store.",
+      "type": "object",
+      "properties": {
+        "consentArtifacts": {
+          "description": "The returned consent artifacts. The maximum number of artifacts returned\nis determined by the value of page_size in the ListConsentArtifactsRequest.",
+          "type": "array",
+          "items": {
+            "$ref": "ConsentArtifact"
+          }
+        },
+        "nextPageToken": {
+          "description": "Token to retrieve the next page of results or empty if there are no more\nresults in the list.",
+          "type": "string"
+        }
+      }
+    },
+    "Consent": {
+      "id": "Consent",
+      "description": "Represents an end user's consent.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Output only. Resource name of the Consent, of the form\n`projects\/{project_id}\/locations\/{location_id}\/datasets\/{dataset_id}\/consentStores\/{consent_store_id}\/consents\/{consent_id}`.",
+          "type": "string"
+        },
+        "userId": {
+          "description": "User's UUID provided by the client.",
+          "type": "string"
+        },
+        "policies": {
+          "description": "Represents an end user's consent in terms of the resources that can be\naccessed and under what conditions.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudHealthcareV1alpha2ConsentPolicy"
+          }
+        },
+        "consentArtifact": {
+          "description": "Required. The resource name of the consent artifact that contains proof of\nthe end user's consent, of the form\n`projects\/{project_id}\/locations\/{location_id}\/datasets\/{dataset_id}\/consentStores\/{consent_store_id}\/consentArtifacts\/{consent_artifact_id}`.",
+          "type": "string"
+        },
+        "state": {
+          "enumDescriptions": [
+            "No state specified.",
+            "The consent is active and is considered when evaluating user's consent\non resources.",
+            "When a consent is updated, the current version is archived and a\nnew one is created with active state.",
+            "A revoked consent is not considered when evaluating user's consent on\nresources."
+          ],
+          "type": "string",
+          "enum": [
+            "STATE_UNSPECIFIED",
+            "ACTIVE",
+            "ARCHIVED",
+            "REVOKED"
+          ]
+        },
+        "stateChangeTime": {
+          "description": "Output only. Indicates the timestamp when the state of this consent last changed.",
+          "type": "string",
+          "format": "google-datetime"
+        }
+      }
+    },
+    "GoogleCloudHealthcareV1alpha2ConsentPolicy": {
+      "id": "GoogleCloudHealthcareV1alpha2ConsentPolicy",
+      "description": "Represents an end user's consent in terms of the resources that can be\naccessed and under what conditions.",
+      "type": "object",
+      "properties": {
+        "resourceAttributes": {
+          "description": "The data resources that this policy applies to. A data resource is a match\nif it matches all the attributes listed here.",
+          "type": "array",
+          "items": {
+            "$ref": "Attribute"
+          }
+        },
+        "authorizationRule": {
+          "description": "The request conditions to meet to grant access.",
+          "$ref": "Expr"
+        }
+      }
+    },
+    "Attribute": {
+      "id": "Attribute",
+      "description": "An attribute value for a consent or data mapping. Each Attribute must\nhave a corresponding AttributeDefinition in the\nconsent store that defines the default and allowed values.",
+      "type": "object",
+      "properties": {
+        "attributeDefinitionId": {
+          "description": "Indicates the name of an attribute defined at the consent store.",
+          "type": "string"
+        },
+        "values": {
+          "description": "The value of the attribute. Must be an acceptable value as defined in the\nconsent store. For example, if the consent store defines \"data type\" with\nacceptable values \"questionnaire\" and \"step-count\", when the attribute name\nis data type, this field must contain one of those values.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "ListConsentsResponse": {
+      "id": "ListConsentsResponse",
+      "description": "Lists the Consents in\nthe given Consent store.",
+      "type": "object",
+      "properties": {
+        "consents": {
+          "description": "The returned consents. The maximum number of consents returned\nis determined by the value of page_size in the ListConsentsRequest.",
+          "type": "array",
+          "items": {
+            "$ref": "Consent"
+          }
+        },
+        "nextPageToken": {
+          "description": "Token to retrieve the next page of results or empty if there are no more\nresults in the list.",
+          "type": "string"
+        }
+      }
+    },
+    "RevokeConsentRequest": {
+      "id": "RevokeConsentRequest",
+      "description": "Revokes the current version of the specified Consent.",
+      "type": "object",
+      "properties": {
+      }
+    },
+    "RevokeConsentResponse": {
+      "id": "RevokeConsentResponse",
+      "description": "Revokes the current version of the specified Consent.",
+      "type": "object",
+      "properties": {
+      }
+    },
+    "DeleteAllConsentHistoryRequest": {
+      "id": "DeleteAllConsentHistoryRequest",
+      "description": "Deletes historical versions of the Consent excluding the current\nversion from the Consent store. This operation\ndoes not affect the related consent artifact.",
+      "type": "object",
+      "properties": {
+      }
+    },
+    "ListConsentHistoryResponse": {
+      "id": "ListConsentHistoryResponse",
+      "description": "Lists all the historical versions of the Consent from the\nConsent store.",
+      "type": "object",
+      "properties": {
+        "consents": {
+          "description": "The returned historical versions of a consent. The maximum number\nof versions returned is determined by the value of page_size in the\nListConsentHistoryRequest.",
+          "type": "array",
+          "items": {
+            "$ref": "Consent"
+          }
+        },
+        "nextPageToken": {
+          "description": "Token to retrieve the next page of results or empty if there are no more\nresults in the list.",
+          "type": "string"
+        }
+      }
+    },
+    "UserDataMapping": {
+      "id": "UserDataMapping",
+      "description": "Maps a user data entry to its end user and\nAttributes.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Output only. Resource name of the User data mapping, of the form\n`projects\/{project_id}\/locations\/{location_id}\/datasets\/{dataset_id}\/consentStores\/{consent_store_id}\/userDataMappings\/{user_data_mapping_id}`.",
+          "type": "string"
+        },
+        "dataId": {
+          "description": "A unique identifier for the mapped data.",
+          "type": "string"
+        },
+        "userId": {
+          "description": "User's UUID provided by the client.",
+          "type": "string"
+        },
+        "resourceAttributes": {
+          "description": "Attributes of end user data. Each attribute can have exactly one value\nspecified. Only explicitly set attributes are displayed here.\nAttribute definitions with\ndefaults set implicitly apply to these User data mappings.\nAttributes listed here must be single valued, that is, exactly one value is\nspecified for the field \"values\" in each Attribute.",
+          "type": "array",
+          "items": {
+            "$ref": "Attribute"
+          }
+        },
+        "archived": {
+          "description": "Output only. Indicates whether this data mapping is archived.",
+          "type": "boolean"
+        },
+        "archiveTime": {
+          "description": "Output only. Indicates the time when this data mapping was archived.",
+          "type": "string",
+          "format": "google-datetime"
+        }
+      }
+    },
+    "ListUserDataMappingsResponse": {
+      "id": "ListUserDataMappingsResponse",
+      "description": "Lists the User data mappings in the given\nConsent store.",
+      "type": "object",
+      "properties": {
+        "userDataMappings": {
+          "description": "The returned user data mappings. The maximum number of user data mappings\nreturned is determined by the value of page_size in the\nListUserDataMappingsRequest.",
+          "type": "array",
+          "items": {
+            "$ref": "UserDataMapping"
+          }
+        },
+        "nextPageToken": {
+          "description": "Token to retrieve the next page of results or empty if there are no more\nresults in the list.",
+          "type": "string"
+        }
+      }
+    },
+    "ArchiveUserDataMappingResponse": {
+      "id": "ArchiveUserDataMappingResponse",
+      "description": "Archives the specified User data mapping.",
+      "type": "object",
+      "properties": {
+      }
+    },
+    "CheckDataAccessRequest": {
+      "id": "CheckDataAccessRequest",
+      "description": "Checks if a particular data_id of a User data mapping in the given\nConsent store is\nconsented for a given use.",
+      "type": "object",
+      "properties": {
+        "dataId": {
+          "description": "The unique identifier of the data to check access for.",
+          "type": "string"
+        },
+        "requestAttributes": {
+          "description": "The values of request attributes associated with this access request.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "CheckDataAccessResponse": {
+      "id": "CheckDataAccessResponse",
+      "description": "Checks if a particular data_id of a User data mapping in the given\nConsent store is\nconsented for a given use.",
+      "type": "object",
+      "properties": {
+        "consented": {
+          "description": "Whether the requested data is consented for the given use.",
+          "type": "boolean"
+        }
+      }
+    },
+    "QueryAccessibleDataRequest": {
+      "id": "QueryAccessibleDataRequest",
+      "description": "Queries all data_ids that are consented for a given use in the given\nConsent store and\nwrites them to a specified destination. Note that if a user has a\nPolicy in their consents\nthat grants the given use, then the user is considered to have consented\neven if other policies do not allow the given use. For example, if a user\nhas a policy with `resource_attributes` matching the requested\n`resource_attributes` and an `authorization_rule` supporting the requested\n`request_attributes`, then the user is considered to have consented even if\nthe user has another policy with the same `resource_attributes` and an\n`authorization_rule` rejecting the requested `request_attributes`.\nErrors are logged to Cloud Logging (see [Viewing logs]\n(\/healthcare\/docs\/how-tos\/stackdriver-logging) and [QueryAccessibleData] for\na sample log entry).",
+      "type": "object",
+      "properties": {
+        "gcsDestination": {
+          "description": "The Cloud Storage destination. The Cloud Healthcare API service account\nmust have the `roles\/storage.objectAdmin` Cloud IAM role for this Cloud\nStorage location.",
+          "$ref": "GoogleCloudHealthcareV1alpha2ConsentGcsDestination"
+        },
+        "resourceAttributes": {
+          "description": "The values of resources attributes associated with the type of data being\nrequested. If no values are specified, then all data types are included in\nthe output.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "requestAttributes": {
+          "description": "The values of request attributes associated with this access request.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "GoogleCloudHealthcareV1alpha2ConsentGcsDestination": {
+      "id": "GoogleCloudHealthcareV1alpha2ConsentGcsDestination",
+      "description": "The Cloud Storage location for export.",
+      "type": "object",
+      "properties": {
+        "uriPrefix": {
+          "description": "URI for a Cloud Storage directory where the server writes result files, in\nthe format `gs:\/\/{bucket-id}\/{path\/to\/destination\/dir}`. If there is no\ntrailing slash, the service appends one when composing the object path.\nThe user is responsible for creating the Cloud Storage bucket and directory\nreferenced in `uri_prefix`.",
+          "type": "string"
+        }
+      }
+    },
     "Dataset": {
       "id": "Dataset",
       "description": "A message representing a health dataset.\n\nA health dataset represents a collection of healthcare data pertaining to one\nor more patients. This may include multiple modalities of healthcare data,\nsuch as electronic medical records or medical imaging data.",
@@ -1205,7 +1676,7 @@
           }
         },
         "bigqueryDestination": {
-          "description": "The destination BigQuery structure that contains both the dataset\nlocation and corresponding schema config.\n\nThe output is organized in one table per resource type. The server\nreuses the existing tables (if any) that are named after the resource\ntypes, e.g. \"Patient\", \"Observation\". When there is no existing table\nfor a given resource type, the server attempts to create one.\n\nWhen a table schema doesn't align with the schema config, either\nbecause of existing incompatible schema or out of band incompatible\nmodification, the server does not stream in new data.\n\nOne resolution in this case is to delete the incompatible\ntable and let the server recreate one, though the newly created table\nonly contains data after the table recreation.\n\nBigQuery imposes a 1 MB limit on streaming insert row size, therefore\nany resource mutation that generates more than 1 MB of BigQuery data\nwill not be streamed.\n\nResults are appended to the corresponding BigQuery tables. Different\nversions of the same resource are distinguishable by the meta.versionId\nand meta.lastUpdated columns. The operation (CREATE\/UPDATE\/DELETE) that\nresults in the new version is recorded in the meta.tag.\n\nThe tables contain all historical resource versions since streaming was\nenabled. For query convenience, the server also creates one view per\ntable of the same name containing only the current resource version.\n\nIf a resource mutation cannot be streamed to BigQuery, errors will be\nlogged to Stackdriver (see [Viewing logs](\/healthcare\/docs\/how-\ntos\/stackdriver-logging)).",
+          "description": "The destination BigQuery structure that contains both the dataset\nlocation and corresponding schema config.\n\nThe output is organized in one table per resource type. The server\nreuses the existing tables (if any) that are named after the resource\ntypes, e.g. \"Patient\", \"Observation\". When there is no existing table\nfor a given resource type, the server attempts to create one.\n\nWhen a table schema doesn't align with the schema config, either\nbecause of existing incompatible schema or out of band incompatible\nmodification, the server does not stream in new data.\n\nOne resolution in this case is to delete the incompatible\ntable and let the server recreate one, though the newly created table\nonly contains data after the table recreation.\n\nBigQuery imposes a 1 MB limit on streaming insert row size, therefore\nany resource mutation that generates more than 1 MB of BigQuery data\nwill not be streamed.\n\nResults are appended to the corresponding BigQuery tables. Different\nversions of the same resource are distinguishable by the meta.versionId\nand meta.lastUpdated columns. The operation (CREATE\/UPDATE\/DELETE) that\nresults in the new version is recorded in the meta.tag.\n\nThe tables contain all historical resource versions since streaming was\nenabled. For query convenience, the server also creates one view per\ntable of the same name containing only the current resource version.\n\nThe streamed data in the BigQuery dataset is not guaranteed to be\ncompletely unique. The combination of the id and meta.versionId columns\nshould ideally identify a single unique row. But in rare cases,\nduplicates may exist. At query time, users may use the SQL select\nstatement to keep only one of the duplicate rows given an id and\nmeta.versionId pair. Alternatively, the server created view mentioned\nabove also filters out duplicates.\n\nIf a resource mutation cannot be streamed to BigQuery, errors will be\nlogged to Stackdriver (see [Viewing logs](\/healthcare\/docs\/how-\ntos\/stackdriver-logging)).",
           "$ref": "GoogleCloudHealthcareV1alpha2FhirBigQueryDestination"
         }
       }
@@ -3105,7 +3576,7 @@
                       "scopes": [
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
-                      "description": "Import\nAnnotations to\nthe Annotation\nstore by\nloading data from the specified sources.\nIf the request is successful, a detailed response is returned as of type\nImportAnnotationsResponse, contained in the\nresponse field when the\noperation finishes.\nThe metadata field type is\nOperationMetadata.\nIf errors occur, the error\nfield type is ImportAnnotationsErrorDetails.\nErrors are also logged to Stackdriver\n(see [Viewing logs](\/healthcare\/docs\/how-tos\/stackdriver-logging)).\nFor example, the following sample log entry shows a\n`failed to parse GCS object` error that occurred while attempting to import\n`gs:\/\/ANNOTATION_FILENAME.json` to\n`projects\/{project_id}\/locations\/{location_id}\/datasets\/{dataset_id}\/annotationStores\/{annotation_store_id}`.\n```json\njsonPayload: {\n  @type:\n  \"type.googleapis.com\/google.cloud.healthcare.logging.ImportAnnotationLogEntry\"\n  error: {\n    code:  3\n    message:  \"failed to parse GCS object\"\n  }\n  source:  \"gs:\/\/ANNOTATION_FILENAME.json\"\n}\nlogName:\n\"projects\/{project_id}\/logs\/healthcare.googleapis.com%2Fimport_annotations\"\noperation: {\n  id:\n  \"projects\/{project_id}\/locations\/{location_id}\/datasets\/{dataset_id}\/operations\/{operation_id}\"\n  producer:  \"healthcare.googleapis.com\/ImportAnnotations\"\n}\nreceiveTimestamp:  \"TIMESTAMP\"\nresource: {\n  labels: {\n    annotation_store_id:  \"{annotation_store_id}\"\n    dataset_id:  \"{dataset_id}\"\n    location:  \"{location_id}\"\n    project_id:  \"{project_id}\"\n  }\n  type:  \"healthcare_annotation_store\"\n}\nseverity:  \"ERROR\"\ntimestamp:  \"TIMESTAMP\"\n```"
+                      "description": "Import\nAnnotations to\nthe Annotation\nstore by\nloading data from the specified sources.\nIf the request is successful, a detailed response is returned as of type\nImportAnnotationsResponse, contained in the\nresponse field when the\noperation finishes.\nThe metadata field type is\nOperationMetadata.\nIf errors occur, the error\nfield type is ImportAnnotationsErrorDetails.\nErrors are also logged to Stackdriver\n(see [Viewing logs](\/healthcare\/docs\/how-tos\/stackdriver-logging)).\nFor example, the following sample log entry shows a\n`failed to parse Cloud Storage object` error that occurred while attempting\nto import `gs:\/\/ANNOTATION_FILENAME.json` to\n`projects\/{project_id}\/locations\/{location_id}\/datasets\/{dataset_id}\/annotationStores\/{annotation_store_id}`.\n```json\njsonPayload: {\n  @type:\n  \"type.googleapis.com\/google.cloud.healthcare.logging.ImportAnnotationLogEntry\"\n  error: {\n    code:  3\n    message:  \"failed to parse Cloud Storage object\"\n  }\n  source:  \"gs:\/\/ANNOTATION_FILENAME.json\"\n}\nlogName:\n\"projects\/{project_id}\/logs\/healthcare.googleapis.com%2Fimport_annotations\"\noperation: {\n  id:\n  \"projects\/{project_id}\/locations\/{location_id}\/datasets\/{dataset_id}\/operations\/{operation_id}\"\n  producer:  \"healthcare.googleapis.com\/ImportAnnotations\"\n}\nreceiveTimestamp:  \"TIMESTAMP\"\nresource: {\n  labels: {\n    annotation_store_id:  \"{annotation_store_id}\"\n    dataset_id:  \"{dataset_id}\"\n    location:  \"{location_id}\"\n    project_id:  \"{project_id}\"\n  }\n  type:  \"healthcare_annotation_store\"\n}\nseverity:  \"ERROR\"\ntimestamp:  \"TIMESTAMP\"\n```"
                     },
                     "export": {
                       "id": "healthcare.projects.locations.datasets.annotationStores.export",
@@ -3162,6 +3633,1042 @@
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
                       "description": "Evaluate an Annotation store against a\nground truth Annotation store.\nWhen the operation finishes successfully, a detailed response is returned\nof type EvaluateAnnotationStoreResponse, contained in the response. The metadata field type is\nOperationMetadata.\nErrors are logged to Stackdriver\n(see [Viewing logs](\/healthcare\/docs\/how-tos\/stackdriver-logging) and\nImportAnnotations for a sample log entry)."
+                    }
+                  }
+                },
+                "consentStores": {
+                  "methods": {
+                    "setIamPolicy": {
+                      "id": "healthcare.projects.locations.datasets.consentStores.setIamPolicy",
+                      "path": "v1alpha2/{+resource}:setIamPolicy",
+                      "flatPath": "v1alpha2/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/consentStores/{consentStoresId}:setIamPolicy",
+                      "httpMethod": "POST",
+                      "parameters": {
+                        "resource": {
+                          "description": "REQUIRED: The resource for which the policy is being specified.\nSee the operation documentation for the appropriate value for this field.",
+                          "location": "path",
+                          "required": true,
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/datasets\/[^\/]+\/consentStores\/[^\/]+$",
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "resource"
+                      ],
+                      "request": {
+                        "$ref": "SetIamPolicyRequest"
+                      },
+                      "response": {
+                        "$ref": "Policy"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Sets the access control policy on the specified resource. Replaces any\nexisting policy.\n\nCan return Public Errors: NOT_FOUND, INVALID_ARGUMENT and PERMISSION_DENIED"
+                    },
+                    "getIamPolicy": {
+                      "id": "healthcare.projects.locations.datasets.consentStores.getIamPolicy",
+                      "path": "v1alpha2/{+resource}:getIamPolicy",
+                      "flatPath": "v1alpha2/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/consentStores/{consentStoresId}:getIamPolicy",
+                      "httpMethod": "GET",
+                      "parameters": {
+                        "resource": {
+                          "description": "REQUIRED: The resource for which the policy is being requested.\nSee the operation documentation for the appropriate value for this field.",
+                          "location": "path",
+                          "required": true,
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/datasets\/[^\/]+\/consentStores\/[^\/]+$",
+                          "type": "string"
+                        },
+                        "options.requestedPolicyVersion": {
+                          "description": "Optional. The policy format version to be returned.\n\nValid values are 0, 1, and 3. Requests specifying an invalid value will be\nrejected.\n\nRequests for policies with any conditional bindings must specify version 3.\nPolicies without any conditional bindings may specify any valid value or\nleave the field unset.",
+                          "location": "query",
+                          "type": "integer",
+                          "format": "int32"
+                        }
+                      },
+                      "parameterOrder": [
+                        "resource"
+                      ],
+                      "response": {
+                        "$ref": "Policy"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Gets the access control policy for a resource.\nReturns an empty policy if the resource exists and does not have a policy\nset."
+                    },
+                    "testIamPermissions": {
+                      "id": "healthcare.projects.locations.datasets.consentStores.testIamPermissions",
+                      "path": "v1alpha2/{+resource}:testIamPermissions",
+                      "flatPath": "v1alpha2/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/consentStores/{consentStoresId}:testIamPermissions",
+                      "httpMethod": "POST",
+                      "parameters": {
+                        "resource": {
+                          "description": "REQUIRED: The resource for which the policy detail is being requested.\nSee the operation documentation for the appropriate value for this field.",
+                          "location": "path",
+                          "required": true,
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/datasets\/[^\/]+\/consentStores\/[^\/]+$",
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "resource"
+                      ],
+                      "request": {
+                        "$ref": "TestIamPermissionsRequest"
+                      },
+                      "response": {
+                        "$ref": "TestIamPermissionsResponse"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Returns permissions that a caller has on the specified resource.\nIf the resource does not exist, this will return an empty set of\npermissions, not a NOT_FOUND error.\n\nNote: This operation is designed to be used for building permission-aware\nUIs and command-line tools, not for authorization checking. This operation\nmay \"fail open\" without warning."
+                    },
+                    "create": {
+                      "id": "healthcare.projects.locations.datasets.consentStores.create",
+                      "path": "v1alpha2/{+parent}/consentStores",
+                      "flatPath": "v1alpha2/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/consentStores",
+                      "httpMethod": "POST",
+                      "parameters": {
+                        "parent": {
+                          "description": "The name of the dataset this Consent store belongs to.",
+                          "location": "path",
+                          "required": true,
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/datasets\/[^\/]+$",
+                          "type": "string"
+                        },
+                        "consentStoreId": {
+                          "description": "The ID of the consent store to create.\nThe string must match the following regex: `[\\p{L}\\p{N}_\\-\\.]{1,256}`.",
+                          "location": "query",
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "parent"
+                      ],
+                      "request": {
+                        "$ref": "ConsentStore"
+                      },
+                      "response": {
+                        "$ref": "ConsentStore"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Creates a new Consent store in the\nparent dataset. Attempting to create a consent store with the same ID as an\nexisting store fails with an ALREADY_EXISTS error."
+                    },
+                    "get": {
+                      "id": "healthcare.projects.locations.datasets.consentStores.get",
+                      "path": "v1alpha2/{+name}",
+                      "flatPath": "v1alpha2/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/consentStores/{consentStoresId}",
+                      "httpMethod": "GET",
+                      "parameters": {
+                        "name": {
+                          "description": "The resource name of the Consent store to get.",
+                          "location": "path",
+                          "required": true,
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/datasets\/[^\/]+\/consentStores\/[^\/]+$",
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "name"
+                      ],
+                      "response": {
+                        "$ref": "ConsentStore"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Gets the specified Consent store."
+                    },
+                    "delete": {
+                      "id": "healthcare.projects.locations.datasets.consentStores.delete",
+                      "path": "v1alpha2/{+name}",
+                      "flatPath": "v1alpha2/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/consentStores/{consentStoresId}",
+                      "httpMethod": "DELETE",
+                      "parameters": {
+                        "name": {
+                          "description": "The resource name of the Consent store to delete.",
+                          "location": "path",
+                          "required": true,
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/datasets\/[^\/]+\/consentStores\/[^\/]+$",
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "name"
+                      ],
+                      "response": {
+                        "$ref": "Empty"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Deletes the specified Consent store and removes all\nconsent data in the specified consent store."
+                    },
+                    "patch": {
+                      "id": "healthcare.projects.locations.datasets.consentStores.patch",
+                      "path": "v1alpha2/{+name}",
+                      "flatPath": "v1alpha2/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/consentStores/{consentStoresId}",
+                      "httpMethod": "PATCH",
+                      "parameters": {
+                        "name": {
+                          "description": "Output only. Resource name of the Consent store, of the form\n`projects\/{project_id}\/locations\/{location_id}\/datasets\/{dataset_id}\/consentStores\/{consent_store_id}`.",
+                          "location": "path",
+                          "required": true,
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/datasets\/[^\/]+\/consentStores\/[^\/]+$",
+                          "type": "string"
+                        },
+                        "updateMask": {
+                          "description": "The update mask that applies to the resource. For the `FieldMask`\ndefinition, see\nhttps:\/\/developers.google.com\/protocol-buffers\/docs\/reference\/google.protobuf#fieldmask.\nThe `labels` field is allowed to be updated.",
+                          "location": "query",
+                          "type": "string",
+                          "format": "google-fieldmask"
+                        }
+                      },
+                      "parameterOrder": [
+                        "name"
+                      ],
+                      "request": {
+                        "$ref": "ConsentStore"
+                      },
+                      "response": {
+                        "$ref": "ConsentStore"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Updates the specified Consent store."
+                    },
+                    "list": {
+                      "id": "healthcare.projects.locations.datasets.consentStores.list",
+                      "path": "v1alpha2/{+parent}/consentStores",
+                      "flatPath": "v1alpha2/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/consentStores",
+                      "httpMethod": "GET",
+                      "parameters": {
+                        "parent": {
+                          "description": "Name of the dataset.",
+                          "location": "path",
+                          "required": true,
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/datasets\/[^\/]+$",
+                          "type": "string"
+                        },
+                        "pageSize": {
+                          "description": "Limit on the number of Consent stores to return in a single response.\nIf zero the default page size of 100 is used.",
+                          "location": "query",
+                          "type": "integer",
+                          "format": "int32"
+                        },
+                        "pageToken": {
+                          "description": "Token to retrieve the next page of results or empty if there are no more\nresults in the list.",
+                          "location": "query",
+                          "type": "string"
+                        },
+                        "filter": {
+                          "description": "Restricts the stores returned to those matching a filter. Syntax:\nhttps:\/\/cloud.google.com\/appengine\/docs\/standard\/python\/search\/query_strings.\nOnly filtering on labels is supported. For example, `labels.key=value`.",
+                          "location": "query",
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "parent"
+                      ],
+                      "response": {
+                        "$ref": "ListConsentStoresResponse"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Lists the Consent stores in the given\ndataset."
+                    },
+                    "checkDataAccess": {
+                      "id": "healthcare.projects.locations.datasets.consentStores.checkDataAccess",
+                      "path": "v1alpha2/{+consentStore}:checkDataAccess",
+                      "flatPath": "v1alpha2/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/consentStores/{consentStoresId}:checkDataAccess",
+                      "httpMethod": "POST",
+                      "parameters": {
+                        "consentStore": {
+                          "description": "Name of the Consent store where the requested data_id is stored.",
+                          "location": "path",
+                          "required": true,
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/datasets\/[^\/]+\/consentStores\/[^\/]+$",
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "consentStore"
+                      ],
+                      "request": {
+                        "$ref": "CheckDataAccessRequest"
+                      },
+                      "response": {
+                        "$ref": "CheckDataAccessResponse"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Checks if a particular data_id of a User data mapping in the given\nConsent store is\nconsented for a given use."
+                    },
+                    "queryAccessibleData": {
+                      "id": "healthcare.projects.locations.datasets.consentStores.queryAccessibleData",
+                      "path": "v1alpha2/{+consentStore}:queryAccessibleData",
+                      "flatPath": "v1alpha2/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/consentStores/{consentStoresId}:queryAccessibleData",
+                      "httpMethod": "POST",
+                      "parameters": {
+                        "consentStore": {
+                          "description": "Name of the Consent store to retrieve user data mappings from.",
+                          "location": "path",
+                          "required": true,
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/datasets\/[^\/]+\/consentStores\/[^\/]+$",
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "consentStore"
+                      ],
+                      "request": {
+                        "$ref": "QueryAccessibleDataRequest"
+                      },
+                      "response": {
+                        "$ref": "Operation"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Queries all data_ids that are consented for a given use in the given\nConsent store and\nwrites them to a specified destination. Note that if a user has a\nPolicy in their consents\nthat grants the given use, then the user is considered to have consented\neven if other policies do not allow the given use. For example, if a user\nhas a policy with `resource_attributes` matching the requested\n`resource_attributes` and an `authorization_rule` supporting the requested\n`request_attributes`, then the user is considered to have consented even if\nthe user has another policy with the same `resource_attributes` and an\n`authorization_rule` rejecting the requested `request_attributes`.\nErrors are logged to Cloud Logging (see [Viewing logs]\n(\/healthcare\/docs\/how-tos\/stackdriver-logging)). For example, the following\nsample log entry shows a `failed to evaluate consent policy` error that\noccurred during a QueryAccessibleData call to consent store\n`projects\/{project_id}\/locations\/{location_id}\/datasets\/{dataset_id}\/consentStores\/{consent_store_id}`.\n```json\njsonPayload: {\n  @type:\n  \"type.googleapis.com\/google.cloud.healthcare.logging.QueryAccessibleDataLogEntry\"\n  error: {\n    code:  9\n    message:  \"failed to evaluate consent policy\"\n  }\n  resourceName:\n  \"projects\/{project_id}\/locations\/{location_id}\/datasets\/{dataset_id}\/consentStores\/{consent_store_id}\/consents\/{consent_id}\"\n}\nlogName:\n\"projects\/{project_id}\/logs\/healthcare.googleapis.com%2Fquery_accessible_data\"\noperation: {\n  id:\n  \"projects\/{project_id}\/locations\/{location_id}\/datasets\/{dataset_id}\/operations\/{operation_id}\"\n  producer:  \"healthcare.googleapis.com\/QueryAccessibleData\"\n}\nreceiveTimestamp:  \"TIMESTAMP\"\nresource: {\n  labels: {\n    consent_store_id:  \"{consent_store_id}\"\n    dataset_id:  \"{dataset_id}\"\n    location:  \"{location_id}\"\n    project_id:  \"{project_id}\"\n  }\n  type:  \"healthcare_consent_store\"\n}\nseverity:  \"ERROR\"\ntimestamp:  \"TIMESTAMP\"\n```"
+                    }
+                  }
+                  ,
+                  "resources": {
+                    "attributeDefinitions": {
+                      "methods": {
+                        "create": {
+                          "id": "healthcare.projects.locations.datasets.consentStores.attributeDefinitions.create",
+                          "path": "v1alpha2/{+parent}/attributeDefinitions",
+                          "flatPath": "v1alpha2/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/consentStores/{consentStoresId}/attributeDefinitions",
+                          "httpMethod": "POST",
+                          "parameters": {
+                            "parent": {
+                              "description": "The name of the consent store that this Attribute definition belongs to.",
+                              "location": "path",
+                              "required": true,
+                              "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/datasets\/[^\/]+\/consentStores\/[^\/]+$",
+                              "type": "string"
+                            },
+                            "attributeDefinitionId": {
+                              "description": "The ID of the Attribute definition to create.\nThe string must match the following regex: `_a-zA-Z{0,255}`\nand must not be a reserved keyword within the Common Expression Language as\nlisted on https:\/\/github.com\/google\/cel-spec\/blob\/master\/doc\/langdef.md.",
+                              "location": "query",
+                              "type": "string"
+                            }
+                          },
+                          "parameterOrder": [
+                            "parent"
+                          ],
+                          "request": {
+                            "$ref": "AttributeDefinition"
+                          },
+                          "response": {
+                            "$ref": "AttributeDefinition"
+                          },
+                          "scopes": [
+                            "https://www.googleapis.com/auth/cloud-platform"
+                          ],
+                          "description": "Creates a new Attribute definition in the\nparent Consent store."
+                        },
+                        "get": {
+                          "id": "healthcare.projects.locations.datasets.consentStores.attributeDefinitions.get",
+                          "path": "v1alpha2/{+name}",
+                          "flatPath": "v1alpha2/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/consentStores/{consentStoresId}/attributeDefinitions/{attributeDefinitionsId}",
+                          "httpMethod": "GET",
+                          "parameters": {
+                            "name": {
+                              "description": "The resource name of the Attribute definition to get.",
+                              "location": "path",
+                              "required": true,
+                              "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/datasets\/[^\/]+\/consentStores\/[^\/]+\/attributeDefinitions\/[^\/]+$",
+                              "type": "string"
+                            }
+                          },
+                          "parameterOrder": [
+                            "name"
+                          ],
+                          "response": {
+                            "$ref": "AttributeDefinition"
+                          },
+                          "scopes": [
+                            "https://www.googleapis.com/auth/cloud-platform"
+                          ],
+                          "description": "Gets the specified Attribute definition."
+                        },
+                        "delete": {
+                          "id": "healthcare.projects.locations.datasets.consentStores.attributeDefinitions.delete",
+                          "path": "v1alpha2/{+name}",
+                          "flatPath": "v1alpha2/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/consentStores/{consentStoresId}/attributeDefinitions/{attributeDefinitionsId}",
+                          "httpMethod": "DELETE",
+                          "parameters": {
+                            "name": {
+                              "description": "The resource name of the Attribute definition to delete.",
+                              "location": "path",
+                              "required": true,
+                              "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/datasets\/[^\/]+\/consentStores\/[^\/]+\/attributeDefinitions\/[^\/]+$",
+                              "type": "string"
+                            }
+                          },
+                          "parameterOrder": [
+                            "name"
+                          ],
+                          "response": {
+                            "$ref": "Empty"
+                          },
+                          "scopes": [
+                            "https://www.googleapis.com/auth/cloud-platform"
+                          ],
+                          "description": "Deletes the specified Attribute definition. Fails if it\nis referenced in any Consent or User data mapping."
+                        },
+                        "patch": {
+                          "id": "healthcare.projects.locations.datasets.consentStores.attributeDefinitions.patch",
+                          "path": "v1alpha2/{+name}",
+                          "flatPath": "v1alpha2/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/consentStores/{consentStoresId}/attributeDefinitions/{attributeDefinitionsId}",
+                          "httpMethod": "PATCH",
+                          "parameters": {
+                            "name": {
+                              "description": "Output only. Resource name of the attribute definition, of the form\n`projects\/{project_id}\/locations\/{location_id}\/datasets\/{dataset_id}\/consentStores\/{consent_store_id}\/attributeDefinitions\/{attribute_definition_id}`.",
+                              "location": "path",
+                              "required": true,
+                              "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/datasets\/[^\/]+\/consentStores\/[^\/]+\/attributeDefinitions\/[^\/]+$",
+                              "type": "string"
+                            },
+                            "updateMask": {
+                              "description": "The update mask that applies to the resource. For the `FieldMask`\ndefinition, see\nhttps:\/\/developers.google.com\/protocol-buffers\/docs\/reference\/google.protobuf#fieldmask.\nThe `description`, `possible_values`, `consent_default_values`, and\n`data_mapping_default_value` fields are allowed to be updated. The updated\n`possible_values` must contain all values from the previous\n`possible_values`.",
+                              "location": "query",
+                              "type": "string",
+                              "format": "google-fieldmask"
+                            }
+                          },
+                          "parameterOrder": [
+                            "name"
+                          ],
+                          "request": {
+                            "$ref": "AttributeDefinition"
+                          },
+                          "response": {
+                            "$ref": "AttributeDefinition"
+                          },
+                          "scopes": [
+                            "https://www.googleapis.com/auth/cloud-platform"
+                          ],
+                          "description": "Updates the specified Attribute definition."
+                        },
+                        "list": {
+                          "id": "healthcare.projects.locations.datasets.consentStores.attributeDefinitions.list",
+                          "path": "v1alpha2/{+parent}/attributeDefinitions",
+                          "flatPath": "v1alpha2/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/consentStores/{consentStoresId}/attributeDefinitions",
+                          "httpMethod": "GET",
+                          "parameters": {
+                            "parent": {
+                              "description": "Name of the Consent store to retrieve attribute definitions from.",
+                              "location": "path",
+                              "required": true,
+                              "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/datasets\/[^\/]+\/consentStores\/[^\/]+$",
+                              "type": "string"
+                            },
+                            "pageSize": {
+                              "description": "Limit on the number of attribute definitions to return in a single\nresponse. If zero the default page size of 100 is used.",
+                              "location": "query",
+                              "type": "integer",
+                              "format": "int32"
+                            },
+                            "pageToken": {
+                              "description": "Token to retrieve the next page of results or empty if there are no more\nresults in the list.",
+                              "location": "query",
+                              "type": "string"
+                            },
+                            "filter": {
+                              "description": "Restricts the attributes returned to those matching a filter. Syntax:\nhttps:\/\/cloud.google.com\/appengine\/docs\/standard\/python\/search\/query_strings.\nThe only field available for filtering is `category`.",
+                              "location": "query",
+                              "type": "string"
+                            }
+                          },
+                          "parameterOrder": [
+                            "parent"
+                          ],
+                          "response": {
+                            "$ref": "ListAttributeDefinitionsResponse"
+                          },
+                          "scopes": [
+                            "https://www.googleapis.com/auth/cloud-platform"
+                          ],
+                          "description": "Lists the Attribute definitions in the given\nConsent store."
+                        }
+                      }
+                    },
+                    "consentArtifacts": {
+                      "methods": {
+                        "create": {
+                          "id": "healthcare.projects.locations.datasets.consentStores.consentArtifacts.create",
+                          "path": "v1alpha2/{+parent}/consentArtifacts",
+                          "flatPath": "v1alpha2/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/consentStores/{consentStoresId}/consentArtifacts",
+                          "httpMethod": "POST",
+                          "parameters": {
+                            "parent": {
+                              "description": "The name of the Consent store this consent artifact belongs to.",
+                              "location": "path",
+                              "required": true,
+                              "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/datasets\/[^\/]+\/consentStores\/[^\/]+$",
+                              "type": "string"
+                            }
+                          },
+                          "parameterOrder": [
+                            "parent"
+                          ],
+                          "request": {
+                            "$ref": "ConsentArtifact"
+                          },
+                          "response": {
+                            "$ref": "ConsentArtifact"
+                          },
+                          "scopes": [
+                            "https://www.googleapis.com/auth/cloud-platform"
+                          ],
+                          "description": "Creates a new Consent artifact in the\nparent Consent store."
+                        },
+                        "get": {
+                          "id": "healthcare.projects.locations.datasets.consentStores.consentArtifacts.get",
+                          "path": "v1alpha2/{+name}",
+                          "flatPath": "v1alpha2/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/consentStores/{consentStoresId}/consentArtifacts/{consentArtifactsId}",
+                          "httpMethod": "GET",
+                          "parameters": {
+                            "name": {
+                              "description": "The resource name of the consent artifact to retrieve.",
+                              "location": "path",
+                              "required": true,
+                              "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/datasets\/[^\/]+\/consentStores\/[^\/]+\/consentArtifacts\/[^\/]+$",
+                              "type": "string"
+                            }
+                          },
+                          "parameterOrder": [
+                            "name"
+                          ],
+                          "response": {
+                            "$ref": "ConsentArtifact"
+                          },
+                          "scopes": [
+                            "https://www.googleapis.com/auth/cloud-platform"
+                          ],
+                          "description": "Gets the specified Consent artifact."
+                        },
+                        "delete": {
+                          "id": "healthcare.projects.locations.datasets.consentStores.consentArtifacts.delete",
+                          "path": "v1alpha2/{+name}",
+                          "flatPath": "v1alpha2/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/consentStores/{consentStoresId}/consentArtifacts/{consentArtifactsId}",
+                          "httpMethod": "DELETE",
+                          "parameters": {
+                            "name": {
+                              "description": "The resource name of the consent artifact to delete.",
+                              "location": "path",
+                              "required": true,
+                              "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/datasets\/[^\/]+\/consentStores\/[^\/]+\/consentArtifacts\/[^\/]+$",
+                              "type": "string"
+                            }
+                          },
+                          "parameterOrder": [
+                            "name"
+                          ],
+                          "response": {
+                            "$ref": "Empty"
+                          },
+                          "scopes": [
+                            "https://www.googleapis.com/auth/cloud-platform"
+                          ],
+                          "description": "Deletes the specified Consent artifact. Fails if it is\nreferenced by any Consent."
+                        },
+                        "list": {
+                          "id": "healthcare.projects.locations.datasets.consentStores.consentArtifacts.list",
+                          "path": "v1alpha2/{+parent}/consentArtifacts",
+                          "flatPath": "v1alpha2/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/consentStores/{consentStoresId}/consentArtifacts",
+                          "httpMethod": "GET",
+                          "parameters": {
+                            "parent": {
+                              "description": "Name of the Consent store to retrieve consent artifacts from.",
+                              "location": "path",
+                              "required": true,
+                              "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/datasets\/[^\/]+\/consentStores\/[^\/]+$",
+                              "type": "string"
+                            },
+                            "pageSize": {
+                              "description": "Limit on the number of consent artifacts to return in a single response.\nIf zero the default page size of 100 is used.",
+                              "location": "query",
+                              "type": "integer",
+                              "format": "int32"
+                            },
+                            "pageToken": {
+                              "description": "The next_page_token value returned from the previous List request, if any.",
+                              "location": "query",
+                              "type": "string"
+                            },
+                            "filter": {
+                              "description": "Restricts the artifacts returned to those matching a filter. Syntax:\nhttps:\/\/cloud.google.com\/appengine\/docs\/standard\/python\/search\/query_strings\nThe fields available for filtering are:\n\n- user_id\n- consent_content_version",
+                              "location": "query",
+                              "type": "string"
+                            }
+                          },
+                          "parameterOrder": [
+                            "parent"
+                          ],
+                          "response": {
+                            "$ref": "ListConsentArtifactsResponse"
+                          },
+                          "scopes": [
+                            "https://www.googleapis.com/auth/cloud-platform"
+                          ],
+                          "description": "Lists the Consent artifacts in the given\nConsent store."
+                        }
+                      }
+                    },
+                    "consents": {
+                      "methods": {
+                        "create": {
+                          "id": "healthcare.projects.locations.datasets.consentStores.consents.create",
+                          "path": "v1alpha2/{+parent}/consents",
+                          "flatPath": "v1alpha2/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/consentStores/{consentStoresId}/consents",
+                          "httpMethod": "POST",
+                          "parameters": {
+                            "parent": {
+                              "description": "Name of the consent store.",
+                              "location": "path",
+                              "required": true,
+                              "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/datasets\/[^\/]+\/consentStores\/[^\/]+$",
+                              "type": "string"
+                            }
+                          },
+                          "parameterOrder": [
+                            "parent"
+                          ],
+                          "request": {
+                            "$ref": "Consent"
+                          },
+                          "response": {
+                            "$ref": "Consent"
+                          },
+                          "scopes": [
+                            "https://www.googleapis.com/auth/cloud-platform"
+                          ],
+                          "description": "Creates a new Consent\nin the parent Consent store."
+                        },
+                        "get": {
+                          "id": "healthcare.projects.locations.datasets.consentStores.consents.get",
+                          "path": "v1alpha2/{+name}",
+                          "flatPath": "v1alpha2/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/consentStores/{consentStoresId}/consents/{consentsId}",
+                          "httpMethod": "GET",
+                          "parameters": {
+                            "name": {
+                              "description": "The resource name of the consent to retrieve.",
+                              "location": "path",
+                              "required": true,
+                              "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/datasets\/[^\/]+\/consentStores\/[^\/]+\/consents\/[^\/]+$",
+                              "type": "string"
+                            }
+                          },
+                          "parameterOrder": [
+                            "name"
+                          ],
+                          "response": {
+                            "$ref": "Consent"
+                          },
+                          "scopes": [
+                            "https://www.googleapis.com/auth/cloud-platform"
+                          ],
+                          "description": "Gets the specified Consent."
+                        },
+                        "delete": {
+                          "id": "healthcare.projects.locations.datasets.consentStores.consents.delete",
+                          "path": "v1alpha2/{+name}",
+                          "flatPath": "v1alpha2/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/consentStores/{consentStoresId}/consents/{consentsId}",
+                          "httpMethod": "DELETE",
+                          "parameters": {
+                            "name": {
+                              "description": "The resource name of the consent to delete.",
+                              "location": "path",
+                              "required": true,
+                              "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/datasets\/[^\/]+\/consentStores\/[^\/]+\/consents\/[^\/]+$",
+                              "type": "string"
+                            }
+                          },
+                          "parameterOrder": [
+                            "name"
+                          ],
+                          "response": {
+                            "$ref": "Empty"
+                          },
+                          "scopes": [
+                            "https://www.googleapis.com/auth/cloud-platform"
+                          ],
+                          "description": "Deletes the Consent and\nits history. To keep a record of the Consent but mark it inactive, see\n[RevokeConsent]. To delete the history of a Consent, see\n[DeleteAllConsentHistory]. This operation does not affect the related\nconsent artifact."
+                        },
+                        "patch": {
+                          "id": "healthcare.projects.locations.datasets.consentStores.consents.patch",
+                          "path": "v1alpha2/{+name}",
+                          "flatPath": "v1alpha2/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/consentStores/{consentStoresId}/consents/{consentsId}",
+                          "httpMethod": "PATCH",
+                          "parameters": {
+                            "name": {
+                              "description": "Output only. Resource name of the Consent, of the form\n`projects\/{project_id}\/locations\/{location_id}\/datasets\/{dataset_id}\/consentStores\/{consent_store_id}\/consents\/{consent_id}`.",
+                              "location": "path",
+                              "required": true,
+                              "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/datasets\/[^\/]+\/consentStores\/[^\/]+\/consents\/[^\/]+$",
+                              "type": "string"
+                            },
+                            "updateMask": {
+                              "description": "The update mask to apply to the resource. For the `FieldMask` definition,\nsee\nhttps:\/\/developers.google.com\/protocol-buffers\/docs\/reference\/google.protobuf#fieldmask.\nThe `user_id`, `policies`, `consent_artifact`, and\n`revoke_consent_artifact` fields can be updated.",
+                              "location": "query",
+                              "type": "string",
+                              "format": "google-fieldmask"
+                            }
+                          },
+                          "parameterOrder": [
+                            "name"
+                          ],
+                          "request": {
+                            "$ref": "Consent"
+                          },
+                          "response": {
+                            "$ref": "Consent"
+                          },
+                          "scopes": [
+                            "https://www.googleapis.com/auth/cloud-platform"
+                          ],
+                          "description": "Updates the Consent.\nThe existing consent is archived and replaced with the one that has updated\nfields. Only active consents can be updated. To view previous versions, use\nthe [ListConsentHistory] operation."
+                        },
+                        "list": {
+                          "id": "healthcare.projects.locations.datasets.consentStores.consents.list",
+                          "path": "v1alpha2/{+parent}/consents",
+                          "flatPath": "v1alpha2/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/consentStores/{consentStoresId}/consents",
+                          "httpMethod": "GET",
+                          "parameters": {
+                            "parent": {
+                              "description": "Name of the Consent store to retrieve consents from.",
+                              "location": "path",
+                              "required": true,
+                              "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/datasets\/[^\/]+\/consentStores\/[^\/]+$",
+                              "type": "string"
+                            },
+                            "pageSize": {
+                              "description": "Limit on the number of consents to return in a single response.\nIf zero the default page size of 100 is used.",
+                              "location": "query",
+                              "type": "integer",
+                              "format": "int32"
+                            },
+                            "pageToken": {
+                              "description": "The next_page_token value returned from the previous List request, if any.",
+                              "location": "query",
+                              "type": "string"
+                            },
+                            "filter": {
+                              "description": "Restricts the consents returned to those matching a filter. Syntax:\nhttps:\/\/cloud.google.com\/appengine\/docs\/standard\/python\/search\/query_strings\nThe fields available for filtering are:\n\n- user_id\n- consent_artifact\n- state\n- state_change_time",
+                              "location": "query",
+                              "type": "string"
+                            }
+                          },
+                          "parameterOrder": [
+                            "parent"
+                          ],
+                          "response": {
+                            "$ref": "ListConsentsResponse"
+                          },
+                          "scopes": [
+                            "https://www.googleapis.com/auth/cloud-platform"
+                          ],
+                          "description": "Lists the Consents in\nthe given Consent store."
+                        },
+                        "revoke": {
+                          "id": "healthcare.projects.locations.datasets.consentStores.consents.revoke",
+                          "path": "v1alpha2/{+name}:revoke",
+                          "flatPath": "v1alpha2/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/consentStores/{consentStoresId}/consents/{consentsId}:revoke",
+                          "httpMethod": "POST",
+                          "parameters": {
+                            "name": {
+                              "description": "The resource name of the consent to revoke.",
+                              "location": "path",
+                              "required": true,
+                              "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/datasets\/[^\/]+\/consentStores\/[^\/]+\/consents\/[^\/]+$",
+                              "type": "string"
+                            }
+                          },
+                          "parameterOrder": [
+                            "name"
+                          ],
+                          "request": {
+                            "$ref": "RevokeConsentRequest"
+                          },
+                          "response": {
+                            "$ref": "RevokeConsentResponse"
+                          },
+                          "scopes": [
+                            "https://www.googleapis.com/auth/cloud-platform"
+                          ],
+                          "description": "Revokes the current version of the specified Consent."
+                        }
+                      }
+                      ,
+                      "resources": {
+                        "history": {
+                          "methods": {
+                            "deleteAll": {
+                              "id": "healthcare.projects.locations.datasets.consentStores.consents.history.deleteAll",
+                              "path": "v1alpha2/{+consent}/history:deleteAll",
+                              "flatPath": "v1alpha2/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/consentStores/{consentStoresId}/consents/{consentsId}/history:deleteAll",
+                              "httpMethod": "POST",
+                              "parameters": {
+                                "consent": {
+                                  "description": "The name of the Consent for which the history is deleted, of the form\n`projects\/{project_id}\/locations\/{location_id}\/datasets\/{dataset_id}\/consentStores\/{consent_store_id}\/consents\/{consent_id}`.",
+                                  "location": "path",
+                                  "required": true,
+                                  "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/datasets\/[^\/]+\/consentStores\/[^\/]+\/consents\/[^\/]+$",
+                                  "type": "string"
+                                }
+                              },
+                              "parameterOrder": [
+                                "consent"
+                              ],
+                              "request": {
+                                "$ref": "DeleteAllConsentHistoryRequest"
+                              },
+                              "response": {
+                                "$ref": "Empty"
+                              },
+                              "scopes": [
+                                "https://www.googleapis.com/auth/cloud-platform"
+                              ],
+                              "description": "Deletes historical versions of a Consent excluding the\ncurrent version from the Consent store.\nThis operation does not affect the related consent artifact."
+                            },
+                            "list": {
+                              "id": "healthcare.projects.locations.datasets.consentStores.consents.history.list",
+                              "path": "v1alpha2/{+consent}/history",
+                              "flatPath": "v1alpha2/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/consentStores/{consentStoresId}/consents/{consentsId}/history",
+                              "httpMethod": "GET",
+                              "parameters": {
+                                "consent": {
+                                  "description": "The name of the Consent for which the history is listed, of the form\n`projects\/{project_id}\/locations\/{location_id}\/datasets\/{dataset_id}\/consentStores\/{consent_store_id}\/consents\/{consent_id}`.",
+                                  "location": "path",
+                                  "required": true,
+                                  "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/datasets\/[^\/]+\/consentStores\/[^\/]+\/consents\/[^\/]+$",
+                                  "type": "string"
+                                },
+                                "pageSize": {
+                                  "description": "Limit on the number of historical versions to return in a single response.\nIf zero the default page size of 100 is used.",
+                                  "location": "query",
+                                  "type": "integer",
+                                  "format": "int32"
+                                },
+                                "pageToken": {
+                                  "description": "The next_page_token value returned from the previous List request, if any.",
+                                  "location": "query",
+                                  "type": "string"
+                                },
+                                "filter": {
+                                  "description": "Restricts the historical versions of consents returned to those\nmatching a filter. Syntax:\nhttps:\/\/cloud.google.com\/appengine\/docs\/standard\/python\/search\/query_strings\nThe fields available for filtering are:\n\n- user_id\n- consent_artifact\n- state\n- state_change_time",
+                                  "location": "query",
+                                  "type": "string"
+                                }
+                              },
+                              "parameterOrder": [
+                                "consent"
+                              ],
+                              "response": {
+                                "$ref": "ListConsentHistoryResponse"
+                              },
+                              "scopes": [
+                                "https://www.googleapis.com/auth/cloud-platform"
+                              ],
+                              "description": "Lists historical versions of a Consent excluding the\ncurrent version from the Consent store."
+                            }
+                          }
+                        }
+                      }
+                    },
+                    "userDataMappings": {
+                      "methods": {
+                        "create": {
+                          "id": "healthcare.projects.locations.datasets.consentStores.userDataMappings.create",
+                          "path": "v1alpha2/{+parent}/userDataMappings",
+                          "flatPath": "v1alpha2/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/consentStores/{consentStoresId}/userDataMappings",
+                          "httpMethod": "POST",
+                          "parameters": {
+                            "parent": {
+                              "description": "Name of the consent store.",
+                              "location": "path",
+                              "required": true,
+                              "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/datasets\/[^\/]+\/consentStores\/[^\/]+$",
+                              "type": "string"
+                            }
+                          },
+                          "parameterOrder": [
+                            "parent"
+                          ],
+                          "request": {
+                            "$ref": "UserDataMapping"
+                          },
+                          "response": {
+                            "$ref": "UserDataMapping"
+                          },
+                          "scopes": [
+                            "https://www.googleapis.com/auth/cloud-platform"
+                          ],
+                          "description": "Creates a new User data mapping in the\nparent Consent store."
+                        },
+                        "get": {
+                          "id": "healthcare.projects.locations.datasets.consentStores.userDataMappings.get",
+                          "path": "v1alpha2/{+name}",
+                          "flatPath": "v1alpha2/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/consentStores/{consentStoresId}/userDataMappings/{userDataMappingsId}",
+                          "httpMethod": "GET",
+                          "parameters": {
+                            "name": {
+                              "description": "The resource name of the user data mapping to retrieve.",
+                              "location": "path",
+                              "required": true,
+                              "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/datasets\/[^\/]+\/consentStores\/[^\/]+\/userDataMappings\/[^\/]+$",
+                              "type": "string"
+                            }
+                          },
+                          "parameterOrder": [
+                            "name"
+                          ],
+                          "response": {
+                            "$ref": "UserDataMapping"
+                          },
+                          "scopes": [
+                            "https://www.googleapis.com/auth/cloud-platform"
+                          ],
+                          "description": "Gets the specified User data mapping."
+                        },
+                        "delete": {
+                          "id": "healthcare.projects.locations.datasets.consentStores.userDataMappings.delete",
+                          "path": "v1alpha2/{+name}",
+                          "flatPath": "v1alpha2/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/consentStores/{consentStoresId}/userDataMappings/{userDataMappingsId}",
+                          "httpMethod": "DELETE",
+                          "parameters": {
+                            "name": {
+                              "description": "The resource name of the user data mapping to delete.",
+                              "location": "path",
+                              "required": true,
+                              "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/datasets\/[^\/]+\/consentStores\/[^\/]+\/userDataMappings\/[^\/]+$",
+                              "type": "string"
+                            }
+                          },
+                          "parameterOrder": [
+                            "name"
+                          ],
+                          "response": {
+                            "$ref": "Empty"
+                          },
+                          "scopes": [
+                            "https://www.googleapis.com/auth/cloud-platform"
+                          ],
+                          "description": "Deletes the specified User data mapping."
+                        },
+                        "patch": {
+                          "id": "healthcare.projects.locations.datasets.consentStores.userDataMappings.patch",
+                          "path": "v1alpha2/{+name}",
+                          "flatPath": "v1alpha2/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/consentStores/{consentStoresId}/userDataMappings/{userDataMappingsId}",
+                          "httpMethod": "PATCH",
+                          "parameters": {
+                            "name": {
+                              "description": "Output only. Resource name of the User data mapping, of the form\n`projects\/{project_id}\/locations\/{location_id}\/datasets\/{dataset_id}\/consentStores\/{consent_store_id}\/userDataMappings\/{user_data_mapping_id}`.",
+                              "location": "path",
+                              "required": true,
+                              "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/datasets\/[^\/]+\/consentStores\/[^\/]+\/userDataMappings\/[^\/]+$",
+                              "type": "string"
+                            },
+                            "updateMask": {
+                              "description": "The update mask that applies to the resource. For the `FieldMask`\ndefinition, see\nhttps:\/\/developers.google.com\/protocol-buffers\/docs\/reference\/google.protobuf#fieldmask.",
+                              "location": "query",
+                              "type": "string",
+                              "format": "google-fieldmask"
+                            }
+                          },
+                          "parameterOrder": [
+                            "name"
+                          ],
+                          "request": {
+                            "$ref": "UserDataMapping"
+                          },
+                          "response": {
+                            "$ref": "UserDataMapping"
+                          },
+                          "scopes": [
+                            "https://www.googleapis.com/auth/cloud-platform"
+                          ],
+                          "description": "Updates the specified User data mapping."
+                        },
+                        "list": {
+                          "id": "healthcare.projects.locations.datasets.consentStores.userDataMappings.list",
+                          "path": "v1alpha2/{+parent}/userDataMappings",
+                          "flatPath": "v1alpha2/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/consentStores/{consentStoresId}/userDataMappings",
+                          "httpMethod": "GET",
+                          "parameters": {
+                            "parent": {
+                              "description": "Name of the Consent store to retrieve user data mappings from.",
+                              "location": "path",
+                              "required": true,
+                              "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/datasets\/[^\/]+\/consentStores\/[^\/]+$",
+                              "type": "string"
+                            },
+                            "pageSize": {
+                              "description": "Limit on the number of user data mappings to return in a single response.\nIf zero the default page size of 100 is used.",
+                              "location": "query",
+                              "type": "integer",
+                              "format": "int32"
+                            },
+                            "pageToken": {
+                              "description": "Token to retrieve the next page of results or empty if there are no more\nresults in the list.",
+                              "location": "query",
+                              "type": "string"
+                            },
+                            "filter": {
+                              "description": "Restricts the user data mappings returned to those matching a filter.\nSyntax:\nhttps:\/\/cloud.google.com\/appengine\/docs\/standard\/python\/search\/query_strings",
+                              "location": "query",
+                              "type": "string"
+                            }
+                          },
+                          "parameterOrder": [
+                            "parent"
+                          ],
+                          "response": {
+                            "$ref": "ListUserDataMappingsResponse"
+                          },
+                          "scopes": [
+                            "https://www.googleapis.com/auth/cloud-platform"
+                          ],
+                          "description": "Lists the User data mappings in the given\nConsent store."
+                        },
+                        "archive": {
+                          "id": "healthcare.projects.locations.datasets.consentStores.userDataMappings.archive",
+                          "path": "v1alpha2/{+name}:archive",
+                          "flatPath": "v1alpha2/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/consentStores/{consentStoresId}/userDataMappings/{userDataMappingsId}:archive",
+                          "httpMethod": "POST",
+                          "parameters": {
+                            "name": {
+                              "description": "The resource name of the user data mapping to archive.",
+                              "location": "path",
+                              "required": true,
+                              "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/datasets\/[^\/]+\/consentStores\/[^\/]+\/userDataMappings\/[^\/]+$",
+                              "type": "string"
+                            }
+                          },
+                          "parameterOrder": [
+                            "name"
+                          ],
+                          "response": {
+                            "$ref": "ArchiveUserDataMappingResponse"
+                          },
+                          "scopes": [
+                            "https://www.googleapis.com/auth/cloud-platform"
+                          ],
+                          "description": "Archives the specified User data mapping."
+                        }
+                      }
                     }
                   }
                 },

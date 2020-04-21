@@ -303,6 +303,7 @@ class Cluster(_messages.Message):
       pods that can be run simultaneously on a node in the node pool of this
       cluster. Only honored if cluster created with IP Alias support.
     description: An optional description of this cluster.
+    enableAutogke: Enable the cluster to be AutoGKE
     enableGvnic: Enable or disable gvnic on this cluster. This field is not
       yet used.
     enableKubernetesAlpha: Kubernetes alpha features are enabled on this
@@ -528,52 +529,53 @@ class Cluster(_messages.Message):
   databaseEncryptionKeyId = _messages.StringField(14)
   defaultMaxPodsConstraint = _messages.MessageField('MaxPodsConstraint', 15)
   description = _messages.StringField(16)
-  enableGvnic = _messages.BooleanField(17)
-  enableKubernetesAlpha = _messages.BooleanField(18)
-  enableTpu = _messages.BooleanField(19)
-  endpoint = _messages.StringField(20)
-  expireTime = _messages.StringField(21)
-  initialClusterVersion = _messages.StringField(22)
-  initialNodeCount = _messages.IntegerField(23, variant=_messages.Variant.INT32)
-  instanceGroupUrls = _messages.StringField(24, repeated=True)
-  ipAllocationPolicy = _messages.MessageField('IPAllocationPolicy', 25)
-  labelFingerprint = _messages.StringField(26)
-  legacyAbac = _messages.MessageField('LegacyAbac', 27)
-  location = _messages.StringField(28)
-  locations = _messages.StringField(29, repeated=True)
-  loggingService = _messages.StringField(30)
-  maintenancePolicy = _messages.MessageField('MaintenancePolicy', 31)
-  masterAuth = _messages.MessageField('MasterAuth', 32)
-  masterAuthorizedNetworksConfig = _messages.MessageField('MasterAuthorizedNetworksConfig', 33)
-  masterIpv4CidrBlock = _messages.StringField(34)
-  monitoringService = _messages.StringField(35)
-  name = _messages.StringField(36)
-  network = _messages.StringField(37)
-  networkConfig = _messages.MessageField('NetworkConfig', 38)
-  networkPolicy = _messages.MessageField('NetworkPolicy', 39)
-  nodeConfig = _messages.MessageField('NodeConfig', 40)
-  nodeIpv4CidrSize = _messages.IntegerField(41, variant=_messages.Variant.INT32)
-  nodePools = _messages.MessageField('NodePool', 42, repeated=True)
-  nodeSchedulingStrategy = _messages.EnumField('NodeSchedulingStrategyValueValuesEnum', 43)
-  podSecurityPolicyConfig = _messages.MessageField('PodSecurityPolicyConfig', 44)
-  privateCluster = _messages.BooleanField(45)
-  privateClusterConfig = _messages.MessageField('PrivateClusterConfig', 46)
-  releaseChannel = _messages.MessageField('ReleaseChannel', 47)
-  resourceLabels = _messages.MessageField('ResourceLabelsValue', 48)
-  resourceUsageExportConfig = _messages.MessageField('ResourceUsageExportConfig', 49)
-  resourceVersion = _messages.StringField(50)
-  securityProfile = _messages.MessageField('SecurityProfile', 51)
-  selfLink = _messages.StringField(52)
-  servicesIpv4Cidr = _messages.StringField(53)
-  shieldedNodes = _messages.MessageField('ShieldedNodes', 54)
-  status = _messages.EnumField('StatusValueValuesEnum', 55)
-  statusMessage = _messages.StringField(56)
-  subnetwork = _messages.StringField(57)
-  tpuConfig = _messages.MessageField('TpuConfig', 58)
-  tpuIpv4CidrBlock = _messages.StringField(59)
-  verticalPodAutoscaling = _messages.MessageField('VerticalPodAutoscaling', 60)
-  workloadIdentityConfig = _messages.MessageField('WorkloadIdentityConfig', 61)
-  zone = _messages.StringField(62)
+  enableAutogke = _messages.BooleanField(17)
+  enableGvnic = _messages.BooleanField(18)
+  enableKubernetesAlpha = _messages.BooleanField(19)
+  enableTpu = _messages.BooleanField(20)
+  endpoint = _messages.StringField(21)
+  expireTime = _messages.StringField(22)
+  initialClusterVersion = _messages.StringField(23)
+  initialNodeCount = _messages.IntegerField(24, variant=_messages.Variant.INT32)
+  instanceGroupUrls = _messages.StringField(25, repeated=True)
+  ipAllocationPolicy = _messages.MessageField('IPAllocationPolicy', 26)
+  labelFingerprint = _messages.StringField(27)
+  legacyAbac = _messages.MessageField('LegacyAbac', 28)
+  location = _messages.StringField(29)
+  locations = _messages.StringField(30, repeated=True)
+  loggingService = _messages.StringField(31)
+  maintenancePolicy = _messages.MessageField('MaintenancePolicy', 32)
+  masterAuth = _messages.MessageField('MasterAuth', 33)
+  masterAuthorizedNetworksConfig = _messages.MessageField('MasterAuthorizedNetworksConfig', 34)
+  masterIpv4CidrBlock = _messages.StringField(35)
+  monitoringService = _messages.StringField(36)
+  name = _messages.StringField(37)
+  network = _messages.StringField(38)
+  networkConfig = _messages.MessageField('NetworkConfig', 39)
+  networkPolicy = _messages.MessageField('NetworkPolicy', 40)
+  nodeConfig = _messages.MessageField('NodeConfig', 41)
+  nodeIpv4CidrSize = _messages.IntegerField(42, variant=_messages.Variant.INT32)
+  nodePools = _messages.MessageField('NodePool', 43, repeated=True)
+  nodeSchedulingStrategy = _messages.EnumField('NodeSchedulingStrategyValueValuesEnum', 44)
+  podSecurityPolicyConfig = _messages.MessageField('PodSecurityPolicyConfig', 45)
+  privateCluster = _messages.BooleanField(46)
+  privateClusterConfig = _messages.MessageField('PrivateClusterConfig', 47)
+  releaseChannel = _messages.MessageField('ReleaseChannel', 48)
+  resourceLabels = _messages.MessageField('ResourceLabelsValue', 49)
+  resourceUsageExportConfig = _messages.MessageField('ResourceUsageExportConfig', 50)
+  resourceVersion = _messages.StringField(51)
+  securityProfile = _messages.MessageField('SecurityProfile', 52)
+  selfLink = _messages.StringField(53)
+  servicesIpv4Cidr = _messages.StringField(54)
+  shieldedNodes = _messages.MessageField('ShieldedNodes', 55)
+  status = _messages.EnumField('StatusValueValuesEnum', 56)
+  statusMessage = _messages.StringField(57)
+  subnetwork = _messages.StringField(58)
+  tpuConfig = _messages.MessageField('TpuConfig', 59)
+  tpuIpv4CidrBlock = _messages.StringField(60)
+  verticalPodAutoscaling = _messages.MessageField('VerticalPodAutoscaling', 61)
+  workloadIdentityConfig = _messages.MessageField('WorkloadIdentityConfig', 62)
+  zone = _messages.StringField(63)
 
 
 class ClusterAutoscaling(_messages.Message):
@@ -648,6 +650,10 @@ class ClusterUpdate(_messages.Message):
   be applied to a cluster with each request, so at most one field can be
   provided.
 
+  Enums:
+    DesiredPrivateIpv6GoogleAccessValueValuesEnum: The desired state of IPv6
+      connectivity to Google Services.
+
   Fields:
     concurrentNodeCount: Controls how many nodes to upgrade in parallel. A
       maximum of 20 concurrent nodes is allowed. Deprecated. This feature will
@@ -669,6 +675,7 @@ class ClusterUpdate(_messages.Message):
     desiredDatabaseEncryption: Configuration of etcd encryption.
     desiredDefaultSnatStatus: The desired status of whether to disable default
       sNAT for this cluster.
+    desiredEnableAutogke: Enable or disable AutoGKE for the cluster.
     desiredEnableGvnic: Enable or disable gvnic on this cluster. This field is
       not yet used.
     desiredImage: The desired name of the image to use for this node. This is
@@ -733,6 +740,8 @@ class ClusterUpdate(_messages.Message):
     desiredPrivateClusterConfig: The desired private cluster configuration.
     desiredPrivateIpv6Access: The desired status of Private IPv6 access for
       this cluster.
+    desiredPrivateIpv6GoogleAccess: The desired state of IPv6 connectivity to
+      Google Services.
     desiredReleaseChannel: The desired release channel configuration.
     desiredResourceUsageExportConfig: The desired configuration for exporting
       resource usage.
@@ -745,6 +754,23 @@ class ClusterUpdate(_messages.Message):
     securityProfile: User may change security profile during update
   """
 
+  class DesiredPrivateIpv6GoogleAccessValueValuesEnum(_messages.Enum):
+    r"""The desired state of IPv6 connectivity to Google Services.
+
+    Values:
+      PRIVATE_IPV6_GOOGLE_ACCESS_UNSPECIFIED: Default value. Same as DISABLED
+      PRIVATE_IPV6_GOOGLE_ACCESS_DISABLED: No private access to or from Google
+        Services
+      PRIVATE_IPV6_GOOGLE_ACCESS_TO_GOOGLE: Enables private IPv6 access to
+        Google Services from GKE
+      PRIVATE_IPV6_GOOGLE_ACCESS_BIDIRECTIONAL: Enables priate IPv6 access to
+        and from Google Services
+    """
+    PRIVATE_IPV6_GOOGLE_ACCESS_UNSPECIFIED = 0
+    PRIVATE_IPV6_GOOGLE_ACCESS_DISABLED = 1
+    PRIVATE_IPV6_GOOGLE_ACCESS_TO_GOOGLE = 2
+    PRIVATE_IPV6_GOOGLE_ACCESS_BIDIRECTIONAL = 3
+
   concurrentNodeCount = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   desiredAddonsConfig = _messages.MessageField('AddonsConfig', 2)
   desiredBinaryAuthorization = _messages.MessageField('BinaryAuthorization', 3)
@@ -754,31 +780,33 @@ class ClusterUpdate(_messages.Message):
   desiredCostManagementConfig = _messages.MessageField('CostManagementConfig', 7)
   desiredDatabaseEncryption = _messages.MessageField('DatabaseEncryption', 8)
   desiredDefaultSnatStatus = _messages.MessageField('DefaultSnatStatus', 9)
-  desiredEnableGvnic = _messages.BooleanField(10)
-  desiredImage = _messages.StringField(11)
-  desiredImageProject = _messages.StringField(12)
-  desiredImageType = _messages.StringField(13)
-  desiredIntraNodeVisibilityConfig = _messages.MessageField('IntraNodeVisibilityConfig', 14)
-  desiredL4ilbSubsettingConfig = _messages.MessageField('ILBSubsettingConfig', 15)
-  desiredLocations = _messages.StringField(16, repeated=True)
-  desiredLoggingService = _messages.StringField(17)
-  desiredMasterAuthorizedNetworksConfig = _messages.MessageField('MasterAuthorizedNetworksConfig', 18)
-  desiredMasterVersion = _messages.StringField(19)
-  desiredMonitoringService = _messages.StringField(20)
-  desiredNodePoolAutoscaling = _messages.MessageField('NodePoolAutoscaling', 21)
-  desiredNodePoolId = _messages.StringField(22)
-  desiredNodeVersion = _messages.StringField(23)
-  desiredPodSecurityPolicyConfig = _messages.MessageField('PodSecurityPolicyConfig', 24)
-  desiredPrivateClusterConfig = _messages.MessageField('PrivateClusterConfig', 25)
-  desiredPrivateIpv6Access = _messages.MessageField('PrivateIPv6Status', 26)
-  desiredReleaseChannel = _messages.MessageField('ReleaseChannel', 27)
-  desiredResourceUsageExportConfig = _messages.MessageField('ResourceUsageExportConfig', 28)
-  desiredShieldedNodes = _messages.MessageField('ShieldedNodes', 29)
-  desiredTpuConfig = _messages.MessageField('TpuConfig', 30)
-  desiredVerticalPodAutoscaling = _messages.MessageField('VerticalPodAutoscaling', 31)
-  desiredWorkloadIdentityConfig = _messages.MessageField('WorkloadIdentityConfig', 32)
-  privateClusterConfig = _messages.MessageField('PrivateClusterConfig', 33)
-  securityProfile = _messages.MessageField('SecurityProfile', 34)
+  desiredEnableAutogke = _messages.BooleanField(10)
+  desiredEnableGvnic = _messages.BooleanField(11)
+  desiredImage = _messages.StringField(12)
+  desiredImageProject = _messages.StringField(13)
+  desiredImageType = _messages.StringField(14)
+  desiredIntraNodeVisibilityConfig = _messages.MessageField('IntraNodeVisibilityConfig', 15)
+  desiredL4ilbSubsettingConfig = _messages.MessageField('ILBSubsettingConfig', 16)
+  desiredLocations = _messages.StringField(17, repeated=True)
+  desiredLoggingService = _messages.StringField(18)
+  desiredMasterAuthorizedNetworksConfig = _messages.MessageField('MasterAuthorizedNetworksConfig', 19)
+  desiredMasterVersion = _messages.StringField(20)
+  desiredMonitoringService = _messages.StringField(21)
+  desiredNodePoolAutoscaling = _messages.MessageField('NodePoolAutoscaling', 22)
+  desiredNodePoolId = _messages.StringField(23)
+  desiredNodeVersion = _messages.StringField(24)
+  desiredPodSecurityPolicyConfig = _messages.MessageField('PodSecurityPolicyConfig', 25)
+  desiredPrivateClusterConfig = _messages.MessageField('PrivateClusterConfig', 26)
+  desiredPrivateIpv6Access = _messages.MessageField('PrivateIPv6Status', 27)
+  desiredPrivateIpv6GoogleAccess = _messages.EnumField('DesiredPrivateIpv6GoogleAccessValueValuesEnum', 28)
+  desiredReleaseChannel = _messages.MessageField('ReleaseChannel', 29)
+  desiredResourceUsageExportConfig = _messages.MessageField('ResourceUsageExportConfig', 30)
+  desiredShieldedNodes = _messages.MessageField('ShieldedNodes', 31)
+  desiredTpuConfig = _messages.MessageField('TpuConfig', 32)
+  desiredVerticalPodAutoscaling = _messages.MessageField('VerticalPodAutoscaling', 33)
+  desiredWorkloadIdentityConfig = _messages.MessageField('WorkloadIdentityConfig', 34)
+  privateClusterConfig = _messages.MessageField('PrivateClusterConfig', 35)
+  securityProfile = _messages.MessageField('SecurityProfile', 36)
 
 
 class CompleteIPRotationRequest(_messages.Message):
@@ -2131,6 +2159,9 @@ class NetworkConfig(_messages.Message):
   Enums:
     DatapathProviderValueValuesEnum: The desired datapath provider for this
       cluster. By default, uses the IPTables-based kube-proxy implementation.
+    PrivateIpv6GoogleAccessValueValuesEnum: The desired state of IPv6
+      connectivity to Google Services. By default, no private IPv6 access to
+      or from Google Services (all access will be via IPv4)
 
   Fields:
     datapathProvider: The desired datapath provider for this cluster. By
@@ -2157,6 +2188,9 @@ class NetworkConfig(_messages.Message):
       network(/compute/docs/networks-and-firewalls#networks) to which the
       cluster is connected. Example: projects/my-project/global/networks/my-
       network
+    privateIpv6GoogleAccess: The desired state of IPv6 connectivity to Google
+      Services. By default, no private IPv6 access to or from Google Services
+      (all access will be via IPv4)
     subnetwork: Output only. The relative name of the Google Compute Engine
       [subnetwork](/compute/docs/vpc) to which the cluster is connected.
       Example: projects/my-project/regions/us-central1/subnetworks/my-subnet
@@ -2176,6 +2210,25 @@ class NetworkConfig(_messages.Message):
     LEGACY_DATAPATH = 1
     ADVANCED_DATAPATH = 2
 
+  class PrivateIpv6GoogleAccessValueValuesEnum(_messages.Enum):
+    r"""The desired state of IPv6 connectivity to Google Services. By default,
+    no private IPv6 access to or from Google Services (all access will be via
+    IPv4)
+
+    Values:
+      PRIVATE_IPV6_GOOGLE_ACCESS_UNSPECIFIED: Default value. Same as DISABLED
+      PRIVATE_IPV6_GOOGLE_ACCESS_DISABLED: No private access to or from Google
+        Services
+      PRIVATE_IPV6_GOOGLE_ACCESS_TO_GOOGLE: Enables private IPv6 access to
+        Google Services from GKE
+      PRIVATE_IPV6_GOOGLE_ACCESS_BIDIRECTIONAL: Enables priate IPv6 access to
+        and from Google Services
+    """
+    PRIVATE_IPV6_GOOGLE_ACCESS_UNSPECIFIED = 0
+    PRIVATE_IPV6_GOOGLE_ACCESS_DISABLED = 1
+    PRIVATE_IPV6_GOOGLE_ACCESS_TO_GOOGLE = 2
+    PRIVATE_IPV6_GOOGLE_ACCESS_BIDIRECTIONAL = 3
+
   datapathProvider = _messages.EnumField('DatapathProviderValueValuesEnum', 1)
   disableDefaultSnat = _messages.BooleanField(2)
   enableCloudNat = _messages.BooleanField(3)
@@ -2184,7 +2237,8 @@ class NetworkConfig(_messages.Message):
   enablePrivateIpv6Access = _messages.BooleanField(6)
   enableSharedNetwork = _messages.BooleanField(7)
   network = _messages.StringField(8)
-  subnetwork = _messages.StringField(9)
+  privateIpv6GoogleAccess = _messages.EnumField('PrivateIpv6GoogleAccessValueValuesEnum', 9)
+  subnetwork = _messages.StringField(10)
 
 
 class NetworkPolicy(_messages.Message):

@@ -290,7 +290,7 @@
           "type": "boolean"
         },
         "enableAutomaticPunctuation": {
-          "description": "If 'true', adds punctuation to recognition result hypotheses.\nThis feature is only available in select languages. Setting this for\nrequests in other languages has no effect at all.\nThe default 'false' value does not add punctuation to result hypotheses.\nNote: This is currently offered as an experimental service, complimentary\nto all users. In the future this may be exclusively available as a\npremium feature.",
+          "description": "If 'true', adds punctuation to recognition result hypotheses.\nThis feature is only available in select languages. Setting this for\nrequests in other languages has no effect at all.\nThe default 'false' value does not add punctuation to result hypotheses.",
           "type": "boolean"
         },
         "enableSpeakerDiarization": {
@@ -1075,7 +1075,7 @@
           "format": "google-datetime"
         },
         "uri": {
-          "description": "The URI of the audio file being transcribed. Empty if the audio was sent\nas byte content. ",
+          "description": "Output only. The URI of the audio file being transcribed. Empty if the audio was sent\nas byte content. ",
           "type": "string"
         }
       }

@@ -295,6 +295,10 @@
         "gkeCluster": {
           "description": "If this Membership is a Kubernetes API server hosted on GKE, this is a\nself link to its GCP resource.",
           "$ref": "GkeCluster"
+        },
+        "kubernetesMetadata": {
+          "description": "Output only. For Memberships that point to Kubernetes Endpoints, this field provides\nuseful metadata.",
+          "$ref": "KubernetesMetadata"
         }
       }
     },
@@ -306,6 +310,36 @@
         "resourceLink": {
           "description": "Self-link of the GCP resource for the GKE cluster.\nFor example:\n\/\/container.googleapis.com\/v1\/projects\/my-project\/zones\/us-west1-a\/clusters\/my-cluster\nIt can be at the most 1000 characters in length.",
           "type": "string"
+        }
+      }
+    },
+    "KubernetesMetadata": {
+      "id": "KubernetesMetadata",
+      "description": "KubernetesMetadata provides informational metadata for Memberships\nthat are created from Kubernetes Endpoints (currently, these are equivalent\nto Kubernetes clusters).",
+      "type": "object",
+      "properties": {
+        "kubernetesApiServerVersion": {
+          "description": "Kubernetes API server version string as reported by '\/version'.",
+          "type": "string"
+        },
+        "nodeProviderId": {
+          "description": "Node providerID as reported by the first node in the list of nodes on\nthe Kubernetes endpoint. It should be noted that some Kubernetes platforms\n(like GKE-on-GCP) support zero-node clusters. For these platforms, the\nnode_count will be zero and the node_provider_id will be empty.",
+          "type": "string"
+        },
+        "nodeCount": {
+          "description": "Node count as reported by Kubernetes nodes resources.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "vcpuCount": {
+          "description": "vCPU count as reported by Kubernetes nodes resources.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "updateTime": {
+          "description": "The time at which these details were last updated. This update_time is\ndifferent from the Membership-level update_time since EndpointDetails are\nupdated internally for API consumers.",
+          "type": "string",
+          "format": "google-datetime"
         }
       }
     },
@@ -816,7 +850,6 @@
       "type": "object",
       "properties": {
         "logMode": {
-          "description": "Whether Gin logging should happen in a fail-closed manner at the caller.\nThis is currently supported in the LocalIAM implementation, Stubby C++,\nand Stubby Java. For Apps Framework, see go\/af-audit-logging#failclosed.",
           "enumDescriptions": [
             "Client is not required to write a partial Gin log immediately after\nthe authorization check. If client chooses to write one and it fails,\nclient may either fail open (allow the operation to continue) or\nfail closed (handle as a DENY outcome).",
             "The application's operation in the context of which this authorization\ncheck is being made may only be performed if it is successfully logged\nto Gin. For instance, the authorization library may satisfy this\nobligation by emitting a partial log entry at authorization check time\nand only returning ALLOW to the application if it succeeds.\n\nIf a matching Rule has this directive, but the client has not indicated\nthat it will honor such requirements, then the IAM check will result in\nauthorization failure by setting CheckPolicyResponse.success=false."

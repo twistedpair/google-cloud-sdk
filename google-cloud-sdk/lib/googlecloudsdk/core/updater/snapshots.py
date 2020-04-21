@@ -537,7 +537,8 @@ class ComponentSnapshot(object):
         if key not in ('components', 'schema_version', 'revision', 'version'):
           del sdk_def_dict[key]
     files.WriteFileContents(
-        path, json.dumps(sdk_def_dict, indent=2, sort_keys=True))
+        path, json.dumps(sdk_def_dict, indent=2, sort_keys=True,
+                         separators=(',', ': ')))
 
 
 class ComponentSnapshotDiff(object):

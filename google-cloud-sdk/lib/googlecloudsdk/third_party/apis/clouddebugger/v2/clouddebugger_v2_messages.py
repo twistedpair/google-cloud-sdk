@@ -53,6 +53,7 @@ class Breakpoint(_messages.Message):
       at the breakpoint location is hit.
     LogLevelValueValuesEnum: Indicates the severity of the log. Only relevant
       when action is `LOG`.
+    StateValueValuesEnum: The current state of the breakpoint.
 
   Messages:
     LabelsValue: A set of custom breakpoint properties, populated by the
@@ -61,6 +62,9 @@ class Breakpoint(_messages.Message):
   Fields:
     action: Action that the agent should perform when the code at the
       breakpoint location is hit.
+    canaryExpireTime: The deadline for the breakpoint to stay in CANARY_ACTIVE
+      state. The value is meaningless when the breakpoint is not in
+      CANARY_ACTIVE state.
     condition: Condition that triggers the breakpoint. The condition is a
       compound boolean expression composed using expressions in a programming
       language at the source location.
@@ -96,6 +100,7 @@ class Breakpoint(_messages.Message):
       message.count ]`.
     stackFrames: The stack at breakpoint time, where stack_frames[0]
       represents the most recently entered function.
+    state: The current state of the breakpoint.
     status: Breakpoint status.  The status includes an error flag and a human
       readable message. This field is usually unset. The message can be either
       informational or an error message. Regardless, clients should always
@@ -143,6 +148,24 @@ class Breakpoint(_messages.Message):
     WARNING = 1
     ERROR = 2
 
+  class StateValueValuesEnum(_messages.Enum):
+    r"""The current state of the breakpoint.
+
+    Values:
+      STATE_UNSPECIFIED: Breakpoint state UNSPECIFIED.
+      STATE_CANARY_PENDING_AGENTS: Enabling canary but no agents are
+        available.
+      STATE_CANARY_ACTIVE: Enabling canary and successfully assigning canary
+        agents.
+      STATE_ROLLING_TO_ALL: Breakpoint rolling out to all agents.
+      STATE_IS_FINAL: Breakpoint is hit/complete/failed.
+    """
+    STATE_UNSPECIFIED = 0
+    STATE_CANARY_PENDING_AGENTS = 1
+    STATE_CANARY_ACTIVE = 2
+    STATE_ROLLING_TO_ALL = 3
+    STATE_IS_FINAL = 4
+
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
     r"""A set of custom breakpoint properties, populated by the agent, to be
@@ -169,21 +192,23 @@ class Breakpoint(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   action = _messages.EnumField('ActionValueValuesEnum', 1)
-  condition = _messages.StringField(2)
-  createTime = _messages.StringField(3)
-  evaluatedExpressions = _messages.MessageField('Variable', 4, repeated=True)
-  expressions = _messages.StringField(5, repeated=True)
-  finalTime = _messages.StringField(6)
-  id = _messages.StringField(7)
-  isFinalState = _messages.BooleanField(8)
-  labels = _messages.MessageField('LabelsValue', 9)
-  location = _messages.MessageField('SourceLocation', 10)
-  logLevel = _messages.EnumField('LogLevelValueValuesEnum', 11)
-  logMessageFormat = _messages.StringField(12)
-  stackFrames = _messages.MessageField('StackFrame', 13, repeated=True)
-  status = _messages.MessageField('StatusMessage', 14)
-  userEmail = _messages.StringField(15)
-  variableTable = _messages.MessageField('Variable', 16, repeated=True)
+  canaryExpireTime = _messages.StringField(2)
+  condition = _messages.StringField(3)
+  createTime = _messages.StringField(4)
+  evaluatedExpressions = _messages.MessageField('Variable', 5, repeated=True)
+  expressions = _messages.StringField(6, repeated=True)
+  finalTime = _messages.StringField(7)
+  id = _messages.StringField(8)
+  isFinalState = _messages.BooleanField(9)
+  labels = _messages.MessageField('LabelsValue', 10)
+  location = _messages.MessageField('SourceLocation', 11)
+  logLevel = _messages.EnumField('LogLevelValueValuesEnum', 12)
+  logMessageFormat = _messages.StringField(13)
+  stackFrames = _messages.MessageField('StackFrame', 14, repeated=True)
+  state = _messages.EnumField('StateValueValuesEnum', 15)
+  status = _messages.MessageField('StatusMessage', 16)
+  userEmail = _messages.StringField(17)
+  variableTable = _messages.MessageField('Variable', 18, repeated=True)
 
 
 class CloudRepoSourceContext(_messages.Message):
@@ -236,6 +261,8 @@ class ClouddebuggerControllerDebuggeesBreakpointsListRequest(_messages.Message):
   r"""A ClouddebuggerControllerDebuggeesBreakpointsListRequest object.
 
   Fields:
+    agentId: Identifies the agent. This is the ID returned in the
+      RegisterDebuggee response.
     debuggeeId: Required. Identifies the debuggee.
     successOnTimeout: If set to `true` (recommended), returns
       `google.rpc.Code.OK` status and sets the `wait_expired` response field
@@ -248,9 +275,10 @@ class ClouddebuggerControllerDebuggeesBreakpointsListRequest(_messages.Message):
       last response. The initial value should be set to `"init"`.
   """
 
-  debuggeeId = _messages.StringField(1, required=True)
-  successOnTimeout = _messages.BooleanField(2)
-  waitToken = _messages.StringField(3)
+  agentId = _messages.StringField(1)
+  debuggeeId = _messages.StringField(2, required=True)
+  successOnTimeout = _messages.BooleanField(3)
+  waitToken = _messages.StringField(4)
 
 
 class ClouddebuggerControllerDebuggeesBreakpointsUpdateRequest(_messages.Message):
@@ -348,17 +376,35 @@ class ClouddebuggerDebuggerDebuggeesBreakpointsListRequest(_messages.Message):
 class ClouddebuggerDebuggerDebuggeesBreakpointsSetRequest(_messages.Message):
   r"""A ClouddebuggerDebuggerDebuggeesBreakpointsSetRequest object.
 
+  Enums:
+    CanaryOptionValueValuesEnum: The canary option set by the user upon
+      setting breakpoint.
+
   Fields:
     breakpoint: A Breakpoint resource to be passed as the request body.
+    canaryOption: The canary option set by the user upon setting breakpoint.
     clientVersion: Required. The client version making the call. Schema:
       `domain/type/version` (e.g., `google.com/intellij/v1`).
     debuggeeId: Required. ID of the debuggee where the breakpoint is to be
       set.
   """
 
+  class CanaryOptionValueValuesEnum(_messages.Enum):
+    r"""The canary option set by the user upon setting breakpoint.
+
+    Values:
+      CANARY_OPTION_UNSPECIFIED: <no description>
+      CANARY_OPTION_TRY_ENABLE: <no description>
+      CANARY_OPTION_TRY_DISABLE: <no description>
+    """
+    CANARY_OPTION_UNSPECIFIED = 0
+    CANARY_OPTION_TRY_ENABLE = 1
+    CANARY_OPTION_TRY_DISABLE = 2
+
   breakpoint = _messages.MessageField('Breakpoint', 1)
-  clientVersion = _messages.StringField(2)
-  debuggeeId = _messages.StringField(3, required=True)
+  canaryOption = _messages.EnumField('CanaryOptionValueValuesEnum', 2)
+  clientVersion = _messages.StringField(3)
+  debuggeeId = _messages.StringField(4, required=True)
 
 
 class ClouddebuggerDebuggerDebuggeesListRequest(_messages.Message):
@@ -385,6 +431,10 @@ class Debuggee(_messages.Message):
   Agents attached to the same debuggee identify themselves as such by using
   exactly the same Debuggee message value when registering.
 
+  Enums:
+    CanaryModeValueValuesEnum: Used when setting breakpoint canary for this
+      debuggee.
+
   Messages:
     LabelsValue: A set of custom debuggee properties, populated by the agent,
       to be displayed to the user.
@@ -392,6 +442,7 @@ class Debuggee(_messages.Message):
   Fields:
     agentVersion: Version ID of the agent. Schema: `domain/language-
       platform/vmajor.minor` (for example `google.com/java-gcp/v1.1`).
+    canaryMode: Used when setting breakpoint canary for this debuggee.
     description: Human readable description of the debuggee. Including a
       human-readable project name, environment name and version information is
       recommended.
@@ -421,6 +472,32 @@ class Debuggee(_messages.Message):
       that identifies the code, binary, configuration and environment.
   """
 
+  class CanaryModeValueValuesEnum(_messages.Enum):
+    r"""Used when setting breakpoint canary for this debuggee.
+
+    Values:
+      CANARY_MODE_UNSPECIFIED: Before "use_breakpoint_canary" is deprecated:
+        CANARY_MODE_UNSPECIFIED = use_breakpoint_canary ?
+        CANARY_MODE_DEFAULT_ENABLED :
+        CANARY_MODE_DEFAULT_DISABLED; After "use_breakpoint_canary" is
+        deprecated:   CANARY_MODE_UNSPECIFIED = CANARY_MODE_DEFAULT_ENABLED;
+      CANARY_MODE_ALWAYS_ENABLED: Always enable breakpoint canary regardless
+        of the value of breakpoint's canary option.
+      CANARY_MODE_ALWAYS_DISABLED: Always disable breakpoint canary regardless
+        of the value of breakpoint's canary option.
+      CANARY_MODE_DEFAULT_ENABLED: Depends on the breakpoint's canary option.
+        Enable canary by default if the breakpoint's canary option is not
+        specified.
+      CANARY_MODE_DEFAULT_DISABLED: Depends on the breakpoint's canary option.
+        Disable canary by default if the breakpoint's canary option is not
+        specified.
+    """
+    CANARY_MODE_UNSPECIFIED = 0
+    CANARY_MODE_ALWAYS_ENABLED = 1
+    CANARY_MODE_ALWAYS_DISABLED = 2
+    CANARY_MODE_DEFAULT_ENABLED = 3
+    CANARY_MODE_DEFAULT_DISABLED = 4
+
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
     r"""A set of custom debuggee properties, populated by the agent, to be
@@ -447,16 +524,17 @@ class Debuggee(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   agentVersion = _messages.StringField(1)
-  description = _messages.StringField(2)
-  extSourceContexts = _messages.MessageField('ExtendedSourceContext', 3, repeated=True)
-  id = _messages.StringField(4)
-  isDisabled = _messages.BooleanField(5)
-  isInactive = _messages.BooleanField(6)
-  labels = _messages.MessageField('LabelsValue', 7)
-  project = _messages.StringField(8)
-  sourceContexts = _messages.MessageField('SourceContext', 9, repeated=True)
-  status = _messages.MessageField('StatusMessage', 10)
-  uniquifier = _messages.StringField(11)
+  canaryMode = _messages.EnumField('CanaryModeValueValuesEnum', 2)
+  description = _messages.StringField(3)
+  extSourceContexts = _messages.MessageField('ExtendedSourceContext', 4, repeated=True)
+  id = _messages.StringField(5)
+  isDisabled = _messages.BooleanField(6)
+  isInactive = _messages.BooleanField(7)
+  labels = _messages.MessageField('LabelsValue', 8)
+  project = _messages.StringField(9)
+  sourceContexts = _messages.MessageField('SourceContext', 10, repeated=True)
+  status = _messages.MessageField('StatusMessage', 11)
+  uniquifier = _messages.StringField(12)
 
 
 class Empty(_messages.Message):
@@ -646,6 +724,8 @@ class RegisterDebuggeeResponse(_messages.Message):
   r"""Response for registering a debuggee.
 
   Fields:
+    agentId: A unique ID generated for the agent. Each RegisterDebuggee
+      request will generate a new agent ID.
     debuggee: Debuggee resource. The field `id` is guaranteed to be set (in
       addition to the echoed fields). If the field `is_disabled` is set to
       `true`, the agent should disable itself by removing all breakpoints and
@@ -653,7 +733,8 @@ class RegisterDebuggeeResponse(_messages.Message):
       `RegisterDebuggee` until reenabled.
   """
 
-  debuggee = _messages.MessageField('Debuggee', 1)
+  agentId = _messages.StringField(1)
+  debuggee = _messages.MessageField('Debuggee', 2)
 
 
 class RepoId(_messages.Message):
@@ -825,6 +906,8 @@ class StatusMessage(_messages.Message):
         to its expressions.
       BREAKPOINT_AGE: Status applies to the breakpoint and is related to its
         age.
+      BREAKPOINT_CANARY_FAILED: Status applies to the breakpoint when the
+        breakpoint failed to exit the canary state.
       VARIABLE_NAME: Status applies to the entire variable.
       VARIABLE_VALUE: Status applies to variable value (variable name is
         valid).
@@ -834,8 +917,9 @@ class StatusMessage(_messages.Message):
     BREAKPOINT_CONDITION = 2
     BREAKPOINT_EXPRESSION = 3
     BREAKPOINT_AGE = 4
-    VARIABLE_NAME = 5
-    VARIABLE_VALUE = 6
+    BREAKPOINT_CANARY_FAILED = 5
+    VARIABLE_NAME = 6
+    VARIABLE_VALUE = 7
 
   description = _messages.MessageField('FormatMessage', 1)
   isError = _messages.BooleanField(2)

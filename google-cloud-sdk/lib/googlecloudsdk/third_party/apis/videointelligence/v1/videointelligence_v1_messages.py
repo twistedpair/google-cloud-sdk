@@ -36,24 +36,24 @@ class GoogleCloudVideointelligenceV1AnnotateVideoRequest(_messages.Message):
   Fields:
     features: Required. Requested video annotation features.
     inputContent: The video data bytes. If unset, the input video(s) should be
-      specified via `input_uri`. If set, `input_uri` should be unset.
+      specified via the `input_uri`. If set, `input_uri` must be unset.
     inputUri: Input video location. Currently, only [Cloud
-      Storage](https://cloud.google.com/storage/) URIs are supported, which
+      Storage](https://cloud.google.com/storage/) URIs are supported. URIs
       must be specified in the following format: `gs://bucket-id/object-id`
       (other URI formats return google.rpc.Code.INVALID_ARGUMENT). For more
       information, see [Request URIs](https://cloud.google.com/storage/docs
-      /request-endpoints). A video URI may include wildcards in `object-id`,
-      and thus identify multiple videos. Supported wildcards: '*' to match 0
-      or more characters; '?' to match 1 character. If unset, the input video
-      should be embedded in the request as `input_content`. If set,
-      `input_content` should be unset.
+      /request-endpoints). To identify multiple videos, a video URI may
+      include wildcards in the `object-id`. Supported wildcards: '*' to match
+      0 or more characters; '?' to match 1 character. If unset, the input
+      video should be embedded in the request as `input_content`. If set,
+      `input_content` must be unset.
     locationId: Optional. Cloud region where annotation should take place.
-      Supported cloud regions: `us-east1`, `us-west1`, `europe-west1`, `asia-
-      east1`. If no region is specified, a region will be determined based on
-      video file location.
+      Supported cloud regions are: `us-east1`, `us-west1`, `europe-west1`,
+      `asia-east1`. If no region is specified, the region will be determined
+      based on video file location.
     outputUri: Optional. Location where the output (in JSON format) should be
       stored. Currently, only [Cloud
-      Storage](https://cloud.google.com/storage/) URIs are supported, which
+      Storage](https://cloud.google.com/storage/) URIs are supported. These
       must be specified in the following format: `gs://bucket-id/object-id`
       (other URI formats return google.rpc.Code.INVALID_ARGUMENT). For more
       information, see [Request URIs](https://cloud.google.com/storage/docs
@@ -109,8 +109,8 @@ class GoogleCloudVideointelligenceV1DetectedAttribute(_messages.Message):
 
   Fields:
     confidence: Detected attribute confidence. Range [0, 1].
-    name: The name of the attribute, i.e. glasses, dark_glasses, mouth_open
-      etc. A full list of supported type names will be provided in the
+    name: The name of the attribute, for example, glasses, dark_glasses,
+      mouth_open. A full list of supported type names will be provided in the
       document.
     value: Text value of the detection result. For example, the value for
       "HairColor" can be "black", "blonde", etc.
@@ -127,7 +127,7 @@ class GoogleCloudVideointelligenceV1DetectedLandmark(_messages.Message):
 
   Fields:
     confidence: The confidence score of the detected landmark. Range [0, 1].
-    name: The name of this landmark, i.e. left_hand, right_shoulder.
+    name: The name of this landmark, for example, left_hand, right_shoulder.
     point: The 2D point of the detected landmark using the normalized image
       coordindate system. The normalized coordinates have the range from 0 to
       1.
@@ -142,7 +142,7 @@ class GoogleCloudVideointelligenceV1Entity(_messages.Message):
   r"""Detected entity from video analysis.
 
   Fields:
-    description: Textual description, e.g. `Fixed-gear bicycle`.
+    description: Textual description, e.g., `Fixed-gear bicycle`.
     entityId: Opaque entity ID. Some IDs may be available in [Google Knowledge
       Graph Search API](https://developers.google.com/knowledge-graph/).
     languageCode: Language code for `description` in BCP-47 format.
@@ -215,9 +215,10 @@ class GoogleCloudVideointelligenceV1LabelAnnotation(_messages.Message):
   r"""Label annotation.
 
   Fields:
-    categoryEntities: Common categories for the detected entity. E.g. when the
-      label is `Terrier` the category is likely `dog`. And in some cases there
-      might be more than one categories e.g. `Terrier` could also be a `pet`.
+    categoryEntities: Common categories for the detected entity. For example,
+      when the label is `Terrier`, the category is likely `dog`. And in some
+      cases there might be more than one categories e.g., `Terrier` could also
+      be a `pet`.
     entity: Detected entity.
     frames: All video frames where a label was detected.
     segments: All video segments where a label was detected.
@@ -241,22 +242,22 @@ class GoogleCloudVideointelligenceV1LabelDetectionConfig(_messages.Message):
     frameConfidenceThreshold: The confidence threshold we perform filtering on
       the labels from frame-level detection. If not set, it is set to 0.4 by
       default. The valid range for this threshold is [0.1, 0.9]. Any value set
-      outside of this range will be clipped. Note: for best results please
-      follow the default threshold. We will update the default threshold
-      everytime when we release a new model.
+      outside of this range will be clipped. Note: For best results, follow
+      the default threshold. We will update the default threshold everytime
+      when we release a new model.
     labelDetectionMode: What labels should be detected with LABEL_DETECTION,
       in addition to video-level labels or segment-level labels. If
       unspecified, defaults to `SHOT_MODE`.
     model: Model to use for label detection. Supported values:
       "builtin/stable" (the default if unset) and "builtin/latest".
-    stationaryCamera: Whether the video has been shot from a stationary (i.e.
+    stationaryCamera: Whether the video has been shot from a stationary (i.e.,
       non-moving) camera. When set to true, might improve detection accuracy
       for moving objects. Should be used with `SHOT_AND_FRAME_MODE` enabled.
     videoConfidenceThreshold: The confidence threshold we perform filtering on
-      the labels from video-level and shot-level detections. If not set, it is
+      the labels from video-level and shot-level detections. If not set, it's
       set to 0.3 by default. The valid range for this threshold is [0.1, 0.9].
-      Any value set outside of this range will be clipped. Note: for best
-      results please follow the default threshold. We will update the default
+      Any value set outside of this range will be clipped. Note: For best
+      results, follow the default threshold. We will update the default
       threshold everytime when we release a new model.
   """
 
@@ -466,8 +467,8 @@ class GoogleCloudVideointelligenceV1SpeechRecognitionAlternative(_messages.Messa
       sentinel value indicating `confidence` was not set.
     transcript: Transcript text representing the words that the user spoke.
     words: Output only. A list of word-specific information for each
-      recognized word. Note: When `enable_speaker_diarization` is true, you
-      will see all the words from the beginning of the audio.
+      recognized word. Note: When `enable_speaker_diarization` is set to true,
+      you will see all the words from the beginning of the audio.
   """
 
   confidence = _messages.FloatField(1, variant=_messages.Variant.FLOAT)
@@ -513,7 +514,7 @@ class GoogleCloudVideointelligenceV1SpeechTranscriptionConfig(_messages.Message)
       for each recognized word in the top alternative of the recognition
       result using a speaker_tag provided in the WordInfo. Note: When this is
       true, we send all the words from the beginning of the audio for the top
-      alternative in every consecutive responses. This is done in order to
+      alternative in every consecutive response. This is done in order to
       improve our speaker tags as our models learn to identify the speakers in
       the conversation over time.
     enableWordConfidence: Optional. If `true`, the top result includes a list
@@ -649,24 +650,24 @@ class GoogleCloudVideointelligenceV1VideoAnnotationProgress(_messages.Message):
 
   Enums:
     FeatureValueValuesEnum: Specifies which feature is being tracked if the
-      request contains more than one features.
+      request contains more than one feature.
 
   Fields:
     feature: Specifies which feature is being tracked if the request contains
-      more than one features.
+      more than one feature.
     inputUri: Video file location in [Cloud
       Storage](https://cloud.google.com/storage/).
     progressPercent: Approximate percentage processed thus far. Guaranteed to
       be 100 when fully processed.
     segment: Specifies which segment is being tracked if the request contains
-      more than one segments.
+      more than one segment.
     startTime: Time when the request was received.
     updateTime: Time of the most recent update.
   """
 
   class FeatureValueValuesEnum(_messages.Enum):
     r"""Specifies which feature is being tracked if the request contains more
-    than one features.
+    than one feature.
 
     Values:
       FEATURE_UNSPECIFIED: Unspecified.
@@ -711,11 +712,11 @@ class GoogleCloudVideointelligenceV1VideoAnnotationResults(_messages.Message):
     objectAnnotations: Annotations for list of objects detected and tracked in
       video.
     segment: Video segment on which the annotation is run.
-    segmentLabelAnnotations: Topical label annotations on video level or user
+    segmentLabelAnnotations: Topical label annotations on video level or user-
       specified segment level. There is exactly one element for each unique
       label.
     segmentPresenceLabelAnnotations: Presence label annotations on video level
-      or user specified segment level. There is exactly one element for each
+      or user-specified segment level. There is exactly one element for each
       unique label. Compared to the existing topical
       `segment_label_annotations`, this field presents more fine-grained,
       segment-level labels detected in video content and is made available
@@ -857,8 +858,8 @@ class GoogleCloudVideointelligenceV1beta2DetectedAttribute(_messages.Message):
 
   Fields:
     confidence: Detected attribute confidence. Range [0, 1].
-    name: The name of the attribute, i.e. glasses, dark_glasses, mouth_open
-      etc. A full list of supported type names will be provided in the
+    name: The name of the attribute, for example, glasses, dark_glasses,
+      mouth_open. A full list of supported type names will be provided in the
       document.
     value: Text value of the detection result. For example, the value for
       "HairColor" can be "black", "blonde", etc.
@@ -875,7 +876,7 @@ class GoogleCloudVideointelligenceV1beta2DetectedLandmark(_messages.Message):
 
   Fields:
     confidence: The confidence score of the detected landmark. Range [0, 1].
-    name: The name of this landmark, i.e. left_hand, right_shoulder.
+    name: The name of this landmark, for example, left_hand, right_shoulder.
     point: The 2D point of the detected landmark using the normalized image
       coordindate system. The normalized coordinates have the range from 0 to
       1.
@@ -890,7 +891,7 @@ class GoogleCloudVideointelligenceV1beta2Entity(_messages.Message):
   r"""Detected entity from video analysis.
 
   Fields:
-    description: Textual description, e.g. `Fixed-gear bicycle`.
+    description: Textual description, e.g., `Fixed-gear bicycle`.
     entityId: Opaque entity ID. Some IDs may be available in [Google Knowledge
       Graph Search API](https://developers.google.com/knowledge-graph/).
     languageCode: Language code for `description` in BCP-47 format.
@@ -952,9 +953,10 @@ class GoogleCloudVideointelligenceV1beta2LabelAnnotation(_messages.Message):
   r"""Label annotation.
 
   Fields:
-    categoryEntities: Common categories for the detected entity. E.g. when the
-      label is `Terrier` the category is likely `dog`. And in some cases there
-      might be more than one categories e.g. `Terrier` could also be a `pet`.
+    categoryEntities: Common categories for the detected entity. For example,
+      when the label is `Terrier`, the category is likely `dog`. And in some
+      cases there might be more than one categories e.g., `Terrier` could also
+      be a `pet`.
     entity: Detected entity.
     frames: All video frames where a label was detected.
     segments: All video segments where a label was detected.
@@ -1110,8 +1112,8 @@ class GoogleCloudVideointelligenceV1beta2SpeechRecognitionAlternative(_messages.
       sentinel value indicating `confidence` was not set.
     transcript: Transcript text representing the words that the user spoke.
     words: Output only. A list of word-specific information for each
-      recognized word. Note: When `enable_speaker_diarization` is true, you
-      will see all the words from the beginning of the audio.
+      recognized word. Note: When `enable_speaker_diarization` is set to true,
+      you will see all the words from the beginning of the audio.
   """
 
   confidence = _messages.FloatField(1, variant=_messages.Variant.FLOAT)
@@ -1221,24 +1223,24 @@ class GoogleCloudVideointelligenceV1beta2VideoAnnotationProgress(_messages.Messa
 
   Enums:
     FeatureValueValuesEnum: Specifies which feature is being tracked if the
-      request contains more than one features.
+      request contains more than one feature.
 
   Fields:
     feature: Specifies which feature is being tracked if the request contains
-      more than one features.
+      more than one feature.
     inputUri: Video file location in [Cloud
       Storage](https://cloud.google.com/storage/).
     progressPercent: Approximate percentage processed thus far. Guaranteed to
       be 100 when fully processed.
     segment: Specifies which segment is being tracked if the request contains
-      more than one segments.
+      more than one segment.
     startTime: Time when the request was received.
     updateTime: Time of the most recent update.
   """
 
   class FeatureValueValuesEnum(_messages.Enum):
     r"""Specifies which feature is being tracked if the request contains more
-    than one features.
+    than one feature.
 
     Values:
       FEATURE_UNSPECIFIED: Unspecified.
@@ -1283,11 +1285,11 @@ class GoogleCloudVideointelligenceV1beta2VideoAnnotationResults(_messages.Messag
     objectAnnotations: Annotations for list of objects detected and tracked in
       video.
     segment: Video segment on which the annotation is run.
-    segmentLabelAnnotations: Topical label annotations on video level or user
+    segmentLabelAnnotations: Topical label annotations on video level or user-
       specified segment level. There is exactly one element for each unique
       label.
     segmentPresenceLabelAnnotations: Presence label annotations on video level
-      or user specified segment level. There is exactly one element for each
+      or user-specified segment level. There is exactly one element for each
       unique label. Compared to the existing topical
       `segment_label_annotations`, this field presents more fine-grained,
       segment-level labels detected in video content and is made available
@@ -1405,8 +1407,8 @@ class GoogleCloudVideointelligenceV1p1beta1DetectedAttribute(_messages.Message):
 
   Fields:
     confidence: Detected attribute confidence. Range [0, 1].
-    name: The name of the attribute, i.e. glasses, dark_glasses, mouth_open
-      etc. A full list of supported type names will be provided in the
+    name: The name of the attribute, for example, glasses, dark_glasses,
+      mouth_open. A full list of supported type names will be provided in the
       document.
     value: Text value of the detection result. For example, the value for
       "HairColor" can be "black", "blonde", etc.
@@ -1423,7 +1425,7 @@ class GoogleCloudVideointelligenceV1p1beta1DetectedLandmark(_messages.Message):
 
   Fields:
     confidence: The confidence score of the detected landmark. Range [0, 1].
-    name: The name of this landmark, i.e. left_hand, right_shoulder.
+    name: The name of this landmark, for example, left_hand, right_shoulder.
     point: The 2D point of the detected landmark using the normalized image
       coordindate system. The normalized coordinates have the range from 0 to
       1.
@@ -1438,7 +1440,7 @@ class GoogleCloudVideointelligenceV1p1beta1Entity(_messages.Message):
   r"""Detected entity from video analysis.
 
   Fields:
-    description: Textual description, e.g. `Fixed-gear bicycle`.
+    description: Textual description, e.g., `Fixed-gear bicycle`.
     entityId: Opaque entity ID. Some IDs may be available in [Google Knowledge
       Graph Search API](https://developers.google.com/knowledge-graph/).
     languageCode: Language code for `description` in BCP-47 format.
@@ -1500,9 +1502,10 @@ class GoogleCloudVideointelligenceV1p1beta1LabelAnnotation(_messages.Message):
   r"""Label annotation.
 
   Fields:
-    categoryEntities: Common categories for the detected entity. E.g. when the
-      label is `Terrier` the category is likely `dog`. And in some cases there
-      might be more than one categories e.g. `Terrier` could also be a `pet`.
+    categoryEntities: Common categories for the detected entity. For example,
+      when the label is `Terrier`, the category is likely `dog`. And in some
+      cases there might be more than one categories e.g., `Terrier` could also
+      be a `pet`.
     entity: Detected entity.
     frames: All video frames where a label was detected.
     segments: All video segments where a label was detected.
@@ -1658,8 +1661,8 @@ class GoogleCloudVideointelligenceV1p1beta1SpeechRecognitionAlternative(_message
       sentinel value indicating `confidence` was not set.
     transcript: Transcript text representing the words that the user spoke.
     words: Output only. A list of word-specific information for each
-      recognized word. Note: When `enable_speaker_diarization` is true, you
-      will see all the words from the beginning of the audio.
+      recognized word. Note: When `enable_speaker_diarization` is set to true,
+      you will see all the words from the beginning of the audio.
   """
 
   confidence = _messages.FloatField(1, variant=_messages.Variant.FLOAT)
@@ -1769,24 +1772,24 @@ class GoogleCloudVideointelligenceV1p1beta1VideoAnnotationProgress(_messages.Mes
 
   Enums:
     FeatureValueValuesEnum: Specifies which feature is being tracked if the
-      request contains more than one features.
+      request contains more than one feature.
 
   Fields:
     feature: Specifies which feature is being tracked if the request contains
-      more than one features.
+      more than one feature.
     inputUri: Video file location in [Cloud
       Storage](https://cloud.google.com/storage/).
     progressPercent: Approximate percentage processed thus far. Guaranteed to
       be 100 when fully processed.
     segment: Specifies which segment is being tracked if the request contains
-      more than one segments.
+      more than one segment.
     startTime: Time when the request was received.
     updateTime: Time of the most recent update.
   """
 
   class FeatureValueValuesEnum(_messages.Enum):
     r"""Specifies which feature is being tracked if the request contains more
-    than one features.
+    than one feature.
 
     Values:
       FEATURE_UNSPECIFIED: Unspecified.
@@ -1831,11 +1834,11 @@ class GoogleCloudVideointelligenceV1p1beta1VideoAnnotationResults(_messages.Mess
     objectAnnotations: Annotations for list of objects detected and tracked in
       video.
     segment: Video segment on which the annotation is run.
-    segmentLabelAnnotations: Topical label annotations on video level or user
+    segmentLabelAnnotations: Topical label annotations on video level or user-
       specified segment level. There is exactly one element for each unique
       label.
     segmentPresenceLabelAnnotations: Presence label annotations on video level
-      or user specified segment level. There is exactly one element for each
+      or user-specified segment level. There is exactly one element for each
       unique label. Compared to the existing topical
       `segment_label_annotations`, this field presents more fine-grained,
       segment-level labels detected in video content and is made available
@@ -1953,8 +1956,8 @@ class GoogleCloudVideointelligenceV1p2beta1DetectedAttribute(_messages.Message):
 
   Fields:
     confidence: Detected attribute confidence. Range [0, 1].
-    name: The name of the attribute, i.e. glasses, dark_glasses, mouth_open
-      etc. A full list of supported type names will be provided in the
+    name: The name of the attribute, for example, glasses, dark_glasses,
+      mouth_open. A full list of supported type names will be provided in the
       document.
     value: Text value of the detection result. For example, the value for
       "HairColor" can be "black", "blonde", etc.
@@ -1971,7 +1974,7 @@ class GoogleCloudVideointelligenceV1p2beta1DetectedLandmark(_messages.Message):
 
   Fields:
     confidence: The confidence score of the detected landmark. Range [0, 1].
-    name: The name of this landmark, i.e. left_hand, right_shoulder.
+    name: The name of this landmark, for example, left_hand, right_shoulder.
     point: The 2D point of the detected landmark using the normalized image
       coordindate system. The normalized coordinates have the range from 0 to
       1.
@@ -1986,7 +1989,7 @@ class GoogleCloudVideointelligenceV1p2beta1Entity(_messages.Message):
   r"""Detected entity from video analysis.
 
   Fields:
-    description: Textual description, e.g. `Fixed-gear bicycle`.
+    description: Textual description, e.g., `Fixed-gear bicycle`.
     entityId: Opaque entity ID. Some IDs may be available in [Google Knowledge
       Graph Search API](https://developers.google.com/knowledge-graph/).
     languageCode: Language code for `description` in BCP-47 format.
@@ -2048,9 +2051,10 @@ class GoogleCloudVideointelligenceV1p2beta1LabelAnnotation(_messages.Message):
   r"""Label annotation.
 
   Fields:
-    categoryEntities: Common categories for the detected entity. E.g. when the
-      label is `Terrier` the category is likely `dog`. And in some cases there
-      might be more than one categories e.g. `Terrier` could also be a `pet`.
+    categoryEntities: Common categories for the detected entity. For example,
+      when the label is `Terrier`, the category is likely `dog`. And in some
+      cases there might be more than one categories e.g., `Terrier` could also
+      be a `pet`.
     entity: Detected entity.
     frames: All video frames where a label was detected.
     segments: All video segments where a label was detected.
@@ -2206,8 +2210,8 @@ class GoogleCloudVideointelligenceV1p2beta1SpeechRecognitionAlternative(_message
       sentinel value indicating `confidence` was not set.
     transcript: Transcript text representing the words that the user spoke.
     words: Output only. A list of word-specific information for each
-      recognized word. Note: When `enable_speaker_diarization` is true, you
-      will see all the words from the beginning of the audio.
+      recognized word. Note: When `enable_speaker_diarization` is set to true,
+      you will see all the words from the beginning of the audio.
   """
 
   confidence = _messages.FloatField(1, variant=_messages.Variant.FLOAT)
@@ -2317,24 +2321,24 @@ class GoogleCloudVideointelligenceV1p2beta1VideoAnnotationProgress(_messages.Mes
 
   Enums:
     FeatureValueValuesEnum: Specifies which feature is being tracked if the
-      request contains more than one features.
+      request contains more than one feature.
 
   Fields:
     feature: Specifies which feature is being tracked if the request contains
-      more than one features.
+      more than one feature.
     inputUri: Video file location in [Cloud
       Storage](https://cloud.google.com/storage/).
     progressPercent: Approximate percentage processed thus far. Guaranteed to
       be 100 when fully processed.
     segment: Specifies which segment is being tracked if the request contains
-      more than one segments.
+      more than one segment.
     startTime: Time when the request was received.
     updateTime: Time of the most recent update.
   """
 
   class FeatureValueValuesEnum(_messages.Enum):
     r"""Specifies which feature is being tracked if the request contains more
-    than one features.
+    than one feature.
 
     Values:
       FEATURE_UNSPECIFIED: Unspecified.
@@ -2379,11 +2383,11 @@ class GoogleCloudVideointelligenceV1p2beta1VideoAnnotationResults(_messages.Mess
     objectAnnotations: Annotations for list of objects detected and tracked in
       video.
     segment: Video segment on which the annotation is run.
-    segmentLabelAnnotations: Topical label annotations on video level or user
+    segmentLabelAnnotations: Topical label annotations on video level or user-
       specified segment level. There is exactly one element for each unique
       label.
     segmentPresenceLabelAnnotations: Presence label annotations on video level
-      or user specified segment level. There is exactly one element for each
+      or user-specified segment level. There is exactly one element for each
       unique label. Compared to the existing topical
       `segment_label_annotations`, this field presents more fine-grained,
       segment-level labels detected in video content and is made available
@@ -2544,8 +2548,8 @@ class GoogleCloudVideointelligenceV1p3beta1DetectedAttribute(_messages.Message):
 
   Fields:
     confidence: Detected attribute confidence. Range [0, 1].
-    name: The name of the attribute, i.e. glasses, dark_glasses, mouth_open
-      etc. A full list of supported type names will be provided in the
+    name: The name of the attribute, for example, glasses, dark_glasses,
+      mouth_open. A full list of supported type names will be provided in the
       document.
     value: Text value of the detection result. For example, the value for
       "HairColor" can be "black", "blonde", etc.
@@ -2562,7 +2566,7 @@ class GoogleCloudVideointelligenceV1p3beta1DetectedLandmark(_messages.Message):
 
   Fields:
     confidence: The confidence score of the detected landmark. Range [0, 1].
-    name: The name of this landmark, i.e. left_hand, right_shoulder.
+    name: The name of this landmark, for example, left_hand, right_shoulder.
     point: The 2D point of the detected landmark using the normalized image
       coordindate system. The normalized coordinates have the range from 0 to
       1.
@@ -2577,7 +2581,7 @@ class GoogleCloudVideointelligenceV1p3beta1Entity(_messages.Message):
   r"""Detected entity from video analysis.
 
   Fields:
-    description: Textual description, e.g. `Fixed-gear bicycle`.
+    description: Textual description, e.g., `Fixed-gear bicycle`.
     entityId: Opaque entity ID. Some IDs may be available in [Google Knowledge
       Graph Search API](https://developers.google.com/knowledge-graph/).
     languageCode: Language code for `description` in BCP-47 format.
@@ -2651,9 +2655,10 @@ class GoogleCloudVideointelligenceV1p3beta1LabelAnnotation(_messages.Message):
   r"""Label annotation.
 
   Fields:
-    categoryEntities: Common categories for the detected entity. E.g. when the
-      label is `Terrier` the category is likely `dog`. And in some cases there
-      might be more than one categories e.g. `Terrier` could also be a `pet`.
+    categoryEntities: Common categories for the detected entity. For example,
+      when the label is `Terrier`, the category is likely `dog`. And in some
+      cases there might be more than one categories e.g., `Terrier` could also
+      be a `pet`.
     entity: Detected entity.
     frames: All video frames where a label was detected.
     segments: All video segments where a label was detected.
@@ -2801,7 +2806,7 @@ class GoogleCloudVideointelligenceV1p3beta1PersonDetectionAnnotation(_messages.M
   r"""Person detection annotation per video.
 
   Fields:
-    tracks: The trackes that a person is detected.
+    tracks: The detected tracks of a person.
   """
 
   tracks = _messages.MessageField('GoogleCloudVideointelligenceV1p3beta1Track', 1, repeated=True)
@@ -2831,8 +2836,8 @@ class GoogleCloudVideointelligenceV1p3beta1SpeechRecognitionAlternative(_message
       sentinel value indicating `confidence` was not set.
     transcript: Transcript text representing the words that the user spoke.
     words: Output only. A list of word-specific information for each
-      recognized word. Note: When `enable_speaker_diarization` is true, you
-      will see all the words from the beginning of the audio.
+      recognized word. Note: When `enable_speaker_diarization` is set to true,
+      you will see all the words from the beginning of the audio.
   """
 
   confidence = _messages.FloatField(1, variant=_messages.Variant.FLOAT)
@@ -2865,10 +2870,10 @@ class GoogleCloudVideointelligenceV1p3beta1StreamingAnnotateVideoResponse(_messa
 
   Fields:
     annotationResults: Streaming annotation results.
-    annotationResultsUri: Cloud Storage URI that stores annotation results of
-      one streaming session. It is a directory that can hold multiple files in
-      JSON format. Example uri format: gs://bucket_id/object_id
-      /cloud_project_name-session_id
+    annotationResultsUri: Google Cloud Storage(GCS) URI that stores annotation
+      results of one streaming session in JSON format. It is the
+      annotation_result_storage_directory from the request followed by
+      '/cloud_project_number-session_id'.
     error: If set, returns a google.rpc.Status message that specifies the
       error for the operation.
   """
@@ -2980,24 +2985,24 @@ class GoogleCloudVideointelligenceV1p3beta1VideoAnnotationProgress(_messages.Mes
 
   Enums:
     FeatureValueValuesEnum: Specifies which feature is being tracked if the
-      request contains more than one features.
+      request contains more than one feature.
 
   Fields:
     feature: Specifies which feature is being tracked if the request contains
-      more than one features.
+      more than one feature.
     inputUri: Video file location in [Cloud
       Storage](https://cloud.google.com/storage/).
     progressPercent: Approximate percentage processed thus far. Guaranteed to
       be 100 when fully processed.
     segment: Specifies which segment is being tracked if the request contains
-      more than one segments.
+      more than one segment.
     startTime: Time when the request was received.
     updateTime: Time of the most recent update.
   """
 
   class FeatureValueValuesEnum(_messages.Enum):
     r"""Specifies which feature is being tracked if the request contains more
-    than one features.
+    than one feature.
 
     Values:
       FEATURE_UNSPECIFIED: Unspecified.
@@ -3051,11 +3056,11 @@ class GoogleCloudVideointelligenceV1p3beta1VideoAnnotationResults(_messages.Mess
       video.
     personDetectionAnnotations: Person detection annotations.
     segment: Video segment on which the annotation is run.
-    segmentLabelAnnotations: Topical label annotations on video level or user
+    segmentLabelAnnotations: Topical label annotations on video level or user-
       specified segment level. There is exactly one element for each unique
       label.
     segmentPresenceLabelAnnotations: Presence label annotations on video level
-      or user specified segment level. There is exactly one element for each
+      or user-specified segment level. There is exactly one element for each
       unique label. Compared to the existing topical
       `segment_label_annotations`, this field presents more fine-grained,
       segment-level labels detected in video content and is made available

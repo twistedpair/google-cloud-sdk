@@ -19,11 +19,13 @@ class BigQueryOptions(_messages.Message):
   r"""Options that change functionality of a sink exporting data to BigQuery.
 
   Fields:
-    usePartitionedTables: Optional. Whether to use BigQuery's partition
-      tables. By default, Logging creates dated tables based on the log
-      entries' timestamps, e.g. syslog_20170523. With partitioned tables the
-      date suffix is no longer present and special query syntax has to be used
-      instead. In both cases, tables are sharded based on UTC timezone.
+    usePartitionedTables: Optional. Whether to use BigQuery's partition tables
+      (https://cloud.google.com/bigquery/docs/partitioned-tables). By default,
+      Logging creates dated tables based on the log entries' timestamps, e.g.
+      syslog_20170523. With partitioned tables the date suffix is no longer
+      present and special query syntax (https://cloud.google.com/bigquery/docs
+      /querying-partitioned-tables) has to be used instead. In both cases,
+      tables are sharded based on UTC timezone.
     usesTimestampColumnPartitioning: Output only. True if new timestamp column
       based partitioning is in use, false if legacy ingestion-time
       partitioning is in use. All new sinks will have this field set true and
@@ -68,7 +70,8 @@ class CmekSettings(_messages.Message):
   with a project, folder, organization, billing account, or flexible
   resource.Note: CMEK for the Logs Router can currently only be configured for
   GCP organizations. Once configured, it applies to all projects and folders
-  in the GCP organization.See Enabling CMEK for Logs Router for more
+  in the GCP organization.See Enabling CMEK for Logs Router
+  (https://cloud.google.com/logging/docs/routing/managed-encryption) for more
   information.
 
   Fields:
@@ -85,7 +88,9 @@ class CmekSettings(_messages.Message):
       started. Decryption operations will be completed using the key that was
       used at the time of encryption unless access to that key has been
       revoked.To disable CMEK for the Logs Router, set this field to an empty
-      string.See Enabling CMEK for Logs Router for more information.
+      string.See Enabling CMEK for Logs Router
+      (https://cloud.google.com/logging/docs/routing/managed-encryption) for
+      more information.
     name: Output only. The resource name of the CMEK settings.
     serviceAccountId: Output only. The service account that will be used by
       the Logs Router to access your Cloud KMS key.Before enabling CMEK for
@@ -93,7 +98,8 @@ class CmekSettings(_messages.Message):
       roles/cloudkms.cryptoKeyEncrypterDecrypter to the service account that
       the Logs Router will use to access your Cloud KMS key. Use
       GetCmekSettings to obtain the service account ID.See Enabling CMEK for
-      Logs Router for more information.
+      Logs Router (https://cloud.google.com/logging/docs/routing/managed-
+      encryption) for more information.
   """
 
   kmsKeyName = _messages.StringField(1)
@@ -108,21 +114,23 @@ class DlpOptions(_messages.Message):
   Fields:
     deidentifyTemplateName: Required. DLP template used to specify how to
       perform the de-identification of log data. See Creating Cloud DLP de-
-      identification templates. For example:
+      identification templates (https://cloud.google.com/dlp/docs/creating-
+      templates-deid). For example:
       "projects/[PROJECT_ID]/deidentifyTemplates/[TEMPLATE_ID]"
     includedFields: Optional. Fields within the log entries to include in DLP
       de-identification. Each field is identified using the advanced logs
-      filter syntax. If any fields are specified, the de-identification will
-      only be applied to these fields and other fields will remain unmodified.
-      If no fields are specified, payload and http_request fields will be
-      included in the de-identification. Specifying included fields is useful
-      for limiting the amount of billable data sent to the DLP API. For
+      filter (https://cloud.google.com/logging/docs/view/advanced-queries)
+      syntax. If any fields are specified, the de-identification will only be
+      applied to these fields and other fields will remain unmodified. If no
+      fields are specified, payload and http_request fields will be included
+      in the de-identification. Specifying included fields is useful for
+      limiting the amount of billable data sent to the DLP API. For
       example:"httpRequest.remoteIp"  "jsonPayload.user.phoneNumber"
       "jsonPayload.person.socialSecurityNumber"
     inspectTemplateName: Required. DLP template used to specify what types of
       data within a log to inspect. See Creating Cloud DLP inspection
-      templates. For example:
-      "projects/[PROJECT_ID]/inspectTemplates/[TEMPLATE_ID]"
+      templates (https://cloud.google.com/dlp/docs/creating-templates). For
+      example: "projects/[PROJECT_ID]/inspectTemplates/[TEMPLATE_ID]"
   """
 
   deidentifyTemplateName = _messages.StringField(1)
@@ -314,11 +322,12 @@ class ListLogEntriesRequest(_messages.Message):
 
   Fields:
     filter: Optional. A filter that chooses which log entries to return. See
-      Advanced Logs Queries. Only log entries that match the filter are
-      returned. An empty filter matches all log entries in the resources
-      listed in resource_names. Referencing a parent resource that is not
-      listed in resource_names will cause the filter to return no results. The
-      maximum length of the filter is 20000 characters.
+      Advanced Logs Queries (https://cloud.google.com/logging/docs/view
+      /advanced-queries). Only log entries that match the filter are returned.
+      An empty filter matches all log entries in the resources listed in
+      resource_names. Referencing a parent resource that is not listed in
+      resource_names will cause the filter to return no results. The maximum
+      length of the filter is 20000 characters.
     orderBy: Optional. How the results should be sorted. Presently, the only
       permitted values are "timestamp asc" (default) and "timestamp desc". The
       first option returns entries in order of increasing values of
@@ -570,9 +579,9 @@ class LogEntry(_messages.Message):
       have this field populated for GKE versions older than 1.12.6. For GKE
       versions 1.12.6 and above, the metadata field has been deprecated. The
       Kubernetes pod labels that used to be in metadata.userLabels will now be
-      present in the labels field with a key prefix of k8s-pod/. The
-      Stackdriver system labels that were present in the metadata.systemLabels
-      field will no longer be available in the LogEntry.
+      present in the labels field with a key prefix of k8s-pod/. The system
+      labels that were present in the metadata.systemLabels field will no
+      longer be available in the LogEntry.
     operation: Optional. Information about an operation associated with the
       log entry, if applicable.
     protoPayload: The log entry payload, represented as a protocol buffer.
@@ -605,9 +614,10 @@ class LogEntry(_messages.Message):
       entry, then Logging assigns it the current time. Timestamps have
       nanosecond accuracy, but trailing zeros in the fractional seconds might
       be omitted when the timestamp is displayed.Incoming log entries must
-      have timestamps that don't exceed the logs retention period in the past,
-      and that don't exceed 24 hours in the future. Log entries outside those
-      time boundaries aren't ingested by Logging.
+      have timestamps that don't exceed the logs retention period
+      (https://cloud.google.com/logging/quotas#logs_retention_periods) in the
+      past, and that don't exceed 24 hours in the future. Log entries outside
+      those time boundaries aren't ingested by Logging.
     trace: Optional. Resource name of the trace associated with the log entry,
       if any. If it contains a relative resource name, the name is assumed to
       be relative to //tracing.googleapis.com. Example: projects/my-
@@ -806,11 +816,14 @@ class LogExclusion(_messages.Message):
     disabled: Optional. If set to True, then this exclusion is disabled and it
       does not exclude any log entries. You can update an exclusion to change
       the value of this field.
-    filter: Required. An advanced logs filter that matches the log entries to
-      be excluded. By using the sample function, you can exclude less than
-      100% of the matching log entries. For example, the following query
-      matches 99% of low-severity log entries from Google Cloud Storage
-      buckets:"resource.type=gcs_bucket severity<ERROR sample(insertId, 0.99)"
+    filter: Required. An advanced logs filter
+      (https://cloud.google.com/logging/docs/view/advanced-queries) that
+      matches the log entries to be excluded. By using the sample function
+      (https://cloud.google.com/logging/docs/view/advanced-queries#sample),
+      you can exclude less than 100% of the matching log entries. For example,
+      the following query matches 99% of low-severity log entries from Google
+      Cloud Storage buckets:"resource.type=gcs_bucket severity<ERROR
+      sample(insertId, 0.99)"
     name: Required. A client-assigned identifier, such as "load-balancer-
       exclusion". Identifiers are limited to 100 characters and can include
       only letters, digits, underscores, hyphens, and periods. First character
@@ -908,9 +921,10 @@ class LogMetric(_messages.Message):
       documentation. The maximum length of the description is 8000 characters.
     disabled: Optional. If set to True, then this metric is disabled and it
       does not generate any points.
-    filter: Required. An advanced logs filter which is used to match log
-      entries. Example: "resource.type=gae_app AND severity>=ERROR" The
-      maximum length of the filter is 20000 characters.
+    filter: Required. An advanced logs filter
+      (https://cloud.google.com/logging/docs/view/advanced_filters) which is
+      used to match log entries. Example: "resource.type=gae_app AND
+      severity>=ERROR" The maximum length of the filter is 20000 characters.
     labelExtractors: Optional. A map from a label key string to an extractor
       expression which is used to extract data from a log entry field and
       assign as the label value. Each label key specified in the
@@ -1036,9 +1050,7 @@ class LogSink(_messages.Message):
   account, or folder.
 
   Enums:
-    OutputVersionFormatValueValuesEnum: Deprecated. The log entry format to
-      use for this sink's exported log entries. The v2 format is used by
-      default and cannot be changed.
+    OutputVersionFormatValueValuesEnum: Deprecated. This field is unused.
 
   Fields:
     bigqueryOptions: Optional. Options that affect sinks exporting data to
@@ -1053,18 +1065,20 @@ class LogSink(_messages.Message):
       "pubsub.googleapis.com/projects/[PROJECT_ID]/topics/[TOPIC_ID]" The
       sink's writer_identity, set when the sink is created, must have
       permission to write to the destination or else the log entries are not
-      exported. For more information, see Exporting Logs with Sinks.
+      exported. For more information, see Exporting Logs with Sinks
+      (https://cloud.google.com/logging/docs/api/tasks/exporting-logs).
     disabled: Optional. If set to True, then this sink is disabled and it does
       not export any log entries.
-    dlpOptions: Optional. Settings for Data Loss Prevention (DLP) enabled
-      sinks.
+    dlpOptions: Optional. Settings for Data Loss Prevention (DLP)
+      (https://cloud.google.com/dlp/docs/) enabled sinks.
     exclusions: Optional. Log entries that match any of the exclusion filters
       will not be exported. If a log entry is matched by both filter and one
       of exclusion_filters it will not be exported.
-    filter: Optional. An advanced logs filter. The only exported log entries
-      are those that are in the resource owning the sink and that match the
-      filter. For example: logName="projects/[PROJECT_ID]/logs/[LOG_ID]" AND
-      severity>=ERROR
+    filter: Optional. An advanced logs filter
+      (https://cloud.google.com/logging/docs/view/advanced-queries). The only
+      exported log entries are those that are in the resource owning the sink
+      and that match the filter. For example:
+      logName="projects/[PROJECT_ID]/logs/[LOG_ID]" AND severity>=ERROR
     includeChildren: Optional. This field applies only to sinks owned by
       organizations and folders. If the field is false, the default, only the
       logs owned by the sink's parent resource are available for export. If
@@ -1082,9 +1096,7 @@ class LogSink(_messages.Message):
       limited to 100 characters and can include only the following characters:
       upper and lower-case alphanumeric characters, underscores, hyphens, and
       periods. First character has to be alphanumeric.
-    outputVersionFormat: Deprecated. The log entry format to use for this
-      sink's exported log entries. The v2 format is used by default and cannot
-      be changed.
+    outputVersionFormat: Deprecated. This field is unused.
     updateTime: Output only. The last update timestamp of the sink.This field
       may not be present for older sinks.
     writerIdentity: Output only. An IAM identity&mdash;a service account or
@@ -1093,13 +1105,14 @@ class LogSink(_messages.Message):
       based on the value of unique_writer_identity in those methods.Until you
       grant this identity write-access to the destination, log entry exports
       from this sink will fail. For more information, see Granting Access for
-      a Resource. Consult the destination service's documentation to determine
-      the appropriate IAM roles to assign to the identity.
+      a Resource (https://cloud.google.com/iam/docs/granting-roles-to-service-
+      accounts#granting_access_to_a_service_account_for_a_resource). Consult
+      the destination service's documentation to determine the appropriate IAM
+      roles to assign to the identity.
   """
 
   class OutputVersionFormatValueValuesEnum(_messages.Enum):
-    r"""Deprecated. The log entry format to use for this sink's exported log
-    entries. The v2 format is used by default and cannot be changed.
+    r"""Deprecated. This field is unused.
 
     Values:
       VERSION_FORMAT_UNSPECIFIED: An unspecified format version that will
@@ -1136,7 +1149,7 @@ class LogView(_messages.Message):
     filter: Filter that restricts which log entries in a bucket are visible in
       this view. Filters are restricted to be a logical AND of ==/!= of any of
       the following:  originating project/folder/organization/billing account.
-      resource type  log id  user labels
+      resource type  log id
     name: The resource name of the view. For example "projects/my-project-
       id/locations/my-location/buckets/my-bucket-id/views/my-view
     updateTime: Output only. The last update timestamp of the view.
@@ -4543,13 +4556,15 @@ class WriteLogEntriesRequest(_messages.Message):
       values are chosen so that, among the log entries that did not supply
       their own values, the entries earlier in the list will sort before the
       entries later in the list. See the entries.list method.Log entries with
-      timestamps that are more than the logs retention period in the past or
-      more than 24 hours in the future will not be available when calling
-      entries.list. However, those log entries can still be exported with
-      LogSinks.To improve throughput and to avoid exceeding the quota limit
-      for calls to entries.write, you should try to include several log
-      entries in this list, rather than calling this method for each
-      individual log entry.
+      timestamps that are more than the logs retention period
+      (https://cloud.google.com/logging/quota-policy) in the past or more than
+      24 hours in the future will not be available when calling entries.list.
+      However, those log entries can still be exported with LogSinks
+      (https://cloud.google.com/logging/docs/api/tasks/exporting-logs).To
+      improve throughput and to avoid exceeding the quota limit
+      (https://cloud.google.com/logging/quota-policy) for calls to
+      entries.write, you should try to include several log entries in this
+      list, rather than calling this method for each individual log entry.
     labels: Optional. Default labels that are added to the labels field of all
       log entries in entries. If a log entry already has a label with the same
       key as a label in this parameter, then the log entry's label is not

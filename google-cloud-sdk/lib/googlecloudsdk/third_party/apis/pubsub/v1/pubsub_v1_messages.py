@@ -1034,7 +1034,7 @@ class PushConfig(_messages.Message):
       message.
     pushEndpoint: A URL locating the endpoint to which messages should be
       pushed. For example, a Webhook endpoint might use
-      "https://example.com/push".
+      `https://example.com/push`.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')

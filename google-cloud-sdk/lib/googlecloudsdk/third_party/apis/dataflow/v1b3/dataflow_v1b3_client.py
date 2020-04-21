@@ -36,6 +36,8 @@ class DataflowV1b3(base_api.BaseApiClient):
         default_global_params=default_global_params,
         additional_http_headers=additional_http_headers,
         response_encoding=response_encoding)
+    self.projects_catalogTemplates_templateVersions = self.ProjectsCatalogTemplatesTemplateVersionsService(self)
+    self.projects_catalogTemplates = self.ProjectsCatalogTemplatesService(self)
     self.projects_jobs_debug = self.ProjectsJobsDebugService(self)
     self.projects_jobs_messages = self.ProjectsJobsMessagesService(self)
     self.projects_jobs_workItems = self.ProjectsJobsWorkItemsService(self)
@@ -51,8 +53,201 @@ class DataflowV1b3(base_api.BaseApiClient):
     self.projects_locations_templates = self.ProjectsLocationsTemplatesService(self)
     self.projects_locations = self.ProjectsLocationsService(self)
     self.projects_snapshots = self.ProjectsSnapshotsService(self)
+    self.projects_templateVersions = self.ProjectsTemplateVersionsService(self)
     self.projects_templates = self.ProjectsTemplatesService(self)
     self.projects = self.ProjectsService(self)
+
+  class ProjectsCatalogTemplatesTemplateVersionsService(base_api.BaseApiService):
+    """Service class for the projects_catalogTemplates_templateVersions resource."""
+
+    _NAME = u'projects_catalogTemplates_templateVersions'
+
+    def __init__(self, client):
+      super(DataflowV1b3.ProjectsCatalogTemplatesTemplateVersionsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Creates a new Template with TemplateVersion. Requires.
+project_id(projects) and template display_name(catalogTemplates).
+The template display_name is set by the user.
+
+      Args:
+        request: (DataflowProjectsCatalogTemplatesTemplateVersionsCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (TemplateVersion) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1b3/projects/{projectsId}/catalogTemplates/{catalogTemplatesId}/templateVersions',
+        http_method=u'POST',
+        method_id=u'dataflow.projects.catalogTemplates.templateVersions.create',
+        ordered_params=[u'parent'],
+        path_params=[u'parent'],
+        query_params=[],
+        relative_path=u'v1b3/{+parent}/templateVersions',
+        request_field=u'createTemplateVersionRequest',
+        request_type_name=u'DataflowProjectsCatalogTemplatesTemplateVersionsCreateRequest',
+        response_type_name=u'TemplateVersion',
+        supports_download=False,
+    )
+
+  class ProjectsCatalogTemplatesService(base_api.BaseApiService):
+    """Service class for the projects_catalogTemplates resource."""
+
+    _NAME = u'projects_catalogTemplates'
+
+    def __init__(self, client):
+      super(DataflowV1b3.ProjectsCatalogTemplatesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Commit(self, request, global_params=None):
+      r"""Creates a new TemplateVersion (Important: not new Template) entry in the.
+spanner table. Requires project_id and display_name (template).
+
+      Args:
+        request: (DataflowProjectsCatalogTemplatesCommitRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (TemplateVersion) The response message.
+      """
+      config = self.GetMethodConfig('Commit')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Commit.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1b3/projects/{projectsId}/catalogTemplates/{catalogTemplatesId}:commit',
+        http_method=u'POST',
+        method_id=u'dataflow.projects.catalogTemplates.commit',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[],
+        relative_path=u'v1b3/{+name}:commit',
+        request_field=u'commitTemplateVersionRequest',
+        request_type_name=u'DataflowProjectsCatalogTemplatesCommitRequest',
+        response_type_name=u'TemplateVersion',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes an existing Template. Do nothing if Template does not exist.
+
+      Args:
+        request: (DataflowProjectsCatalogTemplatesDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Empty) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1b3/projects/{projectsId}/catalogTemplates/{catalogTemplatesId}',
+        http_method=u'DELETE',
+        method_id=u'dataflow.projects.catalogTemplates.delete',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[],
+        relative_path=u'v1b3/{+name}',
+        request_field='',
+        request_type_name=u'DataflowProjectsCatalogTemplatesDeleteRequest',
+        response_type_name=u'Empty',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Get TemplateVersion using project_id and display_name with an optional.
+version_id field. Get latest (has tag "latest") TemplateVersion if
+version_id not set.
+
+      Args:
+        request: (DataflowProjectsCatalogTemplatesGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (TemplateVersion) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1b3/projects/{projectsId}/catalogTemplates/{catalogTemplatesId}',
+        http_method=u'GET',
+        method_id=u'dataflow.projects.catalogTemplates.get',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[],
+        relative_path=u'v1b3/{+name}',
+        request_field='',
+        request_type_name=u'DataflowProjectsCatalogTemplatesGetRequest',
+        response_type_name=u'TemplateVersion',
+        supports_download=False,
+    )
+
+    def Label(self, request, global_params=None):
+      r"""Updates the label of the TemplateVersion. Label can be duplicated in.
+Template, so either add or remove the label in the TemplateVersion.
+
+      Args:
+        request: (DataflowProjectsCatalogTemplatesLabelRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ModifyTemplateVersionLabelResponse) The response message.
+      """
+      config = self.GetMethodConfig('Label')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Label.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1b3/projects/{projectsId}/catalogTemplates/{catalogTemplatesId}:label',
+        http_method=u'POST',
+        method_id=u'dataflow.projects.catalogTemplates.label',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[],
+        relative_path=u'v1b3/{+name}:label',
+        request_field=u'modifyTemplateVersionLabelRequest',
+        request_type_name=u'DataflowProjectsCatalogTemplatesLabelRequest',
+        response_type_name=u'ModifyTemplateVersionLabelResponse',
+        supports_download=False,
+    )
+
+    def Tag(self, request, global_params=None):
+      r"""Updates the tag of the TemplateVersion, and tag is unique in Template.
+If tag exists in another TemplateVersion in the Template, updates the tag
+to this TemplateVersion will remove it from the old TemplateVersion and add
+it to this TemplateVersion. If request is remove_only (remove_only = true),
+remove the tag from this TemplateVersion.
+
+      Args:
+        request: (DataflowProjectsCatalogTemplatesTagRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ModifyTemplateVersionTagResponse) The response message.
+      """
+      config = self.GetMethodConfig('Tag')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Tag.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1b3/projects/{projectsId}/catalogTemplates/{catalogTemplatesId}:tag',
+        http_method=u'POST',
+        method_id=u'dataflow.projects.catalogTemplates.tag',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[],
+        relative_path=u'v1b3/{+name}:tag',
+        request_field=u'modifyTemplateVersionTagRequest',
+        request_type_name=u'DataflowProjectsCatalogTemplatesTagRequest',
+        response_type_name=u'ModifyTemplateVersionTagResponse',
+        supports_download=False,
+    )
 
   class ProjectsJobsDebugService(base_api.BaseApiService):
     """Service class for the projects_jobs_debug resource."""
@@ -1188,6 +1383,45 @@ analyzes properly as well.
         request_field='',
         request_type_name=u'DataflowProjectsSnapshotsListRequest',
         response_type_name=u'ListSnapshotsResponse',
+        supports_download=False,
+    )
+
+  class ProjectsTemplateVersionsService(base_api.BaseApiService):
+    """Service class for the projects_templateVersions resource."""
+
+    _NAME = u'projects_templateVersions'
+
+    def __init__(self, client):
+      super(DataflowV1b3.ProjectsTemplateVersionsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def List(self, request, global_params=None):
+      r"""List TemplateVersions using project_id and an optional display_name field.
+List all the TemplateVersions in the Template if display set.
+List all the TemplateVersions in the Project if display_name not set.
+
+      Args:
+        request: (DataflowProjectsTemplateVersionsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListTemplateVersionsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1b3/projects/{projectsId}/templateVersions',
+        http_method=u'GET',
+        method_id=u'dataflow.projects.templateVersions.list',
+        ordered_params=[u'parent'],
+        path_params=[u'parent'],
+        query_params=[u'pageSize', u'pageToken'],
+        relative_path=u'v1b3/{+parent}/templateVersions',
+        request_field='',
+        request_type_name=u'DataflowProjectsTemplateVersionsListRequest',
+        response_type_name=u'ListTemplateVersionsResponse',
         supports_download=False,
     )
 

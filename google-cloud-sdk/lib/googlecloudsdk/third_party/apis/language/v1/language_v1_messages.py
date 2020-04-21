@@ -302,7 +302,8 @@ class ClassificationCategory(_messages.Message):
       how certain the classifier is that this category represents the given
       text.
     name: The name of the category representing the document, from the
-      [predefined taxonomy](/natural-language/docs/categories).
+      [predefined taxonomy](https://cloud.google.com/natural-
+      language/docs/categories).
   """
 
   confidence = _messages.FloatField(1, variant=_messages.Variant.FLOAT)
@@ -539,11 +540,11 @@ class Document(_messages.Message):
       NOTE: Cloud Storage object versioning is not supported.
     language: The language of the document (if not specified, the language is
       automatically detected). Both ISO and BCP-47 language codes are
-      accepted.<br> [Language Support](/natural-language/docs/languages) lists
-      currently supported languages for each API method. If the language
-      (either specified by the caller or automatically detected) is not
-      supported by the called API method, an `INVALID_ARGUMENT` error is
-      returned.
+      accepted.<br> [Language Support](https://cloud.google.com/natural-
+      language/docs/languages) lists currently supported languages for each
+      API method. If the language (either specified by the caller or
+      automatically detected) is not supported by the called API method, an
+      `INVALID_ARGUMENT` error is returned.
     type: Required. If the type is not set or is `TYPE_UNSPECIFIED`, returns
       an `INVALID_ARGUMENT` error.
   """

@@ -243,11 +243,11 @@ class DatabaseConfig(_messages.Message):
   Airflow software.
 
   Fields:
-    tier: Optional. Cloud SQL tier used by Airflow database. If not specified,
-      db-n1-standard-2 will be used.
+    machineType: Optional. Cloud SQL tier used by Airflow database. If not
+      specified, db-n1-standard-2 will be used.
   """
 
-  tier = _messages.StringField(1)
+  machineType = _messages.StringField(1)
 
 
 class Empty(_messages.Message):

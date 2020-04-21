@@ -9022,6 +9022,34 @@ class ComputeInstancesResetRequest(_messages.Message):
   zone = _messages.StringField(4, required=True)
 
 
+class ComputeInstancesResumeRequest(_messages.Message):
+  r"""A ComputeInstancesResumeRequest object.
+
+  Fields:
+    instance: Name of the instance resource to resume.
+    instancesResumeRequest: A InstancesResumeRequest resource to be passed as
+      the request body.
+    project: Project ID for this request.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
+    zone: The name of the zone for this request.
+  """
+
+  instance = _messages.StringField(1, required=True)
+  instancesResumeRequest = _messages.MessageField('InstancesResumeRequest', 2)
+  project = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(4)
+  zone = _messages.StringField(5, required=True)
+
+
 class ComputeInstancesSetDeletionProtectionRequest(_messages.Message):
   r"""A ComputeInstancesSetDeletionProtectionRequest object.
 
@@ -9437,6 +9465,34 @@ class ComputeInstancesStopRequest(_messages.Message):
   project = _messages.StringField(2, required=True)
   requestId = _messages.StringField(3)
   zone = _messages.StringField(4, required=True)
+
+
+class ComputeInstancesSuspendRequest(_messages.Message):
+  r"""A ComputeInstancesSuspendRequest object.
+
+  Fields:
+    discardLocalSsd: If true, discard the contents of any attached localSSD
+      partitions. Default value is false (== preserve localSSD data).
+    instance: Name of the instance resource to suspend.
+    project: Project ID for this request.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
+    zone: The name of the zone for this request.
+  """
+
+  discardLocalSsd = _messages.BooleanField(1)
+  instance = _messages.StringField(2, required=True)
+  project = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(4)
+  zone = _messages.StringField(5, required=True)
 
 
 class ComputeInstancesTestIamPermissionsRequest(_messages.Message):
@@ -12861,6 +12917,20 @@ class ComputeRegionDisksDeleteRequest(_messages.Message):
   requestId = _messages.StringField(4)
 
 
+class ComputeRegionDisksGetIamPolicyRequest(_messages.Message):
+  r"""A ComputeRegionDisksGetIamPolicyRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    region: The name of the region for this request.
+    resource: Name or id of the resource for this request.
+  """
+
+  project = _messages.StringField(1, required=True)
+  region = _messages.StringField(2, required=True)
+  resource = _messages.StringField(3, required=True)
+
+
 class ComputeRegionDisksGetRequest(_messages.Message):
   r"""A ComputeRegionDisksGetRequest object.
 
@@ -13006,6 +13076,23 @@ class ComputeRegionDisksResizeRequest(_messages.Message):
   region = _messages.StringField(3, required=True)
   regionDisksResizeRequest = _messages.MessageField('RegionDisksResizeRequest', 4)
   requestId = _messages.StringField(5)
+
+
+class ComputeRegionDisksSetIamPolicyRequest(_messages.Message):
+  r"""A ComputeRegionDisksSetIamPolicyRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    region: The name of the region for this request.
+    regionSetPolicyRequest: A RegionSetPolicyRequest resource to be passed as
+      the request body.
+    resource: Name or id of the resource for this request.
+  """
+
+  project = _messages.StringField(1, required=True)
+  region = _messages.StringField(2, required=True)
+  regionSetPolicyRequest = _messages.MessageField('RegionSetPolicyRequest', 3)
+  resource = _messages.StringField(4, required=True)
 
 
 class ComputeRegionDisksSetLabelsRequest(_messages.Message):
@@ -18973,10 +19060,10 @@ class CorsPolicy(_messages.Message):
     allowOriginRegexes: Specifies the regualar expression patterns that match
       allowed origins. For regular expression grammar please see
       en.cppreference.com/w/cpp/regex/ecmascript  An origin is allowed if it
-      matches either allow_origins or allow_origin_regex.
+      matches either an item in allowOrigins or an item in allowOriginRegexes.
     allowOrigins: Specifies the list of origins that will be allowed to do
-      CORS requests. An origin is allowed if it matches either allow_origins
-      or allow_origin_regex.
+      CORS requests. An origin is allowed if it matches either an item in
+      allowOrigins or an item in allowOriginRegexes.
     disabled: If true, specifies the CORS policy is disabled. The default
       value of false, which indicates that the CORS policy is in effect.
     exposeHeaders: Specifies the content for the Access-Control-Expose-Headers
@@ -20516,12 +20603,14 @@ class Expr(_messages.Message):
 
 
 class ExternalVpnGateway(_messages.Message):
-  r"""External VPN gateway is the on-premises VPN gateway(s) or another cloud
-  provider's VPN gateway that connects to your Google Cloud VPN gateway. To
-  create a highly available VPN from Google Cloud to your on-premises side or
-  another Cloud provider's VPN gateway, you must create a external VPN gateway
-  resource in GCP, which provides the information to GCP about your external
-  VPN gateway.
+  r"""Represents an external VPN gateway.  External VPN gateway is the on-
+  premises VPN gateway(s) or another cloud provider's VPN gateway that
+  connects to your Google Cloud VPN gateway.  To create a highly available VPN
+  from Google Cloud Platform to your VPN gateway or another cloud provider's
+  VPN gateway, you must create a external VPN gateway resource with
+  information about the other gateway.  For more information about using
+  external VPN gateways, see  Creating an HA VPN gateway and tunnel pair to a
+  peer VPN. (== resource_for {$api_version}.externalVpnGateways ==)
 
   Enums:
     RedundancyTypeValueValuesEnum: Indicates the user-supplied redundancy type
@@ -20766,15 +20855,15 @@ class FileContentBuffer(_messages.Message):
   r"""A FileContentBuffer object.
 
   Enums:
-    FileTypeValueValuesEnum:
+    FileTypeValueValuesEnum: The file type of source file.
 
   Fields:
     content: The raw content in the secure keys file.
-    fileType: A FileTypeValueValuesEnum attribute.
+    fileType: The file type of source file.
   """
 
   class FileTypeValueValuesEnum(_messages.Enum):
-    r"""FileTypeValueValuesEnum enum type.
+    r"""The file type of source file.
 
     Values:
       BIN: <no description>
@@ -26640,6 +26729,26 @@ class InstancesRemoveResourcePoliciesRequest(_messages.Message):
   resourcePolicies = _messages.StringField(1, repeated=True)
 
 
+class InstancesResumeRequest(_messages.Message):
+  r"""A InstancesResumeRequest object.
+
+  Fields:
+    disks: Array of disks associated with this instance that are protected
+      with a customer-supplied encryption key.  In order to resume the
+      instance, the disk url and its corresponding key must be provided.  If
+      the disk is not protected with a customer-supplied encryption key it
+      should not be specified.
+    instanceEncryptionKey: Decrypts data associated with an instance that is
+      protected with a customer-supplied encryption key.  If the instance you
+      are starting is protected with a customer-supplied encryption key, the
+      correct key must be provided otherwise the instance resume will not
+      succeed.
+  """
+
+  disks = _messages.MessageField('CustomerEncryptionKeyProtectedDisk', 1, repeated=True)
+  instanceEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 2)
+
+
 class InstancesScopedList(_messages.Message):
   r"""A InstancesScopedList object.
 
@@ -28824,26 +28933,14 @@ class LogConfigDataAccessOptions(_messages.Message):
   r"""Write a Data Access (Gin) log
 
   Enums:
-    LogModeValueValuesEnum: Whether Gin logging should happen in a fail-closed
-      manner at the caller. This is currently supported in the LocalIAM
-      implementation, Stubby C++, and Stubby Java. For Apps Framework, see go
-      /af-audit-logging#failclosed. TODO(b/77591626): Add support for Stubby
-      Go. TODO(b/129671387): Add support for Scaffolding.
+    LogModeValueValuesEnum:
 
   Fields:
-    logMode: Whether Gin logging should happen in a fail-closed manner at the
-      caller. This is currently supported in the LocalIAM implementation,
-      Stubby C++, and Stubby Java. For Apps Framework, see go/af-audit-
-      logging#failclosed. TODO(b/77591626): Add support for Stubby Go.
-      TODO(b/129671387): Add support for Scaffolding.
+    logMode:
   """
 
   class LogModeValueValuesEnum(_messages.Enum):
-    r"""Whether Gin logging should happen in a fail-closed manner at the
-    caller. This is currently supported in the LocalIAM implementation, Stubby
-    C++, and Stubby Java. For Apps Framework, see go/af-audit-
-    logging#failclosed. TODO(b/77591626): Add support for Stubby Go.
-    TODO(b/129671387): Add support for Scaffolding.
+    r"""LogModeValueValuesEnum enum type.
 
     Values:
       LOG_FAIL_CLOSED: <no description>
@@ -29752,9 +29849,12 @@ class NetworkEndpoint(_messages.Message):
 
 
 class NetworkEndpointGroup(_messages.Message):
-  r"""Represents a collection of network endpoints.  For more information read
-  Network endpoint groups overview. (== resource_for
-  {$api_version}.networkEndpointGroups ==) Next ID: 21
+  r"""Represents a collection of network endpoints.  A network endpoint group
+  (NEG) defines how a set of endpoints should be reached, whether they are
+  reachable, and where they are located. For more information about using
+  NEGs, see  Setting up internet NEGs or  Setting up zonal NEGs. (==
+  resource_for {$api_version}.networkEndpointGroups ==) (== resource_for
+  {$api_version}.globalNetworkEndpointGroups ==)
 
   Enums:
     NetworkEndpointTypeValueValuesEnum: Type of network endpoints in this
@@ -30120,19 +30220,19 @@ class NetworkEndpointGroupsListEndpointsRequest(_messages.Message):
   Enums:
     HealthStatusValueValuesEnum: Optional query parameter for showing the
       health status of each network endpoint. Valid options are SKIP or SHOW.
-      If you don't specifiy this parameter, the health status of network
+      If you don't specify this parameter, the health status of network
       endpoints will not be provided.
 
   Fields:
     healthStatus: Optional query parameter for showing the health status of
       each network endpoint. Valid options are SKIP or SHOW. If you don't
-      specifiy this parameter, the health status of network endpoints will not
+      specify this parameter, the health status of network endpoints will not
       be provided.
   """
 
   class HealthStatusValueValuesEnum(_messages.Enum):
     r"""Optional query parameter for showing the health status of each network
-    endpoint. Valid options are SKIP or SHOW. If you don't specifiy this
+    endpoint. Valid options are SKIP or SHOW. If you don't specify this
     parameter, the health status of network endpoints will not be provided.
 
     Values:
@@ -33077,7 +33177,12 @@ class OutlierDetection(_messages.Message):
 
 
 class PacketMirroring(_messages.Message):
-  r"""Represents a PacketMirroring resource.
+  r"""Represents a Packet Mirroring resource.  Packet Mirroring clones the
+  traffic of specified instances in your Virtual Private Cloud (VPC) network
+  and forwards it to a collector destination, such as an instance group of an
+  internal TCP/UDP load balancer, for analysis or examination. For more
+  information about setting up Packet Mirroring, see Using Packet Mirroring.
+  (== resource_for {$api_version}.packetMirrorings ==)
 
   Enums:
     EnableValueValuesEnum: Indicates whether or not this packet mirroring
@@ -38480,9 +38585,11 @@ class ShieldedInstanceConfig(_messages.Message):
 
   Fields:
     enableIntegrityMonitoring: Defines whether the instance has integrity
-      monitoring enabled.
+      monitoring enabled. Enabled by default.
     enableSecureBoot: Defines whether the instance has Secure Boot enabled.
-    enableVtpm: Defines whether the instance has the vTPM enabled.
+      Disabled by default.
+    enableVtpm: Defines whether the instance has the vTPM enabled. Enabled by
+      default.
   """
 
   enableIntegrityMonitoring = _messages.BooleanField(1)
@@ -44340,7 +44447,11 @@ class VmEndpointNatMappingsList(_messages.Message):
 
 
 class VpnGateway(_messages.Message):
-  r"""Represents a VPN gateway resource. Next ID: 13
+  r"""Represents a HA VPN gateway.  HA VPN is a high-availability (HA) Cloud
+  VPN solution that lets you securely connect your on-premises network to your
+  Google Cloud Virtual Private Cloud network through an IPsec VPN connection
+  in a single region. For more information about Cloud HA VPN solutions, see
+  Cloud VPN topologies . (== resource_for {$api_version}.vpnGateways ==)
 
   Messages:
     LabelsValue: Labels for this resource. These can only be added or modified

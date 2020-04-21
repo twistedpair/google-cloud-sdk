@@ -1437,11 +1437,7 @@ class LogConfigDataAccessOptions(_messages.Message):
   r"""Write a Data Access (Gin) log
 
   Fields:
-    logMode: Whether Gin logging should happen in a fail-closed manner at the
-      caller. This is currently supported in the LocalIAM implementation,
-      Stubby C++, and Stubby Java. For Apps Framework, see go/af-audit-
-      logging#failclosed. TODO(b/77591626): Add support for Stubby Go.
-      TODO(b/129671387): Add support for Scaffolding.
+    logMode:
   """
 
   logMode = _messages.StringField(1)

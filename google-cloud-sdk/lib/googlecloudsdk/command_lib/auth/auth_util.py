@@ -107,11 +107,15 @@ def PromptIfADCEnvVarIsSet():
 
 def WriteGcloudCredentialsToADC(creds, add_quota_project=False):
   """Writes gclouds's credential from auth login to ADC json."""
-  if c_creds.CredentialType.FromCredentials(
-      creds) != c_creds.CredentialType.USER_ACCOUNT:
+  if c_creds.IsOauth2ClientCredentials(creds):
+    cred_type = c_creds.CredentialType.FromCredentials(creds).key
+  else:
+    cred_type = c_creds.CredentialTypeGoogleAuth.FromCredentials(creds).key
+  if cred_type != c_creds.USER_ACCOUNT_CREDS_NAME:
     log.warning('Credentials cannot be written to application default '
                 'credentials because it is not a user credential.')
     return
+
   PromptIfADCEnvVarIsSet()
   if add_quota_project:
     c_creds.ADC(creds).DumpExtendedADCToFile()

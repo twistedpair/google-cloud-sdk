@@ -94,6 +94,11 @@ FORWARDING_RULES_OVERVIEW_ALPHA = """\
         """
 
 
+# This is the list of valid values for the --target-bundle option, used
+# for Private Service Connect for Google APIs.
+PSC_GOOGLE_APIS_BUNDLES = ['all-apis', 'vpc-sc']
+
+
 class ForwardingRulesZonalCompleter(compute_completers.ListCommandCompleter):
 
   def __init__(self, **kwargs):
@@ -371,7 +376,8 @@ def AddressArg(include_l7_internal_load_balancing):
 
 def AddUpdateArgs(parser,
                   include_l7_internal_load_balancing=False,
-                  include_target_grpc_proxy=False):
+                  include_target_grpc_proxy=False,
+                  include_psc_google_apis=False):
   """Adds common flags for mutating forwarding rule targets."""
   target = parser.add_mutually_exclusive_group(required=True)
 
@@ -391,8 +397,20 @@ def AddUpdateArgs(parser,
   TARGET_SSL_PROXY_ARG.AddArgument(parser, mutex_group=target)
   TARGET_TCP_PROXY_ARG.AddArgument(parser, mutex_group=target)
   TARGET_VPN_GATEWAY_ARG.AddArgument(parser, mutex_group=target)
-
   BACKEND_SERVICE_ARG.AddArgument(parser, mutex_group=target)
+
+  if include_psc_google_apis:
+    target.add_argument(
+        '--target-google-apis-bundle',
+        required=False,
+        #      short_help='Target bundle of Google APIs to expose.',
+        help=(
+            'Target bundle of Google APIs that will receive forwarded traffic'
+            'via Private Service Connect. '
+            'Acceptable values are all-apis, meaning all Google APIs, or '
+            'vpc-sc, meaning just the APIs that support VPC Service Controls'),
+        action='store')
+
   NetworkArg(
       include_l7_internal_load_balancing=include_l7_internal_load_balancing
   ).AddArgument(parser)

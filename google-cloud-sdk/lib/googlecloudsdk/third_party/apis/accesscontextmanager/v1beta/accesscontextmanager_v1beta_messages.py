@@ -19,7 +19,6 @@ class AccessLevel(_messages.Message):
 
   Fields:
     basic: A `BasicLevel` composed of `Conditions`.
-    createTime: Output only. Time the `AccessLevel` was created in UTC.
     custom: A `CustomLevel` written in the Common Expression Language.
     description: Description of the `AccessLevel` and its use. Does not affect
       behavior.
@@ -28,16 +27,13 @@ class AccessLevel(_messages.Message):
       '_'. Format: `accessPolicies/{policy_id}/accessLevels/{short_name}`. The
       maximum length  // of the `short_name` component is 50 characters.
     title: Human readable title. Must be unique within the Policy.
-    updateTime: Output only. Time the `AccessLevel` was updated in UTC.
   """
 
   basic = _messages.MessageField('BasicLevel', 1)
-  createTime = _messages.StringField(2)
-  custom = _messages.MessageField('CustomLevel', 3)
-  description = _messages.StringField(4)
-  name = _messages.StringField(5)
-  title = _messages.StringField(6)
-  updateTime = _messages.StringField(7)
+  custom = _messages.MessageField('CustomLevel', 2)
+  description = _messages.StringField(3)
+  name = _messages.StringField(4)
+  title = _messages.StringField(5)
 
 
 class AccessPolicy(_messages.Message):
@@ -48,21 +44,17 @@ class AccessPolicy(_messages.Message):
   the restrictions it specifies apply to all projects within an organization.
 
   Fields:
-    createTime: Output only. Time the `AccessPolicy` was created in UTC.
     name: Output only. Resource name of the `AccessPolicy`. Format:
       `accessPolicies/{policy_id}`
     parent: Required. The parent of this `AccessPolicy` in the Cloud Resource
       Hierarchy. Currently immutable once created. Format:
       `organizations/{organization_id}`
     title: Required. Human readable title. Does not affect behavior.
-    updateTime: Output only. Time the `AccessPolicy` was updated in UTC.
   """
 
-  createTime = _messages.StringField(1)
-  name = _messages.StringField(2)
-  parent = _messages.StringField(3)
-  title = _messages.StringField(4)
-  updateTime = _messages.StringField(5)
+  name = _messages.StringField(1)
+  parent = _messages.StringField(2)
+  title = _messages.StringField(3)
 
 
 class AccesscontextmanagerAccessPoliciesAccessLevelsCreateRequest(_messages.Message):
@@ -811,7 +803,6 @@ class ServicePerimeter(_messages.Message):
       must be empty.
 
   Fields:
-    createTime: Output only. Time the `ServicePerimeter` was created in UTC.
     description: Description of the `ServicePerimeter` and its use. Does not
       affect behavior.
     dryRun: Dry run flag. This flag enables dry run tests for the "proposed"
@@ -838,7 +829,6 @@ class ServicePerimeter(_messages.Message):
       resources, restricted/unrestricted services and access levels that
       determine perimeter content and boundaries.
     title: Human readable title. Must be unique within the Policy.
-    updateTime: Output only. Time the `ServicePerimeter` was updated in UTC.
   """
 
   class PerimeterTypeValueValuesEnum(_messages.Enum):
@@ -855,15 +845,13 @@ class ServicePerimeter(_messages.Message):
     PERIMETER_TYPE_REGULAR = 0
     PERIMETER_TYPE_BRIDGE = 1
 
-  createTime = _messages.StringField(1)
-  description = _messages.StringField(2)
-  dryRun = _messages.BooleanField(3)
-  name = _messages.StringField(4)
-  perimeterType = _messages.EnumField('PerimeterTypeValueValuesEnum', 5)
-  spec = _messages.MessageField('ServicePerimeterConfig', 6)
-  status = _messages.MessageField('ServicePerimeterConfig', 7)
-  title = _messages.StringField(8)
-  updateTime = _messages.StringField(9)
+  description = _messages.StringField(1)
+  dryRun = _messages.BooleanField(2)
+  name = _messages.StringField(3)
+  perimeterType = _messages.EnumField('PerimeterTypeValueValuesEnum', 4)
+  spec = _messages.MessageField('ServicePerimeterConfig', 5)
+  status = _messages.MessageField('ServicePerimeterConfig', 6)
+  title = _messages.StringField(7)
 
 
 class ServicePerimeterConfig(_messages.Message):

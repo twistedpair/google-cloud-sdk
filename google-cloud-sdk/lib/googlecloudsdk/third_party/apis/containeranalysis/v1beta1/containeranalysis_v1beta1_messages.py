@@ -63,6 +63,26 @@ class Artifact(_messages.Message):
   names = _messages.StringField(3, repeated=True)
 
 
+class ArtifactHashes(_messages.Message):
+  r"""Defines a hash object for use in Materials and Products.
+
+  Fields:
+    sha256: A string attribute.
+  """
+
+  sha256 = _messages.StringField(1)
+
+
+class ArtifactRule(_messages.Message):
+  r"""Defines an object to declare an in-toto artifact rule
+
+  Fields:
+    artifactRule: A string attribute.
+  """
+
+  artifactRule = _messages.StringField(1, repeated=True)
+
+
 class Attestation(_messages.Message):
   r"""Occurrence that represents a single "attestation". The authenticity of
   an attestation can be verified using the attached signature. If the verifier
@@ -362,6 +382,45 @@ class BuildSignature(_messages.Message):
   keyType = _messages.EnumField('KeyTypeValueValuesEnum', 2)
   publicKey = _messages.StringField(3)
   signature = _messages.BytesField(4)
+
+
+class ByProducts(_messages.Message):
+  r"""Defines an object for the byproducts field in in-toto links. The
+  suggested fields are "stderr", "stdout", and "return-value".
+
+  Messages:
+    CustomValuesValue: A CustomValuesValue object.
+
+  Fields:
+    customValues: A CustomValuesValue attribute.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class CustomValuesValue(_messages.Message):
+    r"""A CustomValuesValue object.
+
+    Messages:
+      AdditionalProperty: An additional property for a CustomValuesValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type CustomValuesValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a CustomValuesValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  customValues = _messages.MessageField('CustomValuesValue', 1)
 
 
 class CVSSv3(_messages.Message):
@@ -1091,6 +1150,7 @@ class Discovery(_messages.Message):
         a resource.
       ATTESTATION: This represents a logical "role" that can attest to
         artifacts.
+      INTOTO: This represents an in-toto link.
     """
     NOTE_KIND_UNSPECIFIED = 0
     VULNERABILITY = 1
@@ -1100,6 +1160,7 @@ class Discovery(_messages.Message):
     DEPLOYMENT = 5
     DISCOVERY = 6
     ATTESTATION = 7
+    INTOTO = 8
 
   analysisKind = _messages.EnumField('AnalysisKindValueValuesEnum', 1)
 
@@ -1155,6 +1216,45 @@ class Empty(_messages.Message):
   JSON representation for `Empty` is empty JSON object `{}`.
   """
 
+
+
+class Environment(_messages.Message):
+  r"""Defines an object for the environment field in in-toto links. The
+  suggested fields are "variables", "filesystem", and "workdir".
+
+  Messages:
+    CustomValuesValue: A CustomValuesValue object.
+
+  Fields:
+    customValues: A CustomValuesValue attribute.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class CustomValuesValue(_messages.Message):
+    r"""A CustomValuesValue object.
+
+    Messages:
+      AdditionalProperty: An additional property for a CustomValuesValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type CustomValuesValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a CustomValuesValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  customValues = _messages.MessageField('CustomValuesValue', 1)
 
 
 class Expr(_messages.Message):
@@ -1433,6 +1533,44 @@ class GrafeasV1beta1ImageDetails(_messages.Message):
   derivedImage = _messages.MessageField('Derived', 1)
 
 
+class GrafeasV1beta1IntotoArtifact(_messages.Message):
+  r"""A GrafeasV1beta1IntotoArtifact object.
+
+  Fields:
+    hashes: A ArtifactHashes attribute.
+    resourceUri: A string attribute.
+  """
+
+  hashes = _messages.MessageField('ArtifactHashes', 1)
+  resourceUri = _messages.StringField(2)
+
+
+class GrafeasV1beta1IntotoDetails(_messages.Message):
+  r"""This corresponds to a signed in-toto link - it is made up of one or more
+  signatures and the in-toto link itself. This is used for occurrences of a
+  Grafeas in-toto note.
+
+  Fields:
+    signatures: A GrafeasV1beta1IntotoSignature attribute.
+    signed: A Link attribute.
+  """
+
+  signatures = _messages.MessageField('GrafeasV1beta1IntotoSignature', 1, repeated=True)
+  signed = _messages.MessageField('Link', 2)
+
+
+class GrafeasV1beta1IntotoSignature(_messages.Message):
+  r"""A signature object consists of the KeyID used and the signature itself.
+
+  Fields:
+    keyid: A string attribute.
+    sig: A string attribute.
+  """
+
+  keyid = _messages.StringField(1)
+  sig = _messages.StringField(2)
+
+
 class GrafeasV1beta1PackageDetails(_messages.Message):
   r"""Details of a package occurrence.
 
@@ -1562,6 +1700,33 @@ class Hint(_messages.Message):
   humanReadableName = _messages.StringField(1)
 
 
+class InToto(_messages.Message):
+  r"""This contains the fields corresponding to the definition of a software
+  supply chain step in an in-toto layout. This information goes into a Grafeas
+  note.
+
+  Fields:
+    expectedCommand: This field contains the expected command used to perform
+      the step.
+    expectedMaterials: The following fields contain in-toto artifact rules
+      identifying the artifacts that enter this supply chain step, and exit
+      the supply chain step, i.e. materials and products of the step.
+    expectedProducts: A ArtifactRule attribute.
+    signingKeys: This field contains the public keys that can be used to
+      verify the signatures on the step metadata.
+    stepName: This field identifies the name of the step in the supply chain.
+    threshold: This field contains a value that indicates the minimum number
+      of keys that need to be used to sign the step's in-toto link.
+  """
+
+  expectedCommand = _messages.StringField(1, repeated=True)
+  expectedMaterials = _messages.MessageField('ArtifactRule', 2, repeated=True)
+  expectedProducts = _messages.MessageField('ArtifactRule', 3, repeated=True)
+  signingKeys = _messages.MessageField('SigningKey', 4, repeated=True)
+  stepName = _messages.StringField(5)
+  threshold = _messages.IntegerField(6)
+
+
 class Installation(_messages.Message):
   r"""This represents how a particular software package may be installed on a
   system.
@@ -1647,6 +1812,42 @@ class Layer(_messages.Message):
 
   arguments = _messages.StringField(1)
   directive = _messages.EnumField('DirectiveValueValuesEnum', 2)
+
+
+class Link(_messages.Message):
+  r"""This corresponds to an in-toto link.
+
+  Fields:
+    byproducts: ByProducts are data generated as part of a software supply
+      chain step, but are not the actual result of the step.
+    command: This field contains the full command executed for the step. This
+      can also be empty if links are generated for operations that aren't
+      directly mapped to a specific command. Each term in the command is an
+      independent string in the list. An example of a command in the in-toto
+      metadata field is: "command": ["git", "clone", "https://github.com/in-
+      toto/demo-project.git"]
+    environment: This is a field that can be used to capture information about
+      the environment. It is suggested for this field to contain information
+      that details environment variables, filesystem information, and the
+      present working directory. The recommended structure of this field is:
+      "environment": {   "custom_values": {     "variables": "<ENV>",
+      "filesystem": "<FS>",     "workdir": "<CWD>",     "<ANY OTHER RELEVANT
+      FIELDS>": "..."   } }
+    materials: Materials are the supply chain artifacts that go into the step
+      and are used for the operation performed. The key of the map is the path
+      of the artifact and the structure contains the recorded hash
+      information. An example is: "materials": [   {     "resource_uri":
+      "foo/bar",     "hashes": {       "sha256": "ebebf...",       <OTHER HASH
+      ALGORITHMS>: <HASH VALUE>     }   } ]
+    products: Products are the supply chain artifacts generated as a result of
+      the step. The structure is identical to that of materials.
+  """
+
+  byproducts = _messages.MessageField('ByProducts', 1)
+  command = _messages.StringField(2, repeated=True)
+  environment = _messages.MessageField('Environment', 3)
+  materials = _messages.MessageField('GrafeasV1beta1IntotoArtifact', 4, repeated=True)
+  products = _messages.MessageField('GrafeasV1beta1IntotoArtifact', 5, repeated=True)
 
 
 class ListNoteOccurrencesResponse(_messages.Message):
@@ -1738,6 +1939,7 @@ class Note(_messages.Message):
     discovery: A note describing the initial analysis of a resource.
     expirationTime: Time of expiration for this note. Empty if note does not
       expire.
+    intoto: A note describing an in-toto link.
     kind: Output only. The type of analysis. This field can be used as a
       filter in list requests.
     longDescription: A detailed description of this note.
@@ -1768,6 +1970,7 @@ class Note(_messages.Message):
         a resource.
       ATTESTATION: This represents a logical "role" that can attest to
         artifacts.
+      INTOTO: This represents an in-toto link.
     """
     NOTE_KIND_UNSPECIFIED = 0
     VULNERABILITY = 1
@@ -1777,6 +1980,7 @@ class Note(_messages.Message):
     DEPLOYMENT = 5
     DISCOVERY = 6
     ATTESTATION = 7
+    INTOTO = 8
 
   attestationAuthority = _messages.MessageField('Authority', 1)
   baseImage = _messages.MessageField('Basis', 2)
@@ -1785,15 +1989,16 @@ class Note(_messages.Message):
   deployable = _messages.MessageField('Deployable', 5)
   discovery = _messages.MessageField('Discovery', 6)
   expirationTime = _messages.StringField(7)
-  kind = _messages.EnumField('KindValueValuesEnum', 8)
-  longDescription = _messages.StringField(9)
-  name = _messages.StringField(10)
-  package = _messages.MessageField('Package', 11)
-  relatedNoteNames = _messages.StringField(12, repeated=True)
-  relatedUrl = _messages.MessageField('RelatedUrl', 13, repeated=True)
-  shortDescription = _messages.StringField(14)
-  updateTime = _messages.StringField(15)
-  vulnerability = _messages.MessageField('Vulnerability', 16)
+  intoto = _messages.MessageField('InToto', 8)
+  kind = _messages.EnumField('KindValueValuesEnum', 9)
+  longDescription = _messages.StringField(10)
+  name = _messages.StringField(11)
+  package = _messages.MessageField('Package', 12)
+  relatedNoteNames = _messages.StringField(13, repeated=True)
+  relatedUrl = _messages.MessageField('RelatedUrl', 14, repeated=True)
+  shortDescription = _messages.StringField(15)
+  updateTime = _messages.StringField(16)
+  vulnerability = _messages.MessageField('Vulnerability', 17)
 
 
 class Occurrence(_messages.Message):
@@ -1814,6 +2019,7 @@ class Occurrence(_messages.Message):
     discovered: Describes when a resource was discovered.
     installation: Describes the installation of a package on the linked
       resource.
+    intoto: Describes a specific in-toto link.
     kind: Output only. This explicitly denotes which of the occurrence details
       are specified. This field can be used as a filter in list requests.
     name: Output only. The name of the occurrence in the form of
@@ -1845,6 +2051,7 @@ class Occurrence(_messages.Message):
         a resource.
       ATTESTATION: This represents a logical "role" that can attest to
         artifacts.
+      INTOTO: This represents an in-toto link.
     """
     NOTE_KIND_UNSPECIFIED = 0
     VULNERABILITY = 1
@@ -1854,6 +2061,7 @@ class Occurrence(_messages.Message):
     DEPLOYMENT = 5
     DISCOVERY = 6
     ATTESTATION = 7
+    INTOTO = 8
 
   attestation = _messages.MessageField('Details', 1)
   build = _messages.MessageField('GrafeasV1beta1BuildDetails', 2)
@@ -1862,13 +2070,14 @@ class Occurrence(_messages.Message):
   derivedImage = _messages.MessageField('GrafeasV1beta1ImageDetails', 5)
   discovered = _messages.MessageField('GrafeasV1beta1DiscoveryDetails', 6)
   installation = _messages.MessageField('GrafeasV1beta1PackageDetails', 7)
-  kind = _messages.EnumField('KindValueValuesEnum', 8)
-  name = _messages.StringField(9)
-  noteName = _messages.StringField(10)
-  remediation = _messages.StringField(11)
-  resource = _messages.MessageField('Resource', 12)
-  updateTime = _messages.StringField(13)
-  vulnerability = _messages.MessageField('GrafeasV1beta1VulnerabilityDetails', 14)
+  intoto = _messages.MessageField('GrafeasV1beta1IntotoDetails', 8)
+  kind = _messages.EnumField('KindValueValuesEnum', 9)
+  name = _messages.StringField(10)
+  noteName = _messages.StringField(11)
+  remediation = _messages.StringField(12)
+  resource = _messages.MessageField('Resource', 13)
+  updateTime = _messages.StringField(14)
+  vulnerability = _messages.MessageField('GrafeasV1beta1VulnerabilityDetails', 15)
 
 
 class Package(_messages.Message):
@@ -2164,6 +2373,31 @@ class Signature(_messages.Message):
 
   publicKeyId = _messages.StringField(1)
   signature = _messages.BytesField(2)
+
+
+class SigningKey(_messages.Message):
+  r"""This defines the format used to record keys used in the software supply
+  chain. An in-toto link is attested using one or more keys defined in the in-
+  toto layout. An example of this is: {   "key_id":
+  "776a00e29f3559e0141b3b096f696abc6cfb0c657ab40f441132b345b0...",
+  "key_type": "rsa",   "public_key_value": "-----BEGIN PUBLIC
+  KEY-----\nMIIBojANBgkqhkiG9w0B...",   "key_scheme": "rsassa-pss-sha256" }
+  The format for in-toto's key definition can be found in section 4.2 of the
+  in-toto specification.
+
+  Fields:
+    keyId: key_id is an identifier for the signing key.
+    keyScheme: This field contains the corresponding signature scheme. Eg:
+      "rsassa-pss-sha256".
+    keyType: This field identifies the specific signing method. Eg: "rsa",
+      "ed25519", and "ecdsa".
+    publicKeyValue: This field contains the actual public key.
+  """
+
+  keyId = _messages.StringField(1)
+  keyScheme = _messages.StringField(2)
+  keyType = _messages.StringField(3)
+  publicKeyValue = _messages.StringField(4)
 
 
 class Source(_messages.Message):

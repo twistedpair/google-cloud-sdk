@@ -2199,6 +2199,204 @@
         }
       }
     },
+    "CreateTemplateVersionRequest": {
+      "id": "CreateTemplateVersionRequest",
+      "description": "Creates a new Template with TemplateVersions.",
+      "type": "object",
+      "properties": {
+        "templateVersion": {
+          "description": "The TemplateVersion object to create.",
+          "$ref": "TemplateVersion"
+        }
+      }
+    },
+    "TemplateVersion": {
+      "id": "TemplateVersion",
+      "description": "\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\n\/\/\/\/ Template Catalog is used to organize user TemplateVersions.\n\/\/\/\/ TemplateVersions that have the same project_id and display_name are\n\/\/\/\/ belong to the same Template.\n\/\/\/\/ Templates with the same project_id belong to the same Project.\n\/\/\/\/ TemplateVersion may have labels and multiple labels are allowed.\n\/\/\/\/ Duplicated labels in the same `TemplateVersion` are not allowed.\n\/\/\/\/ TemplateVersion may have tags and multiple tags are allowed. Duplicated\n\/\/\/\/ tags in the same `Template` are not allowed!",
+      "type": "object",
+      "properties": {
+        "projectId": {
+          "description": "A unique project_id. Multiple Templates per Project.",
+          "type": "string"
+        },
+        "displayName": {
+          "description": "A customized name for Template. Multiple TemplateVersions per Template.",
+          "type": "string"
+        },
+        "versionId": {
+          "description": "An auto generated version_id for TemplateVersion.",
+          "type": "string"
+        },
+        "description": {
+          "description": "Template description from the user.",
+          "type": "string"
+        },
+        "artifact": {
+          "description": "Job graph and metadata if it is a legacy Template.\nContainer image path and metadata if it is flex Template.",
+          "$ref": "Artifact"
+        },
+        "labels": {
+          "description": "Labels for the Template Version. Labels can be duplicate within Template.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "type": {
+          "description": "Either LEGACY or FLEX. This should match with the type of artifact.",
+          "enumDescriptions": [
+            "Default value. Not a useful zero case.",
+            "Legacy Template.",
+            "Flex Template."
+          ],
+          "type": "string",
+          "enum": [
+            "TEMPLATE_TYPE_UNSPECIFIED",
+            "LEGACY",
+            "FLEX"
+          ]
+        },
+        "tags": {
+          "description": "Alias for version_id, helps locate a TemplateVersion.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "createTime": {
+          "description": "Creation time of this TemplateVersion.",
+          "type": "string",
+          "format": "google-datetime"
+        }
+      }
+    },
+    "Artifact": {
+      "id": "Artifact",
+      "description": "Job information for templates.",
+      "type": "object",
+      "properties": {
+        "jobGraphGcsPath": {
+          "description": "job_graph_gcs_path set for legacy Template.",
+          "type": "string"
+        },
+        "containerSpec": {
+          "description": "Container image path set for flex Template.",
+          "$ref": "ContainerSpec"
+        },
+        "metadata": {
+          "description": "Metadata set for legacy Template.",
+          "$ref": "TemplateMetadata"
+        }
+      }
+    },
+    "CommitTemplateVersionRequest": {
+      "id": "CommitTemplateVersionRequest",
+      "description": "Commit will add a new TemplateVersion to an existing template.",
+      "type": "object",
+      "properties": {
+        "templateVersion": {
+          "description": "TemplateVersion obejct to create.",
+          "$ref": "TemplateVersion"
+        }
+      }
+    },
+    "Empty": {
+      "id": "Empty",
+      "description": "A generic empty message that you can re-use to avoid defining duplicated\nempty messages in your APIs. A typical example is to use it as the request\nor the response type of an API method. For instance:\n\n    service Foo {\n      rpc Bar(google.protobuf.Empty) returns (google.protobuf.Empty);\n    }\n\nThe JSON representation for `Empty` is empty JSON object `{}`.",
+      "type": "object",
+      "properties": {
+      }
+    },
+    "ListTemplateVersionsResponse": {
+      "id": "ListTemplateVersionsResponse",
+      "description": "Respond a list of TemplateVersions.",
+      "type": "object",
+      "properties": {
+        "templateVersions": {
+          "description": "A list of TemplateVersions.",
+          "type": "array",
+          "items": {
+            "$ref": "TemplateVersion"
+          }
+        },
+        "nextPageToken": {
+          "description": "A token that can be sent as `page_token` to retrieve the next page.\nIf this field is omitted, there are no subsequent pages.",
+          "type": "string"
+        }
+      }
+    },
+    "ModifyTemplateVersionTagRequest": {
+      "id": "ModifyTemplateVersionTagRequest",
+      "description": "Add a tag to the current TemplateVersion. If tag exist in another\nTemplateVersion in the Template, remove the tag before add it to the current\nTemplateVersion. If remove_only set, remove the tag from the current\nTemplateVersion.",
+      "type": "object",
+      "properties": {
+        "tag": {
+          "description": "The tag for update.",
+          "type": "string"
+        },
+        "removeOnly": {
+          "description": "The flag that indicates if the request is only for remove tag from\nTemplateVersion.",
+          "type": "boolean"
+        }
+      }
+    },
+    "ModifyTemplateVersionTagResponse": {
+      "id": "ModifyTemplateVersionTagResponse",
+      "description": "Respond the current tags in the TemplateVersion.",
+      "type": "object",
+      "properties": {
+        "tags": {
+          "description": "All the tags in the TemplateVersion.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "ModifyTemplateVersionLabelRequest": {
+      "id": "ModifyTemplateVersionLabelRequest",
+      "description": "Either add the label to TemplateVersion or remove it from the\nTemplateVersion.",
+      "type": "object",
+      "properties": {
+        "key": {
+          "description": "The label key for update.",
+          "type": "string"
+        },
+        "value": {
+          "description": "The label value for update.",
+          "type": "string"
+        },
+        "op": {
+          "description": "Requests for add label to TemplateVersion or remove label from\nTemplateVersion.",
+          "enumDescriptions": [
+            "Default value.",
+            "Add the label to the TemplateVersion object.",
+            "Remove the label from the TemplateVersion object."
+          ],
+          "type": "string",
+          "enum": [
+            "OPERATION_UNSPECIFIED",
+            "ADD",
+            "REMOVE"
+          ]
+        }
+      }
+    },
+    "ModifyTemplateVersionLabelResponse": {
+      "id": "ModifyTemplateVersionLabelResponse",
+      "description": "Respond the labels in the TemplateVersion.",
+      "type": "object",
+      "properties": {
+        "labels": {
+          "description": "All the label in the TemplateVersion.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        }
+      }
+    },
     "ReportWorkItemStatusRequest": {
       "id": "ReportWorkItemStatusRequest",
       "description": "Request to report the status of WorkItems.",
@@ -5404,6 +5602,226 @@
                 "https://www.googleapis.com/auth/userinfo.email"
               ],
               "description": "Get the template associated with a template."
+            }
+          }
+        },
+        "catalogTemplates": {
+          "methods": {
+            "get": {
+              "id": "dataflow.projects.catalogTemplates.get",
+              "path": "v1b3/{+name}",
+              "flatPath": "v1b3/projects/{projectsId}/catalogTemplates/{catalogTemplatesId}",
+              "httpMethod": "GET",
+              "parameters": {
+                "name": {
+                  "description": "Resource name includes project_id and display_name. version_id is optional.\nGet the latest TemplateVersion if version_id not set.\n\nGet by project_id(pid1) and display_name(tid1):\n  Format: projects\/{pid1}\/catalogTemplates\/{tid1}\n\nGet by project_id(pid1), display_name(tid1), and version_id(vid1):\n  Format: projects\/{pid1}\/catalogTemplates\/{tid1@vid}",
+                  "location": "path",
+                  "required": true,
+                  "pattern": "^projects\/[^\/]+\/catalogTemplates\/[^\/]+$",
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "name"
+              ],
+              "response": {
+                "$ref": "TemplateVersion"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform",
+                "https://www.googleapis.com/auth/userinfo.email"
+              ],
+              "description": "Get TemplateVersion using project_id and display_name with an optional\nversion_id field. Get latest (has tag \"latest\") TemplateVersion if\nversion_id not set."
+            },
+            "commit": {
+              "id": "dataflow.projects.catalogTemplates.commit",
+              "path": "v1b3/{+name}:commit",
+              "flatPath": "v1b3/projects/{projectsId}/catalogTemplates/{catalogTemplatesId}:commit",
+              "httpMethod": "POST",
+              "parameters": {
+                "name": {
+                  "description": "The location of the template, name includes project_id and display_name.\n\nCommit using project_id(pid1) and display_name(tid1).\n  Format: projects\/{pid1}\/catalogTemplates\/{tid1}",
+                  "location": "path",
+                  "required": true,
+                  "pattern": "^projects\/[^\/]+\/catalogTemplates\/[^\/]+$",
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "name"
+              ],
+              "request": {
+                "$ref": "CommitTemplateVersionRequest"
+              },
+              "response": {
+                "$ref": "TemplateVersion"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform",
+                "https://www.googleapis.com/auth/userinfo.email"
+              ],
+              "description": "Creates a new TemplateVersion (Important: not new Template) entry in the\nspanner table. Requires project_id and display_name (template)."
+            },
+            "delete": {
+              "id": "dataflow.projects.catalogTemplates.delete",
+              "path": "v1b3/{+name}",
+              "flatPath": "v1b3/projects/{projectsId}/catalogTemplates/{catalogTemplatesId}",
+              "httpMethod": "DELETE",
+              "parameters": {
+                "name": {
+                  "description": "name includes project_id and display_name.\n\nDelete by project_id(pid1) and display_name(tid1).\n  Format: projects\/{pid1}\/catalogTemplates\/{tid1}",
+                  "location": "path",
+                  "required": true,
+                  "pattern": "^projects\/[^\/]+\/catalogTemplates\/[^\/]+$",
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "name"
+              ],
+              "response": {
+                "$ref": "Empty"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform",
+                "https://www.googleapis.com/auth/userinfo.email"
+              ],
+              "description": "Deletes an existing Template. Do nothing if Template does not exist."
+            },
+            "tag": {
+              "id": "dataflow.projects.catalogTemplates.tag",
+              "path": "v1b3/{+name}:tag",
+              "flatPath": "v1b3/projects/{projectsId}/catalogTemplates/{catalogTemplatesId}:tag",
+              "httpMethod": "POST",
+              "parameters": {
+                "name": {
+                  "description": "Resource name includes project_id, display_name, and version_id.\n\nUpdates by project_id(pid1), display_name(tid1), and version_id(vid1):\n  Format: projects\/{pid1}\/catalogTemplates\/{tid1@vid}",
+                  "location": "path",
+                  "required": true,
+                  "pattern": "^projects\/[^\/]+\/catalogTemplates\/[^\/]+$",
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "name"
+              ],
+              "request": {
+                "$ref": "ModifyTemplateVersionTagRequest"
+              },
+              "response": {
+                "$ref": "ModifyTemplateVersionTagResponse"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform",
+                "https://www.googleapis.com/auth/userinfo.email"
+              ],
+              "description": "Updates the tag of the TemplateVersion, and tag is unique in Template.\nIf tag exists in another TemplateVersion in the Template, updates the tag\nto this TemplateVersion will remove it from the old TemplateVersion and add\nit to this TemplateVersion. If request is remove_only (remove_only = true),\nremove the tag from this TemplateVersion."
+            },
+            "label": {
+              "id": "dataflow.projects.catalogTemplates.label",
+              "path": "v1b3/{+name}:label",
+              "flatPath": "v1b3/projects/{projectsId}/catalogTemplates/{catalogTemplatesId}:label",
+              "httpMethod": "POST",
+              "parameters": {
+                "name": {
+                  "description": "Resource name includes project_id, display_name, and version_id.\n\nUpdates by project_id(pid1), display_name(tid1), and version_id(vid1):\n  Format: projects\/{pid1}\/catalogTemplates\/{tid1@vid}",
+                  "location": "path",
+                  "required": true,
+                  "pattern": "^projects\/[^\/]+\/catalogTemplates\/[^\/]+$",
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "name"
+              ],
+              "request": {
+                "$ref": "ModifyTemplateVersionLabelRequest"
+              },
+              "response": {
+                "$ref": "ModifyTemplateVersionLabelResponse"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform",
+                "https://www.googleapis.com/auth/userinfo.email"
+              ],
+              "description": "Updates the label of the TemplateVersion. Label can be duplicated in\nTemplate, so either add or remove the label in the TemplateVersion."
+            }
+          }
+          ,
+          "resources": {
+            "templateVersions": {
+              "methods": {
+                "create": {
+                  "id": "dataflow.projects.catalogTemplates.templateVersions.create",
+                  "path": "v1b3/{+parent}/templateVersions",
+                  "flatPath": "v1b3/projects/{projectsId}/catalogTemplates/{catalogTemplatesId}/templateVersions",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "parent": {
+                      "description": "The parent project and template that the TemplateVersion will be created\nunder.\n\nCreate using project_id(pid1) and display_name(tid1).\n  Format: projects\/{pid1}\/catalogTemplates\/{tid1}",
+                      "location": "path",
+                      "required": true,
+                      "pattern": "^projects\/[^\/]+\/catalogTemplates\/[^\/]+$",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "parent"
+                  ],
+                  "request": {
+                    "$ref": "CreateTemplateVersionRequest"
+                  },
+                  "response": {
+                    "$ref": "TemplateVersion"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform",
+                    "https://www.googleapis.com/auth/userinfo.email"
+                  ],
+                  "description": "Creates a new Template with TemplateVersion. Requires\nproject_id(projects) and template display_name(catalogTemplates).\nThe template display_name is set by the user."
+                }
+              }
+            }
+          }
+        },
+        "templateVersions": {
+          "methods": {
+            "list": {
+              "id": "dataflow.projects.templateVersions.list",
+              "path": "v1b3/{+parent}/templateVersions",
+              "flatPath": "v1b3/projects/{projectsId}/templateVersions",
+              "httpMethod": "GET",
+              "parameters": {
+                "parent": {
+                  "description": "parent includes project_id, and display_name is optional.\n\nList by project_id(pid1) and display_name(tid1).\n  Format: projects\/{pid1}\/catalogTemplates\/{tid1}\n\nList by project_id(pid1).\n  Format: projects\/{pid1}",
+                  "location": "path",
+                  "required": true,
+                  "pattern": "^projects\/[^\/]+$",
+                  "type": "string"
+                },
+                "pageSize": {
+                  "description": "The maximum number of TemplateVersions to return per page.",
+                  "location": "query",
+                  "type": "integer",
+                  "format": "int32"
+                },
+                "pageToken": {
+                  "description": "The page token, received from a previous ListTemplateVersions call.\nProvide this to retrieve the subsequent page.",
+                  "location": "query",
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "parent"
+              ],
+              "response": {
+                "$ref": "ListTemplateVersionsResponse"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform",
+                "https://www.googleapis.com/auth/userinfo.email"
+              ],
+              "description": "List TemplateVersions using project_id and an optional display_name field.\nList all the TemplateVersions in the Template if display set.\nList all the TemplateVersions in the Project if display_name not set."
             }
           }
         },

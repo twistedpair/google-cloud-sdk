@@ -72,7 +72,8 @@ result pages. Also note that results returned (and not returned) can vary
 across repeated search queries.
 
 See [Data Catalog Search
-Syntax](/data-catalog/docs/how-to/search-reference) for more information.
+Syntax](https://cloud.google.com/data-catalog/docs/how-to/search-reference)
+for more information.
 
       Args:
         request: (GoogleCloudDatacatalogV1SearchCatalogRequest) input message
@@ -148,10 +149,10 @@ Data Catalog Entry.
     def Create(self, request, global_params=None):
       r"""Creates a tag on an Entry.
 Note: The project identified by the `parent` parameter for the
-[tag](/data-catalog/docs/reference/rest/v1/projects.locations.entryGroups.entries.tags/create#path-parameters)
+[tag](https://cloud.google.com/data-catalog/docs/reference/rest/v1/projects.locations.entryGroups.entries.tags/create#path-parameters)
 and the
 [tag
-template](/data-catalog/docs/reference/rest/v1/projects.locations.tagTemplates/create#path-parameters)
+template](https://cloud.google.com/data-catalog/docs/reference/rest/v1/projects.locations.tagTemplates/create#path-parameters)
 used to create the tag must be from the same organization.
 
       Args:
@@ -275,7 +276,8 @@ be created.
 
 Users should enable the Data Catalog API in the project identified by
 the `parent` parameter (see [Data Catalog Resource Project]
-(/data-catalog/docs/concepts/resource-project) for more information).
+(https://cloud.google.com/data-catalog/docs/concepts/resource-project) for
+more information).
 
 A maximum of 100,000 entries may be created per entry group.
 
@@ -309,7 +311,8 @@ CreateEntry
 method can be deleted.
 Users should enable the Data Catalog API in the project identified by
 the `name` parameter (see [Data Catalog Resource Project]
-(/data-catalog/docs/concepts/resource-project) for more information).
+(https://cloud.google.com/data-catalog/docs/concepts/resource-project) for
+more information).
 
       Args:
         request: (DatacatalogProjectsLocationsEntryGroupsEntriesDeleteRequest) input message
@@ -435,7 +438,8 @@ Callers must have following Google IAM permission
       r"""Updates an existing entry.
 Users should enable the Data Catalog API in the project identified by
 the `entry.name` parameter (see [Data Catalog Resource Project]
-(/data-catalog/docs/concepts/resource-project) for more information).
+(https://cloud.google.com/data-catalog/docs/concepts/resource-project) for
+more information).
 
       Args:
         request: (DatacatalogProjectsLocationsEntryGroupsEntriesPatchRequest) input message
@@ -513,10 +517,10 @@ request.
     def Create(self, request, global_params=None):
       r"""Creates a tag on an Entry.
 Note: The project identified by the `parent` parameter for the
-[tag](/data-catalog/docs/reference/rest/v1/projects.locations.entryGroups.entries.tags/create#path-parameters)
+[tag](https://cloud.google.com/data-catalog/docs/reference/rest/v1/projects.locations.entryGroups.entries.tags/create#path-parameters)
 and the
 [tag
-template](/data-catalog/docs/reference/rest/v1/projects.locations.tagTemplates/create#path-parameters)
+template](https://cloud.google.com/data-catalog/docs/reference/rest/v1/projects.locations.tagTemplates/create#path-parameters)
 used to create the tag must be from the same organization.
 
       Args:
@@ -652,7 +656,8 @@ locations.
 
 Users should enable the Data Catalog API in the project identified by
 the `parent` parameter (see [Data Catalog Resource Project]
-(/data-catalog/docs/concepts/resource-project) for more information).
+(https://cloud.google.com/data-catalog/docs/concepts/resource-project) for
+more information).
 
       Args:
         request: (DatacatalogProjectsLocationsEntryGroupsCreateRequest) input message
@@ -682,7 +687,8 @@ the `parent` parameter (see [Data Catalog Resource Project]
       r"""Deletes an EntryGroup. Only entry groups that do not contain entries can be.
 deleted. Users should enable the Data Catalog API in the project
 identified by the `name` parameter (see [Data Catalog Resource Project]
-(/data-catalog/docs/concepts/resource-project) for more information).
+(https://cloud.google.com/data-catalog/docs/concepts/resource-project) for
+more information).
 
       Args:
         request: (DatacatalogProjectsLocationsEntryGroupsDeleteRequest) input message
@@ -807,8 +813,9 @@ Callers must have following Google IAM permission
     def Patch(self, request, global_params=None):
       r"""Updates an EntryGroup. The user should enable the Data Catalog API in the.
 project identified by the `entry_group.name` parameter (see [Data Catalog
-Resource Project] (/data-catalog/docs/concepts/resource-project) for more
-information).
+Resource Project]
+(https://cloud.google.com/data-catalog/docs/concepts/resource-project) for
+more information).
 
       Args:
         request: (DatacatalogProjectsLocationsEntryGroupsPatchRequest) input message
@@ -927,8 +934,8 @@ request.
       r"""Creates a field in a tag template. The user should enable the Data Catalog.
 API in the project identified by the `parent` parameter (see
 [Data Catalog Resource
-Project](/data-catalog/docs/concepts/resource-project) for more
-information).
+Project](https://cloud.google.com/data-catalog/docs/concepts/resource-project)
+for more information).
 
       Args:
         request: (DatacatalogProjectsLocationsTagTemplatesFieldsCreateRequest) input message
@@ -958,7 +965,8 @@ information).
       r"""Deletes a field in a tag template and all uses of that field.
 Users should enable the Data Catalog API in the project identified by
 the `name` parameter (see [Data Catalog Resource Project]
-(/data-catalog/docs/concepts/resource-project) for more information).
+(https://cloud.google.com/data-catalog/docs/concepts/resource-project) for
+more information).
 
       Args:
         request: (DatacatalogProjectsLocationsTagTemplatesFieldsDeleteRequest) input message
@@ -988,7 +996,8 @@ the `name` parameter (see [Data Catalog Resource Project]
       r"""Updates a field in a tag template. This method cannot be used to update the.
 field type. Users should enable the Data Catalog API in the project
 identified by the `name` parameter (see [Data Catalog Resource Project]
-(/data-catalog/docs/concepts/resource-project) for more information).
+(https://cloud.google.com/data-catalog/docs/concepts/resource-project) for
+more information).
 
       Args:
         request: (DatacatalogProjectsLocationsTagTemplatesFieldsPatchRequest) input message
@@ -1017,8 +1026,9 @@ identified by the `name` parameter (see [Data Catalog Resource Project]
     def Rename(self, request, global_params=None):
       r"""Renames a field in a tag template. The user should enable the Data Catalog.
 API in the project identified by the `name` parameter (see [Data Catalog
-Resource Project](/data-catalog/docs/concepts/resource-project) for more
-information).
+Resource
+Project](https://cloud.google.com/data-catalog/docs/concepts/resource-project)
+for more information).
 
       Args:
         request: (DatacatalogProjectsLocationsTagTemplatesFieldsRenameRequest) input message
@@ -1057,8 +1067,9 @@ information).
     def Create(self, request, global_params=None):
       r"""Creates a tag template. The user should enable the Data Catalog API in.
 the project identified by the `parent` parameter (see [Data Catalog
-Resource Project](/data-catalog/docs/concepts/resource-project) for more
-information).
+Resource
+Project](https://cloud.google.com/data-catalog/docs/concepts/resource-project)
+for more information).
 
       Args:
         request: (DatacatalogProjectsLocationsTagTemplatesCreateRequest) input message
@@ -1088,7 +1099,8 @@ information).
       r"""Deletes a tag template and all tags using the template.
 Users should enable the Data Catalog API in the project identified by
 the `name` parameter (see [Data Catalog Resource Project]
-(/data-catalog/docs/concepts/resource-project) for more information).
+(https://cloud.google.com/data-catalog/docs/concepts/resource-project) for
+more information).
 
       Args:
         request: (DatacatalogProjectsLocationsTagTemplatesDeleteRequest) input message
@@ -1189,7 +1201,8 @@ a template. The tag template fields are represented as separate resources
 and should be updated using their own create/update/delete methods.
 Users should enable the Data Catalog API in the project identified by
 the `tag_template.name` parameter (see [Data Catalog Resource Project]
-(/data-catalog/docs/concepts/resource-project) for more information).
+(https://cloud.google.com/data-catalog/docs/concepts/resource-project) for
+more information).
 
       Args:
         request: (DatacatalogProjectsLocationsTagTemplatesPatchRequest) input message

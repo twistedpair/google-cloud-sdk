@@ -726,7 +726,8 @@
             "Next hop is a VPN tunnel.",
             "Next hop is a VPN Gateway. This scenario only happens when tracing\nconnectivity from an on-premises network to GCP through a VPN. The\nanalysis simulates a packet departing from the on-premises network\nthrough a VPN tunnel and arrives at a Cloud VPN gateway.",
             "Next hop is an internet gateway.",
-            "Next hop is blackhole; that is, the next hop either does not exist or is\nnot running."
+            "Next hop is blackhole; that is, the next hop either does not exist or is\nnot running.",
+            "Next hop is the forwarding rule of an Internal Load Balancer."
           ],
           "type": "string",
           "enum": [
@@ -739,7 +740,8 @@
             "NEXT_HOP_VPN_TUNNEL",
             "NEXT_HOP_VPN_GATEWAY",
             "NEXT_HOP_INTERNET_GATEWAY",
-            "NEXT_HOP_BLACKHOLE"
+            "NEXT_HOP_BLACKHOLE",
+            "NEXT_HOP_ILB"
           ]
         },
         "displayName": {

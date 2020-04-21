@@ -3334,11 +3334,11 @@ class GooglePrivacyDlpV2Finding(_messages.Message):
   Messages:
     LabelsValue: The labels associated with this `Finding`.  Label keys must
       be between 1 and 63 characters long and must conform to the following
-      regular expression: \[a-z\](\[-a-z0-9\]*\[a-z0-9\])?.  Label values must
-      be between 0 and 63 characters long and must conform to the regular
-      expression (\[a-z\](\[-a-z0-9\]*\[a-z0-9\])?)?.  No more than 10 labels
-      can be associated with a given finding.  Example: <code>"environment" :
-      "production"</code> Example: <code>"pipeline" : "etl"</code>
+      regular expression: `[a-z]([-a-z0-9]*[a-z0-9])?`.  Label values must be
+      between 0 and 63 characters long and must conform to the regular
+      expression `([a-z]([-a-z0-9]*[a-z0-9])?)?`.  No more than 10 labels can
+      be associated with a given finding.  Examples: * `"environment" :
+      "production"` * `"pipeline" : "etl"`
 
   Fields:
     createTime: Timestamp when finding was detected.
@@ -3348,11 +3348,11 @@ class GooglePrivacyDlpV2Finding(_messages.Message):
     jobName: The job that stored the finding.
     labels: The labels associated with this `Finding`.  Label keys must be
       between 1 and 63 characters long and must conform to the following
-      regular expression: \[a-z\](\[-a-z0-9\]*\[a-z0-9\])?.  Label values must
-      be between 0 and 63 characters long and must conform to the regular
-      expression (\[a-z\](\[-a-z0-9\]*\[a-z0-9\])?)?.  No more than 10 labels
-      can be associated with a given finding.  Example: <code>"environment" :
-      "production"</code> Example: <code>"pipeline" : "etl"</code>
+      regular expression: `[a-z]([-a-z0-9]*[a-z0-9])?`.  Label values must be
+      between 0 and 63 characters long and must conform to the regular
+      expression `([a-z]([-a-z0-9]*[a-z0-9])?)?`.  No more than 10 labels can
+      be associated with a given finding.  Examples: * `"environment" :
+      "production"` * `"pipeline" : "etl"`
     likelihood: Confidence of how likely it is that the `info_type` is
       correct.
     location: Where the content was found.
@@ -3393,11 +3393,11 @@ class GooglePrivacyDlpV2Finding(_messages.Message):
   class LabelsValue(_messages.Message):
     r"""The labels associated with this `Finding`.  Label keys must be between
     1 and 63 characters long and must conform to the following regular
-    expression: \[a-z\](\[-a-z0-9\]*\[a-z0-9\])?.  Label values must be
-    between 0 and 63 characters long and must conform to the regular
-    expression (\[a-z\](\[-a-z0-9\]*\[a-z0-9\])?)?.  No more than 10 labels
-    can be associated with a given finding.  Example: <code>"environment" :
-    "production"</code> Example: <code>"pipeline" : "etl"</code>
+    expression: `[a-z]([-a-z0-9]*[a-z0-9])?`.  Label values must be between 0
+    and 63 characters long and must conform to the regular expression
+    `([a-z]([-a-z0-9]*[a-z0-9])?)?`.  No more than 10 labels can be associated
+    with a given finding.  Examples: * `"environment" : "production"` *
+    `"pipeline" : "etl"`
 
     Messages:
       AdditionalProperty: An additional property for a LabelsValue object.
@@ -3538,11 +3538,11 @@ class GooglePrivacyDlpV2HybridFindingDetails(_messages.Message):
       required. The labels associated with `Finding`'s produced by hybrid
       inspection.  Label keys must be between 1 and 63 characters long and
       must conform to the following regular expression:
-      \[a-z\](\[-a-z0-9\]*\[a-z0-9\])?.  Label values must be between 0 and 63
+      `[a-z]([-a-z0-9]*[a-z0-9])?`.  Label values must be between 0 and 63
       characters long and must conform to the regular expression
-      (\[a-z\](\[-a-z0-9\]*\[a-z0-9\])?)?.  No more than 10 labels can be
-      associated with a given finding.  Example: <code>"environment" :
-      "production"</code> Example: <code>"pipeline" : "etl"</code>
+      `([a-z]([-a-z0-9]*[a-z0-9])?)?`.  No more than 10 labels can be
+      associated with a given finding.  Examples: * `"environment" :
+      "production"` * `"pipeline" : "etl"`
 
   Fields:
     containerDetails: Details about the container where the content being
@@ -3555,12 +3555,11 @@ class GooglePrivacyDlpV2HybridFindingDetails(_messages.Message):
       inspected. If configured by the job, some key values may be required.
       The labels associated with `Finding`'s produced by hybrid inspection.
       Label keys must be between 1 and 63 characters long and must conform to
-      the following regular expression: \[a-z\](\[-a-z0-9\]*\[a-z0-9\])?.
-      Label values must be between 0 and 63 characters long and must conform
-      to the regular expression (\[a-z\](\[-a-z0-9\]*\[a-z0-9\])?)?.  No more
-      than 10 labels can be associated with a given finding.  Example:
-      <code>"environment" : "production"</code> Example: <code>"pipeline" :
-      "etl"</code>
+      the following regular expression: `[a-z]([-a-z0-9]*[a-z0-9])?`.  Label
+      values must be between 0 and 63 characters long and must conform to the
+      regular expression `([a-z]([-a-z0-9]*[a-z0-9])?)?`.  No more than 10
+      labels can be associated with a given finding.  Examples: *
+      `"environment" : "production"` * `"pipeline" : "etl"`
     rowOffset: Offset of the row for tables. Populate if the row(s) being
       scanned are part of a bigger dataset and you want to keep track of their
       absolute position.
@@ -3577,12 +3576,11 @@ class GooglePrivacyDlpV2HybridFindingDetails(_messages.Message):
     inspected. If configured by the job, some key values may be required. The
     labels associated with `Finding`'s produced by hybrid inspection.  Label
     keys must be between 1 and 63 characters long and must conform to the
-    following regular expression: \[a-z\](\[-a-z0-9\]*\[a-z0-9\])?.  Label
-    values must be between 0 and 63 characters long and must conform to the
-    regular expression (\[a-z\](\[-a-z0-9\]*\[a-z0-9\])?)?.  No more than 10
-    labels can be associated with a given finding.  Example:
-    <code>"environment" : "production"</code> Example: <code>"pipeline" :
-    "etl"</code>
+    following regular expression: `[a-z]([-a-z0-9]*[a-z0-9])?`.  Label values
+    must be between 0 and 63 characters long and must conform to the regular
+    expression `([a-z]([-a-z0-9]*[a-z0-9])?)?`.  No more than 10 labels can be
+    associated with a given finding.  Examples: * `"environment" :
+    "production"` * `"pipeline" : "etl"`
 
     Messages:
       AdditionalProperty: An additional property for a LabelsValue object.
@@ -3663,29 +3661,28 @@ class GooglePrivacyDlpV2HybridOptions(_messages.Message):
     LabelsValue: To organize findings, these labels will be added to each
       finding.  Label keys must be between 1 and 63 characters long and must
       conform to the following regular expression:
-      \[a-z\](\[-a-z0-9\]*\[a-z0-9\])?.  Label values must be between 0 and 63
+      `[a-z]([-a-z0-9]*[a-z0-9])?`.  Label values must be between 0 and 63
       characters long and must conform to the regular expression
-      (\[a-z\](\[-a-z0-9\]*\[a-z0-9\])?)?.  No more than 10 labels can be
-      associated with a given finding.  Example: <code>"environment" :
-      "production"</code> Example: <code>"pipeline" : "etl"</code>
+      `([a-z]([-a-z0-9]*[a-z0-9])?)?`.  No more than 10 labels can be
+      associated with a given finding.  Examples: * `"environment" :
+      "production"` * `"pipeline" : "etl"`
 
   Fields:
     description: A short description of where the data is coming from. Will be
       stored once in the job. 256 max length.
     labels: To organize findings, these labels will be added to each finding.
       Label keys must be between 1 and 63 characters long and must conform to
-      the following regular expression: \[a-z\](\[-a-z0-9\]*\[a-z0-9\])?.
-      Label values must be between 0 and 63 characters long and must conform
-      to the regular expression (\[a-z\](\[-a-z0-9\]*\[a-z0-9\])?)?.  No more
-      than 10 labels can be associated with a given finding.  Example:
-      <code>"environment" : "production"</code> Example: <code>"pipeline" :
-      "etl"</code>
+      the following regular expression: `[a-z]([-a-z0-9]*[a-z0-9])?`.  Label
+      values must be between 0 and 63 characters long and must conform to the
+      regular expression `([a-z]([-a-z0-9]*[a-z0-9])?)?`.  No more than 10
+      labels can be associated with a given finding.  Examples: *
+      `"environment" : "production"` * `"pipeline" : "etl"`
     requiredFindingLabelKeys: These are labels that each inspection request
       must include within their 'finding_labels' map. Request may contain
       others, but any missing one of these will be rejected.  Label keys must
       be between 1 and 63 characters long and must conform to the following
-      regular expression: \[a-z\](\[-a-z0-9\]*\[a-z0-9\])?.  No more than 10
-      keys can be required.
+      regular expression: `[a-z]([-a-z0-9]*[a-z0-9])?`.  No more than 10 keys
+      can be required.
     tableOptions: If the container is a table, additional information to make
       findings meaningful such as the columns that are primary keys.
   """
@@ -3694,12 +3691,11 @@ class GooglePrivacyDlpV2HybridOptions(_messages.Message):
   class LabelsValue(_messages.Message):
     r"""To organize findings, these labels will be added to each finding.
     Label keys must be between 1 and 63 characters long and must conform to
-    the following regular expression: \[a-z\](\[-a-z0-9\]*\[a-z0-9\])?.  Label
+    the following regular expression: `[a-z]([-a-z0-9]*[a-z0-9])?`.  Label
     values must be between 0 and 63 characters long and must conform to the
-    regular expression (\[a-z\](\[-a-z0-9\]*\[a-z0-9\])?)?.  No more than 10
-    labels can be associated with a given finding.  Example:
-    <code>"environment" : "production"</code> Example: <code>"pipeline" :
-    "etl"</code>
+    regular expression `([a-z]([-a-z0-9]*[a-z0-9])?)?`.  No more than 10
+    labels can be associated with a given finding.  Examples: * `"environment"
+    : "production"` * `"pipeline" : "etl"`
 
     Messages:
       AdditionalProperty: An additional property for a LabelsValue object.
@@ -3765,7 +3761,7 @@ class GooglePrivacyDlpV2InfoType(_messages.Message):
       creating a CustomInfoType, or one of the names listed at
       https://cloud.google.com/dlp/docs/infotypes-reference when specifying a
       built-in type. InfoType names should conform to the pattern
-      [a-zA-Z0-9_]{1,64}.
+      `[a-zA-Z0-9_]{1,64}`.
   """
 
   name = _messages.StringField(1)

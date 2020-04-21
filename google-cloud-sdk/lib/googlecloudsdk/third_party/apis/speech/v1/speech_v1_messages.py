@@ -36,8 +36,8 @@ class LongRunningRecognizeMetadata(_messages.Message):
       Guaranteed to be 100 when the audio is fully processed and the results
       are available.
     startTime: Time when the request was received.
-    uri: The URI of the audio file being transcribed. Empty if the audio was
-      sent as byte content.
+    uri: Output only. The URI of the audio file being transcribed. Empty if
+      the audio was sent as byte content.
   """
 
   lastUpdateTime = _messages.StringField(1)
@@ -236,9 +236,6 @@ class RecognitionConfig(_messages.Message):
       result hypotheses. This feature is only available in select languages.
       Setting this for requests in other languages has no effect at all. The
       default 'false' value does not add punctuation to result hypotheses.
-      Note: This is currently offered as an experimental service,
-      complimentary to all users. In the future this may be exclusively
-      available as a premium feature.
     enableSeparateRecognitionPerChannel: This needs to be set to `true`
       explicitly and `audio_channel_count` > 1 to get each channel recognized
       separately. The recognition result will contain a `channel_tag` field to

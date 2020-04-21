@@ -233,15 +233,15 @@
       "type": "object",
       "properties": {
         "name": {
-          "description": "Resource name for LabelKey. Must be in the format labelKeys\/123.\n\nImmutable.",
+          "description": "Immutable. Resource name for LabelKey. Must be in the format labelKeys\/123.",
           "type": "string"
         },
         "parent": {
-          "description": "The resource name of the new LabelKey's parent.\nMust be of the form `organizations\/{org_id}`.\n\nImmutable.",
+          "description": "Immutable. The resource name of the new LabelKey's parent.\nMust be of the form `organizations\/{org_id}`.",
           "type": "string"
         },
         "displayName": {
-          "description": "Required. User-assigned display name for LabelKey. Display name should be\nunique for LabelKeys within the same parent resource.\n\nThe display name must be 1-63 characters, beginning and ending with\nan alphanumeric character ([a-z0-9A-Z]) with dashes (-), underscores (_),\ndots (.), and alphanumerics between.\n\nRead-write.",
+          "description": "Required. Immutable. User-assigned display name for LabelKey. Display name should be\nunique for LabelKeys within the same parent resource.\n\nThe display name must be 1-63 characters, beginning and ending with\nan alphanumeric character ([a-z0-9A-Z]) with dashes (-), underscores (_),\ndots (.), and alphanumerics between.",
           "type": "string"
         },
         "description": {
@@ -321,15 +321,15 @@
       "type": "object",
       "properties": {
         "name": {
-          "description": "Resource name for LabelValue in the format labelValues\/456.\n\nImmutable.",
+          "description": "Immutable. Resource name for LabelValue in the format labelValues\/456.",
           "type": "string"
         },
         "parent": {
-          "description": "The resource name of the new LabelValue's parent LabelKey.\nMust be of the form `labelKeys\/{label_key_id}`.\n\nImmutable.",
+          "description": "Immutable. The resource name of the new LabelValue's parent LabelKey.\nMust be of the form `labelKeys\/{label_key_id}`.",
           "type": "string"
         },
         "displayName": {
-          "description": "Required. User-assigned display name for LabelValue. Display name should be\nunique for LabelValues within the same parent LabelKey.\n\nThe display name must be 63 characters or less, beginning and ending with\nan alphanumeric character ([a-z0-9A-Z]) with dashes (-), underscores (_),\ndots (.), and alphanumerics between.\n\nRead-write.",
+          "description": "Required. Immutable. User-assigned display name for LabelValue. Display name should be\nunique for LabelValues within the same parent LabelKey.\n\nThe display name must be 63 characters or less, beginning and ending with\nan alphanumeric character ([a-z0-9A-Z]) with dashes (-), underscores (_),\ndots (.), and alphanumerics between.",
           "type": "string"
         },
         "description": {
@@ -746,7 +746,7 @@
           "httpMethod": "PATCH",
           "parameters": {
             "name": {
-              "description": "Resource name for LabelKey. Must be in the format labelKeys\/123.\n\nImmutable.",
+              "description": "Immutable. Resource name for LabelKey. Must be in the format labelKeys\/123.",
               "location": "path",
               "required": true,
               "pattern": "^labelKeys\/[^\/]+$",
@@ -1007,7 +1007,7 @@
           "httpMethod": "PATCH",
           "parameters": {
             "name": {
-              "description": "Resource name for LabelValue in the format labelValues\/456.\n\nImmutable.",
+              "description": "Immutable. Resource name for LabelValue in the format labelValues\/456.",
               "location": "path",
               "required": true,
               "pattern": "^labelValues\/[^\/]+$",

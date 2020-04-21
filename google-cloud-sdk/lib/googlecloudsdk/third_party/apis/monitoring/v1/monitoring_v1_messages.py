@@ -1195,11 +1195,14 @@ class TimeSeriesFilter(_messages.Message):
       (https://cloud.google.com/monitoring/api/v3/filters) that identifies the
       metric types, resources, and projects to query.
     pickTimeSeriesFilter: Ranking based time series filter.
+    secondaryAggregation: Apply a second aggregation after aggregation is
+      applied.
   """
 
   aggregation = _messages.MessageField('Aggregation', 1)
   filter = _messages.StringField(2)
   pickTimeSeriesFilter = _messages.MessageField('PickTimeSeriesFilter', 3)
+  secondaryAggregation = _messages.MessageField('Aggregation', 4)
 
 
 class TimeSeriesFilterRatio(_messages.Message):

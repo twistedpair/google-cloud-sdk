@@ -1366,7 +1366,6 @@
       "type": "object",
       "properties": {
         "logMode": {
-          "description": "Whether Gin logging should happen in a fail-closed manner at the caller.\nThis is currently supported in the LocalIAM implementation, Stubby C++,\nand Stubby Java. For Apps Framework, see go\/af-audit-logging#failclosed.",
           "enumDescriptions": [
             "Client is not required to write a partial Gin log immediately after\nthe authorization check. If client chooses to write one and it fails,\nclient may either fail open (allow the operation to continue) or\nfail closed (handle as a DENY outcome).",
             "The application's operation in the context of which this authorization\ncheck is being made may only be performed if it is successfully logged\nto Gin. For instance, the authorization library may satisfy this\nobligation by emitting a partial log entry at authorization check time\nand only returning ALLOW to the application if it succeeds.\n\nIf a matching Rule has this directive, but the client has not indicated\nthat it will honor such requirements, then the IAM check will result in\nauthorization failure by setting CheckPolicyResponse.success=false."

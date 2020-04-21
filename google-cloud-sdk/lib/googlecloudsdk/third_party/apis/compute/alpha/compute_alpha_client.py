@@ -1058,6 +1058,10 @@ class ComputeAlpha(base_api.BaseApiClient):
     def GetHealth(self, request, global_params=None):
       r"""Gets the most recent health check results for this BackendService.
 
+Example request body:
+
+{ "group": "/zones/us-east1-b/instanceGroups/lb-backend-example" }
+
       Args:
         request: (ComputeBackendServicesGetHealthRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
@@ -3024,7 +3028,7 @@ This method is called on a best-effort basis. Specifically:
         ordered_params=[u'operation'],
         path_params=[u'operation'],
         query_params=[u'parentId'],
-        relative_path=u'projects/locations/global/operations/{operation}',
+        relative_path=u'locations/global/operations/{operation}',
         request_field='',
         request_type_name=u'ComputeGlobalOrganizationOperationsDeleteRequest',
         response_type_name=u'ComputeGlobalOrganizationOperationsDeleteResponse',
@@ -3050,7 +3054,7 @@ This method is called on a best-effort basis. Specifically:
         ordered_params=[u'operation'],
         path_params=[u'operation'],
         query_params=[u'parentId'],
-        relative_path=u'projects/locations/global/operations/{operation}',
+        relative_path=u'locations/global/operations/{operation}',
         request_field='',
         request_type_name=u'ComputeGlobalOrganizationOperationsGetRequest',
         response_type_name=u'Operation',
@@ -3076,7 +3080,7 @@ This method is called on a best-effort basis. Specifically:
         ordered_params=[],
         path_params=[],
         query_params=[u'filter', u'maxResults', u'orderBy', u'pageToken', u'parentId', u'returnPartialSuccess'],
-        relative_path=u'projects/locations/global/operations',
+        relative_path=u'locations/global/operations',
         request_field='',
         request_type_name=u'ComputeGlobalOrganizationOperationsListRequest',
         response_type_name=u'OperationList',
@@ -9020,7 +9024,7 @@ If the group is part of a backend service that has enabled connection draining, 
         ordered_params=[u'securityPolicy'],
         path_params=[u'securityPolicy'],
         query_params=[u'replaceExistingAssociation', u'requestId'],
-        relative_path=u'projects/locations/global/securityPolicies/{securityPolicy}/addAssociation',
+        relative_path=u'locations/global/securityPolicies/{securityPolicy}/addAssociation',
         request_field=u'securityPolicyAssociation',
         request_type_name=u'ComputeOrganizationSecurityPoliciesAddAssociationRequest',
         response_type_name=u'Operation',
@@ -9046,7 +9050,7 @@ If the group is part of a backend service that has enabled connection draining, 
         ordered_params=[u'securityPolicy'],
         path_params=[u'securityPolicy'],
         query_params=[u'requestId'],
-        relative_path=u'projects/locations/global/securityPolicies/{securityPolicy}/addRule',
+        relative_path=u'locations/global/securityPolicies/{securityPolicy}/addRule',
         request_field=u'securityPolicyRule',
         request_type_name=u'ComputeOrganizationSecurityPoliciesAddRuleRequest',
         response_type_name=u'Operation',
@@ -9072,7 +9076,7 @@ If the group is part of a backend service that has enabled connection draining, 
         ordered_params=[u'securityPolicy'],
         path_params=[u'securityPolicy'],
         query_params=[u'requestId', u'sourceSecurityPolicy'],
-        relative_path=u'projects/locations/global/securityPolicies/{securityPolicy}/copyRules',
+        relative_path=u'locations/global/securityPolicies/{securityPolicy}/copyRules',
         request_field='',
         request_type_name=u'ComputeOrganizationSecurityPoliciesCopyRulesRequest',
         response_type_name=u'Operation',
@@ -9098,7 +9102,7 @@ If the group is part of a backend service that has enabled connection draining, 
         ordered_params=[u'securityPolicy'],
         path_params=[u'securityPolicy'],
         query_params=[u'requestId'],
-        relative_path=u'projects/locations/global/securityPolicies/{securityPolicy}',
+        relative_path=u'locations/global/securityPolicies/{securityPolicy}',
         request_field='',
         request_type_name=u'ComputeOrganizationSecurityPoliciesDeleteRequest',
         response_type_name=u'Operation',
@@ -9124,7 +9128,7 @@ If the group is part of a backend service that has enabled connection draining, 
         ordered_params=[u'securityPolicy'],
         path_params=[u'securityPolicy'],
         query_params=[],
-        relative_path=u'projects/locations/global/securityPolicies/{securityPolicy}',
+        relative_path=u'locations/global/securityPolicies/{securityPolicy}',
         request_field='',
         request_type_name=u'ComputeOrganizationSecurityPoliciesGetRequest',
         response_type_name=u'SecurityPolicy',
@@ -9150,7 +9154,7 @@ If the group is part of a backend service that has enabled connection draining, 
         ordered_params=[u'securityPolicy'],
         path_params=[u'securityPolicy'],
         query_params=[u'name'],
-        relative_path=u'projects/locations/global/securityPolicies/{securityPolicy}/getAssociation',
+        relative_path=u'locations/global/securityPolicies/{securityPolicy}/getAssociation',
         request_field='',
         request_type_name=u'ComputeOrganizationSecurityPoliciesGetAssociationRequest',
         response_type_name=u'SecurityPolicyAssociation',
@@ -9176,7 +9180,7 @@ If the group is part of a backend service that has enabled connection draining, 
         ordered_params=[u'securityPolicy'],
         path_params=[u'securityPolicy'],
         query_params=[u'priority'],
-        relative_path=u'projects/locations/global/securityPolicies/{securityPolicy}/getRule',
+        relative_path=u'locations/global/securityPolicies/{securityPolicy}/getRule',
         request_field='',
         request_type_name=u'ComputeOrganizationSecurityPoliciesGetRuleRequest',
         response_type_name=u'SecurityPolicyRule',
@@ -9202,7 +9206,7 @@ If the group is part of a backend service that has enabled connection draining, 
         ordered_params=[],
         path_params=[],
         query_params=[u'parentId', u'requestId'],
-        relative_path=u'projects/locations/global/securityPolicies',
+        relative_path=u'locations/global/securityPolicies',
         request_field=u'securityPolicy',
         request_type_name=u'ComputeOrganizationSecurityPoliciesInsertRequest',
         response_type_name=u'Operation',
@@ -9228,7 +9232,7 @@ If the group is part of a backend service that has enabled connection draining, 
         ordered_params=[],
         path_params=[],
         query_params=[u'filter', u'maxResults', u'orderBy', u'pageToken', u'parentId', u'returnPartialSuccess'],
-        relative_path=u'projects/locations/global/securityPolicies',
+        relative_path=u'locations/global/securityPolicies',
         request_field='',
         request_type_name=u'ComputeOrganizationSecurityPoliciesListRequest',
         response_type_name=u'SecurityPolicyList',
@@ -9254,7 +9258,7 @@ If the group is part of a backend service that has enabled connection draining, 
         ordered_params=[],
         path_params=[],
         query_params=[u'targetResource'],
-        relative_path=u'projects/locations/global/securityPolicies/listAssociations',
+        relative_path=u'locations/global/securityPolicies/listAssociations',
         request_field='',
         request_type_name=u'ComputeOrganizationSecurityPoliciesListAssociationsRequest',
         response_type_name=u'OrganizationSecurityPoliciesListAssociationsResponse',
@@ -9280,7 +9284,7 @@ If the group is part of a backend service that has enabled connection draining, 
         ordered_params=[u'securityPolicy'],
         path_params=[u'securityPolicy'],
         query_params=[u'parentId', u'requestId'],
-        relative_path=u'projects/locations/global/securityPolicies/{securityPolicy}/move',
+        relative_path=u'locations/global/securityPolicies/{securityPolicy}/move',
         request_field='',
         request_type_name=u'ComputeOrganizationSecurityPoliciesMoveRequest',
         response_type_name=u'Operation',
@@ -9306,7 +9310,7 @@ If the group is part of a backend service that has enabled connection draining, 
         ordered_params=[u'securityPolicy'],
         path_params=[u'securityPolicy'],
         query_params=[u'requestId'],
-        relative_path=u'projects/locations/global/securityPolicies/{securityPolicy}',
+        relative_path=u'locations/global/securityPolicies/{securityPolicy}',
         request_field=u'securityPolicyResource',
         request_type_name=u'ComputeOrganizationSecurityPoliciesPatchRequest',
         response_type_name=u'Operation',
@@ -9332,7 +9336,7 @@ If the group is part of a backend service that has enabled connection draining, 
         ordered_params=[u'securityPolicy'],
         path_params=[u'securityPolicy'],
         query_params=[u'priority', u'requestId'],
-        relative_path=u'projects/locations/global/securityPolicies/{securityPolicy}/patchRule',
+        relative_path=u'locations/global/securityPolicies/{securityPolicy}/patchRule',
         request_field=u'securityPolicyRule',
         request_type_name=u'ComputeOrganizationSecurityPoliciesPatchRuleRequest',
         response_type_name=u'Operation',
@@ -9358,7 +9362,7 @@ If the group is part of a backend service that has enabled connection draining, 
         ordered_params=[u'securityPolicy'],
         path_params=[u'securityPolicy'],
         query_params=[u'name', u'requestId'],
-        relative_path=u'projects/locations/global/securityPolicies/{securityPolicy}/removeAssociation',
+        relative_path=u'locations/global/securityPolicies/{securityPolicy}/removeAssociation',
         request_field='',
         request_type_name=u'ComputeOrganizationSecurityPoliciesRemoveAssociationRequest',
         response_type_name=u'Operation',
@@ -9384,7 +9388,7 @@ If the group is part of a backend service that has enabled connection draining, 
         ordered_params=[u'securityPolicy'],
         path_params=[u'securityPolicy'],
         query_params=[u'priority', u'requestId'],
-        relative_path=u'projects/locations/global/securityPolicies/{securityPolicy}/removeRule',
+        relative_path=u'locations/global/securityPolicies/{securityPolicy}/removeRule',
         request_field='',
         request_type_name=u'ComputeOrganizationSecurityPoliciesRemoveRuleRequest',
         response_type_name=u'Operation',
@@ -16511,6 +16515,32 @@ For more information, see Deleting snapshots.
         supports_download=False,
     )
 
+    def SetCertificateMap(self, request, global_params=None):
+      r"""Changes the Certificate Map for TargetHttpsProxy.
+
+      Args:
+        request: (ComputeTargetHttpsProxiesSetCertificateMapRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('SetCertificateMap')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SetCertificateMap.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'compute.targetHttpsProxies.setCertificateMap',
+        ordered_params=[u'project', u'targetHttpsProxy'],
+        path_params=[u'project', u'targetHttpsProxy'],
+        query_params=[u'requestId'],
+        relative_path=u'projects/{project}/global/targetHttpsProxies/{targetHttpsProxy}/setCertificateMap',
+        request_field=u'targetHttpsProxiesSetCertificateMapRequest',
+        request_type_name=u'ComputeTargetHttpsProxiesSetCertificateMapRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
     def SetQuicOverride(self, request, global_params=None):
       r"""Sets the QUIC override policy for TargetHttpsProxy.
 
@@ -17265,6 +17295,32 @@ For more information, see Deleting snapshots.
         relative_path=u'projects/{project}/global/targetSslProxies/{targetSslProxy}/setBackendService',
         request_field=u'targetSslProxiesSetBackendServiceRequest',
         request_type_name=u'ComputeTargetSslProxiesSetBackendServiceRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
+    def SetCertificateMap(self, request, global_params=None):
+      r"""Changes the Certificate Map for TargetSslProxy.
+
+      Args:
+        request: (ComputeTargetSslProxiesSetCertificateMapRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('SetCertificateMap')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SetCertificateMap.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'compute.targetSslProxies.setCertificateMap',
+        ordered_params=[u'project', u'targetSslProxy'],
+        path_params=[u'project', u'targetSslProxy'],
+        query_params=[u'requestId'],
+        relative_path=u'projects/{project}/global/targetSslProxies/{targetSslProxy}/setCertificateMap',
+        request_field=u'targetSslProxiesSetCertificateMapRequest',
+        request_type_name=u'ComputeTargetSslProxiesSetCertificateMapRequest',
         response_type_name=u'Operation',
         supports_download=False,
     )

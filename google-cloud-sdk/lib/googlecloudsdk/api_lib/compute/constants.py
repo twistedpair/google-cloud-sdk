@@ -42,7 +42,7 @@ DEFAULT_NETWORK = 'default'
 DEFAULT_NETWORK_INTERFACE = 'nic0'
 NETWORK_TIER_CHOICES_FOR_INSTANCE = ['PREMIUM', 'SELECT', 'STANDARD']
 
-DEFAULT_IMAGE_FAMILY = 'debian-9'
+DEFAULT_IMAGE_FAMILY = 'debian-10'
 
 ImageAlias = collections.namedtuple(
     'ImageAlias', ['project', 'name_prefix', 'family'])

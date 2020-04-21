@@ -31,6 +31,16 @@ class Collections(enum.Enum):
       [u'projectId'],
       True
   )
+  PROJECTS_CATALOGTEMPLATES = (
+      'projects.catalogTemplates',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/catalogTemplates/{catalogTemplatesId}',
+      },
+      [u'name'],
+      True
+  )
   PROJECTS_JOBS = (
       'projects.jobs',
       'projects/{projectId}/jobs/{jobId}',

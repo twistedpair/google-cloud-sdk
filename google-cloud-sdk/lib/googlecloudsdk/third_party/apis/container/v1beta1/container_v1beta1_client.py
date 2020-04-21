@@ -435,7 +435,8 @@ clusters.
 Compute Engine instances.
 
 By default, the cluster is created in the project's
-[default network](/compute/docs/networks-and-firewalls#networks).
+[default
+network](https://cloud.google.com/compute/docs/networks-and-firewalls#networks).
 
 One firewall is added for the cluster. After cluster creation,
 the Kubelet creates routes for each node to allow the containers
@@ -646,7 +647,7 @@ zones.
     def SetLocations(self, request, global_params=None):
       r"""Sets the locations for a specific cluster.
 Deprecated. Use
-[projects.locations.clusters.update](/kubernetes-engine/docs/reference/rest/v1beta1/projects.locations.clusters/update)
+[projects.locations.clusters.update](https://cloud.google.com/kubernetes-engine/docs/reference/rest/v1beta1/projects.locations.clusters/update)
 instead.
 
       Args:
@@ -1385,7 +1386,8 @@ This makes no changes if the last upgrade successfully completed.
 Compute Engine instances.
 
 By default, the cluster is created in the project's
-[default network](/compute/docs/networks-and-firewalls#networks).
+[default
+network](https://cloud.google.com/compute/docs/networks-and-firewalls#networks).
 
 One firewall is added for the cluster. After cluster creation,
 the Kubelet creates routes for each node to allow the containers
@@ -1534,7 +1536,7 @@ zones.
     def Locations(self, request, global_params=None):
       r"""Sets the locations for a specific cluster.
 Deprecated. Use
-[projects.locations.clusters.update](/kubernetes-engine/docs/reference/rest/v1beta1/projects.locations.clusters/update)
+[projects.locations.clusters.update](https://cloud.google.com/kubernetes-engine/docs/reference/rest/v1beta1/projects.locations.clusters/update)
 instead.
 
       Args:

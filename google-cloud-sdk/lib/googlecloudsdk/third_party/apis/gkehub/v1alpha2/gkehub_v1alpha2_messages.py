@@ -390,23 +390,14 @@ class DataAccessOptions(_messages.Message):
   r"""Write a Data Access (Gin) log
 
   Enums:
-    LogModeValueValuesEnum: Whether Gin logging should happen in a fail-closed
-      manner at the caller. This is currently supported in the LocalIAM
-      implementation, Stubby C++, and Stubby Java. For Apps Framework, see go
-      /af-audit-logging#failclosed.
+    LogModeValueValuesEnum:
 
   Fields:
-    logMode: Whether Gin logging should happen in a fail-closed manner at the
-      caller. This is currently supported in the LocalIAM implementation,
-      Stubby C++, and Stubby Java. For Apps Framework, see go/af-audit-
-      logging#failclosed.
+    logMode: A LogModeValueValuesEnum attribute.
   """
 
   class LogModeValueValuesEnum(_messages.Enum):
-    r"""Whether Gin logging should happen in a fail-closed manner at the
-    caller. This is currently supported in the LocalIAM implementation, Stubby
-    C++, and Stubby Java. For Apps Framework, see go/af-audit-
-    logging#failclosed.
+    r"""LogModeValueValuesEnum enum type.
 
     Values:
       LOG_MODE_UNSPECIFIED: Client is not required to write a partial Gin log
@@ -805,6 +796,33 @@ class GoogleRpcStatus(_messages.Message):
   message = _messages.StringField(3)
 
 
+class KubernetesMetadata(_messages.Message):
+  r"""KubernetesMetadata provides informational metadata for Memberships that
+  are created from Kubernetes Endpoints (currently, these are equivalent to
+  Kubernetes clusters).
+
+  Fields:
+    kubernetesApiServerVersion: Kubernetes API server version string as
+      reported by '/version'.
+    nodeCount: Node count as reported by Kubernetes nodes resources.
+    nodeProviderId: Node providerID as reported by the first node in the list
+      of nodes on the Kubernetes endpoint. It should be noted that some
+      Kubernetes platforms (like GKE-on-GCP) support zero-node clusters. For
+      these platforms, the node_count will be zero and the node_provider_id
+      will be empty.
+    updateTime: The time at which these details were last updated. This
+      update_time is different from the Membership-level update_time since
+      EndpointDetails are updated internally for API consumers.
+    vcpuCount: vCPU count as reported by Kubernetes nodes resources.
+  """
+
+  kubernetesApiServerVersion = _messages.StringField(1)
+  nodeCount = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  nodeProviderId = _messages.StringField(3)
+  updateTime = _messages.StringField(4)
+  vcpuCount = _messages.IntegerField(5, variant=_messages.Variant.INT32)
+
+
 class ListLocationsResponse(_messages.Message):
   r"""The response message for Locations.ListLocations.
 
@@ -1024,9 +1042,12 @@ class MembershipEndpoint(_messages.Message):
   Fields:
     gkeCluster: If this Membership is a Kubernetes API server hosted on GKE,
       this is a self link to its GCP resource.
+    kubernetesMetadata: Output only. For Memberships that point to Kubernetes
+      Endpoints, this field provides useful metadata.
   """
 
   gkeCluster = _messages.MessageField('GkeCluster', 1)
+  kubernetesMetadata = _messages.MessageField('KubernetesMetadata', 2)
 
 
 class MembershipState(_messages.Message):

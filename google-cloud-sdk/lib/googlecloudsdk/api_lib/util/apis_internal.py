@@ -25,7 +25,6 @@ from __future__ import unicode_literals
 
 from googlecloudsdk.api_lib.util import apis_util
 from googlecloudsdk.api_lib.util import resource as resource_util
-from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 from googlecloudsdk.third_party.apis import apis_map
 
@@ -185,13 +184,6 @@ def _GetClientInstance(api_name,
   return client_instance
 
 
-_WARNING_MTLS_NOT_SUPPORTED = (
-    '{service}_{version} does not support client certificate authorization on '
-    'this version of gcloud. The request will be executed without using a '
-    'client certificate. '
-    'Please run $ gcloud topic client-certificate for more information.')
-
-
 def _GetMtlsEndpointIfEnabled(api_name, api_version, client_class=None):
   """Returns mtls endpoint if mtls is enabled for the API."""
   client_class = client_class or _GetClientClass(api_name, api_version)
@@ -201,9 +193,6 @@ def _GetMtlsEndpointIfEnabled(api_name, api_version, client_class=None):
     # mtls_endpoint_override in the API map or in the generated client.
     # We have tests to guarantee that.
     return api_def.mtls_endpoint_override or client_class.MTLS_BASE_URL
-  log.warning(
-      _WARNING_MTLS_NOT_SUPPORTED.format(service=client_class._PACKAGE,  # pylint:disable=protected-access
-                                         version=client_class._VERSION))  # pylint:disable=protected-access
 
 
 def _GetEffectiveApiEndpoint(api_name, api_version, client_class=None):

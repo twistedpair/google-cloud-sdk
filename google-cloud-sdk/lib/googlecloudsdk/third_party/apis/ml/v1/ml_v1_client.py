@@ -374,8 +374,8 @@ service.
           }
 
     def AddMeasurement(self, request, global_params=None):
-      r"""Adds a measurement of the objective metrics to a Trial. This measurement.
-is assumed to have been taken before the Trial is complete.
+      r"""Adds a measurement of the objective metrics to a trial. This measurement.
+is assumed to have been taken before the trial is complete.
 
       Args:
         request: (MlProjectsLocationsStudiesTrialsAddMeasurementRequest) input message
@@ -402,7 +402,10 @@ is assumed to have been taken before the Trial is complete.
     )
 
     def CheckEarlyStoppingState(self, request, global_params=None):
-      r"""Checks whether a trial should stop or not.
+      r"""Checks  whether a trial should stop or not. Returns a.
+long-running operation. When the operation is successful,
+it will contain a
+CheckTrialEarlyStoppingStateResponse.
 
       Args:
         request: (MlProjectsLocationsStudiesTrialsCheckEarlyStoppingStateRequest) input message
@@ -429,7 +432,7 @@ is assumed to have been taken before the Trial is complete.
     )
 
     def Complete(self, request, global_params=None):
-      r"""Marks a Trial as complete.
+      r"""Marks a trial as complete.
 
       Args:
         request: (MlProjectsLocationsStudiesTrialsCompleteRequest) input message
@@ -456,7 +459,7 @@ is assumed to have been taken before the Trial is complete.
     )
 
     def Create(self, request, global_params=None):
-      r"""Adds a user provided trial to a Study.
+      r"""Adds a user provided trial to a study.
 
       Args:
         request: (MlProjectsLocationsStudiesTrialsCreateRequest) input message
@@ -483,7 +486,7 @@ is assumed to have been taken before the Trial is complete.
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes a Trial.
+      r"""Deletes a trial.
 
       Args:
         request: (MlProjectsLocationsStudiesTrialsDeleteRequest) input message
@@ -510,7 +513,7 @@ is assumed to have been taken before the Trial is complete.
     )
 
     def Get(self, request, global_params=None):
-      r"""Gets a Trial.
+      r"""Gets a trial.
 
       Args:
         request: (MlProjectsLocationsStudiesTrialsGetRequest) input message
@@ -537,7 +540,7 @@ is assumed to have been taken before the Trial is complete.
     )
 
     def List(self, request, global_params=None):
-      r"""Lists the trials associated with a Study.
+      r"""Lists the trials associated with a study.
 
       Args:
         request: (MlProjectsLocationsStudiesTrialsListRequest) input message
@@ -591,8 +594,11 @@ is assumed to have been taken before the Trial is complete.
     )
 
     def Suggest(self, request, global_params=None):
-      r"""Returns a long-running operation associated with the generation of trial.
-suggestions.
+      r"""Adds one or more trials to a study, with parameter values.
+suggested by AI Platform Optimizer. Returns a long-running
+operation associated with the generation of trial suggestions.
+When this long-running operation succeeds, it will contain
+a SuggestTrialsResponse.
 
       Args:
         request: (MlProjectsLocationsStudiesTrialsSuggestRequest) input message

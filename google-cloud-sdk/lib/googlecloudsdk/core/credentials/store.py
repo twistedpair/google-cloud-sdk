@@ -39,6 +39,7 @@ from googlecloudsdk.core.configurations import named_configs
 from googlecloudsdk.core.credentials import creds
 from googlecloudsdk.core.credentials import devshell as c_devshell
 from googlecloudsdk.core.credentials import gce as c_gce
+from googlecloudsdk.core.credentials import reauth as google_auth_reauth
 from googlecloudsdk.core.util import files
 from googlecloudsdk.core.util import times
 
@@ -52,6 +53,7 @@ from oauth2client.contrib import reauth_errors
 import six
 from six.moves import urllib
 from google.auth import exceptions as google_auth_exceptions
+import google.auth.compute_engine as google_auth_gce
 from google.auth.transport import requests
 from google.oauth2 import service_account as google_auth_service_account
 
@@ -219,9 +221,9 @@ class StaticCredentialProviders(object):
   def RemoveProvider(self, provider):
     self._providers.remove(provider)
 
-  def GetCredentials(self, account):
+  def GetCredentials(self, account, use_google_auth=False):
     for provider in self._providers:
-      cred = provider.GetCredentials(account)
+      cred = provider.GetCredentials(account, use_google_auth)
       if cred is not None:
         return cred
     return None
@@ -239,7 +241,9 @@ STATIC_CREDENTIAL_PROVIDERS = StaticCredentialProviders()
 class DevShellCredentialProvider(object):
   """Provides account, project and credential data for devshell env."""
 
-  def GetCredentials(self, account):
+  def GetCredentials(self, account, use_google_auth=False):
+    # TODO(b/153356810): migrate to google-auth.
+    del use_google_auth
     devshell_creds = c_devshell.LoadDevshellCredentials()
     if devshell_creds and (devshell_creds.devshell_response.user_email ==
                            account):
@@ -272,9 +276,9 @@ class DevShellCredentialProvider(object):
 class GceCredentialProvider(object):
   """Provides account, project and credential data for gce vm env."""
 
-  def GetCredentials(self, account):
+  def GetCredentials(self, account, use_google_auth=False):
     if account in c_gce.Metadata().Accounts():
-      return AcquireFromGCE(account)
+      return AcquireFromGCE(account, use_google_auth)
     return None
 
   def GetAccount(self):
@@ -563,7 +567,7 @@ def _Load(account, scopes, prevent_refresh, use_google_auth=False):
       raise NoActiveAccountException(
           named_configs.ActiveConfig(False).file_path)
 
-    cred = STATIC_CREDENTIAL_PROVIDERS.GetCredentials(account)
+    cred = STATIC_CREDENTIAL_PROVIDERS.GetCredentials(account, use_google_auth)
     if cred is not None:
       return cred
 
@@ -616,7 +620,8 @@ def Refresh(credentials,
     _Refresh(credentials, http_client, is_impersonated_credential,
              include_email, gce_token_format, gce_include_license)
   else:
-    _RefreshGoogleAuth(credentials, http_client)
+    _RefreshGoogleAuth(credentials, http_client, gce_token_format,
+                       gce_include_license)
 
 
 def _Refresh(credentials,
@@ -666,7 +671,10 @@ def _Refresh(credentials,
     raise TokenRefreshReauthError(str(e))
 
 
-def _RefreshGoogleAuth(credentials, http_client=None):
+def _RefreshGoogleAuth(credentials,
+                       http_client=None,
+                       gce_token_format='standard',
+                       gce_include_license=False):
   """Refreshes google-auth credentials.
 
   Args:
@@ -674,6 +682,11 @@ def _RefreshGoogleAuth(credentials, http_client=None):
       to refresh.
     http_client: google.auth.transport.requests, The http transport to refresh
       with.
+    gce_token_format: str, Specifies whether or not the project and instance
+      details are included in the identity token. Choices are "standard",
+      "full".
+    gce_include_license: bool, Specifies whether or not license codes for images
+      associated with GCE instance are included in their identity tokens.
   """
   request_client = http_client or requests
   try:
@@ -683,8 +696,13 @@ def _RefreshGoogleAuth(credentials, http_client=None):
     if isinstance(credentials, google_auth_service_account.Credentials):
       id_token = _RefreshServiceAccountIdTokenGoogleAuth(
           credentials, request_client)
+    elif isinstance(credentials, google_auth_gce.Credentials):
+      id_token = c_gce.Metadata().GetIdToken(
+          config.CLOUDSDK_CLIENT_ID,
+          token_format=gce_token_format,
+          include_license=gce_include_license)
     else:
-      # TODO(b/151370064): ID token refresh should support GCE and impersonated
+      # TODO(b/151370064): ID token refresh should support impersonated
       # credentials.
       pass
 
@@ -696,8 +714,11 @@ def _RefreshGoogleAuth(credentials, http_client=None):
       credentials.id_tokenb64 = id_token
   except google_auth_exceptions.RefreshError as e:
     raise TokenRefreshError(six.text_type(e))
-  # TODO(b/147893169): Throws TokenRefreshReauthError on reauth errors once
-  #   supporting reauth is ready for google-auth user credentials.
+  except reauth_errors.ReauthSamlLoginRequiredError:
+    raise WebLoginRequiredReauthError()
+  except (reauth_errors.ReauthError,
+          google_auth_reauth.ReauthRequiredError) as e:
+    raise TokenRefreshReauthError(str(e))
 
 
 def _RefreshIfAlmostExpire(credentials):
@@ -1009,14 +1030,19 @@ def AcquireFromToken(refresh_token,
   return cred
 
 
-def AcquireFromGCE(account=None):
+def AcquireFromGCE(account=None, use_google_auth=False):
   """Get credentials from a GCE metadata server.
 
   Args:
     account: str, The account name to use. If none, the default is used.
+    use_google_auth: bool, True to load credentials of google-auth if it is
+      supported in the current authentication scenario. False to load
+      credentials of oauth2client.
 
   Returns:
-    client.Credentials, Credentials taken from the metadata server.
+    oauth2client.client.Credentials or google.auth.credentials.Credentials based
+    on use_google_auth and whether google-auth is supported in the current
+    authentication sceanrio.
 
   Raises:
     c_gce.CannotConnectToMetadataServerException: If the metadata server cannot
@@ -1024,7 +1050,11 @@ def AcquireFromGCE(account=None):
     TokenRefreshError: If the credentials fail to refresh.
     TokenRefreshReauthError: If the credentials fail to refresh due to reauth.
   """
-  credentials = oauth2client_gce.AppAssertionCredentials(email=account)
+  if use_google_auth:
+    email = account or 'default'
+    credentials = google_auth_gce.Credentials(service_account_email=email)
+  else:
+    credentials = oauth2client_gce.AppAssertionCredentials(email=account)
   Refresh(credentials)
   return credentials
 

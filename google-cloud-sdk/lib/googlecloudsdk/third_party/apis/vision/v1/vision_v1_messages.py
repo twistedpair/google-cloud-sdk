@@ -6220,7 +6220,8 @@ class ImageContext(_messages.Message):
       text in the image is known, setting a hint will help get better results
       (although it will be a significant hindrance if the hint is wrong). Text
       detection returns an error if one or more of the specified languages is
-      not one of the [supported languages](/vision/docs/languages).
+      not one of the [supported
+      languages](https://cloud.google.com/vision/docs/languages).
     latLongRect: Not used.
     productSearchParams: Parameters for product search.
     webDetectionParams: Parameters for web detection.

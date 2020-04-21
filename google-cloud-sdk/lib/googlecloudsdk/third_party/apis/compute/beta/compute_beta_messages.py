@@ -21597,10 +21597,10 @@ class CorsPolicy(_messages.Message):
     allowOriginRegexes: Specifies the regualar expression patterns that match
       allowed origins. For regular expression grammar please see
       en.cppreference.com/w/cpp/regex/ecmascript  An origin is allowed if it
-      matches either allow_origins or allow_origin_regex.
+      matches either an item in allowOrigins or an item in allowOriginRegexes.
     allowOrigins: Specifies the list of origins that will be allowed to do
-      CORS requests. An origin is allowed if it matches either allow_origins
-      or allow_origin_regex.
+      CORS requests. An origin is allowed if it matches either an item in
+      allowOrigins or an item in allowOriginRegexes.
     disabled: If true, specifies the CORS policy is disabled. The default
       value of false, which indicates that the CORS policy is in effect.
     exposeHeaders: Specifies the content for the Access-Control-Expose-Headers
@@ -23166,12 +23166,14 @@ class Expr(_messages.Message):
 
 
 class ExternalVpnGateway(_messages.Message):
-  r"""External VPN gateway is the on-premises VPN gateway(s) or another cloud
-  provider's VPN gateway that connects to your Google Cloud VPN gateway. To
-  create a highly available VPN from Google Cloud to your on-premises side or
-  another Cloud provider's VPN gateway, you must create a external VPN gateway
-  resource in GCP, which provides the information to GCP about your external
-  VPN gateway.
+  r"""Represents an external VPN gateway.  External VPN gateway is the on-
+  premises VPN gateway(s) or another cloud provider's VPN gateway that
+  connects to your Google Cloud VPN gateway.  To create a highly available VPN
+  from Google Cloud Platform to your VPN gateway or another cloud provider's
+  VPN gateway, you must create a external VPN gateway resource with
+  information about the other gateway.  For more information about using
+  external VPN gateways, see  Creating an HA VPN gateway and tunnel pair to a
+  peer VPN. (== resource_for {$api_version}.externalVpnGateways ==)
 
   Enums:
     RedundancyTypeValueValuesEnum: Indicates the user-supplied redundancy type
@@ -23416,15 +23418,15 @@ class FileContentBuffer(_messages.Message):
   r"""A FileContentBuffer object.
 
   Enums:
-    FileTypeValueValuesEnum:
+    FileTypeValueValuesEnum: The file type of source file.
 
   Fields:
     content: The raw content in the secure keys file.
-    fileType: A FileTypeValueValuesEnum attribute.
+    fileType: The file type of source file.
   """
 
   class FileTypeValueValuesEnum(_messages.Enum):
-    r"""FileTypeValueValuesEnum enum type.
+    r"""The file type of source file.
 
     Values:
       BIN: <no description>
@@ -25233,9 +25235,8 @@ class HealthCheckReference(_messages.Message):
 
 
 class HealthCheckService(_messages.Message):
-  r"""A HealthCheckService defines a set of backends on which to perform
-  periodic health checks and an endpoint to which to send notification of
-  changes in the health status of the backends.
+  r"""Represents a Health-Check as a Service resource.  (== resource_for
+  {$api_version}.regionHealthCheckServices ==)
 
   Enums:
     HealthStatusAggregationPolicyValueValuesEnum: Optional. Policy for how the
@@ -32314,26 +32315,14 @@ class LogConfigDataAccessOptions(_messages.Message):
   r"""Write a Data Access (Gin) log
 
   Enums:
-    LogModeValueValuesEnum: Whether Gin logging should happen in a fail-closed
-      manner at the caller. This is currently supported in the LocalIAM
-      implementation, Stubby C++, and Stubby Java. For Apps Framework, see go
-      /af-audit-logging#failclosed. TODO(b/77591626): Add support for Stubby
-      Go. TODO(b/129671387): Add support for Scaffolding.
+    LogModeValueValuesEnum:
 
   Fields:
-    logMode: Whether Gin logging should happen in a fail-closed manner at the
-      caller. This is currently supported in the LocalIAM implementation,
-      Stubby C++, and Stubby Java. For Apps Framework, see go/af-audit-
-      logging#failclosed. TODO(b/77591626): Add support for Stubby Go.
-      TODO(b/129671387): Add support for Scaffolding.
+    logMode:
   """
 
   class LogModeValueValuesEnum(_messages.Enum):
-    r"""Whether Gin logging should happen in a fail-closed manner at the
-    caller. This is currently supported in the LocalIAM implementation, Stubby
-    C++, and Stubby Java. For Apps Framework, see go/af-audit-
-    logging#failclosed. TODO(b/77591626): Add support for Stubby Go.
-    TODO(b/129671387): Add support for Scaffolding.
+    r"""LogModeValueValuesEnum enum type.
 
     Values:
       LOG_FAIL_CLOSED: <no description>
@@ -33479,9 +33468,12 @@ class NetworkEndpoint(_messages.Message):
 
 
 class NetworkEndpointGroup(_messages.Message):
-  r"""Represents a collection of network endpoints.  For more information read
-  Network endpoint groups overview. (== resource_for
-  {$api_version}.networkEndpointGroups ==) Next ID: 21
+  r"""Represents a collection of network endpoints.  A network endpoint group
+  (NEG) defines how a set of endpoints should be reached, whether they are
+  reachable, and where they are located. For more information about using
+  NEGs, see  Setting up internet NEGs or  Setting up zonal NEGs. (==
+  resource_for {$api_version}.networkEndpointGroups ==) (== resource_for
+  {$api_version}.globalNetworkEndpointGroups ==)
 
   Enums:
     NetworkEndpointTypeValueValuesEnum: Type of network endpoints in this
@@ -33903,19 +33895,23 @@ class NetworkEndpointGroupsListEndpointsRequest(_messages.Message):
   Enums:
     HealthStatusValueValuesEnum: Optional query parameter for showing the
       health status of each network endpoint. Valid options are SKIP or SHOW.
-      If you don't specifiy this parameter, the health status of network
+      If you don't specify this parameter, the health status of network
       endpoints will not be provided.
 
   Fields:
+    endpointFilters: Optional list of endpoints to query. This is a more
+      efficient but also limited version of filter parameter. Endpoints in the
+      filter must have ip_address and port fields populated, other fields are
+      not supported.
     healthStatus: Optional query parameter for showing the health status of
       each network endpoint. Valid options are SKIP or SHOW. If you don't
-      specifiy this parameter, the health status of network endpoints will not
+      specify this parameter, the health status of network endpoints will not
       be provided.
   """
 
   class HealthStatusValueValuesEnum(_messages.Enum):
     r"""Optional query parameter for showing the health status of each network
-    endpoint. Valid options are SKIP or SHOW. If you don't specifiy this
+    endpoint. Valid options are SKIP or SHOW. If you don't specify this
     parameter, the health status of network endpoints will not be provided.
 
     Values:
@@ -33925,7 +33921,18 @@ class NetworkEndpointGroupsListEndpointsRequest(_messages.Message):
     SHOW = 0
     SKIP = 1
 
-  healthStatus = _messages.EnumField('HealthStatusValueValuesEnum', 1)
+  endpointFilters = _messages.MessageField('NetworkEndpointGroupsListEndpointsRequestNetworkEndpointFilter', 1, repeated=True)
+  healthStatus = _messages.EnumField('HealthStatusValueValuesEnum', 2)
+
+
+class NetworkEndpointGroupsListEndpointsRequestNetworkEndpointFilter(_messages.Message):
+  r"""A NetworkEndpointGroupsListEndpointsRequestNetworkEndpointFilter object.
+
+  Fields:
+    networkEndpoint: A NetworkEndpoint attribute.
+  """
+
+  networkEndpoint = _messages.MessageField('NetworkEndpoint', 1)
 
 
 class NetworkEndpointGroupsListNetworkEndpoints(_messages.Message):
@@ -36227,9 +36234,11 @@ class NodeTypesScopedList(_messages.Message):
 
 
 class NotificationEndpoint(_messages.Message):
-  r"""A notification endpoint resource defines an endpoint to receive
-  notifications when there are status changes detected by the associated
-  health check service.
+  r"""Represents a notification endpoint.  A notification endpoint resource
+  defines an endpoint to receive notifications when there are status changes
+  detected by the associated health check service.  For more information, see
+  Health checks overview. (== resource_for {$api_version}.notificationEndpoint
+  ==) (== resource_for {$api_version}.regionNotificationEndpoints ==)
 
   Fields:
     creationTimestamp: [Output Only] Creation timestamp in RFC3339 text
@@ -37180,7 +37189,12 @@ class PacketIntervals(_messages.Message):
 
 
 class PacketMirroring(_messages.Message):
-  r"""Represents a PacketMirroring resource.
+  r"""Represents a Packet Mirroring resource.  Packet Mirroring clones the
+  traffic of specified instances in your Virtual Private Cloud (VPC) network
+  and forwards it to a collector destination, such as an instance group of an
+  internal TCP/UDP load balancer, for analysis or examination. For more
+  information about setting up Packet Mirroring, see Using Packet Mirroring.
+  (== resource_for {$api_version}.packetMirrorings ==)
 
   Enums:
     EnableValueValuesEnum: Indicates whether or not this packet mirroring
@@ -43302,9 +43316,11 @@ class ShieldedInstanceConfig(_messages.Message):
 
   Fields:
     enableIntegrityMonitoring: Defines whether the instance has integrity
-      monitoring enabled.
+      monitoring enabled. Enabled by default.
     enableSecureBoot: Defines whether the instance has Secure Boot enabled.
-    enableVtpm: Defines whether the instance has the vTPM enabled.
+      Disabled by default.
+    enableVtpm: Defines whether the instance has the vTPM enabled. Enabled by
+      default.
   """
 
   enableIntegrityMonitoring = _messages.BooleanField(1)
@@ -49630,7 +49646,11 @@ class VmEndpointNatMappingsList(_messages.Message):
 
 
 class VpnGateway(_messages.Message):
-  r"""Represents a VPN gateway resource. Next ID: 13
+  r"""Represents a HA VPN gateway.  HA VPN is a high-availability (HA) Cloud
+  VPN solution that lets you securely connect your on-premises network to your
+  Google Cloud Virtual Private Cloud network through an IPsec VPN connection
+  in a single region. For more information about Cloud HA VPN solutions, see
+  Cloud VPN topologies . (== resource_for {$api_version}.vpnGateways ==)
 
   Messages:
     LabelsValue: Labels for this resource. These can only be added or modified

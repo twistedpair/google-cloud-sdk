@@ -63,6 +63,65 @@ class Collections(enum.Enum):
       [u'name'],
       True
   )
+  PROJECTS_LOCATIONS_DATASETS_CONSENTSTORES = (
+      'projects.locations.datasets.consentStores',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/datasets/'
+              '{datasetsId}/consentStores/{consentStoresId}',
+      },
+      [u'name'],
+      True
+  )
+  PROJECTS_LOCATIONS_DATASETS_CONSENTSTORES_ATTRIBUTEDEFINITIONS = (
+      'projects.locations.datasets.consentStores.attributeDefinitions',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/datasets/'
+              '{datasetsId}/consentStores/{consentStoresId}/'
+              'attributeDefinitions/{attributeDefinitionsId}',
+      },
+      [u'name'],
+      True
+  )
+  PROJECTS_LOCATIONS_DATASETS_CONSENTSTORES_CONSENTARTIFACTS = (
+      'projects.locations.datasets.consentStores.consentArtifacts',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/datasets/'
+              '{datasetsId}/consentStores/{consentStoresId}/consentArtifacts/'
+              '{consentArtifactsId}',
+      },
+      [u'name'],
+      True
+  )
+  PROJECTS_LOCATIONS_DATASETS_CONSENTSTORES_CONSENTS = (
+      'projects.locations.datasets.consentStores.consents',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/datasets/'
+              '{datasetsId}/consentStores/{consentStoresId}/consents/'
+              '{consentsId}',
+      },
+      [u'name'],
+      True
+  )
+  PROJECTS_LOCATIONS_DATASETS_CONSENTSTORES_USERDATAMAPPINGS = (
+      'projects.locations.datasets.consentStores.userDataMappings',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/datasets/'
+              '{datasetsId}/consentStores/{consentStoresId}/userDataMappings/'
+              '{userDataMappingsId}',
+      },
+      [u'name'],
+      True
+  )
   PROJECTS_LOCATIONS_DATASETS_DICOMSTORES = (
       'projects.locations.datasets.dicomStores',
       '{+name}',

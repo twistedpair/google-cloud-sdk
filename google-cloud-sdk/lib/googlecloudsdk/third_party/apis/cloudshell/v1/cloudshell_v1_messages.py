@@ -423,8 +423,10 @@ class StartEnvironmentMetadata(_messages.Message):
         be assigned to the environment. This should normally happen very
         quickly, but an environment might stay in this state for an extended
         period of time if the system is experiencing heavy load.
-      FINISHED: Startup is complete and the user should be able to establish
-        an SSH connection to their environment.
+      FINISHED: Startup has completed. If the start operation was successful,
+        the user should be able to establish an SSH connection to their
+        environment. Otherwise, the operation will contain details of the
+        failure.
     """
     STATE_UNSPECIFIED = 0
     STARTING = 1

@@ -2028,7 +2028,12 @@
             "",
             "Unsupported migration type.",
             "No pglogical extension installed on databases, applicable for postgres.",
-            "pglogical node already exists on databases, applicable for postgres."
+            "pglogical node already exists on databases, applicable for postgres.",
+            "The value of parameter wal_level is not set to logical.",
+            "The value of parameter shared_preload_libraries does not include\npglogical.",
+            "The value of parameter max_replication_slots is not sufficient.",
+            "The value of parameter max_wal_senders is not sufficient.",
+            "The value of parameter max_worker_processes is not sufficient."
           ],
           "type": "string",
           "enum": [
@@ -2040,7 +2045,12 @@
             "INSUFFICIENT_PRIVILEGE",
             "UNSUPPORTED_MIGRATION_TYPE",
             "NO_PGLOGICAL_INSTALLED",
-            "PGLOGICAL_NODE_ALREADY_EXISTS"
+            "PGLOGICAL_NODE_ALREADY_EXISTS",
+            "INVALID_WAL_LEVEL",
+            "INVALID_SHARED_PRELOAD_LIBRARY",
+            "INSUFFICIENT_MAX_REPLICATION_SLOTS",
+            "INSUFFICIENT_MAX_WAL_SENDERS",
+            "INSUFFICIENT_MAX_WORKER_PROCESSES"
           ]
         },
         "detail": {

@@ -1699,6 +1699,53 @@ class HealthcareProjectsLocationsDatasetsFhirStoresFhirCapabilitiesRequest(_mess
   name = _messages.StringField(1, required=True)
 
 
+class HealthcareProjectsLocationsDatasetsFhirStoresFhirConceptMapSearchTranslateRequest(_messages.Message):
+  r"""A HealthcareProjectsLocationsDatasetsFhirStoresFhirConceptMapSearchTrans
+  lateRequest object.
+
+  Fields:
+    code: The code to translate.
+    conceptMapVersion: The version of the concept map to use. If unset, the
+      most current version is used.
+    parent: The name for the FHIR store containing the concept map(s) to use
+      for the translation.
+    source: The source value set of the concept map to be used. If unset,
+      target is used to search for concept maps.
+    system: The system for the code to be translated.
+    target: The target value set of the concept map to be used. If unset,
+      source is used to search for concept maps.
+    url: The canonical url of the concept map to use. If unset, the source and
+      target is used to search for concept maps.
+  """
+
+  code = _messages.StringField(1)
+  conceptMapVersion = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+  source = _messages.StringField(4)
+  system = _messages.StringField(5)
+  target = _messages.StringField(6)
+  url = _messages.StringField(7)
+
+
+class HealthcareProjectsLocationsDatasetsFhirStoresFhirConceptMapTranslateRequest(_messages.Message):
+  r"""A
+  HealthcareProjectsLocationsDatasetsFhirStoresFhirConceptMapTranslateRequest
+  object.
+
+  Fields:
+    code: The code to translate.
+    conceptMapVersion: The version of the concept map to use. If unset, the
+      most current version is used.
+    name: The URL for the concept map to use for the translation.
+    system: The system for the code to be translated.
+  """
+
+  code = _messages.StringField(1)
+  conceptMapVersion = _messages.StringField(2)
+  name = _messages.StringField(3, required=True)
+  system = _messages.StringField(4)
+
+
 class HealthcareProjectsLocationsDatasetsFhirStoresFhirConditionalDeleteRequest(_messages.Message):
   r"""A
   HealthcareProjectsLocationsDatasetsFhirStoresFhirConditionalDeleteRequest
@@ -2021,22 +2068,6 @@ class HealthcareProjectsLocationsDatasetsFhirStoresPatchRequest(_messages.Messag
   fhirStore = _messages.MessageField('FhirStore', 1)
   name = _messages.StringField(2, required=True)
   updateMask = _messages.StringField(3)
-
-
-class HealthcareProjectsLocationsDatasetsFhirStoresSearchRequest(_messages.Message):
-  r"""A HealthcareProjectsLocationsDatasetsFhirStoresSearchRequest object.
-
-  Fields:
-    parent: Name of the FHIR store to retrieve resources from.
-    resourceType: The FHIR resource type to search, such as Patient or
-      Observation. For a complete list, see the FHIR Resource Index ([DSTU2](h
-      ttp://hl7.org/implement/standards/fhir/DSTU2/resourcelist.html),
-      [STU3](http://hl7.org/implement/standards/fhir/STU3/resourcelist.html),
-      [R4](http://hl7.org/implement/standards/fhir/R4/resourcelist.html)).
-  """
-
-  parent = _messages.StringField(1, required=True)
-  resourceType = _messages.StringField(2)
 
 
 class HealthcareProjectsLocationsDatasetsFhirStoresSetIamPolicyRequest(_messages.Message):
@@ -3857,9 +3888,15 @@ class StreamConfig(_messages.Message):
       the meta.tag.  The tables contain all historical resource versions since
       streaming was enabled. For query convenience, the server also creates
       one view per table of the same name containing only the current resource
-      version.  If a resource mutation cannot be streamed to BigQuery, errors
-      will be logged to Stackdriver (see [Viewing logs](/healthcare/docs/how-
-      tos/stackdriver-logging)).
+      version.  The streamed data in the BigQuery dataset is not guaranteed to
+      be completely unique. The combination of the id and meta.versionId
+      columns should ideally identify a single unique row. But in rare cases,
+      duplicates may exist. At query time, users may use the SQL select
+      statement to keep only one of the duplicate rows given an id and
+      meta.versionId pair. Alternatively, the server created view mentioned
+      above also filters out duplicates.  If a resource mutation cannot be
+      streamed to BigQuery, errors will be logged to Stackdriver (see [Viewing
+      logs](/healthcare/docs/how- tos/stackdriver-logging)).
     resourceTypes: Supply a FHIR resource type (such as "Patient" or
       "Observation"). See https://www.hl7.org/fhir/valueset-resource-
       types.html for a list of all FHIR resource types. The server treats an

@@ -362,7 +362,7 @@
       "type": "object",
       "properties": {
         "configBucket": {
-          "description": "Optional. A Cloud Storage bucket used to stage job dependencies, config files, and job driver console output. If you do not specify a staging bucket, Cloud Dataproc will determine a Cloud Storage location (US, ASIA, or EU) for your cluster's staging bucket according to the Compute Engine zone where your cluster is deployed, and then create and manage this project-level, per-location bucket (see Dataproc staging bucket).",
+          "description": "Optional. A Cloud Storage bucket used to stage job dependencies, config files, and job driver console output. If you do not specify a staging bucket, Cloud Dataproc will determine a Cloud Storage location (US, ASIA, or EU) for your cluster's staging bucket according to the Compute Engine zone where your cluster is deployed, and then create and manage this project-level, per-location bucket (see Dataproc staging bucket (https:\/\/cloud.google.com\/dataproc\/docs\/concepts\/configuring-clusters\/staging-bucket)).",
           "type": "string"
         },
         "gceClusterConfig": {
@@ -428,7 +428,7 @@
           "type": "string"
         },
         "networkUri": {
-          "description": "Optional. The Compute Engine network to be used for machine communications. Cannot be specified with subnetwork_uri. If neither network_uri nor subnetwork_uri is specified, the \"default\" network of the project is used, if it exists. Cannot be a \"Custom Subnet Network\" (see Using Subnetworks for more information).A full URL, partial URI, or short name are valid. Examples:\nhttps:\/\/www.googleapis.com\/compute\/v1\/projects\/[project_id]\/regions\/global\/default\nprojects\/[project_id]\/regions\/global\/default\ndefault",
+          "description": "Optional. The Compute Engine network to be used for machine communications. Cannot be specified with subnetwork_uri. If neither network_uri nor subnetwork_uri is specified, the \"default\" network of the project is used, if it exists. Cannot be a \"Custom Subnet Network\" (see Using Subnetworks (https:\/\/cloud.google.com\/compute\/docs\/subnetworks) for more information).A full URL, partial URI, or short name are valid. Examples:\nhttps:\/\/www.googleapis.com\/compute\/v1\/projects\/[project_id]\/regions\/global\/default\nprojects\/[project_id]\/regions\/global\/default\ndefault",
           "type": "string"
         },
         "subnetworkUri": {
@@ -440,7 +440,7 @@
           "type": "boolean"
         },
         "serviceAccount": {
-          "description": "Optional. The Dataproc service account (also see VM Data Plane identity) used by Dataproc cluster VM instances to access Google Cloud Platform services.If not specified, the Compute Engine default service account is used.",
+          "description": "Optional. The Dataproc service account (https:\/\/cloud.google.com\/dataproc\/docs\/concepts\/configuring-clusters\/service-accounts#service_accounts_in_cloud_dataproc) (also see VM Data Plane identity (https:\/\/cloud.google.com\/dataproc\/docs\/concepts\/iam\/dataproc-principals#vm_service_account_data_plane_identity)) used by Dataproc cluster VM instances to access Google Cloud Platform services.If not specified, the Compute Engine default service account (https:\/\/cloud.google.com\/compute\/docs\/access\/service-accounts#default_service_account) is used.",
           "type": "string"
         },
         "serviceAccountScopes": {
@@ -451,7 +451,7 @@
           }
         },
         "tags": {
-          "description": "The Compute Engine tags to add to all instances (see Tagging instances).",
+          "description": "The Compute Engine tags to add to all instances (see Tagging instances (https:\/\/cloud.google.com\/compute\/docs\/label-or-tag-resources#tags)).",
           "type": "array",
           "items": {
             "type": "string"
@@ -526,7 +526,7 @@
           "type": "string"
         },
         "machineTypeUri": {
-          "description": "Optional. The Compute Engine machine type used for cluster instances.A full URL, partial URI, or short name are valid. Examples:\nhttps:\/\/www.googleapis.com\/compute\/v1\/projects\/[project_id]\/zones\/us-east1-a\/machineTypes\/n1-standard-2\nprojects\/[project_id]\/zones\/us-east1-a\/machineTypes\/n1-standard-2\nn1-standard-2Auto Zone Exception: If you are using the Dataproc Auto Zone Placement feature, you must use the short name of the machine type resource, for example, n1-standard-2.",
+          "description": "Optional. The Compute Engine machine type used for cluster instances.A full URL, partial URI, or short name are valid. Examples:\nhttps:\/\/www.googleapis.com\/compute\/v1\/projects\/[project_id]\/zones\/us-east1-a\/machineTypes\/n1-standard-2\nprojects\/[project_id]\/zones\/us-east1-a\/machineTypes\/n1-standard-2\nn1-standard-2Auto Zone Exception: If you are using the Dataproc Auto Zone Placement (https:\/\/cloud.google.com\/dataproc\/docs\/concepts\/configuring-clusters\/auto-zone#using_auto_zone_placement) feature, you must use the short name of the machine type resource, for example, n1-standard-2.",
           "type": "string"
         },
         "diskConfig": {
@@ -563,7 +563,7 @@
           }
         },
         "minCpuPlatform": {
-          "description": "Specifies the minimum cpu platform for the Instance Group. See Dataproc&rarr;Minimum CPU Platform.",
+          "description": "Specifies the minimum cpu platform for the Instance Group. See Dataproc -&gt; Minimum CPU Platform (https:\/\/cloud.google.com\/dataproc\/docs\/concepts\/compute\/dataproc-min-cpu).",
           "type": "string"
         }
       }
@@ -606,11 +606,11 @@
     },
     "AcceleratorConfig": {
       "id": "AcceleratorConfig",
-      "description": "Specifies the type and number of accelerator cards attached to the instances of an instance group (see GPUs on Compute Engine).",
+      "description": "Specifies the type and number of accelerator cards attached to the instances of an instance group (see GPUs on Compute Engine (https:\/\/cloud.google.com\/compute\/docs\/gpus\/)).",
       "type": "object",
       "properties": {
         "acceleratorTypeUri": {
-          "description": "Full URL, partial URI, or short name of the accelerator type resource to expose to this instance. See Compute Engine AcceleratorTypesExamples * https:\/\/www.googleapis.com\/compute\/beta\/projects\/[project_id]\/zones\/us-east1-a\/acceleratorTypes\/nvidia-tesla-k80 * projects\/[project_id]\/zones\/us-east1-a\/acceleratorTypes\/nvidia-tesla-k80 * nvidia-tesla-k80Auto Zone Exception: If you are using the Dataproc Auto Zone Placement feature, you must use the short name of the accelerator type resource, for example, nvidia-tesla-k80.",
+          "description": "Full URL, partial URI, or short name of the accelerator type resource to expose to this instance. See Compute Engine AcceleratorTypes (https:\/\/cloud.google.com\/compute\/docs\/reference\/beta\/acceleratorTypes)Examples * https:\/\/www.googleapis.com\/compute\/beta\/projects\/[project_id]\/zones\/us-east1-a\/acceleratorTypes\/nvidia-tesla-k80 * projects\/[project_id]\/zones\/us-east1-a\/acceleratorTypes\/nvidia-tesla-k80 * nvidia-tesla-k80Auto Zone Exception: If you are using the Dataproc Auto Zone Placement (https:\/\/cloud.google.com\/dataproc\/docs\/concepts\/configuring-clusters\/auto-zone#using_auto_zone_placement) feature, you must use the short name of the accelerator type resource, for example, nvidia-tesla-k80.",
           "type": "string"
         },
         "acceleratorCount": {
@@ -626,11 +626,11 @@
       "type": "object",
       "properties": {
         "imageVersion": {
-          "description": "Optional. The version of software inside the cluster. It must be one of the supported Dataproc Versions, such as \"1.2\" (including a subminor version, such as \"1.2.29\"), or the \"preview\" version. If unspecified, it defaults to the latest Debian version.",
+          "description": "Optional. The version of software inside the cluster. It must be one of the supported Dataproc Versions (https:\/\/cloud.google.com\/dataproc\/docs\/concepts\/versioning\/dataproc-versions#supported_cloud_dataproc_versions), such as \"1.2\" (including a subminor version, such as \"1.2.29\"), or the \"preview\" version (https:\/\/cloud.google.com\/dataproc\/docs\/concepts\/versioning\/dataproc-versions#other_versions). If unspecified, it defaults to the latest Debian version.",
           "type": "string"
         },
         "properties": {
-          "description": "Optional. The properties to set on daemon config files.Property keys are specified in prefix:property format, for example core:hadoop.tmp.dir. The following are supported prefixes and their mappings:\ncapacity-scheduler: capacity-scheduler.xml\ncore: core-site.xml\ndistcp: distcp-default.xml\nhdfs: hdfs-site.xml\nhive: hive-site.xml\nmapred: mapred-site.xml\npig: pig.properties\nspark: spark-defaults.conf\nyarn: yarn-site.xmlFor more information, see Cluster properties.",
+          "description": "Optional. The properties to set on daemon config files.Property keys are specified in prefix:property format, for example core:hadoop.tmp.dir. The following are supported prefixes and their mappings:\ncapacity-scheduler: capacity-scheduler.xml\ncore: core-site.xml\ndistcp: distcp-default.xml\nhdfs: hdfs-site.xml\nhive: hive-site.xml\nmapred: mapred-site.xml\npig: pig.properties\nspark: spark-defaults.conf\nyarn: yarn-site.xmlFor more information, see Cluster properties (https:\/\/cloud.google.com\/dataproc\/docs\/concepts\/cluster-properties).",
           "type": "object",
           "additionalProperties": {
             "type": "string"
@@ -1513,7 +1513,7 @@
     },
     "PrestoJob": {
       "id": "PrestoJob",
-      "description": "A Dataproc job for running Presto (https:\/\/prestosql.io\/) queries. IMPORTANT: The Dataproc Presto Optional Component must be enabled when the cluster is created to submit a Presto job to the cluster.",
+      "description": "A Dataproc job for running Presto (https:\/\/prestosql.io\/) queries. IMPORTANT: The Dataproc Presto Optional Component (https:\/\/cloud.google.com\/dataproc\/docs\/concepts\/components\/presto) must be enabled when the cluster is created to submit a Presto job to the cluster.",
       "type": "object",
       "properties": {
         "queryFileUri": {
@@ -1815,29 +1815,35 @@
           "type": "string"
         },
         "hadoopJob": {
+          "description": "Optional. Job is a Hadoop job.",
           "$ref": "HadoopJob"
         },
         "sparkJob": {
+          "description": "Optional. Job is a Spark job.",
           "$ref": "SparkJob"
         },
         "pysparkJob": {
+          "description": "Optional. Job is a PySpark job.",
           "$ref": "PySparkJob"
         },
         "hiveJob": {
+          "description": "Optional. Job is a Hive job.",
           "$ref": "HiveJob"
         },
         "pigJob": {
+          "description": "Optional. Job is a Pig job.",
           "$ref": "PigJob"
         },
         "sparkRJob": {
-          "description": "Spark R job",
+          "description": "Optional. Job is a SparkR job.",
           "$ref": "SparkRJob"
         },
         "sparkSqlJob": {
+          "description": "Optional. Job is a SparkSql job.",
           "$ref": "SparkSqlJob"
         },
         "prestoJob": {
-          "description": "Presto job",
+          "description": "Optional. Job is a Presto job.",
           "$ref": "PrestoJob"
         },
         "labels": {

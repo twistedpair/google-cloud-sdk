@@ -5,6 +5,44 @@ Copyright 2014-2020 Google Inc. All rights reserved.
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 
 
+## 290.0.0 (2020-04-21)
+
+### Cloud Dataflow
+
+* Promoted `gcloud dataflow sql query` command to GA.
+
+### Cloud Dataproc
+
+* Updated `--image` flag to accept image family URIs.
+* Fixed a bug where managed clusters added to workflow templates did not
+  correctly respect `--enable-component-gateway`.
+
+### Cloud Firestore Emulator
+
+* Release Cloud Firestore emulator v1.11.3
+  * Fix rolling back an already failed transaction.
+  * Fix gRPC issue on large rules coverage reports.
+
+### Compute Engine
+
+* Changed the default value of `--image-family` flag to debian-10 for `gcloud compute instances create` and `gcloud compute instance-templates create` commands.
+* Added PRIVATE_SERVICE_CONNECT as a type of global address reservation.
+* Added `--target-bundle` option in `gcloud compute forwarding-rules create`.
+
+### Kubernetes Engine
+
+*   Promoted the GKE `ConfigConnector` add-on of `gcloud container clusters
+    create` and `gcloud container clusters update` to beta. This add-on is
+    disabled by default.
+      * Use `--addons=ConfigConnector` to enable the add-on during cluster
+        creation.
+      * Use `--update-addons=ConfigConnector=ENABLED|DISABLED` to
+        enable/disable the add-on for existing GKE clusters.
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+
 ## 289.0.0 (2020-04-14)
 
 ### App Engine

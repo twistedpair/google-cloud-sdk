@@ -203,18 +203,18 @@ class LabelKey(_messages.Message):
     deleteTime: Output only. Deletion time. This field is cleared on undelete.
     description: Optional. User-assigned description of the LabelKey. Must not
       exceed 256 characters.  Read-write.
-    displayName: Required. User-assigned display name for LabelKey. Display
-      name should be unique for LabelKeys within the same parent resource.
-      The display name must be 1-63 characters, beginning and ending with an
-      alphanumeric character ([a-z0-9A-Z]) with dashes (-), underscores (_),
-      dots (.), and alphanumerics between.  Read-write.
+    displayName: Required. Immutable. User-assigned display name for LabelKey.
+      Display name should be unique for LabelKeys within the same parent
+      resource.  The display name must be 1-63 characters, beginning and
+      ending with an alphanumeric character ([a-z0-9A-Z]) with dashes (-),
+      underscores (_), dots (.), and alphanumerics between.
     etag: Optional. Entity tag which users can pass to prevent race
       conditions. This field is always set in server responses. See
       UpdateLabelKeyRequest for details.
-    name: Resource name for LabelKey. Must be in the format labelKeys/123.
-      Immutable.
-    parent: The resource name of the new LabelKey's parent. Must be of the
-      form `organizations/{org_id}`.  Immutable.
+    name: Immutable. Resource name for LabelKey. Must be in the format
+      labelKeys/123.
+    parent: Immutable. The resource name of the new LabelKey's parent. Must be
+      of the form `organizations/{org_id}`.
     purpose: Optional. A purpose denotes that this Label is intended for use
       in policies of a specific policy engine, and will involve that policy
       engine in management operations involving this Label. A purpose does not
@@ -277,18 +277,18 @@ class LabelValue(_messages.Message):
     deleteTime: Output only. Deletion time. This value is cleared on undelete.
     description: Optional. User-assigned description of the LabelValue. Must
       not exceed 256 characters.  Read-write.
-    displayName: Required. User-assigned display name for LabelValue. Display
-      name should be unique for LabelValues within the same parent LabelKey.
-      The display name must be 63 characters or less, beginning and ending
-      with an alphanumeric character ([a-z0-9A-Z]) with dashes (-),
-      underscores (_), dots (.), and alphanumerics between.  Read-write.
+    displayName: Required. Immutable. User-assigned display name for
+      LabelValue. Display name should be unique for LabelValues within the
+      same parent LabelKey.  The display name must be 63 characters or less,
+      beginning and ending with an alphanumeric character ([a-z0-9A-Z]) with
+      dashes (-), underscores (_), dots (.), and alphanumerics between.
     etag: Optional. Entity tag which users can pass to prevent race
       conditions. This field is always set in server responses. See
       UpdateLabelValueRequest for details.
-    name: Resource name for LabelValue in the format labelValues/456.
-      Immutable.
-    parent: The resource name of the new LabelValue's parent LabelKey. Must be
-      of the form `labelKeys/{label_key_id}`.  Immutable.
+    name: Immutable. Resource name for LabelValue in the format
+      labelValues/456.
+    parent: Immutable. The resource name of the new LabelValue's parent
+      LabelKey. Must be of the form `labelKeys/{label_key_id}`.
     state: Output only. LabelValue lifecycle state.
   """
 
@@ -425,8 +425,8 @@ class LabelmanagerLabelKeysPatchRequest(_messages.Message):
 
   Fields:
     labelKey: A LabelKey resource to be passed as the request body.
-    name: Resource name for LabelKey. Must be in the format labelKeys/123.
-      Immutable.
+    name: Immutable. Resource name for LabelKey. Must be in the format
+      labelKeys/123.
     updateMask: Fields to be updated
   """
 
@@ -528,8 +528,8 @@ class LabelmanagerLabelValuesPatchRequest(_messages.Message):
 
   Fields:
     labelValue: A LabelValue resource to be passed as the request body.
-    name: Resource name for LabelValue in the format labelValues/456.
-      Immutable.
+    name: Immutable. Resource name for LabelValue in the format
+      labelValues/456.
     updateMask: Fields to be updated.
   """
 

@@ -888,6 +888,10 @@ class ComputeV1(base_api.BaseApiClient):
     def GetHealth(self, request, global_params=None):
       r"""Gets the most recent health check results for this BackendService.
 
+Example request body:
+
+{ "group": "/zones/us-east1-b/instanceGroups/lb-backend-example" }
+
       Args:
         request: (ComputeBackendServicesGetHealthRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
@@ -4751,6 +4755,32 @@ If the group is part of a backend service that has enabled connection draining, 
         supports_download=False,
     )
 
+    def Resume(self, request, global_params=None):
+      r"""Resumes an instance that was suspended using the instances().suspend method.
+
+      Args:
+        request: (ComputeInstancesResumeRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Resume')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Resume.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'compute.instances.resume',
+        ordered_params=[u'project', u'zone', u'instance'],
+        path_params=[u'instance', u'project', u'zone'],
+        query_params=[u'requestId'],
+        relative_path=u'projects/{project}/zones/{zone}/instances/{instance}/resume',
+        request_field=u'instancesResumeRequest',
+        request_type_name=u'ComputeInstancesResumeRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
     def SetDeletionProtection(self, request, global_params=None):
       r"""Sets deletion protection on the instance.
 
@@ -5163,6 +5193,32 @@ If the group is part of a backend service that has enabled connection draining, 
         relative_path=u'projects/{project}/zones/{zone}/instances/{instance}/stop',
         request_field='',
         request_type_name=u'ComputeInstancesStopRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
+    def Suspend(self, request, global_params=None):
+      r"""This method suspends a running instance, saving its state to persistent storage, and allows you to resume the instance at a later time. Suspended instances incur reduced per-minute, virtual machine usage charges while they are suspended. Any resources the virtual machine is using, such as persistent disks and static IP addresses, will continue to be charged until they are deleted.
+
+      Args:
+        request: (ComputeInstancesSuspendRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Suspend')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Suspend.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'compute.instances.suspend',
+        ordered_params=[u'project', u'zone', u'instance'],
+        path_params=[u'instance', u'project', u'zone'],
+        query_params=[u'discardLocalSsd', u'requestId'],
+        relative_path=u'projects/{project}/zones/{zone}/instances/{instance}/suspend',
+        request_field='',
+        request_type_name=u'ComputeInstancesSuspendRequest',
         response_type_name=u'Operation',
         supports_download=False,
     )
@@ -8415,6 +8471,32 @@ If the group is part of a backend service that has enabled connection draining, 
         supports_download=False,
     )
 
+    def GetIamPolicy(self, request, global_params=None):
+      r"""Gets the access control policy for a resource. May be empty if no such policy or resource exists.
+
+      Args:
+        request: (ComputeRegionDisksGetIamPolicyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Policy) The response message.
+      """
+      config = self.GetMethodConfig('GetIamPolicy')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'compute.regionDisks.getIamPolicy',
+        ordered_params=[u'project', u'region', u'resource'],
+        path_params=[u'project', u'region', u'resource'],
+        query_params=[],
+        relative_path=u'projects/{project}/regions/{region}/disks/{resource}/getIamPolicy',
+        request_field='',
+        request_type_name=u'ComputeRegionDisksGetIamPolicyRequest',
+        response_type_name=u'Policy',
+        supports_download=False,
+    )
+
     def Insert(self, request, global_params=None):
       r"""Creates a persistent regional disk in the specified project using the data included in the request.
 
@@ -8516,6 +8598,32 @@ If the group is part of a backend service that has enabled connection draining, 
         request_field=u'regionDisksResizeRequest',
         request_type_name=u'ComputeRegionDisksResizeRequest',
         response_type_name=u'Operation',
+        supports_download=False,
+    )
+
+    def SetIamPolicy(self, request, global_params=None):
+      r"""Sets the access control policy on the specified resource. Replaces any existing policy.
+
+      Args:
+        request: (ComputeRegionDisksSetIamPolicyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Policy) The response message.
+      """
+      config = self.GetMethodConfig('SetIamPolicy')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'compute.regionDisks.setIamPolicy',
+        ordered_params=[u'project', u'region', u'resource'],
+        path_params=[u'project', u'region', u'resource'],
+        query_params=[],
+        relative_path=u'projects/{project}/regions/{region}/disks/{resource}/setIamPolicy',
+        request_field=u'regionSetPolicyRequest',
+        request_type_name=u'ComputeRegionDisksSetIamPolicyRequest',
+        response_type_name=u'Policy',
         supports_download=False,
     )
 

@@ -89,7 +89,8 @@ class AllowedSubjectAltNames(_messages.Message):
       patterns are supported only for ip address entries (i.e. not for subnet
       ranges).
     allowedUris: Contains valid RFC 3986 URIs. Glob patterns are also
-      supported.
+      supported. To match across path seperators (i.e. '/') use the double
+      star glob pattern (i.e. '**').
   """
 
   allowCustomSans = _messages.BooleanField(1)

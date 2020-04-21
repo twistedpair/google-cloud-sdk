@@ -570,24 +570,6 @@
         }
       }
     },
-    "ListDevicesResponse": {
-      "id": "ListDevicesResponse",
-      "description": "Response message that is returned in LRO result of ListDevices Operation.",
-      "type": "object",
-      "properties": {
-        "devices": {
-          "description": "Devices meeting the list restrictions.",
-          "type": "array",
-          "items": {
-            "$ref": "Device"
-          }
-        },
-        "nextPageToken": {
-          "description": "Token to retrieve the next page of results. Empty if there are no more\nresults.",
-          "type": "string"
-        }
-      }
-    },
     "Device": {
       "id": "Device",
       "description": "Represents a Device known to Google Cloud, independent of the device\nownership, type, and whether it is assigned or in use by a user.",
@@ -825,24 +807,6 @@
         }
       }
     },
-    "ListDeviceUsersResponse": {
-      "id": "ListDeviceUsersResponse",
-      "description": "Response message that is returned in LRO result of ListDeviceUsers Operation.",
-      "type": "object",
-      "properties": {
-        "deviceUsers": {
-          "description": "Devices meeting the list restrictions.",
-          "type": "array",
-          "items": {
-            "$ref": "DeviceUser"
-          }
-        },
-        "nextPageToken": {
-          "description": "Token to retrieve the next page of results. Empty if there are no more\nresults.",
-          "type": "string"
-        }
-      }
-    },
     "DeviceUser": {
       "id": "DeviceUser",
       "description": "A DeviceUser is a resource representing a user's use of a Device",
@@ -923,6 +887,157 @@
             "PASSWORD_SET",
             "PASSWORD_NOT_SET"
           ]
+        }
+      }
+    },
+    "ClientState": {
+      "id": "ClientState",
+      "description": "Resource representing ClientState and supports updates from API users",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Output only. [Resource name](https:\/\/cloud.google.com\/apis\/design\/resource_names) of\nthe ClientState in format:\n`devices\/{device_id}\/deviceUsers\/{device_user_id}\/clientState\/{partner_id}`,\nwhere partner_id corresponds to the partner storing the data.",
+          "type": "string"
+        },
+        "createTime": {
+          "description": "Output only. The time the client state data was created.",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "lastUpdateTime": {
+          "description": "Output only. The time the client state data was last updated.",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "etag": {
+          "description": "The token that needs to be passed back for\nconcurrency control in updates. Token needs to be passed back\nin UpdateRequest",
+          "type": "string"
+        },
+        "customId": {
+          "description": "This field may be used to store a unique identifier for the API resource\nwithin which these CustomAttributes are a field.",
+          "type": "string"
+        },
+        "assetTags": {
+          "description": "The caller can specify asset tags for this resource",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "healthScore": {
+          "description": "The Health score of the resource",
+          "enumDescriptions": [
+            "Default value",
+            "The object is in very poor health as defined by the caller.",
+            "The object is in poor health as defined by the caller.",
+            "The object health is neither good nor poor, as defined by the caller.",
+            "The object is in good health as defined by the caller.",
+            "The object is in very good health as defined by the caller."
+          ],
+          "type": "string",
+          "enum": [
+            "HEALTH_SCORE_UNSPECIFIED",
+            "VERY_POOR",
+            "POOR",
+            "NEUTRAL",
+            "GOOD",
+            "VERY_GOOD"
+          ]
+        },
+        "scoreReason": {
+          "description": "A descriptive cause of the health score.",
+          "type": "string"
+        },
+        "managed": {
+          "description": "The management state of the resource as specified by the API client.",
+          "enumDescriptions": [
+            "The management state of the resource is unknown or unspecified.",
+            "The resource is managed.",
+            "The resource is not managed."
+          ],
+          "type": "string",
+          "enum": [
+            "MANAGED_STATE_UNSPECIFIED",
+            "MANAGED",
+            "UNMANAGED"
+          ]
+        },
+        "complianceState": {
+          "description": "The compliance state of the resource as specified by the API client.",
+          "enumDescriptions": [
+            "The compliance state of the resource is unknown or unspecified.",
+            "Device is compliant with third party policies",
+            "Device is not compliant with third party policies"
+          ],
+          "type": "string",
+          "enum": [
+            "COMPLIANCE_STATE_UNSPECIFIED",
+            "COMPLIANT",
+            "NON_COMPLIANT"
+          ]
+        },
+        "keyValuePairs": {
+          "description": "The map of key-value attributes stored by callers specific to a\ndevice. The total serialized length of this map may not exceed 10KB. No\nlimit is placed on the number of attributes in a map.",
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "CustomAttributeValue"
+          }
+        }
+      }
+    },
+    "CustomAttributeValue": {
+      "id": "CustomAttributeValue",
+      "description": "Additional custom attribute values may be one of these types",
+      "type": "object",
+      "properties": {
+        "numberValue": {
+          "description": "Represents a double value.",
+          "type": "number",
+          "format": "double"
+        },
+        "stringValue": {
+          "description": "Represents a string value.",
+          "type": "string"
+        },
+        "boolValue": {
+          "description": "Represents a boolean value.",
+          "type": "boolean"
+        }
+      }
+    },
+    "ListDevicesResponse": {
+      "id": "ListDevicesResponse",
+      "description": "Response message that is returned in LRO result of ListDevices Operation.",
+      "type": "object",
+      "properties": {
+        "devices": {
+          "description": "Devices meeting the list restrictions.",
+          "type": "array",
+          "items": {
+            "$ref": "Device"
+          }
+        },
+        "nextPageToken": {
+          "description": "Token to retrieve the next page of results. Empty if there are no more\nresults.",
+          "type": "string"
+        }
+      }
+    },
+    "ListDeviceUsersResponse": {
+      "id": "ListDeviceUsersResponse",
+      "description": "Response message that is returned in LRO result of ListDeviceUsers Operation.",
+      "type": "object",
+      "properties": {
+        "deviceUsers": {
+          "description": "Devices meeting the list restrictions.",
+          "type": "array",
+          "items": {
+            "$ref": "DeviceUser"
+          }
+        },
+        "nextPageToken": {
+          "description": "Token to retrieve the next page of results. Empty if there are no more\nresults.",
+          "type": "string"
         }
       }
     },

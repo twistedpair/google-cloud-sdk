@@ -297,3 +297,63 @@ to keep track of the export.
         response_type_name=u'Operation',
         supports_download=False,
     )
+
+    def SearchAllIamPolicies(self, request, global_params=None):
+      r"""Searches all the IAM policies within the given accessible scope (e.g., a.
+project, a folder or an organization). Callers should have
+cloud.assets.SearchAllIamPolicies permission upon the requested scope,
+otherwise the request will be rejected.
+
+      Args:
+        request: (CloudassetSearchAllIamPoliciesRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (SearchAllIamPoliciesResponse) The response message.
+      """
+      config = self.GetMethodConfig('SearchAllIamPolicies')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SearchAllIamPolicies.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1/{v1Id}/{v1Id1}:searchAllIamPolicies',
+        http_method=u'GET',
+        method_id=u'cloudasset.searchAllIamPolicies',
+        ordered_params=[u'scope'],
+        path_params=[u'scope'],
+        query_params=[u'pageSize', u'pageToken', u'query'],
+        relative_path=u'v1/{+scope}:searchAllIamPolicies',
+        request_field='',
+        request_type_name=u'CloudassetSearchAllIamPoliciesRequest',
+        response_type_name=u'SearchAllIamPoliciesResponse',
+        supports_download=False,
+    )
+
+    def SearchAllResources(self, request, global_params=None):
+      r"""Searches all the resources within the given accessible scope (e.g., a.
+project, a folder or an organization). Callers should have
+cloud.assets.SearchAllResources permission upon the requested scope,
+otherwise the request will be rejected.
+
+      Args:
+        request: (CloudassetSearchAllResourcesRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (SearchAllResourcesResponse) The response message.
+      """
+      config = self.GetMethodConfig('SearchAllResources')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SearchAllResources.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1/{v1Id}/{v1Id1}:searchAllResources',
+        http_method=u'GET',
+        method_id=u'cloudasset.searchAllResources',
+        ordered_params=[u'scope'],
+        path_params=[u'scope'],
+        query_params=[u'assetTypes', u'orderBy', u'pageSize', u'pageToken', u'query'],
+        relative_path=u'v1/{+scope}:searchAllResources',
+        request_field='',
+        request_type_name=u'CloudassetSearchAllResourcesRequest',
+        response_type_name=u'SearchAllResourcesResponse',
+        supports_download=False,
+    )

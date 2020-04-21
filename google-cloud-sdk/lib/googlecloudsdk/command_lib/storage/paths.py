@@ -27,7 +27,7 @@ import re
 class Path(object):
   """Wrapper to help with dealing with local and GCS paths uniformly."""
 
-  _INVALID_PATH_FORMAT = r'{sep}\.(\.)?({sep}|$)'
+  _INVALID_PATH_FORMAT = r'{sep}\.+({sep}|$)'
 
   def __init__(self, path):
     self.path = path
@@ -48,7 +48,11 @@ class Path(object):
     return Path(os.path.join(self.path, part))
 
   def IsPathSafe(self):
-    sep = '/' if self.is_remote else os.sep
+    if self.is_remote:
+      sep = '/'
+    else:
+      # Need \\\\ for the regex to work with nt (Windows) paths as intended.
+      sep = os.sep * 2 if os.name == 'nt' else os.sep
     return not bool(re.search(
         Path._INVALID_PATH_FORMAT.format(sep=sep),
         self.path))

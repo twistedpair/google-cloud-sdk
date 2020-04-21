@@ -1,0 +1,49 @@
+topic-name:
+  api_field: topicId
+  arg_name: topic
+  required: true
+  is_positional: true
+  help_text: |
+    Topic name.
+
+partitions:
+  api_field: topic.partitionConfig.count
+  arg_name: partitions
+  required: false
+  help_text: |
+    Number of partitions in the topic.
+
+scale:
+  api_field: topic.partitionConfig.scale
+  arg_name: scale
+  required: false
+  help_text: |
+    Topic partition scale value. Every partition in the topic is allocated
+    throughput equivalent to `scale` times the standard partition throughput
+    (4 MiB/s of publishing throughput and 8 MiB/s of subscribing throughput).
+    This is also reflected in the cost of this topic; a topic with `scale` of
+    2 and count of 10 is charged for 20 partitions.
+
+per-partition-bytes:
+  api_field: topic.retentionConfig.perPartitionBytes
+  arg_name: per-partition-bytes
+  type: googlecloudsdk.core.util.scaled_integer:ParseInteger
+  required: false
+  help_text: |
+    Provisioned storage, in bytes, per partition. If the number of bytes
+    stored in any of the topic's partitions exceeds this value, older
+    messages will be dropped to make room for newer ones, regardless of the
+    value of `message-retention-period`.
+    A valid example value of this flag would be `per-partition-bytes=30GiB`.
+
+message-retention-period:
+  api_field: topic.retentionConfig.period
+  arg_name: message-retention-period
+  type: googlecloudsdk.core.util.times:ParseDuration
+  processor: googlecloudsdk.command_lib.pubsub.lite_util:DurationToSeconds
+  required: false
+  help_text: |
+    How long a published message is retained. If unset, messages will only be
+    dropped to make space for new ones once the `per-partition-bytes` limit is
+    reached.
+    A valid example value of this flag would be `message-retention-period="2w"`.

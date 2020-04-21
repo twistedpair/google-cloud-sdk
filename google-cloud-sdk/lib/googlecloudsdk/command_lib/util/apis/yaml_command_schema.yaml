@@ -667,6 +667,11 @@ properties:
         required: [api_field]
         properties:
           api_field: {type: string}
+      # Removes arguments from the parser
+      exclude:
+        type: array
+        items:
+          type: string
 
   # Information about how to collect input from the user.
   input:

@@ -4,7 +4,7 @@
  "id": "compute:v1",
  "name": "compute",
  "version": "v1",
- "revision": "20200327",
+ "revision": "20200410",
  "title": "Compute Engine API",
  "description": "Creates and runs virtual machines on Google Cloud Platform.",
  "ownerDomain": "google.com",
@@ -3423,14 +3423,14 @@
     },
     "allowOriginRegexes": {
      "type": "array",
-     "description": "Specifies the regualar expression patterns that match allowed origins. For regular expression grammar please see en.cppreference.com/w/cpp/regex/ecmascript \nAn origin is allowed if it matches either allow_origins or allow_origin_regex.",
+     "description": "Specifies the regualar expression patterns that match allowed origins. For regular expression grammar please see en.cppreference.com/w/cpp/regex/ecmascript \nAn origin is allowed if it matches either an item in allowOrigins or an item in allowOriginRegexes.",
      "items": {
       "type": "string"
      }
     },
     "allowOrigins": {
      "type": "array",
-     "description": "Specifies the list of origins that will be allowed to do CORS requests.\nAn origin is allowed if it matches either allow_origins or allow_origin_regex.",
+     "description": "Specifies the list of origins that will be allowed to do CORS requests.\nAn origin is allowed if it matches either an item in allowOrigins or an item in allowOriginRegexes.",
      "items": {
       "type": "string"
      }
@@ -4716,7 +4716,7 @@
   "ExternalVpnGateway": {
    "id": "ExternalVpnGateway",
    "type": "object",
-   "description": "External VPN gateway is the on-premises VPN gateway(s) or another cloud provider's VPN gateway that connects to your Google Cloud VPN gateway. To create a highly available VPN from Google Cloud to your on-premises side or another Cloud provider's VPN gateway, you must create a external VPN gateway resource in GCP, which provides the information to GCP about your external VPN gateway.",
+   "description": "Represents an external VPN gateway.\n\nExternal VPN gateway is the on-premises VPN gateway(s) or another cloud provider's VPN gateway that connects to your Google Cloud VPN gateway.\n\nTo create a highly available VPN from Google Cloud Platform to your VPN gateway or another cloud provider's VPN gateway, you must create a external VPN gateway resource with information about the other gateway.\n\nFor more information about using external VPN gateways, see  Creating an HA VPN gateway and tunnel pair to a peer VPN. (== resource_for {$api_version}.externalVpnGateways ==)",
    "properties": {
     "creationTimestamp": {
      "type": "string",
@@ -4927,6 +4927,7 @@
     },
     "fileType": {
      "type": "string",
+     "description": "The file type of source file.",
      "enum": [
       "BIN",
       "UNDEFINED",
@@ -9893,6 +9894,23 @@
     }
    }
   },
+  "InstancesResumeRequest": {
+   "id": "InstancesResumeRequest",
+   "type": "object",
+   "properties": {
+    "disks": {
+     "type": "array",
+     "description": "Array of disks associated with this instance that are protected with a customer-supplied encryption key.\n\nIn order to resume the instance, the disk url and its corresponding key must be provided.\n\nIf the disk is not protected with a customer-supplied encryption key it should not be specified.",
+     "items": {
+      "$ref": "CustomerEncryptionKeyProtectedDisk"
+     }
+    },
+    "instanceEncryptionKey": {
+     "$ref": "CustomerEncryptionKey",
+     "description": "Decrypts data associated with an instance that is protected with a customer-supplied encryption key.\n\nIf the instance you are starting is protected with a customer-supplied encryption key, the correct key must be provided otherwise the instance resume will not succeed."
+    }
+   }
+  },
   "InstancesScopedList": {
    "id": "InstancesScopedList",
    "type": "object",
@@ -11707,7 +11725,7 @@
    "properties": {
     "logMode": {
      "type": "string",
-     "description": "Whether Gin logging should happen in a fail-closed manner at the caller. This is currently supported in the LocalIAM implementation, Stubby C++, and Stubby Java. For Apps Framework, see go/af-audit-logging#failclosed. TODO(b/77591626): Add support for Stubby Go. TODO(b/129671387): Add support for Scaffolding.",
+     "description": "",
      "enum": [
       "LOG_FAIL_CLOSED",
       "LOG_MODE_UNSPECIFIED"
@@ -12486,7 +12504,7 @@
   "NetworkEndpointGroup": {
    "id": "NetworkEndpointGroup",
    "type": "object",
-   "description": "Represents a collection of network endpoints.\n\nFor more information read Network endpoint groups overview. (== resource_for {$api_version}.networkEndpointGroups ==) Next ID: 21",
+   "description": "Represents a collection of network endpoints.\n\nA network endpoint group (NEG) defines how a set of endpoints should be reached, whether they are reachable, and where they are located. For more information about using NEGs, see  Setting up internet NEGs or  Setting up zonal NEGs. (== resource_for {$api_version}.networkEndpointGroups ==) (== resource_for {$api_version}.globalNetworkEndpointGroups ==)",
    "properties": {
     "creationTimestamp": {
      "type": "string",
@@ -12807,7 +12825,7 @@
    "properties": {
     "healthStatus": {
      "type": "string",
-     "description": "Optional query parameter for showing the health status of each network endpoint. Valid options are SKIP or SHOW. If you don't specifiy this parameter, the health status of network endpoints will not be provided.",
+     "description": "Optional query parameter for showing the health status of each network endpoint. Valid options are SKIP or SHOW. If you don't specify this parameter, the health status of network endpoints will not be provided.",
      "enum": [
       "SHOW",
       "SKIP"
@@ -15328,7 +15346,7 @@
   "PacketMirroring": {
    "id": "PacketMirroring",
    "type": "object",
-   "description": "Represents a PacketMirroring resource.",
+   "description": "Represents a Packet Mirroring resource.\n\nPacket Mirroring clones the traffic of specified instances in your Virtual Private Cloud (VPC) network and forwards it to a collector destination, such as an instance group of an internal TCP/UDP load balancer, for analysis or examination. For more information about setting up Packet Mirroring, see Using Packet Mirroring. (== resource_for {$api_version}.packetMirrorings ==)",
    "properties": {
     "collectorIlb": {
      "$ref": "PacketMirroringForwardingRuleInfo",
@@ -20200,15 +20218,15 @@
    "properties": {
     "enableIntegrityMonitoring": {
      "type": "boolean",
-     "description": "Defines whether the instance has integrity monitoring enabled."
+     "description": "Defines whether the instance has integrity monitoring enabled. Enabled by default."
     },
     "enableSecureBoot": {
      "type": "boolean",
-     "description": "Defines whether the instance has Secure Boot enabled."
+     "description": "Defines whether the instance has Secure Boot enabled. Disabled by default."
     },
     "enableVtpm": {
      "type": "boolean",
-     "description": "Defines whether the instance has the vTPM enabled."
+     "description": "Defines whether the instance has the vTPM enabled. Enabled by default."
     }
    }
   },
@@ -25120,7 +25138,7 @@
   "VpnGateway": {
    "id": "VpnGateway",
    "type": "object",
-   "description": "Represents a VPN gateway resource. Next ID: 13",
+   "description": "Represents a HA VPN gateway.\n\nHA VPN is a high-availability (HA) Cloud VPN solution that lets you securely connect your on-premises network to your Google Cloud Virtual Private Cloud network through an IPsec VPN connection in a single region. For more information about Cloud HA VPN solutions, see  Cloud VPN topologies . (== resource_for {$api_version}.vpnGateways ==)",
    "properties": {
     "creationTimestamp": {
      "type": "string",
@@ -27761,7 +27779,7 @@
      "id": "compute.backendServices.getHealth",
      "path": "{project}/global/backendServices/{backendService}/getHealth",
      "httpMethod": "POST",
-     "description": "Gets the most recent health check results for this BackendService.",
+     "description": "Gets the most recent health check results for this BackendService.\n\nExample request body:\n\n{ \"group\": \"/zones/us-east1-b/instanceGroups/lb-backend-example\" }",
      "parameters": {
       "backendService": {
        "type": "string",
@@ -34020,6 +34038,55 @@
       "https://www.googleapis.com/auth/compute"
      ]
     },
+    "resume": {
+     "id": "compute.instances.resume",
+     "path": "{project}/zones/{zone}/instances/{instance}/resume",
+     "httpMethod": "POST",
+     "description": "Resumes an instance that was suspended using the instances().suspend method.",
+     "parameters": {
+      "instance": {
+       "type": "string",
+       "description": "Name of the instance resource to resume.",
+       "required": true,
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
+       "location": "path"
+      },
+      "project": {
+       "type": "string",
+       "description": "Project ID for this request.",
+       "required": true,
+       "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))",
+       "location": "path"
+      },
+      "requestId": {
+       "type": "string",
+       "description": "An optional request ID to identify requests. Specify a unique request ID so that if you must retry your request, the server will know to ignore the request if it has already been completed.\n\nFor example, consider a situation where you make an initial request and the request times out. If you make the request again with the same request ID, the server can check if original operation with the same request ID was received, and if so, will ignore the second request. This prevents clients from accidentally creating duplicate commitments.\n\nThe request ID must be a valid UUID with the exception that zero UUID is not supported (00000000-0000-0000-0000-000000000000).",
+       "location": "query"
+      },
+      "zone": {
+       "type": "string",
+       "description": "The name of the zone for this request.",
+       "required": true,
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+       "location": "path"
+      }
+     },
+     "parameterOrder": [
+      "project",
+      "zone",
+      "instance"
+     ],
+     "request": {
+      "$ref": "InstancesResumeRequest"
+     },
+     "response": {
+      "$ref": "Operation"
+     },
+     "scopes": [
+      "https://www.googleapis.com/auth/cloud-platform",
+      "https://www.googleapis.com/auth/compute"
+     ]
+    },
     "setDeletionProtection": {
      "id": "compute.instances.setDeletionProtection",
      "path": "{project}/zones/{zone}/instances/{resource}/setDeletionProtection",
@@ -34763,6 +34830,57 @@
       "instance": {
        "type": "string",
        "description": "Name of the instance resource to stop.",
+       "required": true,
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
+       "location": "path"
+      },
+      "project": {
+       "type": "string",
+       "description": "Project ID for this request.",
+       "required": true,
+       "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))",
+       "location": "path"
+      },
+      "requestId": {
+       "type": "string",
+       "description": "An optional request ID to identify requests. Specify a unique request ID so that if you must retry your request, the server will know to ignore the request if it has already been completed.\n\nFor example, consider a situation where you make an initial request and the request times out. If you make the request again with the same request ID, the server can check if original operation with the same request ID was received, and if so, will ignore the second request. This prevents clients from accidentally creating duplicate commitments.\n\nThe request ID must be a valid UUID with the exception that zero UUID is not supported (00000000-0000-0000-0000-000000000000).",
+       "location": "query"
+      },
+      "zone": {
+       "type": "string",
+       "description": "The name of the zone for this request.",
+       "required": true,
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+       "location": "path"
+      }
+     },
+     "parameterOrder": [
+      "project",
+      "zone",
+      "instance"
+     ],
+     "response": {
+      "$ref": "Operation"
+     },
+     "scopes": [
+      "https://www.googleapis.com/auth/cloud-platform",
+      "https://www.googleapis.com/auth/compute"
+     ]
+    },
+    "suspend": {
+     "id": "compute.instances.suspend",
+     "path": "{project}/zones/{zone}/instances/{instance}/suspend",
+     "httpMethod": "POST",
+     "description": "This method suspends a running instance, saving its state to persistent storage, and allows you to resume the instance at a later time. Suspended instances incur reduced per-minute, virtual machine usage charges while they are suspended. Any resources the virtual machine is using, such as persistent disks and static IP addresses, will continue to be charged until they are deleted.",
+     "parameters": {
+      "discardLocalSsd": {
+       "type": "boolean",
+       "description": "If true, discard the contents of any attached localSSD partitions. Default value is false (== preserve localSSD data).",
+       "location": "query"
+      },
+      "instance": {
+       "type": "string",
+       "description": "Name of the instance resource to suspend.",
        "required": true,
        "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
@@ -40207,6 +40325,48 @@
       "https://www.googleapis.com/auth/compute.readonly"
      ]
     },
+    "getIamPolicy": {
+     "id": "compute.regionDisks.getIamPolicy",
+     "path": "{project}/regions/{region}/disks/{resource}/getIamPolicy",
+     "httpMethod": "GET",
+     "description": "Gets the access control policy for a resource. May be empty if no such policy or resource exists.",
+     "parameters": {
+      "project": {
+       "type": "string",
+       "description": "Project ID for this request.",
+       "required": true,
+       "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))",
+       "location": "path"
+      },
+      "region": {
+       "type": "string",
+       "description": "The name of the region for this request.",
+       "required": true,
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+       "location": "path"
+      },
+      "resource": {
+       "type": "string",
+       "description": "Name or id of the resource for this request.",
+       "required": true,
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
+       "location": "path"
+      }
+     },
+     "parameterOrder": [
+      "project",
+      "region",
+      "resource"
+     ],
+     "response": {
+      "$ref": "Policy"
+     },
+     "scopes": [
+      "https://www.googleapis.com/auth/cloud-platform",
+      "https://www.googleapis.com/auth/compute",
+      "https://www.googleapis.com/auth/compute.readonly"
+     ]
+    },
     "insert": {
      "id": "compute.regionDisks.insert",
      "path": "{project}/regions/{region}/disks",
@@ -40402,6 +40562,50 @@
      },
      "response": {
       "$ref": "Operation"
+     },
+     "scopes": [
+      "https://www.googleapis.com/auth/cloud-platform",
+      "https://www.googleapis.com/auth/compute"
+     ]
+    },
+    "setIamPolicy": {
+     "id": "compute.regionDisks.setIamPolicy",
+     "path": "{project}/regions/{region}/disks/{resource}/setIamPolicy",
+     "httpMethod": "POST",
+     "description": "Sets the access control policy on the specified resource. Replaces any existing policy.",
+     "parameters": {
+      "project": {
+       "type": "string",
+       "description": "Project ID for this request.",
+       "required": true,
+       "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))",
+       "location": "path"
+      },
+      "region": {
+       "type": "string",
+       "description": "The name of the region for this request.",
+       "required": true,
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+       "location": "path"
+      },
+      "resource": {
+       "type": "string",
+       "description": "Name or id of the resource for this request.",
+       "required": true,
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
+       "location": "path"
+      }
+     },
+     "parameterOrder": [
+      "project",
+      "region",
+      "resource"
+     ],
+     "request": {
+      "$ref": "RegionSetPolicyRequest"
+     },
+     "response": {
+      "$ref": "Policy"
      },
      "scopes": [
       "https://www.googleapis.com/auth/cloud-platform",

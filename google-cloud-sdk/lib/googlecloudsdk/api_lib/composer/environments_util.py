@@ -18,7 +18,7 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
-from collections import OrderedDict
+import collections
 from googlecloudsdk.api_lib.composer import util as api_util
 from googlecloudsdk.calliope import base
 
@@ -130,10 +130,11 @@ def Create(environment_ref,
         diskSizeGb=disk_size_gb)
     if oauth_scopes:
       config.nodeConfig.oauthScopes = list(
-          OrderedDict((s.strip(), None) for s in oauth_scopes).keys())
+          collections.OrderedDict(
+              (s.strip(), None) for s in oauth_scopes).keys())
     if tags:
       config.nodeConfig.tags = list(
-          OrderedDict((t.strip(), None) for t in tags).keys())
+          collections.OrderedDict((t.strip(), None) for t in tags).keys())
   if (image_version or env_variables or airflow_config_overrides or
       python_version or airflow_executor_type):
     is_config_empty = False

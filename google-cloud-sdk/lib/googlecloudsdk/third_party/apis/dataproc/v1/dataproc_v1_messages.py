@@ -14,20 +14,23 @@ package = 'dataproc'
 
 class AcceleratorConfig(_messages.Message):
   r"""Specifies the type and number of accelerator cards attached to the
-  instances of an instance. See GPUs on Compute Engine.
+  instances of an instance. See GPUs on Compute Engine
+  (https://cloud.google.com/compute/docs/gpus/).
 
   Fields:
     acceleratorCount: The number of the accelerator cards of this type exposed
       to this instance.
     acceleratorTypeUri: Full URL, partial URI, or short name of the
       accelerator type resource to expose to this instance. See Compute Engine
-      AcceleratorTypes.Examples:
+      AcceleratorTypes (https://cloud.google.com/compute/docs/reference/beta/a
+      cceleratorTypes).Examples:
       https://www.googleapis.com/compute/beta/projects/[project_id]/zones/us-
       east1-a/acceleratorTypes/nvidia-tesla-k80 projects/[project_id]/zones
       /us-east1-a/acceleratorTypes/nvidia-tesla-k80 nvidia-tesla-k80Auto Zone
-      Exception: If you are using the Dataproc Auto Zone Placement feature,
-      you must use the short name of the accelerator type resource, for
-      example, nvidia-tesla-k80.
+      Exception: If you are using the Dataproc Auto Zone Placement
+      (https://cloud.google.com/dataproc/docs/concepts/configuring-clusters
+      /auto-zone#using_auto_zone_placement) feature, you must use the short
+      name of the accelerator type resource, for example, nvidia-tesla-k80.
   """
 
   acceleratorCount = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -269,7 +272,8 @@ class ClusterConfig(_messages.Message):
       location (US, ASIA, or EU) for your cluster's staging bucket according
       to the Compute Engine zone where your cluster is deployed, and then
       create and manage this project-level, per-location bucket (see Dataproc
-      staging bucket).
+      staging bucket (https://cloud.google.com/dataproc/docs/concepts
+      /configuring-clusters/staging-bucket)).
     encryptionConfig: Optional. Encryption settings for the cluster.
     gceClusterConfig: Optional. The shared Compute Engine config settings for
       all instances in a cluster.
@@ -1815,16 +1819,22 @@ class GceClusterConfig(_messages.Message):
       communications. Cannot be specified with subnetwork_uri. If neither
       network_uri nor subnetwork_uri is specified, the "default" network of
       the project is used, if it exists. Cannot be a "Custom Subnet Network"
-      (see Using Subnetworks for more information).A full URL, partial URI, or
-      short name are valid. Examples: https://www.googleapis.com/compute/v1/pr
-      ojects/[project_id]/regions/global/default
-      projects/[project_id]/regions/global/default default
+      (see Using Subnetworks
+      (https://cloud.google.com/compute/docs/subnetworks) for more
+      information).A full URL, partial URI, or short name are valid. Examples:
+      https://www.googleapis.com/compute/v1/projects/[project_id]/regions/glob
+      al/default projects/[project_id]/regions/global/default default
     reservationAffinity: Optional. Reservation Affinity for consuming Zonal
       reservation.
-    serviceAccount: Optional. The Dataproc service account (also see VM Data
-      Plane identity) used by Dataproc cluster VM instances to access Google
-      Cloud Platform services.If not specified, the Compute Engine default
-      service account is used.
+    serviceAccount: Optional. The Dataproc service account
+      (https://cloud.google.com/dataproc/docs/concepts/configuring-clusters
+      /service-accounts#service_accounts_in_cloud_dataproc) (also see VM Data
+      Plane identity (https://cloud.google.com/dataproc/docs/concepts/iam
+      /dataproc-principals#vm_service_account_data_plane_identity)) used by
+      Dataproc cluster VM instances to access Google Cloud Platform
+      services.If not specified, the Compute Engine default service account
+      (https://cloud.google.com/compute/docs/access/service-
+      accounts#default_service_account) is used.
     serviceAccountScopes: Optional. The URIs of service account scopes to be
       included in Compute Engine instances. The following base set of scopes
       is always included:
@@ -1843,7 +1853,8 @@ class GceClusterConfig(_messages.Message):
       east1/subnetworks/sub0 projects/[project_id]/regions/us-
       east1/subnetworks/sub0 sub0
     tags: The Compute Engine tags to add to all instances (see Tagging
-      instances).
+      instances (https://cloud.google.com/compute/docs/label-or-tag-
+      resources#tags)).
     zoneUri: Optional. The zone where the Compute Engine cluster will be
       located. On a create request, it is required in the "global" region. If
       omitted in a non-global Dataproc region, the service will pick a zone in
@@ -2135,8 +2146,15 @@ class InstanceGroupConfig(_messages.Message):
       these instances.
     diskConfig: Optional. Disk option config settings.
     imageUri: Optional. The Compute Engine image resource used for cluster
-      instances. It can be specified or may be inferred from
-      SoftwareConfig.image_version.
+      instances.The URI can represent an image or image family.Image examples:
+      https://www.googleapis.com/compute/beta/projects/[project_id]/global/ima
+      ges/[image-id] projects/[project_id]/global/images/[image-id] image-
+      idImage family examples. Dataproc will use the most recent image from
+      the family: https://www.googleapis.com/compute/beta/projects/[project_id
+      ]/global/images/family/[custom-image-family-name]
+      projects/[project_id]/global/images/family/[custom-image-family-name]If
+      the URI is unspecified, it will be inferred from
+      SoftwareConfig.image_version or the system default.
     instanceNames: Output only. The list of instance names. Dataproc derives
       the names from cluster_name, num_instances, and the instance group.
     isPreemptible: Output only. Specifies that this instance group contains
@@ -2146,13 +2164,17 @@ class InstanceGroupConfig(_messages.Message):
       https://www.googleapis.com/compute/v1/projects/[project_id]/zones/us-
       east1-a/machineTypes/n1-standard-2 projects/[project_id]/zones/us-
       east1-a/machineTypes/n1-standard-2 n1-standard-2Auto Zone Exception: If
-      you are using the Dataproc Auto Zone Placement feature, you must use the
-      short name of the machine type resource, for example, n1-standard-2.
+      you are using the Dataproc Auto Zone Placement
+      (https://cloud.google.com/dataproc/docs/concepts/configuring-clusters
+      /auto-zone#using_auto_zone_placement) feature, you must use the short
+      name of the machine type resource, for example, n1-standard-2.
     managedGroupConfig: Output only. The config for Compute Engine Instance
       Group Manager that manages this group. This is only used for preemptible
       instance groups.
     minCpuPlatform: Optional. Specifies the minimum cpu platform for the
-      Instance Group. See Dataproc&rarr;Minimum CPU Platform.
+      Instance Group. See Dataproc -&gt; Minimum CPU Platform
+      (https://cloud.google.com/dataproc/docs/concepts/compute/dataproc-min-
+      cpu).
     numInstances: Optional. The number of VM instances in the instance group.
       For master instance groups, must be set to 1.
     preemptibility: Optional. Specifies the preemptibility of the instance
@@ -2926,24 +2948,24 @@ class OrderedJob(_messages.Message):
       be associated with a given job.
 
   Fields:
-    hadoopJob: A HadoopJob attribute.
-    hiveJob: A HiveJob attribute.
+    hadoopJob: Optional. Job is a Hadoop job.
+    hiveJob: Optional. Job is a Hive job.
     labels: Optional. The labels to associate with this job.Label keys must be
       between 1 and 63 characters long, and must conform to the following
       regular expression: \p{Ll}\p{Lo}{0,62}Label values must be between 1 and
       63 characters long, and must conform to the following regular
       expression: \p{Ll}\p{Lo}\p{N}_-{0,63}No more than 32 labels can be
       associated with a given job.
-    pigJob: A PigJob attribute.
+    pigJob: Optional. Job is a Pig job.
     prerequisiteStepIds: Optional. The optional list of prerequisite job
       step_ids. If not specified, the job will start at the beginning of
       workflow.
-    prestoJob: Presto job
-    pysparkJob: A PySparkJob attribute.
+    prestoJob: Optional. Job is a Presto job.
+    pysparkJob: Optional. Job is a PySpark job.
     scheduling: Optional. Job scheduling configuration.
-    sparkJob: A SparkJob attribute.
-    sparkRJob: Spark R job
-    sparkSqlJob: A SparkSqlJob attribute.
+    sparkJob: Optional. Job is a Spark job.
+    sparkRJob: Optional. Job is a SparkR job.
+    sparkSqlJob: Optional. Job is a SparkSql job.
     stepId: Required. The step id. The id must be unique among all jobs within
       the template.The step id is used as prefix for job id, as job goog-
       dataproc-workflow-step-id label, and in prerequisiteStepIds field from
@@ -3165,7 +3187,10 @@ class Policy(_messages.Message):
 
 
 class PrestoJob(_messages.Message):
-  r"""A Dataproc job for running Presto (https://prestosql.io/) queries
+  r"""A Dataproc job for running Presto (https://prestosql.io/) queries.
+  IMPORTANT: The Dataproc Presto Optional Component
+  (https://cloud.google.com/dataproc/docs/concepts/components/presto) must be
+  enabled when the cluster is created to submit a Presto job to the cluster.
 
   Messages:
     PropertiesValue: Optional. A mapping of property names to values. Used to
@@ -3388,13 +3413,18 @@ class SoftwareConfig(_messages.Message):
       mappings: capacity-scheduler: capacity-scheduler.xml core: core-site.xml
       distcp: distcp-default.xml hdfs: hdfs-site.xml hive: hive-site.xml
       mapred: mapred-site.xml pig: pig.properties spark: spark-defaults.conf
-      yarn: yarn-site.xmlFor more information, see Cluster properties.
+      yarn: yarn-site.xmlFor more information, see Cluster properties
+      (https://cloud.google.com/dataproc/docs/concepts/cluster-properties).
 
   Fields:
     imageVersion: Optional. The version of software inside the cluster. It
-      must be one of the supported Dataproc Versions, such as "1.2" (including
-      a subminor version, such as "1.2.29"), or the "preview" version. If
-      unspecified, it defaults to the latest Debian version.
+      must be one of the supported Dataproc Versions
+      (https://cloud.google.com/dataproc/docs/concepts/versioning/dataproc-
+      versions#supported_cloud_dataproc_versions), such as "1.2" (including a
+      subminor version, such as "1.2.29"), or the "preview" version
+      (https://cloud.google.com/dataproc/docs/concepts/versioning/dataproc-
+      versions#other_versions). If unspecified, it defaults to the latest
+      Debian version.
     optionalComponents: Optional. The set of components to activate on the
       cluster.
     properties: Optional. The properties to set on daemon config
@@ -3403,7 +3433,8 @@ class SoftwareConfig(_messages.Message):
       mappings: capacity-scheduler: capacity-scheduler.xml core: core-site.xml
       distcp: distcp-default.xml hdfs: hdfs-site.xml hive: hive-site.xml
       mapred: mapred-site.xml pig: pig.properties spark: spark-defaults.conf
-      yarn: yarn-site.xmlFor more information, see Cluster properties.
+      yarn: yarn-site.xmlFor more information, see Cluster properties
+      (https://cloud.google.com/dataproc/docs/concepts/cluster-properties).
   """
 
   class OptionalComponentsValueListEntryValuesEnum(_messages.Enum):
@@ -3448,7 +3479,8 @@ class SoftwareConfig(_messages.Message):
     scheduler: capacity-scheduler.xml core: core-site.xml distcp: distcp-
     default.xml hdfs: hdfs-site.xml hive: hive-site.xml mapred: mapred-
     site.xml pig: pig.properties spark: spark-defaults.conf yarn: yarn-
-    site.xmlFor more information, see Cluster properties.
+    site.xmlFor more information, see Cluster properties
+    (https://cloud.google.com/dataproc/docs/concepts/cluster-properties).
 
     Messages:
       AdditionalProperty: An additional property for a PropertiesValue object.

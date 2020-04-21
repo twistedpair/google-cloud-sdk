@@ -208,7 +208,7 @@ class GoogleCloudMlV1AutomatedStoppingConfigDecayCurveAutomatedStoppingConfig(_m
   object.
 
   Fields:
-    useElapsedTime: True if measurement.elapsed_time is used as the x-axis of
+    useElapsedTime: If true, measurement.elapsed_time is used as the x-axis of
       each Trials Decay Curve. Otherwise, Measurement.steps will be used as
       the x-axis.
   """
@@ -224,10 +224,10 @@ class GoogleCloudMlV1AutomatedStoppingConfigMedianAutomatedStoppingConfig(_messa
   by the trial in each measurement.
 
   Fields:
-    useElapsedTime: True if median automated stopping rule applies on
-      measurement.use_elapsed_time. it means that elapsed_time field of latest
-      measurement of current trial is used to compute median objective value
-      for each completed trials.
+    useElapsedTime: If true, the median automated stopping rule applies to
+      measurement.use_elapsed_time, which means the elapsed_time field of the
+      current trial's latest measurement is used to compute the median
+      objective value for each completed trial.
   """
 
   useElapsedTime = _messages.BooleanField(1)
@@ -318,9 +318,9 @@ class GoogleCloudMlV1CheckTrialEarlyStoppingStateMetatdata(_messages.Message):
   request.
 
   Fields:
-    createTime: The time operation was submitted.
+    createTime: The time at which the operation was submitted.
     study: The name of the study that the trial belongs to.
-    trial: The Trial name.
+    trial: The trial name.
   """
 
   createTime = _messages.StringField(1)
@@ -340,9 +340,9 @@ class GoogleCloudMlV1CheckTrialEarlyStoppingStateResponse(_messages.Message):
   request.
 
   Fields:
-    endTime: The time operation processing completed.
+    endTime: The time at which operation processing completed.
     shouldStop: True if the Trial should stop.
-    startTime: The time operation was started.
+    startTime: The time at which the operation was started.
   """
 
   endTime = _messages.StringField(1)
@@ -357,7 +357,7 @@ class GoogleCloudMlV1CompleteTrialRequest(_messages.Message):
     finalMeasurement: Optional. If provided, it will be used as the completed
       trial's final_measurement; Otherwise, the service will auto-select a
       previously reported measurement as the final-measurement
-    infeasibleReason: Optional. A human readable reason why the Trial was
+    infeasibleReason: Optional. A human readable reason why the trial was
       infeasible. This should only be provided if `trial_infeasible` is true.
     trialInfeasible: Optional. True if the trial cannot be run with the given
       Parameter, and final_measurement will be ignored.
@@ -437,10 +437,10 @@ class GoogleCloudMlV1EncryptionConfig(_messages.Message):
   a resource.
 
   Fields:
-    kmsKeyName: The Cloud KMS resource identifier of the customer managed
-      encryption key used to protect a resource, such as a training job. Has
-      the form: `projects/my-project/locations/my-region/keyRings/my-
-      kr/cryptoKeys/my-key`.
+    kmsKeyName: The Cloud KMS resource identifier of the customer-managed
+      encryption key used to protect a resource, such as a training job. It
+      has the following format: `projects/{PROJECT_ID}/locations/{REGION}/keyR
+      ings/{KEY_RING_NAME}/cryptoKeys/{KEY_NAME}`
   """
 
   kmsKeyName = _messages.StringField(1)
@@ -1047,7 +1047,7 @@ class GoogleCloudMlV1ListStudiesResponse(_messages.Message):
   r"""A GoogleCloudMlV1ListStudiesResponse object.
 
   Fields:
-    studies: The Studies associated with the project.
+    studies: The studies associated with the project.
   """
 
   studies = _messages.MessageField('GoogleCloudMlV1Study', 1, repeated=True)
@@ -1102,11 +1102,11 @@ class GoogleCloudMlV1ManualScaling(_messages.Message):
 
 
 class GoogleCloudMlV1Measurement(_messages.Message):
-  r"""A message representing a Measurement.
+  r"""A message representing a measurement.
 
   Fields:
-    elapsedTime: Time that the Trial has been running at the point of this
-      Measurement.
+    elapsedTime: Output only. Time that the trial has been running at the
+      point of this measurement.
     metrics: Provides a list of metrics that act as inputs into the objective
       function.
     stepCount: The number of steps a machine learning model has been trained
@@ -1855,13 +1855,13 @@ class GoogleCloudMlV1Scheduling(_messages.Message):
   Fields:
     maxRunningTime: Optional. The maximum job running time, expressed in
       seconds. The field can contain up to nine fractional digits, terminated
-      by `s`. By default there is no limit to the running time.  If the
-      training job is still running after this duration, AI Platform Training
-      cancels it.  For example, if you want to ensure your job runs for no
-      more than 2 hours, set this field to `7200s` (2 hours * 60 minutes /
-      hour * 60 seconds / minute).  If you submit your training job using the
-      `gcloud` tool, you can [provide this field in a `config.yaml` file](/ai-
-      platform/training/docs/training-
+      by `s`. If not specified, this field defaults to `604800s` (seven days).
+      If the training job is still running after this duration, AI Platform
+      Training cancels it.  For example, if you want to ensure your job runs
+      for no more than 2 hours, set this field to `7200s` (2 hours * 60
+      minutes / hour * 60 seconds / minute).  If you submit your training job
+      using the `gcloud` tool, you can [provide this field in a `config.yaml`
+      file](/ai-platform/training/docs/training-
       jobs#formatting_your_configuration_parameters). For example:  ```yaml
       trainingInput:   ...   scheduling:     maxRunningTime: 7200s   ... ```
   """
@@ -1884,7 +1884,7 @@ class GoogleCloudMlV1Study(_messages.Message):
     StateValueValuesEnum: Output only. The detailed state of a study.
 
   Fields:
-    createTime: Output only. Time that the study was created.
+    createTime: Output only. Time at which the study was created.
     inactiveReason: Output only. A human readable reason why the Study is
       inactive. This should be empty if a study is ACTIVE or COMPLETED.
     name: Output only. The name of a study.
@@ -1924,7 +1924,7 @@ class GoogleCloudMlV1StudyConfig(_messages.Message):
     algorithm: The search algorithm specified for the study.
     automatedStoppingConfig: Configuration for automated stopping of
       unpromising Trials.
-    metrics: A GoogleCloudMlV1StudyConfigMetricSpec attribute.
+    metrics: Metric specs for the study.
     parameters: Required. The set of parameters to tune.
   """
 
@@ -2189,10 +2189,10 @@ class GoogleCloudMlV1SuggestTrialsResponse(_messages.Message):
     StudyStateValueValuesEnum: The state of the study.
 
   Fields:
-    endTime: The time operation processing completed.
-    startTime: The time operation was started.
+    endTime: The time at which operation processing completed.
+    startTime: The time at which the operation was started.
     studyState: The state of the study.
-    trials: A list of Trials.
+    trials: A list of trials.
   """
 
   class StudyStateValueValuesEnum(_messages.Enum):
@@ -2228,13 +2228,17 @@ class GoogleCloudMlV1TrainingInput(_messages.Message):
       number of replicas for workers and parameter servers.
 
   Fields:
-    args: Optional. Arguments passed to the training. - If it is a python
-      package training:   It will be passed as command line argument to the
-      program. - If it is a custom container training,   It will be passed as
-      an argument to the custom container   image.
-    encryptionConfig: Custom encryption key options for a training job. If
-      this is set, then all resources created by the training job will be
-      encrypted with the provided encryption key.
+    args: Optional. Command-line arguments passed to the training application
+      when it starts. If your job uses a custom container, then the arguments
+      are passed to the container's <a class="external" target="_blank"
+      href="https://docs.docker.com/engine/reference/builder/#entrypoint">
+      `ENTRYPOINT`</a> command.
+    encryptionConfig: Optional. Options for using customer-managed encryption
+      keys (CMEK) to protect resources created by a training job, instead of
+      using Google's default encryption. If this is set, then all resources
+      created by the training job will be encrypted with the customer-managed
+      encryption key that you specify.  [Learn how and when to use CMEK with
+      AI Platform Training](/ai-platform/training/docs/cmek).
     evaluatorConfig: Optional. The configuration for evaluators.  You should
       only set `evaluatorConfig.acceleratorConfig` if `evaluatorType` is set
       to a Compute Engine machine type. [Learn about restrictions on
@@ -2242,9 +2246,9 @@ class GoogleCloudMlV1TrainingInput(_messages.Message):
       /using-gpus#compute-engine-machine-types-with-gpu)  Set
       `evaluatorConfig.imageUri` only if you build a custom image for your
       evaluator. If `evaluatorConfig.imageUri` has not been set, AI Platform
-      uses the value of `masterConfig.imageUri` . Learn more about
-      [configuring custom containers](/ai-platform/training/docs/distributed-
-      training-containers).
+      uses the value of `masterConfig.imageUri`. Learn more about [configuring
+      custom containers](/ai-platform/training/docs/distributed-training-
+      containers).
     evaluatorCount: Optional. The number of evaluator replicas to use for the
       training job. Each replica in the cluster will be of the type specified
       in `evaluator_type`.  This value can only be used when `scale_tier` is
@@ -2304,7 +2308,7 @@ class GoogleCloudMlV1TrainingInput(_messages.Message):
       platform/training/docs/using-gpus#compute-engine-machine-types-with-gpu)
       Set `parameterServerConfig.imageUri` only if you build a custom image
       for your parameter server. If `parameterServerConfig.imageUri` has not
-      been set, AI Platform uses the value of `masterConfig.imageUri` . Learn
+      been set, AI Platform uses the value of `masterConfig.imageUri`. Learn
       more about [configuring custom containers](/ai-platform/training/docs
       /distributed-training-containers).
     parameterServerCount: Optional. The number of parameter server replicas to
@@ -2354,8 +2358,8 @@ class GoogleCloudMlV1TrainingInput(_messages.Message):
       #compute-engine-machine-types-with-gpu)  Set `workerConfig.imageUri`
       only if you build a custom image for your worker. If
       `workerConfig.imageUri` has not been set, AI Platform uses the value of
-      `masterConfig.imageUri` . Learn more about [configuring custom
-      containers](/ai-platform/training/docs/distributed-training-containers).
+      `masterConfig.imageUri`. Learn more about [configuring custom containers
+      ](/ai-platform/training/docs/distributed-training-containers).
     workerCount: Optional. The number of worker replicas to use for the
       training job. Each replica in the cluster will be of the type specified
       in `worker_type`.  This value can only be used when `scale_tier` is set
@@ -2479,7 +2483,7 @@ class GoogleCloudMlV1TreeShapAttribution(_messages.Message):
 
 
 class GoogleCloudMlV1Trial(_messages.Message):
-  r"""A message representing a Trial.
+  r"""A message representing a trial.
 
   Enums:
     StateValueValuesEnum: The detailed state of a trial.
@@ -2487,20 +2491,21 @@ class GoogleCloudMlV1Trial(_messages.Message):
   Fields:
     clientId: Output only. The identifier of the client that originally
       requested this trial.
-    endTime: Output only. Time the Trial's status changed to COMPLETED.
-    finalMeasurement: The final Measurement containing the objective value.
+    endTime: Output only. Time at which the trial's status changed to
+      COMPLETED.
+    finalMeasurement: The final measurement containing the objective value.
     infeasibleReason: Output only. A human readable string describing why the
-      Trial is infeasible. This should only be set if trial_infeasible is
+      trial is infeasible. This should only be set if trial_infeasible is
       true.
     measurements: A list of measurements that are strictly lexicographically
       ordered by their induced tuples (steps, elapsed_time). These are used
       for early stopping computations.
     name: Output only. Name of the trial assigned by the service.
-    parameters: The parameters of the Trial.
-    startTime: Output only. Time the Trial was started.
+    parameters: The parameters of the trial.
+    startTime: Output only. Time at which the trial was started.
     state: The detailed state of a trial.
-    trialInfeasible: Output only. True if the parameters in this trial should
-      not be attempted again.
+    trialInfeasible: Output only. If true, the parameters in this trial are
+      not attempted again.
   """
 
   class StateValueValuesEnum(_messages.Enum):
@@ -2508,12 +2513,12 @@ class GoogleCloudMlV1Trial(_messages.Message):
 
     Values:
       STATE_UNSPECIFIED: The trial state is unspecified.
-      REQUESTED: Indicates that a specific Trial has been requested, but it
+      REQUESTED: Indicates that a specific trial has been requested, but it
         has not yet been suggested by the service.
-      ACTIVE: Indicates that the Trial has been suggested.
-      COMPLETED: Indicates that the Trial is done, and either has a
+      ACTIVE: Indicates that the trial has been suggested.
+      COMPLETED: Indicates that the trial is done, and either has a
         final_measurement set, or is marked as trial_infeasible.
-      STOPPING: Indicates that the Trial should stop according to the service.
+      STOPPING: Indicates that the trial should stop according to the service.
     """
     STATE_UNSPECIFIED = 0
     REQUESTED = 1
@@ -2534,7 +2539,8 @@ class GoogleCloudMlV1Trial(_messages.Message):
 
 
 class GoogleCloudMlV1TrialParameter(_messages.Message):
-  r"""A message representing a parameter to be tuned.
+  r"""A message representing a parameter to be tuned. Contains the name of the
+  parameter and the suggested value to use for this trial.
 
   Fields:
     floatValue: Must be set if ParameterType is DOUBLE or DISCRETE.
@@ -3578,7 +3584,7 @@ class MlProjectsLocationsStudiesTrialsCompleteRequest(_messages.Message):
   Fields:
     googleCloudMlV1CompleteTrialRequest: A GoogleCloudMlV1CompleteTrialRequest
       resource to be passed as the request body.
-    name: Required. The trial name.
+    name: Required. The trial name.metat
   """
 
   googleCloudMlV1CompleteTrialRequest = _messages.MessageField('GoogleCloudMlV1CompleteTrialRequest', 1)

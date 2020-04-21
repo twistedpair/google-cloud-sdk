@@ -70,7 +70,7 @@ class DatacatalogEntriesLookupRequest(_messages.Message):
       projects/projectId/datasets/datasetId/tables/tableId  *
       //pubsub.googleapis.com/projects/projectId/topics/topicId
     sqlResource: The SQL name of the entry. SQL names are case-sensitive.
-      Examples:    * `cloud_pubsub.project_id.topic_id`   *
+      Examples:    * `pubsub.project_id.topic_id`   *
       ``pubsub.project_id.`topic.id.with.dots` ``   *
       `bigquery.table.project_id.dataset_id.table_id`   *
       `bigquery.dataset.project_id.dataset_id`   *
@@ -489,9 +489,8 @@ class DatacatalogProjectsLocationsTagTemplatesCreateRequest(_messages.Message):
       GoogleCloudDatacatalogV1beta1TagTemplate resource to be passed as the
       request body.
     parent: Required. The name of the project and the template location
-      [region](/compute/docs/regions-zones/#available). NOTE: Currently, only
-      the `us-central1 region` is supported.  Example:  *
-      projects/{project_id}/locations/us-central1
+      [region](https://cloud.google.com/data-catalog/docs/concepts/regions.
+      Example:  * projects/{project_id}/locations/us-central1
     tagTemplateId: Required. The id of the tag template to create.
   """
 
@@ -524,9 +523,8 @@ class DatacatalogProjectsLocationsTagTemplatesFieldsCreateRequest(_messages.Mess
       GoogleCloudDatacatalogV1beta1TagTemplateField resource to be passed as
       the request body.
     parent: Required. The name of the project and the template location
-      [region](/compute/docs/regions-zones/#available). NOTE: Currently, only
-      the `us-central1 region` is supported.  Example:  *
-      projects/{project_id}/locations/us-
+      [region](https://cloud.google.com/data-catalog/docs/concepts/regions).
+      Example:  * projects/{project_id}/locations/us-
       central1/tagTemplates/{tag_template_id}
     tagTemplateFieldId: Required. The ID of the tag template field to create.
       Field ids can contain letters (both uppercase and lowercase), numbers
@@ -1186,7 +1184,8 @@ class GoogleCloudDatacatalogV1beta1Entry(_messages.Message):
       ENTRY_TYPE_UNSPECIFIED: Default unknown type.
       TABLE: Output only. The type of entry that has a GoogleSQL schema,
         including logical views.
-      MODEL: Output only. The type of models.
+      MODEL: Output only. The type of models. https://cloud.google.com
+        /bigquery-ml/docs/bigqueryml-intro
       DATA_STREAM: Output only. An entry type which is used for streaming
         entries. Example: Pub/Sub topic.
       FILESET: An entry type which is a set of files or objects. Example:
@@ -1527,8 +1526,8 @@ class GoogleCloudDatacatalogV1beta1SearchCatalogRequest(_messages.Message):
       be non-empty.  Query strings can be simple as "x" or more qualified as:
       * name:x * column:x * description:y  Note: Query tokens need to have a
       minimum of 3 characters for substring matching to work correctly. See
-      [Data Catalog Search Syntax](/data-catalog/docs/how-to/search-reference)
-      for more information.
+      [Data Catalog Search Syntax](https://cloud.google.com/data-catalog/docs
+      /how-to/search-reference) for more information.
     scope: Required. The scope of this search request. A `scope` that has
       empty `include_org_ids`, `include_project_ids` AND false
       `include_gcp_public_datasets` is considered invalid. Data Catalog will
@@ -1692,8 +1691,8 @@ class GoogleCloudDatacatalogV1beta1TableSpec(_messages.Message):
 class GoogleCloudDatacatalogV1beta1Tag(_messages.Message):
   r"""Tags are used to attach custom metadata to Data Catalog resources. Tags
   conform to the specifications within their tag template.  See [Data Catalog
-  IAM](/data-catalog/docs/concepts/iam) for information on the permissions
-  needed to create or view tags.
+  IAM](https://cloud.google.com/data-catalog/docs/concepts/iam) for
+  information on the permissions needed to create or view tags.
 
   Messages:
     FieldsValue: Required. This maps the ID of a tag field to the value of and
@@ -1795,10 +1794,11 @@ class GoogleCloudDatacatalogV1beta1TagFieldEnumValue(_messages.Message):
 class GoogleCloudDatacatalogV1beta1TagTemplate(_messages.Message):
   r"""A tag template defines a tag, which can have one or more typed fields.
   The template is used to create and attach the tag to GCP resources. [Tag
-  template roles](/iam/docs/understanding-roles#data-catalog-roles) provide
-  permissions to create, edit, and use the template (see, for example, the
-  [TagTemplate User](/data-catalog/docs/how-to/template-user) role, which
-  includes permission to use the tag template to tag resources.
+  template roles](https://cloud.google.com/iam/docs/understanding-roles#data-
+  catalog-roles) provide permissions to create, edit, and use the template.
+  See, for example, the [TagTemplate User](https://cloud.google.com/data-
+  catalog/docs/how-to/template-user) role, which includes permission to use
+  the tag template to tag resources.
 
   Messages:
     FieldsValue: Required. Map of tag template field IDs to the settings for

@@ -31,6 +31,7 @@ NONCE_LABEL = 'client.knative.dev/nonce'
 # Annotation for the user-specified image.
 USER_IMAGE_ANNOTATION = k8s_object.CLIENT_GROUP + '/user-image'
 CLOUDSQL_ANNOTATION = k8s_object.RUN_GROUP + '/cloudsql-instances'
+VPC_ACCESS_ANNOTATION = 'run.googleapis.com/vpc-access-connector'
 
 
 class Revision(k8s_object.KubernetesObject):

@@ -717,33 +717,33 @@
       "type": "object",
       "properties": {
         "createTime": {
-          "description": "Time when the operation was created.",
+          "description": "Output only. Time when the operation was created.",
           "type": "string",
           "format": "google-datetime"
         },
         "endTime": {
-          "description": "Time when the operation finished running.",
+          "description": "Output only. Time when the operation finished running.",
           "type": "string",
           "format": "google-datetime"
         },
         "target": {
-          "description": "Server-defined resource path for the target of the operation.",
+          "description": "Output only. Server-defined resource path for the target of the operation.",
           "type": "string"
         },
         "verb": {
-          "description": "Name of the verb executed by the operation.",
+          "description": "Output only. Name of the verb executed by the operation.",
           "type": "string"
         },
         "statusDetail": {
-          "description": "Human-readable status of the operation, if any.",
+          "description": "Output only. Human-readable status of the operation, if any.",
           "type": "string"
         },
         "cancelRequested": {
-          "description": "Identifies whether the user has requested cancellation\nof the operation. Operations that have successfully been cancelled\nhave Operation.error value with a google.rpc.Status.code of 1,\ncorresponding to `Code.CANCELLED`.",
+          "description": "Output only. Identifies whether the user has requested cancellation\nof the operation. Operations that have successfully been cancelled\nhave Operation.error value with a google.rpc.Status.code of 1,\ncorresponding to `Code.CANCELLED`.",
           "type": "boolean"
         },
         "apiVersion": {
-          "description": "API version used to start the operation.",
+          "description": "Output only. API version used to start the operation.",
           "type": "string"
         }
       }
@@ -1352,7 +1352,7 @@
                   "httpMethod": "DELETE",
                   "parameters": {
                     "name": {
-                      "description": "Memcached instance resource name in the format:\n    `projects\/{project_id}\/locations\/{location_id}\/instances\/{instance_id}`\nwhere `location_id` refers to a GCP region",
+                      "description": "Required. Memcached instance resource name in the format:\n    `projects\/{project_id}\/locations\/{location_id}\/instances\/{instance_id}`\nwhere `location_id` refers to a GCP region",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/instances\/[^\/]+$",

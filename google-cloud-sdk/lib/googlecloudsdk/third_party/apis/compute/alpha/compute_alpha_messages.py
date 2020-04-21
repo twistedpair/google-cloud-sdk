@@ -21956,6 +21956,35 @@ class ComputeTargetHttpsProxiesListRequest(_messages.Message):
   returnPartialSuccess = _messages.BooleanField(6)
 
 
+class ComputeTargetHttpsProxiesSetCertificateMapRequest(_messages.Message):
+  r"""A ComputeTargetHttpsProxiesSetCertificateMapRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
+    targetHttpsProxiesSetCertificateMapRequest: A
+      TargetHttpsProxiesSetCertificateMapRequest resource to be passed as the
+      request body.
+    targetHttpsProxy: Name of the TargetHttpsProxy resource whose
+      CertificateMap is to be set. The name must be 1-63 characters long, and
+      comply with RFC1035.
+  """
+
+  project = _messages.StringField(1, required=True)
+  requestId = _messages.StringField(2)
+  targetHttpsProxiesSetCertificateMapRequest = _messages.MessageField('TargetHttpsProxiesSetCertificateMapRequest', 3)
+  targetHttpsProxy = _messages.StringField(4, required=True)
+
+
 class ComputeTargetHttpsProxiesSetQuicOverrideRequest(_messages.Message):
   r"""A ComputeTargetHttpsProxiesSetQuicOverrideRequest object.
 
@@ -22764,6 +22793,35 @@ class ComputeTargetSslProxiesSetBackendServiceRequest(_messages.Message):
   project = _messages.StringField(1, required=True)
   requestId = _messages.StringField(2)
   targetSslProxiesSetBackendServiceRequest = _messages.MessageField('TargetSslProxiesSetBackendServiceRequest', 3)
+  targetSslProxy = _messages.StringField(4, required=True)
+
+
+class ComputeTargetSslProxiesSetCertificateMapRequest(_messages.Message):
+  r"""A ComputeTargetSslProxiesSetCertificateMapRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
+    targetSslProxiesSetCertificateMapRequest: A
+      TargetSslProxiesSetCertificateMapRequest resource to be passed as the
+      request body.
+    targetSslProxy: Name of the TargetSslProxy resource whose CertificateMap
+      is to be set. The name must be 1-63 characters long, and comply with
+      RFC1035.
+  """
+
+  project = _messages.StringField(1, required=True)
+  requestId = _messages.StringField(2)
+  targetSslProxiesSetCertificateMapRequest = _messages.MessageField('TargetSslProxiesSetCertificateMapRequest', 3)
   targetSslProxy = _messages.StringField(4, required=True)
 
 
@@ -24512,10 +24570,10 @@ class CorsPolicy(_messages.Message):
     allowOriginRegexes: Specifies the regualar expression patterns that match
       allowed origins. For regular expression grammar please see
       en.cppreference.com/w/cpp/regex/ecmascript  An origin is allowed if it
-      matches either allow_origins or allow_origin_regex.
+      matches either an item in allowOrigins or an item in allowOriginRegexes.
     allowOrigins: Specifies the list of origins that will be allowed to do
-      CORS requests. An origin is allowed if it matches either allow_origins
-      or allow_origin_regex.
+      CORS requests. An origin is allowed if it matches either an item in
+      allowOrigins or an item in allowOriginRegexes.
     disabled: If true, specifies the CORS policy is disabled. The default
       value of false, which indicates that the CORS policy is in effect.
     exposeHeaders: Specifies the content for the Access-Control-Expose-Headers
@@ -26177,12 +26235,14 @@ class Expr(_messages.Message):
 
 
 class ExternalVpnGateway(_messages.Message):
-  r"""External VPN gateway is the on-premises VPN gateway(s) or another cloud
-  provider's VPN gateway that connects to your Google Cloud VPN gateway. To
-  create a highly available VPN from Google Cloud to your on-premises side or
-  another Cloud provider's VPN gateway, you must create a external VPN gateway
-  resource in GCP, which provides the information to GCP about your external
-  VPN gateway.
+  r"""Represents an external VPN gateway.  External VPN gateway is the on-
+  premises VPN gateway(s) or another cloud provider's VPN gateway that
+  connects to your Google Cloud VPN gateway.  To create a highly available VPN
+  from Google Cloud Platform to your VPN gateway or another cloud provider's
+  VPN gateway, you must create a external VPN gateway resource with
+  information about the other gateway.  For more information about using
+  external VPN gateways, see  Creating an HA VPN gateway and tunnel pair to a
+  peer VPN. (== resource_for {$api_version}.externalVpnGateways ==)
 
   Enums:
     RedundancyTypeValueValuesEnum: Indicates the user-supplied redundancy type
@@ -26429,15 +26489,15 @@ class FileContentBuffer(_messages.Message):
   r"""A FileContentBuffer object.
 
   Enums:
-    FileTypeValueValuesEnum:
+    FileTypeValueValuesEnum: The file type of source file.
 
   Fields:
     content: The raw content in the secure keys file.
-    fileType: A FileTypeValueValuesEnum attribute.
+    fileType: The file type of source file.
   """
 
   class FileTypeValueValuesEnum(_messages.Enum):
-    r"""FileTypeValueValuesEnum enum type.
+    r"""The file type of source file.
 
     Values:
       BIN: <no description>
@@ -28356,9 +28416,8 @@ class HealthCheckReference(_messages.Message):
 
 
 class HealthCheckService(_messages.Message):
-  r"""A HealthCheckService defines a set of backends on which to perform
-  periodic health checks and an endpoint to which to send notification of
-  changes in the health status of the backends.
+  r"""Represents a Health-Check as a Service resource.  (== resource_for
+  {$api_version}.regionHealthCheckServices ==)
 
   Enums:
     HealthStatusAggregationPolicyValueValuesEnum: Optional. Policy for how the
@@ -36351,26 +36410,14 @@ class LogConfigDataAccessOptions(_messages.Message):
   r"""Write a Data Access (Gin) log
 
   Enums:
-    LogModeValueValuesEnum: Whether Gin logging should happen in a fail-closed
-      manner at the caller. This is currently supported in the LocalIAM
-      implementation, Stubby C++, and Stubby Java. For Apps Framework, see go
-      /af-audit-logging#failclosed. TODO(b/77591626): Add support for Stubby
-      Go. TODO(b/129671387): Add support for Scaffolding.
+    LogModeValueValuesEnum:
 
   Fields:
-    logMode: Whether Gin logging should happen in a fail-closed manner at the
-      caller. This is currently supported in the LocalIAM implementation,
-      Stubby C++, and Stubby Java. For Apps Framework, see go/af-audit-
-      logging#failclosed. TODO(b/77591626): Add support for Stubby Go.
-      TODO(b/129671387): Add support for Scaffolding.
+    logMode:
   """
 
   class LogModeValueValuesEnum(_messages.Enum):
-    r"""Whether Gin logging should happen in a fail-closed manner at the
-    caller. This is currently supported in the LocalIAM implementation, Stubby
-    C++, and Stubby Java. For Apps Framework, see go/af-audit-
-    logging#failclosed. TODO(b/77591626): Add support for Stubby Go.
-    TODO(b/129671387): Add support for Scaffolding.
+    r"""LogModeValueValuesEnum enum type.
 
     Values:
       LOG_FAIL_CLOSED: <no description>
@@ -37634,9 +37681,12 @@ class NetworkEndpoint(_messages.Message):
 
 
 class NetworkEndpointGroup(_messages.Message):
-  r"""Represents a collection of network endpoints.  For more information read
-  Network endpoint groups overview. (== resource_for
-  {$api_version}.networkEndpointGroups ==) Next ID: 21
+  r"""Represents a collection of network endpoints.  A network endpoint group
+  (NEG) defines how a set of endpoints should be reached, whether they are
+  reachable, and where they are located. For more information about using
+  NEGs, see  Setting up internet NEGs or  Setting up zonal NEGs. (==
+  resource_for {$api_version}.networkEndpointGroups ==) (== resource_for
+  {$api_version}.globalNetworkEndpointGroups ==)
 
   Enums:
     NetworkEndpointTypeValueValuesEnum: Type of network endpoints in this
@@ -38179,7 +38229,7 @@ class NetworkEndpointGroupsListEndpointsRequest(_messages.Message):
   Enums:
     HealthStatusValueValuesEnum: Optional query parameter for showing the
       health status of each network endpoint. Valid options are SKIP or SHOW.
-      If you don't specifiy this parameter, the health status of network
+      If you don't specify this parameter, the health status of network
       endpoints will not be provided.
 
   Fields:
@@ -38189,13 +38239,13 @@ class NetworkEndpointGroupsListEndpointsRequest(_messages.Message):
       not supported.
     healthStatus: Optional query parameter for showing the health status of
       each network endpoint. Valid options are SKIP or SHOW. If you don't
-      specifiy this parameter, the health status of network endpoints will not
+      specify this parameter, the health status of network endpoints will not
       be provided.
   """
 
   class HealthStatusValueValuesEnum(_messages.Enum):
     r"""Optional query parameter for showing the health status of each network
-    endpoint. Valid options are SKIP or SHOW. If you don't specifiy this
+    endpoint. Valid options are SKIP or SHOW. If you don't specify this
     parameter, the health status of network endpoints will not be provided.
 
     Values:
@@ -40603,9 +40653,11 @@ class NodeTypesScopedList(_messages.Message):
 
 
 class NotificationEndpoint(_messages.Message):
-  r"""A notification endpoint resource defines an endpoint to receive
-  notifications when there are status changes detected by the associated
-  health check service.
+  r"""Represents a notification endpoint.  A notification endpoint resource
+  defines an endpoint to receive notifications when there are status changes
+  detected by the associated health check service.  For more information, see
+  Health checks overview. (== resource_for {$api_version}.notificationEndpoint
+  ==) (== resource_for {$api_version}.regionNotificationEndpoints ==)
 
   Fields:
     creationTimestamp: [Output Only] Creation timestamp in RFC3339 text
@@ -41582,7 +41634,12 @@ class PacketIntervals(_messages.Message):
 
 
 class PacketMirroring(_messages.Message):
-  r"""Represents a PacketMirroring resource.
+  r"""Represents a Packet Mirroring resource.  Packet Mirroring clones the
+  traffic of specified instances in your Virtual Private Cloud (VPC) network
+  and forwards it to a collector destination, such as an instance group of an
+  internal TCP/UDP load balancer, for analysis or examination. For more
+  information about setting up Packet Mirroring, see Using Packet Mirroring.
+  (== resource_for {$api_version}.packetMirrorings ==)
 
   Enums:
     EnableValueValuesEnum: Indicates whether or not this packet mirroring
@@ -43609,6 +43666,7 @@ class Quota(_messages.Message):
       PREEMPTIBLE_NVIDIA_T4_VWS_GPUS: <no description>
       PREEMPTIBLE_NVIDIA_V100_GPUS: <no description>
       PRIVATE_V6_ACCESS_SUBNETWORKS: <no description>
+      PSC_GOOGLE_APIS_FORWARDING_RULES_PER_NETWORK: <no description>
       PUBLIC_ADVERTISED_PREFIXES: <no description>
       PUBLIC_DELEGATED_PREFIXES: <no description>
       REGIONAL_AUTOSCALERS: <no description>
@@ -43715,35 +43773,36 @@ class Quota(_messages.Message):
     PREEMPTIBLE_NVIDIA_T4_VWS_GPUS = 73
     PREEMPTIBLE_NVIDIA_V100_GPUS = 74
     PRIVATE_V6_ACCESS_SUBNETWORKS = 75
-    PUBLIC_ADVERTISED_PREFIXES = 76
-    PUBLIC_DELEGATED_PREFIXES = 77
-    REGIONAL_AUTOSCALERS = 78
-    REGIONAL_INSTANCE_GROUP_MANAGERS = 79
-    RESERVATIONS = 80
-    RESOURCE_POLICIES = 81
-    ROUTERS = 82
-    ROUTES = 83
-    SECURITY_POLICIES = 84
-    SECURITY_POLICY_CEVAL_RULES = 85
-    SECURITY_POLICY_RULES = 86
-    SNAPSHOTS = 87
-    SSD_TOTAL_GB = 88
-    SSL_CERTIFICATES = 89
-    STATIC_ADDRESSES = 90
-    STATIC_BYOIP_ADDRESSES = 91
-    SUBNETWORKS = 92
-    SUBNET_RANGES_PER_NETWORK = 93
-    TARGET_HTTPS_PROXIES = 94
-    TARGET_HTTP_PROXIES = 95
-    TARGET_INSTANCES = 96
-    TARGET_POOLS = 97
-    TARGET_SSL_PROXIES = 98
-    TARGET_TCP_PROXIES = 99
-    TARGET_VPN_GATEWAYS = 100
-    URL_MAPS = 101
-    VPN_GATEWAYS = 102
-    VPN_TUNNELS = 103
-    XPN_SERVICE_PROJECTS = 104
+    PSC_GOOGLE_APIS_FORWARDING_RULES_PER_NETWORK = 76
+    PUBLIC_ADVERTISED_PREFIXES = 77
+    PUBLIC_DELEGATED_PREFIXES = 78
+    REGIONAL_AUTOSCALERS = 79
+    REGIONAL_INSTANCE_GROUP_MANAGERS = 80
+    RESERVATIONS = 81
+    RESOURCE_POLICIES = 82
+    ROUTERS = 83
+    ROUTES = 84
+    SECURITY_POLICIES = 85
+    SECURITY_POLICY_CEVAL_RULES = 86
+    SECURITY_POLICY_RULES = 87
+    SNAPSHOTS = 88
+    SSD_TOTAL_GB = 89
+    SSL_CERTIFICATES = 90
+    STATIC_ADDRESSES = 91
+    STATIC_BYOIP_ADDRESSES = 92
+    SUBNETWORKS = 93
+    SUBNET_RANGES_PER_NETWORK = 94
+    TARGET_HTTPS_PROXIES = 95
+    TARGET_HTTP_PROXIES = 96
+    TARGET_INSTANCES = 97
+    TARGET_POOLS = 98
+    TARGET_SSL_PROXIES = 99
+    TARGET_TCP_PROXIES = 100
+    TARGET_VPN_GATEWAYS = 101
+    URL_MAPS = 102
+    VPN_GATEWAYS = 103
+    VPN_TUNNELS = 104
+    XPN_SERVICE_PROJECTS = 105
 
   limit = _messages.FloatField(1)
   metric = _messages.EnumField('MetricValueValuesEnum', 2)
@@ -49310,9 +49369,11 @@ class ShieldedInstanceConfig(_messages.Message):
 
   Fields:
     enableIntegrityMonitoring: Defines whether the instance has integrity
-      monitoring enabled.
+      monitoring enabled. Enabled by default.
     enableSecureBoot: Defines whether the instance has Secure Boot enabled.
-    enableVtpm: Defines whether the instance has the vTPM enabled.
+      Disabled by default.
+    enableVtpm: Defines whether the instance has the vTPM enabled. Enabled by
+      default.
   """
 
   enableIntegrityMonitoring = _messages.BooleanField(1)
@@ -52586,6 +52647,17 @@ class TargetHttpsProxiesScopedList(_messages.Message):
   warning = _messages.MessageField('WarningValue', 2)
 
 
+class TargetHttpsProxiesSetCertificateMapRequest(_messages.Message):
+  r"""A TargetHttpsProxiesSetCertificateMapRequest object.
+
+  Fields:
+    certificateMap: URL of the Certificate Map to associate with this
+      TargetHttpsProxy.
+  """
+
+  certificateMap = _messages.StringField(1)
+
+
 class TargetHttpsProxiesSetQuicOverrideRequest(_messages.Message):
   r"""A TargetHttpsProxiesSetQuicOverrideRequest object.
 
@@ -54094,6 +54166,17 @@ class TargetSslProxiesSetBackendServiceRequest(_messages.Message):
   """
 
   service = _messages.StringField(1)
+
+
+class TargetSslProxiesSetCertificateMapRequest(_messages.Message):
+  r"""A TargetSslProxiesSetCertificateMapRequest object.
+
+  Fields:
+    certificateMap: URL of the Certificate Map to associate with this
+      TargetSslProxy.
+  """
+
+  certificateMap = _messages.StringField(1)
 
 
 class TargetSslProxiesSetProxyHeaderRequest(_messages.Message):
@@ -56178,7 +56261,11 @@ class VmEndpointNatMappingsList(_messages.Message):
 
 
 class VpnGateway(_messages.Message):
-  r"""Represents a VPN gateway resource. Next ID: 13
+  r"""Represents a HA VPN gateway.  HA VPN is a high-availability (HA) Cloud
+  VPN solution that lets you securely connect your on-premises network to your
+  Google Cloud Virtual Private Cloud network through an IPsec VPN connection
+  in a single region. For more information about Cloud HA VPN solutions, see
+  Cloud VPN topologies . (== resource_for {$api_version}.vpnGateways ==)
 
   Messages:
     LabelsValue: Labels for this resource. These can only be added or modified

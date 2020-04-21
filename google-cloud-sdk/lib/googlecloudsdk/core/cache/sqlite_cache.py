@@ -23,6 +23,7 @@ from __future__ import division
 from __future__ import unicode_literals
 
 import errno
+import gc
 import os
 
 from googlecloudsdk.core.cache import exceptions
@@ -261,6 +262,8 @@ class Cache(metadata_table.CacheUsingMetadataTable):
       del self.cursor
       self._db.close()
       self._db = None
+      gc.collect(2)  # On Windows, connection refs sometimes remain in memory
+      # and prevent the db file from being deleted. This gets rid of them.
       self._tables = None
       if not commit and not self._persistent:
         # Need this because sqlite3 creates a filesystem artifact even if there

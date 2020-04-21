@@ -1003,11 +1003,13 @@ internet (0.0.0.0/0) is allowed to connect to Kubernetes master through HTTPS.
       '--master-authorized-networks',
       type=arg_parsers.ArgList(min_length=1),
       metavar='NETWORK',
-      help='The list of CIDR blocks (up to {max}) that are allowed to connect '
+      help='The list of CIDR blocks (up to {max_private} for private cluster, '
+      '{max_public} for public cluster) that are allowed to connect '
       'to Kubernetes master through HTTPS. Specified in CIDR notation (e.g. '
-      '1.2.3.4/30). Can not be specified unless '
+      '1.2.3.4/30). Cannot be specified unless '
       '`--enable-master-authorized-networks` is also specified.'.format(
-          max=api_adapter.MAX_AUTHORIZED_NETWORKS_CIDRS))
+          max_private=api_adapter.MAX_AUTHORIZED_NETWORKS_CIDRS_PRIVATE,
+          max_public=api_adapter.MAX_AUTHORIZED_NETWORKS_CIDRS_PUBLIC))
 
 
 def AddNetworkPolicyFlags(parser, hidden=False):
@@ -2945,7 +2947,6 @@ private cluster's region.
       '--enable-master-global-access',
       help=help_text,
       default=None,
-      hidden=True,
       action='store_true')
 
 

@@ -2044,6 +2044,16 @@ class SqlExternalSyncSettingError(_messages.Message):
         applicable for postgres.
       PGLOGICAL_NODE_ALREADY_EXISTS: pglogical node already exists on
         databases, applicable for postgres.
+      INVALID_WAL_LEVEL: The value of parameter wal_level is not set to
+        logical.
+      INVALID_SHARED_PRELOAD_LIBRARY: The value of parameter
+        shared_preload_libraries does not include pglogical.
+      INSUFFICIENT_MAX_REPLICATION_SLOTS: The value of parameter
+        max_replication_slots is not sufficient.
+      INSUFFICIENT_MAX_WAL_SENDERS: The value of parameter max_wal_senders is
+        not sufficient.
+      INSUFFICIENT_MAX_WORKER_PROCESSES: The value of parameter
+        max_worker_processes is not sufficient.
     """
     SQL_EXTERNAL_SYNC_SETTING_ERROR_TYPE_UNSPECIFIED = 0
     CONNECTION_FAILURE = 1
@@ -2054,6 +2064,11 @@ class SqlExternalSyncSettingError(_messages.Message):
     UNSUPPORTED_MIGRATION_TYPE = 6
     NO_PGLOGICAL_INSTALLED = 7
     PGLOGICAL_NODE_ALREADY_EXISTS = 8
+    INVALID_WAL_LEVEL = 9
+    INVALID_SHARED_PRELOAD_LIBRARY = 10
+    INSUFFICIENT_MAX_REPLICATION_SLOTS = 11
+    INSUFFICIENT_MAX_WAL_SENDERS = 12
+    INSUFFICIENT_MAX_WORKER_PROCESSES = 13
 
   detail = _messages.StringField(1)
   kind = _messages.StringField(2)

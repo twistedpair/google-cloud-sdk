@@ -135,8 +135,9 @@ def ArgsForClusterRef(parser,
   image_parser.add_argument(
       '--image',
       metavar='IMAGE',
-      help='The full custom image URI or the custom image name that '
-      'will be used to create a cluster.')
+      help='The custom image used to create the cluster. It can '
+           'be the image name, the image URI, or the image family URI, which '
+           'selects the latest image from the family.')
   image_parser.add_argument(
       '--image-version',
       metavar='VERSION',
@@ -816,10 +817,12 @@ def GetClusterConfig(args,
             minCpuPlatform=args.worker_min_cpu_platform,
             preemptibility=_GetType(dataproc, args.secondary_worker_type)))
 
-  if include_gke_platform_args:
+  if beta:
     if args.enable_component_gateway:
       cluster_config.endpointConfig = dataproc.messages.EndpointConfig(
           enableHttpPortAccess=args.enable_component_gateway)
+
+  if include_gke_platform_args:
     if args.gke_cluster is not None:
       location = args.zone or args.region
       target_gke_cluster = 'projects/{0}/locations/{1}/clusters/{2}'.format(

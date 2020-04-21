@@ -315,6 +315,36 @@ class SearchMachineImagesCompleter(completers.ResourceSearchCompleter):
         **kwargs)
 
 
+class InPlaceSnapshotsCompleter(completers.MultiResourceCompleter):
+
+  def __init__(self, **kwargs):
+    super(InPlaceSnapshotsCompleter, self).__init__(
+        completers=[
+            RegionInPlaceSnapshotsCompleter, ZoneInPlaceSnapshotsCompleter
+        ],
+        **kwargs)
+
+
+class ZoneInPlaceSnapshotsCompleter(ListCommandCompleter):
+
+  def __init__(self, **kwargs):
+    super(ZoneInPlaceSnapshotsCompleter, self).__init__(
+        collection='compute.zoneInPlaceSnapshots',
+        list_command='alpha compute in-place-snapshots list --uri',
+        api_version='alpha',
+        **kwargs)
+
+
+class RegionInPlaceSnapshotsCompleter(ListCommandCompleter):
+
+  def __init__(self, **kwargs):
+    super(RegionInPlaceSnapshotsCompleter, self).__init__(
+        collection='compute.regionInPlaceSnapshots',
+        list_command='alpha compute in-place-snapshots list --uri',
+        api_version='alpha',
+        **kwargs)
+
+
 class MachineTypesCompleter(ListCommandCompleter):
 
   def __init__(self, **kwargs):

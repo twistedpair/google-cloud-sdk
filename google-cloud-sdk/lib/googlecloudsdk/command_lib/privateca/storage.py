@@ -38,6 +38,8 @@ def CreateBucketForCertificateAuthority(ca_ref):
   client.buckets.Insert(
       messages.StorageBucketsInsertRequest(
           project=project,
+          predefinedDefaultObjectAcl=messages.StorageBucketsInsertRequest
+          .PredefinedDefaultObjectAclValueValuesEnum.publicRead,
           bucket=messages.Bucket(
               name=bucket_name,
               location=location,

@@ -870,6 +870,7 @@ class CommandBuilder(object):
       parser: The argparse parser.
     """
     args = self.arg_generator.GenerateArgs()
+    parser = self._Exclude(parser)
     for arg in args:
       arg.AddToParser(parser)
     if self.spec.arguments.additional_arguments_hook:
@@ -879,6 +880,19 @@ class CommandBuilder(object):
       parser.display_info.AddFormat(self.spec.output.format)
     if self.spec.output.flatten:
       parser.display_info.AddFlatten(self.spec.output.flatten)
+
+  def _Exclude(self, parser):
+    """Excludes specified arguments from the parser.
+
+    Args:
+      parser: The argparse parser.
+
+    Returns:
+      The argparse parser.
+    """
+    for arg in self.spec.arguments.exclude:
+      base.Argument('--{}'.format(arg), help='').RemoveFromParser(parser)
+    return parser
 
   def _CommonRun(self, args, existing_message=None):
     """Performs run actions common to all commands.

@@ -362,6 +362,95 @@ class CloudassetOperationsGetRequest(_messages.Message):
   name = _messages.StringField(1, required=True)
 
 
+class CloudassetSearchAllIamPoliciesRequest(_messages.Message):
+  r"""A CloudassetSearchAllIamPoliciesRequest object.
+
+  Fields:
+    pageSize: Optional. The page size for search result pagination. Page size
+      is capped at 500 even if a larger value is given. If set to zero, server
+      will pick an appropriate default. Returned results may be fewer than
+      requested. When this happens, there could be more results as long as
+      `next_page_token` is returned.
+    pageToken: Optional. If present, retrieve the next batch of results from
+      the preceding call to this method. `page_token` must be the value of
+      `next_page_token` from the previous response. The values of all other
+      method parameters must be identical to those in the previous call.
+    query: Optional. The query statement. Examples: * "policy :
+      amy@gmail.com": to find Cloud IAM policy bindings that specify   user
+      "amy@gmail.com". * "policy : roles/compute.admin": to find Cloud IAM
+      policy bindings that   specify the Compute Admin role. *
+      "policy.role.permissions : storage.buckets.update" : to find Cloud IAM
+      policy bindings that cover "storage.buckets.update" permission. *
+      "resource : organizations/123": to find Cloud IAM policy bindings that
+      are set on "organizations/123". An empty query can be specified to
+      search all the IAM policies within the given `scope`. See [how to
+      construct a query](https://cloud.google.com/asset-inventory/docs
+      /searching-iam-policies#how_to_construct_a_query) for more details.
+    scope: Required. A scope can be a project, a folder or an organization.
+      The search is limited to the IAM policies within the `scope`. The
+      allowed values are: * projects/<project_id> (e.g., projects/foo) *
+      projects/<project_number> (e.g., projects/12345) *
+      folders/<folder_number> (e.g., folders/1234) *
+      organizations/<organization_number> (e.g., organizations/123)
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  query = _messages.StringField(3)
+  scope = _messages.StringField(4, required=True)
+
+
+class CloudassetSearchAllResourcesRequest(_messages.Message):
+  r"""A CloudassetSearchAllResourcesRequest object.
+
+  Fields:
+    assetTypes: Optional. A list of asset types that this request searches
+      for. If empty, it will search all the [supported asset
+      types](https://cloud.google.com/asset-inventory/docs/supported-asset-
+      types).
+    orderBy: Optional. A comma separated list of fields specifying the sorting
+      order of the results. The default order is ascending. Add " desc" after
+      the field name to indicate descending order. Redundant space characters
+      are ignored. For example, "location, name desc". See [supported resource
+      metadata fields](https://cloud.google.com/asset-inventory/docs
+      /searching-resources#query_on_resource_metadata_fields) for more
+      details.
+    pageSize: Optional. The page size for search result pagination. Page size
+      is capped at 500 even if a larger value is given. If set to zero, server
+      will pick an appropriate default. Returned results may be fewer than
+      requested. When this happens, there could be more results as long as
+      `next_page_token` is returned.
+    pageToken: Optional. If present, then retrieve the next batch of results
+      from the preceding call to this method. `page_token` must be the value
+      of `next_page_token` from the previous response. The values of all other
+      method parameters, must be identical to those in the previous call.
+    query: Optional. The query statement. Examples: * "name : Important": to
+      find Cloud resources whose name contains   "Important" as a word. *
+      "displayName : Impor*": to find Cloud resources whose display name
+      contains "Impor" as a word prefix. * "description : *por*": to find
+      Cloud resources whose description contains   "por" as a sub string of a
+      word. * "Important": to find Cloud resources which contain "Important"
+      as a word   in any of the searchable fields. An empty query can be
+      specified to search all the resources of certain `asset_types` within
+      the given `scope`. See [how to construct a
+      query](https://cloud.google.com/asset-inventory/docs/searching-
+      resources#how_to_construct_a_query) for more details.
+    scope: Required. A scope can be a project, a folder or an organization.
+      The search is limited to the resources within the `scope`. The allowed
+      values are: * projects/<project_id> (e.g., projects/foo) *
+      projects/<project_number> (e.g., projects/12345) *
+      folders/<folder_number> (e.g., folders/1234) *
+      organizations/<organization_number> (e.g., organizations/123)
+  """
+
+  assetTypes = _messages.StringField(1, repeated=True)
+  orderBy = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  query = _messages.StringField(5)
+  scope = _messages.StringField(6, required=True)
+
+
 class CreateFeedRequest(_messages.Message):
   r"""Create asset feed request.
 
@@ -387,6 +476,65 @@ class Empty(_messages.Message):
   JSON representation for `Empty` is empty JSON object `{}`.
   """
 
+
+
+class Explanation(_messages.Message):
+  r"""Explanation about the IAM policy search result.
+
+  Messages:
+    MatchedPermissionsValue: The map from roles to their included permissions
+      that match the permission query (i.e., a query containing
+      `policy.role.permissions:`). For example, if query
+      `policy.role.permissions : "compute.disk.get"` matches a policy binding
+      that contains owner role, the matched_permissions will be
+      {"roles/owner": ["compute.disk.get"]}. The roles can also be found in
+      the returned `policy` bindings. Note that the map is populated only for
+      requests with permission queries.
+
+  Fields:
+    matchedPermissions: The map from roles to their included permissions that
+      match the permission query (i.e., a query containing
+      `policy.role.permissions:`). For example, if query
+      `policy.role.permissions : "compute.disk.get"` matches a policy binding
+      that contains owner role, the matched_permissions will be
+      {"roles/owner": ["compute.disk.get"]}. The roles can also be found in
+      the returned `policy` bindings. Note that the map is populated only for
+      requests with permission queries.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class MatchedPermissionsValue(_messages.Message):
+    r"""The map from roles to their included permissions that match the
+    permission query (i.e., a query containing `policy.role.permissions:`).
+    For example, if query `policy.role.permissions : "compute.disk.get"`
+    matches a policy binding that contains owner role, the matched_permissions
+    will be {"roles/owner": ["compute.disk.get"]}. The roles can also be found
+    in the returned `policy` bindings. Note that the map is populated only for
+    requests with permission queries.
+
+    Messages:
+      AdditionalProperty: An additional property for a MatchedPermissionsValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type
+        MatchedPermissionsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a MatchedPermissionsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A Permissions attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('Permissions', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  matchedPermissions = _messages.MessageField('MatchedPermissionsValue', 1)
 
 
 class ExportAssetsRequest(_messages.Message):
@@ -1146,6 +1294,34 @@ class GoogleIdentityAccesscontextmanagerV1VpcAccessibleServices(_messages.Messag
   enableRestriction = _messages.BooleanField(2)
 
 
+class IamPolicySearchResult(_messages.Message):
+  r"""A result of IAM Policy search, containing information of an IAM policy.
+
+  Fields:
+    explanation: Explanation about the IAM policy search result. It contains
+      additional information to explain why the search result matches the
+      query.
+    policy: The IAM policy directly set on the given resource. Note that the
+      original IAM policy can contain multiple bindings. This only contains
+      the bindings that match the given query. For queries that don't contain
+      a constrain on policies (e.g., an empty query), this contains all the
+      bindings.
+    project: The project that the associated GCP resource belongs to, in the
+      form of `projects/{project_number}`. If an IAM policy is set on a
+      resource (like VM instance, Cloud Storage bucket), the project field
+      will indicate the project that contains the resource. If an IAM policy
+      is set on a folder or orgnization, the project field will be empty.
+    resource: The [full resource name](https://cloud.google.com/apis/design/re
+      source_names#full_resource_name) of the resource associated with this
+      IAM policy.
+  """
+
+  explanation = _messages.MessageField('Explanation', 1)
+  policy = _messages.MessageField('Policy', 2)
+  project = _messages.StringField(3)
+  resource = _messages.StringField(4)
+
+
 class ListFeedsResponse(_messages.Message):
   r"""A ListFeedsResponse object.
 
@@ -1277,6 +1453,17 @@ class OutputConfig(_messages.Message):
 
   bigqueryDestination = _messages.MessageField('BigQueryDestination', 1)
   gcsDestination = _messages.MessageField('GcsDestination', 2)
+
+
+class Permissions(_messages.Message):
+  r"""IAM permissions
+
+  Fields:
+    permissions: A list of permissions. A sample permission string:
+      "compute.disk.get".
+  """
+
+  permissions = _messages.StringField(1, repeated=True)
 
 
 class Policy(_messages.Message):
@@ -1424,6 +1611,94 @@ class Resource(_messages.Message):
   parent = _messages.StringField(4)
   resourceUrl = _messages.StringField(5)
   version = _messages.StringField(6)
+
+
+class ResourceSearchResult(_messages.Message):
+  r"""A result of Resource Search, containing information of a cloud resoure.
+
+  Messages:
+    LabelsValue: Labels associated with this resource.
+
+  Fields:
+    assetType: The type of this resource. For example:
+      "compute.googleapis.com/Disk".
+    description: One or more paragraphs of text description of this resource.
+      Maximum length could be up to 1M bytes.
+    displayName: The display name of this resource.
+    labels: Labels associated with this resource.
+    location: Location can be "global", regional like "us-east1", or zonal
+      like "us-west1-b".
+    name: The full resource name. For example: `//compute.googleapis.com/proje
+      cts/my_project_123/zones/zone1/instances/instance1`. See [Resource Names
+      ](https://cloud.google.com/apis/design/resource_names#full_resource_name
+      ) for more information.
+    project: The project that this resource belongs to, in the form of
+      `projects/{project_number}`.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Labels associated with this resource.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  assetType = _messages.StringField(1)
+  description = _messages.StringField(2)
+  displayName = _messages.StringField(3)
+  labels = _messages.MessageField('LabelsValue', 4)
+  location = _messages.StringField(5)
+  name = _messages.StringField(6)
+  project = _messages.StringField(7)
+
+
+class SearchAllIamPoliciesResponse(_messages.Message):
+  r"""Search all IAM policies response.
+
+  Fields:
+    nextPageToken: Set if there are more results than those appearing in this
+      response; to get the next set of results, call this method again, using
+      this value as the `page_token`.
+    results: A list of IamPolicy that match the search query. Related
+      information such as the associated resource is returned along with the
+      policy.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  results = _messages.MessageField('IamPolicySearchResult', 2, repeated=True)
+
+
+class SearchAllResourcesResponse(_messages.Message):
+  r"""Search all resources response.
+
+  Fields:
+    nextPageToken: If there are more results than those appearing in this
+      response, then `next_page_token` is included. To get the next set of
+      results, call this method again using the value of `next_page_token` as
+      `page_token`.
+    results: A list of Resources that match the search query. It contains the
+      resource standard metadata information.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  results = _messages.MessageField('ResourceSearchResult', 2, repeated=True)
 
 
 class StandardQueryParameters(_messages.Message):

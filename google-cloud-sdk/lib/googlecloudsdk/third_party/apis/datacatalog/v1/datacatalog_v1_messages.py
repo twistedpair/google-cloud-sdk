@@ -70,7 +70,7 @@ class DatacatalogEntriesLookupRequest(_messages.Message):
       projects/projectId/datasets/datasetId/tables/tableId  *
       //pubsub.googleapis.com/projects/projectId/topics/topicId
     sqlResource: The SQL name of the entry. SQL names are case-sensitive.
-      Examples:    * `cloud_pubsub.project_id.topic_id`   *
+      Examples:    * `pubsub.project_id.topic_id`   *
       ``pubsub.project_id.`topic.id.with.dots` ``   *
       `bigquery.table.project_id.dataset_id.table_id`   *
       `bigquery.dataset.project_id.dataset_id`   *
@@ -486,9 +486,8 @@ class DatacatalogProjectsLocationsTagTemplatesCreateRequest(_messages.Message):
     googleCloudDatacatalogV1TagTemplate: A GoogleCloudDatacatalogV1TagTemplate
       resource to be passed as the request body.
     parent: Required. The name of the project and the template location
-      [region](/compute/docs/regions-zones/#available). NOTE: Currently, only
-      the `us-central1 region` is supported.  Example:  *
-      projects/{project_id}/locations/us-central1
+      [region](https://cloud.google.com/data-catalog/docs/concepts/regions).
+      Example:  * projects/{project_id}/locations/us-central1
     tagTemplateId: Required. The id of the tag template to create.
   """
 
@@ -521,9 +520,8 @@ class DatacatalogProjectsLocationsTagTemplatesFieldsCreateRequest(_messages.Mess
       GoogleCloudDatacatalogV1TagTemplateField resource to be passed as the
       request body.
     parent: Required. The name of the project and the template location
-      [region](/compute/docs/regions-zones/#available). NOTE: Currently, only
-      the `us-central1 region` is supported.  Example:  *
-      projects/{project_id}/locations/us-
+      [region](https://cloud.google.com/data-catalog/docs/concepts/regions).
+      Example:  * projects/{project_id}/locations/us-
       central1/tagTemplates/{tag_template_id}
     tagTemplateFieldId: Required. The ID of the tag template field to create.
       Field ids can contain letters (both uppercase and lowercase), numbers
@@ -1148,8 +1146,8 @@ class GoogleCloudDatacatalogV1SearchCatalogRequest(_messages.Message):
       be non-empty.  Query strings can be simple as "x" or more qualified as:
       * name:x * column:x * description:y  Note: Query tokens need to have a
       minimum of 3 characters for substring matching to work correctly. See
-      [Data Catalog Search Syntax](/data-catalog/docs/how-to/search-reference)
-      for more information.
+      [Data Catalog Search Syntax](https://cloud.google.com/data-catalog/docs
+      /how-to/search-reference) for more information.
     scope: Required. The scope of this search request. A `scope` that has
       empty `include_org_ids`, `include_project_ids` AND false
       `include_gcp_public_datasets` is considered invalid. Data Catalog will
@@ -1177,11 +1175,25 @@ class GoogleCloudDatacatalogV1SearchCatalogRequestScope(_messages.Message):
     includeProjectIds: The list of project IDs to search within. To learn more
       about the distinction between project names/IDs/numbers, go to
       https://cloud.google.com/docs/overview/#projects.
+    restrictedLocations: Optional. The list of locations to search within. 1.
+      If empty, search will be performed in all locations; 2. If any of the
+      locations are NOT in the valid locations list, error will be returned;
+      3. Otherwise, search only the given locations for matching results.
+      Typical usage is to leave this field empty. When a location is
+      unreachable as returned in the `SearchCatalogResponse.unreachable`
+      field, users can repeat the search request with this parameter set to
+      get additional information on the error.  Valid locations:  * asia-east1
+      * asia-east2  * asia-northeast1  * asia-northeast2  * asia-south1  *
+      asia-southeast1  * australia-southeast1  * eu  * europe-north1  *
+      europe-west1  * europe-west2  * europe-west3  * europe-west4  * europe-
+      west6  * global  * northamerica-northeast1  * southamerica-east1  * us
+      * us-central1  * us-east1  * us-east4  * us-west1  * us-west2
   """
 
   includeGcpPublicDatasets = _messages.BooleanField(1)
   includeOrgIds = _messages.StringField(2, repeated=True)
   includeProjectIds = _messages.StringField(3, repeated=True)
+  restrictedLocations = _messages.StringField(4, repeated=True)
 
 
 class GoogleCloudDatacatalogV1SearchCatalogResponse(_messages.Message):
@@ -1191,10 +1203,16 @@ class GoogleCloudDatacatalogV1SearchCatalogResponse(_messages.Message):
     nextPageToken: The token that can be used to retrieve the next page of
       results.
     results: Search results.
+    unreachable: Unreachable locations. Search result does not include data
+      from those locations. Users can get additional information on the error
+      by repeating the search request with a more restrictive parameter --
+      setting the value for
+      `SearchDataCatalogRequest.scope.include_locations`.
   """
 
   nextPageToken = _messages.StringField(1)
   results = _messages.MessageField('GoogleCloudDatacatalogV1SearchCatalogResult', 2, repeated=True)
+  unreachable = _messages.StringField(3, repeated=True)
 
 
 class GoogleCloudDatacatalogV1SearchCatalogResult(_messages.Message):
@@ -1301,8 +1319,8 @@ class GoogleCloudDatacatalogV1TableSpec(_messages.Message):
 class GoogleCloudDatacatalogV1Tag(_messages.Message):
   r"""Tags are used to attach custom metadata to Data Catalog resources. Tags
   conform to the specifications within their tag template.  See [Data Catalog
-  IAM](/data-catalog/docs/concepts/iam) for information on the permissions
-  needed to create or view tags.
+  IAM](https://cloud.google.com/data-catalog/docs/concepts/iam) for
+  information on the permissions needed to create or view tags.
 
   Messages:
     FieldsValue: Required. This maps the ID of a tag field to the value of and
@@ -1404,10 +1422,11 @@ class GoogleCloudDatacatalogV1TagFieldEnumValue(_messages.Message):
 class GoogleCloudDatacatalogV1TagTemplate(_messages.Message):
   r"""A tag template defines a tag, which can have one or more typed fields.
   The template is used to create and attach the tag to GCP resources. [Tag
-  template roles](/iam/docs/understanding-roles#data-catalog-roles) provide
-  permissions to create, edit, and use the template. See, for example, the
-  [TagTemplate User](/data-catalog/docs/how-to/template-user) role, which
-  includes permission to use the tag template to tag resources.
+  template roles](https://cloud.google.com/iam/docs/understanding-roles#data-
+  catalog-roles) provide permissions to create, edit, and use the template.
+  See, for example, the [TagTemplate User](https://cloud.google.com/data-
+  catalog/docs/how-to/template-user) role, which includes permission to use
+  the tag template to tag resources.
 
   Messages:
     FieldsValue: Required. Map of tag template field IDs to the settings for

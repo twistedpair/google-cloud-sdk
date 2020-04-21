@@ -308,6 +308,10 @@
           "description": "By default, the raw time series data is returned. Use this field to combine multiple time series for different views of the data.",
           "$ref": "Aggregation"
         },
+        "secondaryAggregation": {
+          "description": "Apply a second aggregation after aggregation is applied.",
+          "$ref": "Aggregation"
+        },
         "pickTimeSeriesFilter": {
           "description": "Ranking based time series filter.",
           "$ref": "PickTimeSeriesFilter"

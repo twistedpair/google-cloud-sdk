@@ -4,7 +4,7 @@
  "id": "bigquery:v2",
  "name": "bigquery",
  "version": "v2",
- "revision": "20200403",
+ "revision": "20200410",
  "title": "BigQuery API",
  "description": "A data platform for customers to create, manage, share and query data.",
  "ownerDomain": "google.com",
@@ -769,10 +769,6 @@
      "$ref": "GoogleSheetsOptions",
      "description": "[Optional] Additional options if sourceFormat is set to GOOGLE_SHEETS."
     },
-    "hivePartitioningMode": {
-     "type": "string",
-     "description": "[Optional, Trusted Tester] Deprecated, do not use. Please set hivePartitioningOptions instead."
-    },
     "hivePartitioningOptions": {
      "$ref": "HivePartitioningOptions",
      "description": "[Optional, Trusted Tester] Options to configure hive partitioning support."
@@ -1100,10 +1096,6 @@
     "fieldDelimiter": {
      "type": "string",
      "description": "[Optional] The separator for fields in a CSV file. The separator can be any ISO-8859-1 single-byte character. To use a character in the range 128-255, you must encode the character as UTF8. BigQuery converts the string to ISO-8859-1 encoding, and then uses the first byte of the encoded string to split the data in its raw, binary state. BigQuery also supports the escape sequence \"\\t\" to specify a tab separator. The default value is a comma (',')."
-    },
-    "hivePartitioningMode": {
-     "type": "string",
-     "description": "[Optional, Trusted Tester] Deprecated, do not use. Please set hivePartitioningOptions instead."
     },
     "hivePartitioningOptions": {
      "$ref": "HivePartitioningOptions",

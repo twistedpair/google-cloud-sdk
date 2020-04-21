@@ -37,6 +37,10 @@ _DETAILED_SOURCE_SNAPSHOT_HELP = """\
       size of the disks.
 """
 
+_DETAILED_SOURCE_IN_PLACE_SNAPSHOT_HELP = """\
+      Source in place snapshot used to create the disks.
+"""
+
 _SOURCE_DISK_DETAILED_HELP = """\
       Source disk used to create the disks. It is safe to
       delete a source disk after a disk has been created from the
@@ -113,6 +117,18 @@ SOURCE_SNAPSHOT_ARG = compute_flags.ResourceArgument(
     global_collection='compute.snapshots',
     short_help='Source snapshot used to create the disks.',
     detailed_help=_DETAILED_SOURCE_SNAPSHOT_HELP,)
+
+SOURCE_IN_PLACE_SNAPSHOT_ARG = compute_flags.ResourceArgument(
+    resource_name='source in place snapshot',
+    completer=compute_completers.InPlaceSnapshotsCompleter,
+    name='--source-in-place-snapshot',
+    zonal_collection='compute.zoneInPlaceSnapshots',
+    regional_collection='compute.regionInPlaceSnapshots',
+    plural=False,
+    required=False,
+    short_help='Source in place snapshot used to create the disks.',
+    detailed_help=_DETAILED_SOURCE_IN_PLACE_SNAPSHOT_HELP,
+)
 
 SOURCE_DISK_ARG = compute_flags.ResourceArgument(
     resource_name='source disk',
