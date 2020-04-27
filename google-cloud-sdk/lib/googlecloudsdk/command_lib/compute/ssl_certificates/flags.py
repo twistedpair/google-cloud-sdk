@@ -25,20 +25,12 @@ from googlecloudsdk.command_lib.util import completers
 DEFAULT_LIST_FORMAT = """\
     table(
       name,
-      creationTimestamp
-    )"""
-
-BETA_LIST_FORMAT = """\
-    table(
-      name,
       type,
       creationTimestamp,
       expireTime,
       managed.status:label=MANAGED_STATUS,
       managed.domainStatus:format="yaml"
     )"""
-
-ALPHA_LIST_FORMAT = BETA_LIST_FORMAT
 
 
 class SslCertificatesCompleter(compute_completers.ListCommandCompleter):
