@@ -222,21 +222,8 @@ class DevshellCredentials(client.OAuth2Credentials):
           seconds=self.devshell_response.expires_in))
 
 
-# TODO(b/147098689): Deprecate dev shell credentails and use GCE credentials
-# for the dev shell environment.
 class DevShellCredentialsGoogleAuth(credentials.Credentials):
-  """Implementation of devshell credentials based on google-auth library.
-
-     This class serves as a short term quick solution for the dev shell
-     environment for phase 1 of the 'gcloud & GUAC' work (go/gcloud-guac).
-     This phase converts any kinds of oauth2client credentials to GUAC
-     credentials.
-
-     As discussed with dev shell team, for the long term, dev shell credentials
-     will be deprecated and GCE credentials will be used for this environment.
-     This part requires refactor on the credentials store and will be
-     achieved in the phase 2 of the 'gcloud & GUAC'.
-  """
+  """Implementation of devshell credentials using interface in google-auth."""
 
   def refresh(self, request):
     request = CredentialInfoRequest()
@@ -267,17 +254,26 @@ class DevShellCredentialsGoogleAuth(credentials.Credentials):
     return goog_auth_creds
 
 
-def LoadDevshellCredentials():
+def LoadDevshellCredentials(use_google_auth=False):
   """Load devshell credentials from the proxy.
 
   Also sets various attributes on the credential object expected by other
   parties.
 
+  Args:
+    use_google_auth: bool, True to load DevShellCredentialsGoogleAuth if it is
+        supported in the current authentication scenario. False to load
+        DevshellCredentials.
+
   Returns:
-    DevshellCredentials, if available. If the proxy can't be reached or returns
-    garbage data, this function returns None.
+    DevshellCredentials or DevShellCredentialsGoogleAuth, if available. If the
+    proxy can't be reached or returns garbage data, this function returns None.
   """
   try:
+    if use_google_auth:
+      google_auth_cred = DevShellCredentialsGoogleAuth(None)
+      google_auth_cred.refresh(None)
+      return google_auth_cred
     return DevshellCredentials(
         user_agent=config.CLOUDSDK_USER_AGENT,)
   except Exception:  # pylint:disable=broad-except, any problem means None

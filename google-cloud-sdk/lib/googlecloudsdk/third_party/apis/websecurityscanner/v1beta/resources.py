@@ -18,7 +18,7 @@ import enum
 
 
 BASE_URL = 'https://websecurityscanner.googleapis.com/v1beta/'
-DOCS_URL = 'https://cloud.google.com/security-scanner/'
+DOCS_URL = 'https://cloud.google.com/security-command-center/docs/concepts-web-security-scanner-overview/'
 
 
 class Collections(enum.Enum):

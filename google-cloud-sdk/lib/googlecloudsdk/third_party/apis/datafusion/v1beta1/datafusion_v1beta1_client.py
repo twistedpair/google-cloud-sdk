@@ -38,6 +38,7 @@ class DatafusionV1beta1(base_api.BaseApiClient):
         response_encoding=response_encoding)
     self.projects_locations_instances = self.ProjectsLocationsInstancesService(self)
     self.projects_locations_operations = self.ProjectsLocationsOperationsService(self)
+    self.projects_locations_versions = self.ProjectsLocationsVersionsService(self)
     self.projects_locations = self.ProjectsLocationsService(self)
     self.projects = self.ProjectsService(self)
 
@@ -247,7 +248,7 @@ At the end of an operation instance is fully restarted.
       r"""Sets the access control policy on the specified resource. Replaces any.
 existing policy.
 
-Can return Public Errors: NOT_FOUND, INVALID_ARGUMENT and PERMISSION_DENIED
+Can return `NOT_FOUND`, `INVALID_ARGUMENT`, and `PERMISSION_DENIED` errors.
 
       Args:
         request: (DatafusionProjectsLocationsInstancesSetIamPolicyRequest) input message
@@ -276,7 +277,7 @@ Can return Public Errors: NOT_FOUND, INVALID_ARGUMENT and PERMISSION_DENIED
     def TestIamPermissions(self, request, global_params=None):
       r"""Returns permissions that a caller has on the specified resource.
 If the resource does not exist, this will return an empty set of
-permissions, not a NOT_FOUND error.
+permissions, not a `NOT_FOUND` error.
 
 Note: This operation is designed to be used for building permission-aware
 UIs and command-line tools, not for authorization checking. This operation
@@ -472,6 +473,44 @@ is the parent resource, without the operations collection id.
         request_field='',
         request_type_name=u'DatafusionProjectsLocationsOperationsListRequest',
         response_type_name=u'ListOperationsResponse',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsVersionsService(base_api.BaseApiService):
+    """Service class for the projects_locations_versions resource."""
+
+    _NAME = u'projects_locations_versions'
+
+    def __init__(self, client):
+      super(DatafusionV1beta1.ProjectsLocationsVersionsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def List(self, request, global_params=None):
+      r"""Lists possible versions for Data Fusion instances in the specified project.
+and location.
+
+      Args:
+        request: (DatafusionProjectsLocationsVersionsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListAvailableVersionsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1beta1/projects/{projectsId}/locations/{locationsId}/versions',
+        http_method=u'GET',
+        method_id=u'datafusion.projects.locations.versions.list',
+        ordered_params=[u'parent'],
+        path_params=[u'parent'],
+        query_params=[u'pageSize', u'pageToken'],
+        relative_path=u'v1beta1/{+parent}/versions',
+        request_field='',
+        request_type_name=u'DatafusionProjectsLocationsVersionsListRequest',
+        response_type_name=u'ListAvailableVersionsResponse',
         supports_download=False,
     )
 

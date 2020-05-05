@@ -124,7 +124,7 @@ class Collections(enum.Enum):
   )
   GLOBALORGANIZATIONOPERATIONS = (
       'globalOrganizationOperations',
-      'locations/global/operations/{operation}',
+      'projects/locations/global/operations/{operation}',
       {},
       [u'operation'],
       True
@@ -281,7 +281,7 @@ class Collections(enum.Enum):
   )
   ORGANIZATIONSECURITYPOLICIES = (
       'organizationSecurityPolicies',
-      'locations/global/securityPolicies/{securityPolicy}',
+      'projects/locations/global/securityPolicies/{securityPolicy}',
       {},
       [u'securityPolicy'],
       True

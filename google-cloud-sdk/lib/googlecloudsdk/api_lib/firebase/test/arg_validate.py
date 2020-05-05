@@ -274,6 +274,7 @@ _FILE_ARG_VALIDATORS = {
     'num_flaky_test_attempts': _ValidateNonNegativeInteger,
     'num_uniform_shards': _ValidatePositiveInteger,
     'test_targets_for_shard': ValidateStringList,
+    'test_special_entitlements': _ValidateBool,
     'os_version_ids': ValidateStringList,
     'other_files': _ValidateKeyValueStringPairs,
     'performance_metrics': _ValidateBool,

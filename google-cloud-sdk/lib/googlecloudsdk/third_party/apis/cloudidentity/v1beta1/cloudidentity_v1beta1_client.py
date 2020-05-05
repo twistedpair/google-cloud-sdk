@@ -12,7 +12,7 @@ class CloudidentityV1beta1(base_api.BaseApiClient):
   MTLS_BASE_URL = u'https://cloudidentity.mtls.googleapis.com/'
 
   _PACKAGE = u'cloudidentity'
-  _SCOPES = [u'https://www.googleapis.com/auth/cloud-identity.groups', u'https://www.googleapis.com/auth/cloud-identity.groups.readonly', u'https://www.googleapis.com/auth/cloud-platform']
+  _SCOPES = [u'https://www.googleapis.com/auth/cloud-identity.groups', u'https://www.googleapis.com/auth/cloud-identity.groups.readonly', u'https://www.googleapis.com/auth/cloud-platform', u'https://www.googleapis.com/auth/userinfo.profile']
   _VERSION = u'v1beta1'
   _CLIENT_ID = '1042881264118.apps.googleusercontent.com'
   _CLIENT_SECRET = 'x_Tw5K8nnjoRAqULM9PFAC2b'
@@ -125,6 +125,33 @@ caller's credentials, as well as the properties provided in the request.
         relative_path=u'v1beta1/{+name}',
         request_field='',
         request_type_name=u'CloudidentityDevicesDeviceUsersClientStatesGetRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""List client states for the given search query.
+
+      Args:
+        request: (CloudidentityDevicesDeviceUsersClientStatesListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1beta1/devices/{devicesId}/deviceUsers/{deviceUsersId}/clientStates',
+        http_method=u'GET',
+        method_id=u'cloudidentity.devices.deviceUsers.clientStates.list',
+        ordered_params=[u'parent'],
+        path_params=[u'parent'],
+        query_params=[u'customer', u'filter', u'orderBy', u'pageSize', u'pageToken'],
+        relative_path=u'v1beta1/{+parent}/clientStates',
+        request_field='',
+        request_type_name=u'CloudidentityDevicesDeviceUsersClientStatesListRequest',
         response_type_name=u'Operation',
         supports_download=False,
     )

@@ -17,6 +17,7 @@
   "documentationLink": "https://cloud.google.com/run/",
   "protocol": "rest",
   "rootUrl": "https://run.googleapis.com/",
+  "mtlsRootUrl": "https://run.mtls.googleapis.com/",
   "servicePath": "",
   "baseUrl": "https://run.googleapis.com/",
   "batchPath": "batch",
@@ -109,57 +110,6 @@
     }
   },
   "schemas": {
-    "ListCustomResourceDefinitionsResponse": {
-      "id": "ListCustomResourceDefinitionsResponse",
-      "type": "object",
-      "properties": {
-        "apiVersion": {
-          "description": "The API version for this call such as \"k8s.apiextensions.io\/v1beta1\".",
-          "type": "string"
-        },
-        "kind": {
-          "description": "The kind of this resource, in this case \"CustomResourceDefinitionList\".",
-          "type": "string"
-        },
-        "metadata": {
-          "description": "Metadata associated with this CustomResourceDefinition list.",
-          "$ref": "ListMeta"
-        },
-        "items": {
-          "description": "List of CustomResourceDefinitions.",
-          "type": "array",
-          "items": {
-            "$ref": "CustomResourceDefinition"
-          }
-        },
-        "unreachable": {
-          "description": "Locations that could not be reached.",
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
-        }
-      }
-    },
-    "ListMeta": {
-      "id": "ListMeta",
-      "description": "ListMeta describes metadata that synthetic resources must have, including\nlists and various status objects. A resource may have only one of\n{ObjectMeta, ListMeta}.",
-      "type": "object",
-      "properties": {
-        "selfLink": {
-          "description": "SelfLink is a URL representing this object.\nPopulated by the system.\nRead-only.\n+optional",
-          "type": "string"
-        },
-        "resourceVersion": {
-          "description": "String that identifies the server's internal version of this object that\ncan be used by clients to determine when objects have changed. Value must\nbe treated as opaque by clients and passed unmodified back to the server.\nPopulated by the system.\nRead-only.\nMore info:\nhttps:\/\/git.k8s.io\/community\/contributors\/devel\/api-conventions.md#concurrency-control-and-consistency\n+optional",
-          "type": "string"
-        },
-        "continue": {
-          "description": "continue may be set if the user set a limit on the number of items\nreturned, and indicates that the server has more data available. The value\nis opaque and may be used to issue another request to the endpoint that\nserved this list to retrieve the next set of available objects. Continuing\na list may not be possible if the server configuration has changed or more\nthan a few minutes have passed. The resourceVersion field returned when\nusing this continue value will be identical to the value in the first\nresponse.",
-          "type": "string"
-        }
-      }
-    },
     "CustomResourceDefinition": {
       "id": "CustomResourceDefinition",
       "description": "CustomResourceDefinition represents a resource that should be exposed on the\nAPI server.  Its name MUST be in the format\n<.spec.name>.<.spec.group>.",
@@ -170,7 +120,7 @@
           "type": "string"
         },
         "kind": {
-          "description": "The kind of resource, one example is \"Storage\".",
+          "description": "The kind of resource, in this case always \"CustomResourceDefinition\".",
           "type": "string"
         },
         "metadata": {
@@ -185,7 +135,7 @@
     },
     "ObjectMeta": {
       "id": "ObjectMeta",
-      "description": "ObjectMeta is metadata that all persisted resources must have, which includes\nall objects users must create.",
+      "description": "k8s.io.apimachinery.pkg.apis.meta.v1.ObjectMeta is metadata that all\npersisted resources must have, which includes all objects users must create.",
       "type": "object",
       "properties": {
         "name": {
@@ -193,7 +143,7 @@
           "type": "string"
         },
         "generateName": {
-          "description": "Not currently supported by Cloud Run.\n\nGenerateName is an optional prefix, used by the server, to generate a\nunique name ONLY IF the Name field has not been provided. If this field is\nused, the name returned to the client will be different than the name\npassed. This value will also be combined with a unique suffix. The provided\nvalue has the same validation rules as the Name field, and may be truncated\nby the length of the suffix required to make the value unique on the\nserver.\n\nIf this field is specified and the generated name exists, the server will\nNOT return a 409 - instead, it will either return 201 Created or 500 with\nReason ServerTimeout indicating a unique name could not be found in the\ntime allotted, and the client should retry (optionally after the time\nindicated in the Retry-After header).\n\nApplied only if Name is not specified.\nMore info:\nhttps:\/\/git.k8s.io\/community\/contributors\/devel\/api-conventions.md#idempotency\n+optional\n string generateName = 2;",
+          "description": "(Optional)\n\nCloud Run fully managed: not supported\n\nCloud Run for Anthos: supported\n\nGenerateName is an optional prefix, used by the server, to generate a\nunique name ONLY IF the Name field has not been provided. If this field is\nused, the name returned to the client will be different than the name\npassed. This value will also be combined with a unique suffix. The provided\nvalue has the same validation rules as the Name field, and may be truncated\nby the length of the suffix required to make the value unique on the\nserver.\n\nIf this field is specified and the generated name exists, the server will\nNOT return a 409 - instead, it will either return 201 Created or 500 with\nReason ServerTimeout indicating a unique name could not be found in the\ntime allotted, and the client should retry (optionally after the time\nindicated in the Retry-After header).\n\nApplied only if Name is not specified.\nMore info:\nhttps:\/\/git.k8s.io\/community\/contributors\/devel\/api-conventions.md#idempotency\n string generateName = 2;",
           "type": "string"
         },
         "namespace": {
@@ -201,71 +151,67 @@
           "type": "string"
         },
         "selfLink": {
-          "description": "SelfLink is a URL representing this object.\nPopulated by the system.\nRead-only.\n+optional\n string selfLink = 4;",
+          "description": "(Optional)\n\nSelfLink is a URL representing this object.\nPopulated by the system.\nRead-only.\n string selfLink = 4;",
           "type": "string"
         },
         "uid": {
-          "description": "UID is the unique in time and space value for this object. It is typically\ngenerated by the server on successful creation of a resource and is not\nallowed to change on PUT operations.\n\nPopulated by the system.\nRead-only.\nMore info: http:\/\/kubernetes.io\/docs\/user-guide\/identifiers#uids\n+optional",
+          "description": "(Optional)\n\nUID is the unique in time and space value for this object. It is typically\ngenerated by the server on successful creation of a resource and is not\nallowed to change on PUT operations.\n\nPopulated by the system.\nRead-only.\nMore info: http:\/\/kubernetes.io\/docs\/user-guide\/identifiers#uids",
           "type": "string"
         },
         "resourceVersion": {
-          "description": "An opaque value that represents the internal version of this object that\ncan be used by clients to determine when objects have changed. May be used\nfor optimistic concurrency, change detection, and the watch operation on a\nresource or set of resources. Clients must treat these values as opaque and\npassed unmodified back to the server. They may only be valid for a\nparticular resource or set of resources.\n\nPopulated by the system.\nRead-only.\nValue must be treated as opaque by clients and .\nMore info:\nhttps:\/\/git.k8s.io\/community\/contributors\/devel\/api-conventions.md#concurrency-control-and-consistency\n+optional",
+          "description": "(Optional)\n\nAn opaque value that represents the internal version of this object that\ncan be used by clients to determine when objects have changed. May be used\nfor optimistic concurrency, change detection, and the watch operation on a\nresource or set of resources. Clients must treat these values as opaque and\npassed unmodified back to the server. They may only be valid for a\nparticular resource or set of resources.\n\nPopulated by the system.\nRead-only.\nValue must be treated as opaque by clients and .\nMore info:\nhttps:\/\/git.k8s.io\/community\/contributors\/devel\/api-conventions.md#concurrency-control-and-consistency",
           "type": "string"
         },
         "generation": {
-          "description": "A sequence number representing a specific generation of the desired state.\nPopulated by the system. Read-only.\n+optional",
+          "description": "(Optional)\n\nA sequence number representing a specific generation of the desired state.\nPopulated by the system. Read-only.",
           "type": "integer",
           "format": "int32"
         },
         "creationTimestamp": {
-          "description": "CreationTimestamp is a timestamp representing the server time when this\nobject was created. It is not guaranteed to be set in happens-before order\nacross separate operations. Clients may not set this value. It is\nrepresented in RFC3339 form and is in UTC.\n\nPopulated by the system.\nRead-only.\nNull for lists.\nMore info:\nhttps:\/\/git.k8s.io\/community\/contributors\/devel\/api-conventions.md#metadata\n+optional",
+          "description": "(Optional)\n\nCreationTimestamp is a timestamp representing the server time when this\nobject was created. It is not guaranteed to be set in happens-before order\nacross separate operations. Clients may not set this value. It is\nrepresented in RFC3339 form and is in UTC.\n\nPopulated by the system.\nRead-only.\nNull for lists.\nMore info:\nhttps:\/\/git.k8s.io\/community\/contributors\/devel\/api-conventions.md#metadata",
           "type": "string",
           "format": "google-datetime"
         },
         "labels": {
-          "description": "Map of string keys and values that can be used to organize and categorize\n(scope and select) objects. May match selectors of replication controllers\nand routes.\nMore info: http:\/\/kubernetes.io\/docs\/user-guide\/labels\n+optional",
+          "description": "(Optional)\n\nMap of string keys and values that can be used to organize and categorize\n(scope and select) objects. May match selectors of replication controllers\nand routes.\nMore info: http:\/\/kubernetes.io\/docs\/user-guide\/labels",
           "type": "object",
           "additionalProperties": {
             "type": "string"
           }
         },
         "annotations": {
-          "description": "Annotations is an unstructured key value map stored with a resource that\nmay be set by external tools to store and retrieve arbitrary metadata. They\nare not queryable and should be preserved when modifying objects. More\ninfo: http:\/\/kubernetes.io\/docs\/user-guide\/annotations +optional",
+          "description": "(Optional)\n\nAnnotations is an unstructured key value map stored with a resource that\nmay be set by external tools to store and retrieve arbitrary metadata. They\nare not queryable and should be preserved when modifying objects. More\ninfo: http:\/\/kubernetes.io\/docs\/user-guide\/annotations",
           "type": "object",
           "additionalProperties": {
             "type": "string"
           }
         },
         "ownerReferences": {
-          "description": "List of objects that own this object. If ALL objects in the list have\nbeen deleted, this object will be garbage collected.\n+optional",
+          "description": "(Optional)\n\nCloud Run fully managed: not supported\n\nCloud Run for Anthos: supported\n\nList of objects that own this object. If ALL objects in the list have\nbeen deleted, this object will be garbage collected.",
           "type": "array",
           "items": {
             "$ref": "OwnerReference"
           }
         },
         "deletionTimestamp": {
-          "description": "DeletionTimestamp is RFC 3339 date and time at which this resource will be\ndeleted. This field is set by the server when a graceful deletion is\nrequested by the user, and is not directly settable by a client. The\nresource is expected to be deleted (no longer visible from resource lists,\nand not reachable by name) after the time in this field, once the\nfinalizers list is empty. As long as the finalizers list contains items,\ndeletion is blocked. Once the deletionTimestamp is set, this value may not\nbe unset or be set further into the future, although it may be shortened or\nthe resource may be deleted prior to this time. For example, a user may\nrequest that a pod is deleted in 30 seconds. The Kubelet will react by\nsending a graceful termination signal to the containers in the pod. After\nthat 30 seconds, the Kubelet will send a hard termination signal (SIGKILL)\nto the container and after cleanup, remove the pod from the API. In the\npresence of network partitions, this object may still exist after this\ntimestamp, until an administrator or automated process can determine the\nresource is fully terminated.\nIf not set, graceful deletion of the object has not been requested.\n\nPopulated by the system when a graceful deletion is requested.\nRead-only.\nMore info:\nhttps:\/\/git.k8s.io\/community\/contributors\/devel\/api-conventions.md#metadata\n+optional",
+          "description": "(Optional)\n\nCloud Run fully managed: not supported\n\nCloud Run for Anthos: supported\n\nDeletionTimestamp is RFC 3339 date and time at which this resource will be\ndeleted. This field is set by the server when a graceful deletion is\nrequested by the user, and is not directly settable by a client. The\nresource is expected to be deleted (no longer visible from resource lists,\nand not reachable by name) after the time in this field, once the\nfinalizers list is empty. As long as the finalizers list contains items,\ndeletion is blocked. Once the deletionTimestamp is set, this value may not\nbe unset or be set further into the future, although it may be shortened or\nthe resource may be deleted prior to this time. For example, a user may\nrequest that a pod is deleted in 30 seconds. The Kubelet will react by\nsending a graceful termination signal to the containers in the pod. After\nthat 30 seconds, the Kubelet will send a hard termination signal (SIGKILL)\nto the container and after cleanup, remove the pod from the API. In the\npresence of network partitions, this object may still exist after this\ntimestamp, until an administrator or automated process can determine the\nresource is fully terminated.\nIf not set, graceful deletion of the object has not been requested.\n\nPopulated by the system when a graceful deletion is requested.\nRead-only.\nMore info:\nhttps:\/\/git.k8s.io\/community\/contributors\/devel\/api-conventions.md#metadata",
           "type": "string",
           "format": "google-datetime"
         },
         "deletionGracePeriodSeconds": {
-          "description": "Not currently supported by Cloud Run.\n\nNumber of seconds allowed for this object to gracefully terminate before\nit will be removed from the system. Only set when deletionTimestamp is also\nset. May only be shortened. Read-only. +optional",
+          "description": "(Optional)\n\nCloud Run fully managed: not supported\n\nCloud Run for Anthos: supported\n\nNumber of seconds allowed for this object to gracefully terminate before\nit will be removed from the system. Only set when deletionTimestamp is also\nset. May only be shortened. Read-only.",
           "type": "integer",
           "format": "int32"
         },
-        "initializers": {
-          "description": "Not currently supported by Cloud Run.\n\nAn initializer is a controller which enforces some system invariant at\nobject creation time. This field is a list of initializers that have not\nyet acted on this object. If nil or empty, this object has been completely\ninitialized. Otherwise, the object is considered uninitialized and is\nhidden (in list\/watch and get calls) from clients that haven't explicitly\nasked to observe uninitialized objects.\n\nWhen an object is created, the system will populate this list with the\ncurrent set of initializers. Only privileged users may set or modify this\nlist. Once it is empty, it may not be modified further by any user.",
-          "$ref": "Initializers"
-        },
         "finalizers": {
-          "description": "Not currently supported by Cloud Run.\n\nMust be empty before the object is deleted from the registry. Each entry\nis an identifier for the responsible component that will remove the entry\nfrom the list. If the deletionTimestamp of the object is non-nil, entries\nin this list can only be removed.\n+optional\n+patchStrategy=merge",
+          "description": "(Optional)\n\nCloud Run fully managed: not supported\n\nCloud Run for Anthos: supported\n\nMust be empty before the object is deleted from the registry. Each entry\nis an identifier for the responsible component that will remove the entry\nfrom the list. If the deletionTimestamp of the object is non-nil, entries\nin this list can only be removed.\n+patchStrategy=merge",
           "type": "array",
           "items": {
             "type": "string"
           }
         },
         "clusterName": {
-          "description": "Not currently supported by Cloud Run.\n\nThe name of the cluster which the object belongs to.\nThis is used to distinguish resources with same name and namespace in\ndifferent clusters. This field is not set anywhere right now and apiserver\nis going to ignore it if set in create or update request. +optional",
+          "description": "(Optional)\n\nCloud Run fully managed: not supported\n\nCloud Run for Anthos: supported\n\nThe name of the cluster which the object belongs to.\nThis is used to distinguish resources with same name and namespace in\ndifferent clusters. This field is not set anywhere right now and apiserver\nis going to ignore it if set in create or update request.",
           "type": "string"
         }
       }
@@ -298,31 +244,6 @@
         "blockOwnerDeletion": {
           "description": "If true, AND if the owner has the \"foregroundDeletion\" finalizer, then\nthe owner cannot be deleted from the key-value store until this\nreference is removed.\nDefaults to false.\nTo set this field, a user needs \"delete\" permission of the owner,\notherwise 422 (Unprocessable Entity) will be returned.\n+optional",
           "type": "boolean"
-        }
-      }
-    },
-    "Initializers": {
-      "id": "Initializers",
-      "description": "Initializers tracks the progress of initialization.",
-      "type": "object",
-      "properties": {
-        "pending": {
-          "description": "Pending is a list of initializers that must execute in order before this\nobject is visible. When the last pending initializer is removed, and no\nfailing result is set, the initializers struct will be set to nil and the\nobject is considered as initialized and visible to all clients.\n+patchMergeKey=name\n+patchStrategy=merge",
-          "type": "array",
-          "items": {
-            "$ref": "Initializer"
-          }
-        }
-      }
-    },
-    "Initializer": {
-      "id": "Initializer",
-      "description": "Initializer is information about an initializer that has not yet completed.",
-      "type": "object",
-      "properties": {
-        "name": {
-          "description": "name of the process that is responsible for initializing this object.",
-          "type": "string"
         }
       }
     },
@@ -729,6 +650,57 @@
           "type": "string"
         }
       }
+    },
+    "ListCustomResourceDefinitionsResponse": {
+      "id": "ListCustomResourceDefinitionsResponse",
+      "type": "object",
+      "properties": {
+        "apiVersion": {
+          "description": "The API version for this call such as \"k8s.apiextensions.io\/v1beta1\".",
+          "type": "string"
+        },
+        "kind": {
+          "description": "The kind of this resource, in this case \"CustomResourceDefinitionList\".",
+          "type": "string"
+        },
+        "metadata": {
+          "description": "Metadata associated with this CustomResourceDefinition list.",
+          "$ref": "ListMeta"
+        },
+        "items": {
+          "description": "List of CustomResourceDefinitions.",
+          "type": "array",
+          "items": {
+            "$ref": "CustomResourceDefinition"
+          }
+        },
+        "unreachable": {
+          "description": "Locations that could not be reached.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "ListMeta": {
+      "id": "ListMeta",
+      "description": "ListMeta describes metadata that synthetic resources must have, including\nlists and various status objects. A resource may have only one of\n{ObjectMeta, ListMeta}.",
+      "type": "object",
+      "properties": {
+        "selfLink": {
+          "description": "SelfLink is a URL representing this object.\nPopulated by the system.\nRead-only.\n+optional",
+          "type": "string"
+        },
+        "resourceVersion": {
+          "description": "String that identifies the server's internal version of this object that\ncan be used by clients to determine when objects have changed. Value must\nbe treated as opaque by clients and passed unmodified back to the server.\nPopulated by the system.\nRead-only.\nMore info:\nhttps:\/\/git.k8s.io\/community\/contributors\/devel\/api-conventions.md#concurrency-control-and-consistency\n+optional",
+          "type": "string"
+        },
+        "continue": {
+          "description": "continue may be set if the user set a limit on the number of items\nreturned, and indicates that the server has more data available. The value\nis opaque and may be used to issue another request to the endpoint that\nserved this list to retrieve the next set of available objects. Continuing\na list may not be possible if the server configuration has changed or more\nthan a few minutes have passed. The resourceVersion field returned when\nusing this continue value will be identical to the value in the first\nresponse.",
+          "type": "string"
+        }
+      }
     }
   },
   "resources": {
@@ -738,6 +710,31 @@
           "resources": {
             "customresourcedefinitions": {
               "methods": {
+                "get": {
+                  "id": "run.projects.locations.customresourcedefinitions.get",
+                  "path": "v1beta1/{+name}",
+                  "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/customresourcedefinitions/{customresourcedefinitionsId}",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "name": {
+                      "description": "The name of the CustomResourceDefinition being retrieved. If needed,\nreplace {namespace_id} with the project ID.",
+                      "location": "path",
+                      "required": true,
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/customresourcedefinitions\/[^\/]+$",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "CustomResourceDefinition"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Rpc to get information about a CustomResourceDefinition."
+                },
                 "list": {
                   "id": "run.projects.locations.customresourcedefinitions.list",
                   "path": "v1beta1/{+parent}/customresourcedefinitions",
@@ -799,6 +796,39 @@
                   "description": "Rpc to list custom resource definitions."
                 }
               }
+            }
+          }
+        }
+      }
+    },
+    "namespaces": {
+      "resources": {
+        "customresourcedefinitions": {
+          "methods": {
+            "get": {
+              "id": "run.namespaces.customresourcedefinitions.get",
+              "path": "apis/apiextensions.k8s.io/v1beta1/{+name}",
+              "flatPath": "apis/apiextensions.k8s.io/v1beta1/namespaces/{namespacesId}/customresourcedefinitions/{customresourcedefinitionsId}",
+              "httpMethod": "GET",
+              "parameters": {
+                "name": {
+                  "description": "The name of the CustomResourceDefinition being retrieved. If needed,\nreplace {namespace_id} with the project ID.",
+                  "location": "path",
+                  "required": true,
+                  "pattern": "^namespaces\/[^\/]+\/customresourcedefinitions\/[^\/]+$",
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "name"
+              ],
+              "response": {
+                "$ref": "CustomResourceDefinition"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ],
+              "description": "Rpc to get information about a CustomResourceDefinition."
             }
           }
         }

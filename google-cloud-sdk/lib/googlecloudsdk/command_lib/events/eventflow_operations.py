@@ -87,11 +87,14 @@ def Connect(conn_context):
         check_response_func=apis.CheckResponseForApiEnablement()
         if conn_context.supports_one_platform else None,
         http_client=conn_context.HttpClient())
-    # This client is used for working with core resources (e.g. Secrets)
-    core_client = apis_internal._GetClientInstance(
-        conn_context.api_name,
-        _CORE_CLIENT_VERSION,
-        http_client=conn_context.HttpClient())
+    # This client is used for working with core resources (e.g. Secrets) in
+    # Cloud Run for Anthos.
+    core_client = None
+    if not conn_context.supports_one_platform:
+      core_client = apis_internal._GetClientInstance(
+          conn_context.api_name,
+          _CORE_CLIENT_VERSION,
+          http_client=conn_context.HttpClient())
     # This client is only used to get CRDs because the api group they are
     # under uses different versioning in k8s
     crd_client = apis_internal._GetClientInstance(
@@ -216,7 +219,8 @@ class EventflowOperations(object):
       client: The API client for interacting with Kubernetes Cloud Run APIs.
       region: str, The region of the control plane if operating against
         hosted Cloud Run, else None.
-      core_client: The API client for queries against core resources.
+      core_client: The API client for queries against core resources if
+        operating against Cloud Run for Anthos, else None.
       crd_client: The API client for querying for CRDs
       op_client: The API client for interacting with One Platform APIs. Or
         None if interacting with Cloud Run for Anthos.

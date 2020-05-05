@@ -828,6 +828,10 @@ class IosXcTest(_messages.Message):
 
   Fields:
     appBundleId: Output only. The bundle id for the application under test.
+    testSpecialEntitlements: The option to test special app entitlements.
+      Setting this would re-sign the app having special entitlements with an
+      explicit application-identifier. Currently supports testing aps-
+      environment entitlement.
     testsZip: Required. The .zip containing the .xctestrun file and the
       contents of the DerivedData/Build/Products directory. The .xctestrun
       file in this zip is ignored if the xctestrun field is specified.
@@ -841,9 +845,10 @@ class IosXcTest(_messages.Message):
   """
 
   appBundleId = _messages.StringField(1)
-  testsZip = _messages.MessageField('FileReference', 2)
-  xcodeVersion = _messages.StringField(3)
-  xctestrun = _messages.MessageField('FileReference', 4)
+  testSpecialEntitlements = _messages.BooleanField(2)
+  testsZip = _messages.MessageField('FileReference', 3)
+  xcodeVersion = _messages.StringField(4)
+  xctestrun = _messages.MessageField('FileReference', 5)
 
 
 class LauncherActivityIntent(_messages.Message):

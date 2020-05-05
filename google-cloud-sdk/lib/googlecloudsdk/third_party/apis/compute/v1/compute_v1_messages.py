@@ -2887,7 +2887,7 @@ class BackendService(_messages.Message):
       INTERNAL_SELF_MANAGED and the backends are instance groups. The named
       port must be defined on each backend instance group. This parameter has
       no meaning if the backends are NEGs.    Must be omitted when the
-      loadBalancingScheme is INTERNAL (Internal TCP/UDP Load Blaancing).
+      loadBalancingScheme is INTERNAL (Internal TCP/UDP Load Balancing).
     protocol: The protocol this BackendService uses to communicate with
       backends.  Possible values are HTTP, HTTPS, HTTP2, TCP, SSL, or UDP.
       depending on the chosen load balancer or Traffic Director configuration.
@@ -3564,10 +3564,14 @@ class Binding(_messages.Message):
   r"""Associates `members` with a `role`.
 
   Fields:
-    condition: The condition that is associated with this binding. NOTE: An
-      unsatisfied condition will not allow user access via current binding.
-      Different bindings, including their conditions, are examined
-      independently.
+    condition: The condition that is associated with this binding.  If the
+      condition evaluates to `true`, then this binding applies to the current
+      request.  If the condition evaluates to `false`, then this binding does
+      not apply to the current request. However, a different role binding
+      might grant the same role to one or more of the members in this binding.
+      To learn which resources support conditions in their IAM policies, see
+      the [IAM documentation](https://cloud.google.com/iam/help/conditions
+      /resource-policies).
     members: Specifies the identities requesting access for a Cloud Platform
       resource. `members` can have the following values:  * `allUsers`: A
       special identifier that represents anyone who is on the internet; with
@@ -9022,34 +9026,6 @@ class ComputeInstancesResetRequest(_messages.Message):
   zone = _messages.StringField(4, required=True)
 
 
-class ComputeInstancesResumeRequest(_messages.Message):
-  r"""A ComputeInstancesResumeRequest object.
-
-  Fields:
-    instance: Name of the instance resource to resume.
-    instancesResumeRequest: A InstancesResumeRequest resource to be passed as
-      the request body.
-    project: Project ID for this request.
-    requestId: An optional request ID to identify requests. Specify a unique
-      request ID so that if you must retry your request, the server will know
-      to ignore the request if it has already been completed.  For example,
-      consider a situation where you make an initial request and the request
-      times out. If you make the request again with the same request ID, the
-      server can check if original operation with the same request ID was
-      received, and if so, will ignore the second request. This prevents
-      clients from accidentally creating duplicate commitments.  The request
-      ID must be a valid UUID with the exception that zero UUID is not
-      supported (00000000-0000-0000-0000-000000000000).
-    zone: The name of the zone for this request.
-  """
-
-  instance = _messages.StringField(1, required=True)
-  instancesResumeRequest = _messages.MessageField('InstancesResumeRequest', 2)
-  project = _messages.StringField(3, required=True)
-  requestId = _messages.StringField(4)
-  zone = _messages.StringField(5, required=True)
-
-
 class ComputeInstancesSetDeletionProtectionRequest(_messages.Message):
   r"""A ComputeInstancesSetDeletionProtectionRequest object.
 
@@ -9465,34 +9441,6 @@ class ComputeInstancesStopRequest(_messages.Message):
   project = _messages.StringField(2, required=True)
   requestId = _messages.StringField(3)
   zone = _messages.StringField(4, required=True)
-
-
-class ComputeInstancesSuspendRequest(_messages.Message):
-  r"""A ComputeInstancesSuspendRequest object.
-
-  Fields:
-    discardLocalSsd: If true, discard the contents of any attached localSSD
-      partitions. Default value is false (== preserve localSSD data).
-    instance: Name of the instance resource to suspend.
-    project: Project ID for this request.
-    requestId: An optional request ID to identify requests. Specify a unique
-      request ID so that if you must retry your request, the server will know
-      to ignore the request if it has already been completed.  For example,
-      consider a situation where you make an initial request and the request
-      times out. If you make the request again with the same request ID, the
-      server can check if original operation with the same request ID was
-      received, and if so, will ignore the second request. This prevents
-      clients from accidentally creating duplicate commitments.  The request
-      ID must be a valid UUID with the exception that zero UUID is not
-      supported (00000000-0000-0000-0000-000000000000).
-    zone: The name of the zone for this request.
-  """
-
-  discardLocalSsd = _messages.BooleanField(1)
-  instance = _messages.StringField(2, required=True)
-  project = _messages.StringField(3, required=True)
-  requestId = _messages.StringField(4)
-  zone = _messages.StringField(5, required=True)
 
 
 class ComputeInstancesTestIamPermissionsRequest(_messages.Message):
@@ -24115,6 +24063,9 @@ class Instance(_messages.Message):
   Machine Instances. (== resource_for {$api_version}.instances ==)
 
   Enums:
+    PrivateIpv6GoogleAccessValueValuesEnum: The private IPv6 google access
+      type for the VM. If not specified, use  INHERIT_FROM_SUBNETWORK as
+      default.
     StatusValueValuesEnum: [Output Only] The status of the instance. One of
       the following values: PROVISIONING, STAGING, RUNNING, STOPPING, STOPPED,
       SUSPENDING, SUSPENDED, and TERMINATED.
@@ -24192,6 +24143,8 @@ class Instance(_messages.Message):
       These specify how interfaces are configured to interact with other
       network services, such as connecting to the internet. Multiple
       interfaces are supported per instance.
+    privateIpv6GoogleAccess: The private IPv6 google access type for the VM.
+      If not specified, use  INHERIT_FROM_SUBNETWORK as default.
     reservationAffinity: Specifies the reservations that this instance can
       consume from.
     resourcePolicies: Resource policies applied to this instance.
@@ -24221,6 +24174,19 @@ class Instance(_messages.Message):
       specify this field as part of the HTTP request URL. It is not settable
       as a field in the request body.
   """
+
+  class PrivateIpv6GoogleAccessValueValuesEnum(_messages.Enum):
+    r"""The private IPv6 google access type for the VM. If not specified, use
+    INHERIT_FROM_SUBNETWORK as default.
+
+    Values:
+      ENABLE_BIDIRECTIONAL_ACCESS_TO_GOOGLE: <no description>
+      ENABLE_OUTBOUND_VM_ACCESS_TO_GOOGLE: <no description>
+      INHERIT_FROM_SUBNETWORK: <no description>
+    """
+    ENABLE_BIDIRECTIONAL_ACCESS_TO_GOOGLE = 0
+    ENABLE_OUTBOUND_VM_ACCESS_TO_GOOGLE = 1
+    INHERIT_FROM_SUBNETWORK = 2
 
   class StatusValueValuesEnum(_messages.Enum):
     r"""[Output Only] The status of the instance. One of the following values:
@@ -24294,18 +24260,19 @@ class Instance(_messages.Message):
   minCpuPlatform = _messages.StringField(17)
   name = _messages.StringField(18)
   networkInterfaces = _messages.MessageField('NetworkInterface', 19, repeated=True)
-  reservationAffinity = _messages.MessageField('ReservationAffinity', 20)
-  resourcePolicies = _messages.StringField(21, repeated=True)
-  scheduling = _messages.MessageField('Scheduling', 22)
-  selfLink = _messages.StringField(23)
-  serviceAccounts = _messages.MessageField('ServiceAccount', 24, repeated=True)
-  shieldedInstanceConfig = _messages.MessageField('ShieldedInstanceConfig', 25)
-  shieldedInstanceIntegrityPolicy = _messages.MessageField('ShieldedInstanceIntegrityPolicy', 26)
-  startRestricted = _messages.BooleanField(27)
-  status = _messages.EnumField('StatusValueValuesEnum', 28)
-  statusMessage = _messages.StringField(29)
-  tags = _messages.MessageField('Tags', 30)
-  zone = _messages.StringField(31)
+  privateIpv6GoogleAccess = _messages.EnumField('PrivateIpv6GoogleAccessValueValuesEnum', 20)
+  reservationAffinity = _messages.MessageField('ReservationAffinity', 21)
+  resourcePolicies = _messages.StringField(22, repeated=True)
+  scheduling = _messages.MessageField('Scheduling', 23)
+  selfLink = _messages.StringField(24)
+  serviceAccounts = _messages.MessageField('ServiceAccount', 25, repeated=True)
+  shieldedInstanceConfig = _messages.MessageField('ShieldedInstanceConfig', 26)
+  shieldedInstanceIntegrityPolicy = _messages.MessageField('ShieldedInstanceIntegrityPolicy', 27)
+  startRestricted = _messages.BooleanField(28)
+  status = _messages.EnumField('StatusValueValuesEnum', 29)
+  statusMessage = _messages.StringField(30)
+  tags = _messages.MessageField('Tags', 31)
+  zone = _messages.StringField(32)
 
 
 class InstanceAggregatedList(_messages.Message):
@@ -26396,6 +26363,11 @@ class InstanceMoveRequest(_messages.Message):
 class InstanceProperties(_messages.Message):
   r"""InstanceProperties message type.
 
+  Enums:
+    PrivateIpv6GoogleAccessValueValuesEnum: The private IPv6 google access
+      type for the VM. If not specified, use  INHERIT_FROM_SUBNETWORK as
+      default.
+
   Messages:
     LabelsValue: Labels to apply to instances that are created from this
       template.
@@ -26427,6 +26399,8 @@ class InstanceProperties(_messages.Message):
       For more information, read Specifying a Minimum CPU Platform.
     networkInterfaces: An array of network access configurations for this
       interface.
+    privateIpv6GoogleAccess: The private IPv6 google access type for the VM.
+      If not specified, use  INHERIT_FROM_SUBNETWORK as default.
     reservationAffinity: Specifies the reservations that this instance can
       consume from.
     resourcePolicies: Resource policies (names, not ULRs) applied to instances
@@ -26443,6 +26417,19 @@ class InstanceProperties(_messages.Message):
       firewalls. The setTags method can modify this list of tags. Each tag
       within the list must comply with RFC1035.
   """
+
+  class PrivateIpv6GoogleAccessValueValuesEnum(_messages.Enum):
+    r"""The private IPv6 google access type for the VM. If not specified, use
+    INHERIT_FROM_SUBNETWORK as default.
+
+    Values:
+      ENABLE_BIDIRECTIONAL_ACCESS_TO_GOOGLE: <no description>
+      ENABLE_OUTBOUND_VM_ACCESS_TO_GOOGLE: <no description>
+      INHERIT_FROM_SUBNETWORK: <no description>
+    """
+    ENABLE_BIDIRECTIONAL_ACCESS_TO_GOOGLE = 0
+    ENABLE_OUTBOUND_VM_ACCESS_TO_GOOGLE = 1
+    INHERIT_FROM_SUBNETWORK = 2
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
@@ -26477,12 +26464,13 @@ class InstanceProperties(_messages.Message):
   metadata = _messages.MessageField('Metadata', 7)
   minCpuPlatform = _messages.StringField(8)
   networkInterfaces = _messages.MessageField('NetworkInterface', 9, repeated=True)
-  reservationAffinity = _messages.MessageField('ReservationAffinity', 10)
-  resourcePolicies = _messages.StringField(11, repeated=True)
-  scheduling = _messages.MessageField('Scheduling', 12)
-  serviceAccounts = _messages.MessageField('ServiceAccount', 13, repeated=True)
-  shieldedInstanceConfig = _messages.MessageField('ShieldedInstanceConfig', 14)
-  tags = _messages.MessageField('Tags', 15)
+  privateIpv6GoogleAccess = _messages.EnumField('PrivateIpv6GoogleAccessValueValuesEnum', 10)
+  reservationAffinity = _messages.MessageField('ReservationAffinity', 11)
+  resourcePolicies = _messages.StringField(12, repeated=True)
+  scheduling = _messages.MessageField('Scheduling', 13)
+  serviceAccounts = _messages.MessageField('ServiceAccount', 14, repeated=True)
+  shieldedInstanceConfig = _messages.MessageField('ShieldedInstanceConfig', 15)
+  tags = _messages.MessageField('Tags', 16)
 
 
 class InstanceReference(_messages.Message):
@@ -26727,26 +26715,6 @@ class InstancesRemoveResourcePoliciesRequest(_messages.Message):
   """
 
   resourcePolicies = _messages.StringField(1, repeated=True)
-
-
-class InstancesResumeRequest(_messages.Message):
-  r"""A InstancesResumeRequest object.
-
-  Fields:
-    disks: Array of disks associated with this instance that are protected
-      with a customer-supplied encryption key.  In order to resume the
-      instance, the disk url and its corresponding key must be provided.  If
-      the disk is not protected with a customer-supplied encryption key it
-      should not be specified.
-    instanceEncryptionKey: Decrypts data associated with an instance that is
-      protected with a customer-supplied encryption key.  If the instance you
-      are starting is protected with a customer-supplied encryption key, the
-      correct key must be provided otherwise the instance resume will not
-      succeed.
-  """
-
-  disks = _messages.MessageField('CustomerEncryptionKeyProtectedDisk', 1, repeated=True)
-  instanceEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 2)
 
 
 class InstancesScopedList(_messages.Message):
@@ -28959,9 +28927,12 @@ class MachineType(_messages.Message):
   {$api_version}.machineTypes ==)
 
   Messages:
+    AcceleratorsValueListEntry: A AcceleratorsValueListEntry object.
     ScratchDisksValueListEntry: A ScratchDisksValueListEntry object.
 
   Fields:
+    accelerators: [Output Only] A list of accelerator configurations assigned
+      to this machine type.
     creationTimestamp: [Output Only] Creation timestamp in RFC3339 text
       format.
     deprecated: [Output Only] The deprecation status associated with this
@@ -28991,6 +28962,18 @@ class MachineType(_messages.Message):
       such as us-central1-a.
   """
 
+  class AcceleratorsValueListEntry(_messages.Message):
+    r"""A AcceleratorsValueListEntry object.
+
+    Fields:
+      guestAcceleratorCount: Number of accelerator cards exposed to the guest.
+      guestAcceleratorType: The accelerator type resource name, not a full
+        URL, e.g. 'nvidia-tesla-k80'.
+    """
+
+    guestAcceleratorCount = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+    guestAcceleratorType = _messages.StringField(2)
+
   class ScratchDisksValueListEntry(_messages.Message):
     r"""A ScratchDisksValueListEntry object.
 
@@ -29000,21 +28983,22 @@ class MachineType(_messages.Message):
 
     diskGb = _messages.IntegerField(1, variant=_messages.Variant.INT32)
 
-  creationTimestamp = _messages.StringField(1)
-  deprecated = _messages.MessageField('DeprecationStatus', 2)
-  description = _messages.StringField(3)
-  guestCpus = _messages.IntegerField(4, variant=_messages.Variant.INT32)
-  id = _messages.IntegerField(5, variant=_messages.Variant.UINT64)
-  imageSpaceGb = _messages.IntegerField(6, variant=_messages.Variant.INT32)
-  isSharedCpu = _messages.BooleanField(7)
-  kind = _messages.StringField(8, default=u'compute#machineType')
-  maximumPersistentDisks = _messages.IntegerField(9, variant=_messages.Variant.INT32)
-  maximumPersistentDisksSizeGb = _messages.IntegerField(10)
-  memoryMb = _messages.IntegerField(11, variant=_messages.Variant.INT32)
-  name = _messages.StringField(12)
-  scratchDisks = _messages.MessageField('ScratchDisksValueListEntry', 13, repeated=True)
-  selfLink = _messages.StringField(14)
-  zone = _messages.StringField(15)
+  accelerators = _messages.MessageField('AcceleratorsValueListEntry', 1, repeated=True)
+  creationTimestamp = _messages.StringField(2)
+  deprecated = _messages.MessageField('DeprecationStatus', 3)
+  description = _messages.StringField(4)
+  guestCpus = _messages.IntegerField(5, variant=_messages.Variant.INT32)
+  id = _messages.IntegerField(6, variant=_messages.Variant.UINT64)
+  imageSpaceGb = _messages.IntegerField(7, variant=_messages.Variant.INT32)
+  isSharedCpu = _messages.BooleanField(8)
+  kind = _messages.StringField(9, default=u'compute#machineType')
+  maximumPersistentDisks = _messages.IntegerField(10, variant=_messages.Variant.INT32)
+  maximumPersistentDisksSizeGb = _messages.IntegerField(11)
+  memoryMb = _messages.IntegerField(12, variant=_messages.Variant.INT32)
+  name = _messages.StringField(13)
+  scratchDisks = _messages.MessageField('ScratchDisksValueListEntry', 14, repeated=True)
+  selfLink = _messages.StringField(15)
+  zone = _messages.StringField(16)
 
 
 class MachineTypeAggregatedList(_messages.Message):
@@ -30511,6 +30495,8 @@ class NetworkInterface(_messages.Message):
       adding a NetworkInterface. An up-to-date fingerprint must be provided in
       order to update the NetworkInterface, otherwise the request will fail
       with error 412 conditionNotMet.
+    ipv6Address: [Output Only] An IPv6 internal network address for this
+      network interface.
     kind: [Output Only] Type of the resource. Always compute#networkInterface
       for network interfaces.
     name: [Output Only] The name of the network interface, which is generated
@@ -30539,11 +30525,12 @@ class NetworkInterface(_messages.Message):
   accessConfigs = _messages.MessageField('AccessConfig', 1, repeated=True)
   aliasIpRanges = _messages.MessageField('AliasIpRange', 2, repeated=True)
   fingerprint = _messages.BytesField(3)
-  kind = _messages.StringField(4, default=u'compute#networkInterface')
-  name = _messages.StringField(5)
-  network = _messages.StringField(6)
-  networkIP = _messages.StringField(7)
-  subnetwork = _messages.StringField(8)
+  ipv6Address = _messages.StringField(4)
+  kind = _messages.StringField(5, default=u'compute#networkInterface')
+  name = _messages.StringField(6)
+  network = _messages.StringField(7)
+  networkIP = _messages.StringField(8)
+  subnetwork = _messages.StringField(9)
 
 
 class NetworkList(_messages.Message):
@@ -33868,16 +33855,19 @@ class Policy(_messages.Message):
   `bindings`. A `binding` binds one or more `members` to a single `role`.
   Members can be user accounts, service accounts, Google groups, and domains
   (such as G Suite). A `role` is a named list of permissions; each `role` can
-  be an IAM predefined role or a user-created custom role.  Optionally, a
-  `binding` can specify a `condition`, which is a logical expression that
-  allows access to a resource only if the expression evaluates to `true`. A
-  condition can add constraints based on attributes of the request, the
-  resource, or both.  **JSON example:**  { "bindings": [ { "role":
+  be an IAM predefined role or a user-created custom role.  For some types of
+  Google Cloud resources, a `binding` can also specify a `condition`, which is
+  a logical expression that allows access to a resource only if the expression
+  evaluates to `true`. A condition can add constraints based on attributes of
+  the request, the resource, or both. To learn which resources support
+  conditions in their IAM policies, see the [IAM
+  documentation](https://cloud.google.com/iam/help/conditions/resource-
+  policies).  **JSON example:**  { "bindings": [ { "role":
   "roles/resourcemanager.organizationAdmin", "members": [
   "user:mike@example.com", "group:admins@example.com", "domain:google.com",
   "serviceAccount:my-project-id@appspot.gserviceaccount.com" ] }, { "role":
-  "roles/resourcemanager.organizationViewer", "members":
-  ["user:eve@example.com"], "condition": { "title": "expirable access",
+  "roles/resourcemanager.organizationViewer", "members": [
+  "user:eve@example.com" ], "condition": { "title": "expirable access",
   "description": "Does not grant access after Sep 2020", "expression":
   "request.time < timestamp('2020-10-01T00:00:00.000Z')", } } ], "etag":
   "BwWWja0YfJA=", "version": 3 }  **YAML example:**  bindings: - members: -
@@ -33927,7 +33917,10 @@ class Policy(_messages.Message):
       a version `3` policy with a version `1` policy, and all of the
       conditions in the version `3` policy are lost.  If a policy does not
       include any conditions, operations on that policy may specify any valid
-      version or leave the field unset.
+      version or leave the field unset.  To learn which resources support
+      conditions in their IAM policies, see the [IAM
+      documentation](https://cloud.google.com/iam/help/conditions/resource-
+      policies).
   """
 
   auditConfigs = _messages.MessageField('AuditConfig', 1, repeated=True)
@@ -38161,7 +38154,7 @@ class SSLHealthCheck(_messages.Message):
 
 
 class Scheduling(_messages.Message):
-  r"""Sets the scheduling options for an Instance. NextID: 10
+  r"""Sets the scheduling options for an Instance. NextID: 11
 
   Enums:
     OnHostMaintenanceValueValuesEnum: Defines the maintenance behavior for
@@ -39927,11 +39920,18 @@ class Subnetwork(_messages.Message):
   {$api_version}.subnetworks ==)
 
   Enums:
+    PrivateIpv6GoogleAccessValueValuesEnum: The private IPv6 google access
+      type for the VMs in this subnet. This is an expanded field of
+      enablePrivateV6Access. If both fields are set, privateIpv6GoogleAccess
+      will take priority.  This field can be both set at resource creation
+      time and updated using patch.
     PurposeValueValuesEnum: The purpose of the resource. This field can be
       either PRIVATE_RFC_1918 or INTERNAL_HTTPS_LOAD_BALANCER. A subnetwork
       with purpose set to INTERNAL_HTTPS_LOAD_BALANCER is a user-created
       subnetwork that is reserved for Internal HTTP(S) Load Balancing. If
-      unspecified, the purpose defaults to PRIVATE_RFC_1918.
+      unspecified, the purpose defaults to PRIVATE_RFC_1918. The
+      enableFlowLogs field isn't supported with the purpose field set to
+      INTERNAL_HTTPS_LOAD_BALANCER.
     RoleValueValuesEnum: The role of subnetwork. Currently, this field is only
       used when purpose = INTERNAL_HTTPS_LOAD_BALANCER. The value can be set
       to ACTIVE or BACKUP. An ACTIVE subnetwork is one that is currently being
@@ -39953,7 +39953,9 @@ class Subnetwork(_messages.Message):
       resource creation time.
     enableFlowLogs: Whether to enable flow logging for this subnetwork. If
       this field is not explicitly set, it will not appear in get listings. If
-      not set the default behavior is to disable flow logging.
+      not set the default behavior is to disable flow logging. This field
+      isn't supported with the purpose field set to
+      INTERNAL_HTTPS_LOAD_BALANCER.
     fingerprint: Fingerprint of this resource. A hash of the contents stored
       in this object. This field is used in optimistic locking. This field
       will be ignored when inserting a Subnetwork. An up-to-date fingerprint
@@ -39969,6 +39971,8 @@ class Subnetwork(_messages.Message):
       example, 10.0.0.0/8 or 192.168.0.0/16. Ranges must be unique and non-
       overlapping within a network. Only IPv4 is supported. This field can be
       set only at resource creation time.
+    ipv6CidrRange: [Output Only] The range of internal IPv6 addresses that are
+      owned by this subnetwork.
     kind: [Output Only] Type of the resource. Always compute#subnetwork for
       Subnetwork resources.
     logConfig: This field denotes the VPC flow logging options for this
@@ -39988,11 +39992,16 @@ class Subnetwork(_messages.Message):
       services without assigned external IP addresses. This field can be both
       set at resource creation time and updated using
       setPrivateIpGoogleAccess.
+    privateIpv6GoogleAccess: The private IPv6 google access type for the VMs
+      in this subnet. This is an expanded field of enablePrivateV6Access. If
+      both fields are set, privateIpv6GoogleAccess will take priority.  This
+      field can be both set at resource creation time and updated using patch.
     purpose: The purpose of the resource. This field can be either
       PRIVATE_RFC_1918 or INTERNAL_HTTPS_LOAD_BALANCER. A subnetwork with
       purpose set to INTERNAL_HTTPS_LOAD_BALANCER is a user-created subnetwork
       that is reserved for Internal HTTP(S) Load Balancing. If unspecified,
-      the purpose defaults to PRIVATE_RFC_1918.
+      the purpose defaults to PRIVATE_RFC_1918. The enableFlowLogs field isn't
+      supported with the purpose field set to INTERNAL_HTTPS_LOAD_BALANCER.
     region: URL of the region where the Subnetwork resides. This field can be
       set only at resource creation time.
     role: The role of subnetwork. Currently, this field is only used when
@@ -40015,12 +40024,28 @@ class Subnetwork(_messages.Message):
       draining cannot be used or modified until it reaches a status of READY.
   """
 
+  class PrivateIpv6GoogleAccessValueValuesEnum(_messages.Enum):
+    r"""The private IPv6 google access type for the VMs in this subnet. This
+    is an expanded field of enablePrivateV6Access. If both fields are set,
+    privateIpv6GoogleAccess will take priority.  This field can be both set at
+    resource creation time and updated using patch.
+
+    Values:
+      DISABLE_GOOGLE_ACCESS: <no description>
+      ENABLE_BIDIRECTIONAL_ACCESS_TO_GOOGLE: <no description>
+      ENABLE_OUTBOUND_VM_ACCESS_TO_GOOGLE: <no description>
+    """
+    DISABLE_GOOGLE_ACCESS = 0
+    ENABLE_BIDIRECTIONAL_ACCESS_TO_GOOGLE = 1
+    ENABLE_OUTBOUND_VM_ACCESS_TO_GOOGLE = 2
+
   class PurposeValueValuesEnum(_messages.Enum):
     r"""The purpose of the resource. This field can be either PRIVATE_RFC_1918
     or INTERNAL_HTTPS_LOAD_BALANCER. A subnetwork with purpose set to
     INTERNAL_HTTPS_LOAD_BALANCER is a user-created subnetwork that is reserved
     for Internal HTTP(S) Load Balancing. If unspecified, the purpose defaults
-    to PRIVATE_RFC_1918.
+    to PRIVATE_RFC_1918. The enableFlowLogs field isn't supported with the
+    purpose field set to INTERNAL_HTTPS_LOAD_BALANCER.
 
     Values:
       INTERNAL_HTTPS_LOAD_BALANCER: <no description>
@@ -40068,17 +40093,19 @@ class Subnetwork(_messages.Message):
   gatewayAddress = _messages.StringField(5)
   id = _messages.IntegerField(6, variant=_messages.Variant.UINT64)
   ipCidrRange = _messages.StringField(7)
-  kind = _messages.StringField(8, default=u'compute#subnetwork')
-  logConfig = _messages.MessageField('SubnetworkLogConfig', 9)
-  name = _messages.StringField(10)
-  network = _messages.StringField(11)
-  privateIpGoogleAccess = _messages.BooleanField(12)
-  purpose = _messages.EnumField('PurposeValueValuesEnum', 13)
-  region = _messages.StringField(14)
-  role = _messages.EnumField('RoleValueValuesEnum', 15)
-  secondaryIpRanges = _messages.MessageField('SubnetworkSecondaryRange', 16, repeated=True)
-  selfLink = _messages.StringField(17)
-  state = _messages.EnumField('StateValueValuesEnum', 18)
+  ipv6CidrRange = _messages.StringField(8)
+  kind = _messages.StringField(9, default=u'compute#subnetwork')
+  logConfig = _messages.MessageField('SubnetworkLogConfig', 10)
+  name = _messages.StringField(11)
+  network = _messages.StringField(12)
+  privateIpGoogleAccess = _messages.BooleanField(13)
+  privateIpv6GoogleAccess = _messages.EnumField('PrivateIpv6GoogleAccessValueValuesEnum', 14)
+  purpose = _messages.EnumField('PurposeValueValuesEnum', 15)
+  region = _messages.StringField(16)
+  role = _messages.EnumField('RoleValueValuesEnum', 17)
+  secondaryIpRanges = _messages.MessageField('SubnetworkSecondaryRange', 18, repeated=True)
+  selfLink = _messages.StringField(19)
+  state = _messages.EnumField('StateValueValuesEnum', 20)
 
 
 class SubnetworkAggregatedList(_messages.Message):

@@ -283,6 +283,8 @@ class Cluster(_messages.Message):
       this resource for username and password information.
     expireTime: [Output only] The time the cluster will be automatically
       deleted in [RFC3339](https://www.ietf.org/rfc/rfc3339.txt) text format.
+    exposeMasterSignalsConfig: Configuration used to enable sending selected
+      master logs and metrics to customer project.
     initialClusterVersion: The initial Kubernetes version for this cluster.
       Valid versions are those found in validMasterVersions returned by
       getServerConfig.  The version can be upgraded over time; such upgrades
@@ -479,44 +481,45 @@ class Cluster(_messages.Message):
   enableTpu = _messages.BooleanField(17)
   endpoint = _messages.StringField(18)
   expireTime = _messages.StringField(19)
-  initialClusterVersion = _messages.StringField(20)
-  initialNodeCount = _messages.IntegerField(21, variant=_messages.Variant.INT32)
-  instanceGroupUrls = _messages.StringField(22, repeated=True)
-  ipAllocationPolicy = _messages.MessageField('IPAllocationPolicy', 23)
-  labelFingerprint = _messages.StringField(24)
-  legacyAbac = _messages.MessageField('LegacyAbac', 25)
-  location = _messages.StringField(26)
-  locations = _messages.StringField(27, repeated=True)
-  loggingService = _messages.StringField(28)
-  maintenancePolicy = _messages.MessageField('MaintenancePolicy', 29)
-  masterAuth = _messages.MessageField('MasterAuth', 30)
-  masterAuthorizedNetworksConfig = _messages.MessageField('MasterAuthorizedNetworksConfig', 31)
-  masterIpv4CidrBlock = _messages.StringField(32)
-  monitoringService = _messages.StringField(33)
-  name = _messages.StringField(34)
-  network = _messages.StringField(35)
-  networkConfig = _messages.MessageField('NetworkConfig', 36)
-  networkPolicy = _messages.MessageField('NetworkPolicy', 37)
-  nodeConfig = _messages.MessageField('NodeConfig', 38)
-  nodeIpv4CidrSize = _messages.IntegerField(39, variant=_messages.Variant.INT32)
-  nodePools = _messages.MessageField('NodePool', 40, repeated=True)
-  podSecurityPolicyConfig = _messages.MessageField('PodSecurityPolicyConfig', 41)
-  privateCluster = _messages.BooleanField(42)
-  privateClusterConfig = _messages.MessageField('PrivateClusterConfig', 43)
-  releaseChannel = _messages.MessageField('ReleaseChannel', 44)
-  resourceLabels = _messages.MessageField('ResourceLabelsValue', 45)
-  resourceUsageExportConfig = _messages.MessageField('ResourceUsageExportConfig', 46)
-  selfLink = _messages.StringField(47)
-  servicesIpv4Cidr = _messages.StringField(48)
-  shieldedNodes = _messages.MessageField('ShieldedNodes', 49)
-  status = _messages.EnumField('StatusValueValuesEnum', 50)
-  statusMessage = _messages.StringField(51)
-  subnetwork = _messages.StringField(52)
-  tpuConfig = _messages.MessageField('TpuConfig', 53)
-  tpuIpv4CidrBlock = _messages.StringField(54)
-  verticalPodAutoscaling = _messages.MessageField('VerticalPodAutoscaling', 55)
-  workloadIdentityConfig = _messages.MessageField('WorkloadIdentityConfig', 56)
-  zone = _messages.StringField(57)
+  exposeMasterSignalsConfig = _messages.MessageField('ExposeMasterSignalsConfig', 20)
+  initialClusterVersion = _messages.StringField(21)
+  initialNodeCount = _messages.IntegerField(22, variant=_messages.Variant.INT32)
+  instanceGroupUrls = _messages.StringField(23, repeated=True)
+  ipAllocationPolicy = _messages.MessageField('IPAllocationPolicy', 24)
+  labelFingerprint = _messages.StringField(25)
+  legacyAbac = _messages.MessageField('LegacyAbac', 26)
+  location = _messages.StringField(27)
+  locations = _messages.StringField(28, repeated=True)
+  loggingService = _messages.StringField(29)
+  maintenancePolicy = _messages.MessageField('MaintenancePolicy', 30)
+  masterAuth = _messages.MessageField('MasterAuth', 31)
+  masterAuthorizedNetworksConfig = _messages.MessageField('MasterAuthorizedNetworksConfig', 32)
+  masterIpv4CidrBlock = _messages.StringField(33)
+  monitoringService = _messages.StringField(34)
+  name = _messages.StringField(35)
+  network = _messages.StringField(36)
+  networkConfig = _messages.MessageField('NetworkConfig', 37)
+  networkPolicy = _messages.MessageField('NetworkPolicy', 38)
+  nodeConfig = _messages.MessageField('NodeConfig', 39)
+  nodeIpv4CidrSize = _messages.IntegerField(40, variant=_messages.Variant.INT32)
+  nodePools = _messages.MessageField('NodePool', 41, repeated=True)
+  podSecurityPolicyConfig = _messages.MessageField('PodSecurityPolicyConfig', 42)
+  privateCluster = _messages.BooleanField(43)
+  privateClusterConfig = _messages.MessageField('PrivateClusterConfig', 44)
+  releaseChannel = _messages.MessageField('ReleaseChannel', 45)
+  resourceLabels = _messages.MessageField('ResourceLabelsValue', 46)
+  resourceUsageExportConfig = _messages.MessageField('ResourceUsageExportConfig', 47)
+  selfLink = _messages.StringField(48)
+  servicesIpv4Cidr = _messages.StringField(49)
+  shieldedNodes = _messages.MessageField('ShieldedNodes', 50)
+  status = _messages.EnumField('StatusValueValuesEnum', 51)
+  statusMessage = _messages.StringField(52)
+  subnetwork = _messages.StringField(53)
+  tpuConfig = _messages.MessageField('TpuConfig', 54)
+  tpuIpv4CidrBlock = _messages.StringField(55)
+  verticalPodAutoscaling = _messages.MessageField('VerticalPodAutoscaling', 56)
+  workloadIdentityConfig = _messages.MessageField('WorkloadIdentityConfig', 57)
+  zone = _messages.StringField(58)
 
 
 class ClusterAutoscaling(_messages.Message):
@@ -1401,6 +1404,38 @@ class Empty(_messages.Message):
 
 
 
+class ExposeMasterSignalsConfig(_messages.Message):
+  r"""ExposeMasterSignalsConfig is the configuration for exposing selected
+  master logs and metrics to customer
+
+  Enums:
+    EnableComponentLogsValueListEntryValuesEnum:
+
+  Fields:
+    enableComponentLogs: Select components to expose logs
+    enableMetrics: Enable sendings metrics to customer
+  """
+
+  class EnableComponentLogsValueListEntryValuesEnum(_messages.Enum):
+    r"""EnableComponentLogsValueListEntryValuesEnum enum type.
+
+    Values:
+      COMPONENT_UNSPECIFIED: <no description>
+      APISERVER: <no description>
+      SCHEDULER: <no description>
+      CONTROLLER_MANAGER: <no description>
+      ADDON_MANAGER: <no description>
+    """
+    COMPONENT_UNSPECIFIED = 0
+    APISERVER = 1
+    SCHEDULER = 2
+    CONTROLLER_MANAGER = 3
+    ADDON_MANAGER = 4
+
+  enableComponentLogs = _messages.EnumField('EnableComponentLogsValueListEntryValuesEnum', 1, repeated=True)
+  enableMetrics = _messages.BooleanField(2)
+
+
 class GcePersistentDiskCsiDriverConfig(_messages.Message):
   r"""Configuration for the Compute Engine PD CSI driver. This option can only
   be enabled at cluster creation time.
@@ -1686,6 +1721,46 @@ class LegacyAbac(_messages.Message):
   """
 
   enabled = _messages.BooleanField(1)
+
+
+class LinuxNodeConfig(_messages.Message):
+  r"""Parameters that can be configured on Linux nodes.
+
+  Messages:
+    SysctlsValue: The Linux kernel parameters to be applied to the nodes and
+      all pods running on the nodes.
+
+  Fields:
+    sysctls: The Linux kernel parameters to be applied to the nodes and all
+      pods running on the nodes.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class SysctlsValue(_messages.Message):
+    r"""The Linux kernel parameters to be applied to the nodes and all pods
+    running on the nodes.
+
+    Messages:
+      AdditionalProperty: An additional property for a SysctlsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type SysctlsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a SysctlsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  sysctls = _messages.MessageField('SysctlsValue', 1)
 
 
 class ListClustersResponse(_messages.Message):
@@ -2073,6 +2148,7 @@ class NodeConfig(_messages.Message):
       'pd-ssd')  If unspecified, the default disk type is 'pd-standard'
     imageType: The image type to use for this node. Note that for a given
       image type, the latest version of it will be used.
+    kubeletConfig: Node kubelet configs.
     labels: The map of Kubernetes labels (key/value pairs) to be applied to
       each node. These will added in addition to any default label(s) that
       Kubernetes may apply to the node. In case of conflict in label keys, the
@@ -2081,6 +2157,7 @@ class NodeConfig(_messages.Message):
       more information, including usage and the valid values, see:
       https://kubernetes.io/docs/concepts/overview/working-with-
       objects/labels/
+    linuxNodeConfig: Parameters that can be configured on Linux nodes.
     localSsdCount: The number of local SSD disks to be attached to the node.
       The limit for this value is dependent upon the maximum number of disks
       available on a machine per zone. See:
@@ -2224,21 +2301,52 @@ class NodeConfig(_messages.Message):
   diskSizeGb = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   diskType = _messages.StringField(4)
   imageType = _messages.StringField(5)
-  labels = _messages.MessageField('LabelsValue', 6)
-  localSsdCount = _messages.IntegerField(7, variant=_messages.Variant.INT32)
-  machineType = _messages.StringField(8)
-  metadata = _messages.MessageField('MetadataValue', 9)
-  minCpuPlatform = _messages.StringField(10)
-  nodeImageConfig = _messages.MessageField('CustomImageConfig', 11)
-  oauthScopes = _messages.StringField(12, repeated=True)
-  preemptible = _messages.BooleanField(13)
-  reservationAffinity = _messages.MessageField('ReservationAffinity', 14)
-  sandboxConfig = _messages.MessageField('SandboxConfig', 15)
-  serviceAccount = _messages.StringField(16)
-  shieldedInstanceConfig = _messages.MessageField('ShieldedInstanceConfig', 17)
-  tags = _messages.StringField(18, repeated=True)
-  taints = _messages.MessageField('NodeTaint', 19, repeated=True)
-  workloadMetadataConfig = _messages.MessageField('WorkloadMetadataConfig', 20)
+  kubeletConfig = _messages.MessageField('NodeKubeletConfig', 6)
+  labels = _messages.MessageField('LabelsValue', 7)
+  linuxNodeConfig = _messages.MessageField('LinuxNodeConfig', 8)
+  localSsdCount = _messages.IntegerField(9, variant=_messages.Variant.INT32)
+  machineType = _messages.StringField(10)
+  metadata = _messages.MessageField('MetadataValue', 11)
+  minCpuPlatform = _messages.StringField(12)
+  nodeImageConfig = _messages.MessageField('CustomImageConfig', 13)
+  oauthScopes = _messages.StringField(14, repeated=True)
+  preemptible = _messages.BooleanField(15)
+  reservationAffinity = _messages.MessageField('ReservationAffinity', 16)
+  sandboxConfig = _messages.MessageField('SandboxConfig', 17)
+  serviceAccount = _messages.StringField(18)
+  shieldedInstanceConfig = _messages.MessageField('ShieldedInstanceConfig', 19)
+  tags = _messages.StringField(20, repeated=True)
+  taints = _messages.MessageField('NodeTaint', 21, repeated=True)
+  workloadMetadataConfig = _messages.MessageField('WorkloadMetadataConfig', 22)
+
+
+class NodeKubeletConfig(_messages.Message):
+  r"""Node kubelet configs.
+
+  Fields:
+    cpuCfsQuota: Enable CPU CFS quota enforcement for containers that specify
+      CPU limits.  If this option is enabled, kubelet uses CFS quota
+      (https://www.kernel.org/doc/Documentation/scheduler/sched-bwc.txt) to
+      enforce container CPU limits. Otherwise, CPU limits will not be enforced
+      at all.  Disable this option to mitigate CPU throttling problems while
+      still having your pods to be in Guaranteed QoS class by specifying the
+      CPU limits.  The default value is 'true' if unspecified.
+    cpuCfsQuotaPeriod: Set the CPU CFS quota period value 'cpu.cfs_period_us'.
+      The string must be a sequence of decimal numbers, each with optional
+      fraction and a unit suffix, such as "300ms". Valid time units are "ns",
+      "us" (or "\xb5s"), "ms", "s", "m", "h". The value must be a positive
+      duration.
+    cpuManagerPolicy: Control the CPU management policy on the node. See
+      https://kubernetes.io/docs/tasks/administer-cluster/cpu-management-
+      policies/  The following values are allowed.   - "none": the default,
+      which represents the existing scheduling behavior.   - "static": allows
+      pods with certain resource characteristics to be               granted
+      increased CPU affinity and exclusivity on the node.
+  """
+
+  cpuCfsQuota = _messages.BooleanField(1)
+  cpuCfsQuotaPeriod = _messages.StringField(2)
+  cpuManagerPolicy = _messages.StringField(3)
 
 
 class NodeManagement(_messages.Message):
@@ -2365,8 +2473,9 @@ class NodePoolAutoscaling(_messages.Message):
 class NodeTaint(_messages.Message):
   r"""Kubernetes taint is comprised of three fields: key, value, and effect.
   Effect can only be one of three types:  NoSchedule, PreferNoSchedule or
-  NoExecute.  For more information, including usage and the valid values, see:
-  https://kubernetes.io/docs/concepts/configuration/taint-and-toleration/
+  NoExecute.  See [here](https://kubernetes.io/docs/concepts/configuration
+  /taint-and-toleration) for more information, including usage and the valid
+  values.
 
   Enums:
     EffectValueValuesEnum: Effect for taint.
@@ -3516,6 +3625,8 @@ class UpdateNodePoolRequest(_messages.Message):
     imageProject: The project containing the desired image to use for this
       node pool. This is used to create clusters using a custom image.
     imageType: Required. The desired image type for the node pool.
+    kubeletConfig: Node kubelet configs.
+    linuxNodeConfig: Parameters that can be configured on Linux nodes.
     locations: The desired list of Google Compute Engine
       [zones](https://cloud.google.com/compute/docs/zones#available) in which
       the node pool's nodes should be located. Changing the locations for a
@@ -3551,14 +3662,16 @@ class UpdateNodePoolRequest(_messages.Message):
   image = _messages.StringField(2)
   imageProject = _messages.StringField(3)
   imageType = _messages.StringField(4)
-  locations = _messages.StringField(5, repeated=True)
-  name = _messages.StringField(6)
-  nodePoolId = _messages.StringField(7)
-  nodeVersion = _messages.StringField(8)
-  projectId = _messages.StringField(9)
-  upgradeSettings = _messages.MessageField('UpgradeSettings', 10)
-  workloadMetadataConfig = _messages.MessageField('WorkloadMetadataConfig', 11)
-  zone = _messages.StringField(12)
+  kubeletConfig = _messages.MessageField('NodeKubeletConfig', 5)
+  linuxNodeConfig = _messages.MessageField('LinuxNodeConfig', 6)
+  locations = _messages.StringField(7, repeated=True)
+  name = _messages.StringField(8)
+  nodePoolId = _messages.StringField(9)
+  nodeVersion = _messages.StringField(10)
+  projectId = _messages.StringField(11)
+  upgradeSettings = _messages.MessageField('UpgradeSettings', 12)
+  workloadMetadataConfig = _messages.MessageField('WorkloadMetadataConfig', 13)
+  zone = _messages.StringField(14)
 
 
 class UpgradeSettings(_messages.Message):

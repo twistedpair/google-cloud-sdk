@@ -23,6 +23,10 @@ class Connector(_messages.Message):
       `access1`.
     ipCidrRange: The range of internal addresses that follows RFC 4632
       notation. Example: `10.132.0.0/28`.
+    maxThroughput: Maximum throughput of the connector in Mbps. Default is
+      200, max is 1000.
+    minThroughput: Minimum throughput of the connector in Mbps. Default and
+      min is 200.
     name: The resource name in the format
       `projects/*/locations/*/connectors/*`.
     network: Name of a VPC network.
@@ -49,9 +53,11 @@ class Connector(_messages.Message):
 
   id = _messages.StringField(1)
   ipCidrRange = _messages.StringField(2)
-  name = _messages.StringField(3)
-  network = _messages.StringField(4)
-  status = _messages.EnumField('StatusValueValuesEnum', 5)
+  maxThroughput = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  minThroughput = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  name = _messages.StringField(5)
+  network = _messages.StringField(6)
+  status = _messages.EnumField('StatusValueValuesEnum', 7)
 
 
 class ListConnectorsResponse(_messages.Message):

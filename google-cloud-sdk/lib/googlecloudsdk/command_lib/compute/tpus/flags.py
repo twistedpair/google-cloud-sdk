@@ -18,6 +18,7 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import base
 
 
@@ -70,4 +71,108 @@ def GetRangeFlag():
        currently existing TPU, the CIDR range conflicts with any networks
        in the user's provided network, or the provided network is peered with
        another network that is using that CIDR range.
+      """)
+
+
+def AddPreemptibleFlag(parser):
+  return parser.add_argument(
+      '--preemptible',
+      required=False,
+      action='store_false',
+      help="""\
+      Create a preemptible Cloud TPU, instead of a normal (non-preemptible) Cloud TPU. A
+        preemptible Cloud TPU costs less per hour, but the Cloud TPU service can stop/terminate
+        the node at any time.
+      """)
+
+
+def AddTpuNameArg(parser):
+  return parser.add_argument(
+      'name',
+      help="""\
+      Override the name to use for VMs and TPUs (defaults to your username). """
+      )
+
+
+def AddPreemptibleVmFlag(parser):
+  return parser.add_argument(
+      '--preemptible-vm',
+      required=False,
+      action='store_false',
+      help="""\
+      Create a preemptible Compute Engine VM, instead of a normal (non-preemptible) VM.
+        A preemptible VM costs less per hour, but the Compute Engine service can terminate the
+        instance at any time.
+      """)
+
+
+def AddTfVersionFlag(parser):
+  return parser.add_argument(
+      '--tf-version',
+      required=False,
+      help="""\
+      Set the version of TensorFlow to use when creating the Compute Engine VM and the Cloud TPU.
+        (It defaults to auto-selecting the latest stable release.)
+      """
+      )
+
+
+def AddVmOnlyFlag(parser):
+  return parser.add_argument(
+      '--vm-only',
+      required=False,
+      help="""\
+      Do not allocate a TPU, only allocate a VM (useful if you're not ready to run on a TPU yet).
+      """)
+
+
+def AddDeepLearningImagesFlag(parser):
+  return parser.add_argument(
+      '--use-dl-images',
+      help="""\
+      Use Deep Learning VM Images (see docs - https://cloud.google.com/deep-learning-vm/) instead
+        of TPU-specific machine images. Defaults to TPU-specific images.
+      """)
+
+
+def AddDryRunFlag(parser):
+  return parser.add_argument(
+      '--dry-run',
+      help="""\
+      Do not make changes; print only what would have happened.
+      """)
+
+
+def AddPortForwardingFlag(parser):
+  return parser.add_argument(
+      '--forward-ports',
+      action='store_false',
+      help="""\
+      Automatically forward useful ports from the Compute Engine VM to your local
+        machine. The ports forwarded are: 6006 (tensorboard), 8888 (jupyter notebooks),
+        8470 (TPU port), 8466 (TPU profiler port).
+      """)
+
+
+def AddGceImageFlag(parser):
+  return parser.add_argument(
+      '--gce-image',
+      help="""\
+      Override the automatically chosen Compute Engine Image. Use this flag when you're using
+        your own custom images instead of the provided ones with TensorFlow pre-installed.
+      """)
+
+
+def AddDiskSizeFlag(parser):
+  return parser.add_argument(
+      '--disk-size',
+      default='250GB',
+      type=arg_parsers.BinarySize(
+          lower_bound='20GB',
+          upper_bound='500GB',
+          suggested_binary_size_scales=['GB']),
+      help="""\
+      Configures the root volume size of your Compute Engine VM (in GB). The
+      minimum size is 20GB and the maximum is 500GB. Specified value must be an
+      integer multiple of Gigabytes.
       """)

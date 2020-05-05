@@ -19,6 +19,8 @@ from __future__ import division
 from __future__ import unicode_literals
 
 import json
+import re
+
 from googlecloudsdk.api_lib.util import exceptions as exceptions_util
 from googlecloudsdk.core import exceptions
 
@@ -120,6 +122,44 @@ class HttpError(exceptions_util.HttpException):
           '{{field_violations.{}}}'.format(k)
           for k in self.payload.field_violations.keys()
       ])
+
+
+class FieldMismatchError(exceptions.Error):
+  """Given field value doesn't match the expected type."""
+
+
+# Should match
+# https://github.com/google/apitools/blob/02db277e2bbc5906c8787f64dc9a743fe3327f90/apitools/base/protorpclite/messages.py#L1338-L1340..
+# apitools reraises the ValidationError as its own InvalidDataFromServerError
+# https://github.com/google/apitools/blob/ecbcd3e9e5ec44826d35fd0d0a35387c4d66c2b9/apitools/base/py/base_api.py#L449-L451
+# so the start of the regex is to account for the additional error message
+# prefix added by that.
+VALIDATION_ERROR_MSG_REGEX = re.compile(
+    r'^.*(?:\n.*)*Expected type .+? for field (.+?), found (.+?) \(type .+?\)',
+    re.MULTILINE)
+
+
+def MaybeRaiseCustomFieldMismatch(error):
+  """Special handling for port field type mismatch.
+
+  Due to differences in golang structs used by clusters and proto messages used
+  by gcloud, some invalid service responses should be specially handled.
+  See b/149365868#comment5 for more info.
+
+  Args:
+    error: original error complaining of a type mismatch.
+  Raises:
+    FieldMismatchError: If the error is due to our own custom handling or the
+      original error if not.
+  """
+  regex_match = VALIDATION_ERROR_MSG_REGEX.match(str(error))
+  if regex_match and regex_match.group(1) == 'port':
+    raise FieldMismatchError(
+        'Error decoding the "port" field. Only integer ports are supported '
+        'by gcloud. Please change your port from "{}" to an integer value to '
+        'be compatible with gcloud.'.format(regex_match.group(2)))
+  else:
+    raise error
 
 
 class KubernetesError(exceptions.Error):

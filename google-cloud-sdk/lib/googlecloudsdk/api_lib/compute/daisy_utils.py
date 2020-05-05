@@ -752,7 +752,7 @@ def RunOVFImportBuild(args, compute_client, instance_name, source_uri,
     AppendArg(ovf_importer_args, 'release-track', compute_release_track)
   AppendArg(ovf_importer_args, 'hostname', hostname)
 
-  build_tags = ['gce-ovf-import']
+  build_tags = ['gce-daisy', 'gce-ovf-import']
 
   backoff = lambda elapsed: 2 if elapsed < 30 else 15
 
@@ -828,7 +828,7 @@ def RunMachineImageOVFImportBuild(args, output_filter, compute_release_track):
   if compute_release_track:
     AppendArg(ovf_importer_args, 'release-track', compute_release_track)
 
-  build_tags = ['gce-ovf-machine-image-import']
+  build_tags = ['gce-daisy', 'gce-ovf-machine-image-import']
 
   backoff = lambda elapsed: 2 if elapsed < 30 else 15
 

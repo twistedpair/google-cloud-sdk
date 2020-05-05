@@ -6,6 +6,21 @@ topic-name:
   help_text: |
     Topic name.
 
+subscription-name:
+  api_field: subscriptionId
+  arg_name: subscription
+  is_positional: true
+  required: true
+  help_text: |
+    Subscription name.
+
+subscription-topic-name:
+  api_field: subscription.topic
+  arg_name: topic
+  required: true
+  help_text: |
+    Topic name associated with the subscription.
+
 partitions:
   api_field: topic.partitionConfig.count
   arg_name: partitions
@@ -47,3 +62,17 @@ message-retention-period:
     dropped to make space for new ones once the `per-partition-bytes` limit is
     reached.
     A valid example value of this flag would be `message-retention-period="2w"`.
+
+delivery-requirement:
+  api_field: subscription.deliveryConfig.deliveryRequirement
+  arg_name: delivery-requirement
+  choices:
+  - arg_value: deliver-immediately
+    enum_value: DELIVER_IMMEDIATELY
+  - arg_value: deliver-after-stored
+    enum_value: DELIVER_AFTER_STORED
+  help_text: |
+    When this subscription should send messages to subscribers relative to
+    messages persistence in storage.
+    See https://cloud.google.com/pubsub/lite/docs/subscriptions#creating_lite_subscriptions
+    for more info.

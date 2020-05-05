@@ -93,7 +93,10 @@ class MatrixCreator(object):
         iosXcTest=self._messages.IosXcTest(
             testsZip=self._BuildFileReference(self._args.test),
             xctestrun=self._BuildFileReference(self._args.xctestrun_file),
-            xcodeVersion=self._args.xcode_version))
+            xcodeVersion=self._args.xcode_version,
+            testSpecialEntitlements=getattr(self._args,
+                                            'test_special_entitlements',
+                                            False)))
     return spec
 
   def _BuildIosTestLoopTestSpec(self):

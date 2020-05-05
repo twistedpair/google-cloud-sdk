@@ -30,7 +30,7 @@ class CustomClass(_messages.Message):
 
   Fields:
     customClassId: If this custom class is a resource, the custom_class_id is
-      the resource id of the CustomClass.
+      the resource id of the CustomClass. Case sensitive.
     items: A collection of class items.
     name: The resource name of the custom class.
   """
@@ -537,14 +537,14 @@ class Phrase(_messages.Message):
   can also include pre-built or custom classes containing groups of words that
   represent common concepts that occur in natural language. For example,
   rather than providing a phrase hint for every month of the year (e.g. "i was
-  born in january", "i was born in febuary", ...), use the pre-built $MONTH
+  born in january", "i was born in febuary", ...), use the pre-built `$MONTH`
   class improves the likelihood of correctly transcribing audio that includes
   months (e.g. "i was born in $month"). To refer to pre-built classes, use the
-  class' symbol prepended with $ e.g. $MONTH. To refer to custom classes that
-  were defined inline in the request, set the class's `custom_class_id` to a
-  string unique to all class resources and inline classes. Then use the class'
-  id wrapped in ${...} e.g. "${my-months}". To refer to custom classes
-  resources, use the class' id wrapped in ${} (e.g. ${my-months}).
+  class' symbol prepended with `$` e.g. `$MONTH`. To refer to custom classes
+  that were defined inline in the request, set the class's `custom_class_id`
+  to a string unique to all class resources and inline classes. Then use the
+  class' id wrapped in $`{...}` e.g. "${my-months}". To refer to custom
+  classes resources, use the class' id wrapped in `${}` (e.g. `${my-months}`).
 
   Fields:
     boost: Hint Boost. Overrides the boost set at the phrase set level.

@@ -36,25 +36,17 @@ class CommandRater(object):
   # a search term.
   _NOT_FOUND_MULTIPLIER = 0.1
 
-  # The below multipliers penalize commands that are duplicates of others.
-  _DUPLICATE_MULTIPLIER = 0.1
-
-  def __init__(self, results, command, found_commands):
+  def __init__(self, results, command):
     """Create a CommandRater.
 
     Args:
       results: googlecloudsdk.command_lib.search_help.search_util
         .CommandSearchResult, class that holds results.
       command: dict, a json representation of a command.
-      found_commands: [dict], a list of all commands that were found.
     """
     self._command = command
     self._terms = results.AllTerms()
     self._results = results
-    self._found_commands_map = {}
-    for c in found_commands:
-      path = _GetPathWithoutPrefix(c)
-      self._found_commands_map.setdefault(path, []).append(c)
 
   def Rate(self):
     """Produce a simple relevance rating for a set of command search results.
@@ -73,7 +65,6 @@ class CommandRater(object):
     rating = 1.0
     rating *= self._RateForLocation()
     rating *= self._RateForTermsFound()
-    rating *= self._RateForDuplicates()
     return rating
 
   def _RateForLocation(self):
@@ -101,48 +92,6 @@ class CommandRater(object):
         rating *= self._NOT_FOUND_MULTIPLIER
     return rating
 
-  def _RateForDuplicates(self):
-    """Get a rating based on whether better results were found.
-
-    For any command, if a command with the same name but a higher release track
-    was found *and* the same terms were found in the same place, the rating
-    is decreased.
-
-    Returns:
-      rating: float, a rating representing the penalty if the same results
-        were found with a higher release track.
-    """
-    rating = 1.0
-    tracks = [lookup.GA, lookup.BETA, lookup.ALPHA]
-    command_path = _GetPathWithoutPrefix(self._command)
-    for matching_command in self._found_commands_map.get(command_path, []):
-      if matching_command != self._command:
-        matching_release = matching_command[lookup.RELEASE]
-        release = self._command[lookup.RELEASE]
-        # Use the json representation of the results since that's all
-        # that's available in matching_command.
-        matching_results = matching_command[lookup.RESULTS]
-        results = self._command[lookup.RESULTS]
-        if (tracks.index(matching_release) < tracks.index(release)
-            and matching_results == results):
-          rating *= self._DUPLICATE_MULTIPLIER
-    return rating
-
-
-def _GetPathWithoutPrefix(command):
-  """Helper to get the path of a command without a track prefix.
-
-  Args:
-    command: dict, json representation of a command.
-
-  Returns:
-    a ' '-separated string representation of a command path without any
-      track prefixes.
-  """
-  return ' '.join(
-      [segment for segment in command[lookup.PATH]
-       if segment not in [lookup.ALPHA_PATH, lookup.BETA_PATH]])
-
 
 class CumulativeRater(object):
   """Rates all found commands for relevance."""
@@ -165,9 +114,7 @@ class CumulativeRater(object):
 
   def RateAll(self):
     """Adds rating to every command found."""
-    all_commands = [command for (command, _)
-                    in self._found_commands_and_results]
     for command, results in self._found_commands_and_results:
-      rating = CommandRater(results, command, all_commands).Rate()
+      rating = CommandRater(results, command).Rate()
       command[lookup.RELEVANCE] = rating
 

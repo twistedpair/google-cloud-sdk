@@ -114,8 +114,9 @@ def AddUpdateArgs(parser, include_alpha_logging,
   updated_field.add_argument(
       '--enable-flow-logs',
       action=arg_parsers.StoreTrueFalseAction,
-      help=('Enable/disable VPC Flow Logs for this subnet. More information '
-            'for VPC Flow Logs can be found at '
+      help=('Enable/disable VPC Flow Logs for this subnet. If the subnet does '
+            ' not support VPC Flow Logs, this flag has no effect. For '
+            ' more information, see '
             'https://cloud.google.com/vpc/docs/using-flow-logs.'))
 
   AddLoggingAggregationInterval(parser, messages)
@@ -322,7 +323,8 @@ def GetLoggingMetadataArg(messages):
       help_str="""\
         Can only be specified if VPC Flow Logs for this subnetwork is
         enabled. Configures whether metadata fields should be added to the
-        reported logs. Default is to include all metadata.
+        reported logs. Default is to include all metadata. Note that
+        "include-all" does not include GKE annotations.
         """)
 
 
@@ -341,7 +343,8 @@ def GetLoggingMetadataArgDeprecated(messages):
       help_str="""\
         Can only be specified if VPC Flow Logs for this subnetwork is
         enabled. Configures whether metadata fields should be added to the
-        reported logs. Default is to include all metadata.
+        reported logs. Default is to include all metadata. Note that
+        "include-all" does not include GKE annotations.
         """)
 
 

@@ -272,6 +272,8 @@ apis:
   compute:
     alpha:
       discovery_doc: compute_alpha.json
+      enable_mtls: true
+      mtls_endpoint_override: https://compute.mtls.googleapis.com/compute/alpha/
       resources:
         nextHopGateways:
           path: projects/{project}/global/gateways/{nextHopGateway}
@@ -279,6 +281,8 @@ apis:
           path: projects/{project}/global/securityPolicies/{securityPolicy}/securityPolicyRules/{securityPolicyRule}
     beta:
       discovery_doc: compute_beta.json
+      enable_mtls: true
+      mtls_endpoint_override: https://compute.mtls.googleapis.com/compute/beta/
       unelidable_request_methods:
         - compute.disks.resize
       resources:
@@ -288,6 +292,8 @@ apis:
           path: projects/{project}/global/securityPolicies/{securityPolicy}/securityPolicyRules/{securityPolicyRule}
     v1:
       discovery_doc: compute_v1.json
+      enable_mtls: true
+      mtls_endpoint_override: https://compute.mtls.googleapis.com/compute/v1/
       default: true
       resources:
         nextHopGateways:
@@ -418,9 +424,14 @@ apis:
     v1alpha1:
       discovery_doc: domains_v1alpha1.json
       default: true
+    v1alpha2:
+      discovery_doc: domains_v1alpha2.json
   eventflow:
     v1beta2:
       discovery_doc: eventflow_v1beta2.json
+  events:
+    v1beta1:
+      discovery_doc: events_v1beta1.json
   file:
     v1p1alpha1:
       discovery_doc: file_v1p1alpha1.json
@@ -876,6 +887,12 @@ apis:
   workflowexecutions:
     v1alpha1:
       discovery_doc: workflowexecutions_v1alpha1.json
+      default: true
+    v1beta:
+      discovery_doc: workflowexecutions_v1beta.json
   workflows:
     v1alpha1:
       discovery_doc: workflows_v1alpha1.json
+      default: true
+    v1beta:
+      discovery_doc: workflows_v1beta.json

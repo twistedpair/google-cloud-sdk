@@ -625,6 +625,10 @@
           "items": {
             "$ref": "GoogleCloudVideointelligenceV1beta2_LabelFrame"
           }
+        },
+        "version": {
+          "description": "Feature version.",
+          "type": "string"
         }
       }
     },
@@ -691,6 +695,10 @@
           "items": {
             "$ref": "GoogleCloudVideointelligenceV1beta2_ExplicitContentFrame"
           }
+        },
+        "version": {
+          "description": "Feature version.",
+          "type": "string"
         }
       }
     },
@@ -813,6 +821,10 @@
           "items": {
             "$ref": "GoogleCloudVideointelligenceV1beta2_TextSegment"
           }
+        },
+        "version": {
+          "description": "Feature version.",
+          "type": "string"
         }
       }
     },
@@ -915,6 +927,10 @@
           "items": {
             "$ref": "GoogleCloudVideointelligenceV1beta2_ObjectTrackingFrame"
           }
+        },
+        "version": {
+          "description": "Feature version.",
+          "type": "string"
         }
       }
     },
@@ -1290,6 +1306,10 @@
           "items": {
             "$ref": "GoogleCloudVideointelligenceV1_LabelFrame"
           }
+        },
+        "version": {
+          "description": "Feature version.",
+          "type": "string"
         }
       }
     },
@@ -1356,6 +1376,10 @@
           "items": {
             "$ref": "GoogleCloudVideointelligenceV1_ExplicitContentFrame"
           }
+        },
+        "version": {
+          "description": "Feature version.",
+          "type": "string"
         }
       }
     },
@@ -1478,6 +1502,10 @@
           "items": {
             "$ref": "GoogleCloudVideointelligenceV1_TextSegment"
           }
+        },
+        "version": {
+          "description": "Feature version.",
+          "type": "string"
         }
       }
     },
@@ -1580,6 +1608,10 @@
           "items": {
             "$ref": "GoogleCloudVideointelligenceV1_ObjectTrackingFrame"
           }
+        },
+        "version": {
+          "description": "Feature version.",
+          "type": "string"
         }
       }
     },
@@ -1972,6 +2004,10 @@
           "items": {
             "$ref": "GoogleCloudVideointelligenceV1p1beta1_LabelFrame"
           }
+        },
+        "version": {
+          "description": "Feature version.",
+          "type": "string"
         }
       }
     },
@@ -2038,6 +2074,10 @@
           "items": {
             "$ref": "GoogleCloudVideointelligenceV1p1beta1_ExplicitContentFrame"
           }
+        },
+        "version": {
+          "description": "Feature version.",
+          "type": "string"
         }
       }
     },
@@ -2160,6 +2200,10 @@
           "items": {
             "$ref": "GoogleCloudVideointelligenceV1p1beta1_TextSegment"
           }
+        },
+        "version": {
+          "description": "Feature version.",
+          "type": "string"
         }
       }
     },
@@ -2262,6 +2306,10 @@
           "items": {
             "$ref": "GoogleCloudVideointelligenceV1p1beta1_ObjectTrackingFrame"
           }
+        },
+        "version": {
+          "description": "Feature version.",
+          "type": "string"
         }
       }
     },
@@ -2654,6 +2702,10 @@
           "items": {
             "$ref": "GoogleCloudVideointelligenceV1p2beta1_LabelFrame"
           }
+        },
+        "version": {
+          "description": "Feature version.",
+          "type": "string"
         }
       }
     },
@@ -2720,6 +2772,10 @@
           "items": {
             "$ref": "GoogleCloudVideointelligenceV1p2beta1_ExplicitContentFrame"
           }
+        },
+        "version": {
+          "description": "Feature version.",
+          "type": "string"
         }
       }
     },
@@ -2842,6 +2898,10 @@
           "items": {
             "$ref": "GoogleCloudVideointelligenceV1p2beta1_TextSegment"
           }
+        },
+        "version": {
+          "description": "Feature version.",
+          "type": "string"
         }
       }
     },
@@ -2944,6 +3004,10 @@
           "items": {
             "$ref": "GoogleCloudVideointelligenceV1p2beta1_ObjectTrackingFrame"
           }
+        },
+        "version": {
+          "description": "Feature version.",
+          "type": "string"
         }
       }
     },
@@ -3354,6 +3418,10 @@
           "items": {
             "$ref": "GoogleCloudVideointelligenceV1p3beta1_LabelFrame"
           }
+        },
+        "version": {
+          "description": "Feature version.",
+          "type": "string"
         }
       }
     },
@@ -3425,6 +3493,10 @@
           "description": "The thumbnail of a person's face.",
           "type": "string",
           "format": "byte"
+        },
+        "version": {
+          "description": "Feature version.",
+          "type": "string"
         }
       }
     },
@@ -3583,6 +3655,10 @@
           "items": {
             "$ref": "GoogleCloudVideointelligenceV1p3beta1_ExplicitContentFrame"
           }
+        },
+        "version": {
+          "description": "Feature version.",
+          "type": "string"
         }
       }
     },
@@ -3705,6 +3781,10 @@
           "items": {
             "$ref": "GoogleCloudVideointelligenceV1p3beta1_TextSegment"
           }
+        },
+        "version": {
+          "description": "Feature version.",
+          "type": "string"
         }
       }
     },
@@ -3790,6 +3870,10 @@
           "items": {
             "$ref": "GoogleCloudVideointelligenceV1p3beta1_ObjectTrackingFrame"
           }
+        },
+        "version": {
+          "description": "Feature version.",
+          "type": "string"
         }
       }
     },
@@ -3845,6 +3929,10 @@
           "items": {
             "$ref": "GoogleCloudVideointelligenceV1p3beta1_Track"
           }
+        },
+        "version": {
+          "description": "Feature version.",
+          "type": "string"
         }
       }
     },
@@ -3859,6 +3947,10 @@
           "items": {
             "$ref": "GoogleCloudVideointelligenceV1p3beta1_CelebrityTrack"
           }
+        },
+        "version": {
+          "description": "Feature version.",
+          "type": "string"
         }
       }
     },

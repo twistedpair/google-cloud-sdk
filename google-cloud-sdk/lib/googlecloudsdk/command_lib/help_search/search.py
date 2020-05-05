@@ -61,31 +61,44 @@ class Searcher(object):
     Commands match if at least one of the searcher's terms is found in the
     command.
 
+    Filters out duplicates with lower tracks.
+
     Returns:
       [dict], a list of the matching commands in json form.
     """
+    found_commands = self._WalkTree(self.parent, [])
+    # Sorts by track, i.e. Ga -> Beta -> Alpha.
+    found_commands.sort(key=lambda e: e['release'], reverse=True)
+    de_duped_commands = []
+    unique_results_tracking_list = []
 
-    def _WalkTree(current_parent, found_commands):
-      """Recursively walks command tree, checking for matches.
+    for command in found_commands:
+      command_path = _GetCommandPathWithoutTrackPrefix(command)
+      unique_combo = (command_path, command['results'])
+      if unique_combo not in unique_results_tracking_list:
+        unique_results_tracking_list.append(unique_combo)
+        de_duped_commands.append(command)
 
-      If a command matches it is postprocessed and added to found_commands.
-
-      Args:
-        current_parent: dict, a json representation of a CLI command.
-        found_commands: [dict], a list of matching commands.
-
-      Returns:
-        [dict], a list of commands that have matched so far.
-      """
-      result = self._PossiblyGetResult(current_parent)
-      if result:
-        found_commands.append(result)
-      for child_command in current_parent.get(lookup.COMMANDS, {}).values():
-        found_commands = _WalkTree(child_command, found_commands)
-      return found_commands
-
-    found_commands = _WalkTree(self.parent, [])
     self._rater.RateAll()
+    return de_duped_commands
+
+  def _WalkTree(self, current_parent, found_commands):
+    """Recursively walks command tree, checking for matches.
+
+    If a command matches, it is postprocessed and added to found_commands.
+
+    Args:
+      current_parent: dict, a json representation of a CLI command.
+      found_commands: [dict], a list of matching commands.
+
+    Returns:
+      [dict], a list of commands that have matched so far.
+    """
+    result = self._PossiblyGetResult(current_parent)
+    if result:
+      found_commands.append(result)
+    for child_command in current_parent.get(lookup.COMMANDS, {}).values():
+      found_commands = self._WalkTree(child_command, found_commands)
     return found_commands
 
   def _PossiblyGetResult(self, command):
@@ -109,5 +122,19 @@ class Searcher(object):
       self._rater.AddFoundCommand(new_command, results)
       return new_command
 
+
+def _GetCommandPathWithoutTrackPrefix(command):
+  """Helper to get the path of a command without a track prefix.
+
+  Args:
+    command: dict, json representation of a command.
+
+  Returns:
+    a ' '-separated string representation of a command path without any
+      track prefixes.
+  """
+  return ' '.join(
+      [segment for segment in command[lookup.PATH]
+       if segment not in [lookup.ALPHA_PATH, lookup.BETA_PATH]])
 
 

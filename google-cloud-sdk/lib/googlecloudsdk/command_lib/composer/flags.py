@@ -303,6 +303,11 @@ WEB_SERVER_ALLOW_IP = base.Argument(
     Airflow web server. By default, all IPs are allowed to access the web
     server.
 
+    This is a repeated argument that can be specified multiple times to specify
+    multiple IP ranges.
+    (e.g. --web-server-allow-ip=ip_range=130.211.160.0/28,description="office network"
+    --web-server-allow-ip=ip_range=130.211.114.0/28,description="legacy network")
+
     *ip_range*::: IPv4 or IPv6 range of addresses allowed to access the Airflow
     web server.
 

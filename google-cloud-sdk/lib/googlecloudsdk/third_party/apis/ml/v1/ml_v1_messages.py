@@ -478,7 +478,7 @@ class GoogleCloudMlV1ExplanationConfig(_messages.Message):
   r"""Message holding configuration options for explaining model predictions.
   There are two feature attribution methods supported for TensorFlow models:
   integrated gradients and sampled Shapley. [Learn more about feature
-  attributions.](/ml-engine/docs/ai-explanations/overview)
+  attributions.](/ai-platform/prediction/docs/ai-explanations/overview)
 
   Fields:
     ablationAttribution: TensorFlow framework explanation methods. Attributes
@@ -883,7 +883,7 @@ class GoogleCloudMlV1HyperparameterSpec(_messages.Message):
 class GoogleCloudMlV1IntegratedGradientsAttribution(_messages.Message):
   r"""Attributes credit by computing the Aumann-Shapley value taking advantage
   of the model's fully differentiable structure. Refer to this paper for more
-  details: http://proceedings.mlr.press/v70/sundararajan17a.html
+  details: https://arxiv.org/abs/1703.01365
 
   Fields:
     numIntegralSteps: Number of steps for approximating the path integral. A
@@ -1754,6 +1754,24 @@ class GoogleCloudMlV1ReplicaConfig(_messages.Message):
       the replica. [Learn about restrictions on accelerator configurations for
       training.](/ai-platform/training/docs/using-gpus#compute-engine-machine-
       types-with-gpu)
+    containerArgs: Arguments to the entrypoint command. The following rules
+      apply for container_command and container_args: - If you do not supply
+      command or args:   The defaults defined in the Docker image are used. -
+      If you supply a command but no args:   The default EntryPoint and the
+      default Cmd defined in the Docker image   are ignored. Your command is
+      run without any arguments. - If you supply only args:   The default
+      Entrypoint defined in the Docker image is run with the args   that you
+      supplied. - If you supply a command and args:   The default Entrypoint
+      and the default Cmd defined in the Docker image   are ignored. Your
+      command is run with your args. It cannot be set if custom container
+      image is not provided. Note that this field and [TrainingInput.args] are
+      mutually exclusive, i.e., both cannot be set at the same time.
+    containerCommand: The command with which the replica's custom container is
+      run. If provided, it will override default ENTRYPOINT of the docker
+      image. If not provided, the docker image's ENTRYPOINT is used. It cannot
+      be set if custom container image is not provided. Note that this field
+      and [TrainingInput.args] are mutually exclusive, i.e., both cannot be
+      set at the same time.
     imageUri: The Docker image to run on the replica. This image must be in
       Container Registry. Learn more about [configuring custom containers
       ](/ai-platform/training/docs/distributed-training-containers).
@@ -1772,8 +1790,10 @@ class GoogleCloudMlV1ReplicaConfig(_messages.Message):
   """
 
   acceleratorConfig = _messages.MessageField('GoogleCloudMlV1AcceleratorConfig', 1)
-  imageUri = _messages.StringField(2)
-  tpuTfVersion = _messages.StringField(3)
+  containerArgs = _messages.StringField(2, repeated=True)
+  containerCommand = _messages.StringField(3, repeated=True)
+  imageUri = _messages.StringField(4)
+  tpuTfVersion = _messages.StringField(5)
 
 
 class GoogleCloudMlV1RequestLoggingConfig(_messages.Message):
@@ -1864,9 +1884,11 @@ class GoogleCloudMlV1Scheduling(_messages.Message):
       file](/ai-platform/training/docs/training-
       jobs#formatting_your_configuration_parameters). For example:  ```yaml
       trainingInput:   ...   scheduling:     maxRunningTime: 7200s   ... ```
+    maxWaitTime: A string attribute.
   """
 
   maxRunningTime = _messages.StringField(1)
+  maxWaitTime = _messages.StringField(2)
 
 
 class GoogleCloudMlV1SetDefaultVersionRequest(_messages.Message):
@@ -2298,6 +2320,14 @@ class GoogleCloudMlV1TrainingInput(_messages.Message):
       options for training with TPUs](/ml-engine/docs/tensorflow/using-
       tpus#configuring_a_custom_tpu_machine).
     nasJobSpec: Optional. The spec of a Neural Architecture Search (NAS) job.
+    network: Optional. The full name of the Google Compute Engine
+      [network](/compute/docs/networks-and-firewalls#networks) to which the
+      Job is peered. For example, projects/12345/global/networks/myVPC. Format
+      is of the form projects/{project}/global/networks/{network}. Where
+      {project} is a project number, as in '12345', and {network} is network
+      name.".  Private services access must already be configured for the
+      network. If left unspecified, the Job is not peered with any network.
+      Learn more - Connecting Job to user network over private IP.
     packageUris: Required. The Google Cloud Storage location of the packages
       with the training program and any additional dependencies. The maximum
       number of package URIs is 100.
@@ -2426,20 +2456,21 @@ class GoogleCloudMlV1TrainingInput(_messages.Message):
   masterConfig = _messages.MessageField('GoogleCloudMlV1ReplicaConfig', 8)
   masterType = _messages.StringField(9)
   nasJobSpec = _messages.MessageField('GoogleCloudMlV1NasSpec', 10)
-  packageUris = _messages.StringField(11, repeated=True)
-  parameterServerConfig = _messages.MessageField('GoogleCloudMlV1ReplicaConfig', 12)
-  parameterServerCount = _messages.IntegerField(13)
-  parameterServerType = _messages.StringField(14)
-  pythonModule = _messages.StringField(15)
-  pythonVersion = _messages.StringField(16)
-  region = _messages.StringField(17)
-  runtimeVersion = _messages.StringField(18)
-  scaleTier = _messages.EnumField('ScaleTierValueValuesEnum', 19)
-  scheduling = _messages.MessageField('GoogleCloudMlV1Scheduling', 20)
-  useChiefInTfConfig = _messages.BooleanField(21)
-  workerConfig = _messages.MessageField('GoogleCloudMlV1ReplicaConfig', 22)
-  workerCount = _messages.IntegerField(23)
-  workerType = _messages.StringField(24)
+  network = _messages.StringField(11)
+  packageUris = _messages.StringField(12, repeated=True)
+  parameterServerConfig = _messages.MessageField('GoogleCloudMlV1ReplicaConfig', 13)
+  parameterServerCount = _messages.IntegerField(14)
+  parameterServerType = _messages.StringField(15)
+  pythonModule = _messages.StringField(16)
+  pythonVersion = _messages.StringField(17)
+  region = _messages.StringField(18)
+  runtimeVersion = _messages.StringField(19)
+  scaleTier = _messages.EnumField('ScaleTierValueValuesEnum', 20)
+  scheduling = _messages.MessageField('GoogleCloudMlV1Scheduling', 21)
+  useChiefInTfConfig = _messages.BooleanField(22)
+  workerConfig = _messages.MessageField('GoogleCloudMlV1ReplicaConfig', 23)
+  workerCount = _messages.IntegerField(24)
+  workerType = _messages.StringField(25)
 
 
 class GoogleCloudMlV1TrainingOutput(_messages.Message):
@@ -2476,8 +2507,8 @@ class GoogleCloudMlV1TrainingOutput(_messages.Message):
 class GoogleCloudMlV1TreeShapAttribution(_messages.Message):
   r"""Attributes credit by computing the Shapley value taking advantage of the
   model's tree ensemble structure. Refer to this paper for more details:
-  http://papers.nips.cc/paper/7062-a-unified-approach-to-interpreting-model-
-  predictions.pdf. This attribution method is supported for XGBoost models.
+  https://arxiv.org/abs/1705.07874 This attribution method is supported for
+  XGBoost models.
   """
 
 
@@ -2916,10 +2947,14 @@ class GoogleIamV1Binding(_messages.Message):
   r"""Associates `members` with a `role`.
 
   Fields:
-    condition: The condition that is associated with this binding. NOTE: An
-      unsatisfied condition will not allow user access via current binding.
-      Different bindings, including their conditions, are examined
-      independently.
+    condition: The condition that is associated with this binding.  If the
+      condition evaluates to `true`, then this binding applies to the current
+      request.  If the condition evaluates to `false`, then this binding does
+      not apply to the current request. However, a different role binding
+      might grant the same role to one or more of the members in this binding.
+      To learn which resources support conditions in their IAM policies, see
+      the [IAM documentation](https://cloud.google.com/iam/help/conditions
+      /resource-policies).
     members: Specifies the identities requesting access for a Cloud Platform
       resource. `members` can have the following values:  * `allUsers`: A
       special identifier that represents anyone who is    on the internet;
@@ -2965,19 +3000,22 @@ class GoogleIamV1Policy(_messages.Message):
   `bindings`. A `binding` binds one or more `members` to a single `role`.
   Members can be user accounts, service accounts, Google groups, and domains
   (such as G Suite). A `role` is a named list of permissions; each `role` can
-  be an IAM predefined role or a user-created custom role.  Optionally, a
-  `binding` can specify a `condition`, which is a logical expression that
-  allows access to a resource only if the expression evaluates to `true`. A
-  condition can add constraints based on attributes of the request, the
-  resource, or both.  **JSON example:**      {       "bindings": [         {
+  be an IAM predefined role or a user-created custom role.  For some types of
+  Google Cloud resources, a `binding` can also specify a `condition`, which is
+  a logical expression that allows access to a resource only if the expression
+  evaluates to `true`. A condition can add constraints based on attributes of
+  the request, the resource, or both. To learn which resources support
+  conditions in their IAM policies, see the [IAM
+  documentation](https://cloud.google.com/iam/help/conditions/resource-
+  policies).  **JSON example:**      {       "bindings": [         {
   "role": "roles/resourcemanager.organizationAdmin",           "members": [
   "user:mike@example.com",             "group:admins@example.com",
   "domain:google.com",             "serviceAccount:my-project-
   id@appspot.gserviceaccount.com"           ]         },         {
-  "role": "roles/resourcemanager.organizationViewer",           "members":
-  ["user:eve@example.com"],           "condition": {             "title":
-  "expirable access",             "description": "Does not grant access after
-  Sep 2020",             "expression": "request.time <
+  "role": "roles/resourcemanager.organizationViewer",           "members": [
+  "user:eve@example.com"           ],           "condition": {
+  "title": "expirable access",             "description": "Does not grant
+  access after Sep 2020",             "expression": "request.time <
   timestamp('2020-10-01T00:00:00.000Z')",           }         }       ],
   "etag": "BwWWja0YfJA=",       "version": 3     }  **YAML example:**
   bindings:     - members:       - user:mike@example.com       -
@@ -3020,7 +3058,10 @@ class GoogleIamV1Policy(_messages.Message):
       a version `3` policy with a version `1` policy, and all of the
       conditions in the version `3` policy are lost.  If a policy does not
       include any conditions, operations on that policy may specify any valid
-      version or leave the field unset.
+      version or leave the field unset.  To learn which resources support
+      conditions in their IAM policies, see the [IAM
+      documentation](https://cloud.google.com/iam/help/conditions/resource-
+      policies).
   """
 
   auditConfigs = _messages.MessageField('GoogleIamV1AuditConfig', 1, repeated=True)
@@ -3039,8 +3080,7 @@ class GoogleIamV1SetIamPolicyRequest(_messages.Message):
       might reject them.
     updateMask: OPTIONAL: A FieldMask specifying which fields of the policy to
       modify. Only the fields in the mask will be modified. If no mask is
-      provided, the following default mask is used: paths: "bindings, etag"
-      This field is only used by Cloud IAM.
+      provided, the following default mask is used:  `paths: "bindings, etag"`
   """
 
   policy = _messages.MessageField('GoogleIamV1Policy', 1)
@@ -3347,7 +3387,10 @@ class MlProjectsJobsGetIamPolicyRequest(_messages.Message):
       returned.  Valid values are 0, 1, and 3. Requests specifying an invalid
       value will be rejected.  Requests for policies with any conditional
       bindings must specify version 3. Policies without any conditional
-      bindings may specify any valid value or leave the field unset.
+      bindings may specify any valid value or leave the field unset.  To learn
+      which resources support conditions in their IAM policies, see the [IAM
+      documentation](https://cloud.google.com/iam/help/conditions/resource-
+      policies).
     resource: REQUIRED: The resource for which the policy is being requested.
       See the operation documentation for the appropriate value for this
       field.
@@ -3691,7 +3734,10 @@ class MlProjectsModelsGetIamPolicyRequest(_messages.Message):
       returned.  Valid values are 0, 1, and 3. Requests specifying an invalid
       value will be rejected.  Requests for policies with any conditional
       bindings must specify version 3. Policies without any conditional
-      bindings may specify any valid value or leave the field unset.
+      bindings may specify any valid value or leave the field unset.  To learn
+      which resources support conditions in their IAM policies, see the [IAM
+      documentation](https://cloud.google.com/iam/help/conditions/resource-
+      policies).
     resource: REQUIRED: The resource for which the policy is being requested.
       See the operation documentation for the appropriate value for this
       field.

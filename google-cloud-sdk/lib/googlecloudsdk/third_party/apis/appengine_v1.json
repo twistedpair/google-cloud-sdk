@@ -268,7 +268,7 @@
             "Database type is unspecified.",
             "Cloud Datastore",
             "Cloud Firestore Native",
-            "Cloud Firestore Datastore Mode"
+            "Cloud Firestore in Datastore Mode"
           ],
           "type": "string",
           "enum": [

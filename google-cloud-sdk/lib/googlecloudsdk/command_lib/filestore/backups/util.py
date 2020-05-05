@@ -55,8 +55,10 @@ def AddInstanceNameToRequest(ref, args, req):
 
 def AddBackupNameToRequest(ref, args, req):
   """Python hook for yaml commands to process the source backup name."""
+  del ref  # Not used to infer location for backups.
+  if args.source_backup is None or args.source_backup_region is None:
+    return req
   project = properties.VALUES.core.project.Get(required=True)
-  location = args.source_backup_region or ref.locationsId
   req.restoreInstanceRequest.sourceBackup = BACKUP_NAME_TEMPLATE.format(
-      project, location, args.source_backup)
+      project, args.source_backup_region, args.source_backup)
   return req

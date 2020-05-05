@@ -27,7 +27,12 @@ from googlecloudsdk.api_lib.scc import securitycenter_client as sc_client
 from googlecloudsdk.command_lib.util.apis import yaml_data
 from googlecloudsdk.command_lib.util.args import resource_args
 from googlecloudsdk.command_lib.util.concepts import concept_parsers
+from googlecloudsdk.core import exceptions as core_exceptions
 from googlecloudsdk.core import properties
+
+
+class InvalidSCCInputError(core_exceptions.Error):
+  """Exception raised for errors in the input."""
 
 
 def AppendOrgArg():
@@ -69,6 +74,9 @@ def GetOrganization(args):
     organization = properties.VALUES.scc.organization.Get()
   else:
     organization = args.organization
+  if organization is None:
+    raise InvalidSCCInputError("Could not find Organization argument. Please "
+                               "provide the organization argument.")
   assert resource_pattern.match(organization) or id_pattern.match(
       organization), (
           "Organization must match either organizations/[0-9]+ or [0-9]+.")

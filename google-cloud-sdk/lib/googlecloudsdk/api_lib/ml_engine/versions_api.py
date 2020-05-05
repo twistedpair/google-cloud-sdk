@@ -79,7 +79,8 @@ class VersionsClient(object):
             version=version))
 
   def Patch(self, version_ref, labels_update, description=None,
-            prediction_class_update=None, package_uris=None):
+            prediction_class_update=None, package_uris=None,
+            manual_scaling_nodes=None, auto_scaling_min_nodes=None):
     """Update a version."""
     version = self.messages.GoogleCloudMlV1Version()
     update_mask = []
@@ -99,6 +100,16 @@ class VersionsClient(object):
       update_mask.append('packageUris')
       version.packageUris = package_uris
 
+    if manual_scaling_nodes is not None:
+      update_mask.append('manualScaling.nodes')
+      version.manualScaling = self.messages.GoogleCloudMlV1ManualScaling(
+          nodes=manual_scaling_nodes)
+
+    if auto_scaling_min_nodes is not None:
+      update_mask.append('autoScaling.minNodes')
+      version.autoScaling = self.messages.GoogleCloudMlV1AutoScaling(
+          minNodes=auto_scaling_min_nodes)
+
     if not update_mask:
       raise NoFieldsSpecifiedError('No updates requested.')
 
@@ -106,7 +117,7 @@ class VersionsClient(object):
         self.messages.MlProjectsModelsVersionsPatchRequest(
             name=version_ref.RelativeName(),
             googleCloudMlV1Version=version,
-            updateMask=','.join(update_mask)))
+            updateMask=','.join(sorted(update_mask))))
 
   def Delete(self, version_ref):
     """Deletes a version from a model."""
@@ -132,6 +143,45 @@ class VersionsClient(object):
     """Sets a model's default version."""
     return self.client.projects_models_versions.SetDefault(
         self._MakeSetDefaultRequest(name=version_ref.RelativeName()))
+
+  def ReadConfig(self, path, allowed_fields):
+    """Read a config file and return Version object with the values.
+
+    The object is based on a YAML configuration file. The file may only
+    have the fields given in `allowed_fields`.
+
+    Args:
+      path: str, the path to the YAML file.
+      allowed_fields: Collection, the fields allowed in the YAML.
+
+    Returns:
+      A Version object (for the corresponding API version).
+
+    Raises:
+      InvalidVersionConfigFile: If the file contains unexpected fields.
+    """
+    try:
+      data = yaml.load_path(path)
+    except (yaml.Error) as err:
+      raise InvalidVersionConfigFile(
+          'Could not read Version configuration file [{path}]:\n\n'
+          '{err}'.format(path=path, err=six.text_type(err.inner_error)))
+    if data:
+      version = encoding.DictToMessage(data, self.version_class)
+
+    specified_fields = set([f.name for f in version.all_fields() if
+                            getattr(version, f.name)])
+    invalid_fields = (specified_fields - allowed_fields |
+                      set(version.all_unrecognized_fields()))
+    if invalid_fields:
+      raise InvalidVersionConfigFile(
+          'Invalid {noun} [{fields}] in configuration file [{path}]. '
+          'Allowed fields: [{allowed}].'.format(
+              noun=text.Pluralize(len(invalid_fields), 'field'),
+              fields=', '.join(sorted(invalid_fields)),
+              path=path,
+              allowed=', '.join(sorted(allowed_fields))))
+    return version
 
   def BuildVersion(self, name,
                    path=None,
@@ -190,30 +240,10 @@ class VersionsClient(object):
     Raises:
       InvalidVersionConfigFile: If the file contains unexpected fields.
     """
-    version = self.version_class()
-
     if path:
-      try:
-        data = yaml.load_path(path)
-      except (yaml.Error) as err:
-        raise InvalidVersionConfigFile(
-            'Could not read Version configuration file [{path}]:\n\n'
-            '{err}'.format(path=path, err=six.text_type(err.inner_error)))
-      if data:
-        version = encoding.DictToMessage(data, self.version_class)
-
-    specified_fields = set([f.name for f in version.all_fields() if
-                            getattr(version, f.name)])
-    invalid_fields = (specified_fields - self._ALLOWED_YAML_FIELDS |
-                      set(version.all_unrecognized_fields()))
-    if invalid_fields:
-      raise InvalidVersionConfigFile(
-          'Invalid {noun} [{fields}] in configuration file [{path}]. '
-          'Allowed fields: [{allowed}].'.format(
-              noun=text.Pluralize(len(invalid_fields), 'field'),
-              fields=', '.join(sorted(invalid_fields)),
-              path=path,
-              allowed=', '.join(sorted(self._ALLOWED_YAML_FIELDS))))
+      version = self.ReadConfig(path, self._ALLOWED_YAML_FIELDS)
+    else:
+      version = self.version_class()
 
     additional_fields = {
         'name': name,

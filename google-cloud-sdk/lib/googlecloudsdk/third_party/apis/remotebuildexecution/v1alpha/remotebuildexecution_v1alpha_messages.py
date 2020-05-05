@@ -878,6 +878,8 @@ class GoogleDevtoolsRemotebuildbotCommandStatus(_messages.Message):
         error.
       DOCKER_CREATE_RUNTIME_FILE_NOT_FOUND: Docker failed to create OCI
         runtime because of file not found.
+      DOCKER_CREATE_RUNTIME_PERMISSION_DENIED: Docker failed to create OCI
+        runtime because of permission denied.
     """
     OK = 0
     INVALID_ARGUMENT = 1
@@ -912,6 +914,7 @@ class GoogleDevtoolsRemotebuildbotCommandStatus(_messages.Message):
     DOCKER_PREPARELAYER_ERROR = 30
     DOCKER_INCOMPATIBLE_OS_ERROR = 31
     DOCKER_CREATE_RUNTIME_FILE_NOT_FOUND = 32
+    DOCKER_CREATE_RUNTIME_PERMISSION_DENIED = 33
 
   code = _messages.EnumField('CodeValueValuesEnum', 1)
   message = _messages.StringField(2)
@@ -955,6 +958,19 @@ class GoogleDevtoolsRemotebuildexecutionAdminV1alphaAcceleratorConfig(_messages.
 
   acceleratorCount = _messages.IntegerField(1)
   acceleratorType = _messages.StringField(2)
+
+
+class GoogleDevtoolsRemotebuildexecutionAdminV1alphaAutoscale(_messages.Message):
+  r"""Autoscale defines the autoscaling policy of a worker pool.
+
+  Fields:
+    maxSize: The maximal number of workers. Must be equal to or greater than
+      min_size.
+    minSize: The minimal number of workers. Must be greater than 0.
+  """
+
+  maxSize = _messages.IntegerField(1)
+  minSize = _messages.IntegerField(2)
 
 
 class GoogleDevtoolsRemotebuildexecutionAdminV1alphaCreateInstanceRequest(_messages.Message):
@@ -1278,6 +1294,7 @@ class GoogleDevtoolsRemotebuildexecutionAdminV1alphaWorkerPool(_messages.Message
     StateValueValuesEnum: Output only. State of the worker pool.
 
   Fields:
+    autoscale: The autoscale policy to apply on a pool.
     name: WorkerPool resource name formatted as:
       `projects/[PROJECT_ID]/instances/[INSTANCE_ID]/workerpools/[POOL_ID]`.
       name should not be populated when creating a worker pool since it is
@@ -1314,10 +1331,11 @@ class GoogleDevtoolsRemotebuildexecutionAdminV1alphaWorkerPool(_messages.Message
     DELETING = 4
     INACTIVE = 5
 
-  name = _messages.StringField(1)
-  state = _messages.EnumField('StateValueValuesEnum', 2)
-  workerConfig = _messages.MessageField('GoogleDevtoolsRemotebuildexecutionAdminV1alphaWorkerConfig', 3)
-  workerCount = _messages.IntegerField(4)
+  autoscale = _messages.MessageField('GoogleDevtoolsRemotebuildexecutionAdminV1alphaAutoscale', 1)
+  name = _messages.StringField(2)
+  state = _messages.EnumField('StateValueValuesEnum', 3)
+  workerConfig = _messages.MessageField('GoogleDevtoolsRemotebuildexecutionAdminV1alphaWorkerConfig', 4)
+  workerCount = _messages.IntegerField(5)
 
 
 class GoogleDevtoolsRemoteworkersV1test2AdminTemp(_messages.Message):

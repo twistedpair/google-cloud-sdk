@@ -160,9 +160,11 @@ class GoogleCloudVideointelligenceV1ExplicitContentAnnotation(_messages.Message)
 
   Fields:
     frames: All video frames where explicit content was detected.
+    version: Feature version.
   """
 
   frames = _messages.MessageField('GoogleCloudVideointelligenceV1ExplicitContentFrame', 1, repeated=True)
+  version = _messages.StringField(2)
 
 
 class GoogleCloudVideointelligenceV1ExplicitContentDetectionConfig(_messages.Message):
@@ -222,12 +224,14 @@ class GoogleCloudVideointelligenceV1LabelAnnotation(_messages.Message):
     entity: Detected entity.
     frames: All video frames where a label was detected.
     segments: All video segments where a label was detected.
+    version: Feature version.
   """
 
   categoryEntities = _messages.MessageField('GoogleCloudVideointelligenceV1Entity', 1, repeated=True)
   entity = _messages.MessageField('GoogleCloudVideointelligenceV1Entity', 2)
   frames = _messages.MessageField('GoogleCloudVideointelligenceV1LabelFrame', 3, repeated=True)
   segments = _messages.MessageField('GoogleCloudVideointelligenceV1LabelSegment', 4, repeated=True)
+  version = _messages.StringField(5)
 
 
 class GoogleCloudVideointelligenceV1LabelDetectionConfig(_messages.Message):
@@ -393,6 +397,7 @@ class GoogleCloudVideointelligenceV1ObjectTrackingAnnotation(_messages.Message):
       VideoSegment info returned. Instead, we provide a unique identifiable
       integer track_id so that the customers can correlate the results of the
       ongoing ObjectTrackAnnotation of the same track_id over time.
+    version: Feature version.
   """
 
   confidence = _messages.FloatField(1, variant=_messages.Variant.FLOAT)
@@ -400,6 +405,7 @@ class GoogleCloudVideointelligenceV1ObjectTrackingAnnotation(_messages.Message):
   frames = _messages.MessageField('GoogleCloudVideointelligenceV1ObjectTrackingFrame', 3, repeated=True)
   segment = _messages.MessageField('GoogleCloudVideointelligenceV1VideoSegment', 4)
   trackId = _messages.IntegerField(5)
+  version = _messages.StringField(6)
 
 
 class GoogleCloudVideointelligenceV1ObjectTrackingConfig(_messages.Message):
@@ -558,10 +564,12 @@ class GoogleCloudVideointelligenceV1TextAnnotation(_messages.Message):
   Fields:
     segments: All video segments where OCR detected text appears.
     text: The detected text.
+    version: Feature version.
   """
 
   segments = _messages.MessageField('GoogleCloudVideointelligenceV1TextSegment', 1, repeated=True)
   text = _messages.StringField(2)
+  version = _messages.StringField(3)
 
 
 class GoogleCloudVideointelligenceV1TextDetectionConfig(_messages.Message):
@@ -909,9 +917,11 @@ class GoogleCloudVideointelligenceV1beta2ExplicitContentAnnotation(_messages.Mes
 
   Fields:
     frames: All video frames where explicit content was detected.
+    version: Feature version.
   """
 
   frames = _messages.MessageField('GoogleCloudVideointelligenceV1beta2ExplicitContentFrame', 1, repeated=True)
+  version = _messages.StringField(2)
 
 
 class GoogleCloudVideointelligenceV1beta2ExplicitContentFrame(_messages.Message):
@@ -960,12 +970,14 @@ class GoogleCloudVideointelligenceV1beta2LabelAnnotation(_messages.Message):
     entity: Detected entity.
     frames: All video frames where a label was detected.
     segments: All video segments where a label was detected.
+    version: Feature version.
   """
 
   categoryEntities = _messages.MessageField('GoogleCloudVideointelligenceV1beta2Entity', 1, repeated=True)
   entity = _messages.MessageField('GoogleCloudVideointelligenceV1beta2Entity', 2)
   frames = _messages.MessageField('GoogleCloudVideointelligenceV1beta2LabelFrame', 3, repeated=True)
   segments = _messages.MessageField('GoogleCloudVideointelligenceV1beta2LabelSegment', 4, repeated=True)
+  version = _messages.StringField(5)
 
 
 class GoogleCloudVideointelligenceV1beta2LabelFrame(_messages.Message):
@@ -1077,6 +1089,7 @@ class GoogleCloudVideointelligenceV1beta2ObjectTrackingAnnotation(_messages.Mess
       VideoSegment info returned. Instead, we provide a unique identifiable
       integer track_id so that the customers can correlate the results of the
       ongoing ObjectTrackAnnotation of the same track_id over time.
+    version: Feature version.
   """
 
   confidence = _messages.FloatField(1, variant=_messages.Variant.FLOAT)
@@ -1084,6 +1097,7 @@ class GoogleCloudVideointelligenceV1beta2ObjectTrackingAnnotation(_messages.Mess
   frames = _messages.MessageField('GoogleCloudVideointelligenceV1beta2ObjectTrackingFrame', 3, repeated=True)
   segment = _messages.MessageField('GoogleCloudVideointelligenceV1beta2VideoSegment', 4)
   trackId = _messages.IntegerField(5)
+  version = _messages.StringField(6)
 
 
 class GoogleCloudVideointelligenceV1beta2ObjectTrackingFrame(_messages.Message):
@@ -1147,10 +1161,12 @@ class GoogleCloudVideointelligenceV1beta2TextAnnotation(_messages.Message):
   Fields:
     segments: All video segments where OCR detected text appears.
     text: The detected text.
+    version: Feature version.
   """
 
   segments = _messages.MessageField('GoogleCloudVideointelligenceV1beta2TextSegment', 1, repeated=True)
   text = _messages.StringField(2)
+  version = _messages.StringField(3)
 
 
 class GoogleCloudVideointelligenceV1beta2TextFrame(_messages.Message):
@@ -1458,9 +1474,11 @@ class GoogleCloudVideointelligenceV1p1beta1ExplicitContentAnnotation(_messages.M
 
   Fields:
     frames: All video frames where explicit content was detected.
+    version: Feature version.
   """
 
   frames = _messages.MessageField('GoogleCloudVideointelligenceV1p1beta1ExplicitContentFrame', 1, repeated=True)
+  version = _messages.StringField(2)
 
 
 class GoogleCloudVideointelligenceV1p1beta1ExplicitContentFrame(_messages.Message):
@@ -1509,12 +1527,14 @@ class GoogleCloudVideointelligenceV1p1beta1LabelAnnotation(_messages.Message):
     entity: Detected entity.
     frames: All video frames where a label was detected.
     segments: All video segments where a label was detected.
+    version: Feature version.
   """
 
   categoryEntities = _messages.MessageField('GoogleCloudVideointelligenceV1p1beta1Entity', 1, repeated=True)
   entity = _messages.MessageField('GoogleCloudVideointelligenceV1p1beta1Entity', 2)
   frames = _messages.MessageField('GoogleCloudVideointelligenceV1p1beta1LabelFrame', 3, repeated=True)
   segments = _messages.MessageField('GoogleCloudVideointelligenceV1p1beta1LabelSegment', 4, repeated=True)
+  version = _messages.StringField(5)
 
 
 class GoogleCloudVideointelligenceV1p1beta1LabelFrame(_messages.Message):
@@ -1626,6 +1646,7 @@ class GoogleCloudVideointelligenceV1p1beta1ObjectTrackingAnnotation(_messages.Me
       VideoSegment info returned. Instead, we provide a unique identifiable
       integer track_id so that the customers can correlate the results of the
       ongoing ObjectTrackAnnotation of the same track_id over time.
+    version: Feature version.
   """
 
   confidence = _messages.FloatField(1, variant=_messages.Variant.FLOAT)
@@ -1633,6 +1654,7 @@ class GoogleCloudVideointelligenceV1p1beta1ObjectTrackingAnnotation(_messages.Me
   frames = _messages.MessageField('GoogleCloudVideointelligenceV1p1beta1ObjectTrackingFrame', 3, repeated=True)
   segment = _messages.MessageField('GoogleCloudVideointelligenceV1p1beta1VideoSegment', 4)
   trackId = _messages.IntegerField(5)
+  version = _messages.StringField(6)
 
 
 class GoogleCloudVideointelligenceV1p1beta1ObjectTrackingFrame(_messages.Message):
@@ -1696,10 +1718,12 @@ class GoogleCloudVideointelligenceV1p1beta1TextAnnotation(_messages.Message):
   Fields:
     segments: All video segments where OCR detected text appears.
     text: The detected text.
+    version: Feature version.
   """
 
   segments = _messages.MessageField('GoogleCloudVideointelligenceV1p1beta1TextSegment', 1, repeated=True)
   text = _messages.StringField(2)
+  version = _messages.StringField(3)
 
 
 class GoogleCloudVideointelligenceV1p1beta1TextFrame(_messages.Message):
@@ -2007,9 +2031,11 @@ class GoogleCloudVideointelligenceV1p2beta1ExplicitContentAnnotation(_messages.M
 
   Fields:
     frames: All video frames where explicit content was detected.
+    version: Feature version.
   """
 
   frames = _messages.MessageField('GoogleCloudVideointelligenceV1p2beta1ExplicitContentFrame', 1, repeated=True)
+  version = _messages.StringField(2)
 
 
 class GoogleCloudVideointelligenceV1p2beta1ExplicitContentFrame(_messages.Message):
@@ -2058,12 +2084,14 @@ class GoogleCloudVideointelligenceV1p2beta1LabelAnnotation(_messages.Message):
     entity: Detected entity.
     frames: All video frames where a label was detected.
     segments: All video segments where a label was detected.
+    version: Feature version.
   """
 
   categoryEntities = _messages.MessageField('GoogleCloudVideointelligenceV1p2beta1Entity', 1, repeated=True)
   entity = _messages.MessageField('GoogleCloudVideointelligenceV1p2beta1Entity', 2)
   frames = _messages.MessageField('GoogleCloudVideointelligenceV1p2beta1LabelFrame', 3, repeated=True)
   segments = _messages.MessageField('GoogleCloudVideointelligenceV1p2beta1LabelSegment', 4, repeated=True)
+  version = _messages.StringField(5)
 
 
 class GoogleCloudVideointelligenceV1p2beta1LabelFrame(_messages.Message):
@@ -2175,6 +2203,7 @@ class GoogleCloudVideointelligenceV1p2beta1ObjectTrackingAnnotation(_messages.Me
       VideoSegment info returned. Instead, we provide a unique identifiable
       integer track_id so that the customers can correlate the results of the
       ongoing ObjectTrackAnnotation of the same track_id over time.
+    version: Feature version.
   """
 
   confidence = _messages.FloatField(1, variant=_messages.Variant.FLOAT)
@@ -2182,6 +2211,7 @@ class GoogleCloudVideointelligenceV1p2beta1ObjectTrackingAnnotation(_messages.Me
   frames = _messages.MessageField('GoogleCloudVideointelligenceV1p2beta1ObjectTrackingFrame', 3, repeated=True)
   segment = _messages.MessageField('GoogleCloudVideointelligenceV1p2beta1VideoSegment', 4)
   trackId = _messages.IntegerField(5)
+  version = _messages.StringField(6)
 
 
 class GoogleCloudVideointelligenceV1p2beta1ObjectTrackingFrame(_messages.Message):
@@ -2245,10 +2275,12 @@ class GoogleCloudVideointelligenceV1p2beta1TextAnnotation(_messages.Message):
   Fields:
     segments: All video segments where OCR detected text appears.
     text: The detected text.
+    version: Feature version.
   """
 
   segments = _messages.MessageField('GoogleCloudVideointelligenceV1p2beta1TextSegment', 1, repeated=True)
   text = _messages.StringField(2)
+  version = _messages.StringField(3)
 
 
 class GoogleCloudVideointelligenceV1p2beta1TextFrame(_messages.Message):
@@ -2524,9 +2556,11 @@ class GoogleCloudVideointelligenceV1p3beta1CelebrityRecognitionAnnotation(_messa
   Fields:
     celebrityTracks: The tracks detected from the input video, including
       recognized celebrities and other detected faces in the video.
+    version: Feature version.
   """
 
   celebrityTracks = _messages.MessageField('GoogleCloudVideointelligenceV1p3beta1CelebrityTrack', 1, repeated=True)
+  version = _messages.StringField(2)
 
 
 class GoogleCloudVideointelligenceV1p3beta1CelebrityTrack(_messages.Message):
@@ -2599,9 +2633,11 @@ class GoogleCloudVideointelligenceV1p3beta1ExplicitContentAnnotation(_messages.M
 
   Fields:
     frames: All video frames where explicit content was detected.
+    version: Feature version.
   """
 
   frames = _messages.MessageField('GoogleCloudVideointelligenceV1p3beta1ExplicitContentFrame', 1, repeated=True)
+  version = _messages.StringField(2)
 
 
 class GoogleCloudVideointelligenceV1p3beta1ExplicitContentFrame(_messages.Message):
@@ -2645,10 +2681,12 @@ class GoogleCloudVideointelligenceV1p3beta1FaceDetectionAnnotation(_messages.Mes
   Fields:
     thumbnail: The thumbnail of a person's face.
     tracks: The face tracks with attributes.
+    version: Feature version.
   """
 
   thumbnail = _messages.BytesField(1)
   tracks = _messages.MessageField('GoogleCloudVideointelligenceV1p3beta1Track', 2, repeated=True)
+  version = _messages.StringField(3)
 
 
 class GoogleCloudVideointelligenceV1p3beta1LabelAnnotation(_messages.Message):
@@ -2662,12 +2700,14 @@ class GoogleCloudVideointelligenceV1p3beta1LabelAnnotation(_messages.Message):
     entity: Detected entity.
     frames: All video frames where a label was detected.
     segments: All video segments where a label was detected.
+    version: Feature version.
   """
 
   categoryEntities = _messages.MessageField('GoogleCloudVideointelligenceV1p3beta1Entity', 1, repeated=True)
   entity = _messages.MessageField('GoogleCloudVideointelligenceV1p3beta1Entity', 2)
   frames = _messages.MessageField('GoogleCloudVideointelligenceV1p3beta1LabelFrame', 3, repeated=True)
   segments = _messages.MessageField('GoogleCloudVideointelligenceV1p3beta1LabelSegment', 4, repeated=True)
+  version = _messages.StringField(5)
 
 
 class GoogleCloudVideointelligenceV1p3beta1LabelFrame(_messages.Message):
@@ -2779,6 +2819,7 @@ class GoogleCloudVideointelligenceV1p3beta1ObjectTrackingAnnotation(_messages.Me
       VideoSegment info returned. Instead, we provide a unique identifiable
       integer track_id so that the customers can correlate the results of the
       ongoing ObjectTrackAnnotation of the same track_id over time.
+    version: Feature version.
   """
 
   confidence = _messages.FloatField(1, variant=_messages.Variant.FLOAT)
@@ -2786,6 +2827,7 @@ class GoogleCloudVideointelligenceV1p3beta1ObjectTrackingAnnotation(_messages.Me
   frames = _messages.MessageField('GoogleCloudVideointelligenceV1p3beta1ObjectTrackingFrame', 3, repeated=True)
   segment = _messages.MessageField('GoogleCloudVideointelligenceV1p3beta1VideoSegment', 4)
   trackId = _messages.IntegerField(5)
+  version = _messages.StringField(6)
 
 
 class GoogleCloudVideointelligenceV1p3beta1ObjectTrackingFrame(_messages.Message):
@@ -2807,9 +2849,11 @@ class GoogleCloudVideointelligenceV1p3beta1PersonDetectionAnnotation(_messages.M
 
   Fields:
     tracks: The detected tracks of a person.
+    version: Feature version.
   """
 
   tracks = _messages.MessageField('GoogleCloudVideointelligenceV1p3beta1Track', 1, repeated=True)
+  version = _messages.StringField(2)
 
 
 class GoogleCloudVideointelligenceV1p3beta1RecognizedCelebrity(_messages.Message):
@@ -2909,10 +2953,12 @@ class GoogleCloudVideointelligenceV1p3beta1TextAnnotation(_messages.Message):
   Fields:
     segments: All video segments where OCR detected text appears.
     text: The detected text.
+    version: Feature version.
   """
 
   segments = _messages.MessageField('GoogleCloudVideointelligenceV1p3beta1TextSegment', 1, repeated=True)
   text = _messages.StringField(2)
+  version = _messages.StringField(3)
 
 
 class GoogleCloudVideointelligenceV1p3beta1TextFrame(_messages.Message):

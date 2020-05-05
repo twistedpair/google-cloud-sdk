@@ -1797,6 +1797,7 @@ class _SectionApiEndpointOverrides(_Section):
     self.discovery = self._Add('discovery')
     self.dns = self._Add('dns')
     self.domains = self._Add('domains')
+    self.events = self._Add('events')
     self.file = self._Add('file')
     self.firestore = self._Add('firestore')
     self.gameservices = self._Add('gameservices')

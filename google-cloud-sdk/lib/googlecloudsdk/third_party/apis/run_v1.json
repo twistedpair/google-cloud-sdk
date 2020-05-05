@@ -464,7 +464,7 @@
           "type": "string"
         },
         "ports": {
-          "description": "(Optional)\n\nCloud Run fully managed: not supported\n\nCloud Run for Anthos: supported\n\nList of ports to expose from the container. Exposing a port here gives\nthe system additional information about the network connections a\ncontainer uses, but is primarily informational. Not specifying a port here\nDOES NOT prevent that port from being exposed. Any port which is\nlistening on the default \"0.0.0.0\" address inside a container will be\naccessible from the network.",
+          "description": "(Optional)\n\nList of ports to expose from the container. Only a single port can be\nspecified. The specified ports must be listening on all interfaces\n(0.0.0.0) within the container to be accessible.\n\nIf omitted, a port number will be chosen and passed to the container\nthrough the PORT environment variable for the container to listen on.",
           "type": "array",
           "items": {
             "$ref": "ContainerPort"
@@ -624,7 +624,7 @@
     },
     "ContainerPort": {
       "id": "ContainerPort",
-      "description": "Cloud Run fully managed: not supported\n\nCloud Run for Anthos: supported\n\nContainerPort represents a network port in a single container.",
+      "description": "ContainerPort represents a network port in a single container.",
       "type": "object",
       "properties": {
         "name": {
@@ -632,12 +632,12 @@
           "type": "string"
         },
         "containerPort": {
-          "description": "(Optional)\n\nCloud Run fully managed: supported\n\nCloud Run for Anthos: supported\n\nPort number the container listens on.\nThis must be a valid port number, 0 < x < 65536.",
+          "description": "(Optional)\n\nPort number the container listens on.\nThis must be a valid port number, 0 < x < 65536.",
           "type": "integer",
           "format": "int32"
         },
         "protocol": {
-          "description": "(Optional)\n\nCloud Run fully managed: not supported\n\nCloud Run for Anthos: supported\n\nProtocol for port. Must be TCP.\nDefaults to \"TCP\".",
+          "description": "(Optional)\n\nCloud Run fully managed: not supported\n\nCloud Run for Anthos: supported\n\nProtocol for port. Must be \"TCP\".\nDefaults to \"TCP\".",
           "type": "string"
         }
       }
@@ -727,10 +727,6 @@
       "description": "Cloud Run fully managed: not supported\n\nCloud Run for Anthos: supported\n\nProbe describes a health check to be performed against a container to\ndetermine whether it is alive or ready to receive traffic.",
       "type": "object",
       "properties": {
-        "handler": {
-          "description": "Cloud Run fully managed: not supported\n\nCloud Run for Anthos: supported\n\nThe action taken to determine the health of a container",
-          "$ref": "Handler"
-        },
         "initialDelaySeconds": {
           "description": "(Optional)\n\nCloud Run fully managed: not supported\n\nCloud Run for Anthos: supported\n\nNumber of seconds after the container has started before liveness probes\nare initiated. More info:\nhttps:\/\/kubernetes.io\/docs\/concepts\/workloads\/pods\/pod-lifecycle#container-probes",
           "type": "integer",
@@ -755,24 +751,17 @@
           "description": "(Optional)\n\nCloud Run fully managed: not supported\n\nCloud Run for Anthos: supported\n\nMinimum consecutive failures for the probe to be considered failed after\nhaving succeeded. Defaults to 3. Minimum value is 1.",
           "type": "integer",
           "format": "int32"
-        }
-      }
-    },
-    "Handler": {
-      "id": "Handler",
-      "description": "Cloud Run fully managed: not supported\n\nCloud Run for Anthos: supported\n\nHandler defines a specific action that should be taken",
-      "type": "object",
-      "properties": {
+        },
         "exec": {
-          "description": "(Optional)\n\nCloud Run fully managed: not supported\n\nCloud Run for Anthos: supported\n\nOne and only one of the following should be specified.\nExec specifies the action to take.",
+          "description": "(Optional)\n\nCloud Run fully managed: not supported\n\nCloud Run for Anthos: supported\n\nOne and only one of the following should be specified.\nExec specifies the action to take.\n\nA field inlined from the Handler message.",
           "$ref": "ExecAction"
         },
         "httpGet": {
-          "description": "(Optional)\n\nCloud Run fully managed: not supported\n\nCloud Run for Anthos: supported\n\nHTTPGet specifies the http request to perform.",
+          "description": "(Optional)\n\nCloud Run fully managed: not supported\n\nCloud Run for Anthos: supported\n\nHTTPGet specifies the http request to perform.\n\nA field inlined from the Handler message.",
           "$ref": "HTTPGetAction"
         },
         "tcpSocket": {
-          "description": "(Optional)\n\nCloud Run fully managed: not supported\n\nCloud Run for Anthos: supported\n\nTCPSocket specifies an action involving a TCP port.\nTCP hooks not yet supported",
+          "description": "(Optional)\n\nCloud Run fully managed: not supported\n\nCloud Run for Anthos: supported\n\nTCPSocket specifies an action involving a TCP port.\nTCP hooks not yet supported\n\nA field inlined from the Handler message.",
           "$ref": "TCPSocketAction"
         }
       }
@@ -835,32 +824,12 @@
       "type": "object",
       "properties": {
         "port": {
-          "description": "Cloud Run fully managed: not supported\n\nCloud Run for Anthos: supported\n\nNumber or name of the port to access on the container.\nNumber must be in the range 1 to 65535.\nName must be an IANA_SVC_NAME.",
-          "$ref": "IntOrString"
+          "description": "Cloud Run fully managed: not supported\n\nCloud Run for Anthos: supported\n\nNumber or name of the port to access on the container.\nNumber must be in the range 1 to 65535.\nName must be an IANA_SVC_NAME.\n\nThis field is currently limited to integer types only because of proto's\ninability to properly support the IntOrString golang type.",
+          "type": "integer",
+          "format": "int32"
         },
         "host": {
           "description": "(Optional)\n\nCloud Run fully managed: not supported\n\nCloud Run for Anthos: supported\n\nOptional: Host name to connect to, defaults to the pod IP.",
-          "type": "string"
-        }
-      }
-    },
-    "IntOrString": {
-      "id": "IntOrString",
-      "description": "IntOrString is a type that can hold an int32 or a string.  When used in\nJSON or YAML marshalling and unmarshalling, it produces or consumes the\ninner type.  This allows you to have, for example, a JSON field that can\naccept a name or number.",
-      "type": "object",
-      "properties": {
-        "type": {
-          "description": "The type of the value.",
-          "type": "integer",
-          "format": "int32"
-        },
-        "intVal": {
-          "description": "The int value.",
-          "type": "integer",
-          "format": "int32"
-        },
-        "strVal": {
-          "description": "The string value.",
           "type": "string"
         }
       }
@@ -1273,7 +1242,7 @@
           "enumDescriptions": [
             "",
             "Do not provision an HTTPS certificate.",
-            "Automatically provisions an HTTPS certificate via LetsEncrypt."
+            "Automatically provisions an HTTPS certificate via GoogleCA or LetsEncrypt."
           ],
           "type": "string",
           "enum": [
@@ -1728,11 +1697,11 @@
     },
     "Policy": {
       "id": "Policy",
-      "description": "An Identity and Access Management (IAM) policy, which specifies access\ncontrols for Google Cloud resources.\n\n\nA `Policy` is a collection of `bindings`. A `binding` binds one or more\n`members` to a single `role`. Members can be user accounts, service accounts,\nGoogle groups, and domains (such as G Suite). A `role` is a named list of\npermissions; each `role` can be an IAM predefined role or a user-created\ncustom role.\n\nOptionally, a `binding` can specify a `condition`, which is a logical\nexpression that allows access to a resource only if the expression evaluates\nto `true`. A condition can add constraints based on attributes of the\nrequest, the resource, or both.\n\n**JSON example:**\n\n    {\n      \"bindings\": [\n        {\n          \"role\": \"roles\/resourcemanager.organizationAdmin\",\n          \"members\": [\n            \"user:mike@example.com\",\n            \"group:admins@example.com\",\n            \"domain:google.com\",\n            \"serviceAccount:my-project-id@appspot.gserviceaccount.com\"\n          ]\n        },\n        {\n          \"role\": \"roles\/resourcemanager.organizationViewer\",\n          \"members\": [\"user:eve@example.com\"],\n          \"condition\": {\n            \"title\": \"expirable access\",\n            \"description\": \"Does not grant access after Sep 2020\",\n            \"expression\": \"request.time < timestamp('2020-10-01T00:00:00.000Z')\",\n          }\n        }\n      ],\n      \"etag\": \"BwWWja0YfJA=\",\n      \"version\": 3\n    }\n\n**YAML example:**\n\n    bindings:\n    - members:\n      - user:mike@example.com\n      - group:admins@example.com\n      - domain:google.com\n      - serviceAccount:my-project-id@appspot.gserviceaccount.com\n      role: roles\/resourcemanager.organizationAdmin\n    - members:\n      - user:eve@example.com\n      role: roles\/resourcemanager.organizationViewer\n      condition:\n        title: expirable access\n        description: Does not grant access after Sep 2020\n        expression: request.time < timestamp('2020-10-01T00:00:00.000Z')\n    - etag: BwWWja0YfJA=\n    - version: 3\n\nFor a description of IAM and its features, see the\n[IAM documentation](https:\/\/cloud.google.com\/iam\/docs\/).",
+      "description": "An Identity and Access Management (IAM) policy, which specifies access\ncontrols for Google Cloud resources.\n\n\nA `Policy` is a collection of `bindings`. A `binding` binds one or more\n`members` to a single `role`. Members can be user accounts, service accounts,\nGoogle groups, and domains (such as G Suite). A `role` is a named list of\npermissions; each `role` can be an IAM predefined role or a user-created\ncustom role.\n\nFor some types of Google Cloud resources, a `binding` can also specify a\n`condition`, which is a logical expression that allows access to a resource\nonly if the expression evaluates to `true`. A condition can add constraints\nbased on attributes of the request, the resource, or both. To learn which\nresources support conditions in their IAM policies, see the\n[IAM documentation](https:\/\/cloud.google.com\/iam\/help\/conditions\/resource-policies).\n\n**JSON example:**\n\n    {\n      \"bindings\": [\n        {\n          \"role\": \"roles\/resourcemanager.organizationAdmin\",\n          \"members\": [\n            \"user:mike@example.com\",\n            \"group:admins@example.com\",\n            \"domain:google.com\",\n            \"serviceAccount:my-project-id@appspot.gserviceaccount.com\"\n          ]\n        },\n        {\n          \"role\": \"roles\/resourcemanager.organizationViewer\",\n          \"members\": [\n            \"user:eve@example.com\"\n          ],\n          \"condition\": {\n            \"title\": \"expirable access\",\n            \"description\": \"Does not grant access after Sep 2020\",\n            \"expression\": \"request.time < timestamp('2020-10-01T00:00:00.000Z')\",\n          }\n        }\n      ],\n      \"etag\": \"BwWWja0YfJA=\",\n      \"version\": 3\n    }\n\n**YAML example:**\n\n    bindings:\n    - members:\n      - user:mike@example.com\n      - group:admins@example.com\n      - domain:google.com\n      - serviceAccount:my-project-id@appspot.gserviceaccount.com\n      role: roles\/resourcemanager.organizationAdmin\n    - members:\n      - user:eve@example.com\n      role: roles\/resourcemanager.organizationViewer\n      condition:\n        title: expirable access\n        description: Does not grant access after Sep 2020\n        expression: request.time < timestamp('2020-10-01T00:00:00.000Z')\n    - etag: BwWWja0YfJA=\n    - version: 3\n\nFor a description of IAM and its features, see the\n[IAM documentation](https:\/\/cloud.google.com\/iam\/docs\/).",
       "type": "object",
       "properties": {
         "version": {
-          "description": "Specifies the format of the policy.\n\nValid values are `0`, `1`, and `3`. Requests that specify an invalid value\nare rejected.\n\nAny operation that affects conditional role bindings must specify version\n`3`. This requirement applies to the following operations:\n\n* Getting a policy that includes a conditional role binding\n* Adding a conditional role binding to a policy\n* Changing a conditional role binding in a policy\n* Removing any role binding, with or without a condition, from a policy\n  that includes conditions\n\n**Important:** If you use IAM Conditions, you must include the `etag` field\nwhenever you call `setIamPolicy`. If you omit this field, then IAM allows\nyou to overwrite a version `3` policy with a version `1` policy, and all of\nthe conditions in the version `3` policy are lost.\n\nIf a policy does not include any conditions, operations on that policy may\nspecify any valid version or leave the field unset.",
+          "description": "Specifies the format of the policy.\n\nValid values are `0`, `1`, and `3`. Requests that specify an invalid value\nare rejected.\n\nAny operation that affects conditional role bindings must specify version\n`3`. This requirement applies to the following operations:\n\n* Getting a policy that includes a conditional role binding\n* Adding a conditional role binding to a policy\n* Changing a conditional role binding in a policy\n* Removing any role binding, with or without a condition, from a policy\n  that includes conditions\n\n**Important:** If you use IAM Conditions, you must include the `etag` field\nwhenever you call `setIamPolicy`. If you omit this field, then IAM allows\nyou to overwrite a version `3` policy with a version `1` policy, and all of\nthe conditions in the version `3` policy are lost.\n\nIf a policy does not include any conditions, operations on that policy may\nspecify any valid version or leave the field unset.\n\nTo learn which resources support conditions in their IAM policies, see the\n[IAM documentation](https:\/\/cloud.google.com\/iam\/help\/conditions\/resource-policies).",
           "type": "integer",
           "format": "int32"
         },
@@ -1774,7 +1743,7 @@
           }
         },
         "condition": {
-          "description": "The condition that is associated with this binding.\nNOTE: An unsatisfied condition will not allow user access via current\nbinding. Different bindings, including their conditions, are examined\nindependently.",
+          "description": "The condition that is associated with this binding.\n\nIf the condition evaluates to `true`, then this binding applies to the\ncurrent request.\n\nIf the condition evaluates to `false`, then this binding does not apply to\nthe current request. However, a different role binding might grant the same\nrole to one or more of the members in this binding.\n\nTo learn which resources support conditions in their IAM policies, see the\n[IAM\ndocumentation](https:\/\/cloud.google.com\/iam\/help\/conditions\/resource-policies).",
           "$ref": "Expr"
         }
       }
@@ -1860,7 +1829,7 @@
           "$ref": "Policy"
         },
         "updateMask": {
-          "description": "OPTIONAL: A FieldMask specifying which fields of the policy to modify. Only\nthe fields in the mask will be modified. If no mask is provided, the\nfollowing default mask is used:\npaths: \"bindings, etag\"\nThis field is only used by Cloud IAM.",
+          "description": "OPTIONAL: A FieldMask specifying which fields of the policy to modify. Only\nthe fields in the mask will be modified. If no mask is provided, the\nfollowing default mask is used:\n\n`paths: \"bindings, etag\"`",
           "type": "string",
           "format": "google-fieldmask"
         }
@@ -2798,7 +2767,7 @@
                       "type": "string"
                     },
                     "options.requestedPolicyVersion": {
-                      "description": "Optional. The policy format version to be returned.\n\nValid values are 0, 1, and 3. Requests specifying an invalid value will be\nrejected.\n\nRequests for policies with any conditional bindings must specify version 3.\nPolicies without any conditional bindings may specify any valid value or\nleave the field unset.",
+                      "description": "Optional. The policy format version to be returned.\n\nValid values are 0, 1, and 3. Requests specifying an invalid value will be\nrejected.\n\nRequests for policies with any conditional bindings must specify version 3.\nPolicies without any conditional bindings may specify any valid value or\nleave the field unset.\n\nTo learn which resources support conditions in their IAM policies, see the\n[IAM\ndocumentation](https:\/\/cloud.google.com\/iam\/help\/conditions\/resource-policies).",
                       "location": "query",
                       "type": "integer",
                       "format": "int32"

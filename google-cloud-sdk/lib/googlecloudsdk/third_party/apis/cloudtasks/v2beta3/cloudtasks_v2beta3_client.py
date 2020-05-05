@@ -674,7 +674,7 @@ may "fail open" without warning.
         method_id=u'cloudtasks.projects.locations.list',
         ordered_params=[u'name'],
         path_params=[u'name'],
-        query_params=[u'filter', u'pageSize', u'pageToken'],
+        query_params=[u'filter', u'includeUnrevealedLocations', u'pageSize', u'pageToken'],
         relative_path=u'v2beta3/{+name}/locations',
         request_field='',
         request_type_name=u'CloudtasksProjectsLocationsListRequest',

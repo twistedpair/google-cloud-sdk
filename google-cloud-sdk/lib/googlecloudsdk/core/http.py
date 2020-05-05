@@ -537,26 +537,6 @@ class Modifiers(object):
     return _LogRequest
 
   @classmethod
-  def DumpRequest(cls, capturer):
-    """Dumps the contents of the http request to capturer.
-
-    Args:
-      capturer: SessionCapturer, instance to pass request to
-
-    Returns:
-      A function that can be used in a Handler.request.
-    """
-
-    def _DumpRequest(args, kwargs):
-      """Replacement http.request() method."""
-
-      capturer.CaptureHttpRequest(*Modifiers._GetRequest(args, kwargs))
-
-      return Modifiers.Result()
-
-    return _DumpRequest
-
-  @classmethod
   def LogResponse(cls):
     """Logs the contents of the http response.
 
@@ -585,23 +565,6 @@ class Modifiers(object):
       log.status.Print('---- response end ----')
       log.status.Print('----------------------')
     return _LogResponse
-
-  @classmethod
-  def DumpResponse(cls, capturer):
-    """Dumps the contents of the http response to capturer.
-
-    Args:
-      capturer: SessionCapturer, instance to pass response to
-
-    Returns:
-      A function that can be used in a Handler.request.
-    """
-
-    def _DumpResponse(response, unused_args):
-      """Response handler."""
-      capturer.CaptureHttpResponse(response[0], response[1])
-
-    return _DumpResponse
 
   @classmethod
   def RecordStartTime(cls):

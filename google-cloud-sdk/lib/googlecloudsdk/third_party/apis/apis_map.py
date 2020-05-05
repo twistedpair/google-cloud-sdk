@@ -599,24 +599,24 @@ MAP = {
                 client_classpath='compute_alpha_client.ComputeAlpha',
                 messages_modulepath='compute_alpha_messages',
                 default_version=False,
-                enable_mtls=False,
-                mtls_endpoint_override=''),
+                enable_mtls=True,
+                mtls_endpoint_override='https://compute.mtls.googleapis.com/compute/alpha/'),
         'beta':
             APIDef(
                 class_path='googlecloudsdk.third_party.apis.compute.beta',
                 client_classpath='compute_beta_client.ComputeBeta',
                 messages_modulepath='compute_beta_messages',
                 default_version=False,
-                enable_mtls=False,
-                mtls_endpoint_override=''),
+                enable_mtls=True,
+                mtls_endpoint_override='https://compute.mtls.googleapis.com/compute/beta/'),
         'v1':
             APIDef(
                 class_path='googlecloudsdk.third_party.apis.compute.v1',
                 client_classpath='compute_v1_client.ComputeV1',
                 messages_modulepath='compute_v1_messages',
                 default_version=True,
-                enable_mtls=False,
-                mtls_endpoint_override=''),
+                enable_mtls=True,
+                mtls_endpoint_override='https://compute.mtls.googleapis.com/compute/v1/'),
     },
     'container': {
         'v1':
@@ -853,6 +853,14 @@ MAP = {
                 default_version=True,
                 enable_mtls=False,
                 mtls_endpoint_override=''),
+        'v1alpha2':
+            APIDef(
+                class_path='googlecloudsdk.third_party.apis.domains.v1alpha2',
+                client_classpath='domains_v1alpha2_client.DomainsV1alpha2',
+                messages_modulepath='domains_v1alpha2_messages',
+                default_version=False,
+                enable_mtls=False,
+                mtls_endpoint_override=''),
     },
     'eventflow': {
         'v1beta2':
@@ -860,6 +868,16 @@ MAP = {
                 class_path='googlecloudsdk.third_party.apis.eventflow.v1beta2',
                 client_classpath='eventflow_v1beta2_client.EventflowV1beta2',
                 messages_modulepath='eventflow_v1beta2_messages',
+                default_version=True,
+                enable_mtls=False,
+                mtls_endpoint_override=''),
+    },
+    'events': {
+        'v1beta1':
+            APIDef(
+                class_path='googlecloudsdk.third_party.apis.events.v1beta1',
+                client_classpath='events_v1beta1_client.EventsV1beta1',
+                messages_modulepath='events_v1beta1_messages',
                 default_version=True,
                 enable_mtls=False,
                 mtls_endpoint_override=''),
@@ -1795,6 +1813,14 @@ MAP = {
                 default_version=True,
                 enable_mtls=False,
                 mtls_endpoint_override=''),
+        'v1beta':
+            APIDef(
+                class_path='googlecloudsdk.third_party.apis.workflowexecutions.v1beta',
+                client_classpath='workflowexecutions_v1beta_client.WorkflowexecutionsV1beta',
+                messages_modulepath='workflowexecutions_v1beta_messages',
+                default_version=False,
+                enable_mtls=False,
+                mtls_endpoint_override=''),
     },
     'workflows': {
         'v1alpha1':
@@ -1803,6 +1829,14 @@ MAP = {
                 client_classpath='workflows_v1alpha1_client.WorkflowsV1alpha1',
                 messages_modulepath='workflows_v1alpha1_messages',
                 default_version=True,
+                enable_mtls=False,
+                mtls_endpoint_override=''),
+        'v1beta':
+            APIDef(
+                class_path='googlecloudsdk.third_party.apis.workflows.v1beta',
+                client_classpath='workflows_v1beta_client.WorkflowsV1beta',
+                messages_modulepath='workflows_v1beta_messages',
+                default_version=False,
                 enable_mtls=False,
                 mtls_endpoint_override=''),
     },

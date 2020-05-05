@@ -117,7 +117,7 @@ class GoogleCloudRecaptchaenterpriseV1Key(_messages.Message):
   that use reCAPTCHA Enterprise.
 
   Messages:
-    LabelsValue: Optional. See <a href="https://cloud.google.com/recaptcha-
+    LabelsValue: See <a href="https://cloud.google.com/recaptcha-
       enterprise/docs/labels"> Creating and managing labels</a>.
 
   Fields:
@@ -125,7 +125,7 @@ class GoogleCloudRecaptchaenterpriseV1Key(_messages.Message):
     createTime: The timestamp corresponding to the creation of this Key.
     displayName: Human-readable display name of this key. Modifiable by user.
     iosSettings: Settings for keys that can be used by iOS apps.
-    labels: Optional. See <a href="https://cloud.google.com/recaptcha-
+    labels: See <a href="https://cloud.google.com/recaptcha-
       enterprise/docs/labels"> Creating and managing labels</a>.
     name: The resource name for the Key in the format
       "projects/{project}/keys/{key}".
@@ -134,7 +134,7 @@ class GoogleCloudRecaptchaenterpriseV1Key(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
-    r"""Optional. See <a href="https://cloud.google.com/recaptcha-
+    r"""See <a href="https://cloud.google.com/recaptcha-
     enterprise/docs/labels"> Creating and managing labels</a>.
 
     Messages:

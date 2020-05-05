@@ -1,5 +1,5 @@
 welcome: |-
-  Thank you for taking the survey. The response is anonymous and will only be used to improve our product.
+  Thank you for taking the survey. The response is anonymous and will only be used to improve our product. Please DO NOT report bugs here. Use $ gcloud feedback instead to help us address the issue faster.
 questions:
 - question_type: SatisfactionQuestion
   properties:

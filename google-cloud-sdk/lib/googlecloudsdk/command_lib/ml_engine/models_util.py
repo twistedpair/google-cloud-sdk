@@ -50,13 +50,20 @@ class RegionArgError(core_exceptions.Error):
 
 
 def _GetModelRegion(args):
+  """Extract the region from the command line args."""
   if args.region and args.regions:
     raise RegionArgError('Only one of --region or --regions can be specified.')
   if args.region is not None:
     return [args.region]
   if args.regions is None:
     log.warning(
-        'Please explicitly specify a region. Using [us-central1] by default.')
+        'Please explicitly specify a region. Using [us-central1] by default on '
+        'https://ml.googleapis.com. Please note that your model will be '
+        'inaccessible from https://us-central1-ml.googelapis.com\n'
+        '\n'
+        'Learn more about regional endpoints and see a list of available '
+        'regions: https://cloud.google.com/ai-platform/prediction/docs/'
+        'regional-endpoints')
     return ['us-central1']
   return args.regions
 

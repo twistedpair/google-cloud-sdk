@@ -32,6 +32,14 @@ def RemoveAcceleratorConfig(ref, args, request):
   return request
 
 
+def RemoveAutoscale(ref, args, request):
+  del ref
+  if args.IsSpecified('clear_autoscale'):
+    request.googleDevtoolsRemotebuildexecutionAdminV1alphaUpdateWorkerPoolRequest.workerPool.autoscale = None
+    request.googleDevtoolsRemotebuildexecutionAdminV1alphaUpdateWorkerPoolRequest.updateMask = u'autoscale.min_size,autoscale.max_size'
+  return request
+
+
 def AddLabelsFlags():
   remove_group = base.ArgumentGroup(mutex=True)
   remove_group.AddArgument(labels_util.GetClearLabelsFlag())

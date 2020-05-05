@@ -111,6 +111,9 @@
         },
         "https://www.googleapis.com/auth/cloud-platform": {
           "description": "View and manage your data across Google Cloud Platform services"
+        },
+        "https://www.googleapis.com/auth/userinfo.profile": {
+          "description": "See your personal info, including any personal info you've made publicly available"
         }
       }
     }
@@ -793,6 +796,58 @@
           "description": "Output only. Device brand. Example: Samsung.",
           "type": "string"
         },
+        "buildNumber": {
+          "description": "Output only. Build number of the device.",
+          "type": "string"
+        },
+        "kernelVersion": {
+          "description": "Output only. Kernel version of the device.",
+          "type": "string"
+        },
+        "basebandVersion": {
+          "description": "Output only. Baseband version of the device.",
+          "type": "string"
+        },
+        "enabledDeveloperOptions": {
+          "description": "Output only. Whether developer options is enabled on device.",
+          "type": "boolean"
+        },
+        "otherAccounts": {
+          "description": "Output only. Domain name for Google accounts on device. Type for other accounts on\ndevice. On Android, will only be populated if |ownership_privilege| is\n|PROFILE_OWNER| or |DEVICE_OWNER|. Does not include the account signed in\nto the device policy app if that account's domain has only one account.\nExamples: \"com.example\", \"xyz.com\".",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "enabledUsbDebugging": {
+          "description": "Output only. Whether USB debugging is enabled on device.",
+          "type": "boolean"
+        },
+        "securityPatchTime": {
+          "description": "Output only. OS security patch update time on device.",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "bootloaderVersion": {
+          "description": "Output only. Device bootloader version. Example: 0.6.7.",
+          "type": "string"
+        },
+        "encryptionState": {
+          "description": "Output only. Device encryption state.",
+          "enumDescriptions": [
+            "Encryption Status is not set.",
+            "Device doesn't support encryption.",
+            "Device is encrypted.",
+            "Device is not encrypted."
+          ],
+          "type": "string",
+          "enum": [
+            "ENCRYPTION_STATE_UNSPECIFIED",
+            "UNSUPPORTED_BY_DEVICE",
+            "ENCRYPTED",
+            "NOT_ENCRYPTED"
+          ]
+        },
         "androidSpecificAttributes": {
           "description": "Output only. Attributes specific to Android devices.",
           "$ref": "AndroidAttributes"
@@ -840,35 +895,8 @@
       "description": "Resource representing the Android specific attributes of a Device.",
       "type": "object",
       "properties": {
-        "buildNumber": {
-          "description": "Build number of Android device.",
-          "type": "string"
-        },
-        "kernelVersion": {
-          "description": "Kernel version of Android device.",
-          "type": "string"
-        },
-        "basebandVersion": {
-          "description": "Baseband version of Android device.",
-          "type": "string"
-        },
         "enabledUnknownSources": {
           "description": "Whether applications from unknown sources can be installed on device.",
-          "type": "boolean"
-        },
-        "enabledDeveloperOptions": {
-          "description": "Whether developer options is enabled on device.",
-          "type": "boolean"
-        },
-        "otherAccounts": {
-          "description": "Domain name for Google accounts on device. Type for other accounts on\ndevice. Will only be populated if |ownership_privilege| is\n|PROFILE_OWNER| or |DEVICE_OWNER|. Does not include the account signed in\nto the device policy app if that account's domain has only one account.\nExamples: \"com.example\", \"xyz.com\".",
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
-        },
-        "enabledUsbDebugging": {
-          "description": "Whether adb (USB debugging) is enabled on device.",
           "type": "boolean"
         },
         "supportsWorkProfile": {
@@ -893,35 +921,6 @@
             "DEVICE_ADMINISTRATOR",
             "PROFILE_OWNER",
             "DEVICE_OWNER"
-          ]
-        },
-        "securityPatchTime": {
-          "description": "OS security patch update time on device.",
-          "type": "string",
-          "format": "google-datetime"
-        },
-        "bootloaderVersion": {
-          "description": "Device bootloader version. Example: 0.6.7.",
-          "type": "string"
-        },
-        "hardware": {
-          "description": "Device hardware. Example: Sprout.",
-          "type": "string"
-        },
-        "encryptionState": {
-          "description": "Device encryption state.",
-          "enumDescriptions": [
-            "Encryption Status is not set.",
-            "Device doesn't support encryption.",
-            "Device is encrypted.",
-            "Device is not encrypted."
-          ],
-          "type": "string",
-          "enum": [
-            "ENCRYPTION_STATE_UNSPECIFIED",
-            "UNSUPPORTED_BY_DEVICE",
-            "ENCRYPTED",
-            "NOT_ENCRYPTED"
           ]
         }
       }
@@ -1248,6 +1247,20 @@
           "additionalProperties": {
             "$ref": "CustomAttributeValue"
           }
+        },
+        "ownerType": {
+          "description": "Output only. The owner of the ClientState",
+          "enumDescriptions": [
+            "Unknown owner type",
+            "Customer is the owner",
+            "Partner is the owner"
+          ],
+          "type": "string",
+          "enum": [
+            "OWNER_TYPE_UNSPECIFIED",
+            "OWNER_TYPE_CUSTOMER",
+            "OWNER_TYPE_PARTNER"
+          ]
         }
       }
     },
@@ -2969,6 +2982,54 @@
                   },
                   "description": "Get client state for a device user"
                 },
+                "list": {
+                  "id": "cloudidentity.devices.deviceUsers.clientStates.list",
+                  "path": "v1beta1/{+parent}/clientStates",
+                  "flatPath": "v1beta1/devices/{devicesId}/deviceUsers/{deviceUsersId}/clientStates",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "parent": {
+                      "description": "Required. To list all ClientStates, set this to \"devices\/-\/deviceUsers\/-\".\nTo list all ClientStates owned by a DeviceUser, set this to the resource\nname of the DeviceUser. Format: devices\/{device}\/deviceUsers\/{deviceUser}",
+                      "location": "path",
+                      "required": true,
+                      "pattern": "^devices\/[^\/]+\/deviceUsers\/[^\/]+$",
+                      "type": "string"
+                    },
+                    "customer": {
+                      "description": "Required. [Resource name](https:\/\/cloud.google.com\/apis\/design\/resource_names) of\nthe Customer in format: `customers\/{customer_id}`, where\ncustomer_id is the customer to whom the device belongs.\nTo find the customer ID for your organization, use the\ncommand:\n```\ngcloud alpha organizations list\n```\nThe customer ID you need to use appears under the heading\n`DIRECTORY_CUSTOMER_ID`. The value is the letter \"C\" followed by\nletters and numbers. Use the value after the letter \"C\". So if\nthe Directory Customer ID displayed is, say `C00zqsgyx`, then the\ncustomer ID value to use in the API is: `customers\/00zqsgyx`.",
+                      "location": "query",
+                      "type": "string"
+                    },
+                    "filter": {
+                      "description": "Optional. Additional restrictions when fetching list of client states.",
+                      "location": "query",
+                      "type": "string"
+                    },
+                    "pageSize": {
+                      "description": "Optional. The maximum number of ClientStates to return.\nIf unspecified, at most 5 ClientStates will be returned.\nThe maximum value is 20; values above 20 will be coerced to 20.",
+                      "location": "query",
+                      "type": "integer",
+                      "format": "int32"
+                    },
+                    "pageToken": {
+                      "description": "Optional. A page token, received from a previous `ListClientStates` call.\nProvide this to retrieve the subsequent page.\n\nWhen paginating, all other parameters provided to `ListClientStates` must\nmatch the call that provided the page token.",
+                      "location": "query",
+                      "type": "string"
+                    },
+                    "orderBy": {
+                      "description": "Optional. Order specification for client states in the response.",
+                      "location": "query",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "parent"
+                  ],
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "description": "List client states for the given search query."
+                },
                 "patch": {
                   "id": "cloudidentity.devices.deviceUsers.clientStates.patch",
                   "path": "v1beta1/{+name}",
@@ -3046,6 +3107,9 @@
                   "response": {
                     "$ref": "Operation"
                   },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/userinfo.profile"
+                  ],
                   "description": "Looks up resource names of the DeviceUsers associated with the\ncaller's credentials, as well as the properties provided in the request."
                 }
               }

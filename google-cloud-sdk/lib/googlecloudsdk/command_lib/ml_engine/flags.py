@@ -234,13 +234,13 @@ Learn more about regional endpoints and see a list of available regions:
 """
 
 
-# TODO(b/150923506) Add autocompletion.
 def GetRegionArg(hidden=True):
   """Adds --region flag to determine endpoint for models and versions."""
-  del hidden
   return base.Argument(
       '--region',
-      hidden=True,
+      hidden=hidden,
+      # TODO(b/144662044) Add more regions.
+      choices=['asia-east1', 'europe-west4', 'us-central1'],
       help=_REGION_FLAG_HELPTEXT)
 
 

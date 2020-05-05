@@ -295,6 +295,10 @@
             "DELETING",
             "INACTIVE"
           ]
+        },
+        "autoscale": {
+          "description": "The autoscale policy to apply on a pool.",
+          "$ref": "GoogleDevtoolsRemotebuildexecutionAdminV1alphaAutoscale"
         }
       }
     },
@@ -359,6 +363,23 @@
         "acceleratorType": {
           "description": "The type of accelerator to attach to each VM, e.g. \"nvidia-tesla-k80\" for\nnVidia Tesla K80.",
           "type": "string"
+        }
+      }
+    },
+    "GoogleDevtoolsRemotebuildexecutionAdminV1alphaAutoscale": {
+      "id": "GoogleDevtoolsRemotebuildexecutionAdminV1alphaAutoscale",
+      "description": "Autoscale defines the autoscaling policy of a worker pool.",
+      "type": "object",
+      "properties": {
+        "minSize": {
+          "description": "The minimal number of workers. Must be greater than 0.",
+          "type": "string",
+          "format": "int64"
+        },
+        "maxSize": {
+          "description": "The maximal number of workers. Must be equal to or greater than min_size.",
+          "type": "string",
+          "format": "int64"
         }
       }
     },
@@ -1104,7 +1125,8 @@
             "Docker failed to run containers with CreateComputeSystem error.",
             "Docker failed to run containers with hcsshim::PrepareLayer error.",
             "Docker incompatible operating system error.",
-            "Docker failed to create OCI runtime because of file not found."
+            "Docker failed to create OCI runtime because of file not found.",
+            "Docker failed to create OCI runtime because of permission denied."
           ],
           "type": "string",
           "enum": [
@@ -1140,7 +1162,8 @@
             "DOCKER_CREATE_COMPUTE_SYSTEM_ERROR",
             "DOCKER_PREPARELAYER_ERROR",
             "DOCKER_INCOMPATIBLE_OS_ERROR",
-            "DOCKER_CREATE_RUNTIME_FILE_NOT_FOUND"
+            "DOCKER_CREATE_RUNTIME_FILE_NOT_FOUND",
+            "DOCKER_CREATE_RUNTIME_PERMISSION_DENIED"
           ]
         },
         "message": {

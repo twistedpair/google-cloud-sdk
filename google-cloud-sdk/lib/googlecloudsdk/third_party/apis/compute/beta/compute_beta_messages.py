@@ -2999,7 +2999,7 @@ class BackendService(_messages.Message):
       INTERNAL_SELF_MANAGED and the backends are instance groups. The named
       port must be defined on each backend instance group. This parameter has
       no meaning if the backends are NEGs.    Must be omitted when the
-      loadBalancingScheme is INTERNAL (Internal TCP/UDP Load Blaancing).
+      loadBalancingScheme is INTERNAL (Internal TCP/UDP Load Balancing).
     protocol: The protocol this BackendService uses to communicate with
       backends.  Possible values are HTTP, HTTPS, HTTP2, TCP, SSL, or UDP.
       depending on the chosen load balancer or Traffic Director configuration.
@@ -3964,10 +3964,14 @@ class Binding(_messages.Message):
   r"""Associates `members` with a `role`.
 
   Fields:
-    condition: The condition that is associated with this binding. NOTE: An
-      unsatisfied condition will not allow user access via current binding.
-      Different bindings, including their conditions, are examined
-      independently.
+    condition: The condition that is associated with this binding.  If the
+      condition evaluates to `true`, then this binding applies to the current
+      request.  If the condition evaluates to `false`, then this binding does
+      not apply to the current request. However, a different role binding
+      might grant the same role to one or more of the members in this binding.
+      To learn which resources support conditions in their IAM policies, see
+      the [IAM documentation](https://cloud.google.com/iam/help/conditions
+      /resource-policies).
     members: Specifies the identities requesting access for a Cloud Platform
       resource. `members` can have the following values:  * `allUsers`: A
       special identifier that represents anyone who is on the internet; with
@@ -21532,6 +21536,17 @@ class Condition(_messages.Message):
   values = _messages.StringField(5, repeated=True)
 
 
+class ConfidentialInstanceConfig(_messages.Message):
+  r"""A set of Confidential Instance options.
+
+  Fields:
+    enableConfidentialCompute: Defines whether the instance should have
+      confidential compute enabled.
+  """
+
+  enableConfidentialCompute = _messages.BooleanField(1)
+
+
 class ConnectionDraining(_messages.Message):
   r"""Message containing connection draining configuration.
 
@@ -29654,6 +29669,7 @@ class InstanceProperties(_messages.Message):
       instances will be used as an IP gateway or it will be set as the next-
       hop in a Route resource, specify true. If unsure, leave this set to
       false. See the Enable IP forwarding documentation for more information.
+    confidentialInstanceConfig: Specifies the Confidential Instance options.
     description: An optional text description for the instances that are
       created from this instance template.
     disks: An array of disks that are associated with the instances that are
@@ -29735,23 +29751,24 @@ class InstanceProperties(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   canIpForward = _messages.BooleanField(1)
-  description = _messages.StringField(2)
-  disks = _messages.MessageField('AttachedDisk', 3, repeated=True)
-  displayDevice = _messages.MessageField('DisplayDevice', 4)
-  guestAccelerators = _messages.MessageField('AcceleratorConfig', 5, repeated=True)
-  labels = _messages.MessageField('LabelsValue', 6)
-  machineType = _messages.StringField(7)
-  metadata = _messages.MessageField('Metadata', 8)
-  minCpuPlatform = _messages.StringField(9)
-  networkInterfaces = _messages.MessageField('NetworkInterface', 10, repeated=True)
-  privateIpv6GoogleAccess = _messages.EnumField('PrivateIpv6GoogleAccessValueValuesEnum', 11)
-  reservationAffinity = _messages.MessageField('ReservationAffinity', 12)
-  resourcePolicies = _messages.StringField(13, repeated=True)
-  scheduling = _messages.MessageField('Scheduling', 14)
-  serviceAccounts = _messages.MessageField('ServiceAccount', 15, repeated=True)
-  shieldedInstanceConfig = _messages.MessageField('ShieldedInstanceConfig', 16)
-  shieldedVmConfig = _messages.MessageField('ShieldedVmConfig', 17)
-  tags = _messages.MessageField('Tags', 18)
+  confidentialInstanceConfig = _messages.MessageField('ConfidentialInstanceConfig', 2)
+  description = _messages.StringField(3)
+  disks = _messages.MessageField('AttachedDisk', 4, repeated=True)
+  displayDevice = _messages.MessageField('DisplayDevice', 5)
+  guestAccelerators = _messages.MessageField('AcceleratorConfig', 6, repeated=True)
+  labels = _messages.MessageField('LabelsValue', 7)
+  machineType = _messages.StringField(8)
+  metadata = _messages.MessageField('Metadata', 9)
+  minCpuPlatform = _messages.StringField(10)
+  networkInterfaces = _messages.MessageField('NetworkInterface', 11, repeated=True)
+  privateIpv6GoogleAccess = _messages.EnumField('PrivateIpv6GoogleAccessValueValuesEnum', 12)
+  reservationAffinity = _messages.MessageField('ReservationAffinity', 13)
+  resourcePolicies = _messages.StringField(14, repeated=True)
+  scheduling = _messages.MessageField('Scheduling', 15)
+  serviceAccounts = _messages.MessageField('ServiceAccount', 16, repeated=True)
+  shieldedInstanceConfig = _messages.MessageField('ShieldedInstanceConfig', 17)
+  shieldedVmConfig = _messages.MessageField('ShieldedVmConfig', 18)
+  tags = _messages.MessageField('Tags', 19)
 
 
 class InstanceReference(_messages.Message):
@@ -32559,7 +32576,12 @@ class MachineType(_messages.Message):
   more information, read Machine Types. (== resource_for
   {$api_version}.machineTypes ==)
 
+  Messages:
+    AcceleratorsValueListEntry: A AcceleratorsValueListEntry object.
+
   Fields:
+    accelerators: [Output Only] A list of accelerator configurations assigned
+      to this machine type.
     creationTimestamp: [Output Only] Creation timestamp in RFC3339 text
       format.
     deprecated: [Output Only] The deprecation status associated with this
@@ -32585,19 +32607,32 @@ class MachineType(_messages.Message):
       such as us-central1-a.
   """
 
-  creationTimestamp = _messages.StringField(1)
-  deprecated = _messages.MessageField('DeprecationStatus', 2)
-  description = _messages.StringField(3)
-  guestCpus = _messages.IntegerField(4, variant=_messages.Variant.INT32)
-  id = _messages.IntegerField(5, variant=_messages.Variant.UINT64)
-  isSharedCpu = _messages.BooleanField(6)
-  kind = _messages.StringField(7, default=u'compute#machineType')
-  maximumPersistentDisks = _messages.IntegerField(8, variant=_messages.Variant.INT32)
-  maximumPersistentDisksSizeGb = _messages.IntegerField(9)
-  memoryMb = _messages.IntegerField(10, variant=_messages.Variant.INT32)
-  name = _messages.StringField(11)
-  selfLink = _messages.StringField(12)
-  zone = _messages.StringField(13)
+  class AcceleratorsValueListEntry(_messages.Message):
+    r"""A AcceleratorsValueListEntry object.
+
+    Fields:
+      guestAcceleratorCount: Number of accelerator cards exposed to the guest.
+      guestAcceleratorType: The accelerator type resource name, not a full
+        URL, e.g. 'nvidia-tesla-k80'.
+    """
+
+    guestAcceleratorCount = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+    guestAcceleratorType = _messages.StringField(2)
+
+  accelerators = _messages.MessageField('AcceleratorsValueListEntry', 1, repeated=True)
+  creationTimestamp = _messages.StringField(2)
+  deprecated = _messages.MessageField('DeprecationStatus', 3)
+  description = _messages.StringField(4)
+  guestCpus = _messages.IntegerField(5, variant=_messages.Variant.INT32)
+  id = _messages.IntegerField(6, variant=_messages.Variant.UINT64)
+  isSharedCpu = _messages.BooleanField(7)
+  kind = _messages.StringField(8, default=u'compute#machineType')
+  maximumPersistentDisks = _messages.IntegerField(9, variant=_messages.Variant.INT32)
+  maximumPersistentDisksSizeGb = _messages.IntegerField(10)
+  memoryMb = _messages.IntegerField(11, variant=_messages.Variant.INT32)
+  name = _messages.StringField(12)
+  selfLink = _messages.StringField(13)
+  zone = _messages.StringField(14)
 
 
 class MachineTypeAggregatedList(_messages.Message):
@@ -37883,16 +37918,19 @@ class Policy(_messages.Message):
   `bindings`. A `binding` binds one or more `members` to a single `role`.
   Members can be user accounts, service accounts, Google groups, and domains
   (such as G Suite). A `role` is a named list of permissions; each `role` can
-  be an IAM predefined role or a user-created custom role.  Optionally, a
-  `binding` can specify a `condition`, which is a logical expression that
-  allows access to a resource only if the expression evaluates to `true`. A
-  condition can add constraints based on attributes of the request, the
-  resource, or both.  **JSON example:**  { "bindings": [ { "role":
+  be an IAM predefined role or a user-created custom role.  For some types of
+  Google Cloud resources, a `binding` can also specify a `condition`, which is
+  a logical expression that allows access to a resource only if the expression
+  evaluates to `true`. A condition can add constraints based on attributes of
+  the request, the resource, or both. To learn which resources support
+  conditions in their IAM policies, see the [IAM
+  documentation](https://cloud.google.com/iam/help/conditions/resource-
+  policies).  **JSON example:**  { "bindings": [ { "role":
   "roles/resourcemanager.organizationAdmin", "members": [
   "user:mike@example.com", "group:admins@example.com", "domain:google.com",
   "serviceAccount:my-project-id@appspot.gserviceaccount.com" ] }, { "role":
-  "roles/resourcemanager.organizationViewer", "members":
-  ["user:eve@example.com"], "condition": { "title": "expirable access",
+  "roles/resourcemanager.organizationViewer", "members": [
+  "user:eve@example.com" ], "condition": { "title": "expirable access",
   "description": "Does not grant access after Sep 2020", "expression":
   "request.time < timestamp('2020-10-01T00:00:00.000Z')", } } ], "etag":
   "BwWWja0YfJA=", "version": 3 }  **YAML example:**  bindings: - members: -
@@ -37942,7 +37980,10 @@ class Policy(_messages.Message):
       a version `3` policy with a version `1` policy, and all of the
       conditions in the version `3` policy are lost.  If a policy does not
       include any conditions, operations on that policy may specify any valid
-      version or leave the field unset.
+      version or leave the field unset.  To learn which resources support
+      conditions in their IAM policies, see the [IAM
+      documentation](https://cloud.google.com/iam/help/conditions/resource-
+      policies).
   """
 
   auditConfigs = _messages.MessageField('AuditConfig', 1, repeated=True)
@@ -42684,7 +42725,7 @@ class SavedAttachedDisk(_messages.Message):
 
 
 class Scheduling(_messages.Message):
-  r"""Sets the scheduling options for an Instance. NextID: 10
+  r"""Sets the scheduling options for an Instance. NextID: 11
 
   Enums:
     OnHostMaintenanceValueValuesEnum: Defines the maintenance behavior for
@@ -44915,7 +44956,9 @@ class Subnetwork(_messages.Message):
       either PRIVATE_RFC_1918 or INTERNAL_HTTPS_LOAD_BALANCER. A subnetwork
       with purpose set to INTERNAL_HTTPS_LOAD_BALANCER is a user-created
       subnetwork that is reserved for Internal HTTP(S) Load Balancing. If
-      unspecified, the purpose defaults to PRIVATE_RFC_1918.
+      unspecified, the purpose defaults to PRIVATE_RFC_1918. The
+      enableFlowLogs field isn't supported with the purpose field set to
+      INTERNAL_HTTPS_LOAD_BALANCER.
     RoleValueValuesEnum: The role of subnetwork. Currently, this field is only
       used when purpose = INTERNAL_HTTPS_LOAD_BALANCER. The value can be set
       to ACTIVE or BACKUP. An ACTIVE subnetwork is one that is currently being
@@ -44948,7 +44991,9 @@ class Subnetwork(_messages.Message):
       resource creation time.
     enableFlowLogs: Whether to enable flow logging for this subnetwork. If
       this field is not explicitly set, it will not appear in get listings. If
-      not set the default behavior is to disable flow logging.
+      not set the default behavior is to disable flow logging. This field
+      isn't supported with the purpose field set to
+      INTERNAL_HTTPS_LOAD_BALANCER.
     fingerprint: Fingerprint of this resource. A hash of the contents stored
       in this object. This field is used in optimistic locking. This field
       will be ignored when inserting a Subnetwork. An up-to-date fingerprint
@@ -45000,7 +45045,8 @@ class Subnetwork(_messages.Message):
       PRIVATE_RFC_1918 or INTERNAL_HTTPS_LOAD_BALANCER. A subnetwork with
       purpose set to INTERNAL_HTTPS_LOAD_BALANCER is a user-created subnetwork
       that is reserved for Internal HTTP(S) Load Balancing. If unspecified,
-      the purpose defaults to PRIVATE_RFC_1918.
+      the purpose defaults to PRIVATE_RFC_1918. The enableFlowLogs field isn't
+      supported with the purpose field set to INTERNAL_HTTPS_LOAD_BALANCER.
     region: URL of the region where the Subnetwork resides. This field can be
       set only at resource creation time.
     role: The role of subnetwork. Currently, this field is only used when
@@ -45046,7 +45092,8 @@ class Subnetwork(_messages.Message):
     or INTERNAL_HTTPS_LOAD_BALANCER. A subnetwork with purpose set to
     INTERNAL_HTTPS_LOAD_BALANCER is a user-created subnetwork that is reserved
     for Internal HTTP(S) Load Balancing. If unspecified, the purpose defaults
-    to PRIVATE_RFC_1918.
+    to PRIVATE_RFC_1918. The enableFlowLogs field isn't supported with the
+    purpose field set to INTERNAL_HTTPS_LOAD_BALANCER.
 
     Values:
       INTERNAL_HTTPS_LOAD_BALANCER: <no description>

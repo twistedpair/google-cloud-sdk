@@ -197,10 +197,23 @@ def OverrideProjectIdToProjectNumber(request):
 
 def UpdateAdminRequest(resource_ref, args, request):
   """Returns an updated `request` with values for a valid Admin request."""
+  # Unused resource reference.
   del args
 
   request = ParseResource(request)
   request = OverrideProjectIdToProjectNumber(request)
   OverrideEndpointWithRegion(request, resource_ref.SelfLink())
+
+  return request
+
+
+def AddSubscriptionTopicResource(resource_ref, args, request):
+  """Returns an updated `request` with a resource path on the topic."""
+  # Unused resource reference and arguments.
+  del resource_ref, args
+
+  resource, _ = GetResourceInfo(request)
+  request.subscription.topic = '{}/{}{}'.format(resource, TOPICS_RESOURCE_PATH,
+                                                request.subscription.topic)
 
   return request

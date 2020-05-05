@@ -38,8 +38,14 @@ def TypedArgRules():
   return {
       'xctest': {
           'required': ['test'],
-          'optional': ['xcode_version', 'xctestrun_file'],
-          'defaults': {}
+          'optional': [
+              'xcode_version',
+              'xctestrun_file',
+              'test_special_entitlements',
+          ],
+          'defaults': {
+              'test_special_entitlements': False
+          }
       },
       'game-loop': {
           'required': ['app'],

@@ -4605,7 +4605,7 @@ class GooglePrivacyDlpV2MetadataLocation(_messages.Message):
 
     Values:
       METADATATYPE_UNSPECIFIED: Unused
-      STORAGE_METADATA: General file metadata provided by GCS.
+      STORAGE_METADATA: General file metadata provided by Cloud Storage.
     """
     METADATATYPE_UNSPECIFIED = 0
     STORAGE_METADATA = 1
@@ -5452,6 +5452,11 @@ class GooglePrivacyDlpV2TableLocation(_messages.Message):
 
   Fields:
     rowIndex: The zero-based index of the row where the finding is located.
+      Only populated for resources that have a natural ordering, not BigQuery.
+      In BigQuery, to identify the row a finding came from, populate
+      BigQueryOptions.identifying_fields with your primary key column names
+      and when you store the findings the value of those columns will be
+      stored inside of Finding.
   """
 
   rowIndex = _messages.IntegerField(1)

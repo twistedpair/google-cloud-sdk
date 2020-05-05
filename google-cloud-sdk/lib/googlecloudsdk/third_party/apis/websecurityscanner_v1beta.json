@@ -14,7 +14,7 @@
     "x16": "http://www.google.com/images/icons/product/search-16.gif",
     "x32": "http://www.google.com/images/icons/product/search-32.gif"
    },
-  "documentationLink": "https://cloud.google.com/security-scanner/",
+  "documentationLink": "https://cloud.google.com/security-command-center/docs/concepts-web-security-scanner-overview/",
   "protocol": "rest",
   "rootUrl": "https://websecurityscanner.googleapis.com/",
   "mtlsRootUrl": "https://websecurityscanner.mtls.googleapis.com/",
@@ -156,7 +156,7 @@
           ]
         },
         "blacklistPatterns": {
-          "description": "The blacklist URL patterns as described in\nhttps:\/\/cloud.google.com\/security-scanner\/docs\/excluded-urls",
+          "description": "The excluded URL patterns as described in\nhttps:\/\/cloud.google.com\/security-command-center\/docs\/how-to-use-web-security-scanner#excluding_urls",
           "type": "array",
           "items": {
             "type": "string"
@@ -167,7 +167,7 @@
           "$ref": "Schedule"
         },
         "targetPlatforms": {
-          "description": "Set of Cloud Platforms targeted by the scan. If empty, APP_ENGINE will be\nused as a default.",
+          "description": "Set of Google Cloud platforms targeted by the scan. If empty, APP_ENGINE\nwill be used as a default.",
           "enumDescriptions": [
             "The target platform is unknown. Requests with this enum value will be\nrejected with INVALID_ARGUMENT error.",
             "Google App Engine service.",
@@ -184,11 +184,11 @@
           }
         },
         "exportToSecurityCommandCenter": {
-          "description": "Controls export of scan configurations and results to Cloud Security\nCommand Center.",
+          "description": "Controls export of scan configurations and results to Security\nCommand Center.",
           "enumDescriptions": [
             "Use default, which is ENABLED.",
-            "Export results of this scan to Cloud Security Command Center.",
-            "Do not export results of this scan to Cloud Security Command Center."
+            "Export results of this scan to Security Command Center.",
+            "Do not export results of this scan to Security Command Center."
           ],
           "type": "string",
           "enum": [
@@ -216,7 +216,7 @@
           ]
         },
         "managedScan": {
-          "description": "Whether the scan config is managed by Cloud Web Security Scanner, output\nonly.",
+          "description": "Whether the scan config is managed by Web Security Scanner, output\nonly.",
           "type": "boolean"
         },
         "staticIpScan": {
@@ -481,7 +481,7 @@
             "One of the seed URLs is mapped to an IP address which is not reserved\nfor the current project.",
             "One of the seed URLs has on-routable IP address.",
             "One of the seed URLs has an IP address that is not reserved\nfor the current project.",
-            "The Cloud Security Scanner service account is not configured under the\nproject.",
+            "The Web Security Scanner service account is not configured under the\nproject.",
             "A project has reached the maximum number of scans.",
             "Resolving the details of the current project fails.",
             "One or more blacklist patterns were in the wrong format.",
@@ -670,7 +670,7 @@
           "type": "string"
         },
         "findingType": {
-          "description": "The type of the Finding.\nDetailed and up-to-date information on findings can be found here:\nhttps:\/\/cloud.google.com\/security-scanner\/docs\/scan-result-details",
+          "description": "The type of the Finding.\nDetailed and up-to-date information on findings can be found here:\nhttps:\/\/cloud.google.com\/security-command-center\/docs\/how-to-remediate-web-security-scanner",
           "type": "string"
         },
         "severity": {

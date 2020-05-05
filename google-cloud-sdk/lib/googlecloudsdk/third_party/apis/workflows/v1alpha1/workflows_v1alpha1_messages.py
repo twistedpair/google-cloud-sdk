@@ -406,7 +406,8 @@ class Workflow(_messages.Message):
 
   Fields:
     createTime: Output only. The timestamp of when the workflow was created.
-    description: Description of the workflow provided by the user.
+    description: Description of the workflow provided by the user. Must be at
+      most 1000 unicode characters long.
     labels: Labels associated with this workflow.
     name: Name of the workflow resource, for example,
       "projects/project1/locations/us-central1/workflows/workflow1".

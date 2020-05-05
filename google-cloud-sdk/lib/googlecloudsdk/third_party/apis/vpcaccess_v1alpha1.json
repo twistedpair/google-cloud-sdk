@@ -282,6 +282,16 @@
             "ERROR",
             "UPDATING"
           ]
+        },
+        "minThroughput": {
+          "description": "Minimum throughput of the connector in Mbps. Default and min is 200.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "maxThroughput": {
+          "description": "Maximum throughput of the connector in Mbps. Default is 200, max is 1000.",
+          "type": "integer",
+          "format": "int32"
         }
       }
     },

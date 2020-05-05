@@ -144,15 +144,41 @@ def List(versions_client, model=None):
   return versions_client.List(model_ref)
 
 
+_ALLOWED_UPDATE_YAML_FIELDS = frozenset([
+    'autoScaling', 'description', 'manualScaling',
+])
+
+
 def Update(versions_client, operations_client, version_ref, args):
   """Update the given version."""
   get_result = repeated.CachedResult.FromFunc(
       versions_client.Get, version_ref)
+
+  version = None
+  if hasattr(args, 'config') and args.config:
+    version = versions_client.ReadConfig(
+        args.config, _ALLOWED_UPDATE_YAML_FIELDS)
+
+  description = args.description or (version.description if version else None)
+
+  # The semantics of updating/removing/clearing labels from the config file is
+  # not totally clear, so labels aren't currently allowed in config files.
   labels_update = ParseUpdateLabels(versions_client, get_result, args)
+
+  manual_scaling_nodes = None
+  if version and hasattr(version.manualScaling, 'nodes'):
+    manual_scaling_nodes = version.manualScaling.nodes
+
+  auto_scaling_min_nodes = None
+  if version and hasattr(version.autoScaling, 'minNodes'):
+    auto_scaling_min_nodes = version.autoScaling.minNodes
+
   all_args = ['update_labels', 'clear_labels', 'remove_labels', 'description']
 
   try:
-    op = versions_client.Patch(version_ref, labels_update, args.description)
+    op = versions_client.Patch(version_ref, labels_update, description,
+                               manual_scaling_nodes=manual_scaling_nodes,
+                               auto_scaling_min_nodes=auto_scaling_min_nodes)
   except versions_api.NoFieldsSpecifiedError:
     if not any(args.IsSpecified(arg) for arg in all_args):
       raise

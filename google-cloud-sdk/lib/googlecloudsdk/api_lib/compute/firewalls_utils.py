@@ -41,23 +41,17 @@ LEGAL_SPECS = re.compile(
 EFFECTIVE_FIREWALL_LIST_FORMAT = """\
   table(
     type,
+    security_policy_id,
     priority,
     action,
     direction,
-    src_ip_ranges,
-    dest_ip_ranges,
-    target_svc_acct,
-    enableLogging,
-    description,
-    name,
-    disabled,
-    security_policy_id,
-    target_tags,
-    src_svc_acct,
-    src_tags,
-    ruleTupleCount,
-    targetResources:label=TARGET_RESOURCES
+    ip_ranges.list():label=IP_RANGES
   )"""
+
+LIST_NOTICE = """\
+To show all fields of the firewall, please show in JSON format: --format=json
+To show more fields in table format, please see the examples in --help.
+"""
 
 
 class ArgumentValidationError(exceptions.Error):
@@ -473,9 +467,9 @@ def ConvertOrgSecurityPolicyRulesToEffectiveFwRules(security_policy):
     item.update({'action': rule.action})
     item.update({'disabled': 'False'})
     if rule.match.config.srcIpRanges:
-      item.update({'src_ip_ranges': rule.match.config.srcIpRanges})
+      item.update({'ip_ranges': rule.match.config.srcIpRanges})
     if rule.match.config.destIpRanges:
-      item.update({'dest_ip_ranges': rule.match.config.destIpRanges})
+      item.update({'ip_ranges': rule.match.config.destIpRanges})
     if rule.targetServiceAccounts:
       item.update({'target_svc_acct': rule.targetServiceAccounts})
     if rule.targetResources:
@@ -498,9 +492,9 @@ def ConvertNetworkFirewallRulesToEffectiveFwRules(network_firewalls):
     else:
       item.update({'action': 'DENY'})
     if rule.sourceRanges:
-      item.update({'src_ip_ranges': rule.sourceRanges})
+      item.update({'ip_ranges': rule.sourceRanges})
     if rule.destinationRanges:
-      item.update({'dest_ip_ranges': rule.destinationRanges})
+      item.update({'ip_ranges': rule.destinationRanges})
     if rule.targetServiceAccounts:
       item.update({'target_svc_acct': rule.targetServiceAccounts})
     if rule.targetTags:

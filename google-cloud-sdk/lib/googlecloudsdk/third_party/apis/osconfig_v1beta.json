@@ -486,7 +486,7 @@
     },
     "PatchJob": {
       "id": "PatchJob",
-      "description": "A high level representation of a patch job that is either in progress\nor has completed.\n\nInstances details are not included in the job. To paginate through instance\ndetails, use ListPatchJobInstanceDetails.\n\nFor more information about patch jobs, see\n[Creating patch jobs](\/compute\/docs\/os-patch-management\/create-patch-job).",
+      "description": "A high level representation of a patch job that is either in progress\nor has completed.\n\nInstances details are not included in the job. To paginate through instance\ndetails, use ListPatchJobInstanceDetails.\n\nFor more information about patch jobs, see\n[Creating patch\njobs](https:\/\/cloud.google.com\/compute\/docs\/os-patch-management\/create-patch-job).",
       "type": "object",
       "properties": {
         "name": {
@@ -698,7 +698,7 @@
     },
     "PatchJobInstanceDetails": {
       "id": "PatchJobInstanceDetails",
-      "description": "Patch details for a VM instance. For more information about reviewing VM\ninstance details, see\n[Listing all VM instance details for a specific patch\njob](\/compute\/docs\/os-patch-management\/manage-patch-jobs#list-instance-details).",
+      "description": "Patch details for a VM instance. For more information about reviewing VM\ninstance details, see\n[Listing all VM instance details for a specific patch\njob](https:\/\/cloud.google.com\/compute\/docs\/os-patch-management\/manage-patch-jobs#list-instance-details).",
       "type": "object",
       "properties": {
         "name": {
@@ -762,7 +762,7 @@
     },
     "PatchDeployment": {
       "id": "PatchDeployment",
-      "description": "Patch deployments are configurations that individual patch jobs use to\ncomplete a patch. These configurations include instance filter, package\nrepository settings, and a schedule. For more information about creating and\nmanaging patch deployments, see [Scheduling patch\njobs](\/compute\/docs\/os-patch-management\/schedule-patch-jobs).",
+      "description": "Patch deployments are configurations that individual patch jobs use to\ncomplete a patch. These configurations include instance filter, package\nrepository settings, and a schedule. For more information about creating and\nmanaging patch deployments, see [Scheduling patch\njobs](https:\/\/cloud.google.com\/compute\/docs\/os-patch-management\/schedule-patch-jobs).",
       "type": "object",
       "properties": {
         "name": {
@@ -795,17 +795,17 @@
           "$ref": "RecurringSchedule"
         },
         "createTime": {
-          "description": "Output only. Time the patch deployment was created. Timestamp is in\n<a href=\"https:\/\/www.ietf.org\/rfc\/rfc3339.txt\" target=\"_blank\">RFC3339<\/a>\ntext format.",
+          "description": "Output only. Time the patch deployment was created. Timestamp is in\n[RFC3339](https:\/\/www.ietf.org\/rfc\/rfc3339.txt) text format.",
           "type": "string",
           "format": "google-datetime"
         },
         "updateTime": {
-          "description": "Output only. Time the patch deployment was last updated. Timestamp is in\n<a href=\"https:\/\/www.ietf.org\/rfc\/rfc3339.txt\" target=\"_blank\">RFC3339<\/a>\ntext format.",
+          "description": "Output only. Time the patch deployment was last updated. Timestamp is in\n[RFC3339](\"https:\/\/www.ietf.org\/rfc\/rfc3339.txt) text format.",
           "type": "string",
           "format": "google-datetime"
         },
         "lastExecuteTime": {
-          "description": "Output only. The last time a patch job was started by this deployment.\nTimestamp is in\n<a href=\"https:\/\/www.ietf.org\/rfc\/rfc3339.txt\" target=\"_blank\">RFC3339<\/a>\ntext format.",
+          "description": "Output only. The last time a patch job was started by this deployment.\nTimestamp is in [RFC3339](https:\/\/www.ietf.org\/rfc\/rfc3339.txt) text\nformat.",
           "type": "string",
           "format": "google-datetime"
         }
@@ -813,7 +813,7 @@
     },
     "OneTimeSchedule": {
       "id": "OneTimeSchedule",
-      "description": "Sets the time for a one time patch deployment. Timestamp is in\n<a href=\"https:\/\/www.ietf.org\/rfc\/rfc3339.txt\" target=\"_blank\">RFC3339<\/a>\ntext format.",
+      "description": "Sets the time for a one time patch deployment. Timestamp is in\n[RFC3339](https:\/\/www.ietf.org\/rfc\/rfc3339.txt) text format.",
       "type": "object",
       "properties": {
         "executeTime": {
@@ -1338,7 +1338,7 @@
     },
     "SoftwareRecipe": {
       "id": "SoftwareRecipe",
-      "description": "A software recipe is a set of instructions for installing and configuring a\npiece of software. It consists of a set of artifacts that are\ndownloaded, and a set of steps that install, configure, and\/or update the\nsoftware.\n\nRecipes support installing and updating software from artifacts in the\nfollowing formats:\nZip archive, Tar archive, Windows MSI, Debian package, and RPM package.\n\nAdditionally, recipes support executing a script (either defined in a file or\ndirectly in this api) in bash, sh, cmd, and powershell.\n\nUpdating a software recipe\n\nIf a recipe is assigned to an instance and there is a recipe with the same\nname but a lower version already installed and the assigned state\nof the recipe is `INSTALLED_KEEP_UPDATED`, then the recipe is updated to\nthe new version.\n\nScript Working Directories\n\nEach script or execution step is run in its own temporary directory which\nis deleted after completing the step.",
+      "description": "A software recipe is a set of instructions for installing and configuring a\npiece of software. It consists of a set of artifacts that are\ndownloaded, and a set of steps that install, configure, and\/or update the\nsoftware.\n\nRecipes support installing and updating software from artifacts in the\nfollowing formats:\nZip archive, Tar archive, Windows MSI, Debian package, and RPM package.\n\nAdditionally, recipes support executing a script (either defined in a file or\ndirectly in this api) in bash, sh, cmd, and powershell.\n\nUpdating a software recipe\n\nIf a recipe is assigned to an instance and there is a recipe with the same\nname but a lower version already installed and the assigned state\nof the recipe is `UPDATED`, then the recipe is updated to\nthe new version.\n\nScript Working Directories\n\nEach script or execution step is run in its own temporary directory which\nis deleted after completing the step.",
       "type": "object",
       "properties": {
         "name": {
@@ -1371,7 +1371,7 @@
           }
         },
         "desiredState": {
-          "description": "Default is INSTALLED. The desired state the agent should maintain for this\nrecipe.\n\nINSTALLED: The software recipe is installed on the instance but\n           won't be updated to new versions.\nINSTALLED_KEEP_UPDATED: The software recipe is installed on the\n                        instance. The recipe is updated to a higher\n                        version, if a higher version of the recipe is\n                        assigned to this instance.\nREMOVE: Remove is unsupported for software recipes and attempts to\n        create or update a recipe to the REMOVE state is rejected.",
+          "description": "Default is INSTALLED. The desired state the agent should maintain for this\nrecipe.\n\nINSTALLED: The software recipe is installed on the instance but\n           won't be updated to new versions.\nUPDATED: The software recipe is installed on the instance. The recipe is\n         updated to a higher version, if a higher version of the recipe is\n         assigned to this instance.\nREMOVE: Remove is unsupported for software recipes and attempts to\n        create or update a recipe to the REMOVE state is rejected.",
           "enumDescriptions": [
             "The default is to ensure the package is installed.",
             "The agent ensures that the package is installed.",

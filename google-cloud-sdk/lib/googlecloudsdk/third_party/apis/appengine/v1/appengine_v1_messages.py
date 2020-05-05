@@ -746,7 +746,7 @@ class Application(_messages.Message):
       DATABASE_TYPE_UNSPECIFIED: Database type is unspecified.
       CLOUD_DATASTORE: Cloud Datastore
       CLOUD_FIRESTORE: Cloud Firestore Native
-      CLOUD_DATASTORE_COMPATIBILITY: Cloud Firestore Datastore Mode
+      CLOUD_DATASTORE_COMPATIBILITY: Cloud Firestore in Datastore Mode
     """
     DATABASE_TYPE_UNSPECIFIED = 0
     CLOUD_DATASTORE = 1

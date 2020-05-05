@@ -19,15 +19,18 @@ from __future__ import print_function
 from __future__ import unicode_literals
 
 import base64
+import json
 import os
 import os.path
 import re
 
 from apitools.base.py import exceptions as apitools_exceptions
 from googlecloudsdk.api_lib.util import apis
+from googlecloudsdk.command_lib.auth import auth_util
 from googlecloudsdk.command_lib.code import yaml_helper
 from googlecloudsdk.command_lib.iam import iam_util
 from googlecloudsdk.core import config
+from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import properties
 from googlecloudsdk.core import yaml
 from googlecloudsdk.core.console import console_io
@@ -39,12 +42,82 @@ IAM_MESSAGE_MODULE = apis.GetMessagesModule('iam', 'v1')
 CRM_MESSAGE_MODULE = apis.GetMessagesModule('cloudresourcemanager', 'v1')
 
 
-class Settings(object):
-  """Settings for local development environments."""
+class _DataType(type):
+  """Dumb immutable data type."""
 
-  __slots__ = ('service_name', 'image_name', 'service_account', 'dockerfile',
-               'build_context_directory', 'builder', 'local_port', 'env_vars',
-               'cloudsql_instances', 'memory_limit', 'cpu_limit')
+  # TODO(b/154131605): This a type that is an immutable data object. Can't use
+  # attrs because it's not part of googlecloudsdk and can't use namedtuple
+  # because it's not efficient on python 2 (it generates code, which needs
+  # to be parsed and interpretted). Remove this code when we get support
+  # for attrs or another dumb data object in gcloud.
+
+  def __new__(mcs, classname, bases, class_dict):
+    class_dict = class_dict.copy()
+    names = class_dict.get('NAMES', tuple())
+    class_dict.update(
+        (name, mcs._CreateAccessor(i)) for i, name in enumerate(names))
+
+    return super(_DataType, mcs).__new__(mcs, classname, bases, class_dict)
+
+  @staticmethod
+  def _CreateAccessor(i):
+    """Create an tuple accessor property."""
+    return property(lambda tpl: tpl[i])
+
+
+class DataObject(six.with_metaclass(_DataType, tuple)):
+  """Parent class of dumb data object."""
+
+  def __new__(cls, **kwargs):
+    names = getattr(cls, 'NAMES', tuple())
+    invalid_names = set(kwargs) - set(names)
+    if invalid_names:
+      raise ValueError('Invalid names: ' + repr(invalid_names))
+
+    tpl = tuple(kwargs[name] if name in kwargs else None for name in names)
+    return super(DataObject, cls).__new__(cls, tpl)
+
+
+class ServiceAccountSetting(DataObject):
+  """Setting object representing a service account."""
+  NAMES = ('name',)
+
+
+class ApplicationDefaultCredentialSetting(DataObject):
+  """Setting object representing the application default credential."""
+
+  _instance = None
+
+  def __new__(cls, **kwargs):
+    if not cls._instance:
+      cls._instance = super(ApplicationDefaultCredentialSetting,
+                            cls).__new__(cls, **kwargs)
+
+    return cls._instance
+
+
+class Settings(DataObject):
+  """Settings for local development environments.
+
+    Attributes:
+      service_name: Name of the kuberntes service.
+      image_name: Docker image tag.
+      credential: Credential setting for either service account or application
+        default credential.
+      dockerfile: Path to dockerfile.
+      build_context_directory: Path to directory to use as the current working
+        directory for the docker build.
+      builder: Buildpack builder.
+      local_port: Local port to which to forward the service connection.
+      env_vars: Container environment variables.
+      cloudsql_instances: Cloud SQL instances.
+      memory_limit: Memory limit.
+      cpu_limit: CPU limit.
+  """
+
+  NAMES = ('service_name', 'image_name', 'credential', 'dockerfile',
+           'build_context_directory', 'builder', 'local_port', 'env_vars',
+           'cloudsql_instances', 'memory_limit', 'cpu_limit')
 
   @classmethod
   def FromArgs(cls, args):
@@ -68,46 +141,25 @@ class Settings(object):
     else:
       image_name = args.image_name
 
-    return cls(service_name, image_name, args.service_account, args.dockerfile,
-               args.build_context_directory, args.builder, args.local_port,
-               args.env_vars or args.env_vars_file, args.cloudsql_instances,
-               args.memory_limit, args.cpu_limit)
+    if args.IsSpecified('application_default_credential'):
+      credential = ApplicationDefaultCredentialSetting()
+    elif args.IsSpecified('service_account'):
+      credential = ServiceAccountSetting(name=args.service_account)
+    else:
+      credential = None
 
-  def __init__(self, service_name, image_name, service_account, dockerfile,
-               build_context_directory, builder, local_port, env_vars,
-               cloudsql_instances, memory_limit, cpu_limit):
-    """Initialize Settings.
-
-    Args:
-      service_name: Name of the kuberntes service.
-      image_name: Docker image tag.
-      service_account: Service account id.
-      dockerfile: Path to dockerfile.
-      build_context_directory: Path to directory to use as the current working
-        directory for the docker build.
-      builder: Buildpack builder.
-      local_port: Local port to which to forward the service connection.
-      env_vars: Container environment variables.
-      cloudsql_instances: Cloud SQL instances.
-      memory_limit: Memory limit.
-      cpu_limit: CPU limit.
-    """
-    super(Settings, self).__setattr__('service_name', service_name)
-    super(Settings, self).__setattr__('image_name', image_name)
-    super(Settings, self).__setattr__('service_account', service_account)
-    super(Settings, self).__setattr__('dockerfile', dockerfile)
-    super(Settings, self).__setattr__('build_context_directory',
-                                      build_context_directory)
-    super(Settings, self).__setattr__('builder', builder)
-    super(Settings, self).__setattr__('local_port', local_port)
-    super(Settings, self).__setattr__('env_vars', env_vars)
-    super(Settings, self).__setattr__('cloudsql_instances', cloudsql_instances)
-    super(Settings, self).__setattr__('memory_limit', memory_limit)
-    super(Settings, self).__setattr__('cpu_limit', cpu_limit)
-
-  def __setattr__(self, name, value):
-    """Prevent modification of attributes."""
-    raise NotImplementedError('Settings cannot be modified')
+    return cls(
+        service_name=service_name,
+        image_name=image_name,
+        credential=credential,
+        dockerfile=args.dockerfile,
+        build_context_directory=args.build_context_directory,
+        builder=args.builder,
+        local_port=args.local_port,
+        env_vars=args.env_vars or args.env_vars_file,
+        cloudsql_instances=args.cloudsql_instances,
+        memory_limit=args.memory_limit,
+        cpu_limit=args.cpu_limit)
 
 
 _POD_TEMPLATE = """
@@ -472,20 +524,50 @@ class SecretInfo(object):
                  '/local_development_service_account.json')
 
 
-class SecretGenerator(KubeConfigGenerator):
+class ADCMissingError(exceptions.Error):
+  """Application Default Credential is missing."""
+
+
+def GetServiceAccountSecret(account_name):
+  """Get a service account secret file as text.
+
+  Args:
+    account_name: (str) Name of the service account.
+
+  Returns:
+    Context of the service account secret as a string.
+  """
+  service_account = CreateDevelopmentServiceAccount(account_name)
+  return CreateServiceAccountKey(service_account)
+
+
+def GetUserCredential():
+  """Get a copy of the application default credential for a user.
+
+  Returns:
+    Text version of the user's application default credential.
+  Raises:
+    ADCMissingError: Application Default Credential is not present.
+  """
+  adc = auth_util.GetADCAsJson()
+  if not adc:
+    raise ADCMissingError('No user credential present. Run '
+                          '`$ gcloud auth application-default login`.')
+  return json.dumps(adc)
+
+
+class CredentialGenerator(KubeConfigGenerator):
   """Configures service account secret."""
 
-  def __init__(self, account_name):
-    self._account_name = account_name
+  def __init__(self, credential_fetcher):
+    self._credential_fetcher = credential_fetcher
 
   def GetInfo(self):
     return SecretInfo()
 
   def CreateConfigs(self):
     """Create a secret."""
-    service_account = CreateDevelopmentServiceAccount(self._account_name)
-    private_key_json = CreateServiceAccountKey(service_account)
-    return [LocalDevelopmentSecretSpec(private_key_json)]
+    return [LocalDevelopmentSecretSpec(self._credential_fetcher())]
 
   def ModifyDeployment(self, deployment):
     """Add a secret volume to a deployment."""

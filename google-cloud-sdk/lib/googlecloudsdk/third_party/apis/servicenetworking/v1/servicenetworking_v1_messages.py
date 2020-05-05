@@ -406,15 +406,22 @@ class BackendRule(_messages.Message):
 
 class Billing(_messages.Message):
   r"""Billing related configuration of the service.  The following example
-  shows how to configure monitored resources and metrics for billing:
-  monitored_resources:     - type: library.googleapis.com/branch       labels:
-  - key: /city         description: The city where the library branch is
-  located in.       - key: /name         description: The name of the branch.
-  metrics:     - name: library.googleapis.com/book/borrowed_count
-  metric_kind: DELTA       value_type: INT64     billing:
-  consumer_destinations:       - monitored_resource:
-  library.googleapis.com/branch         metrics:         -
-  library.googleapis.com/book/borrowed_count
+  shows how to configure monitored resources and metrics for billing,
+  `consumer_destinations` is the only supported destination and the monitored
+  resources need at least one label key `cloud.googleapis.com/location` to
+  indicate the location of the billing usage, using different monitored
+  resources between monitoring and billing is recommended so they can be
+  evolved independently:       monitored_resources:     - type:
+  library.googleapis.com/billing_branch       labels:       - key:
+  cloud.googleapis.com/location         description: |           Predefined
+  label to support billing location restriction.       - key: city
+  description: |           Custom label to define the city where the library
+  branch is located           in.       - key: name         description:
+  Custom label to define the name of the library branch.     metrics:     -
+  name: library.googleapis.com/book/borrowed_count       metric_kind: DELTA
+  value_type: INT64       unit: "1"     billing:       consumer_destinations:
+  - monitored_resource: library.googleapis.com/billing_branch         metrics:
+  - library.googleapis.com/book/borrowed_count
 
   Fields:
     consumerDestinations: Billing configurations for sending metrics to the
@@ -2992,6 +2999,8 @@ class ValidateConsumerConfigResponse(_messages.Message):
         create a subnet of desired size.
       RANGES_NOT_RESERVED: The IP ranges were not reserved.
       RANGES_DELETED_LATER: The IP ranges were reserved but deleted later.
+      COMPUTE_API_NOT_ENABLED: The consumer project does not have the compute
+        api enabled.
     """
     VALIDATION_ERROR_UNSPECIFIED = 0
     VALIDATION_NOT_REQUESTED = 1
@@ -3006,6 +3015,7 @@ class ValidateConsumerConfigResponse(_messages.Message):
     RANGES_EXHAUSTED = 10
     RANGES_NOT_RESERVED = 11
     RANGES_DELETED_LATER = 12
+    COMPUTE_API_NOT_ENABLED = 13
 
   isValid = _messages.BooleanField(1)
   validationError = _messages.EnumField('ValidationErrorValueValuesEnum', 2)

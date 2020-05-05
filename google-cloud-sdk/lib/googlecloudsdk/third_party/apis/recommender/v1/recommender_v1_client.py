@@ -108,10 +108,10 @@ IAM permission for the specified recommender.
     )
 
     def MarkClaimed(self, request, global_params=None):
-      r"""Mark the Recommendation State as Claimed. Users can use this method to.
+      r"""Marks the Recommendation State as Claimed. Users can use this method to.
 indicate to the Recommender API that they are starting to apply the
 recommendation themselves. This stops the recommendation content from being
-updated.
+updated. Associated insights are frozen and placed in the ACCEPTED state.
 
 MarkRecommendationClaimed can be applied to recommendations in CLAIMED,
 SUCCEEDED, FAILED, or ACTIVE state.
@@ -144,10 +144,11 @@ recommender.
     )
 
     def MarkFailed(self, request, global_params=None):
-      r"""Mark the Recommendation State as Failed. Users can use this method to.
+      r"""Marks the Recommendation State as Failed. Users can use this method to.
 indicate to the Recommender API that they have applied the recommendation
 themselves, and the operation failed. This stops the recommendation content
-from being updated.
+from being updated. Associated insights are frozen and placed in the
+ACCEPTED state.
 
 MarkRecommendationFailed can be applied to recommendations in ACTIVE,
 CLAIMED, SUCCEEDED, or FAILED state.
@@ -180,10 +181,11 @@ recommender.
     )
 
     def MarkSucceeded(self, request, global_params=None):
-      r"""Mark the Recommendation State as Succeeded. Users can use this method to.
+      r"""Marks the Recommendation State as Succeeded. Users can use this method to.
 indicate to the Recommender API that they have applied the recommendation
 themselves, and the operation was successful. This stops the recommendation
-content from being updated.
+content from being updated. Associated insights are frozen and placed in
+the ACCEPTED state.
 
 MarkRecommendationSucceeded can be applied to recommendations in ACTIVE,
 CLAIMED, SUCCEEDED, or FAILED state.

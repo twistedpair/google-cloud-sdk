@@ -450,7 +450,6 @@ Multiple scopes can be specified, separated by commas. For information on defaul
 look at:
 https://cloud.google.com/sdk/gcloud/reference/container/clusters/create#--scopes
 
-Note: Node Upgrade settings are implemented only in Beta and Alpha.
 Node Upgrade settings are specified under the field
 'upgradeSettings', which has the following fields:
 maxSurgeUpgrade: Number of extra (surge) nodes to be created on
@@ -458,8 +457,7 @@ each upgrade of an autoprovisioned node pool.
 maxUnavailableUpgrade: Number of nodes that can be unavailable at the
 same time on each upgrade of an autoprovisioned node pool.
 
-Note: Node Management settings are implemented only in Beta and
-Alpha. Node Management settings are specified under the field
+Node Management settings are specified under the field
 'nodeManagement', which has the following fields:
 enableAutoUpgrade: A boolean field that indicates if node
 autoupgrade is enabled for autoprovisioned node pools.
@@ -580,6 +578,52 @@ Multiple scopes can be specified, separated by commas. For information
 on defaults, look at:
 https://cloud.google.com/sdk/gcloud/reference/container/clusters/create#--scopes
 """)
+  upgrade_settings_group = from_flags_group.add_argument_group(
+      'Flags to specify upgrade settings for autoprovisioned nodes:',
+      hidden=hidden,
+  )
+  upgrade_settings_group.add_argument(
+      '--autoprovisioning-max-surge-upgrade',
+      type=int,
+      hidden=hidden,
+      required=True,
+      help="""\
+Number of extra (surge) nodes to be created on each upgrade of an
+autoprovisioned node pool.
+""")
+  upgrade_settings_group.add_argument(
+      '--autoprovisioning-max-unavailable-upgrade',
+      type=int,
+      hidden=hidden,
+      required=True,
+      help="""\
+Number of nodes that can be unavailable at the same time on each
+upgrade of an autoprovisioned node pool.
+""")
+  management_settings_group = from_flags_group.add_argument_group(
+      'Flags to specify node management settings for autoprovisioned nodes:',
+      hidden=hidden,
+  )
+  management_settings_group.add_argument(
+      '--enable-autoprovisioning-autoupgrade',
+      hidden=hidden,
+      default=None,
+      required=True,
+      action='store_true',
+      help="""\
+Enable node autoupgrade for autoprovisioned node pools.
+Use --no-enable-autoprovisioning-autoupgrade to disable.
+""")
+  management_settings_group.add_argument(
+      '--enable-autoprovisioning-autorepair',
+      default=None,
+      action='store_true',
+      hidden=hidden,
+      required=True,
+      help="""\
+Enable node autorepair for autoprovisioned node pools.
+Use --no-enable-autoprovisioning-autorepair to disable.
+""")
   from_flags_group.add_argument(
       '--autoprovisioning-locations',
       hidden=hidden,
@@ -599,52 +643,6 @@ def AddNonGAAutoscalingFlags(from_flags_group):
   Args:
     from_flags_group: Autoprovisioning flags group
   """
-  upgrade_settings_group = from_flags_group.add_argument_group(
-      'Flags to specify upgrade settings for autoprovisioned nodes:',
-      hidden=True,
-  )
-  upgrade_settings_group.add_argument(
-      '--autoprovisioning-max-surge-upgrade',
-      type=int,
-      hidden=True,
-      required=True,
-      help="""\
-Number of extra (surge) nodes to be created on each upgrade of a
-autoprovisioned node pool.
-""")
-  upgrade_settings_group.add_argument(
-      '--autoprovisioning-max-unavailable-upgrade',
-      type=int,
-      hidden=True,
-      required=True,
-      help="""\
-Number of nodes that can be unavailable at the same time on each
-upgrade of a autoprovisioned node pool.
-""")
-  management_settings_group = from_flags_group.add_argument_group(
-      'Flags to specify node management settings for autoprovisioned nodes:',
-      hidden=True,
-  )
-  management_settings_group.add_argument(
-      '--enable-autoprovisioning-autoupgrade',
-      hidden=True,
-      default=None,
-      required=True,
-      action='store_true',
-      help="""\
-Enable node autoupgrade for autoprovisioned node pools.
-Use --no-enable-autoprovisioning-autoupgrade to disable
-""")
-  management_settings_group.add_argument(
-      '--enable-autoprovisioning-autorepair',
-      default=None,
-      action='store_true',
-      hidden=True,
-      required=True,
-      help="""\
-Enable node autorepair for autoprovisioned node pools.
-Use --no-enable-autoprovisioning-autorepair to disable
-""")
   from_flags_group.add_argument(
       '--autoprovisioning-min-cpu-platform',
       hidden=True,

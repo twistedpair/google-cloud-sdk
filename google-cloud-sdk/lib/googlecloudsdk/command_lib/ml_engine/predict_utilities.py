@@ -101,8 +101,10 @@ def ReadInstances(input_file, data_format, limit=None):
                                       'instances file.')
     if limit and line_num >= limit:
       raise InvalidInstancesFileError(
-          'Online prediction can process no more than ' + six.text_type(limit) +
-          ' instances per file. Please use batch prediction instead.')
+          'The gcloud CLI can currently process no more than ' +
+          six.text_type(limit) +
+          ' instances per file. Please use the API directly if you need to send'
+          ' more.')
     if data_format == 'json':
       try:
         instances.append(json.loads(line_content))
@@ -224,4 +226,3 @@ def CheckRuntimeVersion(model=None, version=None):
     return (release == 1 and version >= 8) or (release > 1)
   else:
     return False
-

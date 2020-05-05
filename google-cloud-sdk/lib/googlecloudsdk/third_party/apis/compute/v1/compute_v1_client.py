@@ -4755,32 +4755,6 @@ If the group is part of a backend service that has enabled connection draining, 
         supports_download=False,
     )
 
-    def Resume(self, request, global_params=None):
-      r"""Resumes an instance that was suspended using the instances().suspend method.
-
-      Args:
-        request: (ComputeInstancesResumeRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Operation) The response message.
-      """
-      config = self.GetMethodConfig('Resume')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Resume.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'compute.instances.resume',
-        ordered_params=[u'project', u'zone', u'instance'],
-        path_params=[u'instance', u'project', u'zone'],
-        query_params=[u'requestId'],
-        relative_path=u'projects/{project}/zones/{zone}/instances/{instance}/resume',
-        request_field=u'instancesResumeRequest',
-        request_type_name=u'ComputeInstancesResumeRequest',
-        response_type_name=u'Operation',
-        supports_download=False,
-    )
-
     def SetDeletionProtection(self, request, global_params=None):
       r"""Sets deletion protection on the instance.
 
@@ -5193,32 +5167,6 @@ If the group is part of a backend service that has enabled connection draining, 
         relative_path=u'projects/{project}/zones/{zone}/instances/{instance}/stop',
         request_field='',
         request_type_name=u'ComputeInstancesStopRequest',
-        response_type_name=u'Operation',
-        supports_download=False,
-    )
-
-    def Suspend(self, request, global_params=None):
-      r"""This method suspends a running instance, saving its state to persistent storage, and allows you to resume the instance at a later time. Suspended instances incur reduced per-minute, virtual machine usage charges while they are suspended. Any resources the virtual machine is using, such as persistent disks and static IP addresses, will continue to be charged until they are deleted.
-
-      Args:
-        request: (ComputeInstancesSuspendRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Operation) The response message.
-      """
-      config = self.GetMethodConfig('Suspend')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Suspend.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'compute.instances.suspend',
-        ordered_params=[u'project', u'zone', u'instance'],
-        path_params=[u'instance', u'project', u'zone'],
-        query_params=[u'discardLocalSsd', u'requestId'],
-        relative_path=u'projects/{project}/zones/{zone}/instances/{instance}/suspend',
-        request_field='',
-        request_type_name=u'ComputeInstancesSuspendRequest',
         response_type_name=u'Operation',
         supports_download=False,
     )

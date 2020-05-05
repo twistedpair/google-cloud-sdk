@@ -16,48 +16,19 @@ class AndroidAttributes(_messages.Message):
   r"""Resource representing the Android specific attributes of a Device.
 
   Enums:
-    EncryptionStateValueValuesEnum: Device encryption state.
     OwnershipPrivilegeValueValuesEnum: Ownership privileges on device.
 
   Fields:
-    basebandVersion: Baseband version of Android device.
-    bootloaderVersion: Device bootloader version. Example: 0.6.7.
-    buildNumber: Build number of Android device.
-    enabledDeveloperOptions: Whether developer options is enabled on device.
     enabledUnknownSources: Whether applications from unknown sources can be
       installed on device.
-    enabledUsbDebugging: Whether adb (USB debugging) is enabled on device.
-    encryptionState: Device encryption state.
-    hardware: Device hardware. Example: Sprout.
-    kernelVersion: Kernel version of Android device.
-    otherAccounts: Domain name for Google accounts on device. Type for other
-      accounts on device. Will only be populated if |ownership_privilege| is
-      |PROFILE_OWNER| or |DEVICE_OWNER|. Does not include the account signed
-      in to the device policy app if that account's domain has only one
-      account. Examples: "com.example", "xyz.com".
     ownerProfileAccount: Whether this account is on an owner/primary profile.
       For phones, only true for owner profiles. Android 4+ devices can have
       secondary or restricted user profiles.
     ownershipPrivilege: Ownership privileges on device.
-    securityPatchTime: OS security patch update time on device.
     supportsWorkProfile: Whether device supports Android work profiles. If
       false, this service will not block access to corp data even if an
       administrator turns on the "Enforce Work Profile" policy.
   """
-
-  class EncryptionStateValueValuesEnum(_messages.Enum):
-    r"""Device encryption state.
-
-    Values:
-      ENCRYPTION_STATE_UNSPECIFIED: Encryption Status is not set.
-      UNSUPPORTED_BY_DEVICE: Device doesn't support encryption.
-      ENCRYPTED: Device is encrypted.
-      NOT_ENCRYPTED: Device is not encrypted.
-    """
-    ENCRYPTION_STATE_UNSPECIFIED = 0
-    UNSUPPORTED_BY_DEVICE = 1
-    ENCRYPTED = 2
-    NOT_ENCRYPTED = 3
 
   class OwnershipPrivilegeValueValuesEnum(_messages.Enum):
     r"""Ownership privileges on device.
@@ -75,20 +46,10 @@ class AndroidAttributes(_messages.Message):
     PROFILE_OWNER = 2
     DEVICE_OWNER = 3
 
-  basebandVersion = _messages.StringField(1)
-  bootloaderVersion = _messages.StringField(2)
-  buildNumber = _messages.StringField(3)
-  enabledDeveloperOptions = _messages.BooleanField(4)
-  enabledUnknownSources = _messages.BooleanField(5)
-  enabledUsbDebugging = _messages.BooleanField(6)
-  encryptionState = _messages.EnumField('EncryptionStateValueValuesEnum', 7)
-  hardware = _messages.StringField(8)
-  kernelVersion = _messages.StringField(9)
-  otherAccounts = _messages.StringField(10, repeated=True)
-  ownerProfileAccount = _messages.BooleanField(11)
-  ownershipPrivilege = _messages.EnumField('OwnershipPrivilegeValueValuesEnum', 12)
-  securityPatchTime = _messages.StringField(13)
-  supportsWorkProfile = _messages.BooleanField(14)
+  enabledUnknownSources = _messages.BooleanField(1)
+  ownerProfileAccount = _messages.BooleanField(2)
+  ownershipPrivilege = _messages.EnumField('OwnershipPrivilegeValueValuesEnum', 3)
+  supportsWorkProfile = _messages.BooleanField(4)
 
 
 class ApproveDeviceUserRequest(_messages.Message):
@@ -247,6 +208,7 @@ class ClientState(_messages.Message):
     HealthScoreValueValuesEnum: The Health score of the resource
     ManagedValueValuesEnum: The management state of the resource as specified
       by the API client.
+    OwnerTypeValueValuesEnum: Output only. The owner of the ClientState
 
   Messages:
     KeyValuePairsValue: The map of key-value attributes stored by callers
@@ -275,6 +237,7 @@ class ClientState(_messages.Message):
       ClientState in format: `devices/{device_id}/deviceUsers/{device_user_id}
       /clientState/{partner_id}`, where partner_id corresponds to the partner
       storing the data.
+    ownerType: Output only. The owner of the ClientState
     scoreReason: A descriptive cause of the health score.
   """
 
@@ -323,6 +286,18 @@ class ClientState(_messages.Message):
     MANAGED = 1
     UNMANAGED = 2
 
+  class OwnerTypeValueValuesEnum(_messages.Enum):
+    r"""Output only. The owner of the ClientState
+
+    Values:
+      OWNER_TYPE_UNSPECIFIED: Unknown owner type
+      OWNER_TYPE_CUSTOMER: Customer is the owner
+      OWNER_TYPE_PARTNER: Partner is the owner
+    """
+    OWNER_TYPE_UNSPECIFIED = 0
+    OWNER_TYPE_CUSTOMER = 1
+    OWNER_TYPE_PARTNER = 2
+
   @encoding.MapUnrecognizedFields('additionalProperties')
   class KeyValuePairsValue(_messages.Message):
     r"""The map of key-value attributes stored by callers specific to a
@@ -360,7 +335,8 @@ class ClientState(_messages.Message):
   lastUpdateTime = _messages.StringField(8)
   managed = _messages.EnumField('ManagedValueValuesEnum', 9)
   name = _messages.StringField(10)
-  scoreReason = _messages.StringField(11)
+  ownerType = _messages.EnumField('OwnerTypeValueValuesEnum', 11)
+  scoreReason = _messages.StringField(12)
 
 
 class CloudidentityDevicesCancelWipeRequest(_messages.Message):
@@ -480,6 +456,44 @@ class CloudidentityDevicesDeviceUsersClientStatesGetRequest(_messages.Message):
 
   customer = _messages.StringField(1)
   name = _messages.StringField(2, required=True)
+
+
+class CloudidentityDevicesDeviceUsersClientStatesListRequest(_messages.Message):
+  r"""A CloudidentityDevicesDeviceUsersClientStatesListRequest object.
+
+  Fields:
+    customer: Required. [Resource
+      name](https://cloud.google.com/apis/design/resource_names) of the
+      Customer in format: `customers/{customer_id}`, where customer_id is the
+      customer to whom the device belongs. To find the customer ID for your
+      organization, use the command: ``` gcloud alpha organizations list ```
+      The customer ID you need to use appears under the heading
+      `DIRECTORY_CUSTOMER_ID`. The value is the letter "C" followed by letters
+      and numbers. Use the value after the letter "C". So if the Directory
+      Customer ID displayed is, say `C00zqsgyx`, then the customer ID value to
+      use in the API is: `customers/00zqsgyx`.
+    filter: Optional. Additional restrictions when fetching list of client
+      states.
+    orderBy: Optional. Order specification for client states in the response.
+    pageSize: Optional. The maximum number of ClientStates to return. If
+      unspecified, at most 5 ClientStates will be returned. The maximum value
+      is 20; values above 20 will be coerced to 20.
+    pageToken: Optional. A page token, received from a previous
+      `ListClientStates` call. Provide this to retrieve the subsequent page.
+      When paginating, all other parameters provided to `ListClientStates`
+      must match the call that provided the page token.
+    parent: Required. To list all ClientStates, set this to
+      "devices/-/deviceUsers/-". To list all ClientStates owned by a
+      DeviceUser, set this to the resource name of the DeviceUser. Format:
+      devices/{device}/deviceUsers/{deviceUser}
+  """
+
+  customer = _messages.StringField(1)
+  filter = _messages.StringField(2)
+  orderBy = _messages.StringField(3)
+  pageSize = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(5)
+  parent = _messages.StringField(6, required=True)
 
 
 class CloudidentityDevicesDeviceUsersClientStatesPatchRequest(_messages.Message):
@@ -1449,6 +1463,7 @@ class Device(_messages.Message):
     CompromisedStateValueValuesEnum: Output only. Represents whether the
       Device is compromised.
     DeviceTypeValueValuesEnum: Output only. Type of device.
+    EncryptionStateValueValuesEnum: Output only. Device encryption state.
     ManagementStateValueValuesEnum: Output only. Management state of the
       device
     OwnerTypeValueValuesEnum: Whether the device is owned by the company or an
@@ -1458,13 +1473,22 @@ class Device(_messages.Message):
     androidSpecificAttributes: Output only. Attributes specific to Android
       devices.
     assetTag: Asset tag of the device.
+    basebandVersion: Output only. Baseband version of the device.
+    bootloaderVersion: Output only. Device bootloader version. Example: 0.6.7.
     brand: Output only. Device brand. Example: Samsung.
+    buildNumber: Output only. Build number of the device.
     compromisedState: Output only. Represents whether the Device is
       compromised.
     createTime: Output only. When the Company-Owned device was imported. This
       field is empty for BYOD devices.
     deviceType: Output only. Type of device.
+    enabledDeveloperOptions: Output only. Whether developer options is enabled
+      on device.
+    enabledUsbDebugging: Output only. Whether USB debugging is enabled on
+      device.
+    encryptionState: Output only. Device encryption state.
     imei: Output only. IMEI number of device if GSM device; empty otherwise.
+    kernelVersion: Output only. Kernel version of the device.
     lastSyncTime: Most recent time when device synced with this service.
     managementState: Output only. Management state of the device
     manufacturer: Output only. Device manufacturer. Example: Motorola.
@@ -1477,8 +1501,14 @@ class Device(_messages.Message):
     networkOperator: Output only. Mobile or network operator of device, if
       available.
     osVersion: Output only. OS version of the device. Example: Android 8.1.0.
+    otherAccounts: Output only. Domain name for Google accounts on device.
+      Type for other accounts on device. On Android, will only be populated if
+      |ownership_privilege| is |PROFILE_OWNER| or |DEVICE_OWNER|. Does not
+      include the account signed in to the device policy app if that account's
+      domain has only one account. Examples: "com.example", "xyz.com".
     ownerType: Whether the device is owned by the company or an individual
     releaseVersion: Output only. OS release version. Example: 6.0.
+    securityPatchTime: Output only. OS security patch update time on device.
     serialNumber: Serial Number of device. Example: HT82V1A01076.
     wifiMacAddresses: WiFi MAC addresses of device.
   """
@@ -1519,6 +1549,20 @@ class Device(_messages.Message):
     LINUX = 6
     CHROME_OS = 7
 
+  class EncryptionStateValueValuesEnum(_messages.Enum):
+    r"""Output only. Device encryption state.
+
+    Values:
+      ENCRYPTION_STATE_UNSPECIFIED: Encryption Status is not set.
+      UNSUPPORTED_BY_DEVICE: Device doesn't support encryption.
+      ENCRYPTED: Device is encrypted.
+      NOT_ENCRYPTED: Device is not encrypted.
+    """
+    ENCRYPTION_STATE_UNSPECIFIED = 0
+    UNSUPPORTED_BY_DEVICE = 1
+    ENCRYPTED = 2
+    NOT_ENCRYPTED = 3
+
   class ManagementStateValueValuesEnum(_messages.Enum):
     r"""Output only. Management state of the device
 
@@ -1555,23 +1599,32 @@ class Device(_messages.Message):
 
   androidSpecificAttributes = _messages.MessageField('AndroidAttributes', 1)
   assetTag = _messages.StringField(2)
-  brand = _messages.StringField(3)
-  compromisedState = _messages.EnumField('CompromisedStateValueValuesEnum', 4)
-  createTime = _messages.StringField(5)
-  deviceType = _messages.EnumField('DeviceTypeValueValuesEnum', 6)
-  imei = _messages.StringField(7)
-  lastSyncTime = _messages.StringField(8)
-  managementState = _messages.EnumField('ManagementStateValueValuesEnum', 9)
-  manufacturer = _messages.StringField(10)
-  meid = _messages.StringField(11)
-  model = _messages.StringField(12)
-  name = _messages.StringField(13)
-  networkOperator = _messages.StringField(14)
-  osVersion = _messages.StringField(15)
-  ownerType = _messages.EnumField('OwnerTypeValueValuesEnum', 16)
-  releaseVersion = _messages.StringField(17)
-  serialNumber = _messages.StringField(18)
-  wifiMacAddresses = _messages.StringField(19, repeated=True)
+  basebandVersion = _messages.StringField(3)
+  bootloaderVersion = _messages.StringField(4)
+  brand = _messages.StringField(5)
+  buildNumber = _messages.StringField(6)
+  compromisedState = _messages.EnumField('CompromisedStateValueValuesEnum', 7)
+  createTime = _messages.StringField(8)
+  deviceType = _messages.EnumField('DeviceTypeValueValuesEnum', 9)
+  enabledDeveloperOptions = _messages.BooleanField(10)
+  enabledUsbDebugging = _messages.BooleanField(11)
+  encryptionState = _messages.EnumField('EncryptionStateValueValuesEnum', 12)
+  imei = _messages.StringField(13)
+  kernelVersion = _messages.StringField(14)
+  lastSyncTime = _messages.StringField(15)
+  managementState = _messages.EnumField('ManagementStateValueValuesEnum', 16)
+  manufacturer = _messages.StringField(17)
+  meid = _messages.StringField(18)
+  model = _messages.StringField(19)
+  name = _messages.StringField(20)
+  networkOperator = _messages.StringField(21)
+  osVersion = _messages.StringField(22)
+  otherAccounts = _messages.StringField(23, repeated=True)
+  ownerType = _messages.EnumField('OwnerTypeValueValuesEnum', 24)
+  releaseVersion = _messages.StringField(25)
+  securityPatchTime = _messages.StringField(26)
+  serialNumber = _messages.StringField(27)
+  wifiMacAddresses = _messages.StringField(28, repeated=True)
 
 
 class DeviceUser(_messages.Message):

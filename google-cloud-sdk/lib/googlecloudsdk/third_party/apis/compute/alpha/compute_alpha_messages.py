@@ -1266,12 +1266,14 @@ class AllocationSpecificSKUAllocationReservedInstanceProperties(_messages.Messag
     locationHint: An opaque location hint used to place the allocation close
       to other resources. This field is for use by internal tools that use the
       public API.
-    longTermRelease: Compute Engine Long Term Release. When specified, VMs
-      that have this policy become long term release (internal: stable fleet)
-      VMs.  For all VM shapes, this should result in fewer disruptions due to
-      software updates and greater predictability via 1 week extended
-      notifications.  For GPU VMs, this should also result in an 2 week uptime
-      guarantee. See go/stable-fleet-gpus-design for more details.
+    longTermRelease: DEPRECATED, please use maintenance_freeze_duration_hours.
+      TODO(b/154158138): Remove this field. Compute Engine Long Term Release.
+      When specified, VMs that have this policy become long term release
+      (internal: stable fleet) VMs.  For all VM shapes, this should result in
+      fewer disruptions due to software updates and greater predictability via
+      1 week extended notifications.  For GPU VMs, this should also result in
+      an 2 week uptime guarantee. See go/stable-fleet-gpus-design for more
+      details.
     machineType: Specifies type of machine (name only) which has fixed number
       of vCPUs and fixed amount of memory. This also includes specifying
       custom machine type following custom-NUMBER_OF_CPUS-AMOUNT_OF_MEMORY
@@ -1505,6 +1507,8 @@ class AttachedDiskInitializeParams(_messages.Message):
     labels: Labels to apply to this disk. These can be later modified by the
       disks.setLabels method. This field is only applicable for persistent
       disks.
+    multiWriter: Indicates whether or not the disk can be read/write attached
+      to more than one instance.
     onUpdateAction: Specifies which action to take on instance update with
       this disk. Default is to use the existing disk.
     replicaZones: URLs of the zones where the disk should be replicated to.
@@ -1588,13 +1592,14 @@ class AttachedDiskInitializeParams(_messages.Message):
   diskType = _messages.StringField(4)
   guestOsFeatures = _messages.MessageField('GuestOsFeature', 5, repeated=True)
   labels = _messages.MessageField('LabelsValue', 6)
-  onUpdateAction = _messages.EnumField('OnUpdateActionValueValuesEnum', 7)
-  replicaZones = _messages.StringField(8, repeated=True)
-  resourcePolicies = _messages.StringField(9, repeated=True)
-  sourceImage = _messages.StringField(10)
-  sourceImageEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 11)
-  sourceSnapshot = _messages.StringField(12)
-  sourceSnapshotEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 13)
+  multiWriter = _messages.BooleanField(7)
+  onUpdateAction = _messages.EnumField('OnUpdateActionValueValuesEnum', 8)
+  replicaZones = _messages.StringField(9, repeated=True)
+  resourcePolicies = _messages.StringField(10, repeated=True)
+  sourceImage = _messages.StringField(11)
+  sourceImageEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 12)
+  sourceSnapshot = _messages.StringField(13)
+  sourceSnapshotEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 14)
 
 
 class AuditConfig(_messages.Message):
@@ -3269,7 +3274,7 @@ class BackendService(_messages.Message):
       INTERNAL_SELF_MANAGED and the backends are instance groups. The named
       port must be defined on each backend instance group. This parameter has
       no meaning if the backends are NEGs.    Must be omitted when the
-      loadBalancingScheme is INTERNAL (Internal TCP/UDP Load Blaancing).
+      loadBalancingScheme is INTERNAL (Internal TCP/UDP Load Balancing).
     protocol: The protocol this BackendService uses to communicate with
       backends.  Possible values are HTTP, HTTPS, HTTP2, TCP, SSL, or UDP.
       depending on the chosen load balancer or Traffic Director configuration.
@@ -4278,10 +4283,14 @@ class Binding(_messages.Message):
   r"""Associates `members` with a `role`.
 
   Fields:
-    condition: The condition that is associated with this binding. NOTE: An
-      unsatisfied condition will not allow user access via current binding.
-      Different bindings, including their conditions, are examined
-      independently.
+    condition: The condition that is associated with this binding.  If the
+      condition evaluates to `true`, then this binding applies to the current
+      request.  If the condition evaluates to `false`, then this binding does
+      not apply to the current request. However, a different role binding
+      might grant the same role to one or more of the members in this binding.
+      To learn which resources support conditions in their IAM policies, see
+      the [IAM documentation](https://cloud.google.com/iam/help/conditions
+      /resource-policies).
     members: Specifies the identities requesting access for a Cloud Platform
       resource. `members` can have the following values:  * `allUsers`: A
       special identifier that represents anyone who is on the internet; with
@@ -4326,7 +4335,6 @@ class BulkInsertInstanceResource(_messages.Message):
 
   Fields:
     count: The maximum number of instances to create.
-    excludedZones: List of zones to exclude for regional requests.
     instance: A Instance attribute.
     minCount: The minimum number of instances to create. If no min_count is
       specified then count is used as the default value. If min_count
@@ -4343,11 +4351,10 @@ class BulkInsertInstanceResource(_messages.Message):
   """
 
   count = _messages.IntegerField(1)
-  excludedZones = _messages.StringField(2, repeated=True)
-  instance = _messages.MessageField('Instance', 3)
-  minCount = _messages.IntegerField(4)
-  predefinedNames = _messages.StringField(5, repeated=True)
-  sourceInstanceTemplate = _messages.StringField(6)
+  instance = _messages.MessageField('Instance', 2)
+  minCount = _messages.IntegerField(3)
+  predefinedNames = _messages.StringField(4, repeated=True)
+  sourceInstanceTemplate = _messages.StringField(5)
 
 
 class CacheInvalidationRule(_messages.Message):
@@ -21560,6 +21567,32 @@ class ComputeTargetGrpcProxiesListRequest(_messages.Message):
   pageToken = _messages.StringField(4)
   project = _messages.StringField(5, required=True)
   returnPartialSuccess = _messages.BooleanField(6)
+
+
+class ComputeTargetGrpcProxiesPatchRequest(_messages.Message):
+  r"""A ComputeTargetGrpcProxiesPatchRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
+    targetGrpcProxy: Name of the TargetGrpcProxy resource to patch.
+    targetGrpcProxyResource: A TargetGrpcProxy resource to be passed as the
+      request body.
+  """
+
+  project = _messages.StringField(1, required=True)
+  requestId = _messages.StringField(2)
+  targetGrpcProxy = _messages.StringField(3, required=True)
+  targetGrpcProxyResource = _messages.MessageField('TargetGrpcProxy', 4)
 
 
 class ComputeTargetGrpcProxiesTestIamPermissionsRequest(_messages.Message):
@@ -42392,16 +42425,19 @@ class Policy(_messages.Message):
   `bindings`. A `binding` binds one or more `members` to a single `role`.
   Members can be user accounts, service accounts, Google groups, and domains
   (such as G Suite). A `role` is a named list of permissions; each `role` can
-  be an IAM predefined role or a user-created custom role.  Optionally, a
-  `binding` can specify a `condition`, which is a logical expression that
-  allows access to a resource only if the expression evaluates to `true`. A
-  condition can add constraints based on attributes of the request, the
-  resource, or both.  **JSON example:**  { "bindings": [ { "role":
+  be an IAM predefined role or a user-created custom role.  For some types of
+  Google Cloud resources, a `binding` can also specify a `condition`, which is
+  a logical expression that allows access to a resource only if the expression
+  evaluates to `true`. A condition can add constraints based on attributes of
+  the request, the resource, or both. To learn which resources support
+  conditions in their IAM policies, see the [IAM
+  documentation](https://cloud.google.com/iam/help/conditions/resource-
+  policies).  **JSON example:**  { "bindings": [ { "role":
   "roles/resourcemanager.organizationAdmin", "members": [
   "user:mike@example.com", "group:admins@example.com", "domain:google.com",
   "serviceAccount:my-project-id@appspot.gserviceaccount.com" ] }, { "role":
-  "roles/resourcemanager.organizationViewer", "members":
-  ["user:eve@example.com"], "condition": { "title": "expirable access",
+  "roles/resourcemanager.organizationViewer", "members": [
+  "user:eve@example.com" ], "condition": { "title": "expirable access",
   "description": "Does not grant access after Sep 2020", "expression":
   "request.time < timestamp('2020-10-01T00:00:00.000Z')", } } ], "etag":
   "BwWWja0YfJA=", "version": 3 }  **YAML example:**  bindings: - members: -
@@ -42451,7 +42487,10 @@ class Policy(_messages.Message):
       a version `3` policy with a version `1` policy, and all of the
       conditions in the version `3` policy are lost.  If a policy does not
       include any conditions, operations on that policy may specify any valid
-      version or leave the field unset.
+      version or leave the field unset.  To learn which resources support
+      conditions in their IAM policies, see the [IAM
+      documentation](https://cloud.google.com/iam/help/conditions/resource-
+      policies).
   """
 
   auditConfigs = _messages.MessageField('AuditConfig', 1, repeated=True)
@@ -48346,7 +48385,7 @@ class SavedAttachedDisk(_messages.Message):
 
 
 class Scheduling(_messages.Message):
-  r"""Sets the scheduling options for an Instance. NextID: 10
+  r"""Sets the scheduling options for an Instance. NextID: 11
 
   Enums:
     OnHostMaintenanceValueValuesEnum: Defines the maintenance behavior for
@@ -48369,12 +48408,14 @@ class Scheduling(_messages.Message):
     locationHint: An opaque location hint used to place the instance close to
       other resources. This field is for use by internal tools that use the
       public API.
-    longTermRelease: Compute Engine Long Term Release. When specified, VMs
-      that have this policy become long term release (internal: stable fleet)
-      VMs.  For all VM shapes, this should result in fewer disruptions due to
-      software updates and greater predictability via 1 week extended
-      notifications.  For GPU VMs, this should also result in an 2 week uptime
-      guarantee. See go/stable-fleet-gpus-design for more details.
+    longTermRelease: DEPRECATED, please use maintenance_freeze_duration_hours.
+      TODO(b/154158138): Remove this field. Compute Engine Long Term Release.
+      When specified, VMs that have this policy become long term release
+      (internal: stable fleet) VMs.  For all VM shapes, this should result in
+      fewer disruptions due to software updates and greater predictability via
+      1 week extended notifications.  For GPU VMs, this should also result in
+      an 2 week uptime guarantee. See go/stable-fleet-gpus-design for more
+      details.
     minNodeCpus: The minimum number of virtual CPUs this instance will consume
       when running on a sole-tenant node.
     nodeAffinities: A set of node affinity and anti-affinity configurations.
@@ -51009,7 +51050,9 @@ class Subnetwork(_messages.Message):
       either PRIVATE_RFC_1918 or INTERNAL_HTTPS_LOAD_BALANCER. A subnetwork
       with purpose set to INTERNAL_HTTPS_LOAD_BALANCER is a user-created
       subnetwork that is reserved for Internal HTTP(S) Load Balancing. If
-      unspecified, the purpose defaults to PRIVATE_RFC_1918.
+      unspecified, the purpose defaults to PRIVATE_RFC_1918. The
+      enableFlowLogs field isn't supported with the purpose field set to
+      INTERNAL_HTTPS_LOAD_BALANCER.
     RoleValueValuesEnum: The role of subnetwork. Currently, this field is only
       used when purpose = INTERNAL_HTTPS_LOAD_BALANCER. The value can be set
       to ACTIVE or BACKUP. An ACTIVE subnetwork is one that is currently being
@@ -51048,7 +51091,9 @@ class Subnetwork(_messages.Message):
       resource creation time.
     enableFlowLogs: Whether to enable flow logging for this subnetwork. If
       this field is not explicitly set, it will not appear in get listings. If
-      not set the default behavior is to disable flow logging.
+      not set the default behavior is to disable flow logging. This field
+      isn't supported with the purpose field set to
+      INTERNAL_HTTPS_LOAD_BALANCER.
     enablePrivateV6Access: Deprecated in favor of enable in
       PrivateIpv6GoogleAccess. Whether the VMs in this subnet can directly
       access Google services via internal IPv6 addresses. This field can be
@@ -51112,7 +51157,8 @@ class Subnetwork(_messages.Message):
       PRIVATE_RFC_1918 or INTERNAL_HTTPS_LOAD_BALANCER. A subnetwork with
       purpose set to INTERNAL_HTTPS_LOAD_BALANCER is a user-created subnetwork
       that is reserved for Internal HTTP(S) Load Balancing. If unspecified,
-      the purpose defaults to PRIVATE_RFC_1918.
+      the purpose defaults to PRIVATE_RFC_1918. The enableFlowLogs field isn't
+      supported with the purpose field set to INTERNAL_HTTPS_LOAD_BALANCER.
     region: URL of the region where the Subnetwork resides. This field can be
       set only at resource creation time.
     role: The role of subnetwork. Currently, this field is only used when
@@ -51195,7 +51241,8 @@ class Subnetwork(_messages.Message):
     or INTERNAL_HTTPS_LOAD_BALANCER. A subnetwork with purpose set to
     INTERNAL_HTTPS_LOAD_BALANCER is a user-created subnetwork that is reserved
     for Internal HTTP(S) Load Balancing. If unspecified, the purpose defaults
-    to PRIVATE_RFC_1918.
+    to PRIVATE_RFC_1918. The enableFlowLogs field isn't supported with the
+    purpose field set to INTERNAL_HTTPS_LOAD_BALANCER.
 
     Values:
       AGGREGATE: <no description>
@@ -51899,6 +51946,13 @@ class TargetGrpcProxy(_messages.Message):
       format.
     description: An optional description of this resource. Provide this
       property when you create the resource.
+    fingerprint: Fingerprint of this resource. A hash of the contents stored
+      in this object. This field is used in optimistic locking. This field
+      will be ignored when inserting a TargetGrpcProxy. An up-to-date
+      fingerprint must be provided in order to patch/update the
+      TargetGrpcProxy; otherwise, the request will fail with error 412
+      conditionNotMet. To see the latest fingerprint, make a get() request to
+      retrieve the TargetGrpcProxy.
     id: [Output Only] The unique identifier for the resource type. The server
       generates this identifier.
     kind: [Output Only] Type of the resource. Always compute#targetGrpcProxy
@@ -51929,13 +51983,14 @@ class TargetGrpcProxy(_messages.Message):
 
   creationTimestamp = _messages.StringField(1)
   description = _messages.StringField(2)
-  id = _messages.IntegerField(3, variant=_messages.Variant.UINT64)
-  kind = _messages.StringField(4, default=u'compute#targetGrpcProxy')
-  name = _messages.StringField(5)
-  selfLink = _messages.StringField(6)
-  selfLinkWithId = _messages.StringField(7)
-  urlMap = _messages.StringField(8)
-  validateForProxyless = _messages.BooleanField(9)
+  fingerprint = _messages.BytesField(3)
+  id = _messages.IntegerField(4, variant=_messages.Variant.UINT64)
+  kind = _messages.StringField(5, default=u'compute#targetGrpcProxy')
+  name = _messages.StringField(6)
+  selfLink = _messages.StringField(7)
+  selfLinkWithId = _messages.StringField(8)
+  urlMap = _messages.StringField(9)
+  validateForProxyless = _messages.BooleanField(10)
 
 
 class TargetGrpcProxyList(_messages.Message):

@@ -1230,10 +1230,11 @@ def VerifyGKEFlags(args, release_track, product):
 
   if FlagIsExplicitlySet(args, 'allow_unauthenticated'):
     raise serverless_exceptions.ConfigurationError(
-        error_msg.format(
-            flag='--allow-unauthenticated',
-            platform=PLATFORM_MANAGED,
-            platform_desc=_PLATFORM_SHORT_DESCRIPTIONS[PLATFORM_MANAGED]))
+        'The `--[no-]allow-unauthenticated` flag is not supported with '
+        'Cloud Run for Anthos deployed on Google Cloud. All deployed '
+        'services allow unauthenticated requests. The `--connectivity` '
+        'flag can limit which network a service is available on to reduce '
+        'access.')
 
   if (release_track != base.ReleaseTrack.ALPHA and
       FlagIsExplicitlySet(args, 'service_account') and product == Product.RUN):
@@ -1288,10 +1289,11 @@ def VerifyKubernetesFlags(args, release_track, product):
 
   if FlagIsExplicitlySet(args, 'allow_unauthenticated'):
     raise serverless_exceptions.ConfigurationError(
-        error_msg.format(
-            flag='--allow-unauthenticated',
-            platform=PLATFORM_MANAGED,
-            platform_desc=_PLATFORM_SHORT_DESCRIPTIONS[PLATFORM_MANAGED]))
+        'The `--[no-]allow-unauthenticated` flag is not supported with '
+        'Cloud Run for Anthos deployed on VMware. All deployed '
+        'services allow unauthenticated requests. The `--connectivity` '
+        'flag can limit which network a service is available on to reduce '
+        'access.')
 
   if (release_track != base.ReleaseTrack.ALPHA and
       FlagIsExplicitlySet(args, 'service_account') and product == Product.RUN):

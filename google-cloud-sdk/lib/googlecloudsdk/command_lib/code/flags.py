@@ -47,10 +47,18 @@ def CommonFlags(parser):
       help='Build with a given Cloud Native Computing Foundation Buildpack '
       'builder.')
 
-  parser.add_argument(
+  credential_group = parser.add_mutually_exclusive_group(required=False)
+  credential_group.add_argument(
       '--service-account',
       help='When connecting to Google Cloud Platform services, use a service '
       'account key.')
+
+  credential_group.add_argument(
+      '--application-default-credential',
+      action='store_true',
+      default=False,
+      help='When connecting to Google Cloud Platform services, use the '
+      'application default credential.')
 
   parser.add_argument(
       '--local-port',
@@ -104,6 +112,7 @@ class InvalidFlagError(exceptions.Error):
 def Validate(namespace):
   """Validate flag requirements that cannot be handled by argparse."""
   if (namespace.IsSpecified('cloudsql_instances') and
-      not namespace.IsSpecified('service_account')):
-    raise InvalidFlagError(
-        '--cloudsql-instances requires --service-account to be specified.')
+      not (namespace.IsSpecified('service_account') or
+           namespace.IsSpecified('application_default_credential'))):
+    raise InvalidFlagError('--cloudsql-instances requires --service-account or '
+                           '--application-default-credential to be specified.')

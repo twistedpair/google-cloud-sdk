@@ -36,7 +36,7 @@ MULTISCOPE_LIST_FORMAT = """
 
 def MakeInPlaceSnapshotArg(plural=False):
   return compute_flags.ResourceArgument(
-      resource_name='in place snapshot',
+      resource_name='in-place snapshot',
       completer=compute_completers.InPlaceSnapshotsCompleter,
       plural=plural,
       name='IN_PLACE_SNAPSHOT_NAME',

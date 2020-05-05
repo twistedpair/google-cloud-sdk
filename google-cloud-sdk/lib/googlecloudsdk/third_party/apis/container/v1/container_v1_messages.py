@@ -2022,8 +2022,9 @@ class NodePoolAutoscaling(_messages.Message):
 class NodeTaint(_messages.Message):
   r"""Kubernetes taint is comprised of three fields: key, value, and effect.
   Effect can only be one of three types:  NoSchedule, PreferNoSchedule or
-  NoExecute.  For more information, including usage and the valid values, see:
-  https://kubernetes.io/docs/concepts/configuration/taint-and-toleration/
+  NoExecute.  See [here](https://kubernetes.io/docs/concepts/configuration
+  /taint-and-toleration) for more information, including usage and the valid
+  values.
 
   Enums:
     EffectValueValuesEnum: Effect for taint.

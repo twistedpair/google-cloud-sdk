@@ -759,6 +759,33 @@ results of future queries.
       self._upload_configs = {
           }
 
+    def List(self, request, global_params=None):
+      r"""Returns the list of all non-draft environments of the specified agent.
+
+      Args:
+        request: (DialogflowProjectsAgentEnvironmentsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudDialogflowV2ListEnvironmentsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v2/projects/{projectsId}/agent/environments',
+        http_method=u'GET',
+        method_id=u'dialogflow.projects.agent.environments.list',
+        ordered_params=[u'parent'],
+        path_params=[u'parent'],
+        query_params=[u'pageSize', u'pageToken'],
+        relative_path=u'v2/{+parent}/environments',
+        request_field='',
+        request_type_name=u'DialogflowProjectsAgentEnvironmentsListRequest',
+        response_type_name=u'GoogleCloudDialogflowV2ListEnvironmentsResponse',
+        supports_download=False,
+    )
+
   class ProjectsAgentIntentsService(base_api.BaseApiService):
     """Service class for the projects_agent_intents resource."""
 

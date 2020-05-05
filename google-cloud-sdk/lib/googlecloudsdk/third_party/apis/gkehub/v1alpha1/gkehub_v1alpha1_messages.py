@@ -114,21 +114,31 @@ class AuthorizationLoggingOptions(_messages.Message):
 
 
 class AuthorizerFeatureSpec(_messages.Message):
-  r"""A AuthorizerFeatureSpec object."""
+  r"""AuthorizerFeatureSpec contains options and specifications for the
+  Authorizer Feature.
+  """
+
 
 
 class AuthorizerFeatureState(_messages.Message):
-  r"""A AuthorizerFeatureState object."""
+  r"""AuthorizerFeatureState contains the current detailed state of the
+  Authorizer Feature.
+  """
+
 
 
 class Binding(_messages.Message):
   r"""Associates `members` with a `role`.
 
   Fields:
-    condition: The condition that is associated with this binding. NOTE: An
-      unsatisfied condition will not allow user access via current binding.
-      Different bindings, including their conditions, are examined
-      independently.
+    condition: The condition that is associated with this binding.  If the
+      condition evaluates to `true`, then this binding applies to the current
+      request.  If the condition evaluates to `false`, then this binding does
+      not apply to the current request. However, a different role binding
+      might grant the same role to one or more of the members in this binding.
+      To learn which resources support conditions in their IAM policies, see
+      the [IAM documentation](https://cloud.google.com/iam/help/conditions
+      /resource-policies).
     members: Specifies the identities requesting access for a Cloud Platform
       resource. `members` can have the following values:  * `allUsers`: A
       special identifier that represents anyone who is    on the internet;
@@ -233,13 +243,15 @@ class Condition(_messages.Message):
         of the realms match any of the given values". Note that a value can
         be:  - 'self' (i.e., allow connections from clients that are in the
         same  security realm)  - 'self:cloud-region' (i.e., allow connections
-        from clients that are in  the same cloud region)  - a realm (e.g.,
-        'campus-abc')  - a realm group (e.g., 'realms-for-borg-cell-xx', see:
-        go/realm-groups) A match is determined by a realm group membership
-        check performed by a RealmAclRep object (go/realm-acl-howto). It is
-        not permitted to grant access based on the *absence* of a realm, so
-        realm conditions can only be used in a "positive" context (e.g.,
-        ALLOW/IN or DENY/NOT_IN).
+        from clients that are in  the same cloud region)  - 'guardians' (i.e.,
+        allow connections from its guardian realms. See  go/security-realms-
+        glossary#guardian for more information.)  - a realm (e.g., 'campus-
+        abc')  - a realm group (e.g., 'realms-for-borg-cell-xx', see: go
+        /realm-groups) A match is determined by a realm group membership check
+        performed by a RealmAclRep object (go/realm-acl-howto). It is not
+        permitted to grant access based on the *absence* of a realm, so realm
+        conditions can only be used in a "positive" context (e.g., ALLOW/IN or
+        DENY/NOT_IN).
       APPROVER: An approver (distinct from the requester) that has authorized
         this request. When used with IN, the condition indicates that one of
         the approvers associated with the request matches the specified
@@ -638,7 +650,7 @@ class Feature(_messages.Message):
     LabelsValue: GCP labels for this feature.
 
   Fields:
-    authorizerFeatureSpec: A AuthorizerFeatureSpec attribute.
+    authorizerFeatureSpec: The specification for the Authorizer Feature.
     configmanagementFeatureSpec: Feature for Anthos Config Management.
     createTime: Output only. Timestamp for when the Feature was created.
     deleteTime: Output only. Timestamp for when the Feature was deleted.
@@ -648,8 +660,8 @@ class Feature(_messages.Message):
       our feature lifecycle code.
     labels: GCP labels for this feature.
     meteringFeatureSpec: The specification for the metering feature.
-    multiclusteringressFeatureSpec: A MultiClusterIngressFeatureSpec
-      attribute.
+    multiclusteringressFeatureSpec: The specification for the Ingress for
+      Anthos feature.
     multiclusterservicediscoveryFeatureSpec: An EAP feature for GKE multi-
       cluster service discovery.
     name: Output only. The unique name of this feature resource in the format:
@@ -786,18 +798,17 @@ class FeatureStateDetails(_messages.Message):
       of the feature. It also allows for an interpretation of the details.
 
   Fields:
-    authorizerFeatureState: A AuthorizerFeatureState attribute.
+    authorizerFeatureState: State for the Authorizer Feature.
     code: The code indicates machine-interpretable status code of the feature.
       It also allows for an interpretation of the details.
-    configmanagementFeatureState: A ConfigManagementFeatureState attribute.
+    configmanagementFeatureState: State for the Config Management Feature.
     description: Human readable description of the issue.
-    helloworldFeatureState: A HelloWorldFeatureState attribute.
-    meteringFeatureState: A MeteringFeatureState attribute.
-    multiclusteringressFeatureState: A MultiClusterIngressFeatureState
-      attribute.
-    multiclusterservicediscoveryFeatureState: A
-      MultiClusterServiceDiscoveryFeatureState attribute.
-    servicemeshFeatureState: A ServiceMeshFeatureState attribute.
+    helloworldFeatureState: State for the Hello World Feature.
+    meteringFeatureState: State for the Metering Feature.
+    multiclusteringressFeatureState: State for the Ingress for Anthos Feature.
+    multiclusterservicediscoveryFeatureState: State for the Multi-cluster
+      Service Discovery Feature.
+    servicemeshFeatureState: State for the Service Mesh Feature.
     updateTime: The last update time of this status by the controllers
   """
 
@@ -826,19 +837,6 @@ class FeatureStateDetails(_messages.Message):
   multiclusterservicediscoveryFeatureState = _messages.MessageField('MultiClusterServiceDiscoveryFeatureState', 8)
   servicemeshFeatureState = _messages.MessageField('ServiceMeshFeatureState', 9)
   updateTime = _messages.StringField(10)
-
-
-class GenerateConnectAgentManifestResponse(_messages.Message):
-  r"""Response message for `GkeHubService.GenerateConnectAgentManifest`
-  method.
-
-  Fields:
-    manifest: The generated Kubernetes manifest to be used to instantiate a
-      new agent on a Kubernetes cluster. The manifest output is in Kubernetes
-      YAML format.
-  """
-
-  manifest = _messages.StringField(1)
 
 
 class GitConfig(_messages.Message):
@@ -871,7 +869,10 @@ class GkehubProjectsLocationsFeaturesGetIamPolicyRequest(_messages.Message):
       returned.  Valid values are 0, 1, and 3. Requests specifying an invalid
       value will be rejected.  Requests for policies with any conditional
       bindings must specify version 3. Policies without any conditional
-      bindings may specify any valid value or leave the field unset.
+      bindings may specify any valid value or leave the field unset.  To learn
+      which resources support conditions in their IAM policies, see the [IAM
+      documentation](https://cloud.google.com/iam/help/conditions/resource-
+      policies).
     resource: REQUIRED: The resource for which the policy is being requested.
       See the operation documentation for the appropriate value for this
       field.
@@ -919,43 +920,6 @@ class GkehubProjectsLocationsGetRequest(_messages.Message):
   """
 
   name = _messages.StringField(1, required=True)
-
-
-class GkehubProjectsLocationsGlobalConnectAgentsGenerateManifestRequest(_messages.Message):
-  r"""A GkehubProjectsLocationsGlobalConnectAgentsGenerateManifestRequest
-  object.
-
-  Fields:
-    connectAgent_credentialData: Optional, if the user wishes creds secret to
-      also be generated in the connect agent manifest. This should be the JSON
-      of the private key for the GCP service account to be used for GKE
-      Connect agent.
-    connectAgent_name: Name is the unique identifier for a connect agent per
-      project. Limited to 1024 characters
-    connectAgent_namespace: Optional, if the user wishes the connect agent and
-      dependent resources to be run in different namespace than the default
-      namespace `gke-connect-[project_id]`
-    connectAgent_proxy: Optional connection name of the proxy, format must be
-      in the form http(s)://USERNAME:PASSWORD@IP_ADDRESS:PORT, depends on
-      HTTP/HTTPS protocol supported by the proxy. This will direct connect
-      agent's outbound traffic through a HTTP(S) proxy.
-    connectAgent_registry_imagePullSecretData: The content of ImagePullSecret
-      in raw bytes, if the registry requires credentials.
-    connectAgent_registry_name: The image will be pulled form ${name
-      }/gkeconnect-gce:{tag} The name of the Docker registry.
-    connectAgent_registry_tag: The tag of the connect agent image to use.
-    parent: The parent project the connect agent is associated with.
-      `projects/[project_id]/locations/global/connectAgents`.
-  """
-
-  connectAgent_credentialData = _messages.BytesField(1)
-  connectAgent_name = _messages.StringField(2)
-  connectAgent_namespace = _messages.StringField(3)
-  connectAgent_proxy = _messages.StringField(4)
-  connectAgent_registry_imagePullSecretData = _messages.BytesField(5)
-  connectAgent_registry_name = _messages.StringField(6)
-  connectAgent_registry_tag = _messages.StringField(7)
-  parent = _messages.StringField(8, required=True)
 
 
 class GkehubProjectsLocationsGlobalFeaturesCreateRequest(_messages.Message):
@@ -1360,10 +1324,17 @@ class MeteringFeatureSpec(_messages.Message):
 
 
 class MeteringFeatureState(_messages.Message):
-  r"""An empty state for metering feature. This is required since
-  FeatureStateDetails requires a state.
+  r"""Metering Feature State.
+
+  Fields:
+    lastMeasuredClusterVcpuCapacity: The number of vCPUs in the cluster
+      according to the most recent measurement.
+    lastMeasurementTime: The time stamp of the most recent measurement of the
+      number of vCPUs in the cluster.
   """
 
+  lastMeasuredClusterVcpuCapacity = _messages.IntegerField(1)
+  lastMeasurementTime = _messages.StringField(2)
 
 
 class MultiClusterIngressFeatureSpec(_messages.Message):
@@ -1548,19 +1519,22 @@ class Policy(_messages.Message):
   `bindings`. A `binding` binds one or more `members` to a single `role`.
   Members can be user accounts, service accounts, Google groups, and domains
   (such as G Suite). A `role` is a named list of permissions; each `role` can
-  be an IAM predefined role or a user-created custom role.  Optionally, a
-  `binding` can specify a `condition`, which is a logical expression that
-  allows access to a resource only if the expression evaluates to `true`. A
-  condition can add constraints based on attributes of the request, the
-  resource, or both.  **JSON example:**      {       "bindings": [         {
+  be an IAM predefined role or a user-created custom role.  For some types of
+  Google Cloud resources, a `binding` can also specify a `condition`, which is
+  a logical expression that allows access to a resource only if the expression
+  evaluates to `true`. A condition can add constraints based on attributes of
+  the request, the resource, or both. To learn which resources support
+  conditions in their IAM policies, see the [IAM
+  documentation](https://cloud.google.com/iam/help/conditions/resource-
+  policies).  **JSON example:**      {       "bindings": [         {
   "role": "roles/resourcemanager.organizationAdmin",           "members": [
   "user:mike@example.com",             "group:admins@example.com",
   "domain:google.com",             "serviceAccount:my-project-
   id@appspot.gserviceaccount.com"           ]         },         {
-  "role": "roles/resourcemanager.organizationViewer",           "members":
-  ["user:eve@example.com"],           "condition": {             "title":
-  "expirable access",             "description": "Does not grant access after
-  Sep 2020",             "expression": "request.time <
+  "role": "roles/resourcemanager.organizationViewer",           "members": [
+  "user:eve@example.com"           ],           "condition": {
+  "title": "expirable access",             "description": "Does not grant
+  access after Sep 2020",             "expression": "request.time <
   timestamp('2020-10-01T00:00:00.000Z')",           }         }       ],
   "etag": "BwWWja0YfJA=",       "version": 3     }  **YAML example:**
   bindings:     - members:       - user:mike@example.com       -
@@ -1611,7 +1585,10 @@ class Policy(_messages.Message):
       a version `3` policy with a version `1` policy, and all of the
       conditions in the version `3` policy are lost.  If a policy does not
       include any conditions, operations on that policy may specify any valid
-      version or leave the field unset.
+      version or leave the field unset.  To learn which resources support
+      conditions in their IAM policies, see the [IAM
+      documentation](https://cloud.google.com/iam/help/conditions/resource-
+      policies).
   """
 
   auditConfigs = _messages.MessageField('AuditConfig', 1, repeated=True)
@@ -1678,19 +1655,8 @@ class Rule(_messages.Message):
 
 class ServiceMeshFeatureSpec(_messages.Message):
   r"""ServiceMeshFeatureSpec contains the input for the service mesh feature.
-  Only those fields that qualify as user inputs are eligible to be in a
-  feature spec. These feature spec messages are per-feature, meaning each
-  feature is expected to have its own set of fields. Auto-filled fields and
-  statues do not belong to a spec and must be included in the details field of
-  the feature's status. Spec fields could be of any type: primitive or non-
-  primitive types. These types could be simple or complex types and complex
-  types could be nested. There is no restriction on nesting depth.
-
-  Fields:
-    mtls: Mesh should have mtls enabled.
   """
 
-  mtls = _messages.BooleanField(1)
 
 
 class ServiceMeshFeatureState(_messages.Message):
@@ -1715,8 +1681,7 @@ class SetIamPolicyRequest(_messages.Message):
       might reject them.
     updateMask: OPTIONAL: A FieldMask specifying which fields of the policy to
       modify. Only the fields in the mask will be modified. If no mask is
-      provided, the following default mask is used: paths: "bindings, etag"
-      This field is only used by Cloud IAM.
+      provided, the following default mask is used:  `paths: "bindings, etag"`
   """
 
   policy = _messages.MessageField('Policy', 1)

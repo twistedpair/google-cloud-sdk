@@ -83,16 +83,6 @@ Min CPU platform not implemented in GA. Please remove 'minCpuPlatform' from
 auto-provisioning config file
 """
 
-UPGRADE_SETTINGS_NOT_IMPLEMENTED_IN_GA = """\
-Upgrade settings not implemented in GA. Please remove 'upgradeSettings' from
-auto-provisioning config file
-"""
-
-NODE_MANAGEMENT_SETTINGS_NOT_IMPLEMENTED_IN_GA = """\
-Node Management settings not implemented in GA. Please remove 'managment' from
-auto-provisioning config file
-"""
-
 BOTH_AUTOPROVISIONING_UPGRADE_SETTINGS_ERROR_MSG = """\
 Must specify both 'maxSurgeUpgrade' and 'maxUnavailableUpgrade' in \
 'upgradeSettings' in --autoprovisioning-config-file to set upgrade settings.
@@ -1612,18 +1602,30 @@ class APIAdapter(object):
       resource_limits = config.get(RESOURCE_LIMITS)
       service_account = config.get(SERVICE_ACCOUNT)
       scopes = config.get(SCOPES)
+      max_surge_upgrade = None
+      max_unavailable_upgrade = None
+      upgrade_settings = config.get(UPGRADE_SETTINGS)
+      if upgrade_settings:
+        max_surge_upgrade = upgrade_settings.get(MAX_SURGE_UPGRADE)
+        max_unavailable_upgrade = upgrade_settings.get(MAX_UNAVAILABLE_UPGRADE)
+      management_settings = config.get(NODE_MANAGEMENT)
+      enable_autoupgrade = None
+      enable_autorepair = None
+      if management_settings:
+        enable_autoupgrade = management_settings.get(ENABLE_AUTO_UPGRADE)
+        enable_autorepair = management_settings.get(ENABLE_AUTO_REPAIR)
       autoprovisioning_locations = \
           config.get(AUTOPROVISIONING_LOCATIONS)
-      if config.get(NODE_MANAGEMENT):
-        raise util.Error(NODE_MANAGEMENT_SETTINGS_NOT_IMPLEMENTED_IN_GA)
-      if config.get(UPGRADE_SETTINGS):
-        raise util.Error(UPGRADE_SETTINGS_NOT_IMPLEMENTED_IN_GA)
       if config.get(MIN_CPU_PLATFORM):
         raise util.Error(MIN_CPU_PLATFORM_NOT_IMPLEMENTED_IN_GA)
     else:
       resource_limits = self.ResourceLimitsFromFlags(options)
       service_account = options.autoprovisioning_service_account
       scopes = options.autoprovisioning_scopes
+      max_surge_upgrade = options.autoprovisioning_max_surge_upgrade
+      max_unavailable_upgrade = options.autoprovisioning_max_unavailable_upgrade
+      enable_autoupgrade = options.enable_autoprovisioning_autoupgrade
+      enable_autorepair = options.enable_autoprovisioning_autorepair
       autoprovisioning_locations = options.autoprovisioning_locations
 
     if options.enable_autoprovisioning is not None:
@@ -1633,9 +1635,21 @@ class APIAdapter(object):
       autoscaling.resourceLimits = resource_limits
       if scopes is None:
         scopes = []
+      management = None
+      upgrade_settings = None
+      if max_surge_upgrade is not None or max_unavailable_upgrade is not None:
+        upgrade_settings = self.messages.UpgradeSettings()
+        upgrade_settings.maxUnavailable = max_unavailable_upgrade
+        upgrade_settings.maxSurge = max_surge_upgrade
+      if enable_autorepair is not None or enable_autoupgrade is not None:
+        management = (
+            self.messages.NodeManagement(
+                autoUpgrade=enable_autoupgrade, autoRepair=enable_autorepair))
       autoscaling.autoprovisioningNodePoolDefaults = self.messages \
         .AutoprovisioningNodePoolDefaults(serviceAccount=service_account,
-                                          oauthScopes=scopes)
+                                          oauthScopes=scopes,
+                                          upgradeSettings=upgrade_settings,
+                                          management=management)
       if autoprovisioning_locations:
         autoscaling.autoprovisioningLocations = \
             sorted(autoprovisioning_locations)
@@ -1661,6 +1675,19 @@ class APIAdapter(object):
                         for limit in autoscaling.resourceLimits)
         if not cpu_found or not mem_found:
           raise util.Error(NO_AUTOPROVISIONING_LIMITS_ERROR_MSG)
+        defaults = autoscaling.autoprovisioningNodePoolDefaults
+        if defaults:
+          if defaults.upgradeSettings:
+            max_surge_found = defaults.upgradeSettings.maxSurge is not None
+            max_unavailable_found = defaults.upgradeSettings.maxUnavailable is not None
+            if max_unavailable_found != max_surge_found:
+              raise util.Error(BOTH_AUTOPROVISIONING_UPGRADE_SETTINGS_ERROR_MSG)
+          if defaults.management:
+            auto_upgrade_found = defaults.management.autoUpgrade is not None
+            auto_repair_found = defaults.management.autoRepair is not None
+            if auto_repair_found != auto_upgrade_found:
+              raise util.Error(
+                  BOTH_AUTOPROVISIONING_MANAGEMENT_SETTINGS_ERROR_MSG)
     elif autoscaling.resourceLimits:
       raise util.Error(LIMITS_WITHOUT_AUTOPROVISIONING_MSG)
     elif autoscaling.autoprovisioningNodePoolDefaults and \

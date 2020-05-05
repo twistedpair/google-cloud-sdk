@@ -9,7 +9,7 @@ class CloudassetV1p1beta1(base_api.BaseApiClient):
 
   MESSAGES_MODULE = messages
   BASE_URL = u'https://cloudasset.googleapis.com/'
-  MTLS_BASE_URL = u''
+  MTLS_BASE_URL = u'https://cloudasset.mtls.googleapis.com/'
 
   _PACKAGE = u'cloudasset'
   _SCOPES = [u'https://www.googleapis.com/auth/cloud-platform']
@@ -135,7 +135,7 @@ requested scope, otherwise it will be rejected.
         method_id=u'cloudasset.resources.search',
         ordered_params=[],
         path_params=[],
-        query_params=[u'assetTypes', u'pageSize', u'pageToken', u'query', u'scope'],
+        query_params=[u'assetTypes', u'orderBy', u'pageSize', u'pageToken', u'query', u'scope'],
         relative_path=u'v1p1beta1/resources:search',
         request_field='',
         request_type_name=u'CloudassetResourcesSearchRequest',
@@ -167,7 +167,7 @@ scope, otherwise it will be rejected.
         method_id=u'cloudasset.resources.searchAll',
         ordered_params=[u'scope'],
         path_params=[u'scope'],
-        query_params=[u'assetTypes', u'pageSize', u'pageToken', u'query'],
+        query_params=[u'assetTypes', u'orderBy', u'pageSize', u'pageToken', u'query'],
         relative_path=u'v1p1beta1/{+scope}/resources:searchAll',
         request_field='',
         request_type_name=u'CloudassetResourcesSearchAllRequest',

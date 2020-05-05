@@ -41,44 +41,56 @@ import six
 from six.moves.urllib import parse as urlparse
 
 
-_EVENTS_API_VERSION = 'v1alpha1'
+_CLUSTER_EVENTS_API_NAME = global_methods.SERVERLESS_API_NAME
+_CLUSTER_EVENTS_API_VERSION = 'v1alpha1'
+
+_MANAGED_EVENTS_API_NAME = 'events'
+_MANAGED_EVENTS_API_VERSION = 'v1beta1'
+_MANAGED_EVENTS_ALPHA_API_NAME = global_methods.SERVERLESS_API_NAME
+_MANAGED_EVENTS_ALPHA_API_VERSION = 'v1alpha1'
 
 
 @contextlib.contextmanager
-def _OverrideEndpointOverrides(override):
-  """Context manager to override the Cloud Run endpoint overrides for a while.
+def _OverrideEndpointOverrides(api_name, override):
+  """Context manager to override an API's endpoint overrides for a while.
 
   Args:
-    override: str, New value for Cloud Run endpoint.
+    api_name: str, Name of the API to modify.
+    override: str, New value for the endpoint.
+
   Yields:
     None.
   """
-  old_endpoint = properties.VALUES.api_endpoint_overrides.run.Get()
+  endpoint_property = getattr(properties.VALUES.api_endpoint_overrides,
+                              api_name)
+  old_endpoint = endpoint_property.Get()
   try:
-    properties.VALUES.api_endpoint_overrides.run.Set(override)
+    endpoint_property.Set(override)
     yield
   finally:
-    properties.VALUES.api_endpoint_overrides.run.Set(old_endpoint)
+    endpoint_property.Set(old_endpoint)
 
 
 class ConnectionInfo(six.with_metaclass(abc.ABCMeta)):
   """Information useful in constructing an API client."""
 
-  def __init__(self, version):
+  def __init__(self, api_name, version):
     """Initialize a connection context.
 
     Args:
+      api_name: str, api name to use for making requests.
       version: str, api version to use for making requests.
     """
     self.endpoint = None
     self.ca_certs = None
     self.region = None
     self._cm = None
+    self._api_name = api_name
     self._version = version
 
   @property
   def api_name(self):
-    return global_methods.SERVERLESS_API_NAME
+    return self._api_name
 
   @property
   def api_version(self):
@@ -156,8 +168,8 @@ def _CheckTLSSupport():
 class _GKEConnectionContext(ConnectionInfo):
   """Context manager to connect to the GKE Cloud Run add-in."""
 
-  def __init__(self, cluster_ref, version):
-    super(_GKEConnectionContext, self).__init__(version)
+  def __init__(self, cluster_ref, api_name, version):
+    super(_GKEConnectionContext, self).__init__(api_name, version)
     self.cluster_ref = cluster_ref
 
   @contextlib.contextmanager
@@ -167,7 +179,7 @@ class _GKEConnectionContext(ConnectionInfo):
       self.ca_certs = ca_certs
       with gke.MonkeypatchAddressChecking('kubernetes.default', ip) as endpoint:
         self.endpoint = 'https://{}/'.format(endpoint)
-        with _OverrideEndpointOverrides(self.endpoint):
+        with _OverrideEndpointOverrides(self._api_name, self.endpoint):
           yield self
 
   @property
@@ -209,15 +221,16 @@ class _GKEConnectionContext(ConnectionInfo):
 class _KubeconfigConnectionContext(ConnectionInfo):
   """Context manager to connect to a cluster defined in a Kubeconfig file."""
 
-  def __init__(self, kubeconfig, version, context=None):
+  def __init__(self, kubeconfig, api_name, version, context=None):
     """Initialize connection context based on kubeconfig file.
 
     Args:
       kubeconfig: googlecloudsdk.api_lib.container.kubeconfig.Kubeconfig object
+      api_name: str, api name to use for making requests
       version: str, api version to use for making requests
       context: str, current context name
     """
-    super(_KubeconfigConnectionContext, self).__init__(version)
+    super(_KubeconfigConnectionContext, self).__init__(api_name, version)
     self.kubeconfig = kubeconfig
     self.kubeconfig.SetCurrentContext(context or kubeconfig.current_context)
     self.client_cert_data = None
@@ -234,11 +247,11 @@ class _KubeconfigConnectionContext(ConnectionInfo):
           with gke.MonkeypatchAddressChecking(
               'kubernetes.default', self.raw_hostname) as endpoint:
             self.endpoint = 'https://{}/'.format(endpoint)
-            with _OverrideEndpointOverrides(self.endpoint):
+            with _OverrideEndpointOverrides(self._api_name, self.endpoint):
               yield self
         else:
           self.endpoint = 'https://{}/'.format(self.raw_hostname)
-          with _OverrideEndpointOverrides(self.endpoint):
+          with _OverrideEndpointOverrides(self._api_name, self.endpoint):
             yield self
       except httplib2.HttpLib2Error as e:
         if 'CERTIFICATE_VERIFY_FAILED' in six.text_type(e):
@@ -369,8 +382,8 @@ def DeriveRegionalEndpoint(endpoint, region):
 class _RegionalConnectionContext(ConnectionInfo):
   """Context manager to connect a particular Cloud Run region."""
 
-  def __init__(self, region, version):
-    super(_RegionalConnectionContext, self).__init__(version)
+  def __init__(self, region, api_name, version):
+    super(_RegionalConnectionContext, self).__init__(api_name, version)
     self.region = region
 
   @property
@@ -388,10 +401,10 @@ class _RegionalConnectionContext(ConnectionInfo):
 
   @contextlib.contextmanager
   def Connect(self):
-    global_endpoint = apis.GetEffectiveApiEndpoint(
-        global_methods.SERVERLESS_API_NAME, self._version)
+    global_endpoint = apis.GetEffectiveApiEndpoint(self._api_name,
+                                                   self._version)
     self.endpoint = DeriveRegionalEndpoint(global_endpoint, self.region)
-    with _OverrideEndpointOverrides(self.endpoint):
+    with _OverrideEndpointOverrides(self._api_name, self.endpoint):
       yield self
 
   @property
@@ -399,21 +412,38 @@ class _RegionalConnectionContext(ConnectionInfo):
     return True
 
 
+def _GetApiName(product, release_track, is_cluster=False):
+  """Returns the api name to use depending on the current context."""
+  if product == flags.Product.RUN:
+    return global_methods.SERVERLESS_API_NAME
+  elif product == flags.Product.EVENTS:
+    if is_cluster:
+      return _CLUSTER_EVENTS_API_NAME
+    elif release_track == base.ReleaseTrack.ALPHA:
+      return _MANAGED_EVENTS_ALPHA_API_NAME
+    else:
+      return _MANAGED_EVENTS_API_NAME
+  else:
+    raise ValueError('Unrecognized product: ' + six.u(product))
+
+
 def _GetApiVersion(product,
                    release_track,
                    is_cluster=False,
                    version_override=None):
   """Returns the api version to use depending on the current context."""
-  del release_track
-  del is_cluster
-
   if version_override is not None:
     return version_override
 
   if product == flags.Product.RUN:
     return global_methods.SERVERLESS_API_VERSION
   elif product == flags.Product.EVENTS:
-    return _EVENTS_API_VERSION
+    if is_cluster:
+      return _CLUSTER_EVENTS_API_VERSION
+    elif release_track == base.ReleaseTrack.ALPHA:
+      return _MANAGED_EVENTS_ALPHA_API_VERSION
+    else:
+      return _MANAGED_EVENTS_API_VERSION
   else:
     raise ValueError('Unrecognized product: ' + six.u(product))
 
@@ -439,12 +469,14 @@ def GetConnectionContext(args,
   """
   if flags.GetPlatform() == flags.PLATFORM_KUBERNETES:
     kubeconfig = flags.GetKubeconfig(args)
+    api_name = _GetApiName(product, release_track, is_cluster=True)
     api_version = _GetApiVersion(
         product,
         release_track,
         is_cluster=True,
         version_override=version_override)
-    return _KubeconfigConnectionContext(kubeconfig, api_version, args.context)
+    return _KubeconfigConnectionContext(kubeconfig, api_name, api_version,
+                                        args.context)
 
   if flags.GetPlatform() == flags.PLATFORM_GKE:
     cluster_ref = args.CONCEPTS.cluster.Parse()
@@ -453,12 +485,13 @@ def GetConnectionContext(args,
           'You must specify a cluster in a given location. '
           'Either use the `--cluster` and `--cluster-location` flags '
           'or set the run/cluster and run/cluster_location properties.')
+    api_name = _GetApiName(product, release_track, is_cluster=True)
     api_version = _GetApiVersion(
         product,
         release_track,
         is_cluster=True,
         version_override=version_override)
-    return _GKEConnectionContext(cluster_ref, api_version)
+    return _GKEConnectionContext(cluster_ref, api_name, api_version)
 
   if flags.GetPlatform() == flags.PLATFORM_MANAGED:
     region = flags.GetRegion(args, prompt=True)
@@ -466,6 +499,7 @@ def GetConnectionContext(args,
       raise flags.ArgumentError(
           'You must specify a region. Either use the `--region` flag '
           'or set the run/region property.')
+    api_name = _GetApiName(product, release_track)
     api_version = _GetApiVersion(
         product, release_track, version_override=version_override)
-    return _RegionalConnectionContext(region, api_version)
+    return _RegionalConnectionContext(region, api_name, api_version)

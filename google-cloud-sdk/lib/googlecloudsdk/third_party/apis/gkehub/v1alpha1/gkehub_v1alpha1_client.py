@@ -37,7 +37,6 @@ class GkehubV1alpha1(base_api.BaseApiClient):
         additional_http_headers=additional_http_headers,
         response_encoding=response_encoding)
     self.projects_locations_features = self.ProjectsLocationsFeaturesService(self)
-    self.projects_locations_global_connectAgents = self.ProjectsLocationsGlobalConnectAgentsService(self)
     self.projects_locations_global_features = self.ProjectsLocationsGlobalFeaturesService(self)
     self.projects_locations_global = self.ProjectsLocationsGlobalService(self)
     self.projects_locations_operations = self.ProjectsLocationsOperationsService(self)
@@ -87,7 +86,7 @@ set.
       r"""Sets the access control policy on the specified resource. Replaces any.
 existing policy.
 
-Can return Public Errors: NOT_FOUND, INVALID_ARGUMENT and PERMISSION_DENIED
+Can return `NOT_FOUND`, `INVALID_ARGUMENT`, and `PERMISSION_DENIED` errors.
 
       Args:
         request: (GkehubProjectsLocationsFeaturesSetIamPolicyRequest) input message
@@ -116,7 +115,7 @@ Can return Public Errors: NOT_FOUND, INVALID_ARGUMENT and PERMISSION_DENIED
     def TestIamPermissions(self, request, global_params=None):
       r"""Returns permissions that a caller has on the specified resource.
 If the resource does not exist, this will return an empty set of
-permissions, not a NOT_FOUND error.
+permissions, not a `NOT_FOUND` error.
 
 Note: This operation is designed to be used for building permission-aware
 UIs and command-line tools, not for authorization checking. This operation
@@ -143,43 +142,6 @@ may "fail open" without warning.
         request_field=u'testIamPermissionsRequest',
         request_type_name=u'GkehubProjectsLocationsFeaturesTestIamPermissionsRequest',
         response_type_name=u'TestIamPermissionsResponse',
-        supports_download=False,
-    )
-
-  class ProjectsLocationsGlobalConnectAgentsService(base_api.BaseApiService):
-    """Service class for the projects_locations_global_connectAgents resource."""
-
-    _NAME = u'projects_locations_global_connectAgents'
-
-    def __init__(self, client):
-      super(GkehubV1alpha1.ProjectsLocationsGlobalConnectAgentsService, self).__init__(client)
-      self._upload_configs = {
-          }
-
-    def GenerateManifest(self, request, global_params=None):
-      r"""Generate the manifest for deployment of GKE connect agent server on-prem.
-
-      Args:
-        request: (GkehubProjectsLocationsGlobalConnectAgentsGenerateManifestRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (GenerateConnectAgentManifestResponse) The response message.
-      """
-      config = self.GetMethodConfig('GenerateManifest')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    GenerateManifest.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha1/projects/{projectsId}/locations/global/connectAgents:generateManifest',
-        http_method=u'GET',
-        method_id=u'gkehub.projects.locations.global.connectAgents.generateManifest',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'connectAgent_credentialData', u'connectAgent_name', u'connectAgent_namespace', u'connectAgent_proxy', u'connectAgent_registry_imagePullSecretData', u'connectAgent_registry_name', u'connectAgent_registry_tag'],
-        relative_path=u'v1alpha1/{+parent}:generateManifest',
-        request_field='',
-        request_type_name=u'GkehubProjectsLocationsGlobalConnectAgentsGenerateManifestRequest',
-        response_type_name=u'GenerateConnectAgentManifestResponse',
         supports_download=False,
     )
 

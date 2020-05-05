@@ -25,9 +25,9 @@ location:
     parameter_name: locationsId
     attribute_name: zone
     help: |
-      The pubsub/lite_zone of the Pub/Sub Lite resource.
+      ID of the location of the Pub/Sub Lite resource.
 
-      If not specified, will use `default` pubsub/lite_zone.
+      If not specified, will use `default` pubsub/lite_zone property.
     property: pubsub/lite_zone
 
 lite-topic:
@@ -39,3 +39,13 @@ lite-topic:
     attribute_name: topic
     help: |
       The topic name.
+
+lite-subscription:
+  name: subscription
+  collection: pubsublite.admin.projects.locations.subscriptions
+  attributes:
+  - *location
+  - parameter_name: subscriptionsId
+    attribute_name: subscription
+    help: |
+      The subscription name.

@@ -165,11 +165,14 @@ def AddAccessLevelsBase(ref, args, req, version=None):
   if args.IsSpecified('access_levels'):
     access_levels = []
     for access_level in args.access_levels:
-      level_ref = resources.REGISTRY.Create(
-          'accesscontextmanager.accessPolicies.accessLevels',
-          accessLevelsId=access_level,
-          **ref.Parent().AsDict())
-      access_levels.append(level_ref.RelativeName())
+      if access_level.startswith('accessPolicies'):
+        access_levels.append(access_level)
+      else:
+        level_ref = resources.REGISTRY.Create(
+            'accesscontextmanager.accessPolicies.accessLevels',
+            accessLevelsId=access_level,
+            **ref.Parent().AsDict())
+        access_levels.append(level_ref.RelativeName())
     service_perimeter_config = req.servicePerimeter.status
     if not service_perimeter_config:
       service_perimeter_config = (
@@ -277,6 +280,7 @@ def GetPerimeterTypeEnumForShortName(perimeter_type_short_name, api_version):
 
 def AddPerimeterUpdateArgs(parser, version=None, track=None):
   """Add args for perimeters update command."""
+  del track  # Unused
   args = [
       common.GetDescriptionArg('service perimeter'),
       common.GetTitleArg('service perimeter'),
@@ -287,8 +291,7 @@ def AddPerimeterUpdateArgs(parser, version=None, track=None):
   _AddResources(parser)
   _AddRestrictedServices(parser)
   _AddLevelsUpdate(parser)
-  if track == 'ALPHA' or track == 'BETA':
-    _AddVpcRestrictionArgs(parser)
+  _AddVpcRestrictionArgs(parser)
 
 
 def AddPerimeterUpdateDryRunConfigArgs(parser):

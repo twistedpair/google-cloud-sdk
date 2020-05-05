@@ -53,3 +53,10 @@ def GetProjectRolesForServiceAccount(service_account_ref):
         m.endswith(':' + service_account_ref.Name()) for m in binding.members):
       roles.add(binding.role)
   return roles
+
+
+def BindProjectRolesForServiceAccount(service_account_ref, roles):
+  project_ref = projects_util.ParseProject(properties.VALUES.core.project.Get())
+  member_str = 'serviceAccount:{}'.format(service_account_ref.Name())
+  member_roles = [(member_str, role) for role in roles]
+  projects_api.AddIamPolicyBindings(project_ref, member_roles)

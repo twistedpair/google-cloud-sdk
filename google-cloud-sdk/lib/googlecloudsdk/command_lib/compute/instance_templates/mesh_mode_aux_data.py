@@ -26,8 +26,11 @@ class MeshModes(str, enum.Enum):
   OFF = 'OFF'
 
 
+# Don't put sudo when running mesh-agent-bootstrap.sh, as exported variables
+# don't get passed to the script when run with sudo. It's not a problem
+# because all commands inside mesh-agent-bootstrap.sh are run with sudo anyway.
 startup_script = """#! /bin/bash
-sudo adduser --system --disabled-login envoy
-sudo gsutil cp gs://gce-mesh/mesh-agent/releases/mesh-agent-0.1.tgz /home/envoy
-sudo tar -xzf /home/envoy/mesh-agent-0.1.tgz -C /home/envoy
-sudo /home/envoy/mesh-agent/mesh-agent-bootstrap.sh"""
+export MESH_AGENT_DIRECTORY=$(mktemp -d)
+sudo gsutil cp gs://gce-mesh/mesh-agent/releases/mesh-agent-0.1.tgz ${MESH_AGENT_DIRECTORY}
+sudo tar -xzf ${MESH_AGENT_DIRECTORY}/mesh-agent-0.1.tgz -C ${MESH_AGENT_DIRECTORY}
+${MESH_AGENT_DIRECTORY}/mesh-agent/mesh-agent-bootstrap.sh"""

@@ -82,7 +82,7 @@ class Finding(_messages.Message):
       detected.
     findingType: The type of the Finding. Detailed and up-to-date information
       on findings can be found here: https://cloud.google.com/security-
-      scanner/docs/scan-result-details
+      command-center/docs/how-to-remediate-web-security-scanner
     form: An addon containing information reported for a vulnerability with an
       HTML form, if any.
     frameUrl: If the vulnerability was originated from nested IFrame, the
@@ -302,7 +302,7 @@ class ScanConfig(_messages.Message):
 
   Enums:
     ExportToSecurityCommandCenterValueValuesEnum: Controls export of scan
-      configurations and results to Cloud Security Command Center.
+      configurations and results to Security Command Center.
     RiskLevelValueValuesEnum: The risk level selected for the scan
     TargetPlatformsValueListEntryValuesEnum:
     UserAgentValueValuesEnum: The user agent used during scanning.
@@ -310,14 +310,15 @@ class ScanConfig(_messages.Message):
   Fields:
     authentication: The authentication configuration. If specified, service
       will use the authentication configuration during scanning.
-    blacklistPatterns: The blacklist URL patterns as described in
-      https://cloud.google.com/security-scanner/docs/excluded-urls
+    blacklistPatterns: The excluded URL patterns as described in
+      https://cloud.google.com/security-command-center/docs/how-to-use-web-
+      security-scanner#excluding_urls
     displayName: Required. The user provided display name of the ScanConfig.
     exportToSecurityCommandCenter: Controls export of scan configurations and
-      results to Cloud Security Command Center.
+      results to Security Command Center.
     latestRun: Latest ScanRun if available.
-    managedScan: Whether the scan config is managed by Cloud Web Security
-      Scanner, output only.
+    managedScan: Whether the scan config is managed by Web Security Scanner,
+      output only.
     maxQps: The maximum QPS during scanning. A valid value ranges from 5 to 20
       inclusively. If the field is unspecified or its value is set 0, server
       will default to 15. Other values outside of [5, 20] range will be
@@ -332,21 +333,20 @@ class ScanConfig(_messages.Message):
     staticIpScan: Whether the scan configuration has enabled static IP address
       scan feature. If enabled, the scanner will access applications from
       static IP addresses.
-    targetPlatforms: Set of Cloud Platforms targeted by the scan. If empty,
-      APP_ENGINE will be used as a default.
+    targetPlatforms: Set of Google Cloud platforms targeted by the scan. If
+      empty, APP_ENGINE will be used as a default.
     userAgent: The user agent used during scanning.
   """
 
   class ExportToSecurityCommandCenterValueValuesEnum(_messages.Enum):
-    r"""Controls export of scan configurations and results to Cloud Security
-    Command Center.
+    r"""Controls export of scan configurations and results to Security Command
+    Center.
 
     Values:
       EXPORT_TO_SECURITY_COMMAND_CENTER_UNSPECIFIED: Use default, which is
         ENABLED.
-      ENABLED: Export results of this scan to Cloud Security Command Center.
-      DISABLED: Do not export results of this scan to Cloud Security Command
-        Center.
+      ENABLED: Export results of this scan to Security Command Center.
+      DISABLED: Do not export results of this scan to Security Command Center.
     """
     EXPORT_TO_SECURITY_COMMAND_CENTER_UNSPECIFIED = 0
     ENABLED = 1
@@ -498,8 +498,8 @@ class ScanConfigError(_messages.Message):
         routable IP address.
       SEED_URL_HAS_UNRESERVED_IP_ADDRESS: One of the seed URLs has an IP
         address that is not reserved for the current project.
-      SERVICE_ACCOUNT_NOT_CONFIGURED: The Cloud Security Scanner service
-        account is not configured under the project.
+      SERVICE_ACCOUNT_NOT_CONFIGURED: The Web Security Scanner service account
+        is not configured under the project.
       TOO_MANY_SCANS: A project has reached the maximum number of scans.
       UNABLE_TO_RESOLVE_PROJECT_INFO: Resolving the details of the current
         project fails.

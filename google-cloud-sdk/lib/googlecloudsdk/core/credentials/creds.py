@@ -32,7 +32,7 @@ from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 from googlecloudsdk.core.credentials import devshell as c_devshell
-from googlecloudsdk.core.credentials import reauth
+from googlecloudsdk.core.credentials import google_auth_credentials as c_google_auth
 from googlecloudsdk.core.util import files
 
 from oauth2client import client
@@ -80,6 +80,13 @@ def IsOauth2ClientCredentials(creds):
 
 def IsGoogleAuthCredentials(creds):
   return isinstance(creds, google_auth_creds.Credentials)
+
+
+def IsUserAccountCredentials(creds):
+  if IsOauth2ClientCredentials(creds):
+    return CredentialType.FromCredentials(creds).is_user
+  else:
+    return CredentialTypeGoogleAuth.FromCredentials(creds).is_user
 
 
 @six.add_metaclass(abc.ABCMeta)
@@ -768,7 +775,7 @@ def FromJsonGoogleAuth(json_value):
     cred.client_id = json_key.get('client_id')
     return cred
   if cred_type == CredentialTypeGoogleAuth.USER_ACCOUNT:
-    return reauth.UserCredWithReauth.from_authorized_user_info(
+    return c_google_auth.UserCredWithReauth.from_authorized_user_info(
         json_key, scopes=json_key.get('scopes'))
   raise UnknownCredentialsType(
       'Google auth does not support deserialization of {} credentials.'.format(
@@ -802,12 +809,8 @@ def GetQuotaProject(credentials, force_resource_quota):
     str, The project id to send in the header or None to not populate the
     header.
   """
-  if IsOauth2ClientCredentials(credentials):
-    if not CredentialType.FromCredentials(credentials).is_user:
-      return None
-  elif IsGoogleAuthCredentials(credentials):
-    if not CredentialTypeGoogleAuth.FromCredentials(credentials).is_user:
-      return None
+  if not IsUserAccountCredentials(credentials):
+    return None
 
   quota_project = properties.VALUES.billing.quota_project.Get()
   if quota_project == properties.VALUES.billing.CURRENT_PROJECT:
@@ -831,10 +834,7 @@ class ADC(object):
 
   @property
   def is_user(self):
-    if self._is_oauth2client:
-      return CredentialType.FromCredentials(self._credentials).is_user
-    else:
-      return CredentialTypeGoogleAuth.FromCredentials(self._credentials).is_user
+    return IsUserAccountCredentials(self._credentials)
 
   @property
   def adc(self):

@@ -22,7 +22,7 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
-
+import contextlib
 import datetime
 import json
 import os
@@ -36,10 +36,10 @@ from googlecloudsdk.core import http
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 from googlecloudsdk.core.configurations import named_configs
-from googlecloudsdk.core.credentials import creds
+from googlecloudsdk.core.credentials import creds as c_creds
 from googlecloudsdk.core.credentials import devshell as c_devshell
 from googlecloudsdk.core.credentials import gce as c_gce
-from googlecloudsdk.core.credentials import reauth as google_auth_reauth
+from googlecloudsdk.core.credentials import google_auth_credentials as c_google_auth
 from googlecloudsdk.core.util import files
 from googlecloudsdk.core.util import times
 
@@ -242,9 +242,7 @@ class DevShellCredentialProvider(object):
   """Provides account, project and credential data for devshell env."""
 
   def GetCredentials(self, account, use_google_auth=False):
-    # TODO(b/153356810): migrate to google-auth.
-    del use_google_auth
-    devshell_creds = c_devshell.LoadDevshellCredentials()
+    devshell_creds = c_devshell.LoadDevshellCredentials(use_google_auth)
     if devshell_creds and (devshell_creds.devshell_response.user_email ==
                            account):
       return devshell_creds
@@ -254,7 +252,10 @@ class DevShellCredentialProvider(object):
     return c_devshell.DefaultAccount()
 
   def GetAccounts(self):
-    devshell_creds = c_devshell.LoadDevshellCredentials()
+    # DevShellCredentialsGoogleAuth and DevShellCredentials use the same code
+    # to get devshell_response, so here it is safe to load
+    # DevShellCredentialsGoogleAuth.
+    devshell_creds = c_devshell.LoadDevshellCredentials(use_google_auth=True)
     if devshell_creds:
       return set([devshell_creds.devshell_response.user_email])
     return set()
@@ -315,7 +316,7 @@ def AvailableAccounts():
     [str], List of the accounts.
 
   """
-  store = creds.GetCredentialStore()
+  store = c_creds.GetCredentialStore()
   accounts = store.GetAccounts() | STATIC_CREDENTIAL_PROVIDERS.GetAccounts()
 
   return sorted(accounts)
@@ -526,7 +527,7 @@ def Load(account=None,
   else:
     cred = _Load(account, scopes, prevent_refresh, use_google_auth)
 
-  cred = creds.MaybeConvertToGoogleAuthCredentials(cred, use_google_auth)
+  cred = c_creds.MaybeConvertToGoogleAuthCredentials(cred, use_google_auth)
   return cred
 
 
@@ -552,13 +553,13 @@ def _Load(account, scopes, prevent_refresh, use_google_auth=False):
     # preserved when scopes are applied.
     token_uri_override = properties.VALUES.auth.token_host.Get()
     if token_uri_override:
-      cred_type = creds.CredentialType.FromCredentials(cred)
-      if cred_type in (creds.CredentialType.SERVICE_ACCOUNT,
-                       creds.CredentialType.P12_SERVICE_ACCOUNT):
+      cred_type = c_creds.CredentialType.FromCredentials(cred)
+      if cred_type in (c_creds.CredentialType.SERVICE_ACCOUNT,
+                       c_creds.CredentialType.P12_SERVICE_ACCOUNT):
         cred.token_uri = token_uri_override
     # The credential override is not stored in credential store, but we still
     # want to cache access tokens between invocations.
-    cred = creds.MaybeAttachAccessTokenCacheStore(cred)
+    cred = c_creds.MaybeAttachAccessTokenCacheStore(cred)
   else:
     if not account:
       account = properties.VALUES.core.account.Get()
@@ -571,7 +572,7 @@ def _Load(account, scopes, prevent_refresh, use_google_auth=False):
     if cred is not None:
       return cred
 
-    store = creds.GetCredentialStore()
+    store = c_creds.GetCredentialStore()
     cred = store.Load(account, use_google_auth)
     if not cred:
       raise NoCredentialsForAccountException(account)
@@ -616,7 +617,7 @@ def Refresh(credentials,
     TokenRefreshError: If the credentials fail to refresh.
     TokenRefreshReauthError: If the credentials fail to refresh due to reauth.
   """
-  if creds.IsOauth2ClientCredentials(credentials):
+  if c_creds.IsOauth2ClientCredentials(credentials):
     _Refresh(credentials, http_client, is_impersonated_credential,
              include_email, gce_token_format, gce_include_license)
   else:
@@ -671,6 +672,20 @@ def _Refresh(credentials,
     raise TokenRefreshReauthError(str(e))
 
 
+@contextlib.contextmanager
+def HandleGoogleAuthCredentialsRefreshError():
+  """Handles exceptions during refreshing google auth credentials."""
+  try:
+    yield
+  except google_auth_exceptions.RefreshError as e:
+    raise TokenRefreshError(six.text_type(e))
+  except reauth_errors.ReauthSamlLoginRequiredError:
+    raise WebLoginRequiredReauthError()
+  except (reauth_errors.ReauthError,
+          c_google_auth.ReauthRequiredError) as e:
+    raise TokenRefreshReauthError(str(e))
+
+
 def _RefreshGoogleAuth(credentials,
                        http_client=None,
                        gce_token_format='standard',
@@ -689,7 +704,7 @@ def _RefreshGoogleAuth(credentials,
       associated with GCE instance are included in their identity tokens.
   """
   request_client = http_client or requests
-  try:
+  with HandleGoogleAuthCredentialsRefreshError():
     credentials.refresh(request_client.Request())
 
     id_token = None
@@ -712,13 +727,6 @@ def _RefreshGoogleAuth(credentials,
       # which is referenced in several places
       credentials._id_token = id_token  # pylint: disable=protected-access
       credentials.id_tokenb64 = id_token
-  except google_auth_exceptions.RefreshError as e:
-    raise TokenRefreshError(six.text_type(e))
-  except reauth_errors.ReauthSamlLoginRequiredError:
-    raise WebLoginRequiredReauthError()
-  except (reauth_errors.ReauthError,
-          google_auth_reauth.ReauthRequiredError) as e:
-    raise TokenRefreshReauthError(str(e))
 
 
 def _RefreshIfAlmostExpire(credentials):
@@ -736,7 +744,7 @@ def _RefreshIfAlmostExpire(credentials):
     credentials: google.auth.credentials.Credentials or
       client.OAuth2Credentials, the credentials to refresh.
   """
-  if creds.IsOauth2ClientCredentials(credentials):
+  if c_creds.IsOauth2ClientCredentials(credentials):
     almost_expire = not credentials.token_expiry or _TokenExpiresWithinWindow(
         _CREDENTIALS_EXPIRY_WINDOW, credentials.token_expiry)
   else:
@@ -844,10 +852,10 @@ def Store(credentials, account=None, scopes=None):
         active account.
   """
 
-  if creds.IsOauth2ClientCredentials(credentials):
-    cred_type = creds.CredentialType.FromCredentials(credentials)
+  if c_creds.IsOauth2ClientCredentials(credentials):
+    cred_type = c_creds.CredentialType.FromCredentials(credentials)
   else:
-    cred_type = creds.CredentialTypeGoogleAuth.FromCredentials(credentials)
+    cred_type = c_creds.CredentialTypeGoogleAuth.FromCredentials(credentials)
 
   if not cred_type.is_serializable:
     return
@@ -857,7 +865,7 @@ def Store(credentials, account=None, scopes=None):
   if not account:
     raise NoActiveAccountException()
 
-  store = creds.GetCredentialStore()
+  store = c_creds.GetCredentialStore()
   store.Store(account, credentials)
 
   _LegacyGenerator(account, credentials, scopes).WriteTemplate()
@@ -872,18 +880,35 @@ def ActivateCredentials(account, credentials):
 
 
 def RevokeCredentials(credentials):
-  credentials.revoke(http.Http())
+  """Revokes the token on the server.
+
+  Args:
+    credentials: user account credentials from either google-auth or
+      oauth2client.
+  Raises:
+    RevokeError: If credentials to revoke is not user account credentials.
+  """
+  if not c_creds.IsUserAccountCredentials(credentials):
+    raise RevokeError('The token cannot be revoked from server because it is '
+                      'not user account credentials.')
+  if c_creds.IsOauth2ClientCredentials(credentials):
+    credentials.revoke(http.Http())
+  else:
+    credentials.revoke(requests.Request())
 
 
-def Revoke(account=None):
+def Revoke(account=None, use_google_auth=False):
   """Revoke credentials and clean up related files.
 
   Args:
     account: str, The account address for the credentials to be revoked. If
         None, the currently active account is used.
+    use_google_auth: bool, True to revoke the credentials as google auth
+        credentials. False to revoke the credentials as oauth2client
+        credentials.
 
   Returns:
-    'True' if this call revoked the account; 'False' if the account was already
+    True if this call revoked the account; False if the account was already
     revoked.
 
   Raises:
@@ -901,11 +926,13 @@ def Revoke(account=None):
   if account in c_gce.Metadata().Accounts():
     raise RevokeError('Cannot revoke GCE-provided credentials.')
 
-  credentials = Load(account, prevent_refresh=True)
+  credentials = Load(
+      account, prevent_refresh=True, use_google_auth=use_google_auth)
   if not credentials:
     raise NoCredentialsForAccountException(account)
 
-  if isinstance(credentials, c_devshell.DevshellCredentials):
+  if (isinstance(credentials, c_devshell.DevshellCredentials) or
+      isinstance(credentials, c_devshell.DevShellCredentialsGoogleAuth)):
     raise RevokeError(
         'Cannot revoke the automatically provisioned Cloud Shell credential.'
         'This comes from your browser session and will not persist outside'
@@ -916,7 +943,7 @@ def Revoke(account=None):
     if not account.endswith('.gserviceaccount.com'):
       RevokeCredentials(credentials)
       rv = True
-  except client.TokenRevokeError as e:
+  except (client.TokenRevokeError, c_google_auth.TokenRevokeError) as e:
     if e.args[0] == 'invalid_token':
       # Malformed or already revoked
       pass
@@ -926,7 +953,7 @@ def Revoke(account=None):
     else:
       raise
 
-  store = creds.GetCredentialStore()
+  store = c_creds.GetCredentialStore()
   store.Remove(account)
 
   _LegacyGenerator(account, credentials).Clean()
@@ -1070,10 +1097,10 @@ class _LegacyGenerator(object):
 
   def __init__(self, account, credentials, scopes=None):
     self.credentials = credentials
-    if self._cred_type not in (creds.USER_ACCOUNT_CREDS_NAME,
-                               creds.SERVICE_ACCOUNT_CREDS_NAME,
-                               creds.P12_SERVICE_ACCOUNT_CREDS_NAME):
-      raise creds.CredentialFileSaveError(
+    if self._cred_type not in (c_creds.USER_ACCOUNT_CREDS_NAME,
+                               c_creds.SERVICE_ACCOUNT_CREDS_NAME,
+                               c_creds.P12_SERVICE_ACCOUNT_CREDS_NAME):
+      raise c_creds.CredentialFileSaveError(
           'Unsupported credentials type {0}'.format(type(self.credentials)))
     if scopes is None:
       self.scopes = config.CLOUDSDK_SCOPES
@@ -1091,14 +1118,14 @@ class _LegacyGenerator(object):
 
   @property
   def _is_oauth2client(self):
-    return creds.IsOauth2ClientCredentials(self.credentials)
+    return c_creds.IsOauth2ClientCredentials(self.credentials)
 
   @property
   def _cred_type(self):
     if self._is_oauth2client:
-      return creds.CredentialType.FromCredentials(self.credentials).key
+      return c_creds.CredentialType.FromCredentials(self.credentials).key
     else:
-      return creds.CredentialTypeGoogleAuth.FromCredentials(
+      return c_creds.CredentialTypeGoogleAuth.FromCredentials(
           self.credentials).key
 
   def Clean(self):
@@ -1121,7 +1148,7 @@ class _LegacyGenerator(object):
     """Write the credential file."""
 
     # Generates credentials used by bq and gsutil.
-    if self._cred_type == creds.P12_SERVICE_ACCOUNT_CREDS_NAME:
+    if self._cred_type == c_creds.P12_SERVICE_ACCOUNT_CREDS_NAME:
       cred = self.credentials
       key = cred._private_key_pkcs12  # pylint: disable=protected-access
       password = cred._private_key_password  # pylint: disable=protected-access
@@ -1138,9 +1165,9 @@ class _LegacyGenerator(object):
                     key_file=self._p12_key_path,
                     key_password=password))
       return
-    creds.ADC(self.credentials).DumpADCToFile(file_path=self._adc_path)
+    c_creds.ADC(self.credentials).DumpADCToFile(file_path=self._adc_path)
 
-    if self._cred_type == creds.USER_ACCOUNT_CREDS_NAME:
+    if self._cred_type == c_creds.USER_ACCOUNT_CREDS_NAME:
       # We create a small .boto file for gsutil, to be put in BOTO_PATH.
       # Our client_id and client_secret should accompany our refresh token;
       # if a user loaded any other .boto files that specified a different

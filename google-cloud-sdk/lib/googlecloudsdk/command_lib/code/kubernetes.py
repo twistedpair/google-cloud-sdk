@@ -28,6 +28,9 @@ from googlecloudsdk.core.util import files as file_utils
 import six
 
 
+DEFAULT_CLUSTER_NAME = 'gcloud-local-dev'
+
+
 def _FindOrInstallComponent(component_name):
   """Finds the path to a component or install it.
 
@@ -128,6 +131,12 @@ class KindClusterContext(object):
       _DeleteKindCluster(self._cluster_name)
 
 
+def DeleteKindClusterIfExists(cluster_name):
+  """Delete a kind cluster if it is up."""
+  if _IsKindClusterUp(cluster_name):
+    _DeleteKindCluster(cluster_name)
+
+
 def _StartKindCluster(cluster_name):
   """Starts a kind kubernetes cluster.
 
@@ -221,6 +230,7 @@ def _StartMinikubeCluster(cluster_name, vm_driver):
         '-p',
         cluster_name,
         '--keep-context',
+        '--interactive=false',
         '--delete-on-failure',
         '--install-addons=false',
     ]
@@ -261,6 +271,14 @@ def _StopMinikube(cluster_name):
   """Stop a minikube cluster."""
   cmd = [_FindMinikube(), 'stop', '-p', cluster_name]
   print("Stopping development environment '%s' ..." % cluster_name)
+  _RunWithoutOutput(cmd)
+  print('Development environment stopped.')
+
+
+def DeleteMinikube(cluster_name):
+  """Delete a minikube cluster."""
+  cmd = [_FindMinikube(), 'delete', '-p', cluster_name, '--purge']
+  print("Deleting development environment '%s' ..." % cluster_name)
   _RunWithoutOutput(cmd)
   print('Development environment stopped.')
 

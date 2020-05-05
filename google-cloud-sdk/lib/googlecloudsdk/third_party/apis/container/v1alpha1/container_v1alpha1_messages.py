@@ -320,6 +320,8 @@ class Cluster(_messages.Message):
       this resource for username and password information.
     expireTime: [Output only] The time the cluster will be automatically
       deleted in [RFC3339](https://www.ietf.org/rfc/rfc3339.txt) text format.
+    exposeMasterSignalsConfig: Configuration used to enable sending selected
+      master logs and metrics to customer project.
     initialClusterVersion: The initial Kubernetes version for this cluster.
       Valid versions are those found in validMasterVersions returned by
       getServerConfig.  The version can be upgraded over time; such upgrades
@@ -535,47 +537,48 @@ class Cluster(_messages.Message):
   enableTpu = _messages.BooleanField(20)
   endpoint = _messages.StringField(21)
   expireTime = _messages.StringField(22)
-  initialClusterVersion = _messages.StringField(23)
-  initialNodeCount = _messages.IntegerField(24, variant=_messages.Variant.INT32)
-  instanceGroupUrls = _messages.StringField(25, repeated=True)
-  ipAllocationPolicy = _messages.MessageField('IPAllocationPolicy', 26)
-  labelFingerprint = _messages.StringField(27)
-  legacyAbac = _messages.MessageField('LegacyAbac', 28)
-  location = _messages.StringField(29)
-  locations = _messages.StringField(30, repeated=True)
-  loggingService = _messages.StringField(31)
-  maintenancePolicy = _messages.MessageField('MaintenancePolicy', 32)
-  masterAuth = _messages.MessageField('MasterAuth', 33)
-  masterAuthorizedNetworksConfig = _messages.MessageField('MasterAuthorizedNetworksConfig', 34)
-  masterIpv4CidrBlock = _messages.StringField(35)
-  monitoringService = _messages.StringField(36)
-  name = _messages.StringField(37)
-  network = _messages.StringField(38)
-  networkConfig = _messages.MessageField('NetworkConfig', 39)
-  networkPolicy = _messages.MessageField('NetworkPolicy', 40)
-  nodeConfig = _messages.MessageField('NodeConfig', 41)
-  nodeIpv4CidrSize = _messages.IntegerField(42, variant=_messages.Variant.INT32)
-  nodePools = _messages.MessageField('NodePool', 43, repeated=True)
-  nodeSchedulingStrategy = _messages.EnumField('NodeSchedulingStrategyValueValuesEnum', 44)
-  podSecurityPolicyConfig = _messages.MessageField('PodSecurityPolicyConfig', 45)
-  privateCluster = _messages.BooleanField(46)
-  privateClusterConfig = _messages.MessageField('PrivateClusterConfig', 47)
-  releaseChannel = _messages.MessageField('ReleaseChannel', 48)
-  resourceLabels = _messages.MessageField('ResourceLabelsValue', 49)
-  resourceUsageExportConfig = _messages.MessageField('ResourceUsageExportConfig', 50)
-  resourceVersion = _messages.StringField(51)
-  securityProfile = _messages.MessageField('SecurityProfile', 52)
-  selfLink = _messages.StringField(53)
-  servicesIpv4Cidr = _messages.StringField(54)
-  shieldedNodes = _messages.MessageField('ShieldedNodes', 55)
-  status = _messages.EnumField('StatusValueValuesEnum', 56)
-  statusMessage = _messages.StringField(57)
-  subnetwork = _messages.StringField(58)
-  tpuConfig = _messages.MessageField('TpuConfig', 59)
-  tpuIpv4CidrBlock = _messages.StringField(60)
-  verticalPodAutoscaling = _messages.MessageField('VerticalPodAutoscaling', 61)
-  workloadIdentityConfig = _messages.MessageField('WorkloadIdentityConfig', 62)
-  zone = _messages.StringField(63)
+  exposeMasterSignalsConfig = _messages.MessageField('ExposeMasterSignalsConfig', 23)
+  initialClusterVersion = _messages.StringField(24)
+  initialNodeCount = _messages.IntegerField(25, variant=_messages.Variant.INT32)
+  instanceGroupUrls = _messages.StringField(26, repeated=True)
+  ipAllocationPolicy = _messages.MessageField('IPAllocationPolicy', 27)
+  labelFingerprint = _messages.StringField(28)
+  legacyAbac = _messages.MessageField('LegacyAbac', 29)
+  location = _messages.StringField(30)
+  locations = _messages.StringField(31, repeated=True)
+  loggingService = _messages.StringField(32)
+  maintenancePolicy = _messages.MessageField('MaintenancePolicy', 33)
+  masterAuth = _messages.MessageField('MasterAuth', 34)
+  masterAuthorizedNetworksConfig = _messages.MessageField('MasterAuthorizedNetworksConfig', 35)
+  masterIpv4CidrBlock = _messages.StringField(36)
+  monitoringService = _messages.StringField(37)
+  name = _messages.StringField(38)
+  network = _messages.StringField(39)
+  networkConfig = _messages.MessageField('NetworkConfig', 40)
+  networkPolicy = _messages.MessageField('NetworkPolicy', 41)
+  nodeConfig = _messages.MessageField('NodeConfig', 42)
+  nodeIpv4CidrSize = _messages.IntegerField(43, variant=_messages.Variant.INT32)
+  nodePools = _messages.MessageField('NodePool', 44, repeated=True)
+  nodeSchedulingStrategy = _messages.EnumField('NodeSchedulingStrategyValueValuesEnum', 45)
+  podSecurityPolicyConfig = _messages.MessageField('PodSecurityPolicyConfig', 46)
+  privateCluster = _messages.BooleanField(47)
+  privateClusterConfig = _messages.MessageField('PrivateClusterConfig', 48)
+  releaseChannel = _messages.MessageField('ReleaseChannel', 49)
+  resourceLabels = _messages.MessageField('ResourceLabelsValue', 50)
+  resourceUsageExportConfig = _messages.MessageField('ResourceUsageExportConfig', 51)
+  resourceVersion = _messages.StringField(52)
+  securityProfile = _messages.MessageField('SecurityProfile', 53)
+  selfLink = _messages.StringField(54)
+  servicesIpv4Cidr = _messages.StringField(55)
+  shieldedNodes = _messages.MessageField('ShieldedNodes', 56)
+  status = _messages.EnumField('StatusValueValuesEnum', 57)
+  statusMessage = _messages.StringField(58)
+  subnetwork = _messages.StringField(59)
+  tpuConfig = _messages.MessageField('TpuConfig', 60)
+  tpuIpv4CidrBlock = _messages.StringField(61)
+  verticalPodAutoscaling = _messages.MessageField('VerticalPodAutoscaling', 62)
+  workloadIdentityConfig = _messages.MessageField('WorkloadIdentityConfig', 63)
+  zone = _messages.StringField(64)
 
 
 class ClusterAutoscaling(_messages.Message):
@@ -1473,6 +1476,38 @@ class Empty(_messages.Message):
   JSON representation for `Empty` is empty JSON object `{}`.
   """
 
+
+
+class ExposeMasterSignalsConfig(_messages.Message):
+  r"""ExposeMasterSignalsConfig is the configuration for exposing selected
+  master logs and metrics to customer
+
+  Enums:
+    EnableComponentLogsValueListEntryValuesEnum:
+
+  Fields:
+    enableComponentLogs: Select components to expose logs
+    enableMetrics: Enable sendings metrics to customer
+  """
+
+  class EnableComponentLogsValueListEntryValuesEnum(_messages.Enum):
+    r"""EnableComponentLogsValueListEntryValuesEnum enum type.
+
+    Values:
+      COMPONENT_UNSPECIFIED: <no description>
+      APISERVER: <no description>
+      SCHEDULER: <no description>
+      CONTROLLER_MANAGER: <no description>
+      ADDON_MANAGER: <no description>
+    """
+    COMPONENT_UNSPECIFIED = 0
+    APISERVER = 1
+    SCHEDULER = 2
+    CONTROLLER_MANAGER = 3
+    ADDON_MANAGER = 4
+
+  enableComponentLogs = _messages.EnumField('EnableComponentLogsValueListEntryValuesEnum', 1, repeated=True)
+  enableMetrics = _messages.BooleanField(2)
 
 
 class GcePersistentDiskCsiDriverConfig(_messages.Message):
@@ -2659,8 +2694,9 @@ class NodePoolAutoscaling(_messages.Message):
 class NodeTaint(_messages.Message):
   r"""Kubernetes taint is comprised of three fields: key, value, and effect.
   Effect can only be one of three types:  NoSchedule, PreferNoSchedule or
-  NoExecute.  For more information, including usage and the valid values, see:
-  https://kubernetes.io/docs/concepts/configuration/taint-and-toleration/
+  NoExecute.  See [here](https://kubernetes.io/docs/concepts/configuration
+  /taint-and-toleration) for more information, including usage and the valid
+  values.
 
   Enums:
     EffectValueValuesEnum: Effect for taint.
@@ -3816,6 +3852,8 @@ class UpdateNodePoolRequest(_messages.Message):
     imageProject: The project containing the desired image to use for this
       node pool. This is used to create clusters using a custom image.
     imageType: The desired image type for the node pool.
+    kubeletConfig: Node kubelet configs.
+    linuxNodeConfig: Parameters that can be configured on Linux nodes.
     locations: The desired list of Google Compute Engine
       [zones](/compute/docs/zones#available) in which the node pool's nodes
       should be located. Changing the locations for a node pool will result in
@@ -3853,15 +3891,17 @@ class UpdateNodePoolRequest(_messages.Message):
   image = _messages.StringField(2)
   imageProject = _messages.StringField(3)
   imageType = _messages.StringField(4)
-  locations = _messages.StringField(5, repeated=True)
-  name = _messages.StringField(6)
-  nodePoolId = _messages.StringField(7)
-  nodeVersion = _messages.StringField(8)
-  projectId = _messages.StringField(9)
-  updatedNodePool = _messages.MessageField('NodePool', 10)
-  upgradeSettings = _messages.MessageField('UpgradeSettings', 11)
-  workloadMetadataConfig = _messages.MessageField('WorkloadMetadataConfig', 12)
-  zone = _messages.StringField(13)
+  kubeletConfig = _messages.MessageField('NodeKubeletConfig', 5)
+  linuxNodeConfig = _messages.MessageField('LinuxNodeConfig', 6)
+  locations = _messages.StringField(7, repeated=True)
+  name = _messages.StringField(8)
+  nodePoolId = _messages.StringField(9)
+  nodeVersion = _messages.StringField(10)
+  projectId = _messages.StringField(11)
+  updatedNodePool = _messages.MessageField('NodePool', 12)
+  upgradeSettings = _messages.MessageField('UpgradeSettings', 13)
+  workloadMetadataConfig = _messages.MessageField('WorkloadMetadataConfig', 14)
+  zone = _messages.StringField(15)
 
 
 class UpgradeSettings(_messages.Message):

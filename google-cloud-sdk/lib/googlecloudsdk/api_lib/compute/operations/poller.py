@@ -95,20 +95,11 @@ class Poller(waiter.OperationPoller):
   def GetResult(self, operation):
     """Overrides."""
     request_type = self.resource_service.GetRequestType('Get')
-    # Handle organization operations to only parse from target link if possible.
+    # Organization operation and target URLs have 'locations' and do not
+    # have 'projects' token. This is not supported in REGISTRY.Parse(). Simply
+    # return None.
     if operation.name and 'org-' in operation.name:
-      # Ignore the last get if no target link in organization operations.
-      if not operation.targetLink:
-        return None
-      # Check if needs to add 'projects' token in the target link to make it
-      # consistent with the discovery doc. Target link does not have 'projects'
-      # token. Currently, discovery doc has 'projects' token in the URL, but
-      # would remove it in the near future. TODO(b/136281960): remove after
-      # 'projects' is removed.
-      if self.has_project and 'projects' not in operation.targetLink:
-        operation.targetLink = operation.targetLink.replace(
-            'locations', 'projects/locations')
-      target_ref = resources.REGISTRY.Parse(operation.targetLink)
+      return None
     else:
       target_ref = (
           self.target_ref or resources.REGISTRY.Parse(operation.targetLink))

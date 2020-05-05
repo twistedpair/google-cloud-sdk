@@ -17,6 +17,7 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+import functools
 import itertools
 import os.path
 
@@ -60,13 +61,23 @@ class LocalRuntimeFiles(object):
                                     self._settings.cpu_limit)
     ]
 
-    if self._settings.service_account:
-      secret_generator = local.SecretGenerator(self._settings.service_account)
-      code_generators.append(secret_generator)
+    credential_generator = None
+    if isinstance(self._settings.credential, local.ServiceAccountSetting):
+      credential_generator = local.CredentialGenerator(
+          functools.partial(local.GetServiceAccountSecret,
+                            self._settings.credential.name))
+      code_generators.append(credential_generator)
+    elif isinstance(self._settings.credential,
+                    local.ApplicationDefaultCredentialSetting):
+      credential_generator = local.CredentialGenerator(local.GetUserCredential)
+      code_generators.append(credential_generator)
 
     if self._settings.cloudsql_instances:
+      if not credential_generator:
+        raise ValueError('A credential generator must be defined when cloudsql '
+                         'instances are defined.')
       cloudsql_proxy = local.CloudSqlProxyGenerator(
-          self._settings.cloudsql_instances, secret_generator.GetInfo())
+          self._settings.cloudsql_instances, credential_generator.GetInfo())
       code_generators.append(cloudsql_proxy)
 
     return _GenerateKubeConfigs(code_generators)

@@ -211,10 +211,27 @@ def AddIamPolicyBinding(project_ref,
                         member,
                         role,
                         api_version=DEFAULT_API_VERSION):
+  return AddIamPolicyBindings(project_ref, [(member, role)], api_version)
+
+
+def AddIamPolicyBindings(project_ref,
+                         member_roles,
+                         api_version=DEFAULT_API_VERSION):
+  """Adds iam bindings to project_ref's iam policy.
+
+  Args:
+    project_ref: The project for the binding
+    member_roles: List of 2-tuples of the form [(member, role), ...].
+    api_version: The version of the api
+
+  Returns:
+    The updated IAM Policy
+  """
   messages = projects_util.GetMessages(api_version)
 
   policy = GetIamPolicy(project_ref, api_version)
-  iam_util.AddBindingToIamPolicy(messages.Binding, policy, member, role)
+  for member, role in member_roles:
+    iam_util.AddBindingToIamPolicy(messages.Binding, policy, member, role)
   return SetIamPolicy(project_ref, policy, api_version=api_version)
 
 

@@ -183,6 +183,23 @@ class DialogflowProjectsAgentEntityTypesPatchRequest(_messages.Message):
   updateMask = _messages.StringField(4)
 
 
+class DialogflowProjectsAgentEnvironmentsListRequest(_messages.Message):
+  r"""A DialogflowProjectsAgentEnvironmentsListRequest object.
+
+  Fields:
+    pageSize: Optional. The maximum number of items to return in a single
+      page. By default 100 and at most 1000.
+    pageToken: Optional. The next_page_token value returned from a previous
+      list request.
+    parent: Required. The agent to list all environments from. Format:
+      `projects/<Project ID>/agent`.
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
 class DialogflowProjectsAgentEnvironmentsUsersSessionsContextsCreateRequest(_messages.Message):
   r"""A DialogflowProjectsAgentEnvironmentsUsersSessionsContextsCreateRequest
   object.
@@ -1647,6 +1664,50 @@ class GoogleCloudDialogflowV2EntityTypeEntity(_messages.Message):
   value = _messages.StringField(2)
 
 
+class GoogleCloudDialogflowV2Environment(_messages.Message):
+  r"""Represents an agent environment.
+
+  Enums:
+    StateValueValuesEnum: Output only. The state of this environment. This
+      field is read-only, i.e., it cannot be set by create and update methods.
+
+  Fields:
+    agentVersion: Optional. The agent version loaded into this environment.
+      Format: `projects/<Project ID>/agent/versions/<Version ID>`.
+    description: Optional. The developer-provided description for this
+      environment. The maximum length is 500 characters. If exceeded, the
+      request is rejected.
+    name: Output only. The unique identifier of this agent environment.
+      Format: `projects/<Project ID>/agent/environments/<Environment ID>`. For
+      Environment ID, "-" is reserved for 'draft' environment.
+    state: Output only. The state of this environment. This field is read-
+      only, i.e., it cannot be set by create and update methods.
+    updateTime: Output only. The last update time of this environment. This
+      field is read-only, i.e., it cannot be set by create and update methods.
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Output only. The state of this environment. This field is read-only,
+    i.e., it cannot be set by create and update methods.
+
+    Values:
+      STATE_UNSPECIFIED: Not specified. This value is not used.
+      STOPPED: Stopped.
+      LOADING: Loading.
+      RUNNING: Running.
+    """
+    STATE_UNSPECIFIED = 0
+    STOPPED = 1
+    LOADING = 2
+    RUNNING = 3
+
+  agentVersion = _messages.StringField(1)
+  description = _messages.StringField(2)
+  name = _messages.StringField(3)
+  state = _messages.EnumField('StateValueValuesEnum', 4)
+  updateTime = _messages.StringField(5)
+
+
 class GoogleCloudDialogflowV2EventInput(_messages.Message):
   r"""Events allow for matching intents by event name instead of the natural
   language input. For instance, input `<event: { name: "welcome_event",
@@ -2844,6 +2905,20 @@ class GoogleCloudDialogflowV2ListEntityTypesResponse(_messages.Message):
   nextPageToken = _messages.StringField(2)
 
 
+class GoogleCloudDialogflowV2ListEnvironmentsResponse(_messages.Message):
+  r"""The response message for Environments.ListEnvironments.
+
+  Fields:
+    environments: The list of agent environments. There will be a maximum
+      number of items returned based on the page_size field in the request.
+    nextPageToken: Token to retrieve the next page of results, or empty if
+      there are no more results in the list.
+  """
+
+  environments = _messages.MessageField('GoogleCloudDialogflowV2Environment', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+
+
 class GoogleCloudDialogflowV2ListIntentsResponse(_messages.Message):
   r"""The response message for Intents.ListIntents.
 
@@ -3446,7 +3521,7 @@ class GoogleCloudDialogflowV2SpeechContext(_messages.Message):
   conversation state.
 
   Fields:
-    boost: Optional. Boost for this context compared to other contexts: * If
+    boost: Optional. Boost for this context compared to other contexts:  * If
       the boost is positive, Dialogflow will increase the probability that
       the phrases in this context are recognized over similar sounding
       phrases. * If the boost is unspecified or non-positive, Dialogflow will
@@ -3656,10 +3731,10 @@ class GoogleCloudDialogflowV2WebhookResponse(_messages.Message):
 
   Messages:
     PayloadValue: Optional. This field can be used to pass custom data from
-      your webhook to the API caller. Arbitrary JSON objects are supported.
-      When provided, Dialogflow uses this field to populate
-      `QueryResult.webhook_payload` sent to the API caller. This field is also
-      used by the [Google Assistant
+      your webhook to the integration or API caller. Arbitrary JSON objects
+      are supported. When provided, Dialogflow uses this field to populate
+      QueryResult.webhook_payload sent to the integration or API caller. This
+      field is also used by the [Google Assistant
       integration](https://cloud.google.com/dialogflow/docs/integrations/aog)
       for rich response messages. See the format definition at [Google
       Assistant Dialogflow webhook
@@ -3667,22 +3742,25 @@ class GoogleCloudDialogflowV2WebhookResponse(_messages.Message):
       /dialogflow-webhook-json)
 
   Fields:
-    followupEventInput: Optional. Makes the platform immediately invoke
-      another `DetectIntent` call internally with the specified event as
-      input. When this field is set, Dialogflow ignores the
-      `fulfillment_text`, `fulfillment_messages`, and `payload` fields.
-    fulfillmentMessages: Optional. The collection of rich messages to present
-      to the user. This value is passed directly to
-      `QueryResult.fulfillment_messages`.
-    fulfillmentText: Optional. The text to be shown on the screen. This value
-      is passed directly to `QueryResult.fulfillment_text`.
-    outputContexts: Optional. The collection of output contexts. This value is
-      passed directly to `QueryResult.output_contexts`.
+    followupEventInput: Optional. Invokes the supplied events. When this field
+      is set, Dialogflow ignores the `fulfillment_text`,
+      `fulfillment_messages`, and `payload` fields.
+    fulfillmentMessages: Optional. The rich response messages intended for the
+      end-user. When provided, Dialogflow uses this field to populate
+      QueryResult.fulfillment_messages sent to the integration or API caller.
+    fulfillmentText: Optional. The text response message intended for the end-
+      user. It is recommended to use `fulfillment_messages.text.text[0]`
+      instead. When provided, Dialogflow uses this field to populate
+      QueryResult.fulfillment_text sent to the integration or API caller.
+    outputContexts: Optional. The collection of output contexts that will
+      overwrite currently active contexts for the session and reset their
+      lifespans. When provided, Dialogflow uses this field to populate
+      QueryResult.output_contexts sent to the integration or API caller.
     payload: Optional. This field can be used to pass custom data from your
-      webhook to the API caller. Arbitrary JSON objects are supported. When
-      provided, Dialogflow uses this field to populate
-      `QueryResult.webhook_payload` sent to the API caller. This field is also
-      used by the [Google Assistant
+      webhook to the integration or API caller. Arbitrary JSON objects are
+      supported. When provided, Dialogflow uses this field to populate
+      QueryResult.webhook_payload sent to the integration or API caller. This
+      field is also used by the [Google Assistant
       integration](https://cloud.google.com/dialogflow/docs/integrations/aog)
       for rich response messages. See the format definition at [Google
       Assistant Dialogflow webhook
@@ -3690,20 +3768,23 @@ class GoogleCloudDialogflowV2WebhookResponse(_messages.Message):
       /dialogflow-webhook-json)
     sessionEntityTypes: Optional. Additional session entity types to replace
       or extend developer entity types with. The entity synonyms apply to all
-      languages and persist for the session of this query. Setting the session
-      entity types inside webhook overwrites the session entity types that
-      have been set through
-      `DetectIntentRequest.query_params.session_entity_types`.
-    source: Optional. This value is passed directly to
-      `QueryResult.webhook_source`.
+      languages and persist for the session. Setting this data from a webhook
+      overwrites the session entity types that have been set using
+      `detectIntent`, `streamingDetectIntent` or SessionEntityType management
+      methods.
+    source: Optional. A custom field used to identify the webhook source.
+      Arbitrary strings are supported. When provided, Dialogflow uses this
+      field to populate QueryResult.webhook_source sent to the integration or
+      API caller.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class PayloadValue(_messages.Message):
     r"""Optional. This field can be used to pass custom data from your webhook
-    to the API caller. Arbitrary JSON objects are supported. When provided,
-    Dialogflow uses this field to populate `QueryResult.webhook_payload` sent
-    to the API caller. This field is also used by the [Google Assistant
+    to the integration or API caller. Arbitrary JSON objects are supported.
+    When provided, Dialogflow uses this field to populate
+    QueryResult.webhook_payload sent to the integration or API caller. This
+    field is also used by the [Google Assistant
     integration](https://cloud.google.com/dialogflow/docs/integrations/aog)
     for rich response messages. See the format definition at [Google Assistant
     Dialogflow webhook
@@ -5679,10 +5760,10 @@ class GoogleCloudDialogflowV2beta1WebhookResponse(_messages.Message):
 
   Messages:
     PayloadValue: Optional. This field can be used to pass custom data from
-      your webhook to the API caller. Arbitrary JSON objects are supported.
-      When provided, Dialogflow uses this field to populate
-      `QueryResult.webhook_payload` sent to the API caller. This field is also
-      used by the [Google Assistant
+      your webhook to the integration or API caller. Arbitrary JSON objects
+      are supported. When provided, Dialogflow uses this field to populate
+      QueryResult.webhook_payload sent to the integration or API caller. This
+      field is also used by the [Google Assistant
       integration](https://cloud.google.com/dialogflow/docs/integrations/aog)
       for rich response messages. See the format definition at [Google
       Assistant Dialogflow webhook
@@ -5694,22 +5775,25 @@ class GoogleCloudDialogflowV2beta1WebhookResponse(_messages.Message):
       Some integrations (e.g., Actions on Google or Dialogflow phone gateway)
       use this information to close interaction with an end user. Default is
       false.
-    followupEventInput: Optional. Makes the platform immediately invoke
-      another `DetectIntent` call internally with the specified event as
-      input. When this field is set, Dialogflow ignores the
-      `fulfillment_text`, `fulfillment_messages`, and `payload` fields.
-    fulfillmentMessages: Optional. The collection of rich messages to present
-      to the user. This value is passed directly to
-      `QueryResult.fulfillment_messages`.
-    fulfillmentText: Optional. The text to be shown on the screen. This value
-      is passed directly to `QueryResult.fulfillment_text`.
-    outputContexts: Optional. The collection of output contexts. This value is
-      passed directly to `QueryResult.output_contexts`.
+    followupEventInput: Optional. Invokes the supplied events. When this field
+      is set, Dialogflow ignores the `fulfillment_text`,
+      `fulfillment_messages`, and `payload` fields.
+    fulfillmentMessages: Optional. The rich response messages intended for the
+      end-user. When provided, Dialogflow uses this field to populate
+      QueryResult.fulfillment_messages sent to the integration or API caller.
+    fulfillmentText: Optional. The text response message intended for the end-
+      user. It is recommended to use `fulfillment_messages.text.text[0]`
+      instead. When provided, Dialogflow uses this field to populate
+      QueryResult.fulfillment_text sent to the integration or API caller.
+    outputContexts: Optional. The collection of output contexts that will
+      overwrite currently active contexts for the session and reset their
+      lifespans. When provided, Dialogflow uses this field to populate
+      QueryResult.output_contexts sent to the integration or API caller.
     payload: Optional. This field can be used to pass custom data from your
-      webhook to the API caller. Arbitrary JSON objects are supported. When
-      provided, Dialogflow uses this field to populate
-      `QueryResult.webhook_payload` sent to the API caller. This field is also
-      used by the [Google Assistant
+      webhook to the integration or API caller. Arbitrary JSON objects are
+      supported. When provided, Dialogflow uses this field to populate
+      QueryResult.webhook_payload sent to the integration or API caller. This
+      field is also used by the [Google Assistant
       integration](https://cloud.google.com/dialogflow/docs/integrations/aog)
       for rich response messages. See the format definition at [Google
       Assistant Dialogflow webhook
@@ -5717,20 +5801,23 @@ class GoogleCloudDialogflowV2beta1WebhookResponse(_messages.Message):
       /dialogflow-webhook-json)
     sessionEntityTypes: Optional. Additional session entity types to replace
       or extend developer entity types with. The entity synonyms apply to all
-      languages and persist for the session of this query. Setting the session
-      entity types inside webhook overwrites the session entity types that
-      have been set through
-      `DetectIntentRequest.query_params.session_entity_types`.
-    source: Optional. This value is passed directly to
-      `QueryResult.webhook_source`.
+      languages and persist for the session. Setting this data from a webhook
+      overwrites the session entity types that have been set using
+      `detectIntent`, `streamingDetectIntent` or SessionEntityType management
+      methods.
+    source: Optional. A custom field used to identify the webhook source.
+      Arbitrary strings are supported. When provided, Dialogflow uses this
+      field to populate QueryResult.webhook_source sent to the integration or
+      API caller.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class PayloadValue(_messages.Message):
     r"""Optional. This field can be used to pass custom data from your webhook
-    to the API caller. Arbitrary JSON objects are supported. When provided,
-    Dialogflow uses this field to populate `QueryResult.webhook_payload` sent
-    to the API caller. This field is also used by the [Google Assistant
+    to the integration or API caller. Arbitrary JSON objects are supported.
+    When provided, Dialogflow uses this field to populate
+    QueryResult.webhook_payload sent to the integration or API caller. This
+    field is also used by the [Google Assistant
     integration](https://cloud.google.com/dialogflow/docs/integrations/aog)
     for rich response messages. See the format definition at [Google Assistant
     Dialogflow webhook
@@ -5765,6 +5852,19 @@ class GoogleCloudDialogflowV2beta1WebhookResponse(_messages.Message):
   payload = _messages.MessageField('PayloadValue', 6)
   sessionEntityTypes = _messages.MessageField('GoogleCloudDialogflowV2beta1SessionEntityType', 7, repeated=True)
   source = _messages.StringField(8)
+
+
+class GoogleCloudDialogflowV3alpha1ExportAgentResponse(_messages.Message):
+  r"""The response message for Agents.ExportAgent.
+
+  Fields:
+    agentContent: Uncompressed raw byte content for agent.
+    agentUri: The URI to a file containing the exported agent. This field is
+      populated only if `agent_uri` is specified in ExportAgentRequest.
+  """
+
+  agentContent = _messages.BytesField(1)
+  agentUri = _messages.StringField(2)
 
 
 class GoogleLongrunningListOperationsResponse(_messages.Message):

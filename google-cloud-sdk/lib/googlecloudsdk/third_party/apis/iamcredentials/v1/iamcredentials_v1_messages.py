@@ -182,7 +182,8 @@ class SignBlobResponse(_messages.Message):
 
   Fields:
     keyId: The ID of the key used to sign the blob.
-    signedBlob: The signed blob.
+    signedBlob: The signature for the blob. Does not include the original
+      blob.
   """
 
   keyId = _messages.StringField(1)
@@ -203,8 +204,11 @@ class SignJwtRequest(_messages.Message):
       `projects/-/serviceAccounts/{ACCOUNT_EMAIL_OR_UNIQUEID}`. The `-`
       wildcard character is required; replacing it with a project ID is
       invalid.
-    payload: Required. The JWT payload to sign: a JSON object that contains a
-      JWT Claims Set.
+    payload: Required. The JWT payload to sign. Must be a serialized JSON
+      object that contains a JWT Claim Set. For example: `{"sub":
+      "user@example.com", "iat": 313435}`  If the claim set contains an `exp`
+      claim, it must be an integer timestamp that is not in the past and at
+      most 12 hours in the future.
   """
 
   delegates = _messages.StringField(1, repeated=True)
@@ -216,7 +220,9 @@ class SignJwtResponse(_messages.Message):
 
   Fields:
     keyId: The ID of the key used to sign the JWT.
-    signedJwt: The signed JWT.
+    signedJwt: The signed JWT. Contains the automatically generated header;
+      the client-supplied payload; and the signature, which is generated using
+      the key referenced by the `kid` field in the header.
   """
 
   keyId = _messages.StringField(1)

@@ -144,7 +144,8 @@ class CloudassetIamPoliciesSearchAllRequest(_messages.Message):
     scope: Required. The relative name of an asset. The search is limited to
       the resources within the `scope`. The allowed value must be: *
       Organization number (such as "organizations/123") * Folder number(such
-      as "folders/1234") * Project number (such as "projects/12345")
+      as "folders/1234") * Project number (such as "projects/12345") * Project
+      id (such as "projects/abc")
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -171,7 +172,8 @@ class CloudassetIamPoliciesSearchRequest(_messages.Message):
     scope: Required. The relative name of an asset. The search is limited to
       the resources within the `scope`. The allowed value must be: *
       Organization number (such as "organizations/123") * Folder number(such
-      as "folders/1234") * Project number (such as "projects/12345")
+      as "folders/1234") * Project number (such as "projects/12345") * Project
+      id (such as "projects/abc")
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -186,6 +188,10 @@ class CloudassetResourcesSearchAllRequest(_messages.Message):
   Fields:
     assetTypes: Optional. A list of asset types that this request searches
       for. If empty, it will search all the supported asset types.
+    orderBy: Optional. A comma separated list of fields specifying the sorting
+      order of the results. The default order is ascending. Add " desc" after
+      the field name to indicate descending order. Redundant space characters
+      are ignored. For example, "  foo ,  bar  desc  ".
     pageSize: Optional. The page size for search result pagination. Page size
       is capped at 500 even if a larger value is given. If set to zero, server
       will pick an appropriate default. Returned results may be fewer than
@@ -199,14 +205,16 @@ class CloudassetResourcesSearchAllRequest(_messages.Message):
     scope: Required. The relative name of an asset. The search is limited to
       the resources within the `scope`. The allowed value must be: *
       Organization number (such as "organizations/123") * Folder number(such
-      as "folders/1234") * Project number (such as "projects/12345")
+      as "folders/1234") * Project number (such as "projects/12345") * Project
+      id (such as "projects/abc")
   """
 
   assetTypes = _messages.StringField(1, repeated=True)
-  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(3)
-  query = _messages.StringField(4)
-  scope = _messages.StringField(5, required=True)
+  orderBy = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  query = _messages.StringField(5)
+  scope = _messages.StringField(6, required=True)
 
 
 class CloudassetResourcesSearchRequest(_messages.Message):
@@ -215,6 +223,10 @@ class CloudassetResourcesSearchRequest(_messages.Message):
   Fields:
     assetTypes: Optional. A list of asset types that this request searches
       for. If empty, it will search all the supported asset types.
+    orderBy: Optional. A comma separated list of fields specifying the sorting
+      order of the results. The default order is ascending. Add " desc" after
+      the field name to indicate descending order. Redundant space characters
+      are ignored. For example, "  foo ,  bar  desc  ".
     pageSize: Optional. The page size for search result pagination. Page size
       is capped at 500 even if a larger value is given. If set to zero, server
       will pick an appropriate default. Returned results may be fewer than
@@ -228,14 +240,69 @@ class CloudassetResourcesSearchRequest(_messages.Message):
     scope: Required. The relative name of an asset. The search is limited to
       the resources within the `scope`. The allowed value must be: *
       Organization number (such as "organizations/123") * Folder number(such
-      as "folders/1234") * Project number (such as "projects/12345")
+      as "folders/1234") * Project number (such as "projects/12345") * Project
+      id (such as "projects/abc")
   """
 
   assetTypes = _messages.StringField(1, repeated=True)
-  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(3)
-  query = _messages.StringField(4)
-  scope = _messages.StringField(5)
+  orderBy = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  query = _messages.StringField(5)
+  scope = _messages.StringField(6)
+
+
+class Explanation(_messages.Message):
+  r"""Explanation about the IAM policy search result.
+
+  Messages:
+    MatchedPermissionsValue: The map from roles to their included permission
+      matching the permission query (e.g. containing
+      `policy.role.permissions:`). A sample role string:
+      "roles/compute.instanceAdmin". The roles can also be found in the
+      returned `policy` bindings. Note that the map is populated only if
+      requesting with a permission query.
+
+  Fields:
+    matchedPermissions: The map from roles to their included permission
+      matching the permission query (e.g. containing
+      `policy.role.permissions:`). A sample role string:
+      "roles/compute.instanceAdmin". The roles can also be found in the
+      returned `policy` bindings. Note that the map is populated only if
+      requesting with a permission query.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class MatchedPermissionsValue(_messages.Message):
+    r"""The map from roles to their included permission matching the
+    permission query (e.g. containing `policy.role.permissions:`). A sample
+    role string: "roles/compute.instanceAdmin". The roles can also be found in
+    the returned `policy` bindings. Note that the map is populated only if
+    requesting with a permission query.
+
+    Messages:
+      AdditionalProperty: An additional property for a MatchedPermissionsValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type
+        MatchedPermissionsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a MatchedPermissionsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A Permissions attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('Permissions', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  matchedPermissions = _messages.MessageField('MatchedPermissionsValue', 1)
 
 
 class Expr(_messages.Message):
@@ -278,9 +345,14 @@ class IamPolicySearchResult(_messages.Message):
   r"""The result for a IAM Policy search.
 
   Fields:
-    policy: Representation of the actual Cloud IAM policy set on a cloud
-      resource. For each resource, there must be at most one Cloud IAM policy
-      set on it.
+    explanation: Explanation about the IAM policy search result. It contains
+      additional information to explain why the search result matches the
+      query.
+    policy: The IAM policy directly set on the given resource. Note that the
+      original IAM policy can contain multiple bindings. This only contains
+      the bindings that match the given query. For queries that don't contain
+      a constrain on policies (e.g. an empty query), this contains all the
+      bindings.
     project: The project that the associated GCP resource belongs to, in the
       form of `projects/{project_number}`. If an IAM policy is set on a
       resource (like VM instance, Cloud Storage bucket), the project field
@@ -291,9 +363,21 @@ class IamPolicySearchResult(_messages.Message):
       IAM policy.
   """
 
-  policy = _messages.MessageField('Policy', 1)
-  project = _messages.StringField(2)
-  resource = _messages.StringField(3)
+  explanation = _messages.MessageField('Explanation', 1)
+  policy = _messages.MessageField('Policy', 2)
+  project = _messages.StringField(3)
+  resource = _messages.StringField(4)
+
+
+class Permissions(_messages.Message):
+  r"""IAM permissions
+
+  Fields:
+    permissions: A list of permissions. A sample permission string:
+      "compute.disk.get".
+  """
+
+  permissions = _messages.StringField(1, repeated=True)
 
 
 class Policy(_messages.Message):
@@ -494,6 +578,9 @@ class StandardQueryParameters(_messages.Message):
 class StandardResourceMetadata(_messages.Message):
   r"""The standard metadata of a cloud resource.
 
+  Messages:
+    LabelsValue: Labels associated with this resource.
+
   Fields:
     additionalAttributes: Additional searchable attributes of this resource.
       Informational only. The exact set of attributes is subject to change.
@@ -503,20 +590,55 @@ class StandardResourceMetadata(_messages.Message):
     description: One or more paragraphs of text description of this resource.
       Maximum length could be up to 1M bytes.
     displayName: The display name of this resource.
+    labels: Labels associated with this resource.
+    location: Location can be "global", regional like "us-east1", or zonal
+      like "us-west1-b".
     name: The full resource name. For example: `//compute.googleapis.com/proje
       cts/my_project_123/zones/zone1/instances/instance1`. See [Resource Names
       ](https://cloud.google.com/apis/design/resource_names#full_resource_name
       ) for more information.
+    networkTags: Network tags associated with this resource. Like labels,
+      network tags are a type of annotations used to group GCP resources. See
+      [Labelling GCP resources](lhttps://cloud.google.com/blog/products/gcp
+      /labelling-and-grouping-your-google-cloud-platform-resources) for more
+      information.
     project: The project that this resource belongs to, in the form of
       `projects/{project_number}`.
   """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Labels associated with this resource.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   additionalAttributes = _messages.StringField(1, repeated=True)
   assetType = _messages.StringField(2)
   description = _messages.StringField(3)
   displayName = _messages.StringField(4)
-  name = _messages.StringField(5)
-  project = _messages.StringField(6)
+  labels = _messages.MessageField('LabelsValue', 5)
+  location = _messages.StringField(6)
+  name = _messages.StringField(7)
+  networkTags = _messages.StringField(8, repeated=True)
+  project = _messages.StringField(9)
 
 
 encoding.AddCustomJsonFieldMapping(

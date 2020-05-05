@@ -399,6 +399,10 @@
         "enableGvnic": {
           "description": "Enable or disable gvnic on this cluster. This field is not yet used.",
           "type": "boolean"
+        },
+        "exposeMasterSignalsConfig": {
+          "description": "Configuration used to enable sending selected master logs and metrics to\ncustomer project.",
+          "$ref": "ExposeMasterSignalsConfig"
         }
       }
     },
@@ -506,6 +510,14 @@
         "shieldedInstanceConfig": {
           "description": "Shielded Instance options.",
           "$ref": "ShieldedInstanceConfig"
+        },
+        "linuxNodeConfig": {
+          "description": "Parameters that can be configured on Linux nodes.",
+          "$ref": "LinuxNodeConfig"
+        },
+        "kubeletConfig": {
+          "description": "Node kubelet configs.",
+          "$ref": "NodeKubeletConfig"
         }
       }
     },
@@ -640,7 +652,7 @@
     },
     "NodeTaint": {
       "id": "NodeTaint",
-      "description": "Kubernetes taint is comprised of three fields: key, value, and effect. Effect\ncan only be one of three types:  NoSchedule, PreferNoSchedule or NoExecute.\n\nFor more information, including usage and the valid values, see:\nhttps:\/\/kubernetes.io\/docs\/concepts\/configuration\/taint-and-toleration\/",
+      "description": "Kubernetes taint is comprised of three fields: key, value, and effect. Effect\ncan only be one of three types:  NoSchedule, PreferNoSchedule or NoExecute.\n\nSee\n[here](https:\/\/kubernetes.io\/docs\/concepts\/configuration\/taint-and-toleration)\nfor more information, including usage and the valid values.",
       "type": "object",
       "properties": {
         "key": {
@@ -681,6 +693,39 @@
         "enableIntegrityMonitoring": {
           "description": "Defines whether the instance has integrity monitoring enabled.\n\nEnables monitoring and attestation of the boot integrity of the instance.\nThe attestation is performed against the integrity policy baseline. This\nbaseline is initially derived from the implicitly trusted boot image when\nthe instance is created.",
           "type": "boolean"
+        }
+      }
+    },
+    "LinuxNodeConfig": {
+      "id": "LinuxNodeConfig",
+      "description": "Parameters that can be configured on Linux nodes.",
+      "type": "object",
+      "properties": {
+        "sysctls": {
+          "description": "The Linux kernel parameters to be applied to the nodes and all pods running\non the nodes.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "NodeKubeletConfig": {
+      "id": "NodeKubeletConfig",
+      "description": "Node kubelet configs.",
+      "type": "object",
+      "properties": {
+        "cpuManagerPolicy": {
+          "description": "Control the CPU management policy on the node.\nSee\nhttps:\/\/kubernetes.io\/docs\/tasks\/administer-cluster\/cpu-management-policies\/\n\nThe following values are allowed.\n  - \"none\": the default, which represents the existing scheduling behavior.\n  - \"static\": allows pods with certain resource characteristics to be\n              granted increased CPU affinity and exclusivity on the node.",
+          "type": "string"
+        },
+        "cpuCfsQuota": {
+          "description": "Enable CPU CFS quota enforcement for containers that specify CPU limits.\n\nIf this option is enabled, kubelet uses CFS quota\n(https:\/\/www.kernel.org\/doc\/Documentation\/scheduler\/sched-bwc.txt) to\nenforce container CPU limits. Otherwise, CPU limits will not be enforced at\nall.\n\nDisable this option to mitigate CPU throttling problems while still having\nyour pods to be in Guaranteed QoS class by specifying the CPU limits.\n\nThe default value is 'true' if unspecified.",
+          "type": "boolean"
+        },
+        "cpuCfsQuotaPeriod": {
+          "description": "Set the CPU CFS quota period value 'cpu.cfs_period_us'.\n\nThe string must be a sequence of decimal numbers, each with optional\nfraction and a unit suffix, such as \"300ms\".\nValid time units are \"ns\", \"us\" (or \"\u00B5s\"), \"ms\", \"s\", \"m\", \"h\".\nThe value must be a positive duration.",
+          "type": "string"
         }
       }
     },
@@ -1703,6 +1748,38 @@
         }
       }
     },
+    "ExposeMasterSignalsConfig": {
+      "id": "ExposeMasterSignalsConfig",
+      "description": "ExposeMasterSignalsConfig is the configuration for exposing selected master\nlogs and metrics to customer",
+      "type": "object",
+      "properties": {
+        "enableMetrics": {
+          "description": "Enable sendings metrics to customer",
+          "type": "boolean"
+        },
+        "enableComponentLogs": {
+          "description": "Select components to expose logs",
+          "enumDescriptions": [
+            "Not set, will be ignored",
+            "kube-apiserver",
+            "kube-scheduler",
+            "kube-controller-manager",
+            "kube-addon-manager"
+          ],
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": [
+              "COMPONENT_UNSPECIFIED",
+              "APISERVER",
+              "SCHEDULER",
+              "CONTROLLER_MANAGER",
+              "ADDON_MANAGER"
+            ]
+          }
+        }
+      }
+    },
     "CreateClusterRequest": {
       "id": "CreateClusterRequest",
       "description": "CreateClusterRequest creates a cluster.",
@@ -2153,6 +2230,14 @@
         "upgradeSettings": {
           "description": "Upgrade settings control disruption and speed of the upgrade.",
           "$ref": "UpgradeSettings"
+        },
+        "linuxNodeConfig": {
+          "description": "Parameters that can be configured on Linux nodes.",
+          "$ref": "LinuxNodeConfig"
+        },
+        "kubeletConfig": {
+          "description": "Node kubelet configs.",
+          "$ref": "NodeKubeletConfig"
         }
       }
     },

@@ -53,8 +53,9 @@ class ConfigChanger(six.with_metaclass(abc.ABCMeta, object)):
 class LabelChanges(ConfigChanger):
   """Represents the user intent to modify metadata labels."""
 
-  def __init__(self, diff):
+  def __init__(self, diff, copy_to_revision=True):
     self._diff = diff
+    self._copy_to_revision = copy_to_revision
 
   def Adjust(self, resource):
     # Currently assumes all "system"-owned labels are applied by the control
@@ -65,13 +66,14 @@ class LabelChanges(ConfigChanger):
     maybe_new_labels = update_result.GetOrNone()
     if maybe_new_labels:
       resource.metadata.labels = maybe_new_labels
-      # Service labels are the source of truth and *overwrite* revision labels.
-      # See run-labels-prd for deets.
-      # However, we need to preserve the nonce if there is one.
-      nonce = resource.template.labels.get(revision.NONCE_LABEL)
-      resource.template.metadata.labels = copy.deepcopy(maybe_new_labels)
-      if nonce:
-        resource.template.labels[revision.NONCE_LABEL] = nonce
+      if self._copy_to_revision:
+        # Service labels are the source of truth and *overwrite* revision labels
+        # See go/run-labels-prd for deets.
+        # However, we need to preserve the nonce if there is one.
+        nonce = resource.template.labels.get(revision.NONCE_LABEL)
+        resource.template.metadata.labels = copy.deepcopy(maybe_new_labels)
+        if nonce:
+          resource.template.labels[revision.NONCE_LABEL] = nonce
     return resource
 
 
@@ -117,7 +119,9 @@ class EndpointVisibilityChange(LabelChanges):
           additions={service.ENDPOINT_VISIBILITY: service.CLUSTER_LOCAL})
     else:
       diff = labels_util.Diff(subtractions=[service.ENDPOINT_VISIBILITY])
-    super(EndpointVisibilityChange, self).__init__(diff)
+    # Don't copy this label to the revision because it's not supported there.
+    # See b/154664962.
+    super(EndpointVisibilityChange, self).__init__(diff, False)
 
 
 class SetTemplateAnnotationChange(ConfigChanger):

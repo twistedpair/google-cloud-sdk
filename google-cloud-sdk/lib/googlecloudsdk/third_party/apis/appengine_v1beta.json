@@ -261,6 +261,22 @@
           "description": "The Google Container Registry domain used for storing managed build docker images for this application.",
           "type": "string"
         },
+        "databaseType": {
+          "description": "The type of the Cloud Firestore or Cloud Datastore database associated with this application.",
+          "enumDescriptions": [
+            "Database type is unspecified.",
+            "Cloud Datastore",
+            "Cloud Firestore Native",
+            "Cloud Firestore in Datastore Mode"
+          ],
+          "type": "string",
+          "enum": [
+            "DATABASE_TYPE_UNSPECIFIED",
+            "CLOUD_DATASTORE",
+            "CLOUD_FIRESTORE",
+            "CLOUD_DATASTORE_COMPATIBILITY"
+          ]
+        },
         "featureSettings": {
           "description": "The feature specific settings to be used in the application.",
           "$ref": "FeatureSettings"

@@ -17,6 +17,7 @@
   "documentationLink": "https://cloud.google.com/asset-inventory/docs/quickstart",
   "protocol": "rest",
   "rootUrl": "https://cloudasset.googleapis.com/",
+  "mtlsRootUrl": "https://cloudasset.mtls.googleapis.com/",
   "servicePath": "",
   "baseUrl": "https://cloudasset.googleapis.com/",
   "batchPath": "batch",
@@ -158,6 +159,24 @@
           "items": {
             "type": "string"
           }
+        },
+        "location": {
+          "description": "Location can be \"global\", regional like \"us-east1\", or zonal like\n\"us-west1-b\".",
+          "type": "string"
+        },
+        "labels": {
+          "description": "Labels associated with this resource.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "networkTags": {
+          "description": "Network tags associated with this resource. Like labels, network tags are a\ntype of annotations used to group GCP resources. See [Labelling GCP\nresources](lhttps:\/\/cloud.google.com\/blog\/products\/gcp\/labelling-and-grouping-your-google-cloud-platform-resources)\nfor more information.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
         }
       }
     },
@@ -193,8 +212,12 @@
           "type": "string"
         },
         "policy": {
-          "description": "Representation of the actual Cloud IAM policy set on a cloud resource. For\neach resource, there must be at most one Cloud IAM policy set on it.",
+          "description": "The IAM policy directly set on the given resource. Note that the original\nIAM policy can contain multiple bindings. This only contains the bindings\nthat match the given query. For queries that don't contain a constrain on\npolicies (e.g. an empty query), this contains all the bindings.",
           "$ref": "Policy"
+        },
+        "explanation": {
+          "description": "Explanation about the IAM policy search result. It contains additional\ninformation to explain why the search result matches the query.",
+          "$ref": "Explanation"
         }
       }
     },
@@ -322,6 +345,34 @@
         }
       }
     },
+    "Explanation": {
+      "id": "Explanation",
+      "description": "Explanation about the IAM policy search result.",
+      "type": "object",
+      "properties": {
+        "matchedPermissions": {
+          "description": "The map from roles to their included permission matching the permission\nquery (e.g. containing `policy.role.permissions:`). A sample role string:\n\"roles\/compute.instanceAdmin\". The roles can also be found in the\nreturned `policy` bindings. Note that the map is populated only if\nrequesting with a permission query.",
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "Permissions"
+          }
+        }
+      }
+    },
+    "Permissions": {
+      "id": "Permissions",
+      "description": "IAM permissions",
+      "type": "object",
+      "properties": {
+        "permissions": {
+          "description": "A list of permissions. A sample permission string: \"compute.disk.get\".",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
     "SearchAllResourcesResponse": {
       "id": "SearchAllResourcesResponse",
       "description": "Search all resources response.",
@@ -369,7 +420,7 @@
           "httpMethod": "GET",
           "parameters": {
             "scope": {
-              "description": "Required. The relative name of an asset. The search is limited to the resources\nwithin the `scope`. The allowed value must be:\n* Organization number (such as \"organizations\/123\")\n* Folder number(such as \"folders\/1234\")\n* Project number (such as \"projects\/12345\")",
+              "description": "Required. The relative name of an asset. The search is limited to the resources\nwithin the `scope`. The allowed value must be:\n* Organization number (such as \"organizations\/123\")\n* Folder number(such as \"folders\/1234\")\n* Project number (such as \"projects\/12345\")\n* Project id (such as \"projects\/abc\")",
               "location": "query",
               "type": "string"
             },
@@ -394,6 +445,11 @@
               "description": "Optional. If present, then retrieve the next batch of results from the preceding call\nto this method. `page_token` must be the value of `next_page_token` from\nthe previous response. The values of all other method parameters, must be\nidentical to those in the previous call.",
               "location": "query",
               "type": "string"
+            },
+            "orderBy": {
+              "description": "Optional. A comma separated list of fields specifying the sorting order of the\nresults. The default order is ascending. Add \" desc\" after the field name\nto indicate descending order. Redundant space characters are ignored. For\nexample, \"  foo ,  bar  desc  \".",
+              "location": "query",
+              "type": "string"
             }
           },
           "parameterOrder": [
@@ -413,7 +469,7 @@
           "httpMethod": "GET",
           "parameters": {
             "scope": {
-              "description": "Required. The relative name of an asset. The search is limited to the resources\nwithin the `scope`. The allowed value must be:\n* Organization number (such as \"organizations\/123\")\n* Folder number(such as \"folders\/1234\")\n* Project number (such as \"projects\/12345\")",
+              "description": "Required. The relative name of an asset. The search is limited to the resources\nwithin the `scope`. The allowed value must be:\n* Organization number (such as \"organizations\/123\")\n* Folder number(such as \"folders\/1234\")\n* Project number (such as \"projects\/12345\")\n* Project id (such as \"projects\/abc\")",
               "location": "path",
               "required": true,
               "pattern": "^[^\/]+\/[^\/]+$",
@@ -440,6 +496,11 @@
               "description": "Optional. If present, then retrieve the next batch of results from the preceding call\nto this method.  `page_token` must be the value of `next_page_token` from\nthe previous response. The values of all other method parameters, must be\nidentical to those in the previous call.",
               "location": "query",
               "type": "string"
+            },
+            "orderBy": {
+              "description": "Optional. A comma separated list of fields specifying the sorting order of the\nresults. The default order is ascending. Add \" desc\" after the field name\nto indicate descending order. Redundant space characters are ignored. For\nexample, \"  foo ,  bar  desc  \".",
+              "location": "query",
+              "type": "string"
             }
           },
           "parameterOrder": [
@@ -464,7 +525,7 @@
           "httpMethod": "GET",
           "parameters": {
             "scope": {
-              "description": "Required. The relative name of an asset. The search is limited to the resources\nwithin the `scope`. The allowed value must be:\n* Organization number (such as \"organizations\/123\")\n* Folder number(such as \"folders\/1234\")\n* Project number (such as \"projects\/12345\")",
+              "description": "Required. The relative name of an asset. The search is limited to the resources\nwithin the `scope`. The allowed value must be:\n* Organization number (such as \"organizations\/123\")\n* Folder number(such as \"folders\/1234\")\n* Project number (such as \"projects\/12345\")\n* Project id (such as \"projects\/abc\")",
               "location": "query",
               "type": "string"
             },
@@ -502,7 +563,7 @@
           "httpMethod": "GET",
           "parameters": {
             "scope": {
-              "description": "Required. The relative name of an asset. The search is limited to the resources\nwithin the `scope`. The allowed value must be:\n* Organization number (such as \"organizations\/123\")\n* Folder number(such as \"folders\/1234\")\n* Project number (such as \"projects\/12345\")",
+              "description": "Required. The relative name of an asset. The search is limited to the resources\nwithin the `scope`. The allowed value must be:\n* Organization number (such as \"organizations\/123\")\n* Folder number(such as \"folders\/1234\")\n* Project number (such as \"projects\/12345\")\n* Project id (such as \"projects\/abc\")",
               "location": "path",
               "required": true,
               "pattern": "^[^\/]+\/[^\/]+$",

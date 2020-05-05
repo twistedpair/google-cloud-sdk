@@ -1901,7 +1901,7 @@
           }
         },
         "boost": {
-          "description": "Optional. Boost for this context compared to other contexts:\n* If the boost is positive, Dialogflow will increase the probability that\n  the phrases in this context are recognized over similar sounding phrases.\n* If the boost is unspecified or non-positive, Dialogflow will not apply\n  any boost.\n\nDialogflow recommends that you use boosts in the range (0, 20] and that you\nfind a value that fits your use case with binary search.",
+          "description": "Optional. Boost for this context compared to other contexts:\n\n* If the boost is positive, Dialogflow will increase the probability that\n  the phrases in this context are recognized over similar sounding phrases.\n* If the boost is unspecified or non-positive, Dialogflow will not apply\n  any boost.\n\nDialogflow recommends that you use boosts in the range (0, 20] and that you\nfind a value that fits your use case with binary search.",
           "type": "number",
           "format": "float"
         }
@@ -2177,6 +2177,64 @@
           "description": "A non-negative number in the [0, +inf) range, which represents the absolute\nmagnitude of sentiment, regardless of score (positive or negative).",
           "type": "number",
           "format": "float"
+        }
+      }
+    },
+    "GoogleCloudDialogflowV2ListEnvironmentsResponse": {
+      "id": "GoogleCloudDialogflowV2ListEnvironmentsResponse",
+      "description": "The response message for Environments.ListEnvironments.",
+      "type": "object",
+      "properties": {
+        "environments": {
+          "description": "The list of agent environments. There will be a maximum number of items\nreturned based on the page_size field in the request.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudDialogflowV2Environment"
+          }
+        },
+        "nextPageToken": {
+          "description": "Token to retrieve the next page of results, or empty if there are no\nmore results in the list.",
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudDialogflowV2Environment": {
+      "id": "GoogleCloudDialogflowV2Environment",
+      "description": "Represents an agent environment.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Output only. The unique identifier of this agent environment.\nFormat: `projects\/<Project ID>\/agent\/environments\/<Environment ID>`.\nFor Environment ID, \"-\" is reserved for 'draft' environment.",
+          "type": "string"
+        },
+        "description": {
+          "description": "Optional. The developer-provided description for this environment.\nThe maximum length is 500 characters. If exceeded, the request is rejected.",
+          "type": "string"
+        },
+        "agentVersion": {
+          "description": "Optional. The agent version loaded into this environment.\nFormat: `projects\/<Project ID>\/agent\/versions\/<Version ID>`.",
+          "type": "string"
+        },
+        "state": {
+          "description": "Output only. The state of this environment. This field is read-only, i.e., it cannot be\nset by create and update methods.",
+          "enumDescriptions": [
+            "Not specified. This value is not used.",
+            "Stopped.",
+            "Loading.",
+            "Running."
+          ],
+          "type": "string",
+          "enum": [
+            "STATE_UNSPECIFIED",
+            "STOPPED",
+            "LOADING",
+            "RUNNING"
+          ]
+        },
+        "updateTime": {
+          "description": "Output only. The last update time of this environment. This field is read-only, i.e., it\ncannot be set by create and update methods.",
+          "type": "string",
+          "format": "google-datetime"
         }
       }
     },
@@ -2479,22 +2537,22 @@
       "type": "object",
       "properties": {
         "fulfillmentText": {
-          "description": "Optional. The text to be shown on the screen. This value is passed directly\nto `QueryResult.fulfillment_text`.",
+          "description": "Optional. The text response message intended for the end-user.\nIt is recommended to use `fulfillment_messages.text.text[0]` instead.\nWhen provided, Dialogflow uses this field to populate\nQueryResult.fulfillment_text sent to the integration or API caller.",
           "type": "string"
         },
         "fulfillmentMessages": {
-          "description": "Optional. The collection of rich messages to present to the user. This\nvalue is passed directly to `QueryResult.fulfillment_messages`.",
+          "description": "Optional. The rich response messages intended for the end-user.\nWhen provided, Dialogflow uses this field to populate\nQueryResult.fulfillment_messages sent to the integration or API caller.",
           "type": "array",
           "items": {
             "$ref": "GoogleCloudDialogflowV2IntentMessage"
           }
         },
         "source": {
-          "description": "Optional. This value is passed directly to `QueryResult.webhook_source`.",
+          "description": "Optional. A custom field used to identify the webhook source.\nArbitrary strings are supported.\nWhen provided, Dialogflow uses this field to populate\nQueryResult.webhook_source sent to the integration or API caller.",
           "type": "string"
         },
         "payload": {
-          "description": "Optional. This field can be used to pass custom data from your webhook to the API\ncaller. Arbitrary JSON objects are supported.\nWhen provided, Dialogflow uses this field to populate\n`QueryResult.webhook_payload` sent to the API caller.\nThis field is also used by the\n[Google Assistant\nintegration](https:\/\/cloud.google.com\/dialogflow\/docs\/integrations\/aog)\nfor rich response messages.\nSee the format definition at [Google Assistant Dialogflow webhook\nformat](https:\/\/developers.google.com\/assistant\/actions\/build\/json\/dialogflow-webhook-json)",
+          "description": "Optional. This field can be used to pass custom data from your webhook to the\nintegration or API caller. Arbitrary JSON objects are supported.\nWhen provided, Dialogflow uses this field to populate\nQueryResult.webhook_payload sent to the integration or API caller.\nThis field is also used by the\n[Google Assistant\nintegration](https:\/\/cloud.google.com\/dialogflow\/docs\/integrations\/aog)\nfor rich response messages.\nSee the format definition at [Google Assistant Dialogflow webhook\nformat](https:\/\/developers.google.com\/assistant\/actions\/build\/json\/dialogflow-webhook-json)",
           "type": "object",
           "additionalProperties": {
             "type": "any",
@@ -2502,18 +2560,18 @@
           }
         },
         "outputContexts": {
-          "description": "Optional. The collection of output contexts. This value is passed directly\nto `QueryResult.output_contexts`.",
+          "description": "Optional. The collection of output contexts that will overwrite currently\nactive contexts for the session and reset their lifespans.\nWhen provided, Dialogflow uses this field to populate\nQueryResult.output_contexts sent to the integration or API caller.",
           "type": "array",
           "items": {
             "$ref": "GoogleCloudDialogflowV2Context"
           }
         },
         "followupEventInput": {
-          "description": "Optional. Makes the platform immediately invoke another `DetectIntent` call\ninternally with the specified event as input.\nWhen this field is set, Dialogflow ignores the `fulfillment_text`,\n`fulfillment_messages`, and `payload` fields.",
+          "description": "Optional. Invokes the supplied events.\nWhen this field is set, Dialogflow ignores the `fulfillment_text`,\n`fulfillment_messages`, and `payload` fields.",
           "$ref": "GoogleCloudDialogflowV2EventInput"
         },
         "sessionEntityTypes": {
-          "description": "Optional. Additional session entity types to replace or extend developer\nentity types with. The entity synonyms apply to all languages and persist\nfor the session of this query. Setting the session entity types inside\nwebhook overwrites the session entity types that have been set through\n`DetectIntentRequest.query_params.session_entity_types`.",
+          "description": "Optional. Additional session entity types to replace or extend developer\nentity types with. The entity synonyms apply to all languages and persist\nfor the session. Setting this data from a webhook overwrites\nthe session entity types that have been set using `detectIntent`,\n`streamingDetectIntent` or SessionEntityType management methods.",
           "type": "array",
           "items": {
             "$ref": "GoogleCloudDialogflowV2SessionEntityType"
@@ -4117,22 +4175,22 @@
       "type": "object",
       "properties": {
         "fulfillmentText": {
-          "description": "Optional. The text to be shown on the screen. This value is passed directly\nto `QueryResult.fulfillment_text`.",
+          "description": "Optional. The text response message intended for the end-user.\nIt is recommended to use `fulfillment_messages.text.text[0]` instead.\nWhen provided, Dialogflow uses this field to populate\nQueryResult.fulfillment_text sent to the integration or API caller.",
           "type": "string"
         },
         "fulfillmentMessages": {
-          "description": "Optional. The collection of rich messages to present to the user. This\nvalue is passed directly to `QueryResult.fulfillment_messages`.",
+          "description": "Optional. The rich response messages intended for the end-user.\nWhen provided, Dialogflow uses this field to populate\nQueryResult.fulfillment_messages sent to the integration or API caller.",
           "type": "array",
           "items": {
             "$ref": "GoogleCloudDialogflowV2beta1IntentMessage"
           }
         },
         "source": {
-          "description": "Optional. This value is passed directly to `QueryResult.webhook_source`.",
+          "description": "Optional. A custom field used to identify the webhook source.\nArbitrary strings are supported.\nWhen provided, Dialogflow uses this field to populate\nQueryResult.webhook_source sent to the integration or API caller.",
           "type": "string"
         },
         "payload": {
-          "description": "Optional. This field can be used to pass custom data from your webhook to the API\ncaller. Arbitrary JSON objects are supported.\nWhen provided, Dialogflow uses this field to populate\n`QueryResult.webhook_payload` sent to the API caller.\nThis field is also used by the\n[Google Assistant\nintegration](https:\/\/cloud.google.com\/dialogflow\/docs\/integrations\/aog)\nfor rich response messages.\nSee the format definition at [Google Assistant Dialogflow webhook\nformat](https:\/\/developers.google.com\/assistant\/actions\/build\/json\/dialogflow-webhook-json)",
+          "description": "Optional. This field can be used to pass custom data from your webhook to the\nintegration or API caller. Arbitrary JSON objects are supported.\nWhen provided, Dialogflow uses this field to populate\nQueryResult.webhook_payload sent to the integration or API caller.\nThis field is also used by the\n[Google Assistant\nintegration](https:\/\/cloud.google.com\/dialogflow\/docs\/integrations\/aog)\nfor rich response messages.\nSee the format definition at [Google Assistant Dialogflow webhook\nformat](https:\/\/developers.google.com\/assistant\/actions\/build\/json\/dialogflow-webhook-json)",
           "type": "object",
           "additionalProperties": {
             "type": "any",
@@ -4140,14 +4198,14 @@
           }
         },
         "outputContexts": {
-          "description": "Optional. The collection of output contexts. This value is passed directly\nto `QueryResult.output_contexts`.",
+          "description": "Optional. The collection of output contexts that will overwrite currently\nactive contexts for the session and reset their lifespans.\nWhen provided, Dialogflow uses this field to populate\nQueryResult.output_contexts sent to the integration or API caller.",
           "type": "array",
           "items": {
             "$ref": "GoogleCloudDialogflowV2beta1Context"
           }
         },
         "followupEventInput": {
-          "description": "Optional. Makes the platform immediately invoke another `DetectIntent` call\ninternally with the specified event as input.\nWhen this field is set, Dialogflow ignores the `fulfillment_text`,\n`fulfillment_messages`, and `payload` fields.",
+          "description": "Optional. Invokes the supplied events.\nWhen this field is set, Dialogflow ignores the `fulfillment_text`,\n`fulfillment_messages`, and `payload` fields.",
           "$ref": "GoogleCloudDialogflowV2beta1EventInput"
         },
         "endInteraction": {
@@ -4155,7 +4213,7 @@
           "type": "boolean"
         },
         "sessionEntityTypes": {
-          "description": "Optional. Additional session entity types to replace or extend developer\nentity types with. The entity synonyms apply to all languages and persist\nfor the session of this query. Setting the session entity types inside\nwebhook overwrites the session entity types that have been set through\n`DetectIntentRequest.query_params.session_entity_types`.",
+          "description": "Optional. Additional session entity types to replace or extend developer\nentity types with. The entity synonyms apply to all languages and persist\nfor the session. Setting this data from a webhook overwrites\nthe session entity types that have been set using `detectIntent`,\n`streamingDetectIntent` or SessionEntityType management methods.",
           "type": "array",
           "items": {
             "$ref": "GoogleCloudDialogflowV2beta1SessionEntityType"
@@ -4264,6 +4322,22 @@
         "questionTypeName": {
           "description": "Output only. Question type name that identifies a labeling task.\nA question is a single task that a worker answers. A question type is set\nof related questions. Each question belongs to a particular question type.\nIt can be used in CrowdCompute UI to filter and manage labeling tasks.",
           "type": "string"
+        }
+      }
+    },
+    "GoogleCloudDialogflowV3alpha1ExportAgentResponse": {
+      "id": "GoogleCloudDialogflowV3alpha1ExportAgentResponse",
+      "description": "The response message for Agents.ExportAgent.",
+      "type": "object",
+      "properties": {
+        "agentUri": {
+          "description": "The URI to a file containing the exported agent. This field is populated\nonly if `agent_uri` is specified in ExportAgentRequest.",
+          "type": "string"
+        },
+        "agentContent": {
+          "description": "Uncompressed raw byte content for agent.",
+          "type": "string",
+          "format": "byte"
         }
       }
     }
@@ -4811,390 +4885,6 @@
           }
           ,
           "resources": {
-            "environments": {
-              "resources": {
-                "users": {
-                  "resources": {
-                    "sessions": {
-                      "methods": {
-                        "deleteContexts": {
-                          "id": "dialogflow.projects.agent.environments.users.sessions.deleteContexts",
-                          "path": "v2/{+parent}/contexts",
-                          "flatPath": "v2/projects/{projectsId}/agent/environments/{environmentsId}/users/{usersId}/sessions/{sessionsId}/contexts",
-                          "httpMethod": "DELETE",
-                          "parameters": {
-                            "parent": {
-                              "description": "Required. The name of the session to delete all contexts from. Format:\n`projects\/<Project ID>\/agent\/sessions\/<Session ID>` or `projects\/<Project\nID>\/agent\/environments\/<Environment ID>\/users\/<User ID>\/sessions\/<Session\nID>`.\nIf `Environment ID` is not specified we assume default 'draft' environment.\nIf `User ID` is not specified, we assume default '-' user.",
-                              "location": "path",
-                              "required": true,
-                              "pattern": "^projects\/[^\/]+\/agent\/environments\/[^\/]+\/users\/[^\/]+\/sessions\/[^\/]+$",
-                              "type": "string"
-                            }
-                          },
-                          "parameterOrder": [
-                            "parent"
-                          ],
-                          "response": {
-                            "$ref": "GoogleProtobufEmpty"
-                          },
-                          "scopes": [
-                            "https://www.googleapis.com/auth/cloud-platform",
-                            "https://www.googleapis.com/auth/dialogflow"
-                          ],
-                          "description": "Deletes all active contexts in the specified session."
-                        },
-                        "detectIntent": {
-                          "id": "dialogflow.projects.agent.environments.users.sessions.detectIntent",
-                          "path": "v2/{+session}:detectIntent",
-                          "flatPath": "v2/projects/{projectsId}/agent/environments/{environmentsId}/users/{usersId}/sessions/{sessionsId}:detectIntent",
-                          "httpMethod": "POST",
-                          "parameters": {
-                            "session": {
-                              "description": "Required. The name of the session this query is sent to. Format:\n`projects\/<Project ID>\/agent\/sessions\/<Session ID>`, or\n`projects\/<Project ID>\/agent\/environments\/<Environment ID>\/users\/<User\nID>\/sessions\/<Session ID>`. If `Environment ID` is not specified, we assume\ndefault 'draft' environment. If `User ID` is not specified, we are using\n\"-\". It's up to the API caller to choose an appropriate `Session ID` and\n`User Id`. They can be a random number or some type of user and session\nidentifiers (preferably hashed). The length of the `Session ID` and\n`User ID` must not exceed 36 characters.",
-                              "location": "path",
-                              "required": true,
-                              "pattern": "^projects\/[^\/]+\/agent\/environments\/[^\/]+\/users\/[^\/]+\/sessions\/[^\/]+$",
-                              "type": "string"
-                            }
-                          },
-                          "parameterOrder": [
-                            "session"
-                          ],
-                          "request": {
-                            "$ref": "GoogleCloudDialogflowV2DetectIntentRequest"
-                          },
-                          "response": {
-                            "$ref": "GoogleCloudDialogflowV2DetectIntentResponse"
-                          },
-                          "scopes": [
-                            "https://www.googleapis.com/auth/cloud-platform",
-                            "https://www.googleapis.com/auth/dialogflow"
-                          ],
-                          "description": "Processes a natural language query and returns structured, actionable data\nas a result. This method is not idempotent, because it may cause contexts\nand session entity types to be updated, which in turn might affect\nresults of future queries."
-                        }
-                      }
-                      ,
-                      "resources": {
-                        "contexts": {
-                          "methods": {
-                            "list": {
-                              "id": "dialogflow.projects.agent.environments.users.sessions.contexts.list",
-                              "path": "v2/{+parent}/contexts",
-                              "flatPath": "v2/projects/{projectsId}/agent/environments/{environmentsId}/users/{usersId}/sessions/{sessionsId}/contexts",
-                              "httpMethod": "GET",
-                              "parameters": {
-                                "parent": {
-                                  "description": "Required. The session to list all contexts from.\nFormat: `projects\/<Project ID>\/agent\/sessions\/<Session ID>` or\n`projects\/<Project ID>\/agent\/environments\/<Environment ID>\/users\/<User\nID>\/sessions\/<Session ID>`.\nIf `Environment ID` is not specified, we assume default 'draft'\nenvironment. If `User ID` is not specified, we assume default '-' user.",
-                                  "location": "path",
-                                  "required": true,
-                                  "pattern": "^projects\/[^\/]+\/agent\/environments\/[^\/]+\/users\/[^\/]+\/sessions\/[^\/]+$",
-                                  "type": "string"
-                                },
-                                "pageSize": {
-                                  "description": "Optional. The maximum number of items to return in a single page. By\ndefault 100 and at most 1000.",
-                                  "location": "query",
-                                  "type": "integer",
-                                  "format": "int32"
-                                },
-                                "pageToken": {
-                                  "description": "Optional. The next_page_token value returned from a previous list request.",
-                                  "location": "query",
-                                  "type": "string"
-                                }
-                              },
-                              "parameterOrder": [
-                                "parent"
-                              ],
-                              "response": {
-                                "$ref": "GoogleCloudDialogflowV2ListContextsResponse"
-                              },
-                              "scopes": [
-                                "https://www.googleapis.com/auth/cloud-platform",
-                                "https://www.googleapis.com/auth/dialogflow"
-                              ],
-                              "description": "Returns the list of all contexts in the specified session."
-                            },
-                            "get": {
-                              "id": "dialogflow.projects.agent.environments.users.sessions.contexts.get",
-                              "path": "v2/{+name}",
-                              "flatPath": "v2/projects/{projectsId}/agent/environments/{environmentsId}/users/{usersId}/sessions/{sessionsId}/contexts/{contextsId}",
-                              "httpMethod": "GET",
-                              "parameters": {
-                                "name": {
-                                  "description": "Required. The name of the context. Format:\n`projects\/<Project ID>\/agent\/sessions\/<Session ID>\/contexts\/<Context ID>`\nor `projects\/<Project ID>\/agent\/environments\/<Environment ID>\/users\/<User\nID>\/sessions\/<Session ID>\/contexts\/<Context ID>`.\nIf `Environment ID` is not specified, we assume default 'draft'\nenvironment. If `User ID` is not specified, we assume default '-' user.",
-                                  "location": "path",
-                                  "required": true,
-                                  "pattern": "^projects\/[^\/]+\/agent\/environments\/[^\/]+\/users\/[^\/]+\/sessions\/[^\/]+\/contexts\/[^\/]+$",
-                                  "type": "string"
-                                }
-                              },
-                              "parameterOrder": [
-                                "name"
-                              ],
-                              "response": {
-                                "$ref": "GoogleCloudDialogflowV2Context"
-                              },
-                              "scopes": [
-                                "https://www.googleapis.com/auth/cloud-platform",
-                                "https://www.googleapis.com/auth/dialogflow"
-                              ],
-                              "description": "Retrieves the specified context."
-                            },
-                            "create": {
-                              "id": "dialogflow.projects.agent.environments.users.sessions.contexts.create",
-                              "path": "v2/{+parent}/contexts",
-                              "flatPath": "v2/projects/{projectsId}/agent/environments/{environmentsId}/users/{usersId}/sessions/{sessionsId}/contexts",
-                              "httpMethod": "POST",
-                              "parameters": {
-                                "parent": {
-                                  "description": "Required. The session to create a context for.\nFormat: `projects\/<Project ID>\/agent\/sessions\/<Session ID>` or\n`projects\/<Project ID>\/agent\/environments\/<Environment ID>\/users\/<User\nID>\/sessions\/<Session ID>`.\nIf `Environment ID` is not specified, we assume default 'draft'\nenvironment. If `User ID` is not specified, we assume default '-' user.",
-                                  "location": "path",
-                                  "required": true,
-                                  "pattern": "^projects\/[^\/]+\/agent\/environments\/[^\/]+\/users\/[^\/]+\/sessions\/[^\/]+$",
-                                  "type": "string"
-                                }
-                              },
-                              "parameterOrder": [
-                                "parent"
-                              ],
-                              "request": {
-                                "$ref": "GoogleCloudDialogflowV2Context"
-                              },
-                              "response": {
-                                "$ref": "GoogleCloudDialogflowV2Context"
-                              },
-                              "scopes": [
-                                "https://www.googleapis.com/auth/cloud-platform",
-                                "https://www.googleapis.com/auth/dialogflow"
-                              ],
-                              "description": "Creates a context.\n\nIf the specified context already exists, overrides the context."
-                            },
-                            "patch": {
-                              "id": "dialogflow.projects.agent.environments.users.sessions.contexts.patch",
-                              "path": "v2/{+name}",
-                              "flatPath": "v2/projects/{projectsId}/agent/environments/{environmentsId}/users/{usersId}/sessions/{sessionsId}/contexts/{contextsId}",
-                              "httpMethod": "PATCH",
-                              "parameters": {
-                                "name": {
-                                  "description": "Required. The unique identifier of the context. Format:\n`projects\/<Project ID>\/agent\/sessions\/<Session ID>\/contexts\/<Context ID>`,\nor `projects\/<Project ID>\/agent\/environments\/<Environment ID>\/users\/<User\nID>\/sessions\/<Session ID>\/contexts\/<Context ID>`.\n\nThe `Context ID` is always converted to lowercase, may only contain\ncharacters in a-zA-Z0-9_-% and may be at most 250 bytes long.\n\nIf `Environment ID` is not specified, we assume default 'draft'\nenvironment. If `User ID` is not specified, we assume default '-' user.\n\nThe following context names are reserved for internal use by Dialogflow.\nYou should not use these contexts or create contexts with these names:\n\n* `__system_counters__`\n* `*_id_dialog_context`\n* `*_dialog_params_size`",
-                                  "location": "path",
-                                  "required": true,
-                                  "pattern": "^projects\/[^\/]+\/agent\/environments\/[^\/]+\/users\/[^\/]+\/sessions\/[^\/]+\/contexts\/[^\/]+$",
-                                  "type": "string"
-                                },
-                                "updateMask": {
-                                  "description": "Optional. The mask to control which fields get updated.",
-                                  "location": "query",
-                                  "type": "string",
-                                  "format": "google-fieldmask"
-                                }
-                              },
-                              "parameterOrder": [
-                                "name"
-                              ],
-                              "request": {
-                                "$ref": "GoogleCloudDialogflowV2Context"
-                              },
-                              "response": {
-                                "$ref": "GoogleCloudDialogflowV2Context"
-                              },
-                              "scopes": [
-                                "https://www.googleapis.com/auth/cloud-platform",
-                                "https://www.googleapis.com/auth/dialogflow"
-                              ],
-                              "description": "Updates the specified context."
-                            },
-                            "delete": {
-                              "id": "dialogflow.projects.agent.environments.users.sessions.contexts.delete",
-                              "path": "v2/{+name}",
-                              "flatPath": "v2/projects/{projectsId}/agent/environments/{environmentsId}/users/{usersId}/sessions/{sessionsId}/contexts/{contextsId}",
-                              "httpMethod": "DELETE",
-                              "parameters": {
-                                "name": {
-                                  "description": "Required. The name of the context to delete. Format:\n`projects\/<Project ID>\/agent\/sessions\/<Session ID>\/contexts\/<Context ID>`\nor `projects\/<Project ID>\/agent\/environments\/<Environment ID>\/users\/<User\nID>\/sessions\/<Session ID>\/contexts\/<Context ID>`.\nIf `Environment ID` is not specified, we assume default 'draft'\nenvironment. If `User ID` is not specified, we assume default '-' user.",
-                                  "location": "path",
-                                  "required": true,
-                                  "pattern": "^projects\/[^\/]+\/agent\/environments\/[^\/]+\/users\/[^\/]+\/sessions\/[^\/]+\/contexts\/[^\/]+$",
-                                  "type": "string"
-                                }
-                              },
-                              "parameterOrder": [
-                                "name"
-                              ],
-                              "response": {
-                                "$ref": "GoogleProtobufEmpty"
-                              },
-                              "scopes": [
-                                "https://www.googleapis.com/auth/cloud-platform",
-                                "https://www.googleapis.com/auth/dialogflow"
-                              ],
-                              "description": "Deletes the specified context."
-                            }
-                          }
-                        },
-                        "entityTypes": {
-                          "methods": {
-                            "list": {
-                              "id": "dialogflow.projects.agent.environments.users.sessions.entityTypes.list",
-                              "path": "v2/{+parent}/entityTypes",
-                              "flatPath": "v2/projects/{projectsId}/agent/environments/{environmentsId}/users/{usersId}/sessions/{sessionsId}/entityTypes",
-                              "httpMethod": "GET",
-                              "parameters": {
-                                "parent": {
-                                  "description": "Required. The session to list all session entity types from.\nFormat: `projects\/<Project ID>\/agent\/sessions\/<Session ID>` or\n`projects\/<Project ID>\/agent\/environments\/<Environment ID>\/users\/<User ID>\/\nsessions\/<Session ID>`.\nIf `Environment ID` is not specified, we assume default 'draft'\nenvironment. If `User ID` is not specified, we assume default '-' user.",
-                                  "location": "path",
-                                  "required": true,
-                                  "pattern": "^projects\/[^\/]+\/agent\/environments\/[^\/]+\/users\/[^\/]+\/sessions\/[^\/]+$",
-                                  "type": "string"
-                                },
-                                "pageSize": {
-                                  "description": "Optional. The maximum number of items to return in a single page. By\ndefault 100 and at most 1000.",
-                                  "location": "query",
-                                  "type": "integer",
-                                  "format": "int32"
-                                },
-                                "pageToken": {
-                                  "description": "Optional. The next_page_token value returned from a previous list request.",
-                                  "location": "query",
-                                  "type": "string"
-                                }
-                              },
-                              "parameterOrder": [
-                                "parent"
-                              ],
-                              "response": {
-                                "$ref": "GoogleCloudDialogflowV2ListSessionEntityTypesResponse"
-                              },
-                              "scopes": [
-                                "https://www.googleapis.com/auth/cloud-platform",
-                                "https://www.googleapis.com/auth/dialogflow"
-                              ],
-                              "description": "Returns the list of all session entity types in the specified session.\n\nThis method doesn't work with Google Assistant integration.\nContact Dialogflow support if you need to use session entities\nwith Google Assistant integration."
-                            },
-                            "get": {
-                              "id": "dialogflow.projects.agent.environments.users.sessions.entityTypes.get",
-                              "path": "v2/{+name}",
-                              "flatPath": "v2/projects/{projectsId}/agent/environments/{environmentsId}/users/{usersId}/sessions/{sessionsId}/entityTypes/{entityTypesId}",
-                              "httpMethod": "GET",
-                              "parameters": {
-                                "name": {
-                                  "description": "Required. The name of the session entity type. Format:\n`projects\/<Project ID>\/agent\/sessions\/<Session ID>\/entityTypes\/<Entity Type\nDisplay Name>` or `projects\/<Project ID>\/agent\/environments\/<Environment\nID>\/users\/<User ID>\/sessions\/<Session ID>\/entityTypes\/<Entity Type Display\nName>`.\nIf `Environment ID` is not specified, we assume default 'draft'\nenvironment. If `User ID` is not specified, we assume default '-' user.",
-                                  "location": "path",
-                                  "required": true,
-                                  "pattern": "^projects\/[^\/]+\/agent\/environments\/[^\/]+\/users\/[^\/]+\/sessions\/[^\/]+\/entityTypes\/[^\/]+$",
-                                  "type": "string"
-                                }
-                              },
-                              "parameterOrder": [
-                                "name"
-                              ],
-                              "response": {
-                                "$ref": "GoogleCloudDialogflowV2SessionEntityType"
-                              },
-                              "scopes": [
-                                "https://www.googleapis.com/auth/cloud-platform",
-                                "https://www.googleapis.com/auth/dialogflow"
-                              ],
-                              "description": "Retrieves the specified session entity type.\n\nThis method doesn't work with Google Assistant integration.\nContact Dialogflow support if you need to use session entities\nwith Google Assistant integration."
-                            },
-                            "create": {
-                              "id": "dialogflow.projects.agent.environments.users.sessions.entityTypes.create",
-                              "path": "v2/{+parent}/entityTypes",
-                              "flatPath": "v2/projects/{projectsId}/agent/environments/{environmentsId}/users/{usersId}/sessions/{sessionsId}/entityTypes",
-                              "httpMethod": "POST",
-                              "parameters": {
-                                "parent": {
-                                  "description": "Required. The session to create a session entity type for.\nFormat: `projects\/<Project ID>\/agent\/sessions\/<Session ID>` or\n`projects\/<Project ID>\/agent\/environments\/<Environment ID>\/users\/<User ID>\/\nsessions\/<Session ID>`.\nIf `Environment ID` is not specified, we assume default 'draft'\nenvironment. If `User ID` is not specified, we assume default '-' user.",
-                                  "location": "path",
-                                  "required": true,
-                                  "pattern": "^projects\/[^\/]+\/agent\/environments\/[^\/]+\/users\/[^\/]+\/sessions\/[^\/]+$",
-                                  "type": "string"
-                                }
-                              },
-                              "parameterOrder": [
-                                "parent"
-                              ],
-                              "request": {
-                                "$ref": "GoogleCloudDialogflowV2SessionEntityType"
-                              },
-                              "response": {
-                                "$ref": "GoogleCloudDialogflowV2SessionEntityType"
-                              },
-                              "scopes": [
-                                "https://www.googleapis.com/auth/cloud-platform",
-                                "https://www.googleapis.com/auth/dialogflow"
-                              ],
-                              "description": "Creates a session entity type.\n\nIf the specified session entity type already exists, overrides the session\nentity type.\n\nThis method doesn't work with Google Assistant integration.\nContact Dialogflow support if you need to use session entities\nwith Google Assistant integration."
-                            },
-                            "patch": {
-                              "id": "dialogflow.projects.agent.environments.users.sessions.entityTypes.patch",
-                              "path": "v2/{+name}",
-                              "flatPath": "v2/projects/{projectsId}/agent/environments/{environmentsId}/users/{usersId}/sessions/{sessionsId}/entityTypes/{entityTypesId}",
-                              "httpMethod": "PATCH",
-                              "parameters": {
-                                "name": {
-                                  "description": "Required. The unique identifier of this session entity type. Format:\n`projects\/<Project ID>\/agent\/sessions\/<Session ID>\/entityTypes\/<Entity Type\nDisplay Name>`, or `projects\/<Project ID>\/agent\/environments\/<Environment\nID>\/users\/<User ID>\/sessions\/<Session ID>\/entityTypes\/<Entity Type Display\nName>`.\nIf `Environment ID` is not specified, we assume default 'draft'\nenvironment. If `User ID` is not specified, we assume default '-' user.\n\n`<Entity Type Display Name>` must be the display name of an existing entity\ntype in the same agent that will be overridden or supplemented.",
-                                  "location": "path",
-                                  "required": true,
-                                  "pattern": "^projects\/[^\/]+\/agent\/environments\/[^\/]+\/users\/[^\/]+\/sessions\/[^\/]+\/entityTypes\/[^\/]+$",
-                                  "type": "string"
-                                },
-                                "updateMask": {
-                                  "description": "Optional. The mask to control which fields get updated.",
-                                  "location": "query",
-                                  "type": "string",
-                                  "format": "google-fieldmask"
-                                }
-                              },
-                              "parameterOrder": [
-                                "name"
-                              ],
-                              "request": {
-                                "$ref": "GoogleCloudDialogflowV2SessionEntityType"
-                              },
-                              "response": {
-                                "$ref": "GoogleCloudDialogflowV2SessionEntityType"
-                              },
-                              "scopes": [
-                                "https://www.googleapis.com/auth/cloud-platform",
-                                "https://www.googleapis.com/auth/dialogflow"
-                              ],
-                              "description": "Updates the specified session entity type.\n\nThis method doesn't work with Google Assistant integration.\nContact Dialogflow support if you need to use session entities\nwith Google Assistant integration."
-                            },
-                            "delete": {
-                              "id": "dialogflow.projects.agent.environments.users.sessions.entityTypes.delete",
-                              "path": "v2/{+name}",
-                              "flatPath": "v2/projects/{projectsId}/agent/environments/{environmentsId}/users/{usersId}/sessions/{sessionsId}/entityTypes/{entityTypesId}",
-                              "httpMethod": "DELETE",
-                              "parameters": {
-                                "name": {
-                                  "description": "Required. The name of the entity type to delete. Format:\n`projects\/<Project ID>\/agent\/sessions\/<Session ID>\/entityTypes\/<Entity Type\nDisplay Name>` or `projects\/<Project ID>\/agent\/environments\/<Environment\nID>\/users\/<User ID>\/sessions\/<Session ID>\/entityTypes\/<Entity Type Display\nName>`.\nIf `Environment ID` is not specified, we assume default 'draft'\nenvironment. If `User ID` is not specified, we assume default '-' user.",
-                                  "location": "path",
-                                  "required": true,
-                                  "pattern": "^projects\/[^\/]+\/agent\/environments\/[^\/]+\/users\/[^\/]+\/sessions\/[^\/]+\/entityTypes\/[^\/]+$",
-                                  "type": "string"
-                                }
-                              },
-                              "parameterOrder": [
-                                "name"
-                              ],
-                              "response": {
-                                "$ref": "GoogleProtobufEmpty"
-                              },
-                              "scopes": [
-                                "https://www.googleapis.com/auth/cloud-platform",
-                                "https://www.googleapis.com/auth/dialogflow"
-                              ],
-                              "description": "Deletes the specified session entity type.\n\nThis method doesn't work with Google Assistant integration.\nContact Dialogflow support if you need to use session entities\nwith Google Assistant integration."
-                            }
-                          }
-                        }
-                      }
-                    }
-                  }
-                }
-              }
-            },
             "sessions": {
               "methods": {
                 "deleteContexts": {
@@ -6166,6 +5856,430 @@
                         "https://www.googleapis.com/auth/dialogflow"
                       ],
                       "description": "Deletes entities in the specified entity type.\n\n\nOperation <response: google.protobuf.Empty>"
+                    }
+                  }
+                }
+              }
+            },
+            "environments": {
+              "methods": {
+                "list": {
+                  "id": "dialogflow.projects.agent.environments.list",
+                  "path": "v2/{+parent}/environments",
+                  "flatPath": "v2/projects/{projectsId}/agent/environments",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "parent": {
+                      "description": "Required. The agent to list all environments from.\nFormat: `projects\/<Project ID>\/agent`.",
+                      "location": "path",
+                      "required": true,
+                      "pattern": "^projects\/[^\/]+\/agent$",
+                      "type": "string"
+                    },
+                    "pageSize": {
+                      "description": "Optional. The maximum number of items to return in a single page. By default 100 and\nat most 1000.",
+                      "location": "query",
+                      "type": "integer",
+                      "format": "int32"
+                    },
+                    "pageToken": {
+                      "description": "Optional. The next_page_token value returned from a previous list request.",
+                      "location": "query",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "parent"
+                  ],
+                  "response": {
+                    "$ref": "GoogleCloudDialogflowV2ListEnvironmentsResponse"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform",
+                    "https://www.googleapis.com/auth/dialogflow"
+                  ],
+                  "description": "Returns the list of all non-draft environments of the specified agent."
+                }
+              }
+              ,
+              "resources": {
+                "users": {
+                  "resources": {
+                    "sessions": {
+                      "methods": {
+                        "deleteContexts": {
+                          "id": "dialogflow.projects.agent.environments.users.sessions.deleteContexts",
+                          "path": "v2/{+parent}/contexts",
+                          "flatPath": "v2/projects/{projectsId}/agent/environments/{environmentsId}/users/{usersId}/sessions/{sessionsId}/contexts",
+                          "httpMethod": "DELETE",
+                          "parameters": {
+                            "parent": {
+                              "description": "Required. The name of the session to delete all contexts from. Format:\n`projects\/<Project ID>\/agent\/sessions\/<Session ID>` or `projects\/<Project\nID>\/agent\/environments\/<Environment ID>\/users\/<User ID>\/sessions\/<Session\nID>`.\nIf `Environment ID` is not specified we assume default 'draft' environment.\nIf `User ID` is not specified, we assume default '-' user.",
+                              "location": "path",
+                              "required": true,
+                              "pattern": "^projects\/[^\/]+\/agent\/environments\/[^\/]+\/users\/[^\/]+\/sessions\/[^\/]+$",
+                              "type": "string"
+                            }
+                          },
+                          "parameterOrder": [
+                            "parent"
+                          ],
+                          "response": {
+                            "$ref": "GoogleProtobufEmpty"
+                          },
+                          "scopes": [
+                            "https://www.googleapis.com/auth/cloud-platform",
+                            "https://www.googleapis.com/auth/dialogflow"
+                          ],
+                          "description": "Deletes all active contexts in the specified session."
+                        },
+                        "detectIntent": {
+                          "id": "dialogflow.projects.agent.environments.users.sessions.detectIntent",
+                          "path": "v2/{+session}:detectIntent",
+                          "flatPath": "v2/projects/{projectsId}/agent/environments/{environmentsId}/users/{usersId}/sessions/{sessionsId}:detectIntent",
+                          "httpMethod": "POST",
+                          "parameters": {
+                            "session": {
+                              "description": "Required. The name of the session this query is sent to. Format:\n`projects\/<Project ID>\/agent\/sessions\/<Session ID>`, or\n`projects\/<Project ID>\/agent\/environments\/<Environment ID>\/users\/<User\nID>\/sessions\/<Session ID>`. If `Environment ID` is not specified, we assume\ndefault 'draft' environment. If `User ID` is not specified, we are using\n\"-\". It's up to the API caller to choose an appropriate `Session ID` and\n`User Id`. They can be a random number or some type of user and session\nidentifiers (preferably hashed). The length of the `Session ID` and\n`User ID` must not exceed 36 characters.",
+                              "location": "path",
+                              "required": true,
+                              "pattern": "^projects\/[^\/]+\/agent\/environments\/[^\/]+\/users\/[^\/]+\/sessions\/[^\/]+$",
+                              "type": "string"
+                            }
+                          },
+                          "parameterOrder": [
+                            "session"
+                          ],
+                          "request": {
+                            "$ref": "GoogleCloudDialogflowV2DetectIntentRequest"
+                          },
+                          "response": {
+                            "$ref": "GoogleCloudDialogflowV2DetectIntentResponse"
+                          },
+                          "scopes": [
+                            "https://www.googleapis.com/auth/cloud-platform",
+                            "https://www.googleapis.com/auth/dialogflow"
+                          ],
+                          "description": "Processes a natural language query and returns structured, actionable data\nas a result. This method is not idempotent, because it may cause contexts\nand session entity types to be updated, which in turn might affect\nresults of future queries."
+                        }
+                      }
+                      ,
+                      "resources": {
+                        "contexts": {
+                          "methods": {
+                            "list": {
+                              "id": "dialogflow.projects.agent.environments.users.sessions.contexts.list",
+                              "path": "v2/{+parent}/contexts",
+                              "flatPath": "v2/projects/{projectsId}/agent/environments/{environmentsId}/users/{usersId}/sessions/{sessionsId}/contexts",
+                              "httpMethod": "GET",
+                              "parameters": {
+                                "parent": {
+                                  "description": "Required. The session to list all contexts from.\nFormat: `projects\/<Project ID>\/agent\/sessions\/<Session ID>` or\n`projects\/<Project ID>\/agent\/environments\/<Environment ID>\/users\/<User\nID>\/sessions\/<Session ID>`.\nIf `Environment ID` is not specified, we assume default 'draft'\nenvironment. If `User ID` is not specified, we assume default '-' user.",
+                                  "location": "path",
+                                  "required": true,
+                                  "pattern": "^projects\/[^\/]+\/agent\/environments\/[^\/]+\/users\/[^\/]+\/sessions\/[^\/]+$",
+                                  "type": "string"
+                                },
+                                "pageSize": {
+                                  "description": "Optional. The maximum number of items to return in a single page. By\ndefault 100 and at most 1000.",
+                                  "location": "query",
+                                  "type": "integer",
+                                  "format": "int32"
+                                },
+                                "pageToken": {
+                                  "description": "Optional. The next_page_token value returned from a previous list request.",
+                                  "location": "query",
+                                  "type": "string"
+                                }
+                              },
+                              "parameterOrder": [
+                                "parent"
+                              ],
+                              "response": {
+                                "$ref": "GoogleCloudDialogflowV2ListContextsResponse"
+                              },
+                              "scopes": [
+                                "https://www.googleapis.com/auth/cloud-platform",
+                                "https://www.googleapis.com/auth/dialogflow"
+                              ],
+                              "description": "Returns the list of all contexts in the specified session."
+                            },
+                            "get": {
+                              "id": "dialogflow.projects.agent.environments.users.sessions.contexts.get",
+                              "path": "v2/{+name}",
+                              "flatPath": "v2/projects/{projectsId}/agent/environments/{environmentsId}/users/{usersId}/sessions/{sessionsId}/contexts/{contextsId}",
+                              "httpMethod": "GET",
+                              "parameters": {
+                                "name": {
+                                  "description": "Required. The name of the context. Format:\n`projects\/<Project ID>\/agent\/sessions\/<Session ID>\/contexts\/<Context ID>`\nor `projects\/<Project ID>\/agent\/environments\/<Environment ID>\/users\/<User\nID>\/sessions\/<Session ID>\/contexts\/<Context ID>`.\nIf `Environment ID` is not specified, we assume default 'draft'\nenvironment. If `User ID` is not specified, we assume default '-' user.",
+                                  "location": "path",
+                                  "required": true,
+                                  "pattern": "^projects\/[^\/]+\/agent\/environments\/[^\/]+\/users\/[^\/]+\/sessions\/[^\/]+\/contexts\/[^\/]+$",
+                                  "type": "string"
+                                }
+                              },
+                              "parameterOrder": [
+                                "name"
+                              ],
+                              "response": {
+                                "$ref": "GoogleCloudDialogflowV2Context"
+                              },
+                              "scopes": [
+                                "https://www.googleapis.com/auth/cloud-platform",
+                                "https://www.googleapis.com/auth/dialogflow"
+                              ],
+                              "description": "Retrieves the specified context."
+                            },
+                            "create": {
+                              "id": "dialogflow.projects.agent.environments.users.sessions.contexts.create",
+                              "path": "v2/{+parent}/contexts",
+                              "flatPath": "v2/projects/{projectsId}/agent/environments/{environmentsId}/users/{usersId}/sessions/{sessionsId}/contexts",
+                              "httpMethod": "POST",
+                              "parameters": {
+                                "parent": {
+                                  "description": "Required. The session to create a context for.\nFormat: `projects\/<Project ID>\/agent\/sessions\/<Session ID>` or\n`projects\/<Project ID>\/agent\/environments\/<Environment ID>\/users\/<User\nID>\/sessions\/<Session ID>`.\nIf `Environment ID` is not specified, we assume default 'draft'\nenvironment. If `User ID` is not specified, we assume default '-' user.",
+                                  "location": "path",
+                                  "required": true,
+                                  "pattern": "^projects\/[^\/]+\/agent\/environments\/[^\/]+\/users\/[^\/]+\/sessions\/[^\/]+$",
+                                  "type": "string"
+                                }
+                              },
+                              "parameterOrder": [
+                                "parent"
+                              ],
+                              "request": {
+                                "$ref": "GoogleCloudDialogflowV2Context"
+                              },
+                              "response": {
+                                "$ref": "GoogleCloudDialogflowV2Context"
+                              },
+                              "scopes": [
+                                "https://www.googleapis.com/auth/cloud-platform",
+                                "https://www.googleapis.com/auth/dialogflow"
+                              ],
+                              "description": "Creates a context.\n\nIf the specified context already exists, overrides the context."
+                            },
+                            "patch": {
+                              "id": "dialogflow.projects.agent.environments.users.sessions.contexts.patch",
+                              "path": "v2/{+name}",
+                              "flatPath": "v2/projects/{projectsId}/agent/environments/{environmentsId}/users/{usersId}/sessions/{sessionsId}/contexts/{contextsId}",
+                              "httpMethod": "PATCH",
+                              "parameters": {
+                                "name": {
+                                  "description": "Required. The unique identifier of the context. Format:\n`projects\/<Project ID>\/agent\/sessions\/<Session ID>\/contexts\/<Context ID>`,\nor `projects\/<Project ID>\/agent\/environments\/<Environment ID>\/users\/<User\nID>\/sessions\/<Session ID>\/contexts\/<Context ID>`.\n\nThe `Context ID` is always converted to lowercase, may only contain\ncharacters in a-zA-Z0-9_-% and may be at most 250 bytes long.\n\nIf `Environment ID` is not specified, we assume default 'draft'\nenvironment. If `User ID` is not specified, we assume default '-' user.\n\nThe following context names are reserved for internal use by Dialogflow.\nYou should not use these contexts or create contexts with these names:\n\n* `__system_counters__`\n* `*_id_dialog_context`\n* `*_dialog_params_size`",
+                                  "location": "path",
+                                  "required": true,
+                                  "pattern": "^projects\/[^\/]+\/agent\/environments\/[^\/]+\/users\/[^\/]+\/sessions\/[^\/]+\/contexts\/[^\/]+$",
+                                  "type": "string"
+                                },
+                                "updateMask": {
+                                  "description": "Optional. The mask to control which fields get updated.",
+                                  "location": "query",
+                                  "type": "string",
+                                  "format": "google-fieldmask"
+                                }
+                              },
+                              "parameterOrder": [
+                                "name"
+                              ],
+                              "request": {
+                                "$ref": "GoogleCloudDialogflowV2Context"
+                              },
+                              "response": {
+                                "$ref": "GoogleCloudDialogflowV2Context"
+                              },
+                              "scopes": [
+                                "https://www.googleapis.com/auth/cloud-platform",
+                                "https://www.googleapis.com/auth/dialogflow"
+                              ],
+                              "description": "Updates the specified context."
+                            },
+                            "delete": {
+                              "id": "dialogflow.projects.agent.environments.users.sessions.contexts.delete",
+                              "path": "v2/{+name}",
+                              "flatPath": "v2/projects/{projectsId}/agent/environments/{environmentsId}/users/{usersId}/sessions/{sessionsId}/contexts/{contextsId}",
+                              "httpMethod": "DELETE",
+                              "parameters": {
+                                "name": {
+                                  "description": "Required. The name of the context to delete. Format:\n`projects\/<Project ID>\/agent\/sessions\/<Session ID>\/contexts\/<Context ID>`\nor `projects\/<Project ID>\/agent\/environments\/<Environment ID>\/users\/<User\nID>\/sessions\/<Session ID>\/contexts\/<Context ID>`.\nIf `Environment ID` is not specified, we assume default 'draft'\nenvironment. If `User ID` is not specified, we assume default '-' user.",
+                                  "location": "path",
+                                  "required": true,
+                                  "pattern": "^projects\/[^\/]+\/agent\/environments\/[^\/]+\/users\/[^\/]+\/sessions\/[^\/]+\/contexts\/[^\/]+$",
+                                  "type": "string"
+                                }
+                              },
+                              "parameterOrder": [
+                                "name"
+                              ],
+                              "response": {
+                                "$ref": "GoogleProtobufEmpty"
+                              },
+                              "scopes": [
+                                "https://www.googleapis.com/auth/cloud-platform",
+                                "https://www.googleapis.com/auth/dialogflow"
+                              ],
+                              "description": "Deletes the specified context."
+                            }
+                          }
+                        },
+                        "entityTypes": {
+                          "methods": {
+                            "list": {
+                              "id": "dialogflow.projects.agent.environments.users.sessions.entityTypes.list",
+                              "path": "v2/{+parent}/entityTypes",
+                              "flatPath": "v2/projects/{projectsId}/agent/environments/{environmentsId}/users/{usersId}/sessions/{sessionsId}/entityTypes",
+                              "httpMethod": "GET",
+                              "parameters": {
+                                "parent": {
+                                  "description": "Required. The session to list all session entity types from.\nFormat: `projects\/<Project ID>\/agent\/sessions\/<Session ID>` or\n`projects\/<Project ID>\/agent\/environments\/<Environment ID>\/users\/<User ID>\/\nsessions\/<Session ID>`.\nIf `Environment ID` is not specified, we assume default 'draft'\nenvironment. If `User ID` is not specified, we assume default '-' user.",
+                                  "location": "path",
+                                  "required": true,
+                                  "pattern": "^projects\/[^\/]+\/agent\/environments\/[^\/]+\/users\/[^\/]+\/sessions\/[^\/]+$",
+                                  "type": "string"
+                                },
+                                "pageSize": {
+                                  "description": "Optional. The maximum number of items to return in a single page. By\ndefault 100 and at most 1000.",
+                                  "location": "query",
+                                  "type": "integer",
+                                  "format": "int32"
+                                },
+                                "pageToken": {
+                                  "description": "Optional. The next_page_token value returned from a previous list request.",
+                                  "location": "query",
+                                  "type": "string"
+                                }
+                              },
+                              "parameterOrder": [
+                                "parent"
+                              ],
+                              "response": {
+                                "$ref": "GoogleCloudDialogflowV2ListSessionEntityTypesResponse"
+                              },
+                              "scopes": [
+                                "https://www.googleapis.com/auth/cloud-platform",
+                                "https://www.googleapis.com/auth/dialogflow"
+                              ],
+                              "description": "Returns the list of all session entity types in the specified session.\n\nThis method doesn't work with Google Assistant integration.\nContact Dialogflow support if you need to use session entities\nwith Google Assistant integration."
+                            },
+                            "get": {
+                              "id": "dialogflow.projects.agent.environments.users.sessions.entityTypes.get",
+                              "path": "v2/{+name}",
+                              "flatPath": "v2/projects/{projectsId}/agent/environments/{environmentsId}/users/{usersId}/sessions/{sessionsId}/entityTypes/{entityTypesId}",
+                              "httpMethod": "GET",
+                              "parameters": {
+                                "name": {
+                                  "description": "Required. The name of the session entity type. Format:\n`projects\/<Project ID>\/agent\/sessions\/<Session ID>\/entityTypes\/<Entity Type\nDisplay Name>` or `projects\/<Project ID>\/agent\/environments\/<Environment\nID>\/users\/<User ID>\/sessions\/<Session ID>\/entityTypes\/<Entity Type Display\nName>`.\nIf `Environment ID` is not specified, we assume default 'draft'\nenvironment. If `User ID` is not specified, we assume default '-' user.",
+                                  "location": "path",
+                                  "required": true,
+                                  "pattern": "^projects\/[^\/]+\/agent\/environments\/[^\/]+\/users\/[^\/]+\/sessions\/[^\/]+\/entityTypes\/[^\/]+$",
+                                  "type": "string"
+                                }
+                              },
+                              "parameterOrder": [
+                                "name"
+                              ],
+                              "response": {
+                                "$ref": "GoogleCloudDialogflowV2SessionEntityType"
+                              },
+                              "scopes": [
+                                "https://www.googleapis.com/auth/cloud-platform",
+                                "https://www.googleapis.com/auth/dialogflow"
+                              ],
+                              "description": "Retrieves the specified session entity type.\n\nThis method doesn't work with Google Assistant integration.\nContact Dialogflow support if you need to use session entities\nwith Google Assistant integration."
+                            },
+                            "create": {
+                              "id": "dialogflow.projects.agent.environments.users.sessions.entityTypes.create",
+                              "path": "v2/{+parent}/entityTypes",
+                              "flatPath": "v2/projects/{projectsId}/agent/environments/{environmentsId}/users/{usersId}/sessions/{sessionsId}/entityTypes",
+                              "httpMethod": "POST",
+                              "parameters": {
+                                "parent": {
+                                  "description": "Required. The session to create a session entity type for.\nFormat: `projects\/<Project ID>\/agent\/sessions\/<Session ID>` or\n`projects\/<Project ID>\/agent\/environments\/<Environment ID>\/users\/<User ID>\/\nsessions\/<Session ID>`.\nIf `Environment ID` is not specified, we assume default 'draft'\nenvironment. If `User ID` is not specified, we assume default '-' user.",
+                                  "location": "path",
+                                  "required": true,
+                                  "pattern": "^projects\/[^\/]+\/agent\/environments\/[^\/]+\/users\/[^\/]+\/sessions\/[^\/]+$",
+                                  "type": "string"
+                                }
+                              },
+                              "parameterOrder": [
+                                "parent"
+                              ],
+                              "request": {
+                                "$ref": "GoogleCloudDialogflowV2SessionEntityType"
+                              },
+                              "response": {
+                                "$ref": "GoogleCloudDialogflowV2SessionEntityType"
+                              },
+                              "scopes": [
+                                "https://www.googleapis.com/auth/cloud-platform",
+                                "https://www.googleapis.com/auth/dialogflow"
+                              ],
+                              "description": "Creates a session entity type.\n\nIf the specified session entity type already exists, overrides the session\nentity type.\n\nThis method doesn't work with Google Assistant integration.\nContact Dialogflow support if you need to use session entities\nwith Google Assistant integration."
+                            },
+                            "patch": {
+                              "id": "dialogflow.projects.agent.environments.users.sessions.entityTypes.patch",
+                              "path": "v2/{+name}",
+                              "flatPath": "v2/projects/{projectsId}/agent/environments/{environmentsId}/users/{usersId}/sessions/{sessionsId}/entityTypes/{entityTypesId}",
+                              "httpMethod": "PATCH",
+                              "parameters": {
+                                "name": {
+                                  "description": "Required. The unique identifier of this session entity type. Format:\n`projects\/<Project ID>\/agent\/sessions\/<Session ID>\/entityTypes\/<Entity Type\nDisplay Name>`, or `projects\/<Project ID>\/agent\/environments\/<Environment\nID>\/users\/<User ID>\/sessions\/<Session ID>\/entityTypes\/<Entity Type Display\nName>`.\nIf `Environment ID` is not specified, we assume default 'draft'\nenvironment. If `User ID` is not specified, we assume default '-' user.\n\n`<Entity Type Display Name>` must be the display name of an existing entity\ntype in the same agent that will be overridden or supplemented.",
+                                  "location": "path",
+                                  "required": true,
+                                  "pattern": "^projects\/[^\/]+\/agent\/environments\/[^\/]+\/users\/[^\/]+\/sessions\/[^\/]+\/entityTypes\/[^\/]+$",
+                                  "type": "string"
+                                },
+                                "updateMask": {
+                                  "description": "Optional. The mask to control which fields get updated.",
+                                  "location": "query",
+                                  "type": "string",
+                                  "format": "google-fieldmask"
+                                }
+                              },
+                              "parameterOrder": [
+                                "name"
+                              ],
+                              "request": {
+                                "$ref": "GoogleCloudDialogflowV2SessionEntityType"
+                              },
+                              "response": {
+                                "$ref": "GoogleCloudDialogflowV2SessionEntityType"
+                              },
+                              "scopes": [
+                                "https://www.googleapis.com/auth/cloud-platform",
+                                "https://www.googleapis.com/auth/dialogflow"
+                              ],
+                              "description": "Updates the specified session entity type.\n\nThis method doesn't work with Google Assistant integration.\nContact Dialogflow support if you need to use session entities\nwith Google Assistant integration."
+                            },
+                            "delete": {
+                              "id": "dialogflow.projects.agent.environments.users.sessions.entityTypes.delete",
+                              "path": "v2/{+name}",
+                              "flatPath": "v2/projects/{projectsId}/agent/environments/{environmentsId}/users/{usersId}/sessions/{sessionsId}/entityTypes/{entityTypesId}",
+                              "httpMethod": "DELETE",
+                              "parameters": {
+                                "name": {
+                                  "description": "Required. The name of the entity type to delete. Format:\n`projects\/<Project ID>\/agent\/sessions\/<Session ID>\/entityTypes\/<Entity Type\nDisplay Name>` or `projects\/<Project ID>\/agent\/environments\/<Environment\nID>\/users\/<User ID>\/sessions\/<Session ID>\/entityTypes\/<Entity Type Display\nName>`.\nIf `Environment ID` is not specified, we assume default 'draft'\nenvironment. If `User ID` is not specified, we assume default '-' user.",
+                                  "location": "path",
+                                  "required": true,
+                                  "pattern": "^projects\/[^\/]+\/agent\/environments\/[^\/]+\/users\/[^\/]+\/sessions\/[^\/]+\/entityTypes\/[^\/]+$",
+                                  "type": "string"
+                                }
+                              },
+                              "parameterOrder": [
+                                "name"
+                              ],
+                              "response": {
+                                "$ref": "GoogleProtobufEmpty"
+                              },
+                              "scopes": [
+                                "https://www.googleapis.com/auth/cloud-platform",
+                                "https://www.googleapis.com/auth/dialogflow"
+                              ],
+                              "description": "Deletes the specified session entity type.\n\nThis method doesn't work with Google Assistant integration.\nContact Dialogflow support if you need to use session entities\nwith Google Assistant integration."
+                            }
+                          }
+                        }
+                      }
                     }
                   }
                 }

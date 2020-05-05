@@ -637,6 +637,18 @@ class Clustering(_messages.Message):
   fields = _messages.StringField(1, repeated=True)
 
 
+class ConnectionProperty(_messages.Message):
+  r"""A ConnectionProperty object.
+
+  Fields:
+    key: [Required] Name of the connection property to set.
+    value: [Required] Value of the connection property.
+  """
+
+  key = _messages.StringField(1)
+  value = _messages.StringField(2)
+
+
 class CsvOptions(_messages.Message):
   r"""A CsvOptions object.
 
@@ -1729,7 +1741,7 @@ class JobConfigurationQuery(_messages.Message):
 
   allowLargeResults = _messages.BooleanField(1, default=False)
   clustering = _messages.MessageField('Clustering', 2)
-  connectionProperties = _messages.MessageField('extra_types.JsonValue', 3, repeated=True)
+  connectionProperties = _messages.MessageField('ConnectionProperty', 3, repeated=True)
   createDisposition = _messages.StringField(4)
   defaultDataset = _messages.MessageField('DatasetReference', 5)
   destinationEncryptionConfiguration = _messages.MessageField('EncryptionConfiguration', 6)
@@ -2391,7 +2403,7 @@ class QueryRequest(_messages.Message):
       whenever tables in the query are modified. The default value is true.
   """
 
-  connectionProperties = _messages.MessageField('extra_types.JsonValue', 1, repeated=True)
+  connectionProperties = _messages.MessageField('ConnectionProperty', 1, repeated=True)
   defaultDataset = _messages.MessageField('DatasetReference', 2)
   dryRun = _messages.BooleanField(3)
   kind = _messages.StringField(4, default=u'bigquery#queryRequest')

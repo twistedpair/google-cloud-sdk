@@ -84,10 +84,14 @@ class Binding(_messages.Message):
   r"""Associates `members` with a `role`.
 
   Fields:
-    condition: The condition that is associated with this binding. NOTE: An
-      unsatisfied condition will not allow user access via current binding.
-      Different bindings, including their conditions, are examined
-      independently.
+    condition: The condition that is associated with this binding.  If the
+      condition evaluates to `true`, then this binding applies to the current
+      request.  If the condition evaluates to `false`, then this binding does
+      not apply to the current request. However, a different role binding
+      might grant the same role to one or more of the members in this binding.
+      To learn which resources support conditions in their IAM policies, see
+      the [IAM documentation](https://cloud.google.com/iam/help/conditions
+      /resource-policies).
     members: Specifies the identities requesting access for a Cloud Platform
       resource. `members` can have the following values:  * `allUsers`: A
       special identifier that represents anyone who is    on the internet;
@@ -1042,7 +1046,10 @@ class HealthcareProjectsLocationsDatasetsAnnotationStoresGetIamPolicyRequest(_me
       returned.  Valid values are 0, 1, and 3. Requests specifying an invalid
       value will be rejected.  Requests for policies with any conditional
       bindings must specify version 3. Policies without any conditional
-      bindings may specify any valid value or leave the field unset.
+      bindings may specify any valid value or leave the field unset.  To learn
+      which resources support conditions in their IAM policies, see the [IAM
+      documentation](https://cloud.google.com/iam/help/conditions/resource-
+      policies).
     resource: REQUIRED: The resource for which the policy is being requested.
       See the operation documentation for the appropriate value for this
       field.
@@ -1191,7 +1198,10 @@ class HealthcareProjectsLocationsDatasetsDicomStoresGetIamPolicyRequest(_message
       returned.  Valid values are 0, 1, and 3. Requests specifying an invalid
       value will be rejected.  Requests for policies with any conditional
       bindings must specify version 3. Policies without any conditional
-      bindings may specify any valid value or leave the field unset.
+      bindings may specify any valid value or leave the field unset.  To learn
+      which resources support conditions in their IAM policies, see the [IAM
+      documentation](https://cloud.google.com/iam/help/conditions/resource-
+      policies).
     resource: REQUIRED: The resource for which the policy is being requested.
       See the operation documentation for the appropriate value for this
       field.
@@ -1997,7 +2007,10 @@ class HealthcareProjectsLocationsDatasetsFhirStoresGetIamPolicyRequest(_messages
       returned.  Valid values are 0, 1, and 3. Requests specifying an invalid
       value will be rejected.  Requests for policies with any conditional
       bindings must specify version 3. Policies without any conditional
-      bindings may specify any valid value or leave the field unset.
+      bindings may specify any valid value or leave the field unset.  To learn
+      which resources support conditions in their IAM policies, see the [IAM
+      documentation](https://cloud.google.com/iam/help/conditions/resource-
+      policies).
     resource: REQUIRED: The resource for which the policy is being requested.
       See the operation documentation for the appropriate value for this
       field.
@@ -2110,7 +2123,10 @@ class HealthcareProjectsLocationsDatasetsGetIamPolicyRequest(_messages.Message):
       returned.  Valid values are 0, 1, and 3. Requests specifying an invalid
       value will be rejected.  Requests for policies with any conditional
       bindings must specify version 3. Policies without any conditional
-      bindings may specify any valid value or leave the field unset.
+      bindings may specify any valid value or leave the field unset.  To learn
+      which resources support conditions in their IAM policies, see the [IAM
+      documentation](https://cloud.google.com/iam/help/conditions/resource-
+      policies).
     resource: REQUIRED: The resource for which the policy is being requested.
       See the operation documentation for the appropriate value for this
       field.
@@ -2165,7 +2181,10 @@ class HealthcareProjectsLocationsDatasetsHl7V2StoresGetIamPolicyRequest(_message
       returned.  Valid values are 0, 1, and 3. Requests specifying an invalid
       value will be rejected.  Requests for policies with any conditional
       bindings must specify version 3. Policies without any conditional
-      bindings may specify any valid value or leave the field unset.
+      bindings may specify any valid value or leave the field unset.  To learn
+      which resources support conditions in their IAM policies, see the [IAM
+      documentation](https://cloud.google.com/iam/help/conditions/resource-
+      policies).
     resource: REQUIRED: The resource for which the policy is being requested.
       See the operation documentation for the appropriate value for this
       field.
@@ -2631,7 +2650,7 @@ class Hl7V2NotificationConfig(_messages.Message):
       using the Message.labels map. For example, `labels."priority"="high"`.
       The operator `:*` can be used to assert the existence of a label. For
       example, `labels."priority":*`.
-    pubsubTopic: The [Cloud Pubsub](https://cloud.google.com/pubsub/docs/)
+    pubsubTopic: The [Cloud Pub/Sub](https://cloud.google.com/pubsub/docs/)
       topic that notifications of changes are published on. Supplied by the
       client. The notification is a `PubsubMessage` with the following fields:
       *  `PubsubMessage.Data` contains the resource name. *
@@ -2640,12 +2659,12 @@ class Hl7V2NotificationConfig(_messages.Message):
       is the time at which the message was published.  Note that notifications
       are only sent if the topic is non-empty. [Topic
       names](https://cloud.google.com/pubsub/docs/overview#names) must be
-      scoped to a project. cloud-healthcare@system.gserviceaccount.com must
-      have publisher permissions on the given Pubsub topic. Not having
-      adequate permissions causes the calls that send notifications to fail.
-      If a notification cannot be published to Cloud Pub/Sub, errors will be
-      logged to Stackdriver (see [Viewing logs](/healthcare/docs/how- tos
-      /stackdriver-logging)).
+      scoped to a project. Cloud Healthcare API service account must have
+      publisher permissions on the given Pub/Sub topic. Not having adequate
+      permissions causes the calls that send notifications to fail.  If a
+      notification cannot be published to Cloud Pub/Sub, errors will be logged
+      to Cloud Logging (see [Viewing logs](/healthcare/docs/how-
+      tos/logging)).
   """
 
   filter = _messages.StringField(1)
@@ -3223,13 +3242,12 @@ class NotificationConfig(_messages.Message):
       which the message was published. Notifications are only sent if the
       topic is non-empty. [Topic
       names](https://cloud.google.com/pubsub/docs/overview#names) must be
-      scoped to a project. cloud-healthcare@system.gserviceaccount.com must
-      have publisher permissions on the given Cloud Pub/Sub topic. Not having
+      scoped to a project. Cloud Healthcare API service account must have
+      publisher permissions on the given Cloud Pub/Sub topic. Not having
       adequate permissions causes the calls that send notifications to fail.
       If a notification can't be published to Cloud Pub/Sub, errors are logged
-      to Stackdriver (see [Viewing logs](/healthcare/docs/how-tos/stackdriver-
-      logging)). If the number of errors exceeds a certain rate, some aren't
-      submitted.
+      to Cloud Logging (see [Viewing logs](/healthcare/docs/how-tos/logging)).
+      If the number of errors exceeds a certain rate, some aren't submitted.
   """
 
   pubsubTopic = _messages.StringField(1)
@@ -3355,8 +3373,8 @@ class OperationMetadata(_messages.Message):
     createTime: The time at which the operation was created by the API.
     endTime: The time at which execution was completed.
     logsUrl: A link to audit and error logs in the log viewer. Error logs are
-      generated only by some operations, listed at
-      https://cloud.google.com/healthcare/docs/how-tos/stackdriver-logging.
+      generated only by some operations, listed at [Viewing
+      logs](/healthcare/docs/how-tos/logging).
   """
 
   apiMethodName = _messages.StringField(1)
@@ -3413,19 +3431,22 @@ class Policy(_messages.Message):
   `bindings`. A `binding` binds one or more `members` to a single `role`.
   Members can be user accounts, service accounts, Google groups, and domains
   (such as G Suite). A `role` is a named list of permissions; each `role` can
-  be an IAM predefined role or a user-created custom role.  Optionally, a
-  `binding` can specify a `condition`, which is a logical expression that
-  allows access to a resource only if the expression evaluates to `true`. A
-  condition can add constraints based on attributes of the request, the
-  resource, or both.  **JSON example:**      {       "bindings": [         {
+  be an IAM predefined role or a user-created custom role.  For some types of
+  Google Cloud resources, a `binding` can also specify a `condition`, which is
+  a logical expression that allows access to a resource only if the expression
+  evaluates to `true`. A condition can add constraints based on attributes of
+  the request, the resource, or both. To learn which resources support
+  conditions in their IAM policies, see the [IAM
+  documentation](https://cloud.google.com/iam/help/conditions/resource-
+  policies).  **JSON example:**      {       "bindings": [         {
   "role": "roles/resourcemanager.organizationAdmin",           "members": [
   "user:mike@example.com",             "group:admins@example.com",
   "domain:google.com",             "serviceAccount:my-project-
   id@appspot.gserviceaccount.com"           ]         },         {
-  "role": "roles/resourcemanager.organizationViewer",           "members":
-  ["user:eve@example.com"],           "condition": {             "title":
-  "expirable access",             "description": "Does not grant access after
-  Sep 2020",             "expression": "request.time <
+  "role": "roles/resourcemanager.organizationViewer",           "members": [
+  "user:eve@example.com"           ],           "condition": {
+  "title": "expirable access",             "description": "Does not grant
+  access after Sep 2020",             "expression": "request.time <
   timestamp('2020-10-01T00:00:00.000Z')",           }         }       ],
   "etag": "BwWWja0YfJA=",       "version": 3     }  **YAML example:**
   bindings:     - members:       - user:mike@example.com       -
@@ -3468,7 +3489,10 @@ class Policy(_messages.Message):
       a version `3` policy with a version `1` policy, and all of the
       conditions in the version `3` policy are lost.  If a policy does not
       include any conditions, operations on that policy may specify any valid
-      version or leave the field unset.
+      version or leave the field unset.  To learn which resources support
+      conditions in their IAM policies, see the [IAM
+      documentation](https://cloud.google.com/iam/help/conditions/resource-
+      policies).
   """
 
   auditConfigs = _messages.MessageField('AuditConfig', 1, repeated=True)
@@ -3545,6 +3569,11 @@ class SchemaConfig(_messages.Message):
         FHIR data being exported, with no additional simplification.
       ANALYTICS: Analytics schema defined by the FHIR community. See
         https://github.com/FHIR/sql-on-fhir/blob/master/sql-on-fhir.md.
+        BigQuery only allows a maximum of 10,000 columns per table. Due to
+        this limitation, the server will not generate schemas for fields of
+        type `Resource`, which can hold any resource type. The affected fields
+        are `Parameters.parameter.resource`, `Bundle.entry.resource`, and
+        `Bundle.entry.response.outcome`.
     """
     SCHEMA_TYPE_UNSPECIFIED = 0
     LOSSLESS = 1
@@ -3742,8 +3771,7 @@ class SetIamPolicyRequest(_messages.Message):
       might reject them.
     updateMask: OPTIONAL: A FieldMask specifying which fields of the policy to
       modify. Only the fields in the mask will be modified. If no mask is
-      provided, the following default mask is used: paths: "bindings, etag"
-      This field is only used by Cloud IAM.
+      provided, the following default mask is used:  `paths: "bindings, etag"`
   """
 
   policy = _messages.MessageField('Policy', 1)
@@ -3895,8 +3923,8 @@ class StreamConfig(_messages.Message):
       statement to keep only one of the duplicate rows given an id and
       meta.versionId pair. Alternatively, the server created view mentioned
       above also filters out duplicates.  If a resource mutation cannot be
-      streamed to BigQuery, errors will be logged to Stackdriver (see [Viewing
-      logs](/healthcare/docs/how- tos/stackdriver-logging)).
+      streamed to BigQuery, errors will be logged to Cloud Logging (see
+      [Viewing logs](/healthcare/docs/how- tos/logging)).
     resourceTypes: Supply a FHIR resource type (such as "Patient" or
       "Observation"). See https://www.hl7.org/fhir/valueset-resource-
       types.html for a list of all FHIR resource types. The server treats an

@@ -4,7 +4,7 @@
  "id": "bigquery:v2",
  "name": "bigquery",
  "version": "v2",
- "revision": "20200410",
+ "revision": "20200429",
  "title": "BigQuery API",
  "description": "A data platform for customers to create, manage, share and query data.",
  "ownerDomain": "google.com",
@@ -294,6 +294,20 @@
      "items": {
       "type": "string"
      }
+    }
+   }
+  },
+  "ConnectionProperty": {
+   "id": "ConnectionProperty",
+   "type": "object",
+   "properties": {
+    "key": {
+     "type": "string",
+     "description": "[Required] Name of the connection property to set."
+    },
+    "value": {
+     "type": "string",
+     "description": "[Required] Value of the connection property."
     }
    }
   },
@@ -1197,7 +1211,7 @@
      "type": "array",
      "description": "Connection properties.",
      "items": {
-      "type": "any"
+      "$ref": "ConnectionProperty"
      }
     },
     "createDisposition": {
@@ -1971,7 +1985,7 @@
      "type": "array",
      "description": "Connection properties.",
      "items": {
-      "type": "any"
+      "$ref": "ConnectionProperty"
      }
     },
     "defaultDataset": {

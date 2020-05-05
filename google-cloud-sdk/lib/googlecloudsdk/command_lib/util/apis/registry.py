@@ -368,7 +368,7 @@ class APIMethod(object):
 
     item_field = self.ListItemField()
     if not item_field:
-      log.warning(
+      log.debug(
           'Unable to flatten list response, raw results being returned.')
       return self._NormalRequest(service, request)
 

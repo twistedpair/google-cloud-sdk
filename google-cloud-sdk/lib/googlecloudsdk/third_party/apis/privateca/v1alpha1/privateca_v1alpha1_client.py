@@ -196,7 +196,7 @@ set.
       r"""Sets the access control policy on the specified resource. Replaces any.
 existing policy.
 
-Can return Public Errors: NOT_FOUND, INVALID_ARGUMENT and PERMISSION_DENIED
+Can return `NOT_FOUND`, `INVALID_ARGUMENT`, and `PERMISSION_DENIED` errors.
 
       Args:
         request: (PrivatecaProjectsLocationsCertificateAuthoritiesCertificateRevocationListsSetIamPolicyRequest) input message
@@ -225,7 +225,7 @@ Can return Public Errors: NOT_FOUND, INVALID_ARGUMENT and PERMISSION_DENIED
     def TestIamPermissions(self, request, global_params=None):
       r"""Returns permissions that a caller has on the specified resource.
 If the resource does not exist, this will return an empty set of
-permissions, not a NOT_FOUND error.
+permissions, not a `NOT_FOUND` error.
 
 Note: This operation is designed to be used for building permission-aware
 UIs and command-line tools, not for authorization checking. This operation
@@ -434,7 +434,7 @@ set.
       r"""Sets the access control policy on the specified resource. Replaces any.
 existing policy.
 
-Can return Public Errors: NOT_FOUND, INVALID_ARGUMENT and PERMISSION_DENIED
+Can return `NOT_FOUND`, `INVALID_ARGUMENT`, and `PERMISSION_DENIED` errors.
 
       Args:
         request: (PrivatecaProjectsLocationsCertificateAuthoritiesCertificatesSetIamPolicyRequest) input message
@@ -463,7 +463,7 @@ Can return Public Errors: NOT_FOUND, INVALID_ARGUMENT and PERMISSION_DENIED
     def TestIamPermissions(self, request, global_params=None):
       r"""Returns permissions that a caller has on the specified resource.
 If the resource does not exist, this will return an empty set of
-permissions, not a NOT_FOUND error.
+permissions, not a `NOT_FOUND` error.
 
 Note: This operation is designed to be used for building permission-aware
 UIs and command-line tools, not for authorization checking. This operation
@@ -804,6 +804,33 @@ set.
         supports_download=False,
     )
 
+    def Restore(self, request, global_params=None):
+      r"""Restore a CertificateAuthority that is scheduled for deletion.
+
+      Args:
+        request: (PrivatecaProjectsLocationsCertificateAuthoritiesRestoreRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Restore')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Restore.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1alpha1/projects/{projectsId}/locations/{locationsId}/certificateAuthorities/{certificateAuthoritiesId}:restore',
+        http_method=u'POST',
+        method_id=u'privateca.projects.locations.certificateAuthorities.restore',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[],
+        relative_path=u'v1alpha1/{+name}:restore',
+        request_field=u'restoreCertificateAuthorityRequest',
+        request_type_name=u'PrivatecaProjectsLocationsCertificateAuthoritiesRestoreRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
     def ScheduleDelete(self, request, global_params=None):
       r"""Schedule a CertificateAuthority for deletion.
 
@@ -835,7 +862,7 @@ set.
       r"""Sets the access control policy on the specified resource. Replaces any.
 existing policy.
 
-Can return Public Errors: NOT_FOUND, INVALID_ARGUMENT and PERMISSION_DENIED
+Can return `NOT_FOUND`, `INVALID_ARGUMENT`, and `PERMISSION_DENIED` errors.
 
       Args:
         request: (PrivatecaProjectsLocationsCertificateAuthoritiesSetIamPolicyRequest) input message
@@ -864,7 +891,7 @@ Can return Public Errors: NOT_FOUND, INVALID_ARGUMENT and PERMISSION_DENIED
     def TestIamPermissions(self, request, global_params=None):
       r"""Returns permissions that a caller has on the specified resource.
 If the resource does not exist, this will return an empty set of
-permissions, not a NOT_FOUND error.
+permissions, not a `NOT_FOUND` error.
 
 Note: This operation is designed to be used for building permission-aware
 UIs and command-line tools, not for authorization checking. This operation
@@ -1186,7 +1213,7 @@ set.
       r"""Sets the access control policy on the specified resource. Replaces any.
 existing policy.
 
-Can return Public Errors: NOT_FOUND, INVALID_ARGUMENT and PERMISSION_DENIED
+Can return `NOT_FOUND`, `INVALID_ARGUMENT`, and `PERMISSION_DENIED` errors.
 
       Args:
         request: (PrivatecaProjectsLocationsReusableConfigsSetIamPolicyRequest) input message
@@ -1215,7 +1242,7 @@ Can return Public Errors: NOT_FOUND, INVALID_ARGUMENT and PERMISSION_DENIED
     def TestIamPermissions(self, request, global_params=None):
       r"""Returns permissions that a caller has on the specified resource.
 If the resource does not exist, this will return an empty set of
-permissions, not a NOT_FOUND error.
+permissions, not a `NOT_FOUND` error.
 
 Note: This operation is designed to be used for building permission-aware
 UIs and command-line tools, not for authorization checking. This operation

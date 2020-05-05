@@ -12,6 +12,24 @@ from apitools.base.py import extra_types
 package = 'composer'
 
 
+class AllowedIpRange(_messages.Message):
+  r"""Allowed IP range with user-provided description.
+
+  Fields:
+    description: User-provided description. It must contain at most 300
+      characters.
+    value: IP address or range, defined using CIDR notation, of requests that
+      this rule applies to. Examples: `192.168.1.1` or `192.168.0.0/16` or
+      `2001:db8::/32`           or `2001:0db8:0000:0042:0000:8a2e:0370:7334`.
+      <p>IP range prefixes should be properly truncated. For example,
+      `1.2.3.4/24` should be truncated to `1.2.3.0/24`. Similarly, for IPv6,
+      `2001:db8::1/32` should be truncated to `2001:db8::/32`.
+  """
+
+  description = _messages.StringField(1)
+  value = _messages.StringField(2)
+
+
 class CancelOperationRequest(_messages.Message):
   r"""The request message for Operations.CancelOperation."""
 
@@ -134,6 +152,8 @@ class ComposerProjectsLocationsEnvironmentsPatchRequest(_messages.Message):
       <td>Horizontally scale the number of nodes in the environment. An
       integer  greater than or equal to 3 must be provided in the
       `config.nodeCount`  field.  </td>  </tr>  <tr>
+      <td>config.webServerNetworkAccessControl</td>  <td>Replace the
+      environment's current WebServerNetworkAccessControl.  </td>  </tr>  <tr>
       <td>config.softwareConfig.airflowConfigOverrides</td>  <td>Replace all
       Apache Airflow config overrides. If a replacement config  overrides map
       is not included in `environment`, all config overrides  are cleared.  It
@@ -376,6 +396,11 @@ class EnvironmentConfig(_messages.Message):
       Composer environment.
     softwareConfig: The configuration settings for software inside the
       environment.
+    webServerConfig: Optional. The configuration settings for the Airflow web
+      server App Engine instance.
+    webServerNetworkAccessControl: Optional. The network-level access control
+      policy for the Airflow web server. If unspecified, no network-level
+      access restrictions will be applied.
   """
 
   airflowUri = _messages.StringField(1)
@@ -386,6 +411,8 @@ class EnvironmentConfig(_messages.Message):
   nodeCount = _messages.IntegerField(6, variant=_messages.Variant.INT32)
   privateEnvironmentConfig = _messages.MessageField('PrivateEnvironmentConfig', 7)
   softwareConfig = _messages.MessageField('SoftwareConfig', 8)
+  webServerConfig = _messages.MessageField('WebServerConfig', 9)
+  webServerNetworkAccessControl = _messages.MessageField('WebServerNetworkAccessControl', 10)
 
 
 class IPAllocationPolicy(_messages.Message):
@@ -1106,6 +1133,31 @@ class Status(_messages.Message):
   code = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   details = _messages.MessageField('DetailsValueListEntry', 2, repeated=True)
   message = _messages.StringField(3)
+
+
+class WebServerConfig(_messages.Message):
+  r"""The configuration settings for the Airflow web server App Engine
+  instance.
+
+  Fields:
+    machineType: Optional. Machine type on which Airflow web server is
+      running. For example: composer-n1-webserver-2, composer-n1-webserver-4,
+      composer-n1-webserver-8. Value custom will be returned in response if
+      Airflow web server parameters were manually changed to non-standard
+      values. If not specified, composer-n1-webserver-2 will be used.
+  """
+
+  machineType = _messages.StringField(1)
+
+
+class WebServerNetworkAccessControl(_messages.Message):
+  r"""Network-level access control policy for the Airflow web server.
+
+  Fields:
+    allowedIpRanges: A collection of allowed IP ranges with descriptions.
+  """
+
+  allowedIpRanges = _messages.MessageField('AllowedIpRange', 1, repeated=True)
 
 
 encoding.AddCustomJsonFieldMapping(

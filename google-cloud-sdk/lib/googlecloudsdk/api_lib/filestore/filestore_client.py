@@ -23,6 +23,7 @@ from apitools.base.py import list_pager
 from googlecloudsdk.api_lib.compute import utils
 from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.api_lib.util import waiter
+from googlecloudsdk.command_lib.filestore.backups import util as backup_util
 from googlecloudsdk.command_lib.filestore.snapshots import util as snapshot_util
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import log
@@ -59,6 +60,10 @@ def GetMessages(version=V1_API_VERSION):
 
 class Error(exceptions.Error):
   """Base class for exceptions in this module."""
+
+
+class InvalidArgumentError(Error):
+  """Raised when command line argument constraints are violated."""
 
 
 class InvalidCapacityError(Error):
@@ -326,20 +331,50 @@ class AlphaFilestoreAdapter(object):
 
   def ParseFileShareIntoInstance(self, instance, file_share,
                                  instance_zone=None):
-    """Parse specified file share configs into an instance message."""
+    """Parse specified file share configs into an instance message.
+
+    Args:
+      instance: the instance message.
+      file_share: the file share config.
+      instance_zone: the instance zone.
+
+    Raises:
+      InvalidArgumentError: If file_share argument constraints are violated.
+    """
     if instance.fileShares is None:
       instance.fileShares = []
+
     if file_share:
       source_snapshot = None
+      source_backup = None
+      location = None
+
       if 'source-snapshot' in file_share:
         project = properties.VALUES.core.project.Get(required=True)
         location = (file_share.get('source-snapshot-region') or instance_zone)
         source_snapshot = snapshot_util.SNAPSHOT_NAME_TEMPLATE.format(
             project, location, file_share.get('source-snapshot'))
+      if 'source-backup' in file_share:
+        project = properties.VALUES.core.project.Get(required=True)
+        location = file_share.get('source-backup-region')
+        source_backup = backup_util.BACKUP_NAME_TEMPLATE.format(
+            project, location, file_share.get('source-backup'))
+
+      if None not in [source_snapshot, source_backup]:
+        raise InvalidArgumentError(
+            "At most one of ['source-snapshot', 'source-backup'] may be specified."
+        )
+      if source_backup is not None and location is None:
+        raise InvalidArgumentError(
+            "If 'source-backup' is specified, 'source-backup-region' must also be specified."
+        )
+
       file_share_config = self.messages.FileShareConfig(
           name=file_share.get('name'),
           capacityGb=utils.BytesToGb(file_share.get('capacity')),
-          sourceSnapshot=source_snapshot)
+          sourceSnapshot=source_snapshot,
+          sourceBackup=source_backup)
+
       instance.fileShares.append(file_share_config)
 
   def FileSharesFromInstance(self, instance):

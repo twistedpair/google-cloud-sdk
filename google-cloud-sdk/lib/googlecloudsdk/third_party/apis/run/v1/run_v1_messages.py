@@ -111,10 +111,14 @@ class Binding(_messages.Message):
   r"""Associates `members` with a `role`.
 
   Fields:
-    condition: The condition that is associated with this binding. NOTE: An
-      unsatisfied condition will not allow user access via current binding.
-      Different bindings, including their conditions, are examined
-      independently.
+    condition: The condition that is associated with this binding.  If the
+      condition evaluates to `true`, then this binding applies to the current
+      request.  If the condition evaluates to `false`, then this binding does
+      not apply to the current request. However, a different role binding
+      might grant the same role to one or more of the members in this binding.
+      To learn which resources support conditions in their IAM policies, see
+      the [IAM documentation](https://cloud.google.com/iam/help/conditions
+      /resource-policies).
     members: Specifies the identities requesting access for a Cloud Platform
       resource. `members` can have the following values:  * `allUsers`: A
       special identifier that represents anyone who is    on the internet;
@@ -346,13 +350,11 @@ class Container(_messages.Message):
       https://kubernetes.io/docs/concepts/workloads/pods/pod-lifecycle
       #container-probes
     name: (Optional)  Name of the container specified as a DNS_LABEL.
-    ports: (Optional)  Cloud Run fully managed: not supported  Cloud Run for
-      Anthos: supported  List of ports to expose from the container. Exposing
-      a port here gives the system additional information about the network
-      connections a container uses, but is primarily informational. Not
-      specifying a port here DOES NOT prevent that port from being exposed.
-      Any port which is listening on the default "0.0.0.0" address inside a
-      container will be accessible from the network.
+    ports: (Optional)  List of ports to expose from the container. Only a
+      single port can be specified. The specified ports must be listening on
+      all interfaces (0.0.0.0) within the container to be accessible.  If
+      omitted, a port number will be chosen and passed to the container
+      through the PORT environment variable for the container to listen on.
     readinessProbe: (Optional)  Cloud Run fully managed: not supported  Cloud
       Run for Anthos: supported  Periodic probe of container service
       readiness. Container will be removed from service endpoints if the probe
@@ -410,18 +412,16 @@ class Container(_messages.Message):
 
 
 class ContainerPort(_messages.Message):
-  r"""Cloud Run fully managed: not supported  Cloud Run for Anthos: supported
-  ContainerPort represents a network port in a single container.
+  r"""ContainerPort represents a network port in a single container.
 
   Fields:
-    containerPort: (Optional)  Cloud Run fully managed: supported  Cloud Run
-      for Anthos: supported  Port number the container listens on. This must
+    containerPort: (Optional)  Port number the container listens on. This must
       be a valid port number, 0 < x < 65536.
     name: (Optional)  Cloud Run fully managed: not supported  Cloud Run for
       Anthos: supported  If specified, used to specify which protocol to use.
       Allowed values are "http1" and "h2c".
     protocol: (Optional)  Cloud Run fully managed: not supported  Cloud Run
-      for Anthos: supported  Protocol for port. Must be TCP. Defaults to
+      for Anthos: supported  Protocol for port. Must be "TCP". Defaults to
       "TCP".
   """
 
@@ -471,7 +471,7 @@ class DomainMappingSpec(_messages.Message):
     Values:
       CERTIFICATE_MODE_UNSPECIFIED: <no description>
       NONE: Do not provision an HTTPS certificate.
-      AUTOMATIC: Automatically provisions an HTTPS certificate via
+      AUTOMATIC: Automatically provisions an HTTPS certificate via GoogleCA or
         LetsEncrypt.
     """
     CERTIFICATE_MODE_UNSPECIFIED = 0
@@ -682,43 +682,6 @@ class HTTPHeader(_messages.Message):
 
   name = _messages.StringField(1)
   value = _messages.StringField(2)
-
-
-class Handler(_messages.Message):
-  r"""Cloud Run fully managed: not supported  Cloud Run for Anthos: supported
-  Handler defines a specific action that should be taken
-
-  Fields:
-    exec_: (Optional)  Cloud Run fully managed: not supported  Cloud Run for
-      Anthos: supported  One and only one of the following should be
-      specified. Exec specifies the action to take.
-    httpGet: (Optional)  Cloud Run fully managed: not supported  Cloud Run for
-      Anthos: supported  HTTPGet specifies the http request to perform.
-    tcpSocket: (Optional)  Cloud Run fully managed: not supported  Cloud Run
-      for Anthos: supported  TCPSocket specifies an action involving a TCP
-      port. TCP hooks not yet supported
-  """
-
-  exec_ = _messages.MessageField('ExecAction', 1)
-  httpGet = _messages.MessageField('HTTPGetAction', 2)
-  tcpSocket = _messages.MessageField('TCPSocketAction', 3)
-
-
-class IntOrString(_messages.Message):
-  r"""IntOrString is a type that can hold an int32 or a string.  When used in
-  JSON or YAML marshalling and unmarshalling, it produces or consumes the
-  inner type.  This allows you to have, for example, a JSON field that can
-  accept a name or number.
-
-  Fields:
-    intVal: The int value.
-    strVal: The string value.
-    type: The type of the value.
-  """
-
-  intVal = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  strVal = _messages.StringField(2)
-  type = _messages.IntegerField(3, variant=_messages.Variant.INT32)
 
 
 class KeyToPath(_messages.Message):
@@ -1263,19 +1226,22 @@ class Policy(_messages.Message):
   `bindings`. A `binding` binds one or more `members` to a single `role`.
   Members can be user accounts, service accounts, Google groups, and domains
   (such as G Suite). A `role` is a named list of permissions; each `role` can
-  be an IAM predefined role or a user-created custom role.  Optionally, a
-  `binding` can specify a `condition`, which is a logical expression that
-  allows access to a resource only if the expression evaluates to `true`. A
-  condition can add constraints based on attributes of the request, the
-  resource, or both.  **JSON example:**      {       "bindings": [         {
+  be an IAM predefined role or a user-created custom role.  For some types of
+  Google Cloud resources, a `binding` can also specify a `condition`, which is
+  a logical expression that allows access to a resource only if the expression
+  evaluates to `true`. A condition can add constraints based on attributes of
+  the request, the resource, or both. To learn which resources support
+  conditions in their IAM policies, see the [IAM
+  documentation](https://cloud.google.com/iam/help/conditions/resource-
+  policies).  **JSON example:**      {       "bindings": [         {
   "role": "roles/resourcemanager.organizationAdmin",           "members": [
   "user:mike@example.com",             "group:admins@example.com",
   "domain:google.com",             "serviceAccount:my-project-
   id@appspot.gserviceaccount.com"           ]         },         {
-  "role": "roles/resourcemanager.organizationViewer",           "members":
-  ["user:eve@example.com"],           "condition": {             "title":
-  "expirable access",             "description": "Does not grant access after
-  Sep 2020",             "expression": "request.time <
+  "role": "roles/resourcemanager.organizationViewer",           "members": [
+  "user:eve@example.com"           ],           "condition": {
+  "title": "expirable access",             "description": "Does not grant
+  access after Sep 2020",             "expression": "request.time <
   timestamp('2020-10-01T00:00:00.000Z')",           }         }       ],
   "etag": "BwWWja0YfJA=",       "version": 3     }  **YAML example:**
   bindings:     - members:       - user:mike@example.com       -
@@ -1318,7 +1284,10 @@ class Policy(_messages.Message):
       a version `3` policy with a version `1` policy, and all of the
       conditions in the version `3` policy are lost.  If a policy does not
       include any conditions, operations on that policy may specify any valid
-      version or leave the field unset.
+      version or leave the field unset.  To learn which resources support
+      conditions in their IAM policies, see the [IAM
+      documentation](https://cloud.google.com/iam/help/conditions/resource-
+      policies).
   """
 
   auditConfigs = _messages.MessageField('AuditConfig', 1, repeated=True)
@@ -1333,12 +1302,17 @@ class Probe(_messages.Message):
   determine whether it is alive or ready to receive traffic.
 
   Fields:
+    exec_: (Optional)  Cloud Run fully managed: not supported  Cloud Run for
+      Anthos: supported  One and only one of the following should be
+      specified. Exec specifies the action to take.  A field inlined from the
+      Handler message.
     failureThreshold: (Optional)  Cloud Run fully managed: not supported
       Cloud Run for Anthos: supported  Minimum consecutive failures for the
       probe to be considered failed after having succeeded. Defaults to 3.
       Minimum value is 1.
-    handler: Cloud Run fully managed: not supported  Cloud Run for Anthos:
-      supported  The action taken to determine the health of a container
+    httpGet: (Optional)  Cloud Run fully managed: not supported  Cloud Run for
+      Anthos: supported  HTTPGet specifies the http request to perform.  A
+      field inlined from the Handler message.
     initialDelaySeconds: (Optional)  Cloud Run fully managed: not supported
       Cloud Run for Anthos: supported  Number of seconds after the container
       has started before liveness probes are initiated. More info:
@@ -1351,6 +1325,10 @@ class Probe(_messages.Message):
       Cloud Run for Anthos: supported  Minimum consecutive successes for the
       probe to be considered successful after having failed. Defaults to 1.
       Must be 1 for liveness. Minimum value is 1.
+    tcpSocket: (Optional)  Cloud Run fully managed: not supported  Cloud Run
+      for Anthos: supported  TCPSocket specifies an action involving a TCP
+      port. TCP hooks not yet supported  A field inlined from the Handler
+      message.
     timeoutSeconds: (Optional)  Cloud Run fully managed: not supported  Cloud
       Run for Anthos: supported  Number of seconds after which the probe times
       out. Defaults to 1 second. Minimum value is 1. More info:
@@ -1358,12 +1336,14 @@ class Probe(_messages.Message):
       #container-probes
   """
 
-  failureThreshold = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  handler = _messages.MessageField('Handler', 2)
-  initialDelaySeconds = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  periodSeconds = _messages.IntegerField(4, variant=_messages.Variant.INT32)
-  successThreshold = _messages.IntegerField(5, variant=_messages.Variant.INT32)
-  timeoutSeconds = _messages.IntegerField(6, variant=_messages.Variant.INT32)
+  exec_ = _messages.MessageField('ExecAction', 1)
+  failureThreshold = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  httpGet = _messages.MessageField('HTTPGetAction', 3)
+  initialDelaySeconds = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  periodSeconds = _messages.IntegerField(5, variant=_messages.Variant.INT32)
+  successThreshold = _messages.IntegerField(6, variant=_messages.Variant.INT32)
+  tcpSocket = _messages.MessageField('TCPSocketAction', 7)
+  timeoutSeconds = _messages.IntegerField(8, variant=_messages.Variant.INT32)
 
 
 class ResourceRecord(_messages.Message):
@@ -2433,7 +2413,10 @@ class RunProjectsLocationsServicesGetIamPolicyRequest(_messages.Message):
       returned.  Valid values are 0, 1, and 3. Requests specifying an invalid
       value will be rejected.  Requests for policies with any conditional
       bindings must specify version 3. Policies without any conditional
-      bindings may specify any valid value or leave the field unset.
+      bindings may specify any valid value or leave the field unset.  To learn
+      which resources support conditions in their IAM policies, see the [IAM
+      documentation](https://cloud.google.com/iam/help/conditions/resource-
+      policies).
     resource: REQUIRED: The resource for which the policy is being requested.
       See the operation documentation for the appropriate value for this
       field.
@@ -2815,8 +2798,7 @@ class SetIamPolicyRequest(_messages.Message):
       might reject them.
     updateMask: OPTIONAL: A FieldMask specifying which fields of the policy to
       modify. Only the fields in the mask will be modified. If no mask is
-      provided, the following default mask is used: paths: "bindings, etag"
-      This field is only used by Cloud IAM.
+      provided, the following default mask is used:  `paths: "bindings, etag"`
   """
 
   policy = _messages.MessageField('Policy', 1)
@@ -2987,11 +2969,13 @@ class TCPSocketAction(_messages.Message):
       pod IP.
     port: Cloud Run fully managed: not supported  Cloud Run for Anthos:
       supported  Number or name of the port to access on the container. Number
-      must be in the range 1 to 65535. Name must be an IANA_SVC_NAME.
+      must be in the range 1 to 65535. Name must be an IANA_SVC_NAME.  This
+      field is currently limited to integer types only because of proto's
+      inability to properly support the IntOrString golang type.
   """
 
   host = _messages.StringField(1)
-  port = _messages.MessageField('IntOrString', 2)
+  port = _messages.IntegerField(2, variant=_messages.Variant.INT32)
 
 
 class TestIamPermissionsRequest(_messages.Message):
@@ -3100,9 +3084,9 @@ class VolumeMount(_messages.Message):
 
 
 encoding.AddCustomJsonFieldMapping(
-    Handler, 'exec_', 'exec')
-encoding.AddCustomJsonFieldMapping(
     ListMeta, 'continue_', 'continue')
+encoding.AddCustomJsonFieldMapping(
+    Probe, 'exec_', 'exec')
 encoding.AddCustomJsonFieldMapping(
     StandardQueryParameters, 'f__xgafv', '$.xgafv')
 encoding.AddCustomJsonEnumMapping(

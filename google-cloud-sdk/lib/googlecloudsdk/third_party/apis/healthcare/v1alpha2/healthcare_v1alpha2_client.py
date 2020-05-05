@@ -123,8 +123,8 @@ ground truth Annotation store.
 When the operation finishes successfully, a detailed response is returned
 of type EvaluateAnnotationStoreResponse, contained in the response. The metadata field type is
 OperationMetadata.
-Errors are logged to Stackdriver
-(see [Viewing logs](/healthcare/docs/how-tos/stackdriver-logging) and
+Errors are logged to Cloud Logging
+(see [Viewing logs](/healthcare/docs/how-tos/logging) and
 ImportAnnotations for a sample log entry).
 
       Args:
@@ -164,8 +164,8 @@ The metadata field type is
 OperationMetadata.
 If errors occur, the error
 field type is ImportAnnotationsErrorDetails.
-Errors are also logged to Stackdriver
-(see [Viewing logs](/healthcare/docs/how-tos/stackdriver-logging) and
+Errors are also logged to Cloud Logging
+(see [Viewing logs](/healthcare/docs/how-tos/logging) and
 ImportAnnotations for a sample log entry).
 
       Args:
@@ -263,8 +263,8 @@ The metadata field type is
 OperationMetadata.
 If errors occur, the error
 field type is ImportAnnotationsErrorDetails.
-Errors are also logged to Stackdriver
-(see [Viewing logs](/healthcare/docs/how-tos/stackdriver-logging)).
+Errors are also logged to Cloud Logging
+(see [Viewing logs](/healthcare/docs/how-tos/logging)).
 For example, the following sample log entry shows a
 `failed to parse Cloud Storage object` error that occurred while attempting
 to import `gs://ANNOTATION_FILENAME.json` to
@@ -382,7 +382,7 @@ timestamp:  "TIMESTAMP"
       r"""Sets the access control policy on the specified resource. Replaces any.
 existing policy.
 
-Can return Public Errors: NOT_FOUND, INVALID_ARGUMENT and PERMISSION_DENIED
+Can return `NOT_FOUND`, `INVALID_ARGUMENT`, and `PERMISSION_DENIED` errors.
 
       Args:
         request: (HealthcareProjectsLocationsDatasetsAnnotationStoresSetIamPolicyRequest) input message
@@ -411,7 +411,7 @@ Can return Public Errors: NOT_FOUND, INVALID_ARGUMENT and PERMISSION_DENIED
     def TestIamPermissions(self, request, global_params=None):
       r"""Returns permissions that a caller has on the specified resource.
 If the resource does not exist, this will return an empty set of
-permissions, not a NOT_FOUND error.
+permissions, not a `NOT_FOUND` error.
 
 Note: This operation is designed to be used for building permission-aware
 UIs and command-line tools, not for authorization checking. This operation
@@ -1351,8 +1351,12 @@ has a policy with `resource_attributes` matching the requested
 `request_attributes`, then the user is considered to have consented even if
 the user has another policy with the same `resource_attributes` and an
 `authorization_rule` rejecting the requested `request_attributes`.
+
+The returned Operation includes a progress
+counter for the number of User data mappings processed.
+
 Errors are logged to Cloud Logging (see [Viewing logs]
-(/healthcare/docs/how-tos/stackdriver-logging)). For example, the following
+(/healthcare/docs/how-tos/logging)). For example, the following
 sample log entry shows a `failed to evaluate consent policy` error that
 occurred during a QueryAccessibleData call to consent store
 `projects/{project_id}/locations/{location_id}/datasets/{dataset_id}/consentStores/{consent_store_id}`.
@@ -1416,7 +1420,7 @@ timestamp:  "TIMESTAMP"
       r"""Sets the access control policy on the specified resource. Replaces any.
 existing policy.
 
-Can return Public Errors: NOT_FOUND, INVALID_ARGUMENT and PERMISSION_DENIED
+Can return `NOT_FOUND`, `INVALID_ARGUMENT`, and `PERMISSION_DENIED` errors.
 
       Args:
         request: (HealthcareProjectsLocationsDatasetsConsentStoresSetIamPolicyRequest) input message
@@ -1445,7 +1449,7 @@ Can return Public Errors: NOT_FOUND, INVALID_ARGUMENT and PERMISSION_DENIED
     def TestIamPermissions(self, request, global_params=None):
       r"""Returns permissions that a caller has on the specified resource.
 If the resource does not exist, this will return an empty set of
-permissions, not a NOT_FOUND error.
+permissions, not a `NOT_FOUND` error.
 
 Note: This operation is designed to be used for building permission-aware
 UIs and command-line tools, not for authorization checking. This operation
@@ -1518,7 +1522,7 @@ set.
       r"""Sets the access control policy on the specified resource. Replaces any.
 existing policy.
 
-Can return Public Errors: NOT_FOUND, INVALID_ARGUMENT and PERMISSION_DENIED
+Can return `NOT_FOUND`, `INVALID_ARGUMENT`, and `PERMISSION_DENIED` errors.
 
       Args:
         request: (HealthcareProjectsLocationsDatasetsDataProtectionStoresSetIamPolicyRequest) input message
@@ -1612,8 +1616,8 @@ within it.
     def Export(self, request, global_params=None):
       r"""Exports data to the specified destination by copying it from the DICOM.
 store.
-Errors are also logged to Stackdriver Logging. For more information,
-see [Viewing logs](/healthcare/docs/how-tos/stackdriver-logging).
+Errors are also logged to Cloud Logging. For more information,
+see [Viewing logs](/healthcare/docs/how-tos/logging).
 The metadata field type is
 OperationMetadata.
 
@@ -1701,9 +1705,8 @@ set.
       r"""Imports data into the DICOM store by copying it from the specified source.
 For errors, the Operation is populated with error details (in the form
 of ImportDicomDataErrorDetails in error.details), which holds
-finer-grained error information. Errors are also logged to Stackdriver
-Logging. For more information, see
-[Viewing logs](/healthcare/docs/how-tos/stackdriver-logging).
+finer-grained error information. Errors are also logged to Cloud Logging.
+For more information, see [Viewing logs](/healthcare/docs/how-tos/logging).
 The metadata field type is
 OperationMetadata.
 
@@ -1789,7 +1792,7 @@ OperationMetadata.
       r"""Sets the access control policy on the specified resource. Replaces any.
 existing policy.
 
-Can return Public Errors: NOT_FOUND, INVALID_ARGUMENT and PERMISSION_DENIED
+Can return `NOT_FOUND`, `INVALID_ARGUMENT`, and `PERMISSION_DENIED` errors.
 
       Args:
         request: (HealthcareProjectsLocationsDatasetsDicomStoresSetIamPolicyRequest) input message
@@ -1818,7 +1821,7 @@ Can return Public Errors: NOT_FOUND, INVALID_ARGUMENT and PERMISSION_DENIED
     def TestIamPermissions(self, request, global_params=None):
       r"""Returns permissions that a caller has on the specified resource.
 If the resource does not exist, this will return an empty set of
-permissions, not a NOT_FOUND error.
+permissions, not a `NOT_FOUND` error.
 
 Note: This operation is designed to be used for building permission-aware
 UIs and command-line tools, not for authorization checking. This operation
@@ -1921,8 +1924,8 @@ GetOperation.
 
 Immediate fatal errors appear in the
 error field, errors are also logged
-to Stackdriver (see [Viewing
-logs](/healthcare/docs/how-tos/stackdriver-logging)).
+to Cloud Logging (see [Viewing
+logs](/healthcare/docs/how-tos/logging)).
 Otherwise, when the operation finishes, a detailed response of type
 ExportResourcesResponse is returned in the
 response field.
@@ -2076,8 +2079,8 @@ GetOperation.
 
 Immediate fatal errors appear in the
 error field, errors are also logged
-to Stackdriver (see [Viewing
-logs](/healthcare/docs/how-tos/stackdriver-logging)). Otherwise, when the
+to Cloud Logging (see [Viewing
+logs](/healthcare/docs/how-tos/logging)). Otherwise, when the
 operation finishes, a detailed response of type ImportResourcesResponse
 is returned in the response field.
 The metadata field type for this
@@ -2165,7 +2168,7 @@ operation is OperationMetadata.
       r"""Sets the access control policy on the specified resource. Replaces any.
 existing policy.
 
-Can return Public Errors: NOT_FOUND, INVALID_ARGUMENT and PERMISSION_DENIED
+Can return `NOT_FOUND`, `INVALID_ARGUMENT`, and `PERMISSION_DENIED` errors.
 
       Args:
         request: (HealthcareProjectsLocationsDatasetsFhirStoresSetIamPolicyRequest) input message
@@ -2194,7 +2197,7 @@ Can return Public Errors: NOT_FOUND, INVALID_ARGUMENT and PERMISSION_DENIED
     def TestIamPermissions(self, request, global_params=None):
       r"""Returns permissions that a caller has on the specified resource.
 If the resource does not exist, this will return an empty set of
-permissions, not a NOT_FOUND error.
+permissions, not a `NOT_FOUND` error.
 
 Note: This operation is designed to be used for building permission-aware
 UIs and command-line tools, not for authorization checking. This operation
@@ -2403,7 +2406,7 @@ set.
       r"""Sets the access control policy on the specified resource. Replaces any.
 existing policy.
 
-Can return Public Errors: NOT_FOUND, INVALID_ARGUMENT and PERMISSION_DENIED
+Can return `NOT_FOUND`, `INVALID_ARGUMENT`, and `PERMISSION_DENIED` errors.
 
       Args:
         request: (HealthcareProjectsLocationsDatasetsHl7V2StoresSetIamPolicyRequest) input message
@@ -2432,7 +2435,7 @@ Can return Public Errors: NOT_FOUND, INVALID_ARGUMENT and PERMISSION_DENIED
     def TestIamPermissions(self, request, global_params=None):
       r"""Returns permissions that a caller has on the specified resource.
 If the resource does not exist, this will return an empty set of
-permissions, not a NOT_FOUND error.
+permissions, not a `NOT_FOUND` error.
 
 Note: This operation is designed to be used for building permission-aware
 UIs and command-line tools, not for authorization checking. This operation
@@ -2631,8 +2634,8 @@ The LRO result may still be successful if de-identification fails for some
 DICOM instances. The new de-identified dataset will not contain these
 failed resources. Failed resource totals are tracked in
 DeidentifySummary.failure_resource_count.
-Error details are also logged to Stackdriver Logging. For more information,
-see [Viewing logs](/healthcare/docs/how-tos/stackdriver-logging).
+Error details are also logged to Cloud Logging. For more information,
+see [Viewing logs](/healthcare/docs/how-tos/logging).
 
       Args:
         request: (HealthcareProjectsLocationsDatasetsDeidentifyRequest) input message
@@ -2801,7 +2804,7 @@ set.
       r"""Sets the access control policy on the specified resource. Replaces any.
 existing policy.
 
-Can return Public Errors: NOT_FOUND, INVALID_ARGUMENT and PERMISSION_DENIED
+Can return `NOT_FOUND`, `INVALID_ARGUMENT`, and `PERMISSION_DENIED` errors.
 
       Args:
         request: (HealthcareProjectsLocationsDatasetsSetIamPolicyRequest) input message
@@ -2830,7 +2833,7 @@ Can return Public Errors: NOT_FOUND, INVALID_ARGUMENT and PERMISSION_DENIED
     def TestIamPermissions(self, request, global_params=None):
       r"""Returns permissions that a caller has on the specified resource.
 If the resource does not exist, this will return an empty set of
-permissions, not a NOT_FOUND error.
+permissions, not a `NOT_FOUND` error.
 
 Note: This operation is designed to be used for building permission-aware
 UIs and command-line tools, not for authorization checking. This operation

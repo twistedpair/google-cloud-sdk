@@ -17,8 +17,7 @@ class AppProfile(_messages.Message):
   traffic from a particular end user application.
 
   Fields:
-    description: Optional long form description of the use case for this
-      AppProfile.
+    description: Long form description of the use case for this AppProfile.
     etag: Strongly validated etag for optimistic concurrency control. Preserve
       the value returned from `GetAppProfile` when calling `UpdateAppProfile`
       to fail the request if there has been a modification in the mean time.
@@ -27,8 +26,8 @@ class AppProfile(_messages.Message):
       [Wikipedia](https://en.wikipedia.org/wiki/HTTP_ETag) and [RFC
       7232](https://tools.ietf.org/html/rfc7232#section-2.3) for more details.
     multiClusterRoutingUseAny: Use a multi-cluster routing policy.
-    name: (`OutputOnly`) The unique name of the app profile. Values are of the
-      form `projects/<project>/instances/<instance>/appProfiles/_a-zA-Z0-9*`.
+    name: The unique name of the app profile. Values are of the form
+      `projects/{project}/instances/{instance}/appProfiles/_a-zA-Z0-9*`.
     singleClusterRouting: Use a single-cluster routing policy.
   """
 
@@ -121,8 +120,8 @@ class Backup(_messages.Message):
       time the request is received. Once the `expire_time` has passed, Cloud
       Bigtable will delete the backup and free the resources used by the
       backup.
-    name: Output only. A globally unique identifier for the backup which
-      cannot be changed. Values are of the form
+    name: A globally unique identifier for the backup which cannot be changed.
+      Values are of the form
       `projects/{project}/instances/{instance}/clusters/{cluster}/    backups
       /_a-zA-Z0-9*` The final segment of the name must be between 1 and 50
       characters in length.  The backup is stored in the cluster identified by
@@ -305,8 +304,8 @@ class BigtableadminProjectsInstancesAppProfilesPatchRequest(_messages.Message):
     appProfile: A AppProfile resource to be passed as the request body.
     ignoreWarnings: If true, ignore safety checks when updating the app
       profile.
-    name: (`OutputOnly`) The unique name of the app profile. Values are of the
-      form `projects/<project>/instances/<instance>/appProfiles/_a-zA-Z0-9*`.
+    name: The unique name of the app profile. Values are of the form
+      `projects/{project}/instances/{instance}/appProfiles/_a-zA-Z0-9*`.
     updateMask: Required. The subset of app profile fields which should be
       replaced. If unset, all fields will be replaced.
   """
@@ -439,8 +438,8 @@ class BigtableadminProjectsInstancesClustersBackupsPatchRequest(_messages.Messag
 
   Fields:
     backup: A Backup resource to be passed as the request body.
-    name: Output only. A globally unique identifier for the backup which
-      cannot be changed. Values are of the form
+    name: A globally unique identifier for the backup which cannot be changed.
+      Values are of the form
       `projects/{project}/instances/{instance}/clusters/{cluster}/    backups
       /_a-zA-Z0-9*` The final segment of the name must be between 1 and 50
       characters in length.  The backup is stored in the cluster identified by
@@ -602,8 +601,8 @@ class BigtableadminProjectsInstancesPartialUpdateInstanceRequest(_messages.Messa
 
   Fields:
     instance: A Instance resource to be passed as the request body.
-    name: Required. (`OutputOnly`) The unique name of the instance. Values are
-      of the form `projects/{project}/instances/a-z+[a-z0-9]`.
+    name: The unique name of the instance. Values are of the form
+      `projects/{project}/instances/a-z+[a-z0-9]`.
     updateMask: Required. The subset of Instance fields which should be
       replaced. Must be explicitly set.
   """
@@ -902,10 +901,14 @@ class Binding(_messages.Message):
   r"""Associates `members` with a `role`.
 
   Fields:
-    condition: The condition that is associated with this binding. NOTE: An
-      unsatisfied condition will not allow user access via current binding.
-      Different bindings, including their conditions, are examined
-      independently.
+    condition: The condition that is associated with this binding.  If the
+      condition evaluates to `true`, then this binding applies to the current
+      request.  If the condition evaluates to `false`, then this binding does
+      not apply to the current request. However, a different role binding
+      might grant the same role to one or more of the members in this binding.
+      To learn which resources support conditions in their IAM policies, see
+      the [IAM documentation](https://cloud.google.com/iam/help/conditions
+      /resource-policies).
     members: Specifies the identities requesting access for a Cloud Platform
       resource. `members` can have the following values:  * `allUsers`: A
       special identifier that represents anyone who is    on the internet;
@@ -975,28 +978,27 @@ class Cluster(_messages.Message):
   serving all Tables in the parent Instance.
 
   Enums:
-    DefaultStorageTypeValueValuesEnum: (`CreationOnly`) The type of storage
-      used by this cluster to serve its parent instance's tables, unless
-      explicitly overridden.
-    StateValueValuesEnum: (`OutputOnly`) The current state of the cluster.
+    DefaultStorageTypeValueValuesEnum: Immutable. The type of storage used by
+      this cluster to serve its parent instance's tables, unless explicitly
+      overridden.
+    StateValueValuesEnum: Output only. The current state of the cluster.
 
   Fields:
-    defaultStorageType: (`CreationOnly`) The type of storage used by this
-      cluster to serve its parent instance's tables, unless explicitly
-      overridden.
-    location: (`CreationOnly`) The location where this cluster's nodes and
-      storage reside. For best performance, clients should be located as close
-      as possible to this cluster. Currently only zones are supported, so
-      values should be of the form `projects/{project}/locations/{zone}`.
-    name: Required. (`OutputOnly`) The unique name of the cluster. Values are
-      of the form `projects/{project}/instances/{instance}/clusters/a-z*`.
+    defaultStorageType: Immutable. The type of storage used by this cluster to
+      serve its parent instance's tables, unless explicitly overridden.
+    location: Immutable. The location where this cluster's nodes and storage
+      reside. For best performance, clients should be located as close as
+      possible to this cluster. Currently only zones are supported, so values
+      should be of the form `projects/{project}/locations/{zone}`.
+    name: The unique name of the cluster. Values are of the form
+      `projects/{project}/instances/{instance}/clusters/a-z*`.
     serveNodes: Required. The number of nodes allocated to this cluster. More
       nodes enable higher throughput and more consistent performance.
-    state: (`OutputOnly`) The current state of the cluster.
+    state: Output only. The current state of the cluster.
   """
 
   class DefaultStorageTypeValueValuesEnum(_messages.Enum):
-    r"""(`CreationOnly`) The type of storage used by this cluster to serve its
+    r"""Immutable. The type of storage used by this cluster to serve its
     parent instance's tables, unless explicitly overridden.
 
     Values:
@@ -1009,7 +1011,7 @@ class Cluster(_messages.Message):
     HDD = 2
 
   class StateValueValuesEnum(_messages.Enum):
-    r"""(`OutputOnly`) The current state of the cluster.
+    r"""Output only. The current state of the cluster.
 
     Values:
       STATE_NOT_KNOWN: The state of the cluster could not be determined.
@@ -1396,7 +1398,7 @@ class GetIamPolicyRequest(_messages.Message):
 
   Fields:
     options: OPTIONAL: A `GetPolicyOptions` object for specifying options to
-      `GetIamPolicy`. This field is only used by Cloud IAM.
+      `GetIamPolicy`.
   """
 
   options = _messages.MessageField('GetPolicyOptions', 1)
@@ -1410,7 +1412,10 @@ class GetPolicyOptions(_messages.Message):
       returned.  Valid values are 0, 1, and 3. Requests specifying an invalid
       value will be rejected.  Requests for policies with any conditional
       bindings must specify version 3. Policies without any conditional
-      bindings may specify any valid value or leave the field unset.
+      bindings may specify any valid value or leave the field unset.  To learn
+      which resources support conditions in their IAM policies, see the [IAM
+      documentation](https://cloud.google.com/iam/help/conditions/resource-
+      policies).
   """
 
   requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -1421,7 +1426,7 @@ class Instance(_messages.Message):
   tables in an instance are served from all Clusters in the instance.
 
   Enums:
-    StateValueValuesEnum: (`OutputOnly`) The current state of the instance.
+    StateValueValuesEnum: Output only. The current state of the instance.
     TypeValueValuesEnum: Required. The type of the instance. Defaults to
       `PRODUCTION`.
 
@@ -1451,14 +1456,14 @@ class Instance(_messages.Message):
       `[\p{Ll}\p{Lo}\p{N}_-]{0,63}`. * No more than 64 labels can be
       associated with a given resource. * Keys and values must both be under
       128 bytes.
-    name: Required. (`OutputOnly`) The unique name of the instance. Values are
-      of the form `projects/{project}/instances/a-z+[a-z0-9]`.
-    state: (`OutputOnly`) The current state of the instance.
+    name: The unique name of the instance. Values are of the form
+      `projects/{project}/instances/a-z+[a-z0-9]`.
+    state: Output only. The current state of the instance.
     type: Required. The type of the instance. Defaults to `PRODUCTION`.
   """
 
   class StateValueValuesEnum(_messages.Enum):
-    r"""(`OutputOnly`) The current state of the instance.
+    r"""Output only. The current state of the instance.
 
     Values:
       STATE_NOT_KNOWN: The state of the instance could not be determined.
@@ -1930,19 +1935,22 @@ class Policy(_messages.Message):
   `bindings`. A `binding` binds one or more `members` to a single `role`.
   Members can be user accounts, service accounts, Google groups, and domains
   (such as G Suite). A `role` is a named list of permissions; each `role` can
-  be an IAM predefined role or a user-created custom role.  Optionally, a
-  `binding` can specify a `condition`, which is a logical expression that
-  allows access to a resource only if the expression evaluates to `true`. A
-  condition can add constraints based on attributes of the request, the
-  resource, or both.  **JSON example:**      {       "bindings": [         {
+  be an IAM predefined role or a user-created custom role.  For some types of
+  Google Cloud resources, a `binding` can also specify a `condition`, which is
+  a logical expression that allows access to a resource only if the expression
+  evaluates to `true`. A condition can add constraints based on attributes of
+  the request, the resource, or both. To learn which resources support
+  conditions in their IAM policies, see the [IAM
+  documentation](https://cloud.google.com/iam/help/conditions/resource-
+  policies).  **JSON example:**      {       "bindings": [         {
   "role": "roles/resourcemanager.organizationAdmin",           "members": [
   "user:mike@example.com",             "group:admins@example.com",
   "domain:google.com",             "serviceAccount:my-project-
   id@appspot.gserviceaccount.com"           ]         },         {
-  "role": "roles/resourcemanager.organizationViewer",           "members":
-  ["user:eve@example.com"],           "condition": {             "title":
-  "expirable access",             "description": "Does not grant access after
-  Sep 2020",             "expression": "request.time <
+  "role": "roles/resourcemanager.organizationViewer",           "members": [
+  "user:eve@example.com"           ],           "condition": {
+  "title": "expirable access",             "description": "Does not grant
+  access after Sep 2020",             "expression": "request.time <
   timestamp('2020-10-01T00:00:00.000Z')",           }         }       ],
   "etag": "BwWWja0YfJA=",       "version": 3     }  **YAML example:**
   bindings:     - members:       - user:mike@example.com       -
@@ -1985,7 +1993,10 @@ class Policy(_messages.Message):
       a version `3` policy with a version `1` policy, and all of the
       conditions in the version `3` policy are lost.  If a policy does not
       include any conditions, operations on that policy may specify any valid
-      version or leave the field unset.
+      version or leave the field unset.  To learn which resources support
+      conditions in their IAM policies, see the [IAM
+      documentation](https://cloud.google.com/iam/help/conditions/resource-
+      policies).
   """
 
   auditConfigs = _messages.MessageField('AuditConfig', 1, repeated=True)
@@ -2085,8 +2096,7 @@ class SetIamPolicyRequest(_messages.Message):
       might reject them.
     updateMask: OPTIONAL: A FieldMask specifying which fields of the policy to
       modify. Only the fields in the mask will be modified. If no mask is
-      provided, the following default mask is used: paths: "bindings, etag"
-      This field is only used by Cloud IAM.
+      provided, the following default mask is used:  `paths: "bindings, etag"`
   """
 
   policy = _messages.MessageField('Policy', 1)
@@ -2239,10 +2249,10 @@ class Table(_messages.Message):
   table is served using the resources of its parent cluster.
 
   Enums:
-    GranularityValueValuesEnum: (`CreationOnly`) The granularity (i.e.
-      `MILLIS`) at which timestamps are stored in this table. Timestamps not
-      matching the granularity will be rejected. If unspecified at creation
-      time, the value will be set to `MILLIS`. Views: `SCHEMA_VIEW`, `FULL`.
+    GranularityValueValuesEnum: Immutable. The granularity (i.e. `MILLIS`) at
+      which timestamps are stored in this table. Timestamps not matching the
+      granularity will be rejected. If unspecified at creation time, the value
+      will be set to `MILLIS`. Views: `SCHEMA_VIEW`, `FULL`.
 
   Messages:
     ClusterStatesValue: Output only. Map from cluster ID to per-cluster table
@@ -2250,8 +2260,8 @@ class Table(_messages.Message):
       in a particular cluster (for example, if its zone is unavailable), then
       there will be an entry for the cluster with UNKNOWN
       `replication_status`. Views: `REPLICATION_VIEW`, `FULL`
-    ColumnFamiliesValue: (`CreationOnly`) The column families configured for
-      this table, mapped by column family ID. Views: `SCHEMA_VIEW`, `FULL`
+    ColumnFamiliesValue: The column families configured for this table, mapped
+      by column family ID. Views: `SCHEMA_VIEW`, `FULL`
 
   Fields:
     clusterStates: Output only. Map from cluster ID to per-cluster table
@@ -2259,14 +2269,14 @@ class Table(_messages.Message):
       in a particular cluster (for example, if its zone is unavailable), then
       there will be an entry for the cluster with UNKNOWN
       `replication_status`. Views: `REPLICATION_VIEW`, `FULL`
-    columnFamilies: (`CreationOnly`) The column families configured for this
-      table, mapped by column family ID. Views: `SCHEMA_VIEW`, `FULL`
-    granularity: (`CreationOnly`) The granularity (i.e. `MILLIS`) at which
+    columnFamilies: The column families configured for this table, mapped by
+      column family ID. Views: `SCHEMA_VIEW`, `FULL`
+    granularity: Immutable. The granularity (i.e. `MILLIS`) at which
       timestamps are stored in this table. Timestamps not matching the
       granularity will be rejected. If unspecified at creation time, the value
       will be set to `MILLIS`. Views: `SCHEMA_VIEW`, `FULL`.
-    name: Output only. The unique name of the table. Values are of the form
-      `projects/<project>/instances/<instance>/tables/_a-zA-Z0-9*`. Views:
+    name: The unique name of the table. Values are of the form
+      `projects/{project}/instances/{instance}/tables/_a-zA-Z0-9*`. Views:
       `NAME_ONLY`, `SCHEMA_VIEW`, `REPLICATION_VIEW`, `FULL`
     restoreInfo: Output only. If this table was restored from another data
       source (e.g. a backup), this field will be populated with information
@@ -2274,8 +2284,8 @@ class Table(_messages.Message):
   """
 
   class GranularityValueValuesEnum(_messages.Enum):
-    r"""(`CreationOnly`) The granularity (i.e. `MILLIS`) at which timestamps
-    are stored in this table. Timestamps not matching the granularity will be
+    r"""Immutable. The granularity (i.e. `MILLIS`) at which timestamps are
+    stored in this table. Timestamps not matching the granularity will be
     rejected. If unspecified at creation time, the value will be set to
     `MILLIS`. Views: `SCHEMA_VIEW`, `FULL`.
 
@@ -2319,8 +2329,8 @@ class Table(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class ColumnFamiliesValue(_messages.Message):
-    r"""(`CreationOnly`) The column families configured for this table, mapped
-    by column family ID. Views: `SCHEMA_VIEW`, `FULL`
+    r"""The column families configured for this table, mapped by column family
+    ID. Views: `SCHEMA_VIEW`, `FULL`
 
     Messages:
       AdditionalProperty: An additional property for a ColumnFamiliesValue

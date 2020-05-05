@@ -53,12 +53,7 @@ FILE_SHARE_ARG_SPEC = {
             default_unit='GB',
             lower_bound='1TB',
             upper_bound='65434GB',
-            suggested_binary_size_scales=['GB', 'GiB', 'TB', 'TiB']
-        ),
-    'source-snapshot':
-        str,
-    'source-snapshot-region':
-        str,
+            suggested_binary_size_scales=['GB', 'GiB', 'TB', 'TiB']),
 }
 
 
@@ -129,12 +124,16 @@ def AddNetworkArg(parser):
       help=network_help)
 
 
-def AddFileShareArg(parser, include_snapshot_flags=False, required=True):
+def AddFileShareArg(parser,
+                    include_snapshot_flags=False,
+                    include_backup_flags=False,
+                    required=True):
   """Adds a --file-share flag to the given parser.
 
   Args:
     parser: argparse parser.
     include_snapshot_flags: bool, whether to include --source-snapshot flags.
+    include_backup_flags: bool, whether to include --source-backup flags.
     required: bool, passthrough to parser.add_argument.
   """
   file_share_help = """\
@@ -149,20 +148,39 @@ def AddFileShareArg(parser, include_snapshot_flags=False, required=True):
       *name*::: The desired logical name of the volume.
 
       """
+  source_backup_help = """\
+
+      *source-backup*::: The name of the backup to restore from.
+
+      *source-backup-region*::: The region of the source backup.
+
+      """
   source_snapshot_help = """\
+
       *source-snapshot*::: The name of the snapshot to restore from.
 
       *source-snapshot-region*::: The region of the source snapshot. If
       unspecified, it is assumed that the Filestore snapshot is local and
       instance-zone will be used.
+
       """
+
+  file_share_arg_spec = FILE_SHARE_ARG_SPEC.copy()
+  if include_backup_flags:
+    file_share_arg_spec['source-backup'] = str
+    file_share_arg_spec['source-backup-region'] = str
+  if include_snapshot_flags:
+    file_share_arg_spec['source-snapshot'] = str
+    file_share_arg_spec['source-snapshot-region'] = str
+
   parser.add_argument(
       '--file-share',
-      type=arg_parsers.ArgDict(spec=FILE_SHARE_ARG_SPEC,
-                               required_keys=['name', 'capacity']),
+      type=arg_parsers.ArgDict(
+          spec=file_share_arg_spec, required_keys=['name', 'capacity']),
       required=required,
-      help=file_share_help + (source_snapshot_help if include_snapshot_flags
-                              else ''))
+      help=file_share_help +
+      (source_backup_help if include_backup_flags else '') +
+      (source_snapshot_help if include_snapshot_flags else ''))
 
 
 def AddInstanceCreateArgs(parser, api_version):
@@ -174,8 +192,11 @@ def AddInstanceCreateArgs(parser, api_version):
   messages = filestore_client.GetMessages(version=api_version)
   GetTierArg(messages).choice_arg.AddToParser(parser)
   AddAsyncFlag(parser)
-  AddFileShareArg(parser, include_snapshot_flags=
-                  (api_version == filestore_client.ALPHA_API_VERSION))
+  AddFileShareArg(
+      parser,
+      include_snapshot_flags=(
+          api_version == filestore_client.ALPHA_API_VERSION),
+      include_backup_flags=(api_version == filestore_client.ALPHA_API_VERSION))
   AddNetworkArg(parser)
   labels_util.AddCreateLabelsFlags(parser)
 

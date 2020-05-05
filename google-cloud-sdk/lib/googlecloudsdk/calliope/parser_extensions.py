@@ -427,23 +427,23 @@ class ArgumentParser(argparse.ArgumentParser):
       # Only do this for flag names.
       if not isinstance(arg, six.string_types):
         continue
-      if arg.startswith('--'):
-        # Strip the flag value if any from the suggestion.
-        flag = arg.split('=')[0]
+      # Strip the flag value if any from the suggestion.
+      flag = arg.split('=')[0]
+      if flag.startswith('--'):
         suggestion = suggester.GetSuggestion(flag)
         arg = self._AddLocations(arg)
       else:
         suggestion = None
       if arg in messages:
         continue
+      if self._ExistingFlagAlternativeReleaseTracks(flag):
+        existing_alternatives = self._ExistingFlagAlternativeReleaseTracks(flag)
+        messages.append('\n {} flag is available in one or more alternate '
+                        'release tracks. Try:\n'.format(flag))
+        messages.append('\n  '.join(existing_alternatives) +'\n')
       if suggestion:
         suggestions[arg] = suggestion
         messages.append(arg + " (did you mean '{0}'?)".format(suggestion))
-      elif self._ExistingFlagAlternativeReleaseTracks(arg):
-        existing_alternatives = self._ExistingFlagAlternativeReleaseTracks(arg)
-        messages.append('\n {} flag is available in one or more alternate '
-                        'release tracks. Try:\n'.format(arg))
-        messages.append('\n  '.join(existing_alternatives))
       else:
         messages.append(arg)
 

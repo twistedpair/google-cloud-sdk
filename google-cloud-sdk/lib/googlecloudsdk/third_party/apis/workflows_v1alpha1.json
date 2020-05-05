@@ -291,7 +291,7 @@
           "type": "string"
         },
         "description": {
-          "description": "Description of the workflow provided by the user.",
+          "description": "Description of the workflow provided by the user.\nMust be at most 1000 unicode characters long.",
           "type": "string"
         },
         "sourceContents": {

@@ -9,7 +9,7 @@ class RunV1beta1(base_api.BaseApiClient):
 
   MESSAGES_MODULE = messages
   BASE_URL = u'https://run.googleapis.com/'
-  MTLS_BASE_URL = u''
+  MTLS_BASE_URL = u'https://run.mtls.googleapis.com/'
 
   _PACKAGE = u'run'
   _SCOPES = [u'https://www.googleapis.com/auth/cloud-platform']
@@ -37,6 +37,8 @@ class RunV1beta1(base_api.BaseApiClient):
         additional_http_headers=additional_http_headers,
         response_encoding=response_encoding)
     self.customresourcedefinitions = self.CustomresourcedefinitionsService(self)
+    self.namespaces_customresourcedefinitions = self.NamespacesCustomresourcedefinitionsService(self)
+    self.namespaces = self.NamespacesService(self)
     self.projects_locations_customresourcedefinitions = self.ProjectsLocationsCustomresourcedefinitionsService(self)
     self.projects_locations = self.ProjectsLocationsService(self)
     self.projects = self.ProjectsService(self)
@@ -77,6 +79,53 @@ class RunV1beta1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+  class NamespacesCustomresourcedefinitionsService(base_api.BaseApiService):
+    """Service class for the namespaces_customresourcedefinitions resource."""
+
+    _NAME = u'namespaces_customresourcedefinitions'
+
+    def __init__(self, client):
+      super(RunV1beta1.NamespacesCustomresourcedefinitionsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Get(self, request, global_params=None):
+      r"""Rpc to get information about a CustomResourceDefinition.
+
+      Args:
+        request: (RunNamespacesCustomresourcedefinitionsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (CustomResourceDefinition) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'apis/apiextensions.k8s.io/v1beta1/namespaces/{namespacesId}/customresourcedefinitions/{customresourcedefinitionsId}',
+        http_method=u'GET',
+        method_id=u'run.namespaces.customresourcedefinitions.get',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[],
+        relative_path=u'apis/apiextensions.k8s.io/v1beta1/{+name}',
+        request_field='',
+        request_type_name=u'RunNamespacesCustomresourcedefinitionsGetRequest',
+        response_type_name=u'CustomResourceDefinition',
+        supports_download=False,
+    )
+
+  class NamespacesService(base_api.BaseApiService):
+    """Service class for the namespaces resource."""
+
+    _NAME = u'namespaces'
+
+    def __init__(self, client):
+      super(RunV1beta1.NamespacesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
   class ProjectsLocationsCustomresourcedefinitionsService(base_api.BaseApiService):
     """Service class for the projects_locations_customresourcedefinitions resource."""
 
@@ -86,6 +135,33 @@ class RunV1beta1(base_api.BaseApiClient):
       super(RunV1beta1.ProjectsLocationsCustomresourcedefinitionsService, self).__init__(client)
       self._upload_configs = {
           }
+
+    def Get(self, request, global_params=None):
+      r"""Rpc to get information about a CustomResourceDefinition.
+
+      Args:
+        request: (RunProjectsLocationsCustomresourcedefinitionsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (CustomResourceDefinition) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1beta1/projects/{projectsId}/locations/{locationsId}/customresourcedefinitions/{customresourcedefinitionsId}',
+        http_method=u'GET',
+        method_id=u'run.projects.locations.customresourcedefinitions.get',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[],
+        relative_path=u'v1beta1/{+name}',
+        request_field='',
+        request_type_name=u'RunProjectsLocationsCustomresourcedefinitionsGetRequest',
+        response_type_name=u'CustomResourceDefinition',
+        supports_download=False,
+    )
 
     def List(self, request, global_params=None):
       r"""Rpc to list custom resource definitions.

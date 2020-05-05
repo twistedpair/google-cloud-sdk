@@ -545,6 +545,8 @@ class ServerlessOperations(object):
       with metrics.RecordDuration(metric_names.GET_REVISION):
         response = self._client.namespaces_revisions.Get(request)
       return revision.Revision(response, messages)
+    except api_exceptions.InvalidDataFromServerError as e:
+      serverless_exceptions.MaybeRaiseCustomFieldMismatch(e)
     except api_exceptions.HttpNotFoundError:
       return None
 
@@ -624,23 +626,32 @@ class ServerlessOperations(object):
     return serv_route.active_revisions
 
   def ListServices(self, namespace_ref):
+    """Returns all services in the namespace."""
     messages = self.messages_module
     request = messages.RunNamespacesServicesListRequest(
         parent=namespace_ref.RelativeName())
-    with metrics.RecordDuration(metric_names.LIST_SERVICES):
-      response = self._client.namespaces_services.List(request)
-    return [service.Service(item, messages) for item in response.items]
+    try:
+      with metrics.RecordDuration(metric_names.LIST_SERVICES):
+        response = self._client.namespaces_services.List(request)
+      return [service.Service(item, messages) for item in response.items]
+    except api_exceptions.InvalidDataFromServerError as e:
+      serverless_exceptions.MaybeRaiseCustomFieldMismatch(e)
 
   def ListConfigurations(self, namespace_ref):
+    """Returns all configurations in the namespace."""
     messages = self.messages_module
     request = messages.RunNamespacesConfigurationsListRequest(
         parent=namespace_ref.RelativeName())
-    with metrics.RecordDuration(metric_names.LIST_CONFIGURATIONS):
-      response = self._client.namespaces_configurations.List(request)
-    return [configuration.Configuration(item, messages)
-            for item in response.items]
+    try:
+      with metrics.RecordDuration(metric_names.LIST_CONFIGURATIONS):
+        response = self._client.namespaces_configurations.List(request)
+      return [configuration.Configuration(item, messages)
+              for item in response.items]
+    except api_exceptions.InvalidDataFromServerError as e:
+      serverless_exceptions.MaybeRaiseCustomFieldMismatch(e)
 
   def ListRoutes(self, namespace_ref):
+    """Returns all routes in the namespace."""
     messages = self.messages_module
     request = messages.RunNamespacesRoutesListRequest(
         parent=namespace_ref.RelativeName())
@@ -658,7 +669,9 @@ class ServerlessOperations(object):
       with metrics.RecordDuration(metric_names.GET_SERVICE):
         service_get_response = self._client.namespaces_services.Get(
             service_get_request)
-      return service.Service(service_get_response, messages)
+        return service.Service(service_get_response, messages)
+    except api_exceptions.InvalidDataFromServerError as e:
+      serverless_exceptions.MaybeRaiseCustomFieldMismatch(e)
     except api_exceptions.HttpNotFoundError:
       return None
 
@@ -683,6 +696,8 @@ class ServerlessOperations(object):
         configuration_get_response = self._client.namespaces_configurations.Get(
             configuration_get_request)
       return configuration.Configuration(configuration_get_response, messages)
+    except api_exceptions.InvalidDataFromServerError as e:
+      serverless_exceptions.MaybeRaiseCustomFieldMismatch(e)
     except api_exceptions.HttpNotFoundError:
       return None
 
@@ -758,8 +773,11 @@ class ServerlessOperations(object):
     request = messages.RunNamespacesRevisionsListRequest(
         parent=namespace_ref.RelativeName(),
         labelSelector='{} = {}'.format(revision.NONCE_LABEL, nonce))
-    response = self._client.namespaces_revisions.List(request)
-    return [revision.Revision(item, messages) for item in response.items]
+    try:
+      response = self._client.namespaces_revisions.List(request)
+      return [revision.Revision(item, messages) for item in response.items]
+    except api_exceptions.InvalidDataFromServerError as e:
+      serverless_exceptions.MaybeRaiseCustomFieldMismatch(e)
 
   def _GetBaseRevision(self, template, metadata, status):
     """Return a Revision for use as the "base revision" for a change.
@@ -893,6 +911,8 @@ class ServerlessOperations(object):
           raw_service = self._client.namespaces_services.Create(
               serv_create_req)
         return service.Service(raw_service, messages)
+    except api_exceptions.InvalidDataFromServerError as e:
+      serverless_exceptions.MaybeRaiseCustomFieldMismatch(e)
     except api_exceptions.HttpBadRequestError as e:
       exceptions.reraise(serverless_exceptions.HttpError(e))
     except api_exceptions.HttpNotFoundError as e:
@@ -1096,15 +1116,18 @@ class ServerlessOperations(object):
       # 'service-less' operation.
       request.labelSelector = 'serving.knative.dev/service = {}'.format(
           service_name)
-    for result in list_pager.YieldFromList(
-        service=self._client.namespaces_revisions,
-        request=request,
-        limit=limit,
-        batch_size=page_size,
-        current_token_attribute='continue_',
-        next_token_attribute=('metadata', 'continue_'),
-        batch_size_attribute='limit'):
-      yield revision.Revision(result, messages)
+    try:
+      for result in list_pager.YieldFromList(
+          service=self._client.namespaces_revisions,
+          request=request,
+          limit=limit,
+          batch_size=page_size,
+          current_token_attribute='continue_',
+          next_token_attribute=('metadata', 'continue_'),
+          batch_size_attribute='limit'):
+        yield revision.Revision(result, messages)
+    except api_exceptions.InvalidDataFromServerError as e:
+      serverless_exceptions.MaybeRaiseCustomFieldMismatch(e)
 
   def ListDomainMappings(self, namespace_ref):
     """List all domain mappings.

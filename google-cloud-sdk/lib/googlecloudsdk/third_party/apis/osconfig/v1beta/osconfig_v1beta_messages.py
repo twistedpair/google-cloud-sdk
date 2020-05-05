@@ -502,9 +502,8 @@ class MonthlySchedule(_messages.Message):
 
 
 class OneTimeSchedule(_messages.Message):
-  r"""Sets the time for a one time patch deployment. Timestamp is in <a
-  href="https://www.ietf.org/rfc/rfc3339.txt" target="_blank">RFC3339</a> text
-  format.
+  r"""Sets the time for a one time patch deployment. Timestamp is in
+  [RFC3339](https://www.ietf.org/rfc/rfc3339.txt) text format.
 
   Fields:
     executeTime: Required. The desired patch job execution time.
@@ -897,22 +896,21 @@ class PatchDeployment(_messages.Message):
   r"""Patch deployments are configurations that individual patch jobs use to
   complete a patch. These configurations include instance filter, package
   repository settings, and a schedule. For more information about creating and
-  managing patch deployments, see [Scheduling patch jobs](/compute/docs/os-
-  patch-management/schedule-patch-jobs).
+  managing patch deployments, see [Scheduling patch
+  jobs](https://cloud.google.com/compute/docs/os-patch-management/schedule-
+  patch-jobs).
 
   Fields:
     createTime: Output only. Time the patch deployment was created. Timestamp
-      is in <a href="https://www.ietf.org/rfc/rfc3339.txt"
-      target="_blank">RFC3339</a> text format.
+      is in [RFC3339](https://www.ietf.org/rfc/rfc3339.txt) text format.
     description: Optional. Description of the patch deployment. Length of the
       description is limited to 1024 characters.
     duration: Optional. Duration of the patch. After the duration ends, the
       patch times out.
     instanceFilter: Required. VM instances to patch.
     lastExecuteTime: Output only. The last time a patch job was started by
-      this deployment. Timestamp is in <a
-      href="https://www.ietf.org/rfc/rfc3339.txt" target="_blank">RFC3339</a>
-      text format.
+      this deployment. Timestamp is in
+      [RFC3339](https://www.ietf.org/rfc/rfc3339.txt) text format.
     name: Unique name for the patch deployment resource in a project. The
       patch deployment name is in the form:
       `projects/{project_id}/patchDeployments/{patch_deployment_id}`. This
@@ -921,8 +919,8 @@ class PatchDeployment(_messages.Message):
     patchConfig: Optional. Patch configuration that is applied.
     recurringSchedule: Required. Schedule recurring executions.
     updateTime: Output only. Time the patch deployment was last updated.
-      Timestamp is in <a href="https://www.ietf.org/rfc/rfc3339.txt"
-      target="_blank">RFC3339</a> text format.
+      Timestamp is in [RFC3339]("https://www.ietf.org/rfc/rfc3339.txt) text
+      format.
   """
 
   createTime = _messages.StringField(1)
@@ -1013,8 +1011,9 @@ class PatchJob(_messages.Message):
   r"""A high level representation of a patch job that is either in progress or
   has completed.  Instances details are not included in the job. To paginate
   through instance details, use ListPatchJobInstanceDetails.  For more
-  information about patch jobs, see [Creating patch jobs](/compute/docs/os-
-  patch-management/create-patch-job).
+  information about patch jobs, see [Creating patch
+  jobs](https://cloud.google.com/compute/docs/os-patch-management/create-
+  patch-job).
 
   Enums:
     StateValueValuesEnum: The current state of the PatchJob .
@@ -1086,8 +1085,8 @@ class PatchJob(_messages.Message):
 class PatchJobInstanceDetails(_messages.Message):
   r"""Patch details for a VM instance. For more information about reviewing VM
   instance details, see [Listing all VM instance details for a specific patch
-  job](/compute/docs/os-patch-management/manage-patch-jobs#list-instance-
-  details).
+  job](https://cloud.google.com/compute/docs/os-patch-management/manage-patch-
+  jobs#list-instance-details).
 
   Enums:
     StateValueValuesEnum: Current state of instance patch.
@@ -1261,30 +1260,28 @@ class SoftwareRecipe(_messages.Message):
   (either defined in a file or directly in this api) in bash, sh, cmd, and
   powershell.  Updating a software recipe  If a recipe is assigned to an
   instance and there is a recipe with the same name but a lower version
-  already installed and the assigned state of the recipe is
-  `INSTALLED_KEEP_UPDATED`, then the recipe is updated to the new version.
-  Script Working Directories  Each script or execution step is run in its own
-  temporary directory which is deleted after completing the step.
+  already installed and the assigned state of the recipe is `UPDATED`, then
+  the recipe is updated to the new version.  Script Working Directories  Each
+  script or execution step is run in its own temporary directory which is
+  deleted after completing the step.
 
   Enums:
     DesiredStateValueValuesEnum: Default is INSTALLED. The desired state the
       agent should maintain for this recipe.  INSTALLED: The software recipe
       is installed on the instance but            won't be updated to new
-      versions. INSTALLED_KEEP_UPDATED: The software recipe is installed on
-      the                         instance. The recipe is updated to a higher
-      version, if a higher version of the recipe is
-      assigned to this instance. REMOVE: Remove is unsupported for software
-      recipes and attempts to         create or update a recipe to the REMOVE
-      state is rejected.
+      versions. UPDATED: The software recipe is installed on the instance. The
+      recipe is          updated to a higher version, if a higher version of
+      the recipe is          assigned to this instance. REMOVE: Remove is
+      unsupported for software recipes and attempts to         create or
+      update a recipe to the REMOVE state is rejected.
 
   Fields:
     artifacts: Resources available to be used in the steps in the recipe.
     desiredState: Default is INSTALLED. The desired state the agent should
       maintain for this recipe.  INSTALLED: The software recipe is installed
       on the instance but            won't be updated to new versions.
-      INSTALLED_KEEP_UPDATED: The software recipe is installed on the
-      instance. The recipe is updated to a higher
-      version, if a higher version of the recipe is
+      UPDATED: The software recipe is installed on the instance. The recipe is
+      updated to a higher version, if a higher version of the recipe is
       assigned to this instance. REMOVE: Remove is unsupported for software
       recipes and attempts to         create or update a recipe to the REMOVE
       state is rejected.
@@ -1308,12 +1305,12 @@ class SoftwareRecipe(_messages.Message):
   class DesiredStateValueValuesEnum(_messages.Enum):
     r"""Default is INSTALLED. The desired state the agent should maintain for
     this recipe.  INSTALLED: The software recipe is installed on the instance
-    but            won't be updated to new versions. INSTALLED_KEEP_UPDATED:
-    The software recipe is installed on the                         instance.
-    The recipe is updated to a higher                         version, if a
-    higher version of the recipe is                         assigned to this
-    instance. REMOVE: Remove is unsupported for software recipes and attempts
-    to         create or update a recipe to the REMOVE state is rejected.
+    but            won't be updated to new versions. UPDATED: The software
+    recipe is installed on the instance. The recipe is          updated to a
+    higher version, if a higher version of the recipe is          assigned to
+    this instance. REMOVE: Remove is unsupported for software recipes and
+    attempts to         create or update a recipe to the REMOVE state is
+    rejected.
 
     Values:
       DESIRED_STATE_UNSPECIFIED: The default is to ensure the package is

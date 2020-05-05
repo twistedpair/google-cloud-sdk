@@ -401,15 +401,22 @@ class BackendRule(_messages.Message):
 
 class Billing(_messages.Message):
   r"""Billing related configuration of the service.  The following example
-  shows how to configure monitored resources and metrics for billing:
-  monitored_resources:     - type: library.googleapis.com/branch       labels:
-  - key: /city         description: The city where the library branch is
-  located in.       - key: /name         description: The name of the branch.
-  metrics:     - name: library.googleapis.com/book/borrowed_count
-  metric_kind: DELTA       value_type: INT64     billing:
-  consumer_destinations:       - monitored_resource:
-  library.googleapis.com/branch         metrics:         -
-  library.googleapis.com/book/borrowed_count
+  shows how to configure monitored resources and metrics for billing,
+  `consumer_destinations` is the only supported destination and the monitored
+  resources need at least one label key `cloud.googleapis.com/location` to
+  indicate the location of the billing usage, using different monitored
+  resources between monitoring and billing is recommended so they can be
+  evolved independently:       monitored_resources:     - type:
+  library.googleapis.com/billing_branch       labels:       - key:
+  cloud.googleapis.com/location         description: |           Predefined
+  label to support billing location restriction.       - key: city
+  description: |           Custom label to define the city where the library
+  branch is located           in.       - key: name         description:
+  Custom label to define the name of the library branch.     metrics:     -
+  name: library.googleapis.com/book/borrowed_count       metric_kind: DELTA
+  value_type: INT64       unit: "1"     billing:       consumer_destinations:
+  - monitored_resource: library.googleapis.com/billing_branch         metrics:
+  - library.googleapis.com/book/borrowed_count
 
   Fields:
     consumerDestinations: Billing configurations for sending metrics to the
@@ -440,10 +447,14 @@ class Binding(_messages.Message):
   r"""Associates `members` with a `role`.
 
   Fields:
-    condition: The condition that is associated with this binding. NOTE: An
-      unsatisfied condition will not allow user access via current binding.
-      Different bindings, including their conditions, are examined
-      independently.
+    condition: The condition that is associated with this binding.  If the
+      condition evaluates to `true`, then this binding applies to the current
+      request.  If the condition evaluates to `false`, then this binding does
+      not apply to the current request. However, a different role binding
+      might grant the same role to one or more of the members in this binding.
+      To learn which resources support conditions in their IAM policies, see
+      the [IAM documentation](https://cloud.google.com/iam/help/conditions
+      /resource-policies).
     members: Specifies the identities requesting access for a Cloud Platform
       resource. `members` can have the following values:  * `allUsers`: A
       special identifier that represents anyone who is    on the internet;
@@ -1454,7 +1465,7 @@ class GetIamPolicyRequest(_messages.Message):
 
   Fields:
     options: OPTIONAL: A `GetPolicyOptions` object for specifying options to
-      `GetIamPolicy`. This field is only used by Cloud IAM.
+      `GetIamPolicy`.
   """
 
   options = _messages.MessageField('GetPolicyOptions', 1)
@@ -1468,7 +1479,10 @@ class GetPolicyOptions(_messages.Message):
       returned.  Valid values are 0, 1, and 3. Requests specifying an invalid
       value will be rejected.  Requests for policies with any conditional
       bindings must specify version 3. Policies without any conditional
-      bindings may specify any valid value or leave the field unset.
+      bindings may specify any valid value or leave the field unset.  To learn
+      which resources support conditions in their IAM policies, see the [IAM
+      documentation](https://cloud.google.com/iam/help/conditions/resource-
+      policies).
   """
 
   requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -2676,19 +2690,22 @@ class Policy(_messages.Message):
   `bindings`. A `binding` binds one or more `members` to a single `role`.
   Members can be user accounts, service accounts, Google groups, and domains
   (such as G Suite). A `role` is a named list of permissions; each `role` can
-  be an IAM predefined role or a user-created custom role.  Optionally, a
-  `binding` can specify a `condition`, which is a logical expression that
-  allows access to a resource only if the expression evaluates to `true`. A
-  condition can add constraints based on attributes of the request, the
-  resource, or both.  **JSON example:**      {       "bindings": [         {
+  be an IAM predefined role or a user-created custom role.  For some types of
+  Google Cloud resources, a `binding` can also specify a `condition`, which is
+  a logical expression that allows access to a resource only if the expression
+  evaluates to `true`. A condition can add constraints based on attributes of
+  the request, the resource, or both. To learn which resources support
+  conditions in their IAM policies, see the [IAM
+  documentation](https://cloud.google.com/iam/help/conditions/resource-
+  policies).  **JSON example:**      {       "bindings": [         {
   "role": "roles/resourcemanager.organizationAdmin",           "members": [
   "user:mike@example.com",             "group:admins@example.com",
   "domain:google.com",             "serviceAccount:my-project-
   id@appspot.gserviceaccount.com"           ]         },         {
-  "role": "roles/resourcemanager.organizationViewer",           "members":
-  ["user:eve@example.com"],           "condition": {             "title":
-  "expirable access",             "description": "Does not grant access after
-  Sep 2020",             "expression": "request.time <
+  "role": "roles/resourcemanager.organizationViewer",           "members": [
+  "user:eve@example.com"           ],           "condition": {
+  "title": "expirable access",             "description": "Does not grant
+  access after Sep 2020",             "expression": "request.time <
   timestamp('2020-10-01T00:00:00.000Z')",           }         }       ],
   "etag": "BwWWja0YfJA=",       "version": 3     }  **YAML example:**
   bindings:     - members:       - user:mike@example.com       -
@@ -2731,7 +2748,10 @@ class Policy(_messages.Message):
       a version `3` policy with a version `1` policy, and all of the
       conditions in the version `3` policy are lost.  If a policy does not
       include any conditions, operations on that policy may specify any valid
-      version or leave the field unset.
+      version or leave the field unset.  To learn which resources support
+      conditions in their IAM policies, see the [IAM
+      documentation](https://cloud.google.com/iam/help/conditions/resource-
+      policies).
   """
 
   auditConfigs = _messages.MessageField('AuditConfig', 1, repeated=True)
@@ -4094,8 +4114,7 @@ class SetIamPolicyRequest(_messages.Message):
       might reject them.
     updateMask: OPTIONAL: A FieldMask specifying which fields of the policy to
       modify. Only the fields in the mask will be modified. If no mask is
-      provided, the following default mask is used: paths: "bindings, etag"
-      This field is only used by Cloud IAM.
+      provided, the following default mask is used:  `paths: "bindings, etag"`
   """
 
   policy = _messages.MessageField('Policy', 1)

@@ -4,7 +4,7 @@
  "id": "storage:v1",
  "name": "storage",
  "version": "v1",
- "revision": "20200410",
+ "revision": "20200429",
  "title": "Cloud Storage JSON API",
  "description": "Stores and retrieves potentially large, immutable data objects.",
  "ownerDomain": "google.com",
@@ -278,6 +278,11 @@
             "description": "Number of days elapsed since the user-specified timestamp set on an object. The condition is satisfied if the days elapsed is at least this number. If no custom timestamp is specified on an object, the condition does not apply.",
             "format": "int32"
            },
+           "daysSinceNoncurrentTime": {
+            "type": "integer",
+            "description": "Number of days elapsed since the noncurrent timestamp of an object. The condition is satisfied if the days elapsed is at least this number. This condition is relevant only for versioned objects. The value of the field must be a nonnegative integer. If it's zero, the object version will become eligible for Lifecycle action as soon as it becomes noncurrent.",
+            "format": "int32"
+           },
            "isLive": {
             "type": "boolean",
             "description": "Relevant only for versioned objects. If the value is true, this condition matches live objects; if the value is false, it matches archived objects."
@@ -292,6 +297,11 @@
             "items": {
              "type": "string"
             }
+           },
+           "noncurrentTimeBefore": {
+            "type": "string",
+            "description": "A timestamp in RFC 3339 format. This condition is satisfied when the noncurrent time on an object is before this timestamp. This condition is relevant only for versioned objects.",
+            "format": "date-time"
            },
            "numNewerVersions": {
             "type": "integer",

@@ -5,6 +5,133 @@ Copyright 2014-2020 Google Inc. All rights reserved.
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 
 
+## 291.0.0 (2020-05-05)
+
+### AI Platform
+
+* Added `--config` to `gcloud beta ai-platform versions update` and
+  `gcloud beta ai-platform versions update` to allow specifying manual and
+  auto-scaling parameters.
+
+### App Engine
+
+* Updated the Java SDK to version 1.9.80.
+  Please visit the following release notes for details:
+  <https://cloud.google.com/appengine/docs/java/release-notes>.
+
+### BigQuery
+
+* Enabled purchasing capacity commitments through the BQCLI.
+* Added support for passing empty array parameters.
+* Fixed issues with handling of YAML parse errors.
+* Fixed vulnerabilities related to pre-packaged dependencies.
+
+### Cloud Access Context Manager
+
+* Promoted `gcloud access-context-manager perimeters dry-run` command group to
+  GA.
+* Added the following flags to `gcloud access-context-manager perimeters create`:
+  * `--enable-vpc-accessible-services`
+  * `--vpc-allowed-services`
+* Added the following flags to `gcloud access-context-manager perimeters update`:
+  * `--enable-vpc-accessible-services`
+  * `--add-vpc-allowed-services`
+  * `--clear-vpc-allowed-services`
+  * `--remove-vpc-allowed-services`
+
+### Cloud Dataproc
+
+*   Added `--secondary-worker-type` to `gcloud dataproc clusters create`
+and `gcloud dataproc workflow-templates set-managed-cluster` commands.
+This adds the ability to create a cluster with secondary workers that are
+non-preemptible. If unspecified, secondary workers continue to be preemptible by
+default.
+
+### Cloud Functions
+
+* `gcloud functions logs read` now understands log entries with JSON payloads.
+
+### Cloud Healthcare
+
+* Promoted `gcloud healthcare` command group to GA.
+* This release includes some major changes that are different from beta.
+  * FHIR store creation requires a `version` in GA, or the request will fail.
+  * HL7V2 stores can now have multiple Pub/Sub topics, corresponding API is changed to accomplish that.
+
+### Cloud IAM
+
+*   Promoted  `--condition` flag to GA for
+    `gcloud iam service-account <add|remove>-iam-policy-binding`.
+
+### Cloud Resource Manager
+
+*   Promoted  `--condition` flag to GA for  the following commands:
+    *   `gcloud projects <add|remove>-iam-policy-binding`
+    *   `gcloud organizations <add|remove>-iam-policy-binding`
+    *   `gcloud resources-manager folders <add|remove>-iam-policy-binding`
+
+### Cloud Run
+
+* Promoted `--min-instances`, `--no-traffic`, `--use-http2`,
+  `--clear-config-maps`, `--set-config-maps`, `--remove-config-map`,
+  `--update-config-map`, `--clear-secrets`, `--set-secrets`,
+  `--remove-secrets`, `--update-secrets` flags of `gcloud run services update`
+  to beta.
+* Changed default output format of `gcloud run revisions describe` to be more
+  human-readable. For yaml output, use `--format=yaml`.
+
+### Cloud Services
+
+* Promoted `gcloud services vpc-peerings enable-vpc-service-controls` to beta.
+* Promoted `gcloud services vpc-peerings disable-vpc-service-controls` to beta.
+
+### Cloud Storage
+
+* 
+* Updated gsutil component to 4.50.
+
+### Compute Engine
+
+* Promoted `--export-subnet-routes-with-public-ip` and
+`--import-subnet-routes-with-public-ip` flags of
+`gcloud compute networks peerings create` and
+`gcloud compute networks peerings update` to beta and GA.
+* Promoted `--domains` flag of `gcloud compute ssl-certificates create` to GA.
+* Promoted `suspend` and `resume` commands of `gcloud compute instances` command group to beta.
+
+### Firebase Test Lab
+
+*   Added `--testing-special-entitlements` flag to
+    [`gcloud beta firebase test ios run`](//cloud.google.com/sdk/gcloud/reference/beta/firebase/test/ios).
+    This flag allows you to test iOS app entitlements by re-signing the
+    app with a new and explicit application-identifier.
+
+### Kpt
+
+* Updated kpt from v0.17.0 to v0.24.0.
+* Updated import of cli-utils from v0.6.0 to v0.8.0.
+* Updated import of kyaml from v0.1.4 to v0.1.8.
+* Updated import of cmd/config from v0.1.4 to v0.1.7.
+
+### Kubernetes Engine
+
+* Updates kubectl to change default version of kubectl from 1.14 to 1.15.
+* Additional kubectl versions:
+  * kubectl.1.14 (1.14.10)
+  * kubectl.1.15 (1.15.11)
+  * kubectl.1.16 (1.16.9)
+  * kubectl.1.17 (1.17.5)
+*   Promoted `--autoprovisioning-max-surge-upgrade`,
+    `--autoprovisioning-max-unavailable-upgrade`,
+    `--enable-autoprovisioning-autoupgrade`,
+    `--enable-autoprovisioning-autorepair` flags of
+    `gcloud container clusters create` and `gcloud container clusters update`
+    to GA.
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+
 ## 290.0.1 (2020-04-27)
 
 
@@ -12,7 +139,7 @@ Subscribe to these release notes at [https://groups.google.com/forum/#!forum/goo
 
 * Promoted `--domains` flag of `gcloud compute ssl-certificates create` to GA.
 
-## 290.0.0 (2020-04-21)
+## 290.0.0 (2020-04-22)
 
 ### Cloud Dataflow
 
@@ -45,6 +172,9 @@ Subscribe to these release notes at [https://groups.google.com/forum/#!forum/goo
         creation.
       * Use `--update-addons=ConfigConnector=ENABLED|DISABLED` to
         enable/disable the add-on for existing GKE clusters.
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 
 
 ## 289.0.0 (2020-04-14)

@@ -229,7 +229,7 @@ Currently the only supported fields to update are `labels`.
       r"""Sets the access control policy on the specified resource. Replaces any.
 existing policy.
 
-Can return Public Errors: NOT_FOUND, INVALID_ARGUMENT and PERMISSION_DENIED
+Can return `NOT_FOUND`, `INVALID_ARGUMENT`, and `PERMISSION_DENIED` errors.
 
       Args:
         request: (MlProjectsJobsSetIamPolicyRequest) input message
@@ -258,7 +258,7 @@ Can return Public Errors: NOT_FOUND, INVALID_ARGUMENT and PERMISSION_DENIED
     def TestIamPermissions(self, request, global_params=None):
       r"""Returns permissions that a caller has on the specified resource.
 If the resource does not exist, this will return an empty set of
-permissions, not a NOT_FOUND error.
+permissions, not a `NOT_FOUND` error.
 
 Note: This operation is designed to be used for building permission-aware
 UIs and command-line tools, not for authorization checking. This operation
@@ -1211,7 +1211,7 @@ Currently the only supported fields to update are `description` and
       r"""Sets the access control policy on the specified resource. Replaces any.
 existing policy.
 
-Can return Public Errors: NOT_FOUND, INVALID_ARGUMENT and PERMISSION_DENIED
+Can return `NOT_FOUND`, `INVALID_ARGUMENT`, and `PERMISSION_DENIED` errors.
 
       Args:
         request: (MlProjectsModelsSetIamPolicyRequest) input message
@@ -1240,7 +1240,7 @@ Can return Public Errors: NOT_FOUND, INVALID_ARGUMENT and PERMISSION_DENIED
     def TestIamPermissions(self, request, global_params=None):
       r"""Returns permissions that a caller has on the specified resource.
 If the resource does not exist, this will return an empty set of
-permissions, not a NOT_FOUND error.
+permissions, not a `NOT_FOUND` error.
 
 Note: This operation is designed to be used for building permission-aware
 UIs and command-line tools, not for authorization checking. This operation
@@ -1393,8 +1393,8 @@ is the parent resource, without the operations collection id.
 
     def Explain(self, request, global_params=None):
       r"""Performs explanation on the data in the request.
-AI Platform implements a custom `explain` verb on top of an HTTP POST
-method.
+
+<div>{% dynamic include "/ai-platform/includes/___explain-request" %}</div>
 
       Args:
         request: (MlProjectsExplainRequest) input message

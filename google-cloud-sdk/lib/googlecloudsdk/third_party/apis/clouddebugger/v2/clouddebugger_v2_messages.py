@@ -476,11 +476,9 @@ class Debuggee(_messages.Message):
     r"""Used when setting breakpoint canary for this debuggee.
 
     Values:
-      CANARY_MODE_UNSPECIFIED: Before "use_breakpoint_canary" is deprecated:
-        CANARY_MODE_UNSPECIFIED = use_breakpoint_canary ?
-        CANARY_MODE_DEFAULT_ENABLED :
-        CANARY_MODE_DEFAULT_DISABLED; After "use_breakpoint_canary" is
-        deprecated:   CANARY_MODE_UNSPECIFIED = CANARY_MODE_DEFAULT_ENABLED;
+      CANARY_MODE_UNSPECIFIED: CANARY_MODE_UNSPECIFIED is equivalent to
+        CANARY_MODE_ALWAYS_DISABLED so that if the debuggee is not configured
+        to use the canary feature, the feature will be disabled.
       CANARY_MODE_ALWAYS_ENABLED: Always enable breakpoint canary regardless
         of the value of breakpoint's canary option.
       CANARY_MODE_ALWAYS_DISABLED: Always disable breakpoint canary regardless

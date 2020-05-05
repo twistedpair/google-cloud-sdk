@@ -515,13 +515,13 @@ def AddCreateDiskArgs(parser, enable_kms=False, enable_snapshots=False,
       Creates and attaches persistent disks to the instances.
 
       *name*::: Specifies the name of the disk. This option cannot be
-      specified if more than one instance is being created.{}
+      specified if more than one instance is being created.{disk_name}
 
       *description*::: Optional textual description for the disk being created.
 
       *mode*::: Specifies the mode of the disk. Supported options
       are ``ro'' for read-only and ``rw'' for read-write. If
-      omitted, ``rw'' is used as a default.{}
+      omitted, ``rw'' is used as a default.{disk_mode}
 
       *image*::: Specifies the name of the image that the disk will be
       initialized with. A new disk will be created based on the given
@@ -561,14 +561,14 @@ def AddCreateDiskArgs(parser, enable_kms=False, enable_snapshots=False,
       types, run $ gcloud compute disk-types list. The default disk type
       is ``pd-standard''.
 
-      *device-name*::: {}
+      *device-name*::: {disk_device}
 
       *auto-delete*::: If ``yes'',  this persistent disk will be
       automatically deleted when the instance is deleted. However,
       if the disk is later detached from the instance, this option
       won't apply. The default value for this is ``yes''.
-      """.format(disk_name_extra_help, disk_mode_extra_help,
-                 disk_device_name_help)
+      """.format(disk_name=disk_name_extra_help, disk_mode=disk_mode_extra_help,
+                 disk_device=disk_device_name_help)
   if enable_kms:
     disk_help += """
       *kms-key*::: Fully qualified Cloud KMS cryptokey name that will

@@ -171,10 +171,14 @@ class Binding(_messages.Message):
   r"""Associates `members` with a `role`.
 
   Fields:
-    condition: The condition that is associated with this binding. NOTE: An
-      unsatisfied condition will not allow user access via current binding.
-      Different bindings, including their conditions, are examined
-      independently.
+    condition: The condition that is associated with this binding.  If the
+      condition evaluates to `true`, then this binding applies to the current
+      request.  If the condition evaluates to `false`, then this binding does
+      not apply to the current request. However, a different role binding
+      might grant the same role to one or more of the members in this binding.
+      To learn which resources support conditions in their IAM policies, see
+      the [IAM documentation](https://cloud.google.com/iam/help/conditions
+      /resource-policies).
     members: Specifies the identities requesting access for a Cloud Platform
       resource. `members` can have the following values:  * `allUsers`: A
       special identifier that represents anyone who is    on the internet;
@@ -221,12 +225,10 @@ class CloudassetBatchGetAssetsHistoryRequest(_messages.Message):
     ContentTypeValueValuesEnum: Optional. The content type.
 
   Fields:
-    assetNames: A list of the full names of the assets. For example: `//comput
-      e.googleapis.com/projects/my_project_123/zones/zone1/instances/instance1
-      `. See [Resource Names](https://cloud.google.com/apis/design/resource_na
-      mes#full_resource_name) and [Resource Name
-      Format](https://cloud.google.com/asset-inventory/docs/resource-name-
-      format) for more info.  The request becomes a no-op if the asset name
+    assetNames: A list of the full names of the assets. See:
+      https://cloud.google.com/asset-inventory/docs/resource-name-format
+      Example:  `//compute.googleapis.com/projects/my_project_123/zones/zone1/
+      instances/instance1`.  The request becomes a no-op if the asset name
       list is empty, and the max size of the asset name list is 100 in one
       request.
     contentType: Optional. The content type.
@@ -1472,19 +1474,22 @@ class Policy(_messages.Message):
   `bindings`. A `binding` binds one or more `members` to a single `role`.
   Members can be user accounts, service accounts, Google groups, and domains
   (such as G Suite). A `role` is a named list of permissions; each `role` can
-  be an IAM predefined role or a user-created custom role.  Optionally, a
-  `binding` can specify a `condition`, which is a logical expression that
-  allows access to a resource only if the expression evaluates to `true`. A
-  condition can add constraints based on attributes of the request, the
-  resource, or both.  **JSON example:**      {       "bindings": [         {
+  be an IAM predefined role or a user-created custom role.  For some types of
+  Google Cloud resources, a `binding` can also specify a `condition`, which is
+  a logical expression that allows access to a resource only if the expression
+  evaluates to `true`. A condition can add constraints based on attributes of
+  the request, the resource, or both. To learn which resources support
+  conditions in their IAM policies, see the [IAM
+  documentation](https://cloud.google.com/iam/help/conditions/resource-
+  policies).  **JSON example:**      {       "bindings": [         {
   "role": "roles/resourcemanager.organizationAdmin",           "members": [
   "user:mike@example.com",             "group:admins@example.com",
   "domain:google.com",             "serviceAccount:my-project-
   id@appspot.gserviceaccount.com"           ]         },         {
-  "role": "roles/resourcemanager.organizationViewer",           "members":
-  ["user:eve@example.com"],           "condition": {             "title":
-  "expirable access",             "description": "Does not grant access after
-  Sep 2020",             "expression": "request.time <
+  "role": "roles/resourcemanager.organizationViewer",           "members": [
+  "user:eve@example.com"           ],           "condition": {
+  "title": "expirable access",             "description": "Does not grant
+  access after Sep 2020",             "expression": "request.time <
   timestamp('2020-10-01T00:00:00.000Z')",           }         }       ],
   "etag": "BwWWja0YfJA=",       "version": 3     }  **YAML example:**
   bindings:     - members:       - user:mike@example.com       -
@@ -1527,7 +1532,10 @@ class Policy(_messages.Message):
       a version `3` policy with a version `1` policy, and all of the
       conditions in the version `3` policy are lost.  If a policy does not
       include any conditions, operations on that policy may specify any valid
-      version or leave the field unset.
+      version or leave the field unset.  To learn which resources support
+      conditions in their IAM policies, see the [IAM
+      documentation](https://cloud.google.com/iam/help/conditions/resource-
+      policies).
   """
 
   auditConfigs = _messages.MessageField('AuditConfig', 1, repeated=True)
@@ -1617,7 +1625,10 @@ class ResourceSearchResult(_messages.Message):
   r"""A result of Resource Search, containing information of a cloud resoure.
 
   Messages:
-    LabelsValue: Labels associated with this resource.
+    LabelsValue: Labels associated with this resource. See [Labelling and
+      grouping GCP resources](https://cloud.google.com/blog/products/gcp
+      /labelling-and-grouping-your-google-cloud-platform-resources) for more
+      information.
 
   Fields:
     assetType: The type of this resource. For example:
@@ -1625,20 +1636,29 @@ class ResourceSearchResult(_messages.Message):
     description: One or more paragraphs of text description of this resource.
       Maximum length could be up to 1M bytes.
     displayName: The display name of this resource.
-    labels: Labels associated with this resource.
+    labels: Labels associated with this resource. See [Labelling and grouping
+      GCP resources](https://cloud.google.com/blog/products/gcp/labelling-and-
+      grouping-your-google-cloud-platform-resources) for more information.
     location: Location can be "global", regional like "us-east1", or zonal
       like "us-west1-b".
     name: The full resource name. For example: `//compute.googleapis.com/proje
       cts/my_project_123/zones/zone1/instances/instance1`. See [Resource Names
       ](https://cloud.google.com/apis/design/resource_names#full_resource_name
       ) for more information.
+    networkTags: Network tags associated with this resource. Like labels,
+      network tags are a type of annotations used to group GCP resources. See
+      [Labelling GCP resources](https://cloud.google.com/blog/products/gcp
+      /labelling-and-grouping-your-google-cloud-platform-resources) for more
+      information.
     project: The project that this resource belongs to, in the form of
       `projects/{project_number}`.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
-    r"""Labels associated with this resource.
+    r"""Labels associated with this resource. See [Labelling and grouping GCP
+    resources](https://cloud.google.com/blog/products/gcp/labelling-and-
+    grouping-your-google-cloud-platform-resources) for more information.
 
     Messages:
       AdditionalProperty: An additional property for a LabelsValue object.
@@ -1666,7 +1686,8 @@ class ResourceSearchResult(_messages.Message):
   labels = _messages.MessageField('LabelsValue', 4)
   location = _messages.StringField(5)
   name = _messages.StringField(6)
-  project = _messages.StringField(7)
+  networkTags = _messages.StringField(7, repeated=True)
+  project = _messages.StringField(8)
 
 
 class SearchAllIamPoliciesResponse(_messages.Message):
