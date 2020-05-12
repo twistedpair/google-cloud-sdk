@@ -103,13 +103,24 @@ def GetVersionFromTag(client, messages, tag):
   return get_tag_res.version.split("/")[-1]
 
 
-def ListTags(client, messages, package):
+def ListTags(client,
+             messages,
+             package,
+             page_size=None,
+             page_token=None,
+             res=None):
   """Lists all tags under a package with the given package name."""
+  if not res:
+    res = []
   list_tags_req = messages.ArtifactregistryProjectsLocationsRepositoriesPackagesTagsListRequest(
-      parent=package)
+      parent=package, pageSize=page_size, pageToken=page_token)
   list_tags_res = client.projects_locations_repositories_packages_tags.List(
       list_tags_req)
-  return list_tags_res.tags
+  res.extend(list_tags_res.tags)
+  if list_tags_res.nextPageToken:
+    ListTags(client, messages, package, page_size, list_tags_res.nextPageToken,
+             res)
+  return res
 
 
 def ListVersionTags(client, messages, package, version):
@@ -130,13 +141,25 @@ def ListPackages(client, messages, repo):
   return list_pkgs_res.packages
 
 
-def ListVersions(client, messages, pkg, version_view):
+def ListVersions(client,
+                 messages,
+                 pkg,
+                 version_view,
+                 page_size=None,
+                 page_token=None,
+                 res=None):
   """Lists all versions under a package."""
+  if not res:
+    res = []
   list_vers_req = messages.ArtifactregistryProjectsLocationsRepositoriesPackagesVersionsListRequest(
-      parent=pkg, view=version_view)
+      parent=pkg, view=version_view, pageSize=page_size, pageToken=page_token)
   list_vers_res = client.projects_locations_repositories_packages_versions.List(
       list_vers_req)
-  return list_vers_res.versions
+  res.extend(list_vers_res.versions)
+  if list_vers_res.nextPageToken:
+    ListVersions(client, messages, pkg, version_view, page_size,
+                 list_vers_res.nextPageToken, res)
+  return res
 
 
 def ListRepositories(project):
@@ -159,14 +182,19 @@ def GetRepository(repo):
   return get_repo_res
 
 
-def ListLocations(project_id):
+def ListLocations(project_id, page_size=None, page_token=None, res=None):
   """Lists all locations for a given project."""
+  if not res:
+    res = []
   client = GetClient()
   messages = GetMessages()
   list_locs_req = messages.ArtifactregistryProjectsLocationsListRequest(
-      name="projects/"+ project_id)
+      name="projects/" + project_id, pageSize=page_size, pageToken=page_token)
   list_locs_res = client.projects_locations.List(list_locs_req)
-  return sorted([loc.locationId for loc in list_locs_res.locations])
+  res.extend(list_locs_res.locations)
+  if list_locs_res.nextPageToken:
+    ListLocations(project_id, page_size, list_locs_res.nextPageToken, res)
+  return sorted([loc.locationId for loc in res])
 
 
 def TestStorageIAMPermission(bucket, project):

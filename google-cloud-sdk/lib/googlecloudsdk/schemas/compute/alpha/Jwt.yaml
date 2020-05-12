@@ -42,7 +42,7 @@ properties:
     type: string
   jwksPublicKeys:
     description: |-
-      The provider?s public key set to validate the signature of the JWT.
+      The provider's public key set to validate the signature of the JWT.
     type: string
   jwtHeaders:
     description: |-

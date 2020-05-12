@@ -1220,6 +1220,13 @@ def VerifyOnePlatformFlags(args, release_track, product):
       raise serverless_exceptions.ConfigurationError(
           'Timeout duration must be less than 15m.')
 
+  if FlagIsExplicitlySet(args, 'trigger_filters'):
+    raise serverless_exceptions.ConfigurationError(
+        error_msg.format(
+            flag='--trigger-filters',
+            platform=PLATFORM_GKE,
+            platform_desc=_PLATFORM_SHORT_DESCRIPTIONS[PLATFORM_GKE]))
+
 
 def VerifyGKEFlags(args, release_track, product):
   """Raise ConfigurationError if args includes OnePlatform only arguments."""

@@ -154,7 +154,7 @@ first).
         method_id=u'workflowexecutions.projects.locations.workflows.executions.list',
         ordered_params=[u'parent'],
         path_params=[u'parent'],
-        query_params=[u'filter', u'pageSize', u'pageToken', u'view'],
+        query_params=[u'pageSize', u'pageToken', u'view'],
         relative_path=u'v1beta/{+parent}/executions',
         request_field='',
         request_type_name=u'WorkflowexecutionsProjectsLocationsWorkflowsExecutionsListRequest',

@@ -63,14 +63,14 @@ def CheckSpecifiedDiskArgs(args,
 
 
 def CreateDiskMessages(args,
-                       instance_name,
                        project,
                        location,
                        scope,
                        compute_client,
                        resource_parser,
-                       boot_disk_size_gb,
                        image_uri,
+                       boot_disk_size_gb=None,
+                       instance_name=None,
                        create_boot_disk=False,
                        csek_keys=None,
                        support_kms=False,
@@ -80,23 +80,26 @@ def CreateDiskMessages(args,
                        support_boot_snapshot_uri=False,
                        support_image_csek=False,
                        support_match_container_mount_disks=False,
-                       support_create_disk_snapshots=False):
+                       support_create_disk_snapshots=False,
+                       support_persistent_attached_disks=True):
   """Creates disk messages for a single instance."""
 
   container_mount_disk = []
   if support_match_container_mount_disks:
     container_mount_disk = args.container_mount_disk
 
-  persistent_disks = (
-      CreatePersistentAttachedDiskMessages(
-          resources=resource_parser,
-          compute_client=compute_client,
-          csek_keys=csek_keys,
-          disks=args.disk or [],
-          project=project,
-          location=location,
-          scope=scope,
-          container_mount_disk=container_mount_disk))
+  persistent_disks = []
+  if support_persistent_attached_disks:
+    persistent_disks = (
+        CreatePersistentAttachedDiskMessages(
+            resources=resource_parser,
+            compute_client=compute_client,
+            csek_keys=csek_keys,
+            disks=args.disk or [],
+            project=project,
+            location=location,
+            scope=scope,
+            container_mount_disk=container_mount_disk))
 
   persistent_create_disks = (
       CreatePersistentCreateDiskMessages(
@@ -135,9 +138,9 @@ def CreateDiskMessages(args,
     boot_disk = CreateDefaultBootAttachedDiskMessage(
         compute_client=compute_client,
         resources=resource_parser,
-        disk_type=args.boot_disk_type,
-        disk_device_name=args.boot_disk_device_name,
-        disk_auto_delete=args.boot_disk_auto_delete,
+        disk_type=getattr(args, 'boot_disk_type', None),
+        disk_device_name=getattr(args, 'boot_disk_device_name', None),
+        disk_auto_delete=getattr(args, 'boot_disk_auto_delete', None),
         disk_size_gb=boot_disk_size_gb,
         require_csek_key_create=(args.require_csek_key_create
                                  if csek_keys else None),
@@ -169,7 +172,7 @@ def CreatePersistentAttachedDiskMessages(resources,
   messages = compute_client.messages
   compute = compute_client.apitools_client
   for disk in disks:
-    name = disk['name']
+    name = disk.get('name')
 
     # Resolves the mode.
     mode_value = disk.get('mode', 'rw')
@@ -567,7 +570,8 @@ def _CreateLocalSsdMessage(resources,
   return local_ssd
 
 
-def GetNetworkInterfaces(args, client, holder, project, zone, skip_defaults):
+def GetNetworkInterfaces(args, client, holder, project, location, scope,
+                         skip_defaults):
   """Get network interfaces."""
   if (skip_defaults and not args.IsSpecified('network') and
       not instance_utils.IsAnySpecified(
@@ -593,7 +597,8 @@ def GetNetworkInterfaces(args, client, holder, project, zone, skip_defaults):
           no_address=args.no_address,
           address=args.address,
           project=project,
-          zone=zone,
+          location=location,
+          scope=scope,
           no_public_ptr=args.no_public_ptr,
           public_ptr=args.public_ptr,
           no_public_ptr_domain=args.no_public_ptr_domain,
@@ -603,7 +608,7 @@ def GetNetworkInterfaces(args, client, holder, project, zone, skip_defaults):
   ]
 
 
-def GetNetworkInterfacesAlpha(args, client, holder, project, zone,
+def GetNetworkInterfacesAlpha(args, client, holder, project, location, scope,
                               skip_defaults):
   if (skip_defaults and not instance_utils.IsAnySpecified(
       args, 'network', 'subnet', 'private_network_ip', 'no_address', 'address',
@@ -620,7 +625,8 @@ def GetNetworkInterfacesAlpha(args, client, holder, project, zone,
           no_address=args.no_address,
           address=args.address,
           project=project,
-          zone=zone,
+          location=location,
+          scope=scope,
           network_tier=getattr(args, 'network_tier', None),
           no_public_dns=getattr(args, 'no_public_dns', None),
           public_dns=getattr(args, 'public_dns', None),
@@ -639,7 +645,8 @@ def CreateNetworkInterfaceMessage(resources,
                                   no_address,
                                   address,
                                   project,
-                                  zone,
+                                  location,
+                                  scope,
                                   alias_ip_ranges_string=None,
                                   network_tier=None,
                                   no_public_dns=None,
@@ -650,7 +657,10 @@ def CreateNetworkInterfaceMessage(resources,
                                   public_ptr_domain=None):
   """Returns a new NetworkInterface message."""
   # TODO(b/30460572): instance reference should have zone name, not zone URI.
-  region = utils.ZoneNameToRegionName(zone.split('/')[-1])
+  if scope == compute_scopes.ScopeEnum.ZONE:
+    region = utils.ZoneNameToRegionName(location.split('/')[-1])
+  elif scope == compute_scopes.ScopeEnum.REGION:
+    region = location
   messages = compute_client.messages
   network_interface = messages.NetworkInterface()
   # By default interface is attached to default network. If network or subnet
@@ -728,7 +738,8 @@ def CreateNetworkInterfaceMessage(resources,
 
 
 def CreateNetworkInterfaceMessages(resources, compute_client,
-                                   network_interface_arg, project, zone):
+                                   network_interface_arg, project, location,
+                                   scope):
   """Create network interface messages.
 
   Args:
@@ -753,8 +764,9 @@ def CreateNetworkInterfaceMessages(resources, compute_client,
           CreateNetworkInterfaceMessage(
               resources, compute_client, interface.get('network', None),
               interface.get('subnet', None),
-              interface.get('private-network-ip', None), no_address, address,
-              project, zone, interface.get('aliases', None), network_tier))
+              interface.get('private-network-ip', None),
+              no_address, address, project, location, scope,
+              interface.get('aliases', None), network_tier))
   return result
 
 
@@ -763,7 +775,8 @@ def GetNetworkInterfacesWithValidation(args,
                                        compute_client,
                                        holder,
                                        project,
-                                       zone,
+                                       location,
+                                       scope,
                                        skip_defaults,
                                        support_public_dns=False):
   """Validates and retrieves the network interface message."""
@@ -773,15 +786,16 @@ def GetNetworkInterfacesWithValidation(args,
         compute_client=compute_client,
         network_interface_arg=args.network_interface,
         project=project,
-        zone=zone)
+        location=location,
+        scope=scope)
   else:
     instances_flags.ValidatePublicPtrFlags(args)
     if support_public_dns:
       instances_flags.ValidatePublicDnsFlags(args)
       return GetNetworkInterfacesAlpha(args, compute_client, holder, project,
-                                       zone, skip_defaults)
-    return GetNetworkInterfaces(args, compute_client, holder, project, zone,
-                                skip_defaults)
+                                       location, scope, skip_defaults)
+    return GetNetworkInterfaces(args, compute_client, holder, project, location,
+                                scope, skip_defaults)
 
 
 def GetProjectToServiceAccountMap(args, instance_refs, client, skip_defaults):
@@ -790,18 +804,19 @@ def GetProjectToServiceAccountMap(args, instance_refs, client, skip_defaults):
   for instance_ref in instance_refs:
     if instance_ref.project not in project_to_sa:
       project_to_sa[instance_ref.project] = GetProjectServiceAccount(
-          args, instance_ref.Name(), instance_ref.project, client,
-          skip_defaults)
+          args=args,
+          project=instance_ref.project,
+          client=client,
+          skip_defaults=skip_defaults,
+          instance_name=instance_ref.Name())
   return project_to_sa
 
 
-def GetProjectServiceAccount(
-    args,
-    instance_name,
-    project,
-    client,
-    skip_defaults,
-):
+def GetProjectServiceAccount(args,
+                             project,
+                             client,
+                             skip_defaults,
+                             instance_name=None):
   """Retrieves service accounts for the specified project."""
   scopes = None
   if not args.no_scopes and not args.scopes:
@@ -814,9 +829,12 @@ def GetProjectServiceAccount(
     if not errors:
       if not result[0].defaultServiceAccount:
         scopes = []
-        log.status.Print('There is no default service account for project {}. '
-                         'Instance {} will not have scopes.'.format(
-                             project, instance_name))
+        scope_warning = 'There is no default service account for project {}.'.format(
+            project)
+        if instance_name:
+          scope_warning += ' Instance {} will not have scopes.'.format(
+              instance_name)
+        log.status.Print(scope_warning)
   if scopes is None:
     scopes = [] if args.no_scopes else args.scopes
 
@@ -876,23 +894,23 @@ def GetAccelerators(args, compute_client, resource_parser, project, location,
   """Returns list of messages with accelerators for the instance."""
   if args.accelerator:
     accelerator_type_name = args.accelerator['type']
-    accelerator_type_ref = instance_utils.ParseAcceleratorType(
+    accelerator_type = instance_utils.ParseAcceleratorType(
         accelerator_type_name, resource_parser, project, location, scope)
     # Accelerator count is default to 1.
     accelerator_count = int(args.accelerator.get('count', 1))
     return CreateAcceleratorConfigMessages(compute_client.messages,
-                                           accelerator_type_ref,
+                                           accelerator_type,
                                            accelerator_count)
   return []
 
 
-def CreateAcceleratorConfigMessages(msgs, accelerator_type_ref,
+def CreateAcceleratorConfigMessages(msgs, accelerator_type,
                                     accelerator_count):
   """Returns a list of accelerator config messages.
 
   Args:
     msgs: tracked GCE API messages.
-    accelerator_type_ref: reference to the accelerator type.
+    accelerator_type: reference to the accelerator type.
     accelerator_count: number of accelerators to attach to the VM.
 
   Returns:
@@ -901,7 +919,7 @@ def CreateAcceleratorConfigMessages(msgs, accelerator_type_ref,
   """
 
   accelerator_config = msgs.AcceleratorConfig(
-      acceleratorType=accelerator_type_ref.SelfLink(),
+      acceleratorType=accelerator_type,
       acceleratorCount=accelerator_count)
   return [accelerator_config]
 

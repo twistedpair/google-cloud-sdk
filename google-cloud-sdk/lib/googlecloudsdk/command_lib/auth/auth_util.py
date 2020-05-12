@@ -23,7 +23,10 @@ import json
 import os
 import textwrap
 
+from googlecloudsdk.api_lib.cloudresourcemanager import projects_api
 from googlecloudsdk.api_lib.iamcredentials import util as impersonation_util
+from googlecloudsdk.calliope import exceptions as c_exc
+from googlecloudsdk.command_lib.projects import util as project_util
 from googlecloudsdk.core import config
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
@@ -37,11 +40,17 @@ from oauth2client import service_account
 from oauth2client.contrib import gce as oauth2client_gce
 
 
+SERVICEUSAGE_PERMISSION = 'serviceusage.services.use'
+
 ACCOUNT_TABLE_FORMAT = ("""\
     table[title='Credentialed Accounts'](
         status.yesno(yes='*', no=''):label=ACTIVE,
         account
     )""")
+
+
+class MissingPermissionOnQuotaProjectError(c_creds.ADCError):
+  """An error when ADC does not have permission to bill a quota project."""
 
 
 class _AcctInfo(object):
@@ -107,11 +116,7 @@ def PromptIfADCEnvVarIsSet():
 
 def WriteGcloudCredentialsToADC(creds, add_quota_project=False):
   """Writes gclouds's credential from auth login to ADC json."""
-  if c_creds.IsOauth2ClientCredentials(creds):
-    cred_type = c_creds.CredentialType.FromCredentials(creds).key
-  else:
-    cred_type = c_creds.CredentialTypeGoogleAuth.FromCredentials(creds).key
-  if cred_type != c_creds.USER_ACCOUNT_CREDS_NAME:
+  if not c_creds.IsUserAccountCredentials(creds):
     log.warning('Credentials cannot be written to application default '
                 'credentials because it is not a user credential.')
     return
@@ -140,3 +145,141 @@ def GetQuotaProjectFromADC():
     return None
 
 
+def AssertADCExists():
+  adc_path = config.ADCFilePath()
+  if not os.path.isfile(adc_path):
+    raise c_exc.BadFileException(
+        'Application default credentials have not been set up. '
+        'Run $ gcloud auth application-default login to set it up first.')
+
+
+def ADCIsUserAccount():
+  cred_file = config.ADCFilePath()
+  creds = client.GoogleCredentials.from_stream(cred_file)
+  return creds.serialization_data['type'] == 'authorized_user'
+
+
+def AdcHasGivenPermissionOnProject(project_id, permissions):
+  AssertADCExists()
+  project_ref = project_util.ParseProject(project_id)
+  return _AdcHasGivenPermissionOnProjectHelper(project_ref, permissions)
+
+
+def _AdcHasGivenPermissionOnProjectHelper(project_ref, permissions):
+  cred_file_override_old = properties.VALUES.auth.credential_file_override.Get()
+  try:
+    properties.VALUES.auth.credential_file_override.Set(config.ADCFilePath())
+    granted_permissions = projects_api.TestIamPermissions(
+        project_ref, permissions).permissions
+    return set(permissions) == set(granted_permissions)
+  finally:
+    properties.VALUES.auth.credential_file_override.Set(cred_file_override_old)
+
+
+def LogADCIsWritten(adc_path):
+  log.status.Print('\nCredentials saved to file: [{}]'.format(adc_path))
+  log.status.Print(
+      '\nThese credentials will be used by any library that requests '
+      'Application Default Credentials (ADC).')
+
+
+def LogQuotaProjectAdded(quota_project):
+  log.status.Print(
+      '\nQuota project "{}" was added to ADC which can be used by Google '
+      'client libraries for billing and quota. Note that some services may '
+      'still bill the project owning the resource.'.format(quota_project))
+
+
+def LogQuotaProjectNotFound():
+  log.warning('\nCannot find a quota project to add to ADC. You might receive '
+              'a "quota exceeded" or "API not enabled" error. Run $ gcloud '
+              'auth application-default set-quota-project to add '
+              'a quota project.')
+
+
+def LogMissingPermissionOnQuotaProject(quota_project):
+  log.warning(
+      '\nCannot add the project "{}" to ADC as the quota project because the '
+      'account in ADC does not have the "{}" permission on this project. '
+      'You might receive a "quota_exceeded" or "API not enabled" error. '
+      'Run $ gcloud auth application-default set-quota-project to add a quota '
+      'project.'.format(quota_project, SERVICEUSAGE_PERMISSION))
+
+
+def LogQuotaProjectDisabled():
+  log.warning(
+      '\nQuota project is disabled. You might receive a "quota exceeded" or '
+      '"API not enabled" error. Run $ gcloud auth application-default '
+      'set-quota-project to add a quota project.')
+
+
+def DumpADC(credentials, quota_project_disabled=False):
+  """Dumps the given credentials to ADC file.
+
+  Args:
+     credentials: a credentials from oauth2client or google-auth libraries, the
+       credentials to dump.
+     quota_project_disabled: bool, If quota project is explicitly disabled.
+  """
+  adc_path = c_creds.ADC(credentials).DumpADCToFile()
+  LogADCIsWritten(adc_path)
+  if quota_project_disabled:
+    LogQuotaProjectDisabled()
+
+
+def DumpADCOptionalQuotaProject(credentials):
+  """Dumps the given credentials to ADC file with an optional quota project.
+
+  Loads quota project from gcloud's context and writes it to application default
+  credentials file if the credentials has the "serviceusage.services.use"
+  permission on the quota project..
+
+  Args:
+     credentials: a credentials from oauth2client or google-auth libraries, the
+       credentials to dump.
+  """
+  adc_path = c_creds.ADC(credentials).DumpADCToFile()
+  LogADCIsWritten(adc_path)
+
+  quota_project = c_creds.GetQuotaProject(
+      credentials, force_resource_quota=True)
+  if not quota_project:
+    LogQuotaProjectNotFound()
+  elif AdcHasGivenPermissionOnProject(
+      quota_project, permissions=[SERVICEUSAGE_PERMISSION]):
+    c_creds.ADC(credentials).DumpExtendedADCToFile(quota_project=quota_project)
+    LogQuotaProjectAdded(quota_project)
+  else:
+    LogMissingPermissionOnQuotaProject(quota_project)
+
+
+def AddQuotaProjectToADC(quota_project):
+  """Adds the quota project to the existing ADC file.
+
+  Quota project is only added to ADC when the credentials have the
+  "serviceusage.services.use" permission on the project.
+
+  Args:
+    quota_project: str, The project id of a valid GCP project to add to ADC.
+
+  Raises:
+    MissingPermissionOnQuotaProjectError: If the credentials do not have the
+      "serviceusage.services.use" permission.
+  """
+  AssertADCExists()
+  if not ADCIsUserAccount():
+    raise c_exc.BadFileException(
+        'The application default credentials are not user credentials, quota '
+        'project cannot be added.')
+  if not AdcHasGivenPermissionOnProject(
+      quota_project, permissions=[SERVICEUSAGE_PERMISSION]):
+    raise MissingPermissionOnQuotaProjectError(
+        'Cannot add the project "{}" to application default credentials (ADC) '
+        'as a quota project because the account in ADC does not have the '
+        '"{}" permission on this project.'.format(quota_project,
+                                                  SERVICEUSAGE_PERMISSION))
+  credentials = client.GoogleCredentials.from_stream(config.ADCFilePath())
+  adc_path = c_creds.ADC(credentials).DumpExtendedADCToFile(
+      quota_project=quota_project)
+  LogADCIsWritten(adc_path)
+  LogQuotaProjectAdded(quota_project)

@@ -56,11 +56,8 @@ ARGS_CONFLICTING_WITH_AUTOSCALING_FILE_BETA = [
 ]
 
 ARGS_CONFLICTING_WITH_AUTOSCALING_FILE_ALPHA = (
-    ARGS_CONFLICTING_WITH_AUTOSCALING_FILE_BETA + [
-        'queue_scaling_acceptable_backlog_per_instance',
-        'queue_scaling_cloud_pub_sub', 'queue_scaling_single_worker_throughput',
-    ]
-)
+    ARGS_CONFLICTING_WITH_AUTOSCALING_FILE_BETA)
+
 
 _MAX_AUTOSCALER_NAME_LENGTH = 63
 # 4 character chosen from between lowercase letters and numbers give >1.6M
@@ -68,8 +65,6 @@ _MAX_AUTOSCALER_NAME_LENGTH = 63
 # so probability that adding an autoscaler will fail because of name conflict
 # is about 6e-5.
 _NUM_RANDOM_CHARACTERS_IN_AS_NAME = 4
-
-CLOUD_PUB_SUB_VALID_RESOURCE_RE = r'^[A-Za-z][A-Za-z0-9-_.~+%]{2,}$'
 
 
 # TODO(b/110191362): resign from passing whole args to functions in this file
@@ -95,16 +90,12 @@ class ResourceCannotBeResolvedException(Error):
   """The user uses invalid / partial name to resolve URI for the resource."""
 
 
-def ArgsSupportQueueScaling(args):
-  return 'queue_scaling_acceptable_backlog_per_instance' in args
-
-
-def AddAutoscalerArgs(parser,
-                      queue_scaling_enabled=False,
-                      autoscaling_file_enabled=False,
-                      stackdriver_metrics_flags=False,
-                      scale_in=False,
-                      predictive=False):
+def AddAutoscalerArgs(
+    parser,
+    autoscaling_file_enabled=False,
+    stackdriver_metrics_flags=False,
+    scale_in=False,
+    predictive=False):
   """Adds commandline arguments to parser."""
   parser.add_argument(
       '--cool-down-period',
@@ -165,39 +156,6 @@ Mutually exclusive with `--update-stackdriver-metric`.
       help=custom_metric_utilization_help,
   )
 
-  if queue_scaling_enabled:
-    parser.add_argument(
-        '--queue-scaling-cloud-pub-sub',
-        type=arg_parsers.ArgDict(
-            spec={
-                'topic': str,
-                'subscription': str,
-            },
-        ),
-        help="""\
-        Specifies queue-based scaling based on a Cloud Pub/Sub queuing system.
-        Both topic and subscription are required.
-
-        *topic*::: Topic specification. Can be just a name or a partial URL
-        (starting with "projects/..."). Topic must belong to the same project as
-        Autoscaler.
-
-        *subscription*::: Subscription specification. Can be just a name or a
-        partial URL (starting with "projects/..."). Subscription must belong to
-        the same project as Autoscaler and must be connected to the specified
-        topic.
-        """
-    )
-    parser.add_argument('--queue-scaling-acceptable-backlog-per-instance',
-                        type=arg_parsers.BoundedFloat(0.0, None),
-                        help='Queue-based scaling target: autoscaler will aim '
-                        'to assure that average number of tasks in the queue '
-                        'is no greater than this value.',)
-    parser.add_argument('--queue-scaling-single-worker-throughput',
-                        type=arg_parsers.BoundedFloat(0.0, None),
-                        help='Hint the autoscaler for queue-based scaling on '
-                        'how much throughput a single worker instance is able '
-                        'to consume.')
   if autoscaling_file_enabled:
     parser.add_argument(
         '--autoscaling-file',
@@ -352,38 +310,6 @@ def AddPredictiveAutoscaling(parser):
   )
 
 
-def _ValidateCloudPubSubResource(pubsub_spec_dict, expected_resource_type):
-  """Validate Cloud Pub/Sub resource spec format."""
-  def RaiseInvalidArgument(message):
-    raise calliope_exceptions.InvalidArgumentException(
-        '--queue-scaling-cloud-pub-sub:{0}'.format(expected_resource_type),
-        message)
-
-  if expected_resource_type not in pubsub_spec_dict:
-    raise calliope_exceptions.ToolException(
-        'Both topic and subscription are required for Cloud Pub/Sub '
-        'queue scaling specification.')
-  split_resource = pubsub_spec_dict[expected_resource_type].split('/')
-
-  if len(split_resource) == 1:
-    resource_name = split_resource[0]
-  elif len(split_resource) == 4:
-    (project_prefix, unused_project_name,
-     resource_prefix, resource_name) = split_resource
-    if project_prefix != 'projects':
-      RaiseInvalidArgument(
-          'partial-URL format for Cloud PubSub resource does not start with '
-          '"projects/"')
-    if resource_prefix != '{0}s'.format(expected_resource_type):
-      RaiseInvalidArgument('not in valid resource types: topic, subscription.')
-  else:
-    RaiseInvalidArgument(
-        'Cloud PubSub resource must either be just a name or a partial '
-        'URL (starting with "projects/").')
-  if not re.match(CLOUD_PUB_SUB_VALID_RESOURCE_RE, resource_name):
-    RaiseInvalidArgument('resource name not valid.')
-
-
 def ValidateConflictsWithAutoscalingFile(args, conflicting_args):
   if (hasattr(args, 'autoscaling_file') and
       args.IsSpecified('autoscaling_file')):
@@ -506,24 +432,6 @@ def ValidateAutoscalerArgs(args):
       if custom_metric_utilization['utilization-target'] < 0:
         raise calliope_exceptions.InvalidArgumentException(
             '--custom-metric-utilization utilization-target', 'less than 0.')
-
-  if ArgsSupportQueueScaling(args):
-    queue_spec_found = False
-    queue_target_found = False
-    if args.queue_scaling_cloud_pub_sub:
-      _ValidateCloudPubSubResource(
-          args.queue_scaling_cloud_pub_sub, 'topic')
-      _ValidateCloudPubSubResource(
-          args.queue_scaling_cloud_pub_sub, 'subscription')
-      queue_spec_found = True
-
-    if args.queue_scaling_acceptable_backlog_per_instance is not None:
-      queue_target_found = True
-
-    if queue_spec_found != queue_target_found:
-      raise calliope_exceptions.ToolException(
-          'Both queue specification and queue scaling target must be provided '
-          'for queue-based autoscaling.')
 
 
 def GetInstanceGroupManagerOrThrow(igm_ref, client):
@@ -906,40 +814,6 @@ def _BuildLoadBalancingUtilization(args, messages):
   return None
 
 
-def _BuildQueueBasedScaling(args, messages):
-  """Builds queue based scaling policy from args.
-
-  Args:
-    args: command line arguments.
-    messages: module containing message classes.
-  Returns:
-    AutoscalingPolicyQueueBasedScaling message object or None.
-  """
-  if not ArgsSupportQueueScaling(args):
-    return None
-
-  queue_policy_dict = {}
-  if args.queue_scaling_cloud_pub_sub:
-    queue_policy_dict['cloudPubSub'] = (
-        messages.AutoscalingPolicyQueueBasedScalingCloudPubSub(
-            topic=args.queue_scaling_cloud_pub_sub['topic'],
-            subscription=args.queue_scaling_cloud_pub_sub['subscription']))
-  else:
-    return None  # No queue spec.
-
-  if args.queue_scaling_acceptable_backlog_per_instance is not None:
-    queue_policy_dict['acceptableBacklogPerInstance'] = (
-        args.queue_scaling_acceptable_backlog_per_instance)
-  else:
-    return None  # No queue target.
-
-  if args.queue_scaling_single_worker_throughput is not None:
-    queue_policy_dict['singleWorkerThroughputPerSec'] = (
-        args.queue_scaling_single_worker_throughput)
-
-  return messages.AutoscalingPolicyQueueBasedScaling(**queue_policy_dict)
-
-
 def ParseModeString(mode, messages):
   return messages.AutoscalingPolicy.ModeValueValuesEnum(
       mode.upper().replace('-', '_'))
@@ -1016,7 +890,6 @@ def _BuildAutoscalerPolicy(args, messages, original, scale_in=False,
           args, messages, original),
       'loadBalancingUtilization': _BuildLoadBalancingUtilization(
           args, messages),
-      'queueBasedScaling': _BuildQueueBasedScaling(args, messages),
       'maxNumReplicas': args.max_num_replicas,
       'minNumReplicas': args.min_num_replicas,
   }

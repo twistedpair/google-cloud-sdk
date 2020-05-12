@@ -604,6 +604,7 @@ class ManagedZone(_messages.Message):
     nameServers: A string attribute.
     peeringConfig: A ManagedZonePeeringConfig attribute.
     privateVisibilityConfig: A ManagedZonePrivateVisibilityConfig attribute.
+    reverseLookupConfig: A ManagedZoneReverseLookupConfig attribute.
     visibility: A VisibilityValueValuesEnum attribute.
   """
 
@@ -654,7 +655,8 @@ class ManagedZone(_messages.Message):
   nameServers = _messages.StringField(11, repeated=True)
   peeringConfig = _messages.MessageField('ManagedZonePeeringConfig', 12)
   privateVisibilityConfig = _messages.MessageField('ManagedZonePrivateVisibilityConfig', 13)
-  visibility = _messages.EnumField('VisibilityValueValuesEnum', 14)
+  reverseLookupConfig = _messages.MessageField('ManagedZoneReverseLookupConfig', 14)
+  visibility = _messages.EnumField('VisibilityValueValuesEnum', 15)
 
 
 class ManagedZoneDnsSecConfig(_messages.Message):
@@ -717,14 +719,29 @@ class ManagedZoneForwardingConfig(_messages.Message):
 class ManagedZoneForwardingConfigNameServerTarget(_messages.Message):
   r"""A ManagedZoneForwardingConfigNameServerTarget object.
 
+  Enums:
+    ForwardingPathValueValuesEnum:
+
   Fields:
+    forwardingPath: A ForwardingPathValueValuesEnum attribute.
     ipv4Address: A string attribute.
     kind: Identifies what kind of resource this is. Value: the fixed string
       "dns#managedZoneForwardingConfigNameServerTarget".
   """
 
-  ipv4Address = _messages.StringField(1)
-  kind = _messages.StringField(2, default=u'dns#managedZoneForwardingConfigNameServerTarget')
+  class ForwardingPathValueValuesEnum(_messages.Enum):
+    r"""ForwardingPathValueValuesEnum enum type.
+
+    Values:
+      default: <no description>
+      private: <no description>
+    """
+    default = 0
+    private = 1
+
+  forwardingPath = _messages.EnumField('ForwardingPathValueValuesEnum', 1)
+  ipv4Address = _messages.StringField(2)
+  kind = _messages.StringField(3, default=u'dns#managedZoneForwardingConfigNameServerTarget')
 
 
 class ManagedZoneOperationsListResponse(_messages.Message):
@@ -795,6 +812,17 @@ class ManagedZonePrivateVisibilityConfigNetwork(_messages.Message):
 
   kind = _messages.StringField(1, default=u'dns#managedZonePrivateVisibilityConfigNetwork')
   networkUrl = _messages.StringField(2)
+
+
+class ManagedZoneReverseLookupConfig(_messages.Message):
+  r"""A ManagedZoneReverseLookupConfig object.
+
+  Fields:
+    kind: Identifies what kind of resource this is. Value: the fixed string
+      "dns#managedZoneReverseLookupConfig".
+  """
+
+  kind = _messages.StringField(1, default=u'dns#managedZoneReverseLookupConfig')
 
 
 class ManagedZonesListResponse(_messages.Message):
@@ -958,14 +986,29 @@ class PolicyAlternativeNameServerConfig(_messages.Message):
 class PolicyAlternativeNameServerConfigTargetNameServer(_messages.Message):
   r"""A PolicyAlternativeNameServerConfigTargetNameServer object.
 
+  Enums:
+    ForwardingPathValueValuesEnum:
+
   Fields:
+    forwardingPath: A ForwardingPathValueValuesEnum attribute.
     ipv4Address: A string attribute.
     kind: Identifies what kind of resource this is. Value: the fixed string
       "dns#policyAlternativeNameServerConfigTargetNameServer".
   """
 
-  ipv4Address = _messages.StringField(1)
-  kind = _messages.StringField(2, default=u'dns#policyAlternativeNameServerConfigTargetNameServer')
+  class ForwardingPathValueValuesEnum(_messages.Enum):
+    r"""ForwardingPathValueValuesEnum enum type.
+
+    Values:
+      default: <no description>
+      private: <no description>
+    """
+    default = 0
+    private = 1
+
+  forwardingPath = _messages.EnumField('ForwardingPathValueValuesEnum', 1)
+  ipv4Address = _messages.StringField(2)
+  kind = _messages.StringField(3, default=u'dns#policyAlternativeNameServerConfigTargetNameServer')
 
 
 class PolicyNetwork(_messages.Message):

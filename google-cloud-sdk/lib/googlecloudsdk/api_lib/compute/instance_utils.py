@@ -541,9 +541,9 @@ def ParseAcceleratorType(accelerator_type_name, resource_parser, project,
   elif scope == compute_scopes.ScopeEnum.REGION:
     collection = 'compute.regionAcceleratorTypes'
     params = {'project': project, 'region': location}
-  accelerator_type_ref = resource_parser.Parse(
-      accelerator_type_name, collection=collection, params=params)
-  return accelerator_type_ref
+  accelerator_type = resource_parser.Parse(
+      accelerator_type_name, collection=collection, params=params).SelfLink()
+  return accelerator_type
 
 
 def ResolveSnapshotURI(user_project, snapshot, resource_parser):

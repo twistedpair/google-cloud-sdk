@@ -2201,6 +2201,11 @@ class NetworkConfig(_messages.Message):
   Fields:
     datapathProvider: The desired datapath provider for this cluster. By
       default, uses the IPTables-based kube-proxy implementation.
+    defaultSnatStatus: Whether the cluster disables default in-node sNAT
+      rules. In-node sNAT rules will be disabled when default_snat_status is
+      disabled. When disabled is set to false, default IP masquerade rules
+      will be applied to the nodes to prevent sNAT on cluster internal
+      traffic.
     disableDefaultSnat: Whether the cluster disables default in-node sNAT
       rules. In-node sNAT rules will be disabled when this flag is true. When
       set to false, default IP masquerade rules will be applied to the nodes
@@ -2265,15 +2270,16 @@ class NetworkConfig(_messages.Message):
     PRIVATE_IPV6_GOOGLE_ACCESS_BIDIRECTIONAL = 3
 
   datapathProvider = _messages.EnumField('DatapathProviderValueValuesEnum', 1)
-  disableDefaultSnat = _messages.BooleanField(2)
-  enableCloudNat = _messages.BooleanField(3)
-  enableIntraNodeVisibility = _messages.BooleanField(4)
-  enableL4ilbSubsetting = _messages.BooleanField(5)
-  enablePrivateIpv6Access = _messages.BooleanField(6)
-  enableSharedNetwork = _messages.BooleanField(7)
-  network = _messages.StringField(8)
-  privateIpv6GoogleAccess = _messages.EnumField('PrivateIpv6GoogleAccessValueValuesEnum', 9)
-  subnetwork = _messages.StringField(10)
+  defaultSnatStatus = _messages.MessageField('DefaultSnatStatus', 2)
+  disableDefaultSnat = _messages.BooleanField(3)
+  enableCloudNat = _messages.BooleanField(4)
+  enableIntraNodeVisibility = _messages.BooleanField(5)
+  enableL4ilbSubsetting = _messages.BooleanField(6)
+  enablePrivateIpv6Access = _messages.BooleanField(7)
+  enableSharedNetwork = _messages.BooleanField(8)
+  network = _messages.StringField(9)
+  privateIpv6GoogleAccess = _messages.EnumField('PrivateIpv6GoogleAccessValueValuesEnum', 10)
+  subnetwork = _messages.StringField(11)
 
 
 class NetworkPolicy(_messages.Message):

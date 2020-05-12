@@ -1624,6 +1624,10 @@
           "description": "Whether the cluster disables default in-node sNAT rules. In-node sNAT rules\nwill be disabled when this flag is true. When set to false, default IP\nmasquerade rules will be applied to the nodes to prevent sNAT on cluster\ninternal traffic.\nDeprecated. Use default_snat_status instead",
           "type": "boolean"
         },
+        "defaultSnatStatus": {
+          "description": "Whether the cluster disables default in-node sNAT rules. In-node sNAT rules\nwill be disabled when default_snat_status is disabled. When disabled is set\nto false, default IP masquerade rules will be applied to the nodes to\nprevent sNAT on cluster internal traffic.",
+          "$ref": "DefaultSnatStatus"
+        },
         "enableL4ilbSubsetting": {
           "description": "Whether L4ILB Subsetting is enabled for this cluster.",
           "type": "boolean"
@@ -1657,6 +1661,17 @@
             "PRIVATE_IPV6_GOOGLE_ACCESS_TO_GOOGLE",
             "PRIVATE_IPV6_GOOGLE_ACCESS_BIDIRECTIONAL"
           ]
+        }
+      }
+    },
+    "DefaultSnatStatus": {
+      "id": "DefaultSnatStatus",
+      "description": "DefaultSnatStatus contains the desired state of whether default sNAT should\nbe disabled on the cluster.",
+      "type": "object",
+      "properties": {
+        "disabled": {
+          "description": "Disables cluster default sNAT rules.",
+          "type": "boolean"
         }
       }
     },
@@ -2388,17 +2403,6 @@
       "properties": {
         "enabled": {
           "description": "Enables intra node visibility for this cluster.",
-          "type": "boolean"
-        }
-      }
-    },
-    "DefaultSnatStatus": {
-      "id": "DefaultSnatStatus",
-      "description": "DefaultSnatStatus contains the desired state of whether default sNAT should\nbe disabled on the cluster.",
-      "type": "object",
-      "properties": {
-        "disabled": {
-          "description": "Disables cluster default sNAT rules.",
           "type": "boolean"
         }
       }

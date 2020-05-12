@@ -39,8 +39,7 @@ import six
 _CONSOLE_URL = ('https://console.cloud.google.com/mlengine/jobs/{job_id}?'
                 'project={project}')
 _LOGS_URL = ('https://console.cloud.google.com/logs?'
-             'resource=ml.googleapis.com%2Fjob_id%2F{job_id}'
-             '&project={project}')
+             'resource=ml_job%2Fjob_id%2F{job_id}&project={project}')
 JOB_FORMAT = 'yaml(jobId,state,startTime.date(tz=LOCAL),endTime.date(tz=LOCAL))'
 # Check every 10 seconds if the job is complete (if we didn't fetch any logs the
 # last time)

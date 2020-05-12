@@ -90,7 +90,7 @@ def GetLocation(args):
 
 
 def GetLocationList(args):
-  return ar_requests.ListLocations(GetProject(args))
+  return ar_requests.ListLocations(GetProject(args), args.page_size)
 
 
 def AppendRepoDataToRequest(repo_ref, repo_args, request):

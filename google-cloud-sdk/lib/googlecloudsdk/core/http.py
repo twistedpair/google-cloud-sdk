@@ -24,6 +24,7 @@ import re
 import time
 import uuid
 import enum
+import google_auth_httplib2
 
 from googlecloudsdk.core import config
 from googlecloudsdk.core import context_aware
@@ -645,3 +646,17 @@ def IsTokenUri(uri):
                      'service-accounts/.*?/token')
 
   return re.search(metadata_regexp, uri) is not None
+
+
+def GoogleAuthRequest(http=None):
+  """A Request object for google-auth library.
+
+  Args:
+    http: httplib2.Http client object configured with all the required settings
+    for gcloud.
+
+  Returns:
+    A http request which implements google.auth.transport.Request and uses
+      gcloud's http object in the core.
+  """
+  return google_auth_httplib2.Request(http or Http())

@@ -62,7 +62,7 @@ properties:
   urlRewrite:
     description: |-
       The spec to modify the URL of the request, prior to forwarding the request
-      to the matched service
+      to the matched service.
     $ref: UrlRewrite.yaml
   weightedBackendServices:
     description: |-

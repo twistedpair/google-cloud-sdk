@@ -25,21 +25,26 @@ properties:
     description: Unknown API fields that cannot be imported.
     items:
       type: string
-  authenticationPolicy:
+  authentication:
     description: |-
-      Authentication policy defines what authentication methods can be accepted
-      on backends, and if authenticated, which method/certificate will set the
-      request principal.
-    $ref: AuthenticationPolicy.yaml
-  authorizationConfig:
+      A URL referring to a networksecurity.Authentication resource that
+      describes how clients should authenticate with this service's backends. If
+      left blank, communications between services are not encrypted (i.e., the
+      TLS policy is set to OPEN). When sending traffic to this service's
+      backends, the OriginationTls setting of
+      Authentication.TransportAuthentication is applied. Refer to the
+      Authentication and Authentication.TransportAuthentication.OriginationTls
+      resources for additional details. authentication only applies to a global
+      BackendService with the loadBalancingScheme set to INTERNAL_SELF_MANAGED.
+    type: string
+  subjectAltNames:
     description: |-
-      Authorization config defines the Role Based Access Control (RBAC) config.
-    $ref: AuthorizationConfig.yaml
-  clientTlsSettings:
-    description: TLS Settings for the backend service.
-    $ref: ClientTlsSettings.yaml
-  serverSettingsSelector:
-    description: |-
-      The listener config of the XDS client is generated if the selector matches
-      the client.
-    $ref: ServerSecuritySettingsSelector.yaml
+      A list of subject alternate names to verify the subject identity (SAN) in
+      the certificate presented by the server, to authorize the SAN list as
+      identities to run the service represented by this BackendService. If
+      specified, the client will verify that the server certificate's subject
+      alt name matches one of the specified values. Only applies to a global
+      BackendService with the loadBalancingScheme set to INTERNAL_SELF_MANAGED.
+    type: array
+    items:
+      type: string

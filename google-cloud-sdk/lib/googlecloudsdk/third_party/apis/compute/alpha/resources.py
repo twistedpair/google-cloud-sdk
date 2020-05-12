@@ -324,6 +324,13 @@ class Collections(enum.Enum):
       [u'project', u'region', u'publicDelegatedPrefix'],
       True
   )
+  REGIONACCELERATORTYPES = (
+      'regionAcceleratorTypes',
+      'projects/{project}/regions/{region}/acceleratorTypes/{acceleratorType}',
+      {},
+      [u'project', u'region', u'acceleratorType'],
+      True
+  )
   REGIONAUTOSCALERS = (
       'regionAutoscalers',
       'projects/{project}/regions/{region}/autoscalers/{autoscaler}',
@@ -394,6 +401,13 @@ class Collections(enum.Enum):
       'projects/{project}/regions/{region}/instanceGroups/{instanceGroup}',
       {},
       [u'project', u'region', u'instanceGroup'],
+      True
+  )
+  REGIONMACHINETYPES = (
+      'regionMachineTypes',
+      'projects/{project}/regions/{region}/machineTypes/{machineType}',
+      {},
+      [u'project', u'region', u'machineType'],
       True
   )
   REGIONNETWORKENDPOINTGROUPS = (

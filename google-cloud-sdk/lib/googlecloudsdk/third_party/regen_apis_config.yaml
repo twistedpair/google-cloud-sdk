@@ -275,6 +275,10 @@ apis:
       enable_mtls: true
       mtls_endpoint_override: https://compute.mtls.googleapis.com/compute/alpha/
       resources:
+        regionAcceleratorTypes:
+          path: projects/{project}/regions/{region}/acceleratorTypes/{acceleratorType}
+        regionMachineTypes:
+          path: projects/{project}/regions/{region}/machineTypes/{machineType}
         nextHopGateways:
           path: projects/{project}/global/gateways/{nextHopGateway}
         securityPolicyRules:

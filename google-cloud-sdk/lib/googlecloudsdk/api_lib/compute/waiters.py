@@ -130,6 +130,7 @@ class OperationData(object):
       the operation. If the operation type is not delete, this service
       is used to fetch the mutated object after the operation is done.
     project: str, The project to which the resource belong.
+    no_followup: str, If True, do not send followup GET request.
     followup_override: str, Overrides the target resource name when
       it is different from the resource name which is used to poll.
     errors: An output parameter for capturing errors.
@@ -141,11 +142,13 @@ class OperationData(object):
                operation_service,
                resource_service,
                project=None,
+               no_followup=False,
                followup_override=None):
     self.operation = operation
     self.operation_service = operation_service
     self.resource_service = resource_service
     self.project = project
+    self.no_followup = no_followup
     self.followup_override = followup_override
 
     self.errors = []
@@ -157,12 +160,13 @@ class OperationData(object):
     return (self.operation == o.operation and self.project == o.project and
             self.operation_service == o.operation_service and
             self.resource_service == o.resource_service and
+            self.no_followup == o.no_followup and
             self.followup_override == o.followup_override)
 
   def __hash__(self):
     return (hash(self.operation.selfLink) ^ hash(self.project)
             ^ hash(self.operation_service) ^ hash(self.resource_service)
-            ^ hash(self.followup_override))
+            ^ hash(self.no_followup) ^ hash(self.followup_override))
 
   def __ne__(self, o):
     return not self == o
@@ -315,7 +319,7 @@ class OperationData(object):
   def GetResult(self, timeout_sec=_POLLING_TIMEOUT_SEC):
     """Get the resource which is touched by the operation."""
     self.PollUntilDone(timeout_sec)
-    if not self.operation.error and not _IsDeleteOp(
+    if not self.no_followup and not self.operation.error and not _IsDeleteOp(
         self.operation.operationType):
       resource_get_request = self.ResourceGetRequest()
       try:
@@ -408,7 +412,7 @@ def WaitForOperations(
 
         # We shouldn't get the target resource if the operation type
         # is delete because there will be no resource left.
-        if not _IsDeleteOp(operation.operationType):
+        if not _IsDeleteOp(operation.operationType) and not data.no_followup:
           request = data.ResourceGetRequest()
           # Some operations do not have target and should not send get request.
           if request:

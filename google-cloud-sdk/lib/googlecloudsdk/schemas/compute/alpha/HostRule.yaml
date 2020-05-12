@@ -32,9 +32,10 @@ properties:
     type: string
   hosts:
     description: |-
-      The list of host patterns to match. They must be valid hostnames, except *
-      will match any string of ([a-z0-9-.]*). In that case, * must be the first
-      character and must be followed in the pattern by either - or ..
+      The list of host patterns to match. They must be valid hostnames with
+      optional port numbers in the format host:port. * matches any string of
+      ([a-z0-9-.]*). In that case, * must be the first character and must be
+      followed in the pattern by either - or ..
     type: array
     items:
       type: string

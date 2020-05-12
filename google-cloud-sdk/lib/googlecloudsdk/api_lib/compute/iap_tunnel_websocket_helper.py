@@ -73,8 +73,9 @@ class IapTunnelWebSocketHelper(object):
       self._sslopt['certfile'] = cert_path
       self._sslopt['password'] = caa_config.client_cert_password
 
-    # Disable most of random logging in websocket library itself
-    logging.getLogger('websocket').setLevel(logging.CRITICAL)
+    # Disable most of random logging in websocket library itself except in DEBUG
+    if log.GetVerbosity() != logging.DEBUG:
+      logging.getLogger('websocket').setLevel(logging.CRITICAL)
 
     self._is_closed = False
     self._error_msg = ''
@@ -117,6 +118,7 @@ class IapTunnelWebSocketHelper(object):
       self.Close()
       raise WebSocketConnectionClosed()
     except Exception as e:  # pylint: disable=broad-except
+      log.debug('Error during WebSocket send of Data message.', exc_info=True)
       # Convert websocket library errors and any others into one based on
       # exceptions.Error
       tb = sys.exc_info()[2]

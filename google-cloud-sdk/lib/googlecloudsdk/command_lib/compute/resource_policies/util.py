@@ -21,6 +21,7 @@ from __future__ import unicode_literals
 from googlecloudsdk.api_lib.compute import utils
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import exceptions
+from googlecloudsdk.command_lib.compute import scope as compute_scopes
 from googlecloudsdk.command_lib.compute.resource_policies import flags
 from googlecloudsdk.command_lib.util.args import labels_util
 from googlecloudsdk.core import yaml
@@ -237,4 +238,12 @@ def ParseResourcePolicy(resources, name, project=None, region=None):
 
 def ParseResourcePolicyWithZone(resources, name, project, zone):
   region = utils.ZoneNameToRegionName(zone)
+  return ParseResourcePolicy(resources, name, project, region)
+
+
+def ParseResourcePolicyWithScope(resources, name, project, location, scope):
+  if scope == compute_scopes.ScopeEnum.ZONE:
+    region = utils.ZoneNameToRegionName(location)
+  elif scope == compute_scopes.ScopeEnum.REGION:
+    region = location
   return ParseResourcePolicy(resources, name, project, region)

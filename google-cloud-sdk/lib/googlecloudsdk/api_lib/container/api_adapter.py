@@ -470,7 +470,7 @@ class CreateClusterOptions(object):
       disable_default_snat=None,
       shielded_secure_boot=None,
       shielded_integrity_monitoring=None,
-      node_config=None,
+      system_config_from_file=None,
       maintenance_window_start=None,
       maintenance_window_end=None,
       maintenance_window_recurrence=None,
@@ -587,7 +587,7 @@ class CreateClusterOptions(object):
     self.disable_default_snat = disable_default_snat
     self.shielded_secure_boot = shielded_secure_boot
     self.shielded_integrity_monitoring = shielded_integrity_monitoring
-    self.node_config = node_config
+    self.system_config_from_file = system_config_from_file
     self.maintenance_window_start = maintenance_window_start
     self.maintenance_window_end = maintenance_window_end
     self.maintenance_window_recurrence = maintenance_window_recurrence
@@ -805,7 +805,7 @@ class CreateNodePoolOptions(object):
                node_locations=None,
                shielded_secure_boot=None,
                shielded_integrity_monitoring=None,
-               node_config=None,
+               system_config_from_file=None,
                reservation_affinity=None,
                reservation=None):
     self.machine_type = machine_type
@@ -845,7 +845,7 @@ class CreateNodePoolOptions(object):
     self.node_locations = node_locations
     self.shielded_secure_boot = shielded_secure_boot
     self.shielded_integrity_monitoring = shielded_integrity_monitoring
-    self.node_config = node_config
+    self.system_config_from_file = system_config_from_file
     self.reservation_affinity = reservation_affinity
     self.reservation = reservation
 
@@ -864,7 +864,8 @@ class UpdateNodePoolOptions(object):
                workload_metadata_from_node=None,
                node_locations=None,
                max_surge_upgrade=None,
-               max_unavailable_upgrade=None):
+               max_unavailable_upgrade=None,
+               system_config_from_file=None):
     self.enable_autorepair = enable_autorepair
     self.enable_autoupgrade = enable_autoupgrade
     self.enable_autoscaling = enable_autoscaling
@@ -876,6 +877,7 @@ class UpdateNodePoolOptions(object):
     self.node_locations = node_locations
     self.max_surge_upgrade = max_surge_upgrade
     self.max_unavailable_upgrade = max_unavailable_upgrade
+    self.system_config_from_file = system_config_from_file
 
   def IsAutoscalingUpdate(self):
     return (self.enable_autoscaling is not None or self.max_nodes is not None or
@@ -891,7 +893,8 @@ class UpdateNodePoolOptions(object):
             self.workload_metadata_from_node is not None or
             self.node_locations is not None or
             self.max_surge_upgrade is not None or
-            self.max_unavailable_upgrade is not None)
+            self.max_unavailable_upgrade is not None or
+            self.system_config_from_file is not None)
 
 
 class APIAdapter(object):
@@ -1307,9 +1310,10 @@ class APIAdapter(object):
     _AddShieldedInstanceConfigToNodeConfig(node_config, options, self.messages)
     _AddReservationAffinityToNodeConfig(node_config, options, self.messages)
 
-    if options.node_config is not None:
-      util.LoadNodeConfigFromYAML(node_config, options.node_config,
-                                  self.messages)
+    if options.system_config_from_file is not None:
+      util.LoadSystemConfigFromYAML(node_config,
+                                    options.system_config_from_file,
+                                    self.messages)
 
     return node_config
 
@@ -2312,9 +2316,10 @@ class APIAdapter(object):
     if options.node_locations is not None:
       pool.locations = sorted(options.node_locations)
 
-    if options.node_config is not None:
-      util.LoadNodeConfigFromYAML(node_config, options.node_config,
-                                  self.messages)
+    if options.system_config_from_file is not None:
+      util.LoadSystemConfigFromYAML(node_config,
+                                    options.system_config_from_file,
+                                    self.messages)
 
     return pool
 
@@ -2437,7 +2442,13 @@ class APIAdapter(object):
           options.max_unavailable_upgrade is not None):
       update_request.upgradeSettings = self.UpdateUpgradeSettings(
           node_pool_ref, options)
-
+    elif options.system_config_from_file is not None:
+      node_config = self.messages.NodeConfig()
+      util.LoadSystemConfigFromYAML(node_config,
+                                    options.system_config_from_file,
+                                    self.messages)
+      update_request.linuxNodeConfig = node_config.linuxNodeConfig
+      update_request.kubeletConfig = node_config.kubeletConfig
     return update_request
 
   def UpdateNodePool(self, node_pool_ref, options):

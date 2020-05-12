@@ -5,6 +5,60 @@ Copyright 2014-2020 Google Inc. All rights reserved.
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 
 
+## 292.0.0 (2020-05-12)
+
+### Breaking Changes
+
+*   **(Cloud SDK)** Modified `gcloud auth application-default login` to add a quota project
+    by default. Use `--disable-quota-project` to skip setting the quota project.
+*   **(Cloud SDK)** Modified `gcloud auth application-default login` and
+    `gcloud auth application-default set-quota-project` so that a quota project
+    is added to the application default credentials only when the credentials
+    have the permission to bill the project.
+
+
+### Cloud SDK
+
+*   Fixed an issue in `gcloud auth login` and `gcloud init` when running behind
+    a proxy/firewall. This issue can be tracked at <https://issuetracker.google.com/issues/155818300>.
+
+### App Engine Flexible Environment
+
+* Fixed issue where CloudBuild timeout value without 's' suffix was rejected sometimes.
+
+### Cloud DNS
+
+* Promoted Non-RFC 1918 Cloud DNS features to GA.
+
+### Cloud Dataproc
+
+* Fixed bug in `gcloud dataproc clusters list` where Google Kubernetes
+  Engine-based clusters are listed with `PLATFORM` as `GCE` when accessed by the
+  GA command.
+
+### Cloud Key Management Service
+
+*   Promoted  `--condition` flag to GA for the following commands:
+    *   `gcloud kms keyrings add-iam-policy-binding`
+    *   `gcloud kms keyrings remove-iam-policy-binding`
+    *   `gcloud kms keys add-iam-policy-binding`
+    *   `gcloud kms keys remove-iam-policy-binding`
+
+### Compute Engine
+
+* Added `import` and `export` commands to `gcloud compute <target-http-proxies|target-https-proxies>`.
+* Promoted `--private-ipv6-google-access-type` flag of `gcloud compute instances <create|create-with-container>` to beta.
+* Promoted `--private-ipv6-google-access-type` flag of `gcloud compute instance-templates <create|create-with-container>` to beta.
+* Promoted `--autoscaler-mode`, `--min-nodes`, and `--max-nodes` flags of command `gcloud compute sole-tenancy node-groups create` to GA.
+
+### Kubernetes Engine
+
+* `gcloud container` now respects `compute/region` property.
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+
 ## 291.0.0 (2020-05-05)
 
 ### AI Platform
@@ -87,7 +141,6 @@ default.
 
 ### Cloud Storage
 
-* 
 * Updated gsutil component to 4.50.
 
 ### Compute Engine

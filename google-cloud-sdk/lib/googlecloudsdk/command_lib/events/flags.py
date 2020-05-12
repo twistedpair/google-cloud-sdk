@@ -19,11 +19,20 @@ from __future__ import division
 from __future__ import print_function
 from __future__ import unicode_literals
 
+import collections
+
+from googlecloudsdk.api_lib.events import iam_util
+from googlecloudsdk.api_lib.events import trigger
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import exceptions as calliope_exceptions
 from googlecloudsdk.command_lib.events import exceptions
-from googlecloudsdk.command_lib.iam import iam_util
+from googlecloudsdk.command_lib.iam import iam_util as core_iam_util
+from googlecloudsdk.command_lib.run import flags as run_flags
 from googlecloudsdk.core import yaml
+
+_DISALLOWED_SPECIAL_KEYS = [
+    trigger.SOURCE_TRIGGER_LINK_FIELD, trigger.DEPENDENCY_ANNOTATION_FIELD
+]
 
 
 def AddSourceFlag(parser):
@@ -78,10 +87,11 @@ def AddServiceAccountFlag(parser):
   """Adds service account flag."""
   parser.add_argument(
       '--service-account',
-      required=True,
-      type=iam_util.GetIamAccountFormatValidator(),
-      help='Email address of an IAM service account which represents the '
-      'identity of the internal events operator.')
+      type=core_iam_util.GetIamAccountFormatValidator(),
+      help='Email address of an existing IAM service account which '
+      'represents the identity of the internal events operator. If no '
+      'service account is provided, a default service account ({}) will be '
+      'created.'.format(iam_util.DEFAULT_EVENTS_SERVICE_ACCOUNT))
 
 
 def AddCustomEventTypeFlag(parser):
@@ -91,6 +101,23 @@ def AddCustomEventTypeFlag(parser):
       action='store_true',
       help='If specified, the provided event type should be interpreted as a '
       'custom event type.')
+
+
+def _AllowedKeyString(key):
+  if key in _DISALLOWED_SPECIAL_KEYS:
+    raise run_flags.ArgumentError('Filter {} not allowed'.format(key))
+  return key
+
+
+def AddFiltersFlags(parser):
+  """Adds trigger filters flags."""
+  parser.add_argument(
+      '--trigger-filters',
+      type=arg_parsers.ArgDict(key_type=_AllowedKeyString, value_type=str),
+      action=arg_parsers.UpdateAction,
+      metavar='KEY=VALUE',
+      help="""Filters to apply before forwarding events for the target service. Events must contain all KEY=VALUE pairs to be forwarded.""",
+      default=collections.OrderedDict())
 
 
 _PARAMETERS_FLAG_NAME = 'parameters'
@@ -117,7 +144,6 @@ def AddParametersFlags(parser):
       help='Path to a local JSON or YAML file that defines a dictionary of '
       'parameters and their values. Parameters must match the items shown when '
       'describing the event type.')
-
 
 _SECRETS_FLAG_NAME = 'secrets'
 

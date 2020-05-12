@@ -36,6 +36,7 @@ from googlecloudsdk.command_lib.compute import completers as compute_completers
 from googlecloudsdk.command_lib.compute import flags as compute_flags
 from googlecloudsdk.command_lib.compute import scope as compute_scope
 from googlecloudsdk.command_lib.compute.kms import resource_args as kms_resource_args
+from googlecloudsdk.command_lib.util.apis import arg_utils
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 from googlecloudsdk.core import resources as core_resources
@@ -301,6 +302,48 @@ def AddCanIpForwardArgs(parser):
             'with non-matching destination or source IP addresses.'))
 
 
+def AddPrivateIpv6GoogleAccessArg(parser, api_version):
+  messages = apis.GetMessagesModule('compute', api_version)
+  GetPrivateIpv6GoogleAccessTypeFlagMapper(messages).choice_arg.AddToParser(
+      parser)
+
+
+def GetPrivateIpv6GoogleAccessTypeFlagMapper(messages):
+  return arg_utils.ChoiceEnumMapper(
+      '--private-ipv6-google-access-type',
+      messages.Instance.PrivateIpv6GoogleAccessValueValuesEnum,
+      custom_mappings={
+          'INHERIT_FROM_SUBNETWORK':
+              'inherit-subnetwork',
+          'ENABLE_BIDIRECTIONAL_ACCESS_TO_GOOGLE':
+              'enable-bidirectional-access',
+          'ENABLE_OUTBOUND_VM_ACCESS_TO_GOOGLE':
+              'enable-outbound-vm-access'
+      },
+      help_str='The private IPv6 Google access type for the VM.')
+
+
+def AddPrivateIpv6GoogleAccessArgForTemplate(parser, api_version):
+  messages = apis.GetMessagesModule('compute', api_version)
+  GetPrivateIpv6GoogleAccessTypeFlagMapperForTemplate(
+      messages).choice_arg.AddToParser(parser)
+
+
+def GetPrivateIpv6GoogleAccessTypeFlagMapperForTemplate(messages):
+  return arg_utils.ChoiceEnumMapper(
+      '--private-ipv6-google-access-type',
+      messages.InstanceProperties.PrivateIpv6GoogleAccessValueValuesEnum,
+      custom_mappings={
+          'INHERIT_FROM_SUBNETWORK':
+              'inherit-subnetwork',
+          'ENABLE_BIDIRECTIONAL_ACCESS_TO_GOOGLE':
+              'enable-bidirectional-access',
+          'ENABLE_OUTBOUND_VM_ACCESS_TO_GOOGLE':
+              'enable-outbound-vm-access'
+      },
+      help_str='The private IPv6 Google access type for the VM.')
+
+
 def AddLocalSsdArgs(parser):
   """Adds local SSD argument for instances and instance-templates."""
 
@@ -499,7 +542,7 @@ def AddDiskArgs(parser, enable_regional_disks=False, enable_kms=False,
 def AddCreateDiskArgs(parser, enable_kms=False, enable_snapshots=False,
                       container_mount_enabled=False, resource_policy=False,
                       source_snapshot_csek=False,
-                      image_csek=False):
+                      image_csek=False, include_name=True):
   """Adds create-disk argument for instances and instance-templates."""
 
   disk_device_name_help = _GetDiskDeviceNameHelp(
@@ -602,7 +645,6 @@ def AddCreateDiskArgs(parser, enable_kms=False, enable_snapshots=False,
       See {kms_help} for more details.
       """.format(resource='disk', kms_help=kms_utils.KMS_HELP_URL)
   spec = {
-      'name': str,
       'description': str,
       'mode': str,
       'image': str,
@@ -613,6 +655,10 @@ def AddCreateDiskArgs(parser, enable_kms=False, enable_snapshots=False,
       'device-name': str,
       'auto-delete': str,
   }
+
+  if include_name:
+    spec['name'] = str
+
   if enable_kms:
     spec['kms-key'] = str
     spec['kms-project'] = str
@@ -798,7 +844,17 @@ def ValidateDiskFlags(args, enable_kms=False, enable_snapshots=False,
       enable_image_csek=enable_image_csek)
 
 
-def ValidateDiskCommonFlags(args):
+def ValidateBulkDiskFlags(args, enable_kms=False, enable_snapshots=False,
+                          enable_source_snapshot_csek=False,
+                          enable_image_csek=False):
+  """Validates the values of all disk-related flags."""
+  ValidateCreateDiskFlags(
+      args, enable_snapshots=enable_snapshots,
+      enable_source_snapshot_csek=enable_source_snapshot_csek,
+      enable_image_csek=enable_image_csek)
+
+
+def ValidateDiskCommonFlags(args, include_name=True):
   """Validates the values of common disk-related flags."""
 
   for disk in args.disk or []:
@@ -904,18 +960,19 @@ def ValidateDiskBootFlags(args, enable_kms=False):
 
 def ValidateCreateDiskFlags(args, enable_snapshots=False,
                             enable_source_snapshot_csek=False,
-                            enable_image_csek=False):
+                            enable_image_csek=False, include_name=True):
   """Validates the values of create-disk related flags."""
   require_csek_key_create = getattr(args, 'require_csek_key_create', None)
   csek_key_file = getattr(args, 'csek_key_file', None)
   resource_names = getattr(args, 'names', [])
+
   for disk in getattr(args, 'create_disk', []) or []:
     disk_name = disk.get('name')
-    if len(resource_names) > 1 and disk_name:
+    if include_name and len(resource_names) > 1 and disk_name:
       raise exceptions.ToolException(
           'Cannot create a disk with [name]={} for more than one instance.'
           .format(disk_name))
-    if not disk_name and require_csek_key_create and csek_key_file:
+    if disk_name and require_csek_key_create and csek_key_file:
       raise exceptions.ToolException(
           'Cannot create a disk with customer supplied key when disk name '
           'is not specified.')
@@ -2416,3 +2473,19 @@ def AddPostKeyRevocationActionTypeArgs(parser):
 
       Default setting is `NOOP`.
       """)
+
+
+def AddBulkCreateArgs(parser):
+  """Adds bulk creation specific arguments to parser."""
+  parser.add_argument('--count', type=int, help="""TBD""")
+  parser.add_argument('--min-count', type=int, help="""TBD""")
+  parser.add_argument(
+      '--predefined-names',
+      type=arg_parsers.ArgList(),
+      metavar='INSTANCE_NAME',
+      required=True,
+      help="""TBD""")
+  location = parser.add_group(required=True, mutex=True)
+  location.add_argument('--region', help="""TBD""")
+  location.add_argument('--zone', help="""TBD""")
+

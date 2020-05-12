@@ -71,25 +71,19 @@ def ProjectAttributeConfig(fallthroughs=None):
       fallthroughs=fallthroughs or [])
 
 
-def CreateReusableConfigResourceSpec(associated_resource):
+def CreateReusableConfigResourceSpec(location_fallthrough):
   """Create a resource spec for a ReusableConfig.
 
   Defaults to the predefined project for reusable configs.
 
   Args:
-    associated_resource: The name of the resource that this reusable config
-      is associated with. This will be used in the helptext.
+    location_fallthrough: Fallthrough to use for the location of the reusable
+      config, if not explicitly provided.
 
   Returns:
     A concepts.ResourceSpec for a reusable config.
   """
   # For now, reusable configs exist in a single project.
-  location_fallthrough = deps.Fallthrough(
-      function=lambda: '',
-      hint='location will default to the same location as the {}'.format(
-          associated_resource),
-      active=False,
-      plural=False)
   project_fallthrough = deps.Fallthrough(
       function=lambda: api_constants.PREDEFINED_REUSABLE_CONFIG_PROJECT,
       hint='project will default to {}'.format(

@@ -91,3 +91,14 @@ def IsGlobalTargetHttpsProxiesRef(target_https_proxy_ref):
   """Returns True if the Target HTTPS Proxy reference is global."""
 
   return target_https_proxy_ref.Collection() == 'compute.targetHttpsProxies'
+
+
+def SendGetRequest(client, target_https_proxy_ref):
+  """Send Url Maps get request."""
+  if target_https_proxy_ref.Collection() == 'compute.regionTargetHttpsProxies':
+    return client.apitools_client.regionTargetHttpsProxies.Get(
+        client.messages.ComputeRegionTargetHttpsProxiesGetRequest(
+            **target_https_proxy_ref.AsDict()))
+  return client.apitools_client.targetHttpsProxies.Get(
+      client.messages.ComputeTargetHttpsProxiesGetRequest(
+          **target_https_proxy_ref.AsDict()))

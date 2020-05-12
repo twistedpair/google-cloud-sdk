@@ -67,6 +67,13 @@ _GO_GCLOUDIGNORE = '\n'.join([
     '*.out'
 ])
 
+_JAVA_GCLOUDIGNORE = '\n'.join([
+    gcloudignore.DEFAULT_IGNORE_FILE,
+    '# Target directory for maven builds',
+    'target/',
+    '# Build directory for gradle builds',
+    'build/'
+])
 
 _GCLOUDIGNORE_REGISTRY = {
     runtime_registry.RegistryEntry(
@@ -77,6 +84,8 @@ _GCLOUDIGNORE_REGISTRY = {
         env.PYTHON_TI_RUNTIME_EXPR, {env.STANDARD}): _PYTHON_GCLOUDIGNORE,
     runtime_registry.RegistryEntry(
         env.GO_TI_RUNTIME_EXPR, {env.STANDARD}): _GO_GCLOUDIGNORE,
+    runtime_registry.RegistryEntry(
+        env.JAVA_TI_RUNTIME_EXPR, {env.STANDARD}): _JAVA_GCLOUDIGNORE,
 }
 
 

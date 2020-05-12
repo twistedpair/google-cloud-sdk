@@ -2815,12 +2815,12 @@ https://cloud.google.com/kubernetes-engine/docs/how-to/encrypting-secrets.
       """)
 
 
-def AddNodeConfigFlag(parser):
-  """Adds node config flag to the given parser."""
+def AddSystemConfigFlag(parser, hidden=True):
+  """Adds --system-config-from-file flag to the given parser."""
   parser.add_argument(
-      '--node-config',
+      '--system-config-from-file',
       type=arg_parsers.FileContents(),
-      hidden=False,
+      hidden=hidden,
       help="""
 Path of the YAML/JSON file that contains the node configuration, including
 Linux kernel parameters (sysctls) and kubelet configs.

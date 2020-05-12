@@ -440,23 +440,17 @@ def CalculateMaxNodeNumberByPodRange(cluster_ipv4_cidr):
   return int(pod_range_ips/pod_range_ips_per_node)
 
 
-def LoadNodeConfigFromYAML(node_config, content, messages):
-  """Load node configuration from YAML/JSON file.
+def LoadSystemConfigFromYAML(node_config, content, messages):
+  """Load system configuration (sysctl & kubelet config) from YAML/JSON file.
 
   Args:
     node_config: The node config object to be populated.
-    content: The YAML/JSON string that contains node config options.
+    content: The YAML/JSON string that contains sysctl and kubelet options.
     messages: The message module.
 
   Raises:
-    Error: when there's any errors on parsing the YAML/JSON node config.
+    Error: when there's any errors on parsing the YAML/JSON system config.
   """
-
-  # This function reads the node config options from YAML/JSON file and sets
-  # them on a set of fields in alpha API only. The future plan is to migrate
-  # node config to go/crp-component-recording where the config validation will
-  # completely be done at server side. Therefore, we just do simple sanity
-  # checks instead of using a JSON schema to validate the node config file here.
 
   try:
     opts = yaml.load(content)

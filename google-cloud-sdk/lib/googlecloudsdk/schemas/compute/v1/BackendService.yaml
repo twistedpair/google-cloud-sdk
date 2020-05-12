@@ -85,15 +85,22 @@ properties:
       applicable if the loadBalancingScheme is EXTERNAL and the protocol
       is HTTP or HTTPS.
     type: boolean
+  failoverPolicy:
+    description: |-
+      Applicable only to Failover for Internal TCP/UDP Load Balancing.
+      Requires at least one backend instance group to be defined as a
+      backup (failover) backend.
+    $ref: BackendServiceFailoverPolicy.yaml
   healthChecks:
     description: |-
-      The list of URLs to the HttpHealthCheck or HttpsHealthCheck
-      resource for health checking this BackendService. Currently at
-      most one health check can be specified, and a health check is
-      required for Compute Engine backend services. A health check must
-      not be specified for App Engine backend and Cloud Function
-      backend.  For internal load balancing, a URL to a HealthCheck
-      resource must be specified instead.
+      The list of URLs to the healthChecks, httpHealthChecks (legacy),
+      or httpsHealthChecks (legacy) resource for health checking this
+      backend service. Not all backend services support legacy health
+      checks. See  Load balancer guide. Currently at most one health
+      check can be specified. Backend services with instance group or
+      zonal NEG backends must have a health check. Backend services with
+      internet NEG backends must not have a health check. A health check
+      must
     type: array
     items:
       type: string
@@ -144,6 +151,12 @@ properties:
     - RANDOM
     - RING_HASH
     - ROUND_ROBIN
+  logConfig:
+    description: |-
+      This field denotes the logging options for the load balancer
+      traffic served by this backend service. If logging is enabled,
+      logs will be exported to Stackdriver.
+    $ref: BackendServiceLogConfig.yaml
   name:
     description: |-
       Name of the resource. Provided by the client when the resource
@@ -154,6 +167,12 @@ properties:
       must be a lowercase letter, and all following characters must
       be a dash, lowercase letter, or digit, except the last
       character, which cannot be a dash.
+    type: string
+  network:
+    description: |-
+      The URL of the network to which this backend service belongs.
+      This field can only be spcified when the load balancing scheme
+      is set to INTERNAL.
     type: string
   outlierDetection:
     description: |-
@@ -177,18 +196,18 @@ properties:
     description: |-
       A named port on a backend instance group representing the port
       for communication to the backend VMs in that group. Required
-      when the loadBalancingScheme is EXTERNAL and the backends are
-      instance groups. The named port must be defined on each
-      backend instance group. This parameter has no meaning if the
-      backends are NEGs.    Must be omitted when the
-      loadBalancingScheme is INTERNAL (Internal TCP/UDP Load
-      Blaancing).
+      when the loadBalancingScheme is EXTERNAL, INTERNAL_MANAGED, or
+      INTERNAL_SELF_MANAGED and the backends are instance groups.
+      The named port must be defined on each backend instance group.
+      This parameter has no meaning if the backends are NEGs.
+      Must be omitted when the loadBalancingScheme is INTERNAL
+      (Internal TCP/UDP Load Blaancing).
     type: string
   protocol:
     description: |-
       The protocol this BackendService uses to communicate with
       backends.  Possible values are HTTP, HTTPS, HTTP2, TCP, SSL,
-      or UDP, depending on the chosen load balancer or Traffic
+      or UDP. depending on the chosen load balancer or Traffic
       Director configuration. Refer to the documentation for the
       load balancer or for Traffic Director for more information.
     type: string
@@ -224,9 +243,9 @@ properties:
       if the protocol is HTTP or HTTPS.  When the
       loadBalancingScheme is INTERNAL, possible values are NONE,
       CLIENT_IP, CLIENT_IP_PROTO, or CLIENT_IP_PORT_PROTO.  When the
-      loadBalancingScheme is INTERNAL_SELF_MANAGED, possible values
-      are NONE, CLIENT_IP, GENERATED_COOKIE, HEADER_FIELD, or
-      HTTP_COOKIE.
+      loadBalancingScheme is INTERNAL_SELF_MANAGED, or
+      INTERNAL_MANAGED, possible values are NONE, CLIENT_IP,
+      GENERATED_COOKIE, HEADER_FIELD, or HTTP_COOKIE.
     type: string
     enum:
     - CLIENT_IP

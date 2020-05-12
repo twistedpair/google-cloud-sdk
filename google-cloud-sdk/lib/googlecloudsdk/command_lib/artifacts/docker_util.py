@@ -205,7 +205,10 @@ def _ParseDockerTag(tag):
     raise ar_exceptions.InvalidInputValueError(_INVALID_DOCKER_TAG_ERROR)
 
 
-def _GetDockerPackagesAndVersions(docker_repo, include_tags, is_nested=False):
+def _GetDockerPackagesAndVersions(docker_repo,
+                                  include_tags,
+                                  page_size,
+                                  is_nested=False):
   """Gets a list of packages with versions for a Docker repository."""
   client = ar_requests.GetClient()
   messages = ar_requests.GetMessages()
@@ -217,21 +220,27 @@ def _GetDockerPackagesAndVersions(docker_repo, include_tags, is_nested=False):
       raise ar_exceptions.ArtifactRegistryError(
           "Internal error. Corrupted package name: {}".format(pkg.name))
     img = DockerImage(DockerRepo(parts[1], parts[3], parts[5]), parts[7])
-    img_list.extend(_GetDockerVersions(img, include_tags, is_nested))
+    img_list.extend(_GetDockerVersions(img, include_tags, page_size, is_nested))
   return img_list
 
 
-def _GetDockerNestedVersions(docker_img, include_tags, is_nested=False):
+def _GetDockerNestedVersions(docker_img,
+                             include_tags,
+                             page_size,
+                             is_nested=False):
   """Gets a list of versions for a Docker nested image."""
   prefix = docker_img.GetDockerString() + "/"
   return [
-      ver for ver in _GetDockerPackagesAndVersions(docker_img.docker_repo,
-                                                   include_tags, is_nested)
+      ver for ver in _GetDockerPackagesAndVersions(
+          docker_img.docker_repo, include_tags, page_size, is_nested)
       if ver["package"].startswith(prefix)
   ]
 
 
-def _GetDockerVersions(docker_img, include_tags, is_nested=False):
+def _GetDockerVersions(docker_img,
+                       include_tags,
+                       page_size=None,
+                       is_nested=False):
   """Gets a list of versions for a Docker image."""
   client = ar_requests.GetClient()
   messages = ar_requests.GetMessages()
@@ -245,14 +254,16 @@ def _GetDockerVersions(docker_img, include_tags, is_nested=False):
         ArtifactregistryProjectsLocationsRepositoriesPackagesVersionsListRequest
         .ViewValueValuesEnum.FULL)
   ver_list = ar_requests.ListVersions(client, messages,
-                                      docker_img.GetPackageName(), ver_view)
+                                      docker_img.GetPackageName(), ver_view,
+                                      page_size)
 
   # If there's no result, the package name might be part of a nested package.
   # E.g. us-west1-docker.pkg.dev/fake-project/docker-repo/nested1 in
   # us-west1-docker.pkg.dev/fake-project/docker-repo/nested1/nested2/test-image
   # Try to get the list of versions through the list of all packages.
   if not ver_list and not is_nested:
-    return _GetDockerNestedVersions(docker_img, include_tags, is_nested=True)
+    return _GetDockerNestedVersions(
+        docker_img, include_tags, page_size, is_nested=True)
 
   img_list = []
   for ver in ver_list:
@@ -437,14 +448,15 @@ def GetDockerImages(args):
     log.status.Print(
         "Listing items under project {}, location {}, repository {}.\n".format(
             resource.project, resource.location, resource.repo))
-    return _GetDockerPackagesAndVersions(resource, args.include_tags)
+    return _GetDockerPackagesAndVersions(resource, args.include_tags,
+                                         args.page_size)
   elif isinstance(resource, DockerImage):
     _ValidateDockerRepo(resource.docker_repo.GetRepositoryName())
     log.status.Print(
         "Listing items under project {}, location {}, repository {}.\n".format(
             resource.docker_repo.project, resource.docker_repo.location,
             resource.docker_repo.repo))
-    return _GetDockerVersions(resource, args.include_tags)
+    return _GetDockerVersions(resource, args.include_tags, args.page_size)
   return []
 
 
@@ -601,7 +613,8 @@ def ListDockerTags(args):
 
   tag_list = []
   for img in img_list:
-    for tag in ar_requests.ListTags(client, messages, img.GetPackageName()):
+    for tag in ar_requests.ListTags(client, messages, img.GetPackageName(),
+                                    args.page_size):
       tag_list.append({
           "tag": tag.name,
           "image": img.GetDockerString(),

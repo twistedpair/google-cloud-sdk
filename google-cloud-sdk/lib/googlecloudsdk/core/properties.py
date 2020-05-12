@@ -1536,8 +1536,7 @@ class _SectionPubsub(_Section):
         # https://cloud.google.com/sdk/docs/properties.
         help_text='Default zone to use when working with zonal Pub/Sub Lite '
         'resources. When a `--zone` flag is required but not provided, '
-        'the command will fall back to this value, if set.',
-        hidden=True)
+        'the command will fall back to this value, if set.')
 
 
 class _SectionComposer(_Section):
@@ -1818,6 +1817,7 @@ class _SectionApiEndpointOverrides(_Section):
     self.monitoring = self._Add('monitoring')
     self.networkmanagement = self._Add('networkmanagement')
     self.networkservices = self._Add('networkservices')
+    self.notebooks = self._Add('notebooks')
     self.orgpolicy = self._Add('orgpolicy')
     self.osconfig = self._Add('osconfig')
     self.oslogin = self._Add('oslogin')
@@ -1827,6 +1827,7 @@ class _SectionApiEndpointOverrides(_Section):
     self.pubsublite = self._Add('pubsublite')
     self.recommender = self._Add('recommender')
     self.replicapoolupdater = self._Add('replicapoolupdater')
+    self.resourcesettings = self._Add('resourcesettings')
     self.runtimeconfig = self._Add('runtimeconfig')
     self.redis = self._Add('redis')
     self.run = self._Add('run')

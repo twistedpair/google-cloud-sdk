@@ -229,18 +229,13 @@
                           "type": "string"
                         },
                         "pageSize": {
-                          "description": "Maximum number of executions to return per call.",
+                          "description": "Maximum number of executions to return per call.\nMax supported value depends on the selected Execution view: it's 10000 for\nBASIC and 100 for FULL. The default value used if the field is not\nspecified is 100, regardless of the selected view. Values greater than\nthe max value will be coerced down to it.",
                           "location": "query",
                           "type": "integer",
                           "format": "int32"
                         },
                         "pageToken": {
                           "description": "A page token, received from a previous `ListExecutions` call.\nProvide this to retrieve the subsequent page.\n\nWhen paginating, all other parameters provided to `ListExecutions` must\nmatch the call that provided the page token.",
-                          "location": "query",
-                          "type": "string"
-                        },
-                        "filter": {
-                          "description": "Filter to restrict results to specific executions.",
                           "location": "query",
                           "type": "string"
                         },

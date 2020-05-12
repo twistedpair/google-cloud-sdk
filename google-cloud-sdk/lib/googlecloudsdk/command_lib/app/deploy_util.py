@@ -56,6 +56,7 @@ from googlecloudsdk.core.configurations import named_configs
 from googlecloudsdk.core.console import console_io
 from googlecloudsdk.core.console import progress_tracker
 from googlecloudsdk.core.util import files
+from googlecloudsdk.core.util import times
 import six
 
 
@@ -278,7 +279,10 @@ class ServiceDeployer(object):
         }
         timeout = properties.VALUES.app.cloud_build_timeout.Get()
         if timeout:
-          cloud_build_options['cloudBuildTimeout'] = timeout
+          build_timeout = int(
+              times.ParseDuration(timeout, default_suffix='s').total_seconds)
+          cloud_build_options['cloudBuildTimeout'] = six.text_type(
+              build_timeout) + 's'
         build = app_cloud_build.BuildArtifact.MakeBuildOptionsArtifact(
             cloud_build_options)
       else:

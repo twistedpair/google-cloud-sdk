@@ -111,7 +111,8 @@ class InvalidFlagError(exceptions.Error):
 
 def Validate(namespace):
   """Validate flag requirements that cannot be handled by argparse."""
-  if (namespace.IsSpecified('cloudsql_instances') and
+  if ('cloudsql_instances' in namespace and
+      namespace.IsSpecified('cloudsql_instances') and
       not (namespace.IsSpecified('service_account') or
            namespace.IsSpecified('application_default_credential'))):
     raise InvalidFlagError('--cloudsql-instances requires --service-account or '

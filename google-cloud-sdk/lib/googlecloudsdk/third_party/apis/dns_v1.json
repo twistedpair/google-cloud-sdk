@@ -4,7 +4,7 @@
  "id": "dns:v1",
  "name": "dns",
  "version": "v1",
- "revision": "20200429",
+ "revision": "20200505",
  "title": "Google Cloud DNS API",
  "description": "Configures and serves authoritative DNS records.",
  "ownerDomain": "google.com",
@@ -358,6 +358,9 @@
     "privateVisibilityConfig": {
      "$ref": "ManagedZonePrivateVisibilityConfig"
     },
+    "reverseLookupConfig": {
+     "$ref": "ManagedZoneReverseLookupConfig"
+    },
     "visibility": {
      "type": "string",
      "enum": [
@@ -433,6 +436,17 @@
    "id": "ManagedZoneForwardingConfigNameServerTarget",
    "type": "object",
    "properties": {
+    "forwardingPath": {
+     "type": "string",
+     "enum": [
+      "default",
+      "private"
+     ],
+     "enumDescriptions": [
+      "",
+      ""
+     ]
+    },
     "ipv4Address": {
      "type": "string"
     },
@@ -525,6 +539,17 @@
     },
     "networkUrl": {
      "type": "string"
+    }
+   }
+  },
+  "ManagedZoneReverseLookupConfig": {
+   "id": "ManagedZoneReverseLookupConfig",
+   "type": "object",
+   "properties": {
+    "kind": {
+     "type": "string",
+     "description": "Identifies what kind of resource this is. Value: the fixed string \"dns#managedZoneReverseLookupConfig\".",
+     "default": "dns#managedZoneReverseLookupConfig"
     }
    }
   },
@@ -719,6 +744,17 @@
    "id": "PolicyAlternativeNameServerConfigTargetNameServer",
    "type": "object",
    "properties": {
+    "forwardingPath": {
+     "type": "string",
+     "enum": [
+      "default",
+      "private"
+     ],
+     "enumDescriptions": [
+      "",
+      ""
+     ]
+    },
     "ipv4Address": {
      "type": "string"
     },

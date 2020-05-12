@@ -2023,6 +2023,11 @@ class NetworkConfig(_messages.Message):
       or from Google Services (all access will be via IPv4)
 
   Fields:
+    defaultSnatStatus: Whether the cluster disables default in-node sNAT
+      rules. In-node sNAT rules will be disabled when default_snat_status is
+      disabled. When disabled is set to false, default IP masquerade rules
+      will be applied to the nodes to prevent sNAT on cluster internal
+      traffic.
     enableIntraNodeVisibility: Whether Intra-node visibility is enabled for
       this cluster. This makes same node pod to pod traffic visible for VPC
       network.
@@ -2058,10 +2063,11 @@ class NetworkConfig(_messages.Message):
     PRIVATE_IPV6_GOOGLE_ACCESS_TO_GOOGLE = 2
     PRIVATE_IPV6_GOOGLE_ACCESS_BIDIRECTIONAL = 3
 
-  enableIntraNodeVisibility = _messages.BooleanField(1)
-  network = _messages.StringField(2)
-  privateIpv6GoogleAccess = _messages.EnumField('PrivateIpv6GoogleAccessValueValuesEnum', 3)
-  subnetwork = _messages.StringField(4)
+  defaultSnatStatus = _messages.MessageField('DefaultSnatStatus', 1)
+  enableIntraNodeVisibility = _messages.BooleanField(2)
+  network = _messages.StringField(3)
+  privateIpv6GoogleAccess = _messages.EnumField('PrivateIpv6GoogleAccessValueValuesEnum', 4)
+  subnetwork = _messages.StringField(5)
 
 
 class NetworkPolicy(_messages.Message):

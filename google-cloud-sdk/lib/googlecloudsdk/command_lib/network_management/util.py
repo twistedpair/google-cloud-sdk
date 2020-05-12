@@ -96,7 +96,7 @@ def ValidateInstanceNames(unused_ref, args, request):
       "destination_instance",
   ]
   instance_pattern = re.compile(
-      r"projects/(?:[a-z][a-z0-9-]*[a-z0-9]|[a-z])/zones/[-\w]+/instances/[-\w]+"
+      r"projects/(?:[a-z][a-z0-9-\.:]*[a-z0-9])/zones/[-\w]+/instances/[-\w]+"
   )
   for flag in flags:
     if args.IsSpecified(flag):
@@ -118,7 +118,7 @@ def ValidateNetworkURIs(unused_ref, args, request):
       "destination_network",
   ]
   network_pattern = re.compile(
-      r"projects/(?:[a-z][a-z0-9-]*[a-z0-9]|[a-z])/global/networks/[-\w]+")
+      r"projects/(?:[a-z][a-z0-9-\.:]*[a-z0-9])/global/networks/[-\w]+")
   for flag in flags:
     if args.IsSpecified(flag):
       network = getattr(args, flag)

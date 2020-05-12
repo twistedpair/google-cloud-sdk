@@ -36,7 +36,9 @@ def RemoveAutoscale(ref, args, request):
   del ref
   if args.IsSpecified('clear_autoscale'):
     request.googleDevtoolsRemotebuildexecutionAdminV1alphaUpdateWorkerPoolRequest.workerPool.autoscale = None
-    request.googleDevtoolsRemotebuildexecutionAdminV1alphaUpdateWorkerPoolRequest.updateMask = u'autoscale.min_size,autoscale.max_size'
+    req = request.googleDevtoolsRemotebuildexecutionAdminV1alphaUpdateWorkerPoolRequest
+    AddFieldToMask('autoscale.min_size', req)
+    AddFieldToMask('autoscale.max_size', req)
   return request
 
 

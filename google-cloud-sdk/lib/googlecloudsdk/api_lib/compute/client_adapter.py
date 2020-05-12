@@ -81,6 +81,7 @@ class ClientAdapter(object):
                    requests,
                    errors_to_collect=None,
                    progress_tracker=None,
+                   no_followup=False,
                    followup_overrides=None,
                    log_result=True,
                    timeout=None):
@@ -93,6 +94,7 @@ class ClientAdapter(object):
             batch_url=self._batch_url,
             errors=errors,
             progress_tracker=progress_tracker,
+            no_followup=no_followup,
             followup_overrides=followup_overrides,
             log_result=log_result,
             timeout=timeout))

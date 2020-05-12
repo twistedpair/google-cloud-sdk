@@ -220,15 +220,18 @@ def GetZoneOrRegion(args, ignore_property=False, required=True):
   region = getattr(args, 'region', None)
 
   if ignore_property:
-    zone_property = None
+    location_property = None
+  elif properties.VALUES.compute.zone.Get():
+    # zone property if set takes precedence over region.
+    location_property = properties.VALUES.compute.zone.Get()
   else:
-    zone_property = properties.VALUES.compute.zone.Get()
+    location_property = properties.VALUES.compute.region.Get()
 
   if zone and region:
     raise calliope_exceptions.ConflictingArgumentsException(
         '--zone', '--region')
 
-  location = region or zone or zone_property
+  location = region or zone or location_property
   if required and not location:
     raise calliope_exceptions.MinimumArgumentException(
         ['--zone', '--region'], 'Please specify location')

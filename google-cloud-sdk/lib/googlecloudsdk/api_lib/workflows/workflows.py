@@ -24,6 +24,7 @@ from apitools.base.py import encoding
 from apitools.base.py import exceptions as api_exceptions
 from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.api_lib.util import waiter
+from googlecloudsdk.calliope import base
 from googlecloudsdk.command_lib.util.args import labels_util
 from googlecloudsdk.command_lib.workflows import flags
 from googlecloudsdk.core import resources
@@ -31,23 +32,25 @@ from googlecloudsdk.core import resources
 import six
 
 
-def GetClientInstance(no_http=False):
-  """Returns the default client instance for Workflows API."""
-  return apis.GetClientInstance('workflows', 'v1alpha1', no_http=no_http)
+class UnsupportedReleaseTrackError(Exception):
+  """Raised when requesting API version for an unsupported release track."""
 
 
-def GetMessagesModule(client=None):
-  """Returns the messages module for the given client."""
-  client = client or GetClientInstance()
-  return client.MESSAGES_MODULE
+def ReleaseTrackToApiVersion(release_track):
+  if release_track == base.ReleaseTrack.ALPHA:
+    return 'v1alpha1'
+  elif release_track == base.ReleaseTrack.BETA:
+    return 'v1beta'
+  else:
+    raise UnsupportedReleaseTrackError(release_track)
 
 
 class WorkflowsClient(object):
   """Client for Workflows service in the Cloud Workflows API."""
 
-  def __init__(self, client=None, messages=None):
-    self.client = client or GetClientInstance()
-    self.messages = messages or GetMessagesModule(client)
+  def __init__(self, api_version):
+    self.client = apis.GetClientInstance('workflows', api_version)
+    self.messages = self.client.MESSAGES_MODULE
     self._service = self.client.projects_locations_workflows
 
   def Get(self, workflow_ref):
@@ -118,7 +121,7 @@ class WorkflowsClient(object):
     """Waits until the given long-running operation is complete."""
     operation_ref = resources.REGISTRY.Parse(
         operation.name, collection='workflows.projects.locations.operations')
-    operations = OperationsClient()
+    operations = OperationsClient(self.client, self.messages)
     poller = _OperationPoller(
         workflows=self, operations=operations, workflow_ref=workflow_ref)
     progress_string = 'Waiting for operation [{}] to complete'.format(
@@ -129,9 +132,9 @@ class WorkflowsClient(object):
 class OperationsClient(object):
   """Client for Operations service in the Cloud Workflows API."""
 
-  def __init__(self, client=None, messages=None):
-    self.client = client or GetClientInstance()
-    self.messages = messages or GetMessagesModule(client)
+  def __init__(self, client, messages):
+    self.client = client
+    self.messages = messages
     self._service = self.client.projects_locations_operations
 
   def Get(self, operation_ref):

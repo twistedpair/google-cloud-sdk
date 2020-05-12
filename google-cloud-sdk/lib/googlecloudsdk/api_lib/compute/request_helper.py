@@ -210,6 +210,7 @@ def MakeRequests(requests,
                  batch_url,
                  errors,
                  progress_tracker=None,
+                 no_followup=False,
                  followup_overrides=None,
                  log_result=True,
                  timeout=None):
@@ -241,6 +242,7 @@ def MakeRequests(requests,
       is added to this list.
     progress_tracker: progress tracker to be ticked while waiting for operations
       to finish.
+    no_followup: If True, do not followup operation with a GET request.
     followup_overrides: A list of new resource names to GET once the operation
       finishes. Generally used in renaming calls.
     log_result: Whether the Operation Waiter should print the result in past
@@ -302,6 +304,7 @@ def MakeRequests(requests,
               operation_service,
               resource_service,
               project=project,
+              no_followup=no_followup,
               followup_override=followup_override))
 
     else:

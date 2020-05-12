@@ -22,6 +22,7 @@ from __future__ import unicode_literals
 from googlecloudsdk.api_lib.privateca import base
 from googlecloudsdk.api_lib.privateca import request_utils
 from googlecloudsdk.command_lib.privateca import resource_args
+from googlecloudsdk.core.util import times
 
 
 def CheckResponseSubordinateTypeHook(response, unused_args):
@@ -74,3 +75,23 @@ def AddRequestIdHook(unused_ref, unused_args, request):
   """Fills a unique identifier for a request with a requestId field."""
   request.requestId = request_utils.GenerateRequestId()
   return request
+
+
+def _ConvertProtoToIsoDuration(proto_duration_str):
+  """Convert a given 'proto duration' string to an ISO8601 duration string."""
+  return times.FormatDuration(times.ParseDuration(proto_duration_str, True))
+
+
+def ConvertCertificateLifetimeToIso8601(response, unused_args):
+  """Converts certificate lifetimes from proto duration format to ISO8601."""
+
+  # These fields could be None if the user specifies a filter that omits them.
+  if response.lifetime:
+    response.lifetime = _ConvertProtoToIsoDuration(response.lifetime)
+  if (response.certificateDescription and
+      response.certificateDescription.subjectDescription and
+      response.certificateDescription.subjectDescription.lifetime):
+    response.certificateDescription.subjectDescription.lifetime = _ConvertProtoToIsoDuration(
+        response.certificateDescription.subjectDescription.lifetime)
+
+  return response
