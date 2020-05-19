@@ -8,17 +8,17 @@ class TestingV1(base_api.BaseApiClient):
   """Generated client library for service testing version v1."""
 
   MESSAGES_MODULE = messages
-  BASE_URL = u'https://testing.googleapis.com/'
-  MTLS_BASE_URL = u'https://testing.mtls.googleapis.com/'
+  BASE_URL = 'https://testing.googleapis.com/'
+  MTLS_BASE_URL = 'https://testing.mtls.googleapis.com/'
 
-  _PACKAGE = u'testing'
-  _SCOPES = [u'https://www.googleapis.com/auth/cloud-platform', u'https://www.googleapis.com/auth/cloud-platform.read-only']
-  _VERSION = u'v1'
+  _PACKAGE = 'testing'
+  _SCOPES = ['https://www.googleapis.com/auth/cloud-platform', 'https://www.googleapis.com/auth/cloud-platform.read-only']
+  _VERSION = 'v1'
   _CLIENT_ID = '1042881264118.apps.googleusercontent.com'
   _CLIENT_SECRET = 'x_Tw5K8nnjoRAqULM9PFAC2b'
-  _USER_AGENT = u'google-cloud-sdk'
-  _CLIENT_CLASS_NAME = u'TestingV1'
-  _URL_VERSION = u'v1'
+  _USER_AGENT = 'google-cloud-sdk'
+  _CLIENT_CLASS_NAME = 'TestingV1'
+  _URL_VERSION = 'v1'
   _API_KEY = None
 
   def __init__(self, url='', credentials=None,
@@ -44,7 +44,7 @@ class TestingV1(base_api.BaseApiClient):
   class ApplicationDetailServiceService(base_api.BaseApiService):
     """Service class for the applicationDetailService resource."""
 
-    _NAME = u'applicationDetailService'
+    _NAME = 'applicationDetailService'
 
     def __init__(self, client):
       super(TestingV1.ApplicationDetailServiceService, self).__init__(client)
@@ -65,22 +65,22 @@ class TestingV1(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     GetApkDetails.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'testing.applicationDetailService.getApkDetails',
+        http_method='POST',
+        method_id='testing.applicationDetailService.getApkDetails',
         ordered_params=[],
         path_params=[],
         query_params=[],
-        relative_path=u'v1/applicationDetailService/getApkDetails',
+        relative_path='v1/applicationDetailService/getApkDetails',
         request_field='<request>',
-        request_type_name=u'FileReference',
-        response_type_name=u'GetApkDetailsResponse',
+        request_type_name='FileReference',
+        response_type_name='GetApkDetailsResponse',
         supports_download=False,
     )
 
   class ProjectsTestMatricesService(base_api.BaseApiService):
     """Service class for the projects_testMatrices resource."""
 
-    _NAME = u'projects_testMatrices'
+    _NAME = 'projects_testMatrices'
 
     def __init__(self, client):
       super(TestingV1.ProjectsTestMatricesService, self).__init__(client)
@@ -109,15 +109,15 @@ May return any of the following canonical error codes:
           config, request, global_params=global_params)
 
     Cancel.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'testing.projects.testMatrices.cancel',
-        ordered_params=[u'projectId', u'testMatrixId'],
-        path_params=[u'projectId', u'testMatrixId'],
+        http_method='POST',
+        method_id='testing.projects.testMatrices.cancel',
+        ordered_params=['projectId', 'testMatrixId'],
+        path_params=['projectId', 'testMatrixId'],
         query_params=[],
-        relative_path=u'v1/projects/{projectId}/testMatrices/{testMatrixId}:cancel',
+        relative_path='v1/projects/{projectId}/testMatrices/{testMatrixId}:cancel',
         request_field='',
-        request_type_name=u'TestingProjectsTestMatricesCancelRequest',
-        response_type_name=u'CancelTestMatrixResponse',
+        request_type_name='TestingProjectsTestMatricesCancelRequest',
+        response_type_name='CancelTestMatrixResponse',
         supports_download=False,
     )
 
@@ -143,15 +143,15 @@ May return any of the following canonical error codes:
           config, request, global_params=global_params)
 
     Create.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'testing.projects.testMatrices.create',
-        ordered_params=[u'projectId'],
-        path_params=[u'projectId'],
-        query_params=[u'requestId'],
-        relative_path=u'v1/projects/{projectId}/testMatrices',
-        request_field=u'testMatrix',
-        request_type_name=u'TestingProjectsTestMatricesCreateRequest',
-        response_type_name=u'TestMatrix',
+        http_method='POST',
+        method_id='testing.projects.testMatrices.create',
+        ordered_params=['projectId'],
+        path_params=['projectId'],
+        query_params=['requestId'],
+        relative_path='v1/projects/{projectId}/testMatrices',
+        request_field='testMatrix',
+        request_type_name='TestingProjectsTestMatricesCreateRequest',
+        response_type_name='TestMatrix',
         supports_download=False,
     )
 
@@ -175,22 +175,22 @@ May return any of the following canonical error codes:
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'testing.projects.testMatrices.get',
-        ordered_params=[u'projectId', u'testMatrixId'],
-        path_params=[u'projectId', u'testMatrixId'],
+        http_method='GET',
+        method_id='testing.projects.testMatrices.get',
+        ordered_params=['projectId', 'testMatrixId'],
+        path_params=['projectId', 'testMatrixId'],
         query_params=[],
-        relative_path=u'v1/projects/{projectId}/testMatrices/{testMatrixId}',
+        relative_path='v1/projects/{projectId}/testMatrices/{testMatrixId}',
         request_field='',
-        request_type_name=u'TestingProjectsTestMatricesGetRequest',
-        response_type_name=u'TestMatrix',
+        request_type_name='TestingProjectsTestMatricesGetRequest',
+        response_type_name='TestMatrix',
         supports_download=False,
     )
 
   class ProjectsService(base_api.BaseApiService):
     """Service class for the projects resource."""
 
-    _NAME = u'projects'
+    _NAME = 'projects'
 
     def __init__(self, client):
       super(TestingV1.ProjectsService, self).__init__(client)
@@ -200,7 +200,7 @@ May return any of the following canonical error codes:
   class TestEnvironmentCatalogService(base_api.BaseApiService):
     """Service class for the testEnvironmentCatalog resource."""
 
-    _NAME = u'testEnvironmentCatalog'
+    _NAME = 'testEnvironmentCatalog'
 
     def __init__(self, client):
       super(TestingV1.TestEnvironmentCatalogService, self).__init__(client)
@@ -227,14 +227,14 @@ May return any of the following canonical error codes:
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'testing.testEnvironmentCatalog.get',
-        ordered_params=[u'environmentType'],
-        path_params=[u'environmentType'],
-        query_params=[u'projectId'],
-        relative_path=u'v1/testEnvironmentCatalog/{environmentType}',
+        http_method='GET',
+        method_id='testing.testEnvironmentCatalog.get',
+        ordered_params=['environmentType'],
+        path_params=['environmentType'],
+        query_params=['projectId'],
+        relative_path='v1/testEnvironmentCatalog/{environmentType}',
         request_field='',
-        request_type_name=u'TestingTestEnvironmentCatalogGetRequest',
-        response_type_name=u'TestEnvironmentCatalog',
+        request_type_name='TestingTestEnvironmentCatalogGetRequest',
+        response_type_name='TestEnvironmentCatalog',
         supports_download=False,
     )

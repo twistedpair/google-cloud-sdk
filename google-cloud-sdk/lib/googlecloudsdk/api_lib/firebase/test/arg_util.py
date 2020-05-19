@@ -121,6 +121,13 @@ def AddAndroidTestArgs(parser):
       help='The Java package of the application under test. By default, the '
       'application package name is parsed from the APK manifest.')
   parser.add_argument(
+      '--additional-apks',
+      type=arg_parsers.ArgList(min_length=1, max_length=100),
+      metavar='APK',
+      help='A list of up to 100 additional APKs to install, in addition to '
+      'those being directly tested. The path may be in the local filesystem or '
+      'in Google Cloud Storage using gs:// notation.')
+  parser.add_argument(
       '--auto-google-login',
       action='store_true',
       default=None,
@@ -169,6 +176,15 @@ def AddAndroidTestArgs(parser):
       `gcloud topic escaping` for ways to change the default list delimiter.
       """)
   parser.add_argument(
+      '--network-profile',
+      metavar='PROFILE_ID',
+      help='The name of the network traffic profile, for example '
+      '--network-profile=LTE, which consists of a set of parameters to emulate '
+      'network conditions when running the test (default: no network shaping; '
+      'see available profiles listed by the '
+      '$ {grandparent_command} network-profiles list` command). '
+      'This feature only works on physical devices.')
+  parser.add_argument(
       '--obb-files',
       type=arg_parsers.ArgList(min_length=1, max_length=2),
       metavar='OBB_FILE',
@@ -177,6 +193,24 @@ def AddAndroidTestArgs(parser):
       'OBB file name must conform to the format as specified by Android (e.g. '
       '[main|patch].0300110.com.example.android.obb) and will be installed '
       'into <shared-storage>/Android/obb/<package-name>/ on the test device.')
+  parser.add_argument(
+      '--other-files',
+      type=arg_parsers.ArgDict(min_length=1),
+      metavar='DEVICE_PATH=FILE_PATH',
+      help="""\
+      A list of device-path=file-path pairs that indicate the device paths to
+      push files to the device before starting tests, and the paths of files to
+      push.\n
+      Device paths must be under absolute, whitelisted paths
+      (${EXTERNAL_STORAGE}, or ${ANDROID_DATA}/local/tmp). Source file paths may
+      be in the local filesystem or in Google Cloud Storage (gs://...).\n
+      Examples:\n
+      ```
+      --other-files /sdcard/dir1/file1.txt=local/file.txt,/sdcard/dir2/file2.jpg=gs://bucket/file.jpg
+      ```\n
+      This flag only copies files to the device. To install files, like OBB or
+      APK files, see --obb-files and --additional-apks.
+      """)
   parser.add_argument(
       '--performance-metrics',
       action='store_true',
@@ -190,6 +224,14 @@ def AddAndroidTestArgs(parser):
       'default: the application\'s label from the APK manifest). All tests '
       'which use the same history name will have their results grouped '
       'together in the Firebase console in a time-ordered test history list.')
+  parser.add_argument(
+      '--robo-script',
+      category=ANDROID_ROBO_TEST,
+      help='The path to a Robo Script JSON file. The path may be in the local '
+      'filesystem or in Google Cloud Storage using gs:// notation. You can '
+      'guide the Robo test to perform specific actions by recording a Robo '
+      'Script in Android Studio and then specifying this argument. Learn more '
+      'at https://firebase.google.com/docs/test-lab/robo-ux-test#scripting.')
   parser.add_argument(
       '--type',
       category=base.COMMONLY_USED_FLAGS,
@@ -422,49 +464,6 @@ def AddAndroidBetaArgs(parser):
   Args:
     parser: An argparse parser used to add args that follow a command.
   """
-  parser.add_argument(
-      '--network-profile',
-      metavar='PROFILE_ID',
-      # TODO(b/36366322): use {grandparent_command} once available
-      help='The name of the network traffic profile, for example '
-      '--network-profile=LTE, which consists of a set of parameters to emulate '
-      'network conditions when running the test (default: no network shaping; '
-      'see available profiles listed by the `$ gcloud firebase test '
-      'network-profiles list` command). This feature only works on physical '
-      'devices.')
-  parser.add_argument(
-      '--robo-script',
-      category=ANDROID_ROBO_TEST,
-      help='The path to a Robo Script JSON file. The path may be in the local '
-      'filesystem or in Google Cloud Storage using gs:// notation. You can '
-      'guide the Robo test to perform specific actions by recording a Robo '
-      'Script in Android Studio and then specifying this argument. Learn more '
-      'at https://firebase.google.com/docs/test-lab/robo-ux-test#scripting.')
-  parser.add_argument(
-      '--additional-apks',
-      type=arg_parsers.ArgList(min_length=1, max_length=100),
-      metavar='APK',
-      help='A list of up to 100 additional APKs to install, in addition to '
-      'those being directly tested. The path may be in the local filesystem or '
-      'in Google Cloud Storage using gs:// notation.')
-  parser.add_argument(
-      '--other-files',
-      type=arg_parsers.ArgDict(min_length=1),
-      metavar='DEVICE_PATH=FILE_PATH',
-      help="""\
-      A list of device-path=file-path pairs that indicate the device paths to
-      push files to the device before starting tests, and the paths of files to
-      push.\n
-      Device paths must be under absolute, whitelisted paths
-      (${EXTERNAL_STORAGE}, or ${ANDROID_DATA}/local/tmp). Source file paths may
-      be in the local filesystem or in Google Cloud Storage (gs://...).\n
-      Examples:\n
-      ```
-      --other-files /sdcard/dir1/file1.txt=local/file.txt,/sdcard/dir2/file2.jpg=gs://bucket/file.jpg
-      ```\n
-      This flag only copies files to the device. To install files, like OBB or
-      APK files, see --obb-files and --additional-apks.
-      """)
   # Mutually exclusive sharding options group.
   sharding_options = parser.add_group(mutex=True, help='Sharding options.')
   sharding_options.add_argument(

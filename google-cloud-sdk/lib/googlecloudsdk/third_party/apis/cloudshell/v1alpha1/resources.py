@@ -28,7 +28,7 @@ class Collections(enum.Enum):
       'users',
       'users/{usersId}',
       {},
-      [u'usersId'],
+      ['usersId'],
       True
   )
   USERS_ENVIRONMENTS = (
@@ -38,7 +38,7 @@ class Collections(enum.Enum):
           '':
               'users/{usersId}/environments/{environmentsId}',
       },
-      [u'name'],
+      ['name'],
       True
   )
 

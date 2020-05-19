@@ -273,9 +273,9 @@ class CloudassetFeedsPatchRequest(_messages.Message):
   r"""A CloudassetFeedsPatchRequest object.
 
   Fields:
-    name: Required. The format will be projects/{project_number}/feeds
-      /{client-assigned_feed_identifier} or folders/{folder_number}/feeds
-      /{client-assigned_feed_identifier} or
+    name: Required. The format will be
+      projects/{project_number}/feeds/{client-assigned_feed_identifier} or
+      folders/{folder_number}/feeds/{client-assigned_feed_identifier} or
       organizations/{organization_number}/feeds/{client-
       assigned_feed_identifier}  The client-assigned feed identifier must be
       unique within the parent project/folder/organization.
@@ -401,15 +401,16 @@ class Feed(_messages.Message):
       specify either or both of asset_names and asset_types. Only asset
       updates matching specified asset_names and asset_types are exported to
       the feed. For example: "compute.googleapis.com/Disk" See [Introduction
-      to Cloud Asset Inventory](https://cloud.google.com/resource-manager/docs
-      /cloud-asset-inventory/overview) for all supported asset types.
+      to Cloud Asset Inventory](https://cloud.google.com/resource-
+      manager/docs/cloud-asset-inventory/overview) for all supported asset
+      types.
     contentType: Asset content type. If not specified, no content but the
       asset name and type will be returned.
     feedOutputConfig: Required. Feed output configuration defining where the
       asset updates are published to.
-    name: Required. The format will be projects/{project_number}/feeds
-      /{client-assigned_feed_identifier} or folders/{folder_number}/feeds
-      /{client-assigned_feed_identifier} or
+    name: Required. The format will be
+      projects/{project_number}/feeds/{client-assigned_feed_identifier} or
+      folders/{folder_number}/feeds/{client-assigned_feed_identifier} or
       organizations/{organization_number}/feeds/{client-
       assigned_feed_identifier}  The client-assigned feed identifier must be
       unique within the parent project/folder/organization.
@@ -757,7 +758,7 @@ class StandardQueryParameters(_messages.Message):
 
   f__xgafv = _messages.EnumField('FXgafvValueValuesEnum', 1)
   access_token = _messages.StringField(2)
-  alt = _messages.EnumField('AltValueValuesEnum', 3, default=u'json')
+  alt = _messages.EnumField('AltValueValuesEnum', 3, default='json')
   callback = _messages.StringField(4)
   fields = _messages.StringField(5)
   key = _messages.StringField(6)

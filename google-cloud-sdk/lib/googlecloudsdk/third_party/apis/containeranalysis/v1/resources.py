@@ -31,14 +31,14 @@ class Collections(enum.Enum):
           '':
               'operations/{operationsId}',
       },
-      [u'name'],
+      ['name'],
       True
   )
   PROJECTS = (
       'projects',
       'projects/{projectsId}',
       {},
-      [u'projectsId'],
+      ['projectsId'],
       True
   )
   PROJECTS_NOTES = (
@@ -48,7 +48,7 @@ class Collections(enum.Enum):
           '':
               'projects/{projectsId}/notes/{notesId}',
       },
-      [u'name'],
+      ['name'],
       True
   )
   PROJECTS_OCCURRENCES = (
@@ -58,7 +58,7 @@ class Collections(enum.Enum):
           '':
               'projects/{projectsId}/occurrences/{occurrencesId}',
       },
-      [u'name'],
+      ['name'],
       True
   )
 

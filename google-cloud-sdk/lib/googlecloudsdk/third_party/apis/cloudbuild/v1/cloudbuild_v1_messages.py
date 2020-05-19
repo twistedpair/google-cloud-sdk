@@ -1027,22 +1027,22 @@ class PullRequestFilter(_messages.Message):
   Requests.
 
   Enums:
-    CommentControlValueValuesEnum: Whether to block builds on a "/gcbrun"
-      comment from a repository admin or collaborator.
+    CommentControlValueValuesEnum: Configure builds to run only when a
+      repository owner or collaborator comments `/gcbrun`.
 
   Fields:
     branch: Regex of branches to match.  The syntax of the regular expressions
       accepted is the syntax accepted by RE2 and described at
       https://github.com/google/re2/wiki/Syntax
-    commentControl: Whether to block builds on a "/gcbrun" comment from a
-      repository admin or collaborator.
+    commentControl: Configure builds to run only when a repository owner or
+      collaborator comments `/gcbrun`.
     invertRegex: If true, branches that do NOT match the git_ref will trigger
       a build.
   """
 
   class CommentControlValueValuesEnum(_messages.Enum):
-    r"""Whether to block builds on a "/gcbrun" comment from a repository admin
-    or collaborator.
+    r"""Configure builds to run only when a repository owner or collaborator
+    comments `/gcbrun`.
 
     Values:
       COMMENTS_DISABLED: Do not require comments on Pull Requests before
@@ -1352,7 +1352,7 @@ class StandardQueryParameters(_messages.Message):
 
   f__xgafv = _messages.EnumField('FXgafvValueValuesEnum', 1)
   access_token = _messages.StringField(2)
-  alt = _messages.EnumField('AltValueValuesEnum', 3, default=u'json')
+  alt = _messages.EnumField('AltValueValuesEnum', 3, default='json')
   callback = _messages.StringField(4)
   fields = _messages.StringField(5)
   key = _messages.StringField(6)

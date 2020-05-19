@@ -52,8 +52,8 @@ class DialogflowProjectsAgentEntityTypesCreateRequest(_messages.Message):
     languageCode: Optional. The language used to access language-specific
       data. If not specified, the agent's default language is used. For more
       information, see [Multilingual intent and entity
-      data](https://cloud.google.com/dialogflow/docs/agents-multilingual
-      #intent-entity).
+      data](https://cloud.google.com/dialogflow/docs/agents-
+      multilingual#intent-entity).
     parent: Required. The agent to create a entity type for. Format:
       `projects/<Project ID>/agent`.
   """
@@ -126,8 +126,8 @@ class DialogflowProjectsAgentEntityTypesGetRequest(_messages.Message):
     languageCode: Optional. The language used to access language-specific
       data. If not specified, the agent's default language is used. For more
       information, see [Multilingual intent and entity
-      data](https://cloud.google.com/dialogflow/docs/agents-multilingual
-      #intent-entity).
+      data](https://cloud.google.com/dialogflow/docs/agents-
+      multilingual#intent-entity).
     name: Required. The name of the entity type. Format: `projects/<Project
       ID>/agent/entityTypes/<EntityType ID>`.
   """
@@ -143,8 +143,8 @@ class DialogflowProjectsAgentEntityTypesListRequest(_messages.Message):
     languageCode: Optional. The language used to access language-specific
       data. If not specified, the agent's default language is used. For more
       information, see [Multilingual intent and entity
-      data](https://cloud.google.com/dialogflow/docs/agents-multilingual
-      #intent-entity).
+      data](https://cloud.google.com/dialogflow/docs/agents-
+      multilingual#intent-entity).
     pageSize: Optional. The maximum number of items to return in a single
       page. By default 100 and at most 1000.
     pageToken: Optional. The next_page_token value returned from a previous
@@ -168,8 +168,8 @@ class DialogflowProjectsAgentEntityTypesPatchRequest(_messages.Message):
     languageCode: Optional. The language used to access language-specific
       data. If not specified, the agent's default language is used. For more
       information, see [Multilingual intent and entity
-      data](https://cloud.google.com/dialogflow/docs/agents-multilingual
-      #intent-entity).
+      data](https://cloud.google.com/dialogflow/docs/agents-
+      multilingual#intent-entity).
     name: The unique identifier of the entity type. Required for
       EntityTypes.UpdateEntityType and EntityTypes.BatchUpdateEntityTypes
       methods. Format: `projects/<Project ID>/agent/entityTypes/<Entity Type
@@ -544,8 +544,8 @@ class DialogflowProjectsAgentIntentsCreateRequest(_messages.Message):
     languageCode: Optional. The language used to access language-specific
       data. If not specified, the agent's default language is used. For more
       information, see [Multilingual intent and entity
-      data](https://cloud.google.com/dialogflow/docs/agents-multilingual
-      #intent-entity).
+      data](https://cloud.google.com/dialogflow/docs/agents-
+      multilingual#intent-entity).
     parent: Required. The agent to create a intent for. Format:
       `projects/<Project ID>/agent`.
   """
@@ -590,8 +590,8 @@ class DialogflowProjectsAgentIntentsGetRequest(_messages.Message):
     languageCode: Optional. The language used to access language-specific
       data. If not specified, the agent's default language is used. For more
       information, see [Multilingual intent and entity
-      data](https://cloud.google.com/dialogflow/docs/agents-multilingual
-      #intent-entity).
+      data](https://cloud.google.com/dialogflow/docs/agents-
+      multilingual#intent-entity).
     name: Required. The name of the intent. Format: `projects/<Project
       ID>/agent/intents/<Intent ID>`.
   """
@@ -623,8 +623,8 @@ class DialogflowProjectsAgentIntentsListRequest(_messages.Message):
     languageCode: Optional. The language used to access language-specific
       data. If not specified, the agent's default language is used. For more
       information, see [Multilingual intent and entity
-      data](https://cloud.google.com/dialogflow/docs/agents-multilingual
-      #intent-entity).
+      data](https://cloud.google.com/dialogflow/docs/agents-
+      multilingual#intent-entity).
     pageSize: Optional. The maximum number of items to return in a single
       page. By default 100 and at most 1000.
     pageToken: Optional. The next_page_token value returned from a previous
@@ -664,8 +664,8 @@ class DialogflowProjectsAgentIntentsPatchRequest(_messages.Message):
     languageCode: Optional. The language used to access language-specific
       data. If not specified, the agent's default language is used. For more
       information, see [Multilingual intent and entity
-      data](https://cloud.google.com/dialogflow/docs/agents-multilingual
-      #intent-entity).
+      data](https://cloud.google.com/dialogflow/docs/agents-
+      multilingual#intent-entity).
     name: Optional. The unique identifier of this intent. Required for
       Intents.UpdateIntent and Intents.BatchUpdateIntents methods. Format:
       `projects/<Project ID>/agent/intents/<Intent ID>`.
@@ -1234,8 +1234,8 @@ class GoogleCloudDialogflowV2BatchCreateEntitiesRequest(_messages.Message):
     languageCode: Optional. The language used to access language-specific
       data. If not specified, the agent's default language is used. For more
       information, see [Multilingual intent and entity
-      data](https://cloud.google.com/dialogflow/docs/agents-multilingual
-      #intent-entity).
+      data](https://cloud.google.com/dialogflow/docs/agents-
+      multilingual#intent-entity).
   """
 
   entities = _messages.MessageField('GoogleCloudDialogflowV2EntityTypeEntity', 1, repeated=True)
@@ -1252,8 +1252,8 @@ class GoogleCloudDialogflowV2BatchDeleteEntitiesRequest(_messages.Message):
     languageCode: Optional. The language used to access language-specific
       data. If not specified, the agent's default language is used. For more
       information, see [Multilingual intent and entity
-      data](https://cloud.google.com/dialogflow/docs/agents-multilingual
-      #intent-entity).
+      data](https://cloud.google.com/dialogflow/docs/agents-
+      multilingual#intent-entity).
   """
 
   entityValues = _messages.StringField(1, repeated=True)
@@ -1290,8 +1290,8 @@ class GoogleCloudDialogflowV2BatchUpdateEntitiesRequest(_messages.Message):
     languageCode: Optional. The language used to access language-specific
       data. If not specified, the agent's default language is used. For more
       information, see [Multilingual intent and entity
-      data](https://cloud.google.com/dialogflow/docs/agents-multilingual
-      #intent-entity).
+      data](https://cloud.google.com/dialogflow/docs/agents-
+      multilingual#intent-entity).
     updateMask: Optional. The mask to control which fields get updated.
   """
 
@@ -1312,8 +1312,8 @@ class GoogleCloudDialogflowV2BatchUpdateEntityTypesRequest(_messages.Message):
     languageCode: Optional. The language used to access language-specific
       data. If not specified, the agent's default language is used. For more
       information, see [Multilingual intent and entity
-      data](https://cloud.google.com/dialogflow/docs/agents-multilingual
-      #intent-entity).
+      data](https://cloud.google.com/dialogflow/docs/agents-
+      multilingual#intent-entity).
     updateMask: Optional. The mask to control which fields get updated.
   """
 
@@ -1350,8 +1350,8 @@ class GoogleCloudDialogflowV2BatchUpdateIntentsRequest(_messages.Message):
     languageCode: Optional. The language used to access language-specific
       data. If not specified, the agent's default language is used. For more
       information, see [Multilingual intent and entity
-      data](https://cloud.google.com/dialogflow/docs/agents-multilingual
-      #intent-entity).
+      data](https://cloud.google.com/dialogflow/docs/agents-
+      multilingual#intent-entity).
     updateMask: Optional. The mask to control which fields get updated.
   """
 
@@ -1857,8 +1857,8 @@ class GoogleCloudDialogflowV2FulfillmentGenericWebService(_messages.Message):
   r"""Represents configuration for a generic web service. Dialogflow supports
   two mechanisms for authentications: - Basic authentication with username and
   password. - Authentication with additional authentication headers. More
-  information could be found at: https://cloud.google.com/dialogflow/docs
-  /fulfillment-configure.
+  information could be found at:
+  https://cloud.google.com/dialogflow/docs/fulfillment-configure.
 
   Messages:
     RequestHeadersValue: Optional. The HTTP request headers to send together
@@ -1870,7 +1870,8 @@ class GoogleCloudDialogflowV2FulfillmentGenericWebService(_messages.Message):
     password: Optional. The password for HTTP Basic authentication.
     requestHeaders: Optional. The HTTP request headers to send together with
       fulfillment requests.
-    uri: Required. The fulfillment URI for receiving POST requests.
+    uri: Required. The fulfillment URI for receiving POST requests. It must
+      use https protocol.
     username: Optional. The user name for HTTP Basic authentication.
   """
 
@@ -1947,8 +1948,8 @@ class GoogleCloudDialogflowV2InputAudioConfig(_messages.Message):
       for the agent and an enhanced version of the specified model for the
       language does not exist, then the speech is recognized using the
       standard version of the specified model. Refer to [Cloud Speech API
-      documentation](https://cloud.google.com/speech-to-text/docs/basics
-      #select-model) for more details.
+      documentation](https://cloud.google.com/speech-to-
+      text/docs/basics#select-model) for more details.
     modelVariant: Which variant of the Speech model to use.
     phraseHints: A list of strings containing words and phrases that the
       speech recognizer should recognize with higher likelihood.  See [the
@@ -2255,9 +2256,9 @@ class GoogleCloudDialogflowV2IntentMessage(_messages.Message):
       SKYPE: Skype.
       LINE: Line.
       VIBER: Viber.
-      ACTIONS_ON_GOOGLE: Google Assistant See [Dialogflow webhook
-        format](https://developers.google.com/assistant/actions/build/json
-        /dialogflow-webhook-json)
+      ACTIONS_ON_GOOGLE: Google Assistant See [Dialogflow webhook format](http
+        s://developers.google.com/assistant/actions/build/json/dialogflow-
+        webhook-json)
       GOOGLE_HANGOUTS: Google Hangouts.
     """
     PLATFORM_UNSPECIFIED = 0
@@ -3737,9 +3738,8 @@ class GoogleCloudDialogflowV2WebhookResponse(_messages.Message):
       field is also used by the [Google Assistant
       integration](https://cloud.google.com/dialogflow/docs/integrations/aog)
       for rich response messages. See the format definition at [Google
-      Assistant Dialogflow webhook
-      format](https://developers.google.com/assistant/actions/build/json
-      /dialogflow-webhook-json)
+      Assistant Dialogflow webhook format](https://developers.google.com/assis
+      tant/actions/build/json/dialogflow-webhook-json)
 
   Fields:
     followupEventInput: Optional. Invokes the supplied events. When this field
@@ -3763,9 +3763,8 @@ class GoogleCloudDialogflowV2WebhookResponse(_messages.Message):
       field is also used by the [Google Assistant
       integration](https://cloud.google.com/dialogflow/docs/integrations/aog)
       for rich response messages. See the format definition at [Google
-      Assistant Dialogflow webhook
-      format](https://developers.google.com/assistant/actions/build/json
-      /dialogflow-webhook-json)
+      Assistant Dialogflow webhook format](https://developers.google.com/assis
+      tant/actions/build/json/dialogflow-webhook-json)
     sessionEntityTypes: Optional. Additional session entity types to replace
       or extend developer entity types with. The entity synonyms apply to all
       languages and persist for the session. Setting this data from a webhook
@@ -3787,9 +3786,8 @@ class GoogleCloudDialogflowV2WebhookResponse(_messages.Message):
     field is also used by the [Google Assistant
     integration](https://cloud.google.com/dialogflow/docs/integrations/aog)
     for rich response messages. See the format definition at [Google Assistant
-    Dialogflow webhook
-    format](https://developers.google.com/assistant/actions/build/json
-    /dialogflow-webhook-json)
+    Dialogflow webhook format](https://developers.google.com/assistant/actions
+    /build/json/dialogflow-webhook-json)
 
     Messages:
       AdditionalProperty: An additional property for a PayloadValue object.
@@ -4153,9 +4151,9 @@ class GoogleCloudDialogflowV2beta1Intent(_messages.Message):
       If the collection of input contexts is not empty, all of the contexts
       must be present in the active user session for an event to trigger this
       intent. Event names are limited to 150 characters.
-    followupIntentInfo: Read-only. Information about all followup intents that
-      have this intent as a direct or indirect parent. We populate this field
-      only in the output.
+    followupIntentInfo: Output only. Information about all followup intents
+      that have this intent as a direct or indirect parent. We populate this
+      field only in the output.
     inputContextNames: Optional. The list of context names required for this
       intent to be triggered. Format: `projects/<Project
       ID>/agent/sessions/-/contexts/<Context ID>`.
@@ -4175,7 +4173,7 @@ class GoogleCloudDialogflowV2beta1Intent(_messages.Message):
       determined as follows: - Before April 15th, 2018 the default is:
       ml_enabled = false / ml_disabled = true. - After April 15th, 2018 the
       default is:   ml_enabled = true / ml_disabled = false.
-    name: The unique identifier of this intent. Required for
+    name: Optional. The unique identifier of this intent. Required for
       Intents.UpdateIntent and Intents.BatchUpdateIntents methods. Format:
       `projects/<Project ID>/agent/intents/<Intent ID>`.
     outputContexts: Optional. The collection of contexts that are activated
@@ -4185,23 +4183,23 @@ class GoogleCloudDialogflowV2beta1Intent(_messages.Message):
       ID>/agent/sessions/-/contexts/<Context ID>`.
     parameters: Optional. The collection of parameters associated with the
       intent.
-    parentFollowupIntentName: Read-only after creation. The unique identifier
-      of the parent intent in the chain of followup intents. You can set this
-      field when creating an intent, for example with CreateIntent or
-      BatchUpdateIntents, in order to make this intent a followup intent.  It
-      identifies the parent followup intent. Format: `projects/<Project
+    parentFollowupIntentName: Optional. The unique identifier of the parent
+      intent in the chain of followup intents. You can set this field when
+      creating an intent, for example with CreateIntent or BatchUpdateIntents,
+      in order to make this intent a followup intent.  It identifies the
+      parent followup intent. Format: `projects/<Project
       ID>/agent/intents/<Intent ID>`.
-    priority: The priority of this intent. Higher numbers represent higher
-      priorities.  - If the supplied value is unspecified or 0, the service
-      translates the value to 500,000, which corresponds to the   `Normal`
-      priority in the console. - If the supplied value is negative, the intent
-      is ignored   in runtime detect intent requests.
+    priority: Optional. The priority of this intent. Higher numbers represent
+      higher priorities.  - If the supplied value is unspecified or 0, the
+      service   translates the value to 500,000, which corresponds to the
+      `Normal` priority in the console. - If the supplied value is negative,
+      the intent is ignored   in runtime detect intent requests.
     resetContexts: Optional. Indicates whether to delete all contexts in the
       current session when this intent is matched.
-    rootFollowupIntentName: Read-only. The unique identifier of the root
+    rootFollowupIntentName: Output only. The unique identifier of the root
       intent in the chain of followup intents. It identifies the correct
-      followup intents chain for this intent. We populate this field only in
-      the output.  Format: `projects/<Project ID>/agent/intents/<Intent ID>`.
+      followup intents chain for this intent.  Format: `projects/<Project
+      ID>/agent/intents/<Intent ID>`.
     trainingPhrases: Optional. The collection of examples that the agent is
       trained on.
     webhookState: Optional. Indicates whether webhooks are enabled for the
@@ -4340,9 +4338,9 @@ class GoogleCloudDialogflowV2beta1IntentMessage(_messages.Message):
       SKYPE: Skype.
       LINE: Line.
       VIBER: Viber.
-      ACTIONS_ON_GOOGLE: Google Assistant See [Dialogflow webhook
-        format](https://developers.google.com/assistant/actions/build/json
-        /dialogflow-webhook-json)
+      ACTIONS_ON_GOOGLE: Google Assistant See [Dialogflow webhook format](http
+        s://developers.google.com/assistant/actions/build/json/dialogflow-
+        webhook-json)
       TELEPHONY: Telephony Gateway.
       GOOGLE_HANGOUTS: Google Hangouts.
     """
@@ -5344,14 +5342,15 @@ class GoogleCloudDialogflowV2beta1KnowledgeOperationMetadata(_messages.Message):
   r"""Metadata in google::longrunning::Operation for Knowledge operations.
 
   Enums:
-    StateValueValuesEnum: Required. The current state of this operation.
+    StateValueValuesEnum: Required. Output only. The current state of this
+      operation.
 
   Fields:
-    state: Required. The current state of this operation.
+    state: Required. Output only. The current state of this operation.
   """
 
   class StateValueValuesEnum(_messages.Enum):
-    r"""Required. The current state of this operation.
+    r"""Required. Output only. The current state of this operation.
 
     Values:
       STATE_UNSPECIFIED: State unspecified.
@@ -5766,9 +5765,8 @@ class GoogleCloudDialogflowV2beta1WebhookResponse(_messages.Message):
       field is also used by the [Google Assistant
       integration](https://cloud.google.com/dialogflow/docs/integrations/aog)
       for rich response messages. See the format definition at [Google
-      Assistant Dialogflow webhook
-      format](https://developers.google.com/assistant/actions/build/json
-      /dialogflow-webhook-json)
+      Assistant Dialogflow webhook format](https://developers.google.com/assis
+      tant/actions/build/json/dialogflow-webhook-json)
 
   Fields:
     endInteraction: Optional. Indicates that this intent ends an interaction.
@@ -5796,9 +5794,8 @@ class GoogleCloudDialogflowV2beta1WebhookResponse(_messages.Message):
       field is also used by the [Google Assistant
       integration](https://cloud.google.com/dialogflow/docs/integrations/aog)
       for rich response messages. See the format definition at [Google
-      Assistant Dialogflow webhook
-      format](https://developers.google.com/assistant/actions/build/json
-      /dialogflow-webhook-json)
+      Assistant Dialogflow webhook format](https://developers.google.com/assis
+      tant/actions/build/json/dialogflow-webhook-json)
     sessionEntityTypes: Optional. Additional session entity types to replace
       or extend developer entity types with. The entity synonyms apply to all
       languages and persist for the session. Setting this data from a webhook
@@ -5820,9 +5817,8 @@ class GoogleCloudDialogflowV2beta1WebhookResponse(_messages.Message):
     field is also used by the [Google Assistant
     integration](https://cloud.google.com/dialogflow/docs/integrations/aog)
     for rich response messages. See the format definition at [Google Assistant
-    Dialogflow webhook
-    format](https://developers.google.com/assistant/actions/build/json
-    /dialogflow-webhook-json)
+    Dialogflow webhook format](https://developers.google.com/assistant/actions
+    /build/json/dialogflow-webhook-json)
 
     Messages:
       AdditionalProperty: An additional property for a PayloadValue object.
@@ -6117,7 +6113,7 @@ class StandardQueryParameters(_messages.Message):
 
   f__xgafv = _messages.EnumField('FXgafvValueValuesEnum', 1)
   access_token = _messages.StringField(2)
-  alt = _messages.EnumField('AltValueValuesEnum', 3, default=u'json')
+  alt = _messages.EnumField('AltValueValuesEnum', 3, default='json')
   callback = _messages.StringField(4)
   fields = _messages.StringField(5)
   key = _messages.StringField(6)

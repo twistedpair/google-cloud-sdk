@@ -28,21 +28,21 @@ class Collections(enum.Enum):
       'projects',
       'projects/{projectId}',
       {},
-      [u'projectId'],
+      ['projectId'],
       True
   )
   PROJECTS_HISTORIES = (
       'projects.histories',
       'projects/{projectId}/histories/{historyId}',
       {},
-      [u'projectId', u'historyId'],
+      ['projectId', 'historyId'],
       True
   )
   PROJECTS_HISTORIES_EXECUTIONS = (
       'projects.histories.executions',
       'projects/{projectId}/histories/{historyId}/executions/{executionId}',
       {},
-      [u'projectId', u'historyId', u'executionId'],
+      ['projectId', 'historyId', 'executionId'],
       True
   )
   PROJECTS_HISTORIES_EXECUTIONS_CLUSTERS = (
@@ -50,7 +50,7 @@ class Collections(enum.Enum):
       'projects/{projectId}/histories/{historyId}/executions/{executionId}/'
       'clusters/{clusterId}',
       {},
-      [u'projectId', u'historyId', u'executionId', u'clusterId'],
+      ['projectId', 'historyId', 'executionId', 'clusterId'],
       True
   )
   PROJECTS_HISTORIES_EXECUTIONS_ENVIRONMENTS = (
@@ -58,7 +58,7 @@ class Collections(enum.Enum):
       'projects/{projectId}/histories/{historyId}/executions/{executionId}/'
       'environments/{environmentId}',
       {},
-      [u'projectId', u'historyId', u'executionId', u'environmentId'],
+      ['projectId', 'historyId', 'executionId', 'environmentId'],
       True
   )
   PROJECTS_HISTORIES_EXECUTIONS_STEPS = (
@@ -66,7 +66,7 @@ class Collections(enum.Enum):
       'projects/{projectId}/histories/{historyId}/executions/{executionId}/'
       'steps/{stepId}',
       {},
-      [u'projectId', u'historyId', u'executionId', u'stepId'],
+      ['projectId', 'historyId', 'executionId', 'stepId'],
       True
   )
   PROJECTS_HISTORIES_EXECUTIONS_STEPS_PERFSAMPLESERIES = (
@@ -74,7 +74,7 @@ class Collections(enum.Enum):
       'projects/{projectId}/histories/{historyId}/executions/{executionId}/'
       'steps/{stepId}/perfSampleSeries/{sampleSeriesId}',
       {},
-      [u'projectId', u'historyId', u'executionId', u'stepId', u'sampleSeriesId'],
+      ['projectId', 'historyId', 'executionId', 'stepId', 'sampleSeriesId'],
       True
   )
   PROJECTS_HISTORIES_EXECUTIONS_STEPS_TESTCASES = (
@@ -82,7 +82,7 @@ class Collections(enum.Enum):
       'projects/{projectId}/histories/{historyId}/executions/{executionId}/'
       'steps/{stepId}/testCases/{testCaseId}',
       {},
-      [u'projectId', u'historyId', u'executionId', u'stepId', u'testCaseId'],
+      ['projectId', 'historyId', 'executionId', 'stepId', 'testCaseId'],
       True
   )
 

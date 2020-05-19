@@ -28,7 +28,7 @@ class Collections(enum.Enum):
       'projects',
       'projects/{projectsId}',
       {},
-      [u'projectsId'],
+      ['projectsId'],
       True
   )
   PROJECTS_LOCATIONS = (
@@ -38,7 +38,7 @@ class Collections(enum.Enum):
           '':
               'projects/{projectsId}/locations/{locationsId}',
       },
-      [u'name'],
+      ['name'],
       True
   )
   PROJECTS_LOCATIONS_BACKUPS = (
@@ -49,7 +49,7 @@ class Collections(enum.Enum):
               'projects/{projectsId}/locations/{locationsId}/backups/'
               '{backupsId}',
       },
-      [u'name'],
+      ['name'],
       True
   )
   PROJECTS_LOCATIONS_INSTANCES = (
@@ -60,7 +60,7 @@ class Collections(enum.Enum):
               'projects/{projectsId}/locations/{locationsId}/instances/'
               '{instancesId}',
       },
-      [u'name'],
+      ['name'],
       True
   )
   PROJECTS_LOCATIONS_OPERATIONS = (
@@ -71,7 +71,7 @@ class Collections(enum.Enum):
               'projects/{projectsId}/locations/{locationsId}/operations/'
               '{operationsId}',
       },
-      [u'name'],
+      ['name'],
       True
   )
   PROJECTS_LOCATIONS_SNAPSHOTS = (
@@ -82,7 +82,7 @@ class Collections(enum.Enum):
               'projects/{projectsId}/locations/{locationsId}/snapshots/'
               '{snapshotsId}',
       },
-      [u'name'],
+      ['name'],
       True
   )
 

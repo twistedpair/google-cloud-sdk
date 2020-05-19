@@ -22,8 +22,9 @@ class Binding(_messages.Message):
       not apply to the current request. However, a different role binding
       might grant the same role to one or more of the members in this binding.
       To learn which resources support conditions in their IAM policies, see
-      the [IAM documentation](https://cloud.google.com/iam/help/conditions
-      /resource-policies).
+      the [IAM
+      documentation](https://cloud.google.com/iam/help/conditions/resource-
+      policies).
     members: Specifies the identities requesting access for a Cloud Platform
       resource. `members` can have the following values:  * `allUsers`: A
       special identifier that represents anyone who is    on the internet;
@@ -750,8 +751,9 @@ class GetPolicyOptions(_messages.Message):
 
 class GoogleCloudDatacatalogV1BigQueryDateShardedSpec(_messages.Message):
   r"""Spec for a group of BigQuery tables with name pattern
-  `[prefix]YYYYMMDD`. Context: https://cloud.google.com/bigquery/docs
-  /partitioned-tables#partitioning_versus_sharding
+  `[prefix]YYYYMMDD`. Context:
+  https://cloud.google.com/bigquery/docs/partitioned-
+  tables#partitioning_versus_sharding
 
   Fields:
     dataset: Output only. The Data Catalog resource name of the dataset entry
@@ -789,10 +791,12 @@ class GoogleCloudDatacatalogV1BigQueryTableSpec(_messages.Message):
       TABLE_SOURCE_TYPE_UNSPECIFIED: Default unknown type.
       BIGQUERY_VIEW: Table view.
       BIGQUERY_TABLE: BigQuery native table.
+      BIGQUERY_MATERIALIZED_VIEW: BigQuery materialized view.
     """
     TABLE_SOURCE_TYPE_UNSPECIFIED = 0
     BIGQUERY_VIEW = 1
     BIGQUERY_TABLE = 2
+    BIGQUERY_MATERIALIZED_VIEW = 3
 
   tableSourceType = _messages.EnumField('TableSourceTypeValueValuesEnum', 1)
   tableSpec = _messages.MessageField('GoogleCloudDatacatalogV1TableSpec', 2)
@@ -1153,8 +1157,8 @@ class GoogleCloudDatacatalogV1SearchCatalogRequest(_messages.Message):
       be non-empty.  Query strings can be simple as "x" or more qualified as:
       * name:x * column:x * description:y  Note: Query tokens need to have a
       minimum of 3 characters for substring matching to work correctly. See
-      [Data Catalog Search Syntax](https://cloud.google.com/data-catalog/docs
-      /how-to/search-reference) for more information.
+      [Data Catalog Search Syntax](https://cloud.google.com/data-
+      catalog/docs/how-to/search-reference) for more information.
     scope: Required. The scope of this search request. A `scope` that has
       empty `include_org_ids`, `include_project_ids` AND false
       `include_gcp_public_datasets` is considered invalid. Data Catalog will
@@ -1177,8 +1181,9 @@ class GoogleCloudDatacatalogV1SearchCatalogRequestScope(_messages.Message):
       available at https://cloud.google.com/public-datasets/. By default, GCP
       public datasets are excluded.
     includeOrgIds: The list of organization IDs to search within. To find your
-      organization ID, follow instructions in https://cloud.google.com
-      /resource-manager/docs/creating-managing-organization.
+      organization ID, follow instructions in
+      https://cloud.google.com/resource-manager/docs/creating-managing-
+      organization.
     includeProjectIds: The list of project IDs to search within. To learn more
       about the distinction between project names/IDs/numbers, go to
       https://cloud.google.com/docs/overview/#projects.
@@ -1555,8 +1560,8 @@ class Policy(_messages.Message):
   timestamp('2020-10-01T00:00:00.000Z')",           }         }       ],
   "etag": "BwWWja0YfJA=",       "version": 3     }  **YAML example:**
   bindings:     - members:       - user:mike@example.com       -
-  group:admins@example.com       - domain:google.com       - serviceAccount
-  :my-project-id@appspot.gserviceaccount.com       role:
+  group:admins@example.com       - domain:google.com       -
+  serviceAccount:my-project-id@appspot.gserviceaccount.com       role:
   roles/resourcemanager.organizationAdmin     - members:       -
   user:eve@example.com       role: roles/resourcemanager.organizationViewer
   condition:         title: expirable access         description: Does not
@@ -1668,7 +1673,7 @@ class StandardQueryParameters(_messages.Message):
 
   f__xgafv = _messages.EnumField('FXgafvValueValuesEnum', 1)
   access_token = _messages.StringField(2)
-  alt = _messages.EnumField('AltValueValuesEnum', 3, default=u'json')
+  alt = _messages.EnumField('AltValueValuesEnum', 3, default='json')
   callback = _messages.StringField(4)
   fields = _messages.StringField(5)
   key = _messages.StringField(6)

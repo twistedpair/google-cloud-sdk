@@ -8,17 +8,17 @@ class CloudidentityV1beta1(base_api.BaseApiClient):
   """Generated client library for service cloudidentity version v1beta1."""
 
   MESSAGES_MODULE = messages
-  BASE_URL = u'https://cloudidentity.googleapis.com/'
-  MTLS_BASE_URL = u'https://cloudidentity.mtls.googleapis.com/'
+  BASE_URL = 'https://cloudidentity.googleapis.com/'
+  MTLS_BASE_URL = 'https://cloudidentity.mtls.googleapis.com/'
 
-  _PACKAGE = u'cloudidentity'
-  _SCOPES = [u'https://www.googleapis.com/auth/cloud-identity.groups', u'https://www.googleapis.com/auth/cloud-identity.groups.readonly', u'https://www.googleapis.com/auth/cloud-platform', u'https://www.googleapis.com/auth/userinfo.profile']
-  _VERSION = u'v1beta1'
+  _PACKAGE = 'cloudidentity'
+  _SCOPES = ['https://www.googleapis.com/auth/cloud-identity.groups', 'https://www.googleapis.com/auth/cloud-identity.groups.readonly', 'https://www.googleapis.com/auth/cloud-platform', 'https://www.googleapis.com/auth/userinfo.profile']
+  _VERSION = 'v1beta1'
   _CLIENT_ID = '1042881264118.apps.googleusercontent.com'
   _CLIENT_SECRET = 'x_Tw5K8nnjoRAqULM9PFAC2b'
-  _USER_AGENT = u'google-cloud-sdk'
-  _CLIENT_CLASS_NAME = u'CloudidentityV1beta1'
-  _URL_VERSION = u'v1beta1'
+  _USER_AGENT = 'google-cloud-sdk'
+  _CLIENT_CLASS_NAME = 'CloudidentityV1beta1'
+  _URL_VERSION = 'v1beta1'
   _API_KEY = None
 
   def __init__(self, url='', credentials=None,
@@ -48,7 +48,7 @@ class CloudidentityV1beta1(base_api.BaseApiClient):
   class DevicesDeviceUsersService(base_api.BaseApiService):
     """Service class for the devices___deviceUsers resource."""
 
-    _NAME = u'devices___deviceUsers'
+    _NAME = 'devices___deviceUsers'
 
     def __init__(self, client):
       super(CloudidentityV1beta1.DevicesDeviceUsersService, self).__init__(client)
@@ -70,22 +70,22 @@ caller's credentials, as well as the properties provided in the request.
           config, request, global_params=global_params)
 
     LookupSelf.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'cloudidentity.devices.-.deviceUsers.lookupSelf',
+        http_method='GET',
+        method_id='cloudidentity.devices.-.deviceUsers.lookupSelf',
         ordered_params=[],
         path_params=[],
-        query_params=[u'androidId', u'pageSize', u'pageToken', u'rawResourceId'],
-        relative_path=u'v1beta1/devices/-/deviceUsers:lookupSelf',
+        query_params=['androidId', 'pageSize', 'pageToken', 'rawResourceId'],
+        relative_path='v1beta1/devices/-/deviceUsers:lookupSelf',
         request_field='',
-        request_type_name=u'CloudidentityDevicesDeviceUsersLookupSelfRequest',
-        response_type_name=u'Operation',
+        request_type_name='CloudidentityDevicesDeviceUsersLookupSelfRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
   class DevicesService(base_api.BaseApiService):
     """Service class for the devices__ resource."""
 
-    _NAME = u'devices__'
+    _NAME = 'devices__'
 
     def __init__(self, client):
       super(CloudidentityV1beta1.DevicesService, self).__init__(client)
@@ -95,7 +95,7 @@ caller's credentials, as well as the properties provided in the request.
   class DevicesDeviceUsersClientStatesService(base_api.BaseApiService):
     """Service class for the devices_deviceUsers_clientStates resource."""
 
-    _NAME = u'devices_deviceUsers_clientStates'
+    _NAME = 'devices_deviceUsers_clientStates'
 
     def __init__(self, client):
       super(CloudidentityV1beta1.DevicesDeviceUsersClientStatesService, self).__init__(client)
@@ -116,16 +116,16 @@ caller's credentials, as well as the properties provided in the request.
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/devices/{devicesId}/deviceUsers/{deviceUsersId}/clientStates/{clientStatesId}',
-        http_method=u'GET',
-        method_id=u'cloudidentity.devices.deviceUsers.clientStates.get',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[u'customer'],
-        relative_path=u'v1beta1/{+name}',
+        flat_path='v1beta1/devices/{devicesId}/deviceUsers/{deviceUsersId}/clientStates/{clientStatesId}',
+        http_method='GET',
+        method_id='cloudidentity.devices.deviceUsers.clientStates.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['customer'],
+        relative_path='v1beta1/{+name}',
         request_field='',
-        request_type_name=u'CloudidentityDevicesDeviceUsersClientStatesGetRequest',
-        response_type_name=u'Operation',
+        request_type_name='CloudidentityDevicesDeviceUsersClientStatesGetRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -143,16 +143,16 @@ caller's credentials, as well as the properties provided in the request.
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/devices/{devicesId}/deviceUsers/{deviceUsersId}/clientStates',
-        http_method=u'GET',
-        method_id=u'cloudidentity.devices.deviceUsers.clientStates.list',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'customer', u'filter', u'orderBy', u'pageSize', u'pageToken'],
-        relative_path=u'v1beta1/{+parent}/clientStates',
+        flat_path='v1beta1/devices/{devicesId}/deviceUsers/{deviceUsersId}/clientStates',
+        http_method='GET',
+        method_id='cloudidentity.devices.deviceUsers.clientStates.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['customer', 'filter', 'orderBy', 'pageToken'],
+        relative_path='v1beta1/{+parent}/clientStates',
         request_field='',
-        request_type_name=u'CloudidentityDevicesDeviceUsersClientStatesListRequest',
-        response_type_name=u'Operation',
+        request_type_name='CloudidentityDevicesDeviceUsersClientStatesListRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -170,23 +170,23 @@ caller's credentials, as well as the properties provided in the request.
           config, request, global_params=global_params)
 
     Patch.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/devices/{devicesId}/deviceUsers/{deviceUsersId}/clientStates/{clientStatesId}',
-        http_method=u'PATCH',
-        method_id=u'cloudidentity.devices.deviceUsers.clientStates.patch',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[u'customer', u'updateMask'],
-        relative_path=u'v1beta1/{+name}',
-        request_field=u'clientState',
-        request_type_name=u'CloudidentityDevicesDeviceUsersClientStatesPatchRequest',
-        response_type_name=u'Operation',
+        flat_path='v1beta1/devices/{devicesId}/deviceUsers/{deviceUsersId}/clientStates/{clientStatesId}',
+        http_method='PATCH',
+        method_id='cloudidentity.devices.deviceUsers.clientStates.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['customer', 'updateMask'],
+        relative_path='v1beta1/{+name}',
+        request_field='clientState',
+        request_type_name='CloudidentityDevicesDeviceUsersClientStatesPatchRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
   class DevicesDeviceUsersEndpointAppsService(base_api.BaseApiService):
     """Service class for the devices_deviceUsers_endpointApps resource."""
 
-    _NAME = u'devices_deviceUsers_endpointApps'
+    _NAME = 'devices_deviceUsers_endpointApps'
 
     def __init__(self, client):
       super(CloudidentityV1beta1.DevicesDeviceUsersEndpointAppsService, self).__init__(client)
@@ -207,23 +207,23 @@ caller's credentials, as well as the properties provided in the request.
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/devices/{devicesId}/deviceUsers/{deviceUsersId}/endpointApps',
-        http_method=u'GET',
-        method_id=u'cloudidentity.devices.deviceUsers.endpointApps.list',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'customer', u'orderBy', u'pageSize', u'pageToken'],
-        relative_path=u'v1beta1/{+parent}/endpointApps',
+        flat_path='v1beta1/devices/{devicesId}/deviceUsers/{deviceUsersId}/endpointApps',
+        http_method='GET',
+        method_id='cloudidentity.devices.deviceUsers.endpointApps.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['customer', 'orderBy', 'pageSize', 'pageToken'],
+        relative_path='v1beta1/{+parent}/endpointApps',
         request_field='',
-        request_type_name=u'CloudidentityDevicesDeviceUsersEndpointAppsListRequest',
-        response_type_name=u'Operation',
+        request_type_name='CloudidentityDevicesDeviceUsersEndpointAppsListRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
   class DevicesDeviceUsersService(base_api.BaseApiService):
     """Service class for the devices_deviceUsers resource."""
 
-    _NAME = u'devices_deviceUsers'
+    _NAME = 'devices_deviceUsers'
 
     def __init__(self, client):
       super(CloudidentityV1beta1.DevicesDeviceUsersService, self).__init__(client)
@@ -244,16 +244,16 @@ caller's credentials, as well as the properties provided in the request.
           config, request, global_params=global_params)
 
     Approve.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/devices/{devicesId}/deviceUsers/{deviceUsersId}:approve',
-        http_method=u'POST',
-        method_id=u'cloudidentity.devices.deviceUsers.approve',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1beta1/devices/{devicesId}/deviceUsers/{deviceUsersId}:approve',
+        http_method='POST',
+        method_id='cloudidentity.devices.deviceUsers.approve',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1beta1/{+name}:approve',
-        request_field=u'approveDeviceUserRequest',
-        request_type_name=u'CloudidentityDevicesDeviceUsersApproveRequest',
-        response_type_name=u'Operation',
+        relative_path='v1beta1/{+name}:approve',
+        request_field='approveDeviceUserRequest',
+        request_type_name='CloudidentityDevicesDeviceUsersApproveRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -271,16 +271,16 @@ caller's credentials, as well as the properties provided in the request.
           config, request, global_params=global_params)
 
     Block.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/devices/{devicesId}/deviceUsers/{deviceUsersId}:block',
-        http_method=u'POST',
-        method_id=u'cloudidentity.devices.deviceUsers.block',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1beta1/devices/{devicesId}/deviceUsers/{deviceUsersId}:block',
+        http_method='POST',
+        method_id='cloudidentity.devices.deviceUsers.block',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1beta1/{+name}:block',
-        request_field=u'blockDeviceUserRequest',
-        request_type_name=u'CloudidentityDevicesDeviceUsersBlockRequest',
-        response_type_name=u'Operation',
+        relative_path='v1beta1/{+name}:block',
+        request_field='blockDeviceUserRequest',
+        request_type_name='CloudidentityDevicesDeviceUsersBlockRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -300,16 +300,16 @@ wipe operation returning success and the device being wiped.
           config, request, global_params=global_params)
 
     CancelWipe.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/devices/{devicesId}/deviceUsers/{deviceUsersId}:cancelWipe',
-        http_method=u'POST',
-        method_id=u'cloudidentity.devices.deviceUsers.cancelWipe',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1beta1/devices/{devicesId}/deviceUsers/{deviceUsersId}:cancelWipe',
+        http_method='POST',
+        method_id='cloudidentity.devices.deviceUsers.cancelWipe',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1beta1/{+name}:cancelWipe',
-        request_field=u'cancelWipeDeviceUserRequest',
-        request_type_name=u'CloudidentityDevicesDeviceUsersCancelWipeRequest',
-        response_type_name=u'Operation',
+        relative_path='v1beta1/{+name}:cancelWipe',
+        request_field='cancelWipeDeviceUserRequest',
+        request_type_name='CloudidentityDevicesDeviceUsersCancelWipeRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -328,16 +328,16 @@ wipe operation returning success and the device being wiped.
           config, request, global_params=global_params)
 
     CollectBugReport.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/devices/{devicesId}/deviceUsers/{deviceUsersId}:collectBugReport',
-        http_method=u'POST',
-        method_id=u'cloudidentity.devices.deviceUsers.collectBugReport',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1beta1/devices/{devicesId}/deviceUsers/{deviceUsersId}:collectBugReport',
+        http_method='POST',
+        method_id='cloudidentity.devices.deviceUsers.collectBugReport',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1beta1/{+name}:collectBugReport',
-        request_field=u'collectBugReportRequest',
-        request_type_name=u'CloudidentityDevicesDeviceUsersCollectBugReportRequest',
-        response_type_name=u'Operation',
+        relative_path='v1beta1/{+name}:collectBugReport',
+        request_field='collectBugReportRequest',
+        request_type_name='CloudidentityDevicesDeviceUsersCollectBugReportRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -355,16 +355,16 @@ wipe operation returning success and the device being wiped.
           config, request, global_params=global_params)
 
     Delete.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/devices/{devicesId}/deviceUsers/{deviceUsersId}',
-        http_method=u'DELETE',
-        method_id=u'cloudidentity.devices.deviceUsers.delete',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[u'customer'],
-        relative_path=u'v1beta1/{+name}',
+        flat_path='v1beta1/devices/{devicesId}/deviceUsers/{deviceUsersId}',
+        http_method='DELETE',
+        method_id='cloudidentity.devices.deviceUsers.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['customer'],
+        relative_path='v1beta1/{+name}',
         request_field='',
-        request_type_name=u'CloudidentityDevicesDeviceUsersDeleteRequest',
-        response_type_name=u'Operation',
+        request_type_name='CloudidentityDevicesDeviceUsersDeleteRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -382,16 +382,16 @@ wipe operation returning success and the device being wiped.
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/devices/{devicesId}/deviceUsers/{deviceUsersId}',
-        http_method=u'GET',
-        method_id=u'cloudidentity.devices.deviceUsers.get',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[u'customer'],
-        relative_path=u'v1beta1/{+name}',
+        flat_path='v1beta1/devices/{devicesId}/deviceUsers/{deviceUsersId}',
+        http_method='GET',
+        method_id='cloudidentity.devices.deviceUsers.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['customer'],
+        relative_path='v1beta1/{+name}',
         request_field='',
-        request_type_name=u'CloudidentityDevicesDeviceUsersGetRequest',
-        response_type_name=u'Operation',
+        request_type_name='CloudidentityDevicesDeviceUsersGetRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -409,16 +409,16 @@ wipe operation returning success and the device being wiped.
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/devices/{devicesId}/deviceUsers',
-        http_method=u'GET',
-        method_id=u'cloudidentity.devices.deviceUsers.list',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'customer', u'filter', u'orderBy', u'pageSize', u'pageToken'],
-        relative_path=u'v1beta1/{+parent}/deviceUsers',
+        flat_path='v1beta1/devices/{devicesId}/deviceUsers',
+        http_method='GET',
+        method_id='cloudidentity.devices.deviceUsers.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['customer', 'filter', 'orderBy', 'pageSize', 'pageToken'],
+        relative_path='v1beta1/{+parent}/deviceUsers',
         request_field='',
-        request_type_name=u'CloudidentityDevicesDeviceUsersListRequest',
-        response_type_name=u'Operation',
+        request_type_name='CloudidentityDevicesDeviceUsersListRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -436,16 +436,16 @@ wipe operation returning success and the device being wiped.
           config, request, global_params=global_params)
 
     Patch.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/devices/{devicesId}/deviceUsers/{deviceUsersId}',
-        http_method=u'PATCH',
-        method_id=u'cloudidentity.devices.deviceUsers.patch',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[u'customer', u'name1', u'updateMask'],
-        relative_path=u'v1beta1/{+name}',
-        request_field=u'deviceUser',
-        request_type_name=u'CloudidentityDevicesDeviceUsersPatchRequest',
-        response_type_name=u'Operation',
+        flat_path='v1beta1/devices/{devicesId}/deviceUsers/{deviceUsersId}',
+        http_method='PATCH',
+        method_id='cloudidentity.devices.deviceUsers.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['customer', 'name1', 'updateMask'],
+        relative_path='v1beta1/{+name}',
+        request_field='deviceUser',
+        request_type_name='CloudidentityDevicesDeviceUsersPatchRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -463,16 +463,16 @@ wipe operation returning success and the device being wiped.
           config, request, global_params=global_params)
 
     Signout.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/devices/{devicesId}/deviceUsers/{deviceUsersId}:signout',
-        http_method=u'POST',
-        method_id=u'cloudidentity.devices.deviceUsers.signout',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1beta1/devices/{devicesId}/deviceUsers/{deviceUsersId}:signout',
+        http_method='POST',
+        method_id='cloudidentity.devices.deviceUsers.signout',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1beta1/{+name}:signout',
-        request_field=u'signoutDeviceUserRequest',
-        request_type_name=u'CloudidentityDevicesDeviceUsersSignoutRequest',
-        response_type_name=u'Operation',
+        relative_path='v1beta1/{+name}:signout',
+        request_field='signoutDeviceUserRequest',
+        request_type_name='CloudidentityDevicesDeviceUsersSignoutRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -490,16 +490,16 @@ wipe operation returning success and the device being wiped.
           config, request, global_params=global_params)
 
     Sync.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/devices/{devicesId}/deviceUsers/{deviceUsersId}:sync',
-        http_method=u'POST',
-        method_id=u'cloudidentity.devices.deviceUsers.sync',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1beta1/devices/{devicesId}/deviceUsers/{deviceUsersId}:sync',
+        http_method='POST',
+        method_id='cloudidentity.devices.deviceUsers.sync',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1beta1/{+name}:sync',
-        request_field=u'syncDeviceUserRequest',
-        request_type_name=u'CloudidentityDevicesDeviceUsersSyncRequest',
-        response_type_name=u'Operation',
+        relative_path='v1beta1/{+name}:sync',
+        request_field='syncDeviceUserRequest',
+        request_type_name='CloudidentityDevicesDeviceUsersSyncRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -518,16 +518,16 @@ their user account.
           config, request, global_params=global_params)
 
     Unenroll.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/devices/{devicesId}/deviceUsers/{deviceUsersId}:unenroll',
-        http_method=u'POST',
-        method_id=u'cloudidentity.devices.deviceUsers.unenroll',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1beta1/devices/{devicesId}/deviceUsers/{deviceUsersId}:unenroll',
+        http_method='POST',
+        method_id='cloudidentity.devices.deviceUsers.unenroll',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1beta1/{+name}:unenroll',
-        request_field=u'unenrollDeviceUserRequest',
-        request_type_name=u'CloudidentityDevicesDeviceUsersUnenrollRequest',
-        response_type_name=u'Operation',
+        relative_path='v1beta1/{+name}:unenroll',
+        request_field='unenrollDeviceUserRequest',
+        request_type_name='CloudidentityDevicesDeviceUsersUnenrollRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -545,23 +545,23 @@ their user account.
           config, request, global_params=global_params)
 
     Wipe.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/devices/{devicesId}/deviceUsers/{deviceUsersId}:wipe',
-        http_method=u'POST',
-        method_id=u'cloudidentity.devices.deviceUsers.wipe',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1beta1/devices/{devicesId}/deviceUsers/{deviceUsersId}:wipe',
+        http_method='POST',
+        method_id='cloudidentity.devices.deviceUsers.wipe',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1beta1/{+name}:wipe',
-        request_field=u'wipeDeviceUserRequest',
-        request_type_name=u'CloudidentityDevicesDeviceUsersWipeRequest',
-        response_type_name=u'Operation',
+        relative_path='v1beta1/{+name}:wipe',
+        request_field='wipeDeviceUserRequest',
+        request_type_name='CloudidentityDevicesDeviceUsersWipeRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
   class DevicesService(base_api.BaseApiService):
     """Service class for the devices resource."""
 
-    _NAME = u'devices'
+    _NAME = 'devices'
 
     def __init__(self, client):
       super(CloudidentityV1beta1.DevicesService, self).__init__(client)
@@ -584,16 +584,16 @@ wipe operation returning success and the device being wiped.
           config, request, global_params=global_params)
 
     CancelWipe.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/devices/{devicesId}:cancelWipe',
-        http_method=u'POST',
-        method_id=u'cloudidentity.devices.cancelWipe',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1beta1/devices/{devicesId}:cancelWipe',
+        http_method='POST',
+        method_id='cloudidentity.devices.cancelWipe',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1beta1/{+name}:cancelWipe',
-        request_field=u'cancelWipeDeviceRequest',
-        request_type_name=u'CloudidentityDevicesCancelWipeRequest',
-        response_type_name=u'Operation',
+        relative_path='v1beta1/{+name}:cancelWipe',
+        request_field='cancelWipeDeviceRequest',
+        request_type_name='CloudidentityDevicesCancelWipeRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -611,15 +611,15 @@ wipe operation returning success and the device being wiped.
           config, request, global_params=global_params)
 
     Create.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'cloudidentity.devices.create',
+        http_method='POST',
+        method_id='cloudidentity.devices.create',
         ordered_params=[],
         path_params=[],
         query_params=[],
-        relative_path=u'v1beta1/devices',
+        relative_path='v1beta1/devices',
         request_field='<request>',
-        request_type_name=u'CreateDeviceRequest',
-        response_type_name=u'Operation',
+        request_type_name='CreateDeviceRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -637,16 +637,16 @@ wipe operation returning success and the device being wiped.
           config, request, global_params=global_params)
 
     Delete.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/devices/{devicesId}',
-        http_method=u'DELETE',
-        method_id=u'cloudidentity.devices.delete',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[u'customer'],
-        relative_path=u'v1beta1/{+name}',
+        flat_path='v1beta1/devices/{devicesId}',
+        http_method='DELETE',
+        method_id='cloudidentity.devices.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['customer'],
+        relative_path='v1beta1/{+name}',
         request_field='',
-        request_type_name=u'CloudidentityDevicesDeleteRequest',
-        response_type_name=u'Operation',
+        request_type_name='CloudidentityDevicesDeleteRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -664,16 +664,16 @@ wipe operation returning success and the device being wiped.
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/devices/{devicesId}',
-        http_method=u'GET',
-        method_id=u'cloudidentity.devices.get',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[u'customer'],
-        relative_path=u'v1beta1/{+name}',
+        flat_path='v1beta1/devices/{devicesId}',
+        http_method='GET',
+        method_id='cloudidentity.devices.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['customer'],
+        relative_path='v1beta1/{+name}',
         request_field='',
-        request_type_name=u'CloudidentityDevicesGetRequest',
-        response_type_name=u'Operation',
+        request_type_name='CloudidentityDevicesGetRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -691,16 +691,16 @@ wipe operation returning success and the device being wiped.
           config, request, global_params=global_params)
 
     GetSettings.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/devices/{devicesId}/settings',
-        http_method=u'GET',
-        method_id=u'cloudidentity.devices.getSettings',
-        ordered_params=[u'resourceId'],
-        path_params=[u'resourceId'],
-        query_params=[u'clientContext_appId', u'clientContext_clientVersion', u'clientContext_iosVendorId', u'clientContext_osVersion'],
-        relative_path=u'v1beta1/{+resourceId}/settings',
+        flat_path='v1beta1/devices/{devicesId}/settings',
+        http_method='GET',
+        method_id='cloudidentity.devices.getSettings',
+        ordered_params=['resourceId'],
+        path_params=['resourceId'],
+        query_params=['clientContext_appId', 'clientContext_clientVersion', 'clientContext_iosVendorId', 'clientContext_osVersion'],
+        relative_path='v1beta1/{+resourceId}/settings',
         request_field='',
-        request_type_name=u'CloudidentityDevicesGetSettingsRequest',
-        response_type_name=u'GetEffectiveSettingsResponse',
+        request_type_name='CloudidentityDevicesGetSettingsRequest',
+        response_type_name='GetEffectiveSettingsResponse',
         supports_download=False,
     )
 
@@ -718,15 +718,15 @@ wipe operation returning success and the device being wiped.
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'cloudidentity.devices.list',
+        http_method='GET',
+        method_id='cloudidentity.devices.list',
         ordered_params=[],
         path_params=[],
-        query_params=[u'customer', u'filter', u'orderBy', u'pageSize', u'pageToken', u'view'],
-        relative_path=u'v1beta1/devices',
+        query_params=['customer', 'filter', 'orderBy', 'pageSize', 'pageToken', 'view'],
+        relative_path='v1beta1/devices',
         request_field='',
-        request_type_name=u'CloudidentityDevicesListRequest',
-        response_type_name=u'Operation',
+        request_type_name='CloudidentityDevicesListRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -744,16 +744,16 @@ wipe operation returning success and the device being wiped.
           config, request, global_params=global_params)
 
     Lock.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/devices:lock',
-        http_method=u'POST',
-        method_id=u'cloudidentity.devices.lock',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1beta1/devices:lock',
+        http_method='POST',
+        method_id='cloudidentity.devices.lock',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1beta1/{+name}:lock',
-        request_field=u'lockDeviceRequest',
-        request_type_name=u'CloudidentityDevicesLockRequest',
-        response_type_name=u'Operation',
+        relative_path='v1beta1/{+name}:lock',
+        request_field='lockDeviceRequest',
+        request_type_name='CloudidentityDevicesLockRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -771,16 +771,16 @@ wipe operation returning success and the device being wiped.
           config, request, global_params=global_params)
 
     Patch.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/devices/{devicesId}',
-        http_method=u'PATCH',
-        method_id=u'cloudidentity.devices.patch',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[u'customer', u'name1', u'updateMask'],
-        relative_path=u'v1beta1/{+name}',
-        request_field=u'device',
-        request_type_name=u'CloudidentityDevicesPatchRequest',
-        response_type_name=u'Operation',
+        flat_path='v1beta1/devices/{devicesId}',
+        http_method='PATCH',
+        method_id='cloudidentity.devices.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['customer', 'name1', 'updateMask'],
+        relative_path='v1beta1/{+name}',
+        request_field='device',
+        request_type_name='CloudidentityDevicesPatchRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -798,16 +798,16 @@ wipe operation returning success and the device being wiped.
           config, request, global_params=global_params)
 
     ResetPin.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/devices:resetPin',
-        http_method=u'POST',
-        method_id=u'cloudidentity.devices.resetPin',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1beta1/devices:resetPin',
+        http_method='POST',
+        method_id='cloudidentity.devices.resetPin',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1beta1/{+name}:resetPin',
-        request_field=u'resetPinRequest',
-        request_type_name=u'CloudidentityDevicesResetPinRequest',
-        response_type_name=u'Operation',
+        relative_path='v1beta1/{+name}:resetPin',
+        request_field='resetPinRequest',
+        request_type_name='CloudidentityDevicesResetPinRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -825,16 +825,16 @@ wipe operation returning success and the device being wiped.
           config, request, global_params=global_params)
 
     Ring.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/devices:ring',
-        http_method=u'POST',
-        method_id=u'cloudidentity.devices.ring',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1beta1/devices:ring',
+        http_method='POST',
+        method_id='cloudidentity.devices.ring',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1beta1/{+name}:ring',
-        request_field=u'ringDeviceRequest',
-        request_type_name=u'CloudidentityDevicesRingRequest',
-        response_type_name=u'Operation',
+        relative_path='v1beta1/{+name}:ring',
+        request_field='ringDeviceRequest',
+        request_type_name='CloudidentityDevicesRingRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -852,16 +852,16 @@ wipe operation returning success and the device being wiped.
           config, request, global_params=global_params)
 
     Settings.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/devices/{devicesId}/settings',
-        http_method=u'POST',
-        method_id=u'cloudidentity.devices.settings',
-        ordered_params=[u'resourceId'],
-        path_params=[u'resourceId'],
+        flat_path='v1beta1/devices/{devicesId}/settings',
+        http_method='POST',
+        method_id='cloudidentity.devices.settings',
+        ordered_params=['resourceId'],
+        path_params=['resourceId'],
         query_params=[],
-        relative_path=u'v1beta1/{+resourceId}/settings',
-        request_field=u'getEffectiveSettingsRequest',
-        request_type_name=u'CloudidentityDevicesSettingsRequest',
-        response_type_name=u'GetEffectiveSettingsResponse',
+        relative_path='v1beta1/{+resourceId}/settings',
+        request_field='getEffectiveSettingsRequest',
+        request_type_name='CloudidentityDevicesSettingsRequest',
+        response_type_name='GetEffectiveSettingsResponse',
         supports_download=False,
     )
 
@@ -879,23 +879,23 @@ wipe operation returning success and the device being wiped.
           config, request, global_params=global_params)
 
     Wipe.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/devices/{devicesId}:wipe',
-        http_method=u'POST',
-        method_id=u'cloudidentity.devices.wipe',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1beta1/devices/{devicesId}:wipe',
+        http_method='POST',
+        method_id='cloudidentity.devices.wipe',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1beta1/{+name}:wipe',
-        request_field=u'wipeDeviceRequest',
-        request_type_name=u'CloudidentityDevicesWipeRequest',
-        response_type_name=u'Operation',
+        relative_path='v1beta1/{+name}:wipe',
+        request_field='wipeDeviceRequest',
+        request_type_name='CloudidentityDevicesWipeRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
   class GroupsMembershipsService(base_api.BaseApiService):
     """Service class for the groups_memberships resource."""
 
-    _NAME = u'groups_memberships'
+    _NAME = 'groups_memberships'
 
     def __init__(self, client):
       super(CloudidentityV1beta1.GroupsMembershipsService, self).__init__(client)
@@ -916,16 +916,16 @@ wipe operation returning success and the device being wiped.
           config, request, global_params=global_params)
 
     CheckTransitiveMembership.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/groups/{groupsId}/memberships:checkTransitiveMembership',
-        http_method=u'GET',
-        method_id=u'cloudidentity.groups.memberships.checkTransitiveMembership',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'query'],
-        relative_path=u'v1beta1/{+parent}/memberships:checkTransitiveMembership',
+        flat_path='v1beta1/groups/{groupsId}/memberships:checkTransitiveMembership',
+        http_method='GET',
+        method_id='cloudidentity.groups.memberships.checkTransitiveMembership',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['query'],
+        relative_path='v1beta1/{+parent}/memberships:checkTransitiveMembership',
         request_field='',
-        request_type_name=u'CloudidentityGroupsMembershipsCheckTransitiveMembershipRequest',
-        response_type_name=u'CheckTransitiveMembershipResponse',
+        request_type_name='CloudidentityGroupsMembershipsCheckTransitiveMembershipRequest',
+        response_type_name='CheckTransitiveMembershipResponse',
         supports_download=False,
     )
 
@@ -943,16 +943,16 @@ wipe operation returning success and the device being wiped.
           config, request, global_params=global_params)
 
     Create.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/groups/{groupsId}/memberships',
-        http_method=u'POST',
-        method_id=u'cloudidentity.groups.memberships.create',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
+        flat_path='v1beta1/groups/{groupsId}/memberships',
+        http_method='POST',
+        method_id='cloudidentity.groups.memberships.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
         query_params=[],
-        relative_path=u'v1beta1/{+parent}/memberships',
-        request_field=u'membership',
-        request_type_name=u'CloudidentityGroupsMembershipsCreateRequest',
-        response_type_name=u'Operation',
+        relative_path='v1beta1/{+parent}/memberships',
+        request_field='membership',
+        request_type_name='CloudidentityGroupsMembershipsCreateRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -970,16 +970,16 @@ wipe operation returning success and the device being wiped.
           config, request, global_params=global_params)
 
     Delete.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/groups/{groupsId}/memberships/{membershipsId}',
-        http_method=u'DELETE',
-        method_id=u'cloudidentity.groups.memberships.delete',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1beta1/groups/{groupsId}/memberships/{membershipsId}',
+        http_method='DELETE',
+        method_id='cloudidentity.groups.memberships.delete',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1beta1/{+name}',
+        relative_path='v1beta1/{+name}',
         request_field='',
-        request_type_name=u'CloudidentityGroupsMembershipsDeleteRequest',
-        response_type_name=u'Operation',
+        request_type_name='CloudidentityGroupsMembershipsDeleteRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -997,16 +997,16 @@ wipe operation returning success and the device being wiped.
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/groups/{groupsId}/memberships/{membershipsId}',
-        http_method=u'GET',
-        method_id=u'cloudidentity.groups.memberships.get',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1beta1/groups/{groupsId}/memberships/{membershipsId}',
+        http_method='GET',
+        method_id='cloudidentity.groups.memberships.get',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1beta1/{+name}',
+        relative_path='v1beta1/{+name}',
         request_field='',
-        request_type_name=u'CloudidentityGroupsMembershipsGetRequest',
-        response_type_name=u'Membership',
+        request_type_name='CloudidentityGroupsMembershipsGetRequest',
+        response_type_name='Membership',
         supports_download=False,
     )
 
@@ -1024,16 +1024,16 @@ wipe operation returning success and the device being wiped.
           config, request, global_params=global_params)
 
     GetMembershipGraph.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/groups/{groupsId}/memberships:getMembershipGraph',
-        http_method=u'GET',
-        method_id=u'cloudidentity.groups.memberships.getMembershipGraph',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'query'],
-        relative_path=u'v1beta1/{+parent}/memberships:getMembershipGraph',
+        flat_path='v1beta1/groups/{groupsId}/memberships:getMembershipGraph',
+        http_method='GET',
+        method_id='cloudidentity.groups.memberships.getMembershipGraph',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['query'],
+        relative_path='v1beta1/{+parent}/memberships:getMembershipGraph',
         request_field='',
-        request_type_name=u'CloudidentityGroupsMembershipsGetMembershipGraphRequest',
-        response_type_name=u'Operation',
+        request_type_name='CloudidentityGroupsMembershipsGetMembershipGraphRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -1051,16 +1051,16 @@ wipe operation returning success and the device being wiped.
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/groups/{groupsId}/memberships',
-        http_method=u'GET',
-        method_id=u'cloudidentity.groups.memberships.list',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'pageSize', u'pageToken', u'view'],
-        relative_path=u'v1beta1/{+parent}/memberships',
+        flat_path='v1beta1/groups/{groupsId}/memberships',
+        http_method='GET',
+        method_id='cloudidentity.groups.memberships.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken', 'view'],
+        relative_path='v1beta1/{+parent}/memberships',
         request_field='',
-        request_type_name=u'CloudidentityGroupsMembershipsListRequest',
-        response_type_name=u'ListMembershipsResponse',
+        request_type_name='CloudidentityGroupsMembershipsListRequest',
+        response_type_name='ListMembershipsResponse',
         supports_download=False,
     )
 
@@ -1080,16 +1080,16 @@ name](https://cloud.google.com/apis/design/resource_names) of a
           config, request, global_params=global_params)
 
     Lookup.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/groups/{groupsId}/memberships:lookup',
-        http_method=u'GET',
-        method_id=u'cloudidentity.groups.memberships.lookup',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'memberKey_id', u'memberKey_namespace'],
-        relative_path=u'v1beta1/{+parent}/memberships:lookup',
+        flat_path='v1beta1/groups/{groupsId}/memberships:lookup',
+        http_method='GET',
+        method_id='cloudidentity.groups.memberships.lookup',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['memberKey_id', 'memberKey_namespace'],
+        relative_path='v1beta1/{+parent}/memberships:lookup',
         request_field='',
-        request_type_name=u'CloudidentityGroupsMembershipsLookupRequest',
-        response_type_name=u'LookupMembershipNameResponse',
+        request_type_name='CloudidentityGroupsMembershipsLookupRequest',
+        response_type_name='LookupMembershipNameResponse',
         supports_download=False,
     )
 
@@ -1107,16 +1107,16 @@ name](https://cloud.google.com/apis/design/resource_names) of a
           config, request, global_params=global_params)
 
     ModifyMembershipRoles.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/groups/{groupsId}/memberships/{membershipsId}:modifyMembershipRoles',
-        http_method=u'POST',
-        method_id=u'cloudidentity.groups.memberships.modifyMembershipRoles',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1beta1/groups/{groupsId}/memberships/{membershipsId}:modifyMembershipRoles',
+        http_method='POST',
+        method_id='cloudidentity.groups.memberships.modifyMembershipRoles',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1beta1/{+name}:modifyMembershipRoles',
-        request_field=u'modifyMembershipRolesRequest',
-        request_type_name=u'CloudidentityGroupsMembershipsModifyMembershipRolesRequest',
-        response_type_name=u'ModifyMembershipRolesResponse',
+        relative_path='v1beta1/{+name}:modifyMembershipRoles',
+        request_field='modifyMembershipRolesRequest',
+        request_type_name='CloudidentityGroupsMembershipsModifyMembershipRolesRequest',
+        response_type_name='ModifyMembershipRolesResponse',
         supports_download=False,
     )
 
@@ -1134,16 +1134,16 @@ name](https://cloud.google.com/apis/design/resource_names) of a
           config, request, global_params=global_params)
 
     Patch.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/groups/{groupsId}/memberships/{membershipsId}',
-        http_method=u'PATCH',
-        method_id=u'cloudidentity.groups.memberships.patch',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[u'updateMask'],
-        relative_path=u'v1beta1/{+name}',
-        request_field=u'membership',
-        request_type_name=u'CloudidentityGroupsMembershipsPatchRequest',
-        response_type_name=u'Operation',
+        flat_path='v1beta1/groups/{groupsId}/memberships/{membershipsId}',
+        http_method='PATCH',
+        method_id='cloudidentity.groups.memberships.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v1beta1/{+name}',
+        request_field='membership',
+        request_type_name='CloudidentityGroupsMembershipsPatchRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -1161,16 +1161,16 @@ name](https://cloud.google.com/apis/design/resource_names) of a
           config, request, global_params=global_params)
 
     SearchTransitiveGroups.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/groups/{groupsId}/memberships:searchTransitiveGroups',
-        http_method=u'GET',
-        method_id=u'cloudidentity.groups.memberships.searchTransitiveGroups',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'pageSize', u'pageToken', u'query'],
-        relative_path=u'v1beta1/{+parent}/memberships:searchTransitiveGroups',
+        flat_path='v1beta1/groups/{groupsId}/memberships:searchTransitiveGroups',
+        http_method='GET',
+        method_id='cloudidentity.groups.memberships.searchTransitiveGroups',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken', 'query'],
+        relative_path='v1beta1/{+parent}/memberships:searchTransitiveGroups',
         request_field='',
-        request_type_name=u'CloudidentityGroupsMembershipsSearchTransitiveGroupsRequest',
-        response_type_name=u'SearchTransitiveGroupsResponse',
+        request_type_name='CloudidentityGroupsMembershipsSearchTransitiveGroupsRequest',
+        response_type_name='SearchTransitiveGroupsResponse',
         supports_download=False,
     )
 
@@ -1188,23 +1188,23 @@ name](https://cloud.google.com/apis/design/resource_names) of a
           config, request, global_params=global_params)
 
     SearchTransitiveMemberships.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/groups/{groupsId}/memberships:searchTransitiveMemberships',
-        http_method=u'GET',
-        method_id=u'cloudidentity.groups.memberships.searchTransitiveMemberships',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'pageSize', u'pageToken'],
-        relative_path=u'v1beta1/{+parent}/memberships:searchTransitiveMemberships',
+        flat_path='v1beta1/groups/{groupsId}/memberships:searchTransitiveMemberships',
+        http_method='GET',
+        method_id='cloudidentity.groups.memberships.searchTransitiveMemberships',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v1beta1/{+parent}/memberships:searchTransitiveMemberships',
         request_field='',
-        request_type_name=u'CloudidentityGroupsMembershipsSearchTransitiveMembershipsRequest',
-        response_type_name=u'SearchTransitiveMembershipsResponse',
+        request_type_name='CloudidentityGroupsMembershipsSearchTransitiveMembershipsRequest',
+        response_type_name='SearchTransitiveMembershipsResponse',
         supports_download=False,
     )
 
   class GroupsService(base_api.BaseApiService):
     """Service class for the groups resource."""
 
-    _NAME = u'groups'
+    _NAME = 'groups'
 
     def __init__(self, client):
       super(CloudidentityV1beta1.GroupsService, self).__init__(client)
@@ -1225,15 +1225,15 @@ name](https://cloud.google.com/apis/design/resource_names) of a
           config, request, global_params=global_params)
 
     Create.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'cloudidentity.groups.create',
+        http_method='POST',
+        method_id='cloudidentity.groups.create',
         ordered_params=[],
         path_params=[],
-        query_params=[u'initialGroupConfig'],
-        relative_path=u'v1beta1/groups',
-        request_field=u'group',
-        request_type_name=u'CloudidentityGroupsCreateRequest',
-        response_type_name=u'Operation',
+        query_params=['initialGroupConfig'],
+        relative_path='v1beta1/groups',
+        request_field='group',
+        request_type_name='CloudidentityGroupsCreateRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -1251,16 +1251,16 @@ name](https://cloud.google.com/apis/design/resource_names) of a
           config, request, global_params=global_params)
 
     Delete.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/groups/{groupsId}',
-        http_method=u'DELETE',
-        method_id=u'cloudidentity.groups.delete',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1beta1/groups/{groupsId}',
+        http_method='DELETE',
+        method_id='cloudidentity.groups.delete',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1beta1/{+name}',
+        relative_path='v1beta1/{+name}',
         request_field='',
-        request_type_name=u'CloudidentityGroupsDeleteRequest',
-        response_type_name=u'Operation',
+        request_type_name='CloudidentityGroupsDeleteRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -1278,16 +1278,16 @@ name](https://cloud.google.com/apis/design/resource_names) of a
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/groups/{groupsId}',
-        http_method=u'GET',
-        method_id=u'cloudidentity.groups.get',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1beta1/groups/{groupsId}',
+        http_method='GET',
+        method_id='cloudidentity.groups.get',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1beta1/{+name}',
+        relative_path='v1beta1/{+name}',
         request_field='',
-        request_type_name=u'CloudidentityGroupsGetRequest',
-        response_type_name=u'Group',
+        request_type_name='CloudidentityGroupsGetRequest',
+        response_type_name='Group',
         supports_download=False,
     )
 
@@ -1305,15 +1305,15 @@ name](https://cloud.google.com/apis/design/resource_names) of a
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'cloudidentity.groups.list',
+        http_method='GET',
+        method_id='cloudidentity.groups.list',
         ordered_params=[],
         path_params=[],
-        query_params=[u'pageSize', u'pageToken', u'parent', u'view'],
-        relative_path=u'v1beta1/groups',
+        query_params=['pageSize', 'pageToken', 'parent', 'view'],
+        relative_path='v1beta1/groups',
         request_field='',
-        request_type_name=u'CloudidentityGroupsListRequest',
-        response_type_name=u'ListGroupsResponse',
+        request_type_name='CloudidentityGroupsListRequest',
+        response_type_name='ListGroupsResponse',
         supports_download=False,
     )
 
@@ -1333,15 +1333,15 @@ its `EntityKey`.
           config, request, global_params=global_params)
 
     Lookup.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'cloudidentity.groups.lookup',
+        http_method='GET',
+        method_id='cloudidentity.groups.lookup',
         ordered_params=[],
         path_params=[],
-        query_params=[u'groupKey_id', u'groupKey_namespace'],
-        relative_path=u'v1beta1/groups:lookup',
+        query_params=['groupKey_id', 'groupKey_namespace'],
+        relative_path='v1beta1/groups:lookup',
         request_field='',
-        request_type_name=u'CloudidentityGroupsLookupRequest',
-        response_type_name=u'LookupGroupNameResponse',
+        request_type_name='CloudidentityGroupsLookupRequest',
+        response_type_name='LookupGroupNameResponse',
         supports_download=False,
     )
 
@@ -1359,16 +1359,16 @@ its `EntityKey`.
           config, request, global_params=global_params)
 
     Patch.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/groups/{groupsId}',
-        http_method=u'PATCH',
-        method_id=u'cloudidentity.groups.patch',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[u'updateMask'],
-        relative_path=u'v1beta1/{+name}',
-        request_field=u'group',
-        request_type_name=u'CloudidentityGroupsPatchRequest',
-        response_type_name=u'Operation',
+        flat_path='v1beta1/groups/{groupsId}',
+        http_method='PATCH',
+        method_id='cloudidentity.groups.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v1beta1/{+name}',
+        request_field='group',
+        request_type_name='CloudidentityGroupsPatchRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -1386,14 +1386,14 @@ its `EntityKey`.
           config, request, global_params=global_params)
 
     Search.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'cloudidentity.groups.search',
+        http_method='GET',
+        method_id='cloudidentity.groups.search',
         ordered_params=[],
         path_params=[],
-        query_params=[u'pageSize', u'pageToken', u'query', u'view'],
-        relative_path=u'v1beta1/groups:search',
+        query_params=['pageSize', 'pageToken', 'query', 'view'],
+        relative_path='v1beta1/groups:search',
         request_field='',
-        request_type_name=u'CloudidentityGroupsSearchRequest',
-        response_type_name=u'SearchGroupsResponse',
+        request_type_name='CloudidentityGroupsSearchRequest',
+        response_type_name='SearchGroupsResponse',
         supports_download=False,
     )

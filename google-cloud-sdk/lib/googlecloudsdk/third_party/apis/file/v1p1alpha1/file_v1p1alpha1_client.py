@@ -8,17 +8,17 @@ class FileV1p1alpha1(base_api.BaseApiClient):
   """Generated client library for service file version v1p1alpha1."""
 
   MESSAGES_MODULE = messages
-  BASE_URL = u'https://file.googleapis.com/'
-  MTLS_BASE_URL = u'https://file.mtls.googleapis.com/'
+  BASE_URL = 'https://file.googleapis.com/'
+  MTLS_BASE_URL = 'https://file.mtls.googleapis.com/'
 
-  _PACKAGE = u'file'
-  _SCOPES = [u'https://www.googleapis.com/auth/cloud-platform']
-  _VERSION = u'v1p1alpha1'
+  _PACKAGE = 'file'
+  _SCOPES = ['https://www.googleapis.com/auth/cloud-platform']
+  _VERSION = 'v1p1alpha1'
   _CLIENT_ID = '1042881264118.apps.googleusercontent.com'
   _CLIENT_SECRET = 'x_Tw5K8nnjoRAqULM9PFAC2b'
-  _USER_AGENT = u'google-cloud-sdk'
-  _CLIENT_CLASS_NAME = u'FileV1p1alpha1'
-  _URL_VERSION = u'v1p1alpha1'
+  _USER_AGENT = 'google-cloud-sdk'
+  _CLIENT_CLASS_NAME = 'FileV1p1alpha1'
+  _URL_VERSION = 'v1p1alpha1'
   _API_KEY = None
 
   def __init__(self, url='', credentials=None,
@@ -46,7 +46,7 @@ class FileV1p1alpha1(base_api.BaseApiClient):
   class ProjectsLocationsBackupsService(base_api.BaseApiService):
     """Service class for the projects_locations_backups resource."""
 
-    _NAME = u'projects_locations_backups'
+    _NAME = 'projects_locations_backups'
 
     def __init__(self, client):
       super(FileV1p1alpha1.ProjectsLocationsBackupsService, self).__init__(client)
@@ -67,16 +67,16 @@ class FileV1p1alpha1(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Create.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1p1alpha1/projects/{projectsId}/locations/{locationsId}/backups',
-        http_method=u'POST',
-        method_id=u'file.projects.locations.backups.create',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'backupId'],
-        relative_path=u'v1p1alpha1/{+parent}/backups',
-        request_field=u'backup',
-        request_type_name=u'FileProjectsLocationsBackupsCreateRequest',
-        response_type_name=u'Operation',
+        flat_path='v1p1alpha1/projects/{projectsId}/locations/{locationsId}/backups',
+        http_method='POST',
+        method_id='file.projects.locations.backups.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['backupId'],
+        relative_path='v1p1alpha1/{+parent}/backups',
+        request_field='backup',
+        request_type_name='FileProjectsLocationsBackupsCreateRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -94,16 +94,16 @@ class FileV1p1alpha1(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Delete.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1p1alpha1/projects/{projectsId}/locations/{locationsId}/backups/{backupsId}',
-        http_method=u'DELETE',
-        method_id=u'file.projects.locations.backups.delete',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1p1alpha1/projects/{projectsId}/locations/{locationsId}/backups/{backupsId}',
+        http_method='DELETE',
+        method_id='file.projects.locations.backups.delete',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1p1alpha1/{+name}',
+        relative_path='v1p1alpha1/{+name}',
         request_field='',
-        request_type_name=u'FileProjectsLocationsBackupsDeleteRequest',
-        response_type_name=u'Operation',
+        request_type_name='FileProjectsLocationsBackupsDeleteRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -121,16 +121,16 @@ class FileV1p1alpha1(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1p1alpha1/projects/{projectsId}/locations/{locationsId}/backups/{backupsId}',
-        http_method=u'GET',
-        method_id=u'file.projects.locations.backups.get',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1p1alpha1/projects/{projectsId}/locations/{locationsId}/backups/{backupsId}',
+        http_method='GET',
+        method_id='file.projects.locations.backups.get',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1p1alpha1/{+name}',
+        relative_path='v1p1alpha1/{+name}',
         request_field='',
-        request_type_name=u'FileProjectsLocationsBackupsGetRequest',
-        response_type_name=u'Backup',
+        request_type_name='FileProjectsLocationsBackupsGetRequest',
+        response_type_name='Backup',
         supports_download=False,
     )
 
@@ -149,16 +149,16 @@ locations.
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1p1alpha1/projects/{projectsId}/locations/{locationsId}/backups',
-        http_method=u'GET',
-        method_id=u'file.projects.locations.backups.list',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'filter', u'orderBy', u'pageSize', u'pageToken'],
-        relative_path=u'v1p1alpha1/{+parent}/backups',
+        flat_path='v1p1alpha1/projects/{projectsId}/locations/{locationsId}/backups',
+        http_method='GET',
+        method_id='file.projects.locations.backups.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'orderBy', 'pageSize', 'pageToken'],
+        relative_path='v1p1alpha1/{+parent}/backups',
         request_field='',
-        request_type_name=u'FileProjectsLocationsBackupsListRequest',
-        response_type_name=u'ListBackupsResponse',
+        request_type_name='FileProjectsLocationsBackupsListRequest',
+        response_type_name='ListBackupsResponse',
         supports_download=False,
     )
 
@@ -176,23 +176,23 @@ locations.
           config, request, global_params=global_params)
 
     Patch.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1p1alpha1/projects/{projectsId}/locations/{locationsId}/backups/{backupsId}',
-        http_method=u'PATCH',
-        method_id=u'file.projects.locations.backups.patch',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[u'updateMask'],
-        relative_path=u'v1p1alpha1/{+name}',
-        request_field=u'backup',
-        request_type_name=u'FileProjectsLocationsBackupsPatchRequest',
-        response_type_name=u'Operation',
+        flat_path='v1p1alpha1/projects/{projectsId}/locations/{locationsId}/backups/{backupsId}',
+        http_method='PATCH',
+        method_id='file.projects.locations.backups.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v1p1alpha1/{+name}',
+        request_field='backup',
+        request_type_name='FileProjectsLocationsBackupsPatchRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
   class ProjectsLocationsInstancesService(base_api.BaseApiService):
     """Service class for the projects_locations_instances resource."""
 
-    _NAME = u'projects_locations_instances'
+    _NAME = 'projects_locations_instances'
 
     def __init__(self, client):
       super(FileV1p1alpha1.ProjectsLocationsInstancesService, self).__init__(client)
@@ -213,16 +213,16 @@ locations.
           config, request, global_params=global_params)
 
     Create.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1p1alpha1/projects/{projectsId}/locations/{locationsId}/instances',
-        http_method=u'POST',
-        method_id=u'file.projects.locations.instances.create',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'instanceId'],
-        relative_path=u'v1p1alpha1/{+parent}/instances',
-        request_field=u'instance',
-        request_type_name=u'FileProjectsLocationsInstancesCreateRequest',
-        response_type_name=u'Operation',
+        flat_path='v1p1alpha1/projects/{projectsId}/locations/{locationsId}/instances',
+        http_method='POST',
+        method_id='file.projects.locations.instances.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['instanceId'],
+        relative_path='v1p1alpha1/{+parent}/instances',
+        request_field='instance',
+        request_type_name='FileProjectsLocationsInstancesCreateRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -240,16 +240,16 @@ locations.
           config, request, global_params=global_params)
 
     Delete.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1p1alpha1/projects/{projectsId}/locations/{locationsId}/instances/{instancesId}',
-        http_method=u'DELETE',
-        method_id=u'file.projects.locations.instances.delete',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1p1alpha1/projects/{projectsId}/locations/{locationsId}/instances/{instancesId}',
+        http_method='DELETE',
+        method_id='file.projects.locations.instances.delete',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1p1alpha1/{+name}',
+        relative_path='v1p1alpha1/{+name}',
         request_field='',
-        request_type_name=u'FileProjectsLocationsInstancesDeleteRequest',
-        response_type_name=u'Operation',
+        request_type_name='FileProjectsLocationsInstancesDeleteRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -267,16 +267,16 @@ locations.
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1p1alpha1/projects/{projectsId}/locations/{locationsId}/instances/{instancesId}',
-        http_method=u'GET',
-        method_id=u'file.projects.locations.instances.get',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1p1alpha1/projects/{projectsId}/locations/{locationsId}/instances/{instancesId}',
+        http_method='GET',
+        method_id='file.projects.locations.instances.get',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1p1alpha1/{+name}',
+        relative_path='v1p1alpha1/{+name}',
         request_field='',
-        request_type_name=u'FileProjectsLocationsInstancesGetRequest',
-        response_type_name=u'Instance',
+        request_type_name='FileProjectsLocationsInstancesGetRequest',
+        response_type_name='Instance',
         supports_download=False,
     )
 
@@ -295,16 +295,16 @@ or for all locations.
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1p1alpha1/projects/{projectsId}/locations/{locationsId}/instances',
-        http_method=u'GET',
-        method_id=u'file.projects.locations.instances.list',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'filter', u'orderBy', u'pageSize', u'pageToken'],
-        relative_path=u'v1p1alpha1/{+parent}/instances',
+        flat_path='v1p1alpha1/projects/{projectsId}/locations/{locationsId}/instances',
+        http_method='GET',
+        method_id='file.projects.locations.instances.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'orderBy', 'pageSize', 'pageToken'],
+        relative_path='v1p1alpha1/{+parent}/instances',
         request_field='',
-        request_type_name=u'FileProjectsLocationsInstancesListRequest',
-        response_type_name=u'ListInstancesResponse',
+        request_type_name='FileProjectsLocationsInstancesListRequest',
+        response_type_name='ListInstancesResponse',
         supports_download=False,
     )
 
@@ -322,16 +322,16 @@ or for all locations.
           config, request, global_params=global_params)
 
     Patch.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1p1alpha1/projects/{projectsId}/locations/{locationsId}/instances/{instancesId}',
-        http_method=u'PATCH',
-        method_id=u'file.projects.locations.instances.patch',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[u'updateMask'],
-        relative_path=u'v1p1alpha1/{+name}',
-        request_field=u'instance',
-        request_type_name=u'FileProjectsLocationsInstancesPatchRequest',
-        response_type_name=u'Operation',
+        flat_path='v1p1alpha1/projects/{projectsId}/locations/{locationsId}/instances/{instancesId}',
+        http_method='PATCH',
+        method_id='file.projects.locations.instances.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v1p1alpha1/{+name}',
+        request_field='instance',
+        request_type_name='FileProjectsLocationsInstancesPatchRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -349,23 +349,23 @@ or for all locations.
           config, request, global_params=global_params)
 
     Restore.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1p1alpha1/projects/{projectsId}/locations/{locationsId}/instances/{instancesId}:restore',
-        http_method=u'POST',
-        method_id=u'file.projects.locations.instances.restore',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1p1alpha1/projects/{projectsId}/locations/{locationsId}/instances/{instancesId}:restore',
+        http_method='POST',
+        method_id='file.projects.locations.instances.restore',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1p1alpha1/{+name}:restore',
-        request_field=u'restoreInstanceRequest',
-        request_type_name=u'FileProjectsLocationsInstancesRestoreRequest',
-        response_type_name=u'Operation',
+        relative_path='v1p1alpha1/{+name}:restore',
+        request_field='restoreInstanceRequest',
+        request_type_name='FileProjectsLocationsInstancesRestoreRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
   class ProjectsLocationsOperationsService(base_api.BaseApiService):
     """Service class for the projects_locations_operations resource."""
 
-    _NAME = u'projects_locations_operations'
+    _NAME = 'projects_locations_operations'
 
     def __init__(self, client):
       super(FileV1p1alpha1.ProjectsLocationsOperationsService, self).__init__(client)
@@ -395,16 +395,16 @@ corresponding to `Code.CANCELLED`.
           config, request, global_params=global_params)
 
     Cancel.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1p1alpha1/projects/{projectsId}/locations/{locationsId}/operations/{operationsId}:cancel',
-        http_method=u'POST',
-        method_id=u'file.projects.locations.operations.cancel',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1p1alpha1/projects/{projectsId}/locations/{locationsId}/operations/{operationsId}:cancel',
+        http_method='POST',
+        method_id='file.projects.locations.operations.cancel',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1p1alpha1/{+name}:cancel',
-        request_field=u'cancelOperationRequest',
-        request_type_name=u'FileProjectsLocationsOperationsCancelRequest',
-        response_type_name=u'Empty',
+        relative_path='v1p1alpha1/{+name}:cancel',
+        request_field='cancelOperationRequest',
+        request_type_name='FileProjectsLocationsOperationsCancelRequest',
+        response_type_name='Empty',
         supports_download=False,
     )
 
@@ -425,16 +425,16 @@ operation. If the server doesn't support this method, it returns
           config, request, global_params=global_params)
 
     Delete.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1p1alpha1/projects/{projectsId}/locations/{locationsId}/operations/{operationsId}',
-        http_method=u'DELETE',
-        method_id=u'file.projects.locations.operations.delete',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1p1alpha1/projects/{projectsId}/locations/{locationsId}/operations/{operationsId}',
+        http_method='DELETE',
+        method_id='file.projects.locations.operations.delete',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1p1alpha1/{+name}',
+        relative_path='v1p1alpha1/{+name}',
         request_field='',
-        request_type_name=u'FileProjectsLocationsOperationsDeleteRequest',
-        response_type_name=u'Empty',
+        request_type_name='FileProjectsLocationsOperationsDeleteRequest',
+        response_type_name='Empty',
         supports_download=False,
     )
 
@@ -454,16 +454,16 @@ service.
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1p1alpha1/projects/{projectsId}/locations/{locationsId}/operations/{operationsId}',
-        http_method=u'GET',
-        method_id=u'file.projects.locations.operations.get',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1p1alpha1/projects/{projectsId}/locations/{locationsId}/operations/{operationsId}',
+        http_method='GET',
+        method_id='file.projects.locations.operations.get',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1p1alpha1/{+name}',
+        relative_path='v1p1alpha1/{+name}',
         request_field='',
-        request_type_name=u'FileProjectsLocationsOperationsGetRequest',
-        response_type_name=u'Operation',
+        request_type_name='FileProjectsLocationsOperationsGetRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -490,23 +490,23 @@ is the parent resource, without the operations collection id.
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1p1alpha1/projects/{projectsId}/locations/{locationsId}/operations',
-        http_method=u'GET',
-        method_id=u'file.projects.locations.operations.list',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[u'filter', u'pageSize', u'pageToken'],
-        relative_path=u'v1p1alpha1/{+name}/operations',
+        flat_path='v1p1alpha1/projects/{projectsId}/locations/{locationsId}/operations',
+        http_method='GET',
+        method_id='file.projects.locations.operations.list',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['filter', 'pageSize', 'pageToken'],
+        relative_path='v1p1alpha1/{+name}/operations',
         request_field='',
-        request_type_name=u'FileProjectsLocationsOperationsListRequest',
-        response_type_name=u'ListOperationsResponse',
+        request_type_name='FileProjectsLocationsOperationsListRequest',
+        response_type_name='ListOperationsResponse',
         supports_download=False,
     )
 
   class ProjectsLocationsSnapshotsService(base_api.BaseApiService):
     """Service class for the projects_locations_snapshots resource."""
 
-    _NAME = u'projects_locations_snapshots'
+    _NAME = 'projects_locations_snapshots'
 
     def __init__(self, client):
       super(FileV1p1alpha1.ProjectsLocationsSnapshotsService, self).__init__(client)
@@ -527,16 +527,16 @@ is the parent resource, without the operations collection id.
           config, request, global_params=global_params)
 
     Create.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1p1alpha1/projects/{projectsId}/locations/{locationsId}/snapshots',
-        http_method=u'POST',
-        method_id=u'file.projects.locations.snapshots.create',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'snapshotId'],
-        relative_path=u'v1p1alpha1/{+parent}/snapshots',
-        request_field=u'snapshot',
-        request_type_name=u'FileProjectsLocationsSnapshotsCreateRequest',
-        response_type_name=u'Operation',
+        flat_path='v1p1alpha1/projects/{projectsId}/locations/{locationsId}/snapshots',
+        http_method='POST',
+        method_id='file.projects.locations.snapshots.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['snapshotId'],
+        relative_path='v1p1alpha1/{+parent}/snapshots',
+        request_field='snapshot',
+        request_type_name='FileProjectsLocationsSnapshotsCreateRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -554,16 +554,16 @@ is the parent resource, without the operations collection id.
           config, request, global_params=global_params)
 
     Delete.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1p1alpha1/projects/{projectsId}/locations/{locationsId}/snapshots/{snapshotsId}',
-        http_method=u'DELETE',
-        method_id=u'file.projects.locations.snapshots.delete',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1p1alpha1/projects/{projectsId}/locations/{locationsId}/snapshots/{snapshotsId}',
+        http_method='DELETE',
+        method_id='file.projects.locations.snapshots.delete',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1p1alpha1/{+name}',
+        relative_path='v1p1alpha1/{+name}',
         request_field='',
-        request_type_name=u'FileProjectsLocationsSnapshotsDeleteRequest',
-        response_type_name=u'Operation',
+        request_type_name='FileProjectsLocationsSnapshotsDeleteRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -581,16 +581,16 @@ is the parent resource, without the operations collection id.
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1p1alpha1/projects/{projectsId}/locations/{locationsId}/snapshots/{snapshotsId}',
-        http_method=u'GET',
-        method_id=u'file.projects.locations.snapshots.get',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1p1alpha1/projects/{projectsId}/locations/{locationsId}/snapshots/{snapshotsId}',
+        http_method='GET',
+        method_id='file.projects.locations.snapshots.get',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1p1alpha1/{+name}',
+        relative_path='v1p1alpha1/{+name}',
         request_field='',
-        request_type_name=u'FileProjectsLocationsSnapshotsGetRequest',
-        response_type_name=u'Snapshot',
+        request_type_name='FileProjectsLocationsSnapshotsGetRequest',
+        response_type_name='Snapshot',
         supports_download=False,
     )
 
@@ -609,16 +609,16 @@ or for all locations.
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1p1alpha1/projects/{projectsId}/locations/{locationsId}/snapshots',
-        http_method=u'GET',
-        method_id=u'file.projects.locations.snapshots.list',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'filter', u'orderBy', u'pageSize', u'pageToken'],
-        relative_path=u'v1p1alpha1/{+parent}/snapshots',
+        flat_path='v1p1alpha1/projects/{projectsId}/locations/{locationsId}/snapshots',
+        http_method='GET',
+        method_id='file.projects.locations.snapshots.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'orderBy', 'pageSize', 'pageToken'],
+        relative_path='v1p1alpha1/{+parent}/snapshots',
         request_field='',
-        request_type_name=u'FileProjectsLocationsSnapshotsListRequest',
-        response_type_name=u'ListSnapshotsResponse',
+        request_type_name='FileProjectsLocationsSnapshotsListRequest',
+        response_type_name='ListSnapshotsResponse',
         supports_download=False,
     )
 
@@ -636,23 +636,23 @@ or for all locations.
           config, request, global_params=global_params)
 
     Patch.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1p1alpha1/projects/{projectsId}/locations/{locationsId}/snapshots/{snapshotsId}',
-        http_method=u'PATCH',
-        method_id=u'file.projects.locations.snapshots.patch',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[u'updateMask'],
-        relative_path=u'v1p1alpha1/{+name}',
-        request_field=u'snapshot',
-        request_type_name=u'FileProjectsLocationsSnapshotsPatchRequest',
-        response_type_name=u'Operation',
+        flat_path='v1p1alpha1/projects/{projectsId}/locations/{locationsId}/snapshots/{snapshotsId}',
+        http_method='PATCH',
+        method_id='file.projects.locations.snapshots.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v1p1alpha1/{+name}',
+        request_field='snapshot',
+        request_type_name='FileProjectsLocationsSnapshotsPatchRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
   class ProjectsLocationsService(base_api.BaseApiService):
     """Service class for the projects_locations resource."""
 
-    _NAME = u'projects_locations'
+    _NAME = 'projects_locations'
 
     def __init__(self, client):
       super(FileV1p1alpha1.ProjectsLocationsService, self).__init__(client)
@@ -673,16 +673,16 @@ or for all locations.
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1p1alpha1/projects/{projectsId}/locations/{locationsId}',
-        http_method=u'GET',
-        method_id=u'file.projects.locations.get',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1p1alpha1/projects/{projectsId}/locations/{locationsId}',
+        http_method='GET',
+        method_id='file.projects.locations.get',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1p1alpha1/{+name}',
+        relative_path='v1p1alpha1/{+name}',
         request_field='',
-        request_type_name=u'FileProjectsLocationsGetRequest',
-        response_type_name=u'Location',
+        request_type_name='FileProjectsLocationsGetRequest',
+        response_type_name='Location',
         supports_download=False,
     )
 
@@ -700,23 +700,23 @@ or for all locations.
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1p1alpha1/projects/{projectsId}/locations',
-        http_method=u'GET',
-        method_id=u'file.projects.locations.list',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[u'filter', u'includeUnrevealedLocations', u'pageSize', u'pageToken'],
-        relative_path=u'v1p1alpha1/{+name}/locations',
+        flat_path='v1p1alpha1/projects/{projectsId}/locations',
+        http_method='GET',
+        method_id='file.projects.locations.list',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['filter', 'includeUnrevealedLocations', 'pageSize', 'pageToken'],
+        relative_path='v1p1alpha1/{+name}/locations',
         request_field='',
-        request_type_name=u'FileProjectsLocationsListRequest',
-        response_type_name=u'ListLocationsResponse',
+        request_type_name='FileProjectsLocationsListRequest',
+        response_type_name='ListLocationsResponse',
         supports_download=False,
     )
 
   class ProjectsService(base_api.BaseApiService):
     """Service class for the projects resource."""
 
-    _NAME = u'projects'
+    _NAME = 'projects'
 
     def __init__(self, client):
       super(FileV1p1alpha1.ProjectsService, self).__init__(client)

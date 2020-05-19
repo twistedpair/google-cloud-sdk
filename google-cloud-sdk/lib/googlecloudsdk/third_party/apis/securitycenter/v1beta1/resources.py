@@ -28,14 +28,14 @@ class Collections(enum.Enum):
       'organizations',
       'organizations/{organizationsId}',
       {},
-      [u'organizationsId'],
+      ['organizationsId'],
       True
   )
   ORGANIZATIONS_ASSETS = (
       'organizations.assets',
       'organizations/{organizationsId}/assets/{assetsId}',
       {},
-      [u'organizationsId', u'assetsId'],
+      ['organizationsId', 'assetsId'],
       True
   )
   ORGANIZATIONS_OPERATIONS = (
@@ -45,7 +45,7 @@ class Collections(enum.Enum):
           '':
               'organizations/{organizationsId}/operations/{operationsId}',
       },
-      [u'name'],
+      ['name'],
       True
   )
   ORGANIZATIONS_SOURCES = (
@@ -55,7 +55,7 @@ class Collections(enum.Enum):
           '':
               'organizations/{organizationsId}/sources/{sourcesId}',
       },
-      [u'name'],
+      ['name'],
       True
   )
   ORGANIZATIONS_SOURCES_FINDINGS = (
@@ -63,7 +63,7 @@ class Collections(enum.Enum):
       'organizations/{organizationsId}/sources/{sourcesId}/findings/'
       '{findingId}',
       {},
-      [u'organizationsId', u'sourcesId', u'findingId'],
+      ['organizationsId', 'sourcesId', 'findingId'],
       True
   )
 

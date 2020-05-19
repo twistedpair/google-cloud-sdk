@@ -673,13 +673,13 @@ def HandleGoogleAuthCredentialsRefreshError():
   """Handles exceptions during refreshing google auth credentials."""
   try:
     yield
-  except google_auth_exceptions.RefreshError as e:
-    raise TokenRefreshError(six.text_type(e))
   except reauth_errors.ReauthSamlLoginRequiredError:
     raise WebLoginRequiredReauthError()
   except (reauth_errors.ReauthError,
           c_google_auth.ReauthRequiredError) as e:
     raise TokenRefreshReauthError(str(e))
+  except google_auth_exceptions.RefreshError as e:
+    raise TokenRefreshError(six.text_type(e))
 
 
 def _RefreshGoogleAuth(credentials,

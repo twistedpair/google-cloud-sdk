@@ -44,8 +44,8 @@ class CloudresourcesearchResourcesSearchRequest(_messages.Message):
       (`@type:Instance`) that have an `env` label value of `prod` and that
       have a machine type that starts with `"n1-stand"`:      @type:Instance
       labels.env:prod machineType:n1-stand*  For more information, see [Search
-      Queries](/resource-search/docs/search-queries) and [Resource Types
-      ](/resource-search/docs/reference/Resource.Types).
+      Queries](/resource-search/docs/search-queries) and [Resource
+      Types](/resource-search/docs/reference/Resource.Types).
   """
 
   orderBy = _messages.StringField(1)
@@ -183,7 +183,7 @@ class StandardQueryParameters(_messages.Message):
 
   f__xgafv = _messages.EnumField('FXgafvValueValuesEnum', 1)
   access_token = _messages.StringField(2)
-  alt = _messages.EnumField('AltValueValuesEnum', 3, default=u'json')
+  alt = _messages.EnumField('AltValueValuesEnum', 3, default='json')
   callback = _messages.StringField(4)
   fields = _messages.StringField(5)
   key = _messages.StringField(6)

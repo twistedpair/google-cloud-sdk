@@ -8,17 +8,17 @@ class OsconfigV1alpha1(base_api.BaseApiClient):
   """Generated client library for service osconfig version v1alpha1."""
 
   MESSAGES_MODULE = messages
-  BASE_URL = u'https://osconfig.googleapis.com/'
-  MTLS_BASE_URL = u''
+  BASE_URL = 'https://osconfig.googleapis.com/'
+  MTLS_BASE_URL = ''
 
-  _PACKAGE = u'osconfig'
-  _SCOPES = [u'https://www.googleapis.com/auth/cloud-platform', u'https://www.googleapis.com/auth/compute']
-  _VERSION = u'v1alpha1'
+  _PACKAGE = 'osconfig'
+  _SCOPES = ['https://www.googleapis.com/auth/cloud-platform', 'https://www.googleapis.com/auth/compute']
+  _VERSION = 'v1alpha1'
   _CLIENT_ID = '1042881264118.apps.googleusercontent.com'
   _CLIENT_SECRET = 'x_Tw5K8nnjoRAqULM9PFAC2b'
-  _USER_AGENT = u'google-cloud-sdk'
-  _CLIENT_CLASS_NAME = u'OsconfigV1alpha1'
-  _URL_VERSION = u'v1alpha1'
+  _USER_AGENT = 'google-cloud-sdk'
+  _CLIENT_CLASS_NAME = 'OsconfigV1alpha1'
+  _URL_VERSION = 'v1alpha1'
   _API_KEY = None
 
   def __init__(self, url='', credentials=None,
@@ -53,7 +53,7 @@ class OsconfigV1alpha1(base_api.BaseApiClient):
   class FoldersAssignmentsService(base_api.BaseApiService):
     """Service class for the folders_assignments resource."""
 
-    _NAME = u'folders_assignments'
+    _NAME = 'folders_assignments'
 
     def __init__(self, client):
       super(OsconfigV1alpha1.FoldersAssignmentsService, self).__init__(client)
@@ -74,16 +74,16 @@ class OsconfigV1alpha1(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Create.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha1/folders/{foldersId}/assignments',
-        http_method=u'POST',
-        method_id=u'osconfig.folders.assignments.create',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
+        flat_path='v1alpha1/folders/{foldersId}/assignments',
+        http_method='POST',
+        method_id='osconfig.folders.assignments.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
         query_params=[],
-        relative_path=u'v1alpha1/{+parent}/assignments',
-        request_field=u'assignment',
-        request_type_name=u'OsconfigFoldersAssignmentsCreateRequest',
-        response_type_name=u'Assignment',
+        relative_path='v1alpha1/{+parent}/assignments',
+        request_field='assignment',
+        request_type_name='OsconfigFoldersAssignmentsCreateRequest',
+        response_type_name='Assignment',
         supports_download=False,
     )
 
@@ -101,16 +101,16 @@ class OsconfigV1alpha1(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Delete.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha1/folders/{foldersId}/assignments/{assignmentsId}',
-        http_method=u'DELETE',
-        method_id=u'osconfig.folders.assignments.delete',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1alpha1/folders/{foldersId}/assignments/{assignmentsId}',
+        http_method='DELETE',
+        method_id='osconfig.folders.assignments.delete',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1alpha1/{+name}',
+        relative_path='v1alpha1/{+name}',
         request_field='',
-        request_type_name=u'OsconfigFoldersAssignmentsDeleteRequest',
-        response_type_name=u'Empty',
+        request_type_name='OsconfigFoldersAssignmentsDeleteRequest',
+        response_type_name='Empty',
         supports_download=False,
     )
 
@@ -128,16 +128,16 @@ class OsconfigV1alpha1(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha1/folders/{foldersId}/assignments/{assignmentsId}',
-        http_method=u'GET',
-        method_id=u'osconfig.folders.assignments.get',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1alpha1/folders/{foldersId}/assignments/{assignmentsId}',
+        http_method='GET',
+        method_id='osconfig.folders.assignments.get',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1alpha1/{+name}',
+        relative_path='v1alpha1/{+name}',
         request_field='',
-        request_type_name=u'OsconfigFoldersAssignmentsGetRequest',
-        response_type_name=u'Assignment',
+        request_type_name='OsconfigFoldersAssignmentsGetRequest',
+        response_type_name='Assignment',
         supports_download=False,
     )
 
@@ -155,16 +155,16 @@ class OsconfigV1alpha1(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha1/folders/{foldersId}/assignments',
-        http_method=u'GET',
-        method_id=u'osconfig.folders.assignments.list',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'pageSize', u'pageToken'],
-        relative_path=u'v1alpha1/{+parent}/assignments',
+        flat_path='v1alpha1/folders/{foldersId}/assignments',
+        http_method='GET',
+        method_id='osconfig.folders.assignments.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v1alpha1/{+parent}/assignments',
         request_field='',
-        request_type_name=u'OsconfigFoldersAssignmentsListRequest',
-        response_type_name=u'ListAssignmentsResponse',
+        request_type_name='OsconfigFoldersAssignmentsListRequest',
+        response_type_name='ListAssignmentsResponse',
         supports_download=False,
     )
 
@@ -182,23 +182,23 @@ class OsconfigV1alpha1(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Patch.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha1/folders/{foldersId}/assignments/{assignmentsId}',
-        http_method=u'PATCH',
-        method_id=u'osconfig.folders.assignments.patch',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[u'updateMask'],
-        relative_path=u'v1alpha1/{+name}',
-        request_field=u'assignment',
-        request_type_name=u'OsconfigFoldersAssignmentsPatchRequest',
-        response_type_name=u'Assignment',
+        flat_path='v1alpha1/folders/{foldersId}/assignments/{assignmentsId}',
+        http_method='PATCH',
+        method_id='osconfig.folders.assignments.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v1alpha1/{+name}',
+        request_field='assignment',
+        request_type_name='OsconfigFoldersAssignmentsPatchRequest',
+        response_type_name='Assignment',
         supports_download=False,
     )
 
   class FoldersOsConfigsService(base_api.BaseApiService):
     """Service class for the folders_osConfigs resource."""
 
-    _NAME = u'folders_osConfigs'
+    _NAME = 'folders_osConfigs'
 
     def __init__(self, client):
       super(OsconfigV1alpha1.FoldersOsConfigsService, self).__init__(client)
@@ -219,16 +219,16 @@ class OsconfigV1alpha1(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Create.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha1/folders/{foldersId}/osConfigs',
-        http_method=u'POST',
-        method_id=u'osconfig.folders.osConfigs.create',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
+        flat_path='v1alpha1/folders/{foldersId}/osConfigs',
+        http_method='POST',
+        method_id='osconfig.folders.osConfigs.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
         query_params=[],
-        relative_path=u'v1alpha1/{+parent}/osConfigs',
-        request_field=u'osConfig',
-        request_type_name=u'OsconfigFoldersOsConfigsCreateRequest',
-        response_type_name=u'OsConfig',
+        relative_path='v1alpha1/{+parent}/osConfigs',
+        request_field='osConfig',
+        request_type_name='OsconfigFoldersOsConfigsCreateRequest',
+        response_type_name='OsConfig',
         supports_download=False,
     )
 
@@ -246,16 +246,16 @@ class OsconfigV1alpha1(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Delete.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha1/folders/{foldersId}/osConfigs/{osConfigsId}',
-        http_method=u'DELETE',
-        method_id=u'osconfig.folders.osConfigs.delete',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1alpha1/folders/{foldersId}/osConfigs/{osConfigsId}',
+        http_method='DELETE',
+        method_id='osconfig.folders.osConfigs.delete',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1alpha1/{+name}',
+        relative_path='v1alpha1/{+name}',
         request_field='',
-        request_type_name=u'OsconfigFoldersOsConfigsDeleteRequest',
-        response_type_name=u'Empty',
+        request_type_name='OsconfigFoldersOsConfigsDeleteRequest',
+        response_type_name='Empty',
         supports_download=False,
     )
 
@@ -273,16 +273,16 @@ class OsconfigV1alpha1(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha1/folders/{foldersId}/osConfigs/{osConfigsId}',
-        http_method=u'GET',
-        method_id=u'osconfig.folders.osConfigs.get',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1alpha1/folders/{foldersId}/osConfigs/{osConfigsId}',
+        http_method='GET',
+        method_id='osconfig.folders.osConfigs.get',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1alpha1/{+name}',
+        relative_path='v1alpha1/{+name}',
         request_field='',
-        request_type_name=u'OsconfigFoldersOsConfigsGetRequest',
-        response_type_name=u'OsConfig',
+        request_type_name='OsconfigFoldersOsConfigsGetRequest',
+        response_type_name='OsConfig',
         supports_download=False,
     )
 
@@ -300,16 +300,16 @@ class OsconfigV1alpha1(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha1/folders/{foldersId}/osConfigs',
-        http_method=u'GET',
-        method_id=u'osconfig.folders.osConfigs.list',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'pageSize', u'pageToken'],
-        relative_path=u'v1alpha1/{+parent}/osConfigs',
+        flat_path='v1alpha1/folders/{foldersId}/osConfigs',
+        http_method='GET',
+        method_id='osconfig.folders.osConfigs.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v1alpha1/{+parent}/osConfigs',
         request_field='',
-        request_type_name=u'OsconfigFoldersOsConfigsListRequest',
-        response_type_name=u'ListOsConfigsResponse',
+        request_type_name='OsconfigFoldersOsConfigsListRequest',
+        response_type_name='ListOsConfigsResponse',
         supports_download=False,
     )
 
@@ -327,23 +327,23 @@ class OsconfigV1alpha1(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Patch.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha1/folders/{foldersId}/osConfigs/{osConfigsId}',
-        http_method=u'PATCH',
-        method_id=u'osconfig.folders.osConfigs.patch',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[u'updateMask'],
-        relative_path=u'v1alpha1/{+name}',
-        request_field=u'osConfig',
-        request_type_name=u'OsconfigFoldersOsConfigsPatchRequest',
-        response_type_name=u'OsConfig',
+        flat_path='v1alpha1/folders/{foldersId}/osConfigs/{osConfigsId}',
+        http_method='PATCH',
+        method_id='osconfig.folders.osConfigs.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v1alpha1/{+name}',
+        request_field='osConfig',
+        request_type_name='OsconfigFoldersOsConfigsPatchRequest',
+        response_type_name='OsConfig',
         supports_download=False,
     )
 
   class FoldersService(base_api.BaseApiService):
     """Service class for the folders resource."""
 
-    _NAME = u'folders'
+    _NAME = 'folders'
 
     def __init__(self, client):
       super(OsconfigV1alpha1.FoldersService, self).__init__(client)
@@ -366,16 +366,16 @@ policy if the resource exists but does not have a policy set.
           config, request, global_params=global_params)
 
     GetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha1/folders/{foldersId}:getIamPolicy',
-        http_method=u'POST',
-        method_id=u'osconfig.folders.getIamPolicy',
-        ordered_params=[u'resource'],
-        path_params=[u'resource'],
+        flat_path='v1alpha1/folders/{foldersId}:getIamPolicy',
+        http_method='POST',
+        method_id='osconfig.folders.getIamPolicy',
+        ordered_params=['resource'],
+        path_params=['resource'],
         query_params=[],
-        relative_path=u'v1alpha1/{+resource}:getIamPolicy',
-        request_field=u'getIamPolicyRequest',
-        request_type_name=u'OsconfigFoldersGetIamPolicyRequest',
-        response_type_name=u'Policy',
+        relative_path='v1alpha1/{+resource}:getIamPolicy',
+        request_field='getIamPolicyRequest',
+        request_type_name='OsconfigFoldersGetIamPolicyRequest',
+        response_type_name='Policy',
         supports_download=False,
     )
 
@@ -394,16 +394,16 @@ Replaces any existing policy.
           config, request, global_params=global_params)
 
     SetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha1/folders/{foldersId}:setIamPolicy',
-        http_method=u'POST',
-        method_id=u'osconfig.folders.setIamPolicy',
-        ordered_params=[u'resource'],
-        path_params=[u'resource'],
+        flat_path='v1alpha1/folders/{foldersId}:setIamPolicy',
+        http_method='POST',
+        method_id='osconfig.folders.setIamPolicy',
+        ordered_params=['resource'],
+        path_params=['resource'],
         query_params=[],
-        relative_path=u'v1alpha1/{+resource}:setIamPolicy',
-        request_field=u'setIamPolicyRequest',
-        request_type_name=u'OsconfigFoldersSetIamPolicyRequest',
-        response_type_name=u'Policy',
+        relative_path='v1alpha1/{+resource}:setIamPolicy',
+        request_field='setIamPolicyRequest',
+        request_type_name='OsconfigFoldersSetIamPolicyRequest',
+        response_type_name='Policy',
         supports_download=False,
     )
 
@@ -421,23 +421,23 @@ Replaces any existing policy.
           config, request, global_params=global_params)
 
     TestIamPermissions.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha1/folders/{foldersId}:testIamPermissions',
-        http_method=u'POST',
-        method_id=u'osconfig.folders.testIamPermissions',
-        ordered_params=[u'resource'],
-        path_params=[u'resource'],
+        flat_path='v1alpha1/folders/{foldersId}:testIamPermissions',
+        http_method='POST',
+        method_id='osconfig.folders.testIamPermissions',
+        ordered_params=['resource'],
+        path_params=['resource'],
         query_params=[],
-        relative_path=u'v1alpha1/{+resource}:testIamPermissions',
-        request_field=u'testIamPermissionsRequest',
-        request_type_name=u'OsconfigFoldersTestIamPermissionsRequest',
-        response_type_name=u'TestIamPermissionsResponse',
+        relative_path='v1alpha1/{+resource}:testIamPermissions',
+        request_field='testIamPermissionsRequest',
+        request_type_name='OsconfigFoldersTestIamPermissionsRequest',
+        response_type_name='TestIamPermissionsResponse',
         supports_download=False,
     )
 
   class OrganizationsAssignmentsService(base_api.BaseApiService):
     """Service class for the organizations_assignments resource."""
 
-    _NAME = u'organizations_assignments'
+    _NAME = 'organizations_assignments'
 
     def __init__(self, client):
       super(OsconfigV1alpha1.OrganizationsAssignmentsService, self).__init__(client)
@@ -458,16 +458,16 @@ Replaces any existing policy.
           config, request, global_params=global_params)
 
     Create.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha1/organizations/{organizationsId}/assignments',
-        http_method=u'POST',
-        method_id=u'osconfig.organizations.assignments.create',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
+        flat_path='v1alpha1/organizations/{organizationsId}/assignments',
+        http_method='POST',
+        method_id='osconfig.organizations.assignments.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
         query_params=[],
-        relative_path=u'v1alpha1/{+parent}/assignments',
-        request_field=u'assignment',
-        request_type_name=u'OsconfigOrganizationsAssignmentsCreateRequest',
-        response_type_name=u'Assignment',
+        relative_path='v1alpha1/{+parent}/assignments',
+        request_field='assignment',
+        request_type_name='OsconfigOrganizationsAssignmentsCreateRequest',
+        response_type_name='Assignment',
         supports_download=False,
     )
 
@@ -485,16 +485,16 @@ Replaces any existing policy.
           config, request, global_params=global_params)
 
     Delete.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha1/organizations/{organizationsId}/assignments/{assignmentsId}',
-        http_method=u'DELETE',
-        method_id=u'osconfig.organizations.assignments.delete',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1alpha1/organizations/{organizationsId}/assignments/{assignmentsId}',
+        http_method='DELETE',
+        method_id='osconfig.organizations.assignments.delete',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1alpha1/{+name}',
+        relative_path='v1alpha1/{+name}',
         request_field='',
-        request_type_name=u'OsconfigOrganizationsAssignmentsDeleteRequest',
-        response_type_name=u'Empty',
+        request_type_name='OsconfigOrganizationsAssignmentsDeleteRequest',
+        response_type_name='Empty',
         supports_download=False,
     )
 
@@ -512,16 +512,16 @@ Replaces any existing policy.
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha1/organizations/{organizationsId}/assignments/{assignmentsId}',
-        http_method=u'GET',
-        method_id=u'osconfig.organizations.assignments.get',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1alpha1/organizations/{organizationsId}/assignments/{assignmentsId}',
+        http_method='GET',
+        method_id='osconfig.organizations.assignments.get',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1alpha1/{+name}',
+        relative_path='v1alpha1/{+name}',
         request_field='',
-        request_type_name=u'OsconfigOrganizationsAssignmentsGetRequest',
-        response_type_name=u'Assignment',
+        request_type_name='OsconfigOrganizationsAssignmentsGetRequest',
+        response_type_name='Assignment',
         supports_download=False,
     )
 
@@ -539,16 +539,16 @@ Replaces any existing policy.
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha1/organizations/{organizationsId}/assignments',
-        http_method=u'GET',
-        method_id=u'osconfig.organizations.assignments.list',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'pageSize', u'pageToken'],
-        relative_path=u'v1alpha1/{+parent}/assignments',
+        flat_path='v1alpha1/organizations/{organizationsId}/assignments',
+        http_method='GET',
+        method_id='osconfig.organizations.assignments.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v1alpha1/{+parent}/assignments',
         request_field='',
-        request_type_name=u'OsconfigOrganizationsAssignmentsListRequest',
-        response_type_name=u'ListAssignmentsResponse',
+        request_type_name='OsconfigOrganizationsAssignmentsListRequest',
+        response_type_name='ListAssignmentsResponse',
         supports_download=False,
     )
 
@@ -566,23 +566,23 @@ Replaces any existing policy.
           config, request, global_params=global_params)
 
     Patch.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha1/organizations/{organizationsId}/assignments/{assignmentsId}',
-        http_method=u'PATCH',
-        method_id=u'osconfig.organizations.assignments.patch',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[u'updateMask'],
-        relative_path=u'v1alpha1/{+name}',
-        request_field=u'assignment',
-        request_type_name=u'OsconfigOrganizationsAssignmentsPatchRequest',
-        response_type_name=u'Assignment',
+        flat_path='v1alpha1/organizations/{organizationsId}/assignments/{assignmentsId}',
+        http_method='PATCH',
+        method_id='osconfig.organizations.assignments.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v1alpha1/{+name}',
+        request_field='assignment',
+        request_type_name='OsconfigOrganizationsAssignmentsPatchRequest',
+        response_type_name='Assignment',
         supports_download=False,
     )
 
   class OrganizationsOsConfigsService(base_api.BaseApiService):
     """Service class for the organizations_osConfigs resource."""
 
-    _NAME = u'organizations_osConfigs'
+    _NAME = 'organizations_osConfigs'
 
     def __init__(self, client):
       super(OsconfigV1alpha1.OrganizationsOsConfigsService, self).__init__(client)
@@ -603,16 +603,16 @@ Replaces any existing policy.
           config, request, global_params=global_params)
 
     Create.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha1/organizations/{organizationsId}/osConfigs',
-        http_method=u'POST',
-        method_id=u'osconfig.organizations.osConfigs.create',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
+        flat_path='v1alpha1/organizations/{organizationsId}/osConfigs',
+        http_method='POST',
+        method_id='osconfig.organizations.osConfigs.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
         query_params=[],
-        relative_path=u'v1alpha1/{+parent}/osConfigs',
-        request_field=u'osConfig',
-        request_type_name=u'OsconfigOrganizationsOsConfigsCreateRequest',
-        response_type_name=u'OsConfig',
+        relative_path='v1alpha1/{+parent}/osConfigs',
+        request_field='osConfig',
+        request_type_name='OsconfigOrganizationsOsConfigsCreateRequest',
+        response_type_name='OsConfig',
         supports_download=False,
     )
 
@@ -630,16 +630,16 @@ Replaces any existing policy.
           config, request, global_params=global_params)
 
     Delete.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha1/organizations/{organizationsId}/osConfigs/{osConfigsId}',
-        http_method=u'DELETE',
-        method_id=u'osconfig.organizations.osConfigs.delete',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1alpha1/organizations/{organizationsId}/osConfigs/{osConfigsId}',
+        http_method='DELETE',
+        method_id='osconfig.organizations.osConfigs.delete',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1alpha1/{+name}',
+        relative_path='v1alpha1/{+name}',
         request_field='',
-        request_type_name=u'OsconfigOrganizationsOsConfigsDeleteRequest',
-        response_type_name=u'Empty',
+        request_type_name='OsconfigOrganizationsOsConfigsDeleteRequest',
+        response_type_name='Empty',
         supports_download=False,
     )
 
@@ -657,16 +657,16 @@ Replaces any existing policy.
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha1/organizations/{organizationsId}/osConfigs/{osConfigsId}',
-        http_method=u'GET',
-        method_id=u'osconfig.organizations.osConfigs.get',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1alpha1/organizations/{organizationsId}/osConfigs/{osConfigsId}',
+        http_method='GET',
+        method_id='osconfig.organizations.osConfigs.get',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1alpha1/{+name}',
+        relative_path='v1alpha1/{+name}',
         request_field='',
-        request_type_name=u'OsconfigOrganizationsOsConfigsGetRequest',
-        response_type_name=u'OsConfig',
+        request_type_name='OsconfigOrganizationsOsConfigsGetRequest',
+        response_type_name='OsConfig',
         supports_download=False,
     )
 
@@ -684,16 +684,16 @@ Replaces any existing policy.
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha1/organizations/{organizationsId}/osConfigs',
-        http_method=u'GET',
-        method_id=u'osconfig.organizations.osConfigs.list',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'pageSize', u'pageToken'],
-        relative_path=u'v1alpha1/{+parent}/osConfigs',
+        flat_path='v1alpha1/organizations/{organizationsId}/osConfigs',
+        http_method='GET',
+        method_id='osconfig.organizations.osConfigs.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v1alpha1/{+parent}/osConfigs',
         request_field='',
-        request_type_name=u'OsconfigOrganizationsOsConfigsListRequest',
-        response_type_name=u'ListOsConfigsResponse',
+        request_type_name='OsconfigOrganizationsOsConfigsListRequest',
+        response_type_name='ListOsConfigsResponse',
         supports_download=False,
     )
 
@@ -711,23 +711,23 @@ Replaces any existing policy.
           config, request, global_params=global_params)
 
     Patch.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha1/organizations/{organizationsId}/osConfigs/{osConfigsId}',
-        http_method=u'PATCH',
-        method_id=u'osconfig.organizations.osConfigs.patch',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[u'updateMask'],
-        relative_path=u'v1alpha1/{+name}',
-        request_field=u'osConfig',
-        request_type_name=u'OsconfigOrganizationsOsConfigsPatchRequest',
-        response_type_name=u'OsConfig',
+        flat_path='v1alpha1/organizations/{organizationsId}/osConfigs/{osConfigsId}',
+        http_method='PATCH',
+        method_id='osconfig.organizations.osConfigs.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v1alpha1/{+name}',
+        request_field='osConfig',
+        request_type_name='OsconfigOrganizationsOsConfigsPatchRequest',
+        response_type_name='OsConfig',
         supports_download=False,
     )
 
   class OrganizationsService(base_api.BaseApiService):
     """Service class for the organizations resource."""
 
-    _NAME = u'organizations'
+    _NAME = 'organizations'
 
     def __init__(self, client):
       super(OsconfigV1alpha1.OrganizationsService, self).__init__(client)
@@ -750,16 +750,16 @@ policy if the resource exists but does not have a policy set.
           config, request, global_params=global_params)
 
     GetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha1/organizations/{organizationsId}:getIamPolicy',
-        http_method=u'POST',
-        method_id=u'osconfig.organizations.getIamPolicy',
-        ordered_params=[u'resource'],
-        path_params=[u'resource'],
+        flat_path='v1alpha1/organizations/{organizationsId}:getIamPolicy',
+        http_method='POST',
+        method_id='osconfig.organizations.getIamPolicy',
+        ordered_params=['resource'],
+        path_params=['resource'],
         query_params=[],
-        relative_path=u'v1alpha1/{+resource}:getIamPolicy',
-        request_field=u'getIamPolicyRequest',
-        request_type_name=u'OsconfigOrganizationsGetIamPolicyRequest',
-        response_type_name=u'Policy',
+        relative_path='v1alpha1/{+resource}:getIamPolicy',
+        request_field='getIamPolicyRequest',
+        request_type_name='OsconfigOrganizationsGetIamPolicyRequest',
+        response_type_name='Policy',
         supports_download=False,
     )
 
@@ -778,16 +778,16 @@ Replaces any existing policy.
           config, request, global_params=global_params)
 
     SetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha1/organizations/{organizationsId}:setIamPolicy',
-        http_method=u'POST',
-        method_id=u'osconfig.organizations.setIamPolicy',
-        ordered_params=[u'resource'],
-        path_params=[u'resource'],
+        flat_path='v1alpha1/organizations/{organizationsId}:setIamPolicy',
+        http_method='POST',
+        method_id='osconfig.organizations.setIamPolicy',
+        ordered_params=['resource'],
+        path_params=['resource'],
         query_params=[],
-        relative_path=u'v1alpha1/{+resource}:setIamPolicy',
-        request_field=u'setIamPolicyRequest',
-        request_type_name=u'OsconfigOrganizationsSetIamPolicyRequest',
-        response_type_name=u'Policy',
+        relative_path='v1alpha1/{+resource}:setIamPolicy',
+        request_field='setIamPolicyRequest',
+        request_type_name='OsconfigOrganizationsSetIamPolicyRequest',
+        response_type_name='Policy',
         supports_download=False,
     )
 
@@ -805,23 +805,23 @@ Replaces any existing policy.
           config, request, global_params=global_params)
 
     TestIamPermissions.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha1/organizations/{organizationsId}:testIamPermissions',
-        http_method=u'POST',
-        method_id=u'osconfig.organizations.testIamPermissions',
-        ordered_params=[u'resource'],
-        path_params=[u'resource'],
+        flat_path='v1alpha1/organizations/{organizationsId}:testIamPermissions',
+        http_method='POST',
+        method_id='osconfig.organizations.testIamPermissions',
+        ordered_params=['resource'],
+        path_params=['resource'],
         query_params=[],
-        relative_path=u'v1alpha1/{+resource}:testIamPermissions',
-        request_field=u'testIamPermissionsRequest',
-        request_type_name=u'OsconfigOrganizationsTestIamPermissionsRequest',
-        response_type_name=u'TestIamPermissionsResponse',
+        relative_path='v1alpha1/{+resource}:testIamPermissions',
+        request_field='testIamPermissionsRequest',
+        request_type_name='OsconfigOrganizationsTestIamPermissionsRequest',
+        response_type_name='TestIamPermissionsResponse',
         supports_download=False,
     )
 
   class ProjectsAssignmentsService(base_api.BaseApiService):
     """Service class for the projects_assignments resource."""
 
-    _NAME = u'projects_assignments'
+    _NAME = 'projects_assignments'
 
     def __init__(self, client):
       super(OsconfigV1alpha1.ProjectsAssignmentsService, self).__init__(client)
@@ -842,16 +842,16 @@ Replaces any existing policy.
           config, request, global_params=global_params)
 
     Create.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha1/projects/{projectsId}/assignments',
-        http_method=u'POST',
-        method_id=u'osconfig.projects.assignments.create',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
+        flat_path='v1alpha1/projects/{projectsId}/assignments',
+        http_method='POST',
+        method_id='osconfig.projects.assignments.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
         query_params=[],
-        relative_path=u'v1alpha1/{+parent}/assignments',
-        request_field=u'assignment',
-        request_type_name=u'OsconfigProjectsAssignmentsCreateRequest',
-        response_type_name=u'Assignment',
+        relative_path='v1alpha1/{+parent}/assignments',
+        request_field='assignment',
+        request_type_name='OsconfigProjectsAssignmentsCreateRequest',
+        response_type_name='Assignment',
         supports_download=False,
     )
 
@@ -869,16 +869,16 @@ Replaces any existing policy.
           config, request, global_params=global_params)
 
     Delete.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha1/projects/{projectsId}/assignments/{assignmentsId}',
-        http_method=u'DELETE',
-        method_id=u'osconfig.projects.assignments.delete',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1alpha1/projects/{projectsId}/assignments/{assignmentsId}',
+        http_method='DELETE',
+        method_id='osconfig.projects.assignments.delete',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1alpha1/{+name}',
+        relative_path='v1alpha1/{+name}',
         request_field='',
-        request_type_name=u'OsconfigProjectsAssignmentsDeleteRequest',
-        response_type_name=u'Empty',
+        request_type_name='OsconfigProjectsAssignmentsDeleteRequest',
+        response_type_name='Empty',
         supports_download=False,
     )
 
@@ -896,16 +896,16 @@ Replaces any existing policy.
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha1/projects/{projectsId}/assignments/{assignmentsId}',
-        http_method=u'GET',
-        method_id=u'osconfig.projects.assignments.get',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1alpha1/projects/{projectsId}/assignments/{assignmentsId}',
+        http_method='GET',
+        method_id='osconfig.projects.assignments.get',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1alpha1/{+name}',
+        relative_path='v1alpha1/{+name}',
         request_field='',
-        request_type_name=u'OsconfigProjectsAssignmentsGetRequest',
-        response_type_name=u'Assignment',
+        request_type_name='OsconfigProjectsAssignmentsGetRequest',
+        response_type_name='Assignment',
         supports_download=False,
     )
 
@@ -923,16 +923,16 @@ Replaces any existing policy.
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha1/projects/{projectsId}/assignments',
-        http_method=u'GET',
-        method_id=u'osconfig.projects.assignments.list',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'pageSize', u'pageToken'],
-        relative_path=u'v1alpha1/{+parent}/assignments',
+        flat_path='v1alpha1/projects/{projectsId}/assignments',
+        http_method='GET',
+        method_id='osconfig.projects.assignments.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v1alpha1/{+parent}/assignments',
         request_field='',
-        request_type_name=u'OsconfigProjectsAssignmentsListRequest',
-        response_type_name=u'ListAssignmentsResponse',
+        request_type_name='OsconfigProjectsAssignmentsListRequest',
+        response_type_name='ListAssignmentsResponse',
         supports_download=False,
     )
 
@@ -950,23 +950,23 @@ Replaces any existing policy.
           config, request, global_params=global_params)
 
     Patch.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha1/projects/{projectsId}/assignments/{assignmentsId}',
-        http_method=u'PATCH',
-        method_id=u'osconfig.projects.assignments.patch',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[u'updateMask'],
-        relative_path=u'v1alpha1/{+name}',
-        request_field=u'assignment',
-        request_type_name=u'OsconfigProjectsAssignmentsPatchRequest',
-        response_type_name=u'Assignment',
+        flat_path='v1alpha1/projects/{projectsId}/assignments/{assignmentsId}',
+        http_method='PATCH',
+        method_id='osconfig.projects.assignments.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v1alpha1/{+name}',
+        request_field='assignment',
+        request_type_name='OsconfigProjectsAssignmentsPatchRequest',
+        response_type_name='Assignment',
         supports_download=False,
     )
 
   class ProjectsOsConfigsService(base_api.BaseApiService):
     """Service class for the projects_osConfigs resource."""
 
-    _NAME = u'projects_osConfigs'
+    _NAME = 'projects_osConfigs'
 
     def __init__(self, client):
       super(OsconfigV1alpha1.ProjectsOsConfigsService, self).__init__(client)
@@ -987,16 +987,16 @@ Replaces any existing policy.
           config, request, global_params=global_params)
 
     Create.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha1/projects/{projectsId}/osConfigs',
-        http_method=u'POST',
-        method_id=u'osconfig.projects.osConfigs.create',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
+        flat_path='v1alpha1/projects/{projectsId}/osConfigs',
+        http_method='POST',
+        method_id='osconfig.projects.osConfigs.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
         query_params=[],
-        relative_path=u'v1alpha1/{+parent}/osConfigs',
-        request_field=u'osConfig',
-        request_type_name=u'OsconfigProjectsOsConfigsCreateRequest',
-        response_type_name=u'OsConfig',
+        relative_path='v1alpha1/{+parent}/osConfigs',
+        request_field='osConfig',
+        request_type_name='OsconfigProjectsOsConfigsCreateRequest',
+        response_type_name='OsConfig',
         supports_download=False,
     )
 
@@ -1014,16 +1014,16 @@ Replaces any existing policy.
           config, request, global_params=global_params)
 
     Delete.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha1/projects/{projectsId}/osConfigs/{osConfigsId}',
-        http_method=u'DELETE',
-        method_id=u'osconfig.projects.osConfigs.delete',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1alpha1/projects/{projectsId}/osConfigs/{osConfigsId}',
+        http_method='DELETE',
+        method_id='osconfig.projects.osConfigs.delete',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1alpha1/{+name}',
+        relative_path='v1alpha1/{+name}',
         request_field='',
-        request_type_name=u'OsconfigProjectsOsConfigsDeleteRequest',
-        response_type_name=u'Empty',
+        request_type_name='OsconfigProjectsOsConfigsDeleteRequest',
+        response_type_name='Empty',
         supports_download=False,
     )
 
@@ -1041,16 +1041,16 @@ Replaces any existing policy.
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha1/projects/{projectsId}/osConfigs/{osConfigsId}',
-        http_method=u'GET',
-        method_id=u'osconfig.projects.osConfigs.get',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1alpha1/projects/{projectsId}/osConfigs/{osConfigsId}',
+        http_method='GET',
+        method_id='osconfig.projects.osConfigs.get',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1alpha1/{+name}',
+        relative_path='v1alpha1/{+name}',
         request_field='',
-        request_type_name=u'OsconfigProjectsOsConfigsGetRequest',
-        response_type_name=u'OsConfig',
+        request_type_name='OsconfigProjectsOsConfigsGetRequest',
+        response_type_name='OsConfig',
         supports_download=False,
     )
 
@@ -1068,16 +1068,16 @@ Replaces any existing policy.
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha1/projects/{projectsId}/osConfigs',
-        http_method=u'GET',
-        method_id=u'osconfig.projects.osConfigs.list',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'pageSize', u'pageToken'],
-        relative_path=u'v1alpha1/{+parent}/osConfigs',
+        flat_path='v1alpha1/projects/{projectsId}/osConfigs',
+        http_method='GET',
+        method_id='osconfig.projects.osConfigs.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v1alpha1/{+parent}/osConfigs',
         request_field='',
-        request_type_name=u'OsconfigProjectsOsConfigsListRequest',
-        response_type_name=u'ListOsConfigsResponse',
+        request_type_name='OsconfigProjectsOsConfigsListRequest',
+        response_type_name='ListOsConfigsResponse',
         supports_download=False,
     )
 
@@ -1095,23 +1095,23 @@ Replaces any existing policy.
           config, request, global_params=global_params)
 
     Patch.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha1/projects/{projectsId}/osConfigs/{osConfigsId}',
-        http_method=u'PATCH',
-        method_id=u'osconfig.projects.osConfigs.patch',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[u'updateMask'],
-        relative_path=u'v1alpha1/{+name}',
-        request_field=u'osConfig',
-        request_type_name=u'OsconfigProjectsOsConfigsPatchRequest',
-        response_type_name=u'OsConfig',
+        flat_path='v1alpha1/projects/{projectsId}/osConfigs/{osConfigsId}',
+        http_method='PATCH',
+        method_id='osconfig.projects.osConfigs.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v1alpha1/{+name}',
+        request_field='osConfig',
+        request_type_name='OsconfigProjectsOsConfigsPatchRequest',
+        response_type_name='OsConfig',
         supports_download=False,
     )
 
   class ProjectsPatchJobsInstanceDetailsService(base_api.BaseApiService):
     """Service class for the projects_patchJobs_instanceDetails resource."""
 
-    _NAME = u'projects_patchJobs_instanceDetails'
+    _NAME = 'projects_patchJobs_instanceDetails'
 
     def __init__(self, client):
       super(OsconfigV1alpha1.ProjectsPatchJobsInstanceDetailsService, self).__init__(client)
@@ -1132,23 +1132,23 @@ Replaces any existing policy.
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha1/projects/{projectsId}/patchJobs/{patchJobsId}/instanceDetails',
-        http_method=u'GET',
-        method_id=u'osconfig.projects.patchJobs.instanceDetails.list',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'filter', u'pageSize', u'pageToken'],
-        relative_path=u'v1alpha1/{+parent}/instanceDetails',
+        flat_path='v1alpha1/projects/{projectsId}/patchJobs/{patchJobsId}/instanceDetails',
+        http_method='GET',
+        method_id='osconfig.projects.patchJobs.instanceDetails.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'pageSize', 'pageToken'],
+        relative_path='v1alpha1/{+parent}/instanceDetails',
         request_field='',
-        request_type_name=u'OsconfigProjectsPatchJobsInstanceDetailsListRequest',
-        response_type_name=u'ListPatchJobInstanceDetailsResponse',
+        request_type_name='OsconfigProjectsPatchJobsInstanceDetailsListRequest',
+        response_type_name='ListPatchJobInstanceDetailsResponse',
         supports_download=False,
     )
 
   class ProjectsPatchJobsService(base_api.BaseApiService):
     """Service class for the projects_patchJobs resource."""
 
-    _NAME = u'projects_patchJobs'
+    _NAME = 'projects_patchJobs'
 
     def __init__(self, client):
       super(OsconfigV1alpha1.ProjectsPatchJobsService, self).__init__(client)
@@ -1170,16 +1170,16 @@ cannot be restarted.
           config, request, global_params=global_params)
 
     Cancel.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha1/projects/{projectsId}/patchJobs/{patchJobsId}:cancel',
-        http_method=u'POST',
-        method_id=u'osconfig.projects.patchJobs.cancel',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1alpha1/projects/{projectsId}/patchJobs/{patchJobsId}:cancel',
+        http_method='POST',
+        method_id='osconfig.projects.patchJobs.cancel',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1alpha1/{+name}:cancel',
-        request_field=u'cancelPatchJobRequest',
-        request_type_name=u'OsconfigProjectsPatchJobsCancelRequest',
-        response_type_name=u'PatchJob',
+        relative_path='v1alpha1/{+name}:cancel',
+        request_field='cancelPatchJobRequest',
+        request_type_name='OsconfigProjectsPatchJobsCancelRequest',
+        response_type_name='PatchJob',
         supports_download=False,
     )
 
@@ -1197,16 +1197,16 @@ cannot be restarted.
           config, request, global_params=global_params)
 
     Execute.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha1/projects/{projectsId}/patchJobs:execute',
-        http_method=u'POST',
-        method_id=u'osconfig.projects.patchJobs.execute',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
+        flat_path='v1alpha1/projects/{projectsId}/patchJobs:execute',
+        http_method='POST',
+        method_id='osconfig.projects.patchJobs.execute',
+        ordered_params=['parent'],
+        path_params=['parent'],
         query_params=[],
-        relative_path=u'v1alpha1/{+parent}/patchJobs:execute',
-        request_field=u'executePatchJobRequest',
-        request_type_name=u'OsconfigProjectsPatchJobsExecuteRequest',
-        response_type_name=u'PatchJob',
+        relative_path='v1alpha1/{+parent}/patchJobs:execute',
+        request_field='executePatchJobRequest',
+        request_type_name='OsconfigProjectsPatchJobsExecuteRequest',
+        response_type_name='PatchJob',
         supports_download=False,
     )
 
@@ -1225,16 +1225,16 @@ ongoing patch job or review the details of completed jobs.
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha1/projects/{projectsId}/patchJobs/{patchJobsId}',
-        http_method=u'GET',
-        method_id=u'osconfig.projects.patchJobs.get',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1alpha1/projects/{projectsId}/patchJobs/{patchJobsId}',
+        http_method='GET',
+        method_id='osconfig.projects.patchJobs.get',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1alpha1/{+name}',
+        relative_path='v1alpha1/{+name}',
         request_field='',
-        request_type_name=u'OsconfigProjectsPatchJobsGetRequest',
-        response_type_name=u'PatchJob',
+        request_type_name='OsconfigProjectsPatchJobsGetRequest',
+        response_type_name='PatchJob',
         supports_download=False,
     )
 
@@ -1252,23 +1252,23 @@ ongoing patch job or review the details of completed jobs.
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha1/projects/{projectsId}/patchJobs',
-        http_method=u'GET',
-        method_id=u'osconfig.projects.patchJobs.list',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'pageSize', u'pageToken'],
-        relative_path=u'v1alpha1/{+parent}/patchJobs',
+        flat_path='v1alpha1/projects/{projectsId}/patchJobs',
+        http_method='GET',
+        method_id='osconfig.projects.patchJobs.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v1alpha1/{+parent}/patchJobs',
         request_field='',
-        request_type_name=u'OsconfigProjectsPatchJobsListRequest',
-        response_type_name=u'ListPatchJobsResponse',
+        request_type_name='OsconfigProjectsPatchJobsListRequest',
+        response_type_name='ListPatchJobsResponse',
         supports_download=False,
     )
 
   class ProjectsZonesInstancesService(base_api.BaseApiService):
     """Service class for the projects_zones_instances resource."""
 
-    _NAME = u'projects_zones_instances'
+    _NAME = 'projects_zones_instances'
 
     def __init__(self, client):
       super(OsconfigV1alpha1.ProjectsZonesInstancesService, self).__init__(client)
@@ -1294,16 +1294,16 @@ This
           config, request, global_params=global_params)
 
     LookupConfigs.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha1/projects/{projectsId}/zones/{zonesId}/instances/{instancesId}:lookupConfigs',
-        http_method=u'POST',
-        method_id=u'osconfig.projects.zones.instances.lookupConfigs',
-        ordered_params=[u'resource'],
-        path_params=[u'resource'],
+        flat_path='v1alpha1/projects/{projectsId}/zones/{zonesId}/instances/{instancesId}:lookupConfigs',
+        http_method='POST',
+        method_id='osconfig.projects.zones.instances.lookupConfigs',
+        ordered_params=['resource'],
+        path_params=['resource'],
         query_params=[],
-        relative_path=u'v1alpha1/{+resource}:lookupConfigs',
-        request_field=u'lookupConfigsRequest',
-        request_type_name=u'OsconfigProjectsZonesInstancesLookupConfigsRequest',
-        response_type_name=u'LookupConfigsResponse',
+        relative_path='v1alpha1/{+resource}:lookupConfigs',
+        request_field='lookupConfigsRequest',
+        request_type_name='OsconfigProjectsZonesInstancesLookupConfigsRequest',
+        response_type_name='LookupConfigsResponse',
         supports_download=False,
     )
 
@@ -1328,23 +1328,23 @@ being correctly applied to this instance.
           config, request, global_params=global_params)
 
     ReportPatchJobInstanceDetails.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha1/projects/{projectsId}/zones/{zonesId}/instances/{instancesId}:reportPatchJobInstanceDetails',
-        http_method=u'POST',
-        method_id=u'osconfig.projects.zones.instances.reportPatchJobInstanceDetails',
-        ordered_params=[u'resource'],
-        path_params=[u'resource'],
+        flat_path='v1alpha1/projects/{projectsId}/zones/{zonesId}/instances/{instancesId}:reportPatchJobInstanceDetails',
+        http_method='POST',
+        method_id='osconfig.projects.zones.instances.reportPatchJobInstanceDetails',
+        ordered_params=['resource'],
+        path_params=['resource'],
         query_params=[],
-        relative_path=u'v1alpha1/{+resource}:reportPatchJobInstanceDetails',
-        request_field=u'reportPatchJobInstanceDetailsRequest',
-        request_type_name=u'OsconfigProjectsZonesInstancesReportPatchJobInstanceDetailsRequest',
-        response_type_name=u'ReportPatchJobInstanceDetailsResponse',
+        relative_path='v1alpha1/{+resource}:reportPatchJobInstanceDetails',
+        request_field='reportPatchJobInstanceDetailsRequest',
+        request_type_name='OsconfigProjectsZonesInstancesReportPatchJobInstanceDetailsRequest',
+        response_type_name='ReportPatchJobInstanceDetailsResponse',
         supports_download=False,
     )
 
   class ProjectsZonesService(base_api.BaseApiService):
     """Service class for the projects_zones resource."""
 
-    _NAME = u'projects_zones'
+    _NAME = 'projects_zones'
 
     def __init__(self, client):
       super(OsconfigV1alpha1.ProjectsZonesService, self).__init__(client)
@@ -1354,7 +1354,7 @@ being correctly applied to this instance.
   class ProjectsService(base_api.BaseApiService):
     """Service class for the projects resource."""
 
-    _NAME = u'projects'
+    _NAME = 'projects'
 
     def __init__(self, client):
       super(OsconfigV1alpha1.ProjectsService, self).__init__(client)
@@ -1377,16 +1377,16 @@ policy if the resource exists but does not have a policy set.
           config, request, global_params=global_params)
 
     GetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha1/projects/{projectsId}:getIamPolicy',
-        http_method=u'POST',
-        method_id=u'osconfig.projects.getIamPolicy',
-        ordered_params=[u'resource'],
-        path_params=[u'resource'],
+        flat_path='v1alpha1/projects/{projectsId}:getIamPolicy',
+        http_method='POST',
+        method_id='osconfig.projects.getIamPolicy',
+        ordered_params=['resource'],
+        path_params=['resource'],
         query_params=[],
-        relative_path=u'v1alpha1/{+resource}:getIamPolicy',
-        request_field=u'getIamPolicyRequest',
-        request_type_name=u'OsconfigProjectsGetIamPolicyRequest',
-        response_type_name=u'Policy',
+        relative_path='v1alpha1/{+resource}:getIamPolicy',
+        request_field='getIamPolicyRequest',
+        request_type_name='OsconfigProjectsGetIamPolicyRequest',
+        response_type_name='Policy',
         supports_download=False,
     )
 
@@ -1405,16 +1405,16 @@ Replaces any existing policy.
           config, request, global_params=global_params)
 
     SetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha1/projects/{projectsId}:setIamPolicy',
-        http_method=u'POST',
-        method_id=u'osconfig.projects.setIamPolicy',
-        ordered_params=[u'resource'],
-        path_params=[u'resource'],
+        flat_path='v1alpha1/projects/{projectsId}:setIamPolicy',
+        http_method='POST',
+        method_id='osconfig.projects.setIamPolicy',
+        ordered_params=['resource'],
+        path_params=['resource'],
         query_params=[],
-        relative_path=u'v1alpha1/{+resource}:setIamPolicy',
-        request_field=u'setIamPolicyRequest',
-        request_type_name=u'OsconfigProjectsSetIamPolicyRequest',
-        response_type_name=u'Policy',
+        relative_path='v1alpha1/{+resource}:setIamPolicy',
+        request_field='setIamPolicyRequest',
+        request_type_name='OsconfigProjectsSetIamPolicyRequest',
+        response_type_name='Policy',
         supports_download=False,
     )
 
@@ -1432,15 +1432,15 @@ Replaces any existing policy.
           config, request, global_params=global_params)
 
     TestIamPermissions.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha1/projects/{projectsId}:testIamPermissions',
-        http_method=u'POST',
-        method_id=u'osconfig.projects.testIamPermissions',
-        ordered_params=[u'resource'],
-        path_params=[u'resource'],
+        flat_path='v1alpha1/projects/{projectsId}:testIamPermissions',
+        http_method='POST',
+        method_id='osconfig.projects.testIamPermissions',
+        ordered_params=['resource'],
+        path_params=['resource'],
         query_params=[],
-        relative_path=u'v1alpha1/{+resource}:testIamPermissions',
-        request_field=u'testIamPermissionsRequest',
-        request_type_name=u'OsconfigProjectsTestIamPermissionsRequest',
-        response_type_name=u'TestIamPermissionsResponse',
+        relative_path='v1alpha1/{+resource}:testIamPermissions',
+        request_field='testIamPermissionsRequest',
+        request_type_name='OsconfigProjectsTestIamPermissionsRequest',
+        response_type_name='TestIamPermissionsResponse',
         supports_download=False,
     )

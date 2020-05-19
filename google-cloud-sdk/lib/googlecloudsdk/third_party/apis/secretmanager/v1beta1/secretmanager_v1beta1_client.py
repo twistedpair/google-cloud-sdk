@@ -8,17 +8,17 @@ class SecretmanagerV1beta1(base_api.BaseApiClient):
   """Generated client library for service secretmanager version v1beta1."""
 
   MESSAGES_MODULE = messages
-  BASE_URL = u'https://secretmanager.googleapis.com/'
-  MTLS_BASE_URL = u'https://secretmanager.mtls.googleapis.com/'
+  BASE_URL = 'https://secretmanager.googleapis.com/'
+  MTLS_BASE_URL = 'https://secretmanager.mtls.googleapis.com/'
 
-  _PACKAGE = u'secretmanager'
-  _SCOPES = [u'https://www.googleapis.com/auth/cloud-platform']
-  _VERSION = u'v1beta1'
+  _PACKAGE = 'secretmanager'
+  _SCOPES = ['https://www.googleapis.com/auth/cloud-platform']
+  _VERSION = 'v1beta1'
   _CLIENT_ID = '1042881264118.apps.googleusercontent.com'
   _CLIENT_SECRET = 'x_Tw5K8nnjoRAqULM9PFAC2b'
-  _USER_AGENT = u'google-cloud-sdk'
-  _CLIENT_CLASS_NAME = u'SecretmanagerV1beta1'
-  _URL_VERSION = u'v1beta1'
+  _USER_AGENT = 'google-cloud-sdk'
+  _CLIENT_CLASS_NAME = 'SecretmanagerV1beta1'
+  _URL_VERSION = 'v1beta1'
   _API_KEY = None
 
   def __init__(self, url='', credentials=None,
@@ -44,7 +44,7 @@ class SecretmanagerV1beta1(base_api.BaseApiClient):
   class ProjectsLocationsService(base_api.BaseApiService):
     """Service class for the projects_locations resource."""
 
-    _NAME = u'projects_locations'
+    _NAME = 'projects_locations'
 
     def __init__(self, client):
       super(SecretmanagerV1beta1.ProjectsLocationsService, self).__init__(client)
@@ -65,16 +65,16 @@ class SecretmanagerV1beta1(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/projects/{projectsId}/locations/{locationsId}',
-        http_method=u'GET',
-        method_id=u'secretmanager.projects.locations.get',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}',
+        http_method='GET',
+        method_id='secretmanager.projects.locations.get',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1beta1/{+name}',
+        relative_path='v1beta1/{+name}',
         request_field='',
-        request_type_name=u'SecretmanagerProjectsLocationsGetRequest',
-        response_type_name=u'Location',
+        request_type_name='SecretmanagerProjectsLocationsGetRequest',
+        response_type_name='Location',
         supports_download=False,
     )
 
@@ -92,23 +92,23 @@ class SecretmanagerV1beta1(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/projects/{projectsId}/locations',
-        http_method=u'GET',
-        method_id=u'secretmanager.projects.locations.list',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[u'filter', u'pageSize', u'pageToken'],
-        relative_path=u'v1beta1/{+name}/locations',
+        flat_path='v1beta1/projects/{projectsId}/locations',
+        http_method='GET',
+        method_id='secretmanager.projects.locations.list',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['filter', 'pageSize', 'pageToken'],
+        relative_path='v1beta1/{+name}/locations',
         request_field='',
-        request_type_name=u'SecretmanagerProjectsLocationsListRequest',
-        response_type_name=u'ListLocationsResponse',
+        request_type_name='SecretmanagerProjectsLocationsListRequest',
+        response_type_name='ListLocationsResponse',
         supports_download=False,
     )
 
   class ProjectsSecretsVersionsService(base_api.BaseApiService):
     """Service class for the projects_secrets_versions resource."""
 
-    _NAME = u'projects_secrets_versions'
+    _NAME = 'projects_secrets_versions'
 
     def __init__(self, client):
       super(SecretmanagerV1beta1.ProjectsSecretsVersionsService, self).__init__(client)
@@ -132,16 +132,16 @@ SecretVersion.
           config, request, global_params=global_params)
 
     Access.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/projects/{projectsId}/secrets/{secretsId}/versions/{versionsId}:access',
-        http_method=u'GET',
-        method_id=u'secretmanager.projects.secrets.versions.access',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1beta1/projects/{projectsId}/secrets/{secretsId}/versions/{versionsId}:access',
+        http_method='GET',
+        method_id='secretmanager.projects.secrets.versions.access',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1beta1/{+name}:access',
+        relative_path='v1beta1/{+name}:access',
         request_field='',
-        request_type_name=u'SecretmanagerProjectsSecretsVersionsAccessRequest',
-        response_type_name=u'AccessSecretVersionResponse',
+        request_type_name='SecretmanagerProjectsSecretsVersionsAccessRequest',
+        response_type_name='AccessSecretVersionResponse',
         supports_download=False,
     )
 
@@ -163,16 +163,16 @@ secret data.
           config, request, global_params=global_params)
 
     Destroy.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/projects/{projectsId}/secrets/{secretsId}/versions/{versionsId}:destroy',
-        http_method=u'POST',
-        method_id=u'secretmanager.projects.secrets.versions.destroy',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1beta1/projects/{projectsId}/secrets/{secretsId}/versions/{versionsId}:destroy',
+        http_method='POST',
+        method_id='secretmanager.projects.secrets.versions.destroy',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1beta1/{+name}:destroy',
-        request_field=u'destroySecretVersionRequest',
-        request_type_name=u'SecretmanagerProjectsSecretsVersionsDestroyRequest',
-        response_type_name=u'SecretVersion',
+        relative_path='v1beta1/{+name}:destroy',
+        request_field='destroySecretVersionRequest',
+        request_type_name='SecretmanagerProjectsSecretsVersionsDestroyRequest',
+        response_type_name='SecretVersion',
         supports_download=False,
     )
 
@@ -193,16 +193,16 @@ DISABLED.
           config, request, global_params=global_params)
 
     Disable.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/projects/{projectsId}/secrets/{secretsId}/versions/{versionsId}:disable',
-        http_method=u'POST',
-        method_id=u'secretmanager.projects.secrets.versions.disable',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1beta1/projects/{projectsId}/secrets/{secretsId}/versions/{versionsId}:disable',
+        http_method='POST',
+        method_id='secretmanager.projects.secrets.versions.disable',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1beta1/{+name}:disable',
-        request_field=u'disableSecretVersionRequest',
-        request_type_name=u'SecretmanagerProjectsSecretsVersionsDisableRequest',
-        response_type_name=u'SecretVersion',
+        relative_path='v1beta1/{+name}:disable',
+        request_field='disableSecretVersionRequest',
+        request_type_name='SecretmanagerProjectsSecretsVersionsDisableRequest',
+        response_type_name='SecretVersion',
         supports_download=False,
     )
 
@@ -223,16 +223,16 @@ ENABLED.
           config, request, global_params=global_params)
 
     Enable.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/projects/{projectsId}/secrets/{secretsId}/versions/{versionsId}:enable',
-        http_method=u'POST',
-        method_id=u'secretmanager.projects.secrets.versions.enable',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1beta1/projects/{projectsId}/secrets/{secretsId}/versions/{versionsId}:enable',
+        http_method='POST',
+        method_id='secretmanager.projects.secrets.versions.enable',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1beta1/{+name}:enable',
-        request_field=u'enableSecretVersionRequest',
-        request_type_name=u'SecretmanagerProjectsSecretsVersionsEnableRequest',
-        response_type_name=u'SecretVersion',
+        relative_path='v1beta1/{+name}:enable',
+        request_field='enableSecretVersionRequest',
+        request_type_name='SecretmanagerProjectsSecretsVersionsEnableRequest',
+        response_type_name='SecretVersion',
         supports_download=False,
     )
 
@@ -253,16 +253,16 @@ SecretVersion.
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/projects/{projectsId}/secrets/{secretsId}/versions/{versionsId}',
-        http_method=u'GET',
-        method_id=u'secretmanager.projects.secrets.versions.get',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1beta1/projects/{projectsId}/secrets/{secretsId}/versions/{versionsId}',
+        http_method='GET',
+        method_id='secretmanager.projects.secrets.versions.get',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1beta1/{+name}',
+        relative_path='v1beta1/{+name}',
         request_field='',
-        request_type_name=u'SecretmanagerProjectsSecretsVersionsGetRequest',
-        response_type_name=u'SecretVersion',
+        request_type_name='SecretmanagerProjectsSecretsVersionsGetRequest',
+        response_type_name='SecretVersion',
         supports_download=False,
     )
 
@@ -281,23 +281,23 @@ data.
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/projects/{projectsId}/secrets/{secretsId}/versions',
-        http_method=u'GET',
-        method_id=u'secretmanager.projects.secrets.versions.list',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'pageSize', u'pageToken'],
-        relative_path=u'v1beta1/{+parent}/versions',
+        flat_path='v1beta1/projects/{projectsId}/secrets/{secretsId}/versions',
+        http_method='GET',
+        method_id='secretmanager.projects.secrets.versions.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v1beta1/{+parent}/versions',
         request_field='',
-        request_type_name=u'SecretmanagerProjectsSecretsVersionsListRequest',
-        response_type_name=u'ListSecretVersionsResponse',
+        request_type_name='SecretmanagerProjectsSecretsVersionsListRequest',
+        response_type_name='ListSecretVersionsResponse',
         supports_download=False,
     )
 
   class ProjectsSecretsService(base_api.BaseApiService):
     """Service class for the projects_secrets resource."""
 
-    _NAME = u'projects_secrets'
+    _NAME = 'projects_secrets'
 
     def __init__(self, client):
       super(SecretmanagerV1beta1.ProjectsSecretsService, self).__init__(client)
@@ -319,16 +319,16 @@ it to an existing Secret.
           config, request, global_params=global_params)
 
     AddVersion.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/projects/{projectsId}/secrets/{secretsId}:addVersion',
-        http_method=u'POST',
-        method_id=u'secretmanager.projects.secrets.addVersion',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
+        flat_path='v1beta1/projects/{projectsId}/secrets/{secretsId}:addVersion',
+        http_method='POST',
+        method_id='secretmanager.projects.secrets.addVersion',
+        ordered_params=['parent'],
+        path_params=['parent'],
         query_params=[],
-        relative_path=u'v1beta1/{+parent}:addVersion',
-        request_field=u'addSecretVersionRequest',
-        request_type_name=u'SecretmanagerProjectsSecretsAddVersionRequest',
-        response_type_name=u'SecretVersion',
+        relative_path='v1beta1/{+parent}:addVersion',
+        request_field='addSecretVersionRequest',
+        request_type_name='SecretmanagerProjectsSecretsAddVersionRequest',
+        response_type_name='SecretVersion',
         supports_download=False,
     )
 
@@ -346,16 +346,16 @@ it to an existing Secret.
           config, request, global_params=global_params)
 
     Create.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/projects/{projectsId}/secrets',
-        http_method=u'POST',
-        method_id=u'secretmanager.projects.secrets.create',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'secretId'],
-        relative_path=u'v1beta1/{+parent}/secrets',
-        request_field=u'secret',
-        request_type_name=u'SecretmanagerProjectsSecretsCreateRequest',
-        response_type_name=u'Secret',
+        flat_path='v1beta1/projects/{projectsId}/secrets',
+        http_method='POST',
+        method_id='secretmanager.projects.secrets.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['secretId'],
+        relative_path='v1beta1/{+parent}/secrets',
+        request_field='secret',
+        request_type_name='SecretmanagerProjectsSecretsCreateRequest',
+        response_type_name='Secret',
         supports_download=False,
     )
 
@@ -373,16 +373,16 @@ it to an existing Secret.
           config, request, global_params=global_params)
 
     Delete.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/projects/{projectsId}/secrets/{secretsId}',
-        http_method=u'DELETE',
-        method_id=u'secretmanager.projects.secrets.delete',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1beta1/projects/{projectsId}/secrets/{secretsId}',
+        http_method='DELETE',
+        method_id='secretmanager.projects.secrets.delete',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1beta1/{+name}',
+        relative_path='v1beta1/{+name}',
         request_field='',
-        request_type_name=u'SecretmanagerProjectsSecretsDeleteRequest',
-        response_type_name=u'Empty',
+        request_type_name='SecretmanagerProjectsSecretsDeleteRequest',
+        response_type_name='Empty',
         supports_download=False,
     )
 
@@ -400,16 +400,16 @@ it to an existing Secret.
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/projects/{projectsId}/secrets/{secretsId}',
-        http_method=u'GET',
-        method_id=u'secretmanager.projects.secrets.get',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1beta1/projects/{projectsId}/secrets/{secretsId}',
+        http_method='GET',
+        method_id='secretmanager.projects.secrets.get',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1beta1/{+name}',
+        relative_path='v1beta1/{+name}',
         request_field='',
-        request_type_name=u'SecretmanagerProjectsSecretsGetRequest',
-        response_type_name=u'Secret',
+        request_type_name='SecretmanagerProjectsSecretsGetRequest',
+        response_type_name='Secret',
         supports_download=False,
     )
 
@@ -428,16 +428,16 @@ Returns empty policy if the secret exists and does not have a policy set.
           config, request, global_params=global_params)
 
     GetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/projects/{projectsId}/secrets/{secretsId}:getIamPolicy',
-        http_method=u'GET',
-        method_id=u'secretmanager.projects.secrets.getIamPolicy',
-        ordered_params=[u'resource'],
-        path_params=[u'resource'],
-        query_params=[u'options_requestedPolicyVersion'],
-        relative_path=u'v1beta1/{+resource}:getIamPolicy',
+        flat_path='v1beta1/projects/{projectsId}/secrets/{secretsId}:getIamPolicy',
+        http_method='GET',
+        method_id='secretmanager.projects.secrets.getIamPolicy',
+        ordered_params=['resource'],
+        path_params=['resource'],
+        query_params=['options_requestedPolicyVersion'],
+        relative_path='v1beta1/{+resource}:getIamPolicy',
         request_field='',
-        request_type_name=u'SecretmanagerProjectsSecretsGetIamPolicyRequest',
-        response_type_name=u'Policy',
+        request_type_name='SecretmanagerProjectsSecretsGetIamPolicyRequest',
+        response_type_name='Policy',
         supports_download=False,
     )
 
@@ -455,16 +455,16 @@ Returns empty policy if the secret exists and does not have a policy set.
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/projects/{projectsId}/secrets',
-        http_method=u'GET',
-        method_id=u'secretmanager.projects.secrets.list',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'pageSize', u'pageToken'],
-        relative_path=u'v1beta1/{+parent}/secrets',
+        flat_path='v1beta1/projects/{projectsId}/secrets',
+        http_method='GET',
+        method_id='secretmanager.projects.secrets.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v1beta1/{+parent}/secrets',
         request_field='',
-        request_type_name=u'SecretmanagerProjectsSecretsListRequest',
-        response_type_name=u'ListSecretsResponse',
+        request_type_name='SecretmanagerProjectsSecretsListRequest',
+        response_type_name='ListSecretsResponse',
         supports_download=False,
     )
 
@@ -482,16 +482,16 @@ Returns empty policy if the secret exists and does not have a policy set.
           config, request, global_params=global_params)
 
     Patch.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/projects/{projectsId}/secrets/{secretsId}',
-        http_method=u'PATCH',
-        method_id=u'secretmanager.projects.secrets.patch',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[u'updateMask'],
-        relative_path=u'v1beta1/{+name}',
-        request_field=u'secret',
-        request_type_name=u'SecretmanagerProjectsSecretsPatchRequest',
-        response_type_name=u'Secret',
+        flat_path='v1beta1/projects/{projectsId}/secrets/{secretsId}',
+        http_method='PATCH',
+        method_id='secretmanager.projects.secrets.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v1beta1/{+name}',
+        request_field='secret',
+        request_type_name='SecretmanagerProjectsSecretsPatchRequest',
+        response_type_name='Secret',
         supports_download=False,
     )
 
@@ -513,16 +513,16 @@ to the policy set on the associated Secret.
           config, request, global_params=global_params)
 
     SetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/projects/{projectsId}/secrets/{secretsId}:setIamPolicy',
-        http_method=u'POST',
-        method_id=u'secretmanager.projects.secrets.setIamPolicy',
-        ordered_params=[u'resource'],
-        path_params=[u'resource'],
+        flat_path='v1beta1/projects/{projectsId}/secrets/{secretsId}:setIamPolicy',
+        http_method='POST',
+        method_id='secretmanager.projects.secrets.setIamPolicy',
+        ordered_params=['resource'],
+        path_params=['resource'],
         query_params=[],
-        relative_path=u'v1beta1/{+resource}:setIamPolicy',
-        request_field=u'setIamPolicyRequest',
-        request_type_name=u'SecretmanagerProjectsSecretsSetIamPolicyRequest',
-        response_type_name=u'Policy',
+        relative_path='v1beta1/{+resource}:setIamPolicy',
+        request_field='setIamPolicyRequest',
+        request_type_name='SecretmanagerProjectsSecretsSetIamPolicyRequest',
+        response_type_name='Policy',
         supports_download=False,
     )
 
@@ -546,23 +546,23 @@ may "fail open" without warning.
           config, request, global_params=global_params)
 
     TestIamPermissions.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/projects/{projectsId}/secrets/{secretsId}:testIamPermissions',
-        http_method=u'POST',
-        method_id=u'secretmanager.projects.secrets.testIamPermissions',
-        ordered_params=[u'resource'],
-        path_params=[u'resource'],
+        flat_path='v1beta1/projects/{projectsId}/secrets/{secretsId}:testIamPermissions',
+        http_method='POST',
+        method_id='secretmanager.projects.secrets.testIamPermissions',
+        ordered_params=['resource'],
+        path_params=['resource'],
         query_params=[],
-        relative_path=u'v1beta1/{+resource}:testIamPermissions',
-        request_field=u'testIamPermissionsRequest',
-        request_type_name=u'SecretmanagerProjectsSecretsTestIamPermissionsRequest',
-        response_type_name=u'TestIamPermissionsResponse',
+        relative_path='v1beta1/{+resource}:testIamPermissions',
+        request_field='testIamPermissionsRequest',
+        request_type_name='SecretmanagerProjectsSecretsTestIamPermissionsRequest',
+        response_type_name='TestIamPermissionsResponse',
         supports_download=False,
     )
 
   class ProjectsService(base_api.BaseApiService):
     """Service class for the projects resource."""
 
-    _NAME = u'projects'
+    _NAME = 'projects'
 
     def __init__(self, client):
       super(SecretmanagerV1beta1.ProjectsService, self).__init__(client)

@@ -8,17 +8,17 @@ class ServiceconsumermanagementV1beta1(base_api.BaseApiClient):
   """Generated client library for service serviceconsumermanagement version v1beta1."""
 
   MESSAGES_MODULE = messages
-  BASE_URL = u'https://serviceconsumermanagement.googleapis.com/'
-  MTLS_BASE_URL = u''
+  BASE_URL = 'https://serviceconsumermanagement.googleapis.com/'
+  MTLS_BASE_URL = ''
 
-  _PACKAGE = u'serviceconsumermanagement'
-  _SCOPES = [u'https://www.googleapis.com/auth/cloud-platform']
-  _VERSION = u'v1beta1'
+  _PACKAGE = 'serviceconsumermanagement'
+  _SCOPES = ['https://www.googleapis.com/auth/cloud-platform']
+  _VERSION = 'v1beta1'
   _CLIENT_ID = '1042881264118.apps.googleusercontent.com'
   _CLIENT_SECRET = 'x_Tw5K8nnjoRAqULM9PFAC2b'
-  _USER_AGENT = u'google-cloud-sdk'
-  _CLIENT_CLASS_NAME = u'ServiceconsumermanagementV1beta1'
-  _URL_VERSION = u'v1beta1'
+  _USER_AGENT = 'google-cloud-sdk'
+  _CLIENT_CLASS_NAME = 'ServiceconsumermanagementV1beta1'
+  _URL_VERSION = 'v1beta1'
   _API_KEY = None
 
   def __init__(self, url='', credentials=None,
@@ -45,7 +45,7 @@ class ServiceconsumermanagementV1beta1(base_api.BaseApiClient):
   class OperationsService(base_api.BaseApiService):
     """Service class for the operations resource."""
 
-    _NAME = u'operations'
+    _NAME = 'operations'
 
     def __init__(self, client):
       super(ServiceconsumermanagementV1beta1.OperationsService, self).__init__(client)
@@ -68,23 +68,23 @@ service.
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/operations/{operationsId}',
-        http_method=u'GET',
-        method_id=u'serviceconsumermanagement.operations.get',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1beta1/operations/{operationsId}',
+        http_method='GET',
+        method_id='serviceconsumermanagement.operations.get',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1beta1/{+name}',
+        relative_path='v1beta1/{+name}',
         request_field='',
-        request_type_name=u'ServiceconsumermanagementOperationsGetRequest',
-        response_type_name=u'Operation',
+        request_type_name='ServiceconsumermanagementOperationsGetRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
   class ServicesConsumerQuotaMetricsLimitsProducerOverridesService(base_api.BaseApiService):
     """Service class for the services_consumerQuotaMetrics_limits_producerOverrides resource."""
 
-    _NAME = u'services_consumerQuotaMetrics_limits_producerOverrides'
+    _NAME = 'services_consumerQuotaMetrics_limits_producerOverrides'
 
     def __init__(self, client):
       super(ServiceconsumermanagementV1beta1.ServicesConsumerQuotaMetricsLimitsProducerOverridesService, self).__init__(client)
@@ -108,16 +108,16 @@ allowed to use.
           config, request, global_params=global_params)
 
     Create.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/services/{servicesId}/{servicesId1}/{servicesId2}/consumerQuotaMetrics/{consumerQuotaMetricsId}/limits/{limitsId}/producerOverrides',
-        http_method=u'POST',
-        method_id=u'serviceconsumermanagement.services.consumerQuotaMetrics.limits.producerOverrides.create',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'force'],
-        relative_path=u'v1beta1/{+parent}/producerOverrides',
-        request_field=u'v1Beta1QuotaOverride',
-        request_type_name=u'ServiceconsumermanagementServicesConsumerQuotaMetricsLimitsProducerOverridesCreateRequest',
-        response_type_name=u'Operation',
+        flat_path='v1beta1/services/{servicesId}/{servicesId1}/{servicesId2}/consumerQuotaMetrics/{consumerQuotaMetricsId}/limits/{limitsId}/producerOverrides',
+        http_method='POST',
+        method_id='serviceconsumermanagement.services.consumerQuotaMetrics.limits.producerOverrides.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['force'],
+        relative_path='v1beta1/{+parent}/producerOverrides',
+        request_field='v1Beta1QuotaOverride',
+        request_type_name='ServiceconsumermanagementServicesConsumerQuotaMetricsLimitsProducerOverridesCreateRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -135,16 +135,16 @@ allowed to use.
           config, request, global_params=global_params)
 
     Delete.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/services/{servicesId}/{servicesId1}/{servicesId2}/consumerQuotaMetrics/{consumerQuotaMetricsId}/limits/{limitsId}/producerOverrides/{producerOverridesId}',
-        http_method=u'DELETE',
-        method_id=u'serviceconsumermanagement.services.consumerQuotaMetrics.limits.producerOverrides.delete',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[u'force'],
-        relative_path=u'v1beta1/{+name}',
+        flat_path='v1beta1/services/{servicesId}/{servicesId1}/{servicesId2}/consumerQuotaMetrics/{consumerQuotaMetricsId}/limits/{limitsId}/producerOverrides/{producerOverridesId}',
+        http_method='DELETE',
+        method_id='serviceconsumermanagement.services.consumerQuotaMetrics.limits.producerOverrides.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['force'],
+        relative_path='v1beta1/{+name}',
         request_field='',
-        request_type_name=u'ServiceconsumermanagementServicesConsumerQuotaMetricsLimitsProducerOverridesDeleteRequest',
-        response_type_name=u'Operation',
+        request_type_name='ServiceconsumermanagementServicesConsumerQuotaMetricsLimitsProducerOverridesDeleteRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -162,16 +162,16 @@ allowed to use.
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/services/{servicesId}/{servicesId1}/{servicesId2}/consumerQuotaMetrics/{consumerQuotaMetricsId}/limits/{limitsId}/producerOverrides',
-        http_method=u'GET',
-        method_id=u'serviceconsumermanagement.services.consumerQuotaMetrics.limits.producerOverrides.list',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'pageSize', u'pageToken'],
-        relative_path=u'v1beta1/{+parent}/producerOverrides',
+        flat_path='v1beta1/services/{servicesId}/{servicesId1}/{servicesId2}/consumerQuotaMetrics/{consumerQuotaMetricsId}/limits/{limitsId}/producerOverrides',
+        http_method='GET',
+        method_id='serviceconsumermanagement.services.consumerQuotaMetrics.limits.producerOverrides.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v1beta1/{+parent}/producerOverrides',
         request_field='',
-        request_type_name=u'ServiceconsumermanagementServicesConsumerQuotaMetricsLimitsProducerOverridesListRequest',
-        response_type_name=u'V1Beta1ListProducerOverridesResponse',
+        request_type_name='ServiceconsumermanagementServicesConsumerQuotaMetricsLimitsProducerOverridesListRequest',
+        response_type_name='V1Beta1ListProducerOverridesResponse',
         supports_download=False,
     )
 
@@ -189,23 +189,23 @@ allowed to use.
           config, request, global_params=global_params)
 
     Patch.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/services/{servicesId}/{servicesId1}/{servicesId2}/consumerQuotaMetrics/{consumerQuotaMetricsId}/limits/{limitsId}/producerOverrides/{producerOverridesId}',
-        http_method=u'PATCH',
-        method_id=u'serviceconsumermanagement.services.consumerQuotaMetrics.limits.producerOverrides.patch',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[u'force', u'updateMask'],
-        relative_path=u'v1beta1/{+name}',
-        request_field=u'v1Beta1QuotaOverride',
-        request_type_name=u'ServiceconsumermanagementServicesConsumerQuotaMetricsLimitsProducerOverridesPatchRequest',
-        response_type_name=u'Operation',
+        flat_path='v1beta1/services/{servicesId}/{servicesId1}/{servicesId2}/consumerQuotaMetrics/{consumerQuotaMetricsId}/limits/{limitsId}/producerOverrides/{producerOverridesId}',
+        http_method='PATCH',
+        method_id='serviceconsumermanagement.services.consumerQuotaMetrics.limits.producerOverrides.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['force', 'updateMask'],
+        relative_path='v1beta1/{+name}',
+        request_field='v1Beta1QuotaOverride',
+        request_type_name='ServiceconsumermanagementServicesConsumerQuotaMetricsLimitsProducerOverridesPatchRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
   class ServicesConsumerQuotaMetricsLimitsService(base_api.BaseApiService):
     """Service class for the services_consumerQuotaMetrics_limits resource."""
 
-    _NAME = u'services_consumerQuotaMetrics_limits'
+    _NAME = 'services_consumerQuotaMetrics_limits'
 
     def __init__(self, client):
       super(ServiceconsumermanagementV1beta1.ServicesConsumerQuotaMetricsLimitsService, self).__init__(client)
@@ -226,23 +226,23 @@ allowed to use.
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/services/{servicesId}/{servicesId1}/{servicesId2}/consumerQuotaMetrics/{consumerQuotaMetricsId}/limits/{limitsId}',
-        http_method=u'GET',
-        method_id=u'serviceconsumermanagement.services.consumerQuotaMetrics.limits.get',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[u'view'],
-        relative_path=u'v1beta1/{+name}',
+        flat_path='v1beta1/services/{servicesId}/{servicesId1}/{servicesId2}/consumerQuotaMetrics/{consumerQuotaMetricsId}/limits/{limitsId}',
+        http_method='GET',
+        method_id='serviceconsumermanagement.services.consumerQuotaMetrics.limits.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['view'],
+        relative_path='v1beta1/{+name}',
         request_field='',
-        request_type_name=u'ServiceconsumermanagementServicesConsumerQuotaMetricsLimitsGetRequest',
-        response_type_name=u'V1Beta1ConsumerQuotaLimit',
+        request_type_name='ServiceconsumermanagementServicesConsumerQuotaMetricsLimitsGetRequest',
+        response_type_name='V1Beta1ConsumerQuotaLimit',
         supports_download=False,
     )
 
   class ServicesConsumerQuotaMetricsService(base_api.BaseApiService):
     """Service class for the services_consumerQuotaMetrics resource."""
 
-    _NAME = u'services_consumerQuotaMetrics'
+    _NAME = 'services_consumerQuotaMetrics'
 
     def __init__(self, client):
       super(ServiceconsumermanagementV1beta1.ServicesConsumerQuotaMetricsService, self).__init__(client)
@@ -263,16 +263,16 @@ allowed to use.
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/services/{servicesId}/{servicesId1}/{servicesId2}/consumerQuotaMetrics/{consumerQuotaMetricsId}',
-        http_method=u'GET',
-        method_id=u'serviceconsumermanagement.services.consumerQuotaMetrics.get',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[u'view'],
-        relative_path=u'v1beta1/{+name}',
+        flat_path='v1beta1/services/{servicesId}/{servicesId1}/{servicesId2}/consumerQuotaMetrics/{consumerQuotaMetricsId}',
+        http_method='GET',
+        method_id='serviceconsumermanagement.services.consumerQuotaMetrics.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['view'],
+        relative_path='v1beta1/{+name}',
         request_field='',
-        request_type_name=u'ServiceconsumermanagementServicesConsumerQuotaMetricsGetRequest',
-        response_type_name=u'V1Beta1ConsumerQuotaMetric',
+        request_type_name='ServiceconsumermanagementServicesConsumerQuotaMetricsGetRequest',
+        response_type_name='V1Beta1ConsumerQuotaMetric',
         supports_download=False,
     )
 
@@ -295,23 +295,23 @@ applied to the limit.
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/services/{servicesId}/{servicesId1}/{servicesId2}/consumerQuotaMetrics',
-        http_method=u'GET',
-        method_id=u'serviceconsumermanagement.services.consumerQuotaMetrics.list',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'pageSize', u'pageToken', u'view'],
-        relative_path=u'v1beta1/{+parent}/consumerQuotaMetrics',
+        flat_path='v1beta1/services/{servicesId}/{servicesId1}/{servicesId2}/consumerQuotaMetrics',
+        http_method='GET',
+        method_id='serviceconsumermanagement.services.consumerQuotaMetrics.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken', 'view'],
+        relative_path='v1beta1/{+parent}/consumerQuotaMetrics',
         request_field='',
-        request_type_name=u'ServiceconsumermanagementServicesConsumerQuotaMetricsListRequest',
-        response_type_name=u'V1Beta1ListConsumerQuotaMetricsResponse',
+        request_type_name='ServiceconsumermanagementServicesConsumerQuotaMetricsListRequest',
+        response_type_name='V1Beta1ListConsumerQuotaMetricsResponse',
         supports_download=False,
     )
 
   class ServicesService(base_api.BaseApiService):
     """Service class for the services resource."""
 
-    _NAME = u'services'
+    _NAME = 'services'
 
     def __init__(self, client):
       super(ServiceconsumermanagementV1beta1.ServicesService, self).__init__(client)

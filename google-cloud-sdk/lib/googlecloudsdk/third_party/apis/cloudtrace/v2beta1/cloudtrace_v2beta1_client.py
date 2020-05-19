@@ -8,17 +8,17 @@ class CloudtraceV2beta1(base_api.BaseApiClient):
   """Generated client library for service cloudtrace version v2beta1."""
 
   MESSAGES_MODULE = messages
-  BASE_URL = u'https://cloudtrace.googleapis.com/'
-  MTLS_BASE_URL = u'https://cloudtrace.mtls.googleapis.com/'
+  BASE_URL = 'https://cloudtrace.googleapis.com/'
+  MTLS_BASE_URL = 'https://cloudtrace.mtls.googleapis.com/'
 
-  _PACKAGE = u'cloudtrace'
-  _SCOPES = [u'https://www.googleapis.com/auth/cloud-platform', u'https://www.googleapis.com/auth/trace.append', u'https://www.googleapis.com/auth/trace.readonly']
-  _VERSION = u'v2beta1'
+  _PACKAGE = 'cloudtrace'
+  _SCOPES = ['https://www.googleapis.com/auth/cloud-platform', 'https://www.googleapis.com/auth/trace.append', 'https://www.googleapis.com/auth/trace.readonly']
+  _VERSION = 'v2beta1'
   _CLIENT_ID = '1042881264118.apps.googleusercontent.com'
   _CLIENT_SECRET = 'x_Tw5K8nnjoRAqULM9PFAC2b'
-  _USER_AGENT = u'google-cloud-sdk'
-  _CLIENT_CLASS_NAME = u'CloudtraceV2beta1'
-  _URL_VERSION = u'v2beta1'
+  _USER_AGENT = 'google-cloud-sdk'
+  _CLIENT_CLASS_NAME = 'CloudtraceV2beta1'
+  _URL_VERSION = 'v2beta1'
   _API_KEY = None
 
   def __init__(self, url='', credentials=None,
@@ -42,7 +42,7 @@ class CloudtraceV2beta1(base_api.BaseApiClient):
   class ProjectsTraceSinksService(base_api.BaseApiService):
     """Service class for the projects_traceSinks resource."""
 
-    _NAME = u'projects_traceSinks'
+    _NAME = 'projects_traceSinks'
 
     def __init__(self, client):
       super(CloudtraceV2beta1.ProjectsTraceSinksService, self).__init__(client)
@@ -66,16 +66,16 @@ export traces only from the resource owning the sink (the 'parent').
           config, request, global_params=global_params)
 
     Create.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v2beta1/projects/{projectsId}/traceSinks',
-        http_method=u'POST',
-        method_id=u'cloudtrace.projects.traceSinks.create',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
+        flat_path='v2beta1/projects/{projectsId}/traceSinks',
+        http_method='POST',
+        method_id='cloudtrace.projects.traceSinks.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
         query_params=[],
-        relative_path=u'v2beta1/{+parent}/traceSinks',
-        request_field=u'traceSink',
-        request_type_name=u'CloudtraceProjectsTraceSinksCreateRequest',
-        response_type_name=u'TraceSink',
+        relative_path='v2beta1/{+parent}/traceSinks',
+        request_field='traceSink',
+        request_type_name='CloudtraceProjectsTraceSinksCreateRequest',
+        response_type_name='TraceSink',
         supports_download=False,
     )
 
@@ -93,16 +93,16 @@ export traces only from the resource owning the sink (the 'parent').
           config, request, global_params=global_params)
 
     Delete.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v2beta1/projects/{projectsId}/traceSinks/{traceSinksId}',
-        http_method=u'DELETE',
-        method_id=u'cloudtrace.projects.traceSinks.delete',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v2beta1/projects/{projectsId}/traceSinks/{traceSinksId}',
+        http_method='DELETE',
+        method_id='cloudtrace.projects.traceSinks.delete',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v2beta1/{+name}',
+        relative_path='v2beta1/{+name}',
         request_field='',
-        request_type_name=u'CloudtraceProjectsTraceSinksDeleteRequest',
-        response_type_name=u'Empty',
+        request_type_name='CloudtraceProjectsTraceSinksDeleteRequest',
+        response_type_name='Empty',
         supports_download=False,
     )
 
@@ -120,16 +120,16 @@ export traces only from the resource owning the sink (the 'parent').
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v2beta1/projects/{projectsId}/traceSinks/{traceSinksId}',
-        http_method=u'GET',
-        method_id=u'cloudtrace.projects.traceSinks.get',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v2beta1/projects/{projectsId}/traceSinks/{traceSinksId}',
+        http_method='GET',
+        method_id='cloudtrace.projects.traceSinks.get',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v2beta1/{+name}',
+        relative_path='v2beta1/{+name}',
         request_field='',
-        request_type_name=u'CloudtraceProjectsTraceSinksGetRequest',
-        response_type_name=u'TraceSink',
+        request_type_name='CloudtraceProjectsTraceSinksGetRequest',
+        response_type_name='TraceSink',
         supports_download=False,
     )
 
@@ -147,16 +147,16 @@ export traces only from the resource owning the sink (the 'parent').
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v2beta1/projects/{projectsId}/traceSinks',
-        http_method=u'GET',
-        method_id=u'cloudtrace.projects.traceSinks.list',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'pageSize', u'pageToken'],
-        relative_path=u'v2beta1/{+parent}/traceSinks',
+        flat_path='v2beta1/projects/{projectsId}/traceSinks',
+        http_method='GET',
+        method_id='cloudtrace.projects.traceSinks.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v2beta1/{+parent}/traceSinks',
         request_field='',
-        request_type_name=u'CloudtraceProjectsTraceSinksListRequest',
-        response_type_name=u'ListTraceSinksResponse',
+        request_type_name='CloudtraceProjectsTraceSinksListRequest',
+        response_type_name='ListTraceSinksResponse',
         supports_download=False,
     )
 
@@ -176,23 +176,23 @@ output-only fields (e.g. the writer_identity).
           config, request, global_params=global_params)
 
     Patch.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v2beta1/projects/{projectsId}/traceSinks/{traceSinksId}',
-        http_method=u'PATCH',
-        method_id=u'cloudtrace.projects.traceSinks.patch',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[u'updateMask'],
-        relative_path=u'v2beta1/{+name}',
-        request_field=u'traceSink',
-        request_type_name=u'CloudtraceProjectsTraceSinksPatchRequest',
-        response_type_name=u'TraceSink',
+        flat_path='v2beta1/projects/{projectsId}/traceSinks/{traceSinksId}',
+        http_method='PATCH',
+        method_id='cloudtrace.projects.traceSinks.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v2beta1/{+name}',
+        request_field='traceSink',
+        request_type_name='CloudtraceProjectsTraceSinksPatchRequest',
+        response_type_name='TraceSink',
         supports_download=False,
     )
 
   class ProjectsService(base_api.BaseApiService):
     """Service class for the projects resource."""
 
-    _NAME = u'projects'
+    _NAME = 'projects'
 
     def __init__(self, client):
       super(CloudtraceV2beta1.ProjectsService, self).__init__(client)

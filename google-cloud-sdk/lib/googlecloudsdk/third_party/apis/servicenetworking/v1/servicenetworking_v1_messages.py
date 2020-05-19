@@ -2508,9 +2508,9 @@ class ServicenetworkingServicesConnectionsPatchRequest(_messages.Message):
       organization. The name includes both the private service name and the
       VPC network peering name in the format of
       `services/{peering_service_name}/connections/{vpc_peering_name}`. For
-      Google services that support this functionality, this is
-      `services/servicenetworking.googleapis.com/connections
-      /servicenetworking-googleapis-com`.
+      Google services that support this functionality, this is `services/servi
+      cenetworking.googleapis.com/connections/servicenetworking-googleapis-
+      com`.
     updateMask: The update mask. If this is omitted, it defaults to "*". You
       can only update the listed peering ranges.
   """
@@ -2701,7 +2701,7 @@ class StandardQueryParameters(_messages.Message):
 
   f__xgafv = _messages.EnumField('FXgafvValueValuesEnum', 1)
   access_token = _messages.StringField(2)
-  alt = _messages.EnumField('AltValueValuesEnum', 3, default=u'json')
+  alt = _messages.EnumField('AltValueValuesEnum', 3, default='json')
   callback = _messages.StringField(4)
   fields = _messages.StringField(5)
   key = _messages.StringField(6)

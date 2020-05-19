@@ -8,17 +8,17 @@ class PolicytroubleshooterV1(base_api.BaseApiClient):
   """Generated client library for service policytroubleshooter version v1."""
 
   MESSAGES_MODULE = messages
-  BASE_URL = u'https://policytroubleshooter.googleapis.com/'
-  MTLS_BASE_URL = u'https://policytroubleshooter.mtls.googleapis.com/'
+  BASE_URL = 'https://policytroubleshooter.googleapis.com/'
+  MTLS_BASE_URL = 'https://policytroubleshooter.mtls.googleapis.com/'
 
-  _PACKAGE = u'policytroubleshooter'
-  _SCOPES = [u'https://www.googleapis.com/auth/cloud-platform']
-  _VERSION = u'v1'
+  _PACKAGE = 'policytroubleshooter'
+  _SCOPES = ['https://www.googleapis.com/auth/cloud-platform']
+  _VERSION = 'v1'
   _CLIENT_ID = '1042881264118.apps.googleusercontent.com'
   _CLIENT_SECRET = 'x_Tw5K8nnjoRAqULM9PFAC2b'
-  _USER_AGENT = u'google-cloud-sdk'
-  _CLIENT_CLASS_NAME = u'PolicytroubleshooterV1'
-  _URL_VERSION = u'v1'
+  _USER_AGENT = 'google-cloud-sdk'
+  _CLIENT_CLASS_NAME = 'PolicytroubleshooterV1'
+  _URL_VERSION = 'v1'
   _API_KEY = None
 
   def __init__(self, url='', credentials=None,
@@ -41,7 +41,7 @@ class PolicytroubleshooterV1(base_api.BaseApiClient):
   class IamService(base_api.BaseApiService):
     """Service class for the iam resource."""
 
-    _NAME = u'iam'
+    _NAME = 'iam'
 
     def __init__(self, client):
       super(PolicytroubleshooterV1.IamService, self).__init__(client)
@@ -63,14 +63,14 @@ and explains why the member does or does not have that permission.
           config, request, global_params=global_params)
 
     Troubleshoot.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'policytroubleshooter.iam.troubleshoot',
+        http_method='POST',
+        method_id='policytroubleshooter.iam.troubleshoot',
         ordered_params=[],
         path_params=[],
         query_params=[],
-        relative_path=u'v1/iam:troubleshoot',
+        relative_path='v1/iam:troubleshoot',
         request_field='<request>',
-        request_type_name=u'GoogleCloudPolicytroubleshooterV1TroubleshootIamPolicyRequest',
-        response_type_name=u'GoogleCloudPolicytroubleshooterV1TroubleshootIamPolicyResponse',
+        request_type_name='GoogleCloudPolicytroubleshooterV1TroubleshootIamPolicyRequest',
+        response_type_name='GoogleCloudPolicytroubleshooterV1TroubleshootIamPolicyResponse',
         supports_download=False,
     )

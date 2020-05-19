@@ -2653,7 +2653,7 @@
                   "type": "string"
                 },
                 "resourceNames": {
-                  "description": "Required. Required for Logging Data Model V2. The resource name that owns the logs:  projects\/PROJECT_ID\/locations\/LOCATION_ID\/buckets\/BUCKET_ID\/views\/VIEW_ID  organization\/ORGANIZATION_ID\/locations\/LOCATION_ID\/buckets\/BUCKET_ID\/views\/VIEW_ID  billingAccounts\/BILLING_ACCOUNT_ID\/locations\/LOCATION_ID\/buckets\/BUCKET_ID\/views\/VIEW_ID  folders\/FOLDER_ID\/locations\/LOCATION_ID\/buckets\/BUCKET_ID\/views\/VIEW_IDTo support legacy queries, it could also be:  \"projects\/PROJECT_ID\"  \"organizations\/ORGANIZATION_ID\"  \"billingAccounts\/BILLING_ACCOUNT_ID\"  \"folders\/FOLDER_ID\"Note: It is not supported for query across multiple projects\/orgs\/folders\/billingAccounts",
+                  "description": "NOT IMPLEMENTED YET. Required for Logging Data Model V2. The resource name that owns the logs:  projects\/PROJECT_ID\/locations\/LOCATION_ID\/buckets\/BUCKET_ID\/views\/VIEW_ID  organization\/ORGANIZATION_ID\/locations\/LOCATION_ID\/buckets\/BUCKET_ID\/views\/VIEW_ID  billingAccounts\/BILLING_ACCOUNT_ID\/locations\/LOCATION_ID\/buckets\/BUCKET_ID\/views\/VIEW_ID  folders\/FOLDER_ID\/locations\/LOCATION_ID\/buckets\/BUCKET_ID\/views\/VIEW_IDTo support legacy queries, it could also be:  \"projects\/PROJECT_ID\"  \"organizations\/ORGANIZATION_ID\"  \"billingAccounts\/BILLING_ACCOUNT_ID\"  \"folders\/FOLDER_ID\"Note: It is not supported for query across multiple projects\/orgs\/folders\/billingAccounts",
                   "location": "query",
                   "repeated": true,
                   "type": "string"
@@ -3630,7 +3630,7 @@
                   "type": "string"
                 },
                 "resourceNames": {
-                  "description": "Required. Required for Logging Data Model V2. The resource name that owns the logs:  projects\/PROJECT_ID\/locations\/LOCATION_ID\/buckets\/BUCKET_ID\/views\/VIEW_ID  organization\/ORGANIZATION_ID\/locations\/LOCATION_ID\/buckets\/BUCKET_ID\/views\/VIEW_ID  billingAccounts\/BILLING_ACCOUNT_ID\/locations\/LOCATION_ID\/buckets\/BUCKET_ID\/views\/VIEW_ID  folders\/FOLDER_ID\/locations\/LOCATION_ID\/buckets\/BUCKET_ID\/views\/VIEW_IDTo support legacy queries, it could also be:  \"projects\/PROJECT_ID\"  \"organizations\/ORGANIZATION_ID\"  \"billingAccounts\/BILLING_ACCOUNT_ID\"  \"folders\/FOLDER_ID\"Note: It is not supported for query across multiple projects\/orgs\/folders\/billingAccounts",
+                  "description": "NOT IMPLEMENTED YET. Required for Logging Data Model V2. The resource name that owns the logs:  projects\/PROJECT_ID\/locations\/LOCATION_ID\/buckets\/BUCKET_ID\/views\/VIEW_ID  organization\/ORGANIZATION_ID\/locations\/LOCATION_ID\/buckets\/BUCKET_ID\/views\/VIEW_ID  billingAccounts\/BILLING_ACCOUNT_ID\/locations\/LOCATION_ID\/buckets\/BUCKET_ID\/views\/VIEW_ID  folders\/FOLDER_ID\/locations\/LOCATION_ID\/buckets\/BUCKET_ID\/views\/VIEW_IDTo support legacy queries, it could also be:  \"projects\/PROJECT_ID\"  \"organizations\/ORGANIZATION_ID\"  \"billingAccounts\/BILLING_ACCOUNT_ID\"  \"folders\/FOLDER_ID\"Note: It is not supported for query across multiple projects\/orgs\/folders\/billingAccounts",
                   "location": "query",
                   "repeated": true,
                   "type": "string"
@@ -4460,7 +4460,7 @@
                   "type": "string"
                 },
                 "resourceNames": {
-                  "description": "Required. Required for Logging Data Model V2. The resource name that owns the logs:  projects\/PROJECT_ID\/locations\/LOCATION_ID\/buckets\/BUCKET_ID\/views\/VIEW_ID  organization\/ORGANIZATION_ID\/locations\/LOCATION_ID\/buckets\/BUCKET_ID\/views\/VIEW_ID  billingAccounts\/BILLING_ACCOUNT_ID\/locations\/LOCATION_ID\/buckets\/BUCKET_ID\/views\/VIEW_ID  folders\/FOLDER_ID\/locations\/LOCATION_ID\/buckets\/BUCKET_ID\/views\/VIEW_IDTo support legacy queries, it could also be:  \"projects\/PROJECT_ID\"  \"organizations\/ORGANIZATION_ID\"  \"billingAccounts\/BILLING_ACCOUNT_ID\"  \"folders\/FOLDER_ID\"Note: It is not supported for query across multiple projects\/orgs\/folders\/billingAccounts",
+                  "description": "NOT IMPLEMENTED YET. Required for Logging Data Model V2. The resource name that owns the logs:  projects\/PROJECT_ID\/locations\/LOCATION_ID\/buckets\/BUCKET_ID\/views\/VIEW_ID  organization\/ORGANIZATION_ID\/locations\/LOCATION_ID\/buckets\/BUCKET_ID\/views\/VIEW_ID  billingAccounts\/BILLING_ACCOUNT_ID\/locations\/LOCATION_ID\/buckets\/BUCKET_ID\/views\/VIEW_ID  folders\/FOLDER_ID\/locations\/LOCATION_ID\/buckets\/BUCKET_ID\/views\/VIEW_IDTo support legacy queries, it could also be:  \"projects\/PROJECT_ID\"  \"organizations\/ORGANIZATION_ID\"  \"billingAccounts\/BILLING_ACCOUNT_ID\"  \"folders\/FOLDER_ID\"Note: It is not supported for query across multiple projects\/orgs\/folders\/billingAccounts",
                   "location": "query",
                   "repeated": true,
                   "type": "string"
@@ -5744,7 +5744,7 @@
                   "type": "string"
                 },
                 "resourceNames": {
-                  "description": "Required. Required for Logging Data Model V2. The resource name that owns the logs:  projects\/PROJECT_ID\/locations\/LOCATION_ID\/buckets\/BUCKET_ID\/views\/VIEW_ID  organization\/ORGANIZATION_ID\/locations\/LOCATION_ID\/buckets\/BUCKET_ID\/views\/VIEW_ID  billingAccounts\/BILLING_ACCOUNT_ID\/locations\/LOCATION_ID\/buckets\/BUCKET_ID\/views\/VIEW_ID  folders\/FOLDER_ID\/locations\/LOCATION_ID\/buckets\/BUCKET_ID\/views\/VIEW_IDTo support legacy queries, it could also be:  \"projects\/PROJECT_ID\"  \"organizations\/ORGANIZATION_ID\"  \"billingAccounts\/BILLING_ACCOUNT_ID\"  \"folders\/FOLDER_ID\"Note: It is not supported for query across multiple projects\/orgs\/folders\/billingAccounts",
+                  "description": "NOT IMPLEMENTED YET. Required for Logging Data Model V2. The resource name that owns the logs:  projects\/PROJECT_ID\/locations\/LOCATION_ID\/buckets\/BUCKET_ID\/views\/VIEW_ID  organization\/ORGANIZATION_ID\/locations\/LOCATION_ID\/buckets\/BUCKET_ID\/views\/VIEW_ID  billingAccounts\/BILLING_ACCOUNT_ID\/locations\/LOCATION_ID\/buckets\/BUCKET_ID\/views\/VIEW_ID  folders\/FOLDER_ID\/locations\/LOCATION_ID\/buckets\/BUCKET_ID\/views\/VIEW_IDTo support legacy queries, it could also be:  \"projects\/PROJECT_ID\"  \"organizations\/ORGANIZATION_ID\"  \"billingAccounts\/BILLING_ACCOUNT_ID\"  \"folders\/FOLDER_ID\"Note: It is not supported for query across multiple projects\/orgs\/folders\/billingAccounts",
                   "location": "query",
                   "repeated": true,
                   "type": "string"
@@ -5821,7 +5821,7 @@
               "type": "string"
             },
             "resourceNames": {
-              "description": "Required. Required for Logging Data Model V2. The resource name that owns the logs:  projects\/PROJECT_ID\/locations\/LOCATION_ID\/buckets\/BUCKET_ID\/views\/VIEW_ID  organization\/ORGANIZATION_ID\/locations\/LOCATION_ID\/buckets\/BUCKET_ID\/views\/VIEW_ID  billingAccounts\/BILLING_ACCOUNT_ID\/locations\/LOCATION_ID\/buckets\/BUCKET_ID\/views\/VIEW_ID  folders\/FOLDER_ID\/locations\/LOCATION_ID\/buckets\/BUCKET_ID\/views\/VIEW_IDTo support legacy queries, it could also be:  \"projects\/PROJECT_ID\"  \"organizations\/ORGANIZATION_ID\"  \"billingAccounts\/BILLING_ACCOUNT_ID\"  \"folders\/FOLDER_ID\"Note: It is not supported for query across multiple projects\/orgs\/folders\/billingAccounts",
+              "description": "NOT IMPLEMENTED YET. Required for Logging Data Model V2. The resource name that owns the logs:  projects\/PROJECT_ID\/locations\/LOCATION_ID\/buckets\/BUCKET_ID\/views\/VIEW_ID  organization\/ORGANIZATION_ID\/locations\/LOCATION_ID\/buckets\/BUCKET_ID\/views\/VIEW_ID  billingAccounts\/BILLING_ACCOUNT_ID\/locations\/LOCATION_ID\/buckets\/BUCKET_ID\/views\/VIEW_ID  folders\/FOLDER_ID\/locations\/LOCATION_ID\/buckets\/BUCKET_ID\/views\/VIEW_IDTo support legacy queries, it could also be:  \"projects\/PROJECT_ID\"  \"organizations\/ORGANIZATION_ID\"  \"billingAccounts\/BILLING_ACCOUNT_ID\"  \"folders\/FOLDER_ID\"Note: It is not supported for query across multiple projects\/orgs\/folders\/billingAccounts",
               "location": "query",
               "repeated": true,
               "type": "string"

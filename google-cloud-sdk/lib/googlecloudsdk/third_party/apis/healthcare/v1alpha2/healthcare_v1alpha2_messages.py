@@ -224,8 +224,9 @@ class Binding(_messages.Message):
       not apply to the current request. However, a different role binding
       might grant the same role to one or more of the members in this binding.
       To learn which resources support conditions in their IAM policies, see
-      the [IAM documentation](https://cloud.google.com/iam/help/conditions
-      /resource-policies).
+      the [IAM
+      documentation](https://cloud.google.com/iam/help/conditions/resource-
+      policies).
     members: Specifies the identities requesting access for a Cloud Platform
       resource. `members` can have the following values:  * `allUsers`: A
       special identifier that represents anyone who is    on the internet;
@@ -645,9 +646,9 @@ class DicomConfig(_messages.Message):
       MINIMAL_KEEP_LIST_PROFILE: Keep only tags required to produce valid
         DICOM.
       ATTRIBUTE_CONFIDENTIALITY_BASIC_PROFILE: Remove tags based on DICOM
-        Standard's Attribute Confidentiality Basic Profile (DICOM Standard
-        Edition 2018e) http://dicom.nema.org/medical/dicom/2018e/output/chtml/
-        part15/chapter_E.html.
+        Standard's [Attribute Confidentiality Basic Profile (DICOM Standard
+        Edition 2018e)] (http://dicom.nema.org/medical/dicom/2018e/output/chtm
+        l/part15/chapter_E.html).
       KEEP_ALL_PROFILE: Keep all tags.
       DEIDENTIFY_TAG_CONTENTS: Inspects within tag contents (including tags
         nested in a sequence) and replaces sensitive text. The process can be
@@ -763,9 +764,9 @@ class EvaluateAnnotationStoreRequest(_messages.Message):
     bigqueryDestination: The BigQuery table where the server writes the
       output. BigQueryDestination requires the `roles/bigquery.dataEditor` and
       `roles/bigquery.jobUser` Cloud IAM roles.
-    goldenStore: The Annotation store to use as ground truth, in the format `p
-      rojects/{project_id}/locations/{location_id}/datasets/{dataset_id}/annot
-      ationStores/{annotation_store_id}`.
+    goldenStore: The Annotation store to use as ground truth, in the format of
+      `projects/{project_id}/locations/{location_id}/datasets/{dataset_id}/ann
+      otationStores/{annotation_store_id}`.
   """
 
   bigqueryDestination = _messages.MessageField('GoogleCloudHealthcareV1alpha2AnnotationBigQueryDestination', 1)
@@ -777,14 +778,14 @@ class EvaluateAnnotationStoreResponse(_messages.Message):
   structure is included in the response upon operation completion.
 
   Fields:
-    evalStore: The evaluated Annotation store in the format `projects/{project
-      _id}/locations/{location_id}/datasets/{dataset_id}/annotationStores/{ann
-      otation_store_id}`.
+    evalStore: The evaluated Annotation store, in the format of `projects/{pro
+      ject_id}/locations/{location_id}/datasets/{dataset_id}/annotationStores/
+      {annotation_store_id}`.
     goldenCount: The number of Annotations in the ground truth Annotation
       store successfully processed.
-    goldenStore: The ground truth Annotation store in the format `projects/{pr
-      oject_id}/locations/{location_id}/datasets/{dataset_id}/annotationStores
-      /{annotation_store_id}`.
+    goldenStore: The ground truth Annotation store, in the format of `projects
+      /{project_id}/locations/{location_id}/datasets/{dataset_id}/annotationSt
+      ores/{annotation_store_id}`.
     matchedCount: The number of Annotations in the eval store that match with
       corresponding annotations in the ground truth Annotation store. Two
       matched annotations both annotate the same resource defined in
@@ -803,8 +804,8 @@ class ExportAnnotationsErrorDetails(_messages.Message):
 
   Fields:
     annotationStore: The annotation_store used for the export operation, in
-      the format `projects/{project_id}/locations/{location_id}/datasets/{data
-      set_id}/annotationStores/{annotation_store_id}`.
+      the format of `projects/{project_id}/locations/{location_id}/datasets/{d
+      ataset_id}/annotationStores/{annotation_store_id}`.
     errorCount: The number of annotations that had errors.
     successCount: The number of annotations successfully exported.
   """
@@ -835,8 +836,8 @@ class ExportAnnotationsResponse(_messages.Message):
 
   Fields:
     annotationStore: The annotation_store used for the export operation, in
-      the format `projects/{project_id}/locations/{location_id}/datasets/{data
-      set_id}/annotationStores/{annotation_store_id}`.
+      the format of `projects/{project_id}/locations/{location_id}/datasets/{d
+      ataset_id}/annotationStores/{annotation_store_id}`.
     successCount: The total number of annotations successfully exported.
   """
 
@@ -1006,14 +1007,9 @@ class FhirStore(_messages.Message):
       store is allowed to have up to 10 streaming configs. After a new config
       is added, the next resource mutation is streamed to the new location in
       addition to the existing ones. When a location is removed from the list,
-      the server stops streaming to that location. Before adding a new config,
-      you must add the required
-      [`bigquery.dataEditor`](https://cloud.google.com/bigquery/docs/access-
-      control#bigquery.dataEditor) role to your project's **Cloud Healthcare
-      Service Agent** [service account](https://cloud.google.com/iam/docs
-      /service-accounts). Some lag (typically on the order of dozens of
-      seconds) is expected before the results show up in the streaming
-      destination.
+      the server stops streaming to that location. Some lag (typically on the
+      order of dozens of seconds) is expected before the results show up in
+      the streaming destination.
     validationConfig: Configuration for how to validate incoming FHIR
       resources against configured profiles.
     version: The FHIR specification version that this FHIR store supports
@@ -1104,9 +1100,10 @@ class FieldMetadata(_messages.Message):
       with the form: field[x]), use two separate components. For example,
       "deceasedAge.unit" is matched by "Deceased.Age.unit". Supported types
       are: AdministrativeGenderCode, Code, Date, DateTime, Decimal, HumanName,
-      Id, LanguageCode, Markdown, Oid, String, Uri, Uuid, Xhtml. The sub-type
-      for HumanName(for example HumanName.given, HumanName.family) can be
-      omitted.
+      Id, LanguageCode, Markdown, Oid, String, Uri, Uuid, Xhtml. Base64Binary
+      is also supported, but may only be kept as-is or have all the content
+      removed. The sub-type for HumanName(for example HumanName.given,
+      HumanName.family) can be omitted.
   """
 
   class ActionValueValuesEnum(_messages.Enum):
@@ -1480,8 +1477,8 @@ class HealthcareProjectsLocationsDatasetsAnnotationStoresEvaluateRequest(_messag
 
   Fields:
     evalStore: The Annotation store to compare against `golden_store`, in the
-      format `projects/{project_id}/locations/{location_id}/datasets/{dataset_
-      id}/annotationStores/{annotation_store_id}`.
+      format of `projects/{project_id}/locations/{location_id}/datasets/{datas
+      et_id}/annotationStores/{annotation_store_id}`.
     evaluateAnnotationStoreRequest: A EvaluateAnnotationStoreRequest resource
       to be passed as the request body.
   """
@@ -1495,9 +1492,9 @@ class HealthcareProjectsLocationsDatasetsAnnotationStoresExportRequest(_messages
   object.
 
   Fields:
-    annotationStore: The Annotation store name to export annotations to, in
-      the format `projects/{project_id}/locations/{location_id}/datasets/{data
-      set_id}/annotationStores/{annotation_store_id}`.
+    annotationStore: The name of the Annotation store to export annotations
+      to, in the format of `projects/{project_id}/locations/{location_id}/data
+      sets/{dataset_id}/annotationStores/{annotation_store_id}`.
     exportAnnotationsRequest: A ExportAnnotationsRequest resource to be passed
       as the request body.
   """
@@ -1544,8 +1541,9 @@ class HealthcareProjectsLocationsDatasetsAnnotationStoresImportRequest(_messages
 
   Fields:
     annotationStore: The name of the Annotation store to which the server
-      imports annotations, in the format `projects/{project_id}/locations/{loc
-      ation_id}/datasets/{dataset_id}/annotationStores/{annotation_store_id}`.
+      imports annotations, in the format of `projects/{project_id}/locations/{
+      location_id}/datasets/{dataset_id}/annotationStores/{annotation_store_id
+      }`.
     importAnnotationsRequest: A ImportAnnotationsRequest resource to be passed
       as the request body.
   """
@@ -2214,6 +2212,22 @@ class HealthcareProjectsLocationsDatasetsDataProtectionStoresSetIamPolicyRequest
 
   resource = _messages.StringField(1, required=True)
   setIamPolicyRequest = _messages.MessageField('SetIamPolicyRequest', 2)
+
+
+class HealthcareProjectsLocationsDatasetsDataProtectionStoresTestIamPermissionsRequest(_messages.Message):
+  r"""A HealthcareProjectsLocationsDatasetsDataProtectionStoresTestIamPermissi
+  onsRequest object.
+
+  Fields:
+    resource: REQUIRED: The resource for which the policy detail is being
+      requested. See the operation documentation for the appropriate value for
+      this field.
+    testIamPermissionsRequest: A TestIamPermissionsRequest resource to be
+      passed as the request body.
+  """
+
+  resource = _messages.StringField(1, required=True)
+  testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 2)
 
 
 class HealthcareProjectsLocationsDatasetsDeidentifyRequest(_messages.Message):
@@ -2969,8 +2983,8 @@ class ImportAnnotationsErrorDetails(_messages.Message):
 
   Fields:
     annotationStore: The annotation_store that the annotations were imported
-      to. The name is in the format `projects/{project_id}/locations/{location
-      _id}/datasets/{dataset_id}/annotationStores/{annotation_store_id}`.
+      to. The name is in the format of `projects/{project_id}/locations/{locat
+      ion_id}/datasets/{dataset_id}/annotationStores/{annotation_store_id}`.
     errorCount: The number of annotations that had errors.
     successCount: The number of annotations that have been imported.
   """
@@ -3000,8 +3014,8 @@ class ImportAnnotationsResponse(_messages.Message):
 
   Fields:
     annotationStore: The annotation_store that the annotations were imported
-      to. The name is in the format `projects/{project_id}/locations/{location
-      _id}/datasets/{dataset_id}/annotationStores/{annotation_store_id}`.
+      to. The name is in the format of `projects/{project_id}/locations/{locat
+      ion_id}/datasets/{dataset_id}/annotationStores/{annotation_store_id}`.
     successCount: The number of the input annotations. All input have been
       imported successfully.
   """
@@ -3073,7 +3087,7 @@ class ImportResourcesRequest(_messages.Message):
       CONTENT_STRUCTURE_UNSPECIFIED: If the content structure is not
         specified, the default value `BUNDLE` is used.
       BUNDLE: The source file contains one or more lines of newline-delimited
-        JSON (ndjson). Each line is a bundle, which contains one or more
+        JSON (ndjson). Each line is a bundle that contains one or more
         resources. Set the bundle type to `history` to import resource
         versions.
       RESOURCE: The source file contains one or more lines of newline-
@@ -3571,8 +3585,8 @@ class Policy(_messages.Message):
   timestamp('2020-10-01T00:00:00.000Z')",           }         }       ],
   "etag": "BwWWja0YfJA=",       "version": 3     }  **YAML example:**
   bindings:     - members:       - user:mike@example.com       -
-  group:admins@example.com       - domain:google.com       - serviceAccount
-  :my-project-id@appspot.gserviceaccount.com       role:
+  group:admins@example.com       - domain:google.com       -
+  serviceAccount:my-project-id@appspot.gserviceaccount.com       role:
   roles/resourcemanager.organizationAdmin     - members:       -
   user:eve@example.com       role: roles/resourcemanager.organizationViewer
   condition:         title: expirable access         description: Does not
@@ -3908,7 +3922,7 @@ class StandardQueryParameters(_messages.Message):
 
   f__xgafv = _messages.EnumField('FXgafvValueValuesEnum', 1)
   access_token = _messages.StringField(2)
-  alt = _messages.EnumField('AltValueValuesEnum', 3, default=u'json')
+  alt = _messages.EnumField('AltValueValuesEnum', 3, default='json')
   callback = _messages.StringField(4)
   fields = _messages.StringField(5)
   key = _messages.StringField(6)
@@ -3972,7 +3986,7 @@ class Status(_messages.Message):
 
 
 class StreamConfig(_messages.Message):
-  r"""This structure contains configuration for streaming FHIR export.
+  r"""Contains configuration for streaming FHIR export.
 
   Fields:
     bigqueryDestination: The destination BigQuery structure that contains both
@@ -4001,9 +4015,15 @@ class StreamConfig(_messages.Message):
       duplicates may exist. At query time, users may use the SQL select
       statement to keep only one of the duplicate rows given an id and
       meta.versionId pair. Alternatively, the server created view mentioned
-      above also filters out duplicates.  If a resource mutation cannot be
-      streamed to BigQuery, errors will be logged to Cloud Logging  (see
-      [Viewing logs](/healthcare/docs/how-tos/logging)).
+      above also filters out duplicates.  Before adding this configuration,
+      you must add the
+      [`bigquery.dataEditor`](https://cloud.google.com/bigquery/docs/access-
+      control#bigquery.dataEditor) role to your project's **Cloud Healthcare
+      Service Agent** [service
+      account](https://cloud.google.com/iam/docs/service-accounts).  If a
+      resource mutation cannot be streamed to BigQuery, errors will be logged
+      to Cloud Logging  (see [Viewing logs](/healthcare/docs/how-
+      tos/logging)).
     resourceTypes: Supply a FHIR resource type (such as "Patient" or
       "Observation"). See https://www.hl7.org/fhir/valueset-resource-
       types.html for a list of all FHIR resource types. The server treats an
@@ -4020,10 +4040,10 @@ class TagFilterList(_messages.Message):
 
   Fields:
     tags: Tags to filter. Tags must be DICOM Data Elements, File Meta
-      Elements, or Directory Structuring Elements, as defined at: http://dicom
-      .nema.org/medical/dicom/current/output/html/part06.html#table_6-1,. They
-      may be provided by "Keyword" or "Tag". For example, "PatientID",
-      "00100010".
+      Elements, or Directory Structuring Elements, as defined in the [Registry
+      of DICOM Data Elements] (http://dicom.nema.org/medical/dicom/current/out
+      put/html/part06.html#table_6-1). They can be provided by "Keyword" or
+      "Tag". For example, "PatientID", "00100010".
   """
 
   tags = _messages.StringField(1, repeated=True)
@@ -4092,8 +4112,7 @@ class UserDataMapping(_messages.Message):
 
 
 class ValidationConfig(_messages.Message):
-  r"""This structure contains the configuration for FHIR profiles and
-  validation.
+  r"""Contains the configuration for FHIR profiles and validation.
 
   Fields:
     disableProfileValidation: Whether to disable profile validation for this

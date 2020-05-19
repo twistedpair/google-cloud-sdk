@@ -8,17 +8,17 @@ class SqlV1beta4(base_api.BaseApiClient):
   """Generated client library for service sql version v1beta4."""
 
   MESSAGES_MODULE = messages
-  BASE_URL = u'https://sqladmin.googleapis.com/'
-  MTLS_BASE_URL = u'https://sqladmin.mtls.googleapis.com/'
+  BASE_URL = 'https://sqladmin.googleapis.com/'
+  MTLS_BASE_URL = 'https://sqladmin.mtls.googleapis.com/'
 
-  _PACKAGE = u'sql'
-  _SCOPES = [u'https://www.googleapis.com/auth/cloud-platform', u'https://www.googleapis.com/auth/sqlservice.admin']
-  _VERSION = u'v1beta4'
+  _PACKAGE = 'sql'
+  _SCOPES = ['https://www.googleapis.com/auth/cloud-platform', 'https://www.googleapis.com/auth/sqlservice.admin']
+  _VERSION = 'v1beta4'
   _CLIENT_ID = '1042881264118.apps.googleusercontent.com'
   _CLIENT_SECRET = 'x_Tw5K8nnjoRAqULM9PFAC2b'
-  _USER_AGENT = u'google-cloud-sdk'
-  _CLIENT_CLASS_NAME = u'SqlV1beta4'
-  _URL_VERSION = u'v1beta4'
+  _USER_AGENT = 'google-cloud-sdk'
+  _CLIENT_CLASS_NAME = 'SqlV1beta4'
+  _URL_VERSION = 'v1beta4'
   _API_KEY = None
 
   def __init__(self, url='', credentials=None,
@@ -50,7 +50,7 @@ class SqlV1beta4(base_api.BaseApiClient):
   class BackupRunsService(base_api.BaseApiService):
     """Service class for the backupRuns resource."""
 
-    _NAME = u'backupRuns'
+    _NAME = 'backupRuns'
 
     def __init__(self, client):
       super(SqlV1beta4.BackupRunsService, self).__init__(client)
@@ -71,15 +71,15 @@ class SqlV1beta4(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Delete.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'DELETE',
-        method_id=u'sql.backupRuns.delete',
-        ordered_params=[u'project', u'instance', u'id'],
-        path_params=[u'id', u'instance', u'project'],
+        http_method='DELETE',
+        method_id='sql.backupRuns.delete',
+        ordered_params=['project', 'instance', 'id'],
+        path_params=['id', 'instance', 'project'],
         query_params=[],
-        relative_path=u'sql/v1beta4/projects/{project}/instances/{instance}/backupRuns/{id}',
+        relative_path='sql/v1beta4/projects/{project}/instances/{instance}/backupRuns/{id}',
         request_field='',
-        request_type_name=u'SqlBackupRunsDeleteRequest',
-        response_type_name=u'Operation',
+        request_type_name='SqlBackupRunsDeleteRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -97,15 +97,15 @@ class SqlV1beta4(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'sql.backupRuns.get',
-        ordered_params=[u'project', u'instance', u'id'],
-        path_params=[u'id', u'instance', u'project'],
+        http_method='GET',
+        method_id='sql.backupRuns.get',
+        ordered_params=['project', 'instance', 'id'],
+        path_params=['id', 'instance', 'project'],
         query_params=[],
-        relative_path=u'sql/v1beta4/projects/{project}/instances/{instance}/backupRuns/{id}',
+        relative_path='sql/v1beta4/projects/{project}/instances/{instance}/backupRuns/{id}',
         request_field='',
-        request_type_name=u'SqlBackupRunsGetRequest',
-        response_type_name=u'BackupRun',
+        request_type_name='SqlBackupRunsGetRequest',
+        response_type_name='BackupRun',
         supports_download=False,
     )
 
@@ -124,15 +124,15 @@ Second Generation instances.
           config, request, global_params=global_params)
 
     Insert.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'sql.backupRuns.insert',
-        ordered_params=[u'project', u'instance'],
-        path_params=[u'instance', u'project'],
+        http_method='POST',
+        method_id='sql.backupRuns.insert',
+        ordered_params=['project', 'instance'],
+        path_params=['instance', 'project'],
         query_params=[],
-        relative_path=u'sql/v1beta4/projects/{project}/instances/{instance}/backupRuns',
-        request_field=u'backupRun',
-        request_type_name=u'SqlBackupRunsInsertRequest',
-        response_type_name=u'Operation',
+        relative_path='sql/v1beta4/projects/{project}/instances/{instance}/backupRuns',
+        request_field='backupRun',
+        request_type_name='SqlBackupRunsInsertRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -151,22 +151,22 @@ the reverse chronological order of the backup initiation time.
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'sql.backupRuns.list',
-        ordered_params=[u'project', u'instance'],
-        path_params=[u'instance', u'project'],
-        query_params=[u'maxResults', u'pageToken'],
-        relative_path=u'sql/v1beta4/projects/{project}/instances/{instance}/backupRuns',
+        http_method='GET',
+        method_id='sql.backupRuns.list',
+        ordered_params=['project', 'instance'],
+        path_params=['instance', 'project'],
+        query_params=['maxResults', 'pageToken'],
+        relative_path='sql/v1beta4/projects/{project}/instances/{instance}/backupRuns',
         request_field='',
-        request_type_name=u'SqlBackupRunsListRequest',
-        response_type_name=u'BackupRunsListResponse',
+        request_type_name='SqlBackupRunsListRequest',
+        response_type_name='BackupRunsListResponse',
         supports_download=False,
     )
 
   class DatabasesService(base_api.BaseApiService):
     """Service class for the databases resource."""
 
-    _NAME = u'databases'
+    _NAME = 'databases'
 
     def __init__(self, client):
       super(SqlV1beta4.DatabasesService, self).__init__(client)
@@ -187,15 +187,15 @@ the reverse chronological order of the backup initiation time.
           config, request, global_params=global_params)
 
     Delete.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'DELETE',
-        method_id=u'sql.databases.delete',
-        ordered_params=[u'project', u'instance', u'database'],
-        path_params=[u'database', u'instance', u'project'],
+        http_method='DELETE',
+        method_id='sql.databases.delete',
+        ordered_params=['project', 'instance', 'database'],
+        path_params=['database', 'instance', 'project'],
         query_params=[],
-        relative_path=u'sql/v1beta4/projects/{project}/instances/{instance}/databases/{database}',
+        relative_path='sql/v1beta4/projects/{project}/instances/{instance}/databases/{database}',
         request_field='',
-        request_type_name=u'SqlDatabasesDeleteRequest',
-        response_type_name=u'Operation',
+        request_type_name='SqlDatabasesDeleteRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -214,15 +214,15 @@ SQL instance.
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'sql.databases.get',
-        ordered_params=[u'project', u'instance', u'database'],
-        path_params=[u'database', u'instance', u'project'],
+        http_method='GET',
+        method_id='sql.databases.get',
+        ordered_params=['project', 'instance', 'database'],
+        path_params=['database', 'instance', 'project'],
         query_params=[],
-        relative_path=u'sql/v1beta4/projects/{project}/instances/{instance}/databases/{database}',
+        relative_path='sql/v1beta4/projects/{project}/instances/{instance}/databases/{database}',
         request_field='',
-        request_type_name=u'SqlDatabasesGetRequest',
-        response_type_name=u'Database',
+        request_type_name='SqlDatabasesGetRequest',
+        response_type_name='Database',
         supports_download=False,
     )
 
@@ -241,15 +241,15 @@ SQL instance.
           config, request, global_params=global_params)
 
     Insert.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'sql.databases.insert',
-        ordered_params=[u'project', u'instance'],
-        path_params=[u'instance', u'project'],
+        http_method='POST',
+        method_id='sql.databases.insert',
+        ordered_params=['project', 'instance'],
+        path_params=['instance', 'project'],
         query_params=[],
-        relative_path=u'sql/v1beta4/projects/{project}/instances/{instance}/databases',
+        relative_path='sql/v1beta4/projects/{project}/instances/{instance}/databases',
         request_field='<request>',
-        request_type_name=u'Database',
-        response_type_name=u'Operation',
+        request_type_name='Database',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -267,15 +267,15 @@ SQL instance.
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'sql.databases.list',
-        ordered_params=[u'project', u'instance'],
-        path_params=[u'instance', u'project'],
+        http_method='GET',
+        method_id='sql.databases.list',
+        ordered_params=['project', 'instance'],
+        path_params=['instance', 'project'],
         query_params=[],
-        relative_path=u'sql/v1beta4/projects/{project}/instances/{instance}/databases',
+        relative_path='sql/v1beta4/projects/{project}/instances/{instance}/databases',
         request_field='',
-        request_type_name=u'SqlDatabasesListRequest',
-        response_type_name=u'DatabasesListResponse',
+        request_type_name='SqlDatabasesListRequest',
+        response_type_name='DatabasesListResponse',
         supports_download=False,
     )
 
@@ -294,15 +294,15 @@ a Cloud SQL instance. This method supports patch semantics.
           config, request, global_params=global_params)
 
     Patch.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'PATCH',
-        method_id=u'sql.databases.patch',
-        ordered_params=[u'project', u'instance', u'database'],
-        path_params=[u'database', u'instance', u'project'],
+        http_method='PATCH',
+        method_id='sql.databases.patch',
+        ordered_params=['project', 'instance', 'database'],
+        path_params=['database', 'instance', 'project'],
         query_params=[],
-        relative_path=u'sql/v1beta4/projects/{project}/instances/{instance}/databases/{database}',
-        request_field=u'databaseResource',
-        request_type_name=u'SqlDatabasesPatchRequest',
-        response_type_name=u'Operation',
+        relative_path='sql/v1beta4/projects/{project}/instances/{instance}/databases/{database}',
+        request_field='databaseResource',
+        request_type_name='SqlDatabasesPatchRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -321,22 +321,22 @@ SQL instance.
           config, request, global_params=global_params)
 
     Update.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'PUT',
-        method_id=u'sql.databases.update',
-        ordered_params=[u'project', u'instance', u'database'],
-        path_params=[u'database', u'instance', u'project'],
+        http_method='PUT',
+        method_id='sql.databases.update',
+        ordered_params=['project', 'instance', 'database'],
+        path_params=['database', 'instance', 'project'],
         query_params=[],
-        relative_path=u'sql/v1beta4/projects/{project}/instances/{instance}/databases/{database}',
-        request_field=u'databaseResource',
-        request_type_name=u'SqlDatabasesUpdateRequest',
-        response_type_name=u'Operation',
+        relative_path='sql/v1beta4/projects/{project}/instances/{instance}/databases/{database}',
+        request_field='databaseResource',
+        request_type_name='SqlDatabasesUpdateRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
   class FlagsService(base_api.BaseApiService):
     """Service class for the flags resource."""
 
-    _NAME = u'flags'
+    _NAME = 'flags'
 
     def __init__(self, client):
       super(SqlV1beta4.FlagsService, self).__init__(client)
@@ -357,22 +357,22 @@ SQL instance.
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'sql.flags.list',
+        http_method='GET',
+        method_id='sql.flags.list',
         ordered_params=[],
         path_params=[],
-        query_params=[u'databaseVersion'],
-        relative_path=u'sql/v1beta4/flags',
+        query_params=['databaseVersion'],
+        relative_path='sql/v1beta4/flags',
         request_field='',
-        request_type_name=u'SqlFlagsListRequest',
-        response_type_name=u'FlagsListResponse',
+        request_type_name='SqlFlagsListRequest',
+        response_type_name='FlagsListResponse',
         supports_download=False,
     )
 
   class InstancesService(base_api.BaseApiService):
     """Service class for the instances resource."""
 
-    _NAME = u'instances'
+    _NAME = 'instances'
 
     def __init__(self, client):
       super(SqlV1beta4.InstancesService, self).__init__(client)
@@ -397,15 +397,15 @@ waiting to be rotated in.
           config, request, global_params=global_params)
 
     AddServerCa.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'sql.instances.addServerCa',
-        ordered_params=[u'project', u'instance'],
-        path_params=[u'instance', u'project'],
+        http_method='POST',
+        method_id='sql.instances.addServerCa',
+        ordered_params=['project', 'instance'],
+        path_params=['instance', 'project'],
         query_params=[],
-        relative_path=u'sql/v1beta4/projects/{project}/instances/{instance}/addServerCa',
+        relative_path='sql/v1beta4/projects/{project}/instances/{instance}/addServerCa',
         request_field='',
-        request_type_name=u'SqlInstancesAddServerCaRequest',
-        response_type_name=u'Operation',
+        request_type_name='SqlInstancesAddServerCaRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -424,15 +424,15 @@ operation might cause your instance to restart.
           config, request, global_params=global_params)
 
     Clone.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'sql.instances.clone',
-        ordered_params=[u'project', u'instance'],
-        path_params=[u'instance', u'project'],
+        http_method='POST',
+        method_id='sql.instances.clone',
+        ordered_params=['project', 'instance'],
+        path_params=['instance', 'project'],
         query_params=[],
-        relative_path=u'sql/v1beta4/projects/{project}/instances/{instance}/clone',
-        request_field=u'instancesCloneRequest',
-        request_type_name=u'SqlInstancesCloneRequest',
-        response_type_name=u'Operation',
+        relative_path='sql/v1beta4/projects/{project}/instances/{instance}/clone',
+        request_field='instancesCloneRequest',
+        request_type_name='SqlInstancesCloneRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -450,15 +450,15 @@ operation might cause your instance to restart.
           config, request, global_params=global_params)
 
     Delete.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'DELETE',
-        method_id=u'sql.instances.delete',
-        ordered_params=[u'project', u'instance'],
-        path_params=[u'instance', u'project'],
+        http_method='DELETE',
+        method_id='sql.instances.delete',
+        ordered_params=['project', 'instance'],
+        path_params=['instance', 'project'],
         query_params=[],
-        relative_path=u'sql/v1beta4/projects/{project}/instances/{instance}',
+        relative_path='sql/v1beta4/projects/{project}/instances/{instance}',
         request_field='',
-        request_type_name=u'SqlInstancesDeleteRequest',
-        response_type_name=u'Operation',
+        request_type_name='SqlInstancesDeleteRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -477,15 +477,15 @@ external database server.
           config, request, global_params=global_params)
 
     DemoteMaster.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'sql.instances.demoteMaster',
-        ordered_params=[u'project', u'instance'],
-        path_params=[u'instance', u'project'],
+        http_method='POST',
+        method_id='sql.instances.demoteMaster',
+        ordered_params=['project', 'instance'],
+        path_params=['instance', 'project'],
         query_params=[],
-        relative_path=u'sql/v1beta4/projects/{project}/instances/{instance}/demoteMaster',
-        request_field=u'instancesDemoteMasterRequest',
-        request_type_name=u'SqlInstancesDemoteMasterRequest',
-        response_type_name=u'Operation',
+        relative_path='sql/v1beta4/projects/{project}/instances/{instance}/demoteMaster',
+        request_field='instancesDemoteMasterRequest',
+        request_type_name='SqlInstancesDemoteMasterRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -504,15 +504,15 @@ dump or CSV file.
           config, request, global_params=global_params)
 
     Export.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'sql.instances.export',
-        ordered_params=[u'project', u'instance'],
-        path_params=[u'instance', u'project'],
+        http_method='POST',
+        method_id='sql.instances.export',
+        ordered_params=['project', 'instance'],
+        path_params=['instance', 'project'],
         query_params=[],
-        relative_path=u'sql/v1beta4/projects/{project}/instances/{instance}/export',
-        request_field=u'instancesExportRequest',
-        request_type_name=u'SqlInstancesExportRequest',
-        response_type_name=u'Operation',
+        relative_path='sql/v1beta4/projects/{project}/instances/{instance}/export',
+        request_field='instancesExportRequest',
+        request_type_name='SqlInstancesExportRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -531,15 +531,15 @@ operation might cause your instance to restart.
           config, request, global_params=global_params)
 
     Failover.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'sql.instances.failover',
-        ordered_params=[u'project', u'instance'],
-        path_params=[u'instance', u'project'],
+        http_method='POST',
+        method_id='sql.instances.failover',
+        ordered_params=['project', 'instance'],
+        path_params=['instance', 'project'],
         query_params=[],
-        relative_path=u'sql/v1beta4/projects/{project}/instances/{instance}/failover',
-        request_field=u'instancesFailoverRequest',
-        request_type_name=u'SqlInstancesFailoverRequest',
-        response_type_name=u'Operation',
+        relative_path='sql/v1beta4/projects/{project}/instances/{instance}/failover',
+        request_field='instancesFailoverRequest',
+        request_type_name='SqlInstancesFailoverRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -557,15 +557,15 @@ operation might cause your instance to restart.
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'sql.instances.get',
-        ordered_params=[u'project', u'instance'],
-        path_params=[u'instance', u'project'],
+        http_method='GET',
+        method_id='sql.instances.get',
+        ordered_params=['project', 'instance'],
+        path_params=['instance', 'project'],
         query_params=[],
-        relative_path=u'sql/v1beta4/projects/{project}/instances/{instance}',
+        relative_path='sql/v1beta4/projects/{project}/instances/{instance}',
         request_field='',
-        request_type_name=u'SqlInstancesGetRequest',
-        response_type_name=u'DatabaseInstance',
+        request_type_name='SqlInstancesGetRequest',
+        response_type_name='DatabaseInstance',
         supports_download=False,
     )
 
@@ -584,15 +584,15 @@ Cloud Storage.
           config, request, global_params=global_params)
 
     Import.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'sql.instances.import',
-        ordered_params=[u'project', u'instance'],
-        path_params=[u'instance', u'project'],
+        http_method='POST',
+        method_id='sql.instances.import',
+        ordered_params=['project', 'instance'],
+        path_params=['instance', 'project'],
         query_params=[],
-        relative_path=u'sql/v1beta4/projects/{project}/instances/{instance}/import',
-        request_field=u'instancesImportRequest',
-        request_type_name=u'SqlInstancesImportRequest',
-        response_type_name=u'Operation',
+        relative_path='sql/v1beta4/projects/{project}/instances/{instance}/import',
+        request_field='instancesImportRequest',
+        request_type_name='SqlInstancesImportRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -610,15 +610,15 @@ Cloud Storage.
           config, request, global_params=global_params)
 
     Insert.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'sql.instances.insert',
-        ordered_params=[u'project'],
-        path_params=[u'project'],
+        http_method='POST',
+        method_id='sql.instances.insert',
+        ordered_params=['project'],
+        path_params=['project'],
         query_params=[],
-        relative_path=u'sql/v1beta4/projects/{project}/instances',
+        relative_path='sql/v1beta4/projects/{project}/instances',
         request_field='<request>',
-        request_type_name=u'DatabaseInstance',
-        response_type_name=u'Operation',
+        request_type_name='DatabaseInstance',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -636,15 +636,15 @@ Cloud Storage.
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'sql.instances.list',
-        ordered_params=[u'project'],
-        path_params=[u'project'],
-        query_params=[u'filter', u'maxResults', u'pageToken'],
-        relative_path=u'sql/v1beta4/projects/{project}/instances',
+        http_method='GET',
+        method_id='sql.instances.list',
+        ordered_params=['project'],
+        path_params=['project'],
+        query_params=['filter', 'maxResults', 'pageToken'],
+        relative_path='sql/v1beta4/projects/{project}/instances',
         request_field='',
-        request_type_name=u'SqlInstancesListRequest',
-        response_type_name=u'InstancesListResponse',
+        request_type_name='SqlInstancesListRequest',
+        response_type_name='InstancesListResponse',
         supports_download=False,
     )
 
@@ -666,15 +666,15 @@ has previously rotated out.
           config, request, global_params=global_params)
 
     ListServerCas.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'sql.instances.listServerCas',
-        ordered_params=[u'project', u'instance'],
-        path_params=[u'instance', u'project'],
+        http_method='GET',
+        method_id='sql.instances.listServerCas',
+        ordered_params=['project', 'instance'],
+        path_params=['instance', 'project'],
         query_params=[],
-        relative_path=u'sql/v1beta4/projects/{project}/instances/{instance}/listServerCas',
+        relative_path='sql/v1beta4/projects/{project}/instances/{instance}/listServerCas',
         request_field='',
-        request_type_name=u'SqlInstancesListServerCasRequest',
-        response_type_name=u'InstancesListServerCasResponse',
+        request_type_name='SqlInstancesListServerCasRequest',
+        response_type_name='InstancesListServerCasResponse',
         supports_download=False,
     )
 
@@ -693,15 +693,15 @@ This method supports patch semantics.
           config, request, global_params=global_params)
 
     Patch.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'PATCH',
-        method_id=u'sql.instances.patch',
-        ordered_params=[u'project', u'instance'],
-        path_params=[u'instance', u'project'],
+        http_method='PATCH',
+        method_id='sql.instances.patch',
+        ordered_params=['project', 'instance'],
+        path_params=['instance', 'project'],
         query_params=[],
-        relative_path=u'sql/v1beta4/projects/{project}/instances/{instance}',
-        request_field=u'databaseInstance',
-        request_type_name=u'SqlInstancesPatchRequest',
-        response_type_name=u'Operation',
+        relative_path='sql/v1beta4/projects/{project}/instances/{instance}',
+        request_field='databaseInstance',
+        request_type_name='SqlInstancesPatchRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -720,15 +720,15 @@ Using this operation might cause your instance to restart.
           config, request, global_params=global_params)
 
     PromoteReplica.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'sql.instances.promoteReplica',
-        ordered_params=[u'project', u'instance'],
-        path_params=[u'instance', u'project'],
+        http_method='POST',
+        method_id='sql.instances.promoteReplica',
+        ordered_params=['project', 'instance'],
+        path_params=['instance', 'project'],
         query_params=[],
-        relative_path=u'sql/v1beta4/projects/{project}/instances/{instance}/promoteReplica',
+        relative_path='sql/v1beta4/projects/{project}/instances/{instance}/promoteReplica',
         request_field='',
-        request_type_name=u'SqlInstancesPromoteReplicaRequest',
-        response_type_name=u'Operation',
+        request_type_name='SqlInstancesPromoteReplicaRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -747,15 +747,15 @@ for the instance.
           config, request, global_params=global_params)
 
     ResetSslConfig.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'sql.instances.resetSslConfig',
-        ordered_params=[u'project', u'instance'],
-        path_params=[u'instance', u'project'],
+        http_method='POST',
+        method_id='sql.instances.resetSslConfig',
+        ordered_params=['project', 'instance'],
+        path_params=['instance', 'project'],
         query_params=[],
-        relative_path=u'sql/v1beta4/projects/{project}/instances/{instance}/resetSslConfig',
+        relative_path='sql/v1beta4/projects/{project}/instances/{instance}/resetSslConfig',
         request_field='',
-        request_type_name=u'SqlInstancesResetSslConfigRequest',
-        response_type_name=u'Operation',
+        request_type_name='SqlInstancesResetSslConfigRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -773,15 +773,15 @@ for the instance.
           config, request, global_params=global_params)
 
     Restart.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'sql.instances.restart',
-        ordered_params=[u'project', u'instance'],
-        path_params=[u'instance', u'project'],
+        http_method='POST',
+        method_id='sql.instances.restart',
+        ordered_params=['project', 'instance'],
+        path_params=['instance', 'project'],
         query_params=[],
-        relative_path=u'sql/v1beta4/projects/{project}/instances/{instance}/restart',
+        relative_path='sql/v1beta4/projects/{project}/instances/{instance}/restart',
         request_field='',
-        request_type_name=u'SqlInstancesRestartRequest',
-        response_type_name=u'Operation',
+        request_type_name='SqlInstancesRestartRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -800,15 +800,15 @@ your instance to restart.
           config, request, global_params=global_params)
 
     RestoreBackup.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'sql.instances.restoreBackup',
-        ordered_params=[u'project', u'instance'],
-        path_params=[u'instance', u'project'],
+        http_method='POST',
+        method_id='sql.instances.restoreBackup',
+        ordered_params=['project', 'instance'],
+        path_params=['instance', 'project'],
         query_params=[],
-        relative_path=u'sql/v1beta4/projects/{project}/instances/{instance}/restoreBackup',
-        request_field=u'instancesRestoreBackupRequest',
-        request_type_name=u'SqlInstancesRestoreBackupRequest',
-        response_type_name=u'Operation',
+        relative_path='sql/v1beta4/projects/{project}/instances/{instance}/restoreBackup',
+        request_field='instancesRestoreBackupRequest',
+        request_type_name='SqlInstancesRestoreBackupRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -827,15 +827,15 @@ your instance to restart.
           config, request, global_params=global_params)
 
     RotateServerCa.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'sql.instances.rotateServerCa',
-        ordered_params=[u'project', u'instance'],
-        path_params=[u'instance', u'project'],
+        http_method='POST',
+        method_id='sql.instances.rotateServerCa',
+        ordered_params=['project', 'instance'],
+        path_params=['instance', 'project'],
         query_params=[],
-        relative_path=u'sql/v1beta4/projects/{project}/instances/{instance}/rotateServerCa',
-        request_field=u'instancesRotateServerCaRequest',
-        request_type_name=u'SqlInstancesRotateServerCaRequest',
-        response_type_name=u'Operation',
+        relative_path='sql/v1beta4/projects/{project}/instances/{instance}/rotateServerCa',
+        request_field='instancesRotateServerCaRequest',
+        request_type_name='SqlInstancesRotateServerCaRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -853,15 +853,15 @@ your instance to restart.
           config, request, global_params=global_params)
 
     StartReplica.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'sql.instances.startReplica',
-        ordered_params=[u'project', u'instance'],
-        path_params=[u'instance', u'project'],
+        http_method='POST',
+        method_id='sql.instances.startReplica',
+        ordered_params=['project', 'instance'],
+        path_params=['instance', 'project'],
         query_params=[],
-        relative_path=u'sql/v1beta4/projects/{project}/instances/{instance}/startReplica',
+        relative_path='sql/v1beta4/projects/{project}/instances/{instance}/startReplica',
         request_field='',
-        request_type_name=u'SqlInstancesStartReplicaRequest',
-        response_type_name=u'Operation',
+        request_type_name='SqlInstancesStartReplicaRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -879,15 +879,15 @@ your instance to restart.
           config, request, global_params=global_params)
 
     StopReplica.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'sql.instances.stopReplica',
-        ordered_params=[u'project', u'instance'],
-        path_params=[u'instance', u'project'],
+        http_method='POST',
+        method_id='sql.instances.stopReplica',
+        ordered_params=['project', 'instance'],
+        path_params=['instance', 'project'],
         query_params=[],
-        relative_path=u'sql/v1beta4/projects/{project}/instances/{instance}/stopReplica',
+        relative_path='sql/v1beta4/projects/{project}/instances/{instance}/stopReplica',
         request_field='',
-        request_type_name=u'SqlInstancesStopReplicaRequest',
-        response_type_name=u'Operation',
+        request_type_name='SqlInstancesStopReplicaRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -905,15 +905,15 @@ your instance to restart.
           config, request, global_params=global_params)
 
     TruncateLog.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'sql.instances.truncateLog',
-        ordered_params=[u'project', u'instance'],
-        path_params=[u'instance', u'project'],
+        http_method='POST',
+        method_id='sql.instances.truncateLog',
+        ordered_params=['project', 'instance'],
+        path_params=['instance', 'project'],
         query_params=[],
-        relative_path=u'sql/v1beta4/projects/{project}/instances/{instance}/truncateLog',
-        request_field=u'instancesTruncateLogRequest',
-        request_type_name=u'SqlInstancesTruncateLogRequest',
-        response_type_name=u'Operation',
+        relative_path='sql/v1beta4/projects/{project}/instances/{instance}/truncateLog',
+        request_field='instancesTruncateLogRequest',
+        request_type_name='SqlInstancesTruncateLogRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -932,22 +932,22 @@ your instance to restart.
           config, request, global_params=global_params)
 
     Update.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'PUT',
-        method_id=u'sql.instances.update',
-        ordered_params=[u'project', u'instance'],
-        path_params=[u'instance', u'project'],
+        http_method='PUT',
+        method_id='sql.instances.update',
+        ordered_params=['project', 'instance'],
+        path_params=['instance', 'project'],
         query_params=[],
-        relative_path=u'sql/v1beta4/projects/{project}/instances/{instance}',
-        request_field=u'databaseInstance',
-        request_type_name=u'SqlInstancesUpdateRequest',
-        response_type_name=u'Operation',
+        relative_path='sql/v1beta4/projects/{project}/instances/{instance}',
+        request_field='databaseInstance',
+        request_type_name='SqlInstancesUpdateRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
   class OperationsService(base_api.BaseApiService):
     """Service class for the operations resource."""
 
-    _NAME = u'operations'
+    _NAME = 'operations'
 
     def __init__(self, client):
       super(SqlV1beta4.OperationsService, self).__init__(client)
@@ -968,15 +968,15 @@ your instance to restart.
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'sql.operations.get',
-        ordered_params=[u'project', u'operation'],
-        path_params=[u'operation', u'project'],
+        http_method='GET',
+        method_id='sql.operations.get',
+        ordered_params=['project', 'operation'],
+        path_params=['operation', 'project'],
         query_params=[],
-        relative_path=u'sql/v1beta4/projects/{project}/operations/{operation}',
+        relative_path='sql/v1beta4/projects/{project}/operations/{operation}',
         request_field='',
-        request_type_name=u'SqlOperationsGetRequest',
-        response_type_name=u'Operation',
+        request_type_name='SqlOperationsGetRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -995,22 +995,22 @@ SQL instance in the reverse chronological order of the start time.
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'sql.operations.list',
-        ordered_params=[u'project'],
-        path_params=[u'project'],
-        query_params=[u'instance', u'maxResults', u'pageToken'],
-        relative_path=u'sql/v1beta4/projects/{project}/operations',
+        http_method='GET',
+        method_id='sql.operations.list',
+        ordered_params=['project'],
+        path_params=['project'],
+        query_params=['instance', 'maxResults', 'pageToken'],
+        relative_path='sql/v1beta4/projects/{project}/operations',
         request_field='',
-        request_type_name=u'SqlOperationsListRequest',
-        response_type_name=u'OperationsListResponse',
+        request_type_name='SqlOperationsListRequest',
+        response_type_name='OperationsListResponse',
         supports_download=False,
     )
 
   class ProjectsInstancesService(base_api.BaseApiService):
     """Service class for the projects_instances resource."""
 
-    _NAME = u'projects_instances'
+    _NAME = 'projects_instances'
 
     def __init__(self, client):
       super(SqlV1beta4.ProjectsInstancesService, self).__init__(client)
@@ -1031,15 +1031,15 @@ SQL instance in the reverse chronological order of the start time.
           config, request, global_params=global_params)
 
     RescheduleMaintenance.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'sql.projects.instances.rescheduleMaintenance',
-        ordered_params=[u'project', u'instance'],
-        path_params=[u'instance', u'project'],
+        http_method='POST',
+        method_id='sql.projects.instances.rescheduleMaintenance',
+        ordered_params=['project', 'instance'],
+        path_params=['instance', 'project'],
         query_params=[],
-        relative_path=u'sql/v1beta4/projects/{project}/instances/{instance}/rescheduleMaintenance',
-        request_field=u'sqlInstancesRescheduleMaintenanceRequestBody',
-        request_type_name=u'SqlProjectsInstancesRescheduleMaintenanceRequest',
-        response_type_name=u'Operation',
+        relative_path='sql/v1beta4/projects/{project}/instances/{instance}/rescheduleMaintenance',
+        request_field='sqlInstancesRescheduleMaintenanceRequestBody',
+        request_type_name='SqlProjectsInstancesRescheduleMaintenanceRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -1057,15 +1057,15 @@ SQL instance in the reverse chronological order of the start time.
           config, request, global_params=global_params)
 
     StartExternalSync.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'sql.projects.instances.startExternalSync',
-        ordered_params=[u'project', u'instance'],
-        path_params=[u'instance', u'project'],
-        query_params=[u'syncMode'],
-        relative_path=u'sql/v1beta4/projects/{project}/instances/{instance}/startExternalSync',
+        http_method='POST',
+        method_id='sql.projects.instances.startExternalSync',
+        ordered_params=['project', 'instance'],
+        path_params=['instance', 'project'],
+        query_params=['syncMode'],
+        relative_path='sql/v1beta4/projects/{project}/instances/{instance}/startExternalSync',
         request_field='',
-        request_type_name=u'SqlProjectsInstancesStartExternalSyncRequest',
-        response_type_name=u'Operation',
+        request_type_name='SqlProjectsInstancesStartExternalSyncRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -1083,22 +1083,22 @@ SQL instance in the reverse chronological order of the start time.
           config, request, global_params=global_params)
 
     VerifyExternalSyncSettings.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'sql.projects.instances.verifyExternalSyncSettings',
-        ordered_params=[u'project', u'instance'],
-        path_params=[u'instance', u'project'],
-        query_params=[u'syncMode', u'verifyConnectionOnly'],
-        relative_path=u'sql/v1beta4/projects/{project}/instances/{instance}/verifyExternalSyncSettings',
+        http_method='POST',
+        method_id='sql.projects.instances.verifyExternalSyncSettings',
+        ordered_params=['project', 'instance'],
+        path_params=['instance', 'project'],
+        query_params=['syncMode', 'verifyConnectionOnly'],
+        relative_path='sql/v1beta4/projects/{project}/instances/{instance}/verifyExternalSyncSettings',
         request_field='',
-        request_type_name=u'SqlProjectsInstancesVerifyExternalSyncSettingsRequest',
-        response_type_name=u'SqlInstancesVerifyExternalSyncSettingsResponse',
+        request_type_name='SqlProjectsInstancesVerifyExternalSyncSettingsRequest',
+        response_type_name='SqlInstancesVerifyExternalSyncSettingsResponse',
         supports_download=False,
     )
 
   class ProjectsService(base_api.BaseApiService):
     """Service class for the projects resource."""
 
-    _NAME = u'projects'
+    _NAME = 'projects'
 
     def __init__(self, client):
       super(SqlV1beta4.ProjectsService, self).__init__(client)
@@ -1108,7 +1108,7 @@ SQL instance in the reverse chronological order of the start time.
   class SslCertsService(base_api.BaseApiService):
     """Service class for the sslCerts resource."""
 
-    _NAME = u'sslCerts'
+    _NAME = 'sslCerts'
 
     def __init__(self, client):
       super(SqlV1beta4.SslCertsService, self).__init__(client)
@@ -1132,15 +1132,15 @@ database.
           config, request, global_params=global_params)
 
     CreateEphemeral.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'sql.sslCerts.createEphemeral',
-        ordered_params=[u'project', u'instance'],
-        path_params=[u'instance', u'project'],
+        http_method='POST',
+        method_id='sql.sslCerts.createEphemeral',
+        ordered_params=['project', 'instance'],
+        path_params=['instance', 'project'],
         query_params=[],
-        relative_path=u'sql/v1beta4/projects/{project}/instances/{instance}/createEphemeral',
-        request_field=u'sslCertsCreateEphemeralRequest',
-        request_type_name=u'SqlSslCertsCreateEphemeralRequest',
-        response_type_name=u'SslCert',
+        relative_path='sql/v1beta4/projects/{project}/instances/{instance}/createEphemeral',
+        request_field='sslCertsCreateEphemeralRequest',
+        request_type_name='SqlSslCertsCreateEphemeralRequest',
+        response_type_name='SslCert',
         supports_download=False,
     )
 
@@ -1159,15 +1159,15 @@ certificate remains valid until the instance is restarted.
           config, request, global_params=global_params)
 
     Delete.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'DELETE',
-        method_id=u'sql.sslCerts.delete',
-        ordered_params=[u'project', u'instance', u'sha1Fingerprint'],
-        path_params=[u'instance', u'project', u'sha1Fingerprint'],
+        http_method='DELETE',
+        method_id='sql.sslCerts.delete',
+        ordered_params=['project', 'instance', 'sha1Fingerprint'],
+        path_params=['instance', 'project', 'sha1Fingerprint'],
         query_params=[],
-        relative_path=u'sql/v1beta4/projects/{project}/instances/{instance}/sslCerts/{sha1Fingerprint}',
+        relative_path='sql/v1beta4/projects/{project}/instances/{instance}/sslCerts/{sha1Fingerprint}',
         request_field='',
-        request_type_name=u'SqlSslCertsDeleteRequest',
-        response_type_name=u'Operation',
+        request_type_name='SqlSslCertsDeleteRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -1187,15 +1187,15 @@ initial creation.
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'sql.sslCerts.get',
-        ordered_params=[u'project', u'instance', u'sha1Fingerprint'],
-        path_params=[u'instance', u'project', u'sha1Fingerprint'],
+        http_method='GET',
+        method_id='sql.sslCerts.get',
+        ordered_params=['project', 'instance', 'sha1Fingerprint'],
+        path_params=['instance', 'project', 'sha1Fingerprint'],
         query_params=[],
-        relative_path=u'sql/v1beta4/projects/{project}/instances/{instance}/sslCerts/{sha1Fingerprint}',
+        relative_path='sql/v1beta4/projects/{project}/instances/{instance}/sslCerts/{sha1Fingerprint}',
         request_field='',
-        request_type_name=u'SqlSslCertsGetRequest',
-        response_type_name=u'SslCert',
+        request_type_name='SqlSslCertsGetRequest',
+        response_type_name='SslCert',
         supports_download=False,
     )
 
@@ -1215,15 +1215,15 @@ the instance is restarted.
           config, request, global_params=global_params)
 
     Insert.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'sql.sslCerts.insert',
-        ordered_params=[u'project', u'instance'],
-        path_params=[u'instance', u'project'],
+        http_method='POST',
+        method_id='sql.sslCerts.insert',
+        ordered_params=['project', 'instance'],
+        path_params=['instance', 'project'],
         query_params=[],
-        relative_path=u'sql/v1beta4/projects/{project}/instances/{instance}/sslCerts',
-        request_field=u'sslCertsInsertRequest',
-        request_type_name=u'SqlSslCertsInsertRequest',
-        response_type_name=u'SslCertsInsertResponse',
+        relative_path='sql/v1beta4/projects/{project}/instances/{instance}/sslCerts',
+        request_field='sslCertsInsertRequest',
+        request_type_name='SqlSslCertsInsertRequest',
+        response_type_name='SslCertsInsertResponse',
         supports_download=False,
     )
 
@@ -1241,22 +1241,22 @@ the instance is restarted.
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'sql.sslCerts.list',
-        ordered_params=[u'project', u'instance'],
-        path_params=[u'instance', u'project'],
+        http_method='GET',
+        method_id='sql.sslCerts.list',
+        ordered_params=['project', 'instance'],
+        path_params=['instance', 'project'],
         query_params=[],
-        relative_path=u'sql/v1beta4/projects/{project}/instances/{instance}/sslCerts',
+        relative_path='sql/v1beta4/projects/{project}/instances/{instance}/sslCerts',
         request_field='',
-        request_type_name=u'SqlSslCertsListRequest',
-        response_type_name=u'SslCertsListResponse',
+        request_type_name='SqlSslCertsListRequest',
+        response_type_name='SslCertsListResponse',
         supports_download=False,
     )
 
   class TiersService(base_api.BaseApiService):
     """Service class for the tiers resource."""
 
-    _NAME = u'tiers'
+    _NAME = 'tiers'
 
     def __init__(self, client):
       super(SqlV1beta4.TiersService, self).__init__(client)
@@ -1279,22 +1279,22 @@ href="/sql/pricing">Pricing</a>.
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'sql.tiers.list',
-        ordered_params=[u'project'],
-        path_params=[u'project'],
+        http_method='GET',
+        method_id='sql.tiers.list',
+        ordered_params=['project'],
+        path_params=['project'],
         query_params=[],
-        relative_path=u'sql/v1beta4/projects/{project}/tiers',
+        relative_path='sql/v1beta4/projects/{project}/tiers',
         request_field='',
-        request_type_name=u'SqlTiersListRequest',
-        response_type_name=u'TiersListResponse',
+        request_type_name='SqlTiersListRequest',
+        response_type_name='TiersListResponse',
         supports_download=False,
     )
 
   class UsersService(base_api.BaseApiService):
     """Service class for the users resource."""
 
-    _NAME = u'users'
+    _NAME = 'users'
 
     def __init__(self, client):
       super(SqlV1beta4.UsersService, self).__init__(client)
@@ -1315,15 +1315,15 @@ href="/sql/pricing">Pricing</a>.
           config, request, global_params=global_params)
 
     Delete.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'DELETE',
-        method_id=u'sql.users.delete',
-        ordered_params=[u'project', u'instance'],
-        path_params=[u'instance', u'project'],
-        query_params=[u'host', u'name'],
-        relative_path=u'sql/v1beta4/projects/{project}/instances/{instance}/users',
+        http_method='DELETE',
+        method_id='sql.users.delete',
+        ordered_params=['project', 'instance'],
+        path_params=['instance', 'project'],
+        query_params=['host', 'name'],
+        relative_path='sql/v1beta4/projects/{project}/instances/{instance}/users',
         request_field='',
-        request_type_name=u'SqlUsersDeleteRequest',
-        response_type_name=u'Operation',
+        request_type_name='SqlUsersDeleteRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -1341,15 +1341,15 @@ href="/sql/pricing">Pricing</a>.
           config, request, global_params=global_params)
 
     Insert.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'sql.users.insert',
-        ordered_params=[u'project', u'instance'],
-        path_params=[u'instance', u'project'],
+        http_method='POST',
+        method_id='sql.users.insert',
+        ordered_params=['project', 'instance'],
+        path_params=['instance', 'project'],
         query_params=[],
-        relative_path=u'sql/v1beta4/projects/{project}/instances/{instance}/users',
+        relative_path='sql/v1beta4/projects/{project}/instances/{instance}/users',
         request_field='<request>',
-        request_type_name=u'User',
-        response_type_name=u'Operation',
+        request_type_name='User',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -1367,15 +1367,15 @@ href="/sql/pricing">Pricing</a>.
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'sql.users.list',
-        ordered_params=[u'project', u'instance'],
-        path_params=[u'instance', u'project'],
+        http_method='GET',
+        method_id='sql.users.list',
+        ordered_params=['project', 'instance'],
+        path_params=['instance', 'project'],
         query_params=[],
-        relative_path=u'sql/v1beta4/projects/{project}/instances/{instance}/users',
+        relative_path='sql/v1beta4/projects/{project}/instances/{instance}/users',
         request_field='',
-        request_type_name=u'SqlUsersListRequest',
-        response_type_name=u'UsersListResponse',
+        request_type_name='SqlUsersListRequest',
+        response_type_name='UsersListResponse',
         supports_download=False,
     )
 
@@ -1393,14 +1393,14 @@ href="/sql/pricing">Pricing</a>.
           config, request, global_params=global_params)
 
     Update.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'PUT',
-        method_id=u'sql.users.update',
-        ordered_params=[u'project', u'instance'],
-        path_params=[u'instance', u'project'],
-        query_params=[u'host', u'name'],
-        relative_path=u'sql/v1beta4/projects/{project}/instances/{instance}/users',
-        request_field=u'user',
-        request_type_name=u'SqlUsersUpdateRequest',
-        response_type_name=u'Operation',
+        http_method='PUT',
+        method_id='sql.users.update',
+        ordered_params=['project', 'instance'],
+        path_params=['instance', 'project'],
+        query_params=['host', 'name'],
+        relative_path='sql/v1beta4/projects/{project}/instances/{instance}/users',
+        request_field='user',
+        request_type_name='SqlUsersUpdateRequest',
+        response_type_name='Operation',
         supports_download=False,
     )

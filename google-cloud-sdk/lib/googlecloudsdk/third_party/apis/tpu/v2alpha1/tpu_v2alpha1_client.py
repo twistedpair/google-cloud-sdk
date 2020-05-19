@@ -8,17 +8,17 @@ class TpuV2alpha1(base_api.BaseApiClient):
   """Generated client library for service tpu version v2alpha1."""
 
   MESSAGES_MODULE = messages
-  BASE_URL = u'https://tpu.googleapis.com/'
-  MTLS_BASE_URL = u'https://tpu.mtls.googleapis.com/'
+  BASE_URL = 'https://tpu.googleapis.com/'
+  MTLS_BASE_URL = 'https://tpu.mtls.googleapis.com/'
 
-  _PACKAGE = u'tpu'
-  _SCOPES = [u'https://www.googleapis.com/auth/cloud-platform']
-  _VERSION = u'v2alpha1'
+  _PACKAGE = 'tpu'
+  _SCOPES = ['https://www.googleapis.com/auth/cloud-platform']
+  _VERSION = 'v2alpha1'
   _CLIENT_ID = '1042881264118.apps.googleusercontent.com'
   _CLIENT_SECRET = 'x_Tw5K8nnjoRAqULM9PFAC2b'
-  _USER_AGENT = u'google-cloud-sdk'
-  _CLIENT_CLASS_NAME = u'TpuV2alpha1'
-  _URL_VERSION = u'v2alpha1'
+  _USER_AGENT = 'google-cloud-sdk'
+  _CLIENT_CLASS_NAME = 'TpuV2alpha1'
+  _URL_VERSION = 'v2alpha1'
   _API_KEY = None
 
   def __init__(self, url='', credentials=None,
@@ -43,7 +43,7 @@ class TpuV2alpha1(base_api.BaseApiClient):
   class ProjectsLocationsOperationsService(base_api.BaseApiService):
     """Service class for the projects_locations_operations resource."""
 
-    _NAME = u'projects_locations_operations'
+    _NAME = 'projects_locations_operations'
 
     def __init__(self, client):
       super(TpuV2alpha1.ProjectsLocationsOperationsService, self).__init__(client)
@@ -73,16 +73,16 @@ corresponding to `Code.CANCELLED`.
           config, request, global_params=global_params)
 
     Cancel.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v2alpha1/projects/{projectsId}/locations/{locationsId}/operations/{operationsId}:cancel',
-        http_method=u'POST',
-        method_id=u'tpu.projects.locations.operations.cancel',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v2alpha1/projects/{projectsId}/locations/{locationsId}/operations/{operationsId}:cancel',
+        http_method='POST',
+        method_id='tpu.projects.locations.operations.cancel',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v2alpha1/{+name}:cancel',
+        relative_path='v2alpha1/{+name}:cancel',
         request_field='',
-        request_type_name=u'TpuProjectsLocationsOperationsCancelRequest',
-        response_type_name=u'Empty',
+        request_type_name='TpuProjectsLocationsOperationsCancelRequest',
+        response_type_name='Empty',
         supports_download=False,
     )
 
@@ -103,16 +103,16 @@ operation. If the server doesn't support this method, it returns
           config, request, global_params=global_params)
 
     Delete.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v2alpha1/projects/{projectsId}/locations/{locationsId}/operations/{operationsId}',
-        http_method=u'DELETE',
-        method_id=u'tpu.projects.locations.operations.delete',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v2alpha1/projects/{projectsId}/locations/{locationsId}/operations/{operationsId}',
+        http_method='DELETE',
+        method_id='tpu.projects.locations.operations.delete',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v2alpha1/{+name}',
+        relative_path='v2alpha1/{+name}',
         request_field='',
-        request_type_name=u'TpuProjectsLocationsOperationsDeleteRequest',
-        response_type_name=u'Empty',
+        request_type_name='TpuProjectsLocationsOperationsDeleteRequest',
+        response_type_name='Empty',
         supports_download=False,
     )
 
@@ -132,16 +132,16 @@ service.
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v2alpha1/projects/{projectsId}/locations/{locationsId}/operations/{operationsId}',
-        http_method=u'GET',
-        method_id=u'tpu.projects.locations.operations.get',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v2alpha1/projects/{projectsId}/locations/{locationsId}/operations/{operationsId}',
+        http_method='GET',
+        method_id='tpu.projects.locations.operations.get',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v2alpha1/{+name}',
+        relative_path='v2alpha1/{+name}',
         request_field='',
-        request_type_name=u'TpuProjectsLocationsOperationsGetRequest',
-        response_type_name=u'Operation',
+        request_type_name='TpuProjectsLocationsOperationsGetRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -168,23 +168,23 @@ is the parent resource, without the operations collection id.
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v2alpha1/projects/{projectsId}/locations/{locationsId}/operations',
-        http_method=u'GET',
-        method_id=u'tpu.projects.locations.operations.list',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[u'filter', u'pageSize', u'pageToken'],
-        relative_path=u'v2alpha1/{+name}/operations',
+        flat_path='v2alpha1/projects/{projectsId}/locations/{locationsId}/operations',
+        http_method='GET',
+        method_id='tpu.projects.locations.operations.list',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['filter', 'pageSize', 'pageToken'],
+        relative_path='v2alpha1/{+name}/operations',
         request_field='',
-        request_type_name=u'TpuProjectsLocationsOperationsListRequest',
-        response_type_name=u'ListOperationsResponse',
+        request_type_name='TpuProjectsLocationsOperationsListRequest',
+        response_type_name='ListOperationsResponse',
         supports_download=False,
     )
 
   class ProjectsLocationsService(base_api.BaseApiService):
     """Service class for the projects_locations resource."""
 
-    _NAME = u'projects_locations'
+    _NAME = 'projects_locations'
 
     def __init__(self, client):
       super(TpuV2alpha1.ProjectsLocationsService, self).__init__(client)
@@ -205,16 +205,16 @@ is the parent resource, without the operations collection id.
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v2alpha1/projects/{projectsId}/locations/{locationsId}',
-        http_method=u'GET',
-        method_id=u'tpu.projects.locations.get',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v2alpha1/projects/{projectsId}/locations/{locationsId}',
+        http_method='GET',
+        method_id='tpu.projects.locations.get',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v2alpha1/{+name}',
+        relative_path='v2alpha1/{+name}',
         request_field='',
-        request_type_name=u'TpuProjectsLocationsGetRequest',
-        response_type_name=u'Location',
+        request_type_name='TpuProjectsLocationsGetRequest',
+        response_type_name='Location',
         supports_download=False,
     )
 
@@ -232,23 +232,23 @@ is the parent resource, without the operations collection id.
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v2alpha1/projects/{projectsId}/locations',
-        http_method=u'GET',
-        method_id=u'tpu.projects.locations.list',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[u'filter', u'pageSize', u'pageToken'],
-        relative_path=u'v2alpha1/{+name}/locations',
+        flat_path='v2alpha1/projects/{projectsId}/locations',
+        http_method='GET',
+        method_id='tpu.projects.locations.list',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['filter', 'pageSize', 'pageToken'],
+        relative_path='v2alpha1/{+name}/locations',
         request_field='',
-        request_type_name=u'TpuProjectsLocationsListRequest',
-        response_type_name=u'ListLocationsResponse',
+        request_type_name='TpuProjectsLocationsListRequest',
+        response_type_name='ListLocationsResponse',
         supports_download=False,
     )
 
   class ProjectsService(base_api.BaseApiService):
     """Service class for the projects resource."""
 
-    _NAME = u'projects'
+    _NAME = 'projects'
 
     def __init__(self, client):
       super(TpuV2alpha1.ProjectsService, self).__init__(client)

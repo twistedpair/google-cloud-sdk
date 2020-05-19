@@ -32,7 +32,7 @@ class Collections(enum.Enum):
               'namespaces/{namespacesId}/customresourcedefinitions/'
               '{customresourcedefinitionsId}',
       },
-      [u'name'],
+      ['name'],
       True
   )
   NAMESPACES_TRIGGERS = (
@@ -42,28 +42,28 @@ class Collections(enum.Enum):
           '':
               'namespaces/{namespacesId}/triggers/{triggersId}',
       },
-      [u'name'],
+      ['name'],
       True
   )
   NAMESPACES = (
       'namespaces',
       'namespaces/{namespacesId}',
       {},
-      [u'namespacesId'],
+      ['namespacesId'],
       True
   )
   PROJECTS = (
       'projects',
       'projects/{projectsId}',
       {},
-      [u'projectsId'],
+      ['projectsId'],
       True
   )
   PROJECTS_LOCATIONS = (
       'projects.locations',
       'projects/{projectsId}/locations/{locationsId}',
       {},
-      [u'projectsId', u'locationsId'],
+      ['projectsId', 'locationsId'],
       True
   )
   PROJECTS_LOCATIONS_CUSTOMRESOURCEDEFINITIONS = (
@@ -74,7 +74,7 @@ class Collections(enum.Enum):
               'projects/{projectsId}/locations/{locationsId}/'
               'customresourcedefinitions/{customresourcedefinitionsId}',
       },
-      [u'name'],
+      ['name'],
       True
   )
   PROJECTS_LOCATIONS_TRIGGERS = (
@@ -85,7 +85,7 @@ class Collections(enum.Enum):
               'projects/{projectsId}/locations/{locationsId}/triggers/'
               '{triggersId}',
       },
-      [u'name'],
+      ['name'],
       True
   )
 

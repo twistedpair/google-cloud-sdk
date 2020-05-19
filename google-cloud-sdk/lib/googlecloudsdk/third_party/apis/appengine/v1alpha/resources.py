@@ -28,7 +28,7 @@ class Collections(enum.Enum):
       'apps',
       'apps/{appsId}',
       {},
-      [u'appsId'],
+      ['appsId'],
       True
   )
   APPS_AUTHORIZEDCERTIFICATES = (
@@ -39,7 +39,7 @@ class Collections(enum.Enum):
               'apps/{appsId}/authorizedCertificates/'
               '{authorizedCertificatesId}',
       },
-      [u'name'],
+      ['name'],
       True
   )
   APPS_DOMAINMAPPINGS = (
@@ -49,7 +49,7 @@ class Collections(enum.Enum):
           '':
               'apps/{appsId}/domainMappings/{domainMappingsId}',
       },
-      [u'name'],
+      ['name'],
       True
   )
   APPS_LOCATIONS = (
@@ -59,7 +59,7 @@ class Collections(enum.Enum):
           '':
               'apps/{appsId}/locations/{locationsId}',
       },
-      [u'name'],
+      ['name'],
       True
   )
   APPS_OPERATIONS = (
@@ -69,7 +69,7 @@ class Collections(enum.Enum):
           '':
               'apps/{appsId}/operations/{operationsId}',
       },
-      [u'name'],
+      ['name'],
       True
   )
 

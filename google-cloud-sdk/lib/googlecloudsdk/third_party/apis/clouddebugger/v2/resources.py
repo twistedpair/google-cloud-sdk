@@ -28,14 +28,14 @@ class Collections(enum.Enum):
       'debugger.debuggees',
       'debugger/debuggees/{debuggeeId}',
       {},
-      [u'debuggeeId'],
+      ['debuggeeId'],
       True
   )
   DEBUGGER_DEBUGGEES_BREAKPOINTS = (
       'debugger.debuggees.breakpoints',
       'debugger/debuggees/{debuggeeId}/breakpoints/{breakpointId}',
       {},
-      [u'debuggeeId', u'breakpointId'],
+      ['debuggeeId', 'breakpointId'],
       True
   )
 

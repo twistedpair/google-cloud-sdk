@@ -8,17 +8,17 @@ class OrgpolicyV2alpha1(base_api.BaseApiClient):
   """Generated client library for service orgpolicy version v2alpha1."""
 
   MESSAGES_MODULE = messages
-  BASE_URL = u'https://orgpolicy.googleapis.com/'
-  MTLS_BASE_URL = u'https://orgpolicy.mtls.googleapis.com/'
+  BASE_URL = 'https://orgpolicy.googleapis.com/'
+  MTLS_BASE_URL = 'https://orgpolicy.mtls.googleapis.com/'
 
-  _PACKAGE = u'orgpolicy'
-  _SCOPES = [u'https://www.googleapis.com/auth/cloud-platform']
-  _VERSION = u'v2alpha1'
+  _PACKAGE = 'orgpolicy'
+  _SCOPES = ['https://www.googleapis.com/auth/cloud-platform']
+  _VERSION = 'v2alpha1'
   _CLIENT_ID = '1042881264118.apps.googleusercontent.com'
   _CLIENT_SECRET = 'x_Tw5K8nnjoRAqULM9PFAC2b'
-  _USER_AGENT = u'google-cloud-sdk'
-  _CLIENT_CLASS_NAME = u'OrgpolicyV2alpha1'
-  _URL_VERSION = u'v2alpha1'
+  _USER_AGENT = 'google-cloud-sdk'
+  _CLIENT_CLASS_NAME = 'OrgpolicyV2alpha1'
+  _URL_VERSION = 'v2alpha1'
   _API_KEY = None
 
   def __init__(self, url='', credentials=None,
@@ -42,7 +42,7 @@ class OrgpolicyV2alpha1(base_api.BaseApiClient):
   class ConstraintsService(base_api.BaseApiService):
     """Service class for the constraints resource."""
 
-    _NAME = u'constraints'
+    _NAME = 'constraints'
 
     def __init__(self, client):
       super(OrgpolicyV2alpha1.ConstraintsService, self).__init__(client)
@@ -63,23 +63,23 @@ class OrgpolicyV2alpha1(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v2alpha1/{v2alpha1Id}/{v2alpha1Id1}/constraints',
-        http_method=u'GET',
-        method_id=u'orgpolicy.constraints.list',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'pageSize', u'pageToken'],
-        relative_path=u'v2alpha1/{+parent}/constraints',
+        flat_path='v2alpha1/{v2alpha1Id}/{v2alpha1Id1}/constraints',
+        http_method='GET',
+        method_id='orgpolicy.constraints.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v2alpha1/{+parent}/constraints',
         request_field='',
-        request_type_name=u'OrgpolicyConstraintsListRequest',
-        response_type_name=u'GoogleCloudOrgpolicyV2alpha1ListConstraintsResponse',
+        request_type_name='OrgpolicyConstraintsListRequest',
+        response_type_name='GoogleCloudOrgpolicyV2alpha1ListConstraintsResponse',
         supports_download=False,
     )
 
   class PoliciesService(base_api.BaseApiService):
     """Service class for the policies resource."""
 
-    _NAME = u'policies'
+    _NAME = 'policies'
 
     def __init__(self, client):
       super(OrgpolicyV2alpha1.PoliciesService, self).__init__(client)
@@ -105,16 +105,16 @@ policy already exists on the given Cloud resource.
           config, request, global_params=global_params)
 
     Create.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v2alpha1/{v2alpha1Id}/{v2alpha1Id1}/policies',
-        http_method=u'POST',
-        method_id=u'orgpolicy.policies.create',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'constraint'],
-        relative_path=u'v2alpha1/{+parent}/policies',
-        request_field=u'googleCloudOrgpolicyV2alpha1Policy',
-        request_type_name=u'OrgpolicyPoliciesCreateRequest',
-        response_type_name=u'GoogleCloudOrgpolicyV2alpha1Policy',
+        flat_path='v2alpha1/{v2alpha1Id}/{v2alpha1Id1}/policies',
+        http_method='POST',
+        method_id='orgpolicy.policies.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['constraint'],
+        relative_path='v2alpha1/{+parent}/policies',
+        request_field='googleCloudOrgpolicyV2alpha1Policy',
+        request_type_name='OrgpolicyPoliciesCreateRequest',
+        response_type_name='GoogleCloudOrgpolicyV2alpha1Policy',
         supports_download=False,
     )
 
@@ -135,16 +135,16 @@ constraint or Org Policy does not exist.
           config, request, global_params=global_params)
 
     Delete.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v2alpha1/{v2alpha1Id}/{v2alpha1Id1}/policies/{policiesId}',
-        http_method=u'DELETE',
-        method_id=u'orgpolicy.policies.delete',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v2alpha1/{v2alpha1Id}/{v2alpha1Id1}/policies/{policiesId}',
+        http_method='DELETE',
+        method_id='orgpolicy.policies.delete',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v2alpha1/{+name}',
+        relative_path='v2alpha1/{+name}',
         request_field='',
-        request_type_name=u'OrgpolicyPoliciesDeleteRequest',
-        response_type_name=u'GoogleProtobufEmpty',
+        request_type_name='OrgpolicyPoliciesDeleteRequest',
+        response_type_name='GoogleProtobufEmpty',
         supports_download=False,
     )
 
@@ -166,16 +166,16 @@ If no `Policy` is set on the resource, NOT_FOUND is returned. The
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v2alpha1/{v2alpha1Id}/{v2alpha1Id1}/policies/{policiesId}',
-        http_method=u'GET',
-        method_id=u'orgpolicy.policies.get',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v2alpha1/{v2alpha1Id}/{v2alpha1Id1}/policies/{policiesId}',
+        http_method='GET',
+        method_id='orgpolicy.policies.get',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v2alpha1/{+name}',
+        relative_path='v2alpha1/{+name}',
         request_field='',
-        request_type_name=u'OrgpolicyPoliciesGetRequest',
-        response_type_name=u'GoogleCloudOrgpolicyV2alpha1Policy',
+        request_type_name='OrgpolicyPoliciesGetRequest',
+        response_type_name='GoogleCloudOrgpolicyV2alpha1Policy',
         supports_download=False,
     )
 
@@ -198,16 +198,16 @@ not be expanded.
           config, request, global_params=global_params)
 
     GetEffectivePolicy.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v2alpha1/{v2alpha1Id}/{v2alpha1Id1}/policies/{policiesId}:getEffectivePolicy',
-        http_method=u'GET',
-        method_id=u'orgpolicy.policies.getEffectivePolicy',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v2alpha1/{v2alpha1Id}/{v2alpha1Id1}/policies/{policiesId}:getEffectivePolicy',
+        http_method='GET',
+        method_id='orgpolicy.policies.getEffectivePolicy',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v2alpha1/{+name}:getEffectivePolicy',
+        relative_path='v2alpha1/{+name}:getEffectivePolicy',
         request_field='',
-        request_type_name=u'OrgpolicyPoliciesGetEffectivePolicyRequest',
-        response_type_name=u'GoogleCloudOrgpolicyV2alpha1Policy',
+        request_type_name='OrgpolicyPoliciesGetEffectivePolicyRequest',
+        response_type_name='GoogleCloudOrgpolicyV2alpha1Policy',
         supports_download=False,
     )
 
@@ -225,16 +225,16 @@ not be expanded.
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v2alpha1/{v2alpha1Id}/{v2alpha1Id1}/policies',
-        http_method=u'GET',
-        method_id=u'orgpolicy.policies.list',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'pageSize', u'pageToken'],
-        relative_path=u'v2alpha1/{+parent}/policies',
+        flat_path='v2alpha1/{v2alpha1Id}/{v2alpha1Id1}/policies',
+        http_method='GET',
+        method_id='orgpolicy.policies.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v2alpha1/{+parent}/policies',
         request_field='',
-        request_type_name=u'OrgpolicyPoliciesListRequest',
-        response_type_name=u'GoogleCloudOrgpolicyV2alpha1ListPoliciesResponse',
+        request_type_name='OrgpolicyPoliciesListRequest',
+        response_type_name='GoogleCloudOrgpolicyV2alpha1ListPoliciesResponse',
         supports_download=False,
     )
 
@@ -260,15 +260,15 @@ fields.
           config, request, global_params=global_params)
 
     Patch.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v2alpha1/{v2alpha1Id}/{v2alpha1Id1}/policies/{policiesId}',
-        http_method=u'PATCH',
-        method_id=u'orgpolicy.policies.patch',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[u'forceUnconditionalWrite'],
-        relative_path=u'v2alpha1/{+name}',
-        request_field=u'googleCloudOrgpolicyV2alpha1Policy',
-        request_type_name=u'OrgpolicyPoliciesPatchRequest',
-        response_type_name=u'GoogleCloudOrgpolicyV2alpha1Policy',
+        flat_path='v2alpha1/{v2alpha1Id}/{v2alpha1Id1}/policies/{policiesId}',
+        http_method='PATCH',
+        method_id='orgpolicy.policies.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['forceUnconditionalWrite'],
+        relative_path='v2alpha1/{+name}',
+        request_field='googleCloudOrgpolicyV2alpha1Policy',
+        request_type_name='OrgpolicyPoliciesPatchRequest',
+        response_type_name='GoogleCloudOrgpolicyV2alpha1Policy',
         supports_download=False,
     )

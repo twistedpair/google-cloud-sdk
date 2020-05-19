@@ -8,17 +8,17 @@ class CloudshellV1alpha1(base_api.BaseApiClient):
   """Generated client library for service cloudshell version v1alpha1."""
 
   MESSAGES_MODULE = messages
-  BASE_URL = u'https://cloudshell.googleapis.com/'
-  MTLS_BASE_URL = u'https://cloudshell.mtls.googleapis.com/'
+  BASE_URL = 'https://cloudshell.googleapis.com/'
+  MTLS_BASE_URL = 'https://cloudshell.mtls.googleapis.com/'
 
-  _PACKAGE = u'cloudshell'
-  _SCOPES = [u'https://www.googleapis.com/auth/cloud-platform']
-  _VERSION = u'v1alpha1'
+  _PACKAGE = 'cloudshell'
+  _SCOPES = ['https://www.googleapis.com/auth/cloud-platform']
+  _VERSION = 'v1alpha1'
   _CLIENT_ID = '1042881264118.apps.googleusercontent.com'
   _CLIENT_SECRET = 'x_Tw5K8nnjoRAqULM9PFAC2b'
-  _USER_AGENT = u'google-cloud-sdk'
-  _CLIENT_CLASS_NAME = u'CloudshellV1alpha1'
-  _URL_VERSION = u'v1alpha1'
+  _USER_AGENT = 'google-cloud-sdk'
+  _CLIENT_CLASS_NAME = 'CloudshellV1alpha1'
+  _URL_VERSION = 'v1alpha1'
   _API_KEY = None
 
   def __init__(self, url='', credentials=None,
@@ -43,7 +43,7 @@ class CloudshellV1alpha1(base_api.BaseApiClient):
   class UsersEnvironmentsPublicKeysService(base_api.BaseApiService):
     """Service class for the users_environments_publicKeys resource."""
 
-    _NAME = u'users_environments_publicKeys'
+    _NAME = 'users_environments_publicKeys'
 
     def __init__(self, client):
       super(CloudshellV1alpha1.UsersEnvironmentsPublicKeysService, self).__init__(client)
@@ -67,16 +67,16 @@ existing key.
           config, request, global_params=global_params)
 
     Create.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha1/users/{usersId}/environments/{environmentsId}/publicKeys',
-        http_method=u'POST',
-        method_id=u'cloudshell.users.environments.publicKeys.create',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
+        flat_path='v1alpha1/users/{usersId}/environments/{environmentsId}/publicKeys',
+        http_method='POST',
+        method_id='cloudshell.users.environments.publicKeys.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
         query_params=[],
-        relative_path=u'v1alpha1/{+parent}/publicKeys',
-        request_field=u'createPublicKeyRequest',
-        request_type_name=u'CloudshellUsersEnvironmentsPublicKeysCreateRequest',
-        response_type_name=u'PublicKey',
+        relative_path='v1alpha1/{+parent}/publicKeys',
+        request_field='createPublicKeyRequest',
+        request_type_name='CloudshellUsersEnvironmentsPublicKeysCreateRequest',
+        response_type_name='PublicKey',
         supports_download=False,
     )
 
@@ -95,23 +95,23 @@ able to connect to the environment using the corresponding private key.
           config, request, global_params=global_params)
 
     Delete.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha1/users/{usersId}/environments/{environmentsId}/publicKeys/{publicKeysId}',
-        http_method=u'DELETE',
-        method_id=u'cloudshell.users.environments.publicKeys.delete',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1alpha1/users/{usersId}/environments/{environmentsId}/publicKeys/{publicKeysId}',
+        http_method='DELETE',
+        method_id='cloudshell.users.environments.publicKeys.delete',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1alpha1/{+name}',
+        relative_path='v1alpha1/{+name}',
         request_field='',
-        request_type_name=u'CloudshellUsersEnvironmentsPublicKeysDeleteRequest',
-        response_type_name=u'Empty',
+        request_type_name='CloudshellUsersEnvironmentsPublicKeysDeleteRequest',
+        response_type_name='Empty',
         supports_download=False,
     )
 
   class UsersEnvironmentsService(base_api.BaseApiService):
     """Service class for the users_environments resource."""
 
-    _NAME = u'users_environments'
+    _NAME = 'users_environments'
 
     def __init__(self, client):
       super(CloudshellV1alpha1.UsersEnvironmentsService, self).__init__(client)
@@ -135,16 +135,16 @@ authenticate.
           config, request, global_params=global_params)
 
     Authorize.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha1/users/{usersId}/environments/{environmentsId}:authorize',
-        http_method=u'POST',
-        method_id=u'cloudshell.users.environments.authorize',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1alpha1/users/{usersId}/environments/{environmentsId}:authorize',
+        http_method='POST',
+        method_id='cloudshell.users.environments.authorize',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1alpha1/{+name}:authorize',
-        request_field=u'authorizeEnvironmentRequest',
-        request_type_name=u'CloudshellUsersEnvironmentsAuthorizeRequest',
-        response_type_name=u'Empty',
+        relative_path='v1alpha1/{+name}:authorize',
+        request_field='authorizeEnvironmentRequest',
+        request_type_name='CloudshellUsersEnvironmentsAuthorizeRequest',
+        response_type_name='Empty',
         supports_download=False,
     )
 
@@ -162,16 +162,16 @@ authenticate.
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha1/users/{usersId}/environments/{environmentsId}',
-        http_method=u'GET',
-        method_id=u'cloudshell.users.environments.get',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1alpha1/users/{usersId}/environments/{environmentsId}',
+        http_method='GET',
+        method_id='cloudshell.users.environments.get',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1alpha1/{+name}',
+        relative_path='v1alpha1/{+name}',
         request_field='',
-        request_type_name=u'CloudshellUsersEnvironmentsGetRequest',
-        response_type_name=u'Environment',
+        request_type_name='CloudshellUsersEnvironmentsGetRequest',
+        response_type_name='Environment',
         supports_download=False,
     )
 
@@ -189,16 +189,16 @@ authenticate.
           config, request, global_params=global_params)
 
     Patch.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha1/users/{usersId}/environments/{environmentsId}',
-        http_method=u'PATCH',
-        method_id=u'cloudshell.users.environments.patch',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[u'updateMask'],
-        relative_path=u'v1alpha1/{+name}',
-        request_field=u'environment',
-        request_type_name=u'CloudshellUsersEnvironmentsPatchRequest',
-        response_type_name=u'Environment',
+        flat_path='v1alpha1/users/{usersId}/environments/{environmentsId}',
+        http_method='PATCH',
+        method_id='cloudshell.users.environments.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v1alpha1/{+name}',
+        request_field='environment',
+        request_type_name='CloudshellUsersEnvironmentsPatchRequest',
+        response_type_name='Environment',
         supports_download=False,
     )
 
@@ -221,23 +221,23 @@ StartEnvironmentResponse in its response field.
           config, request, global_params=global_params)
 
     Start.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha1/users/{usersId}/environments/{environmentsId}:start',
-        http_method=u'POST',
-        method_id=u'cloudshell.users.environments.start',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1alpha1/users/{usersId}/environments/{environmentsId}:start',
+        http_method='POST',
+        method_id='cloudshell.users.environments.start',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1alpha1/{+name}:start',
-        request_field=u'startEnvironmentRequest',
-        request_type_name=u'CloudshellUsersEnvironmentsStartRequest',
-        response_type_name=u'Operation',
+        relative_path='v1alpha1/{+name}:start',
+        request_field='startEnvironmentRequest',
+        request_type_name='CloudshellUsersEnvironmentsStartRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
   class UsersService(base_api.BaseApiService):
     """Service class for the users resource."""
 
-    _NAME = u'users'
+    _NAME = 'users'
 
     def __init__(self, client):
       super(CloudshellV1alpha1.UsersService, self).__init__(client)

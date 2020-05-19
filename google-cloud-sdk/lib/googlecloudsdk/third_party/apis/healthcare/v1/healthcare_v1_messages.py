@@ -612,10 +612,10 @@ class FhirStore(_messages.Message):
       you must add the required
       [`bigquery.dataEditor`](https://cloud.google.com/bigquery/docs/access-
       control#bigquery.dataEditor) role to your project's **Cloud Healthcare
-      Service Agent** [service account](https://cloud.google.com/iam/docs
-      /service-accounts). Some lag (typically on the order of dozens of
-      seconds) is expected before the results show up in the streaming
-      destination.
+      Service Agent** [service
+      account](https://cloud.google.com/iam/docs/service-accounts). Some lag
+      (typically on the order of dozens of seconds) is expected before the
+      results show up in the streaming destination.
     version: The FHIR specification version that this FHIR store supports
       natively. This field is immutable after store creation. Requests are
       rejected if they contain FHIR resources of a different version. An empty
@@ -2228,8 +2228,8 @@ class Hl7V2NotificationConfig(_messages.Message):
       have publisher permissions on the given Pubsub topic. Not having
       adequate permissions causes the calls that send notifications to fail.
       If a notification cannot be published to Cloud Pub/Sub, errors will be
-      logged to Stackdriver (see [Viewing logs](/healthcare/docs/how- tos
-      /stackdriver-logging)).
+      logged to Stackdriver (see [Viewing logs](/healthcare/docs/how-
+      tos/stackdriver-logging)).
   """
 
   filter = _messages.StringField(1)
@@ -2902,8 +2902,8 @@ class Policy(_messages.Message):
   timestamp('2020-10-01T00:00:00.000Z')",           }         }       ],
   "etag": "BwWWja0YfJA=",       "version": 3     }  **YAML example:**
   bindings:     - members:       - user:mike@example.com       -
-  group:admins@example.com       - domain:google.com       - serviceAccount
-  :my-project-id@appspot.gserviceaccount.com       role:
+  group:admins@example.com       - domain:google.com       -
+  serviceAccount:my-project-id@appspot.gserviceaccount.com       role:
   roles/resourcemanager.organizationAdmin     - members:       -
   user:eve@example.com       role: roles/resourcemanager.organizationViewer
   condition:         title: expirable access         description: Does not
@@ -3174,7 +3174,7 @@ class StandardQueryParameters(_messages.Message):
 
   f__xgafv = _messages.EnumField('FXgafvValueValuesEnum', 1)
   access_token = _messages.StringField(2)
-  alt = _messages.EnumField('AltValueValuesEnum', 3, default=u'json')
+  alt = _messages.EnumField('AltValueValuesEnum', 3, default='json')
   callback = _messages.StringField(4)
   fields = _messages.StringField(5)
   key = _messages.StringField(6)

@@ -137,8 +137,9 @@ class Binding(_messages.Message):
       not apply to the current request. However, a different role binding
       might grant the same role to one or more of the members in this binding.
       To learn which resources support conditions in their IAM policies, see
-      the [IAM documentation](https://cloud.google.com/iam/help/conditions
-      /resource-policies).
+      the [IAM
+      documentation](https://cloud.google.com/iam/help/conditions/resource-
+      policies).
     members: Specifies the identities requesting access for a Cloud Platform
       resource. `members` can have the following values:  * `allUsers`: A
       special identifier that represents anyone who is    on the internet;
@@ -180,6 +181,28 @@ class Binding(_messages.Message):
 
 class CancelOperationRequest(_messages.Message):
   r"""The request message for Operations.CancelOperation."""
+
+
+class CloudAuditLoggingFeatureSpec(_messages.Message):
+  r"""Spec for Audit Logging Whitelisting.
+
+  Fields:
+    whitelistedServiceAccounts: Service account that should be whitelisted to
+      send the audit logs; eg cloudauditlogging@gcp-
+      project.iam.gserviceaccount.com. These accounts must already exist, but
+      do not need to have any permissions granted to them. The customer's
+      entitlements will be checked prior to whitelisting (i.e. the customer
+      must be an Anthos customer.)
+  """
+
+  whitelistedServiceAccounts = _messages.StringField(1, repeated=True)
+
+
+class CloudAuditLoggingFeatureState(_messages.Message):
+  r"""An empty state for Audit Logging Whitelisting. This is required since
+  FeatureStateDetails requires a state.
+  """
+
 
 
 class CloudAuditOptions(_messages.Message):
@@ -237,21 +260,21 @@ class Condition(_messages.Message):
       AUTHORITY: Either principal or (if present) authority selector.
       ATTRIBUTION: The principal (even if an authority selector is present),
         which must only be used for attribution, not authorization.
-      SECURITY_REALM: Any of the security realms in the IAMContext (go
-        /security-realms). When used with IN, the condition indicates "any of
-        the request's realms match one of the given values; with NOT_IN, "none
-        of the realms match any of the given values". Note that a value can
-        be:  - 'self' (i.e., allow connections from clients that are in the
-        same  security realm)  - 'self:cloud-region' (i.e., allow connections
-        from clients that are in  the same cloud region)  - 'guardians' (i.e.,
-        allow connections from its guardian realms. See  go/security-realms-
-        glossary#guardian for more information.)  - a realm (e.g., 'campus-
-        abc')  - a realm group (e.g., 'realms-for-borg-cell-xx', see: go
-        /realm-groups) A match is determined by a realm group membership check
-        performed by a RealmAclRep object (go/realm-acl-howto). It is not
-        permitted to grant access based on the *absence* of a realm, so realm
-        conditions can only be used in a "positive" context (e.g., ALLOW/IN or
-        DENY/NOT_IN).
+      SECURITY_REALM: Any of the security realms in the IAMContext
+        (go/security-realms). When used with IN, the condition indicates "any
+        of the request's realms match one of the given values; with NOT_IN,
+        "none of the realms match any of the given values". Note that a value
+        can be:  - 'self' (i.e., allow connections from clients that are in
+        the same  security realm)  - 'self:cloud-region' (i.e., allow
+        connections from clients that are in  the same cloud region)  -
+        'guardians' (i.e., allow connections from its guardian realms. See
+        go/security-realms-glossary#guardian for more information.)  - a realm
+        (e.g., 'campus-abc')  - a realm group (e.g., 'realms-for-borg-cell-
+        xx', see: go/realm-groups) A match is determined by a realm group
+        membership check performed by a RealmAclRep object (go/realm-acl-
+        howto). It is not permitted to grant access based on the *absence* of
+        a realm, so realm conditions can only be used in a "positive" context
+        (e.g., ALLOW/IN or DENY/NOT_IN).
       APPROVER: An approver (distinct from the requester) that has authorized
         this request. When used with IN, the condition indicates that one of
         the approvers associated with the request matches the specified
@@ -651,6 +674,7 @@ class Feature(_messages.Message):
 
   Fields:
     authorizerFeatureSpec: The specification for the Authorizer Feature.
+    cloudauditloggingFeatureSpec: Feature for Anthos Cloud Audit Logging.
     configmanagementFeatureSpec: Feature for Anthos Config Management.
     createTime: Output only. Timestamp for when the Feature was created.
     deleteTime: Output only. Timestamp for when the Feature was deleted.
@@ -695,19 +719,20 @@ class Feature(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   authorizerFeatureSpec = _messages.MessageField('AuthorizerFeatureSpec', 1)
-  configmanagementFeatureSpec = _messages.MessageField('ConfigManagementFeatureSpec', 2)
-  createTime = _messages.StringField(3)
-  deleteTime = _messages.StringField(4)
-  description = _messages.StringField(5)
-  featureState = _messages.MessageField('FeatureState', 6)
-  helloworldFeatureSpec = _messages.MessageField('HelloWorldFeatureSpec', 7)
-  labels = _messages.MessageField('LabelsValue', 8)
-  meteringFeatureSpec = _messages.MessageField('MeteringFeatureSpec', 9)
-  multiclusteringressFeatureSpec = _messages.MessageField('MultiClusterIngressFeatureSpec', 10)
-  multiclusterservicediscoveryFeatureSpec = _messages.MessageField('MultiClusterServiceDiscoveryFeatureSpec', 11)
-  name = _messages.StringField(12)
-  servicemeshFeatureSpec = _messages.MessageField('ServiceMeshFeatureSpec', 13)
-  updateTime = _messages.StringField(14)
+  cloudauditloggingFeatureSpec = _messages.MessageField('CloudAuditLoggingFeatureSpec', 2)
+  configmanagementFeatureSpec = _messages.MessageField('ConfigManagementFeatureSpec', 3)
+  createTime = _messages.StringField(4)
+  deleteTime = _messages.StringField(5)
+  description = _messages.StringField(6)
+  featureState = _messages.MessageField('FeatureState', 7)
+  helloworldFeatureSpec = _messages.MessageField('HelloWorldFeatureSpec', 8)
+  labels = _messages.MessageField('LabelsValue', 9)
+  meteringFeatureSpec = _messages.MessageField('MeteringFeatureSpec', 10)
+  multiclusteringressFeatureSpec = _messages.MessageField('MultiClusterIngressFeatureSpec', 11)
+  multiclusterservicediscoveryFeatureSpec = _messages.MessageField('MultiClusterServiceDiscoveryFeatureSpec', 12)
+  name = _messages.StringField(13)
+  servicemeshFeatureSpec = _messages.MessageField('ServiceMeshFeatureSpec', 14)
+  updateTime = _messages.StringField(15)
 
 
 class FeatureState(_messages.Message):
@@ -799,6 +824,8 @@ class FeatureStateDetails(_messages.Message):
 
   Fields:
     authorizerFeatureState: State for the Authorizer Feature.
+    cloudauditloggingFeatureState: The state of the Anthos Cloud Audit Logging
+      feature.
     code: The code indicates machine-interpretable status code of the feature.
       It also allows for an interpretation of the details.
     configmanagementFeatureState: State for the Config Management Feature.
@@ -828,15 +855,16 @@ class FeatureStateDetails(_messages.Message):
     WARNING = 3
 
   authorizerFeatureState = _messages.MessageField('AuthorizerFeatureState', 1)
-  code = _messages.EnumField('CodeValueValuesEnum', 2)
-  configmanagementFeatureState = _messages.MessageField('ConfigManagementFeatureState', 3)
-  description = _messages.StringField(4)
-  helloworldFeatureState = _messages.MessageField('HelloWorldFeatureState', 5)
-  meteringFeatureState = _messages.MessageField('MeteringFeatureState', 6)
-  multiclusteringressFeatureState = _messages.MessageField('MultiClusterIngressFeatureState', 7)
-  multiclusterservicediscoveryFeatureState = _messages.MessageField('MultiClusterServiceDiscoveryFeatureState', 8)
-  servicemeshFeatureState = _messages.MessageField('ServiceMeshFeatureState', 9)
-  updateTime = _messages.StringField(10)
+  cloudauditloggingFeatureState = _messages.MessageField('CloudAuditLoggingFeatureState', 2)
+  code = _messages.EnumField('CodeValueValuesEnum', 3)
+  configmanagementFeatureState = _messages.MessageField('ConfigManagementFeatureState', 4)
+  description = _messages.StringField(5)
+  helloworldFeatureState = _messages.MessageField('HelloWorldFeatureState', 6)
+  meteringFeatureState = _messages.MessageField('MeteringFeatureState', 7)
+  multiclusteringressFeatureState = _messages.MessageField('MultiClusterIngressFeatureState', 8)
+  multiclusterservicediscoveryFeatureState = _messages.MessageField('MultiClusterServiceDiscoveryFeatureState', 9)
+  servicemeshFeatureState = _messages.MessageField('ServiceMeshFeatureState', 10)
+  updateTime = _messages.StringField(11)
 
 
 class GitConfig(_messages.Message):
@@ -973,12 +1001,12 @@ class GkehubProjectsLocationsGlobalFeaturesListRequest(_messages.Message):
       `>`, `<=`, `>=`, `!=`, `=`, `:` are supported (colon `:` represents a
       HAS operator which is roughly synonymous with equality). <field> can
       refer to a proto or JSON field, or a synthetic field. Field names can be
-      camelCase or snake_case.  Examples: - Filter by name:   name = "projects
-      /foo-proj/locations/global/features/servicemesh  - Filter by labels:   -
-      Resources that have a key called `foo`     labels.foo:*   - Resources
-      that have a key called `foo` whose value is `bar`     labels.foo = bar
-      - Filter by spec:   - ServiceMesh feature with mtls set.
-      servicemesh_feature_spec.mtls = true
+      camelCase or snake_case.  Examples: - Filter by name:   name =
+      "projects/foo-proj/locations/global/features/servicemesh  - Filter by
+      labels:   - Resources that have a key called `foo`     labels.foo:*   -
+      Resources that have a key called `foo` whose value is `bar`
+      labels.foo = bar  - Filter by spec:   - ServiceMesh feature with mtls
+      set.     servicemesh_feature_spec.mtls = true
     orderBy: Field to use to sort the list.
     pageSize: When requesting a 'page' of resources, `page_size` specifies
       number of resources to return. If unspecified or set to 0, it defaults
@@ -1538,8 +1566,8 @@ class Policy(_messages.Message):
   timestamp('2020-10-01T00:00:00.000Z')",           }         }       ],
   "etag": "BwWWja0YfJA=",       "version": 3     }  **YAML example:**
   bindings:     - members:       - user:mike@example.com       -
-  group:admins@example.com       - domain:google.com       - serviceAccount
-  :my-project-id@appspot.gserviceaccount.com       role:
+  group:admins@example.com       - domain:google.com       -
+  serviceAccount:my-project-id@appspot.gserviceaccount.com       role:
   roles/resourcemanager.organizationAdmin     - members:       -
   user:eve@example.com       role: roles/resourcemanager.organizationViewer
   condition:         title: expirable access         description: Does not
@@ -1739,7 +1767,7 @@ class StandardQueryParameters(_messages.Message):
 
   f__xgafv = _messages.EnumField('FXgafvValueValuesEnum', 1)
   access_token = _messages.StringField(2)
-  alt = _messages.EnumField('AltValueValuesEnum', 3, default=u'json')
+  alt = _messages.EnumField('AltValueValuesEnum', 3, default='json')
   callback = _messages.StringField(4)
   fields = _messages.StringField(5)
   key = _messages.StringField(6)

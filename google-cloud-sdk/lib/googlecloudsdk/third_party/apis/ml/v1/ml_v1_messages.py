@@ -156,9 +156,9 @@ class GoogleCloudMlV1AutoScaling(_messages.Message):
       model. These nodes are always up, starting from the time the model is
       deployed. Therefore, the cost of operating this model will be at least
       `rate` * `min_nodes` * number of hours since last billing cycle, where
-      `rate` is the cost per node-hour as documented in the [pricing guide
-      ](/ml-engine/docs/pricing), even if no predictions are performed. There
-      is additional cost for each prediction performed.  Unlike manual
+      `rate` is the cost per node-hour as documented in the [pricing
+      guide](/ml-engine/docs/pricing), even if no predictions are performed.
+      There is additional cost for each prediction performed.  Unlike manual
       scaling, if the load gets too heavy for the nodes that are up, the
       service will automatically add nodes to handle the increased load as
       well as scale back as traffic drops, always maintaining at least
@@ -402,9 +402,9 @@ class GoogleCloudMlV1ContainerSpec(_messages.Message):
       resolved, the reference in the input string will be unchanged. The
       $(VAR_NAME) syntax can be escaped with a double $$, ie: $$(VAR_NAME).
       Escaped references will never be expanded, regardless of whether the
-      variable exists or not. More info: https://kubernetes.io/docs/tasks
-      /inject-data-application/define-command-argument-container/#running-a
-      -command-in-a-shell
+      variable exists or not. More info:
+      https://kubernetes.io/docs/tasks/inject-data-application/define-command-
+      argument-container/#running-a-command-in-a-shell
     command: Immutable. Entrypoint array. Not executed within a shell. The
       docker image's ENTRYPOINT is used if this is not provided. Variable
       references $(VAR_NAME) are expanded using the container's environment.
@@ -1773,20 +1773,20 @@ class GoogleCloudMlV1ReplicaConfig(_messages.Message):
       and [TrainingInput.args] are mutually exclusive, i.e., both cannot be
       set at the same time.
     imageUri: The Docker image to run on the replica. This image must be in
-      Container Registry. Learn more about [configuring custom containers
-      ](/ai-platform/training/docs/distributed-training-containers).
+      Container Registry. Learn more about [configuring custom
+      containers](/ai-platform/training/docs/distributed-training-containers).
     tpuTfVersion: The AI Platform runtime version that includes a TensorFlow
       version matching the one used in the custom container. This field is
       required if the replica is a TPU worker that uses a custom container.
       Otherwise, do not specify this field. This must be a [runtime version
-      that currently supports training with TPUs](/ml-engine/docs/tensorflow
-      /runtime-version-list#tpu-support).  Note that the version of TensorFlow
-      included in a runtime version may differ from the numbering of the
-      runtime version itself, because it may have a different [patch version](
-      https://www.tensorflow.org/guide/version_compat#semantic_versioning_20).
-      In this field, you must specify the runtime version (TensorFlow minor
-      version). For example, if your custom container runs TensorFlow `1.x.y`,
-      specify `1.x`.
+      that currently supports training with TPUs](/ml-
+      engine/docs/tensorflow/runtime-version-list#tpu-support).  Note that the
+      version of TensorFlow included in a runtime version may differ from the
+      numbering of the runtime version itself, because it may have a different
+      [patch version](https://www.tensorflow.org/guide/version_compat#semantic
+      _versioning_20). In this field, you must specify the runtime version
+      (TensorFlow minor version). For example, if your custom container runs
+      TensorFlow `1.x.y`, specify `1.x`.
   """
 
   acceleratorConfig = _messages.MessageField('GoogleCloudMlV1AcceleratorConfig', 1)
@@ -1803,10 +1803,10 @@ class GoogleCloudMlV1RequestLoggingConfig(_messages.Message):
   table. Logging is constrained by [BigQuery quotas and
   limits](/bigquery/quotas). If your project exceeds BigQuery quotas or
   limits, AI Platform Prediction does not log request-response pairs, but it
-  continues to serve predictions.  If you are using [continuous evaluation
-  ](/ml-engine/docs/continuous-evaluation/), you do not need to specify this
-  configuration manually. Setting up continuous evaluation automatically
-  enables logging of request-response pairs.
+  continues to serve predictions.  If you are using [continuous
+  evaluation](/ml-engine/docs/continuous-evaluation/), you do not need to
+  specify this configuration manually. Setting up continuous evaluation
+  automatically enables logging of request-response pairs.
 
   Fields:
     bigqueryTableName: Required. Fully qualified BigQuery table name in the
@@ -2264,9 +2264,9 @@ class GoogleCloudMlV1TrainingInput(_messages.Message):
     evaluatorConfig: Optional. The configuration for evaluators.  You should
       only set `evaluatorConfig.acceleratorConfig` if `evaluatorType` is set
       to a Compute Engine machine type. [Learn about restrictions on
-      accelerator configurations for training.](/ai-platform/training/docs
-      /using-gpus#compute-engine-machine-types-with-gpu)  Set
-      `evaluatorConfig.imageUri` only if you build a custom image for your
+      accelerator configurations for training.](/ai-
+      platform/training/docs/using-gpus#compute-engine-machine-types-with-gpu)
+      Set `evaluatorConfig.imageUri` only if you build a custom image for your
       evaluator. If `evaluatorConfig.imageUri` has not been set, AI Platform
       uses the value of `masterConfig.imageUri`. Learn more about [configuring
       custom containers](/ai-platform/training/docs/distributed-training-
@@ -2292,12 +2292,12 @@ class GoogleCloudMlV1TrainingInput(_messages.Message):
     masterConfig: Optional. The configuration for your master worker.  You
       should only set `masterConfig.acceleratorConfig` if `masterType` is set
       to a Compute Engine machine type. Learn about [restrictions on
-      accelerator configurations for training.](/ai-platform/training/docs
-      /using-gpus#compute-engine-machine-types-with-gpu)  Set
-      `masterConfig.imageUri` only if you build a custom image. Only one of
-      `masterConfig.imageUri` and `runtimeVersion` should be set. Learn more
-      about [configuring custom containers](/ai-platform/training/docs
-      /distributed-training-containers).
+      accelerator configurations for training.](/ai-
+      platform/training/docs/using-gpus#compute-engine-machine-types-with-gpu)
+      Set `masterConfig.imageUri` only if you build a custom image. Only one
+      of `masterConfig.imageUri` and `runtimeVersion` should be set. Learn
+      more about [configuring custom containers](/ai-
+      platform/training/docs/distributed-training-containers).
     masterType: Optional. Specifies the type of virtual machine to use for
       your training job's master worker. You must specify this field when
       `scaleTier` is set to `CUSTOM`.  You can use certain Compute Engine
@@ -2339,8 +2339,8 @@ class GoogleCloudMlV1TrainingInput(_messages.Message):
       Set `parameterServerConfig.imageUri` only if you build a custom image
       for your parameter server. If `parameterServerConfig.imageUri` has not
       been set, AI Platform uses the value of `masterConfig.imageUri`. Learn
-      more about [configuring custom containers](/ai-platform/training/docs
-      /distributed-training-containers).
+      more about [configuring custom containers](/ai-
+      platform/training/docs/distributed-training-containers).
     parameterServerCount: Optional. The number of parameter server replicas to
       use for the training job. Each replica in the cluster will be of the
       type specified in `parameter_server_type`.  This value can only be used
@@ -2384,12 +2384,12 @@ class GoogleCloudMlV1TrainingInput(_messages.Message):
     workerConfig: Optional. The configuration for workers.  You should only
       set `workerConfig.acceleratorConfig` if `workerType` is set to a Compute
       Engine machine type. [Learn about restrictions on accelerator
-      configurations for training.](/ai-platform/training/docs/using-gpus
-      #compute-engine-machine-types-with-gpu)  Set `workerConfig.imageUri`
+      configurations for training.](/ai-platform/training/docs/using-
+      gpus#compute-engine-machine-types-with-gpu)  Set `workerConfig.imageUri`
       only if you build a custom image for your worker. If
       `workerConfig.imageUri` has not been set, AI Platform uses the value of
-      `masterConfig.imageUri`. Learn more about [configuring custom containers
-      ](/ai-platform/training/docs/distributed-training-containers).
+      `masterConfig.imageUri`. Learn more about [configuring custom
+      containers](/ai-platform/training/docs/distributed-training-containers).
     workerCount: Optional. The number of worker replicas to use for the
       training job. Each replica in the cluster will be of the type specified
       in `worker_type`.  This value can only be used when `scale_tier` is set
@@ -2681,8 +2681,8 @@ class GoogleCloudMlV1Version(_messages.Message):
       `n1-highmem-16` * `n1-highmem-32` * `n1-highcpu-2` * `n1-highcpu-4` *
       `n1-highcpu-8` * `n1-highcpu-16` * `n1-highcpu-32`  `mls1-c1-m2` is
       generally available. All other machine types are available in beta.
-      Learn more about the [differences between machine types](/ml-engine/docs
-      /machine-types-online-prediction).
+      Learn more about the [differences between machine types](/ml-
+      engine/docs/machine-types-online-prediction).
     manualScaling: Manually select the number of nodes to use for serving the
       model. You should generally use `auto_scaling` with an appropriate
       `min_nodes` instead, but this option is available if you want more
@@ -2700,9 +2700,9 @@ class GoogleCloudMlV1Version(_messages.Message):
       Predictor class (see
       [`predictionClass`](#Version.FIELDS.prediction_class)). Additionally,
       include any dependencies used by your Predictor or scikit-learn pipeline
-      uses that are not already included in your selected [runtime version
-      ](/ml-engine/docs/tensorflow/runtime-version-list).  If you specify this
-      field, you must also set
+      uses that are not already included in your selected [runtime
+      version](/ml-engine/docs/tensorflow/runtime-version-list).  If you
+      specify this field, you must also set
       [`runtimeVersion`](#Version.FIELDS.runtime_version) to 1.4 or greater.
     predictionClass: Optional. The fully qualified name
       (<var>module_name</var>.<var>class_name</var>) of a class that
@@ -2748,8 +2748,8 @@ class GoogleCloudMlV1Version(_messages.Message):
     routes: A GoogleCloudMlV1RouteMap attribute.
     runtimeVersion: Required. The AI Platform runtime version to use for this
       deployment.  For more information, see the [runtime version list](/ml-
-      engine/docs/runtime-version-list) and [how to manage runtime versions
-      ](/ml-engine/docs/versioning).
+      engine/docs/runtime-version-list) and [how to manage runtime
+      versions](/ml-engine/docs/versioning).
     serviceAccount: Optional. Specifies the service account for resource
       access control.
     state: Output only. The state of a version.
@@ -2763,9 +2763,9 @@ class GoogleCloudMlV1Version(_messages.Message):
     `SCIKIT_LEARN` or `XGBOOST`, you must also set the runtime version of the
     model to 1.4 or greater.  Do **not** specify a framework if you're
     deploying a [custom prediction routine](/ml-engine/docs/tensorflow/custom-
-    prediction-routines).  If you specify a [Compute Engine (N1) machine type
-    ](/ml-engine/docs/machine-types-online-prediction) in the `machineType`
-    field, you must specify `TENSORFLOW` for the framework.
+    prediction-routines).  If you specify a [Compute Engine (N1) machine
+    type](/ml-engine/docs/machine-types-online-prediction) in the
+    `machineType` field, you must specify `TENSORFLOW` for the framework.
 
     Values:
       FRAMEWORK_UNSPECIFIED: Unspecified framework. Assigns a value based on
@@ -2953,8 +2953,9 @@ class GoogleIamV1Binding(_messages.Message):
       not apply to the current request. However, a different role binding
       might grant the same role to one or more of the members in this binding.
       To learn which resources support conditions in their IAM policies, see
-      the [IAM documentation](https://cloud.google.com/iam/help/conditions
-      /resource-policies).
+      the [IAM
+      documentation](https://cloud.google.com/iam/help/conditions/resource-
+      policies).
     members: Specifies the identities requesting access for a Cloud Platform
       resource. `members` can have the following values:  * `allUsers`: A
       special identifier that represents anyone who is    on the internet;
@@ -3019,8 +3020,8 @@ class GoogleIamV1Policy(_messages.Message):
   timestamp('2020-10-01T00:00:00.000Z')",           }         }       ],
   "etag": "BwWWja0YfJA=",       "version": 3     }  **YAML example:**
   bindings:     - members:       - user:mike@example.com       -
-  group:admins@example.com       - domain:google.com       - serviceAccount
-  :my-project-id@appspot.gserviceaccount.com       role:
+  group:admins@example.com       - domain:google.com       -
+  serviceAccount:my-project-id@appspot.gserviceaccount.com       role:
   roles/resourcemanager.organizationAdmin     - members:       -
   user:eve@example.com       role: roles/resourcemanager.organizationViewer
   condition:         title: expirable access         description: Does not
@@ -3420,8 +3421,8 @@ class MlProjectsJobsListRequest(_messages.Message):
       <p><code>gcloud ai-platform jobs list --filter='jobId:census*'</code>
       <p>List all failed jobs with names that start with 'rnn':
       <p><code>gcloud ai-platform jobs list --filter='jobId:rnn* AND
-      state:FAILED'</code> <p>For more examples, see the guide to <a href
-      ="/ml-engine/docs/tensorflow/monitor-training">monitoring jobs</a>.
+      state:FAILED'</code> <p>For more examples, see the guide to <a
+      href="/ml-engine/docs/tensorflow/monitor-training">monitoring jobs</a>.
     pageSize: Optional. The number of jobs to retrieve per "page" of results.
       If there are more remaining results than this number, the response
       message will contain a valid value in the `next_page_token` field.  The
@@ -4027,7 +4028,7 @@ class StandardQueryParameters(_messages.Message):
 
   f__xgafv = _messages.EnumField('FXgafvValueValuesEnum', 1)
   access_token = _messages.StringField(2)
-  alt = _messages.EnumField('AltValueValuesEnum', 3, default=u'json')
+  alt = _messages.EnumField('AltValueValuesEnum', 3, default='json')
   callback = _messages.StringField(4)
   fields = _messages.StringField(5)
   key = _messages.StringField(6)

@@ -28,14 +28,14 @@ class Collections(enum.Enum):
       'projects',
       'projects/{projectsId}',
       {},
-      [u'projectsId'],
+      ['projectsId'],
       True
   )
   PROJECTS_LOCATIONS = (
       'projects.locations',
       'projects/{projectsId}/locations/{locationsId}',
       {},
-      [u'projectsId', u'locationsId'],
+      ['projectsId', 'locationsId'],
       True
   )
   PROJECTS_LOCATIONS_DATASETS = (
@@ -46,7 +46,7 @@ class Collections(enum.Enum):
               'projects/{projectsId}/locations/{locationsId}/datasets/'
               '{datasetsId}',
       },
-      [u'name'],
+      ['name'],
       True
   )
   PROJECTS_LOCATIONS_DATASETS_DICOMSTORES = (
@@ -57,7 +57,7 @@ class Collections(enum.Enum):
               'projects/{projectsId}/locations/{locationsId}/datasets/'
               '{datasetsId}/dicomStores/{dicomStoresId}',
       },
-      [u'name'],
+      ['name'],
       True
   )
   PROJECTS_LOCATIONS_DATASETS_FHIRSTORES = (
@@ -68,7 +68,7 @@ class Collections(enum.Enum):
               'projects/{projectsId}/locations/{locationsId}/datasets/'
               '{datasetsId}/fhirStores/{fhirStoresId}',
       },
-      [u'name'],
+      ['name'],
       True
   )
   PROJECTS_LOCATIONS_DATASETS_HL7V2STORES = (
@@ -79,7 +79,7 @@ class Collections(enum.Enum):
               'projects/{projectsId}/locations/{locationsId}/datasets/'
               '{datasetsId}/hl7V2Stores/{hl7V2StoresId}',
       },
-      [u'name'],
+      ['name'],
       True
   )
   PROJECTS_LOCATIONS_DATASETS_HL7V2STORES_MESSAGES = (
@@ -90,7 +90,7 @@ class Collections(enum.Enum):
               'projects/{projectsId}/locations/{locationsId}/datasets/'
               '{datasetsId}/hl7V2Stores/{hl7V2StoresId}/messages/{messagesId}',
       },
-      [u'name'],
+      ['name'],
       True
   )
   PROJECTS_LOCATIONS_DATASETS_OPERATIONS = (
@@ -101,7 +101,7 @@ class Collections(enum.Enum):
               'projects/{projectsId}/locations/{locationsId}/datasets/'
               '{datasetsId}/operations/{operationsId}',
       },
-      [u'name'],
+      ['name'],
       True
   )
 

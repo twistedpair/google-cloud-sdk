@@ -28,14 +28,14 @@ class Collections(enum.Enum):
       'projects',
       'projects/{projectsId}',
       {},
-      [u'projectsId'],
+      ['projectsId'],
       True
   )
   PROJECTS_AGENT = (
       'projects.agent',
       'projects/{projectsId}/agent',
       {},
-      [u'projectsId'],
+      ['projectsId'],
       True
   )
   PROJECTS_AGENT_ENTITYTYPES = (
@@ -45,14 +45,14 @@ class Collections(enum.Enum):
           '':
               'projects/{projectsId}/agent/entityTypes/{entityTypesId}',
       },
-      [u'name'],
+      ['name'],
       True
   )
   PROJECTS_AGENT_ENVIRONMENTS = (
       'projects.agent.environments',
       'projects/{projectsId}/agent/environments/{environmentsId}',
       {},
-      [u'projectsId', u'environmentsId'],
+      ['projectsId', 'environmentsId'],
       True
   )
   PROJECTS_AGENT_ENVIRONMENTS_USERS = (
@@ -60,7 +60,7 @@ class Collections(enum.Enum):
       'projects/{projectsId}/agent/environments/{environmentsId}/users/'
       '{usersId}',
       {},
-      [u'projectsId', u'environmentsId', u'usersId'],
+      ['projectsId', 'environmentsId', 'usersId'],
       True
   )
   PROJECTS_AGENT_ENVIRONMENTS_USERS_SESSIONS = (
@@ -68,7 +68,7 @@ class Collections(enum.Enum):
       'projects/{projectsId}/agent/environments/{environmentsId}/users/'
       '{usersId}/sessions/{sessionsId}',
       {},
-      [u'projectsId', u'environmentsId', u'usersId', u'sessionsId'],
+      ['projectsId', 'environmentsId', 'usersId', 'sessionsId'],
       True
   )
   PROJECTS_AGENT_ENVIRONMENTS_USERS_SESSIONS_CONTEXTS = (
@@ -79,7 +79,7 @@ class Collections(enum.Enum):
               'projects/{projectsId}/agent/environments/{environmentsId}/'
               'users/{usersId}/sessions/{sessionsId}/contexts/{contextsId}',
       },
-      [u'name'],
+      ['name'],
       True
   )
   PROJECTS_AGENT_ENVIRONMENTS_USERS_SESSIONS_ENTITYTYPES = (
@@ -91,7 +91,7 @@ class Collections(enum.Enum):
               'users/{usersId}/sessions/{sessionsId}/entityTypes/'
               '{entityTypesId}',
       },
-      [u'name'],
+      ['name'],
       True
   )
   PROJECTS_AGENT_INTENTS = (
@@ -101,14 +101,14 @@ class Collections(enum.Enum):
           '':
               'projects/{projectsId}/agent/intents/{intentsId}',
       },
-      [u'name'],
+      ['name'],
       True
   )
   PROJECTS_AGENT_SESSIONS = (
       'projects.agent.sessions',
       'projects/{projectsId}/agent/sessions/{sessionsId}',
       {},
-      [u'projectsId', u'sessionsId'],
+      ['projectsId', 'sessionsId'],
       True
   )
   PROJECTS_AGENT_SESSIONS_CONTEXTS = (
@@ -119,7 +119,7 @@ class Collections(enum.Enum):
               'projects/{projectsId}/agent/sessions/{sessionsId}/contexts/'
               '{contextsId}',
       },
-      [u'name'],
+      ['name'],
       True
   )
   PROJECTS_AGENT_SESSIONS_ENTITYTYPES = (
@@ -130,14 +130,14 @@ class Collections(enum.Enum):
               'projects/{projectsId}/agent/sessions/{sessionsId}/entityTypes/'
               '{entityTypesId}',
       },
-      [u'name'],
+      ['name'],
       True
   )
   PROJECTS_LOCATIONS = (
       'projects.locations',
       'projects/{projectsId}/locations/{locationsId}',
       {},
-      [u'projectsId', u'locationsId'],
+      ['projectsId', 'locationsId'],
       True
   )
   PROJECTS_LOCATIONS_OPERATIONS = (
@@ -148,7 +148,7 @@ class Collections(enum.Enum):
               'projects/{projectsId}/locations/{locationsId}/operations/'
               '{operationsId}',
       },
-      [u'name'],
+      ['name'],
       True
   )
   PROJECTS_OPERATIONS = (
@@ -158,7 +158,7 @@ class Collections(enum.Enum):
           '':
               'projects/{projectsId}/operations/{operationsId}',
       },
-      [u'name'],
+      ['name'],
       True
   )
 

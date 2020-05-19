@@ -8,17 +8,17 @@ class CloudtasksV2(base_api.BaseApiClient):
   """Generated client library for service cloudtasks version v2."""
 
   MESSAGES_MODULE = messages
-  BASE_URL = u'https://cloudtasks.googleapis.com/'
-  MTLS_BASE_URL = u'https://cloudtasks.mtls.googleapis.com/'
+  BASE_URL = 'https://cloudtasks.googleapis.com/'
+  MTLS_BASE_URL = 'https://cloudtasks.mtls.googleapis.com/'
 
-  _PACKAGE = u'cloudtasks'
-  _SCOPES = [u'https://www.googleapis.com/auth/cloud-platform']
-  _VERSION = u'v2'
+  _PACKAGE = 'cloudtasks'
+  _SCOPES = ['https://www.googleapis.com/auth/cloud-platform']
+  _VERSION = 'v2'
   _CLIENT_ID = '1042881264118.apps.googleusercontent.com'
   _CLIENT_SECRET = 'x_Tw5K8nnjoRAqULM9PFAC2b'
-  _USER_AGENT = u'google-cloud-sdk'
-  _CLIENT_CLASS_NAME = u'CloudtasksV2'
-  _URL_VERSION = u'v2'
+  _USER_AGENT = 'google-cloud-sdk'
+  _CLIENT_CLASS_NAME = 'CloudtasksV2'
+  _URL_VERSION = 'v2'
   _API_KEY = None
 
   def __init__(self, url='', credentials=None,
@@ -44,7 +44,7 @@ class CloudtasksV2(base_api.BaseApiClient):
   class ProjectsLocationsQueuesTasksService(base_api.BaseApiService):
     """Service class for the projects_locations_queues_tasks resource."""
 
-    _NAME = u'projects_locations_queues_tasks'
+    _NAME = 'projects_locations_queues_tasks'
 
     def __init__(self, client):
       super(CloudtasksV2.ProjectsLocationsQueuesTasksService, self).__init__(client)
@@ -69,16 +69,16 @@ Tasks cannot be updated after creation; there is no UpdateTask command.
           config, request, global_params=global_params)
 
     Create.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v2/projects/{projectsId}/locations/{locationsId}/queues/{queuesId}/tasks',
-        http_method=u'POST',
-        method_id=u'cloudtasks.projects.locations.queues.tasks.create',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/queues/{queuesId}/tasks',
+        http_method='POST',
+        method_id='cloudtasks.projects.locations.queues.tasks.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
         query_params=[],
-        relative_path=u'v2/{+parent}/tasks',
-        request_field=u'createTaskRequest',
-        request_type_name=u'CloudtasksProjectsLocationsQueuesTasksCreateRequest',
-        response_type_name=u'Task',
+        relative_path='v2/{+parent}/tasks',
+        request_field='createTaskRequest',
+        request_type_name='CloudtasksProjectsLocationsQueuesTasksCreateRequest',
+        response_type_name='Task',
         supports_download=False,
     )
 
@@ -100,16 +100,16 @@ failed.
           config, request, global_params=global_params)
 
     Delete.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v2/projects/{projectsId}/locations/{locationsId}/queues/{queuesId}/tasks/{tasksId}',
-        http_method=u'DELETE',
-        method_id=u'cloudtasks.projects.locations.queues.tasks.delete',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/queues/{queuesId}/tasks/{tasksId}',
+        http_method='DELETE',
+        method_id='cloudtasks.projects.locations.queues.tasks.delete',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v2/{+name}',
+        relative_path='v2/{+name}',
         request_field='',
-        request_type_name=u'CloudtasksProjectsLocationsQueuesTasksDeleteRequest',
-        response_type_name=u'Empty',
+        request_type_name='CloudtasksProjectsLocationsQueuesTasksDeleteRequest',
+        response_type_name='Empty',
         supports_download=False,
     )
 
@@ -127,16 +127,16 @@ failed.
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v2/projects/{projectsId}/locations/{locationsId}/queues/{queuesId}/tasks/{tasksId}',
-        http_method=u'GET',
-        method_id=u'cloudtasks.projects.locations.queues.tasks.get',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[u'responseView'],
-        relative_path=u'v2/{+name}',
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/queues/{queuesId}/tasks/{tasksId}',
+        http_method='GET',
+        method_id='cloudtasks.projects.locations.queues.tasks.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['responseView'],
+        relative_path='v2/{+name}',
         request_field='',
-        request_type_name=u'CloudtasksProjectsLocationsQueuesTasksGetRequest',
-        response_type_name=u'Task',
+        request_type_name='CloudtasksProjectsLocationsQueuesTasksGetRequest',
+        response_type_name='Task',
         supports_download=False,
     )
 
@@ -162,16 +162,16 @@ time.
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v2/projects/{projectsId}/locations/{locationsId}/queues/{queuesId}/tasks',
-        http_method=u'GET',
-        method_id=u'cloudtasks.projects.locations.queues.tasks.list',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'pageSize', u'pageToken', u'responseView'],
-        relative_path=u'v2/{+parent}/tasks',
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/queues/{queuesId}/tasks',
+        http_method='GET',
+        method_id='cloudtasks.projects.locations.queues.tasks.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken', 'responseView'],
+        relative_path='v2/{+parent}/tasks',
         request_field='',
-        request_type_name=u'CloudtasksProjectsLocationsQueuesTasksListRequest',
-        response_type_name=u'ListTasksResponse',
+        request_type_name='CloudtasksProjectsLocationsQueuesTasksListRequest',
+        response_type_name='ListTasksResponse',
         supports_download=False,
     )
 
@@ -212,23 +212,23 @@ task that has already succeeded or permanently failed.
           config, request, global_params=global_params)
 
     Run.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v2/projects/{projectsId}/locations/{locationsId}/queues/{queuesId}/tasks/{tasksId}:run',
-        http_method=u'POST',
-        method_id=u'cloudtasks.projects.locations.queues.tasks.run',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/queues/{queuesId}/tasks/{tasksId}:run',
+        http_method='POST',
+        method_id='cloudtasks.projects.locations.queues.tasks.run',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v2/{+name}:run',
-        request_field=u'runTaskRequest',
-        request_type_name=u'CloudtasksProjectsLocationsQueuesTasksRunRequest',
-        response_type_name=u'Task',
+        relative_path='v2/{+name}:run',
+        request_field='runTaskRequest',
+        request_type_name='CloudtasksProjectsLocationsQueuesTasksRunRequest',
+        response_type_name='Task',
         supports_download=False,
     )
 
   class ProjectsLocationsQueuesService(base_api.BaseApiService):
     """Service class for the projects_locations_queues resource."""
 
-    _NAME = u'projects_locations_queues'
+    _NAME = 'projects_locations_queues'
 
     def __init__(self, client):
       super(CloudtasksV2.ProjectsLocationsQueuesService, self).__init__(client)
@@ -260,16 +260,16 @@ this method.
           config, request, global_params=global_params)
 
     Create.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v2/projects/{projectsId}/locations/{locationsId}/queues',
-        http_method=u'POST',
-        method_id=u'cloudtasks.projects.locations.queues.create',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/queues',
+        http_method='POST',
+        method_id='cloudtasks.projects.locations.queues.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
         query_params=[],
-        relative_path=u'v2/{+parent}/queues',
-        request_field=u'queue',
-        request_type_name=u'CloudtasksProjectsLocationsQueuesCreateRequest',
-        response_type_name=u'Queue',
+        relative_path='v2/{+parent}/queues',
+        request_field='queue',
+        request_type_name='CloudtasksProjectsLocationsQueuesCreateRequest',
+        response_type_name='Queue',
         supports_download=False,
     )
 
@@ -299,16 +299,16 @@ this method.
           config, request, global_params=global_params)
 
     Delete.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v2/projects/{projectsId}/locations/{locationsId}/queues/{queuesId}',
-        http_method=u'DELETE',
-        method_id=u'cloudtasks.projects.locations.queues.delete',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/queues/{queuesId}',
+        http_method='DELETE',
+        method_id='cloudtasks.projects.locations.queues.delete',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v2/{+name}',
+        relative_path='v2/{+name}',
         request_field='',
-        request_type_name=u'CloudtasksProjectsLocationsQueuesDeleteRequest',
-        response_type_name=u'Empty',
+        request_type_name='CloudtasksProjectsLocationsQueuesDeleteRequest',
+        response_type_name='Empty',
         supports_download=False,
     )
 
@@ -326,16 +326,16 @@ this method.
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v2/projects/{projectsId}/locations/{locationsId}/queues/{queuesId}',
-        http_method=u'GET',
-        method_id=u'cloudtasks.projects.locations.queues.get',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/queues/{queuesId}',
+        http_method='GET',
+        method_id='cloudtasks.projects.locations.queues.get',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v2/{+name}',
+        relative_path='v2/{+name}',
         request_field='',
-        request_type_name=u'CloudtasksProjectsLocationsQueuesGetRequest',
-        response_type_name=u'Queue',
+        request_type_name='CloudtasksProjectsLocationsQueuesGetRequest',
+        response_type_name='Queue',
         supports_download=False,
     )
 
@@ -361,16 +361,16 @@ resource parent:
           config, request, global_params=global_params)
 
     GetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v2/projects/{projectsId}/locations/{locationsId}/queues/{queuesId}:getIamPolicy',
-        http_method=u'POST',
-        method_id=u'cloudtasks.projects.locations.queues.getIamPolicy',
-        ordered_params=[u'resource'],
-        path_params=[u'resource'],
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/queues/{queuesId}:getIamPolicy',
+        http_method='POST',
+        method_id='cloudtasks.projects.locations.queues.getIamPolicy',
+        ordered_params=['resource'],
+        path_params=['resource'],
         query_params=[],
-        relative_path=u'v2/{+resource}:getIamPolicy',
-        request_field=u'getIamPolicyRequest',
-        request_type_name=u'CloudtasksProjectsLocationsQueuesGetIamPolicyRequest',
-        response_type_name=u'Policy',
+        relative_path='v2/{+resource}:getIamPolicy',
+        request_field='getIamPolicyRequest',
+        request_type_name='CloudtasksProjectsLocationsQueuesGetIamPolicyRequest',
+        response_type_name='Policy',
         supports_download=False,
     )
 
@@ -390,16 +390,16 @@ Queues are returned in lexicographical order.
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v2/projects/{projectsId}/locations/{locationsId}/queues',
-        http_method=u'GET',
-        method_id=u'cloudtasks.projects.locations.queues.list',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'filter', u'pageSize', u'pageToken'],
-        relative_path=u'v2/{+parent}/queues',
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/queues',
+        http_method='GET',
+        method_id='cloudtasks.projects.locations.queues.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'pageSize', 'pageToken'],
+        relative_path='v2/{+parent}/queues',
         request_field='',
-        request_type_name=u'CloudtasksProjectsLocationsQueuesListRequest',
-        response_type_name=u'ListQueuesResponse',
+        request_type_name='CloudtasksProjectsLocationsQueuesListRequest',
+        response_type_name='ListQueuesResponse',
         supports_download=False,
     )
 
@@ -431,16 +431,16 @@ this method.
           config, request, global_params=global_params)
 
     Patch.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v2/projects/{projectsId}/locations/{locationsId}/queues/{queuesId}',
-        http_method=u'PATCH',
-        method_id=u'cloudtasks.projects.locations.queues.patch',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[u'updateMask'],
-        relative_path=u'v2/{+name}',
-        request_field=u'queue',
-        request_type_name=u'CloudtasksProjectsLocationsQueuesPatchRequest',
-        response_type_name=u'Queue',
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/queues/{queuesId}',
+        http_method='PATCH',
+        method_id='cloudtasks.projects.locations.queues.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v2/{+name}',
+        request_field='queue',
+        request_type_name='CloudtasksProjectsLocationsQueuesPatchRequest',
+        response_type_name='Queue',
         supports_download=False,
     )
 
@@ -464,16 +464,16 @@ state is PAUSED.
           config, request, global_params=global_params)
 
     Pause.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v2/projects/{projectsId}/locations/{locationsId}/queues/{queuesId}:pause',
-        http_method=u'POST',
-        method_id=u'cloudtasks.projects.locations.queues.pause',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/queues/{queuesId}:pause',
+        http_method='POST',
+        method_id='cloudtasks.projects.locations.queues.pause',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v2/{+name}:pause',
-        request_field=u'pauseQueueRequest',
-        request_type_name=u'CloudtasksProjectsLocationsQueuesPauseRequest',
-        response_type_name=u'Queue',
+        relative_path='v2/{+name}:pause',
+        request_field='pauseQueueRequest',
+        request_type_name='CloudtasksProjectsLocationsQueuesPauseRequest',
+        response_type_name='Queue',
         supports_download=False,
     )
 
@@ -496,16 +496,16 @@ might be dispatched before the purge takes effect. A purge is irreversible.
           config, request, global_params=global_params)
 
     Purge.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v2/projects/{projectsId}/locations/{locationsId}/queues/{queuesId}:purge',
-        http_method=u'POST',
-        method_id=u'cloudtasks.projects.locations.queues.purge',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/queues/{queuesId}:purge',
+        http_method='POST',
+        method_id='cloudtasks.projects.locations.queues.purge',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v2/{+name}:purge',
-        request_field=u'purgeQueueRequest',
-        request_type_name=u'CloudtasksProjectsLocationsQueuesPurgeRequest',
-        response_type_name=u'Queue',
+        relative_path='v2/{+name}:purge',
+        request_field='purgeQueueRequest',
+        request_type_name='CloudtasksProjectsLocationsQueuesPurgeRequest',
+        response_type_name='Queue',
         supports_download=False,
     )
 
@@ -535,16 +535,16 @@ Risks](https://cloud.google.com/tasks/docs/manage-cloud-task-scaling).
           config, request, global_params=global_params)
 
     Resume.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v2/projects/{projectsId}/locations/{locationsId}/queues/{queuesId}:resume',
-        http_method=u'POST',
-        method_id=u'cloudtasks.projects.locations.queues.resume',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/queues/{queuesId}:resume',
+        http_method='POST',
+        method_id='cloudtasks.projects.locations.queues.resume',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v2/{+name}:resume',
-        request_field=u'resumeQueueRequest',
-        request_type_name=u'CloudtasksProjectsLocationsQueuesResumeRequest',
-        response_type_name=u'Queue',
+        relative_path='v2/{+name}:resume',
+        request_field='resumeQueueRequest',
+        request_type_name='CloudtasksProjectsLocationsQueuesResumeRequest',
+        response_type_name='Queue',
         supports_download=False,
     )
 
@@ -572,16 +572,16 @@ resource parent:
           config, request, global_params=global_params)
 
     SetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v2/projects/{projectsId}/locations/{locationsId}/queues/{queuesId}:setIamPolicy',
-        http_method=u'POST',
-        method_id=u'cloudtasks.projects.locations.queues.setIamPolicy',
-        ordered_params=[u'resource'],
-        path_params=[u'resource'],
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/queues/{queuesId}:setIamPolicy',
+        http_method='POST',
+        method_id='cloudtasks.projects.locations.queues.setIamPolicy',
+        ordered_params=['resource'],
+        path_params=['resource'],
         query_params=[],
-        relative_path=u'v2/{+resource}:setIamPolicy',
-        request_field=u'setIamPolicyRequest',
-        request_type_name=u'CloudtasksProjectsLocationsQueuesSetIamPolicyRequest',
-        response_type_name=u'Policy',
+        relative_path='v2/{+resource}:setIamPolicy',
+        request_field='setIamPolicyRequest',
+        request_type_name='CloudtasksProjectsLocationsQueuesSetIamPolicyRequest',
+        response_type_name='Policy',
         supports_download=False,
     )
 
@@ -605,23 +605,23 @@ may "fail open" without warning.
           config, request, global_params=global_params)
 
     TestIamPermissions.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v2/projects/{projectsId}/locations/{locationsId}/queues/{queuesId}:testIamPermissions',
-        http_method=u'POST',
-        method_id=u'cloudtasks.projects.locations.queues.testIamPermissions',
-        ordered_params=[u'resource'],
-        path_params=[u'resource'],
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/queues/{queuesId}:testIamPermissions',
+        http_method='POST',
+        method_id='cloudtasks.projects.locations.queues.testIamPermissions',
+        ordered_params=['resource'],
+        path_params=['resource'],
         query_params=[],
-        relative_path=u'v2/{+resource}:testIamPermissions',
-        request_field=u'testIamPermissionsRequest',
-        request_type_name=u'CloudtasksProjectsLocationsQueuesTestIamPermissionsRequest',
-        response_type_name=u'TestIamPermissionsResponse',
+        relative_path='v2/{+resource}:testIamPermissions',
+        request_field='testIamPermissionsRequest',
+        request_type_name='CloudtasksProjectsLocationsQueuesTestIamPermissionsRequest',
+        response_type_name='TestIamPermissionsResponse',
         supports_download=False,
     )
 
   class ProjectsLocationsService(base_api.BaseApiService):
     """Service class for the projects_locations resource."""
 
-    _NAME = u'projects_locations'
+    _NAME = 'projects_locations'
 
     def __init__(self, client):
       super(CloudtasksV2.ProjectsLocationsService, self).__init__(client)
@@ -642,16 +642,16 @@ may "fail open" without warning.
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v2/projects/{projectsId}/locations/{locationsId}',
-        http_method=u'GET',
-        method_id=u'cloudtasks.projects.locations.get',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}',
+        http_method='GET',
+        method_id='cloudtasks.projects.locations.get',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v2/{+name}',
+        relative_path='v2/{+name}',
         request_field='',
-        request_type_name=u'CloudtasksProjectsLocationsGetRequest',
-        response_type_name=u'Location',
+        request_type_name='CloudtasksProjectsLocationsGetRequest',
+        response_type_name='Location',
         supports_download=False,
     )
 
@@ -669,23 +669,23 @@ may "fail open" without warning.
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v2/projects/{projectsId}/locations',
-        http_method=u'GET',
-        method_id=u'cloudtasks.projects.locations.list',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[u'filter', u'pageSize', u'pageToken'],
-        relative_path=u'v2/{+name}/locations',
+        flat_path='v2/projects/{projectsId}/locations',
+        http_method='GET',
+        method_id='cloudtasks.projects.locations.list',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['filter', 'pageSize', 'pageToken'],
+        relative_path='v2/{+name}/locations',
         request_field='',
-        request_type_name=u'CloudtasksProjectsLocationsListRequest',
-        response_type_name=u'ListLocationsResponse',
+        request_type_name='CloudtasksProjectsLocationsListRequest',
+        response_type_name='ListLocationsResponse',
         supports_download=False,
     )
 
   class ProjectsService(base_api.BaseApiService):
     """Service class for the projects resource."""
 
-    _NAME = u'projects'
+    _NAME = 'projects'
 
     def __init__(self, client):
       super(CloudtasksV2.ProjectsService, self).__init__(client)

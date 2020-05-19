@@ -28,21 +28,21 @@ class Collections(enum.Enum):
       'projects',
       'projects/{project}/iap_web',
       {},
-      [u'project'],
+      ['project'],
       True
   )
   PROJECTS_IAP_WEB = (
       'projects.iap_web',
       'projects/{project}/iap_web/{iapWebId}',
       {},
-      [u'project', u'iapWebId'],
+      ['project', 'iapWebId'],
       True
   )
   PROJECTS_IAP_WEB_SERVICES = (
       'projects.iap_web.services',
       'projects/{project}/iap_web/{iapWebId}/services/{serviceId}',
       {},
-      [u'project', u'iapWebId', u'serviceId'],
+      ['project', 'iapWebId', 'serviceId'],
       True
   )
   PROJECTS_IAP_WEB_SERVICES_VERSIONS = (
@@ -50,7 +50,7 @@ class Collections(enum.Enum):
       'projects/{project}/iap_web/{iapWebId}/services/{serviceId}/versions/'
       '{versionId}',
       {},
-      [u'project', u'iapWebId', u'serviceId', u'versionId'],
+      ['project', 'iapWebId', 'serviceId', 'versionId'],
       True
   )
 

@@ -8,17 +8,17 @@ class PrivatecaV1alpha1(base_api.BaseApiClient):
   """Generated client library for service privateca version v1alpha1."""
 
   MESSAGES_MODULE = messages
-  BASE_URL = u'https://privateca.googleapis.com/'
-  MTLS_BASE_URL = u'https://privateca.mtls.googleapis.com/'
+  BASE_URL = 'https://privateca.googleapis.com/'
+  MTLS_BASE_URL = 'https://privateca.mtls.googleapis.com/'
 
-  _PACKAGE = u'privateca'
-  _SCOPES = [u'https://www.googleapis.com/auth/cloud-platform']
-  _VERSION = u'v1alpha1'
+  _PACKAGE = 'privateca'
+  _SCOPES = ['https://www.googleapis.com/auth/cloud-platform']
+  _VERSION = 'v1alpha1'
   _CLIENT_ID = '1042881264118.apps.googleusercontent.com'
   _CLIENT_SECRET = 'x_Tw5K8nnjoRAqULM9PFAC2b'
-  _USER_AGENT = u'google-cloud-sdk'
-  _CLIENT_CLASS_NAME = u'PrivatecaV1alpha1'
-  _URL_VERSION = u'v1alpha1'
+  _USER_AGENT = 'google-cloud-sdk'
+  _CLIENT_CLASS_NAME = 'PrivatecaV1alpha1'
+  _URL_VERSION = 'v1alpha1'
   _API_KEY = None
 
   def __init__(self, url='', credentials=None,
@@ -47,7 +47,7 @@ class PrivatecaV1alpha1(base_api.BaseApiClient):
   class ProjectsLocationsCertificateAuthoritiesCertificateRevocationListsService(base_api.BaseApiService):
     """Service class for the projects_locations_certificateAuthorities_certificateRevocationLists resource."""
 
-    _NAME = u'projects_locations_certificateAuthorities_certificateRevocationLists'
+    _NAME = 'projects_locations_certificateAuthorities_certificateRevocationLists'
 
     def __init__(self, client):
       super(PrivatecaV1alpha1.ProjectsLocationsCertificateAuthoritiesCertificateRevocationListsService, self).__init__(client)
@@ -69,16 +69,16 @@ for a particular CertificateAuthority.
           config, request, global_params=global_params)
 
     Create.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha1/projects/{projectsId}/locations/{locationsId}/certificateAuthorities/{certificateAuthoritiesId}/certificateRevocationLists',
-        http_method=u'POST',
-        method_id=u'privateca.projects.locations.certificateAuthorities.certificateRevocationLists.create',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'certificateRevocationListId', u'requestId'],
-        relative_path=u'v1alpha1/{+parent}/certificateRevocationLists',
-        request_field=u'certificateRevocationList',
-        request_type_name=u'PrivatecaProjectsLocationsCertificateAuthoritiesCertificateRevocationListsCreateRequest',
-        response_type_name=u'Operation',
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/certificateAuthorities/{certificateAuthoritiesId}/certificateRevocationLists',
+        http_method='POST',
+        method_id='privateca.projects.locations.certificateAuthorities.certificateRevocationLists.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['certificateRevocationListId', 'requestId'],
+        relative_path='v1alpha1/{+parent}/certificateRevocationLists',
+        request_field='certificateRevocationList',
+        request_type_name='PrivatecaProjectsLocationsCertificateAuthoritiesCertificateRevocationListsCreateRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -96,16 +96,16 @@ for a particular CertificateAuthority.
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha1/projects/{projectsId}/locations/{locationsId}/certificateAuthorities/{certificateAuthoritiesId}/certificateRevocationLists/{certificateRevocationListsId}',
-        http_method=u'GET',
-        method_id=u'privateca.projects.locations.certificateAuthorities.certificateRevocationLists.get',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/certificateAuthorities/{certificateAuthoritiesId}/certificateRevocationLists/{certificateRevocationListsId}',
+        http_method='GET',
+        method_id='privateca.projects.locations.certificateAuthorities.certificateRevocationLists.get',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1alpha1/{+name}',
+        relative_path='v1alpha1/{+name}',
         request_field='',
-        request_type_name=u'PrivatecaProjectsLocationsCertificateAuthoritiesCertificateRevocationListsGetRequest',
-        response_type_name=u'CertificateRevocationList',
+        request_type_name='PrivatecaProjectsLocationsCertificateAuthoritiesCertificateRevocationListsGetRequest',
+        response_type_name='CertificateRevocationList',
         supports_download=False,
     )
 
@@ -125,16 +125,16 @@ set.
           config, request, global_params=global_params)
 
     GetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha1/projects/{projectsId}/locations/{locationsId}/certificateAuthorities/{certificateAuthoritiesId}/certificateRevocationLists/{certificateRevocationListsId}:getIamPolicy',
-        http_method=u'GET',
-        method_id=u'privateca.projects.locations.certificateAuthorities.certificateRevocationLists.getIamPolicy',
-        ordered_params=[u'resource'],
-        path_params=[u'resource'],
-        query_params=[u'options_requestedPolicyVersion'],
-        relative_path=u'v1alpha1/{+resource}:getIamPolicy',
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/certificateAuthorities/{certificateAuthoritiesId}/certificateRevocationLists/{certificateRevocationListsId}:getIamPolicy',
+        http_method='GET',
+        method_id='privateca.projects.locations.certificateAuthorities.certificateRevocationLists.getIamPolicy',
+        ordered_params=['resource'],
+        path_params=['resource'],
+        query_params=['options_requestedPolicyVersion'],
+        relative_path='v1alpha1/{+resource}:getIamPolicy',
         request_field='',
-        request_type_name=u'PrivatecaProjectsLocationsCertificateAuthoritiesCertificateRevocationListsGetIamPolicyRequest',
-        response_type_name=u'Policy',
+        request_type_name='PrivatecaProjectsLocationsCertificateAuthoritiesCertificateRevocationListsGetIamPolicyRequest',
+        response_type_name='Policy',
         supports_download=False,
     )
 
@@ -152,16 +152,16 @@ set.
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha1/projects/{projectsId}/locations/{locationsId}/certificateAuthorities/{certificateAuthoritiesId}/certificateRevocationLists',
-        http_method=u'GET',
-        method_id=u'privateca.projects.locations.certificateAuthorities.certificateRevocationLists.list',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'filter', u'orderBy', u'pageSize', u'pageToken'],
-        relative_path=u'v1alpha1/{+parent}/certificateRevocationLists',
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/certificateAuthorities/{certificateAuthoritiesId}/certificateRevocationLists',
+        http_method='GET',
+        method_id='privateca.projects.locations.certificateAuthorities.certificateRevocationLists.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'orderBy', 'pageSize', 'pageToken'],
+        relative_path='v1alpha1/{+parent}/certificateRevocationLists',
         request_field='',
-        request_type_name=u'PrivatecaProjectsLocationsCertificateAuthoritiesCertificateRevocationListsListRequest',
-        response_type_name=u'ListCertificateRevocationListsResponse',
+        request_type_name='PrivatecaProjectsLocationsCertificateAuthoritiesCertificateRevocationListsListRequest',
+        response_type_name='ListCertificateRevocationListsResponse',
         supports_download=False,
     )
 
@@ -179,16 +179,16 @@ set.
           config, request, global_params=global_params)
 
     Patch.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha1/projects/{projectsId}/locations/{locationsId}/certificateAuthorities/{certificateAuthoritiesId}/certificateRevocationLists/{certificateRevocationListsId}',
-        http_method=u'PATCH',
-        method_id=u'privateca.projects.locations.certificateAuthorities.certificateRevocationLists.patch',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[u'requestId', u'updateMask'],
-        relative_path=u'v1alpha1/{+name}',
-        request_field=u'certificateRevocationList',
-        request_type_name=u'PrivatecaProjectsLocationsCertificateAuthoritiesCertificateRevocationListsPatchRequest',
-        response_type_name=u'Operation',
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/certificateAuthorities/{certificateAuthoritiesId}/certificateRevocationLists/{certificateRevocationListsId}',
+        http_method='PATCH',
+        method_id='privateca.projects.locations.certificateAuthorities.certificateRevocationLists.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['requestId', 'updateMask'],
+        relative_path='v1alpha1/{+name}',
+        request_field='certificateRevocationList',
+        request_type_name='PrivatecaProjectsLocationsCertificateAuthoritiesCertificateRevocationListsPatchRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -209,16 +209,16 @@ Can return `NOT_FOUND`, `INVALID_ARGUMENT`, and `PERMISSION_DENIED` errors.
           config, request, global_params=global_params)
 
     SetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha1/projects/{projectsId}/locations/{locationsId}/certificateAuthorities/{certificateAuthoritiesId}/certificateRevocationLists/{certificateRevocationListsId}:setIamPolicy',
-        http_method=u'POST',
-        method_id=u'privateca.projects.locations.certificateAuthorities.certificateRevocationLists.setIamPolicy',
-        ordered_params=[u'resource'],
-        path_params=[u'resource'],
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/certificateAuthorities/{certificateAuthoritiesId}/certificateRevocationLists/{certificateRevocationListsId}:setIamPolicy',
+        http_method='POST',
+        method_id='privateca.projects.locations.certificateAuthorities.certificateRevocationLists.setIamPolicy',
+        ordered_params=['resource'],
+        path_params=['resource'],
         query_params=[],
-        relative_path=u'v1alpha1/{+resource}:setIamPolicy',
-        request_field=u'setIamPolicyRequest',
-        request_type_name=u'PrivatecaProjectsLocationsCertificateAuthoritiesCertificateRevocationListsSetIamPolicyRequest',
-        response_type_name=u'Policy',
+        relative_path='v1alpha1/{+resource}:setIamPolicy',
+        request_field='setIamPolicyRequest',
+        request_type_name='PrivatecaProjectsLocationsCertificateAuthoritiesCertificateRevocationListsSetIamPolicyRequest',
+        response_type_name='Policy',
         supports_download=False,
     )
 
@@ -242,23 +242,23 @@ may "fail open" without warning.
           config, request, global_params=global_params)
 
     TestIamPermissions.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha1/projects/{projectsId}/locations/{locationsId}/certificateAuthorities/{certificateAuthoritiesId}/certificateRevocationLists/{certificateRevocationListsId}:testIamPermissions',
-        http_method=u'POST',
-        method_id=u'privateca.projects.locations.certificateAuthorities.certificateRevocationLists.testIamPermissions',
-        ordered_params=[u'resource'],
-        path_params=[u'resource'],
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/certificateAuthorities/{certificateAuthoritiesId}/certificateRevocationLists/{certificateRevocationListsId}:testIamPermissions',
+        http_method='POST',
+        method_id='privateca.projects.locations.certificateAuthorities.certificateRevocationLists.testIamPermissions',
+        ordered_params=['resource'],
+        path_params=['resource'],
         query_params=[],
-        relative_path=u'v1alpha1/{+resource}:testIamPermissions',
-        request_field=u'testIamPermissionsRequest',
-        request_type_name=u'PrivatecaProjectsLocationsCertificateAuthoritiesCertificateRevocationListsTestIamPermissionsRequest',
-        response_type_name=u'TestIamPermissionsResponse',
+        relative_path='v1alpha1/{+resource}:testIamPermissions',
+        request_field='testIamPermissionsRequest',
+        request_type_name='PrivatecaProjectsLocationsCertificateAuthoritiesCertificateRevocationListsTestIamPermissionsRequest',
+        response_type_name='TestIamPermissionsResponse',
         supports_download=False,
     )
 
   class ProjectsLocationsCertificateAuthoritiesCertificatesService(base_api.BaseApiService):
     """Service class for the projects_locations_certificateAuthorities_certificates resource."""
 
-    _NAME = u'projects_locations_certificateAuthorities_certificates'
+    _NAME = 'projects_locations_certificateAuthorities_certificates'
 
     def __init__(self, client):
       super(PrivatecaV1alpha1.ProjectsLocationsCertificateAuthoritiesCertificatesService, self).__init__(client)
@@ -280,16 +280,16 @@ CertificateAuthority.
           config, request, global_params=global_params)
 
     Create.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha1/projects/{projectsId}/locations/{locationsId}/certificateAuthorities/{certificateAuthoritiesId}/certificates',
-        http_method=u'POST',
-        method_id=u'privateca.projects.locations.certificateAuthorities.certificates.create',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'certificateId', u'requestId'],
-        relative_path=u'v1alpha1/{+parent}/certificates',
-        request_field=u'certificate',
-        request_type_name=u'PrivatecaProjectsLocationsCertificateAuthoritiesCertificatesCreateRequest',
-        response_type_name=u'Operation',
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/certificateAuthorities/{certificateAuthoritiesId}/certificates',
+        http_method='POST',
+        method_id='privateca.projects.locations.certificateAuthorities.certificates.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['certificateId', 'requestId'],
+        relative_path='v1alpha1/{+parent}/certificates',
+        request_field='certificate',
+        request_type_name='PrivatecaProjectsLocationsCertificateAuthoritiesCertificatesCreateRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -307,16 +307,16 @@ CertificateAuthority.
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha1/projects/{projectsId}/locations/{locationsId}/certificateAuthorities/{certificateAuthoritiesId}/certificates/{certificatesId}',
-        http_method=u'GET',
-        method_id=u'privateca.projects.locations.certificateAuthorities.certificates.get',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/certificateAuthorities/{certificateAuthoritiesId}/certificates/{certificatesId}',
+        http_method='GET',
+        method_id='privateca.projects.locations.certificateAuthorities.certificates.get',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1alpha1/{+name}',
+        relative_path='v1alpha1/{+name}',
         request_field='',
-        request_type_name=u'PrivatecaProjectsLocationsCertificateAuthoritiesCertificatesGetRequest',
-        response_type_name=u'Certificate',
+        request_type_name='PrivatecaProjectsLocationsCertificateAuthoritiesCertificatesGetRequest',
+        response_type_name='Certificate',
         supports_download=False,
     )
 
@@ -336,16 +336,16 @@ set.
           config, request, global_params=global_params)
 
     GetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha1/projects/{projectsId}/locations/{locationsId}/certificateAuthorities/{certificateAuthoritiesId}/certificates/{certificatesId}:getIamPolicy',
-        http_method=u'GET',
-        method_id=u'privateca.projects.locations.certificateAuthorities.certificates.getIamPolicy',
-        ordered_params=[u'resource'],
-        path_params=[u'resource'],
-        query_params=[u'options_requestedPolicyVersion'],
-        relative_path=u'v1alpha1/{+resource}:getIamPolicy',
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/certificateAuthorities/{certificateAuthoritiesId}/certificates/{certificatesId}:getIamPolicy',
+        http_method='GET',
+        method_id='privateca.projects.locations.certificateAuthorities.certificates.getIamPolicy',
+        ordered_params=['resource'],
+        path_params=['resource'],
+        query_params=['options_requestedPolicyVersion'],
+        relative_path='v1alpha1/{+resource}:getIamPolicy',
         request_field='',
-        request_type_name=u'PrivatecaProjectsLocationsCertificateAuthoritiesCertificatesGetIamPolicyRequest',
-        response_type_name=u'Policy',
+        request_type_name='PrivatecaProjectsLocationsCertificateAuthoritiesCertificatesGetIamPolicyRequest',
+        response_type_name='Policy',
         supports_download=False,
     )
 
@@ -363,16 +363,16 @@ set.
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha1/projects/{projectsId}/locations/{locationsId}/certificateAuthorities/{certificateAuthoritiesId}/certificates',
-        http_method=u'GET',
-        method_id=u'privateca.projects.locations.certificateAuthorities.certificates.list',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'filter', u'orderBy', u'pageSize', u'pageToken'],
-        relative_path=u'v1alpha1/{+parent}/certificates',
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/certificateAuthorities/{certificateAuthoritiesId}/certificates',
+        http_method='GET',
+        method_id='privateca.projects.locations.certificateAuthorities.certificates.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'orderBy', 'pageSize', 'pageToken'],
+        relative_path='v1alpha1/{+parent}/certificates',
         request_field='',
-        request_type_name=u'PrivatecaProjectsLocationsCertificateAuthoritiesCertificatesListRequest',
-        response_type_name=u'ListCertificatesResponse',
+        request_type_name='PrivatecaProjectsLocationsCertificateAuthoritiesCertificatesListRequest',
+        response_type_name='ListCertificatesResponse',
         supports_download=False,
     )
 
@@ -390,16 +390,16 @@ set.
           config, request, global_params=global_params)
 
     Patch.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha1/projects/{projectsId}/locations/{locationsId}/certificateAuthorities/{certificateAuthoritiesId}/certificates/{certificatesId}',
-        http_method=u'PATCH',
-        method_id=u'privateca.projects.locations.certificateAuthorities.certificates.patch',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[u'requestId', u'updateMask'],
-        relative_path=u'v1alpha1/{+name}',
-        request_field=u'certificate',
-        request_type_name=u'PrivatecaProjectsLocationsCertificateAuthoritiesCertificatesPatchRequest',
-        response_type_name=u'Operation',
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/certificateAuthorities/{certificateAuthoritiesId}/certificates/{certificatesId}',
+        http_method='PATCH',
+        method_id='privateca.projects.locations.certificateAuthorities.certificates.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['requestId', 'updateMask'],
+        relative_path='v1alpha1/{+name}',
+        request_field='certificate',
+        request_type_name='PrivatecaProjectsLocationsCertificateAuthoritiesCertificatesPatchRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -417,16 +417,16 @@ set.
           config, request, global_params=global_params)
 
     Revoke.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha1/projects/{projectsId}/locations/{locationsId}/certificateAuthorities/{certificateAuthoritiesId}/certificates/{certificatesId}:revoke',
-        http_method=u'POST',
-        method_id=u'privateca.projects.locations.certificateAuthorities.certificates.revoke',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/certificateAuthorities/{certificateAuthoritiesId}/certificates/{certificatesId}:revoke',
+        http_method='POST',
+        method_id='privateca.projects.locations.certificateAuthorities.certificates.revoke',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1alpha1/{+name}:revoke',
-        request_field=u'revokeCertificateRequest',
-        request_type_name=u'PrivatecaProjectsLocationsCertificateAuthoritiesCertificatesRevokeRequest',
-        response_type_name=u'Operation',
+        relative_path='v1alpha1/{+name}:revoke',
+        request_field='revokeCertificateRequest',
+        request_type_name='PrivatecaProjectsLocationsCertificateAuthoritiesCertificatesRevokeRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -447,16 +447,16 @@ Can return `NOT_FOUND`, `INVALID_ARGUMENT`, and `PERMISSION_DENIED` errors.
           config, request, global_params=global_params)
 
     SetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha1/projects/{projectsId}/locations/{locationsId}/certificateAuthorities/{certificateAuthoritiesId}/certificates/{certificatesId}:setIamPolicy',
-        http_method=u'POST',
-        method_id=u'privateca.projects.locations.certificateAuthorities.certificates.setIamPolicy',
-        ordered_params=[u'resource'],
-        path_params=[u'resource'],
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/certificateAuthorities/{certificateAuthoritiesId}/certificates/{certificatesId}:setIamPolicy',
+        http_method='POST',
+        method_id='privateca.projects.locations.certificateAuthorities.certificates.setIamPolicy',
+        ordered_params=['resource'],
+        path_params=['resource'],
         query_params=[],
-        relative_path=u'v1alpha1/{+resource}:setIamPolicy',
-        request_field=u'setIamPolicyRequest',
-        request_type_name=u'PrivatecaProjectsLocationsCertificateAuthoritiesCertificatesSetIamPolicyRequest',
-        response_type_name=u'Policy',
+        relative_path='v1alpha1/{+resource}:setIamPolicy',
+        request_field='setIamPolicyRequest',
+        request_type_name='PrivatecaProjectsLocationsCertificateAuthoritiesCertificatesSetIamPolicyRequest',
+        response_type_name='Policy',
         supports_download=False,
     )
 
@@ -480,23 +480,23 @@ may "fail open" without warning.
           config, request, global_params=global_params)
 
     TestIamPermissions.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha1/projects/{projectsId}/locations/{locationsId}/certificateAuthorities/{certificateAuthoritiesId}/certificates/{certificatesId}:testIamPermissions',
-        http_method=u'POST',
-        method_id=u'privateca.projects.locations.certificateAuthorities.certificates.testIamPermissions',
-        ordered_params=[u'resource'],
-        path_params=[u'resource'],
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/certificateAuthorities/{certificateAuthoritiesId}/certificates/{certificatesId}:testIamPermissions',
+        http_method='POST',
+        method_id='privateca.projects.locations.certificateAuthorities.certificates.testIamPermissions',
+        ordered_params=['resource'],
+        path_params=['resource'],
         query_params=[],
-        relative_path=u'v1alpha1/{+resource}:testIamPermissions',
-        request_field=u'testIamPermissionsRequest',
-        request_type_name=u'PrivatecaProjectsLocationsCertificateAuthoritiesCertificatesTestIamPermissionsRequest',
-        response_type_name=u'TestIamPermissionsResponse',
+        relative_path='v1alpha1/{+resource}:testIamPermissions',
+        request_field='testIamPermissionsRequest',
+        request_type_name='PrivatecaProjectsLocationsCertificateAuthoritiesCertificatesTestIamPermissionsRequest',
+        response_type_name='TestIamPermissionsResponse',
         supports_download=False,
     )
 
   class ProjectsLocationsCertificateAuthoritiesService(base_api.BaseApiService):
     """Service class for the projects_locations_certificateAuthorities resource."""
 
-    _NAME = u'projects_locations_certificateAuthorities'
+    _NAME = 'projects_locations_certificateAuthorities'
 
     def __init__(self, client):
       super(PrivatecaV1alpha1.ProjectsLocationsCertificateAuthoritiesService, self).__init__(client)
@@ -517,16 +517,16 @@ may "fail open" without warning.
           config, request, global_params=global_params)
 
     Activate.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha1/projects/{projectsId}/locations/{locationsId}/certificateAuthorities/{certificateAuthoritiesId}:activate',
-        http_method=u'POST',
-        method_id=u'privateca.projects.locations.certificateAuthorities.activate',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/certificateAuthorities/{certificateAuthoritiesId}:activate',
+        http_method='POST',
+        method_id='privateca.projects.locations.certificateAuthorities.activate',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1alpha1/{+name}:activate',
-        request_field=u'activateCertificateAuthorityRequest',
-        request_type_name=u'PrivatecaProjectsLocationsCertificateAuthoritiesActivateRequest',
-        response_type_name=u'Operation',
+        relative_path='v1alpha1/{+name}:activate',
+        request_field='activateCertificateAuthorityRequest',
+        request_type_name='PrivatecaProjectsLocationsCertificateAuthoritiesActivateRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -544,16 +544,16 @@ may "fail open" without warning.
           config, request, global_params=global_params)
 
     Create.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha1/projects/{projectsId}/locations/{locationsId}/certificateAuthorities',
-        http_method=u'POST',
-        method_id=u'privateca.projects.locations.certificateAuthorities.create',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'certificateAuthorityId', u'requestId'],
-        relative_path=u'v1alpha1/{+parent}/certificateAuthorities',
-        request_field=u'certificateAuthority',
-        request_type_name=u'PrivatecaProjectsLocationsCertificateAuthoritiesCreateRequest',
-        response_type_name=u'Operation',
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/certificateAuthorities',
+        http_method='POST',
+        method_id='privateca.projects.locations.certificateAuthorities.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['certificateAuthorityId', 'requestId'],
+        relative_path='v1alpha1/{+parent}/certificateAuthorities',
+        request_field='certificateAuthority',
+        request_type_name='PrivatecaProjectsLocationsCertificateAuthoritiesCreateRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -573,16 +573,16 @@ and CertificateRevocationLists.
           config, request, global_params=global_params)
 
     Delete.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha1/projects/{projectsId}/locations/{locationsId}/certificateAuthorities/{certificateAuthoritiesId}',
-        http_method=u'DELETE',
-        method_id=u'privateca.projects.locations.certificateAuthorities.delete',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[u'requestId'],
-        relative_path=u'v1alpha1/{+name}',
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/certificateAuthorities/{certificateAuthoritiesId}',
+        http_method='DELETE',
+        method_id='privateca.projects.locations.certificateAuthorities.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['requestId'],
+        relative_path='v1alpha1/{+name}',
         request_field='',
-        request_type_name=u'PrivatecaProjectsLocationsCertificateAuthoritiesDeleteRequest',
-        response_type_name=u'Operation',
+        request_type_name='PrivatecaProjectsLocationsCertificateAuthoritiesDeleteRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -600,16 +600,16 @@ and CertificateRevocationLists.
           config, request, global_params=global_params)
 
     Disable.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha1/projects/{projectsId}/locations/{locationsId}/certificateAuthorities/{certificateAuthoritiesId}:disable',
-        http_method=u'POST',
-        method_id=u'privateca.projects.locations.certificateAuthorities.disable',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/certificateAuthorities/{certificateAuthoritiesId}:disable',
+        http_method='POST',
+        method_id='privateca.projects.locations.certificateAuthorities.disable',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1alpha1/{+name}:disable',
-        request_field=u'disableCertificateAuthorityRequest',
-        request_type_name=u'PrivatecaProjectsLocationsCertificateAuthoritiesDisableRequest',
-        response_type_name=u'Operation',
+        relative_path='v1alpha1/{+name}:disable',
+        request_field='disableCertificateAuthorityRequest',
+        request_type_name='PrivatecaProjectsLocationsCertificateAuthoritiesDisableRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -627,16 +627,16 @@ and CertificateRevocationLists.
           config, request, global_params=global_params)
 
     Enable.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha1/projects/{projectsId}/locations/{locationsId}/certificateAuthorities/{certificateAuthoritiesId}:enable',
-        http_method=u'POST',
-        method_id=u'privateca.projects.locations.certificateAuthorities.enable',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/certificateAuthorities/{certificateAuthoritiesId}:enable',
+        http_method='POST',
+        method_id='privateca.projects.locations.certificateAuthorities.enable',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1alpha1/{+name}:enable',
-        request_field=u'enableCertificateAuthorityRequest',
-        request_type_name=u'PrivatecaProjectsLocationsCertificateAuthoritiesEnableRequest',
-        response_type_name=u'Operation',
+        relative_path='v1alpha1/{+name}:enable',
+        request_field='enableCertificateAuthorityRequest',
+        request_type_name='PrivatecaProjectsLocationsCertificateAuthoritiesEnableRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -654,16 +654,16 @@ and CertificateRevocationLists.
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha1/projects/{projectsId}/locations/{locationsId}/certificateAuthorities/{certificateAuthoritiesId}',
-        http_method=u'GET',
-        method_id=u'privateca.projects.locations.certificateAuthorities.get',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/certificateAuthorities/{certificateAuthoritiesId}',
+        http_method='GET',
+        method_id='privateca.projects.locations.certificateAuthorities.get',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1alpha1/{+name}',
+        relative_path='v1alpha1/{+name}',
         request_field='',
-        request_type_name=u'PrivatecaProjectsLocationsCertificateAuthoritiesGetRequest',
-        response_type_name=u'CertificateAuthority',
+        request_type_name='PrivatecaProjectsLocationsCertificateAuthoritiesGetRequest',
+        response_type_name='CertificateAuthority',
         supports_download=False,
     )
 
@@ -681,16 +681,16 @@ and CertificateRevocationLists.
           config, request, global_params=global_params)
 
     GetCsr.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha1/projects/{projectsId}/locations/{locationsId}/certificateAuthorities/{certificateAuthoritiesId}:getCsr',
-        http_method=u'GET',
-        method_id=u'privateca.projects.locations.certificateAuthorities.getCsr',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/certificateAuthorities/{certificateAuthoritiesId}:getCsr',
+        http_method='GET',
+        method_id='privateca.projects.locations.certificateAuthorities.getCsr',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1alpha1/{+name}:getCsr',
+        relative_path='v1alpha1/{+name}:getCsr',
         request_field='',
-        request_type_name=u'PrivatecaProjectsLocationsCertificateAuthoritiesGetCsrRequest',
-        response_type_name=u'GetCertificateAuthorityCsrResponse',
+        request_type_name='PrivatecaProjectsLocationsCertificateAuthoritiesGetCsrRequest',
+        response_type_name='GetCertificateAuthorityCsrResponse',
         supports_download=False,
     )
 
@@ -710,16 +710,16 @@ set.
           config, request, global_params=global_params)
 
     GetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha1/projects/{projectsId}/locations/{locationsId}/certificateAuthorities/{certificateAuthoritiesId}:getIamPolicy',
-        http_method=u'GET',
-        method_id=u'privateca.projects.locations.certificateAuthorities.getIamPolicy',
-        ordered_params=[u'resource'],
-        path_params=[u'resource'],
-        query_params=[u'options_requestedPolicyVersion'],
-        relative_path=u'v1alpha1/{+resource}:getIamPolicy',
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/certificateAuthorities/{certificateAuthoritiesId}:getIamPolicy',
+        http_method='GET',
+        method_id='privateca.projects.locations.certificateAuthorities.getIamPolicy',
+        ordered_params=['resource'],
+        path_params=['resource'],
+        query_params=['options_requestedPolicyVersion'],
+        relative_path='v1alpha1/{+resource}:getIamPolicy',
         request_field='',
-        request_type_name=u'PrivatecaProjectsLocationsCertificateAuthoritiesGetIamPolicyRequest',
-        response_type_name=u'Policy',
+        request_type_name='PrivatecaProjectsLocationsCertificateAuthoritiesGetIamPolicyRequest',
+        response_type_name='Policy',
         supports_download=False,
     )
 
@@ -737,16 +737,16 @@ set.
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha1/projects/{projectsId}/locations/{locationsId}/certificateAuthorities',
-        http_method=u'GET',
-        method_id=u'privateca.projects.locations.certificateAuthorities.list',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'filter', u'orderBy', u'pageSize', u'pageToken'],
-        relative_path=u'v1alpha1/{+parent}/certificateAuthorities',
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/certificateAuthorities',
+        http_method='GET',
+        method_id='privateca.projects.locations.certificateAuthorities.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'orderBy', 'pageSize', 'pageToken'],
+        relative_path='v1alpha1/{+parent}/certificateAuthorities',
         request_field='',
-        request_type_name=u'PrivatecaProjectsLocationsCertificateAuthoritiesListRequest',
-        response_type_name=u'ListCertificateAuthoritiesResponse',
+        request_type_name='PrivatecaProjectsLocationsCertificateAuthoritiesListRequest',
+        response_type_name='ListCertificateAuthoritiesResponse',
         supports_download=False,
     )
 
@@ -764,16 +764,16 @@ set.
           config, request, global_params=global_params)
 
     Patch.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha1/projects/{projectsId}/locations/{locationsId}/certificateAuthorities/{certificateAuthoritiesId}',
-        http_method=u'PATCH',
-        method_id=u'privateca.projects.locations.certificateAuthorities.patch',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[u'requestId', u'updateMask'],
-        relative_path=u'v1alpha1/{+name}',
-        request_field=u'certificateAuthority',
-        request_type_name=u'PrivatecaProjectsLocationsCertificateAuthoritiesPatchRequest',
-        response_type_name=u'Operation',
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/certificateAuthorities/{certificateAuthoritiesId}',
+        http_method='PATCH',
+        method_id='privateca.projects.locations.certificateAuthorities.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['requestId', 'updateMask'],
+        relative_path='v1alpha1/{+name}',
+        request_field='certificateAuthority',
+        request_type_name='PrivatecaProjectsLocationsCertificateAuthoritiesPatchRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -791,16 +791,16 @@ set.
           config, request, global_params=global_params)
 
     PublishCrl.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha1/projects/{projectsId}/locations/{locationsId}/certificateAuthorities/{certificateAuthoritiesId}:publishCrl',
-        http_method=u'POST',
-        method_id=u'privateca.projects.locations.certificateAuthorities.publishCrl',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/certificateAuthorities/{certificateAuthoritiesId}:publishCrl',
+        http_method='POST',
+        method_id='privateca.projects.locations.certificateAuthorities.publishCrl',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1alpha1/{+name}:publishCrl',
-        request_field=u'publishCertificateRevocationListRequest',
-        request_type_name=u'PrivatecaProjectsLocationsCertificateAuthoritiesPublishCrlRequest',
-        response_type_name=u'PublishCertificateRevocationListResponse',
+        relative_path='v1alpha1/{+name}:publishCrl',
+        request_field='publishCertificateRevocationListRequest',
+        request_type_name='PrivatecaProjectsLocationsCertificateAuthoritiesPublishCrlRequest',
+        response_type_name='PublishCertificateRevocationListResponse',
         supports_download=False,
     )
 
@@ -818,16 +818,16 @@ set.
           config, request, global_params=global_params)
 
     Restore.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha1/projects/{projectsId}/locations/{locationsId}/certificateAuthorities/{certificateAuthoritiesId}:restore',
-        http_method=u'POST',
-        method_id=u'privateca.projects.locations.certificateAuthorities.restore',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/certificateAuthorities/{certificateAuthoritiesId}:restore',
+        http_method='POST',
+        method_id='privateca.projects.locations.certificateAuthorities.restore',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1alpha1/{+name}:restore',
-        request_field=u'restoreCertificateAuthorityRequest',
-        request_type_name=u'PrivatecaProjectsLocationsCertificateAuthoritiesRestoreRequest',
-        response_type_name=u'Operation',
+        relative_path='v1alpha1/{+name}:restore',
+        request_field='restoreCertificateAuthorityRequest',
+        request_type_name='PrivatecaProjectsLocationsCertificateAuthoritiesRestoreRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -845,16 +845,16 @@ set.
           config, request, global_params=global_params)
 
     ScheduleDelete.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha1/projects/{projectsId}/locations/{locationsId}/certificateAuthorities/{certificateAuthoritiesId}:scheduleDelete',
-        http_method=u'POST',
-        method_id=u'privateca.projects.locations.certificateAuthorities.scheduleDelete',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/certificateAuthorities/{certificateAuthoritiesId}:scheduleDelete',
+        http_method='POST',
+        method_id='privateca.projects.locations.certificateAuthorities.scheduleDelete',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1alpha1/{+name}:scheduleDelete',
-        request_field=u'scheduleDeleteCertificateAuthorityRequest',
-        request_type_name=u'PrivatecaProjectsLocationsCertificateAuthoritiesScheduleDeleteRequest',
-        response_type_name=u'Operation',
+        relative_path='v1alpha1/{+name}:scheduleDelete',
+        request_field='scheduleDeleteCertificateAuthorityRequest',
+        request_type_name='PrivatecaProjectsLocationsCertificateAuthoritiesScheduleDeleteRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -875,16 +875,16 @@ Can return `NOT_FOUND`, `INVALID_ARGUMENT`, and `PERMISSION_DENIED` errors.
           config, request, global_params=global_params)
 
     SetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha1/projects/{projectsId}/locations/{locationsId}/certificateAuthorities/{certificateAuthoritiesId}:setIamPolicy',
-        http_method=u'POST',
-        method_id=u'privateca.projects.locations.certificateAuthorities.setIamPolicy',
-        ordered_params=[u'resource'],
-        path_params=[u'resource'],
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/certificateAuthorities/{certificateAuthoritiesId}:setIamPolicy',
+        http_method='POST',
+        method_id='privateca.projects.locations.certificateAuthorities.setIamPolicy',
+        ordered_params=['resource'],
+        path_params=['resource'],
         query_params=[],
-        relative_path=u'v1alpha1/{+resource}:setIamPolicy',
-        request_field=u'setIamPolicyRequest',
-        request_type_name=u'PrivatecaProjectsLocationsCertificateAuthoritiesSetIamPolicyRequest',
-        response_type_name=u'Policy',
+        relative_path='v1alpha1/{+resource}:setIamPolicy',
+        request_field='setIamPolicyRequest',
+        request_type_name='PrivatecaProjectsLocationsCertificateAuthoritiesSetIamPolicyRequest',
+        response_type_name='Policy',
         supports_download=False,
     )
 
@@ -908,23 +908,23 @@ may "fail open" without warning.
           config, request, global_params=global_params)
 
     TestIamPermissions.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha1/projects/{projectsId}/locations/{locationsId}/certificateAuthorities/{certificateAuthoritiesId}:testIamPermissions',
-        http_method=u'POST',
-        method_id=u'privateca.projects.locations.certificateAuthorities.testIamPermissions',
-        ordered_params=[u'resource'],
-        path_params=[u'resource'],
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/certificateAuthorities/{certificateAuthoritiesId}:testIamPermissions',
+        http_method='POST',
+        method_id='privateca.projects.locations.certificateAuthorities.testIamPermissions',
+        ordered_params=['resource'],
+        path_params=['resource'],
         query_params=[],
-        relative_path=u'v1alpha1/{+resource}:testIamPermissions',
-        request_field=u'testIamPermissionsRequest',
-        request_type_name=u'PrivatecaProjectsLocationsCertificateAuthoritiesTestIamPermissionsRequest',
-        response_type_name=u'TestIamPermissionsResponse',
+        relative_path='v1alpha1/{+resource}:testIamPermissions',
+        request_field='testIamPermissionsRequest',
+        request_type_name='PrivatecaProjectsLocationsCertificateAuthoritiesTestIamPermissionsRequest',
+        response_type_name='TestIamPermissionsResponse',
         supports_download=False,
     )
 
   class ProjectsLocationsOperationsService(base_api.BaseApiService):
     """Service class for the projects_locations_operations resource."""
 
-    _NAME = u'projects_locations_operations'
+    _NAME = 'projects_locations_operations'
 
     def __init__(self, client):
       super(PrivatecaV1alpha1.ProjectsLocationsOperationsService, self).__init__(client)
@@ -954,16 +954,16 @@ corresponding to `Code.CANCELLED`.
           config, request, global_params=global_params)
 
     Cancel.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha1/projects/{projectsId}/locations/{locationsId}/operations/{operationsId}:cancel',
-        http_method=u'POST',
-        method_id=u'privateca.projects.locations.operations.cancel',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/operations/{operationsId}:cancel',
+        http_method='POST',
+        method_id='privateca.projects.locations.operations.cancel',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1alpha1/{+name}:cancel',
-        request_field=u'cancelOperationRequest',
-        request_type_name=u'PrivatecaProjectsLocationsOperationsCancelRequest',
-        response_type_name=u'Empty',
+        relative_path='v1alpha1/{+name}:cancel',
+        request_field='cancelOperationRequest',
+        request_type_name='PrivatecaProjectsLocationsOperationsCancelRequest',
+        response_type_name='Empty',
         supports_download=False,
     )
 
@@ -984,16 +984,16 @@ operation. If the server doesn't support this method, it returns
           config, request, global_params=global_params)
 
     Delete.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha1/projects/{projectsId}/locations/{locationsId}/operations/{operationsId}',
-        http_method=u'DELETE',
-        method_id=u'privateca.projects.locations.operations.delete',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/operations/{operationsId}',
+        http_method='DELETE',
+        method_id='privateca.projects.locations.operations.delete',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1alpha1/{+name}',
+        relative_path='v1alpha1/{+name}',
         request_field='',
-        request_type_name=u'PrivatecaProjectsLocationsOperationsDeleteRequest',
-        response_type_name=u'Empty',
+        request_type_name='PrivatecaProjectsLocationsOperationsDeleteRequest',
+        response_type_name='Empty',
         supports_download=False,
     )
 
@@ -1013,16 +1013,16 @@ service.
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha1/projects/{projectsId}/locations/{locationsId}/operations/{operationsId}',
-        http_method=u'GET',
-        method_id=u'privateca.projects.locations.operations.get',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/operations/{operationsId}',
+        http_method='GET',
+        method_id='privateca.projects.locations.operations.get',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1alpha1/{+name}',
+        relative_path='v1alpha1/{+name}',
         request_field='',
-        request_type_name=u'PrivatecaProjectsLocationsOperationsGetRequest',
-        response_type_name=u'Operation',
+        request_type_name='PrivatecaProjectsLocationsOperationsGetRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -1049,23 +1049,23 @@ is the parent resource, without the operations collection id.
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha1/projects/{projectsId}/locations/{locationsId}/operations',
-        http_method=u'GET',
-        method_id=u'privateca.projects.locations.operations.list',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[u'filter', u'pageSize', u'pageToken'],
-        relative_path=u'v1alpha1/{+name}/operations',
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/operations',
+        http_method='GET',
+        method_id='privateca.projects.locations.operations.list',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['filter', 'pageSize', 'pageToken'],
+        relative_path='v1alpha1/{+name}/operations',
         request_field='',
-        request_type_name=u'PrivatecaProjectsLocationsOperationsListRequest',
-        response_type_name=u'ListOperationsResponse',
+        request_type_name='PrivatecaProjectsLocationsOperationsListRequest',
+        response_type_name='ListOperationsResponse',
         supports_download=False,
     )
 
   class ProjectsLocationsReusableConfigsService(base_api.BaseApiService):
     """Service class for the projects_locations_reusableConfigs resource."""
 
-    _NAME = u'projects_locations_reusableConfigs'
+    _NAME = 'projects_locations_reusableConfigs'
 
     def __init__(self, client):
       super(PrivatecaV1alpha1.ProjectsLocationsReusableConfigsService, self).__init__(client)
@@ -1086,16 +1086,16 @@ is the parent resource, without the operations collection id.
           config, request, global_params=global_params)
 
     Create.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha1/projects/{projectsId}/locations/{locationsId}/reusableConfigs',
-        http_method=u'POST',
-        method_id=u'privateca.projects.locations.reusableConfigs.create',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'requestId', u'reusableConfigId'],
-        relative_path=u'v1alpha1/{+parent}/reusableConfigs',
-        request_field=u'reusableConfig',
-        request_type_name=u'PrivatecaProjectsLocationsReusableConfigsCreateRequest',
-        response_type_name=u'Operation',
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/reusableConfigs',
+        http_method='POST',
+        method_id='privateca.projects.locations.reusableConfigs.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['requestId', 'reusableConfigId'],
+        relative_path='v1alpha1/{+parent}/reusableConfigs',
+        request_field='reusableConfig',
+        request_type_name='PrivatecaProjectsLocationsReusableConfigsCreateRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -1113,16 +1113,16 @@ is the parent resource, without the operations collection id.
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha1/projects/{projectsId}/locations/{locationsId}/reusableConfigs/{reusableConfigsId}',
-        http_method=u'GET',
-        method_id=u'privateca.projects.locations.reusableConfigs.get',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/reusableConfigs/{reusableConfigsId}',
+        http_method='GET',
+        method_id='privateca.projects.locations.reusableConfigs.get',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1alpha1/{+name}',
+        relative_path='v1alpha1/{+name}',
         request_field='',
-        request_type_name=u'PrivatecaProjectsLocationsReusableConfigsGetRequest',
-        response_type_name=u'ReusableConfig',
+        request_type_name='PrivatecaProjectsLocationsReusableConfigsGetRequest',
+        response_type_name='ReusableConfig',
         supports_download=False,
     )
 
@@ -1142,16 +1142,16 @@ set.
           config, request, global_params=global_params)
 
     GetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha1/projects/{projectsId}/locations/{locationsId}/reusableConfigs/{reusableConfigsId}:getIamPolicy',
-        http_method=u'GET',
-        method_id=u'privateca.projects.locations.reusableConfigs.getIamPolicy',
-        ordered_params=[u'resource'],
-        path_params=[u'resource'],
-        query_params=[u'options_requestedPolicyVersion'],
-        relative_path=u'v1alpha1/{+resource}:getIamPolicy',
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/reusableConfigs/{reusableConfigsId}:getIamPolicy',
+        http_method='GET',
+        method_id='privateca.projects.locations.reusableConfigs.getIamPolicy',
+        ordered_params=['resource'],
+        path_params=['resource'],
+        query_params=['options_requestedPolicyVersion'],
+        relative_path='v1alpha1/{+resource}:getIamPolicy',
         request_field='',
-        request_type_name=u'PrivatecaProjectsLocationsReusableConfigsGetIamPolicyRequest',
-        response_type_name=u'Policy',
+        request_type_name='PrivatecaProjectsLocationsReusableConfigsGetIamPolicyRequest',
+        response_type_name='Policy',
         supports_download=False,
     )
 
@@ -1169,16 +1169,16 @@ set.
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha1/projects/{projectsId}/locations/{locationsId}/reusableConfigs',
-        http_method=u'GET',
-        method_id=u'privateca.projects.locations.reusableConfigs.list',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'filter', u'orderBy', u'pageSize', u'pageToken'],
-        relative_path=u'v1alpha1/{+parent}/reusableConfigs',
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/reusableConfigs',
+        http_method='GET',
+        method_id='privateca.projects.locations.reusableConfigs.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'orderBy', 'pageSize', 'pageToken'],
+        relative_path='v1alpha1/{+parent}/reusableConfigs',
         request_field='',
-        request_type_name=u'PrivatecaProjectsLocationsReusableConfigsListRequest',
-        response_type_name=u'ListReusableConfigsResponse',
+        request_type_name='PrivatecaProjectsLocationsReusableConfigsListRequest',
+        response_type_name='ListReusableConfigsResponse',
         supports_download=False,
     )
 
@@ -1196,16 +1196,16 @@ set.
           config, request, global_params=global_params)
 
     Patch.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha1/projects/{projectsId}/locations/{locationsId}/reusableConfigs/{reusableConfigsId}',
-        http_method=u'PATCH',
-        method_id=u'privateca.projects.locations.reusableConfigs.patch',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[u'requestId', u'updateMask'],
-        relative_path=u'v1alpha1/{+name}',
-        request_field=u'reusableConfig',
-        request_type_name=u'PrivatecaProjectsLocationsReusableConfigsPatchRequest',
-        response_type_name=u'Operation',
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/reusableConfigs/{reusableConfigsId}',
+        http_method='PATCH',
+        method_id='privateca.projects.locations.reusableConfigs.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['requestId', 'updateMask'],
+        relative_path='v1alpha1/{+name}',
+        request_field='reusableConfig',
+        request_type_name='PrivatecaProjectsLocationsReusableConfigsPatchRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -1226,16 +1226,16 @@ Can return `NOT_FOUND`, `INVALID_ARGUMENT`, and `PERMISSION_DENIED` errors.
           config, request, global_params=global_params)
 
     SetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha1/projects/{projectsId}/locations/{locationsId}/reusableConfigs/{reusableConfigsId}:setIamPolicy',
-        http_method=u'POST',
-        method_id=u'privateca.projects.locations.reusableConfigs.setIamPolicy',
-        ordered_params=[u'resource'],
-        path_params=[u'resource'],
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/reusableConfigs/{reusableConfigsId}:setIamPolicy',
+        http_method='POST',
+        method_id='privateca.projects.locations.reusableConfigs.setIamPolicy',
+        ordered_params=['resource'],
+        path_params=['resource'],
         query_params=[],
-        relative_path=u'v1alpha1/{+resource}:setIamPolicy',
-        request_field=u'setIamPolicyRequest',
-        request_type_name=u'PrivatecaProjectsLocationsReusableConfigsSetIamPolicyRequest',
-        response_type_name=u'Policy',
+        relative_path='v1alpha1/{+resource}:setIamPolicy',
+        request_field='setIamPolicyRequest',
+        request_type_name='PrivatecaProjectsLocationsReusableConfigsSetIamPolicyRequest',
+        response_type_name='Policy',
         supports_download=False,
     )
 
@@ -1259,23 +1259,23 @@ may "fail open" without warning.
           config, request, global_params=global_params)
 
     TestIamPermissions.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha1/projects/{projectsId}/locations/{locationsId}/reusableConfigs/{reusableConfigsId}:testIamPermissions',
-        http_method=u'POST',
-        method_id=u'privateca.projects.locations.reusableConfigs.testIamPermissions',
-        ordered_params=[u'resource'],
-        path_params=[u'resource'],
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/reusableConfigs/{reusableConfigsId}:testIamPermissions',
+        http_method='POST',
+        method_id='privateca.projects.locations.reusableConfigs.testIamPermissions',
+        ordered_params=['resource'],
+        path_params=['resource'],
         query_params=[],
-        relative_path=u'v1alpha1/{+resource}:testIamPermissions',
-        request_field=u'testIamPermissionsRequest',
-        request_type_name=u'PrivatecaProjectsLocationsReusableConfigsTestIamPermissionsRequest',
-        response_type_name=u'TestIamPermissionsResponse',
+        relative_path='v1alpha1/{+resource}:testIamPermissions',
+        request_field='testIamPermissionsRequest',
+        request_type_name='PrivatecaProjectsLocationsReusableConfigsTestIamPermissionsRequest',
+        response_type_name='TestIamPermissionsResponse',
         supports_download=False,
     )
 
   class ProjectsLocationsService(base_api.BaseApiService):
     """Service class for the projects_locations resource."""
 
-    _NAME = u'projects_locations'
+    _NAME = 'projects_locations'
 
     def __init__(self, client):
       super(PrivatecaV1alpha1.ProjectsLocationsService, self).__init__(client)
@@ -1296,16 +1296,16 @@ may "fail open" without warning.
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha1/projects/{projectsId}/locations/{locationsId}',
-        http_method=u'GET',
-        method_id=u'privateca.projects.locations.get',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}',
+        http_method='GET',
+        method_id='privateca.projects.locations.get',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1alpha1/{+name}',
+        relative_path='v1alpha1/{+name}',
         request_field='',
-        request_type_name=u'PrivatecaProjectsLocationsGetRequest',
-        response_type_name=u'Location',
+        request_type_name='PrivatecaProjectsLocationsGetRequest',
+        response_type_name='Location',
         supports_download=False,
     )
 
@@ -1323,23 +1323,23 @@ may "fail open" without warning.
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha1/projects/{projectsId}/locations',
-        http_method=u'GET',
-        method_id=u'privateca.projects.locations.list',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[u'filter', u'pageSize', u'pageToken'],
-        relative_path=u'v1alpha1/{+name}/locations',
+        flat_path='v1alpha1/projects/{projectsId}/locations',
+        http_method='GET',
+        method_id='privateca.projects.locations.list',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['filter', 'pageSize', 'pageToken'],
+        relative_path='v1alpha1/{+name}/locations',
         request_field='',
-        request_type_name=u'PrivatecaProjectsLocationsListRequest',
-        response_type_name=u'ListLocationsResponse',
+        request_type_name='PrivatecaProjectsLocationsListRequest',
+        response_type_name='ListLocationsResponse',
         supports_download=False,
     )
 
   class ProjectsService(base_api.BaseApiService):
     """Service class for the projects resource."""
 
-    _NAME = u'projects'
+    _NAME = 'projects'
 
     def __init__(self, client):
       super(PrivatecaV1alpha1.ProjectsService, self).__init__(client)

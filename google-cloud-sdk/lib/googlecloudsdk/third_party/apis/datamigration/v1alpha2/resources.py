@@ -28,7 +28,7 @@ class Collections(enum.Enum):
       'projects',
       'projects/{projectsId}',
       {},
-      [u'projectsId'],
+      ['projectsId'],
       True
   )
   PROJECTS_LOCATIONS = (
@@ -38,7 +38,7 @@ class Collections(enum.Enum):
           '':
               'projects/{projectsId}/locations/{locationsId}',
       },
-      [u'name'],
+      ['name'],
       True
   )
   PROJECTS_LOCATIONS_CONNECTIONPROFILES = (
@@ -49,7 +49,7 @@ class Collections(enum.Enum):
               'projects/{projectsId}/locations/{locationsId}/'
               'connectionProfiles/{connectionProfilesId}',
       },
-      [u'name'],
+      ['name'],
       True
   )
   PROJECTS_LOCATIONS_MIGRATIONJOBS = (
@@ -60,7 +60,7 @@ class Collections(enum.Enum):
               'projects/{projectsId}/locations/{locationsId}/migrationJobs/'
               '{migrationJobsId}',
       },
-      [u'name'],
+      ['name'],
       True
   )
   PROJECTS_LOCATIONS_OPERATIONS = (
@@ -71,7 +71,7 @@ class Collections(enum.Enum):
               'projects/{projectsId}/locations/{locationsId}/operations/'
               '{operationsId}',
       },
-      [u'name'],
+      ['name'],
       True
   )
 

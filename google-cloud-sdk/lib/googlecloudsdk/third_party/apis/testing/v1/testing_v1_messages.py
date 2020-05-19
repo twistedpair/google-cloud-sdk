@@ -83,10 +83,11 @@ class AndroidInstrumentationTest(_messages.Message):
       Orchestrator or not. ** Orchestrator is only compatible with
       AndroidJUnitRunner version 1.0 or higher! ** Orchestrator offers the
       following benefits:  - No shared state  - Crashes are isolated  - Logs
-      are scoped per test  See <https://developer.android.com/training/testing
-      /junit-runner.html#using-android-test-orchestrator> for more information
-      about Android Test Orchestrator.  If not set, the test will be run
-      without the orchestrator.
+      are scoped per test  See
+      <https://developer.android.com/training/testing/junit-runner.html#using-
+      android-test-orchestrator> for more information about Android Test
+      Orchestrator.  If not set, the test will be run without the
+      orchestrator.
 
   Fields:
     appApk: The APK for the application under test.
@@ -211,7 +212,8 @@ class AndroidModel(_messages.Message):
     supportedVersionIds: The set of Android versions this device supports.
     tags: Tags for this dimension. Examples: "default", "preview",
       "deprecated".
-    thumbnailUrl: URL of a thumbnail image of the device.
+    thumbnailUrl: URL of a thumbnail image (photo) of the device. e.g.
+      https://lh3.googleusercontent.com/90WcauuJiCYABEl8U0lcZeuS5STUbf2yW...
   """
 
   class FormFactorValueValuesEnum(_messages.Enum):
@@ -705,7 +707,7 @@ class IosDeviceList(_messages.Message):
 
 
 class IosModel(_messages.Message):
-  r"""A description of an iOS device tests may be run on. Next tag: 12
+  r"""A description of an iOS device tests may be run on. Next tag: 13
 
   Enums:
     FormFactorValueValuesEnum: Whether this device is a phone, tablet,
@@ -1132,7 +1134,7 @@ class StandardQueryParameters(_messages.Message):
 
   f__xgafv = _messages.EnumField('FXgafvValueValuesEnum', 1)
   access_token = _messages.StringField(2)
-  alt = _messages.EnumField('AltValueValuesEnum', 3, default=u'json')
+  alt = _messages.EnumField('AltValueValuesEnum', 3, default='json')
   callback = _messages.StringField(4)
   fields = _messages.StringField(5)
   key = _messages.StringField(6)
@@ -1330,8 +1332,8 @@ class TestMatrix(_messages.Message):
       NO_MANIFEST: The AndroidManifest.xml could not be found.
       NO_PACKAGE_NAME: The APK manifest does not declare a package name.
       INVALID_PACKAGE_NAME: The APK application ID (aka package name) is
-        invalid. See also https://developer.android.com/studio/build
-        /application-id
+        invalid. See also
+        https://developer.android.com/studio/build/application-id
       TEST_SAME_AS_APP: The test package and app package are the same.
       NO_INSTRUMENTATION: The test apk does not declare an instrumentation.
       NO_SIGNATURE: The input app apk does not have a signature.

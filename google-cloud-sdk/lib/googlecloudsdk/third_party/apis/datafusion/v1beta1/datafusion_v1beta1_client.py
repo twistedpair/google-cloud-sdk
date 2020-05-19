@@ -8,17 +8,17 @@ class DatafusionV1beta1(base_api.BaseApiClient):
   """Generated client library for service datafusion version v1beta1."""
 
   MESSAGES_MODULE = messages
-  BASE_URL = u'https://datafusion.googleapis.com/'
-  MTLS_BASE_URL = u'https://datafusion.mtls.googleapis.com/'
+  BASE_URL = 'https://datafusion.googleapis.com/'
+  MTLS_BASE_URL = 'https://datafusion.mtls.googleapis.com/'
 
-  _PACKAGE = u'datafusion'
-  _SCOPES = [u'https://www.googleapis.com/auth/cloud-platform']
-  _VERSION = u'v1beta1'
+  _PACKAGE = 'datafusion'
+  _SCOPES = ['https://www.googleapis.com/auth/cloud-platform']
+  _VERSION = 'v1beta1'
   _CLIENT_ID = '1042881264118.apps.googleusercontent.com'
   _CLIENT_SECRET = 'x_Tw5K8nnjoRAqULM9PFAC2b'
-  _USER_AGENT = u'google-cloud-sdk'
-  _CLIENT_CLASS_NAME = u'DatafusionV1beta1'
-  _URL_VERSION = u'v1beta1'
+  _USER_AGENT = 'google-cloud-sdk'
+  _CLIENT_CLASS_NAME = 'DatafusionV1beta1'
+  _URL_VERSION = 'v1beta1'
   _API_KEY = None
 
   def __init__(self, url='', credentials=None,
@@ -45,7 +45,7 @@ class DatafusionV1beta1(base_api.BaseApiClient):
   class ProjectsLocationsInstancesService(base_api.BaseApiService):
     """Service class for the projects_locations_instances resource."""
 
-    _NAME = u'projects_locations_instances'
+    _NAME = 'projects_locations_instances'
 
     def __init__(self, client):
       super(DatafusionV1beta1.ProjectsLocationsInstancesService, self).__init__(client)
@@ -66,16 +66,16 @@ class DatafusionV1beta1(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Create.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/projects/{projectsId}/locations/{locationsId}/instances',
-        http_method=u'POST',
-        method_id=u'datafusion.projects.locations.instances.create',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'instanceId'],
-        relative_path=u'v1beta1/{+parent}/instances',
-        request_field=u'instance',
-        request_type_name=u'DatafusionProjectsLocationsInstancesCreateRequest',
-        response_type_name=u'Operation',
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/instances',
+        http_method='POST',
+        method_id='datafusion.projects.locations.instances.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['instanceId'],
+        relative_path='v1beta1/{+parent}/instances',
+        request_field='instance',
+        request_type_name='DatafusionProjectsLocationsInstancesCreateRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -93,16 +93,16 @@ class DatafusionV1beta1(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Delete.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/projects/{projectsId}/locations/{locationsId}/instances/{instancesId}',
-        http_method=u'DELETE',
-        method_id=u'datafusion.projects.locations.instances.delete',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/instances/{instancesId}',
+        http_method='DELETE',
+        method_id='datafusion.projects.locations.instances.delete',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1beta1/{+name}',
+        relative_path='v1beta1/{+name}',
         request_field='',
-        request_type_name=u'DatafusionProjectsLocationsInstancesDeleteRequest',
-        response_type_name=u'Operation',
+        request_type_name='DatafusionProjectsLocationsInstancesDeleteRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -120,16 +120,16 @@ class DatafusionV1beta1(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/projects/{projectsId}/locations/{locationsId}/instances/{instancesId}',
-        http_method=u'GET',
-        method_id=u'datafusion.projects.locations.instances.get',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/instances/{instancesId}',
+        http_method='GET',
+        method_id='datafusion.projects.locations.instances.get',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1beta1/{+name}',
+        relative_path='v1beta1/{+name}',
         request_field='',
-        request_type_name=u'DatafusionProjectsLocationsInstancesGetRequest',
-        response_type_name=u'Instance',
+        request_type_name='DatafusionProjectsLocationsInstancesGetRequest',
+        response_type_name='Instance',
         supports_download=False,
     )
 
@@ -149,16 +149,16 @@ set.
           config, request, global_params=global_params)
 
     GetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/projects/{projectsId}/locations/{locationsId}/instances/{instancesId}:getIamPolicy',
-        http_method=u'GET',
-        method_id=u'datafusion.projects.locations.instances.getIamPolicy',
-        ordered_params=[u'resource'],
-        path_params=[u'resource'],
-        query_params=[u'options_requestedPolicyVersion'],
-        relative_path=u'v1beta1/{+resource}:getIamPolicy',
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/instances/{instancesId}:getIamPolicy',
+        http_method='GET',
+        method_id='datafusion.projects.locations.instances.getIamPolicy',
+        ordered_params=['resource'],
+        path_params=['resource'],
+        query_params=['options_requestedPolicyVersion'],
+        relative_path='v1beta1/{+resource}:getIamPolicy',
         request_field='',
-        request_type_name=u'DatafusionProjectsLocationsInstancesGetIamPolicyRequest',
-        response_type_name=u'Policy',
+        request_type_name='DatafusionProjectsLocationsInstancesGetIamPolicyRequest',
+        response_type_name='Policy',
         supports_download=False,
     )
 
@@ -176,16 +176,16 @@ set.
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/projects/{projectsId}/locations/{locationsId}/instances',
-        http_method=u'GET',
-        method_id=u'datafusion.projects.locations.instances.list',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'filter', u'orderBy', u'pageSize', u'pageToken'],
-        relative_path=u'v1beta1/{+parent}/instances',
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/instances',
+        http_method='GET',
+        method_id='datafusion.projects.locations.instances.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'orderBy', 'pageSize', 'pageToken'],
+        relative_path='v1beta1/{+parent}/instances',
         request_field='',
-        request_type_name=u'DatafusionProjectsLocationsInstancesListRequest',
-        response_type_name=u'ListInstancesResponse',
+        request_type_name='DatafusionProjectsLocationsInstancesListRequest',
+        response_type_name='ListInstancesResponse',
         supports_download=False,
     )
 
@@ -203,16 +203,16 @@ set.
           config, request, global_params=global_params)
 
     Patch.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/projects/{projectsId}/locations/{locationsId}/instances/{instancesId}',
-        http_method=u'PATCH',
-        method_id=u'datafusion.projects.locations.instances.patch',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[u'updateMask'],
-        relative_path=u'v1beta1/{+name}',
-        request_field=u'instance',
-        request_type_name=u'DatafusionProjectsLocationsInstancesPatchRequest',
-        response_type_name=u'Operation',
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/instances/{instancesId}',
+        http_method='PATCH',
+        method_id='datafusion.projects.locations.instances.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v1beta1/{+name}',
+        request_field='instance',
+        request_type_name='DatafusionProjectsLocationsInstancesPatchRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -231,16 +231,16 @@ At the end of an operation instance is fully restarted.
           config, request, global_params=global_params)
 
     Restart.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/projects/{projectsId}/locations/{locationsId}/instances/{instancesId}:restart',
-        http_method=u'POST',
-        method_id=u'datafusion.projects.locations.instances.restart',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/instances/{instancesId}:restart',
+        http_method='POST',
+        method_id='datafusion.projects.locations.instances.restart',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1beta1/{+name}:restart',
-        request_field=u'restartInstanceRequest',
-        request_type_name=u'DatafusionProjectsLocationsInstancesRestartRequest',
-        response_type_name=u'Operation',
+        relative_path='v1beta1/{+name}:restart',
+        request_field='restartInstanceRequest',
+        request_type_name='DatafusionProjectsLocationsInstancesRestartRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -261,16 +261,16 @@ Can return `NOT_FOUND`, `INVALID_ARGUMENT`, and `PERMISSION_DENIED` errors.
           config, request, global_params=global_params)
 
     SetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/projects/{projectsId}/locations/{locationsId}/instances/{instancesId}:setIamPolicy',
-        http_method=u'POST',
-        method_id=u'datafusion.projects.locations.instances.setIamPolicy',
-        ordered_params=[u'resource'],
-        path_params=[u'resource'],
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/instances/{instancesId}:setIamPolicy',
+        http_method='POST',
+        method_id='datafusion.projects.locations.instances.setIamPolicy',
+        ordered_params=['resource'],
+        path_params=['resource'],
         query_params=[],
-        relative_path=u'v1beta1/{+resource}:setIamPolicy',
-        request_field=u'setIamPolicyRequest',
-        request_type_name=u'DatafusionProjectsLocationsInstancesSetIamPolicyRequest',
-        response_type_name=u'Policy',
+        relative_path='v1beta1/{+resource}:setIamPolicy',
+        request_field='setIamPolicyRequest',
+        request_type_name='DatafusionProjectsLocationsInstancesSetIamPolicyRequest',
+        response_type_name='Policy',
         supports_download=False,
     )
 
@@ -294,16 +294,16 @@ may "fail open" without warning.
           config, request, global_params=global_params)
 
     TestIamPermissions.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/projects/{projectsId}/locations/{locationsId}/instances/{instancesId}:testIamPermissions',
-        http_method=u'POST',
-        method_id=u'datafusion.projects.locations.instances.testIamPermissions',
-        ordered_params=[u'resource'],
-        path_params=[u'resource'],
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/instances/{instancesId}:testIamPermissions',
+        http_method='POST',
+        method_id='datafusion.projects.locations.instances.testIamPermissions',
+        ordered_params=['resource'],
+        path_params=['resource'],
         query_params=[],
-        relative_path=u'v1beta1/{+resource}:testIamPermissions',
-        request_field=u'testIamPermissionsRequest',
-        request_type_name=u'DatafusionProjectsLocationsInstancesTestIamPermissionsRequest',
-        response_type_name=u'TestIamPermissionsResponse',
+        relative_path='v1beta1/{+resource}:testIamPermissions',
+        request_field='testIamPermissionsRequest',
+        request_type_name='DatafusionProjectsLocationsInstancesTestIamPermissionsRequest',
+        response_type_name='TestIamPermissionsResponse',
         supports_download=False,
     )
 
@@ -322,23 +322,23 @@ At the end of an operation instance is fully upgraded.
           config, request, global_params=global_params)
 
     Upgrade.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/projects/{projectsId}/locations/{locationsId}/instances/{instancesId}:upgrade',
-        http_method=u'POST',
-        method_id=u'datafusion.projects.locations.instances.upgrade',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/instances/{instancesId}:upgrade',
+        http_method='POST',
+        method_id='datafusion.projects.locations.instances.upgrade',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1beta1/{+name}:upgrade',
-        request_field=u'upgradeInstanceRequest',
-        request_type_name=u'DatafusionProjectsLocationsInstancesUpgradeRequest',
-        response_type_name=u'Operation',
+        relative_path='v1beta1/{+name}:upgrade',
+        request_field='upgradeInstanceRequest',
+        request_type_name='DatafusionProjectsLocationsInstancesUpgradeRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
   class ProjectsLocationsOperationsService(base_api.BaseApiService):
     """Service class for the projects_locations_operations resource."""
 
-    _NAME = u'projects_locations_operations'
+    _NAME = 'projects_locations_operations'
 
     def __init__(self, client):
       super(DatafusionV1beta1.ProjectsLocationsOperationsService, self).__init__(client)
@@ -368,16 +368,16 @@ corresponding to `Code.CANCELLED`.
           config, request, global_params=global_params)
 
     Cancel.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/projects/{projectsId}/locations/{locationsId}/operations/{operationsId}:cancel',
-        http_method=u'POST',
-        method_id=u'datafusion.projects.locations.operations.cancel',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/operations/{operationsId}:cancel',
+        http_method='POST',
+        method_id='datafusion.projects.locations.operations.cancel',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1beta1/{+name}:cancel',
-        request_field=u'cancelOperationRequest',
-        request_type_name=u'DatafusionProjectsLocationsOperationsCancelRequest',
-        response_type_name=u'Empty',
+        relative_path='v1beta1/{+name}:cancel',
+        request_field='cancelOperationRequest',
+        request_type_name='DatafusionProjectsLocationsOperationsCancelRequest',
+        response_type_name='Empty',
         supports_download=False,
     )
 
@@ -398,16 +398,16 @@ operation. If the server doesn't support this method, it returns
           config, request, global_params=global_params)
 
     Delete.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/projects/{projectsId}/locations/{locationsId}/operations/{operationsId}',
-        http_method=u'DELETE',
-        method_id=u'datafusion.projects.locations.operations.delete',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/operations/{operationsId}',
+        http_method='DELETE',
+        method_id='datafusion.projects.locations.operations.delete',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1beta1/{+name}',
+        relative_path='v1beta1/{+name}',
         request_field='',
-        request_type_name=u'DatafusionProjectsLocationsOperationsDeleteRequest',
-        response_type_name=u'Empty',
+        request_type_name='DatafusionProjectsLocationsOperationsDeleteRequest',
+        response_type_name='Empty',
         supports_download=False,
     )
 
@@ -427,16 +427,16 @@ service.
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/projects/{projectsId}/locations/{locationsId}/operations/{operationsId}',
-        http_method=u'GET',
-        method_id=u'datafusion.projects.locations.operations.get',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/operations/{operationsId}',
+        http_method='GET',
+        method_id='datafusion.projects.locations.operations.get',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1beta1/{+name}',
+        relative_path='v1beta1/{+name}',
         request_field='',
-        request_type_name=u'DatafusionProjectsLocationsOperationsGetRequest',
-        response_type_name=u'Operation',
+        request_type_name='DatafusionProjectsLocationsOperationsGetRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -463,23 +463,23 @@ is the parent resource, without the operations collection id.
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/projects/{projectsId}/locations/{locationsId}/operations',
-        http_method=u'GET',
-        method_id=u'datafusion.projects.locations.operations.list',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[u'filter', u'pageSize', u'pageToken'],
-        relative_path=u'v1beta1/{+name}/operations',
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/operations',
+        http_method='GET',
+        method_id='datafusion.projects.locations.operations.list',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['filter', 'pageSize', 'pageToken'],
+        relative_path='v1beta1/{+name}/operations',
         request_field='',
-        request_type_name=u'DatafusionProjectsLocationsOperationsListRequest',
-        response_type_name=u'ListOperationsResponse',
+        request_type_name='DatafusionProjectsLocationsOperationsListRequest',
+        response_type_name='ListOperationsResponse',
         supports_download=False,
     )
 
   class ProjectsLocationsVersionsService(base_api.BaseApiService):
     """Service class for the projects_locations_versions resource."""
 
-    _NAME = u'projects_locations_versions'
+    _NAME = 'projects_locations_versions'
 
     def __init__(self, client):
       super(DatafusionV1beta1.ProjectsLocationsVersionsService, self).__init__(client)
@@ -501,23 +501,23 @@ and location.
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/projects/{projectsId}/locations/{locationsId}/versions',
-        http_method=u'GET',
-        method_id=u'datafusion.projects.locations.versions.list',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'pageSize', u'pageToken'],
-        relative_path=u'v1beta1/{+parent}/versions',
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/versions',
+        http_method='GET',
+        method_id='datafusion.projects.locations.versions.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['latestPatchOnly', 'pageSize', 'pageToken'],
+        relative_path='v1beta1/{+parent}/versions',
         request_field='',
-        request_type_name=u'DatafusionProjectsLocationsVersionsListRequest',
-        response_type_name=u'ListAvailableVersionsResponse',
+        request_type_name='DatafusionProjectsLocationsVersionsListRequest',
+        response_type_name='ListAvailableVersionsResponse',
         supports_download=False,
     )
 
   class ProjectsLocationsService(base_api.BaseApiService):
     """Service class for the projects_locations resource."""
 
-    _NAME = u'projects_locations'
+    _NAME = 'projects_locations'
 
     def __init__(self, client):
       super(DatafusionV1beta1.ProjectsLocationsService, self).__init__(client)
@@ -538,16 +538,16 @@ and location.
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/projects/{projectsId}/locations/{locationsId}',
-        http_method=u'GET',
-        method_id=u'datafusion.projects.locations.get',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}',
+        http_method='GET',
+        method_id='datafusion.projects.locations.get',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1beta1/{+name}',
+        relative_path='v1beta1/{+name}',
         request_field='',
-        request_type_name=u'DatafusionProjectsLocationsGetRequest',
-        response_type_name=u'Location',
+        request_type_name='DatafusionProjectsLocationsGetRequest',
+        response_type_name='Location',
         supports_download=False,
     )
 
@@ -565,23 +565,23 @@ and location.
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/projects/{projectsId}/locations',
-        http_method=u'GET',
-        method_id=u'datafusion.projects.locations.list',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[u'filter', u'includeUnrevealedLocations', u'pageSize', u'pageToken'],
-        relative_path=u'v1beta1/{+name}/locations',
+        flat_path='v1beta1/projects/{projectsId}/locations',
+        http_method='GET',
+        method_id='datafusion.projects.locations.list',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['filter', 'includeUnrevealedLocations', 'pageSize', 'pageToken'],
+        relative_path='v1beta1/{+name}/locations',
         request_field='',
-        request_type_name=u'DatafusionProjectsLocationsListRequest',
-        response_type_name=u'ListLocationsResponse',
+        request_type_name='DatafusionProjectsLocationsListRequest',
+        response_type_name='ListLocationsResponse',
         supports_download=False,
     )
 
   class ProjectsService(base_api.BaseApiService):
     """Service class for the projects resource."""
 
-    _NAME = u'projects'
+    _NAME = 'projects'
 
     def __init__(self, client):
       super(DatafusionV1beta1.ProjectsService, self).__init__(client)

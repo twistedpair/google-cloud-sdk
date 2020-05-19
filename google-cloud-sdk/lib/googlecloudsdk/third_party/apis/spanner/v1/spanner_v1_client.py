@@ -8,17 +8,17 @@ class SpannerV1(base_api.BaseApiClient):
   """Generated client library for service spanner version v1."""
 
   MESSAGES_MODULE = messages
-  BASE_URL = u'https://spanner.googleapis.com/'
-  MTLS_BASE_URL = u'https://spanner.mtls.googleapis.com/'
+  BASE_URL = 'https://spanner.googleapis.com/'
+  MTLS_BASE_URL = 'https://spanner.mtls.googleapis.com/'
 
-  _PACKAGE = u'spanner'
-  _SCOPES = [u'https://www.googleapis.com/auth/cloud-platform', u'https://www.googleapis.com/auth/spanner.admin', u'https://www.googleapis.com/auth/spanner.data']
-  _VERSION = u'v1'
+  _PACKAGE = 'spanner'
+  _SCOPES = ['https://www.googleapis.com/auth/cloud-platform', 'https://www.googleapis.com/auth/spanner.admin', 'https://www.googleapis.com/auth/spanner.data']
+  _VERSION = 'v1'
   _CLIENT_ID = '1042881264118.apps.googleusercontent.com'
   _CLIENT_SECRET = 'x_Tw5K8nnjoRAqULM9PFAC2b'
-  _USER_AGENT = u'google-cloud-sdk'
-  _CLIENT_CLASS_NAME = u'SpannerV1'
-  _URL_VERSION = u'v1'
+  _USER_AGENT = 'google-cloud-sdk'
+  _CLIENT_CLASS_NAME = 'SpannerV1'
+  _URL_VERSION = 'v1'
   _API_KEY = None
 
   def __init__(self, url='', credentials=None,
@@ -51,7 +51,7 @@ class SpannerV1(base_api.BaseApiClient):
   class ProjectsInstanceConfigsService(base_api.BaseApiService):
     """Service class for the projects_instanceConfigs resource."""
 
-    _NAME = u'projects_instanceConfigs'
+    _NAME = 'projects_instanceConfigs'
 
     def __init__(self, client):
       super(SpannerV1.ProjectsInstanceConfigsService, self).__init__(client)
@@ -72,16 +72,16 @@ class SpannerV1(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/instanceConfigs/{instanceConfigsId}',
-        http_method=u'GET',
-        method_id=u'spanner.projects.instanceConfigs.get',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1/projects/{projectsId}/instanceConfigs/{instanceConfigsId}',
+        http_method='GET',
+        method_id='spanner.projects.instanceConfigs.get',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1/{+name}',
+        relative_path='v1/{+name}',
         request_field='',
-        request_type_name=u'SpannerProjectsInstanceConfigsGetRequest',
-        response_type_name=u'InstanceConfig',
+        request_type_name='SpannerProjectsInstanceConfigsGetRequest',
+        response_type_name='InstanceConfig',
         supports_download=False,
     )
 
@@ -99,23 +99,23 @@ class SpannerV1(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/instanceConfigs',
-        http_method=u'GET',
-        method_id=u'spanner.projects.instanceConfigs.list',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'pageSize', u'pageToken'],
-        relative_path=u'v1/{+parent}/instanceConfigs',
+        flat_path='v1/projects/{projectsId}/instanceConfigs',
+        http_method='GET',
+        method_id='spanner.projects.instanceConfigs.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v1/{+parent}/instanceConfigs',
         request_field='',
-        request_type_name=u'SpannerProjectsInstanceConfigsListRequest',
-        response_type_name=u'ListInstanceConfigsResponse',
+        request_type_name='SpannerProjectsInstanceConfigsListRequest',
+        response_type_name='ListInstanceConfigsResponse',
         supports_download=False,
     )
 
   class ProjectsInstancesBackupOperationsService(base_api.BaseApiService):
     """Service class for the projects_instances_backupOperations resource."""
 
-    _NAME = u'projects_instances_backupOperations'
+    _NAME = 'projects_instances_backupOperations'
 
     def __init__(self, client):
       super(SpannerV1.ProjectsInstancesBackupOperationsService, self).__init__(client)
@@ -145,23 +145,23 @@ from the most recently started operation.
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/instances/{instancesId}/backupOperations',
-        http_method=u'GET',
-        method_id=u'spanner.projects.instances.backupOperations.list',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'filter', u'pageSize', u'pageToken'],
-        relative_path=u'v1/{+parent}/backupOperations',
+        flat_path='v1/projects/{projectsId}/instances/{instancesId}/backupOperations',
+        http_method='GET',
+        method_id='spanner.projects.instances.backupOperations.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'pageSize', 'pageToken'],
+        relative_path='v1/{+parent}/backupOperations',
         request_field='',
-        request_type_name=u'SpannerProjectsInstancesBackupOperationsListRequest',
-        response_type_name=u'ListBackupOperationsResponse',
+        request_type_name='SpannerProjectsInstancesBackupOperationsListRequest',
+        response_type_name='ListBackupOperationsResponse',
         supports_download=False,
     )
 
   class ProjectsInstancesBackupsOperationsService(base_api.BaseApiService):
     """Service class for the projects_instances_backups_operations resource."""
 
-    _NAME = u'projects_instances_backups_operations'
+    _NAME = 'projects_instances_backups_operations'
 
     def __init__(self, client):
       super(SpannerV1.ProjectsInstancesBackupsOperationsService, self).__init__(client)
@@ -191,16 +191,16 @@ corresponding to `Code.CANCELLED`.
           config, request, global_params=global_params)
 
     Cancel.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/instances/{instancesId}/backups/{backupsId}/operations/{operationsId}:cancel',
-        http_method=u'POST',
-        method_id=u'spanner.projects.instances.backups.operations.cancel',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1/projects/{projectsId}/instances/{instancesId}/backups/{backupsId}/operations/{operationsId}:cancel',
+        http_method='POST',
+        method_id='spanner.projects.instances.backups.operations.cancel',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1/{+name}:cancel',
+        relative_path='v1/{+name}:cancel',
         request_field='',
-        request_type_name=u'SpannerProjectsInstancesBackupsOperationsCancelRequest',
-        response_type_name=u'Empty',
+        request_type_name='SpannerProjectsInstancesBackupsOperationsCancelRequest',
+        response_type_name='Empty',
         supports_download=False,
     )
 
@@ -221,16 +221,16 @@ operation. If the server doesn't support this method, it returns
           config, request, global_params=global_params)
 
     Delete.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/instances/{instancesId}/backups/{backupsId}/operations/{operationsId}',
-        http_method=u'DELETE',
-        method_id=u'spanner.projects.instances.backups.operations.delete',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1/projects/{projectsId}/instances/{instancesId}/backups/{backupsId}/operations/{operationsId}',
+        http_method='DELETE',
+        method_id='spanner.projects.instances.backups.operations.delete',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1/{+name}',
+        relative_path='v1/{+name}',
         request_field='',
-        request_type_name=u'SpannerProjectsInstancesBackupsOperationsDeleteRequest',
-        response_type_name=u'Empty',
+        request_type_name='SpannerProjectsInstancesBackupsOperationsDeleteRequest',
+        response_type_name='Empty',
         supports_download=False,
     )
 
@@ -250,16 +250,16 @@ service.
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/instances/{instancesId}/backups/{backupsId}/operations/{operationsId}',
-        http_method=u'GET',
-        method_id=u'spanner.projects.instances.backups.operations.get',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1/projects/{projectsId}/instances/{instancesId}/backups/{backupsId}/operations/{operationsId}',
+        http_method='GET',
+        method_id='spanner.projects.instances.backups.operations.get',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1/{+name}',
+        relative_path='v1/{+name}',
         request_field='',
-        request_type_name=u'SpannerProjectsInstancesBackupsOperationsGetRequest',
-        response_type_name=u'Operation',
+        request_type_name='SpannerProjectsInstancesBackupsOperationsGetRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -286,23 +286,23 @@ is the parent resource, without the operations collection id.
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/instances/{instancesId}/backups/{backupsId}/operations',
-        http_method=u'GET',
-        method_id=u'spanner.projects.instances.backups.operations.list',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[u'filter', u'pageSize', u'pageToken'],
-        relative_path=u'v1/{+name}',
+        flat_path='v1/projects/{projectsId}/instances/{instancesId}/backups/{backupsId}/operations',
+        http_method='GET',
+        method_id='spanner.projects.instances.backups.operations.list',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['filter', 'pageSize', 'pageToken'],
+        relative_path='v1/{+name}',
         request_field='',
-        request_type_name=u'SpannerProjectsInstancesBackupsOperationsListRequest',
-        response_type_name=u'ListOperationsResponse',
+        request_type_name='SpannerProjectsInstancesBackupsOperationsListRequest',
+        response_type_name='ListOperationsResponse',
         supports_download=False,
     )
 
   class ProjectsInstancesBackupsService(base_api.BaseApiService):
     """Service class for the projects_instances_backups resource."""
 
-    _NAME = u'projects_instances_backups'
+    _NAME = 'projects_instances_backups'
 
     def __init__(self, client):
       super(SpannerV1.ProjectsInstancesBackupsService, self).__init__(client)
@@ -334,16 +334,16 @@ of different databases can run concurrently.
           config, request, global_params=global_params)
 
     Create.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/instances/{instancesId}/backups',
-        http_method=u'POST',
-        method_id=u'spanner.projects.instances.backups.create',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'backupId'],
-        relative_path=u'v1/{+parent}/backups',
-        request_field=u'backup',
-        request_type_name=u'SpannerProjectsInstancesBackupsCreateRequest',
-        response_type_name=u'Operation',
+        flat_path='v1/projects/{projectsId}/instances/{instancesId}/backups',
+        http_method='POST',
+        method_id='spanner.projects.instances.backups.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['backupId'],
+        relative_path='v1/{+parent}/backups',
+        request_field='backup',
+        request_type_name='SpannerProjectsInstancesBackupsCreateRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -361,16 +361,16 @@ of different databases can run concurrently.
           config, request, global_params=global_params)
 
     Delete.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/instances/{instancesId}/backups/{backupsId}',
-        http_method=u'DELETE',
-        method_id=u'spanner.projects.instances.backups.delete',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1/projects/{projectsId}/instances/{instancesId}/backups/{backupsId}',
+        http_method='DELETE',
+        method_id='spanner.projects.instances.backups.delete',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1/{+name}',
+        relative_path='v1/{+name}',
         request_field='',
-        request_type_name=u'SpannerProjectsInstancesBackupsDeleteRequest',
-        response_type_name=u'Empty',
+        request_type_name='SpannerProjectsInstancesBackupsDeleteRequest',
+        response_type_name='Empty',
         supports_download=False,
     )
 
@@ -388,16 +388,16 @@ of different databases can run concurrently.
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/instances/{instancesId}/backups/{backupsId}',
-        http_method=u'GET',
-        method_id=u'spanner.projects.instances.backups.get',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1/projects/{projectsId}/instances/{instancesId}/backups/{backupsId}',
+        http_method='GET',
+        method_id='spanner.projects.instances.backups.get',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1/{+name}',
+        relative_path='v1/{+name}',
         request_field='',
-        request_type_name=u'SpannerProjectsInstancesBackupsGetRequest',
-        response_type_name=u'Backup',
+        request_type_name='SpannerProjectsInstancesBackupsGetRequest',
+        response_type_name='Backup',
         supports_download=False,
     )
 
@@ -422,16 +422,16 @@ permission on resource.
           config, request, global_params=global_params)
 
     GetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/instances/{instancesId}/backups/{backupsId}:getIamPolicy',
-        http_method=u'POST',
-        method_id=u'spanner.projects.instances.backups.getIamPolicy',
-        ordered_params=[u'resource'],
-        path_params=[u'resource'],
+        flat_path='v1/projects/{projectsId}/instances/{instancesId}/backups/{backupsId}:getIamPolicy',
+        http_method='POST',
+        method_id='spanner.projects.instances.backups.getIamPolicy',
+        ordered_params=['resource'],
+        path_params=['resource'],
         query_params=[],
-        relative_path=u'v1/{+resource}:getIamPolicy',
-        request_field=u'getIamPolicyRequest',
-        request_type_name=u'SpannerProjectsInstancesBackupsGetIamPolicyRequest',
-        response_type_name=u'Policy',
+        relative_path='v1/{+resource}:getIamPolicy',
+        request_field='getIamPolicyRequest',
+        request_type_name='SpannerProjectsInstancesBackupsGetIamPolicyRequest',
+        response_type_name='Policy',
         supports_download=False,
     )
 
@@ -451,16 +451,16 @@ starting from the most recent `create_time`.
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/instances/{instancesId}/backups',
-        http_method=u'GET',
-        method_id=u'spanner.projects.instances.backups.list',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'filter', u'pageSize', u'pageToken'],
-        relative_path=u'v1/{+parent}/backups',
+        flat_path='v1/projects/{projectsId}/instances/{instancesId}/backups',
+        http_method='GET',
+        method_id='spanner.projects.instances.backups.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'pageSize', 'pageToken'],
+        relative_path='v1/{+parent}/backups',
         request_field='',
-        request_type_name=u'SpannerProjectsInstancesBackupsListRequest',
-        response_type_name=u'ListBackupsResponse',
+        request_type_name='SpannerProjectsInstancesBackupsListRequest',
+        response_type_name='ListBackupsResponse',
         supports_download=False,
     )
 
@@ -478,16 +478,16 @@ starting from the most recent `create_time`.
           config, request, global_params=global_params)
 
     Patch.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/instances/{instancesId}/backups/{backupsId}',
-        http_method=u'PATCH',
-        method_id=u'spanner.projects.instances.backups.patch',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[u'updateMask'],
-        relative_path=u'v1/{+name}',
-        request_field=u'backup',
-        request_type_name=u'SpannerProjectsInstancesBackupsPatchRequest',
-        response_type_name=u'Backup',
+        flat_path='v1/projects/{projectsId}/instances/{instancesId}/backups/{backupsId}',
+        http_method='PATCH',
+        method_id='spanner.projects.instances.backups.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v1/{+name}',
+        request_field='backup',
+        request_type_name='SpannerProjectsInstancesBackupsPatchRequest',
+        response_type_name='Backup',
         supports_download=False,
     )
 
@@ -511,16 +511,16 @@ permission on resource.
           config, request, global_params=global_params)
 
     SetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/instances/{instancesId}/backups/{backupsId}:setIamPolicy',
-        http_method=u'POST',
-        method_id=u'spanner.projects.instances.backups.setIamPolicy',
-        ordered_params=[u'resource'],
-        path_params=[u'resource'],
+        flat_path='v1/projects/{projectsId}/instances/{instancesId}/backups/{backupsId}:setIamPolicy',
+        http_method='POST',
+        method_id='spanner.projects.instances.backups.setIamPolicy',
+        ordered_params=['resource'],
+        path_params=['resource'],
         query_params=[],
-        relative_path=u'v1/{+resource}:setIamPolicy',
-        request_field=u'setIamPolicyRequest',
-        request_type_name=u'SpannerProjectsInstancesBackupsSetIamPolicyRequest',
-        response_type_name=u'Policy',
+        relative_path='v1/{+resource}:setIamPolicy',
+        request_field='setIamPolicyRequest',
+        request_type_name='SpannerProjectsInstancesBackupsSetIamPolicyRequest',
+        response_type_name='Policy',
         supports_download=False,
     )
 
@@ -547,23 +547,23 @@ result in a NOT_FOUND error if the user has
           config, request, global_params=global_params)
 
     TestIamPermissions.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/instances/{instancesId}/backups/{backupsId}:testIamPermissions',
-        http_method=u'POST',
-        method_id=u'spanner.projects.instances.backups.testIamPermissions',
-        ordered_params=[u'resource'],
-        path_params=[u'resource'],
+        flat_path='v1/projects/{projectsId}/instances/{instancesId}/backups/{backupsId}:testIamPermissions',
+        http_method='POST',
+        method_id='spanner.projects.instances.backups.testIamPermissions',
+        ordered_params=['resource'],
+        path_params=['resource'],
         query_params=[],
-        relative_path=u'v1/{+resource}:testIamPermissions',
-        request_field=u'testIamPermissionsRequest',
-        request_type_name=u'SpannerProjectsInstancesBackupsTestIamPermissionsRequest',
-        response_type_name=u'TestIamPermissionsResponse',
+        relative_path='v1/{+resource}:testIamPermissions',
+        request_field='testIamPermissionsRequest',
+        request_type_name='SpannerProjectsInstancesBackupsTestIamPermissionsRequest',
+        response_type_name='TestIamPermissionsResponse',
         supports_download=False,
     )
 
   class ProjectsInstancesDatabaseOperationsService(base_api.BaseApiService):
     """Service class for the projects_instances_databaseOperations resource."""
 
-    _NAME = u'projects_instances_databaseOperations'
+    _NAME = 'projects_instances_databaseOperations'
 
     def __init__(self, client):
       super(SpannerV1.ProjectsInstancesDatabaseOperationsService, self).__init__(client)
@@ -591,23 +591,23 @@ and pending operations.
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/instances/{instancesId}/databaseOperations',
-        http_method=u'GET',
-        method_id=u'spanner.projects.instances.databaseOperations.list',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'filter', u'pageSize', u'pageToken'],
-        relative_path=u'v1/{+parent}/databaseOperations',
+        flat_path='v1/projects/{projectsId}/instances/{instancesId}/databaseOperations',
+        http_method='GET',
+        method_id='spanner.projects.instances.databaseOperations.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'pageSize', 'pageToken'],
+        relative_path='v1/{+parent}/databaseOperations',
         request_field='',
-        request_type_name=u'SpannerProjectsInstancesDatabaseOperationsListRequest',
-        response_type_name=u'ListDatabaseOperationsResponse',
+        request_type_name='SpannerProjectsInstancesDatabaseOperationsListRequest',
+        response_type_name='ListDatabaseOperationsResponse',
         supports_download=False,
     )
 
   class ProjectsInstancesDatabasesOperationsService(base_api.BaseApiService):
     """Service class for the projects_instances_databases_operations resource."""
 
-    _NAME = u'projects_instances_databases_operations'
+    _NAME = 'projects_instances_databases_operations'
 
     def __init__(self, client):
       super(SpannerV1.ProjectsInstancesDatabasesOperationsService, self).__init__(client)
@@ -637,16 +637,16 @@ corresponding to `Code.CANCELLED`.
           config, request, global_params=global_params)
 
     Cancel.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/instances/{instancesId}/databases/{databasesId}/operations/{operationsId}:cancel',
-        http_method=u'POST',
-        method_id=u'spanner.projects.instances.databases.operations.cancel',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1/projects/{projectsId}/instances/{instancesId}/databases/{databasesId}/operations/{operationsId}:cancel',
+        http_method='POST',
+        method_id='spanner.projects.instances.databases.operations.cancel',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1/{+name}:cancel',
+        relative_path='v1/{+name}:cancel',
         request_field='',
-        request_type_name=u'SpannerProjectsInstancesDatabasesOperationsCancelRequest',
-        response_type_name=u'Empty',
+        request_type_name='SpannerProjectsInstancesDatabasesOperationsCancelRequest',
+        response_type_name='Empty',
         supports_download=False,
     )
 
@@ -667,16 +667,16 @@ operation. If the server doesn't support this method, it returns
           config, request, global_params=global_params)
 
     Delete.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/instances/{instancesId}/databases/{databasesId}/operations/{operationsId}',
-        http_method=u'DELETE',
-        method_id=u'spanner.projects.instances.databases.operations.delete',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1/projects/{projectsId}/instances/{instancesId}/databases/{databasesId}/operations/{operationsId}',
+        http_method='DELETE',
+        method_id='spanner.projects.instances.databases.operations.delete',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1/{+name}',
+        relative_path='v1/{+name}',
         request_field='',
-        request_type_name=u'SpannerProjectsInstancesDatabasesOperationsDeleteRequest',
-        response_type_name=u'Empty',
+        request_type_name='SpannerProjectsInstancesDatabasesOperationsDeleteRequest',
+        response_type_name='Empty',
         supports_download=False,
     )
 
@@ -696,16 +696,16 @@ service.
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/instances/{instancesId}/databases/{databasesId}/operations/{operationsId}',
-        http_method=u'GET',
-        method_id=u'spanner.projects.instances.databases.operations.get',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1/projects/{projectsId}/instances/{instancesId}/databases/{databasesId}/operations/{operationsId}',
+        http_method='GET',
+        method_id='spanner.projects.instances.databases.operations.get',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1/{+name}',
+        relative_path='v1/{+name}',
         request_field='',
-        request_type_name=u'SpannerProjectsInstancesDatabasesOperationsGetRequest',
-        response_type_name=u'Operation',
+        request_type_name='SpannerProjectsInstancesDatabasesOperationsGetRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -732,23 +732,23 @@ is the parent resource, without the operations collection id.
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/instances/{instancesId}/databases/{databasesId}/operations',
-        http_method=u'GET',
-        method_id=u'spanner.projects.instances.databases.operations.list',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[u'filter', u'pageSize', u'pageToken'],
-        relative_path=u'v1/{+name}',
+        flat_path='v1/projects/{projectsId}/instances/{instancesId}/databases/{databasesId}/operations',
+        http_method='GET',
+        method_id='spanner.projects.instances.databases.operations.list',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['filter', 'pageSize', 'pageToken'],
+        relative_path='v1/{+name}',
         request_field='',
-        request_type_name=u'SpannerProjectsInstancesDatabasesOperationsListRequest',
-        response_type_name=u'ListOperationsResponse',
+        request_type_name='SpannerProjectsInstancesDatabasesOperationsListRequest',
+        response_type_name='ListOperationsResponse',
         supports_download=False,
     )
 
   class ProjectsInstancesDatabasesSessionsService(base_api.BaseApiService):
     """Service class for the projects_instances_databases_sessions resource."""
 
-    _NAME = u'projects_instances_databases_sessions'
+    _NAME = 'projects_instances_databases_sessions'
 
     def __init__(self, client):
       super(SpannerV1.ProjectsInstancesDatabasesSessionsService, self).__init__(client)
@@ -772,16 +772,16 @@ See https://goo.gl/TgSFN2 for best practices on session cache management.
           config, request, global_params=global_params)
 
     BatchCreate.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/instances/{instancesId}/databases/{databasesId}/sessions:batchCreate',
-        http_method=u'POST',
-        method_id=u'spanner.projects.instances.databases.sessions.batchCreate',
-        ordered_params=[u'database'],
-        path_params=[u'database'],
+        flat_path='v1/projects/{projectsId}/instances/{instancesId}/databases/{databasesId}/sessions:batchCreate',
+        http_method='POST',
+        method_id='spanner.projects.instances.databases.sessions.batchCreate',
+        ordered_params=['database'],
+        path_params=['database'],
         query_params=[],
-        relative_path=u'v1/{+database}/sessions:batchCreate',
-        request_field=u'batchCreateSessionsRequest',
-        request_type_name=u'SpannerProjectsInstancesDatabasesSessionsBatchCreateRequest',
-        response_type_name=u'BatchCreateSessionsResponse',
+        relative_path='v1/{+database}/sessions:batchCreate',
+        request_field='batchCreateSessionsRequest',
+        request_type_name='SpannerProjectsInstancesDatabasesSessionsBatchCreateRequest',
+        response_type_name='BatchCreateSessionsResponse',
         supports_download=False,
     )
 
@@ -802,16 +802,16 @@ side-effect.
           config, request, global_params=global_params)
 
     BeginTransaction.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/instances/{instancesId}/databases/{databasesId}/sessions/{sessionsId}:beginTransaction',
-        http_method=u'POST',
-        method_id=u'spanner.projects.instances.databases.sessions.beginTransaction',
-        ordered_params=[u'session'],
-        path_params=[u'session'],
+        flat_path='v1/projects/{projectsId}/instances/{instancesId}/databases/{databasesId}/sessions/{sessionsId}:beginTransaction',
+        http_method='POST',
+        method_id='spanner.projects.instances.databases.sessions.beginTransaction',
+        ordered_params=['session'],
+        path_params=['session'],
         query_params=[],
-        relative_path=u'v1/{+session}:beginTransaction',
-        request_field=u'beginTransactionRequest',
-        request_type_name=u'SpannerProjectsInstancesDatabasesSessionsBeginTransactionRequest',
-        response_type_name=u'Transaction',
+        relative_path='v1/{+session}:beginTransaction',
+        request_field='beginTransactionRequest',
+        request_type_name='SpannerProjectsInstancesDatabasesSessionsBeginTransactionRequest',
+        response_type_name='Transaction',
         supports_download=False,
     )
 
@@ -836,16 +836,16 @@ the transaction from the beginning, re-using the same session.
           config, request, global_params=global_params)
 
     Commit.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/instances/{instancesId}/databases/{databasesId}/sessions/{sessionsId}:commit',
-        http_method=u'POST',
-        method_id=u'spanner.projects.instances.databases.sessions.commit',
-        ordered_params=[u'session'],
-        path_params=[u'session'],
+        flat_path='v1/projects/{projectsId}/instances/{instancesId}/databases/{databasesId}/sessions/{sessionsId}:commit',
+        http_method='POST',
+        method_id='spanner.projects.instances.databases.sessions.commit',
+        ordered_params=['session'],
+        path_params=['session'],
         query_params=[],
-        relative_path=u'v1/{+session}:commit',
-        request_field=u'commitRequest',
-        request_type_name=u'SpannerProjectsInstancesDatabasesSessionsCommitRequest',
-        response_type_name=u'CommitResponse',
+        relative_path='v1/{+session}:commit',
+        request_field='commitRequest',
+        request_type_name='SpannerProjectsInstancesDatabasesSessionsCommitRequest',
+        response_type_name='CommitResponse',
         supports_download=False,
     )
 
@@ -881,16 +881,16 @@ periodically, e.g., `"SELECT 1"`.
           config, request, global_params=global_params)
 
     Create.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/instances/{instancesId}/databases/{databasesId}/sessions',
-        http_method=u'POST',
-        method_id=u'spanner.projects.instances.databases.sessions.create',
-        ordered_params=[u'database'],
-        path_params=[u'database'],
+        flat_path='v1/projects/{projectsId}/instances/{instancesId}/databases/{databasesId}/sessions',
+        http_method='POST',
+        method_id='spanner.projects.instances.databases.sessions.create',
+        ordered_params=['database'],
+        path_params=['database'],
         query_params=[],
-        relative_path=u'v1/{+database}/sessions',
-        request_field=u'createSessionRequest',
-        request_type_name=u'SpannerProjectsInstancesDatabasesSessionsCreateRequest',
-        response_type_name=u'Session',
+        relative_path='v1/{+database}/sessions',
+        request_field='createSessionRequest',
+        request_type_name='SpannerProjectsInstancesDatabasesSessionsCreateRequest',
+        response_type_name='Session',
         supports_download=False,
     )
 
@@ -910,16 +910,16 @@ this session.
           config, request, global_params=global_params)
 
     Delete.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/instances/{instancesId}/databases/{databasesId}/sessions/{sessionsId}',
-        http_method=u'DELETE',
-        method_id=u'spanner.projects.instances.databases.sessions.delete',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1/projects/{projectsId}/instances/{instancesId}/databases/{databasesId}/sessions/{sessionsId}',
+        http_method='DELETE',
+        method_id='spanner.projects.instances.databases.sessions.delete',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1/{+name}',
+        relative_path='v1/{+name}',
         request_field='',
-        request_type_name=u'SpannerProjectsInstancesDatabasesSessionsDeleteRequest',
-        response_type_name=u'Empty',
+        request_type_name='SpannerProjectsInstancesDatabasesSessionsDeleteRequest',
+        response_type_name='Empty',
         supports_download=False,
     )
 
@@ -947,16 +947,16 @@ are not executed.
           config, request, global_params=global_params)
 
     ExecuteBatchDml.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/instances/{instancesId}/databases/{databasesId}/sessions/{sessionsId}:executeBatchDml',
-        http_method=u'POST',
-        method_id=u'spanner.projects.instances.databases.sessions.executeBatchDml',
-        ordered_params=[u'session'],
-        path_params=[u'session'],
+        flat_path='v1/projects/{projectsId}/instances/{instancesId}/databases/{databasesId}/sessions/{sessionsId}:executeBatchDml',
+        http_method='POST',
+        method_id='spanner.projects.instances.databases.sessions.executeBatchDml',
+        ordered_params=['session'],
+        path_params=['session'],
         query_params=[],
-        relative_path=u'v1/{+session}:executeBatchDml',
-        request_field=u'executeBatchDmlRequest',
-        request_type_name=u'SpannerProjectsInstancesDatabasesSessionsExecuteBatchDmlRequest',
-        response_type_name=u'ExecuteBatchDmlResponse',
+        relative_path='v1/{+session}:executeBatchDml',
+        request_field='executeBatchDmlRequest',
+        request_type_name='SpannerProjectsInstancesDatabasesSessionsExecuteBatchDmlRequest',
+        response_type_name='ExecuteBatchDmlResponse',
         supports_download=False,
     )
 
@@ -984,16 +984,16 @@ ExecuteStreamingSql instead.
           config, request, global_params=global_params)
 
     ExecuteSql.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/instances/{instancesId}/databases/{databasesId}/sessions/{sessionsId}:executeSql',
-        http_method=u'POST',
-        method_id=u'spanner.projects.instances.databases.sessions.executeSql',
-        ordered_params=[u'session'],
-        path_params=[u'session'],
+        flat_path='v1/projects/{projectsId}/instances/{instancesId}/databases/{databasesId}/sessions/{sessionsId}:executeSql',
+        http_method='POST',
+        method_id='spanner.projects.instances.databases.sessions.executeSql',
+        ordered_params=['session'],
+        path_params=['session'],
         query_params=[],
-        relative_path=u'v1/{+session}:executeSql',
-        request_field=u'executeSqlRequest',
-        request_type_name=u'SpannerProjectsInstancesDatabasesSessionsExecuteSqlRequest',
-        response_type_name=u'ResultSet',
+        relative_path='v1/{+session}:executeSql',
+        request_field='executeSqlRequest',
+        request_type_name='SpannerProjectsInstancesDatabasesSessionsExecuteSqlRequest',
+        response_type_name='ResultSet',
         supports_download=False,
     )
 
@@ -1015,16 +1015,16 @@ column value can exceed 10 MiB.
           config, request, global_params=global_params)
 
     ExecuteStreamingSql.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/instances/{instancesId}/databases/{databasesId}/sessions/{sessionsId}:executeStreamingSql',
-        http_method=u'POST',
-        method_id=u'spanner.projects.instances.databases.sessions.executeStreamingSql',
-        ordered_params=[u'session'],
-        path_params=[u'session'],
+        flat_path='v1/projects/{projectsId}/instances/{instancesId}/databases/{databasesId}/sessions/{sessionsId}:executeStreamingSql',
+        http_method='POST',
+        method_id='spanner.projects.instances.databases.sessions.executeStreamingSql',
+        ordered_params=['session'],
+        path_params=['session'],
         query_params=[],
-        relative_path=u'v1/{+session}:executeStreamingSql',
-        request_field=u'executeSqlRequest',
-        request_type_name=u'SpannerProjectsInstancesDatabasesSessionsExecuteStreamingSqlRequest',
-        response_type_name=u'PartialResultSet',
+        relative_path='v1/{+session}:executeStreamingSql',
+        request_field='executeSqlRequest',
+        request_type_name='SpannerProjectsInstancesDatabasesSessionsExecuteStreamingSqlRequest',
+        response_type_name='PartialResultSet',
         supports_download=False,
     )
 
@@ -1044,16 +1044,16 @@ alive.
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/instances/{instancesId}/databases/{databasesId}/sessions/{sessionsId}',
-        http_method=u'GET',
-        method_id=u'spanner.projects.instances.databases.sessions.get',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1/projects/{projectsId}/instances/{instancesId}/databases/{databasesId}/sessions/{sessionsId}',
+        http_method='GET',
+        method_id='spanner.projects.instances.databases.sessions.get',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1/{+name}',
+        relative_path='v1/{+name}',
         request_field='',
-        request_type_name=u'SpannerProjectsInstancesDatabasesSessionsGetRequest',
-        response_type_name=u'Session',
+        request_type_name='SpannerProjectsInstancesDatabasesSessionsGetRequest',
+        response_type_name='Session',
         supports_download=False,
     )
 
@@ -1071,16 +1071,16 @@ alive.
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/instances/{instancesId}/databases/{databasesId}/sessions',
-        http_method=u'GET',
-        method_id=u'spanner.projects.instances.databases.sessions.list',
-        ordered_params=[u'database'],
-        path_params=[u'database'],
-        query_params=[u'filter', u'pageSize', u'pageToken'],
-        relative_path=u'v1/{+database}/sessions',
+        flat_path='v1/projects/{projectsId}/instances/{instancesId}/databases/{databasesId}/sessions',
+        http_method='GET',
+        method_id='spanner.projects.instances.databases.sessions.list',
+        ordered_params=['database'],
+        path_params=['database'],
+        query_params=['filter', 'pageSize', 'pageToken'],
+        relative_path='v1/{+database}/sessions',
         request_field='',
-        request_type_name=u'SpannerProjectsInstancesDatabasesSessionsListRequest',
-        response_type_name=u'ListSessionsResponse',
+        request_type_name='SpannerProjectsInstancesDatabasesSessionsListRequest',
+        response_type_name='ListSessionsResponse',
         supports_download=False,
     )
 
@@ -1108,16 +1108,16 @@ the whole operation must be restarted from the beginning.
           config, request, global_params=global_params)
 
     PartitionQuery.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/instances/{instancesId}/databases/{databasesId}/sessions/{sessionsId}:partitionQuery',
-        http_method=u'POST',
-        method_id=u'spanner.projects.instances.databases.sessions.partitionQuery',
-        ordered_params=[u'session'],
-        path_params=[u'session'],
+        flat_path='v1/projects/{projectsId}/instances/{instancesId}/databases/{databasesId}/sessions/{sessionsId}:partitionQuery',
+        http_method='POST',
+        method_id='spanner.projects.instances.databases.sessions.partitionQuery',
+        ordered_params=['session'],
+        path_params=['session'],
         query_params=[],
-        relative_path=u'v1/{+session}:partitionQuery',
-        request_field=u'partitionQueryRequest',
-        request_type_name=u'SpannerProjectsInstancesDatabasesSessionsPartitionQueryRequest',
-        response_type_name=u'PartitionResponse',
+        relative_path='v1/{+session}:partitionQuery',
+        request_field='partitionQueryRequest',
+        request_type_name='SpannerProjectsInstancesDatabasesSessionsPartitionQueryRequest',
+        response_type_name='PartitionResponse',
         supports_download=False,
     )
 
@@ -1147,16 +1147,16 @@ the whole operation must be restarted from the beginning.
           config, request, global_params=global_params)
 
     PartitionRead.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/instances/{instancesId}/databases/{databasesId}/sessions/{sessionsId}:partitionRead',
-        http_method=u'POST',
-        method_id=u'spanner.projects.instances.databases.sessions.partitionRead',
-        ordered_params=[u'session'],
-        path_params=[u'session'],
+        flat_path='v1/projects/{projectsId}/instances/{instancesId}/databases/{databasesId}/sessions/{sessionsId}:partitionRead',
+        http_method='POST',
+        method_id='spanner.projects.instances.databases.sessions.partitionRead',
+        ordered_params=['session'],
+        path_params=['session'],
         query_params=[],
-        relative_path=u'v1/{+session}:partitionRead',
-        request_field=u'partitionReadRequest',
-        request_type_name=u'SpannerProjectsInstancesDatabasesSessionsPartitionReadRequest',
-        response_type_name=u'PartitionResponse',
+        relative_path='v1/{+session}:partitionRead',
+        request_field='partitionReadRequest',
+        request_type_name='SpannerProjectsInstancesDatabasesSessionsPartitionReadRequest',
+        response_type_name='PartitionResponse',
         supports_download=False,
     )
 
@@ -1186,16 +1186,16 @@ StreamingRead instead.
           config, request, global_params=global_params)
 
     Read.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/instances/{instancesId}/databases/{databasesId}/sessions/{sessionsId}:read',
-        http_method=u'POST',
-        method_id=u'spanner.projects.instances.databases.sessions.read',
-        ordered_params=[u'session'],
-        path_params=[u'session'],
+        flat_path='v1/projects/{projectsId}/instances/{instancesId}/databases/{databasesId}/sessions/{sessionsId}:read',
+        http_method='POST',
+        method_id='spanner.projects.instances.databases.sessions.read',
+        ordered_params=['session'],
+        path_params=['session'],
         query_params=[],
-        relative_path=u'v1/{+session}:read',
-        request_field=u'readRequest',
-        request_type_name=u'SpannerProjectsInstancesDatabasesSessionsReadRequest',
-        response_type_name=u'ResultSet',
+        relative_path='v1/{+session}:read',
+        request_field='readRequest',
+        request_type_name='SpannerProjectsInstancesDatabasesSessionsReadRequest',
+        response_type_name='ResultSet',
         supports_download=False,
     )
 
@@ -1220,16 +1220,16 @@ found. `Rollback` never returns `ABORTED`.
           config, request, global_params=global_params)
 
     Rollback.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/instances/{instancesId}/databases/{databasesId}/sessions/{sessionsId}:rollback',
-        http_method=u'POST',
-        method_id=u'spanner.projects.instances.databases.sessions.rollback',
-        ordered_params=[u'session'],
-        path_params=[u'session'],
+        flat_path='v1/projects/{projectsId}/instances/{instancesId}/databases/{databasesId}/sessions/{sessionsId}:rollback',
+        http_method='POST',
+        method_id='spanner.projects.instances.databases.sessions.rollback',
+        ordered_params=['session'],
+        path_params=['session'],
         query_params=[],
-        relative_path=u'v1/{+session}:rollback',
-        request_field=u'rollbackRequest',
-        request_type_name=u'SpannerProjectsInstancesDatabasesSessionsRollbackRequest',
-        response_type_name=u'Empty',
+        relative_path='v1/{+session}:rollback',
+        request_field='rollbackRequest',
+        request_type_name='SpannerProjectsInstancesDatabasesSessionsRollbackRequest',
+        response_type_name='Empty',
         supports_download=False,
     )
 
@@ -1251,23 +1251,23 @@ the result set can exceed 100 MiB, and no column value can exceed
           config, request, global_params=global_params)
 
     StreamingRead.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/instances/{instancesId}/databases/{databasesId}/sessions/{sessionsId}:streamingRead',
-        http_method=u'POST',
-        method_id=u'spanner.projects.instances.databases.sessions.streamingRead',
-        ordered_params=[u'session'],
-        path_params=[u'session'],
+        flat_path='v1/projects/{projectsId}/instances/{instancesId}/databases/{databasesId}/sessions/{sessionsId}:streamingRead',
+        http_method='POST',
+        method_id='spanner.projects.instances.databases.sessions.streamingRead',
+        ordered_params=['session'],
+        path_params=['session'],
         query_params=[],
-        relative_path=u'v1/{+session}:streamingRead',
-        request_field=u'readRequest',
-        request_type_name=u'SpannerProjectsInstancesDatabasesSessionsStreamingReadRequest',
-        response_type_name=u'PartialResultSet',
+        relative_path='v1/{+session}:streamingRead',
+        request_field='readRequest',
+        request_type_name='SpannerProjectsInstancesDatabasesSessionsStreamingReadRequest',
+        response_type_name='PartialResultSet',
         supports_download=False,
     )
 
   class ProjectsInstancesDatabasesService(base_api.BaseApiService):
     """Service class for the projects_instances_databases resource."""
 
-    _NAME = u'projects_instances_databases'
+    _NAME = 'projects_instances_databases'
 
     def __init__(self, client):
       super(SpannerV1.ProjectsInstancesDatabasesService, self).__init__(client)
@@ -1295,16 +1295,16 @@ Database, if successful.
           config, request, global_params=global_params)
 
     Create.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/instances/{instancesId}/databases',
-        http_method=u'POST',
-        method_id=u'spanner.projects.instances.databases.create',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
+        flat_path='v1/projects/{projectsId}/instances/{instancesId}/databases',
+        http_method='POST',
+        method_id='spanner.projects.instances.databases.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
         query_params=[],
-        relative_path=u'v1/{+parent}/databases',
-        request_field=u'createDatabaseRequest',
-        request_type_name=u'SpannerProjectsInstancesDatabasesCreateRequest',
-        response_type_name=u'Operation',
+        relative_path='v1/{+parent}/databases',
+        request_field='createDatabaseRequest',
+        request_type_name='SpannerProjectsInstancesDatabasesCreateRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -1324,16 +1324,16 @@ Completed backups for the database will be retained according to their
           config, request, global_params=global_params)
 
     DropDatabase.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/instances/{instancesId}/databases/{databasesId}',
-        http_method=u'DELETE',
-        method_id=u'spanner.projects.instances.databases.dropDatabase',
-        ordered_params=[u'database'],
-        path_params=[u'database'],
+        flat_path='v1/projects/{projectsId}/instances/{instancesId}/databases/{databasesId}',
+        http_method='DELETE',
+        method_id='spanner.projects.instances.databases.dropDatabase',
+        ordered_params=['database'],
+        path_params=['database'],
         query_params=[],
-        relative_path=u'v1/{+database}',
+        relative_path='v1/{+database}',
         request_field='',
-        request_type_name=u'SpannerProjectsInstancesDatabasesDropDatabaseRequest',
-        response_type_name=u'Empty',
+        request_type_name='SpannerProjectsInstancesDatabasesDropDatabaseRequest',
+        response_type_name='Empty',
         supports_download=False,
     )
 
@@ -1351,16 +1351,16 @@ Completed backups for the database will be retained according to their
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/instances/{instancesId}/databases/{databasesId}',
-        http_method=u'GET',
-        method_id=u'spanner.projects.instances.databases.get',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1/projects/{projectsId}/instances/{instancesId}/databases/{databasesId}',
+        http_method='GET',
+        method_id='spanner.projects.instances.databases.get',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1/{+name}',
+        relative_path='v1/{+name}',
         request_field='',
-        request_type_name=u'SpannerProjectsInstancesDatabasesGetRequest',
-        response_type_name=u'Database',
+        request_type_name='SpannerProjectsInstancesDatabasesGetRequest',
+        response_type_name='Database',
         supports_download=False,
     )
 
@@ -1380,16 +1380,16 @@ be queried using the Operations API.
           config, request, global_params=global_params)
 
     GetDdl.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/instances/{instancesId}/databases/{databasesId}/ddl',
-        http_method=u'GET',
-        method_id=u'spanner.projects.instances.databases.getDdl',
-        ordered_params=[u'database'],
-        path_params=[u'database'],
+        flat_path='v1/projects/{projectsId}/instances/{instancesId}/databases/{databasesId}/ddl',
+        http_method='GET',
+        method_id='spanner.projects.instances.databases.getDdl',
+        ordered_params=['database'],
+        path_params=['database'],
         query_params=[],
-        relative_path=u'v1/{+database}/ddl',
+        relative_path='v1/{+database}/ddl',
         request_field='',
-        request_type_name=u'SpannerProjectsInstancesDatabasesGetDdlRequest',
-        response_type_name=u'GetDatabaseDdlResponse',
+        request_type_name='SpannerProjectsInstancesDatabasesGetDdlRequest',
+        response_type_name='GetDatabaseDdlResponse',
         supports_download=False,
     )
 
@@ -1414,16 +1414,16 @@ permission on resource.
           config, request, global_params=global_params)
 
     GetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/instances/{instancesId}/databases/{databasesId}:getIamPolicy',
-        http_method=u'POST',
-        method_id=u'spanner.projects.instances.databases.getIamPolicy',
-        ordered_params=[u'resource'],
-        path_params=[u'resource'],
+        flat_path='v1/projects/{projectsId}/instances/{instancesId}/databases/{databasesId}:getIamPolicy',
+        http_method='POST',
+        method_id='spanner.projects.instances.databases.getIamPolicy',
+        ordered_params=['resource'],
+        path_params=['resource'],
         query_params=[],
-        relative_path=u'v1/{+resource}:getIamPolicy',
-        request_field=u'getIamPolicyRequest',
-        request_type_name=u'SpannerProjectsInstancesDatabasesGetIamPolicyRequest',
-        response_type_name=u'Policy',
+        relative_path='v1/{+resource}:getIamPolicy',
+        request_field='getIamPolicyRequest',
+        request_type_name='SpannerProjectsInstancesDatabasesGetIamPolicyRequest',
+        response_type_name='Policy',
         supports_download=False,
     )
 
@@ -1441,16 +1441,16 @@ permission on resource.
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/instances/{instancesId}/databases',
-        http_method=u'GET',
-        method_id=u'spanner.projects.instances.databases.list',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'pageSize', u'pageToken'],
-        relative_path=u'v1/{+parent}/databases',
+        flat_path='v1/projects/{projectsId}/instances/{instancesId}/databases',
+        http_method='GET',
+        method_id='spanner.projects.instances.databases.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v1/{+parent}/databases',
         request_field='',
-        request_type_name=u'SpannerProjectsInstancesDatabasesListRequest',
-        response_type_name=u'ListDatabasesResponse',
+        request_type_name='SpannerProjectsInstancesDatabasesListRequest',
+        response_type_name='ListDatabasesResponse',
         supports_download=False,
     )
 
@@ -1484,16 +1484,16 @@ first restore to complete.
           config, request, global_params=global_params)
 
     Restore.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/instances/{instancesId}/databases:restore',
-        http_method=u'POST',
-        method_id=u'spanner.projects.instances.databases.restore',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
+        flat_path='v1/projects/{projectsId}/instances/{instancesId}/databases:restore',
+        http_method='POST',
+        method_id='spanner.projects.instances.databases.restore',
+        ordered_params=['parent'],
+        path_params=['parent'],
         query_params=[],
-        relative_path=u'v1/{+parent}/databases:restore',
-        request_field=u'restoreDatabaseRequest',
-        request_type_name=u'SpannerProjectsInstancesDatabasesRestoreRequest',
-        response_type_name=u'Operation',
+        relative_path='v1/{+parent}/databases:restore',
+        request_field='restoreDatabaseRequest',
+        request_type_name='SpannerProjectsInstancesDatabasesRestoreRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -1517,16 +1517,16 @@ permission on resource.
           config, request, global_params=global_params)
 
     SetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/instances/{instancesId}/databases/{databasesId}:setIamPolicy',
-        http_method=u'POST',
-        method_id=u'spanner.projects.instances.databases.setIamPolicy',
-        ordered_params=[u'resource'],
-        path_params=[u'resource'],
+        flat_path='v1/projects/{projectsId}/instances/{instancesId}/databases/{databasesId}:setIamPolicy',
+        http_method='POST',
+        method_id='spanner.projects.instances.databases.setIamPolicy',
+        ordered_params=['resource'],
+        path_params=['resource'],
         query_params=[],
-        relative_path=u'v1/{+resource}:setIamPolicy',
-        request_field=u'setIamPolicyRequest',
-        request_type_name=u'SpannerProjectsInstancesDatabasesSetIamPolicyRequest',
-        response_type_name=u'Policy',
+        relative_path='v1/{+resource}:setIamPolicy',
+        request_field='setIamPolicyRequest',
+        request_type_name='SpannerProjectsInstancesDatabasesSetIamPolicyRequest',
+        response_type_name='Policy',
         supports_download=False,
     )
 
@@ -1553,16 +1553,16 @@ result in a NOT_FOUND error if the user has
           config, request, global_params=global_params)
 
     TestIamPermissions.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/instances/{instancesId}/databases/{databasesId}:testIamPermissions',
-        http_method=u'POST',
-        method_id=u'spanner.projects.instances.databases.testIamPermissions',
-        ordered_params=[u'resource'],
-        path_params=[u'resource'],
+        flat_path='v1/projects/{projectsId}/instances/{instancesId}/databases/{databasesId}:testIamPermissions',
+        http_method='POST',
+        method_id='spanner.projects.instances.databases.testIamPermissions',
+        ordered_params=['resource'],
+        path_params=['resource'],
         query_params=[],
-        relative_path=u'v1/{+resource}:testIamPermissions',
-        request_field=u'testIamPermissionsRequest',
-        request_type_name=u'SpannerProjectsInstancesDatabasesTestIamPermissionsRequest',
-        response_type_name=u'TestIamPermissionsResponse',
+        relative_path='v1/{+resource}:testIamPermissions',
+        request_field='testIamPermissionsRequest',
+        request_type_name='SpannerProjectsInstancesDatabasesTestIamPermissionsRequest',
+        response_type_name='TestIamPermissionsResponse',
         supports_download=False,
     )
 
@@ -1586,23 +1586,23 @@ UpdateDatabaseDdlMetadata.  The operation has no response.
           config, request, global_params=global_params)
 
     UpdateDdl.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/instances/{instancesId}/databases/{databasesId}/ddl',
-        http_method=u'PATCH',
-        method_id=u'spanner.projects.instances.databases.updateDdl',
-        ordered_params=[u'database'],
-        path_params=[u'database'],
+        flat_path='v1/projects/{projectsId}/instances/{instancesId}/databases/{databasesId}/ddl',
+        http_method='PATCH',
+        method_id='spanner.projects.instances.databases.updateDdl',
+        ordered_params=['database'],
+        path_params=['database'],
         query_params=[],
-        relative_path=u'v1/{+database}/ddl',
-        request_field=u'updateDatabaseDdlRequest',
-        request_type_name=u'SpannerProjectsInstancesDatabasesUpdateDdlRequest',
-        response_type_name=u'Operation',
+        relative_path='v1/{+database}/ddl',
+        request_field='updateDatabaseDdlRequest',
+        request_type_name='SpannerProjectsInstancesDatabasesUpdateDdlRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
   class ProjectsInstancesOperationsService(base_api.BaseApiService):
     """Service class for the projects_instances_operations resource."""
 
-    _NAME = u'projects_instances_operations'
+    _NAME = 'projects_instances_operations'
 
     def __init__(self, client):
       super(SpannerV1.ProjectsInstancesOperationsService, self).__init__(client)
@@ -1632,16 +1632,16 @@ corresponding to `Code.CANCELLED`.
           config, request, global_params=global_params)
 
     Cancel.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/instances/{instancesId}/operations/{operationsId}:cancel',
-        http_method=u'POST',
-        method_id=u'spanner.projects.instances.operations.cancel',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1/projects/{projectsId}/instances/{instancesId}/operations/{operationsId}:cancel',
+        http_method='POST',
+        method_id='spanner.projects.instances.operations.cancel',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1/{+name}:cancel',
+        relative_path='v1/{+name}:cancel',
         request_field='',
-        request_type_name=u'SpannerProjectsInstancesOperationsCancelRequest',
-        response_type_name=u'Empty',
+        request_type_name='SpannerProjectsInstancesOperationsCancelRequest',
+        response_type_name='Empty',
         supports_download=False,
     )
 
@@ -1662,16 +1662,16 @@ operation. If the server doesn't support this method, it returns
           config, request, global_params=global_params)
 
     Delete.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/instances/{instancesId}/operations/{operationsId}',
-        http_method=u'DELETE',
-        method_id=u'spanner.projects.instances.operations.delete',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1/projects/{projectsId}/instances/{instancesId}/operations/{operationsId}',
+        http_method='DELETE',
+        method_id='spanner.projects.instances.operations.delete',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1/{+name}',
+        relative_path='v1/{+name}',
         request_field='',
-        request_type_name=u'SpannerProjectsInstancesOperationsDeleteRequest',
-        response_type_name=u'Empty',
+        request_type_name='SpannerProjectsInstancesOperationsDeleteRequest',
+        response_type_name='Empty',
         supports_download=False,
     )
 
@@ -1691,16 +1691,16 @@ service.
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/instances/{instancesId}/operations/{operationsId}',
-        http_method=u'GET',
-        method_id=u'spanner.projects.instances.operations.get',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1/projects/{projectsId}/instances/{instancesId}/operations/{operationsId}',
+        http_method='GET',
+        method_id='spanner.projects.instances.operations.get',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1/{+name}',
+        relative_path='v1/{+name}',
         request_field='',
-        request_type_name=u'SpannerProjectsInstancesOperationsGetRequest',
-        response_type_name=u'Operation',
+        request_type_name='SpannerProjectsInstancesOperationsGetRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -1727,23 +1727,23 @@ is the parent resource, without the operations collection id.
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/instances/{instancesId}/operations',
-        http_method=u'GET',
-        method_id=u'spanner.projects.instances.operations.list',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[u'filter', u'pageSize', u'pageToken'],
-        relative_path=u'v1/{+name}',
+        flat_path='v1/projects/{projectsId}/instances/{instancesId}/operations',
+        http_method='GET',
+        method_id='spanner.projects.instances.operations.list',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['filter', 'pageSize', 'pageToken'],
+        relative_path='v1/{+name}',
         request_field='',
-        request_type_name=u'SpannerProjectsInstancesOperationsListRequest',
-        response_type_name=u'ListOperationsResponse',
+        request_type_name='SpannerProjectsInstancesOperationsListRequest',
+        response_type_name='ListOperationsResponse',
         supports_download=False,
     )
 
   class ProjectsInstancesService(base_api.BaseApiService):
     """Service class for the projects_instances resource."""
 
-    _NAME = u'projects_instances'
+    _NAME = 'projects_instances'
 
     def __init__(self, client):
       super(SpannerV1.ProjectsInstancesService, self).__init__(client)
@@ -1797,16 +1797,16 @@ Instance, if successful.
           config, request, global_params=global_params)
 
     Create.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/instances',
-        http_method=u'POST',
-        method_id=u'spanner.projects.instances.create',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
+        flat_path='v1/projects/{projectsId}/instances',
+        http_method='POST',
+        method_id='spanner.projects.instances.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
         query_params=[],
-        relative_path=u'v1/{+parent}/instances',
-        request_field=u'createInstanceRequest',
-        request_type_name=u'SpannerProjectsInstancesCreateRequest',
-        response_type_name=u'Operation',
+        relative_path='v1/{+parent}/instances',
+        request_field='createInstanceRequest',
+        request_type_name='SpannerProjectsInstancesCreateRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -1834,16 +1834,16 @@ Soon afterward:
           config, request, global_params=global_params)
 
     Delete.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/instances/{instancesId}',
-        http_method=u'DELETE',
-        method_id=u'spanner.projects.instances.delete',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1/projects/{projectsId}/instances/{instancesId}',
+        http_method='DELETE',
+        method_id='spanner.projects.instances.delete',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1/{+name}',
+        relative_path='v1/{+name}',
         request_field='',
-        request_type_name=u'SpannerProjectsInstancesDeleteRequest',
-        response_type_name=u'Empty',
+        request_type_name='SpannerProjectsInstancesDeleteRequest',
+        response_type_name='Empty',
         supports_download=False,
     )
 
@@ -1861,16 +1861,16 @@ Soon afterward:
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/instances/{instancesId}',
-        http_method=u'GET',
-        method_id=u'spanner.projects.instances.get',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[u'fieldMask'],
-        relative_path=u'v1/{+name}',
+        flat_path='v1/projects/{projectsId}/instances/{instancesId}',
+        http_method='GET',
+        method_id='spanner.projects.instances.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['fieldMask'],
+        relative_path='v1/{+name}',
         request_field='',
-        request_type_name=u'SpannerProjectsInstancesGetRequest',
-        response_type_name=u'Instance',
+        request_type_name='SpannerProjectsInstancesGetRequest',
+        response_type_name='Instance',
         supports_download=False,
     )
 
@@ -1892,16 +1892,16 @@ resource.
           config, request, global_params=global_params)
 
     GetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/instances/{instancesId}:getIamPolicy',
-        http_method=u'POST',
-        method_id=u'spanner.projects.instances.getIamPolicy',
-        ordered_params=[u'resource'],
-        path_params=[u'resource'],
+        flat_path='v1/projects/{projectsId}/instances/{instancesId}:getIamPolicy',
+        http_method='POST',
+        method_id='spanner.projects.instances.getIamPolicy',
+        ordered_params=['resource'],
+        path_params=['resource'],
         query_params=[],
-        relative_path=u'v1/{+resource}:getIamPolicy',
-        request_field=u'getIamPolicyRequest',
-        request_type_name=u'SpannerProjectsInstancesGetIamPolicyRequest',
-        response_type_name=u'Policy',
+        relative_path='v1/{+resource}:getIamPolicy',
+        request_field='getIamPolicyRequest',
+        request_type_name='SpannerProjectsInstancesGetIamPolicyRequest',
+        response_type_name='Policy',
         supports_download=False,
     )
 
@@ -1919,16 +1919,16 @@ resource.
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/instances',
-        http_method=u'GET',
-        method_id=u'spanner.projects.instances.list',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'filter', u'pageSize', u'pageToken'],
-        relative_path=u'v1/{+parent}/instances',
+        flat_path='v1/projects/{projectsId}/instances',
+        http_method='GET',
+        method_id='spanner.projects.instances.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'pageSize', 'pageToken'],
+        relative_path='v1/{+parent}/instances',
         request_field='',
-        request_type_name=u'SpannerProjectsInstancesListRequest',
-        response_type_name=u'ListInstancesResponse',
+        request_type_name='SpannerProjectsInstancesListRequest',
+        response_type_name='ListInstancesResponse',
         supports_download=False,
     )
 
@@ -1985,16 +1985,16 @@ resource name.
           config, request, global_params=global_params)
 
     Patch.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/instances/{instancesId}',
-        http_method=u'PATCH',
-        method_id=u'spanner.projects.instances.patch',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1/projects/{projectsId}/instances/{instancesId}',
+        http_method='PATCH',
+        method_id='spanner.projects.instances.patch',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1/{+name}',
-        request_field=u'updateInstanceRequest',
-        request_type_name=u'SpannerProjectsInstancesPatchRequest',
-        response_type_name=u'Operation',
+        relative_path='v1/{+name}',
+        request_field='updateInstanceRequest',
+        request_type_name='SpannerProjectsInstancesPatchRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -2016,16 +2016,16 @@ resource.
           config, request, global_params=global_params)
 
     SetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/instances/{instancesId}:setIamPolicy',
-        http_method=u'POST',
-        method_id=u'spanner.projects.instances.setIamPolicy',
-        ordered_params=[u'resource'],
-        path_params=[u'resource'],
+        flat_path='v1/projects/{projectsId}/instances/{instancesId}:setIamPolicy',
+        http_method='POST',
+        method_id='spanner.projects.instances.setIamPolicy',
+        ordered_params=['resource'],
+        path_params=['resource'],
         query_params=[],
-        relative_path=u'v1/{+resource}:setIamPolicy',
-        request_field=u'setIamPolicyRequest',
-        request_type_name=u'SpannerProjectsInstancesSetIamPolicyRequest',
-        response_type_name=u'Policy',
+        relative_path='v1/{+resource}:setIamPolicy',
+        request_field='setIamPolicyRequest',
+        request_type_name='SpannerProjectsInstancesSetIamPolicyRequest',
+        response_type_name='Policy',
         supports_download=False,
     )
 
@@ -2048,23 +2048,23 @@ empty set of permissions.
           config, request, global_params=global_params)
 
     TestIamPermissions.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/instances/{instancesId}:testIamPermissions',
-        http_method=u'POST',
-        method_id=u'spanner.projects.instances.testIamPermissions',
-        ordered_params=[u'resource'],
-        path_params=[u'resource'],
+        flat_path='v1/projects/{projectsId}/instances/{instancesId}:testIamPermissions',
+        http_method='POST',
+        method_id='spanner.projects.instances.testIamPermissions',
+        ordered_params=['resource'],
+        path_params=['resource'],
         query_params=[],
-        relative_path=u'v1/{+resource}:testIamPermissions',
-        request_field=u'testIamPermissionsRequest',
-        request_type_name=u'SpannerProjectsInstancesTestIamPermissionsRequest',
-        response_type_name=u'TestIamPermissionsResponse',
+        relative_path='v1/{+resource}:testIamPermissions',
+        request_field='testIamPermissionsRequest',
+        request_type_name='SpannerProjectsInstancesTestIamPermissionsRequest',
+        response_type_name='TestIamPermissionsResponse',
         supports_download=False,
     )
 
   class ProjectsService(base_api.BaseApiService):
     """Service class for the projects resource."""
 
-    _NAME = u'projects'
+    _NAME = 'projects'
 
     def __init__(self, client):
       super(SpannerV1.ProjectsService, self).__init__(client)

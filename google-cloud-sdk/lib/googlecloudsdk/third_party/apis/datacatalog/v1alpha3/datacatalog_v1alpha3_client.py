@@ -8,17 +8,17 @@ class DatacatalogV1alpha3(base_api.BaseApiClient):
   """Generated client library for service datacatalog version v1alpha3."""
 
   MESSAGES_MODULE = messages
-  BASE_URL = u'https://datacatalog.googleapis.com/'
-  MTLS_BASE_URL = u'https://datacatalog.mtls.googleapis.com/'
+  BASE_URL = 'https://datacatalog.googleapis.com/'
+  MTLS_BASE_URL = 'https://datacatalog.mtls.googleapis.com/'
 
-  _PACKAGE = u'datacatalog'
-  _SCOPES = [u'https://www.googleapis.com/auth/cloud-platform']
-  _VERSION = u'v1alpha3'
+  _PACKAGE = 'datacatalog'
+  _SCOPES = ['https://www.googleapis.com/auth/cloud-platform']
+  _VERSION = 'v1alpha3'
   _CLIENT_ID = '1042881264118.apps.googleusercontent.com'
   _CLIENT_SECRET = 'x_Tw5K8nnjoRAqULM9PFAC2b'
-  _USER_AGENT = u'google-cloud-sdk'
-  _CLIENT_CLASS_NAME = u'DatacatalogV1alpha3'
-  _URL_VERSION = u'v1alpha3'
+  _USER_AGENT = 'google-cloud-sdk'
+  _CLIENT_CLASS_NAME = 'DatacatalogV1alpha3'
+  _URL_VERSION = 'v1alpha3'
   _API_KEY = None
 
   def __init__(self, url='', credentials=None,
@@ -45,7 +45,7 @@ class DatacatalogV1alpha3(base_api.BaseApiClient):
   class ProjectsCrawlersCrawlerRunsService(base_api.BaseApiService):
     """Service class for the projects_crawlers_crawlerRuns resource."""
 
-    _NAME = u'projects_crawlers_crawlerRuns'
+    _NAME = 'projects_crawlers_crawlerRuns'
 
     def __init__(self, client):
       super(DatacatalogV1alpha3.ProjectsCrawlersCrawlerRunsService, self).__init__(client)
@@ -66,16 +66,16 @@ class DatacatalogV1alpha3(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha3/projects/{projectsId}/crawlers/{crawlersId}/crawlerRuns/{crawlerRunsId}',
-        http_method=u'GET',
-        method_id=u'datacatalog.projects.crawlers.crawlerRuns.get',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1alpha3/projects/{projectsId}/crawlers/{crawlersId}/crawlerRuns/{crawlerRunsId}',
+        http_method='GET',
+        method_id='datacatalog.projects.crawlers.crawlerRuns.get',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1alpha3/{+name}',
+        relative_path='v1alpha3/{+name}',
         request_field='',
-        request_type_name=u'DatacatalogProjectsCrawlersCrawlerRunsGetRequest',
-        response_type_name=u'GoogleCloudDatacatalogV1alpha3CrawlerRun',
+        request_type_name='DatacatalogProjectsCrawlersCrawlerRunsGetRequest',
+        response_type_name='GoogleCloudDatacatalogV1alpha3CrawlerRun',
         supports_download=False,
     )
 
@@ -94,23 +94,23 @@ completed crawler runs.
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha3/projects/{projectsId}/crawlers/{crawlersId}/crawlerRuns',
-        http_method=u'GET',
-        method_id=u'datacatalog.projects.crawlers.crawlerRuns.list',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'pageSize', u'pageToken'],
-        relative_path=u'v1alpha3/{+parent}/crawlerRuns',
+        flat_path='v1alpha3/projects/{projectsId}/crawlers/{crawlersId}/crawlerRuns',
+        http_method='GET',
+        method_id='datacatalog.projects.crawlers.crawlerRuns.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v1alpha3/{+parent}/crawlerRuns',
         request_field='',
-        request_type_name=u'DatacatalogProjectsCrawlersCrawlerRunsListRequest',
-        response_type_name=u'GoogleCloudDatacatalogV1alpha3ListCrawlerRunsResponse',
+        request_type_name='DatacatalogProjectsCrawlersCrawlerRunsListRequest',
+        response_type_name='GoogleCloudDatacatalogV1alpha3ListCrawlerRunsResponse',
         supports_download=False,
     )
 
   class ProjectsCrawlersService(base_api.BaseApiService):
     """Service class for the projects_crawlers resource."""
 
-    _NAME = u'projects_crawlers'
+    _NAME = 'projects_crawlers'
 
     def __init__(self, client):
       super(DatacatalogV1alpha3.ProjectsCrawlersService, self).__init__(client)
@@ -132,16 +132,16 @@ completed crawler runs.
           config, request, global_params=global_params)
 
     Create.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha3/projects/{projectsId}/crawlers',
-        http_method=u'POST',
-        method_id=u'datacatalog.projects.crawlers.create',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'crawlerId'],
-        relative_path=u'v1alpha3/{+parent}/crawlers',
-        request_field=u'googleCloudDatacatalogV1alpha3Crawler',
-        request_type_name=u'DatacatalogProjectsCrawlersCreateRequest',
-        response_type_name=u'GoogleCloudDatacatalogV1alpha3Crawler',
+        flat_path='v1alpha3/projects/{projectsId}/crawlers',
+        http_method='POST',
+        method_id='datacatalog.projects.crawlers.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['crawlerId'],
+        relative_path='v1alpha3/{+parent}/crawlers',
+        request_field='googleCloudDatacatalogV1alpha3Crawler',
+        request_type_name='DatacatalogProjectsCrawlersCreateRequest',
+        response_type_name='GoogleCloudDatacatalogV1alpha3Crawler',
         supports_download=False,
     )
 
@@ -160,16 +160,16 @@ not exist.
           config, request, global_params=global_params)
 
     Delete.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha3/projects/{projectsId}/crawlers/{crawlersId}',
-        http_method=u'DELETE',
-        method_id=u'datacatalog.projects.crawlers.delete',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1alpha3/projects/{projectsId}/crawlers/{crawlersId}',
+        http_method='DELETE',
+        method_id='datacatalog.projects.crawlers.delete',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1alpha3/{+name}',
+        relative_path='v1alpha3/{+name}',
         request_field='',
-        request_type_name=u'DatacatalogProjectsCrawlersDeleteRequest',
-        response_type_name=u'Empty',
+        request_type_name='DatacatalogProjectsCrawlersDeleteRequest',
+        response_type_name='Empty',
         supports_download=False,
     )
 
@@ -187,16 +187,16 @@ not exist.
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha3/projects/{projectsId}/crawlers/{crawlersId}',
-        http_method=u'GET',
-        method_id=u'datacatalog.projects.crawlers.get',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1alpha3/projects/{projectsId}/crawlers/{crawlersId}',
+        http_method='GET',
+        method_id='datacatalog.projects.crawlers.get',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1alpha3/{+name}',
+        relative_path='v1alpha3/{+name}',
         request_field='',
-        request_type_name=u'DatacatalogProjectsCrawlersGetRequest',
-        response_type_name=u'GoogleCloudDatacatalogV1alpha3Crawler',
+        request_type_name='DatacatalogProjectsCrawlersGetRequest',
+        response_type_name='GoogleCloudDatacatalogV1alpha3Crawler',
         supports_download=False,
     )
 
@@ -214,16 +214,16 @@ not exist.
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha3/projects/{projectsId}/crawlers',
-        http_method=u'GET',
-        method_id=u'datacatalog.projects.crawlers.list',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'pageSize', u'pageToken'],
-        relative_path=u'v1alpha3/{+parent}/crawlers',
+        flat_path='v1alpha3/projects/{projectsId}/crawlers',
+        http_method='GET',
+        method_id='datacatalog.projects.crawlers.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v1alpha3/{+parent}/crawlers',
         request_field='',
-        request_type_name=u'DatacatalogProjectsCrawlersListRequest',
-        response_type_name=u'GoogleCloudDatacatalogV1alpha3ListCrawlersResponse',
+        request_type_name='DatacatalogProjectsCrawlersListRequest',
+        response_type_name='GoogleCloudDatacatalogV1alpha3ListCrawlersResponse',
         supports_download=False,
     )
 
@@ -241,16 +241,16 @@ not exist.
           config, request, global_params=global_params)
 
     Patch.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha3/projects/{projectsId}/crawlers/{crawlersId}',
-        http_method=u'PATCH',
-        method_id=u'datacatalog.projects.crawlers.patch',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[u'updateMask'],
-        relative_path=u'v1alpha3/{+name}',
-        request_field=u'googleCloudDatacatalogV1alpha3Crawler',
-        request_type_name=u'DatacatalogProjectsCrawlersPatchRequest',
-        response_type_name=u'GoogleCloudDatacatalogV1alpha3Crawler',
+        flat_path='v1alpha3/projects/{projectsId}/crawlers/{crawlersId}',
+        http_method='PATCH',
+        method_id='datacatalog.projects.crawlers.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v1alpha3/{+name}',
+        request_field='googleCloudDatacatalogV1alpha3Crawler',
+        request_type_name='DatacatalogProjectsCrawlersPatchRequest',
+        response_type_name='GoogleCloudDatacatalogV1alpha3Crawler',
         supports_download=False,
     )
 
@@ -269,23 +269,23 @@ The request fails if the crawler is already running.
           config, request, global_params=global_params)
 
     Run.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha3/projects/{projectsId}/crawlers/{crawlersId}:run',
-        http_method=u'POST',
-        method_id=u'datacatalog.projects.crawlers.run',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1alpha3/projects/{projectsId}/crawlers/{crawlersId}:run',
+        http_method='POST',
+        method_id='datacatalog.projects.crawlers.run',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1alpha3/{+name}:run',
-        request_field=u'googleCloudDatacatalogV1alpha3RunCrawlerRequest',
-        request_type_name=u'DatacatalogProjectsCrawlersRunRequest',
-        response_type_name=u'GoogleCloudDatacatalogV1alpha3CrawlerRun',
+        relative_path='v1alpha3/{+name}:run',
+        request_field='googleCloudDatacatalogV1alpha3RunCrawlerRequest',
+        request_type_name='DatacatalogProjectsCrawlersRunRequest',
+        response_type_name='GoogleCloudDatacatalogV1alpha3CrawlerRun',
         supports_download=False,
     )
 
   class ProjectsTaxonomiesCategoriesService(base_api.BaseApiService):
     """Service class for the projects_taxonomies_categories resource."""
 
-    _NAME = u'projects_taxonomies_categories'
+    _NAME = 'projects_taxonomies_categories'
 
     def __init__(self, client):
       super(DatacatalogV1alpha3.ProjectsTaxonomiesCategoriesService, self).__init__(client)
@@ -306,16 +306,16 @@ The request fails if the crawler is already running.
           config, request, global_params=global_params)
 
     Create.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha3/projects/{projectsId}/taxonomies/{taxonomiesId}/categories',
-        http_method=u'POST',
-        method_id=u'datacatalog.projects.taxonomies.categories.create',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
+        flat_path='v1alpha3/projects/{projectsId}/taxonomies/{taxonomiesId}/categories',
+        http_method='POST',
+        method_id='datacatalog.projects.taxonomies.categories.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
         query_params=[],
-        relative_path=u'v1alpha3/{+parent}/categories',
-        request_field=u'googleCloudDatacatalogV1alpha3Category',
-        request_type_name=u'DatacatalogProjectsTaxonomiesCategoriesCreateRequest',
-        response_type_name=u'GoogleCloudDatacatalogV1alpha3Category',
+        relative_path='v1alpha3/{+parent}/categories',
+        request_field='googleCloudDatacatalogV1alpha3Category',
+        request_type_name='DatacatalogProjectsTaxonomiesCategoriesCreateRequest',
+        response_type_name='GoogleCloudDatacatalogV1alpha3Category',
         supports_download=False,
     )
 
@@ -333,16 +333,16 @@ The request fails if the crawler is already running.
           config, request, global_params=global_params)
 
     Delete.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha3/projects/{projectsId}/taxonomies/{taxonomiesId}/categories/{categoriesId}',
-        http_method=u'DELETE',
-        method_id=u'datacatalog.projects.taxonomies.categories.delete',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1alpha3/projects/{projectsId}/taxonomies/{taxonomiesId}/categories/{categoriesId}',
+        http_method='DELETE',
+        method_id='datacatalog.projects.taxonomies.categories.delete',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1alpha3/{+name}',
+        relative_path='v1alpha3/{+name}',
         request_field='',
-        request_type_name=u'DatacatalogProjectsTaxonomiesCategoriesDeleteRequest',
-        response_type_name=u'Empty',
+        request_type_name='DatacatalogProjectsTaxonomiesCategoriesDeleteRequest',
+        response_type_name='Empty',
         supports_download=False,
     )
 
@@ -360,16 +360,16 @@ The request fails if the crawler is already running.
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha3/projects/{projectsId}/taxonomies/{taxonomiesId}/categories/{categoriesId}',
-        http_method=u'GET',
-        method_id=u'datacatalog.projects.taxonomies.categories.get',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1alpha3/projects/{projectsId}/taxonomies/{taxonomiesId}/categories/{categoriesId}',
+        http_method='GET',
+        method_id='datacatalog.projects.taxonomies.categories.get',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1alpha3/{+name}',
+        relative_path='v1alpha3/{+name}',
         request_field='',
-        request_type_name=u'DatacatalogProjectsTaxonomiesCategoriesGetRequest',
-        response_type_name=u'GoogleCloudDatacatalogV1alpha3Category',
+        request_type_name='DatacatalogProjectsTaxonomiesCategoriesGetRequest',
+        response_type_name='GoogleCloudDatacatalogV1alpha3Category',
         supports_download=False,
     )
 
@@ -387,16 +387,16 @@ The request fails if the crawler is already running.
           config, request, global_params=global_params)
 
     GetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha3/projects/{projectsId}/taxonomies/{taxonomiesId}/categories/{categoriesId}:getIamPolicy',
-        http_method=u'POST',
-        method_id=u'datacatalog.projects.taxonomies.categories.getIamPolicy',
-        ordered_params=[u'resource'],
-        path_params=[u'resource'],
+        flat_path='v1alpha3/projects/{projectsId}/taxonomies/{taxonomiesId}/categories/{categoriesId}:getIamPolicy',
+        http_method='POST',
+        method_id='datacatalog.projects.taxonomies.categories.getIamPolicy',
+        ordered_params=['resource'],
+        path_params=['resource'],
         query_params=[],
-        relative_path=u'v1alpha3/{+resource}:getIamPolicy',
-        request_field=u'getIamPolicyRequest',
-        request_type_name=u'DatacatalogProjectsTaxonomiesCategoriesGetIamPolicyRequest',
-        response_type_name=u'Policy',
+        relative_path='v1alpha3/{+resource}:getIamPolicy',
+        request_field='getIamPolicyRequest',
+        request_type_name='DatacatalogProjectsTaxonomiesCategoriesGetIamPolicyRequest',
+        response_type_name='Policy',
         supports_download=False,
     )
 
@@ -414,16 +414,16 @@ The request fails if the crawler is already running.
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha3/projects/{projectsId}/taxonomies/{taxonomiesId}/categories',
-        http_method=u'GET',
-        method_id=u'datacatalog.projects.taxonomies.categories.list',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'pageSize', u'pageToken'],
-        relative_path=u'v1alpha3/{+parent}/categories',
+        flat_path='v1alpha3/projects/{projectsId}/taxonomies/{taxonomiesId}/categories',
+        http_method='GET',
+        method_id='datacatalog.projects.taxonomies.categories.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v1alpha3/{+parent}/categories',
         request_field='',
-        request_type_name=u'DatacatalogProjectsTaxonomiesCategoriesListRequest',
-        response_type_name=u'GoogleCloudDatacatalogV1alpha3ListCategoriesResponse',
+        request_type_name='DatacatalogProjectsTaxonomiesCategoriesListRequest',
+        response_type_name='GoogleCloudDatacatalogV1alpha3ListCategoriesResponse',
         supports_download=False,
     )
 
@@ -441,16 +441,16 @@ The request fails if the crawler is already running.
           config, request, global_params=global_params)
 
     Patch.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha3/projects/{projectsId}/taxonomies/{taxonomiesId}/categories/{categoriesId}',
-        http_method=u'PATCH',
-        method_id=u'datacatalog.projects.taxonomies.categories.patch',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[u'updateMask'],
-        relative_path=u'v1alpha3/{+name}',
-        request_field=u'googleCloudDatacatalogV1alpha3Category',
-        request_type_name=u'DatacatalogProjectsTaxonomiesCategoriesPatchRequest',
-        response_type_name=u'GoogleCloudDatacatalogV1alpha3Category',
+        flat_path='v1alpha3/projects/{projectsId}/taxonomies/{taxonomiesId}/categories/{categoriesId}',
+        http_method='PATCH',
+        method_id='datacatalog.projects.taxonomies.categories.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v1alpha3/{+name}',
+        request_field='googleCloudDatacatalogV1alpha3Category',
+        request_type_name='DatacatalogProjectsTaxonomiesCategoriesPatchRequest',
+        response_type_name='GoogleCloudDatacatalogV1alpha3Category',
         supports_download=False,
     )
 
@@ -468,16 +468,16 @@ The request fails if the crawler is already running.
           config, request, global_params=global_params)
 
     SetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha3/projects/{projectsId}/taxonomies/{taxonomiesId}/categories/{categoriesId}:setIamPolicy',
-        http_method=u'POST',
-        method_id=u'datacatalog.projects.taxonomies.categories.setIamPolicy',
-        ordered_params=[u'resource'],
-        path_params=[u'resource'],
+        flat_path='v1alpha3/projects/{projectsId}/taxonomies/{taxonomiesId}/categories/{categoriesId}:setIamPolicy',
+        http_method='POST',
+        method_id='datacatalog.projects.taxonomies.categories.setIamPolicy',
+        ordered_params=['resource'],
+        path_params=['resource'],
         query_params=[],
-        relative_path=u'v1alpha3/{+resource}:setIamPolicy',
-        request_field=u'setIamPolicyRequest',
-        request_type_name=u'DatacatalogProjectsTaxonomiesCategoriesSetIamPolicyRequest',
-        response_type_name=u'Policy',
+        relative_path='v1alpha3/{+resource}:setIamPolicy',
+        request_field='setIamPolicyRequest',
+        request_type_name='DatacatalogProjectsTaxonomiesCategoriesSetIamPolicyRequest',
+        response_type_name='Policy',
         supports_download=False,
     )
 
@@ -495,23 +495,23 @@ The request fails if the crawler is already running.
           config, request, global_params=global_params)
 
     TestIamPermissions.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha3/projects/{projectsId}/taxonomies/{taxonomiesId}/categories/{categoriesId}:testIamPermissions',
-        http_method=u'POST',
-        method_id=u'datacatalog.projects.taxonomies.categories.testIamPermissions',
-        ordered_params=[u'resource'],
-        path_params=[u'resource'],
+        flat_path='v1alpha3/projects/{projectsId}/taxonomies/{taxonomiesId}/categories/{categoriesId}:testIamPermissions',
+        http_method='POST',
+        method_id='datacatalog.projects.taxonomies.categories.testIamPermissions',
+        ordered_params=['resource'],
+        path_params=['resource'],
         query_params=[],
-        relative_path=u'v1alpha3/{+resource}:testIamPermissions',
-        request_field=u'testIamPermissionsRequest',
-        request_type_name=u'DatacatalogProjectsTaxonomiesCategoriesTestIamPermissionsRequest',
-        response_type_name=u'TestIamPermissionsResponse',
+        relative_path='v1alpha3/{+resource}:testIamPermissions',
+        request_field='testIamPermissionsRequest',
+        request_type_name='DatacatalogProjectsTaxonomiesCategoriesTestIamPermissionsRequest',
+        response_type_name='TestIamPermissionsResponse',
         supports_download=False,
     )
 
   class ProjectsTaxonomiesService(base_api.BaseApiService):
     """Service class for the projects_taxonomies resource."""
 
-    _NAME = u'projects_taxonomies'
+    _NAME = 'projects_taxonomies'
 
     def __init__(self, client):
       super(DatacatalogV1alpha3.ProjectsTaxonomiesService, self).__init__(client)
@@ -532,16 +532,16 @@ The request fails if the crawler is already running.
           config, request, global_params=global_params)
 
     Create.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha3/projects/{projectsId}/taxonomies',
-        http_method=u'POST',
-        method_id=u'datacatalog.projects.taxonomies.create',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
+        flat_path='v1alpha3/projects/{projectsId}/taxonomies',
+        http_method='POST',
+        method_id='datacatalog.projects.taxonomies.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
         query_params=[],
-        relative_path=u'v1alpha3/{+parent}/taxonomies',
-        request_field=u'googleCloudDatacatalogV1alpha3Taxonomy',
-        request_type_name=u'DatacatalogProjectsTaxonomiesCreateRequest',
-        response_type_name=u'GoogleCloudDatacatalogV1alpha3Taxonomy',
+        relative_path='v1alpha3/{+parent}/taxonomies',
+        request_field='googleCloudDatacatalogV1alpha3Taxonomy',
+        request_type_name='DatacatalogProjectsTaxonomiesCreateRequest',
+        response_type_name='GoogleCloudDatacatalogV1alpha3Taxonomy',
         supports_download=False,
     )
 
@@ -560,16 +560,16 @@ categories in this taxonomy.
           config, request, global_params=global_params)
 
     Delete.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha3/projects/{projectsId}/taxonomies/{taxonomiesId}',
-        http_method=u'DELETE',
-        method_id=u'datacatalog.projects.taxonomies.delete',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1alpha3/projects/{projectsId}/taxonomies/{taxonomiesId}',
+        http_method='DELETE',
+        method_id='datacatalog.projects.taxonomies.delete',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1alpha3/{+name}',
+        relative_path='v1alpha3/{+name}',
         request_field='',
-        request_type_name=u'DatacatalogProjectsTaxonomiesDeleteRequest',
-        response_type_name=u'Empty',
+        request_type_name='DatacatalogProjectsTaxonomiesDeleteRequest',
+        response_type_name='Empty',
         supports_download=False,
     )
 
@@ -590,16 +590,16 @@ can be used as an input for future ImportTaxonomies calls.
           config, request, global_params=global_params)
 
     Export.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha3/projects/{projectsId}/taxonomies:export',
-        http_method=u'GET',
-        method_id=u'datacatalog.projects.taxonomies.export',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'taxonomyNames'],
-        relative_path=u'v1alpha3/{+parent}/taxonomies:export',
+        flat_path='v1alpha3/projects/{projectsId}/taxonomies:export',
+        http_method='GET',
+        method_id='datacatalog.projects.taxonomies.export',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['taxonomyNames'],
+        relative_path='v1alpha3/{+parent}/taxonomies:export',
         request_field='',
-        request_type_name=u'DatacatalogProjectsTaxonomiesExportRequest',
-        response_type_name=u'GoogleCloudDatacatalogV1alpha3ExportTaxonomiesResponse',
+        request_type_name='DatacatalogProjectsTaxonomiesExportRequest',
+        response_type_name='GoogleCloudDatacatalogV1alpha3ExportTaxonomiesResponse',
         supports_download=False,
     )
 
@@ -617,16 +617,16 @@ can be used as an input for future ImportTaxonomies calls.
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha3/projects/{projectsId}/taxonomies/{taxonomiesId}',
-        http_method=u'GET',
-        method_id=u'datacatalog.projects.taxonomies.get',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1alpha3/projects/{projectsId}/taxonomies/{taxonomiesId}',
+        http_method='GET',
+        method_id='datacatalog.projects.taxonomies.get',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1alpha3/{+name}',
+        relative_path='v1alpha3/{+name}',
         request_field='',
-        request_type_name=u'DatacatalogProjectsTaxonomiesGetRequest',
-        response_type_name=u'GoogleCloudDatacatalogV1alpha3Taxonomy',
+        request_type_name='DatacatalogProjectsTaxonomiesGetRequest',
+        response_type_name='GoogleCloudDatacatalogV1alpha3Taxonomy',
         supports_download=False,
     )
 
@@ -644,16 +644,16 @@ can be used as an input for future ImportTaxonomies calls.
           config, request, global_params=global_params)
 
     GetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha3/projects/{projectsId}/taxonomies/{taxonomiesId}:getIamPolicy',
-        http_method=u'POST',
-        method_id=u'datacatalog.projects.taxonomies.getIamPolicy',
-        ordered_params=[u'resource'],
-        path_params=[u'resource'],
+        flat_path='v1alpha3/projects/{projectsId}/taxonomies/{taxonomiesId}:getIamPolicy',
+        http_method='POST',
+        method_id='datacatalog.projects.taxonomies.getIamPolicy',
+        ordered_params=['resource'],
+        path_params=['resource'],
         query_params=[],
-        relative_path=u'v1alpha3/{+resource}:getIamPolicy',
-        request_field=u'getIamPolicyRequest',
-        request_type_name=u'DatacatalogProjectsTaxonomiesGetIamPolicyRequest',
-        response_type_name=u'Policy',
+        relative_path='v1alpha3/{+resource}:getIamPolicy',
+        request_field='getIamPolicyRequest',
+        request_type_name='DatacatalogProjectsTaxonomiesGetIamPolicyRequest',
+        response_type_name='Policy',
         supports_download=False,
     )
 
@@ -674,16 +674,16 @@ proto structure.
           config, request, global_params=global_params)
 
     Import.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha3/projects/{projectsId}/taxonomies:import',
-        http_method=u'POST',
-        method_id=u'datacatalog.projects.taxonomies.import',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
+        flat_path='v1alpha3/projects/{projectsId}/taxonomies:import',
+        http_method='POST',
+        method_id='datacatalog.projects.taxonomies.import',
+        ordered_params=['parent'],
+        path_params=['parent'],
         query_params=[],
-        relative_path=u'v1alpha3/{+parent}/taxonomies:import',
-        request_field=u'googleCloudDatacatalogV1alpha3ImportTaxonomiesRequest',
-        request_type_name=u'DatacatalogProjectsTaxonomiesImportRequest',
-        response_type_name=u'GoogleCloudDatacatalogV1alpha3ImportTaxonomiesResponse',
+        relative_path='v1alpha3/{+parent}/taxonomies:import',
+        request_field='googleCloudDatacatalogV1alpha3ImportTaxonomiesRequest',
+        request_type_name='DatacatalogProjectsTaxonomiesImportRequest',
+        response_type_name='GoogleCloudDatacatalogV1alpha3ImportTaxonomiesResponse',
         supports_download=False,
     )
 
@@ -701,16 +701,16 @@ proto structure.
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha3/projects/{projectsId}/taxonomies',
-        http_method=u'GET',
-        method_id=u'datacatalog.projects.taxonomies.list',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'pageSize', u'pageToken'],
-        relative_path=u'v1alpha3/{+parent}/taxonomies',
+        flat_path='v1alpha3/projects/{projectsId}/taxonomies',
+        http_method='GET',
+        method_id='datacatalog.projects.taxonomies.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v1alpha3/{+parent}/taxonomies',
         request_field='',
-        request_type_name=u'DatacatalogProjectsTaxonomiesListRequest',
-        response_type_name=u'GoogleCloudDatacatalogV1alpha3ListTaxonomiesResponse',
+        request_type_name='DatacatalogProjectsTaxonomiesListRequest',
+        response_type_name='GoogleCloudDatacatalogV1alpha3ListTaxonomiesResponse',
         supports_download=False,
     )
 
@@ -728,16 +728,16 @@ proto structure.
           config, request, global_params=global_params)
 
     Patch.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha3/projects/{projectsId}/taxonomies/{taxonomiesId}',
-        http_method=u'PATCH',
-        method_id=u'datacatalog.projects.taxonomies.patch',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[u'updateMask'],
-        relative_path=u'v1alpha3/{+name}',
-        request_field=u'googleCloudDatacatalogV1alpha3Taxonomy',
-        request_type_name=u'DatacatalogProjectsTaxonomiesPatchRequest',
-        response_type_name=u'GoogleCloudDatacatalogV1alpha3Taxonomy',
+        flat_path='v1alpha3/projects/{projectsId}/taxonomies/{taxonomiesId}',
+        http_method='PATCH',
+        method_id='datacatalog.projects.taxonomies.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v1alpha3/{+name}',
+        request_field='googleCloudDatacatalogV1alpha3Taxonomy',
+        request_type_name='DatacatalogProjectsTaxonomiesPatchRequest',
+        response_type_name='GoogleCloudDatacatalogV1alpha3Taxonomy',
         supports_download=False,
     )
 
@@ -755,16 +755,16 @@ proto structure.
           config, request, global_params=global_params)
 
     SetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha3/projects/{projectsId}/taxonomies/{taxonomiesId}:setIamPolicy',
-        http_method=u'POST',
-        method_id=u'datacatalog.projects.taxonomies.setIamPolicy',
-        ordered_params=[u'resource'],
-        path_params=[u'resource'],
+        flat_path='v1alpha3/projects/{projectsId}/taxonomies/{taxonomiesId}:setIamPolicy',
+        http_method='POST',
+        method_id='datacatalog.projects.taxonomies.setIamPolicy',
+        ordered_params=['resource'],
+        path_params=['resource'],
         query_params=[],
-        relative_path=u'v1alpha3/{+resource}:setIamPolicy',
-        request_field=u'setIamPolicyRequest',
-        request_type_name=u'DatacatalogProjectsTaxonomiesSetIamPolicyRequest',
-        response_type_name=u'Policy',
+        relative_path='v1alpha3/{+resource}:setIamPolicy',
+        request_field='setIamPolicyRequest',
+        request_type_name='DatacatalogProjectsTaxonomiesSetIamPolicyRequest',
+        response_type_name='Policy',
         supports_download=False,
     )
 
@@ -782,23 +782,23 @@ proto structure.
           config, request, global_params=global_params)
 
     TestIamPermissions.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha3/projects/{projectsId}/taxonomies/{taxonomiesId}:testIamPermissions',
-        http_method=u'POST',
-        method_id=u'datacatalog.projects.taxonomies.testIamPermissions',
-        ordered_params=[u'resource'],
-        path_params=[u'resource'],
+        flat_path='v1alpha3/projects/{projectsId}/taxonomies/{taxonomiesId}:testIamPermissions',
+        http_method='POST',
+        method_id='datacatalog.projects.taxonomies.testIamPermissions',
+        ordered_params=['resource'],
+        path_params=['resource'],
         query_params=[],
-        relative_path=u'v1alpha3/{+resource}:testIamPermissions',
-        request_field=u'testIamPermissionsRequest',
-        request_type_name=u'DatacatalogProjectsTaxonomiesTestIamPermissionsRequest',
-        response_type_name=u'TestIamPermissionsResponse',
+        relative_path='v1alpha3/{+resource}:testIamPermissions',
+        request_field='testIamPermissionsRequest',
+        request_type_name='DatacatalogProjectsTaxonomiesTestIamPermissionsRequest',
+        response_type_name='TestIamPermissionsResponse',
         supports_download=False,
     )
 
   class ProjectsService(base_api.BaseApiService):
     """Service class for the projects resource."""
 
-    _NAME = u'projects'
+    _NAME = 'projects'
 
     def __init__(self, client):
       super(DatacatalogV1alpha3.ProjectsService, self).__init__(client)

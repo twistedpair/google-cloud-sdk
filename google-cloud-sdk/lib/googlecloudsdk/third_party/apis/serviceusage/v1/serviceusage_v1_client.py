@@ -8,17 +8,17 @@ class ServiceusageV1(base_api.BaseApiClient):
   """Generated client library for service serviceusage version v1."""
 
   MESSAGES_MODULE = messages
-  BASE_URL = u'https://serviceusage.googleapis.com/'
-  MTLS_BASE_URL = u''
+  BASE_URL = 'https://serviceusage.googleapis.com/'
+  MTLS_BASE_URL = ''
 
-  _PACKAGE = u'serviceusage'
-  _SCOPES = [u'https://www.googleapis.com/auth/cloud-platform', u'https://www.googleapis.com/auth/cloud-platform.read-only', u'https://www.googleapis.com/auth/service.management']
-  _VERSION = u'v1'
+  _PACKAGE = 'serviceusage'
+  _SCOPES = ['https://www.googleapis.com/auth/cloud-platform', 'https://www.googleapis.com/auth/cloud-platform.read-only', 'https://www.googleapis.com/auth/service.management']
+  _VERSION = 'v1'
   _CLIENT_ID = '1042881264118.apps.googleusercontent.com'
   _CLIENT_SECRET = 'x_Tw5K8nnjoRAqULM9PFAC2b'
-  _USER_AGENT = u'google-cloud-sdk'
-  _CLIENT_CLASS_NAME = u'ServiceusageV1'
-  _URL_VERSION = u'v1'
+  _USER_AGENT = 'google-cloud-sdk'
+  _CLIENT_CLASS_NAME = 'ServiceusageV1'
+  _URL_VERSION = 'v1'
   _API_KEY = None
 
   def __init__(self, url='', credentials=None,
@@ -42,7 +42,7 @@ class ServiceusageV1(base_api.BaseApiClient):
   class OperationsService(base_api.BaseApiService):
     """Service class for the operations resource."""
 
-    _NAME = u'operations'
+    _NAME = 'operations'
 
     def __init__(self, client):
       super(ServiceusageV1.OperationsService, self).__init__(client)
@@ -72,16 +72,16 @@ corresponding to `Code.CANCELLED`.
           config, request, global_params=global_params)
 
     Cancel.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/operations/{operationsId}:cancel',
-        http_method=u'POST',
-        method_id=u'serviceusage.operations.cancel',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1/operations/{operationsId}:cancel',
+        http_method='POST',
+        method_id='serviceusage.operations.cancel',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1/{+name}:cancel',
-        request_field=u'cancelOperationRequest',
-        request_type_name=u'ServiceusageOperationsCancelRequest',
-        response_type_name=u'Empty',
+        relative_path='v1/{+name}:cancel',
+        request_field='cancelOperationRequest',
+        request_type_name='ServiceusageOperationsCancelRequest',
+        response_type_name='Empty',
         supports_download=False,
     )
 
@@ -102,16 +102,16 @@ operation. If the server doesn't support this method, it returns
           config, request, global_params=global_params)
 
     Delete.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/operations/{operationsId}',
-        http_method=u'DELETE',
-        method_id=u'serviceusage.operations.delete',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1/operations/{operationsId}',
+        http_method='DELETE',
+        method_id='serviceusage.operations.delete',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1/{+name}',
+        relative_path='v1/{+name}',
         request_field='',
-        request_type_name=u'ServiceusageOperationsDeleteRequest',
-        response_type_name=u'Empty',
+        request_type_name='ServiceusageOperationsDeleteRequest',
+        response_type_name='Empty',
         supports_download=False,
     )
 
@@ -131,16 +131,16 @@ service.
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/operations/{operationsId}',
-        http_method=u'GET',
-        method_id=u'serviceusage.operations.get',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1/operations/{operationsId}',
+        http_method='GET',
+        method_id='serviceusage.operations.get',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1/{+name}',
+        relative_path='v1/{+name}',
         request_field='',
-        request_type_name=u'ServiceusageOperationsGetRequest',
-        response_type_name=u'Operation',
+        request_type_name='ServiceusageOperationsGetRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -167,22 +167,22 @@ is the parent resource, without the operations collection id.
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'serviceusage.operations.list',
+        http_method='GET',
+        method_id='serviceusage.operations.list',
         ordered_params=[],
         path_params=[],
-        query_params=[u'filter', u'name', u'pageSize', u'pageToken'],
-        relative_path=u'v1/operations',
+        query_params=['filter', 'name', 'pageSize', 'pageToken'],
+        relative_path='v1/operations',
         request_field='',
-        request_type_name=u'ServiceusageOperationsListRequest',
-        response_type_name=u'ListOperationsResponse',
+        request_type_name='ServiceusageOperationsListRequest',
+        response_type_name='ListOperationsResponse',
         supports_download=False,
     )
 
   class ServicesService(base_api.BaseApiService):
     """Service class for the services resource."""
 
-    _NAME = u'services'
+    _NAME = 'services'
 
     def __init__(self, client):
       super(ServiceusageV1.ServicesService, self).__init__(client)
@@ -206,16 +206,16 @@ Operation<response: BatchEnableServicesResponse>
           config, request, global_params=global_params)
 
     BatchEnable.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/{v1Id}/{v1Id1}/services:batchEnable',
-        http_method=u'POST',
-        method_id=u'serviceusage.services.batchEnable',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
+        flat_path='v1/{v1Id}/{v1Id1}/services:batchEnable',
+        http_method='POST',
+        method_id='serviceusage.services.batchEnable',
+        ordered_params=['parent'],
+        path_params=['parent'],
         query_params=[],
-        relative_path=u'v1/{+parent}/services:batchEnable',
-        request_field=u'batchEnableServicesRequest',
-        request_type_name=u'ServiceusageServicesBatchEnableRequest',
-        response_type_name=u'Operation',
+        relative_path='v1/{+parent}/services:batchEnable',
+        request_field='batchEnableServicesRequest',
+        request_type_name='ServiceusageServicesBatchEnableRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -241,16 +241,16 @@ Operation<response: DisableServiceResponse>
           config, request, global_params=global_params)
 
     Disable.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/{v1Id}/{v1Id1}/services/{servicesId}:disable',
-        http_method=u'POST',
-        method_id=u'serviceusage.services.disable',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1/{v1Id}/{v1Id1}/services/{servicesId}:disable',
+        http_method='POST',
+        method_id='serviceusage.services.disable',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1/{+name}:disable',
-        request_field=u'disableServiceRequest',
-        request_type_name=u'ServiceusageServicesDisableRequest',
-        response_type_name=u'Operation',
+        relative_path='v1/{+name}:disable',
+        request_field='disableServiceRequest',
+        request_type_name='ServiceusageServicesDisableRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -270,16 +270,16 @@ Operation<response: EnableServiceResponse>
           config, request, global_params=global_params)
 
     Enable.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/{v1Id}/{v1Id1}/services/{servicesId}:enable',
-        http_method=u'POST',
-        method_id=u'serviceusage.services.enable',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1/{v1Id}/{v1Id1}/services/{servicesId}:enable',
+        http_method='POST',
+        method_id='serviceusage.services.enable',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1/{+name}:enable',
-        request_field=u'enableServiceRequest',
-        request_type_name=u'ServiceusageServicesEnableRequest',
-        response_type_name=u'Operation',
+        relative_path='v1/{+name}:enable',
+        request_field='enableServiceRequest',
+        request_type_name='ServiceusageServicesEnableRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -297,16 +297,16 @@ Operation<response: EnableServiceResponse>
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/{v1Id}/{v1Id1}/services/{servicesId}',
-        http_method=u'GET',
-        method_id=u'serviceusage.services.get',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1/{v1Id}/{v1Id1}/services/{servicesId}',
+        http_method='GET',
+        method_id='serviceusage.services.get',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1/{+name}',
+        relative_path='v1/{+name}',
         request_field='',
-        request_type_name=u'ServiceusageServicesGetRequest',
-        response_type_name=u'GoogleApiServiceusageV1Service',
+        request_type_name='ServiceusageServicesGetRequest',
+        response_type_name='GoogleApiServiceusageV1Service',
         supports_download=False,
     )
 
@@ -330,15 +330,15 @@ services enabled on the project.
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/{v1Id}/{v1Id1}/services',
-        http_method=u'GET',
-        method_id=u'serviceusage.services.list',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'filter', u'pageSize', u'pageToken'],
-        relative_path=u'v1/{+parent}/services',
+        flat_path='v1/{v1Id}/{v1Id1}/services',
+        http_method='GET',
+        method_id='serviceusage.services.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'pageSize', 'pageToken'],
+        relative_path='v1/{+parent}/services',
         request_field='',
-        request_type_name=u'ServiceusageServicesListRequest',
-        response_type_name=u'ListServicesResponse',
+        request_type_name='ServiceusageServicesListRequest',
+        response_type_name='ListServicesResponse',
         supports_download=False,
     )

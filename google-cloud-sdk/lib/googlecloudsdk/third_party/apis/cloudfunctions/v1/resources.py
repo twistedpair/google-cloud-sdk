@@ -31,28 +31,28 @@ class Collections(enum.Enum):
           '':
               'operations/{operationsId}',
       },
-      [u'name'],
+      ['name'],
       True
   )
   PROJECTS = (
       'projects',
       'projects/{projectsId}',
       {},
-      [u'projectsId'],
+      ['projectsId'],
       True
   )
   PROJECTS_BUCKETS = (
       'projects.buckets',
       'projects/_/buckets/{bucketId}',
       {},
-      [u'bucketId'],
+      ['bucketId'],
       True
   )
   PROJECTS_LOCATIONS = (
       'projects.locations',
       'projects/{projectsId}/locations/{locationsId}',
       {},
-      [u'projectsId', u'locationsId'],
+      ['projectsId', 'locationsId'],
       True
   )
   PROJECTS_LOCATIONS_FUNCTIONS = (
@@ -63,14 +63,14 @@ class Collections(enum.Enum):
               'projects/{projectsId}/locations/{locationsId}/functions/'
               '{functionsId}',
       },
-      [u'name'],
+      ['name'],
       True
   )
   PROVIDERS_EVENT_TYPES = (
       'providers.event_types',
       'providers/{triggerProvider}/eventTypes/{triggerEvent}',
       {},
-      [u'triggerProvider', u'triggerEvent'],
+      ['triggerProvider', 'triggerEvent'],
       True
   )
 

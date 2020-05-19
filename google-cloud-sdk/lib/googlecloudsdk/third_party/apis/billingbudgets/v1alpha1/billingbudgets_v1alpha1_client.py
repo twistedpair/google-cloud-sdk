@@ -8,17 +8,17 @@ class BillingbudgetsV1alpha1(base_api.BaseApiClient):
   """Generated client library for service billingbudgets version v1alpha1."""
 
   MESSAGES_MODULE = messages
-  BASE_URL = u'https://billingbudgets.googleapis.com/'
-  MTLS_BASE_URL = u'https://billingbudgets.mtls.googleapis.com/'
+  BASE_URL = 'https://billingbudgets.googleapis.com/'
+  MTLS_BASE_URL = 'https://billingbudgets.mtls.googleapis.com/'
 
-  _PACKAGE = u'billingbudgets'
-  _SCOPES = [u'https://www.googleapis.com/auth/cloud-platform']
-  _VERSION = u'v1alpha1'
+  _PACKAGE = 'billingbudgets'
+  _SCOPES = ['https://www.googleapis.com/auth/cloud-platform']
+  _VERSION = 'v1alpha1'
   _CLIENT_ID = '1042881264118.apps.googleusercontent.com'
   _CLIENT_SECRET = 'x_Tw5K8nnjoRAqULM9PFAC2b'
-  _USER_AGENT = u'google-cloud-sdk'
-  _CLIENT_CLASS_NAME = u'BillingbudgetsV1alpha1'
-  _URL_VERSION = u'v1alpha1'
+  _USER_AGENT = 'google-cloud-sdk'
+  _CLIENT_CLASS_NAME = 'BillingbudgetsV1alpha1'
+  _URL_VERSION = 'v1alpha1'
   _API_KEY = None
 
   def __init__(self, url='', credentials=None,
@@ -42,7 +42,7 @@ class BillingbudgetsV1alpha1(base_api.BaseApiClient):
   class BillingAccountsBudgetsService(base_api.BaseApiService):
     """Service class for the billingAccounts_budgets resource."""
 
-    _NAME = u'billingAccounts_budgets'
+    _NAME = 'billingAccounts_budgets'
 
     def __init__(self, client):
       super(BillingbudgetsV1alpha1.BillingAccountsBudgetsService, self).__init__(client)
@@ -65,16 +65,16 @@ for more information on the limits of the number of budgets you can create.
           config, request, global_params=global_params)
 
     Create.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha1/billingAccounts/{billingAccountsId}/budgets',
-        http_method=u'POST',
-        method_id=u'billingbudgets.billingAccounts.budgets.create',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
+        flat_path='v1alpha1/billingAccounts/{billingAccountsId}/budgets',
+        http_method='POST',
+        method_id='billingbudgets.billingAccounts.budgets.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
         query_params=[],
-        relative_path=u'v1alpha1/{+parent}/budgets',
-        request_field=u'googleCloudBillingBudgetsV1alpha1CreateBudgetRequest',
-        request_type_name=u'BillingbudgetsBillingAccountsBudgetsCreateRequest',
-        response_type_name=u'GoogleCloudBillingBudgetsV1alpha1Budget',
+        relative_path='v1alpha1/{+parent}/budgets',
+        request_field='googleCloudBillingBudgetsV1alpha1CreateBudgetRequest',
+        request_type_name='BillingbudgetsBillingAccountsBudgetsCreateRequest',
+        response_type_name='GoogleCloudBillingBudgetsV1alpha1Budget',
         supports_download=False,
     )
 
@@ -92,16 +92,16 @@ for more information on the limits of the number of budgets you can create.
           config, request, global_params=global_params)
 
     Delete.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha1/billingAccounts/{billingAccountsId}/budgets/{budgetsId}',
-        http_method=u'DELETE',
-        method_id=u'billingbudgets.billingAccounts.budgets.delete',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1alpha1/billingAccounts/{billingAccountsId}/budgets/{budgetsId}',
+        http_method='DELETE',
+        method_id='billingbudgets.billingAccounts.budgets.delete',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1alpha1/{+name}',
+        relative_path='v1alpha1/{+name}',
         request_field='',
-        request_type_name=u'BillingbudgetsBillingAccountsBudgetsDeleteRequest',
-        response_type_name=u'GoogleProtobufEmpty',
+        request_type_name='BillingbudgetsBillingAccountsBudgetsDeleteRequest',
+        response_type_name='GoogleProtobufEmpty',
         supports_download=False,
     )
 
@@ -124,16 +124,16 @@ in the Cloud Console.
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha1/billingAccounts/{billingAccountsId}/budgets/{budgetsId}',
-        http_method=u'GET',
-        method_id=u'billingbudgets.billingAccounts.budgets.get',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1alpha1/billingAccounts/{billingAccountsId}/budgets/{budgetsId}',
+        http_method='GET',
+        method_id='billingbudgets.billingAccounts.budgets.get',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1alpha1/{+name}',
+        relative_path='v1alpha1/{+name}',
         request_field='',
-        request_type_name=u'BillingbudgetsBillingAccountsBudgetsGetRequest',
-        response_type_name=u'GoogleCloudBillingBudgetsV1alpha1Budget',
+        request_type_name='BillingbudgetsBillingAccountsBudgetsGetRequest',
+        response_type_name='GoogleCloudBillingBudgetsV1alpha1Budget',
         supports_download=False,
     )
 
@@ -156,16 +156,16 @@ in the Cloud Console.
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha1/billingAccounts/{billingAccountsId}/budgets',
-        http_method=u'GET',
-        method_id=u'billingbudgets.billingAccounts.budgets.list',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'pageSize', u'pageToken'],
-        relative_path=u'v1alpha1/{+parent}/budgets',
+        flat_path='v1alpha1/billingAccounts/{billingAccountsId}/budgets',
+        http_method='GET',
+        method_id='billingbudgets.billingAccounts.budgets.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v1alpha1/{+parent}/budgets',
         request_field='',
-        request_type_name=u'BillingbudgetsBillingAccountsBudgetsListRequest',
-        response_type_name=u'GoogleCloudBillingBudgetsV1alpha1ListBudgetsResponse',
+        request_type_name='BillingbudgetsBillingAccountsBudgetsListRequest',
+        response_type_name='GoogleCloudBillingBudgetsV1alpha1ListBudgetsResponse',
         supports_download=False,
     )
 
@@ -187,23 +187,23 @@ this API will not be changed by this method.
           config, request, global_params=global_params)
 
     Patch.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha1/billingAccounts/{billingAccountsId}/budgets/{budgetsId}',
-        http_method=u'PATCH',
-        method_id=u'billingbudgets.billingAccounts.budgets.patch',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1alpha1/billingAccounts/{billingAccountsId}/budgets/{budgetsId}',
+        http_method='PATCH',
+        method_id='billingbudgets.billingAccounts.budgets.patch',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1alpha1/{+name}',
-        request_field=u'googleCloudBillingBudgetsV1alpha1UpdateBudgetRequest',
-        request_type_name=u'BillingbudgetsBillingAccountsBudgetsPatchRequest',
-        response_type_name=u'GoogleCloudBillingBudgetsV1alpha1Budget',
+        relative_path='v1alpha1/{+name}',
+        request_field='googleCloudBillingBudgetsV1alpha1UpdateBudgetRequest',
+        request_type_name='BillingbudgetsBillingAccountsBudgetsPatchRequest',
+        response_type_name='GoogleCloudBillingBudgetsV1alpha1Budget',
         supports_download=False,
     )
 
   class BillingAccountsService(base_api.BaseApiService):
     """Service class for the billingAccounts resource."""
 
-    _NAME = u'billingAccounts'
+    _NAME = 'billingAccounts'
 
     def __init__(self, client):
       super(BillingbudgetsV1alpha1.BillingAccountsService, self).__init__(client)

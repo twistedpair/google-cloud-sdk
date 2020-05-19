@@ -31,7 +31,7 @@ class Collections(enum.Enum):
           '':
               'apps/{appsId}',
       },
-      [u'name'],
+      ['name'],
       True
   )
   APPS_AUTHORIZEDCERTIFICATES = (
@@ -42,7 +42,7 @@ class Collections(enum.Enum):
               'apps/{appsId}/authorizedCertificates/'
               '{authorizedCertificatesId}',
       },
-      [u'name'],
+      ['name'],
       True
   )
   APPS_DOMAINMAPPINGS = (
@@ -52,7 +52,7 @@ class Collections(enum.Enum):
           '':
               'apps/{appsId}/domainMappings/{domainMappingsId}',
       },
-      [u'name'],
+      ['name'],
       True
   )
   APPS_FIREWALL_INGRESSRULES = (
@@ -62,7 +62,7 @@ class Collections(enum.Enum):
           '':
               'apps/{appsId}/firewall/ingressRules/{ingressRulesId}',
       },
-      [u'name'],
+      ['name'],
       True
   )
   APPS_LOCATIONS = (
@@ -72,7 +72,7 @@ class Collections(enum.Enum):
           '':
               'apps/{appsId}/locations/{locationsId}',
       },
-      [u'name'],
+      ['name'],
       True
   )
   APPS_OPERATIONS = (
@@ -82,7 +82,7 @@ class Collections(enum.Enum):
           '':
               'apps/{appsId}/operations/{operationsId}',
       },
-      [u'name'],
+      ['name'],
       True
   )
   APPS_SERVICES = (
@@ -92,7 +92,7 @@ class Collections(enum.Enum):
           '':
               'apps/{appsId}/services/{servicesId}',
       },
-      [u'name'],
+      ['name'],
       True
   )
   APPS_SERVICES_VERSIONS = (
@@ -102,7 +102,7 @@ class Collections(enum.Enum):
           '':
               'apps/{appsId}/services/{servicesId}/versions/{versionsId}',
       },
-      [u'name'],
+      ['name'],
       True
   )
   APPS_SERVICES_VERSIONS_INSTANCES = (
@@ -113,7 +113,7 @@ class Collections(enum.Enum):
               'apps/{appsId}/services/{servicesId}/versions/{versionsId}/'
               'instances/{instancesId}',
       },
-      [u'name'],
+      ['name'],
       True
   )
 

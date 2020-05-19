@@ -14,10 +14,10 @@ package = 'cloudasset'
 
 class Asset(_messages.Message):
   r"""An asset in Google Cloud. An asset can be any resource in the Google
-  Cloud [resource hierarchy](https://cloud.google.com/resource-manager/docs
-  /cloud-platform-resource-hierarchy), a resource outside the Google Cloud
-  resource hierarchy (such as Google Kubernetes Engine clusters and objects),
-  or a Cloud IAM policy.
+  Cloud [resource hierarchy](https://cloud.google.com/resource-
+  manager/docs/cloud-platform-resource-hierarchy), a resource outside the
+  Google Cloud resource hierarchy (such as Google Kubernetes Engine clusters
+  and objects), or a Cloud IAM policy.
 
   Fields:
     accessLevel: A GoogleIdentityAccesscontextmanagerV1AccessLevel attribute.
@@ -54,6 +54,8 @@ class Asset(_messages.Message):
     resource: A representation of the resource.
     servicePerimeter: A GoogleIdentityAccesscontextmanagerV1ServicePerimeter
       attribute.
+    updateTime: The last update timestamp of an asset. update_time is updated
+      when create/update/delete operation is performed.
   """
 
   accessLevel = _messages.MessageField('GoogleIdentityAccesscontextmanagerV1AccessLevel', 1)
@@ -65,6 +67,7 @@ class Asset(_messages.Message):
   orgPolicy = _messages.MessageField('GoogleCloudOrgpolicyV1Policy', 7, repeated=True)
   resource = _messages.MessageField('Resource', 8)
   servicePerimeter = _messages.MessageField('GoogleIdentityAccesscontextmanagerV1ServicePerimeter', 9)
+  updateTime = _messages.StringField(10)
 
 
 class AuditConfig(_messages.Message):
@@ -177,8 +180,9 @@ class Binding(_messages.Message):
       not apply to the current request. However, a different role binding
       might grant the same role to one or more of the members in this binding.
       To learn which resources support conditions in their IAM policies, see
-      the [IAM documentation](https://cloud.google.com/iam/help/conditions
-      /resource-policies).
+      the [IAM
+      documentation](https://cloud.google.com/iam/help/conditions/resource-
+      policies).
     members: Specifies the identities requesting access for a Cloud Platform
       resource. `members` can have the following values:  * `allUsers`: A
       special identifier that represents anyone who is    on the internet;
@@ -340,9 +344,9 @@ class CloudassetFeedsPatchRequest(_messages.Message):
   r"""A CloudassetFeedsPatchRequest object.
 
   Fields:
-    name: Required. The format will be projects/{project_number}/feeds
-      /{client-assigned_feed_identifier} or folders/{folder_number}/feeds
-      /{client-assigned_feed_identifier} or
+    name: Required. The format will be
+      projects/{project_number}/feeds/{client-assigned_feed_identifier} or
+      folders/{folder_number}/feeds/{client-assigned_feed_identifier} or
       organizations/{organization_number}/feeds/{client-
       assigned_feed_identifier}  The client-assigned feed identifier must be
       unique within the parent project/folder/organization.
@@ -377,20 +381,20 @@ class CloudassetSearchAllIamPoliciesRequest(_messages.Message):
       the preceding call to this method. `page_token` must be the value of
       `next_page_token` from the previous response. The values of all other
       method parameters must be identical to those in the previous call.
-    query: Optional. The query statement. Examples: * "policy :
-      amy@gmail.com": to find Cloud IAM policy bindings that specify   user
-      "amy@gmail.com". * "policy : roles/compute.admin": to find Cloud IAM
-      policy bindings that   specify the Compute Admin role. *
-      "policy.role.permissions : storage.buckets.update" : to find Cloud IAM
+    query: Optional. The query statement. An empty query can be specified to
+      search all the IAM policies within the given `scope`.  Examples:  *
+      `"policy : amy@gmail.com"`: to find Cloud IAM policy bindings that
+      specify user "amy@gmail.com". * `"policy : roles/compute.admin"`: to
+      find Cloud IAM policy bindings that   specify the Compute Admin role. *
+      `"policy.role.permissions : storage.buckets.update"` : to find Cloud IAM
       policy bindings that cover "storage.buckets.update" permission. *
-      "resource : organizations/123": to find Cloud IAM policy bindings that
-      are set on "organizations/123". An empty query can be specified to
-      search all the IAM policies within the given `scope`. See [how to
-      construct a query](https://cloud.google.com/asset-inventory/docs
-      /searching-iam-policies#how_to_construct_a_query) for more details.
+      `"resource : organizations/123"`: to find Cloud IAM policy bindings that
+      are set on "organizations/123".  See [how to construct a
+      query](https://cloud.google.com/asset-inventory/docs/searching-iam-
+      policies#how_to_construct_a_query) for more details.
     scope: Required. A scope can be a project, a folder or an organization.
-      The search is limited to the IAM policies within the `scope`. The
-      allowed values are: * projects/<project_id> (e.g., projects/foo) *
+      The search is limited to the IAM policies within the `scope`.  The
+      allowed values are:  * projects/<project_id> (e.g., projects/foo) *
       projects/<project_number> (e.g., projects/12345) *
       folders/<folder_number> (e.g., folders/1234) *
       organizations/<organization_number> (e.g., organizations/123)
@@ -414,9 +418,9 @@ class CloudassetSearchAllResourcesRequest(_messages.Message):
       order of the results. The default order is ascending. Add " desc" after
       the field name to indicate descending order. Redundant space characters
       are ignored. For example, "location, name desc". See [supported resource
-      metadata fields](https://cloud.google.com/asset-inventory/docs
-      /searching-resources#query_on_resource_metadata_fields) for more
-      details.
+      metadata fields](https://cloud.google.com/asset-
+      inventory/docs/searching-resources#query_on_resource_metadata_fields)
+      for more details.
     pageSize: Optional. The page size for search result pagination. Page size
       is capped at 500 even if a larger value is given. If set to zero, server
       will pick an appropriate default. Returned results may be fewer than
@@ -426,20 +430,20 @@ class CloudassetSearchAllResourcesRequest(_messages.Message):
       from the preceding call to this method. `page_token` must be the value
       of `next_page_token` from the previous response. The values of all other
       method parameters, must be identical to those in the previous call.
-    query: Optional. The query statement. Examples: * "name : Important": to
-      find Cloud resources whose name contains   "Important" as a word. *
-      "displayName : Impor*": to find Cloud resources whose display name
-      contains "Impor" as a word prefix. * "description : *por*": to find
-      Cloud resources whose description contains   "por" as a sub string of a
-      word. * "Important": to find Cloud resources which contain "Important"
-      as a word   in any of the searchable fields. An empty query can be
-      specified to search all the resources of certain `asset_types` within
-      the given `scope`. See [how to construct a
+    query: Optional. The query statement. An empty query can be specified to
+      search all the resources of certain `asset_types` within the given
+      `scope`.  Examples:  * `"name : Important"`: to find Cloud resources
+      whose name contains   "Important" as a word. * `"displayName : Impor*"`:
+      to find Cloud resources whose display name   contains "Impor" as a word
+      prefix. * `"description : *por*"`: to find Cloud resources whose
+      description   contains "por" as a sub string of a word. * `"Important"`:
+      to find Cloud resources which contain "Important" as a   word in any of
+      the searchable fields.  See [how to construct a
       query](https://cloud.google.com/asset-inventory/docs/searching-
       resources#how_to_construct_a_query) for more details.
     scope: Required. A scope can be a project, a folder or an organization.
-      The search is limited to the resources within the `scope`. The allowed
-      values are: * projects/<project_id> (e.g., projects/foo) *
+      The search is limited to the resources within the `scope`.  The allowed
+      values are:  * projects/<project_id> (e.g., projects/foo) *
       projects/<project_number> (e.g., projects/12345) *
       folders/<folder_number> (e.g., folders/1234) *
       organizations/<organization_number> (e.g., organizations/123)
@@ -635,13 +639,13 @@ class Feed(_messages.Message):
   Fields:
     assetNames: A list of the full names of the assets to receive updates. You
       must specify either or both of asset_names and asset_types. Only asset
-      updates matching specified asset_names and asset_types are exported to
+      updates matching specified asset_names or asset_types are exported to
       the feed. For example: `//compute.googleapis.com/projects/my_project_123
       /zones/zone1/instances/instance1`. See [Resource Names](https://cloud.go
       ogle.com/apis/design/resource_names#full_resource_name) for more info.
     assetTypes: A list of types of the assets to receive updates. You must
       specify either or both of asset_names and asset_types. Only asset
-      updates matching specified asset_names and asset_types are exported to
+      updates matching specified asset_names or asset_types are exported to
       the feed. For example: `"compute.googleapis.com/Disk"`  See [this
       topic](https://cloud.google.com/asset-inventory/docs/supported-asset-
       types) for a list of all supported asset types.
@@ -649,9 +653,9 @@ class Feed(_messages.Message):
       asset name and type will be returned.
     feedOutputConfig: Required. Feed output configuration defining where the
       asset updates are published to.
-    name: Required. The format will be projects/{project_number}/feeds
-      /{client-assigned_feed_identifier} or folders/{folder_number}/feeds
-      /{client-assigned_feed_identifier} or
+    name: Required. The format will be
+      projects/{project_number}/feeds/{client-assigned_feed_identifier} or
+      folders/{folder_number}/feeds/{client-assigned_feed_identifier} or
       organizations/{organization_number}/feeds/{client-
       assigned_feed_identifier}  The client-assigned feed identifier must be
       unique within the parent project/folder/organization.
@@ -1313,9 +1317,11 @@ class IamPolicySearchResult(_messages.Message):
       resource (like VM instance, Cloud Storage bucket), the project field
       will indicate the project that contains the resource. If an IAM policy
       is set on a folder or orgnization, the project field will be empty.
-    resource: The [full resource name](https://cloud.google.com/apis/design/re
-      source_names#full_resource_name) of the resource associated with this
-      IAM policy.
+    resource: The full resource name of the resource associated with this IAM
+      policy. For example: `//compute.googleapis.com/projects/my_project_123/z
+      ones/zone1/instances/instance1`. See [Cloud Asset Inventory Resource
+      Name Format](https://cloud.google.com/asset-inventory/docs/resource-
+      name-format) for more information.
   """
 
   explanation = _messages.MessageField('Explanation', 1)
@@ -1493,8 +1499,8 @@ class Policy(_messages.Message):
   timestamp('2020-10-01T00:00:00.000Z')",           }         }       ],
   "etag": "BwWWja0YfJA=",       "version": 3     }  **YAML example:**
   bindings:     - members:       - user:mike@example.com       -
-  group:admins@example.com       - domain:google.com       - serviceAccount
-  :my-project-id@appspot.gserviceaccount.com       role:
+  group:admins@example.com       - domain:google.com       -
+  serviceAccount:my-project-id@appspot.gserviceaccount.com       role:
   roles/resourcemanager.organizationAdmin     - members:       -
   user:eve@example.com       role: roles/resourcemanager.organizationViewer
   condition:         title: expirable access         description: Does not
@@ -1573,6 +1579,9 @@ class Resource(_messages.Message):
     discoveryName: The JSON schema name listed in the discovery document. For
       example: "Project"  This value is unspecified for resources that do not
       have an API based on a discovery document, such as Cloud Bigtable.
+    location: The location of the resource in Google Cloud, such as its zone
+      and region. For more information, see
+      https://cloud.google.com/about/locations/.
     parent: The full name of the immediate parent of this resource. See
       [Resource Names](https://cloud.google.com/apis/design/resource_names#ful
       l_resource_name) for more information.  For Google Cloud assets, this
@@ -1616,21 +1625,34 @@ class Resource(_messages.Message):
   data = _messages.MessageField('DataValue', 1)
   discoveryDocumentUri = _messages.StringField(2)
   discoveryName = _messages.StringField(3)
-  parent = _messages.StringField(4)
-  resourceUrl = _messages.StringField(5)
-  version = _messages.StringField(6)
+  location = _messages.StringField(4)
+  parent = _messages.StringField(5)
+  resourceUrl = _messages.StringField(6)
+  version = _messages.StringField(7)
 
 
 class ResourceSearchResult(_messages.Message):
   r"""A result of Resource Search, containing information of a cloud resoure.
 
   Messages:
+    AdditionalAttributesValue: The additional attributes of this resource. The
+      attributes may vary from one resource type to another. For example:
+      "projectId" for Project, "dnsName" for DNS ManagedZone. You can search
+      these attributes by their values. For example, for additional_attributes
+      = {dnsName: "foobar"}, you can search against it with query "foobar" or
+      "*foo*".
     LabelsValue: Labels associated with this resource. See [Labelling and
-      grouping GCP resources](https://cloud.google.com/blog/products/gcp
-      /labelling-and-grouping-your-google-cloud-platform-resources) for more
-      information.
+      grouping GCP
+      resources](https://cloud.google.com/blog/products/gcp/labelling-and-
+      grouping-your-google-cloud-platform-resources) for more information.
 
   Fields:
+    additionalAttributes: The additional attributes of this resource. The
+      attributes may vary from one resource type to another. For example:
+      "projectId" for Project, "dnsName" for DNS ManagedZone. You can search
+      these attributes by their values. For example, for additional_attributes
+      = {dnsName: "foobar"}, you can search against it with query "foobar" or
+      "*foo*".
     assetType: The type of this resource. For example:
       "compute.googleapis.com/Disk".
     description: One or more paragraphs of text description of this resource.
@@ -1641,18 +1663,48 @@ class ResourceSearchResult(_messages.Message):
       grouping-your-google-cloud-platform-resources) for more information.
     location: Location can be "global", regional like "us-east1", or zonal
       like "us-west1-b".
-    name: The full resource name. For example: `//compute.googleapis.com/proje
-      cts/my_project_123/zones/zone1/instances/instance1`. See [Resource Names
-      ](https://cloud.google.com/apis/design/resource_names#full_resource_name
-      ) for more information.
+    name: The full resource name of this resource. For example: `//compute.goo
+      gleapis.com/projects/my_project_123/zones/zone1/instances/instance1`.
+      See [Cloud Asset Inventory Resource Name
+      Format](https://cloud.google.com/asset-inventory/docs/resource-name-
+      format) for more information.
     networkTags: Network tags associated with this resource. Like labels,
       network tags are a type of annotations used to group GCP resources. See
-      [Labelling GCP resources](https://cloud.google.com/blog/products/gcp
-      /labelling-and-grouping-your-google-cloud-platform-resources) for more
-      information.
+      [Labelling GCP
+      resources](https://cloud.google.com/blog/products/gcp/labelling-and-
+      grouping-your-google-cloud-platform-resources) for more information.
     project: The project that this resource belongs to, in the form of
       `projects/{project_number}`.
   """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class AdditionalAttributesValue(_messages.Message):
+    r"""The additional attributes of this resource. The attributes may vary
+    from one resource type to another. For example: "projectId" for Project,
+    "dnsName" for DNS ManagedZone. You can search these attributes by their
+    values. For example, for additional_attributes = {dnsName: "foobar"}, you
+    can search against it with query "foobar" or "*foo*".
+
+    Messages:
+      AdditionalProperty: An additional property for a
+        AdditionalAttributesValue object.
+
+    Fields:
+      additionalProperties: Properties of the object.
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a AdditionalAttributesValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A extra_types.JsonValue attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('extra_types.JsonValue', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
@@ -1680,14 +1732,15 @@ class ResourceSearchResult(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  assetType = _messages.StringField(1)
-  description = _messages.StringField(2)
-  displayName = _messages.StringField(3)
-  labels = _messages.MessageField('LabelsValue', 4)
-  location = _messages.StringField(5)
-  name = _messages.StringField(6)
-  networkTags = _messages.StringField(7, repeated=True)
-  project = _messages.StringField(8)
+  additionalAttributes = _messages.MessageField('AdditionalAttributesValue', 1)
+  assetType = _messages.StringField(2)
+  description = _messages.StringField(3)
+  displayName = _messages.StringField(4)
+  labels = _messages.MessageField('LabelsValue', 5)
+  location = _messages.StringField(6)
+  name = _messages.StringField(7)
+  networkTags = _messages.StringField(8, repeated=True)
+  project = _messages.StringField(9)
 
 
 class SearchAllIamPoliciesResponse(_messages.Message):
@@ -1773,7 +1826,7 @@ class StandardQueryParameters(_messages.Message):
 
   f__xgafv = _messages.EnumField('FXgafvValueValuesEnum', 1)
   access_token = _messages.StringField(2)
-  alt = _messages.EnumField('AltValueValuesEnum', 3, default=u'json')
+  alt = _messages.EnumField('AltValueValuesEnum', 3, default='json')
   callback = _messages.StringField(4)
   fields = _messages.StringField(5)
   key = _messages.StringField(6)

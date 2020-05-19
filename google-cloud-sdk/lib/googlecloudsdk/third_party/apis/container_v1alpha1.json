@@ -434,9 +434,9 @@
           "description": "Enable the cluster to be AutoGKE",
           "type": "boolean"
         },
-        "exposeMasterSignalsConfig": {
+        "masterSignalsConfig": {
           "description": "Configuration used to enable sending selected master logs and metrics to\ncustomer project.",
-          "$ref": "ExposeMasterSignalsConfig"
+          "$ref": "MasterSignalsConfig"
         }
       }
     },
@@ -1930,16 +1930,16 @@
         }
       }
     },
-    "ExposeMasterSignalsConfig": {
-      "id": "ExposeMasterSignalsConfig",
-      "description": "ExposeMasterSignalsConfig is the configuration for exposing selected master\nlogs and metrics to customer",
+    "MasterSignalsConfig": {
+      "id": "MasterSignalsConfig",
+      "description": "MasterSignalsConfig is the configuration for exposing selected master\nlogs and metrics to customer",
       "type": "object",
       "properties": {
         "enableMetrics": {
           "description": "Enable sendings metrics to customer",
           "type": "boolean"
         },
-        "enableComponentLogs": {
+        "logEnabledComponents": {
           "description": "Select components to expose logs",
           "enumDescriptions": [
             "Not set, will be ignored.",

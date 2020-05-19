@@ -8,17 +8,17 @@ class CloudresourcesearchV1(base_api.BaseApiClient):
   """Generated client library for service cloudresourcesearch version v1."""
 
   MESSAGES_MODULE = messages
-  BASE_URL = u'https://cloudresourcesearch.googleapis.com/'
-  MTLS_BASE_URL = u'https://cloudresourcesearch.mtls.googleapis.com/'
+  BASE_URL = 'https://cloudresourcesearch.googleapis.com/'
+  MTLS_BASE_URL = 'https://cloudresourcesearch.mtls.googleapis.com/'
 
-  _PACKAGE = u'cloudresourcesearch'
-  _SCOPES = [u'https://www.googleapis.com/auth/cloud-platform', u'https://www.googleapis.com/auth/cloud-platform.read-only']
-  _VERSION = u'v1'
+  _PACKAGE = 'cloudresourcesearch'
+  _SCOPES = ['https://www.googleapis.com/auth/cloud-platform', 'https://www.googleapis.com/auth/cloud-platform.read-only']
+  _VERSION = 'v1'
   _CLIENT_ID = '1042881264118.apps.googleusercontent.com'
   _CLIENT_SECRET = 'x_Tw5K8nnjoRAqULM9PFAC2b'
-  _USER_AGENT = u'google-cloud-sdk'
-  _CLIENT_CLASS_NAME = u'CloudresourcesearchV1'
-  _URL_VERSION = u'v1'
+  _USER_AGENT = 'google-cloud-sdk'
+  _CLIENT_CLASS_NAME = 'CloudresourcesearchV1'
+  _URL_VERSION = 'v1'
   _API_KEY = None
 
   def __init__(self, url='', credentials=None,
@@ -41,7 +41,7 @@ class CloudresourcesearchV1(base_api.BaseApiClient):
   class ResourcesService(base_api.BaseApiService):
     """Service class for the resources resource."""
 
-    _NAME = u'resources'
+    _NAME = 'resources'
 
     def __init__(self, client):
       super(CloudresourcesearchV1.ResourcesService, self).__init__(client)
@@ -64,14 +64,14 @@ to perform a GET operation on the resource.
           config, request, global_params=global_params)
 
     Search.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'cloudresourcesearch.resources.search',
+        http_method='GET',
+        method_id='cloudresourcesearch.resources.search',
         ordered_params=[],
         path_params=[],
-        query_params=[u'orderBy', u'pageSize', u'pageToken', u'query'],
-        relative_path=u'v1/resources:search',
+        query_params=['orderBy', 'pageSize', 'pageToken', 'query'],
+        relative_path='v1/resources:search',
         request_field='',
-        request_type_name=u'CloudresourcesearchResourcesSearchRequest',
-        response_type_name=u'SearchResponse',
+        request_type_name='CloudresourcesearchResourcesSearchRequest',
+        response_type_name='SearchResponse',
         supports_download=False,
     )

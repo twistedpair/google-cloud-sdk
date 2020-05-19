@@ -1934,11 +1934,12 @@ class Environment(_messages.Message):
       which worker processing should occur, e.g. "us-west1". Mutually
       exclusive with worker_zone. If neither worker_region nor worker_zone is
       specified, default to the control plane's region.
-    workerZone: The Compute Engine zone (https://cloud.google.com/compute/docs
-      /regions-zones/regions-zones) in which worker processing should occur,
-      e.g. "us-west1-a". Mutually exclusive with worker_region. If neither
-      worker_region nor worker_zone is specified, a zone in the control
-      plane's region is chosen based on available capacity.
+    workerZone: The Compute Engine zone
+      (https://cloud.google.com/compute/docs/regions-zones/regions-zones) in
+      which worker processing should occur, e.g. "us-west1-a". Mutually
+      exclusive with worker_region. If neither worker_region nor worker_zone
+      is specified, a zone in the control plane's region is chosen based on
+      available capacity.
   """
 
   class FlexResourceSchedulingGoalValueValuesEnum(_messages.Enum):
@@ -3949,8 +3950,8 @@ class PubsubLocation(_messages.Message):
     timestampLabel: If set, contains a pubsub label from which to extract
       record timestamps. If left empty, record timestamps will be generated
       upon arrival.
-    topic: A pubsub topic, in the form of "pubsub.googleapis.com/topics
-      /<project-id>/<topic-name>"
+    topic: A pubsub topic, in the form of
+      "pubsub.googleapis.com/topics/<project-id>/<topic-name>"
     trackingSubscription: If set, specifies the pubsub subscription that will
       be used for tracking custom time timestamps for watermark estimation.
     withAttributes: If true, then the client has requested to get pubsub
@@ -3978,6 +3979,29 @@ class PubsubSnapshotMetadata(_messages.Message):
   expireTime = _messages.StringField(1)
   snapshotName = _messages.StringField(2)
   topicName = _messages.StringField(3)
+
+
+class QueryInfo(_messages.Message):
+  r"""Information about a validated query.
+
+  Enums:
+    QueryPropertyValueListEntryValuesEnum:
+
+  Fields:
+    queryProperty: Includes an entry for each satisfied QueryProperty.
+  """
+
+  class QueryPropertyValueListEntryValuesEnum(_messages.Enum):
+    r"""QueryPropertyValueListEntryValuesEnum enum type.
+
+    Values:
+      QUERY_PROPERTY_UNSPECIFIED: <no description>
+      HAS_UNBOUNDED_SOURCE: <no description>
+    """
+    QUERY_PROPERTY_UNSPECIFIED = 0
+    HAS_UNBOUNDED_SOURCE = 1
+
+  queryProperty = _messages.EnumField('QueryPropertyValueListEntryValuesEnum', 1, repeated=True)
 
 
 class ReadInstruction(_messages.Message):
@@ -4113,8 +4137,8 @@ class ReportedParallelism(_messages.Message):
 
 class ResourceUtilizationReport(_messages.Message):
   r"""Worker metrics exported from workers. This contains resource utilization
-  metrics accumulated from a variety of sources. For more information, see go
-  /df-resource-signals.
+  metrics accumulated from a variety of sources. For more information, see
+  go/df-resource-signals.
 
   Messages:
     ContainersValue: Per container information. Key: container name.
@@ -4203,12 +4227,13 @@ class RuntimeEnvironment(_messages.Message):
       which worker processing should occur, e.g. "us-west1". Mutually
       exclusive with worker_zone. If neither worker_region nor worker_zone is
       specified, default to the control plane's region.
-    workerZone: The Compute Engine zone (https://cloud.google.com/compute/docs
-      /regions-zones/regions-zones) in which worker processing should occur,
-      e.g. "us-west1-a". Mutually exclusive with worker_region. If neither
-      worker_region nor worker_zone is specified, a zone in the control
-      plane's region is chosen based on available capacity. If both
-      `worker_zone` and `zone` are set, `worker_zone` takes precedence.
+    workerZone: The Compute Engine zone
+      (https://cloud.google.com/compute/docs/regions-zones/regions-zones) in
+      which worker processing should occur, e.g. "us-west1-a". Mutually
+      exclusive with worker_region. If neither worker_region nor worker_zone
+      is specified, a zone in the control plane's region is chosen based on
+      available capacity. If both `worker_zone` and `zone` are set,
+      `worker_zone` takes precedence.
     zone: The Compute Engine [availability
       zone](https://cloud.google.com/compute/docs/regions-zones/regions-zones)
       for launching worker instances to run your pipeline. In the future,
@@ -5083,7 +5108,7 @@ class StandardQueryParameters(_messages.Message):
 
   f__xgafv = _messages.EnumField('FXgafvValueValuesEnum', 1)
   access_token = _messages.StringField(2)
-  alt = _messages.EnumField('AltValueValuesEnum', 3, default=u'json')
+  alt = _messages.EnumField('AltValueValuesEnum', 3, default='json')
   callback = _messages.StringField(4)
   fields = _messages.StringField(5)
   key = _messages.StringField(6)
@@ -5746,9 +5771,12 @@ class ValidateResponse(_messages.Message):
 
   Fields:
     errorMessage: Will be empty if validation succeeds.
+    queryInfo: Information about the validated query. Not defined if
+      validation fails.
   """
 
   errorMessage = _messages.StringField(1)
+  queryInfo = _messages.MessageField('QueryInfo', 2)
 
 
 class WorkItem(_messages.Message):
@@ -5948,10 +5976,10 @@ class WorkerHealthReport(_messages.Message):
 
   Fields:
     msg: A message describing any unusual health reports.
-    pods: The pods running on the worker. See: http://kubernetes.io/v1.1/docs
-      /api-reference/v1/definitions.html#_v1_pod  This field is used by the
-      worker to send the status of the indvidual containers running on each
-      worker.
+    pods: The pods running on the worker. See:
+      http://kubernetes.io/v1.1/docs/api-reference/v1/definitions.html#_v1_pod
+      This field is used by the worker to send the status of the indvidual
+      containers running on each worker.
     reportInterval: The interval at which the worker is sending health
       reports. The default value of 0 should be interpreted as the field is
       not being explicitly set by the worker.

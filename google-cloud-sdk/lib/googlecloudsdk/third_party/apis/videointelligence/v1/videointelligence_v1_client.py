@@ -8,17 +8,17 @@ class VideointelligenceV1(base_api.BaseApiClient):
   """Generated client library for service videointelligence version v1."""
 
   MESSAGES_MODULE = messages
-  BASE_URL = u'https://videointelligence.googleapis.com/'
-  MTLS_BASE_URL = u'https://videointelligence.mtls.googleapis.com/'
+  BASE_URL = 'https://videointelligence.googleapis.com/'
+  MTLS_BASE_URL = 'https://videointelligence.mtls.googleapis.com/'
 
-  _PACKAGE = u'videointelligence'
-  _SCOPES = [u'https://www.googleapis.com/auth/cloud-platform']
-  _VERSION = u'v1'
+  _PACKAGE = 'videointelligence'
+  _SCOPES = ['https://www.googleapis.com/auth/cloud-platform']
+  _VERSION = 'v1'
   _CLIENT_ID = '1042881264118.apps.googleusercontent.com'
   _CLIENT_SECRET = 'x_Tw5K8nnjoRAqULM9PFAC2b'
-  _USER_AGENT = u'google-cloud-sdk'
-  _CLIENT_CLASS_NAME = u'VideointelligenceV1'
-  _URL_VERSION = u'v1'
+  _USER_AGENT = 'google-cloud-sdk'
+  _CLIENT_CLASS_NAME = 'VideointelligenceV1'
+  _URL_VERSION = 'v1'
   _API_KEY = None
 
   def __init__(self, url='', credentials=None,
@@ -48,7 +48,7 @@ class VideointelligenceV1(base_api.BaseApiClient):
   class OperationsProjectsLocationsOperationsService(base_api.BaseApiService):
     """Service class for the operations_projects_locations_operations resource."""
 
-    _NAME = u'operations_projects_locations_operations'
+    _NAME = 'operations_projects_locations_operations'
 
     def __init__(self, client):
       super(VideointelligenceV1.OperationsProjectsLocationsOperationsService, self).__init__(client)
@@ -78,16 +78,16 @@ corresponding to `Code.CANCELLED`.
           config, request, global_params=global_params)
 
     Cancel.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/operations/projects/{projectsId}/locations/{locationsId}/operations/{operationsId}:cancel',
-        http_method=u'POST',
-        method_id=u'videointelligence.operations.projects.locations.operations.cancel',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1/operations/projects/{projectsId}/locations/{locationsId}/operations/{operationsId}:cancel',
+        http_method='POST',
+        method_id='videointelligence.operations.projects.locations.operations.cancel',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1/operations/{+name}:cancel',
+        relative_path='v1/operations/{+name}:cancel',
         request_field='',
-        request_type_name=u'VideointelligenceOperationsProjectsLocationsOperationsCancelRequest',
-        response_type_name=u'GoogleProtobufEmpty',
+        request_type_name='VideointelligenceOperationsProjectsLocationsOperationsCancelRequest',
+        response_type_name='GoogleProtobufEmpty',
         supports_download=False,
     )
 
@@ -108,16 +108,16 @@ operation. If the server doesn't support this method, it returns
           config, request, global_params=global_params)
 
     Delete.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/operations/projects/{projectsId}/locations/{locationsId}/operations/{operationsId}',
-        http_method=u'DELETE',
-        method_id=u'videointelligence.operations.projects.locations.operations.delete',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1/operations/projects/{projectsId}/locations/{locationsId}/operations/{operationsId}',
+        http_method='DELETE',
+        method_id='videointelligence.operations.projects.locations.operations.delete',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1/operations/{+name}',
+        relative_path='v1/operations/{+name}',
         request_field='',
-        request_type_name=u'VideointelligenceOperationsProjectsLocationsOperationsDeleteRequest',
-        response_type_name=u'GoogleProtobufEmpty',
+        request_type_name='VideointelligenceOperationsProjectsLocationsOperationsDeleteRequest',
+        response_type_name='GoogleProtobufEmpty',
         supports_download=False,
     )
 
@@ -137,23 +137,23 @@ service.
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/operations/projects/{projectsId}/locations/{locationsId}/operations/{operationsId}',
-        http_method=u'GET',
-        method_id=u'videointelligence.operations.projects.locations.operations.get',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1/operations/projects/{projectsId}/locations/{locationsId}/operations/{operationsId}',
+        http_method='GET',
+        method_id='videointelligence.operations.projects.locations.operations.get',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1/operations/{+name}',
+        relative_path='v1/operations/{+name}',
         request_field='',
-        request_type_name=u'VideointelligenceOperationsProjectsLocationsOperationsGetRequest',
-        response_type_name=u'GoogleLongrunningOperation',
+        request_type_name='VideointelligenceOperationsProjectsLocationsOperationsGetRequest',
+        response_type_name='GoogleLongrunningOperation',
         supports_download=False,
     )
 
   class OperationsProjectsLocationsService(base_api.BaseApiService):
     """Service class for the operations_projects_locations resource."""
 
-    _NAME = u'operations_projects_locations'
+    _NAME = 'operations_projects_locations'
 
     def __init__(self, client):
       super(VideointelligenceV1.OperationsProjectsLocationsService, self).__init__(client)
@@ -163,7 +163,7 @@ service.
   class OperationsProjectsService(base_api.BaseApiService):
     """Service class for the operations_projects resource."""
 
-    _NAME = u'operations_projects'
+    _NAME = 'operations_projects'
 
     def __init__(self, client):
       super(VideointelligenceV1.OperationsProjectsService, self).__init__(client)
@@ -173,7 +173,7 @@ service.
   class OperationsService(base_api.BaseApiService):
     """Service class for the operations resource."""
 
-    _NAME = u'operations'
+    _NAME = 'operations'
 
     def __init__(self, client):
       super(VideointelligenceV1.OperationsService, self).__init__(client)
@@ -183,7 +183,7 @@ service.
   class ProjectsLocationsOperationsService(base_api.BaseApiService):
     """Service class for the projects_locations_operations resource."""
 
-    _NAME = u'projects_locations_operations'
+    _NAME = 'projects_locations_operations'
 
     def __init__(self, client):
       super(VideointelligenceV1.ProjectsLocationsOperationsService, self).__init__(client)
@@ -213,16 +213,16 @@ corresponding to `Code.CANCELLED`.
           config, request, global_params=global_params)
 
     Cancel.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/locations/{locationsId}/operations/{operationsId}:cancel',
-        http_method=u'POST',
-        method_id=u'videointelligence.projects.locations.operations.cancel',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/operations/{operationsId}:cancel',
+        http_method='POST',
+        method_id='videointelligence.projects.locations.operations.cancel',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1/{+name}:cancel',
-        request_field=u'googleLongrunningCancelOperationRequest',
-        request_type_name=u'VideointelligenceProjectsLocationsOperationsCancelRequest',
-        response_type_name=u'GoogleProtobufEmpty',
+        relative_path='v1/{+name}:cancel',
+        request_field='googleLongrunningCancelOperationRequest',
+        request_type_name='VideointelligenceProjectsLocationsOperationsCancelRequest',
+        response_type_name='GoogleProtobufEmpty',
         supports_download=False,
     )
 
@@ -243,16 +243,16 @@ operation. If the server doesn't support this method, it returns
           config, request, global_params=global_params)
 
     Delete.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/locations/{locationsId}/operations/{operationsId}',
-        http_method=u'DELETE',
-        method_id=u'videointelligence.projects.locations.operations.delete',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/operations/{operationsId}',
+        http_method='DELETE',
+        method_id='videointelligence.projects.locations.operations.delete',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1/{+name}',
+        relative_path='v1/{+name}',
         request_field='',
-        request_type_name=u'VideointelligenceProjectsLocationsOperationsDeleteRequest',
-        response_type_name=u'GoogleProtobufEmpty',
+        request_type_name='VideointelligenceProjectsLocationsOperationsDeleteRequest',
+        response_type_name='GoogleProtobufEmpty',
         supports_download=False,
     )
 
@@ -272,16 +272,16 @@ service.
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/locations/{locationsId}/operations/{operationsId}',
-        http_method=u'GET',
-        method_id=u'videointelligence.projects.locations.operations.get',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/operations/{operationsId}',
+        http_method='GET',
+        method_id='videointelligence.projects.locations.operations.get',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1/{+name}',
+        relative_path='v1/{+name}',
         request_field='',
-        request_type_name=u'VideointelligenceProjectsLocationsOperationsGetRequest',
-        response_type_name=u'GoogleLongrunningOperation',
+        request_type_name='VideointelligenceProjectsLocationsOperationsGetRequest',
+        response_type_name='GoogleLongrunningOperation',
         supports_download=False,
     )
 
@@ -308,23 +308,23 @@ is the parent resource, without the operations collection id.
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/locations/{locationsId}/operations',
-        http_method=u'GET',
-        method_id=u'videointelligence.projects.locations.operations.list',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[u'filter', u'pageSize', u'pageToken'],
-        relative_path=u'v1/{+name}/operations',
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/operations',
+        http_method='GET',
+        method_id='videointelligence.projects.locations.operations.list',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['filter', 'pageSize', 'pageToken'],
+        relative_path='v1/{+name}/operations',
         request_field='',
-        request_type_name=u'VideointelligenceProjectsLocationsOperationsListRequest',
-        response_type_name=u'GoogleLongrunningListOperationsResponse',
+        request_type_name='VideointelligenceProjectsLocationsOperationsListRequest',
+        response_type_name='GoogleLongrunningListOperationsResponse',
         supports_download=False,
     )
 
   class ProjectsLocationsService(base_api.BaseApiService):
     """Service class for the projects_locations resource."""
 
-    _NAME = u'projects_locations'
+    _NAME = 'projects_locations'
 
     def __init__(self, client):
       super(VideointelligenceV1.ProjectsLocationsService, self).__init__(client)
@@ -334,7 +334,7 @@ is the parent resource, without the operations collection id.
   class ProjectsService(base_api.BaseApiService):
     """Service class for the projects resource."""
 
-    _NAME = u'projects'
+    _NAME = 'projects'
 
     def __init__(self, client):
       super(VideointelligenceV1.ProjectsService, self).__init__(client)
@@ -344,7 +344,7 @@ is the parent resource, without the operations collection id.
   class VideosService(base_api.BaseApiService):
     """Service class for the videos resource."""
 
-    _NAME = u'videos'
+    _NAME = 'videos'
 
     def __init__(self, client):
       super(VideointelligenceV1.VideosService, self).__init__(client)
@@ -368,14 +368,14 @@ retrieved through the `google.longrunning.Operations` interface.
           config, request, global_params=global_params)
 
     Annotate.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'videointelligence.videos.annotate',
+        http_method='POST',
+        method_id='videointelligence.videos.annotate',
         ordered_params=[],
         path_params=[],
         query_params=[],
-        relative_path=u'v1/videos:annotate',
+        relative_path='v1/videos:annotate',
         request_field='<request>',
-        request_type_name=u'GoogleCloudVideointelligenceV1AnnotateVideoRequest',
-        response_type_name=u'GoogleLongrunningOperation',
+        request_type_name='GoogleCloudVideointelligenceV1AnnotateVideoRequest',
+        response_type_name='GoogleLongrunningOperation',
         supports_download=False,
     )

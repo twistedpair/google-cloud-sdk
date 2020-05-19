@@ -465,7 +465,7 @@
           "type": "string"
         },
         "orgInternalOnly": {
-          "description": "Output only. Whether the brand is only intended for usage inside the\nGSuite organization only.",
+          "description": "Output only. Whether the brand is only intended for usage inside the\nG Suite organization only.",
           "type": "boolean"
         }
       }
@@ -764,7 +764,7 @@
                   "httpMethod": "POST",
                   "parameters": {
                     "parent": {
-                      "description": "Required. Path to create the client in.\nIn the following format:\nprojects\/{project_number\/id}\/brands\/{brand}.\nThe project must belong to a GSuite account.",
+                      "description": "Required. Path to create the client in.\nIn the following format:\nprojects\/{project_number\/id}\/brands\/{brand}.\nThe project must belong to a G Suite account.",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/brands\/[^\/]+$",

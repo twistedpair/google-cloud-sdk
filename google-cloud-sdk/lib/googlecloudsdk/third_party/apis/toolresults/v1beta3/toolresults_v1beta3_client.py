@@ -8,17 +8,17 @@ class ToolresultsV1beta3(base_api.BaseApiClient):
   """Generated client library for service toolresults version v1beta3."""
 
   MESSAGES_MODULE = messages
-  BASE_URL = u'https://www.googleapis.com/toolresults/v1beta3/'
-  MTLS_BASE_URL = u''
+  BASE_URL = 'https://www.googleapis.com/toolresults/v1beta3/'
+  MTLS_BASE_URL = ''
 
-  _PACKAGE = u'toolresults'
-  _SCOPES = [u'https://www.googleapis.com/auth/cloud-platform']
-  _VERSION = u'v1beta3'
+  _PACKAGE = 'toolresults'
+  _SCOPES = ['https://www.googleapis.com/auth/cloud-platform']
+  _VERSION = 'v1beta3'
   _CLIENT_ID = '1042881264118.apps.googleusercontent.com'
   _CLIENT_SECRET = 'x_Tw5K8nnjoRAqULM9PFAC2b'
-  _USER_AGENT = u'google-cloud-sdk'
-  _CLIENT_CLASS_NAME = u'ToolresultsV1beta3'
-  _URL_VERSION = u'v1beta3'
+  _USER_AGENT = 'google-cloud-sdk'
+  _CLIENT_CLASS_NAME = 'ToolresultsV1beta3'
+  _URL_VERSION = 'v1beta3'
   _API_KEY = None
 
   def __init__(self, url='', credentials=None,
@@ -51,7 +51,7 @@ class ToolresultsV1beta3(base_api.BaseApiClient):
   class ProjectsHistoriesExecutionsClustersService(base_api.BaseApiService):
     """Service class for the projects_histories_executions_clusters resource."""
 
-    _NAME = u'projects_histories_executions_clusters'
+    _NAME = 'projects_histories_executions_clusters'
 
     def __init__(self, client):
       super(ToolresultsV1beta3.ProjectsHistoriesExecutionsClustersService, self).__init__(client)
@@ -72,15 +72,15 @@ class ToolresultsV1beta3(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'toolresults.projects.histories.executions.clusters.get',
-        ordered_params=[u'projectId', u'historyId', u'executionId', u'clusterId'],
-        path_params=[u'clusterId', u'executionId', u'historyId', u'projectId'],
+        http_method='GET',
+        method_id='toolresults.projects.histories.executions.clusters.get',
+        ordered_params=['projectId', 'historyId', 'executionId', 'clusterId'],
+        path_params=['clusterId', 'executionId', 'historyId', 'projectId'],
         query_params=[],
-        relative_path=u'projects/{projectId}/histories/{historyId}/executions/{executionId}/clusters/{clusterId}',
+        relative_path='projects/{projectId}/histories/{historyId}/executions/{executionId}/clusters/{clusterId}',
         request_field='',
-        request_type_name=u'ToolresultsProjectsHistoriesExecutionsClustersGetRequest',
-        response_type_name=u'ScreenshotCluster',
+        request_type_name='ToolresultsProjectsHistoriesExecutionsClustersGetRequest',
+        response_type_name='ScreenshotCluster',
         supports_download=False,
     )
 
@@ -100,22 +100,22 @@ Returns the list of screenshot clusters corresponding to an execution. Screensho
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'toolresults.projects.histories.executions.clusters.list',
-        ordered_params=[u'projectId', u'historyId', u'executionId'],
-        path_params=[u'executionId', u'historyId', u'projectId'],
+        http_method='GET',
+        method_id='toolresults.projects.histories.executions.clusters.list',
+        ordered_params=['projectId', 'historyId', 'executionId'],
+        path_params=['executionId', 'historyId', 'projectId'],
         query_params=[],
-        relative_path=u'projects/{projectId}/histories/{historyId}/executions/{executionId}/clusters',
+        relative_path='projects/{projectId}/histories/{historyId}/executions/{executionId}/clusters',
         request_field='',
-        request_type_name=u'ToolresultsProjectsHistoriesExecutionsClustersListRequest',
-        response_type_name=u'ListScreenshotClustersResponse',
+        request_type_name='ToolresultsProjectsHistoriesExecutionsClustersListRequest',
+        response_type_name='ListScreenshotClustersResponse',
         supports_download=False,
     )
 
   class ProjectsHistoriesExecutionsEnvironmentsService(base_api.BaseApiService):
     """Service class for the projects_histories_executions_environments resource."""
 
-    _NAME = u'projects_histories_executions_environments'
+    _NAME = 'projects_histories_executions_environments'
 
     def __init__(self, client):
       super(ToolresultsV1beta3.ProjectsHistoriesExecutionsEnvironmentsService, self).__init__(client)
@@ -140,15 +140,15 @@ May return any of the following canonical error codes:
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'toolresults.projects.histories.executions.environments.get',
-        ordered_params=[u'projectId', u'historyId', u'executionId', u'environmentId'],
-        path_params=[u'environmentId', u'executionId', u'historyId', u'projectId'],
+        http_method='GET',
+        method_id='toolresults.projects.histories.executions.environments.get',
+        ordered_params=['projectId', 'historyId', 'executionId', 'environmentId'],
+        path_params=['environmentId', 'executionId', 'historyId', 'projectId'],
         query_params=[],
-        relative_path=u'projects/{projectId}/histories/{historyId}/executions/{executionId}/environments/{environmentId}',
+        relative_path='projects/{projectId}/histories/{historyId}/executions/{executionId}/environments/{environmentId}',
         request_field='',
-        request_type_name=u'ToolresultsProjectsHistoriesExecutionsEnvironmentsGetRequest',
-        response_type_name=u'Environment',
+        request_type_name='ToolresultsProjectsHistoriesExecutionsEnvironmentsGetRequest',
+        response_type_name='Environment',
         supports_download=False,
     )
 
@@ -172,22 +172,22 @@ May return any of the following canonical error codes:
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'toolresults.projects.histories.executions.environments.list',
-        ordered_params=[u'projectId', u'historyId', u'executionId'],
-        path_params=[u'executionId', u'historyId', u'projectId'],
-        query_params=[u'pageSize', u'pageToken'],
-        relative_path=u'projects/{projectId}/histories/{historyId}/executions/{executionId}/environments',
+        http_method='GET',
+        method_id='toolresults.projects.histories.executions.environments.list',
+        ordered_params=['projectId', 'historyId', 'executionId'],
+        path_params=['executionId', 'historyId', 'projectId'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='projects/{projectId}/histories/{historyId}/executions/{executionId}/environments',
         request_field='',
-        request_type_name=u'ToolresultsProjectsHistoriesExecutionsEnvironmentsListRequest',
-        response_type_name=u'ListEnvironmentsResponse',
+        request_type_name='ToolresultsProjectsHistoriesExecutionsEnvironmentsListRequest',
+        response_type_name='ListEnvironmentsResponse',
         supports_download=False,
     )
 
   class ProjectsHistoriesExecutionsStepsPerfMetricsSummaryService(base_api.BaseApiService):
     """Service class for the projects_histories_executions_steps_perfMetricsSummary resource."""
 
-    _NAME = u'projects_histories_executions_steps_perfMetricsSummary'
+    _NAME = 'projects_histories_executions_steps_perfMetricsSummary'
 
     def __init__(self, client):
       super(ToolresultsV1beta3.ProjectsHistoriesExecutionsStepsPerfMetricsSummaryService, self).__init__(client)
@@ -210,22 +210,22 @@ May return any of the following error code(s): - NOT_FOUND - The containing Step
           config, request, global_params=global_params)
 
     Create.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'toolresults.projects.histories.executions.steps.perfMetricsSummary.create',
-        ordered_params=[u'projectId', u'historyId', u'executionId', u'stepId'],
-        path_params=[u'executionId', u'historyId', u'projectId', u'stepId'],
+        http_method='POST',
+        method_id='toolresults.projects.histories.executions.steps.perfMetricsSummary.create',
+        ordered_params=['projectId', 'historyId', 'executionId', 'stepId'],
+        path_params=['executionId', 'historyId', 'projectId', 'stepId'],
         query_params=[],
-        relative_path=u'projects/{projectId}/histories/{historyId}/executions/{executionId}/steps/{stepId}/perfMetricsSummary',
+        relative_path='projects/{projectId}/histories/{historyId}/executions/{executionId}/steps/{stepId}/perfMetricsSummary',
         request_field='<request>',
-        request_type_name=u'PerfMetricsSummary',
-        response_type_name=u'PerfMetricsSummary',
+        request_type_name='PerfMetricsSummary',
+        response_type_name='PerfMetricsSummary',
         supports_download=False,
     )
 
   class ProjectsHistoriesExecutionsStepsPerfSampleSeriesSamplesService(base_api.BaseApiService):
     """Service class for the projects_histories_executions_steps_perfSampleSeries_samples resource."""
 
-    _NAME = u'projects_histories_executions_steps_perfSampleSeries_samples'
+    _NAME = 'projects_histories_executions_steps_perfSampleSeries_samples'
 
     def __init__(self, client):
       super(ToolresultsV1beta3.ProjectsHistoriesExecutionsStepsPerfSampleSeriesSamplesService, self).__init__(client)
@@ -248,15 +248,15 @@ May return any of the following canonical error codes: - NOT_FOUND - The contain
           config, request, global_params=global_params)
 
     BatchCreate.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'toolresults.projects.histories.executions.steps.perfSampleSeries.samples.batchCreate',
-        ordered_params=[u'projectId', u'historyId', u'executionId', u'stepId', u'sampleSeriesId'],
-        path_params=[u'executionId', u'historyId', u'projectId', u'sampleSeriesId', u'stepId'],
+        http_method='POST',
+        method_id='toolresults.projects.histories.executions.steps.perfSampleSeries.samples.batchCreate',
+        ordered_params=['projectId', 'historyId', 'executionId', 'stepId', 'sampleSeriesId'],
+        path_params=['executionId', 'historyId', 'projectId', 'sampleSeriesId', 'stepId'],
         query_params=[],
-        relative_path=u'projects/{projectId}/histories/{historyId}/executions/{executionId}/steps/{stepId}/perfSampleSeries/{sampleSeriesId}/samples:batchCreate',
-        request_field=u'batchCreatePerfSamplesRequest',
-        request_type_name=u'ToolresultsProjectsHistoriesExecutionsStepsPerfSampleSeriesSamplesBatchCreateRequest',
-        response_type_name=u'BatchCreatePerfSamplesResponse',
+        relative_path='projects/{projectId}/histories/{historyId}/executions/{executionId}/steps/{stepId}/perfSampleSeries/{sampleSeriesId}/samples:batchCreate',
+        request_field='batchCreatePerfSamplesRequest',
+        request_type_name='ToolresultsProjectsHistoriesExecutionsStepsPerfSampleSeriesSamplesBatchCreateRequest',
+        response_type_name='BatchCreatePerfSamplesResponse',
         supports_download=False,
     )
 
@@ -276,22 +276,22 @@ May return any of the following canonical error codes: - OUT_OF_RANGE - The spec
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'toolresults.projects.histories.executions.steps.perfSampleSeries.samples.list',
-        ordered_params=[u'projectId', u'historyId', u'executionId', u'stepId', u'sampleSeriesId'],
-        path_params=[u'executionId', u'historyId', u'projectId', u'sampleSeriesId', u'stepId'],
-        query_params=[u'pageSize', u'pageToken'],
-        relative_path=u'projects/{projectId}/histories/{historyId}/executions/{executionId}/steps/{stepId}/perfSampleSeries/{sampleSeriesId}/samples',
+        http_method='GET',
+        method_id='toolresults.projects.histories.executions.steps.perfSampleSeries.samples.list',
+        ordered_params=['projectId', 'historyId', 'executionId', 'stepId', 'sampleSeriesId'],
+        path_params=['executionId', 'historyId', 'projectId', 'sampleSeriesId', 'stepId'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='projects/{projectId}/histories/{historyId}/executions/{executionId}/steps/{stepId}/perfSampleSeries/{sampleSeriesId}/samples',
         request_field='',
-        request_type_name=u'ToolresultsProjectsHistoriesExecutionsStepsPerfSampleSeriesSamplesListRequest',
-        response_type_name=u'ListPerfSamplesResponse',
+        request_type_name='ToolresultsProjectsHistoriesExecutionsStepsPerfSampleSeriesSamplesListRequest',
+        response_type_name='ListPerfSamplesResponse',
         supports_download=False,
     )
 
   class ProjectsHistoriesExecutionsStepsPerfSampleSeriesService(base_api.BaseApiService):
     """Service class for the projects_histories_executions_steps_perfSampleSeries resource."""
 
-    _NAME = u'projects_histories_executions_steps_perfSampleSeries'
+    _NAME = 'projects_histories_executions_steps_perfSampleSeries'
 
     def __init__(self, client):
       super(ToolresultsV1beta3.ProjectsHistoriesExecutionsStepsPerfSampleSeriesService, self).__init__(client)
@@ -314,15 +314,15 @@ May return any of the following error code(s): - ALREADY_EXISTS - PerfMetricSumm
           config, request, global_params=global_params)
 
     Create.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'toolresults.projects.histories.executions.steps.perfSampleSeries.create',
-        ordered_params=[u'projectId', u'historyId', u'executionId', u'stepId'],
-        path_params=[u'executionId', u'historyId', u'projectId', u'stepId'],
+        http_method='POST',
+        method_id='toolresults.projects.histories.executions.steps.perfSampleSeries.create',
+        ordered_params=['projectId', 'historyId', 'executionId', 'stepId'],
+        path_params=['executionId', 'historyId', 'projectId', 'stepId'],
         query_params=[],
-        relative_path=u'projects/{projectId}/histories/{historyId}/executions/{executionId}/steps/{stepId}/perfSampleSeries',
+        relative_path='projects/{projectId}/histories/{historyId}/executions/{executionId}/steps/{stepId}/perfSampleSeries',
         request_field='<request>',
-        request_type_name=u'PerfSampleSeries',
-        response_type_name=u'PerfSampleSeries',
+        request_type_name='PerfSampleSeries',
+        response_type_name='PerfSampleSeries',
         supports_download=False,
     )
 
@@ -342,15 +342,15 @@ May return any of the following error code(s): - NOT_FOUND - The specified PerfS
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'toolresults.projects.histories.executions.steps.perfSampleSeries.get',
-        ordered_params=[u'projectId', u'historyId', u'executionId', u'stepId', u'sampleSeriesId'],
-        path_params=[u'executionId', u'historyId', u'projectId', u'sampleSeriesId', u'stepId'],
+        http_method='GET',
+        method_id='toolresults.projects.histories.executions.steps.perfSampleSeries.get',
+        ordered_params=['projectId', 'historyId', 'executionId', 'stepId', 'sampleSeriesId'],
+        path_params=['executionId', 'historyId', 'projectId', 'sampleSeriesId', 'stepId'],
         query_params=[],
-        relative_path=u'projects/{projectId}/histories/{historyId}/executions/{executionId}/steps/{stepId}/perfSampleSeries/{sampleSeriesId}',
+        relative_path='projects/{projectId}/histories/{historyId}/executions/{executionId}/steps/{stepId}/perfSampleSeries/{sampleSeriesId}',
         request_field='',
-        request_type_name=u'ToolresultsProjectsHistoriesExecutionsStepsPerfSampleSeriesGetRequest',
-        response_type_name=u'PerfSampleSeries',
+        request_type_name='ToolresultsProjectsHistoriesExecutionsStepsPerfSampleSeriesGetRequest',
+        response_type_name='PerfSampleSeries',
         supports_download=False,
     )
 
@@ -372,22 +372,22 @@ May return any of the following canonical error codes: - NOT_FOUND - The contain
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'toolresults.projects.histories.executions.steps.perfSampleSeries.list',
-        ordered_params=[u'projectId', u'historyId', u'executionId', u'stepId'],
-        path_params=[u'executionId', u'historyId', u'projectId', u'stepId'],
-        query_params=[u'filter'],
-        relative_path=u'projects/{projectId}/histories/{historyId}/executions/{executionId}/steps/{stepId}/perfSampleSeries',
+        http_method='GET',
+        method_id='toolresults.projects.histories.executions.steps.perfSampleSeries.list',
+        ordered_params=['projectId', 'historyId', 'executionId', 'stepId'],
+        path_params=['executionId', 'historyId', 'projectId', 'stepId'],
+        query_params=['filter'],
+        relative_path='projects/{projectId}/histories/{historyId}/executions/{executionId}/steps/{stepId}/perfSampleSeries',
         request_field='',
-        request_type_name=u'ToolresultsProjectsHistoriesExecutionsStepsPerfSampleSeriesListRequest',
-        response_type_name=u'ListPerfSampleSeriesResponse',
+        request_type_name='ToolresultsProjectsHistoriesExecutionsStepsPerfSampleSeriesListRequest',
+        response_type_name='ListPerfSampleSeriesResponse',
         supports_download=False,
     )
 
   class ProjectsHistoriesExecutionsStepsTestCasesService(base_api.BaseApiService):
     """Service class for the projects_histories_executions_steps_testCases resource."""
 
-    _NAME = u'projects_histories_executions_steps_testCases'
+    _NAME = 'projects_histories_executions_steps_testCases'
 
     def __init__(self, client):
       super(ToolresultsV1beta3.ProjectsHistoriesExecutionsStepsTestCasesService, self).__init__(client)
@@ -412,15 +412,15 @@ May return any of the following canonical error codes:
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'toolresults.projects.histories.executions.steps.testCases.get',
-        ordered_params=[u'projectId', u'historyId', u'executionId', u'stepId', u'testCaseId'],
-        path_params=[u'executionId', u'historyId', u'projectId', u'stepId', u'testCaseId'],
+        http_method='GET',
+        method_id='toolresults.projects.histories.executions.steps.testCases.get',
+        ordered_params=['projectId', 'historyId', 'executionId', 'stepId', 'testCaseId'],
+        path_params=['executionId', 'historyId', 'projectId', 'stepId', 'testCaseId'],
         query_params=[],
-        relative_path=u'projects/{projectId}/histories/{historyId}/executions/{executionId}/steps/{stepId}/testCases/{testCaseId}',
+        relative_path='projects/{projectId}/histories/{historyId}/executions/{executionId}/steps/{stepId}/testCases/{testCaseId}',
         request_field='',
-        request_type_name=u'ToolresultsProjectsHistoriesExecutionsStepsTestCasesGetRequest',
-        response_type_name=u'TestCase',
+        request_type_name='ToolresultsProjectsHistoriesExecutionsStepsTestCasesGetRequest',
+        response_type_name='TestCase',
         supports_download=False,
     )
 
@@ -442,22 +442,22 @@ May return any of the following canonical error codes:
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'toolresults.projects.histories.executions.steps.testCases.list',
-        ordered_params=[u'projectId', u'historyId', u'executionId', u'stepId'],
-        path_params=[u'executionId', u'historyId', u'projectId', u'stepId'],
-        query_params=[u'pageSize', u'pageToken'],
-        relative_path=u'projects/{projectId}/histories/{historyId}/executions/{executionId}/steps/{stepId}/testCases',
+        http_method='GET',
+        method_id='toolresults.projects.histories.executions.steps.testCases.list',
+        ordered_params=['projectId', 'historyId', 'executionId', 'stepId'],
+        path_params=['executionId', 'historyId', 'projectId', 'stepId'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='projects/{projectId}/histories/{historyId}/executions/{executionId}/steps/{stepId}/testCases',
         request_field='',
-        request_type_name=u'ToolresultsProjectsHistoriesExecutionsStepsTestCasesListRequest',
-        response_type_name=u'ListTestCasesResponse',
+        request_type_name='ToolresultsProjectsHistoriesExecutionsStepsTestCasesListRequest',
+        response_type_name='ListTestCasesResponse',
         supports_download=False,
     )
 
   class ProjectsHistoriesExecutionsStepsThumbnailsService(base_api.BaseApiService):
     """Service class for the projects_histories_executions_steps_thumbnails resource."""
 
-    _NAME = u'projects_histories_executions_steps_thumbnails'
+    _NAME = 'projects_histories_executions_steps_thumbnails'
 
     def __init__(self, client):
       super(ToolresultsV1beta3.ProjectsHistoriesExecutionsStepsThumbnailsService, self).__init__(client)
@@ -480,22 +480,22 @@ May return any of the following canonical error codes: - PERMISSION_DENIED - if 
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'toolresults.projects.histories.executions.steps.thumbnails.list',
-        ordered_params=[u'projectId', u'historyId', u'executionId', u'stepId'],
-        path_params=[u'executionId', u'historyId', u'projectId', u'stepId'],
-        query_params=[u'pageSize', u'pageToken'],
-        relative_path=u'projects/{projectId}/histories/{historyId}/executions/{executionId}/steps/{stepId}/thumbnails',
+        http_method='GET',
+        method_id='toolresults.projects.histories.executions.steps.thumbnails.list',
+        ordered_params=['projectId', 'historyId', 'executionId', 'stepId'],
+        path_params=['executionId', 'historyId', 'projectId', 'stepId'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='projects/{projectId}/histories/{historyId}/executions/{executionId}/steps/{stepId}/thumbnails',
         request_field='',
-        request_type_name=u'ToolresultsProjectsHistoriesExecutionsStepsThumbnailsListRequest',
-        response_type_name=u'ListStepThumbnailsResponse',
+        request_type_name='ToolresultsProjectsHistoriesExecutionsStepsThumbnailsListRequest',
+        response_type_name='ListStepThumbnailsResponse',
         supports_download=False,
     )
 
   class ProjectsHistoriesExecutionsStepsService(base_api.BaseApiService):
     """Service class for the projects_histories_executions_steps resource."""
 
-    _NAME = u'projects_histories_executions_steps'
+    _NAME = 'projects_histories_executions_steps'
 
     def __init__(self, client):
       super(ToolresultsV1beta3.ProjectsHistoriesExecutionsStepsService, self).__init__(client)
@@ -520,15 +520,15 @@ May return any of the following canonical error codes:
           config, request, global_params=global_params)
 
     AccessibilityClusters.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'toolresults.projects.histories.executions.steps.accessibilityClusters',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[u'locale'],
-        relative_path=u'{+name}:accessibilityClusters',
+        http_method='GET',
+        method_id='toolresults.projects.histories.executions.steps.accessibilityClusters',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['locale'],
+        relative_path='{+name}:accessibilityClusters',
         request_field='',
-        request_type_name=u'ToolresultsProjectsHistoriesExecutionsStepsAccessibilityClustersRequest',
-        response_type_name=u'ListStepAccessibilityClustersResponse',
+        request_type_name='ToolresultsProjectsHistoriesExecutionsStepsAccessibilityClustersRequest',
+        response_type_name='ListStepAccessibilityClustersResponse',
         supports_download=False,
     )
 
@@ -552,15 +552,15 @@ May return any of the following canonical error codes:
           config, request, global_params=global_params)
 
     Create.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'toolresults.projects.histories.executions.steps.create',
-        ordered_params=[u'projectId', u'historyId', u'executionId'],
-        path_params=[u'executionId', u'historyId', u'projectId'],
-        query_params=[u'requestId'],
-        relative_path=u'projects/{projectId}/histories/{historyId}/executions/{executionId}/steps',
-        request_field=u'step',
-        request_type_name=u'ToolresultsProjectsHistoriesExecutionsStepsCreateRequest',
-        response_type_name=u'Step',
+        http_method='POST',
+        method_id='toolresults.projects.histories.executions.steps.create',
+        ordered_params=['projectId', 'historyId', 'executionId'],
+        path_params=['executionId', 'historyId', 'projectId'],
+        query_params=['requestId'],
+        relative_path='projects/{projectId}/histories/{historyId}/executions/{executionId}/steps',
+        request_field='step',
+        request_type_name='ToolresultsProjectsHistoriesExecutionsStepsCreateRequest',
+        response_type_name='Step',
         supports_download=False,
     )
 
@@ -582,15 +582,15 @@ May return any of the following canonical error codes:
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'toolresults.projects.histories.executions.steps.get',
-        ordered_params=[u'projectId', u'historyId', u'executionId', u'stepId'],
-        path_params=[u'executionId', u'historyId', u'projectId', u'stepId'],
+        http_method='GET',
+        method_id='toolresults.projects.histories.executions.steps.get',
+        ordered_params=['projectId', 'historyId', 'executionId', 'stepId'],
+        path_params=['executionId', 'historyId', 'projectId', 'stepId'],
         query_params=[],
-        relative_path=u'projects/{projectId}/histories/{historyId}/executions/{executionId}/steps/{stepId}',
+        relative_path='projects/{projectId}/histories/{historyId}/executions/{executionId}/steps/{stepId}',
         request_field='',
-        request_type_name=u'ToolresultsProjectsHistoriesExecutionsStepsGetRequest',
-        response_type_name=u'Step',
+        request_type_name='ToolresultsProjectsHistoriesExecutionsStepsGetRequest',
+        response_type_name='Step',
         supports_download=False,
     )
 
@@ -610,15 +610,15 @@ May return any of the following error code(s): - NOT_FOUND - The specified PerfM
           config, request, global_params=global_params)
 
     GetPerfMetricsSummary.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'toolresults.projects.histories.executions.steps.getPerfMetricsSummary',
-        ordered_params=[u'projectId', u'historyId', u'executionId', u'stepId'],
-        path_params=[u'executionId', u'historyId', u'projectId', u'stepId'],
+        http_method='GET',
+        method_id='toolresults.projects.histories.executions.steps.getPerfMetricsSummary',
+        ordered_params=['projectId', 'historyId', 'executionId', 'stepId'],
+        path_params=['executionId', 'historyId', 'projectId', 'stepId'],
         query_params=[],
-        relative_path=u'projects/{projectId}/histories/{historyId}/executions/{executionId}/steps/{stepId}/perfMetricsSummary',
+        relative_path='projects/{projectId}/histories/{historyId}/executions/{executionId}/steps/{stepId}/perfMetricsSummary',
         request_field='',
-        request_type_name=u'ToolresultsProjectsHistoriesExecutionsStepsGetPerfMetricsSummaryRequest',
-        response_type_name=u'PerfMetricsSummary',
+        request_type_name='ToolresultsProjectsHistoriesExecutionsStepsGetPerfMetricsSummaryRequest',
+        response_type_name='PerfMetricsSummary',
         supports_download=False,
     )
 
@@ -642,15 +642,15 @@ May return any of the following canonical error codes:
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'toolresults.projects.histories.executions.steps.list',
-        ordered_params=[u'projectId', u'historyId', u'executionId'],
-        path_params=[u'executionId', u'historyId', u'projectId'],
-        query_params=[u'pageSize', u'pageToken'],
-        relative_path=u'projects/{projectId}/histories/{historyId}/executions/{executionId}/steps',
+        http_method='GET',
+        method_id='toolresults.projects.histories.executions.steps.list',
+        ordered_params=['projectId', 'historyId', 'executionId'],
+        path_params=['executionId', 'historyId', 'projectId'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='projects/{projectId}/histories/{historyId}/executions/{executionId}/steps',
         request_field='',
-        request_type_name=u'ToolresultsProjectsHistoriesExecutionsStepsListRequest',
-        response_type_name=u'ListStepsResponse',
+        request_type_name='ToolresultsProjectsHistoriesExecutionsStepsListRequest',
+        response_type_name='ListStepsResponse',
         supports_download=False,
     )
 
@@ -672,15 +672,15 @@ May return any of the following canonical error codes:
           config, request, global_params=global_params)
 
     Patch.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'PATCH',
-        method_id=u'toolresults.projects.histories.executions.steps.patch',
-        ordered_params=[u'projectId', u'historyId', u'executionId', u'stepId'],
-        path_params=[u'executionId', u'historyId', u'projectId', u'stepId'],
-        query_params=[u'requestId'],
-        relative_path=u'projects/{projectId}/histories/{historyId}/executions/{executionId}/steps/{stepId}',
-        request_field=u'step',
-        request_type_name=u'ToolresultsProjectsHistoriesExecutionsStepsPatchRequest',
-        response_type_name=u'Step',
+        http_method='PATCH',
+        method_id='toolresults.projects.histories.executions.steps.patch',
+        ordered_params=['projectId', 'historyId', 'executionId', 'stepId'],
+        path_params=['executionId', 'historyId', 'projectId', 'stepId'],
+        query_params=['requestId'],
+        relative_path='projects/{projectId}/histories/{historyId}/executions/{executionId}/steps/{stepId}',
+        request_field='step',
+        request_type_name='ToolresultsProjectsHistoriesExecutionsStepsPatchRequest',
+        response_type_name='Step',
         supports_download=False,
     )
 
@@ -702,22 +702,22 @@ May return any of the following canonical error codes:
           config, request, global_params=global_params)
 
     PublishXunitXmlFiles.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'toolresults.projects.histories.executions.steps.publishXunitXmlFiles',
-        ordered_params=[u'projectId', u'historyId', u'executionId', u'stepId'],
-        path_params=[u'executionId', u'historyId', u'projectId', u'stepId'],
+        http_method='POST',
+        method_id='toolresults.projects.histories.executions.steps.publishXunitXmlFiles',
+        ordered_params=['projectId', 'historyId', 'executionId', 'stepId'],
+        path_params=['executionId', 'historyId', 'projectId', 'stepId'],
         query_params=[],
-        relative_path=u'projects/{projectId}/histories/{historyId}/executions/{executionId}/steps/{stepId}:publishXunitXmlFiles',
-        request_field=u'publishXunitXmlFilesRequest',
-        request_type_name=u'ToolresultsProjectsHistoriesExecutionsStepsPublishXunitXmlFilesRequest',
-        response_type_name=u'Step',
+        relative_path='projects/{projectId}/histories/{historyId}/executions/{executionId}/steps/{stepId}:publishXunitXmlFiles',
+        request_field='publishXunitXmlFilesRequest',
+        request_type_name='ToolresultsProjectsHistoriesExecutionsStepsPublishXunitXmlFilesRequest',
+        response_type_name='Step',
         supports_download=False,
     )
 
   class ProjectsHistoriesExecutionsService(base_api.BaseApiService):
     """Service class for the projects_histories_executions resource."""
 
-    _NAME = u'projects_histories_executions'
+    _NAME = 'projects_histories_executions'
 
     def __init__(self, client):
       super(ToolresultsV1beta3.ProjectsHistoriesExecutionsService, self).__init__(client)
@@ -744,15 +744,15 @@ May return any of the following canonical error codes:
           config, request, global_params=global_params)
 
     Create.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'toolresults.projects.histories.executions.create',
-        ordered_params=[u'projectId', u'historyId'],
-        path_params=[u'historyId', u'projectId'],
-        query_params=[u'requestId'],
-        relative_path=u'projects/{projectId}/histories/{historyId}/executions',
-        request_field=u'execution',
-        request_type_name=u'ToolresultsProjectsHistoriesExecutionsCreateRequest',
-        response_type_name=u'Execution',
+        http_method='POST',
+        method_id='toolresults.projects.histories.executions.create',
+        ordered_params=['projectId', 'historyId'],
+        path_params=['historyId', 'projectId'],
+        query_params=['requestId'],
+        relative_path='projects/{projectId}/histories/{historyId}/executions',
+        request_field='execution',
+        request_type_name='ToolresultsProjectsHistoriesExecutionsCreateRequest',
+        response_type_name='Execution',
         supports_download=False,
     )
 
@@ -774,15 +774,15 @@ May return any of the following canonical error codes:
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'toolresults.projects.histories.executions.get',
-        ordered_params=[u'projectId', u'historyId', u'executionId'],
-        path_params=[u'executionId', u'historyId', u'projectId'],
+        http_method='GET',
+        method_id='toolresults.projects.histories.executions.get',
+        ordered_params=['projectId', 'historyId', 'executionId'],
+        path_params=['executionId', 'historyId', 'projectId'],
         query_params=[],
-        relative_path=u'projects/{projectId}/histories/{historyId}/executions/{executionId}',
+        relative_path='projects/{projectId}/histories/{historyId}/executions/{executionId}',
         request_field='',
-        request_type_name=u'ToolresultsProjectsHistoriesExecutionsGetRequest',
-        response_type_name=u'Execution',
+        request_type_name='ToolresultsProjectsHistoriesExecutionsGetRequest',
+        response_type_name='Execution',
         supports_download=False,
     )
 
@@ -806,15 +806,15 @@ May return any of the following canonical error codes:
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'toolresults.projects.histories.executions.list',
-        ordered_params=[u'projectId', u'historyId'],
-        path_params=[u'historyId', u'projectId'],
-        query_params=[u'pageSize', u'pageToken'],
-        relative_path=u'projects/{projectId}/histories/{historyId}/executions',
+        http_method='GET',
+        method_id='toolresults.projects.histories.executions.list',
+        ordered_params=['projectId', 'historyId'],
+        path_params=['historyId', 'projectId'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='projects/{projectId}/histories/{historyId}/executions',
         request_field='',
-        request_type_name=u'ToolresultsProjectsHistoriesExecutionsListRequest',
-        response_type_name=u'ListExecutionsResponse',
+        request_type_name='ToolresultsProjectsHistoriesExecutionsListRequest',
+        response_type_name='ListExecutionsResponse',
         supports_download=False,
     )
 
@@ -836,22 +836,22 @@ May return any of the following canonical error codes:
           config, request, global_params=global_params)
 
     Patch.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'PATCH',
-        method_id=u'toolresults.projects.histories.executions.patch',
-        ordered_params=[u'projectId', u'historyId', u'executionId'],
-        path_params=[u'executionId', u'historyId', u'projectId'],
-        query_params=[u'requestId'],
-        relative_path=u'projects/{projectId}/histories/{historyId}/executions/{executionId}',
-        request_field=u'execution',
-        request_type_name=u'ToolresultsProjectsHistoriesExecutionsPatchRequest',
-        response_type_name=u'Execution',
+        http_method='PATCH',
+        method_id='toolresults.projects.histories.executions.patch',
+        ordered_params=['projectId', 'historyId', 'executionId'],
+        path_params=['executionId', 'historyId', 'projectId'],
+        query_params=['requestId'],
+        relative_path='projects/{projectId}/histories/{historyId}/executions/{executionId}',
+        request_field='execution',
+        request_type_name='ToolresultsProjectsHistoriesExecutionsPatchRequest',
+        response_type_name='Execution',
         supports_download=False,
     )
 
   class ProjectsHistoriesService(base_api.BaseApiService):
     """Service class for the projects_histories resource."""
 
-    _NAME = u'projects_histories'
+    _NAME = 'projects_histories'
 
     def __init__(self, client):
       super(ToolresultsV1beta3.ProjectsHistoriesService, self).__init__(client)
@@ -878,15 +878,15 @@ May return any of the following canonical error codes:
           config, request, global_params=global_params)
 
     Create.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'toolresults.projects.histories.create',
-        ordered_params=[u'projectId'],
-        path_params=[u'projectId'],
-        query_params=[u'requestId'],
-        relative_path=u'projects/{projectId}/histories',
-        request_field=u'history',
-        request_type_name=u'ToolresultsProjectsHistoriesCreateRequest',
-        response_type_name=u'History',
+        http_method='POST',
+        method_id='toolresults.projects.histories.create',
+        ordered_params=['projectId'],
+        path_params=['projectId'],
+        query_params=['requestId'],
+        relative_path='projects/{projectId}/histories',
+        request_field='history',
+        request_type_name='ToolresultsProjectsHistoriesCreateRequest',
+        response_type_name='History',
         supports_download=False,
     )
 
@@ -908,15 +908,15 @@ May return any of the following canonical error codes:
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'toolresults.projects.histories.get',
-        ordered_params=[u'projectId', u'historyId'],
-        path_params=[u'historyId', u'projectId'],
+        http_method='GET',
+        method_id='toolresults.projects.histories.get',
+        ordered_params=['projectId', 'historyId'],
+        path_params=['historyId', 'projectId'],
         query_params=[],
-        relative_path=u'projects/{projectId}/histories/{historyId}',
+        relative_path='projects/{projectId}/histories/{historyId}',
         request_field='',
-        request_type_name=u'ToolresultsProjectsHistoriesGetRequest',
-        response_type_name=u'History',
+        request_type_name='ToolresultsProjectsHistoriesGetRequest',
+        response_type_name='History',
         supports_download=False,
     )
 
@@ -940,22 +940,22 @@ May return any of the following canonical error codes:
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'toolresults.projects.histories.list',
-        ordered_params=[u'projectId'],
-        path_params=[u'projectId'],
-        query_params=[u'filterByName', u'pageSize', u'pageToken'],
-        relative_path=u'projects/{projectId}/histories',
+        http_method='GET',
+        method_id='toolresults.projects.histories.list',
+        ordered_params=['projectId'],
+        path_params=['projectId'],
+        query_params=['filterByName', 'pageSize', 'pageToken'],
+        relative_path='projects/{projectId}/histories',
         request_field='',
-        request_type_name=u'ToolresultsProjectsHistoriesListRequest',
-        response_type_name=u'ListHistoriesResponse',
+        request_type_name='ToolresultsProjectsHistoriesListRequest',
+        response_type_name='ListHistoriesResponse',
         supports_download=False,
     )
 
   class ProjectsService(base_api.BaseApiService):
     """Service class for the projects resource."""
 
-    _NAME = u'projects'
+    _NAME = 'projects'
 
     def __init__(self, client):
       super(ToolresultsV1beta3.ProjectsService, self).__init__(client)
@@ -980,15 +980,15 @@ May return any of the following canonical error codes:
           config, request, global_params=global_params)
 
     GetSettings.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'toolresults.projects.getSettings',
-        ordered_params=[u'projectId'],
-        path_params=[u'projectId'],
+        http_method='GET',
+        method_id='toolresults.projects.getSettings',
+        ordered_params=['projectId'],
+        path_params=['projectId'],
         query_params=[],
-        relative_path=u'projects/{projectId}/settings',
+        relative_path='projects/{projectId}/settings',
         request_field='',
-        request_type_name=u'ToolresultsProjectsGetSettingsRequest',
-        response_type_name=u'ProjectSettings',
+        request_type_name='ToolresultsProjectsGetSettingsRequest',
+        response_type_name='ProjectSettings',
         supports_download=False,
     )
 
@@ -1016,14 +1016,14 @@ May return any canonical error codes, including the following:
           config, request, global_params=global_params)
 
     InitializeSettings.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'toolresults.projects.initializeSettings',
-        ordered_params=[u'projectId'],
-        path_params=[u'projectId'],
+        http_method='POST',
+        method_id='toolresults.projects.initializeSettings',
+        ordered_params=['projectId'],
+        path_params=['projectId'],
         query_params=[],
-        relative_path=u'projects/{projectId}:initializeSettings',
+        relative_path='projects/{projectId}:initializeSettings',
         request_field='',
-        request_type_name=u'ToolresultsProjectsInitializeSettingsRequest',
-        response_type_name=u'ProjectSettings',
+        request_type_name='ToolresultsProjectsInitializeSettingsRequest',
+        response_type_name='ProjectSettings',
         supports_download=False,
     )

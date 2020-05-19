@@ -31,7 +31,7 @@ class Collections(enum.Enum):
           '':
               'operations/{operationsId}',
       },
-      [u'name'],
+      ['name'],
       True
   )
   REPLAYS = (
@@ -41,7 +41,7 @@ class Collections(enum.Enum):
           '':
               'replays/{replaysId}',
       },
-      [u'name'],
+      ['name'],
       True
   )
   SIMULATOR = (

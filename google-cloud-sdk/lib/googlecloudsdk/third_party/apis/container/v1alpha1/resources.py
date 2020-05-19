@@ -28,14 +28,14 @@ class Collections(enum.Enum):
       'projects',
       'projects/{projectsId}',
       {},
-      [u'projectsId'],
+      ['projectsId'],
       True
   )
   PROJECTS_LOCATIONS = (
       'projects.locations',
       'projects/{projectsId}/locations/{locationsId}',
       {},
-      [u'projectsId', u'locationsId'],
+      ['projectsId', 'locationsId'],
       True
   )
   PROJECTS_LOCATIONS_CLUSTERS = (
@@ -46,7 +46,7 @@ class Collections(enum.Enum):
               'projects/{projectsId}/locations/{locationsId}/clusters/'
               '{clustersId}',
       },
-      [u'name'],
+      ['name'],
       True
   )
   PROJECTS_LOCATIONS_CLUSTERS_NODEPOOLS = (
@@ -57,7 +57,7 @@ class Collections(enum.Enum):
               'projects/{projectsId}/locations/{locationsId}/clusters/'
               '{clustersId}/nodePools/{nodePoolsId}',
       },
-      [u'name'],
+      ['name'],
       True
   )
   PROJECTS_LOCATIONS_OPERATIONS = (
@@ -68,21 +68,21 @@ class Collections(enum.Enum):
               'projects/{projectsId}/locations/{locationsId}/operations/'
               '{operationsId}',
       },
-      [u'name'],
+      ['name'],
       True
   )
   PROJECTS_ZONES = (
       'projects.zones',
       'projects/{projectId}/zones/{zoneId}',
       {},
-      [u'projectId', u'zoneId'],
+      ['projectId', 'zoneId'],
       True
   )
   PROJECTS_ZONES_CLUSTERS = (
       'projects.zones.clusters',
       'projects/{projectId}/zones/{zone}/clusters/{clusterId}',
       {},
-      [u'projectId', u'zone', u'clusterId'],
+      ['projectId', 'zone', 'clusterId'],
       True
   )
   PROJECTS_ZONES_CLUSTERS_NODEPOOLS = (
@@ -90,14 +90,14 @@ class Collections(enum.Enum):
       'projects/{projectId}/zones/{zone}/clusters/{clusterId}/nodePools/'
       '{nodePoolId}',
       {},
-      [u'projectId', u'zone', u'clusterId', u'nodePoolId'],
+      ['projectId', 'zone', 'clusterId', 'nodePoolId'],
       True
   )
   PROJECTS_ZONES_OPERATIONS = (
       'projects.zones.operations',
       'projects/{projectId}/zones/{zone}/operations/{operationId}',
       {},
-      [u'projectId', u'zone', u'operationId'],
+      ['projectId', 'zone', 'operationId'],
       True
   )
 

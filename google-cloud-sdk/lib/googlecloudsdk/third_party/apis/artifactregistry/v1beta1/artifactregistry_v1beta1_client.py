@@ -8,17 +8,17 @@ class ArtifactregistryV1beta1(base_api.BaseApiClient):
   """Generated client library for service artifactregistry version v1beta1."""
 
   MESSAGES_MODULE = messages
-  BASE_URL = u'https://artifactregistry.googleapis.com/'
-  MTLS_BASE_URL = u'https://artifactregistry.mtls.googleapis.com/'
+  BASE_URL = 'https://artifactregistry.googleapis.com/'
+  MTLS_BASE_URL = 'https://artifactregistry.mtls.googleapis.com/'
 
-  _PACKAGE = u'artifactregistry'
-  _SCOPES = [u'https://www.googleapis.com/auth/cloud-platform', u'https://www.googleapis.com/auth/cloud-platform.read-only']
-  _VERSION = u'v1beta1'
+  _PACKAGE = 'artifactregistry'
+  _SCOPES = ['https://www.googleapis.com/auth/cloud-platform', 'https://www.googleapis.com/auth/cloud-platform.read-only']
+  _VERSION = 'v1beta1'
   _CLIENT_ID = '1042881264118.apps.googleusercontent.com'
   _CLIENT_SECRET = 'x_Tw5K8nnjoRAqULM9PFAC2b'
-  _USER_AGENT = u'google-cloud-sdk'
-  _CLIENT_CLASS_NAME = u'ArtifactregistryV1beta1'
-  _URL_VERSION = u'v1beta1'
+  _USER_AGENT = 'google-cloud-sdk'
+  _CLIENT_CLASS_NAME = 'ArtifactregistryV1beta1'
+  _URL_VERSION = 'v1beta1'
   _API_KEY = None
 
   def __init__(self, url='', credentials=None,
@@ -48,7 +48,7 @@ class ArtifactregistryV1beta1(base_api.BaseApiClient):
   class ProjectsLocationsOperationsService(base_api.BaseApiService):
     """Service class for the projects_locations_operations resource."""
 
-    _NAME = u'projects_locations_operations'
+    _NAME = 'projects_locations_operations'
 
     def __init__(self, client):
       super(ArtifactregistryV1beta1.ProjectsLocationsOperationsService, self).__init__(client)
@@ -71,16 +71,16 @@ service.
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/projects/{projectsId}/locations/{locationsId}/operations/{operationsId}',
-        http_method=u'GET',
-        method_id=u'artifactregistry.projects.locations.operations.get',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/operations/{operationsId}',
+        http_method='GET',
+        method_id='artifactregistry.projects.locations.operations.get',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1beta1/{+name}',
+        relative_path='v1beta1/{+name}',
         request_field='',
-        request_type_name=u'ArtifactregistryProjectsLocationsOperationsGetRequest',
-        response_type_name=u'Operation',
+        request_type_name='ArtifactregistryProjectsLocationsOperationsGetRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -107,23 +107,23 @@ is the parent resource, without the operations collection id.
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/projects/{projectsId}/locations/{locationsId}/operations',
-        http_method=u'GET',
-        method_id=u'artifactregistry.projects.locations.operations.list',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[u'filter', u'pageSize', u'pageToken'],
-        relative_path=u'v1beta1/{+name}/operations',
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/operations',
+        http_method='GET',
+        method_id='artifactregistry.projects.locations.operations.list',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['filter', 'pageSize', 'pageToken'],
+        relative_path='v1beta1/{+name}/operations',
         request_field='',
-        request_type_name=u'ArtifactregistryProjectsLocationsOperationsListRequest',
-        response_type_name=u'ListOperationsResponse',
+        request_type_name='ArtifactregistryProjectsLocationsOperationsListRequest',
+        response_type_name='ListOperationsResponse',
         supports_download=False,
     )
 
   class ProjectsLocationsRepositoriesFilesService(base_api.BaseApiService):
     """Service class for the projects_locations_repositories_files resource."""
 
-    _NAME = u'projects_locations_repositories_files'
+    _NAME = 'projects_locations_repositories_files'
 
     def __init__(self, client):
       super(ArtifactregistryV1beta1.ProjectsLocationsRepositoriesFilesService, self).__init__(client)
@@ -144,16 +144,16 @@ is the parent resource, without the operations collection id.
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/projects/{projectsId}/locations/{locationsId}/repositories/{repositoriesId}/files/{filesId}',
-        http_method=u'GET',
-        method_id=u'artifactregistry.projects.locations.repositories.files.get',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/repositories/{repositoriesId}/files/{filesId}',
+        http_method='GET',
+        method_id='artifactregistry.projects.locations.repositories.files.get',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1beta1/{+name}',
+        relative_path='v1beta1/{+name}',
         request_field='',
-        request_type_name=u'ArtifactregistryProjectsLocationsRepositoriesFilesGetRequest',
-        response_type_name=u'File',
+        request_type_name='ArtifactregistryProjectsLocationsRepositoriesFilesGetRequest',
+        response_type_name='File',
         supports_download=False,
     )
 
@@ -171,23 +171,23 @@ is the parent resource, without the operations collection id.
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/projects/{projectsId}/locations/{locationsId}/repositories/{repositoriesId}/files',
-        http_method=u'GET',
-        method_id=u'artifactregistry.projects.locations.repositories.files.list',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'filter', u'pageSize', u'pageToken'],
-        relative_path=u'v1beta1/{+parent}/files',
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/repositories/{repositoriesId}/files',
+        http_method='GET',
+        method_id='artifactregistry.projects.locations.repositories.files.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'pageSize', 'pageToken'],
+        relative_path='v1beta1/{+parent}/files',
         request_field='',
-        request_type_name=u'ArtifactregistryProjectsLocationsRepositoriesFilesListRequest',
-        response_type_name=u'ListFilesResponse',
+        request_type_name='ArtifactregistryProjectsLocationsRepositoriesFilesListRequest',
+        response_type_name='ListFilesResponse',
         supports_download=False,
     )
 
   class ProjectsLocationsRepositoriesPackagesTagsService(base_api.BaseApiService):
     """Service class for the projects_locations_repositories_packages_tags resource."""
 
-    _NAME = u'projects_locations_repositories_packages_tags'
+    _NAME = 'projects_locations_repositories_packages_tags'
 
     def __init__(self, client):
       super(ArtifactregistryV1beta1.ProjectsLocationsRepositoriesPackagesTagsService, self).__init__(client)
@@ -208,16 +208,16 @@ is the parent resource, without the operations collection id.
           config, request, global_params=global_params)
 
     Create.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/projects/{projectsId}/locations/{locationsId}/repositories/{repositoriesId}/packages/{packagesId}/tags',
-        http_method=u'POST',
-        method_id=u'artifactregistry.projects.locations.repositories.packages.tags.create',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'tagId'],
-        relative_path=u'v1beta1/{+parent}/tags',
-        request_field=u'tag',
-        request_type_name=u'ArtifactregistryProjectsLocationsRepositoriesPackagesTagsCreateRequest',
-        response_type_name=u'Tag',
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/repositories/{repositoriesId}/packages/{packagesId}/tags',
+        http_method='POST',
+        method_id='artifactregistry.projects.locations.repositories.packages.tags.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['tagId'],
+        relative_path='v1beta1/{+parent}/tags',
+        request_field='tag',
+        request_type_name='ArtifactregistryProjectsLocationsRepositoriesPackagesTagsCreateRequest',
+        response_type_name='Tag',
         supports_download=False,
     )
 
@@ -235,16 +235,16 @@ is the parent resource, without the operations collection id.
           config, request, global_params=global_params)
 
     Delete.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/projects/{projectsId}/locations/{locationsId}/repositories/{repositoriesId}/packages/{packagesId}/tags/{tagsId}',
-        http_method=u'DELETE',
-        method_id=u'artifactregistry.projects.locations.repositories.packages.tags.delete',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/repositories/{repositoriesId}/packages/{packagesId}/tags/{tagsId}',
+        http_method='DELETE',
+        method_id='artifactregistry.projects.locations.repositories.packages.tags.delete',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1beta1/{+name}',
+        relative_path='v1beta1/{+name}',
         request_field='',
-        request_type_name=u'ArtifactregistryProjectsLocationsRepositoriesPackagesTagsDeleteRequest',
-        response_type_name=u'Empty',
+        request_type_name='ArtifactregistryProjectsLocationsRepositoriesPackagesTagsDeleteRequest',
+        response_type_name='Empty',
         supports_download=False,
     )
 
@@ -262,16 +262,16 @@ is the parent resource, without the operations collection id.
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/projects/{projectsId}/locations/{locationsId}/repositories/{repositoriesId}/packages/{packagesId}/tags/{tagsId}',
-        http_method=u'GET',
-        method_id=u'artifactregistry.projects.locations.repositories.packages.tags.get',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/repositories/{repositoriesId}/packages/{packagesId}/tags/{tagsId}',
+        http_method='GET',
+        method_id='artifactregistry.projects.locations.repositories.packages.tags.get',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1beta1/{+name}',
+        relative_path='v1beta1/{+name}',
         request_field='',
-        request_type_name=u'ArtifactregistryProjectsLocationsRepositoriesPackagesTagsGetRequest',
-        response_type_name=u'Tag',
+        request_type_name='ArtifactregistryProjectsLocationsRepositoriesPackagesTagsGetRequest',
+        response_type_name='Tag',
         supports_download=False,
     )
 
@@ -289,16 +289,16 @@ is the parent resource, without the operations collection id.
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/projects/{projectsId}/locations/{locationsId}/repositories/{repositoriesId}/packages/{packagesId}/tags',
-        http_method=u'GET',
-        method_id=u'artifactregistry.projects.locations.repositories.packages.tags.list',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'filter', u'pageSize', u'pageToken'],
-        relative_path=u'v1beta1/{+parent}/tags',
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/repositories/{repositoriesId}/packages/{packagesId}/tags',
+        http_method='GET',
+        method_id='artifactregistry.projects.locations.repositories.packages.tags.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'pageSize', 'pageToken'],
+        relative_path='v1beta1/{+parent}/tags',
         request_field='',
-        request_type_name=u'ArtifactregistryProjectsLocationsRepositoriesPackagesTagsListRequest',
-        response_type_name=u'ListTagsResponse',
+        request_type_name='ArtifactregistryProjectsLocationsRepositoriesPackagesTagsListRequest',
+        response_type_name='ListTagsResponse',
         supports_download=False,
     )
 
@@ -316,23 +316,23 @@ is the parent resource, without the operations collection id.
           config, request, global_params=global_params)
 
     Patch.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/projects/{projectsId}/locations/{locationsId}/repositories/{repositoriesId}/packages/{packagesId}/tags/{tagsId}',
-        http_method=u'PATCH',
-        method_id=u'artifactregistry.projects.locations.repositories.packages.tags.patch',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[u'updateMask'],
-        relative_path=u'v1beta1/{+name}',
-        request_field=u'tag',
-        request_type_name=u'ArtifactregistryProjectsLocationsRepositoriesPackagesTagsPatchRequest',
-        response_type_name=u'Tag',
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/repositories/{repositoriesId}/packages/{packagesId}/tags/{tagsId}',
+        http_method='PATCH',
+        method_id='artifactregistry.projects.locations.repositories.packages.tags.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v1beta1/{+name}',
+        request_field='tag',
+        request_type_name='ArtifactregistryProjectsLocationsRepositoriesPackagesTagsPatchRequest',
+        response_type_name='Tag',
         supports_download=False,
     )
 
   class ProjectsLocationsRepositoriesPackagesVersionsService(base_api.BaseApiService):
     """Service class for the projects_locations_repositories_packages_versions resource."""
 
-    _NAME = u'projects_locations_repositories_packages_versions'
+    _NAME = 'projects_locations_repositories_packages_versions'
 
     def __init__(self, client):
       super(ArtifactregistryV1beta1.ProjectsLocationsRepositoriesPackagesVersionsService, self).__init__(client)
@@ -354,16 +354,16 @@ complete once the version has been deleted.
           config, request, global_params=global_params)
 
     Delete.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/projects/{projectsId}/locations/{locationsId}/repositories/{repositoriesId}/packages/{packagesId}/versions/{versionsId}',
-        http_method=u'DELETE',
-        method_id=u'artifactregistry.projects.locations.repositories.packages.versions.delete',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[u'force'],
-        relative_path=u'v1beta1/{+name}',
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/repositories/{repositoriesId}/packages/{packagesId}/versions/{versionsId}',
+        http_method='DELETE',
+        method_id='artifactregistry.projects.locations.repositories.packages.versions.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['force'],
+        relative_path='v1beta1/{+name}',
         request_field='',
-        request_type_name=u'ArtifactregistryProjectsLocationsRepositoriesPackagesVersionsDeleteRequest',
-        response_type_name=u'Operation',
+        request_type_name='ArtifactregistryProjectsLocationsRepositoriesPackagesVersionsDeleteRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -381,16 +381,16 @@ complete once the version has been deleted.
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/projects/{projectsId}/locations/{locationsId}/repositories/{repositoriesId}/packages/{packagesId}/versions/{versionsId}',
-        http_method=u'GET',
-        method_id=u'artifactregistry.projects.locations.repositories.packages.versions.get',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[u'view'],
-        relative_path=u'v1beta1/{+name}',
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/repositories/{repositoriesId}/packages/{packagesId}/versions/{versionsId}',
+        http_method='GET',
+        method_id='artifactregistry.projects.locations.repositories.packages.versions.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['view'],
+        relative_path='v1beta1/{+name}',
         request_field='',
-        request_type_name=u'ArtifactregistryProjectsLocationsRepositoriesPackagesVersionsGetRequest',
-        response_type_name=u'Version',
+        request_type_name='ArtifactregistryProjectsLocationsRepositoriesPackagesVersionsGetRequest',
+        response_type_name='Version',
         supports_download=False,
     )
 
@@ -408,23 +408,23 @@ complete once the version has been deleted.
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/projects/{projectsId}/locations/{locationsId}/repositories/{repositoriesId}/packages/{packagesId}/versions',
-        http_method=u'GET',
-        method_id=u'artifactregistry.projects.locations.repositories.packages.versions.list',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'pageSize', u'pageToken', u'view'],
-        relative_path=u'v1beta1/{+parent}/versions',
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/repositories/{repositoriesId}/packages/{packagesId}/versions',
+        http_method='GET',
+        method_id='artifactregistry.projects.locations.repositories.packages.versions.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken', 'view'],
+        relative_path='v1beta1/{+parent}/versions',
         request_field='',
-        request_type_name=u'ArtifactregistryProjectsLocationsRepositoriesPackagesVersionsListRequest',
-        response_type_name=u'ListVersionsResponse',
+        request_type_name='ArtifactregistryProjectsLocationsRepositoriesPackagesVersionsListRequest',
+        response_type_name='ListVersionsResponse',
         supports_download=False,
     )
 
   class ProjectsLocationsRepositoriesPackagesService(base_api.BaseApiService):
     """Service class for the projects_locations_repositories_packages resource."""
 
-    _NAME = u'projects_locations_repositories_packages'
+    _NAME = 'projects_locations_repositories_packages'
 
     def __init__(self, client):
       super(ArtifactregistryV1beta1.ProjectsLocationsRepositoriesPackagesService, self).__init__(client)
@@ -446,16 +446,16 @@ will complete once the package has been deleted.
           config, request, global_params=global_params)
 
     Delete.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/projects/{projectsId}/locations/{locationsId}/repositories/{repositoriesId}/packages/{packagesId}',
-        http_method=u'DELETE',
-        method_id=u'artifactregistry.projects.locations.repositories.packages.delete',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/repositories/{repositoriesId}/packages/{packagesId}',
+        http_method='DELETE',
+        method_id='artifactregistry.projects.locations.repositories.packages.delete',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1beta1/{+name}',
+        relative_path='v1beta1/{+name}',
         request_field='',
-        request_type_name=u'ArtifactregistryProjectsLocationsRepositoriesPackagesDeleteRequest',
-        response_type_name=u'Operation',
+        request_type_name='ArtifactregistryProjectsLocationsRepositoriesPackagesDeleteRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -473,16 +473,16 @@ will complete once the package has been deleted.
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/projects/{projectsId}/locations/{locationsId}/repositories/{repositoriesId}/packages/{packagesId}',
-        http_method=u'GET',
-        method_id=u'artifactregistry.projects.locations.repositories.packages.get',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/repositories/{repositoriesId}/packages/{packagesId}',
+        http_method='GET',
+        method_id='artifactregistry.projects.locations.repositories.packages.get',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1beta1/{+name}',
+        relative_path='v1beta1/{+name}',
         request_field='',
-        request_type_name=u'ArtifactregistryProjectsLocationsRepositoriesPackagesGetRequest',
-        response_type_name=u'Package',
+        request_type_name='ArtifactregistryProjectsLocationsRepositoriesPackagesGetRequest',
+        response_type_name='Package',
         supports_download=False,
     )
 
@@ -500,23 +500,23 @@ will complete once the package has been deleted.
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/projects/{projectsId}/locations/{locationsId}/repositories/{repositoriesId}/packages',
-        http_method=u'GET',
-        method_id=u'artifactregistry.projects.locations.repositories.packages.list',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'pageSize', u'pageToken'],
-        relative_path=u'v1beta1/{+parent}/packages',
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/repositories/{repositoriesId}/packages',
+        http_method='GET',
+        method_id='artifactregistry.projects.locations.repositories.packages.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v1beta1/{+parent}/packages',
         request_field='',
-        request_type_name=u'ArtifactregistryProjectsLocationsRepositoriesPackagesListRequest',
-        response_type_name=u'ListPackagesResponse',
+        request_type_name='ArtifactregistryProjectsLocationsRepositoriesPackagesListRequest',
+        response_type_name='ListPackagesResponse',
         supports_download=False,
     )
 
   class ProjectsLocationsRepositoriesService(base_api.BaseApiService):
     """Service class for the projects_locations_repositories resource."""
 
-    _NAME = u'projects_locations_repositories'
+    _NAME = 'projects_locations_repositories'
 
     def __init__(self, client):
       super(ArtifactregistryV1beta1.ProjectsLocationsRepositoriesService, self).__init__(client)
@@ -538,16 +538,16 @@ repository has been created. Its response will be the created Repository.
           config, request, global_params=global_params)
 
     Create.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/projects/{projectsId}/locations/{locationsId}/repositories',
-        http_method=u'POST',
-        method_id=u'artifactregistry.projects.locations.repositories.create',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'repositoryId'],
-        relative_path=u'v1beta1/{+parent}/repositories',
-        request_field=u'repository',
-        request_type_name=u'ArtifactregistryProjectsLocationsRepositoriesCreateRequest',
-        response_type_name=u'Operation',
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/repositories',
+        http_method='POST',
+        method_id='artifactregistry.projects.locations.repositories.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['repositoryId'],
+        relative_path='v1beta1/{+parent}/repositories',
+        request_field='repository',
+        request_type_name='ArtifactregistryProjectsLocationsRepositoriesCreateRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -567,16 +567,16 @@ metadata and will return a google.protobuf.Empty response.
           config, request, global_params=global_params)
 
     Delete.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/projects/{projectsId}/locations/{locationsId}/repositories/{repositoriesId}',
-        http_method=u'DELETE',
-        method_id=u'artifactregistry.projects.locations.repositories.delete',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/repositories/{repositoriesId}',
+        http_method='DELETE',
+        method_id='artifactregistry.projects.locations.repositories.delete',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1beta1/{+name}',
+        relative_path='v1beta1/{+name}',
         request_field='',
-        request_type_name=u'ArtifactregistryProjectsLocationsRepositoriesDeleteRequest',
-        response_type_name=u'Operation',
+        request_type_name='ArtifactregistryProjectsLocationsRepositoriesDeleteRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -594,16 +594,16 @@ metadata and will return a google.protobuf.Empty response.
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/projects/{projectsId}/locations/{locationsId}/repositories/{repositoriesId}',
-        http_method=u'GET',
-        method_id=u'artifactregistry.projects.locations.repositories.get',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/repositories/{repositoriesId}',
+        http_method='GET',
+        method_id='artifactregistry.projects.locations.repositories.get',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1beta1/{+name}',
+        relative_path='v1beta1/{+name}',
         request_field='',
-        request_type_name=u'ArtifactregistryProjectsLocationsRepositoriesGetRequest',
-        response_type_name=u'Repository',
+        request_type_name='ArtifactregistryProjectsLocationsRepositoriesGetRequest',
+        response_type_name='Repository',
         supports_download=False,
     )
 
@@ -621,16 +621,16 @@ metadata and will return a google.protobuf.Empty response.
           config, request, global_params=global_params)
 
     GetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/projects/{projectsId}/locations/{locationsId}/repositories/{repositoriesId}:getIamPolicy',
-        http_method=u'GET',
-        method_id=u'artifactregistry.projects.locations.repositories.getIamPolicy',
-        ordered_params=[u'resource'],
-        path_params=[u'resource'],
-        query_params=[u'options_requestedPolicyVersion'],
-        relative_path=u'v1beta1/{+resource}:getIamPolicy',
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/repositories/{repositoriesId}:getIamPolicy',
+        http_method='GET',
+        method_id='artifactregistry.projects.locations.repositories.getIamPolicy',
+        ordered_params=['resource'],
+        path_params=['resource'],
+        query_params=['options_requestedPolicyVersion'],
+        relative_path='v1beta1/{+resource}:getIamPolicy',
         request_field='',
-        request_type_name=u'ArtifactregistryProjectsLocationsRepositoriesGetIamPolicyRequest',
-        response_type_name=u'Policy',
+        request_type_name='ArtifactregistryProjectsLocationsRepositoriesGetIamPolicyRequest',
+        response_type_name='Policy',
         supports_download=False,
     )
 
@@ -648,16 +648,16 @@ metadata and will return a google.protobuf.Empty response.
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/projects/{projectsId}/locations/{locationsId}/repositories',
-        http_method=u'GET',
-        method_id=u'artifactregistry.projects.locations.repositories.list',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'pageSize', u'pageToken'],
-        relative_path=u'v1beta1/{+parent}/repositories',
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/repositories',
+        http_method='GET',
+        method_id='artifactregistry.projects.locations.repositories.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v1beta1/{+parent}/repositories',
         request_field='',
-        request_type_name=u'ArtifactregistryProjectsLocationsRepositoriesListRequest',
-        response_type_name=u'ListRepositoriesResponse',
+        request_type_name='ArtifactregistryProjectsLocationsRepositoriesListRequest',
+        response_type_name='ListRepositoriesResponse',
         supports_download=False,
     )
 
@@ -675,16 +675,16 @@ metadata and will return a google.protobuf.Empty response.
           config, request, global_params=global_params)
 
     Patch.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/projects/{projectsId}/locations/{locationsId}/repositories/{repositoriesId}',
-        http_method=u'PATCH',
-        method_id=u'artifactregistry.projects.locations.repositories.patch',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[u'updateMask'],
-        relative_path=u'v1beta1/{+name}',
-        request_field=u'repository',
-        request_type_name=u'ArtifactregistryProjectsLocationsRepositoriesPatchRequest',
-        response_type_name=u'Repository',
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/repositories/{repositoriesId}',
+        http_method='PATCH',
+        method_id='artifactregistry.projects.locations.repositories.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v1beta1/{+name}',
+        request_field='repository',
+        request_type_name='ArtifactregistryProjectsLocationsRepositoriesPatchRequest',
+        response_type_name='Repository',
         supports_download=False,
     )
 
@@ -702,16 +702,16 @@ metadata and will return a google.protobuf.Empty response.
           config, request, global_params=global_params)
 
     SetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/projects/{projectsId}/locations/{locationsId}/repositories/{repositoriesId}:setIamPolicy',
-        http_method=u'POST',
-        method_id=u'artifactregistry.projects.locations.repositories.setIamPolicy',
-        ordered_params=[u'resource'],
-        path_params=[u'resource'],
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/repositories/{repositoriesId}:setIamPolicy',
+        http_method='POST',
+        method_id='artifactregistry.projects.locations.repositories.setIamPolicy',
+        ordered_params=['resource'],
+        path_params=['resource'],
         query_params=[],
-        relative_path=u'v1beta1/{+resource}:setIamPolicy',
-        request_field=u'setIamPolicyRequest',
-        request_type_name=u'ArtifactregistryProjectsLocationsRepositoriesSetIamPolicyRequest',
-        response_type_name=u'Policy',
+        relative_path='v1beta1/{+resource}:setIamPolicy',
+        request_field='setIamPolicyRequest',
+        request_type_name='ArtifactregistryProjectsLocationsRepositoriesSetIamPolicyRequest',
+        response_type_name='Policy',
         supports_download=False,
     )
 
@@ -729,23 +729,23 @@ metadata and will return a google.protobuf.Empty response.
           config, request, global_params=global_params)
 
     TestIamPermissions.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/projects/{projectsId}/locations/{locationsId}/repositories/{repositoriesId}:testIamPermissions',
-        http_method=u'POST',
-        method_id=u'artifactregistry.projects.locations.repositories.testIamPermissions',
-        ordered_params=[u'resource'],
-        path_params=[u'resource'],
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/repositories/{repositoriesId}:testIamPermissions',
+        http_method='POST',
+        method_id='artifactregistry.projects.locations.repositories.testIamPermissions',
+        ordered_params=['resource'],
+        path_params=['resource'],
         query_params=[],
-        relative_path=u'v1beta1/{+resource}:testIamPermissions',
-        request_field=u'testIamPermissionsRequest',
-        request_type_name=u'ArtifactregistryProjectsLocationsRepositoriesTestIamPermissionsRequest',
-        response_type_name=u'TestIamPermissionsResponse',
+        relative_path='v1beta1/{+resource}:testIamPermissions',
+        request_field='testIamPermissionsRequest',
+        request_type_name='ArtifactregistryProjectsLocationsRepositoriesTestIamPermissionsRequest',
+        response_type_name='TestIamPermissionsResponse',
         supports_download=False,
     )
 
   class ProjectsLocationsService(base_api.BaseApiService):
     """Service class for the projects_locations resource."""
 
-    _NAME = u'projects_locations'
+    _NAME = 'projects_locations'
 
     def __init__(self, client):
       super(ArtifactregistryV1beta1.ProjectsLocationsService, self).__init__(client)
@@ -766,16 +766,16 @@ metadata and will return a google.protobuf.Empty response.
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/projects/{projectsId}/locations/{locationsId}',
-        http_method=u'GET',
-        method_id=u'artifactregistry.projects.locations.get',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}',
+        http_method='GET',
+        method_id='artifactregistry.projects.locations.get',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1beta1/{+name}',
+        relative_path='v1beta1/{+name}',
         request_field='',
-        request_type_name=u'ArtifactregistryProjectsLocationsGetRequest',
-        response_type_name=u'Location',
+        request_type_name='ArtifactregistryProjectsLocationsGetRequest',
+        response_type_name='Location',
         supports_download=False,
     )
 
@@ -793,23 +793,23 @@ metadata and will return a google.protobuf.Empty response.
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/projects/{projectsId}/locations',
-        http_method=u'GET',
-        method_id=u'artifactregistry.projects.locations.list',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[u'filter', u'pageSize', u'pageToken'],
-        relative_path=u'v1beta1/{+name}/locations',
+        flat_path='v1beta1/projects/{projectsId}/locations',
+        http_method='GET',
+        method_id='artifactregistry.projects.locations.list',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['filter', 'pageSize', 'pageToken'],
+        relative_path='v1beta1/{+name}/locations',
         request_field='',
-        request_type_name=u'ArtifactregistryProjectsLocationsListRequest',
-        response_type_name=u'ListLocationsResponse',
+        request_type_name='ArtifactregistryProjectsLocationsListRequest',
+        response_type_name='ListLocationsResponse',
         supports_download=False,
     )
 
   class ProjectsService(base_api.BaseApiService):
     """Service class for the projects resource."""
 
-    _NAME = u'projects'
+    _NAME = 'projects'
 
     def __init__(self, client):
       super(ArtifactregistryV1beta1.ProjectsService, self).__init__(client)

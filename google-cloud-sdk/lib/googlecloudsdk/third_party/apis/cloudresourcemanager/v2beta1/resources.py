@@ -28,7 +28,7 @@ class Collections(enum.Enum):
       'folders',
       'folders/{foldersId}',
       {},
-      [u'foldersId'],
+      ['foldersId'],
       True
   )
 

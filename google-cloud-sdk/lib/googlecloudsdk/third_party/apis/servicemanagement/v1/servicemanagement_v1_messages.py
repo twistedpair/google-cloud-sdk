@@ -453,8 +453,9 @@ class Binding(_messages.Message):
       not apply to the current request. However, a different role binding
       might grant the same role to one or more of the members in this binding.
       To learn which resources support conditions in their IAM policies, see
-      the [IAM documentation](https://cloud.google.com/iam/help/conditions
-      /resource-policies).
+      the [IAM
+      documentation](https://cloud.google.com/iam/help/conditions/resource-
+      policies).
     members: Specifies the identities requesting access for a Cloud Platform
       resource. `members` can have the following values:  * `allUsers`: A
       special identifier that represents anyone who is    on the internet;
@@ -2709,8 +2710,8 @@ class Policy(_messages.Message):
   timestamp('2020-10-01T00:00:00.000Z')",           }         }       ],
   "etag": "BwWWja0YfJA=",       "version": 3     }  **YAML example:**
   bindings:     - members:       - user:mike@example.com       -
-  group:admins@example.com       - domain:google.com       - serviceAccount
-  :my-project-id@appspot.gserviceaccount.com       role:
+  group:admins@example.com       - domain:google.com       -
+  serviceAccount:my-project-id@appspot.gserviceaccount.com       role:
   roles/resourcemanager.organizationAdmin     - members:       -
   user:eve@example.com       role: roles/resourcemanager.organizationViewer
   condition:         title: expirable access         description: Does not
@@ -3557,9 +3558,10 @@ class ServicemanagementOperationsListRequest(_messages.Message):
       restriction must be at the   top-level and can only be combined with
       other restrictions via the AND   logical operator.    Examples&#58;    *
       `serviceName={some-service}.googleapis.com`   * `serviceName={some-
-      service}.googleapis.com AND startTime>="2017-02-01"`   * `serviceName
-      ={some-service}.googleapis.com AND status=done`   * `serviceName={some-
-      service}.googleapis.com AND (status=done OR startTime>="2017-02-01")`
+      service}.googleapis.com AND startTime>="2017-02-01"`   *
+      `serviceName={some-service}.googleapis.com AND status=done`   *
+      `serviceName={some-service}.googleapis.com AND (status=done OR
+      startTime>="2017-02-01")`
     name: Not used.
     pageSize: The maximum number of operations to return. If unspecified,
       defaults to 50. The maximum value is 100.
@@ -3589,9 +3591,9 @@ class ServicemanagementServicesConfigsCreateRequest(_messages.Message):
 
   Fields:
     service: A Service resource to be passed as the request body.
-    serviceName: Required. The name of the service.  See the [overview
-      ](/service-management/overview) for naming requirements.  For example:
-      `example.googleapis.com`.
+    serviceName: Required. The name of the service.  See the
+      [overview](/service-management/overview) for naming requirements.  For
+      example: `example.googleapis.com`.
   """
 
   service = _messages.MessageField('Service', 1)
@@ -3609,9 +3611,9 @@ class ServicemanagementServicesConfigsGetRequest(_messages.Message):
     configId: Required. The id of the service configuration resource.  This
       field must be specified for the server to return all fields, including
       `SourceInfo`.
-    serviceName: Required. The name of the service.  See the [overview
-      ](/service-management/overview) for naming requirements.  For example:
-      `example.googleapis.com`.
+    serviceName: Required. The name of the service.  See the
+      [overview](/service-management/overview) for naming requirements.  For
+      example: `example.googleapis.com`.
     view: Specifies which parts of the Service Config should be returned in
       the response.
   """
@@ -3639,9 +3641,9 @@ class ServicemanagementServicesConfigsListRequest(_messages.Message):
     pageSize: The max number of items to include in the response list. Page
       size is 50 if not specified. Maximum value is 100.
     pageToken: The token of the page to retrieve.
-    serviceName: Required. The name of the service.  See the [overview
-      ](/service-management/overview) for naming requirements.  For example:
-      `example.googleapis.com`.
+    serviceName: Required. The name of the service.  See the
+      [overview](/service-management/overview) for naming requirements.  For
+      example: `example.googleapis.com`.
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -3653,9 +3655,9 @@ class ServicemanagementServicesConfigsSubmitRequest(_messages.Message):
   r"""A ServicemanagementServicesConfigsSubmitRequest object.
 
   Fields:
-    serviceName: Required. The name of the service.  See the [overview
-      ](/service-management/overview) for naming requirements.  For example:
-      `example.googleapis.com`.
+    serviceName: Required. The name of the service.  See the
+      [overview](/service-management/overview) for naming requirements.  For
+      example: `example.googleapis.com`.
     submitConfigSourceRequest: A SubmitConfigSourceRequest resource to be
       passed as the request body.
   """
@@ -3777,9 +3779,9 @@ class ServicemanagementServicesDeleteRequest(_messages.Message):
   r"""A ServicemanagementServicesDeleteRequest object.
 
   Fields:
-    serviceName: Required. The name of the service.  See the [overview
-      ](/service-management/overview) for naming requirements.  For example:
-      `example.googleapis.com`.
+    serviceName: Required. The name of the service.  See the
+      [overview](/service-management/overview) for naming requirements.  For
+      example: `example.googleapis.com`.
   """
 
   serviceName = _messages.StringField(1, required=True)
@@ -3824,9 +3826,9 @@ class ServicemanagementServicesGetConfigRequest(_messages.Message):
     configId: Required. The id of the service configuration resource.  This
       field must be specified for the server to return all fields, including
       `SourceInfo`.
-    serviceName: Required. The name of the service.  See the [overview
-      ](/service-management/overview) for naming requirements.  For example:
-      `example.googleapis.com`.
+    serviceName: Required. The name of the service.  See the
+      [overview](/service-management/overview) for naming requirements.  For
+      example: `example.googleapis.com`.
     view: Specifies which parts of the Service Config should be returned in
       the response.
   """
@@ -4014,9 +4016,9 @@ class ServicemanagementServicesRolloutsCreateRequest(_messages.Message):
       gradually dial down default quota limit, the recommended practice is to
       create multiple rollouts at least 1 hour apart.
     rollout: A Rollout resource to be passed as the request body.
-    serviceName: Required. The name of the service.  See the [overview
-      ](/service-management/overview) for naming requirements.  For example:
-      `example.googleapis.com`.
+    serviceName: Required. The name of the service.  See the
+      [overview](/service-management/overview) for naming requirements.  For
+      example: `example.googleapis.com`.
   """
 
   force = _messages.BooleanField(1)
@@ -4029,9 +4031,9 @@ class ServicemanagementServicesRolloutsGetRequest(_messages.Message):
 
   Fields:
     rolloutId: Required. The id of the rollout resource.
-    serviceName: Required. The name of the service.  See the [overview
-      ](/service-management/overview) for naming requirements.  For example:
-      `example.googleapis.com`.
+    serviceName: Required. The name of the service.  See the
+      [overview](/service-management/overview) for naming requirements.  For
+      example: `example.googleapis.com`.
   """
 
   rolloutId = _messages.StringField(1, required=True)
@@ -4051,9 +4053,9 @@ class ServicemanagementServicesRolloutsListRequest(_messages.Message):
     pageSize: The max number of items to include in the response list. Page
       size is 50 if not specified. Maximum value is 100.
     pageToken: The token of the page to retrieve.
-    serviceName: Required. The name of the service.  See the [overview
-      ](/service-management/overview) for naming requirements.  For example:
-      `example.googleapis.com`.
+    serviceName: Required. The name of the service.  See the
+      [overview](/service-management/overview) for naming requirements.  For
+      example: `example.googleapis.com`.
   """
 
   filter = _messages.StringField(1)
@@ -4096,9 +4098,9 @@ class ServicemanagementServicesUndeleteRequest(_messages.Message):
   r"""A ServicemanagementServicesUndeleteRequest object.
 
   Fields:
-    serviceName: Required. The name of the service. See the [overview
-      ](/service-management/overview) for naming requirements. For example:
-      `example.googleapis.com`.
+    serviceName: Required. The name of the service. See the
+      [overview](/service-management/overview) for naming requirements. For
+      example: `example.googleapis.com`.
   """
 
   serviceName = _messages.StringField(1, required=True)
@@ -4224,7 +4226,7 @@ class StandardQueryParameters(_messages.Message):
 
   f__xgafv = _messages.EnumField('FXgafvValueValuesEnum', 1)
   access_token = _messages.StringField(2)
-  alt = _messages.EnumField('AltValueValuesEnum', 3, default=u'json')
+  alt = _messages.EnumField('AltValueValuesEnum', 3, default='json')
   callback = _messages.StringField(4)
   fields = _messages.StringField(5)
   key = _messages.StringField(6)

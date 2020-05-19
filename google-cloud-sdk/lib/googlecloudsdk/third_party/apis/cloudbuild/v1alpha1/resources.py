@@ -28,7 +28,7 @@ class Collections(enum.Enum):
       'projects',
       'projects/{projectId}',
       {},
-      [u'projectId'],
+      ['projectId'],
       True
   )
   PROJECTS_WORKERPOOLS = (
@@ -38,7 +38,7 @@ class Collections(enum.Enum):
           '':
               'projects/{projectsId}/workerPools/{workerPoolsId}',
       },
-      [u'name'],
+      ['name'],
       True
   )
 

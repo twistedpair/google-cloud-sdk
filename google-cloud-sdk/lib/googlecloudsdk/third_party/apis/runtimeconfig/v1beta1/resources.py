@@ -28,7 +28,7 @@ class Collections(enum.Enum):
       'projects',
       'projects/{projectsId}',
       {},
-      [u'projectsId'],
+      ['projectsId'],
       True
   )
   PROJECTS_CONFIGS = (
@@ -38,7 +38,7 @@ class Collections(enum.Enum):
           '':
               'projects/{projectsId}/configs/{configsId}',
       },
-      [u'name'],
+      ['name'],
       True
   )
   PROJECTS_CONFIGS_OPERATIONS = (
@@ -49,7 +49,7 @@ class Collections(enum.Enum):
               'projects/{projectsId}/configs/{configsId}/operations/'
               '{operationsId}',
       },
-      [u'name'],
+      ['name'],
       True
   )
   PROJECTS_CONFIGS_VARIABLES = (
@@ -60,7 +60,7 @@ class Collections(enum.Enum):
               'projects/{projectsId}/configs/{configsId}/variables/'
               '{variablesId}',
       },
-      [u'name'],
+      ['name'],
       True
   )
   PROJECTS_CONFIGS_WAITERS = (
@@ -70,7 +70,7 @@ class Collections(enum.Enum):
           '':
               'projects/{projectsId}/configs/{configsId}/waiters/{waitersId}',
       },
-      [u'name'],
+      ['name'],
       True
   )
 

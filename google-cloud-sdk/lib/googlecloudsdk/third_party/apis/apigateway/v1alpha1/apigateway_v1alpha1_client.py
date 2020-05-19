@@ -8,17 +8,17 @@ class ApigatewayV1alpha1(base_api.BaseApiClient):
   """Generated client library for service apigateway version v1alpha1."""
 
   MESSAGES_MODULE = messages
-  BASE_URL = u'https://apigateway.googleapis.com/'
-  MTLS_BASE_URL = u'https://apigateway.mtls.googleapis.com/'
+  BASE_URL = 'https://apigateway.googleapis.com/'
+  MTLS_BASE_URL = 'https://apigateway.mtls.googleapis.com/'
 
-  _PACKAGE = u'apigateway'
-  _SCOPES = [u'https://www.googleapis.com/auth/cloud-platform']
-  _VERSION = u'v1alpha1'
+  _PACKAGE = 'apigateway'
+  _SCOPES = ['https://www.googleapis.com/auth/cloud-platform']
+  _VERSION = 'v1alpha1'
   _CLIENT_ID = '1042881264118.apps.googleusercontent.com'
   _CLIENT_SECRET = 'x_Tw5K8nnjoRAqULM9PFAC2b'
-  _USER_AGENT = u'google-cloud-sdk'
-  _CLIENT_CLASS_NAME = u'ApigatewayV1alpha1'
-  _URL_VERSION = u'v1alpha1'
+  _USER_AGENT = 'google-cloud-sdk'
+  _CLIENT_CLASS_NAME = 'ApigatewayV1alpha1'
+  _URL_VERSION = 'v1alpha1'
   _API_KEY = None
 
   def __init__(self, url='', credentials=None,
@@ -46,7 +46,7 @@ class ApigatewayV1alpha1(base_api.BaseApiClient):
   class ProjectsLocationsApisConfigsService(base_api.BaseApiService):
     """Service class for the projects_locations_apis_configs resource."""
 
-    _NAME = u'projects_locations_apis_configs'
+    _NAME = 'projects_locations_apis_configs'
 
     def __init__(self, client):
       super(ApigatewayV1alpha1.ProjectsLocationsApisConfigsService, self).__init__(client)
@@ -67,16 +67,16 @@ class ApigatewayV1alpha1(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Create.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha1/projects/{projectsId}/locations/{locationsId}/apis/{apisId}/configs',
-        http_method=u'POST',
-        method_id=u'apigateway.projects.locations.apis.configs.create',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'apiConfigId'],
-        relative_path=u'v1alpha1/{+parent}/configs',
-        request_field=u'apigatewayApiConfig',
-        request_type_name=u'ApigatewayProjectsLocationsApisConfigsCreateRequest',
-        response_type_name=u'ApigatewayOperation',
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/apis/{apisId}/configs',
+        http_method='POST',
+        method_id='apigateway.projects.locations.apis.configs.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['apiConfigId'],
+        relative_path='v1alpha1/{+parent}/configs',
+        request_field='apigatewayApiConfig',
+        request_type_name='ApigatewayProjectsLocationsApisConfigsCreateRequest',
+        response_type_name='ApigatewayOperation',
         supports_download=False,
     )
 
@@ -94,16 +94,16 @@ class ApigatewayV1alpha1(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Delete.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha1/projects/{projectsId}/locations/{locationsId}/apis/{apisId}/configs/{configsId}',
-        http_method=u'DELETE',
-        method_id=u'apigateway.projects.locations.apis.configs.delete',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/apis/{apisId}/configs/{configsId}',
+        http_method='DELETE',
+        method_id='apigateway.projects.locations.apis.configs.delete',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1alpha1/{+name}',
+        relative_path='v1alpha1/{+name}',
         request_field='',
-        request_type_name=u'ApigatewayProjectsLocationsApisConfigsDeleteRequest',
-        response_type_name=u'ApigatewayOperation',
+        request_type_name='ApigatewayProjectsLocationsApisConfigsDeleteRequest',
+        response_type_name='ApigatewayOperation',
         supports_download=False,
     )
 
@@ -121,16 +121,16 @@ class ApigatewayV1alpha1(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha1/projects/{projectsId}/locations/{locationsId}/apis/{apisId}/configs/{configsId}',
-        http_method=u'GET',
-        method_id=u'apigateway.projects.locations.apis.configs.get',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/apis/{apisId}/configs/{configsId}',
+        http_method='GET',
+        method_id='apigateway.projects.locations.apis.configs.get',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1alpha1/{+name}',
+        relative_path='v1alpha1/{+name}',
         request_field='',
-        request_type_name=u'ApigatewayProjectsLocationsApisConfigsGetRequest',
-        response_type_name=u'ApigatewayApiConfig',
+        request_type_name='ApigatewayProjectsLocationsApisConfigsGetRequest',
+        response_type_name='ApigatewayApiConfig',
         supports_download=False,
     )
 
@@ -150,16 +150,16 @@ set.
           config, request, global_params=global_params)
 
     GetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha1/projects/{projectsId}/locations/{locationsId}/apis/{apisId}/configs/{configsId}:getIamPolicy',
-        http_method=u'GET',
-        method_id=u'apigateway.projects.locations.apis.configs.getIamPolicy',
-        ordered_params=[u'resource'],
-        path_params=[u'resource'],
-        query_params=[u'options_requestedPolicyVersion'],
-        relative_path=u'v1alpha1/{+resource}:getIamPolicy',
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/apis/{apisId}/configs/{configsId}:getIamPolicy',
+        http_method='GET',
+        method_id='apigateway.projects.locations.apis.configs.getIamPolicy',
+        ordered_params=['resource'],
+        path_params=['resource'],
+        query_params=['options_requestedPolicyVersion'],
+        relative_path='v1alpha1/{+resource}:getIamPolicy',
         request_field='',
-        request_type_name=u'ApigatewayProjectsLocationsApisConfigsGetIamPolicyRequest',
-        response_type_name=u'ApigatewayPolicy',
+        request_type_name='ApigatewayProjectsLocationsApisConfigsGetIamPolicyRequest',
+        response_type_name='ApigatewayPolicy',
         supports_download=False,
     )
 
@@ -177,16 +177,16 @@ set.
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha1/projects/{projectsId}/locations/{locationsId}/apis/{apisId}/configs',
-        http_method=u'GET',
-        method_id=u'apigateway.projects.locations.apis.configs.list',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'filter', u'orderBy', u'pageSize', u'pageToken'],
-        relative_path=u'v1alpha1/{+parent}/configs',
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/apis/{apisId}/configs',
+        http_method='GET',
+        method_id='apigateway.projects.locations.apis.configs.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'orderBy', 'pageSize', 'pageToken'],
+        relative_path='v1alpha1/{+parent}/configs',
         request_field='',
-        request_type_name=u'ApigatewayProjectsLocationsApisConfigsListRequest',
-        response_type_name=u'ApigatewayListApiConfigsResponse',
+        request_type_name='ApigatewayProjectsLocationsApisConfigsListRequest',
+        response_type_name='ApigatewayListApiConfigsResponse',
         supports_download=False,
     )
 
@@ -204,16 +204,16 @@ set.
           config, request, global_params=global_params)
 
     Patch.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha1/projects/{projectsId}/locations/{locationsId}/apis/{apisId}/configs/{configsId}',
-        http_method=u'PATCH',
-        method_id=u'apigateway.projects.locations.apis.configs.patch',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[u'updateMask'],
-        relative_path=u'v1alpha1/{+name}',
-        request_field=u'apigatewayApiConfig',
-        request_type_name=u'ApigatewayProjectsLocationsApisConfigsPatchRequest',
-        response_type_name=u'ApigatewayOperation',
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/apis/{apisId}/configs/{configsId}',
+        http_method='PATCH',
+        method_id='apigateway.projects.locations.apis.configs.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v1alpha1/{+name}',
+        request_field='apigatewayApiConfig',
+        request_type_name='ApigatewayProjectsLocationsApisConfigsPatchRequest',
+        response_type_name='ApigatewayOperation',
         supports_download=False,
     )
 
@@ -234,16 +234,16 @@ Can return `NOT_FOUND`, `INVALID_ARGUMENT`, and `PERMISSION_DENIED` errors.
           config, request, global_params=global_params)
 
     SetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha1/projects/{projectsId}/locations/{locationsId}/apis/{apisId}/configs/{configsId}:setIamPolicy',
-        http_method=u'POST',
-        method_id=u'apigateway.projects.locations.apis.configs.setIamPolicy',
-        ordered_params=[u'resource'],
-        path_params=[u'resource'],
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/apis/{apisId}/configs/{configsId}:setIamPolicy',
+        http_method='POST',
+        method_id='apigateway.projects.locations.apis.configs.setIamPolicy',
+        ordered_params=['resource'],
+        path_params=['resource'],
         query_params=[],
-        relative_path=u'v1alpha1/{+resource}:setIamPolicy',
-        request_field=u'apigatewaySetIamPolicyRequest',
-        request_type_name=u'ApigatewayProjectsLocationsApisConfigsSetIamPolicyRequest',
-        response_type_name=u'ApigatewayPolicy',
+        relative_path='v1alpha1/{+resource}:setIamPolicy',
+        request_field='apigatewaySetIamPolicyRequest',
+        request_type_name='ApigatewayProjectsLocationsApisConfigsSetIamPolicyRequest',
+        response_type_name='ApigatewayPolicy',
         supports_download=False,
     )
 
@@ -267,23 +267,23 @@ may "fail open" without warning.
           config, request, global_params=global_params)
 
     TestIamPermissions.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha1/projects/{projectsId}/locations/{locationsId}/apis/{apisId}/configs/{configsId}:testIamPermissions',
-        http_method=u'POST',
-        method_id=u'apigateway.projects.locations.apis.configs.testIamPermissions',
-        ordered_params=[u'resource'],
-        path_params=[u'resource'],
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/apis/{apisId}/configs/{configsId}:testIamPermissions',
+        http_method='POST',
+        method_id='apigateway.projects.locations.apis.configs.testIamPermissions',
+        ordered_params=['resource'],
+        path_params=['resource'],
         query_params=[],
-        relative_path=u'v1alpha1/{+resource}:testIamPermissions',
-        request_field=u'apigatewayTestIamPermissionsRequest',
-        request_type_name=u'ApigatewayProjectsLocationsApisConfigsTestIamPermissionsRequest',
-        response_type_name=u'ApigatewayTestIamPermissionsResponse',
+        relative_path='v1alpha1/{+resource}:testIamPermissions',
+        request_field='apigatewayTestIamPermissionsRequest',
+        request_type_name='ApigatewayProjectsLocationsApisConfigsTestIamPermissionsRequest',
+        response_type_name='ApigatewayTestIamPermissionsResponse',
         supports_download=False,
     )
 
   class ProjectsLocationsApisService(base_api.BaseApiService):
     """Service class for the projects_locations_apis resource."""
 
-    _NAME = u'projects_locations_apis'
+    _NAME = 'projects_locations_apis'
 
     def __init__(self, client):
       super(ApigatewayV1alpha1.ProjectsLocationsApisService, self).__init__(client)
@@ -304,16 +304,16 @@ may "fail open" without warning.
           config, request, global_params=global_params)
 
     Create.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha1/projects/{projectsId}/locations/{locationsId}/apis',
-        http_method=u'POST',
-        method_id=u'apigateway.projects.locations.apis.create',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'apiId'],
-        relative_path=u'v1alpha1/{+parent}/apis',
-        request_field=u'apigatewayApi',
-        request_type_name=u'ApigatewayProjectsLocationsApisCreateRequest',
-        response_type_name=u'ApigatewayOperation',
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/apis',
+        http_method='POST',
+        method_id='apigateway.projects.locations.apis.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['apiId'],
+        relative_path='v1alpha1/{+parent}/apis',
+        request_field='apigatewayApi',
+        request_type_name='ApigatewayProjectsLocationsApisCreateRequest',
+        response_type_name='ApigatewayOperation',
         supports_download=False,
     )
 
@@ -331,16 +331,16 @@ may "fail open" without warning.
           config, request, global_params=global_params)
 
     Delete.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha1/projects/{projectsId}/locations/{locationsId}/apis/{apisId}',
-        http_method=u'DELETE',
-        method_id=u'apigateway.projects.locations.apis.delete',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/apis/{apisId}',
+        http_method='DELETE',
+        method_id='apigateway.projects.locations.apis.delete',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1alpha1/{+name}',
+        relative_path='v1alpha1/{+name}',
         request_field='',
-        request_type_name=u'ApigatewayProjectsLocationsApisDeleteRequest',
-        response_type_name=u'ApigatewayOperation',
+        request_type_name='ApigatewayProjectsLocationsApisDeleteRequest',
+        response_type_name='ApigatewayOperation',
         supports_download=False,
     )
 
@@ -358,16 +358,16 @@ may "fail open" without warning.
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha1/projects/{projectsId}/locations/{locationsId}/apis/{apisId}',
-        http_method=u'GET',
-        method_id=u'apigateway.projects.locations.apis.get',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/apis/{apisId}',
+        http_method='GET',
+        method_id='apigateway.projects.locations.apis.get',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1alpha1/{+name}',
+        relative_path='v1alpha1/{+name}',
         request_field='',
-        request_type_name=u'ApigatewayProjectsLocationsApisGetRequest',
-        response_type_name=u'ApigatewayApi',
+        request_type_name='ApigatewayProjectsLocationsApisGetRequest',
+        response_type_name='ApigatewayApi',
         supports_download=False,
     )
 
@@ -387,16 +387,16 @@ set.
           config, request, global_params=global_params)
 
     GetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha1/projects/{projectsId}/locations/{locationsId}/apis/{apisId}:getIamPolicy',
-        http_method=u'GET',
-        method_id=u'apigateway.projects.locations.apis.getIamPolicy',
-        ordered_params=[u'resource'],
-        path_params=[u'resource'],
-        query_params=[u'options_requestedPolicyVersion'],
-        relative_path=u'v1alpha1/{+resource}:getIamPolicy',
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/apis/{apisId}:getIamPolicy',
+        http_method='GET',
+        method_id='apigateway.projects.locations.apis.getIamPolicy',
+        ordered_params=['resource'],
+        path_params=['resource'],
+        query_params=['options_requestedPolicyVersion'],
+        relative_path='v1alpha1/{+resource}:getIamPolicy',
         request_field='',
-        request_type_name=u'ApigatewayProjectsLocationsApisGetIamPolicyRequest',
-        response_type_name=u'ApigatewayPolicy',
+        request_type_name='ApigatewayProjectsLocationsApisGetIamPolicyRequest',
+        response_type_name='ApigatewayPolicy',
         supports_download=False,
     )
 
@@ -414,16 +414,16 @@ set.
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha1/projects/{projectsId}/locations/{locationsId}/apis',
-        http_method=u'GET',
-        method_id=u'apigateway.projects.locations.apis.list',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'filter', u'orderBy', u'pageSize', u'pageToken'],
-        relative_path=u'v1alpha1/{+parent}/apis',
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/apis',
+        http_method='GET',
+        method_id='apigateway.projects.locations.apis.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'orderBy', 'pageSize', 'pageToken'],
+        relative_path='v1alpha1/{+parent}/apis',
         request_field='',
-        request_type_name=u'ApigatewayProjectsLocationsApisListRequest',
-        response_type_name=u'ApigatewayListApisResponse',
+        request_type_name='ApigatewayProjectsLocationsApisListRequest',
+        response_type_name='ApigatewayListApisResponse',
         supports_download=False,
     )
 
@@ -441,16 +441,16 @@ set.
           config, request, global_params=global_params)
 
     Patch.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha1/projects/{projectsId}/locations/{locationsId}/apis/{apisId}',
-        http_method=u'PATCH',
-        method_id=u'apigateway.projects.locations.apis.patch',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[u'updateMask'],
-        relative_path=u'v1alpha1/{+name}',
-        request_field=u'apigatewayApi',
-        request_type_name=u'ApigatewayProjectsLocationsApisPatchRequest',
-        response_type_name=u'ApigatewayOperation',
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/apis/{apisId}',
+        http_method='PATCH',
+        method_id='apigateway.projects.locations.apis.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v1alpha1/{+name}',
+        request_field='apigatewayApi',
+        request_type_name='ApigatewayProjectsLocationsApisPatchRequest',
+        response_type_name='ApigatewayOperation',
         supports_download=False,
     )
 
@@ -471,16 +471,16 @@ Can return `NOT_FOUND`, `INVALID_ARGUMENT`, and `PERMISSION_DENIED` errors.
           config, request, global_params=global_params)
 
     SetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha1/projects/{projectsId}/locations/{locationsId}/apis/{apisId}:setIamPolicy',
-        http_method=u'POST',
-        method_id=u'apigateway.projects.locations.apis.setIamPolicy',
-        ordered_params=[u'resource'],
-        path_params=[u'resource'],
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/apis/{apisId}:setIamPolicy',
+        http_method='POST',
+        method_id='apigateway.projects.locations.apis.setIamPolicy',
+        ordered_params=['resource'],
+        path_params=['resource'],
         query_params=[],
-        relative_path=u'v1alpha1/{+resource}:setIamPolicy',
-        request_field=u'apigatewaySetIamPolicyRequest',
-        request_type_name=u'ApigatewayProjectsLocationsApisSetIamPolicyRequest',
-        response_type_name=u'ApigatewayPolicy',
+        relative_path='v1alpha1/{+resource}:setIamPolicy',
+        request_field='apigatewaySetIamPolicyRequest',
+        request_type_name='ApigatewayProjectsLocationsApisSetIamPolicyRequest',
+        response_type_name='ApigatewayPolicy',
         supports_download=False,
     )
 
@@ -504,23 +504,23 @@ may "fail open" without warning.
           config, request, global_params=global_params)
 
     TestIamPermissions.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha1/projects/{projectsId}/locations/{locationsId}/apis/{apisId}:testIamPermissions',
-        http_method=u'POST',
-        method_id=u'apigateway.projects.locations.apis.testIamPermissions',
-        ordered_params=[u'resource'],
-        path_params=[u'resource'],
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/apis/{apisId}:testIamPermissions',
+        http_method='POST',
+        method_id='apigateway.projects.locations.apis.testIamPermissions',
+        ordered_params=['resource'],
+        path_params=['resource'],
         query_params=[],
-        relative_path=u'v1alpha1/{+resource}:testIamPermissions',
-        request_field=u'apigatewayTestIamPermissionsRequest',
-        request_type_name=u'ApigatewayProjectsLocationsApisTestIamPermissionsRequest',
-        response_type_name=u'ApigatewayTestIamPermissionsResponse',
+        relative_path='v1alpha1/{+resource}:testIamPermissions',
+        request_field='apigatewayTestIamPermissionsRequest',
+        request_type_name='ApigatewayProjectsLocationsApisTestIamPermissionsRequest',
+        response_type_name='ApigatewayTestIamPermissionsResponse',
         supports_download=False,
     )
 
   class ProjectsLocationsGatewaysService(base_api.BaseApiService):
     """Service class for the projects_locations_gateways resource."""
 
-    _NAME = u'projects_locations_gateways'
+    _NAME = 'projects_locations_gateways'
 
     def __init__(self, client):
       super(ApigatewayV1alpha1.ProjectsLocationsGatewaysService, self).__init__(client)
@@ -541,16 +541,16 @@ may "fail open" without warning.
           config, request, global_params=global_params)
 
     Create.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha1/projects/{projectsId}/locations/{locationsId}/gateways',
-        http_method=u'POST',
-        method_id=u'apigateway.projects.locations.gateways.create',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'gatewayId'],
-        relative_path=u'v1alpha1/{+parent}/gateways',
-        request_field=u'apigatewayGateway',
-        request_type_name=u'ApigatewayProjectsLocationsGatewaysCreateRequest',
-        response_type_name=u'ApigatewayOperation',
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/gateways',
+        http_method='POST',
+        method_id='apigateway.projects.locations.gateways.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['gatewayId'],
+        relative_path='v1alpha1/{+parent}/gateways',
+        request_field='apigatewayGateway',
+        request_type_name='ApigatewayProjectsLocationsGatewaysCreateRequest',
+        response_type_name='ApigatewayOperation',
         supports_download=False,
     )
 
@@ -568,16 +568,16 @@ may "fail open" without warning.
           config, request, global_params=global_params)
 
     Delete.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha1/projects/{projectsId}/locations/{locationsId}/gateways/{gatewaysId}',
-        http_method=u'DELETE',
-        method_id=u'apigateway.projects.locations.gateways.delete',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/gateways/{gatewaysId}',
+        http_method='DELETE',
+        method_id='apigateway.projects.locations.gateways.delete',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1alpha1/{+name}',
+        relative_path='v1alpha1/{+name}',
         request_field='',
-        request_type_name=u'ApigatewayProjectsLocationsGatewaysDeleteRequest',
-        response_type_name=u'ApigatewayOperation',
+        request_type_name='ApigatewayProjectsLocationsGatewaysDeleteRequest',
+        response_type_name='ApigatewayOperation',
         supports_download=False,
     )
 
@@ -595,16 +595,16 @@ may "fail open" without warning.
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha1/projects/{projectsId}/locations/{locationsId}/gateways/{gatewaysId}',
-        http_method=u'GET',
-        method_id=u'apigateway.projects.locations.gateways.get',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/gateways/{gatewaysId}',
+        http_method='GET',
+        method_id='apigateway.projects.locations.gateways.get',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1alpha1/{+name}',
+        relative_path='v1alpha1/{+name}',
         request_field='',
-        request_type_name=u'ApigatewayProjectsLocationsGatewaysGetRequest',
-        response_type_name=u'ApigatewayGateway',
+        request_type_name='ApigatewayProjectsLocationsGatewaysGetRequest',
+        response_type_name='ApigatewayGateway',
         supports_download=False,
     )
 
@@ -624,16 +624,16 @@ set.
           config, request, global_params=global_params)
 
     GetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha1/projects/{projectsId}/locations/{locationsId}/gateways/{gatewaysId}:getIamPolicy',
-        http_method=u'GET',
-        method_id=u'apigateway.projects.locations.gateways.getIamPolicy',
-        ordered_params=[u'resource'],
-        path_params=[u'resource'],
-        query_params=[u'options_requestedPolicyVersion'],
-        relative_path=u'v1alpha1/{+resource}:getIamPolicy',
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/gateways/{gatewaysId}:getIamPolicy',
+        http_method='GET',
+        method_id='apigateway.projects.locations.gateways.getIamPolicy',
+        ordered_params=['resource'],
+        path_params=['resource'],
+        query_params=['options_requestedPolicyVersion'],
+        relative_path='v1alpha1/{+resource}:getIamPolicy',
         request_field='',
-        request_type_name=u'ApigatewayProjectsLocationsGatewaysGetIamPolicyRequest',
-        response_type_name=u'ApigatewayPolicy',
+        request_type_name='ApigatewayProjectsLocationsGatewaysGetIamPolicyRequest',
+        response_type_name='ApigatewayPolicy',
         supports_download=False,
     )
 
@@ -651,16 +651,16 @@ set.
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha1/projects/{projectsId}/locations/{locationsId}/gateways',
-        http_method=u'GET',
-        method_id=u'apigateway.projects.locations.gateways.list',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'filter', u'orderBy', u'pageSize', u'pageToken'],
-        relative_path=u'v1alpha1/{+parent}/gateways',
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/gateways',
+        http_method='GET',
+        method_id='apigateway.projects.locations.gateways.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'orderBy', 'pageSize', 'pageToken'],
+        relative_path='v1alpha1/{+parent}/gateways',
         request_field='',
-        request_type_name=u'ApigatewayProjectsLocationsGatewaysListRequest',
-        response_type_name=u'ApigatewayListGatewaysResponse',
+        request_type_name='ApigatewayProjectsLocationsGatewaysListRequest',
+        response_type_name='ApigatewayListGatewaysResponse',
         supports_download=False,
     )
 
@@ -678,16 +678,16 @@ set.
           config, request, global_params=global_params)
 
     Patch.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha1/projects/{projectsId}/locations/{locationsId}/gateways/{gatewaysId}',
-        http_method=u'PATCH',
-        method_id=u'apigateway.projects.locations.gateways.patch',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[u'updateMask'],
-        relative_path=u'v1alpha1/{+name}',
-        request_field=u'apigatewayGateway',
-        request_type_name=u'ApigatewayProjectsLocationsGatewaysPatchRequest',
-        response_type_name=u'ApigatewayOperation',
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/gateways/{gatewaysId}',
+        http_method='PATCH',
+        method_id='apigateway.projects.locations.gateways.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v1alpha1/{+name}',
+        request_field='apigatewayGateway',
+        request_type_name='ApigatewayProjectsLocationsGatewaysPatchRequest',
+        response_type_name='ApigatewayOperation',
         supports_download=False,
     )
 
@@ -708,16 +708,16 @@ Can return `NOT_FOUND`, `INVALID_ARGUMENT`, and `PERMISSION_DENIED` errors.
           config, request, global_params=global_params)
 
     SetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha1/projects/{projectsId}/locations/{locationsId}/gateways/{gatewaysId}:setIamPolicy',
-        http_method=u'POST',
-        method_id=u'apigateway.projects.locations.gateways.setIamPolicy',
-        ordered_params=[u'resource'],
-        path_params=[u'resource'],
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/gateways/{gatewaysId}:setIamPolicy',
+        http_method='POST',
+        method_id='apigateway.projects.locations.gateways.setIamPolicy',
+        ordered_params=['resource'],
+        path_params=['resource'],
         query_params=[],
-        relative_path=u'v1alpha1/{+resource}:setIamPolicy',
-        request_field=u'apigatewaySetIamPolicyRequest',
-        request_type_name=u'ApigatewayProjectsLocationsGatewaysSetIamPolicyRequest',
-        response_type_name=u'ApigatewayPolicy',
+        relative_path='v1alpha1/{+resource}:setIamPolicy',
+        request_field='apigatewaySetIamPolicyRequest',
+        request_type_name='ApigatewayProjectsLocationsGatewaysSetIamPolicyRequest',
+        response_type_name='ApigatewayPolicy',
         supports_download=False,
     )
 
@@ -741,23 +741,23 @@ may "fail open" without warning.
           config, request, global_params=global_params)
 
     TestIamPermissions.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha1/projects/{projectsId}/locations/{locationsId}/gateways/{gatewaysId}:testIamPermissions',
-        http_method=u'POST',
-        method_id=u'apigateway.projects.locations.gateways.testIamPermissions',
-        ordered_params=[u'resource'],
-        path_params=[u'resource'],
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/gateways/{gatewaysId}:testIamPermissions',
+        http_method='POST',
+        method_id='apigateway.projects.locations.gateways.testIamPermissions',
+        ordered_params=['resource'],
+        path_params=['resource'],
         query_params=[],
-        relative_path=u'v1alpha1/{+resource}:testIamPermissions',
-        request_field=u'apigatewayTestIamPermissionsRequest',
-        request_type_name=u'ApigatewayProjectsLocationsGatewaysTestIamPermissionsRequest',
-        response_type_name=u'ApigatewayTestIamPermissionsResponse',
+        relative_path='v1alpha1/{+resource}:testIamPermissions',
+        request_field='apigatewayTestIamPermissionsRequest',
+        request_type_name='ApigatewayProjectsLocationsGatewaysTestIamPermissionsRequest',
+        response_type_name='ApigatewayTestIamPermissionsResponse',
         supports_download=False,
     )
 
   class ProjectsLocationsOperationsService(base_api.BaseApiService):
     """Service class for the projects_locations_operations resource."""
 
-    _NAME = u'projects_locations_operations'
+    _NAME = 'projects_locations_operations'
 
     def __init__(self, client):
       super(ApigatewayV1alpha1.ProjectsLocationsOperationsService, self).__init__(client)
@@ -787,16 +787,16 @@ corresponding to `Code.CANCELLED`.
           config, request, global_params=global_params)
 
     Cancel.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha1/projects/{projectsId}/locations/{locationsId}/operations/{operationsId}:cancel',
-        http_method=u'POST',
-        method_id=u'apigateway.projects.locations.operations.cancel',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/operations/{operationsId}:cancel',
+        http_method='POST',
+        method_id='apigateway.projects.locations.operations.cancel',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1alpha1/{+name}:cancel',
-        request_field=u'apigatewayCancelOperationRequest',
-        request_type_name=u'ApigatewayProjectsLocationsOperationsCancelRequest',
-        response_type_name=u'Empty',
+        relative_path='v1alpha1/{+name}:cancel',
+        request_field='apigatewayCancelOperationRequest',
+        request_type_name='ApigatewayProjectsLocationsOperationsCancelRequest',
+        response_type_name='Empty',
         supports_download=False,
     )
 
@@ -817,16 +817,16 @@ operation. If the server doesn't support this method, it returns
           config, request, global_params=global_params)
 
     Delete.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha1/projects/{projectsId}/locations/{locationsId}/operations/{operationsId}',
-        http_method=u'DELETE',
-        method_id=u'apigateway.projects.locations.operations.delete',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/operations/{operationsId}',
+        http_method='DELETE',
+        method_id='apigateway.projects.locations.operations.delete',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1alpha1/{+name}',
+        relative_path='v1alpha1/{+name}',
         request_field='',
-        request_type_name=u'ApigatewayProjectsLocationsOperationsDeleteRequest',
-        response_type_name=u'Empty',
+        request_type_name='ApigatewayProjectsLocationsOperationsDeleteRequest',
+        response_type_name='Empty',
         supports_download=False,
     )
 
@@ -846,16 +846,16 @@ service.
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha1/projects/{projectsId}/locations/{locationsId}/operations/{operationsId}',
-        http_method=u'GET',
-        method_id=u'apigateway.projects.locations.operations.get',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/operations/{operationsId}',
+        http_method='GET',
+        method_id='apigateway.projects.locations.operations.get',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1alpha1/{+name}',
+        relative_path='v1alpha1/{+name}',
         request_field='',
-        request_type_name=u'ApigatewayProjectsLocationsOperationsGetRequest',
-        response_type_name=u'ApigatewayOperation',
+        request_type_name='ApigatewayProjectsLocationsOperationsGetRequest',
+        response_type_name='ApigatewayOperation',
         supports_download=False,
     )
 
@@ -882,23 +882,23 @@ is the parent resource, without the operations collection id.
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha1/projects/{projectsId}/locations/{locationsId}/operations',
-        http_method=u'GET',
-        method_id=u'apigateway.projects.locations.operations.list',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[u'filter', u'pageSize', u'pageToken'],
-        relative_path=u'v1alpha1/{+name}/operations',
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/operations',
+        http_method='GET',
+        method_id='apigateway.projects.locations.operations.list',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['filter', 'pageSize', 'pageToken'],
+        relative_path='v1alpha1/{+name}/operations',
         request_field='',
-        request_type_name=u'ApigatewayProjectsLocationsOperationsListRequest',
-        response_type_name=u'ApigatewayListOperationsResponse',
+        request_type_name='ApigatewayProjectsLocationsOperationsListRequest',
+        response_type_name='ApigatewayListOperationsResponse',
         supports_download=False,
     )
 
   class ProjectsLocationsService(base_api.BaseApiService):
     """Service class for the projects_locations resource."""
 
-    _NAME = u'projects_locations'
+    _NAME = 'projects_locations'
 
     def __init__(self, client):
       super(ApigatewayV1alpha1.ProjectsLocationsService, self).__init__(client)
@@ -919,16 +919,16 @@ is the parent resource, without the operations collection id.
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha1/projects/{projectsId}/locations/{locationsId}',
-        http_method=u'GET',
-        method_id=u'apigateway.projects.locations.get',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}',
+        http_method='GET',
+        method_id='apigateway.projects.locations.get',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1alpha1/{+name}',
+        relative_path='v1alpha1/{+name}',
         request_field='',
-        request_type_name=u'ApigatewayProjectsLocationsGetRequest',
-        response_type_name=u'ApigatewayLocation',
+        request_type_name='ApigatewayProjectsLocationsGetRequest',
+        response_type_name='ApigatewayLocation',
         supports_download=False,
     )
 
@@ -946,23 +946,23 @@ is the parent resource, without the operations collection id.
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha1/projects/{projectsId}/locations',
-        http_method=u'GET',
-        method_id=u'apigateway.projects.locations.list',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[u'filter', u'pageSize', u'pageToken'],
-        relative_path=u'v1alpha1/{+name}/locations',
+        flat_path='v1alpha1/projects/{projectsId}/locations',
+        http_method='GET',
+        method_id='apigateway.projects.locations.list',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['filter', 'pageSize', 'pageToken'],
+        relative_path='v1alpha1/{+name}/locations',
         request_field='',
-        request_type_name=u'ApigatewayProjectsLocationsListRequest',
-        response_type_name=u'ApigatewayListLocationsResponse',
+        request_type_name='ApigatewayProjectsLocationsListRequest',
+        response_type_name='ApigatewayListLocationsResponse',
         supports_download=False,
     )
 
   class ProjectsService(base_api.BaseApiService):
     """Service class for the projects resource."""
 
-    _NAME = u'projects'
+    _NAME = 'projects'
 
     def __init__(self, client):
       super(ApigatewayV1alpha1.ProjectsService, self).__init__(client)

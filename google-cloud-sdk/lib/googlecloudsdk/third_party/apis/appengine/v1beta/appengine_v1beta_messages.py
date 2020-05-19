@@ -944,8 +944,8 @@ class BuildInfo(_messages.Message):
   r"""Google Cloud Build information.
 
   Fields:
-    cloudBuildId: The Google Cloud Build id. Example: "f966068f-08b2-42c8
-      -bdfe-74137dff2bf9"
+    cloudBuildId: The Google Cloud Build id. Example:
+      "f966068f-08b2-42c8-bdfe-74137dff2bf9"
   """
 
   cloudBuildId = _messages.StringField(1)
@@ -1200,8 +1200,8 @@ class EndpointsApiService(_messages.Message):
   Endpoints API Service provides tooling for serving Open API and gRPC
   endpoints via an NGINX proxy. Only valid for App Engine Flexible environment
   deployments.The fields here refer to the name and configuration ID of a
-  "service" resource in the Service Management API (https://cloud.google.com
-  /service-management/overview).
+  "service" resource in the Service Management API
+  (https://cloud.google.com/service-management/overview).
 
   Enums:
     RolloutStrategyValueValuesEnum: Endpoints rollout strategy. If FIXED,
@@ -2274,7 +2274,7 @@ class StandardQueryParameters(_messages.Message):
 
   f__xgafv = _messages.EnumField('FXgafvValueValuesEnum', 1)
   access_token = _messages.StringField(2)
-  alt = _messages.EnumField('AltValueValuesEnum', 3, default=u'json')
+  alt = _messages.EnumField('AltValueValuesEnum', 3, default='json')
   callback = _messages.StringField(4)
   fields = _messages.StringField(5)
   key = _messages.StringField(6)

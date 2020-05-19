@@ -112,16 +112,16 @@ class AppEngineHttpTarget(_messages.Message):
     Google; (+http://code.google.com/appengine)"` to the   modified `User-
     Agent`. * `X-CloudScheduler`: This header will be set to true.  If the job
     has an body, Cloud Scheduler sets the following headers:  * `Content-
-    Type`: By default, the `Content-Type` header is set to   `"application
-    /octet-stream"`. The default can be overridden by explictly   setting
-    `Content-Type` to a particular media type when the job is   created.   For
-    example, `Content-Type` can be set to `"application/json"`. * `Content-
-    Length`: This is computed by Cloud Scheduler. This value is   output only.
-    It cannot be changed.  The headers below are output only. They cannot be
-    set or overridden:  * `X-Google-*`: For Google internal use only. *
-    `X-AppEngine-*`: For Google internal use only.  In addition, some App
-    Engine headers, which contain job-specific information, are also be sent
-    to the job handler.
+    Type`: By default, the `Content-Type` header is set to
+    `"application/octet-stream"`. The default can be overridden by explictly
+    setting `Content-Type` to a particular media type when the job is
+    created.   For example, `Content-Type` can be set to `"application/json"`.
+    * `Content-Length`: This is computed by Cloud Scheduler. This value is
+    output only. It cannot be changed.  The headers below are output only.
+    They cannot be set or overridden:  * `X-Google-*`: For Google internal use
+    only. * `X-AppEngine-*`: For Google internal use only.  In addition, some
+    App Engine headers, which contain job-specific information, are also be
+    sent to the job handler.
 
     Messages:
       AdditionalProperty: An additional property for a HeadersValue object.
@@ -967,7 +967,7 @@ class StandardQueryParameters(_messages.Message):
 
   f__xgafv = _messages.EnumField('FXgafvValueValuesEnum', 1)
   access_token = _messages.StringField(2)
-  alt = _messages.EnumField('AltValueValuesEnum', 3, default=u'json')
+  alt = _messages.EnumField('AltValueValuesEnum', 3, default='json')
   callback = _messages.StringField(4)
   fields = _messages.StringField(5)
   key = _messages.StringField(6)

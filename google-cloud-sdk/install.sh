@@ -101,14 +101,18 @@ _cloudsdk_root_dir() {
 CLOUDSDK_ROOT_DIR=$(_cloudsdk_root_dir "$0")
 
 setup_cloudsdk_python() {
+  # Snap installs prefer python3
+  if [ -z "$CLOUDSDK_PYTHON" ] && [ "$SNAP_INSTANCE_NAME" ]; then
+    CLOUDSDK_PYTHON=$(order_python python3 python2 python2.7 python)
+  fi
   if [ -z "$CLOUDSDK_PYTHON" ]; then
     CLOUDSDK_PYTHON=$(order_python python2 python2.7 python python3)
   fi
 }
 
-setup_cloudsdk_python_prefer_python3_unless_snap() {
+setup_cloudsdk_python_prefer_python3() {
 # Settings for corp
-  if [ -z "$CLOUDSDK_PYTHON" ] && [ -z "$SNAP_INSTANCE_NAME" ]; then
+  if [ -z "$CLOUDSDK_PYTHON" ]; then
     CLOUDSDK_PYTHON=$(order_python python3 python python2 python2.7)
   else
     setup_cloudsdk_python
@@ -116,8 +120,8 @@ setup_cloudsdk_python_prefer_python3_unless_snap() {
 }
 
 case $HOSTNAME in
-  *.corp.google.com) setup_cloudsdk_python_prefer_python3_unless_snap;;
-  *.c.googlers.com) setup_cloudsdk_python_prefer_python3_unless_snap;;
+  *.corp.google.com) setup_cloudsdk_python_prefer_python3;;
+  *.c.googlers.com) setup_cloudsdk_python_prefer_python3;;
   *) setup_cloudsdk_python;;
 esac
 

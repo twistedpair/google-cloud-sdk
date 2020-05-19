@@ -19,8 +19,8 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
-from googlecloudsdk.core import http
 from googlecloudsdk.core import properties
+from googlecloudsdk.core import transport
 from googlecloudsdk.core.credentials import store as cred_store
 
 import six
@@ -70,9 +70,9 @@ def MakeSecureChannel(target):
       custom_metadata_plugin, name='google_creds')
   channel_creds = grpc.composite_channel_credentials(
       transport_creds, auth_creds)
+  command_name = properties.VALUES.metrics.command_name.Get()
   channel_args = (
-      ('grpc.primary_user_agent',
-       http.MakeUserAgentString(properties.VALUES.metrics.command_name.Get())),
+      ('grpc.primary_user_agent', transport.MakeUserAgentString(command_name)),
   )
   return grpc.secure_channel(target, channel_creds,
                              options=channel_args)
@@ -97,4 +97,3 @@ def YieldFromList(list_method, request, items_field):
     request.page_token = response.next_page_token
     if not request.page_token:
       break
-

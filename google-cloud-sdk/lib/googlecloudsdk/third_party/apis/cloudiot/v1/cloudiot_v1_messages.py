@@ -42,8 +42,9 @@ class Binding(_messages.Message):
       not apply to the current request. However, a different role binding
       might grant the same role to one or more of the members in this binding.
       To learn which resources support conditions in their IAM policies, see
-      the [IAM documentation](https://cloud.google.com/iam/help/conditions
-      /resource-policies).
+      the [IAM
+      documentation](https://cloud.google.com/iam/help/conditions/resource-
+      policies).
     members: Specifies the identities requesting access for a Cloud Platform
       resource. `members` can have the following values:  * `allUsers`: A
       special identifier that represents anyone who is    on the internet;
@@ -89,8 +90,8 @@ class CloudiotProjectsLocationsRegistriesBindDeviceToGatewayRequest(_messages.Me
   Fields:
     bindDeviceToGatewayRequest: A BindDeviceToGatewayRequest resource to be
       passed as the request body.
-    parent: Required. The name of the registry. For example, `projects
-      /example-project/locations/us-central1/registries/my-registry`.
+    parent: Required. The name of the registry. For example,
+      `projects/example-project/locations/us-central1/registries/my-registry`.
   """
 
   bindDeviceToGatewayRequest = _messages.MessageField('BindDeviceToGatewayRequest', 1)
@@ -116,8 +117,8 @@ class CloudiotProjectsLocationsRegistriesDeleteRequest(_messages.Message):
   r"""A CloudiotProjectsLocationsRegistriesDeleteRequest object.
 
   Fields:
-    name: Required. The name of the device registry. For example, `projects
-      /example-project/locations/us-central1/registries/my-registry`.
+    name: Required. The name of the device registry. For example,
+      `projects/example-project/locations/us-central1/registries/my-registry`.
   """
 
   name = _messages.StringField(1, required=True)
@@ -276,8 +277,9 @@ class CloudiotProjectsLocationsRegistriesDevicesPatchRequest(_messages.Message):
   Fields:
     device: A Device resource to be passed as the request body.
     name: The resource path name. For example, `projects/p1/locations/us-
-      central1/registries/registry0/devices/dev0` or `projects/p1/locations
-      /us-central1/registries/registry0/devices/{num_id}`. When `name` is
+      central1/registries/registry0/devices/dev0` or
+      `projects/p1/locations/us-
+      central1/registries/registry0/devices/{num_id}`. When `name` is
       populated as a response from the service, it always ends in the device
       numeric ID.
     updateMask: Required. Only updates the `device` fields indicated by this
@@ -344,8 +346,8 @@ class CloudiotProjectsLocationsRegistriesGetRequest(_messages.Message):
   r"""A CloudiotProjectsLocationsRegistriesGetRequest object.
 
   Fields:
-    name: Required. The name of the device registry. For example, `projects
-      /example-project/locations/us-central1/registries/my-registry`.
+    name: Required. The name of the device registry. For example,
+      `projects/example-project/locations/us-central1/registries/my-registry`.
   """
 
   name = _messages.StringField(1, required=True)
@@ -539,8 +541,8 @@ class CloudiotProjectsLocationsRegistriesUnbindDeviceFromGatewayRequest(_message
   object.
 
   Fields:
-    parent: Required. The name of the registry. For example, `projects
-      /example-project/locations/us-central1/registries/my-registry`.
+    parent: Required. The name of the registry. For example,
+      `projects/example-project/locations/us-central1/registries/my-registry`.
     unbindDeviceFromGatewayRequest: A UnbindDeviceFromGatewayRequest resource
       to be passed as the request body.
   """
@@ -618,8 +620,9 @@ class Device(_messages.Message):
       size.  The total size of all keys and values must be less than 256 KB,
       and the maximum number of key-value pairs is 500.
     name: The resource path name. For example, `projects/p1/locations/us-
-      central1/registries/registry0/devices/dev0` or `projects/p1/locations
-      /us-central1/registries/registry0/devices/{num_id}`. When `name` is
+      central1/registries/registry0/devices/dev0` or
+      `projects/p1/locations/us-
+      central1/registries/registry0/devices/{num_id}`. When `name` is
       populated as a response from the service, it always ends in the device
       numeric ID.
     numId: [Output only] A server-defined unique numeric ID for the device.
@@ -1140,8 +1143,8 @@ class Policy(_messages.Message):
   timestamp('2020-10-01T00:00:00.000Z')",           }         }       ],
   "etag": "BwWWja0YfJA=",       "version": 3     }  **YAML example:**
   bindings:     - members:       - user:mike@example.com       -
-  group:admins@example.com       - domain:google.com       - serviceAccount
-  :my-project-id@appspot.gserviceaccount.com       role:
+  group:admins@example.com       - domain:google.com       -
+  serviceAccount:my-project-id@appspot.gserviceaccount.com       role:
   roles/resourcemanager.organizationAdmin     - members:       -
   user:eve@example.com       role: roles/resourcemanager.organizationViewer
   condition:         title: expirable access         description: Does not
@@ -1364,7 +1367,7 @@ class StandardQueryParameters(_messages.Message):
 
   f__xgafv = _messages.EnumField('FXgafvValueValuesEnum', 1)
   access_token = _messages.StringField(2)
-  alt = _messages.EnumField('AltValueValuesEnum', 3, default=u'json')
+  alt = _messages.EnumField('AltValueValuesEnum', 3, default='json')
   callback = _messages.StringField(4)
   fields = _messages.StringField(5)
   key = _messages.StringField(6)

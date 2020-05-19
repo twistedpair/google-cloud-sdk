@@ -31,7 +31,7 @@ class Collections(enum.Enum):
           '':
               'groups/{groupsId}',
       },
-      [u'name'],
+      ['name'],
       True
   )
   GROUPS_MEMBERSHIPS = (
@@ -41,7 +41,7 @@ class Collections(enum.Enum):
           '':
               'groups/{groupsId}/memberships/{membershipsId}',
       },
-      [u'name'],
+      ['name'],
       True
   )
 

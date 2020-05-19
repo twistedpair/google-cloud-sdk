@@ -28,7 +28,7 @@ class Collections(enum.Enum):
       'projects',
       'projects/{projectsId}',
       {},
-      [u'projectsId'],
+      ['projectsId'],
       True
   )
   PROJECTS_LOCATIONS = (
@@ -38,7 +38,7 @@ class Collections(enum.Enum):
           '':
               'projects/{projectsId}/locations/{locationsId}',
       },
-      [u'name'],
+      ['name'],
       True
   )
   PROJECTS_LOCATIONS_KEYRINGS = (
@@ -49,7 +49,7 @@ class Collections(enum.Enum):
               'projects/{projectsId}/locations/{locationsId}/keyRings/'
               '{keyRingsId}',
       },
-      [u'name'],
+      ['name'],
       True
   )
   PROJECTS_LOCATIONS_KEYRINGS_CRYPTOKEYS = (
@@ -60,7 +60,7 @@ class Collections(enum.Enum):
               'projects/{projectsId}/locations/{locationsId}/keyRings/'
               '{keyRingsId}/cryptoKeys/{cryptoKeysId}',
       },
-      [u'name'],
+      ['name'],
       True
   )
   PROJECTS_LOCATIONS_KEYRINGS_CRYPTOKEYS_CRYPTOKEYVERSIONS = (
@@ -72,7 +72,7 @@ class Collections(enum.Enum):
               '{keyRingsId}/cryptoKeys/{cryptoKeysId}/cryptoKeyVersions/'
               '{cryptoKeyVersionsId}',
       },
-      [u'name'],
+      ['name'],
       True
   )
   PROJECTS_LOCATIONS_KEYRINGS_IMPORTJOBS = (
@@ -83,7 +83,7 @@ class Collections(enum.Enum):
               'projects/{projectsId}/locations/{locationsId}/keyRings/'
               '{keyRingsId}/importJobs/{importJobsId}',
       },
-      [u'name'],
+      ['name'],
       True
   )
 

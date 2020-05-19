@@ -28,7 +28,7 @@ class Collections(enum.Enum):
       'namespaces',
       'namespaces/{namespacesId}',
       {},
-      [u'namespacesId'],
+      ['namespacesId'],
       True
   )
   NAMESPACES_CLOUDAUDITLOGSSOURCES = (
@@ -39,7 +39,7 @@ class Collections(enum.Enum):
               'namespaces/{namespacesId}/cloudauditlogssources/'
               '{cloudauditlogssourcesId}',
       },
-      [u'name'],
+      ['name'],
       True
   )
   NAMESPACES_CLOUDPUBSUBSOURCES = (
@@ -50,7 +50,7 @@ class Collections(enum.Enum):
               'namespaces/{namespacesId}/cloudpubsubsources/'
               '{cloudpubsubsourcesId}',
       },
-      [u'name'],
+      ['name'],
       True
   )
   NAMESPACES_CLOUDSCHEDULERSOURCES = (
@@ -61,7 +61,7 @@ class Collections(enum.Enum):
               'namespaces/{namespacesId}/cloudschedulersources/'
               '{cloudschedulersourcesId}',
       },
-      [u'name'],
+      ['name'],
       True
   )
   NAMESPACES_CLOUDSTORAGESOURCES = (
@@ -72,7 +72,7 @@ class Collections(enum.Enum):
               'namespaces/{namespacesId}/cloudstoragesources/'
               '{cloudstoragesourcesId}',
       },
-      [u'name'],
+      ['name'],
       True
   )
   NAMESPACES_CONFIGURATIONS = (
@@ -82,7 +82,7 @@ class Collections(enum.Enum):
           '':
               'namespaces/{namespacesId}/configurations/{configurationsId}',
       },
-      [u'name'],
+      ['name'],
       True
   )
   NAMESPACES_DOMAINMAPPINGS = (
@@ -92,7 +92,7 @@ class Collections(enum.Enum):
           '':
               'namespaces/{namespacesId}/domainmappings/{domainmappingsId}',
       },
-      [u'name'],
+      ['name'],
       True
   )
   NAMESPACES_REVISIONS = (
@@ -102,7 +102,7 @@ class Collections(enum.Enum):
           '':
               'namespaces/{namespacesId}/revisions/{revisionsId}',
       },
-      [u'name'],
+      ['name'],
       True
   )
   NAMESPACES_ROUTES = (
@@ -112,7 +112,7 @@ class Collections(enum.Enum):
           '':
               'namespaces/{namespacesId}/routes/{routesId}',
       },
-      [u'name'],
+      ['name'],
       True
   )
   NAMESPACES_SERVICES = (
@@ -122,7 +122,7 @@ class Collections(enum.Enum):
           '':
               'namespaces/{namespacesId}/services/{servicesId}',
       },
-      [u'name'],
+      ['name'],
       True
   )
   NAMESPACES_TRIGGERS = (
@@ -132,21 +132,21 @@ class Collections(enum.Enum):
           '':
               'namespaces/{namespacesId}/triggers/{triggersId}',
       },
-      [u'name'],
+      ['name'],
       True
   )
   PROJECTS = (
       'projects',
       'projects/{projectsId}',
       {},
-      [u'projectsId'],
+      ['projectsId'],
       True
   )
   PROJECTS_LOCATIONS = (
       'projects.locations',
       'projects/{projectsId}/locations/{locationsId}',
       {},
-      [u'projectsId', u'locationsId'],
+      ['projectsId', 'locationsId'],
       True
   )
   PROJECTS_LOCATIONS_CLOUDAUDITLOGSSOURCES = (
@@ -157,7 +157,7 @@ class Collections(enum.Enum):
               'projects/{projectsId}/locations/{locationsId}/'
               'cloudauditlogssources/{cloudauditlogssourcesId}',
       },
-      [u'name'],
+      ['name'],
       True
   )
   PROJECTS_LOCATIONS_CLOUDPUBSUBSOURCES = (
@@ -168,7 +168,7 @@ class Collections(enum.Enum):
               'projects/{projectsId}/locations/{locationsId}/'
               'cloudpubsubsources/{cloudpubsubsourcesId}',
       },
-      [u'name'],
+      ['name'],
       True
   )
   PROJECTS_LOCATIONS_CLOUDSCHEDULERSOURCES = (
@@ -179,7 +179,7 @@ class Collections(enum.Enum):
               'projects/{projectsId}/locations/{locationsId}/'
               'cloudschedulersources/{cloudschedulersourcesId}',
       },
-      [u'name'],
+      ['name'],
       True
   )
   PROJECTS_LOCATIONS_CLOUDSTORAGESOURCES = (
@@ -190,7 +190,7 @@ class Collections(enum.Enum):
               'projects/{projectsId}/locations/{locationsId}/'
               'cloudstoragesources/{cloudstoragesourcesId}',
       },
-      [u'name'],
+      ['name'],
       True
   )
   PROJECTS_LOCATIONS_CONFIGURATIONS = (
@@ -201,7 +201,7 @@ class Collections(enum.Enum):
               'projects/{projectsId}/locations/{locationsId}/configurations/'
               '{configurationsId}',
       },
-      [u'name'],
+      ['name'],
       True
   )
   PROJECTS_LOCATIONS_DOMAINMAPPINGS = (
@@ -212,7 +212,7 @@ class Collections(enum.Enum):
               'projects/{projectsId}/locations/{locationsId}/domainmappings/'
               '{domainmappingsId}',
       },
-      [u'name'],
+      ['name'],
       True
   )
   PROJECTS_LOCATIONS_REVISIONS = (
@@ -223,7 +223,7 @@ class Collections(enum.Enum):
               'projects/{projectsId}/locations/{locationsId}/revisions/'
               '{revisionsId}',
       },
-      [u'name'],
+      ['name'],
       True
   )
   PROJECTS_LOCATIONS_ROUTES = (
@@ -234,7 +234,7 @@ class Collections(enum.Enum):
               'projects/{projectsId}/locations/{locationsId}/routes/'
               '{routesId}',
       },
-      [u'name'],
+      ['name'],
       True
   )
   PROJECTS_LOCATIONS_SERVICES = (
@@ -245,7 +245,7 @@ class Collections(enum.Enum):
               'projects/{projectsId}/locations/{locationsId}/services/'
               '{servicesId}',
       },
-      [u'name'],
+      ['name'],
       True
   )
   PROJECTS_LOCATIONS_TRIGGERS = (
@@ -256,7 +256,7 @@ class Collections(enum.Enum):
               'projects/{projectsId}/locations/{locationsId}/triggers/'
               '{triggersId}',
       },
-      [u'name'],
+      ['name'],
       True
   )
 

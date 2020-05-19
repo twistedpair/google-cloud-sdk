@@ -31,21 +31,21 @@ class Collections(enum.Enum):
           '':
               'operations/{operationsId}',
       },
-      [u'name'],
+      ['name'],
       True
   )
   PROJECTS = (
       'projects',
       'projects/{projectsId}',
       {},
-      [u'projectsId'],
+      ['projectsId'],
       True
   )
   PROJECTS_LOCATIONS = (
       'projects.locations',
       'projects/{projectsId}/locations/{locationsId}',
       {},
-      [u'projectsId', u'locationsId'],
+      ['projectsId', 'locationsId'],
       True
   )
   PROJECTS_LOCATIONS_CUSTOMCLASSES = (
@@ -56,7 +56,7 @@ class Collections(enum.Enum):
               'projects/{projectsId}/locations/{locationsId}/customClasses/'
               '{customClassesId}',
       },
-      [u'name'],
+      ['name'],
       True
   )
   PROJECTS_LOCATIONS_DATASETS = (
@@ -67,7 +67,7 @@ class Collections(enum.Enum):
               'projects/{projectsId}/locations/{locationsId}/datasets/'
               '{datasetsId}',
       },
-      [u'name'],
+      ['name'],
       True
   )
   PROJECTS_LOCATIONS_OPERATIONS = (
@@ -78,7 +78,7 @@ class Collections(enum.Enum):
               'projects/{projectsId}/locations/{locationsId}/operations/'
               '{operationsId}',
       },
-      [u'name'],
+      ['name'],
       True
   )
   PROJECTS_LOCATIONS_PHRASESETS = (
@@ -89,7 +89,7 @@ class Collections(enum.Enum):
               'projects/{projectsId}/locations/{locationsId}/phraseSets/'
               '{phraseSetsId}',
       },
-      [u'name'],
+      ['name'],
       True
   )
   SPEECH = (

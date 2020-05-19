@@ -28,14 +28,14 @@ class Collections(enum.Enum):
       'projects',
       'projects/{projectsId}',
       {},
-      [u'projectsId'],
+      ['projectsId'],
       True
   )
   PROJECTS_LOCATIONS = (
       'projects.locations',
       'projects/{projectsId}/locations/{locationsId}',
       {},
-      [u'projectsId', u'locationsId'],
+      ['projectsId', 'locationsId'],
       True
   )
   PROJECTS_LOCATIONS_REGISTRIES = (
@@ -46,7 +46,7 @@ class Collections(enum.Enum):
               'projects/{projectsId}/locations/{locationsId}/registries/'
               '{registriesId}',
       },
-      [u'name'],
+      ['name'],
       True
   )
   PROJECTS_LOCATIONS_REGISTRIES_DEVICES = (
@@ -57,7 +57,7 @@ class Collections(enum.Enum):
               'projects/{projectsId}/locations/{locationsId}/registries/'
               '{registriesId}/devices/{devicesId}',
       },
-      [u'name'],
+      ['name'],
       True
   )
   PROJECTS_LOCATIONS_REGISTRIES_DEVICES_CONFIGVERSIONS = (
@@ -65,7 +65,7 @@ class Collections(enum.Enum):
       'projects/{projectsId}/locations/{locationsId}/registries/'
       '{registriesId}/devices/{devicesId}/configVersions/{configVersion}',
       {},
-      [u'projectsId', u'locationsId', u'registriesId', u'devicesId', u'configVersion'],
+      ['projectsId', 'locationsId', 'registriesId', 'devicesId', 'configVersion'],
       True
   )
   PROJECTS_LOCATIONS_REGISTRIES_DEVICES_STATES = (
@@ -73,7 +73,7 @@ class Collections(enum.Enum):
       'projects/{projectsId}/locations/{locationsId}/registries/'
       '{registriesId}/devices/{devicesId}/states/{statesId}',
       {},
-      [u'projectsId', u'locationsId', u'registriesId', u'devicesId', u'statesId'],
+      ['projectsId', 'locationsId', 'registriesId', 'devicesId', 'statesId'],
       True
   )
 

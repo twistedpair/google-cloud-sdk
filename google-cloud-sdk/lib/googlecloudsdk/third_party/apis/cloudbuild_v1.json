@@ -998,7 +998,7 @@
           "type": "string"
         },
         "commentControl": {
-          "description": "Whether to block builds on a \"\/gcbrun\" comment from a repository admin or\ncollaborator.",
+          "description": "Configure builds to run only when a repository owner or collaborator\ncomments `\/gcbrun`.",
           "enumDescriptions": [
             "Do not require comments on Pull Requests before builds are triggered.",
             "Enforce that repository owners or collaborators must comment on Pull\nRequests before builds are triggered."

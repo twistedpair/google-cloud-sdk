@@ -28,7 +28,7 @@ class Collections(enum.Enum):
       'projects',
       'projects/{projectsId}',
       {},
-      [u'projectsId'],
+      ['projectsId'],
       True
   )
   PROJECTS_GUESTPOLICIES = (
@@ -38,7 +38,7 @@ class Collections(enum.Enum):
           '':
               'projects/{projectsId}/guestPolicies/{guestPoliciesId}',
       },
-      [u'name'],
+      ['name'],
       True
   )
   PROJECTS_PATCHDEPLOYMENTS = (
@@ -48,7 +48,7 @@ class Collections(enum.Enum):
           '':
               'projects/{projectsId}/patchDeployments/{patchDeploymentsId}',
       },
-      [u'name'],
+      ['name'],
       True
   )
   PROJECTS_PATCHJOBS = (
@@ -58,7 +58,7 @@ class Collections(enum.Enum):
           '':
               'projects/{projectsId}/patchJobs/{patchJobsId}',
       },
-      [u'name'],
+      ['name'],
       True
   )
 

@@ -8,17 +8,17 @@ class AccessapprovalV1(base_api.BaseApiClient):
   """Generated client library for service accessapproval version v1."""
 
   MESSAGES_MODULE = messages
-  BASE_URL = u'https://accessapproval.googleapis.com/'
-  MTLS_BASE_URL = u'https://accessapproval.mtls.googleapis.com/'
+  BASE_URL = 'https://accessapproval.googleapis.com/'
+  MTLS_BASE_URL = 'https://accessapproval.mtls.googleapis.com/'
 
-  _PACKAGE = u'accessapproval'
-  _SCOPES = [u'https://www.googleapis.com/auth/cloud-platform']
-  _VERSION = u'v1'
+  _PACKAGE = 'accessapproval'
+  _SCOPES = ['https://www.googleapis.com/auth/cloud-platform']
+  _VERSION = 'v1'
   _CLIENT_ID = '1042881264118.apps.googleusercontent.com'
   _CLIENT_SECRET = 'x_Tw5K8nnjoRAqULM9PFAC2b'
-  _USER_AGENT = u'google-cloud-sdk'
-  _CLIENT_CLASS_NAME = u'AccessapprovalV1'
-  _URL_VERSION = u'v1'
+  _USER_AGENT = 'google-cloud-sdk'
+  _CLIENT_CLASS_NAME = 'AccessapprovalV1'
+  _URL_VERSION = 'v1'
   _API_KEY = None
 
   def __init__(self, url='', credentials=None,
@@ -46,7 +46,7 @@ class AccessapprovalV1(base_api.BaseApiClient):
   class FoldersApprovalRequestsService(base_api.BaseApiService):
     """Service class for the folders_approvalRequests resource."""
 
-    _NAME = u'folders_approvalRequests'
+    _NAME = 'folders_approvalRequests'
 
     def __init__(self, client):
       super(AccessapprovalV1.FoldersApprovalRequestsService, self).__init__(client)
@@ -70,16 +70,16 @@ FAILED_PRECONDITION if the request exists but is not in a pending state.
           config, request, global_params=global_params)
 
     Approve.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/folders/{foldersId}/approvalRequests/{approvalRequestsId}:approve',
-        http_method=u'POST',
-        method_id=u'accessapproval.folders.approvalRequests.approve',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1/folders/{foldersId}/approvalRequests/{approvalRequestsId}:approve',
+        http_method='POST',
+        method_id='accessapproval.folders.approvalRequests.approve',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1/{+name}:approve',
-        request_field=u'approveApprovalRequestMessage',
-        request_type_name=u'AccessapprovalFoldersApprovalRequestsApproveRequest',
-        response_type_name=u'ApprovalRequest',
+        relative_path='v1/{+name}:approve',
+        request_field='approveApprovalRequestMessage',
+        request_type_name='AccessapprovalFoldersApprovalRequestsApproveRequest',
+        response_type_name='ApprovalRequest',
         supports_download=False,
     )
 
@@ -106,16 +106,16 @@ state.
           config, request, global_params=global_params)
 
     Dismiss.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/folders/{foldersId}/approvalRequests/{approvalRequestsId}:dismiss',
-        http_method=u'POST',
-        method_id=u'accessapproval.folders.approvalRequests.dismiss',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1/folders/{foldersId}/approvalRequests/{approvalRequestsId}:dismiss',
+        http_method='POST',
+        method_id='accessapproval.folders.approvalRequests.dismiss',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1/{+name}:dismiss',
-        request_field=u'dismissApprovalRequestMessage',
-        request_type_name=u'AccessapprovalFoldersApprovalRequestsDismissRequest',
-        response_type_name=u'ApprovalRequest',
+        relative_path='v1/{+name}:dismiss',
+        request_field='dismissApprovalRequestMessage',
+        request_type_name='AccessapprovalFoldersApprovalRequestsDismissRequest',
+        response_type_name='ApprovalRequest',
         supports_download=False,
     )
 
@@ -133,16 +133,16 @@ state.
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/folders/{foldersId}/approvalRequests/{approvalRequestsId}',
-        http_method=u'GET',
-        method_id=u'accessapproval.folders.approvalRequests.get',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1/folders/{foldersId}/approvalRequests/{approvalRequestsId}',
+        http_method='GET',
+        method_id='accessapproval.folders.approvalRequests.get',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1/{+name}',
+        relative_path='v1/{+name}',
         request_field='',
-        request_type_name=u'AccessapprovalFoldersApprovalRequestsGetRequest',
-        response_type_name=u'ApprovalRequest',
+        request_type_name='AccessapprovalFoldersApprovalRequestsGetRequest',
+        response_type_name='ApprovalRequest',
         supports_download=False,
     )
 
@@ -162,23 +162,23 @@ The order is reverse chronological.
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/folders/{foldersId}/approvalRequests',
-        http_method=u'GET',
-        method_id=u'accessapproval.folders.approvalRequests.list',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'filter', u'pageSize', u'pageToken'],
-        relative_path=u'v1/{+parent}/approvalRequests',
+        flat_path='v1/folders/{foldersId}/approvalRequests',
+        http_method='GET',
+        method_id='accessapproval.folders.approvalRequests.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'pageSize', 'pageToken'],
+        relative_path='v1/{+parent}/approvalRequests',
         request_field='',
-        request_type_name=u'AccessapprovalFoldersApprovalRequestsListRequest',
-        response_type_name=u'ListApprovalRequestsResponse',
+        request_type_name='AccessapprovalFoldersApprovalRequestsListRequest',
+        response_type_name='ListApprovalRequestsResponse',
         supports_download=False,
     )
 
   class FoldersService(base_api.BaseApiService):
     """Service class for the folders resource."""
 
-    _NAME = u'folders'
+    _NAME = 'folders'
 
     def __init__(self, client):
       super(AccessapprovalV1.FoldersService, self).__init__(client)
@@ -204,16 +204,16 @@ the settings are inherited.
           config, request, global_params=global_params)
 
     DeleteAccessApprovalSettings.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/folders/{foldersId}/accessApprovalSettings',
-        http_method=u'DELETE',
-        method_id=u'accessapproval.folders.deleteAccessApprovalSettings',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1/folders/{foldersId}/accessApprovalSettings',
+        http_method='DELETE',
+        method_id='accessapproval.folders.deleteAccessApprovalSettings',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1/{+name}',
+        relative_path='v1/{+name}',
         request_field='',
-        request_type_name=u'AccessapprovalFoldersDeleteAccessApprovalSettingsRequest',
-        response_type_name=u'Empty',
+        request_type_name='AccessapprovalFoldersDeleteAccessApprovalSettingsRequest',
+        response_type_name='Empty',
         supports_download=False,
     )
 
@@ -231,16 +231,16 @@ the settings are inherited.
           config, request, global_params=global_params)
 
     GetAccessApprovalSettings.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/folders/{foldersId}/accessApprovalSettings',
-        http_method=u'GET',
-        method_id=u'accessapproval.folders.getAccessApprovalSettings',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1/folders/{foldersId}/accessApprovalSettings',
+        http_method='GET',
+        method_id='accessapproval.folders.getAccessApprovalSettings',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1/{+name}',
+        relative_path='v1/{+name}',
         request_field='',
-        request_type_name=u'AccessapprovalFoldersGetAccessApprovalSettingsRequest',
-        response_type_name=u'AccessApprovalSettings',
+        request_type_name='AccessapprovalFoldersGetAccessApprovalSettingsRequest',
+        response_type_name='AccessApprovalSettings',
         supports_download=False,
     )
 
@@ -259,23 +259,23 @@ Settings to update are determined by the value of field_mask.
           config, request, global_params=global_params)
 
     UpdateAccessApprovalSettings.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/folders/{foldersId}/accessApprovalSettings',
-        http_method=u'PATCH',
-        method_id=u'accessapproval.folders.updateAccessApprovalSettings',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[u'updateMask'],
-        relative_path=u'v1/{+name}',
-        request_field=u'accessApprovalSettings',
-        request_type_name=u'AccessapprovalFoldersUpdateAccessApprovalSettingsRequest',
-        response_type_name=u'AccessApprovalSettings',
+        flat_path='v1/folders/{foldersId}/accessApprovalSettings',
+        http_method='PATCH',
+        method_id='accessapproval.folders.updateAccessApprovalSettings',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v1/{+name}',
+        request_field='accessApprovalSettings',
+        request_type_name='AccessapprovalFoldersUpdateAccessApprovalSettingsRequest',
+        response_type_name='AccessApprovalSettings',
         supports_download=False,
     )
 
   class OrganizationsApprovalRequestsService(base_api.BaseApiService):
     """Service class for the organizations_approvalRequests resource."""
 
-    _NAME = u'organizations_approvalRequests'
+    _NAME = 'organizations_approvalRequests'
 
     def __init__(self, client):
       super(AccessapprovalV1.OrganizationsApprovalRequestsService, self).__init__(client)
@@ -299,16 +299,16 @@ FAILED_PRECONDITION if the request exists but is not in a pending state.
           config, request, global_params=global_params)
 
     Approve.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/organizations/{organizationsId}/approvalRequests/{approvalRequestsId}:approve',
-        http_method=u'POST',
-        method_id=u'accessapproval.organizations.approvalRequests.approve',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1/organizations/{organizationsId}/approvalRequests/{approvalRequestsId}:approve',
+        http_method='POST',
+        method_id='accessapproval.organizations.approvalRequests.approve',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1/{+name}:approve',
-        request_field=u'approveApprovalRequestMessage',
-        request_type_name=u'AccessapprovalOrganizationsApprovalRequestsApproveRequest',
-        response_type_name=u'ApprovalRequest',
+        relative_path='v1/{+name}:approve',
+        request_field='approveApprovalRequestMessage',
+        request_type_name='AccessapprovalOrganizationsApprovalRequestsApproveRequest',
+        response_type_name='ApprovalRequest',
         supports_download=False,
     )
 
@@ -335,16 +335,16 @@ state.
           config, request, global_params=global_params)
 
     Dismiss.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/organizations/{organizationsId}/approvalRequests/{approvalRequestsId}:dismiss',
-        http_method=u'POST',
-        method_id=u'accessapproval.organizations.approvalRequests.dismiss',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1/organizations/{organizationsId}/approvalRequests/{approvalRequestsId}:dismiss',
+        http_method='POST',
+        method_id='accessapproval.organizations.approvalRequests.dismiss',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1/{+name}:dismiss',
-        request_field=u'dismissApprovalRequestMessage',
-        request_type_name=u'AccessapprovalOrganizationsApprovalRequestsDismissRequest',
-        response_type_name=u'ApprovalRequest',
+        relative_path='v1/{+name}:dismiss',
+        request_field='dismissApprovalRequestMessage',
+        request_type_name='AccessapprovalOrganizationsApprovalRequestsDismissRequest',
+        response_type_name='ApprovalRequest',
         supports_download=False,
     )
 
@@ -362,16 +362,16 @@ state.
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/organizations/{organizationsId}/approvalRequests/{approvalRequestsId}',
-        http_method=u'GET',
-        method_id=u'accessapproval.organizations.approvalRequests.get',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1/organizations/{organizationsId}/approvalRequests/{approvalRequestsId}',
+        http_method='GET',
+        method_id='accessapproval.organizations.approvalRequests.get',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1/{+name}',
+        relative_path='v1/{+name}',
         request_field='',
-        request_type_name=u'AccessapprovalOrganizationsApprovalRequestsGetRequest',
-        response_type_name=u'ApprovalRequest',
+        request_type_name='AccessapprovalOrganizationsApprovalRequestsGetRequest',
+        response_type_name='ApprovalRequest',
         supports_download=False,
     )
 
@@ -391,23 +391,23 @@ The order is reverse chronological.
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/organizations/{organizationsId}/approvalRequests',
-        http_method=u'GET',
-        method_id=u'accessapproval.organizations.approvalRequests.list',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'filter', u'pageSize', u'pageToken'],
-        relative_path=u'v1/{+parent}/approvalRequests',
+        flat_path='v1/organizations/{organizationsId}/approvalRequests',
+        http_method='GET',
+        method_id='accessapproval.organizations.approvalRequests.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'pageSize', 'pageToken'],
+        relative_path='v1/{+parent}/approvalRequests',
         request_field='',
-        request_type_name=u'AccessapprovalOrganizationsApprovalRequestsListRequest',
-        response_type_name=u'ListApprovalRequestsResponse',
+        request_type_name='AccessapprovalOrganizationsApprovalRequestsListRequest',
+        response_type_name='ListApprovalRequestsResponse',
         supports_download=False,
     )
 
   class OrganizationsService(base_api.BaseApiService):
     """Service class for the organizations resource."""
 
-    _NAME = u'organizations'
+    _NAME = 'organizations'
 
     def __init__(self, client):
       super(AccessapprovalV1.OrganizationsService, self).__init__(client)
@@ -433,16 +433,16 @@ the settings are inherited.
           config, request, global_params=global_params)
 
     DeleteAccessApprovalSettings.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/organizations/{organizationsId}/accessApprovalSettings',
-        http_method=u'DELETE',
-        method_id=u'accessapproval.organizations.deleteAccessApprovalSettings',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1/organizations/{organizationsId}/accessApprovalSettings',
+        http_method='DELETE',
+        method_id='accessapproval.organizations.deleteAccessApprovalSettings',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1/{+name}',
+        relative_path='v1/{+name}',
         request_field='',
-        request_type_name=u'AccessapprovalOrganizationsDeleteAccessApprovalSettingsRequest',
-        response_type_name=u'Empty',
+        request_type_name='AccessapprovalOrganizationsDeleteAccessApprovalSettingsRequest',
+        response_type_name='Empty',
         supports_download=False,
     )
 
@@ -460,16 +460,16 @@ the settings are inherited.
           config, request, global_params=global_params)
 
     GetAccessApprovalSettings.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/organizations/{organizationsId}/accessApprovalSettings',
-        http_method=u'GET',
-        method_id=u'accessapproval.organizations.getAccessApprovalSettings',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1/organizations/{organizationsId}/accessApprovalSettings',
+        http_method='GET',
+        method_id='accessapproval.organizations.getAccessApprovalSettings',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1/{+name}',
+        relative_path='v1/{+name}',
         request_field='',
-        request_type_name=u'AccessapprovalOrganizationsGetAccessApprovalSettingsRequest',
-        response_type_name=u'AccessApprovalSettings',
+        request_type_name='AccessapprovalOrganizationsGetAccessApprovalSettingsRequest',
+        response_type_name='AccessApprovalSettings',
         supports_download=False,
     )
 
@@ -488,23 +488,23 @@ Settings to update are determined by the value of field_mask.
           config, request, global_params=global_params)
 
     UpdateAccessApprovalSettings.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/organizations/{organizationsId}/accessApprovalSettings',
-        http_method=u'PATCH',
-        method_id=u'accessapproval.organizations.updateAccessApprovalSettings',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[u'updateMask'],
-        relative_path=u'v1/{+name}',
-        request_field=u'accessApprovalSettings',
-        request_type_name=u'AccessapprovalOrganizationsUpdateAccessApprovalSettingsRequest',
-        response_type_name=u'AccessApprovalSettings',
+        flat_path='v1/organizations/{organizationsId}/accessApprovalSettings',
+        http_method='PATCH',
+        method_id='accessapproval.organizations.updateAccessApprovalSettings',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v1/{+name}',
+        request_field='accessApprovalSettings',
+        request_type_name='AccessapprovalOrganizationsUpdateAccessApprovalSettingsRequest',
+        response_type_name='AccessApprovalSettings',
         supports_download=False,
     )
 
   class ProjectsApprovalRequestsService(base_api.BaseApiService):
     """Service class for the projects_approvalRequests resource."""
 
-    _NAME = u'projects_approvalRequests'
+    _NAME = 'projects_approvalRequests'
 
     def __init__(self, client):
       super(AccessapprovalV1.ProjectsApprovalRequestsService, self).__init__(client)
@@ -528,16 +528,16 @@ FAILED_PRECONDITION if the request exists but is not in a pending state.
           config, request, global_params=global_params)
 
     Approve.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/approvalRequests/{approvalRequestsId}:approve',
-        http_method=u'POST',
-        method_id=u'accessapproval.projects.approvalRequests.approve',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1/projects/{projectsId}/approvalRequests/{approvalRequestsId}:approve',
+        http_method='POST',
+        method_id='accessapproval.projects.approvalRequests.approve',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1/{+name}:approve',
-        request_field=u'approveApprovalRequestMessage',
-        request_type_name=u'AccessapprovalProjectsApprovalRequestsApproveRequest',
-        response_type_name=u'ApprovalRequest',
+        relative_path='v1/{+name}:approve',
+        request_field='approveApprovalRequestMessage',
+        request_type_name='AccessapprovalProjectsApprovalRequestsApproveRequest',
+        response_type_name='ApprovalRequest',
         supports_download=False,
     )
 
@@ -564,16 +564,16 @@ state.
           config, request, global_params=global_params)
 
     Dismiss.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/approvalRequests/{approvalRequestsId}:dismiss',
-        http_method=u'POST',
-        method_id=u'accessapproval.projects.approvalRequests.dismiss',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1/projects/{projectsId}/approvalRequests/{approvalRequestsId}:dismiss',
+        http_method='POST',
+        method_id='accessapproval.projects.approvalRequests.dismiss',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1/{+name}:dismiss',
-        request_field=u'dismissApprovalRequestMessage',
-        request_type_name=u'AccessapprovalProjectsApprovalRequestsDismissRequest',
-        response_type_name=u'ApprovalRequest',
+        relative_path='v1/{+name}:dismiss',
+        request_field='dismissApprovalRequestMessage',
+        request_type_name='AccessapprovalProjectsApprovalRequestsDismissRequest',
+        response_type_name='ApprovalRequest',
         supports_download=False,
     )
 
@@ -591,16 +591,16 @@ state.
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/approvalRequests/{approvalRequestsId}',
-        http_method=u'GET',
-        method_id=u'accessapproval.projects.approvalRequests.get',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1/projects/{projectsId}/approvalRequests/{approvalRequestsId}',
+        http_method='GET',
+        method_id='accessapproval.projects.approvalRequests.get',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1/{+name}',
+        relative_path='v1/{+name}',
         request_field='',
-        request_type_name=u'AccessapprovalProjectsApprovalRequestsGetRequest',
-        response_type_name=u'ApprovalRequest',
+        request_type_name='AccessapprovalProjectsApprovalRequestsGetRequest',
+        response_type_name='ApprovalRequest',
         supports_download=False,
     )
 
@@ -620,23 +620,23 @@ The order is reverse chronological.
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/approvalRequests',
-        http_method=u'GET',
-        method_id=u'accessapproval.projects.approvalRequests.list',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'filter', u'pageSize', u'pageToken'],
-        relative_path=u'v1/{+parent}/approvalRequests',
+        flat_path='v1/projects/{projectsId}/approvalRequests',
+        http_method='GET',
+        method_id='accessapproval.projects.approvalRequests.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'pageSize', 'pageToken'],
+        relative_path='v1/{+parent}/approvalRequests',
         request_field='',
-        request_type_name=u'AccessapprovalProjectsApprovalRequestsListRequest',
-        response_type_name=u'ListApprovalRequestsResponse',
+        request_type_name='AccessapprovalProjectsApprovalRequestsListRequest',
+        response_type_name='ListApprovalRequestsResponse',
         supports_download=False,
     )
 
   class ProjectsService(base_api.BaseApiService):
     """Service class for the projects resource."""
 
-    _NAME = u'projects'
+    _NAME = 'projects'
 
     def __init__(self, client):
       super(AccessapprovalV1.ProjectsService, self).__init__(client)
@@ -662,16 +662,16 @@ the settings are inherited.
           config, request, global_params=global_params)
 
     DeleteAccessApprovalSettings.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/accessApprovalSettings',
-        http_method=u'DELETE',
-        method_id=u'accessapproval.projects.deleteAccessApprovalSettings',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1/projects/{projectsId}/accessApprovalSettings',
+        http_method='DELETE',
+        method_id='accessapproval.projects.deleteAccessApprovalSettings',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1/{+name}',
+        relative_path='v1/{+name}',
         request_field='',
-        request_type_name=u'AccessapprovalProjectsDeleteAccessApprovalSettingsRequest',
-        response_type_name=u'Empty',
+        request_type_name='AccessapprovalProjectsDeleteAccessApprovalSettingsRequest',
+        response_type_name='Empty',
         supports_download=False,
     )
 
@@ -689,16 +689,16 @@ the settings are inherited.
           config, request, global_params=global_params)
 
     GetAccessApprovalSettings.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/accessApprovalSettings',
-        http_method=u'GET',
-        method_id=u'accessapproval.projects.getAccessApprovalSettings',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1/projects/{projectsId}/accessApprovalSettings',
+        http_method='GET',
+        method_id='accessapproval.projects.getAccessApprovalSettings',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1/{+name}',
+        relative_path='v1/{+name}',
         request_field='',
-        request_type_name=u'AccessapprovalProjectsGetAccessApprovalSettingsRequest',
-        response_type_name=u'AccessApprovalSettings',
+        request_type_name='AccessapprovalProjectsGetAccessApprovalSettingsRequest',
+        response_type_name='AccessApprovalSettings',
         supports_download=False,
     )
 
@@ -717,15 +717,15 @@ Settings to update are determined by the value of field_mask.
           config, request, global_params=global_params)
 
     UpdateAccessApprovalSettings.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/accessApprovalSettings',
-        http_method=u'PATCH',
-        method_id=u'accessapproval.projects.updateAccessApprovalSettings',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[u'updateMask'],
-        relative_path=u'v1/{+name}',
-        request_field=u'accessApprovalSettings',
-        request_type_name=u'AccessapprovalProjectsUpdateAccessApprovalSettingsRequest',
-        response_type_name=u'AccessApprovalSettings',
+        flat_path='v1/projects/{projectsId}/accessApprovalSettings',
+        http_method='PATCH',
+        method_id='accessapproval.projects.updateAccessApprovalSettings',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v1/{+name}',
+        request_field='accessApprovalSettings',
+        request_type_name='AccessapprovalProjectsUpdateAccessApprovalSettingsRequest',
+        response_type_name='AccessApprovalSettings',
         supports_download=False,
     )

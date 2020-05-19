@@ -28,7 +28,7 @@ class Collections(enum.Enum):
       'folders',
       'folders/{foldersId}',
       {},
-      [u'foldersId'],
+      ['foldersId'],
       True
   )
   FOLDERS_ASSIGNMENTS = (
@@ -38,7 +38,7 @@ class Collections(enum.Enum):
           '':
               'folders/{foldersId}/assignments/{assignmentsId}',
       },
-      [u'name'],
+      ['name'],
       True
   )
   FOLDERS_OSCONFIGS = (
@@ -48,14 +48,14 @@ class Collections(enum.Enum):
           '':
               'folders/{foldersId}/osConfigs/{osConfigsId}',
       },
-      [u'name'],
+      ['name'],
       True
   )
   ORGANIZATIONS = (
       'organizations',
       'organizations/{organizationsId}',
       {},
-      [u'organizationsId'],
+      ['organizationsId'],
       True
   )
   ORGANIZATIONS_ASSIGNMENTS = (
@@ -65,7 +65,7 @@ class Collections(enum.Enum):
           '':
               'organizations/{organizationsId}/assignments/{assignmentsId}',
       },
-      [u'name'],
+      ['name'],
       True
   )
   ORGANIZATIONS_OSCONFIGS = (
@@ -75,14 +75,14 @@ class Collections(enum.Enum):
           '':
               'organizations/{organizationsId}/osConfigs/{osConfigsId}',
       },
-      [u'name'],
+      ['name'],
       True
   )
   PROJECTS = (
       'projects',
       'projects/{projectsId}',
       {},
-      [u'projectsId'],
+      ['projectsId'],
       True
   )
   PROJECTS_ASSIGNMENTS = (
@@ -92,7 +92,7 @@ class Collections(enum.Enum):
           '':
               'projects/{projectsId}/assignments/{assignmentsId}',
       },
-      [u'name'],
+      ['name'],
       True
   )
   PROJECTS_OSCONFIGS = (
@@ -102,7 +102,7 @@ class Collections(enum.Enum):
           '':
               'projects/{projectsId}/osConfigs/{osConfigsId}',
       },
-      [u'name'],
+      ['name'],
       True
   )
   PROJECTS_PATCHJOBS = (
@@ -112,7 +112,7 @@ class Collections(enum.Enum):
           '':
               'projects/{projectsId}/patchJobs/{patchJobsId}',
       },
-      [u'name'],
+      ['name'],
       True
   )
 

@@ -28,14 +28,14 @@ class Collections(enum.Enum):
       'compositeTypes',
       'projects/{project}/global/compositeTypes/{compositeType}',
       {},
-      [u'project', u'compositeType'],
+      ['project', 'compositeType'],
       True
   )
   DEPLOYMENTS = (
       'deployments',
       'projects/{project}/global/deployments/{deployment}',
       {},
-      [u'project', u'deployment'],
+      ['project', 'deployment'],
       True
   )
   MANIFESTS = (
@@ -43,21 +43,21 @@ class Collections(enum.Enum):
       'projects/{project}/global/deployments/{deployment}/manifests/'
       '{manifest}',
       {},
-      [u'project', u'deployment', u'manifest'],
+      ['project', 'deployment', 'manifest'],
       True
   )
   OPERATIONS = (
       'operations',
       'projects/{project}/global/operations/{operation}',
       {},
-      [u'project', u'operation'],
+      ['project', 'operation'],
       True
   )
   PROJECTS = (
       'projects',
       'projects/{project}',
       {},
-      [u'project'],
+      ['project'],
       True
   )
   RESOURCES = (
@@ -65,21 +65,21 @@ class Collections(enum.Enum):
       'projects/{project}/global/deployments/{deployment}/resources/'
       '{resource}',
       {},
-      [u'project', u'deployment', u'resource'],
+      ['project', 'deployment', 'resource'],
       True
   )
   TYPEPROVIDERS = (
       'typeProviders',
       'projects/{project}/global/typeProviders/{typeProvider}',
       {},
-      [u'project', u'typeProvider'],
+      ['project', 'typeProvider'],
       True
   )
   TYPES = (
       'types',
       'projects/{project}/global/types/{type}',
       {},
-      [u'project', u'type'],
+      ['project', 'type'],
       True
   )
 

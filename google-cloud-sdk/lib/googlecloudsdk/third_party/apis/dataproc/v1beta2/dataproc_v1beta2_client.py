@@ -8,17 +8,17 @@ class DataprocV1beta2(base_api.BaseApiClient):
   """Generated client library for service dataproc version v1beta2."""
 
   MESSAGES_MODULE = messages
-  BASE_URL = u'https://dataproc.googleapis.com/'
-  MTLS_BASE_URL = u'https://dataproc.mtls.googleapis.com/'
+  BASE_URL = 'https://dataproc.googleapis.com/'
+  MTLS_BASE_URL = 'https://dataproc.mtls.googleapis.com/'
 
-  _PACKAGE = u'dataproc'
-  _SCOPES = [u'https://www.googleapis.com/auth/cloud-platform']
-  _VERSION = u'v1beta2'
+  _PACKAGE = 'dataproc'
+  _SCOPES = ['https://www.googleapis.com/auth/cloud-platform']
+  _VERSION = 'v1beta2'
   _CLIENT_ID = '1042881264118.apps.googleusercontent.com'
   _CLIENT_SECRET = 'x_Tw5K8nnjoRAqULM9PFAC2b'
-  _USER_AGENT = u'google-cloud-sdk'
-  _CLIENT_CLASS_NAME = u'DataprocV1beta2'
-  _URL_VERSION = u'v1beta2'
+  _USER_AGENT = 'google-cloud-sdk'
+  _CLIENT_CLASS_NAME = 'DataprocV1beta2'
+  _URL_VERSION = 'v1beta2'
   _API_KEY = None
 
   def __init__(self, url='', credentials=None,
@@ -50,7 +50,7 @@ class DataprocV1beta2(base_api.BaseApiClient):
   class ProjectsLocationsAutoscalingPoliciesService(base_api.BaseApiService):
     """Service class for the projects_locations_autoscalingPolicies resource."""
 
-    _NAME = u'projects_locations_autoscalingPolicies'
+    _NAME = 'projects_locations_autoscalingPolicies'
 
     def __init__(self, client):
       super(DataprocV1beta2.ProjectsLocationsAutoscalingPoliciesService, self).__init__(client)
@@ -71,16 +71,16 @@ class DataprocV1beta2(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Create.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta2/projects/{projectsId}/locations/{locationsId}/autoscalingPolicies',
-        http_method=u'POST',
-        method_id=u'dataproc.projects.locations.autoscalingPolicies.create',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
+        flat_path='v1beta2/projects/{projectsId}/locations/{locationsId}/autoscalingPolicies',
+        http_method='POST',
+        method_id='dataproc.projects.locations.autoscalingPolicies.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
         query_params=[],
-        relative_path=u'v1beta2/{+parent}/autoscalingPolicies',
-        request_field=u'autoscalingPolicy',
-        request_type_name=u'DataprocProjectsLocationsAutoscalingPoliciesCreateRequest',
-        response_type_name=u'AutoscalingPolicy',
+        relative_path='v1beta2/{+parent}/autoscalingPolicies',
+        request_field='autoscalingPolicy',
+        request_type_name='DataprocProjectsLocationsAutoscalingPoliciesCreateRequest',
+        response_type_name='AutoscalingPolicy',
         supports_download=False,
     )
 
@@ -98,16 +98,16 @@ class DataprocV1beta2(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Delete.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta2/projects/{projectsId}/locations/{locationsId}/autoscalingPolicies/{autoscalingPoliciesId}',
-        http_method=u'DELETE',
-        method_id=u'dataproc.projects.locations.autoscalingPolicies.delete',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1beta2/projects/{projectsId}/locations/{locationsId}/autoscalingPolicies/{autoscalingPoliciesId}',
+        http_method='DELETE',
+        method_id='dataproc.projects.locations.autoscalingPolicies.delete',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1beta2/{+name}',
+        relative_path='v1beta2/{+name}',
         request_field='',
-        request_type_name=u'DataprocProjectsLocationsAutoscalingPoliciesDeleteRequest',
-        response_type_name=u'Empty',
+        request_type_name='DataprocProjectsLocationsAutoscalingPoliciesDeleteRequest',
+        response_type_name='Empty',
         supports_download=False,
     )
 
@@ -125,16 +125,16 @@ class DataprocV1beta2(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta2/projects/{projectsId}/locations/{locationsId}/autoscalingPolicies/{autoscalingPoliciesId}',
-        http_method=u'GET',
-        method_id=u'dataproc.projects.locations.autoscalingPolicies.get',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1beta2/projects/{projectsId}/locations/{locationsId}/autoscalingPolicies/{autoscalingPoliciesId}',
+        http_method='GET',
+        method_id='dataproc.projects.locations.autoscalingPolicies.get',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1beta2/{+name}',
+        relative_path='v1beta2/{+name}',
         request_field='',
-        request_type_name=u'DataprocProjectsLocationsAutoscalingPoliciesGetRequest',
-        response_type_name=u'AutoscalingPolicy',
+        request_type_name='DataprocProjectsLocationsAutoscalingPoliciesGetRequest',
+        response_type_name='AutoscalingPolicy',
         supports_download=False,
     )
 
@@ -152,16 +152,16 @@ class DataprocV1beta2(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     GetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta2/projects/{projectsId}/locations/{locationsId}/autoscalingPolicies/{autoscalingPoliciesId}:getIamPolicy',
-        http_method=u'GET',
-        method_id=u'dataproc.projects.locations.autoscalingPolicies.getIamPolicy',
-        ordered_params=[u'resource'],
-        path_params=[u'resource'],
-        query_params=[u'options_requestedPolicyVersion'],
-        relative_path=u'v1beta2/{+resource}:getIamPolicy',
+        flat_path='v1beta2/projects/{projectsId}/locations/{locationsId}/autoscalingPolicies/{autoscalingPoliciesId}:getIamPolicy',
+        http_method='GET',
+        method_id='dataproc.projects.locations.autoscalingPolicies.getIamPolicy',
+        ordered_params=['resource'],
+        path_params=['resource'],
+        query_params=['options_requestedPolicyVersion'],
+        relative_path='v1beta2/{+resource}:getIamPolicy',
         request_field='',
-        request_type_name=u'DataprocProjectsLocationsAutoscalingPoliciesGetIamPolicyRequest',
-        response_type_name=u'Policy',
+        request_type_name='DataprocProjectsLocationsAutoscalingPoliciesGetIamPolicyRequest',
+        response_type_name='Policy',
         supports_download=False,
     )
 
@@ -179,16 +179,16 @@ class DataprocV1beta2(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta2/projects/{projectsId}/locations/{locationsId}/autoscalingPolicies',
-        http_method=u'GET',
-        method_id=u'dataproc.projects.locations.autoscalingPolicies.list',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'pageSize', u'pageToken'],
-        relative_path=u'v1beta2/{+parent}/autoscalingPolicies',
+        flat_path='v1beta2/projects/{projectsId}/locations/{locationsId}/autoscalingPolicies',
+        http_method='GET',
+        method_id='dataproc.projects.locations.autoscalingPolicies.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v1beta2/{+parent}/autoscalingPolicies',
         request_field='',
-        request_type_name=u'DataprocProjectsLocationsAutoscalingPoliciesListRequest',
-        response_type_name=u'ListAutoscalingPoliciesResponse',
+        request_type_name='DataprocProjectsLocationsAutoscalingPoliciesListRequest',
+        response_type_name='ListAutoscalingPoliciesResponse',
         supports_download=False,
     )
 
@@ -206,16 +206,16 @@ class DataprocV1beta2(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     SetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta2/projects/{projectsId}/locations/{locationsId}/autoscalingPolicies/{autoscalingPoliciesId}:setIamPolicy',
-        http_method=u'POST',
-        method_id=u'dataproc.projects.locations.autoscalingPolicies.setIamPolicy',
-        ordered_params=[u'resource'],
-        path_params=[u'resource'],
+        flat_path='v1beta2/projects/{projectsId}/locations/{locationsId}/autoscalingPolicies/{autoscalingPoliciesId}:setIamPolicy',
+        http_method='POST',
+        method_id='dataproc.projects.locations.autoscalingPolicies.setIamPolicy',
+        ordered_params=['resource'],
+        path_params=['resource'],
         query_params=[],
-        relative_path=u'v1beta2/{+resource}:setIamPolicy',
-        request_field=u'setIamPolicyRequest',
-        request_type_name=u'DataprocProjectsLocationsAutoscalingPoliciesSetIamPolicyRequest',
-        response_type_name=u'Policy',
+        relative_path='v1beta2/{+resource}:setIamPolicy',
+        request_field='setIamPolicyRequest',
+        request_type_name='DataprocProjectsLocationsAutoscalingPoliciesSetIamPolicyRequest',
+        response_type_name='Policy',
         supports_download=False,
     )
 
@@ -233,16 +233,16 @@ class DataprocV1beta2(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     TestIamPermissions.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta2/projects/{projectsId}/locations/{locationsId}/autoscalingPolicies/{autoscalingPoliciesId}:testIamPermissions',
-        http_method=u'POST',
-        method_id=u'dataproc.projects.locations.autoscalingPolicies.testIamPermissions',
-        ordered_params=[u'resource'],
-        path_params=[u'resource'],
+        flat_path='v1beta2/projects/{projectsId}/locations/{locationsId}/autoscalingPolicies/{autoscalingPoliciesId}:testIamPermissions',
+        http_method='POST',
+        method_id='dataproc.projects.locations.autoscalingPolicies.testIamPermissions',
+        ordered_params=['resource'],
+        path_params=['resource'],
         query_params=[],
-        relative_path=u'v1beta2/{+resource}:testIamPermissions',
-        request_field=u'testIamPermissionsRequest',
-        request_type_name=u'DataprocProjectsLocationsAutoscalingPoliciesTestIamPermissionsRequest',
-        response_type_name=u'TestIamPermissionsResponse',
+        relative_path='v1beta2/{+resource}:testIamPermissions',
+        request_field='testIamPermissionsRequest',
+        request_type_name='DataprocProjectsLocationsAutoscalingPoliciesTestIamPermissionsRequest',
+        response_type_name='TestIamPermissionsResponse',
         supports_download=False,
     )
 
@@ -260,23 +260,23 @@ class DataprocV1beta2(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Update.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta2/projects/{projectsId}/locations/{locationsId}/autoscalingPolicies/{autoscalingPoliciesId}',
-        http_method=u'PUT',
-        method_id=u'dataproc.projects.locations.autoscalingPolicies.update',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1beta2/projects/{projectsId}/locations/{locationsId}/autoscalingPolicies/{autoscalingPoliciesId}',
+        http_method='PUT',
+        method_id='dataproc.projects.locations.autoscalingPolicies.update',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1beta2/{+name}',
+        relative_path='v1beta2/{+name}',
         request_field='<request>',
-        request_type_name=u'AutoscalingPolicy',
-        response_type_name=u'AutoscalingPolicy',
+        request_type_name='AutoscalingPolicy',
+        response_type_name='AutoscalingPolicy',
         supports_download=False,
     )
 
   class ProjectsLocationsWorkflowTemplatesService(base_api.BaseApiService):
     """Service class for the projects_locations_workflowTemplates resource."""
 
-    _NAME = u'projects_locations_workflowTemplates'
+    _NAME = 'projects_locations_workflowTemplates'
 
     def __init__(self, client):
       super(DataprocV1beta2.ProjectsLocationsWorkflowTemplatesService, self).__init__(client)
@@ -297,16 +297,16 @@ class DataprocV1beta2(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Create.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta2/projects/{projectsId}/locations/{locationsId}/workflowTemplates',
-        http_method=u'POST',
-        method_id=u'dataproc.projects.locations.workflowTemplates.create',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
+        flat_path='v1beta2/projects/{projectsId}/locations/{locationsId}/workflowTemplates',
+        http_method='POST',
+        method_id='dataproc.projects.locations.workflowTemplates.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
         query_params=[],
-        relative_path=u'v1beta2/{+parent}/workflowTemplates',
-        request_field=u'workflowTemplate',
-        request_type_name=u'DataprocProjectsLocationsWorkflowTemplatesCreateRequest',
-        response_type_name=u'WorkflowTemplate',
+        relative_path='v1beta2/{+parent}/workflowTemplates',
+        request_field='workflowTemplate',
+        request_type_name='DataprocProjectsLocationsWorkflowTemplatesCreateRequest',
+        response_type_name='WorkflowTemplate',
         supports_download=False,
     )
 
@@ -324,16 +324,16 @@ class DataprocV1beta2(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Delete.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta2/projects/{projectsId}/locations/{locationsId}/workflowTemplates/{workflowTemplatesId}',
-        http_method=u'DELETE',
-        method_id=u'dataproc.projects.locations.workflowTemplates.delete',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[u'version'],
-        relative_path=u'v1beta2/{+name}',
+        flat_path='v1beta2/projects/{projectsId}/locations/{locationsId}/workflowTemplates/{workflowTemplatesId}',
+        http_method='DELETE',
+        method_id='dataproc.projects.locations.workflowTemplates.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['version'],
+        relative_path='v1beta2/{+name}',
         request_field='',
-        request_type_name=u'DataprocProjectsLocationsWorkflowTemplatesDeleteRequest',
-        response_type_name=u'Empty',
+        request_type_name='DataprocProjectsLocationsWorkflowTemplatesDeleteRequest',
+        response_type_name='Empty',
         supports_download=False,
     )
 
@@ -351,16 +351,16 @@ class DataprocV1beta2(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta2/projects/{projectsId}/locations/{locationsId}/workflowTemplates/{workflowTemplatesId}',
-        http_method=u'GET',
-        method_id=u'dataproc.projects.locations.workflowTemplates.get',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[u'version'],
-        relative_path=u'v1beta2/{+name}',
+        flat_path='v1beta2/projects/{projectsId}/locations/{locationsId}/workflowTemplates/{workflowTemplatesId}',
+        http_method='GET',
+        method_id='dataproc.projects.locations.workflowTemplates.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['version'],
+        relative_path='v1beta2/{+name}',
         request_field='',
-        request_type_name=u'DataprocProjectsLocationsWorkflowTemplatesGetRequest',
-        response_type_name=u'WorkflowTemplate',
+        request_type_name='DataprocProjectsLocationsWorkflowTemplatesGetRequest',
+        response_type_name='WorkflowTemplate',
         supports_download=False,
     )
 
@@ -378,16 +378,16 @@ class DataprocV1beta2(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     GetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta2/projects/{projectsId}/locations/{locationsId}/workflowTemplates/{workflowTemplatesId}:getIamPolicy',
-        http_method=u'GET',
-        method_id=u'dataproc.projects.locations.workflowTemplates.getIamPolicy',
-        ordered_params=[u'resource'],
-        path_params=[u'resource'],
-        query_params=[u'options_requestedPolicyVersion'],
-        relative_path=u'v1beta2/{+resource}:getIamPolicy',
+        flat_path='v1beta2/projects/{projectsId}/locations/{locationsId}/workflowTemplates/{workflowTemplatesId}:getIamPolicy',
+        http_method='GET',
+        method_id='dataproc.projects.locations.workflowTemplates.getIamPolicy',
+        ordered_params=['resource'],
+        path_params=['resource'],
+        query_params=['options_requestedPolicyVersion'],
+        relative_path='v1beta2/{+resource}:getIamPolicy',
         request_field='',
-        request_type_name=u'DataprocProjectsLocationsWorkflowTemplatesGetIamPolicyRequest',
-        response_type_name=u'Policy',
+        request_type_name='DataprocProjectsLocationsWorkflowTemplatesGetIamPolicyRequest',
+        response_type_name='Policy',
         supports_download=False,
     )
 
@@ -405,16 +405,16 @@ class DataprocV1beta2(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Instantiate.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta2/projects/{projectsId}/locations/{locationsId}/workflowTemplates/{workflowTemplatesId}:instantiate',
-        http_method=u'POST',
-        method_id=u'dataproc.projects.locations.workflowTemplates.instantiate',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1beta2/projects/{projectsId}/locations/{locationsId}/workflowTemplates/{workflowTemplatesId}:instantiate',
+        http_method='POST',
+        method_id='dataproc.projects.locations.workflowTemplates.instantiate',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1beta2/{+name}:instantiate',
-        request_field=u'instantiateWorkflowTemplateRequest',
-        request_type_name=u'DataprocProjectsLocationsWorkflowTemplatesInstantiateRequest',
-        response_type_name=u'Operation',
+        relative_path='v1beta2/{+name}:instantiate',
+        request_field='instantiateWorkflowTemplateRequest',
+        request_type_name='DataprocProjectsLocationsWorkflowTemplatesInstantiateRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -432,16 +432,16 @@ class DataprocV1beta2(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     InstantiateInline.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta2/projects/{projectsId}/locations/{locationsId}/workflowTemplates:instantiateInline',
-        http_method=u'POST',
-        method_id=u'dataproc.projects.locations.workflowTemplates.instantiateInline',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'instanceId', u'requestId'],
-        relative_path=u'v1beta2/{+parent}/workflowTemplates:instantiateInline',
-        request_field=u'workflowTemplate',
-        request_type_name=u'DataprocProjectsLocationsWorkflowTemplatesInstantiateInlineRequest',
-        response_type_name=u'Operation',
+        flat_path='v1beta2/projects/{projectsId}/locations/{locationsId}/workflowTemplates:instantiateInline',
+        http_method='POST',
+        method_id='dataproc.projects.locations.workflowTemplates.instantiateInline',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['instanceId', 'requestId'],
+        relative_path='v1beta2/{+parent}/workflowTemplates:instantiateInline',
+        request_field='workflowTemplate',
+        request_type_name='DataprocProjectsLocationsWorkflowTemplatesInstantiateInlineRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -459,16 +459,16 @@ class DataprocV1beta2(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta2/projects/{projectsId}/locations/{locationsId}/workflowTemplates',
-        http_method=u'GET',
-        method_id=u'dataproc.projects.locations.workflowTemplates.list',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'pageSize', u'pageToken'],
-        relative_path=u'v1beta2/{+parent}/workflowTemplates',
+        flat_path='v1beta2/projects/{projectsId}/locations/{locationsId}/workflowTemplates',
+        http_method='GET',
+        method_id='dataproc.projects.locations.workflowTemplates.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v1beta2/{+parent}/workflowTemplates',
         request_field='',
-        request_type_name=u'DataprocProjectsLocationsWorkflowTemplatesListRequest',
-        response_type_name=u'ListWorkflowTemplatesResponse',
+        request_type_name='DataprocProjectsLocationsWorkflowTemplatesListRequest',
+        response_type_name='ListWorkflowTemplatesResponse',
         supports_download=False,
     )
 
@@ -486,16 +486,16 @@ class DataprocV1beta2(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     SetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta2/projects/{projectsId}/locations/{locationsId}/workflowTemplates/{workflowTemplatesId}:setIamPolicy',
-        http_method=u'POST',
-        method_id=u'dataproc.projects.locations.workflowTemplates.setIamPolicy',
-        ordered_params=[u'resource'],
-        path_params=[u'resource'],
+        flat_path='v1beta2/projects/{projectsId}/locations/{locationsId}/workflowTemplates/{workflowTemplatesId}:setIamPolicy',
+        http_method='POST',
+        method_id='dataproc.projects.locations.workflowTemplates.setIamPolicy',
+        ordered_params=['resource'],
+        path_params=['resource'],
         query_params=[],
-        relative_path=u'v1beta2/{+resource}:setIamPolicy',
-        request_field=u'setIamPolicyRequest',
-        request_type_name=u'DataprocProjectsLocationsWorkflowTemplatesSetIamPolicyRequest',
-        response_type_name=u'Policy',
+        relative_path='v1beta2/{+resource}:setIamPolicy',
+        request_field='setIamPolicyRequest',
+        request_type_name='DataprocProjectsLocationsWorkflowTemplatesSetIamPolicyRequest',
+        response_type_name='Policy',
         supports_download=False,
     )
 
@@ -513,16 +513,16 @@ class DataprocV1beta2(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     TestIamPermissions.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta2/projects/{projectsId}/locations/{locationsId}/workflowTemplates/{workflowTemplatesId}:testIamPermissions',
-        http_method=u'POST',
-        method_id=u'dataproc.projects.locations.workflowTemplates.testIamPermissions',
-        ordered_params=[u'resource'],
-        path_params=[u'resource'],
+        flat_path='v1beta2/projects/{projectsId}/locations/{locationsId}/workflowTemplates/{workflowTemplatesId}:testIamPermissions',
+        http_method='POST',
+        method_id='dataproc.projects.locations.workflowTemplates.testIamPermissions',
+        ordered_params=['resource'],
+        path_params=['resource'],
         query_params=[],
-        relative_path=u'v1beta2/{+resource}:testIamPermissions',
-        request_field=u'testIamPermissionsRequest',
-        request_type_name=u'DataprocProjectsLocationsWorkflowTemplatesTestIamPermissionsRequest',
-        response_type_name=u'TestIamPermissionsResponse',
+        relative_path='v1beta2/{+resource}:testIamPermissions',
+        request_field='testIamPermissionsRequest',
+        request_type_name='DataprocProjectsLocationsWorkflowTemplatesTestIamPermissionsRequest',
+        response_type_name='TestIamPermissionsResponse',
         supports_download=False,
     )
 
@@ -540,23 +540,23 @@ class DataprocV1beta2(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Update.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta2/projects/{projectsId}/locations/{locationsId}/workflowTemplates/{workflowTemplatesId}',
-        http_method=u'PUT',
-        method_id=u'dataproc.projects.locations.workflowTemplates.update',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1beta2/projects/{projectsId}/locations/{locationsId}/workflowTemplates/{workflowTemplatesId}',
+        http_method='PUT',
+        method_id='dataproc.projects.locations.workflowTemplates.update',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1beta2/{+name}',
+        relative_path='v1beta2/{+name}',
         request_field='<request>',
-        request_type_name=u'WorkflowTemplate',
-        response_type_name=u'WorkflowTemplate',
+        request_type_name='WorkflowTemplate',
+        response_type_name='WorkflowTemplate',
         supports_download=False,
     )
 
   class ProjectsLocationsService(base_api.BaseApiService):
     """Service class for the projects_locations resource."""
 
-    _NAME = u'projects_locations'
+    _NAME = 'projects_locations'
 
     def __init__(self, client):
       super(DataprocV1beta2.ProjectsLocationsService, self).__init__(client)
@@ -566,7 +566,7 @@ class DataprocV1beta2(base_api.BaseApiClient):
   class ProjectsRegionsAutoscalingPoliciesService(base_api.BaseApiService):
     """Service class for the projects_regions_autoscalingPolicies resource."""
 
-    _NAME = u'projects_regions_autoscalingPolicies'
+    _NAME = 'projects_regions_autoscalingPolicies'
 
     def __init__(self, client):
       super(DataprocV1beta2.ProjectsRegionsAutoscalingPoliciesService, self).__init__(client)
@@ -587,16 +587,16 @@ class DataprocV1beta2(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Create.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta2/projects/{projectsId}/regions/{regionsId}/autoscalingPolicies',
-        http_method=u'POST',
-        method_id=u'dataproc.projects.regions.autoscalingPolicies.create',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
+        flat_path='v1beta2/projects/{projectsId}/regions/{regionsId}/autoscalingPolicies',
+        http_method='POST',
+        method_id='dataproc.projects.regions.autoscalingPolicies.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
         query_params=[],
-        relative_path=u'v1beta2/{+parent}/autoscalingPolicies',
-        request_field=u'autoscalingPolicy',
-        request_type_name=u'DataprocProjectsRegionsAutoscalingPoliciesCreateRequest',
-        response_type_name=u'AutoscalingPolicy',
+        relative_path='v1beta2/{+parent}/autoscalingPolicies',
+        request_field='autoscalingPolicy',
+        request_type_name='DataprocProjectsRegionsAutoscalingPoliciesCreateRequest',
+        response_type_name='AutoscalingPolicy',
         supports_download=False,
     )
 
@@ -614,16 +614,16 @@ class DataprocV1beta2(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Delete.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta2/projects/{projectsId}/regions/{regionsId}/autoscalingPolicies/{autoscalingPoliciesId}',
-        http_method=u'DELETE',
-        method_id=u'dataproc.projects.regions.autoscalingPolicies.delete',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1beta2/projects/{projectsId}/regions/{regionsId}/autoscalingPolicies/{autoscalingPoliciesId}',
+        http_method='DELETE',
+        method_id='dataproc.projects.regions.autoscalingPolicies.delete',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1beta2/{+name}',
+        relative_path='v1beta2/{+name}',
         request_field='',
-        request_type_name=u'DataprocProjectsRegionsAutoscalingPoliciesDeleteRequest',
-        response_type_name=u'Empty',
+        request_type_name='DataprocProjectsRegionsAutoscalingPoliciesDeleteRequest',
+        response_type_name='Empty',
         supports_download=False,
     )
 
@@ -641,16 +641,16 @@ class DataprocV1beta2(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta2/projects/{projectsId}/regions/{regionsId}/autoscalingPolicies/{autoscalingPoliciesId}',
-        http_method=u'GET',
-        method_id=u'dataproc.projects.regions.autoscalingPolicies.get',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1beta2/projects/{projectsId}/regions/{regionsId}/autoscalingPolicies/{autoscalingPoliciesId}',
+        http_method='GET',
+        method_id='dataproc.projects.regions.autoscalingPolicies.get',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1beta2/{+name}',
+        relative_path='v1beta2/{+name}',
         request_field='',
-        request_type_name=u'DataprocProjectsRegionsAutoscalingPoliciesGetRequest',
-        response_type_name=u'AutoscalingPolicy',
+        request_type_name='DataprocProjectsRegionsAutoscalingPoliciesGetRequest',
+        response_type_name='AutoscalingPolicy',
         supports_download=False,
     )
 
@@ -668,16 +668,16 @@ class DataprocV1beta2(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     GetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta2/projects/{projectsId}/regions/{regionsId}/autoscalingPolicies/{autoscalingPoliciesId}:getIamPolicy',
-        http_method=u'GET',
-        method_id=u'dataproc.projects.regions.autoscalingPolicies.getIamPolicy',
-        ordered_params=[u'resource'],
-        path_params=[u'resource'],
-        query_params=[u'options_requestedPolicyVersion'],
-        relative_path=u'v1beta2/{+resource}:getIamPolicy',
+        flat_path='v1beta2/projects/{projectsId}/regions/{regionsId}/autoscalingPolicies/{autoscalingPoliciesId}:getIamPolicy',
+        http_method='GET',
+        method_id='dataproc.projects.regions.autoscalingPolicies.getIamPolicy',
+        ordered_params=['resource'],
+        path_params=['resource'],
+        query_params=['options_requestedPolicyVersion'],
+        relative_path='v1beta2/{+resource}:getIamPolicy',
         request_field='',
-        request_type_name=u'DataprocProjectsRegionsAutoscalingPoliciesGetIamPolicyRequest',
-        response_type_name=u'Policy',
+        request_type_name='DataprocProjectsRegionsAutoscalingPoliciesGetIamPolicyRequest',
+        response_type_name='Policy',
         supports_download=False,
     )
 
@@ -695,16 +695,16 @@ class DataprocV1beta2(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta2/projects/{projectsId}/regions/{regionsId}/autoscalingPolicies',
-        http_method=u'GET',
-        method_id=u'dataproc.projects.regions.autoscalingPolicies.list',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'pageSize', u'pageToken'],
-        relative_path=u'v1beta2/{+parent}/autoscalingPolicies',
+        flat_path='v1beta2/projects/{projectsId}/regions/{regionsId}/autoscalingPolicies',
+        http_method='GET',
+        method_id='dataproc.projects.regions.autoscalingPolicies.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v1beta2/{+parent}/autoscalingPolicies',
         request_field='',
-        request_type_name=u'DataprocProjectsRegionsAutoscalingPoliciesListRequest',
-        response_type_name=u'ListAutoscalingPoliciesResponse',
+        request_type_name='DataprocProjectsRegionsAutoscalingPoliciesListRequest',
+        response_type_name='ListAutoscalingPoliciesResponse',
         supports_download=False,
     )
 
@@ -722,16 +722,16 @@ class DataprocV1beta2(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     SetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta2/projects/{projectsId}/regions/{regionsId}/autoscalingPolicies/{autoscalingPoliciesId}:setIamPolicy',
-        http_method=u'POST',
-        method_id=u'dataproc.projects.regions.autoscalingPolicies.setIamPolicy',
-        ordered_params=[u'resource'],
-        path_params=[u'resource'],
+        flat_path='v1beta2/projects/{projectsId}/regions/{regionsId}/autoscalingPolicies/{autoscalingPoliciesId}:setIamPolicy',
+        http_method='POST',
+        method_id='dataproc.projects.regions.autoscalingPolicies.setIamPolicy',
+        ordered_params=['resource'],
+        path_params=['resource'],
         query_params=[],
-        relative_path=u'v1beta2/{+resource}:setIamPolicy',
-        request_field=u'setIamPolicyRequest',
-        request_type_name=u'DataprocProjectsRegionsAutoscalingPoliciesSetIamPolicyRequest',
-        response_type_name=u'Policy',
+        relative_path='v1beta2/{+resource}:setIamPolicy',
+        request_field='setIamPolicyRequest',
+        request_type_name='DataprocProjectsRegionsAutoscalingPoliciesSetIamPolicyRequest',
+        response_type_name='Policy',
         supports_download=False,
     )
 
@@ -749,16 +749,16 @@ class DataprocV1beta2(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     TestIamPermissions.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta2/projects/{projectsId}/regions/{regionsId}/autoscalingPolicies/{autoscalingPoliciesId}:testIamPermissions',
-        http_method=u'POST',
-        method_id=u'dataproc.projects.regions.autoscalingPolicies.testIamPermissions',
-        ordered_params=[u'resource'],
-        path_params=[u'resource'],
+        flat_path='v1beta2/projects/{projectsId}/regions/{regionsId}/autoscalingPolicies/{autoscalingPoliciesId}:testIamPermissions',
+        http_method='POST',
+        method_id='dataproc.projects.regions.autoscalingPolicies.testIamPermissions',
+        ordered_params=['resource'],
+        path_params=['resource'],
         query_params=[],
-        relative_path=u'v1beta2/{+resource}:testIamPermissions',
-        request_field=u'testIamPermissionsRequest',
-        request_type_name=u'DataprocProjectsRegionsAutoscalingPoliciesTestIamPermissionsRequest',
-        response_type_name=u'TestIamPermissionsResponse',
+        relative_path='v1beta2/{+resource}:testIamPermissions',
+        request_field='testIamPermissionsRequest',
+        request_type_name='DataprocProjectsRegionsAutoscalingPoliciesTestIamPermissionsRequest',
+        response_type_name='TestIamPermissionsResponse',
         supports_download=False,
     )
 
@@ -776,23 +776,23 @@ class DataprocV1beta2(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Update.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta2/projects/{projectsId}/regions/{regionsId}/autoscalingPolicies/{autoscalingPoliciesId}',
-        http_method=u'PUT',
-        method_id=u'dataproc.projects.regions.autoscalingPolicies.update',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1beta2/projects/{projectsId}/regions/{regionsId}/autoscalingPolicies/{autoscalingPoliciesId}',
+        http_method='PUT',
+        method_id='dataproc.projects.regions.autoscalingPolicies.update',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1beta2/{+name}',
+        relative_path='v1beta2/{+name}',
         request_field='<request>',
-        request_type_name=u'AutoscalingPolicy',
-        response_type_name=u'AutoscalingPolicy',
+        request_type_name='AutoscalingPolicy',
+        response_type_name='AutoscalingPolicy',
         supports_download=False,
     )
 
   class ProjectsRegionsClustersService(base_api.BaseApiService):
     """Service class for the projects_regions_clusters resource."""
 
-    _NAME = u'projects_regions_clusters'
+    _NAME = 'projects_regions_clusters'
 
     def __init__(self, client):
       super(DataprocV1beta2.ProjectsRegionsClustersService, self).__init__(client)
@@ -813,15 +813,15 @@ class DataprocV1beta2(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Create.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'dataproc.projects.regions.clusters.create',
-        ordered_params=[u'projectId', u'region'],
-        path_params=[u'projectId', u'region'],
-        query_params=[u'deleteOnFailure', u'diagnoseOnFailure', u'requestId'],
-        relative_path=u'v1beta2/projects/{projectId}/regions/{region}/clusters',
-        request_field=u'cluster',
-        request_type_name=u'DataprocProjectsRegionsClustersCreateRequest',
-        response_type_name=u'Operation',
+        http_method='POST',
+        method_id='dataproc.projects.regions.clusters.create',
+        ordered_params=['projectId', 'region'],
+        path_params=['projectId', 'region'],
+        query_params=['deleteOnFailure', 'diagnoseOnFailure', 'requestId'],
+        relative_path='v1beta2/projects/{projectId}/regions/{region}/clusters',
+        request_field='cluster',
+        request_type_name='DataprocProjectsRegionsClustersCreateRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -839,15 +839,15 @@ class DataprocV1beta2(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Delete.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'DELETE',
-        method_id=u'dataproc.projects.regions.clusters.delete',
-        ordered_params=[u'projectId', u'region', u'clusterName'],
-        path_params=[u'clusterName', u'projectId', u'region'],
-        query_params=[u'clusterUuid', u'requestId'],
-        relative_path=u'v1beta2/projects/{projectId}/regions/{region}/clusters/{clusterName}',
+        http_method='DELETE',
+        method_id='dataproc.projects.regions.clusters.delete',
+        ordered_params=['projectId', 'region', 'clusterName'],
+        path_params=['clusterName', 'projectId', 'region'],
+        query_params=['clusterUuid', 'requestId'],
+        relative_path='v1beta2/projects/{projectId}/regions/{region}/clusters/{clusterName}',
         request_field='',
-        request_type_name=u'DataprocProjectsRegionsClustersDeleteRequest',
-        response_type_name=u'Operation',
+        request_type_name='DataprocProjectsRegionsClustersDeleteRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -865,15 +865,15 @@ class DataprocV1beta2(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Diagnose.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'dataproc.projects.regions.clusters.diagnose',
-        ordered_params=[u'projectId', u'region', u'clusterName'],
-        path_params=[u'clusterName', u'projectId', u'region'],
+        http_method='POST',
+        method_id='dataproc.projects.regions.clusters.diagnose',
+        ordered_params=['projectId', 'region', 'clusterName'],
+        path_params=['clusterName', 'projectId', 'region'],
         query_params=[],
-        relative_path=u'v1beta2/projects/{projectId}/regions/{region}/clusters/{clusterName}:diagnose',
-        request_field=u'diagnoseClusterRequest',
-        request_type_name=u'DataprocProjectsRegionsClustersDiagnoseRequest',
-        response_type_name=u'Operation',
+        relative_path='v1beta2/projects/{projectId}/regions/{region}/clusters/{clusterName}:diagnose',
+        request_field='diagnoseClusterRequest',
+        request_type_name='DataprocProjectsRegionsClustersDiagnoseRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -891,15 +891,15 @@ class DataprocV1beta2(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'dataproc.projects.regions.clusters.get',
-        ordered_params=[u'projectId', u'region', u'clusterName'],
-        path_params=[u'clusterName', u'projectId', u'region'],
+        http_method='GET',
+        method_id='dataproc.projects.regions.clusters.get',
+        ordered_params=['projectId', 'region', 'clusterName'],
+        path_params=['clusterName', 'projectId', 'region'],
         query_params=[],
-        relative_path=u'v1beta2/projects/{projectId}/regions/{region}/clusters/{clusterName}',
+        relative_path='v1beta2/projects/{projectId}/regions/{region}/clusters/{clusterName}',
         request_field='',
-        request_type_name=u'DataprocProjectsRegionsClustersGetRequest',
-        response_type_name=u'Cluster',
+        request_type_name='DataprocProjectsRegionsClustersGetRequest',
+        response_type_name='Cluster',
         supports_download=False,
     )
 
@@ -917,16 +917,16 @@ class DataprocV1beta2(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     GetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta2/projects/{projectsId}/regions/{regionsId}/clusters/{clustersId}:getIamPolicy',
-        http_method=u'GET',
-        method_id=u'dataproc.projects.regions.clusters.getIamPolicy',
-        ordered_params=[u'resource'],
-        path_params=[u'resource'],
-        query_params=[u'options_requestedPolicyVersion'],
-        relative_path=u'v1beta2/{+resource}:getIamPolicy',
+        flat_path='v1beta2/projects/{projectsId}/regions/{regionsId}/clusters/{clustersId}:getIamPolicy',
+        http_method='GET',
+        method_id='dataproc.projects.regions.clusters.getIamPolicy',
+        ordered_params=['resource'],
+        path_params=['resource'],
+        query_params=['options_requestedPolicyVersion'],
+        relative_path='v1beta2/{+resource}:getIamPolicy',
         request_field='',
-        request_type_name=u'DataprocProjectsRegionsClustersGetIamPolicyRequest',
-        response_type_name=u'Policy',
+        request_type_name='DataprocProjectsRegionsClustersGetIamPolicyRequest',
+        response_type_name='Policy',
         supports_download=False,
     )
 
@@ -944,15 +944,15 @@ class DataprocV1beta2(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'dataproc.projects.regions.clusters.list',
-        ordered_params=[u'projectId', u'region'],
-        path_params=[u'projectId', u'region'],
-        query_params=[u'filter', u'pageSize', u'pageToken'],
-        relative_path=u'v1beta2/projects/{projectId}/regions/{region}/clusters',
+        http_method='GET',
+        method_id='dataproc.projects.regions.clusters.list',
+        ordered_params=['projectId', 'region'],
+        path_params=['projectId', 'region'],
+        query_params=['filter', 'pageSize', 'pageToken'],
+        relative_path='v1beta2/projects/{projectId}/regions/{region}/clusters',
         request_field='',
-        request_type_name=u'DataprocProjectsRegionsClustersListRequest',
-        response_type_name=u'ListClustersResponse',
+        request_type_name='DataprocProjectsRegionsClustersListRequest',
+        response_type_name='ListClustersResponse',
         supports_download=False,
     )
 
@@ -970,15 +970,15 @@ class DataprocV1beta2(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Patch.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'PATCH',
-        method_id=u'dataproc.projects.regions.clusters.patch',
-        ordered_params=[u'projectId', u'region', u'clusterName'],
-        path_params=[u'clusterName', u'projectId', u'region'],
-        query_params=[u'gracefulDecommissionTimeout', u'requestId', u'updateMask'],
-        relative_path=u'v1beta2/projects/{projectId}/regions/{region}/clusters/{clusterName}',
-        request_field=u'cluster',
-        request_type_name=u'DataprocProjectsRegionsClustersPatchRequest',
-        response_type_name=u'Operation',
+        http_method='PATCH',
+        method_id='dataproc.projects.regions.clusters.patch',
+        ordered_params=['projectId', 'region', 'clusterName'],
+        path_params=['clusterName', 'projectId', 'region'],
+        query_params=['gracefulDecommissionTimeout', 'requestId', 'updateMask'],
+        relative_path='v1beta2/projects/{projectId}/regions/{region}/clusters/{clusterName}',
+        request_field='cluster',
+        request_type_name='DataprocProjectsRegionsClustersPatchRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -996,16 +996,16 @@ class DataprocV1beta2(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     SetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta2/projects/{projectsId}/regions/{regionsId}/clusters/{clustersId}:setIamPolicy',
-        http_method=u'POST',
-        method_id=u'dataproc.projects.regions.clusters.setIamPolicy',
-        ordered_params=[u'resource'],
-        path_params=[u'resource'],
+        flat_path='v1beta2/projects/{projectsId}/regions/{regionsId}/clusters/{clustersId}:setIamPolicy',
+        http_method='POST',
+        method_id='dataproc.projects.regions.clusters.setIamPolicy',
+        ordered_params=['resource'],
+        path_params=['resource'],
         query_params=[],
-        relative_path=u'v1beta2/{+resource}:setIamPolicy',
-        request_field=u'setIamPolicyRequest',
-        request_type_name=u'DataprocProjectsRegionsClustersSetIamPolicyRequest',
-        response_type_name=u'Policy',
+        relative_path='v1beta2/{+resource}:setIamPolicy',
+        request_field='setIamPolicyRequest',
+        request_type_name='DataprocProjectsRegionsClustersSetIamPolicyRequest',
+        response_type_name='Policy',
         supports_download=False,
     )
 
@@ -1023,15 +1023,15 @@ class DataprocV1beta2(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Start.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'dataproc.projects.regions.clusters.start',
-        ordered_params=[u'projectId', u'region', u'clusterName'],
-        path_params=[u'clusterName', u'projectId', u'region'],
+        http_method='POST',
+        method_id='dataproc.projects.regions.clusters.start',
+        ordered_params=['projectId', 'region', 'clusterName'],
+        path_params=['clusterName', 'projectId', 'region'],
         query_params=[],
-        relative_path=u'v1beta2/projects/{projectId}/regions/{region}/clusters/{clusterName}:start',
-        request_field=u'startClusterRequest',
-        request_type_name=u'DataprocProjectsRegionsClustersStartRequest',
-        response_type_name=u'Operation',
+        relative_path='v1beta2/projects/{projectId}/regions/{region}/clusters/{clusterName}:start',
+        request_field='startClusterRequest',
+        request_type_name='DataprocProjectsRegionsClustersStartRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -1049,15 +1049,15 @@ class DataprocV1beta2(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Stop.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'dataproc.projects.regions.clusters.stop',
-        ordered_params=[u'projectId', u'region', u'clusterName'],
-        path_params=[u'clusterName', u'projectId', u'region'],
+        http_method='POST',
+        method_id='dataproc.projects.regions.clusters.stop',
+        ordered_params=['projectId', 'region', 'clusterName'],
+        path_params=['clusterName', 'projectId', 'region'],
         query_params=[],
-        relative_path=u'v1beta2/projects/{projectId}/regions/{region}/clusters/{clusterName}:stop',
-        request_field=u'stopClusterRequest',
-        request_type_name=u'DataprocProjectsRegionsClustersStopRequest',
-        response_type_name=u'Operation',
+        relative_path='v1beta2/projects/{projectId}/regions/{region}/clusters/{clusterName}:stop',
+        request_field='stopClusterRequest',
+        request_type_name='DataprocProjectsRegionsClustersStopRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -1075,23 +1075,23 @@ class DataprocV1beta2(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     TestIamPermissions.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta2/projects/{projectsId}/regions/{regionsId}/clusters/{clustersId}:testIamPermissions',
-        http_method=u'POST',
-        method_id=u'dataproc.projects.regions.clusters.testIamPermissions',
-        ordered_params=[u'resource'],
-        path_params=[u'resource'],
+        flat_path='v1beta2/projects/{projectsId}/regions/{regionsId}/clusters/{clustersId}:testIamPermissions',
+        http_method='POST',
+        method_id='dataproc.projects.regions.clusters.testIamPermissions',
+        ordered_params=['resource'],
+        path_params=['resource'],
         query_params=[],
-        relative_path=u'v1beta2/{+resource}:testIamPermissions',
-        request_field=u'testIamPermissionsRequest',
-        request_type_name=u'DataprocProjectsRegionsClustersTestIamPermissionsRequest',
-        response_type_name=u'TestIamPermissionsResponse',
+        relative_path='v1beta2/{+resource}:testIamPermissions',
+        request_field='testIamPermissionsRequest',
+        request_type_name='DataprocProjectsRegionsClustersTestIamPermissionsRequest',
+        response_type_name='TestIamPermissionsResponse',
         supports_download=False,
     )
 
   class ProjectsRegionsJobsService(base_api.BaseApiService):
     """Service class for the projects_regions_jobs resource."""
 
-    _NAME = u'projects_regions_jobs'
+    _NAME = 'projects_regions_jobs'
 
     def __init__(self, client):
       super(DataprocV1beta2.ProjectsRegionsJobsService, self).__init__(client)
@@ -1112,15 +1112,15 @@ class DataprocV1beta2(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Cancel.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'dataproc.projects.regions.jobs.cancel',
-        ordered_params=[u'projectId', u'region', u'jobId'],
-        path_params=[u'jobId', u'projectId', u'region'],
+        http_method='POST',
+        method_id='dataproc.projects.regions.jobs.cancel',
+        ordered_params=['projectId', 'region', 'jobId'],
+        path_params=['jobId', 'projectId', 'region'],
         query_params=[],
-        relative_path=u'v1beta2/projects/{projectId}/regions/{region}/jobs/{jobId}:cancel',
-        request_field=u'cancelJobRequest',
-        request_type_name=u'DataprocProjectsRegionsJobsCancelRequest',
-        response_type_name=u'Job',
+        relative_path='v1beta2/projects/{projectId}/regions/{region}/jobs/{jobId}:cancel',
+        request_field='cancelJobRequest',
+        request_type_name='DataprocProjectsRegionsJobsCancelRequest',
+        response_type_name='Job',
         supports_download=False,
     )
 
@@ -1138,15 +1138,15 @@ class DataprocV1beta2(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Delete.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'DELETE',
-        method_id=u'dataproc.projects.regions.jobs.delete',
-        ordered_params=[u'projectId', u'region', u'jobId'],
-        path_params=[u'jobId', u'projectId', u'region'],
+        http_method='DELETE',
+        method_id='dataproc.projects.regions.jobs.delete',
+        ordered_params=['projectId', 'region', 'jobId'],
+        path_params=['jobId', 'projectId', 'region'],
         query_params=[],
-        relative_path=u'v1beta2/projects/{projectId}/regions/{region}/jobs/{jobId}',
+        relative_path='v1beta2/projects/{projectId}/regions/{region}/jobs/{jobId}',
         request_field='',
-        request_type_name=u'DataprocProjectsRegionsJobsDeleteRequest',
-        response_type_name=u'Empty',
+        request_type_name='DataprocProjectsRegionsJobsDeleteRequest',
+        response_type_name='Empty',
         supports_download=False,
     )
 
@@ -1164,15 +1164,15 @@ class DataprocV1beta2(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'dataproc.projects.regions.jobs.get',
-        ordered_params=[u'projectId', u'region', u'jobId'],
-        path_params=[u'jobId', u'projectId', u'region'],
+        http_method='GET',
+        method_id='dataproc.projects.regions.jobs.get',
+        ordered_params=['projectId', 'region', 'jobId'],
+        path_params=['jobId', 'projectId', 'region'],
         query_params=[],
-        relative_path=u'v1beta2/projects/{projectId}/regions/{region}/jobs/{jobId}',
+        relative_path='v1beta2/projects/{projectId}/regions/{region}/jobs/{jobId}',
         request_field='',
-        request_type_name=u'DataprocProjectsRegionsJobsGetRequest',
-        response_type_name=u'Job',
+        request_type_name='DataprocProjectsRegionsJobsGetRequest',
+        response_type_name='Job',
         supports_download=False,
     )
 
@@ -1190,16 +1190,16 @@ class DataprocV1beta2(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     GetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta2/projects/{projectsId}/regions/{regionsId}/jobs/{jobsId}:getIamPolicy',
-        http_method=u'GET',
-        method_id=u'dataproc.projects.regions.jobs.getIamPolicy',
-        ordered_params=[u'resource'],
-        path_params=[u'resource'],
-        query_params=[u'options_requestedPolicyVersion'],
-        relative_path=u'v1beta2/{+resource}:getIamPolicy',
+        flat_path='v1beta2/projects/{projectsId}/regions/{regionsId}/jobs/{jobsId}:getIamPolicy',
+        http_method='GET',
+        method_id='dataproc.projects.regions.jobs.getIamPolicy',
+        ordered_params=['resource'],
+        path_params=['resource'],
+        query_params=['options_requestedPolicyVersion'],
+        relative_path='v1beta2/{+resource}:getIamPolicy',
         request_field='',
-        request_type_name=u'DataprocProjectsRegionsJobsGetIamPolicyRequest',
-        response_type_name=u'Policy',
+        request_type_name='DataprocProjectsRegionsJobsGetIamPolicyRequest',
+        response_type_name='Policy',
         supports_download=False,
     )
 
@@ -1217,15 +1217,15 @@ class DataprocV1beta2(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'dataproc.projects.regions.jobs.list',
-        ordered_params=[u'projectId', u'region'],
-        path_params=[u'projectId', u'region'],
-        query_params=[u'clusterName', u'filter', u'jobStateMatcher', u'pageSize', u'pageToken'],
-        relative_path=u'v1beta2/projects/{projectId}/regions/{region}/jobs',
+        http_method='GET',
+        method_id='dataproc.projects.regions.jobs.list',
+        ordered_params=['projectId', 'region'],
+        path_params=['projectId', 'region'],
+        query_params=['clusterName', 'filter', 'jobStateMatcher', 'pageSize', 'pageToken'],
+        relative_path='v1beta2/projects/{projectId}/regions/{region}/jobs',
         request_field='',
-        request_type_name=u'DataprocProjectsRegionsJobsListRequest',
-        response_type_name=u'ListJobsResponse',
+        request_type_name='DataprocProjectsRegionsJobsListRequest',
+        response_type_name='ListJobsResponse',
         supports_download=False,
     )
 
@@ -1243,15 +1243,15 @@ class DataprocV1beta2(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Patch.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'PATCH',
-        method_id=u'dataproc.projects.regions.jobs.patch',
-        ordered_params=[u'projectId', u'region', u'jobId'],
-        path_params=[u'jobId', u'projectId', u'region'],
-        query_params=[u'updateMask'],
-        relative_path=u'v1beta2/projects/{projectId}/regions/{region}/jobs/{jobId}',
-        request_field=u'job',
-        request_type_name=u'DataprocProjectsRegionsJobsPatchRequest',
-        response_type_name=u'Job',
+        http_method='PATCH',
+        method_id='dataproc.projects.regions.jobs.patch',
+        ordered_params=['projectId', 'region', 'jobId'],
+        path_params=['jobId', 'projectId', 'region'],
+        query_params=['updateMask'],
+        relative_path='v1beta2/projects/{projectId}/regions/{region}/jobs/{jobId}',
+        request_field='job',
+        request_type_name='DataprocProjectsRegionsJobsPatchRequest',
+        response_type_name='Job',
         supports_download=False,
     )
 
@@ -1269,16 +1269,16 @@ class DataprocV1beta2(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     SetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta2/projects/{projectsId}/regions/{regionsId}/jobs/{jobsId}:setIamPolicy',
-        http_method=u'POST',
-        method_id=u'dataproc.projects.regions.jobs.setIamPolicy',
-        ordered_params=[u'resource'],
-        path_params=[u'resource'],
+        flat_path='v1beta2/projects/{projectsId}/regions/{regionsId}/jobs/{jobsId}:setIamPolicy',
+        http_method='POST',
+        method_id='dataproc.projects.regions.jobs.setIamPolicy',
+        ordered_params=['resource'],
+        path_params=['resource'],
         query_params=[],
-        relative_path=u'v1beta2/{+resource}:setIamPolicy',
-        request_field=u'setIamPolicyRequest',
-        request_type_name=u'DataprocProjectsRegionsJobsSetIamPolicyRequest',
-        response_type_name=u'Policy',
+        relative_path='v1beta2/{+resource}:setIamPolicy',
+        request_field='setIamPolicyRequest',
+        request_type_name='DataprocProjectsRegionsJobsSetIamPolicyRequest',
+        response_type_name='Policy',
         supports_download=False,
     )
 
@@ -1296,15 +1296,15 @@ class DataprocV1beta2(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Submit.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'dataproc.projects.regions.jobs.submit',
-        ordered_params=[u'projectId', u'region'],
-        path_params=[u'projectId', u'region'],
+        http_method='POST',
+        method_id='dataproc.projects.regions.jobs.submit',
+        ordered_params=['projectId', 'region'],
+        path_params=['projectId', 'region'],
         query_params=[],
-        relative_path=u'v1beta2/projects/{projectId}/regions/{region}/jobs:submit',
-        request_field=u'submitJobRequest',
-        request_type_name=u'DataprocProjectsRegionsJobsSubmitRequest',
-        response_type_name=u'Job',
+        relative_path='v1beta2/projects/{projectId}/regions/{region}/jobs:submit',
+        request_field='submitJobRequest',
+        request_type_name='DataprocProjectsRegionsJobsSubmitRequest',
+        response_type_name='Job',
         supports_download=False,
     )
 
@@ -1322,15 +1322,15 @@ class DataprocV1beta2(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     SubmitAsOperation.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'dataproc.projects.regions.jobs.submitAsOperation',
-        ordered_params=[u'projectId', u'region'],
-        path_params=[u'projectId', u'region'],
+        http_method='POST',
+        method_id='dataproc.projects.regions.jobs.submitAsOperation',
+        ordered_params=['projectId', 'region'],
+        path_params=['projectId', 'region'],
         query_params=[],
-        relative_path=u'v1beta2/projects/{projectId}/regions/{region}/jobs:submitAsOperation',
-        request_field=u'submitJobRequest',
-        request_type_name=u'DataprocProjectsRegionsJobsSubmitAsOperationRequest',
-        response_type_name=u'Operation',
+        relative_path='v1beta2/projects/{projectId}/regions/{region}/jobs:submitAsOperation',
+        request_field='submitJobRequest',
+        request_type_name='DataprocProjectsRegionsJobsSubmitAsOperationRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -1348,23 +1348,23 @@ class DataprocV1beta2(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     TestIamPermissions.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta2/projects/{projectsId}/regions/{regionsId}/jobs/{jobsId}:testIamPermissions',
-        http_method=u'POST',
-        method_id=u'dataproc.projects.regions.jobs.testIamPermissions',
-        ordered_params=[u'resource'],
-        path_params=[u'resource'],
+        flat_path='v1beta2/projects/{projectsId}/regions/{regionsId}/jobs/{jobsId}:testIamPermissions',
+        http_method='POST',
+        method_id='dataproc.projects.regions.jobs.testIamPermissions',
+        ordered_params=['resource'],
+        path_params=['resource'],
         query_params=[],
-        relative_path=u'v1beta2/{+resource}:testIamPermissions',
-        request_field=u'testIamPermissionsRequest',
-        request_type_name=u'DataprocProjectsRegionsJobsTestIamPermissionsRequest',
-        response_type_name=u'TestIamPermissionsResponse',
+        relative_path='v1beta2/{+resource}:testIamPermissions',
+        request_field='testIamPermissionsRequest',
+        request_type_name='DataprocProjectsRegionsJobsTestIamPermissionsRequest',
+        response_type_name='TestIamPermissionsResponse',
         supports_download=False,
     )
 
   class ProjectsRegionsOperationsService(base_api.BaseApiService):
     """Service class for the projects_regions_operations resource."""
 
-    _NAME = u'projects_regions_operations'
+    _NAME = 'projects_regions_operations'
 
     def __init__(self, client):
       super(DataprocV1beta2.ProjectsRegionsOperationsService, self).__init__(client)
@@ -1385,16 +1385,16 @@ class DataprocV1beta2(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Cancel.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta2/projects/{projectsId}/regions/{regionsId}/operations/{operationsId}:cancel',
-        http_method=u'POST',
-        method_id=u'dataproc.projects.regions.operations.cancel',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1beta2/projects/{projectsId}/regions/{regionsId}/operations/{operationsId}:cancel',
+        http_method='POST',
+        method_id='dataproc.projects.regions.operations.cancel',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1beta2/{+name}:cancel',
+        relative_path='v1beta2/{+name}:cancel',
         request_field='',
-        request_type_name=u'DataprocProjectsRegionsOperationsCancelRequest',
-        response_type_name=u'Empty',
+        request_type_name='DataprocProjectsRegionsOperationsCancelRequest',
+        response_type_name='Empty',
         supports_download=False,
     )
 
@@ -1412,16 +1412,16 @@ class DataprocV1beta2(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Delete.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta2/projects/{projectsId}/regions/{regionsId}/operations/{operationsId}',
-        http_method=u'DELETE',
-        method_id=u'dataproc.projects.regions.operations.delete',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1beta2/projects/{projectsId}/regions/{regionsId}/operations/{operationsId}',
+        http_method='DELETE',
+        method_id='dataproc.projects.regions.operations.delete',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1beta2/{+name}',
+        relative_path='v1beta2/{+name}',
         request_field='',
-        request_type_name=u'DataprocProjectsRegionsOperationsDeleteRequest',
-        response_type_name=u'Empty',
+        request_type_name='DataprocProjectsRegionsOperationsDeleteRequest',
+        response_type_name='Empty',
         supports_download=False,
     )
 
@@ -1439,16 +1439,16 @@ class DataprocV1beta2(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta2/projects/{projectsId}/regions/{regionsId}/operations/{operationsId}',
-        http_method=u'GET',
-        method_id=u'dataproc.projects.regions.operations.get',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1beta2/projects/{projectsId}/regions/{regionsId}/operations/{operationsId}',
+        http_method='GET',
+        method_id='dataproc.projects.regions.operations.get',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1beta2/{+name}',
+        relative_path='v1beta2/{+name}',
         request_field='',
-        request_type_name=u'DataprocProjectsRegionsOperationsGetRequest',
-        response_type_name=u'Operation',
+        request_type_name='DataprocProjectsRegionsOperationsGetRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -1466,16 +1466,16 @@ class DataprocV1beta2(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     GetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta2/projects/{projectsId}/regions/{regionsId}/operations/{operationsId}:getIamPolicy',
-        http_method=u'GET',
-        method_id=u'dataproc.projects.regions.operations.getIamPolicy',
-        ordered_params=[u'resource'],
-        path_params=[u'resource'],
-        query_params=[u'options_requestedPolicyVersion'],
-        relative_path=u'v1beta2/{+resource}:getIamPolicy',
+        flat_path='v1beta2/projects/{projectsId}/regions/{regionsId}/operations/{operationsId}:getIamPolicy',
+        http_method='GET',
+        method_id='dataproc.projects.regions.operations.getIamPolicy',
+        ordered_params=['resource'],
+        path_params=['resource'],
+        query_params=['options_requestedPolicyVersion'],
+        relative_path='v1beta2/{+resource}:getIamPolicy',
         request_field='',
-        request_type_name=u'DataprocProjectsRegionsOperationsGetIamPolicyRequest',
-        response_type_name=u'Policy',
+        request_type_name='DataprocProjectsRegionsOperationsGetIamPolicyRequest',
+        response_type_name='Policy',
         supports_download=False,
     )
 
@@ -1493,16 +1493,16 @@ class DataprocV1beta2(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta2/projects/{projectsId}/regions/{regionsId}/operations',
-        http_method=u'GET',
-        method_id=u'dataproc.projects.regions.operations.list',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[u'filter', u'pageSize', u'pageToken'],
-        relative_path=u'v1beta2/{+name}',
+        flat_path='v1beta2/projects/{projectsId}/regions/{regionsId}/operations',
+        http_method='GET',
+        method_id='dataproc.projects.regions.operations.list',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['filter', 'pageSize', 'pageToken'],
+        relative_path='v1beta2/{+name}',
         request_field='',
-        request_type_name=u'DataprocProjectsRegionsOperationsListRequest',
-        response_type_name=u'ListOperationsResponse',
+        request_type_name='DataprocProjectsRegionsOperationsListRequest',
+        response_type_name='ListOperationsResponse',
         supports_download=False,
     )
 
@@ -1520,16 +1520,16 @@ class DataprocV1beta2(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     SetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta2/projects/{projectsId}/regions/{regionsId}/operations/{operationsId}:setIamPolicy',
-        http_method=u'POST',
-        method_id=u'dataproc.projects.regions.operations.setIamPolicy',
-        ordered_params=[u'resource'],
-        path_params=[u'resource'],
+        flat_path='v1beta2/projects/{projectsId}/regions/{regionsId}/operations/{operationsId}:setIamPolicy',
+        http_method='POST',
+        method_id='dataproc.projects.regions.operations.setIamPolicy',
+        ordered_params=['resource'],
+        path_params=['resource'],
         query_params=[],
-        relative_path=u'v1beta2/{+resource}:setIamPolicy',
-        request_field=u'setIamPolicyRequest',
-        request_type_name=u'DataprocProjectsRegionsOperationsSetIamPolicyRequest',
-        response_type_name=u'Policy',
+        relative_path='v1beta2/{+resource}:setIamPolicy',
+        request_field='setIamPolicyRequest',
+        request_type_name='DataprocProjectsRegionsOperationsSetIamPolicyRequest',
+        response_type_name='Policy',
         supports_download=False,
     )
 
@@ -1547,23 +1547,23 @@ class DataprocV1beta2(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     TestIamPermissions.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta2/projects/{projectsId}/regions/{regionsId}/operations/{operationsId}:testIamPermissions',
-        http_method=u'POST',
-        method_id=u'dataproc.projects.regions.operations.testIamPermissions',
-        ordered_params=[u'resource'],
-        path_params=[u'resource'],
+        flat_path='v1beta2/projects/{projectsId}/regions/{regionsId}/operations/{operationsId}:testIamPermissions',
+        http_method='POST',
+        method_id='dataproc.projects.regions.operations.testIamPermissions',
+        ordered_params=['resource'],
+        path_params=['resource'],
         query_params=[],
-        relative_path=u'v1beta2/{+resource}:testIamPermissions',
-        request_field=u'testIamPermissionsRequest',
-        request_type_name=u'DataprocProjectsRegionsOperationsTestIamPermissionsRequest',
-        response_type_name=u'TestIamPermissionsResponse',
+        relative_path='v1beta2/{+resource}:testIamPermissions',
+        request_field='testIamPermissionsRequest',
+        request_type_name='DataprocProjectsRegionsOperationsTestIamPermissionsRequest',
+        response_type_name='TestIamPermissionsResponse',
         supports_download=False,
     )
 
   class ProjectsRegionsWorkflowTemplatesService(base_api.BaseApiService):
     """Service class for the projects_regions_workflowTemplates resource."""
 
-    _NAME = u'projects_regions_workflowTemplates'
+    _NAME = 'projects_regions_workflowTemplates'
 
     def __init__(self, client):
       super(DataprocV1beta2.ProjectsRegionsWorkflowTemplatesService, self).__init__(client)
@@ -1584,16 +1584,16 @@ class DataprocV1beta2(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Create.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta2/projects/{projectsId}/regions/{regionsId}/workflowTemplates',
-        http_method=u'POST',
-        method_id=u'dataproc.projects.regions.workflowTemplates.create',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
+        flat_path='v1beta2/projects/{projectsId}/regions/{regionsId}/workflowTemplates',
+        http_method='POST',
+        method_id='dataproc.projects.regions.workflowTemplates.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
         query_params=[],
-        relative_path=u'v1beta2/{+parent}/workflowTemplates',
-        request_field=u'workflowTemplate',
-        request_type_name=u'DataprocProjectsRegionsWorkflowTemplatesCreateRequest',
-        response_type_name=u'WorkflowTemplate',
+        relative_path='v1beta2/{+parent}/workflowTemplates',
+        request_field='workflowTemplate',
+        request_type_name='DataprocProjectsRegionsWorkflowTemplatesCreateRequest',
+        response_type_name='WorkflowTemplate',
         supports_download=False,
     )
 
@@ -1611,16 +1611,16 @@ class DataprocV1beta2(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Delete.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta2/projects/{projectsId}/regions/{regionsId}/workflowTemplates/{workflowTemplatesId}',
-        http_method=u'DELETE',
-        method_id=u'dataproc.projects.regions.workflowTemplates.delete',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[u'version'],
-        relative_path=u'v1beta2/{+name}',
+        flat_path='v1beta2/projects/{projectsId}/regions/{regionsId}/workflowTemplates/{workflowTemplatesId}',
+        http_method='DELETE',
+        method_id='dataproc.projects.regions.workflowTemplates.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['version'],
+        relative_path='v1beta2/{+name}',
         request_field='',
-        request_type_name=u'DataprocProjectsRegionsWorkflowTemplatesDeleteRequest',
-        response_type_name=u'Empty',
+        request_type_name='DataprocProjectsRegionsWorkflowTemplatesDeleteRequest',
+        response_type_name='Empty',
         supports_download=False,
     )
 
@@ -1638,16 +1638,16 @@ class DataprocV1beta2(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta2/projects/{projectsId}/regions/{regionsId}/workflowTemplates/{workflowTemplatesId}',
-        http_method=u'GET',
-        method_id=u'dataproc.projects.regions.workflowTemplates.get',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[u'version'],
-        relative_path=u'v1beta2/{+name}',
+        flat_path='v1beta2/projects/{projectsId}/regions/{regionsId}/workflowTemplates/{workflowTemplatesId}',
+        http_method='GET',
+        method_id='dataproc.projects.regions.workflowTemplates.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['version'],
+        relative_path='v1beta2/{+name}',
         request_field='',
-        request_type_name=u'DataprocProjectsRegionsWorkflowTemplatesGetRequest',
-        response_type_name=u'WorkflowTemplate',
+        request_type_name='DataprocProjectsRegionsWorkflowTemplatesGetRequest',
+        response_type_name='WorkflowTemplate',
         supports_download=False,
     )
 
@@ -1665,16 +1665,16 @@ class DataprocV1beta2(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     GetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta2/projects/{projectsId}/regions/{regionsId}/workflowTemplates/{workflowTemplatesId}:getIamPolicy',
-        http_method=u'GET',
-        method_id=u'dataproc.projects.regions.workflowTemplates.getIamPolicy',
-        ordered_params=[u'resource'],
-        path_params=[u'resource'],
-        query_params=[u'options_requestedPolicyVersion'],
-        relative_path=u'v1beta2/{+resource}:getIamPolicy',
+        flat_path='v1beta2/projects/{projectsId}/regions/{regionsId}/workflowTemplates/{workflowTemplatesId}:getIamPolicy',
+        http_method='GET',
+        method_id='dataproc.projects.regions.workflowTemplates.getIamPolicy',
+        ordered_params=['resource'],
+        path_params=['resource'],
+        query_params=['options_requestedPolicyVersion'],
+        relative_path='v1beta2/{+resource}:getIamPolicy',
         request_field='',
-        request_type_name=u'DataprocProjectsRegionsWorkflowTemplatesGetIamPolicyRequest',
-        response_type_name=u'Policy',
+        request_type_name='DataprocProjectsRegionsWorkflowTemplatesGetIamPolicyRequest',
+        response_type_name='Policy',
         supports_download=False,
     )
 
@@ -1692,16 +1692,16 @@ class DataprocV1beta2(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Instantiate.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta2/projects/{projectsId}/regions/{regionsId}/workflowTemplates/{workflowTemplatesId}:instantiate',
-        http_method=u'POST',
-        method_id=u'dataproc.projects.regions.workflowTemplates.instantiate',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1beta2/projects/{projectsId}/regions/{regionsId}/workflowTemplates/{workflowTemplatesId}:instantiate',
+        http_method='POST',
+        method_id='dataproc.projects.regions.workflowTemplates.instantiate',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1beta2/{+name}:instantiate',
-        request_field=u'instantiateWorkflowTemplateRequest',
-        request_type_name=u'DataprocProjectsRegionsWorkflowTemplatesInstantiateRequest',
-        response_type_name=u'Operation',
+        relative_path='v1beta2/{+name}:instantiate',
+        request_field='instantiateWorkflowTemplateRequest',
+        request_type_name='DataprocProjectsRegionsWorkflowTemplatesInstantiateRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -1719,16 +1719,16 @@ class DataprocV1beta2(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     InstantiateInline.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta2/projects/{projectsId}/regions/{regionsId}/workflowTemplates:instantiateInline',
-        http_method=u'POST',
-        method_id=u'dataproc.projects.regions.workflowTemplates.instantiateInline',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'instanceId', u'requestId'],
-        relative_path=u'v1beta2/{+parent}/workflowTemplates:instantiateInline',
-        request_field=u'workflowTemplate',
-        request_type_name=u'DataprocProjectsRegionsWorkflowTemplatesInstantiateInlineRequest',
-        response_type_name=u'Operation',
+        flat_path='v1beta2/projects/{projectsId}/regions/{regionsId}/workflowTemplates:instantiateInline',
+        http_method='POST',
+        method_id='dataproc.projects.regions.workflowTemplates.instantiateInline',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['instanceId', 'requestId'],
+        relative_path='v1beta2/{+parent}/workflowTemplates:instantiateInline',
+        request_field='workflowTemplate',
+        request_type_name='DataprocProjectsRegionsWorkflowTemplatesInstantiateInlineRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -1746,16 +1746,16 @@ class DataprocV1beta2(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta2/projects/{projectsId}/regions/{regionsId}/workflowTemplates',
-        http_method=u'GET',
-        method_id=u'dataproc.projects.regions.workflowTemplates.list',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'pageSize', u'pageToken'],
-        relative_path=u'v1beta2/{+parent}/workflowTemplates',
+        flat_path='v1beta2/projects/{projectsId}/regions/{regionsId}/workflowTemplates',
+        http_method='GET',
+        method_id='dataproc.projects.regions.workflowTemplates.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v1beta2/{+parent}/workflowTemplates',
         request_field='',
-        request_type_name=u'DataprocProjectsRegionsWorkflowTemplatesListRequest',
-        response_type_name=u'ListWorkflowTemplatesResponse',
+        request_type_name='DataprocProjectsRegionsWorkflowTemplatesListRequest',
+        response_type_name='ListWorkflowTemplatesResponse',
         supports_download=False,
     )
 
@@ -1773,16 +1773,16 @@ class DataprocV1beta2(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     SetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta2/projects/{projectsId}/regions/{regionsId}/workflowTemplates/{workflowTemplatesId}:setIamPolicy',
-        http_method=u'POST',
-        method_id=u'dataproc.projects.regions.workflowTemplates.setIamPolicy',
-        ordered_params=[u'resource'],
-        path_params=[u'resource'],
+        flat_path='v1beta2/projects/{projectsId}/regions/{regionsId}/workflowTemplates/{workflowTemplatesId}:setIamPolicy',
+        http_method='POST',
+        method_id='dataproc.projects.regions.workflowTemplates.setIamPolicy',
+        ordered_params=['resource'],
+        path_params=['resource'],
         query_params=[],
-        relative_path=u'v1beta2/{+resource}:setIamPolicy',
-        request_field=u'setIamPolicyRequest',
-        request_type_name=u'DataprocProjectsRegionsWorkflowTemplatesSetIamPolicyRequest',
-        response_type_name=u'Policy',
+        relative_path='v1beta2/{+resource}:setIamPolicy',
+        request_field='setIamPolicyRequest',
+        request_type_name='DataprocProjectsRegionsWorkflowTemplatesSetIamPolicyRequest',
+        response_type_name='Policy',
         supports_download=False,
     )
 
@@ -1800,16 +1800,16 @@ class DataprocV1beta2(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     TestIamPermissions.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta2/projects/{projectsId}/regions/{regionsId}/workflowTemplates/{workflowTemplatesId}:testIamPermissions',
-        http_method=u'POST',
-        method_id=u'dataproc.projects.regions.workflowTemplates.testIamPermissions',
-        ordered_params=[u'resource'],
-        path_params=[u'resource'],
+        flat_path='v1beta2/projects/{projectsId}/regions/{regionsId}/workflowTemplates/{workflowTemplatesId}:testIamPermissions',
+        http_method='POST',
+        method_id='dataproc.projects.regions.workflowTemplates.testIamPermissions',
+        ordered_params=['resource'],
+        path_params=['resource'],
         query_params=[],
-        relative_path=u'v1beta2/{+resource}:testIamPermissions',
-        request_field=u'testIamPermissionsRequest',
-        request_type_name=u'DataprocProjectsRegionsWorkflowTemplatesTestIamPermissionsRequest',
-        response_type_name=u'TestIamPermissionsResponse',
+        relative_path='v1beta2/{+resource}:testIamPermissions',
+        request_field='testIamPermissionsRequest',
+        request_type_name='DataprocProjectsRegionsWorkflowTemplatesTestIamPermissionsRequest',
+        response_type_name='TestIamPermissionsResponse',
         supports_download=False,
     )
 
@@ -1827,23 +1827,23 @@ class DataprocV1beta2(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Update.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta2/projects/{projectsId}/regions/{regionsId}/workflowTemplates/{workflowTemplatesId}',
-        http_method=u'PUT',
-        method_id=u'dataproc.projects.regions.workflowTemplates.update',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1beta2/projects/{projectsId}/regions/{regionsId}/workflowTemplates/{workflowTemplatesId}',
+        http_method='PUT',
+        method_id='dataproc.projects.regions.workflowTemplates.update',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1beta2/{+name}',
+        relative_path='v1beta2/{+name}',
         request_field='<request>',
-        request_type_name=u'WorkflowTemplate',
-        response_type_name=u'WorkflowTemplate',
+        request_type_name='WorkflowTemplate',
+        response_type_name='WorkflowTemplate',
         supports_download=False,
     )
 
   class ProjectsRegionsService(base_api.BaseApiService):
     """Service class for the projects_regions resource."""
 
-    _NAME = u'projects_regions'
+    _NAME = 'projects_regions'
 
     def __init__(self, client):
       super(DataprocV1beta2.ProjectsRegionsService, self).__init__(client)
@@ -1853,7 +1853,7 @@ class DataprocV1beta2(base_api.BaseApiClient):
   class ProjectsService(base_api.BaseApiService):
     """Service class for the projects resource."""
 
-    _NAME = u'projects'
+    _NAME = 'projects'
 
     def __init__(self, client):
       super(DataprocV1beta2.ProjectsService, self).__init__(client)

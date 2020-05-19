@@ -288,8 +288,8 @@ class Cluster(_messages.Message):
     currentNodeCount: [Output only]  The number of nodes currently in the
       cluster. Deprecated. Call Kubernetes API directly to retrieve node
       information.
-    currentNodeVersion: [Output only] Deprecated, use [NodePool.version
-      ](/kubernetes-
+    currentNodeVersion: [Output only] Deprecated, use
+      [NodePool.version](/kubernetes-
       engine/docs/reference/rest/v1alpha1/projects.zones.clusters.nodePool)
       instead. The current version of the node software components. If they
       are currently at multiple versions because they're in the process of
@@ -320,8 +320,6 @@ class Cluster(_messages.Message):
       this resource for username and password information.
     expireTime: [Output only] The time the cluster will be automatically
       deleted in [RFC3339](https://www.ietf.org/rfc/rfc3339.txt) text format.
-    exposeMasterSignalsConfig: Configuration used to enable sending selected
-      master logs and metrics to customer project.
     initialClusterVersion: The initial Kubernetes version for this cluster.
       Valid versions are those found in validMasterVersions returned by
       getServerConfig.  The version can be upgraded over time; such upgrades
@@ -373,6 +371,8 @@ class Cluster(_messages.Message):
       addresses to the master or set of masters, as well as the ILB VIP. This
       field is deprecated, use private_cluster_config.master_ipv4_cidr_block
       instead.
+    masterSignalsConfig: Configuration used to enable sending selected master
+      logs and metrics to customer project.
     monitoringService: The monitoring service the cluster should use to write
       metrics. Currently available options:  *
       "monitoring.googleapis.com/kubernetes" - The Cloud Monitoring service
@@ -386,9 +386,10 @@ class Cluster(_messages.Message):
       characters with the following restrictions:  * Lowercase letters,
       numbers, and hyphens only. * Must start with a letter. * Must end with a
       number or a letter.
-    network: The name of the Google Compute Engine [network](/compute/docs
-      /networks-and-firewalls#networks) to which the cluster is connected. If
-      left unspecified, the `default` network will be used.
+    network: The name of the Google Compute Engine
+      [network](/compute/docs/networks-and-firewalls#networks) to which the
+      cluster is connected. If left unspecified, the `default` network will be
+      used.
     networkConfig: Configuration for cluster networking.
     networkPolicy: Configuration options for the NetworkPolicy feature.
     nodeConfig: Parameters used in creating the cluster's nodes. For requests,
@@ -423,9 +424,10 @@ class Cluster(_messages.Message):
     securityProfile: User selected security profile
     selfLink: [Output only] Server-defined URL for the resource.
     servicesIpv4Cidr: [Output only] The IP address range of the Kubernetes
-      services in this cluster, in [CIDR](http://en.wikipedia.org/wiki
-      /Classless_Inter-Domain_Routing) notation (e.g. `1.2.3.4/29`). Service
-      addresses are typically put in the last `/16` from the container CIDR.
+      services in this cluster, in
+      [CIDR](http://en.wikipedia.org/wiki/Classless_Inter-Domain_Routing)
+      notation (e.g. `1.2.3.4/29`). Service addresses are typically put in the
+      last `/16` from the container CIDR.
     shieldedNodes: Shielded Nodes configuration.
     status: [Output only] The current status of this cluster.
     statusMessage: [Output only] Additional information about the current
@@ -537,20 +539,20 @@ class Cluster(_messages.Message):
   enableTpu = _messages.BooleanField(20)
   endpoint = _messages.StringField(21)
   expireTime = _messages.StringField(22)
-  exposeMasterSignalsConfig = _messages.MessageField('ExposeMasterSignalsConfig', 23)
-  initialClusterVersion = _messages.StringField(24)
-  initialNodeCount = _messages.IntegerField(25, variant=_messages.Variant.INT32)
-  instanceGroupUrls = _messages.StringField(26, repeated=True)
-  ipAllocationPolicy = _messages.MessageField('IPAllocationPolicy', 27)
-  labelFingerprint = _messages.StringField(28)
-  legacyAbac = _messages.MessageField('LegacyAbac', 29)
-  location = _messages.StringField(30)
-  locations = _messages.StringField(31, repeated=True)
-  loggingService = _messages.StringField(32)
-  maintenancePolicy = _messages.MessageField('MaintenancePolicy', 33)
-  masterAuth = _messages.MessageField('MasterAuth', 34)
-  masterAuthorizedNetworksConfig = _messages.MessageField('MasterAuthorizedNetworksConfig', 35)
-  masterIpv4CidrBlock = _messages.StringField(36)
+  initialClusterVersion = _messages.StringField(23)
+  initialNodeCount = _messages.IntegerField(24, variant=_messages.Variant.INT32)
+  instanceGroupUrls = _messages.StringField(25, repeated=True)
+  ipAllocationPolicy = _messages.MessageField('IPAllocationPolicy', 26)
+  labelFingerprint = _messages.StringField(27)
+  legacyAbac = _messages.MessageField('LegacyAbac', 28)
+  location = _messages.StringField(29)
+  locations = _messages.StringField(30, repeated=True)
+  loggingService = _messages.StringField(31)
+  maintenancePolicy = _messages.MessageField('MaintenancePolicy', 32)
+  masterAuth = _messages.MessageField('MasterAuth', 33)
+  masterAuthorizedNetworksConfig = _messages.MessageField('MasterAuthorizedNetworksConfig', 34)
+  masterIpv4CidrBlock = _messages.StringField(35)
+  masterSignalsConfig = _messages.MessageField('MasterSignalsConfig', 36)
   monitoringService = _messages.StringField(37)
   name = _messages.StringField(38)
   network = _messages.StringField(39)
@@ -1478,38 +1480,6 @@ class Empty(_messages.Message):
 
 
 
-class ExposeMasterSignalsConfig(_messages.Message):
-  r"""ExposeMasterSignalsConfig is the configuration for exposing selected
-  master logs and metrics to customer
-
-  Enums:
-    EnableComponentLogsValueListEntryValuesEnum:
-
-  Fields:
-    enableComponentLogs: Select components to expose logs
-    enableMetrics: Enable sendings metrics to customer
-  """
-
-  class EnableComponentLogsValueListEntryValuesEnum(_messages.Enum):
-    r"""EnableComponentLogsValueListEntryValuesEnum enum type.
-
-    Values:
-      COMPONENT_UNSPECIFIED: <no description>
-      APISERVER: <no description>
-      SCHEDULER: <no description>
-      CONTROLLER_MANAGER: <no description>
-      ADDON_MANAGER: <no description>
-    """
-    COMPONENT_UNSPECIFIED = 0
-    APISERVER = 1
-    SCHEDULER = 2
-    CONTROLLER_MANAGER = 3
-    ADDON_MANAGER = 4
-
-  enableComponentLogs = _messages.EnumField('EnableComponentLogsValueListEntryValuesEnum', 1, repeated=True)
-  enableMetrics = _messages.BooleanField(2)
-
-
 class GcePersistentDiskCsiDriverConfig(_messages.Message):
   r"""Configuration for the Compute Engine PD CSI driver. This option can only
   be enabled at cluster creation time.
@@ -2161,6 +2131,38 @@ class MasterAuthorizedNetworksConfig(_messages.Message):
   enabled = _messages.BooleanField(2)
 
 
+class MasterSignalsConfig(_messages.Message):
+  r"""MasterSignalsConfig is the configuration for exposing selected master
+  logs and metrics to customer
+
+  Enums:
+    LogEnabledComponentsValueListEntryValuesEnum:
+
+  Fields:
+    enableMetrics: Enable sendings metrics to customer
+    logEnabledComponents: Select components to expose logs
+  """
+
+  class LogEnabledComponentsValueListEntryValuesEnum(_messages.Enum):
+    r"""LogEnabledComponentsValueListEntryValuesEnum enum type.
+
+    Values:
+      COMPONENT_UNSPECIFIED: <no description>
+      APISERVER: <no description>
+      SCHEDULER: <no description>
+      CONTROLLER_MANAGER: <no description>
+      ADDON_MANAGER: <no description>
+    """
+    COMPONENT_UNSPECIFIED = 0
+    APISERVER = 1
+    SCHEDULER = 2
+    CONTROLLER_MANAGER = 3
+    ADDON_MANAGER = 4
+
+  enableMetrics = _messages.BooleanField(1)
+  logEnabledComponents = _messages.EnumField('LogEnabledComponentsValueListEntryValuesEnum', 2, repeated=True)
+
+
 class MaxPodsConstraint(_messages.Message):
   r"""Constraints applied to pods.
 
@@ -2423,10 +2425,10 @@ class NodeConfig(_messages.Message):
       `https://www.googleapis.com/auth/compute` is required for mounting
       persistent storage on your nodes. *
       `https://www.googleapis.com/auth/devstorage.read_only` is required for
-      communicating with **gcr.io** (the [Google Container Registry
-      ](/container-registry/)).  If unspecified, no scopes are added, unless
-      Cloud Logging or Cloud Monitoring are enabled, in which case their
-      required scopes will be added.
+      communicating with **gcr.io** (the [Google Container
+      Registry](/container-registry/)).  If unspecified, no scopes are added,
+      unless Cloud Logging or Cloud Monitoring are enabled, in which case
+      their required scopes will be added.
     preemptible: Whether the nodes are created as preemptible VM instances.
       See: https://cloud.google.com/compute/docs/instances/preemptible for
       more inforamtion about preemptible VM instances.
@@ -2700,9 +2702,9 @@ class NodePoolAutoscaling(_messages.Message):
 class NodeTaint(_messages.Message):
   r"""Kubernetes taint is comprised of three fields: key, value, and effect.
   Effect can only be one of three types:  NoSchedule, PreferNoSchedule or
-  NoExecute.  See [here](https://kubernetes.io/docs/concepts/configuration
-  /taint-and-toleration) for more information, including usage and the valid
-  values.
+  NoExecute.  See
+  [here](https://kubernetes.io/docs/concepts/configuration/taint-and-
+  toleration) for more information, including usage and the valid values.
 
   Enums:
     EffectValueValuesEnum: Effect for taint.
@@ -3687,7 +3689,7 @@ class StandardQueryParameters(_messages.Message):
 
   f__xgafv = _messages.EnumField('FXgafvValueValuesEnum', 1)
   access_token = _messages.StringField(2)
-  alt = _messages.EnumField('AltValueValuesEnum', 3, default=u'json')
+  alt = _messages.EnumField('AltValueValuesEnum', 3, default='json')
   callback = _messages.StringField(4)
   fields = _messages.StringField(5)
   key = _messages.StringField(6)

@@ -93,12 +93,12 @@ class GoogleCloudBillingBudgetsV1beta1AllUpdatesRule(_messages.Message):
       related messages will be published, in the form
       `projects/{project_id}/topics/{topic_id}`. Updates are sent at regular
       intervals to the topic. The topic needs to be created before the budget
-      is created; see https://cloud.google.com/billing/docs/how-to/budgets
-      #manage-notifications for more details. Caller is expected to have
-      `pubsub.topics.setIamPolicy` permission on the topic when it's set for a
-      budget, otherwise, the API call will fail with PERMISSION_DENIED. See
-      https://cloud.google.com/pubsub/docs/access-control for more details on
-      Pub/Sub roles and permissions.
+      is created; see https://cloud.google.com/billing/docs/how-
+      to/budgets#manage-notifications for more details. Caller is expected to
+      have `pubsub.topics.setIamPolicy` permission on the topic when it's set
+      for a budget, otherwise, the API call will fail with PERMISSION_DENIED.
+      See https://cloud.google.com/pubsub/docs/access-control for more details
+      on Pub/Sub roles and permissions.
     schemaVersion: Required. The schema version of the notification. Only
       "1.0" is accepted. It represents the JSON schema as defined in
       https://cloud.google.com/billing/docs/how-to/budgets#notification_format
@@ -369,7 +369,7 @@ class StandardQueryParameters(_messages.Message):
 
   f__xgafv = _messages.EnumField('FXgafvValueValuesEnum', 1)
   access_token = _messages.StringField(2)
-  alt = _messages.EnumField('AltValueValuesEnum', 3, default=u'json')
+  alt = _messages.EnumField('AltValueValuesEnum', 3, default='json')
   callback = _messages.StringField(4)
   fields = _messages.StringField(5)
   key = _messages.StringField(6)

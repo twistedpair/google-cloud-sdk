@@ -8,17 +8,17 @@ class BigtableadminV2(base_api.BaseApiClient):
   """Generated client library for service bigtableadmin version v2."""
 
   MESSAGES_MODULE = messages
-  BASE_URL = u'https://bigtableadmin.googleapis.com/'
-  MTLS_BASE_URL = u'https://bigtableadmin.mtls.googleapis.com/'
+  BASE_URL = 'https://bigtableadmin.googleapis.com/'
+  MTLS_BASE_URL = 'https://bigtableadmin.mtls.googleapis.com/'
 
-  _PACKAGE = u'bigtableadmin'
-  _SCOPES = [u'https://www.googleapis.com/auth/bigtable.admin', u'https://www.googleapis.com/auth/bigtable.admin.cluster', u'https://www.googleapis.com/auth/bigtable.admin.instance', u'https://www.googleapis.com/auth/bigtable.admin.table', u'https://www.googleapis.com/auth/cloud-bigtable.admin', u'https://www.googleapis.com/auth/cloud-bigtable.admin.cluster', u'https://www.googleapis.com/auth/cloud-bigtable.admin.table', u'https://www.googleapis.com/auth/cloud-platform', u'https://www.googleapis.com/auth/cloud-platform.read-only']
-  _VERSION = u'v2'
+  _PACKAGE = 'bigtableadmin'
+  _SCOPES = ['https://www.googleapis.com/auth/bigtable.admin', 'https://www.googleapis.com/auth/bigtable.admin.cluster', 'https://www.googleapis.com/auth/bigtable.admin.instance', 'https://www.googleapis.com/auth/bigtable.admin.table', 'https://www.googleapis.com/auth/cloud-bigtable.admin', 'https://www.googleapis.com/auth/cloud-bigtable.admin.cluster', 'https://www.googleapis.com/auth/cloud-bigtable.admin.table', 'https://www.googleapis.com/auth/cloud-platform', 'https://www.googleapis.com/auth/cloud-platform.read-only']
+  _VERSION = 'v2'
   _CLIENT_ID = '1042881264118.apps.googleusercontent.com'
   _CLIENT_SECRET = 'x_Tw5K8nnjoRAqULM9PFAC2b'
-  _USER_AGENT = u'google-cloud-sdk'
-  _CLIENT_CLASS_NAME = u'BigtableadminV2'
-  _URL_VERSION = u'v2'
+  _USER_AGENT = 'google-cloud-sdk'
+  _CLIENT_CLASS_NAME = 'BigtableadminV2'
+  _URL_VERSION = 'v2'
   _API_KEY = None
 
   def __init__(self, url='', credentials=None,
@@ -50,7 +50,7 @@ class BigtableadminV2(base_api.BaseApiClient):
   class OperationsProjectsOperationsService(base_api.BaseApiService):
     """Service class for the operations_projects_operations resource."""
 
-    _NAME = u'operations_projects_operations'
+    _NAME = 'operations_projects_operations'
 
     def __init__(self, client):
       super(BigtableadminV2.OperationsProjectsOperationsService, self).__init__(client)
@@ -80,23 +80,23 @@ is the parent resource, without the operations collection id.
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v2/operations/projects/{projectsId}/operations',
-        http_method=u'GET',
-        method_id=u'bigtableadmin.operations.projects.operations.list',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[u'filter', u'pageSize', u'pageToken'],
-        relative_path=u'v2/{+name}/operations',
+        flat_path='v2/operations/projects/{projectsId}/operations',
+        http_method='GET',
+        method_id='bigtableadmin.operations.projects.operations.list',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['filter', 'pageSize', 'pageToken'],
+        relative_path='v2/{+name}/operations',
         request_field='',
-        request_type_name=u'BigtableadminOperationsProjectsOperationsListRequest',
-        response_type_name=u'ListOperationsResponse',
+        request_type_name='BigtableadminOperationsProjectsOperationsListRequest',
+        response_type_name='ListOperationsResponse',
         supports_download=False,
     )
 
   class OperationsProjectsService(base_api.BaseApiService):
     """Service class for the operations_projects resource."""
 
-    _NAME = u'operations_projects'
+    _NAME = 'operations_projects'
 
     def __init__(self, client):
       super(BigtableadminV2.OperationsProjectsService, self).__init__(client)
@@ -106,7 +106,7 @@ is the parent resource, without the operations collection id.
   class OperationsService(base_api.BaseApiService):
     """Service class for the operations resource."""
 
-    _NAME = u'operations'
+    _NAME = 'operations'
 
     def __init__(self, client):
       super(BigtableadminV2.OperationsService, self).__init__(client)
@@ -136,16 +136,16 @@ corresponding to `Code.CANCELLED`.
           config, request, global_params=global_params)
 
     Cancel.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v2/operations/{operationsId}:cancel',
-        http_method=u'POST',
-        method_id=u'bigtableadmin.operations.cancel',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v2/operations/{operationsId}:cancel',
+        http_method='POST',
+        method_id='bigtableadmin.operations.cancel',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v2/{+name}:cancel',
+        relative_path='v2/{+name}:cancel',
         request_field='',
-        request_type_name=u'BigtableadminOperationsCancelRequest',
-        response_type_name=u'Empty',
+        request_type_name='BigtableadminOperationsCancelRequest',
+        response_type_name='Empty',
         supports_download=False,
     )
 
@@ -166,16 +166,16 @@ operation. If the server doesn't support this method, it returns
           config, request, global_params=global_params)
 
     Delete.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v2/operations/{operationsId}',
-        http_method=u'DELETE',
-        method_id=u'bigtableadmin.operations.delete',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v2/operations/{operationsId}',
+        http_method='DELETE',
+        method_id='bigtableadmin.operations.delete',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v2/{+name}',
+        relative_path='v2/{+name}',
         request_field='',
-        request_type_name=u'BigtableadminOperationsDeleteRequest',
-        response_type_name=u'Empty',
+        request_type_name='BigtableadminOperationsDeleteRequest',
+        response_type_name='Empty',
         supports_download=False,
     )
 
@@ -195,23 +195,23 @@ service.
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v2/operations/{operationsId}',
-        http_method=u'GET',
-        method_id=u'bigtableadmin.operations.get',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v2/operations/{operationsId}',
+        http_method='GET',
+        method_id='bigtableadmin.operations.get',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v2/{+name}',
+        relative_path='v2/{+name}',
         request_field='',
-        request_type_name=u'BigtableadminOperationsGetRequest',
-        response_type_name=u'Operation',
+        request_type_name='BigtableadminOperationsGetRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
   class ProjectsInstancesAppProfilesService(base_api.BaseApiService):
     """Service class for the projects_instances_appProfiles resource."""
 
-    _NAME = u'projects_instances_appProfiles'
+    _NAME = 'projects_instances_appProfiles'
 
     def __init__(self, client):
       super(BigtableadminV2.ProjectsInstancesAppProfilesService, self).__init__(client)
@@ -232,16 +232,16 @@ service.
           config, request, global_params=global_params)
 
     Create.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v2/projects/{projectsId}/instances/{instancesId}/appProfiles',
-        http_method=u'POST',
-        method_id=u'bigtableadmin.projects.instances.appProfiles.create',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'appProfileId', u'ignoreWarnings'],
-        relative_path=u'v2/{+parent}/appProfiles',
-        request_field=u'appProfile',
-        request_type_name=u'BigtableadminProjectsInstancesAppProfilesCreateRequest',
-        response_type_name=u'AppProfile',
+        flat_path='v2/projects/{projectsId}/instances/{instancesId}/appProfiles',
+        http_method='POST',
+        method_id='bigtableadmin.projects.instances.appProfiles.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['appProfileId', 'ignoreWarnings'],
+        relative_path='v2/{+parent}/appProfiles',
+        request_field='appProfile',
+        request_type_name='BigtableadminProjectsInstancesAppProfilesCreateRequest',
+        response_type_name='AppProfile',
         supports_download=False,
     )
 
@@ -259,16 +259,16 @@ service.
           config, request, global_params=global_params)
 
     Delete.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v2/projects/{projectsId}/instances/{instancesId}/appProfiles/{appProfilesId}',
-        http_method=u'DELETE',
-        method_id=u'bigtableadmin.projects.instances.appProfiles.delete',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[u'ignoreWarnings'],
-        relative_path=u'v2/{+name}',
+        flat_path='v2/projects/{projectsId}/instances/{instancesId}/appProfiles/{appProfilesId}',
+        http_method='DELETE',
+        method_id='bigtableadmin.projects.instances.appProfiles.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['ignoreWarnings'],
+        relative_path='v2/{+name}',
         request_field='',
-        request_type_name=u'BigtableadminProjectsInstancesAppProfilesDeleteRequest',
-        response_type_name=u'Empty',
+        request_type_name='BigtableadminProjectsInstancesAppProfilesDeleteRequest',
+        response_type_name='Empty',
         supports_download=False,
     )
 
@@ -286,16 +286,16 @@ service.
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v2/projects/{projectsId}/instances/{instancesId}/appProfiles/{appProfilesId}',
-        http_method=u'GET',
-        method_id=u'bigtableadmin.projects.instances.appProfiles.get',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v2/projects/{projectsId}/instances/{instancesId}/appProfiles/{appProfilesId}',
+        http_method='GET',
+        method_id='bigtableadmin.projects.instances.appProfiles.get',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v2/{+name}',
+        relative_path='v2/{+name}',
         request_field='',
-        request_type_name=u'BigtableadminProjectsInstancesAppProfilesGetRequest',
-        response_type_name=u'AppProfile',
+        request_type_name='BigtableadminProjectsInstancesAppProfilesGetRequest',
+        response_type_name='AppProfile',
         supports_download=False,
     )
 
@@ -313,16 +313,16 @@ service.
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v2/projects/{projectsId}/instances/{instancesId}/appProfiles',
-        http_method=u'GET',
-        method_id=u'bigtableadmin.projects.instances.appProfiles.list',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'pageSize', u'pageToken'],
-        relative_path=u'v2/{+parent}/appProfiles',
+        flat_path='v2/projects/{projectsId}/instances/{instancesId}/appProfiles',
+        http_method='GET',
+        method_id='bigtableadmin.projects.instances.appProfiles.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v2/{+parent}/appProfiles',
         request_field='',
-        request_type_name=u'BigtableadminProjectsInstancesAppProfilesListRequest',
-        response_type_name=u'ListAppProfilesResponse',
+        request_type_name='BigtableadminProjectsInstancesAppProfilesListRequest',
+        response_type_name='ListAppProfilesResponse',
         supports_download=False,
     )
 
@@ -340,23 +340,23 @@ service.
           config, request, global_params=global_params)
 
     Patch.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v2/projects/{projectsId}/instances/{instancesId}/appProfiles/{appProfilesId}',
-        http_method=u'PATCH',
-        method_id=u'bigtableadmin.projects.instances.appProfiles.patch',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[u'ignoreWarnings', u'updateMask'],
-        relative_path=u'v2/{+name}',
-        request_field=u'appProfile',
-        request_type_name=u'BigtableadminProjectsInstancesAppProfilesPatchRequest',
-        response_type_name=u'Operation',
+        flat_path='v2/projects/{projectsId}/instances/{instancesId}/appProfiles/{appProfilesId}',
+        http_method='PATCH',
+        method_id='bigtableadmin.projects.instances.appProfiles.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['ignoreWarnings', 'updateMask'],
+        relative_path='v2/{+name}',
+        request_field='appProfile',
+        request_type_name='BigtableadminProjectsInstancesAppProfilesPatchRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
   class ProjectsInstancesClustersBackupsService(base_api.BaseApiService):
     """Service class for the projects_instances_clusters_backups resource."""
 
-    _NAME = u'projects_instances_clusters_backups'
+    _NAME = 'projects_instances_clusters_backups'
 
     def __init__(self, client):
       super(BigtableadminV2.ProjectsInstancesClustersBackupsService, self).__init__(client)
@@ -384,16 +384,16 @@ creation and delete the backup.
           config, request, global_params=global_params)
 
     Create.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v2/projects/{projectsId}/instances/{instancesId}/clusters/{clustersId}/backups',
-        http_method=u'POST',
-        method_id=u'bigtableadmin.projects.instances.clusters.backups.create',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'backupId'],
-        relative_path=u'v2/{+parent}/backups',
-        request_field=u'backup',
-        request_type_name=u'BigtableadminProjectsInstancesClustersBackupsCreateRequest',
-        response_type_name=u'Operation',
+        flat_path='v2/projects/{projectsId}/instances/{instancesId}/clusters/{clustersId}/backups',
+        http_method='POST',
+        method_id='bigtableadmin.projects.instances.clusters.backups.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['backupId'],
+        relative_path='v2/{+parent}/backups',
+        request_field='backup',
+        request_type_name='BigtableadminProjectsInstancesClustersBackupsCreateRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -411,16 +411,16 @@ creation and delete the backup.
           config, request, global_params=global_params)
 
     Delete.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v2/projects/{projectsId}/instances/{instancesId}/clusters/{clustersId}/backups/{backupsId}',
-        http_method=u'DELETE',
-        method_id=u'bigtableadmin.projects.instances.clusters.backups.delete',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v2/projects/{projectsId}/instances/{instancesId}/clusters/{clustersId}/backups/{backupsId}',
+        http_method='DELETE',
+        method_id='bigtableadmin.projects.instances.clusters.backups.delete',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v2/{+name}',
+        relative_path='v2/{+name}',
         request_field='',
-        request_type_name=u'BigtableadminProjectsInstancesClustersBackupsDeleteRequest',
-        response_type_name=u'Empty',
+        request_type_name='BigtableadminProjectsInstancesClustersBackupsDeleteRequest',
+        response_type_name='Empty',
         supports_download=False,
     )
 
@@ -438,16 +438,16 @@ creation and delete the backup.
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v2/projects/{projectsId}/instances/{instancesId}/clusters/{clustersId}/backups/{backupsId}',
-        http_method=u'GET',
-        method_id=u'bigtableadmin.projects.instances.clusters.backups.get',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v2/projects/{projectsId}/instances/{instancesId}/clusters/{clustersId}/backups/{backupsId}',
+        http_method='GET',
+        method_id='bigtableadmin.projects.instances.clusters.backups.get',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v2/{+name}',
+        relative_path='v2/{+name}',
         request_field='',
-        request_type_name=u'BigtableadminProjectsInstancesClustersBackupsGetRequest',
-        response_type_name=u'Backup',
+        request_type_name='BigtableadminProjectsInstancesClustersBackupsGetRequest',
+        response_type_name='Backup',
         supports_download=False,
     )
 
@@ -467,16 +467,16 @@ set.
           config, request, global_params=global_params)
 
     GetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v2/projects/{projectsId}/instances/{instancesId}/clusters/{clustersId}/backups/{backupsId}:getIamPolicy',
-        http_method=u'POST',
-        method_id=u'bigtableadmin.projects.instances.clusters.backups.getIamPolicy',
-        ordered_params=[u'resource'],
-        path_params=[u'resource'],
+        flat_path='v2/projects/{projectsId}/instances/{instancesId}/clusters/{clustersId}/backups/{backupsId}:getIamPolicy',
+        http_method='POST',
+        method_id='bigtableadmin.projects.instances.clusters.backups.getIamPolicy',
+        ordered_params=['resource'],
+        path_params=['resource'],
         query_params=[],
-        relative_path=u'v2/{+resource}:getIamPolicy',
-        request_field=u'getIamPolicyRequest',
-        request_type_name=u'BigtableadminProjectsInstancesClustersBackupsGetIamPolicyRequest',
-        response_type_name=u'Policy',
+        relative_path='v2/{+resource}:getIamPolicy',
+        request_field='getIamPolicyRequest',
+        request_type_name='BigtableadminProjectsInstancesClustersBackupsGetIamPolicyRequest',
+        response_type_name='Policy',
         supports_download=False,
     )
 
@@ -495,16 +495,16 @@ backups.
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v2/projects/{projectsId}/instances/{instancesId}/clusters/{clustersId}/backups',
-        http_method=u'GET',
-        method_id=u'bigtableadmin.projects.instances.clusters.backups.list',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'filter', u'orderBy', u'pageSize', u'pageToken'],
-        relative_path=u'v2/{+parent}/backups',
+        flat_path='v2/projects/{projectsId}/instances/{instancesId}/clusters/{clustersId}/backups',
+        http_method='GET',
+        method_id='bigtableadmin.projects.instances.clusters.backups.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'orderBy', 'pageSize', 'pageToken'],
+        relative_path='v2/{+parent}/backups',
         request_field='',
-        request_type_name=u'BigtableadminProjectsInstancesClustersBackupsListRequest',
-        response_type_name=u'ListBackupsResponse',
+        request_type_name='BigtableadminProjectsInstancesClustersBackupsListRequest',
+        response_type_name='ListBackupsResponse',
         supports_download=False,
     )
 
@@ -522,16 +522,16 @@ backups.
           config, request, global_params=global_params)
 
     Patch.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v2/projects/{projectsId}/instances/{instancesId}/clusters/{clustersId}/backups/{backupsId}',
-        http_method=u'PATCH',
-        method_id=u'bigtableadmin.projects.instances.clusters.backups.patch',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[u'updateMask'],
-        relative_path=u'v2/{+name}',
-        request_field=u'backup',
-        request_type_name=u'BigtableadminProjectsInstancesClustersBackupsPatchRequest',
-        response_type_name=u'Backup',
+        flat_path='v2/projects/{projectsId}/instances/{instancesId}/clusters/{clustersId}/backups/{backupsId}',
+        http_method='PATCH',
+        method_id='bigtableadmin.projects.instances.clusters.backups.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v2/{+name}',
+        request_field='backup',
+        request_type_name='BigtableadminProjectsInstancesClustersBackupsPatchRequest',
+        response_type_name='Backup',
         supports_download=False,
     )
 
@@ -550,16 +550,16 @@ Replaces any existing policy.
           config, request, global_params=global_params)
 
     SetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v2/projects/{projectsId}/instances/{instancesId}/clusters/{clustersId}/backups/{backupsId}:setIamPolicy',
-        http_method=u'POST',
-        method_id=u'bigtableadmin.projects.instances.clusters.backups.setIamPolicy',
-        ordered_params=[u'resource'],
-        path_params=[u'resource'],
+        flat_path='v2/projects/{projectsId}/instances/{instancesId}/clusters/{clustersId}/backups/{backupsId}:setIamPolicy',
+        http_method='POST',
+        method_id='bigtableadmin.projects.instances.clusters.backups.setIamPolicy',
+        ordered_params=['resource'],
+        path_params=['resource'],
         query_params=[],
-        relative_path=u'v2/{+resource}:setIamPolicy',
-        request_field=u'setIamPolicyRequest',
-        request_type_name=u'BigtableadminProjectsInstancesClustersBackupsSetIamPolicyRequest',
-        response_type_name=u'Policy',
+        relative_path='v2/{+resource}:setIamPolicy',
+        request_field='setIamPolicyRequest',
+        request_type_name='BigtableadminProjectsInstancesClustersBackupsSetIamPolicyRequest',
+        response_type_name='Policy',
         supports_download=False,
     )
 
@@ -577,23 +577,23 @@ Replaces any existing policy.
           config, request, global_params=global_params)
 
     TestIamPermissions.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v2/projects/{projectsId}/instances/{instancesId}/clusters/{clustersId}/backups/{backupsId}:testIamPermissions',
-        http_method=u'POST',
-        method_id=u'bigtableadmin.projects.instances.clusters.backups.testIamPermissions',
-        ordered_params=[u'resource'],
-        path_params=[u'resource'],
+        flat_path='v2/projects/{projectsId}/instances/{instancesId}/clusters/{clustersId}/backups/{backupsId}:testIamPermissions',
+        http_method='POST',
+        method_id='bigtableadmin.projects.instances.clusters.backups.testIamPermissions',
+        ordered_params=['resource'],
+        path_params=['resource'],
         query_params=[],
-        relative_path=u'v2/{+resource}:testIamPermissions',
-        request_field=u'testIamPermissionsRequest',
-        request_type_name=u'BigtableadminProjectsInstancesClustersBackupsTestIamPermissionsRequest',
-        response_type_name=u'TestIamPermissionsResponse',
+        relative_path='v2/{+resource}:testIamPermissions',
+        request_field='testIamPermissionsRequest',
+        request_type_name='BigtableadminProjectsInstancesClustersBackupsTestIamPermissionsRequest',
+        response_type_name='TestIamPermissionsResponse',
         supports_download=False,
     )
 
   class ProjectsInstancesClustersService(base_api.BaseApiService):
     """Service class for the projects_instances_clusters resource."""
 
-    _NAME = u'projects_instances_clusters'
+    _NAME = 'projects_instances_clusters'
 
     def __init__(self, client):
       super(BigtableadminV2.ProjectsInstancesClustersService, self).__init__(client)
@@ -614,16 +614,16 @@ Replaces any existing policy.
           config, request, global_params=global_params)
 
     Create.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v2/projects/{projectsId}/instances/{instancesId}/clusters',
-        http_method=u'POST',
-        method_id=u'bigtableadmin.projects.instances.clusters.create',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'clusterId'],
-        relative_path=u'v2/{+parent}/clusters',
-        request_field=u'cluster',
-        request_type_name=u'BigtableadminProjectsInstancesClustersCreateRequest',
-        response_type_name=u'Operation',
+        flat_path='v2/projects/{projectsId}/instances/{instancesId}/clusters',
+        http_method='POST',
+        method_id='bigtableadmin.projects.instances.clusters.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['clusterId'],
+        relative_path='v2/{+parent}/clusters',
+        request_field='cluster',
+        request_type_name='BigtableadminProjectsInstancesClustersCreateRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -641,16 +641,16 @@ Replaces any existing policy.
           config, request, global_params=global_params)
 
     Delete.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v2/projects/{projectsId}/instances/{instancesId}/clusters/{clustersId}',
-        http_method=u'DELETE',
-        method_id=u'bigtableadmin.projects.instances.clusters.delete',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v2/projects/{projectsId}/instances/{instancesId}/clusters/{clustersId}',
+        http_method='DELETE',
+        method_id='bigtableadmin.projects.instances.clusters.delete',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v2/{+name}',
+        relative_path='v2/{+name}',
         request_field='',
-        request_type_name=u'BigtableadminProjectsInstancesClustersDeleteRequest',
-        response_type_name=u'Empty',
+        request_type_name='BigtableadminProjectsInstancesClustersDeleteRequest',
+        response_type_name='Empty',
         supports_download=False,
     )
 
@@ -668,16 +668,16 @@ Replaces any existing policy.
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v2/projects/{projectsId}/instances/{instancesId}/clusters/{clustersId}',
-        http_method=u'GET',
-        method_id=u'bigtableadmin.projects.instances.clusters.get',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v2/projects/{projectsId}/instances/{instancesId}/clusters/{clustersId}',
+        http_method='GET',
+        method_id='bigtableadmin.projects.instances.clusters.get',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v2/{+name}',
+        relative_path='v2/{+name}',
         request_field='',
-        request_type_name=u'BigtableadminProjectsInstancesClustersGetRequest',
-        response_type_name=u'Cluster',
+        request_type_name='BigtableadminProjectsInstancesClustersGetRequest',
+        response_type_name='Cluster',
         supports_download=False,
     )
 
@@ -695,16 +695,16 @@ Replaces any existing policy.
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v2/projects/{projectsId}/instances/{instancesId}/clusters',
-        http_method=u'GET',
-        method_id=u'bigtableadmin.projects.instances.clusters.list',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'pageToken'],
-        relative_path=u'v2/{+parent}/clusters',
+        flat_path='v2/projects/{projectsId}/instances/{instancesId}/clusters',
+        http_method='GET',
+        method_id='bigtableadmin.projects.instances.clusters.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageToken'],
+        relative_path='v2/{+parent}/clusters',
         request_field='',
-        request_type_name=u'BigtableadminProjectsInstancesClustersListRequest',
-        response_type_name=u'ListClustersResponse',
+        request_type_name='BigtableadminProjectsInstancesClustersListRequest',
+        response_type_name='ListClustersResponse',
         supports_download=False,
     )
 
@@ -722,23 +722,23 @@ Replaces any existing policy.
           config, request, global_params=global_params)
 
     Update.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v2/projects/{projectsId}/instances/{instancesId}/clusters/{clustersId}',
-        http_method=u'PUT',
-        method_id=u'bigtableadmin.projects.instances.clusters.update',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v2/projects/{projectsId}/instances/{instancesId}/clusters/{clustersId}',
+        http_method='PUT',
+        method_id='bigtableadmin.projects.instances.clusters.update',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v2/{+name}',
+        relative_path='v2/{+name}',
         request_field='<request>',
-        request_type_name=u'Cluster',
-        response_type_name=u'Operation',
+        request_type_name='Cluster',
+        response_type_name='Operation',
         supports_download=False,
     )
 
   class ProjectsInstancesTablesService(base_api.BaseApiService):
     """Service class for the projects_instances_tables resource."""
 
-    _NAME = u'projects_instances_tables'
+    _NAME = 'projects_instances_tables'
 
     def __init__(self, client):
       super(BigtableadminV2.ProjectsInstancesTablesService, self).__init__(client)
@@ -761,16 +761,16 @@ and the check request.
           config, request, global_params=global_params)
 
     CheckConsistency.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v2/projects/{projectsId}/instances/{instancesId}/tables/{tablesId}:checkConsistency',
-        http_method=u'POST',
-        method_id=u'bigtableadmin.projects.instances.tables.checkConsistency',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v2/projects/{projectsId}/instances/{instancesId}/tables/{tablesId}:checkConsistency',
+        http_method='POST',
+        method_id='bigtableadmin.projects.instances.tables.checkConsistency',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v2/{+name}:checkConsistency',
-        request_field=u'checkConsistencyRequest',
-        request_type_name=u'BigtableadminProjectsInstancesTablesCheckConsistencyRequest',
-        response_type_name=u'CheckConsistencyResponse',
+        relative_path='v2/{+name}:checkConsistency',
+        request_field='checkConsistencyRequest',
+        request_type_name='BigtableadminProjectsInstancesTablesCheckConsistencyRequest',
+        response_type_name='CheckConsistencyResponse',
         supports_download=False,
     )
 
@@ -790,16 +790,16 @@ specified in the request.
           config, request, global_params=global_params)
 
     Create.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v2/projects/{projectsId}/instances/{instancesId}/tables',
-        http_method=u'POST',
-        method_id=u'bigtableadmin.projects.instances.tables.create',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
+        flat_path='v2/projects/{projectsId}/instances/{instancesId}/tables',
+        http_method='POST',
+        method_id='bigtableadmin.projects.instances.tables.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
         query_params=[],
-        relative_path=u'v2/{+parent}/tables',
-        request_field=u'createTableRequest',
-        request_type_name=u'BigtableadminProjectsInstancesTablesCreateRequest',
-        response_type_name=u'Table',
+        relative_path='v2/{+parent}/tables',
+        request_field='createTableRequest',
+        request_type_name='BigtableadminProjectsInstancesTablesCreateRequest',
+        response_type_name='Table',
         supports_download=False,
     )
 
@@ -817,16 +817,16 @@ specified in the request.
           config, request, global_params=global_params)
 
     Delete.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v2/projects/{projectsId}/instances/{instancesId}/tables/{tablesId}',
-        http_method=u'DELETE',
-        method_id=u'bigtableadmin.projects.instances.tables.delete',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v2/projects/{projectsId}/instances/{instancesId}/tables/{tablesId}',
+        http_method='DELETE',
+        method_id='bigtableadmin.projects.instances.tables.delete',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v2/{+name}',
+        relative_path='v2/{+name}',
         request_field='',
-        request_type_name=u'BigtableadminProjectsInstancesTablesDeleteRequest',
-        response_type_name=u'Empty',
+        request_type_name='BigtableadminProjectsInstancesTablesDeleteRequest',
+        response_type_name='Empty',
         supports_download=False,
     )
 
@@ -846,16 +846,16 @@ particular prefix.
           config, request, global_params=global_params)
 
     DropRowRange.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v2/projects/{projectsId}/instances/{instancesId}/tables/{tablesId}:dropRowRange',
-        http_method=u'POST',
-        method_id=u'bigtableadmin.projects.instances.tables.dropRowRange',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v2/projects/{projectsId}/instances/{instancesId}/tables/{tablesId}:dropRowRange',
+        http_method='POST',
+        method_id='bigtableadmin.projects.instances.tables.dropRowRange',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v2/{+name}:dropRowRange',
-        request_field=u'dropRowRangeRequest',
-        request_type_name=u'BigtableadminProjectsInstancesTablesDropRowRangeRequest',
-        response_type_name=u'Empty',
+        relative_path='v2/{+name}:dropRowRange',
+        request_field='dropRowRangeRequest',
+        request_type_name='BigtableadminProjectsInstancesTablesDropRowRangeRequest',
+        response_type_name='Empty',
         supports_download=False,
     )
 
@@ -876,16 +876,16 @@ for 90 days.
           config, request, global_params=global_params)
 
     GenerateConsistencyToken.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v2/projects/{projectsId}/instances/{instancesId}/tables/{tablesId}:generateConsistencyToken',
-        http_method=u'POST',
-        method_id=u'bigtableadmin.projects.instances.tables.generateConsistencyToken',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v2/projects/{projectsId}/instances/{instancesId}/tables/{tablesId}:generateConsistencyToken',
+        http_method='POST',
+        method_id='bigtableadmin.projects.instances.tables.generateConsistencyToken',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v2/{+name}:generateConsistencyToken',
-        request_field=u'generateConsistencyTokenRequest',
-        request_type_name=u'BigtableadminProjectsInstancesTablesGenerateConsistencyTokenRequest',
-        response_type_name=u'GenerateConsistencyTokenResponse',
+        relative_path='v2/{+name}:generateConsistencyToken',
+        request_field='generateConsistencyTokenRequest',
+        request_type_name='BigtableadminProjectsInstancesTablesGenerateConsistencyTokenRequest',
+        response_type_name='GenerateConsistencyTokenResponse',
         supports_download=False,
     )
 
@@ -903,16 +903,16 @@ for 90 days.
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v2/projects/{projectsId}/instances/{instancesId}/tables/{tablesId}',
-        http_method=u'GET',
-        method_id=u'bigtableadmin.projects.instances.tables.get',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[u'view'],
-        relative_path=u'v2/{+name}',
+        flat_path='v2/projects/{projectsId}/instances/{instancesId}/tables/{tablesId}',
+        http_method='GET',
+        method_id='bigtableadmin.projects.instances.tables.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['view'],
+        relative_path='v2/{+name}',
         request_field='',
-        request_type_name=u'BigtableadminProjectsInstancesTablesGetRequest',
-        response_type_name=u'Table',
+        request_type_name='BigtableadminProjectsInstancesTablesGetRequest',
+        response_type_name='Table',
         supports_download=False,
     )
 
@@ -932,16 +932,16 @@ set.
           config, request, global_params=global_params)
 
     GetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v2/projects/{projectsId}/instances/{instancesId}/tables/{tablesId}:getIamPolicy',
-        http_method=u'POST',
-        method_id=u'bigtableadmin.projects.instances.tables.getIamPolicy',
-        ordered_params=[u'resource'],
-        path_params=[u'resource'],
+        flat_path='v2/projects/{projectsId}/instances/{instancesId}/tables/{tablesId}:getIamPolicy',
+        http_method='POST',
+        method_id='bigtableadmin.projects.instances.tables.getIamPolicy',
+        ordered_params=['resource'],
+        path_params=['resource'],
         query_params=[],
-        relative_path=u'v2/{+resource}:getIamPolicy',
-        request_field=u'getIamPolicyRequest',
-        request_type_name=u'BigtableadminProjectsInstancesTablesGetIamPolicyRequest',
-        response_type_name=u'Policy',
+        relative_path='v2/{+resource}:getIamPolicy',
+        request_field='getIamPolicyRequest',
+        request_type_name='BigtableadminProjectsInstancesTablesGetIamPolicyRequest',
+        response_type_name='Policy',
         supports_download=False,
     )
 
@@ -959,16 +959,16 @@ set.
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v2/projects/{projectsId}/instances/{instancesId}/tables',
-        http_method=u'GET',
-        method_id=u'bigtableadmin.projects.instances.tables.list',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'pageSize', u'pageToken', u'view'],
-        relative_path=u'v2/{+parent}/tables',
+        flat_path='v2/projects/{projectsId}/instances/{instancesId}/tables',
+        http_method='GET',
+        method_id='bigtableadmin.projects.instances.tables.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken', 'view'],
+        relative_path='v2/{+parent}/tables',
         request_field='',
-        request_type_name=u'BigtableadminProjectsInstancesTablesListRequest',
-        response_type_name=u'ListTablesResponse',
+        request_type_name='BigtableadminProjectsInstancesTablesListRequest',
+        response_type_name='ListTablesResponse',
         supports_download=False,
     )
 
@@ -989,16 +989,16 @@ where only some modifications have taken effect.
           config, request, global_params=global_params)
 
     ModifyColumnFamilies.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v2/projects/{projectsId}/instances/{instancesId}/tables/{tablesId}:modifyColumnFamilies',
-        http_method=u'POST',
-        method_id=u'bigtableadmin.projects.instances.tables.modifyColumnFamilies',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v2/projects/{projectsId}/instances/{instancesId}/tables/{tablesId}:modifyColumnFamilies',
+        http_method='POST',
+        method_id='bigtableadmin.projects.instances.tables.modifyColumnFamilies',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v2/{+name}:modifyColumnFamilies',
-        request_field=u'modifyColumnFamiliesRequest',
-        request_type_name=u'BigtableadminProjectsInstancesTablesModifyColumnFamiliesRequest',
-        response_type_name=u'Table',
+        relative_path='v2/{+name}:modifyColumnFamilies',
+        request_field='modifyColumnFamiliesRequest',
+        request_type_name='BigtableadminProjectsInstancesTablesModifyColumnFamiliesRequest',
+        response_type_name='Table',
         supports_download=False,
     )
 
@@ -1023,16 +1023,16 @@ Table, if successful.
           config, request, global_params=global_params)
 
     Restore.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v2/projects/{projectsId}/instances/{instancesId}/tables:restore',
-        http_method=u'POST',
-        method_id=u'bigtableadmin.projects.instances.tables.restore',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
+        flat_path='v2/projects/{projectsId}/instances/{instancesId}/tables:restore',
+        http_method='POST',
+        method_id='bigtableadmin.projects.instances.tables.restore',
+        ordered_params=['parent'],
+        path_params=['parent'],
         query_params=[],
-        relative_path=u'v2/{+parent}/tables:restore',
-        request_field=u'restoreTableRequest',
-        request_type_name=u'BigtableadminProjectsInstancesTablesRestoreRequest',
-        response_type_name=u'Operation',
+        relative_path='v2/{+parent}/tables:restore',
+        request_field='restoreTableRequest',
+        request_type_name='BigtableadminProjectsInstancesTablesRestoreRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -1051,16 +1051,16 @@ Replaces any existing policy.
           config, request, global_params=global_params)
 
     SetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v2/projects/{projectsId}/instances/{instancesId}/tables/{tablesId}:setIamPolicy',
-        http_method=u'POST',
-        method_id=u'bigtableadmin.projects.instances.tables.setIamPolicy',
-        ordered_params=[u'resource'],
-        path_params=[u'resource'],
+        flat_path='v2/projects/{projectsId}/instances/{instancesId}/tables/{tablesId}:setIamPolicy',
+        http_method='POST',
+        method_id='bigtableadmin.projects.instances.tables.setIamPolicy',
+        ordered_params=['resource'],
+        path_params=['resource'],
         query_params=[],
-        relative_path=u'v2/{+resource}:setIamPolicy',
-        request_field=u'setIamPolicyRequest',
-        request_type_name=u'BigtableadminProjectsInstancesTablesSetIamPolicyRequest',
-        response_type_name=u'Policy',
+        relative_path='v2/{+resource}:setIamPolicy',
+        request_field='setIamPolicyRequest',
+        request_type_name='BigtableadminProjectsInstancesTablesSetIamPolicyRequest',
+        response_type_name='Policy',
         supports_download=False,
     )
 
@@ -1078,23 +1078,23 @@ Replaces any existing policy.
           config, request, global_params=global_params)
 
     TestIamPermissions.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v2/projects/{projectsId}/instances/{instancesId}/tables/{tablesId}:testIamPermissions',
-        http_method=u'POST',
-        method_id=u'bigtableadmin.projects.instances.tables.testIamPermissions',
-        ordered_params=[u'resource'],
-        path_params=[u'resource'],
+        flat_path='v2/projects/{projectsId}/instances/{instancesId}/tables/{tablesId}:testIamPermissions',
+        http_method='POST',
+        method_id='bigtableadmin.projects.instances.tables.testIamPermissions',
+        ordered_params=['resource'],
+        path_params=['resource'],
         query_params=[],
-        relative_path=u'v2/{+resource}:testIamPermissions',
-        request_field=u'testIamPermissionsRequest',
-        request_type_name=u'BigtableadminProjectsInstancesTablesTestIamPermissionsRequest',
-        response_type_name=u'TestIamPermissionsResponse',
+        relative_path='v2/{+resource}:testIamPermissions',
+        request_field='testIamPermissionsRequest',
+        request_type_name='BigtableadminProjectsInstancesTablesTestIamPermissionsRequest',
+        response_type_name='TestIamPermissionsResponse',
         supports_download=False,
     )
 
   class ProjectsInstancesService(base_api.BaseApiService):
     """Service class for the projects_instances resource."""
 
-    _NAME = u'projects_instances'
+    _NAME = 'projects_instances'
 
     def __init__(self, client):
       super(BigtableadminV2.ProjectsInstancesService, self).__init__(client)
@@ -1115,16 +1115,16 @@ Replaces any existing policy.
           config, request, global_params=global_params)
 
     Create.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v2/projects/{projectsId}/instances',
-        http_method=u'POST',
-        method_id=u'bigtableadmin.projects.instances.create',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
+        flat_path='v2/projects/{projectsId}/instances',
+        http_method='POST',
+        method_id='bigtableadmin.projects.instances.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
         query_params=[],
-        relative_path=u'v2/{+parent}/instances',
+        relative_path='v2/{+parent}/instances',
         request_field='<request>',
-        request_type_name=u'CreateInstanceRequest',
-        response_type_name=u'Operation',
+        request_type_name='CreateInstanceRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -1142,16 +1142,16 @@ Replaces any existing policy.
           config, request, global_params=global_params)
 
     Delete.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v2/projects/{projectsId}/instances/{instancesId}',
-        http_method=u'DELETE',
-        method_id=u'bigtableadmin.projects.instances.delete',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v2/projects/{projectsId}/instances/{instancesId}',
+        http_method='DELETE',
+        method_id='bigtableadmin.projects.instances.delete',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v2/{+name}',
+        relative_path='v2/{+name}',
         request_field='',
-        request_type_name=u'BigtableadminProjectsInstancesDeleteRequest',
-        response_type_name=u'Empty',
+        request_type_name='BigtableadminProjectsInstancesDeleteRequest',
+        response_type_name='Empty',
         supports_download=False,
     )
 
@@ -1169,16 +1169,16 @@ Replaces any existing policy.
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v2/projects/{projectsId}/instances/{instancesId}',
-        http_method=u'GET',
-        method_id=u'bigtableadmin.projects.instances.get',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v2/projects/{projectsId}/instances/{instancesId}',
+        http_method='GET',
+        method_id='bigtableadmin.projects.instances.get',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v2/{+name}',
+        relative_path='v2/{+name}',
         request_field='',
-        request_type_name=u'BigtableadminProjectsInstancesGetRequest',
-        response_type_name=u'Instance',
+        request_type_name='BigtableadminProjectsInstancesGetRequest',
+        response_type_name='Instance',
         supports_download=False,
     )
 
@@ -1197,16 +1197,16 @@ policy if an instance exists but does not have a policy set.
           config, request, global_params=global_params)
 
     GetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v2/projects/{projectsId}/instances/{instancesId}:getIamPolicy',
-        http_method=u'POST',
-        method_id=u'bigtableadmin.projects.instances.getIamPolicy',
-        ordered_params=[u'resource'],
-        path_params=[u'resource'],
+        flat_path='v2/projects/{projectsId}/instances/{instancesId}:getIamPolicy',
+        http_method='POST',
+        method_id='bigtableadmin.projects.instances.getIamPolicy',
+        ordered_params=['resource'],
+        path_params=['resource'],
         query_params=[],
-        relative_path=u'v2/{+resource}:getIamPolicy',
-        request_field=u'getIamPolicyRequest',
-        request_type_name=u'BigtableadminProjectsInstancesGetIamPolicyRequest',
-        response_type_name=u'Policy',
+        relative_path='v2/{+resource}:getIamPolicy',
+        request_field='getIamPolicyRequest',
+        request_type_name='BigtableadminProjectsInstancesGetIamPolicyRequest',
+        response_type_name='Policy',
         supports_download=False,
     )
 
@@ -1224,16 +1224,16 @@ policy if an instance exists but does not have a policy set.
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v2/projects/{projectsId}/instances',
-        http_method=u'GET',
-        method_id=u'bigtableadmin.projects.instances.list',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'pageToken'],
-        relative_path=u'v2/{+parent}/instances',
+        flat_path='v2/projects/{projectsId}/instances',
+        http_method='GET',
+        method_id='bigtableadmin.projects.instances.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageToken'],
+        relative_path='v2/{+parent}/instances',
         request_field='',
-        request_type_name=u'BigtableadminProjectsInstancesListRequest',
-        response_type_name=u'ListInstancesResponse',
+        request_type_name='BigtableadminProjectsInstancesListRequest',
+        response_type_name='ListInstancesResponse',
         supports_download=False,
     )
 
@@ -1252,16 +1252,16 @@ fields of an Instance and is the preferred way to update an Instance.
           config, request, global_params=global_params)
 
     PartialUpdateInstance.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v2/projects/{projectsId}/instances/{instancesId}',
-        http_method=u'PATCH',
-        method_id=u'bigtableadmin.projects.instances.partialUpdateInstance',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[u'updateMask'],
-        relative_path=u'v2/{+name}',
-        request_field=u'instance',
-        request_type_name=u'BigtableadminProjectsInstancesPartialUpdateInstanceRequest',
-        response_type_name=u'Operation',
+        flat_path='v2/projects/{projectsId}/instances/{instancesId}',
+        http_method='PATCH',
+        method_id='bigtableadmin.projects.instances.partialUpdateInstance',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v2/{+name}',
+        request_field='instance',
+        request_type_name='BigtableadminProjectsInstancesPartialUpdateInstanceRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -1280,16 +1280,16 @@ existing policy.
           config, request, global_params=global_params)
 
     SetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v2/projects/{projectsId}/instances/{instancesId}:setIamPolicy',
-        http_method=u'POST',
-        method_id=u'bigtableadmin.projects.instances.setIamPolicy',
-        ordered_params=[u'resource'],
-        path_params=[u'resource'],
+        flat_path='v2/projects/{projectsId}/instances/{instancesId}:setIamPolicy',
+        http_method='POST',
+        method_id='bigtableadmin.projects.instances.setIamPolicy',
+        ordered_params=['resource'],
+        path_params=['resource'],
         query_params=[],
-        relative_path=u'v2/{+resource}:setIamPolicy',
-        request_field=u'setIamPolicyRequest',
-        request_type_name=u'BigtableadminProjectsInstancesSetIamPolicyRequest',
-        response_type_name=u'Policy',
+        relative_path='v2/{+resource}:setIamPolicy',
+        request_field='setIamPolicyRequest',
+        request_type_name='BigtableadminProjectsInstancesSetIamPolicyRequest',
+        response_type_name='Policy',
         supports_download=False,
     )
 
@@ -1307,16 +1307,16 @@ existing policy.
           config, request, global_params=global_params)
 
     TestIamPermissions.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v2/projects/{projectsId}/instances/{instancesId}:testIamPermissions',
-        http_method=u'POST',
-        method_id=u'bigtableadmin.projects.instances.testIamPermissions',
-        ordered_params=[u'resource'],
-        path_params=[u'resource'],
+        flat_path='v2/projects/{projectsId}/instances/{instancesId}:testIamPermissions',
+        http_method='POST',
+        method_id='bigtableadmin.projects.instances.testIamPermissions',
+        ordered_params=['resource'],
+        path_params=['resource'],
         query_params=[],
-        relative_path=u'v2/{+resource}:testIamPermissions',
-        request_field=u'testIamPermissionsRequest',
-        request_type_name=u'BigtableadminProjectsInstancesTestIamPermissionsRequest',
-        response_type_name=u'TestIamPermissionsResponse',
+        relative_path='v2/{+resource}:testIamPermissions',
+        request_field='testIamPermissionsRequest',
+        request_type_name='BigtableadminProjectsInstancesTestIamPermissionsRequest',
+        response_type_name='TestIamPermissionsResponse',
         supports_download=False,
     )
 
@@ -1336,23 +1336,23 @@ labels, use PartialUpdateInstance.
           config, request, global_params=global_params)
 
     Update.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v2/projects/{projectsId}/instances/{instancesId}',
-        http_method=u'PUT',
-        method_id=u'bigtableadmin.projects.instances.update',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v2/projects/{projectsId}/instances/{instancesId}',
+        http_method='PUT',
+        method_id='bigtableadmin.projects.instances.update',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v2/{+name}',
+        relative_path='v2/{+name}',
         request_field='<request>',
-        request_type_name=u'Instance',
-        response_type_name=u'Instance',
+        request_type_name='Instance',
+        response_type_name='Instance',
         supports_download=False,
     )
 
   class ProjectsLocationsService(base_api.BaseApiService):
     """Service class for the projects_locations resource."""
 
-    _NAME = u'projects_locations'
+    _NAME = 'projects_locations'
 
     def __init__(self, client):
       super(BigtableadminV2.ProjectsLocationsService, self).__init__(client)
@@ -1373,16 +1373,16 @@ labels, use PartialUpdateInstance.
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v2/projects/{projectsId}/locations/{locationsId}',
-        http_method=u'GET',
-        method_id=u'bigtableadmin.projects.locations.get',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}',
+        http_method='GET',
+        method_id='bigtableadmin.projects.locations.get',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v2/{+name}',
+        relative_path='v2/{+name}',
         request_field='',
-        request_type_name=u'BigtableadminProjectsLocationsGetRequest',
-        response_type_name=u'Location',
+        request_type_name='BigtableadminProjectsLocationsGetRequest',
+        response_type_name='Location',
         supports_download=False,
     )
 
@@ -1400,23 +1400,23 @@ labels, use PartialUpdateInstance.
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v2/projects/{projectsId}/locations',
-        http_method=u'GET',
-        method_id=u'bigtableadmin.projects.locations.list',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[u'filter', u'pageSize', u'pageToken'],
-        relative_path=u'v2/{+name}/locations',
+        flat_path='v2/projects/{projectsId}/locations',
+        http_method='GET',
+        method_id='bigtableadmin.projects.locations.list',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['filter', 'pageSize', 'pageToken'],
+        relative_path='v2/{+name}/locations',
         request_field='',
-        request_type_name=u'BigtableadminProjectsLocationsListRequest',
-        response_type_name=u'ListLocationsResponse',
+        request_type_name='BigtableadminProjectsLocationsListRequest',
+        response_type_name='ListLocationsResponse',
         supports_download=False,
     )
 
   class ProjectsService(base_api.BaseApiService):
     """Service class for the projects resource."""
 
-    _NAME = u'projects'
+    _NAME = 'projects'
 
     def __init__(self, client):
       super(BigtableadminV2.ProjectsService, self).__init__(client)

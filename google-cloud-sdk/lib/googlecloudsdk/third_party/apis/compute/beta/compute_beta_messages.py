@@ -6,7 +6,6 @@ Creates and runs virtual machines on Google Cloud Platform.
 
 from apitools.base.protorpclite import messages as _messages
 from apitools.base.py import encoding
-from apitools.base.py import extra_types
 
 
 package = 'compute'
@@ -62,7 +61,7 @@ class AcceleratorType(_messages.Message):
   deprecated = _messages.MessageField('DeprecationStatus', 2)
   description = _messages.StringField(3)
   id = _messages.IntegerField(4, variant=_messages.Variant.UINT64)
-  kind = _messages.StringField(5, default=u'compute#acceleratorType')
+  kind = _messages.StringField(5, default='compute#acceleratorType')
   maximumCardsPerInstance = _messages.IntegerField(6, variant=_messages.Variant.INT32)
   name = _messages.StringField(7)
   selfLink = _messages.StringField(8)
@@ -215,7 +214,7 @@ class AcceleratorTypeAggregatedList(_messages.Message):
 
   id = _messages.StringField(1)
   items = _messages.MessageField('ItemsValue', 2)
-  kind = _messages.StringField(3, default=u'compute#acceleratorTypeAggregatedList')
+  kind = _messages.StringField(3, default='compute#acceleratorTypeAggregatedList')
   nextPageToken = _messages.StringField(4)
   selfLink = _messages.StringField(5)
   warning = _messages.MessageField('WarningValue', 6)
@@ -340,7 +339,7 @@ class AcceleratorTypeList(_messages.Message):
 
   id = _messages.StringField(1)
   items = _messages.MessageField('AcceleratorType', 2, repeated=True)
-  kind = _messages.StringField(3, default=u'compute#acceleratorTypeList')
+  kind = _messages.StringField(3, default='compute#acceleratorTypeList')
   nextPageToken = _messages.StringField(4)
   selfLink = _messages.StringField(5)
   warning = _messages.MessageField('WarningValue', 6)
@@ -527,13 +526,13 @@ class AccessConfig(_messages.Message):
     """
     ONE_TO_ONE_NAT = 0
 
-  kind = _messages.StringField(1, default=u'compute#accessConfig')
+  kind = _messages.StringField(1, default='compute#accessConfig')
   name = _messages.StringField(2)
   natIP = _messages.StringField(3)
   networkTier = _messages.EnumField('NetworkTierValueValuesEnum', 4)
   publicPtrDomainName = _messages.StringField(5)
   setPublicPtr = _messages.BooleanField(6)
-  type = _messages.EnumField('TypeValueValuesEnum', 7, default=u'ONE_TO_ONE_NAT')
+  type = _messages.EnumField('TypeValueValuesEnum', 7, default='ONE_TO_ONE_NAT')
 
 
 class Address(_messages.Message):
@@ -764,7 +763,7 @@ class Address(_messages.Message):
   description = _messages.StringField(4)
   id = _messages.IntegerField(5, variant=_messages.Variant.UINT64)
   ipVersion = _messages.EnumField('IpVersionValueValuesEnum', 6)
-  kind = _messages.StringField(7, default=u'compute#address')
+  kind = _messages.StringField(7, default='compute#address')
   labelFingerprint = _messages.BytesField(8)
   labels = _messages.MessageField('LabelsValue', 9)
   name = _messages.StringField(10)
@@ -924,7 +923,7 @@ class AddressAggregatedList(_messages.Message):
 
   id = _messages.StringField(1)
   items = _messages.MessageField('ItemsValue', 2)
-  kind = _messages.StringField(3, default=u'compute#addressAggregatedList')
+  kind = _messages.StringField(3, default='compute#addressAggregatedList')
   nextPageToken = _messages.StringField(4)
   selfLink = _messages.StringField(5)
   warning = _messages.MessageField('WarningValue', 6)
@@ -1049,7 +1048,7 @@ class AddressList(_messages.Message):
 
   id = _messages.StringField(1)
   items = _messages.MessageField('Address', 2, repeated=True)
-  kind = _messages.StringField(3, default=u'compute#addressList')
+  kind = _messages.StringField(3, default='compute#addressList')
   nextPageToken = _messages.StringField(4)
   selfLink = _messages.StringField(5)
   warning = _messages.MessageField('WarningValue', 6)
@@ -1381,7 +1380,7 @@ class AttachedDisk(_messages.Message):
   index = _messages.IntegerField(7, variant=_messages.Variant.INT32)
   initializeParams = _messages.MessageField('AttachedDiskInitializeParams', 8)
   interface = _messages.EnumField('InterfaceValueValuesEnum', 9)
-  kind = _messages.StringField(10, default=u'compute#attachedDisk')
+  kind = _messages.StringField(10, default='compute#attachedDisk')
   licenses = _messages.StringField(11, repeated=True)
   mode = _messages.EnumField('ModeValueValuesEnum', 12)
   shieldedInstanceInitialState = _messages.MessageField('InitialStateConfig', 13)
@@ -1711,7 +1710,7 @@ class Autoscaler(_messages.Message):
   creationTimestamp = _messages.StringField(2)
   description = _messages.StringField(3)
   id = _messages.IntegerField(4, variant=_messages.Variant.UINT64)
-  kind = _messages.StringField(5, default=u'compute#autoscaler')
+  kind = _messages.StringField(5, default='compute#autoscaler')
   name = _messages.StringField(6)
   recommendedSize = _messages.IntegerField(7, variant=_messages.Variant.INT32)
   region = _messages.StringField(8)
@@ -1867,7 +1866,7 @@ class AutoscalerAggregatedList(_messages.Message):
 
   id = _messages.StringField(1)
   items = _messages.MessageField('ItemsValue', 2)
-  kind = _messages.StringField(3, default=u'compute#autoscalerAggregatedList')
+  kind = _messages.StringField(3, default='compute#autoscalerAggregatedList')
   nextPageToken = _messages.StringField(4)
   selfLink = _messages.StringField(5)
   warning = _messages.MessageField('WarningValue', 6)
@@ -1992,7 +1991,7 @@ class AutoscalerList(_messages.Message):
 
   id = _messages.StringField(1)
   items = _messages.MessageField('Autoscaler', 2, repeated=True)
-  kind = _messages.StringField(3, default=u'compute#autoscalerList')
+  kind = _messages.StringField(3, default='compute#autoscalerList')
   nextPageToken = _messages.StringField(4)
   selfLink = _messages.StringField(5)
   warning = _messages.MessageField('WarningValue', 6)
@@ -2680,7 +2679,7 @@ class BackendBucket(_messages.Message):
   description = _messages.StringField(4)
   enableCdn = _messages.BooleanField(5)
   id = _messages.IntegerField(6, variant=_messages.Variant.UINT64)
-  kind = _messages.StringField(7, default=u'compute#backendBucket')
+  kind = _messages.StringField(7, default='compute#backendBucket')
   name = _messages.StringField(8)
   selfLink = _messages.StringField(9)
 
@@ -2823,7 +2822,7 @@ class BackendBucketList(_messages.Message):
 
   id = _messages.StringField(1)
   items = _messages.MessageField('BackendBucket', 2, repeated=True)
-  kind = _messages.StringField(3, default=u'compute#backendBucketList')
+  kind = _messages.StringField(3, default='compute#backendBucketList')
   nextPageToken = _messages.StringField(4)
   selfLink = _messages.StringField(5)
   warning = _messages.MessageField('WarningValue', 6)
@@ -3158,7 +3157,7 @@ class BackendService(_messages.Message):
   healthChecks = _messages.StringField(13, repeated=True)
   iap = _messages.MessageField('BackendServiceIAP', 14)
   id = _messages.IntegerField(15, variant=_messages.Variant.UINT64)
-  kind = _messages.StringField(16, default=u'compute#backendService')
+  kind = _messages.StringField(16, default='compute#backendService')
   loadBalancingScheme = _messages.EnumField('LoadBalancingSchemeValueValuesEnum', 17)
   localityLbPolicy = _messages.EnumField('LocalityLbPolicyValueValuesEnum', 18)
   logConfig = _messages.MessageField('BackendServiceLogConfig', 19)
@@ -3320,7 +3319,7 @@ class BackendServiceAggregatedList(_messages.Message):
 
   id = _messages.StringField(1)
   items = _messages.MessageField('ItemsValue', 2)
-  kind = _messages.StringField(3, default=u'compute#backendServiceAggregatedList')
+  kind = _messages.StringField(3, default='compute#backendServiceAggregatedList')
   nextPageToken = _messages.StringField(4)
   selfLink = _messages.StringField(5)
   warning = _messages.MessageField('WarningValue', 6)
@@ -3423,7 +3422,7 @@ class BackendServiceGroupHealth(_messages.Message):
 
   annotations = _messages.MessageField('AnnotationsValue', 1)
   healthStatus = _messages.MessageField('HealthStatus', 2, repeated=True)
-  kind = _messages.StringField(3, default=u'compute#backendServiceGroupHealth')
+  kind = _messages.StringField(3, default='compute#backendServiceGroupHealth')
 
 
 class BackendServiceIAP(_messages.Message):
@@ -3562,7 +3561,7 @@ class BackendServiceList(_messages.Message):
 
   id = _messages.StringField(1)
   items = _messages.MessageField('BackendService', 2, repeated=True)
-  kind = _messages.StringField(3, default=u'compute#backendServiceList')
+  kind = _messages.StringField(3, default='compute#backendServiceList')
   nextPageToken = _messages.StringField(4)
   selfLink = _messages.StringField(5)
   warning = _messages.MessageField('WarningValue', 6)
@@ -3970,8 +3969,9 @@ class Binding(_messages.Message):
       not apply to the current request. However, a different role binding
       might grant the same role to one or more of the members in this binding.
       To learn which resources support conditions in their IAM policies, see
-      the [IAM documentation](https://cloud.google.com/iam/help/conditions
-      /resource-policies).
+      the [IAM
+      documentation](https://cloud.google.com/iam/help/conditions/resource-
+      policies).
     members: Specifies the identities requesting access for a Cloud Platform
       resource. `members` can have the following values:  * `allUsers`: A
       special identifier that represents anyone who is on the internet; with
@@ -4193,7 +4193,7 @@ class Commitment(_messages.Message):
   description = _messages.StringField(2)
   endTimestamp = _messages.StringField(3)
   id = _messages.IntegerField(4, variant=_messages.Variant.UINT64)
-  kind = _messages.StringField(5, default=u'compute#commitment')
+  kind = _messages.StringField(5, default='compute#commitment')
   name = _messages.StringField(6)
   plan = _messages.EnumField('PlanValueValuesEnum', 7)
   region = _messages.StringField(8)
@@ -4351,7 +4351,7 @@ class CommitmentAggregatedList(_messages.Message):
 
   id = _messages.StringField(1)
   items = _messages.MessageField('ItemsValue', 2)
-  kind = _messages.StringField(3, default=u'compute#commitmentAggregatedList')
+  kind = _messages.StringField(3, default='compute#commitmentAggregatedList')
   nextPageToken = _messages.StringField(4)
   selfLink = _messages.StringField(5)
   warning = _messages.MessageField('WarningValue', 6)
@@ -4476,7 +4476,7 @@ class CommitmentList(_messages.Message):
 
   id = _messages.StringField(1)
   items = _messages.MessageField('Commitment', 2, repeated=True)
-  kind = _messages.StringField(3, default=u'compute#commitmentList')
+  kind = _messages.StringField(3, default='compute#commitmentList')
   nextPageToken = _messages.StringField(4)
   selfLink = _messages.StringField(5)
   warning = _messages.MessageField('WarningValue', 6)
@@ -21756,6 +21756,8 @@ class Disk(_messages.Message):
   {$api_version}.regionDisks ==)
 
   Enums:
+    InterfaceValueValuesEnum: Specifies the disk interface to use for
+      attaching this disk, which is either SCSI or NVME. The default is SCSI.
     StatusValueValuesEnum: [Output Only] The status of disk creation.
       CREATING: Disk is provisioning. RESTORING: Source data is being copied
       into the disk. FAILED: Disk creation failed. READY: Disk is ready for
@@ -21788,6 +21790,8 @@ class Disk(_messages.Message):
       operating system features to see a list of available options.
     id: [Output Only] The unique identifier for the resource. This identifier
       is defined by the server.
+    interface: Specifies the disk interface to use for attaching this disk,
+      which is either SCSI or NVME. The default is SCSI.
     kind: [Output Only] Type of the resource. Always compute#disk for disks.
     labelFingerprint: A fingerprint for the labels being applied to this disk,
       which is essentially a hash of the labels set used for optimistic
@@ -21877,13 +21881,26 @@ class Disk(_messages.Message):
     storageType: [Deprecated] Storage type of the persistent disk.
     type: URL of the disk type resource describing which disk type to use to
       create the disk. Provide this when creating the disk. For example:
-      projects/project/zones/zone/diskTypes/pd-standard or pd-ssd
+      projects/project/zones/zone/diskTypes/pd-standard  or pd-ssd
     users: [Output Only] Links to the users of the disk (attached instances)
       in form: projects/project/zones/zone/instances/instance
     zone: [Output Only] URL of the zone where the disk resides. You must
       specify this field as part of the HTTP request URL. It is not settable
       as a field in the request body.
   """
+
+  class InterfaceValueValuesEnum(_messages.Enum):
+    r"""Specifies the disk interface to use for attaching this disk, which is
+    either SCSI or NVME. The default is SCSI.
+
+    Values:
+      NVME: <no description>
+      SCSI: <no description>
+      UNSPECIFIED: <no description>
+    """
+    NVME = 0
+    SCSI = 1
+    UNSPECIFIED = 2
 
   class StatusValueValuesEnum(_messages.Enum):
     r"""[Output Only] The status of disk creation. CREATING: Disk is
@@ -21945,32 +21962,33 @@ class Disk(_messages.Message):
   eraseWindowsVssSignature = _messages.BooleanField(4)
   guestOsFeatures = _messages.MessageField('GuestOsFeature', 5, repeated=True)
   id = _messages.IntegerField(6, variant=_messages.Variant.UINT64)
-  kind = _messages.StringField(7, default=u'compute#disk')
-  labelFingerprint = _messages.BytesField(8)
-  labels = _messages.MessageField('LabelsValue', 9)
-  lastAttachTimestamp = _messages.StringField(10)
-  lastDetachTimestamp = _messages.StringField(11)
-  licenseCodes = _messages.IntegerField(12, repeated=True)
-  licenses = _messages.StringField(13, repeated=True)
-  name = _messages.StringField(14)
-  options = _messages.StringField(15)
-  physicalBlockSizeBytes = _messages.IntegerField(16)
-  region = _messages.StringField(17)
-  replicaZones = _messages.StringField(18, repeated=True)
-  resourcePolicies = _messages.StringField(19, repeated=True)
-  selfLink = _messages.StringField(20)
-  sizeGb = _messages.IntegerField(21)
-  sourceImage = _messages.StringField(22)
-  sourceImageEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 23)
-  sourceImageId = _messages.StringField(24)
-  sourceSnapshot = _messages.StringField(25)
-  sourceSnapshotEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 26)
-  sourceSnapshotId = _messages.StringField(27)
-  status = _messages.EnumField('StatusValueValuesEnum', 28)
-  storageType = _messages.EnumField('StorageTypeValueValuesEnum', 29)
-  type = _messages.StringField(30)
-  users = _messages.StringField(31, repeated=True)
-  zone = _messages.StringField(32)
+  interface = _messages.EnumField('InterfaceValueValuesEnum', 7)
+  kind = _messages.StringField(8, default='compute#disk')
+  labelFingerprint = _messages.BytesField(9)
+  labels = _messages.MessageField('LabelsValue', 10)
+  lastAttachTimestamp = _messages.StringField(11)
+  lastDetachTimestamp = _messages.StringField(12)
+  licenseCodes = _messages.IntegerField(13, repeated=True)
+  licenses = _messages.StringField(14, repeated=True)
+  name = _messages.StringField(15)
+  options = _messages.StringField(16)
+  physicalBlockSizeBytes = _messages.IntegerField(17)
+  region = _messages.StringField(18)
+  replicaZones = _messages.StringField(19, repeated=True)
+  resourcePolicies = _messages.StringField(20, repeated=True)
+  selfLink = _messages.StringField(21)
+  sizeGb = _messages.IntegerField(22)
+  sourceImage = _messages.StringField(23)
+  sourceImageEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 24)
+  sourceImageId = _messages.StringField(25)
+  sourceSnapshot = _messages.StringField(26)
+  sourceSnapshotEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 27)
+  sourceSnapshotId = _messages.StringField(28)
+  status = _messages.EnumField('StatusValueValuesEnum', 29)
+  storageType = _messages.EnumField('StorageTypeValueValuesEnum', 30)
+  type = _messages.StringField(31)
+  users = _messages.StringField(32, repeated=True)
+  zone = _messages.StringField(33)
 
 
 class DiskAggregatedList(_messages.Message):
@@ -22118,7 +22136,7 @@ class DiskAggregatedList(_messages.Message):
 
   id = _messages.StringField(1)
   items = _messages.MessageField('ItemsValue', 2)
-  kind = _messages.StringField(3, default=u'compute#diskAggregatedList')
+  kind = _messages.StringField(3, default='compute#diskAggregatedList')
   nextPageToken = _messages.StringField(4)
   selfLink = _messages.StringField(5)
   warning = _messages.MessageField('WarningValue', 6)
@@ -22319,7 +22337,7 @@ class DiskList(_messages.Message):
 
   id = _messages.StringField(1)
   items = _messages.MessageField('Disk', 2, repeated=True)
-  kind = _messages.StringField(3, default=u'compute#diskList')
+  kind = _messages.StringField(3, default='compute#diskList')
   nextPageToken = _messages.StringField(4)
   selfLink = _messages.StringField(5)
   warning = _messages.MessageField('WarningValue', 6)
@@ -22387,7 +22405,7 @@ class DiskType(_messages.Message):
   deprecated = _messages.MessageField('DeprecationStatus', 3)
   description = _messages.StringField(4)
   id = _messages.IntegerField(5, variant=_messages.Variant.UINT64)
-  kind = _messages.StringField(6, default=u'compute#diskType')
+  kind = _messages.StringField(6, default='compute#diskType')
   name = _messages.StringField(7)
   region = _messages.StringField(8)
   selfLink = _messages.StringField(9)
@@ -22540,7 +22558,7 @@ class DiskTypeAggregatedList(_messages.Message):
 
   id = _messages.StringField(1)
   items = _messages.MessageField('ItemsValue', 2)
-  kind = _messages.StringField(3, default=u'compute#diskTypeAggregatedList')
+  kind = _messages.StringField(3, default='compute#diskTypeAggregatedList')
   nextPageToken = _messages.StringField(4)
   selfLink = _messages.StringField(5)
   warning = _messages.MessageField('WarningValue', 6)
@@ -22665,7 +22683,7 @@ class DiskTypeList(_messages.Message):
 
   id = _messages.StringField(1)
   items = _messages.MessageField('DiskType', 2, repeated=True)
-  kind = _messages.StringField(3, default=u'compute#diskTypeList')
+  kind = _messages.StringField(3, default='compute#diskTypeList')
   nextPageToken = _messages.StringField(4)
   selfLink = _messages.StringField(5)
   warning = _messages.MessageField('WarningValue', 6)
@@ -23138,7 +23156,7 @@ class ExchangedPeeringRoutesList(_messages.Message):
 
   id = _messages.StringField(1)
   items = _messages.MessageField('ExchangedPeeringRoute', 2, repeated=True)
-  kind = _messages.StringField(3, default=u'compute#exchangedPeeringRoutesList')
+  kind = _messages.StringField(3, default='compute#exchangedPeeringRoutesList')
   nextPageToken = _messages.StringField(4)
   selfLink = _messages.StringField(5)
   warning = _messages.MessageField('WarningValue', 6)
@@ -23275,7 +23293,7 @@ class ExternalVpnGateway(_messages.Message):
   description = _messages.StringField(2)
   id = _messages.IntegerField(3, variant=_messages.Variant.UINT64)
   interfaces = _messages.MessageField('ExternalVpnGatewayInterface', 4, repeated=True)
-  kind = _messages.StringField(5, default=u'compute#externalVpnGateway')
+  kind = _messages.StringField(5, default='compute#externalVpnGateway')
   labelFingerprint = _messages.BytesField(6)
   labels = _messages.MessageField('LabelsValue', 7)
   name = _messages.StringField(8)
@@ -23423,7 +23441,7 @@ class ExternalVpnGatewayList(_messages.Message):
   etag = _messages.StringField(1)
   id = _messages.StringField(2)
   items = _messages.MessageField('ExternalVpnGateway', 3, repeated=True)
-  kind = _messages.StringField(4, default=u'compute#externalVpnGatewayList')
+  kind = _messages.StringField(4, default='compute#externalVpnGatewayList')
   nextPageToken = _messages.StringField(5)
   selfLink = _messages.StringField(6)
   warning = _messages.MessageField('WarningValue', 7)
@@ -23514,10 +23532,9 @@ class Firewall(_messages.Message):
       specified when creating a firewall rule, the default network is used:
       global/networks/default If you choose to specify this field, you can
       specify the network as a full or partial URL. For example, the following
-      are all valid URLs:   -
-      https://www.googleapis.com/compute/v1/projects/myproject/global/networks
-      /my-network  - projects/myproject/global/networks/my-network  -
-      global/networks/default
+      are all valid URLs:   - https://www.googleapis.com/compute/v1/projects/m
+      yproject/global/networks/my-network  -
+      projects/myproject/global/networks/my-network  - global/networks/default
     priority: Priority for this rule. This is an integer between `0` and
       `65535`, both inclusive. The default value is `1000`. Relative
       priorities determine which rule takes effect if multiple rules apply.
@@ -23630,7 +23647,7 @@ class Firewall(_messages.Message):
   disabled = _messages.BooleanField(7)
   enableLogging = _messages.BooleanField(8)
   id = _messages.IntegerField(9, variant=_messages.Variant.UINT64)
-  kind = _messages.StringField(10, default=u'compute#firewall')
+  kind = _messages.StringField(10, default='compute#firewall')
   logConfig = _messages.MessageField('FirewallLogConfig', 11)
   name = _messages.StringField(12)
   network = _messages.StringField(13)
@@ -23762,7 +23779,7 @@ class FirewallList(_messages.Message):
 
   id = _messages.StringField(1)
   items = _messages.MessageField('Firewall', 2, repeated=True)
-  kind = _messages.StringField(3, default=u'compute#firewallList')
+  kind = _messages.StringField(3, default='compute#firewallList')
   nextPageToken = _messages.StringField(4)
   selfLink = _messages.StringField(5)
   warning = _messages.MessageField('WarningValue', 6)
@@ -23879,13 +23896,13 @@ class ForwardingRule(_messages.Message):
       assigned. Methods for specifying an IP address:  * IPv4 dotted decimal,
       as in `100.1.2.3` * Full URL, as in https://www.googleapis.com/compute/v
       1/projects/project_id/regions/region/addresses/address-name * Partial
-      URL or by name, as in: * projects/project_id/regions/region/addresses
-      /address-name * regions/region/addresses/address-name * global/addresses
-      /address-name * address-name   The loadBalancingScheme and the
-      forwarding rule's target determine the type of IP address that you can
-      use. For detailed information, refer to [IP address specifications
-      ](/load-balancing/docs/forwarding-rule-
-      concepts#ip_address_specifications).
+      URL or by name, as in: *
+      projects/project_id/regions/region/addresses/address-name *
+      regions/region/addresses/address-name * global/addresses/address-name *
+      address-name   The loadBalancingScheme and the forwarding rule's target
+      determine the type of IP address that you can use. For detailed
+      information, refer to [IP address specifications](/load-
+      balancing/docs/forwarding-rule-concepts#ip_address_specifications).
     IPProtocol: The IP protocol to which this rule applies. For protocol
       forwarding, valid options are TCP, UDP, ESP, AH, SCTP or ICMP.  For
       Internal TCP/UDP Load Balancing, the load balancing scheme is INTERNAL,
@@ -24156,7 +24173,7 @@ class ForwardingRule(_messages.Message):
   id = _messages.IntegerField(9, variant=_messages.Variant.UINT64)
   ipVersion = _messages.EnumField('IpVersionValueValuesEnum', 10)
   isMirroringCollector = _messages.BooleanField(11)
-  kind = _messages.StringField(12, default=u'compute#forwardingRule')
+  kind = _messages.StringField(12, default='compute#forwardingRule')
   labelFingerprint = _messages.BytesField(13)
   labels = _messages.MessageField('LabelsValue', 14)
   loadBalancingScheme = _messages.EnumField('LoadBalancingSchemeValueValuesEnum', 15)
@@ -24319,7 +24336,7 @@ class ForwardingRuleAggregatedList(_messages.Message):
 
   id = _messages.StringField(1)
   items = _messages.MessageField('ItemsValue', 2)
-  kind = _messages.StringField(3, default=u'compute#forwardingRuleAggregatedList')
+  kind = _messages.StringField(3, default='compute#forwardingRuleAggregatedList')
   nextPageToken = _messages.StringField(4)
   selfLink = _messages.StringField(5)
   warning = _messages.MessageField('WarningValue', 6)
@@ -24443,7 +24460,7 @@ class ForwardingRuleList(_messages.Message):
 
   id = _messages.StringField(1)
   items = _messages.MessageField('ForwardingRule', 2, repeated=True)
-  kind = _messages.StringField(3, default=u'compute#forwardingRuleList')
+  kind = _messages.StringField(3, default='compute#forwardingRuleList')
   nextPageToken = _messages.StringField(4)
   selfLink = _messages.StringField(5)
   warning = _messages.MessageField('WarningValue', 6)
@@ -24691,7 +24708,7 @@ class GuestAttributes(_messages.Message):
     variableValue: [Output Only] The value found for the requested key.
   """
 
-  kind = _messages.StringField(1, default=u'compute#guestAttributes')
+  kind = _messages.StringField(1, default='compute#guestAttributes')
   queryPath = _messages.StringField(2)
   queryValue = _messages.MessageField('GuestAttributesValue', 3)
   selfLink = _messages.StringField(4)
@@ -24744,6 +24761,7 @@ class GuestOsFeature(_messages.Message):
       GVNIC: <no description>
       MULTI_IP_SUBNET: <no description>
       SECURE_BOOT: <no description>
+      SEV_CAPABLE: <no description>
       UEFI_COMPATIBLE: <no description>
       VIRTIO_SCSI_MULTIQUEUE: <no description>
       WINDOWS: <no description>
@@ -24752,9 +24770,10 @@ class GuestOsFeature(_messages.Message):
     GVNIC = 1
     MULTI_IP_SUBNET = 2
     SECURE_BOOT = 3
-    UEFI_COMPATIBLE = 4
-    VIRTIO_SCSI_MULTIQUEUE = 5
-    WINDOWS = 6
+    SEV_CAPABLE = 4
+    UEFI_COMPATIBLE = 5
+    VIRTIO_SCSI_MULTIQUEUE = 6
+    WINDOWS = 7
 
   type = _messages.EnumField('TypeValueValuesEnum', 1)
 
@@ -25086,7 +25105,7 @@ class HealthCheck(_messages.Message):
   httpHealthCheck = _messages.MessageField('HTTPHealthCheck', 6)
   httpsHealthCheck = _messages.MessageField('HTTPSHealthCheck', 7)
   id = _messages.IntegerField(8, variant=_messages.Variant.UINT64)
-  kind = _messages.StringField(9, default=u'compute#healthCheck')
+  kind = _messages.StringField(9, default='compute#healthCheck')
   logConfig = _messages.MessageField('HealthCheckLogConfig', 10)
   name = _messages.StringField(11)
   region = _messages.StringField(12)
@@ -25216,7 +25235,7 @@ class HealthCheckList(_messages.Message):
 
   id = _messages.StringField(1)
   items = _messages.MessageField('HealthCheck', 2, repeated=True)
-  kind = _messages.StringField(3, default=u'compute#healthCheckList')
+  kind = _messages.StringField(3, default='compute#healthCheckList')
   nextPageToken = _messages.StringField(4)
   selfLink = _messages.StringField(5)
   warning = _messages.MessageField('WarningValue', 6)
@@ -25262,6 +25281,14 @@ class HealthCheckService(_messages.Message):
       reports UNHEALTHY, then UNHEALTHY is the HealthState of the entire
       health check service. If all backend's are healthy, the HealthState of
       the health check service is HEALTHY. .
+    HealthStatusAggregationStrategyValueValuesEnum: This field is deprecated.
+      Use health_status_aggregation_policy instead.  Policy for how the
+      results from multiple health checks for the same endpoint are
+      aggregated.   - NO_AGGREGATION. An EndpointHealth message is returned
+      for each backend in the health check service.  - AND. If any backend's
+      health check reports UNHEALTHY, then UNHEALTHY is the HealthState of the
+      entire health check service. If all backend's are healthy, the
+      HealthState of the health check service is HEALTHY. .
 
   Fields:
     creationTimestamp: [Output Only] Creation timestamp in RFC3339 text
@@ -25290,13 +25317,14 @@ class HealthCheckService(_messages.Message):
       AND. If any backend's health check reports UNHEALTHY, then UNHEALTHY is
       the HealthState of the entire health check service. If all backend's are
       healthy, the HealthState of the health check service is HEALTHY. .
-    healthStatusAggregationStrategy: Policy for how the results from multiple
-      health checks for the same endpoint are aggregated.   - NO_AGGREGATION.
-      An EndpointHealth message is returned for each backend in the health
-      check service.  - AND. If any backend's health check reports UNHEALTHY,
-      then UNHEALTHY is the HealthState of the entire health check service. If
-      all backend's are healthy, the HealthState of the health check service
-      is HEALTHY. .
+    healthStatusAggregationStrategy: This field is deprecated. Use
+      health_status_aggregation_policy instead.  Policy for how the results
+      from multiple health checks for the same endpoint are aggregated.   -
+      NO_AGGREGATION. An EndpointHealth message is returned for each backend
+      in the health check service.  - AND. If any backend's health check
+      reports UNHEALTHY, then UNHEALTHY is the HealthState of the entire
+      health check service. If all backend's are healthy, the HealthState of
+      the health check service is HEALTHY. .
     id: [Output Only] The unique identifier for the resource. This identifier
       is defined by the server.
     kind: [Output only] Type of the resource. Always
@@ -25339,14 +25367,30 @@ class HealthCheckService(_messages.Message):
     AND = 0
     NO_AGGREGATION = 1
 
+  class HealthStatusAggregationStrategyValueValuesEnum(_messages.Enum):
+    r"""This field is deprecated. Use health_status_aggregation_policy
+    instead.  Policy for how the results from multiple health checks for the
+    same endpoint are aggregated.   - NO_AGGREGATION. An EndpointHealth
+    message is returned for each backend in the health check service.  - AND.
+    If any backend's health check reports UNHEALTHY, then UNHEALTHY is the
+    HealthState of the entire health check service. If all backend's are
+    healthy, the HealthState of the health check service is HEALTHY. .
+
+    Values:
+      AND: <no description>
+      NO_AGGREGATION: <no description>
+    """
+    AND = 0
+    NO_AGGREGATION = 1
+
   creationTimestamp = _messages.StringField(1)
   description = _messages.StringField(2)
   fingerprint = _messages.BytesField(3)
   healthChecks = _messages.StringField(4, repeated=True)
   healthStatusAggregationPolicy = _messages.EnumField('HealthStatusAggregationPolicyValueValuesEnum', 5)
-  healthStatusAggregationStrategy = _messages.MessageField('extra_types.JsonValue', 6)
+  healthStatusAggregationStrategy = _messages.EnumField('HealthStatusAggregationStrategyValueValuesEnum', 6)
   id = _messages.IntegerField(7, variant=_messages.Variant.UINT64)
-  kind = _messages.StringField(8, default=u'compute#healthCheckService')
+  kind = _messages.StringField(8, default='compute#healthCheckService')
   name = _messages.StringField(9)
   networkEndpointGroups = _messages.StringField(10, repeated=True)
   notificationEndpoints = _messages.StringField(11, repeated=True)
@@ -25488,7 +25532,7 @@ class HealthCheckServicesList(_messages.Message):
 
   id = _messages.StringField(1)
   items = _messages.MessageField('HealthCheckService', 2, repeated=True)
-  kind = _messages.StringField(3, default=u'compute#healthCheckServicesList')
+  kind = _messages.StringField(3, default='compute#healthCheckServicesList')
   nextPageToken = _messages.StringField(4)
   selfLink = _messages.StringField(5)
   warning = _messages.MessageField('WarningValue', 6)
@@ -25638,7 +25682,7 @@ class HealthChecksAggregatedList(_messages.Message):
 
   id = _messages.StringField(1)
   items = _messages.MessageField('ItemsValue', 2)
-  kind = _messages.StringField(3, default=u'compute#healthChecksAggregatedList')
+  kind = _messages.StringField(3, default='compute#healthChecksAggregatedList')
   nextPageToken = _messages.StringField(4)
   selfLink = _messages.StringField(5)
   warning = _messages.MessageField('WarningValue', 6)
@@ -26070,7 +26114,7 @@ class HttpHealthCheck(_messages.Message):
   healthyThreshold = _messages.IntegerField(4, variant=_messages.Variant.INT32)
   host = _messages.StringField(5)
   id = _messages.IntegerField(6, variant=_messages.Variant.UINT64)
-  kind = _messages.StringField(7, default=u'compute#httpHealthCheck')
+  kind = _messages.StringField(7, default='compute#httpHealthCheck')
   name = _messages.StringField(8)
   port = _messages.IntegerField(9, variant=_messages.Variant.INT32)
   requestPath = _messages.StringField(10)
@@ -26197,7 +26241,7 @@ class HttpHealthCheckList(_messages.Message):
 
   id = _messages.StringField(1)
   items = _messages.MessageField('HttpHealthCheck', 2, repeated=True)
-  kind = _messages.StringField(3, default=u'compute#httpHealthCheckList')
+  kind = _messages.StringField(3, default='compute#httpHealthCheckList')
   nextPageToken = _messages.StringField(4)
   selfLink = _messages.StringField(5)
   warning = _messages.MessageField('WarningValue', 6)
@@ -26322,9 +26366,9 @@ class HttpRetryPolicy(_messages.Message):
       read timeout, connection failure, and refused streams.  - gateway-error:
       Similar to 5xx, but only applies to response codes 502, 503 or 504. -  -
       connect-failure: Loadbalancer will retry on failures connecting to
-      backend services, for example due to connection timeouts.  - retriable-
-      4xx: Loadbalancer will retry for retriable 4xx response codes. Currently
-      the only retriable error supported is 409.  - refused-
+      backend services, for example due to connection timeouts.  -
+      retriable-4xx: Loadbalancer will retry for retriable 4xx response codes.
+      Currently the only retriable error supported is 409.  - refused-
       stream:Loadbalancer will retry if the backend service resets the stream
       with a REFUSED_STREAM error code. This reset type indicates that it is
       safe to retry.  - cancelledLoadbalancer will retry if the gRPC status
@@ -26543,7 +26587,7 @@ class HttpsHealthCheck(_messages.Message):
   healthyThreshold = _messages.IntegerField(4, variant=_messages.Variant.INT32)
   host = _messages.StringField(5)
   id = _messages.IntegerField(6, variant=_messages.Variant.UINT64)
-  kind = _messages.StringField(7, default=u'compute#httpsHealthCheck')
+  kind = _messages.StringField(7, default='compute#httpsHealthCheck')
   name = _messages.StringField(8)
   port = _messages.IntegerField(9, variant=_messages.Variant.INT32)
   requestPath = _messages.StringField(10)
@@ -26670,7 +26714,7 @@ class HttpsHealthCheckList(_messages.Message):
 
   id = _messages.StringField(1)
   items = _messages.MessageField('HttpsHealthCheck', 2, repeated=True)
-  kind = _messages.StringField(3, default=u'compute#httpsHealthCheckList')
+  kind = _messages.StringField(3, default='compute#httpsHealthCheckList')
   nextPageToken = _messages.StringField(4)
   selfLink = _messages.StringField(5)
   warning = _messages.MessageField('WarningValue', 6)
@@ -26886,7 +26930,7 @@ class Image(_messages.Message):
   guestOsFeatures = _messages.MessageField('GuestOsFeature', 7, repeated=True)
   id = _messages.IntegerField(8, variant=_messages.Variant.UINT64)
   imageEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 9)
-  kind = _messages.StringField(10, default=u'compute#image')
+  kind = _messages.StringField(10, default='compute#image')
   labelFingerprint = _messages.BytesField(11)
   labels = _messages.MessageField('LabelsValue', 12)
   licenseCodes = _messages.IntegerField(13, repeated=True)
@@ -26904,7 +26948,7 @@ class Image(_messages.Message):
   sourceSnapshot = _messages.StringField(25)
   sourceSnapshotEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 26)
   sourceSnapshotId = _messages.StringField(27)
-  sourceType = _messages.EnumField('SourceTypeValueValuesEnum', 28, default=u'RAW')
+  sourceType = _messages.EnumField('SourceTypeValueValuesEnum', 28, default='RAW')
   status = _messages.EnumField('StatusValueValuesEnum', 29)
   storageLocations = _messages.StringField(30, repeated=True)
 
@@ -27027,7 +27071,7 @@ class ImageList(_messages.Message):
 
   id = _messages.StringField(1)
   items = _messages.MessageField('Image', 2, repeated=True)
-  kind = _messages.StringField(3, default=u'compute#imageList')
+  kind = _messages.StringField(3, default='compute#imageList')
   nextPageToken = _messages.StringField(4)
   selfLink = _messages.StringField(5)
   warning = _messages.MessageField('WarningValue', 6)
@@ -27060,8 +27104,8 @@ class Instance(_messages.Message):
       type for the VM. If not specified, use  INHERIT_FROM_SUBNETWORK as
       default.
     StatusValueValuesEnum: [Output Only] The status of the instance. One of
-      the following values: PROVISIONING, STAGING, RUNNING, STOPPING, STOPPED,
-      SUSPENDING, SUSPENDED, and TERMINATED.
+      the following values: PROVISIONING, STAGING, RUNNING, STOPPING,
+      SUSPENDING, SUSPENDED, REPAIRING, and TERMINATED.
 
   Messages:
     LabelsValue: Labels to apply to this instance. These can be later modified
@@ -27162,8 +27206,8 @@ class Instance(_messages.Message):
     startRestricted: [Output Only] Whether a VM has been restricted for start
       because Compute Engine has detected suspicious activity.
     status: [Output Only] The status of the instance. One of the following
-      values: PROVISIONING, STAGING, RUNNING, STOPPING, STOPPED, SUSPENDING,
-      SUSPENDED, and TERMINATED.
+      values: PROVISIONING, STAGING, RUNNING, STOPPING, SUSPENDING, SUSPENDED,
+      REPAIRING, and TERMINATED.
     statusMessage: [Output Only] An optional, human-readable explanation of
       the status.
     tags: Tags to apply to this instance. Tags are used to identify valid
@@ -27191,8 +27235,8 @@ class Instance(_messages.Message):
 
   class StatusValueValuesEnum(_messages.Enum):
     r"""[Output Only] The status of the instance. One of the following values:
-    PROVISIONING, STAGING, RUNNING, STOPPING, STOPPED, SUSPENDING, SUSPENDED,
-    and TERMINATED.
+    PROVISIONING, STAGING, RUNNING, STOPPING, SUSPENDING, SUSPENDED,
+    REPAIRING, and TERMINATED.
 
     Values:
       DEPROVISIONING: <no description>
@@ -27254,7 +27298,7 @@ class Instance(_messages.Message):
   guestAccelerators = _messages.MessageField('AcceleratorConfig', 10, repeated=True)
   hostname = _messages.StringField(11)
   id = _messages.IntegerField(12, variant=_messages.Variant.UINT64)
-  kind = _messages.StringField(13, default=u'compute#instance')
+  kind = _messages.StringField(13, default='compute#instance')
   labelFingerprint = _messages.BytesField(14)
   labels = _messages.MessageField('LabelsValue', 15)
   machineType = _messages.StringField(16)
@@ -27427,7 +27471,7 @@ class InstanceAggregatedList(_messages.Message):
 
   id = _messages.StringField(1)
   items = _messages.MessageField('ItemsValue', 2)
-  kind = _messages.StringField(3, default=u'compute#instanceAggregatedList')
+  kind = _messages.StringField(3, default='compute#instanceAggregatedList')
   nextPageToken = _messages.StringField(4)
   selfLink = _messages.StringField(5)
   warning = _messages.MessageField('WarningValue', 6)
@@ -27485,7 +27529,7 @@ class InstanceGroup(_messages.Message):
   description = _messages.StringField(2)
   fingerprint = _messages.BytesField(3)
   id = _messages.IntegerField(4, variant=_messages.Variant.UINT64)
-  kind = _messages.StringField(5, default=u'compute#instanceGroup')
+  kind = _messages.StringField(5, default='compute#instanceGroup')
   name = _messages.StringField(6)
   namedPorts = _messages.MessageField('NamedPort', 7, repeated=True)
   network = _messages.StringField(8)
@@ -27642,7 +27686,7 @@ class InstanceGroupAggregatedList(_messages.Message):
 
   id = _messages.StringField(1)
   items = _messages.MessageField('ItemsValue', 2)
-  kind = _messages.StringField(3, default=u'compute#instanceGroupAggregatedList')
+  kind = _messages.StringField(3, default='compute#instanceGroupAggregatedList')
   nextPageToken = _messages.StringField(4)
   selfLink = _messages.StringField(5)
   warning = _messages.MessageField('WarningValue', 6)
@@ -27767,7 +27811,7 @@ class InstanceGroupList(_messages.Message):
 
   id = _messages.StringField(1)
   items = _messages.MessageField('InstanceGroup', 2, repeated=True)
-  kind = _messages.StringField(3, default=u'compute#instanceGroupList')
+  kind = _messages.StringField(3, default='compute#instanceGroupList')
   nextPageToken = _messages.StringField(4)
   selfLink = _messages.StringField(5)
   warning = _messages.MessageField('WarningValue', 6)
@@ -27882,7 +27926,7 @@ class InstanceGroupManager(_messages.Message):
   id = _messages.IntegerField(9, variant=_messages.Variant.UINT64)
   instanceGroup = _messages.StringField(10)
   instanceTemplate = _messages.StringField(11)
-  kind = _messages.StringField(12, default=u'compute#instanceGroupManager')
+  kind = _messages.StringField(12, default='compute#instanceGroupManager')
   name = _messages.StringField(13)
   namedPorts = _messages.MessageField('NamedPort', 14, repeated=True)
   pendingActions = _messages.MessageField('InstanceGroupManagerPendingActionsSummary', 15)
@@ -28093,7 +28137,7 @@ class InstanceGroupManagerAggregatedList(_messages.Message):
 
   id = _messages.StringField(1)
   items = _messages.MessageField('ItemsValue', 2)
-  kind = _messages.StringField(3, default=u'compute#instanceGroupManagerAggregatedList')
+  kind = _messages.StringField(3, default='compute#instanceGroupManagerAggregatedList')
   nextPageToken = _messages.StringField(4)
   selfLink = _messages.StringField(5)
   warning = _messages.MessageField('WarningValue', 6)
@@ -28236,7 +28280,7 @@ class InstanceGroupManagerList(_messages.Message):
 
   id = _messages.StringField(1)
   items = _messages.MessageField('InstanceGroupManager', 2, repeated=True)
-  kind = _messages.StringField(3, default=u'compute#instanceGroupManagerList')
+  kind = _messages.StringField(3, default='compute#instanceGroupManagerList')
   nextPageToken = _messages.StringField(4)
   selfLink = _messages.StringField(5)
   warning = _messages.MessageField('WarningValue', 6)
@@ -29123,7 +29167,7 @@ class InstanceGroupsListInstances(_messages.Message):
 
   id = _messages.StringField(1)
   items = _messages.MessageField('InstanceWithNamedPorts', 2, repeated=True)
-  kind = _messages.StringField(3, default=u'compute#instanceGroupsListInstances')
+  kind = _messages.StringField(3, default='compute#instanceGroupsListInstances')
   nextPageToken = _messages.StringField(4)
   selfLink = _messages.StringField(5)
   warning = _messages.MessageField('WarningValue', 6)
@@ -29421,7 +29465,7 @@ class InstanceList(_messages.Message):
 
   id = _messages.StringField(1)
   items = _messages.MessageField('Instance', 2, repeated=True)
-  kind = _messages.StringField(3, default=u'compute#instanceList')
+  kind = _messages.StringField(3, default='compute#instanceList')
   nextPageToken = _messages.StringField(4)
   selfLink = _messages.StringField(5)
   warning = _messages.MessageField('WarningValue', 6)
@@ -29546,7 +29590,7 @@ class InstanceListReferrers(_messages.Message):
 
   id = _messages.StringField(1)
   items = _messages.MessageField('Reference', 2, repeated=True)
-  kind = _messages.StringField(3, default=u'compute#instanceListReferrers')
+  kind = _messages.StringField(3, default='compute#instanceListReferrers')
   nextPageToken = _messages.StringField(4)
   selfLink = _messages.StringField(5)
   warning = _messages.MessageField('WarningValue', 6)
@@ -29818,7 +29862,7 @@ class InstanceTemplate(_messages.Message):
   creationTimestamp = _messages.StringField(1)
   description = _messages.StringField(2)
   id = _messages.IntegerField(3, variant=_messages.Variant.UINT64)
-  kind = _messages.StringField(4, default=u'compute#instanceTemplate')
+  kind = _messages.StringField(4, default='compute#instanceTemplate')
   name = _messages.StringField(5)
   properties = _messages.MessageField('InstanceProperties', 6)
   selfLink = _messages.StringField(7)
@@ -29945,7 +29989,7 @@ class InstanceTemplateList(_messages.Message):
 
   id = _messages.StringField(1)
   items = _messages.MessageField('InstanceTemplate', 2, repeated=True)
-  kind = _messages.StringField(3, default=u'compute#instanceTemplateList')
+  kind = _messages.StringField(3, default='compute#instanceTemplateList')
   nextPageToken = _messages.StringField(4)
   selfLink = _messages.StringField(5)
   warning = _messages.MessageField('WarningValue', 6)
@@ -30515,7 +30559,7 @@ class Interconnect(_messages.Message):
   id = _messages.IntegerField(9, variant=_messages.Variant.UINT64)
   interconnectAttachments = _messages.StringField(10, repeated=True)
   interconnectType = _messages.EnumField('InterconnectTypeValueValuesEnum', 11)
-  kind = _messages.StringField(12, default=u'compute#interconnect')
+  kind = _messages.StringField(12, default='compute#interconnect')
   labelFingerprint = _messages.BytesField(13)
   labels = _messages.MessageField('LabelsValue', 14)
   linkType = _messages.EnumField('LinkTypeValueValuesEnum', 15)
@@ -30867,7 +30911,7 @@ class InterconnectAttachment(_messages.Message):
   googleReferenceId = _messages.StringField(9)
   id = _messages.IntegerField(10, variant=_messages.Variant.UINT64)
   interconnect = _messages.StringField(11)
-  kind = _messages.StringField(12, default=u'compute#interconnectAttachment')
+  kind = _messages.StringField(12, default='compute#interconnectAttachment')
   labelFingerprint = _messages.BytesField(13)
   labels = _messages.MessageField('LabelsValue', 14)
   name = _messages.StringField(15)
@@ -31030,7 +31074,7 @@ class InterconnectAttachmentAggregatedList(_messages.Message):
 
   id = _messages.StringField(1)
   items = _messages.MessageField('ItemsValue', 2)
-  kind = _messages.StringField(3, default=u'compute#interconnectAttachmentAggregatedList')
+  kind = _messages.StringField(3, default='compute#interconnectAttachmentAggregatedList')
   nextPageToken = _messages.StringField(4)
   selfLink = _messages.StringField(5)
   warning = _messages.MessageField('WarningValue', 6)
@@ -31157,7 +31201,7 @@ class InterconnectAttachmentList(_messages.Message):
 
   id = _messages.StringField(1)
   items = _messages.MessageField('InterconnectAttachment', 2, repeated=True)
-  kind = _messages.StringField(3, default=u'compute#interconnectAttachmentList')
+  kind = _messages.StringField(3, default='compute#interconnectAttachmentList')
   nextPageToken = _messages.StringField(4)
   selfLink = _messages.StringField(5)
   warning = _messages.MessageField('WarningValue', 6)
@@ -31598,7 +31642,7 @@ class InterconnectList(_messages.Message):
 
   id = _messages.StringField(1)
   items = _messages.MessageField('Interconnect', 2, repeated=True)
-  kind = _messages.StringField(3, default=u'compute#interconnectList')
+  kind = _messages.StringField(3, default='compute#interconnectList')
   nextPageToken = _messages.StringField(4)
   selfLink = _messages.StringField(5)
   warning = _messages.MessageField('WarningValue', 6)
@@ -31708,7 +31752,7 @@ class InterconnectLocation(_messages.Message):
   facilityProvider = _messages.StringField(7)
   facilityProviderFacilityId = _messages.StringField(8)
   id = _messages.IntegerField(9, variant=_messages.Variant.UINT64)
-  kind = _messages.StringField(10, default=u'compute#interconnectLocation')
+  kind = _messages.StringField(10, default='compute#interconnectLocation')
   name = _messages.StringField(11)
   peeringdbFacilityId = _messages.StringField(12)
   regionInfos = _messages.MessageField('InterconnectLocationRegionInfo', 13, repeated=True)
@@ -31836,7 +31880,7 @@ class InterconnectLocationList(_messages.Message):
 
   id = _messages.StringField(1)
   items = _messages.MessageField('InterconnectLocation', 2, repeated=True)
-  kind = _messages.StringField(3, default=u'compute#interconnectLocationList')
+  kind = _messages.StringField(3, default='compute#interconnectLocationList')
   nextPageToken = _messages.StringField(4)
   selfLink = _messages.StringField(5)
   warning = _messages.MessageField('WarningValue', 6)
@@ -32032,7 +32076,7 @@ class License(_messages.Message):
   creationTimestamp = _messages.StringField(2)
   description = _messages.StringField(3)
   id = _messages.IntegerField(4, variant=_messages.Variant.UINT64)
-  kind = _messages.StringField(5, default=u'compute#license')
+  kind = _messages.StringField(5, default='compute#license')
   licenseCode = _messages.IntegerField(6, variant=_messages.Variant.UINT64)
   name = _messages.StringField(7)
   resourceRequirements = _messages.MessageField('LicenseResourceRequirements', 8)
@@ -32087,7 +32131,7 @@ class LicenseCode(_messages.Message):
   creationTimestamp = _messages.StringField(1)
   description = _messages.StringField(2)
   id = _messages.IntegerField(3, variant=_messages.Variant.UINT64)
-  kind = _messages.StringField(4, default=u'compute#licenseCode')
+  kind = _messages.StringField(4, default='compute#licenseCode')
   licenseAlias = _messages.MessageField('LicenseCodeLicenseAlias', 5, repeated=True)
   name = _messages.StringField(6)
   selfLink = _messages.StringField(7)
@@ -32433,7 +32477,7 @@ class MachineImage(_messages.Message):
   description = _messages.StringField(2)
   guestFlush = _messages.BooleanField(3)
   id = _messages.IntegerField(4, variant=_messages.Variant.UINT64)
-  kind = _messages.StringField(5, default=u'compute#machineImage')
+  kind = _messages.StringField(5, default='compute#machineImage')
   machineImageEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 6)
   name = _messages.StringField(7)
   selfLink = _messages.StringField(8)
@@ -32564,7 +32608,7 @@ class MachineImageList(_messages.Message):
 
   id = _messages.StringField(1)
   items = _messages.MessageField('MachineImage', 2, repeated=True)
-  kind = _messages.StringField(3, default=u'compute#machineImageList')
+  kind = _messages.StringField(3, default='compute#machineImageList')
   nextPageToken = _messages.StringField(4)
   selfLink = _messages.StringField(5)
   warning = _messages.MessageField('WarningValue', 6)
@@ -32626,7 +32670,7 @@ class MachineType(_messages.Message):
   guestCpus = _messages.IntegerField(5, variant=_messages.Variant.INT32)
   id = _messages.IntegerField(6, variant=_messages.Variant.UINT64)
   isSharedCpu = _messages.BooleanField(7)
-  kind = _messages.StringField(8, default=u'compute#machineType')
+  kind = _messages.StringField(8, default='compute#machineType')
   maximumPersistentDisks = _messages.IntegerField(9, variant=_messages.Variant.INT32)
   maximumPersistentDisksSizeGb = _messages.IntegerField(10)
   memoryMb = _messages.IntegerField(11, variant=_messages.Variant.INT32)
@@ -32780,7 +32824,7 @@ class MachineTypeAggregatedList(_messages.Message):
 
   id = _messages.StringField(1)
   items = _messages.MessageField('ItemsValue', 2)
-  kind = _messages.StringField(3, default=u'compute#machineTypeAggregatedList')
+  kind = _messages.StringField(3, default='compute#machineTypeAggregatedList')
   nextPageToken = _messages.StringField(4)
   selfLink = _messages.StringField(5)
   warning = _messages.MessageField('WarningValue', 6)
@@ -32905,7 +32949,7 @@ class MachineTypeList(_messages.Message):
 
   id = _messages.StringField(1)
   items = _messages.MessageField('MachineType', 2, repeated=True)
-  kind = _messages.StringField(3, default=u'compute#machineTypeList')
+  kind = _messages.StringField(3, default='compute#machineTypeList')
   nextPageToken = _messages.StringField(4)
   selfLink = _messages.StringField(5)
   warning = _messages.MessageField('WarningValue', 6)
@@ -33303,7 +33347,7 @@ class Metadata(_messages.Message):
 
   fingerprint = _messages.BytesField(1)
   items = _messages.MessageField('ItemsValueListEntry', 2, repeated=True)
-  kind = _messages.StringField(3, default=u'compute#metadata')
+  kind = _messages.StringField(3, default='compute#metadata')
 
 
 class MetadataFilter(_messages.Message):
@@ -33437,7 +33481,7 @@ class Network(_messages.Message):
   description = _messages.StringField(4)
   gatewayIPv4 = _messages.StringField(5)
   id = _messages.IntegerField(6, variant=_messages.Variant.UINT64)
-  kind = _messages.StringField(7, default=u'compute#network')
+  kind = _messages.StringField(7, default='compute#network')
   name = _messages.StringField(8)
   peerings = _messages.MessageField('NetworkPeering', 9, repeated=True)
   routingConfig = _messages.MessageField('NetworkRoutingConfig', 10)
@@ -33595,7 +33639,7 @@ class NetworkEndpointGroup(_messages.Message):
   defaultPort = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   description = _messages.StringField(4)
   id = _messages.IntegerField(5, variant=_messages.Variant.UINT64)
-  kind = _messages.StringField(6, default=u'compute#networkEndpointGroup')
+  kind = _messages.StringField(6, default='compute#networkEndpointGroup')
   loadBalancer = _messages.MessageField('NetworkEndpointGroupLbNetworkEndpointGroup', 7)
   name = _messages.StringField(8)
   network = _messages.StringField(9)
@@ -33752,7 +33796,7 @@ class NetworkEndpointGroupAggregatedList(_messages.Message):
 
   id = _messages.StringField(1)
   items = _messages.MessageField('ItemsValue', 2)
-  kind = _messages.StringField(3, default=u'compute#networkEndpointGroupAggregatedList')
+  kind = _messages.StringField(3, default='compute#networkEndpointGroupAggregatedList')
   nextPageToken = _messages.StringField(4)
   selfLink = _messages.StringField(5)
   warning = _messages.MessageField('WarningValue', 6)
@@ -33898,7 +33942,7 @@ class NetworkEndpointGroupList(_messages.Message):
 
   id = _messages.StringField(1)
   items = _messages.MessageField('NetworkEndpointGroup', 2, repeated=True)
-  kind = _messages.StringField(3, default=u'compute#networkEndpointGroupList')
+  kind = _messages.StringField(3, default='compute#networkEndpointGroupList')
   nextPageToken = _messages.StringField(4)
   selfLink = _messages.StringField(5)
   warning = _messages.MessageField('WarningValue', 6)
@@ -34089,7 +34133,7 @@ class NetworkEndpointGroupsListNetworkEndpoints(_messages.Message):
 
   id = _messages.StringField(1)
   items = _messages.MessageField('NetworkEndpointWithHealthStatus', 2, repeated=True)
-  kind = _messages.StringField(3, default=u'compute#networkEndpointGroupsListNetworkEndpoints')
+  kind = _messages.StringField(3, default='compute#networkEndpointGroupsListNetworkEndpoints')
   nextPageToken = _messages.StringField(4)
   warning = _messages.MessageField('WarningValue', 5)
 
@@ -34267,7 +34311,7 @@ class NetworkInterface(_messages.Message):
   aliasIpRanges = _messages.MessageField('AliasIpRange', 2, repeated=True)
   fingerprint = _messages.BytesField(3)
   ipv6Address = _messages.StringField(4)
-  kind = _messages.StringField(5, default=u'compute#networkInterface')
+  kind = _messages.StringField(5, default='compute#networkInterface')
   name = _messages.StringField(6)
   network = _messages.StringField(7)
   networkIP = _messages.StringField(8)
@@ -34393,7 +34437,7 @@ class NetworkList(_messages.Message):
 
   id = _messages.StringField(1)
   items = _messages.MessageField('Network', 2, repeated=True)
-  kind = _messages.StringField(3, default=u'compute#networkList')
+  kind = _messages.StringField(3, default='compute#networkList')
   nextPageToken = _messages.StringField(4)
   selfLink = _messages.StringField(5)
   warning = _messages.MessageField('WarningValue', 6)
@@ -34659,7 +34703,7 @@ class NodeGroup(_messages.Message):
   description = _messages.StringField(3)
   fingerprint = _messages.BytesField(4)
   id = _messages.IntegerField(5, variant=_messages.Variant.UINT64)
-  kind = _messages.StringField(6, default=u'compute#nodeGroup')
+  kind = _messages.StringField(6, default='compute#nodeGroup')
   maintenancePolicy = _messages.EnumField('MaintenancePolicyValueValuesEnum', 7)
   name = _messages.StringField(8)
   nodeTemplate = _messages.StringField(9)
@@ -34814,7 +34858,7 @@ class NodeGroupAggregatedList(_messages.Message):
 
   id = _messages.StringField(1)
   items = _messages.MessageField('ItemsValue', 2)
-  kind = _messages.StringField(3, default=u'compute#nodeGroupAggregatedList')
+  kind = _messages.StringField(3, default='compute#nodeGroupAggregatedList')
   nextPageToken = _messages.StringField(4)
   selfLink = _messages.StringField(5)
   warning = _messages.MessageField('WarningValue', 6)
@@ -34970,7 +35014,7 @@ class NodeGroupList(_messages.Message):
 
   id = _messages.StringField(1)
   items = _messages.MessageField('NodeGroup', 2, repeated=True)
-  kind = _messages.StringField(3, default=u'compute#nodeGroupList')
+  kind = _messages.StringField(3, default='compute#nodeGroupList')
   nextPageToken = _messages.StringField(4)
   selfLink = _messages.StringField(5)
   warning = _messages.MessageField('WarningValue', 6)
@@ -35171,7 +35215,7 @@ class NodeGroupsListNodes(_messages.Message):
 
   id = _messages.StringField(1)
   items = _messages.MessageField('NodeGroupNode', 2, repeated=True)
-  kind = _messages.StringField(3, default=u'compute#nodeGroupsListNodes')
+  kind = _messages.StringField(3, default='compute#nodeGroupsListNodes')
   nextPageToken = _messages.StringField(4)
   selfLink = _messages.StringField(5)
   warning = _messages.MessageField('WarningValue', 6)
@@ -35414,7 +35458,7 @@ class NodeTemplate(_messages.Message):
   creationTimestamp = _messages.StringField(2)
   description = _messages.StringField(3)
   id = _messages.IntegerField(4, variant=_messages.Variant.UINT64)
-  kind = _messages.StringField(5, default=u'compute#nodeTemplate')
+  kind = _messages.StringField(5, default='compute#nodeTemplate')
   name = _messages.StringField(6)
   nodeAffinityLabels = _messages.MessageField('NodeAffinityLabelsValue', 7)
   nodeType = _messages.StringField(8)
@@ -35572,7 +35616,7 @@ class NodeTemplateAggregatedList(_messages.Message):
 
   id = _messages.StringField(1)
   items = _messages.MessageField('ItemsValue', 2)
-  kind = _messages.StringField(3, default=u'compute#nodeTemplateAggregatedList')
+  kind = _messages.StringField(3, default='compute#nodeTemplateAggregatedList')
   nextPageToken = _messages.StringField(4)
   selfLink = _messages.StringField(5)
   warning = _messages.MessageField('WarningValue', 6)
@@ -35697,7 +35741,7 @@ class NodeTemplateList(_messages.Message):
 
   id = _messages.StringField(1)
   items = _messages.MessageField('NodeTemplate', 2, repeated=True)
-  kind = _messages.StringField(3, default=u'compute#nodeTemplateList')
+  kind = _messages.StringField(3, default='compute#nodeTemplateList')
   nextPageToken = _messages.StringField(4)
   selfLink = _messages.StringField(5)
   warning = _messages.MessageField('WarningValue', 6)
@@ -35870,7 +35914,7 @@ class NodeType(_messages.Message):
   description = _messages.StringField(4)
   guestCpus = _messages.IntegerField(5, variant=_messages.Variant.INT32)
   id = _messages.IntegerField(6, variant=_messages.Variant.UINT64)
-  kind = _messages.StringField(7, default=u'compute#nodeType')
+  kind = _messages.StringField(7, default='compute#nodeType')
   localSsdGb = _messages.IntegerField(8, variant=_messages.Variant.INT32)
   memoryMb = _messages.IntegerField(9, variant=_messages.Variant.INT32)
   name = _messages.StringField(10)
@@ -36023,7 +36067,7 @@ class NodeTypeAggregatedList(_messages.Message):
 
   id = _messages.StringField(1)
   items = _messages.MessageField('ItemsValue', 2)
-  kind = _messages.StringField(3, default=u'compute#nodeTypeAggregatedList')
+  kind = _messages.StringField(3, default='compute#nodeTypeAggregatedList')
   nextPageToken = _messages.StringField(4)
   selfLink = _messages.StringField(5)
   warning = _messages.MessageField('WarningValue', 6)
@@ -36148,7 +36192,7 @@ class NodeTypeList(_messages.Message):
 
   id = _messages.StringField(1)
   items = _messages.MessageField('NodeType', 2, repeated=True)
-  kind = _messages.StringField(3, default=u'compute#nodeTypeList')
+  kind = _messages.StringField(3, default='compute#nodeTypeList')
   nextPageToken = _messages.StringField(4)
   selfLink = _messages.StringField(5)
   warning = _messages.MessageField('WarningValue', 6)
@@ -36304,7 +36348,7 @@ class NotificationEndpoint(_messages.Message):
   description = _messages.StringField(2)
   grpcSettings = _messages.MessageField('NotificationEndpointGrpcSettings', 3)
   id = _messages.IntegerField(4, variant=_messages.Variant.UINT64)
-  kind = _messages.StringField(5, default=u'compute#notificationEndpoint')
+  kind = _messages.StringField(5, default='compute#notificationEndpoint')
   name = _messages.StringField(6)
   region = _messages.StringField(7)
   selfLink = _messages.StringField(8)
@@ -36457,7 +36501,7 @@ class NotificationEndpointList(_messages.Message):
 
   id = _messages.StringField(1)
   items = _messages.MessageField('NotificationEndpoint', 2, repeated=True)
-  kind = _messages.StringField(3, default=u'compute#notificationEndpointList')
+  kind = _messages.StringField(3, default='compute#notificationEndpointList')
   nextPageToken = _messages.StringField(4)
   selfLink = _messages.StringField(5)
   warning = _messages.MessageField('WarningValue', 6)
@@ -36685,7 +36729,7 @@ class Operation(_messages.Message):
   httpErrorStatusCode = _messages.IntegerField(7, variant=_messages.Variant.INT32)
   id = _messages.IntegerField(8, variant=_messages.Variant.UINT64)
   insertTime = _messages.StringField(9)
-  kind = _messages.StringField(10, default=u'compute#operation')
+  kind = _messages.StringField(10, default='compute#operation')
   name = _messages.StringField(11)
   operationType = _messages.StringField(12)
   progress = _messages.IntegerField(13, variant=_messages.Variant.INT32)
@@ -36846,7 +36890,7 @@ class OperationAggregatedList(_messages.Message):
 
   id = _messages.StringField(1)
   items = _messages.MessageField('ItemsValue', 2)
-  kind = _messages.StringField(3, default=u'compute#operationAggregatedList')
+  kind = _messages.StringField(3, default='compute#operationAggregatedList')
   nextPageToken = _messages.StringField(4)
   selfLink = _messages.StringField(5)
   warning = _messages.MessageField('WarningValue', 6)
@@ -36971,7 +37015,7 @@ class OperationList(_messages.Message):
 
   id = _messages.StringField(1)
   items = _messages.MessageField('Operation', 2, repeated=True)
-  kind = _messages.StringField(3, default=u'compute#operationList')
+  kind = _messages.StringField(3, default='compute#operationList')
   nextPageToken = _messages.StringField(4)
   selfLink = _messages.StringField(5)
   warning = _messages.MessageField('WarningValue', 6)
@@ -37102,7 +37146,7 @@ class OrganizationSecurityPoliciesListAssociationsResponse(_messages.Message):
   """
 
   associations = _messages.MessageField('SecurityPolicyAssociation', 1, repeated=True)
-  kind = _messages.StringField(2, default=u'compute#organizationSecurityPoliciesListAssociationsResponse')
+  kind = _messages.StringField(2, default='compute#organizationSecurityPoliciesListAssociationsResponse')
 
 
 class OutlierDetection(_messages.Message):
@@ -37295,7 +37339,7 @@ class PacketMirroring(_messages.Message):
   enable = _messages.EnumField('EnableValueValuesEnum', 4)
   filter = _messages.MessageField('PacketMirroringFilter', 5)
   id = _messages.IntegerField(6, variant=_messages.Variant.UINT64)
-  kind = _messages.StringField(7, default=u'compute#packetMirroring')
+  kind = _messages.StringField(7, default='compute#packetMirroring')
   mirroredResources = _messages.MessageField('PacketMirroringMirroredResourceInfo', 8)
   name = _messages.StringField(9)
   network = _messages.MessageField('PacketMirroringNetworkInfo', 10)
@@ -37448,7 +37492,7 @@ class PacketMirroringAggregatedList(_messages.Message):
 
   id = _messages.StringField(1)
   items = _messages.MessageField('ItemsValue', 2)
-  kind = _messages.StringField(3, default=u'compute#packetMirroringAggregatedList')
+  kind = _messages.StringField(3, default='compute#packetMirroringAggregatedList')
   nextPageToken = _messages.StringField(4)
   selfLink = _messages.StringField(5)
   warning = _messages.MessageField('WarningValue', 6)
@@ -37606,7 +37650,7 @@ class PacketMirroringList(_messages.Message):
 
   id = _messages.StringField(1)
   items = _messages.MessageField('PacketMirroring', 2, repeated=True)
-  kind = _messages.StringField(3, default=u'compute#packetMirroringList')
+  kind = _messages.StringField(3, default='compute#packetMirroringList')
   nextPageToken = _messages.StringField(4)
   selfLink = _messages.StringField(5)
   warning = _messages.MessageField('WarningValue', 6)
@@ -38201,7 +38245,7 @@ class Project(_messages.Message):
   description = _messages.StringField(5)
   enabledFeatures = _messages.StringField(6, repeated=True)
   id = _messages.IntegerField(7, variant=_messages.Variant.UINT64)
-  kind = _messages.StringField(8, default=u'compute#project')
+  kind = _messages.StringField(8, default='compute#project')
   name = _messages.StringField(9)
   quotas = _messages.MessageField('Quota', 10, repeated=True)
   selfLink = _messages.StringField(11)
@@ -38245,7 +38289,7 @@ class ProjectsGetXpnResources(_messages.Message):
       project as their shared VPC host.
   """
 
-  kind = _messages.StringField(1, default=u'compute#projectsGetXpnResources')
+  kind = _messages.StringField(1, default='compute#projectsGetXpnResources')
   nextPageToken = _messages.StringField(2)
   resources = _messages.MessageField('XpnResourceId', 3, repeated=True)
 
@@ -38344,6 +38388,8 @@ class Quota(_messages.Message):
       IN_USE_BACKUP_SCHEDULES: <no description>
       IN_USE_SNAPSHOT_SCHEDULES: <no description>
       LOCAL_SSD_TOTAL_GB: <no description>
+      M1_CPUS: <no description>
+      M2_CPUS: <no description>
       MACHINE_IMAGES: <no description>
       N2D_CPUS: <no description>
       N2_CPUS: <no description>
@@ -38440,60 +38486,62 @@ class Quota(_messages.Message):
     IN_USE_BACKUP_SCHEDULES = 38
     IN_USE_SNAPSHOT_SCHEDULES = 39
     LOCAL_SSD_TOTAL_GB = 40
-    MACHINE_IMAGES = 41
-    N2D_CPUS = 42
-    N2_CPUS = 43
-    NETWORKS = 44
-    NETWORK_ENDPOINT_GROUPS = 45
-    NODE_GROUPS = 46
-    NODE_TEMPLATES = 47
-    NVIDIA_K80_GPUS = 48
-    NVIDIA_P100_GPUS = 49
-    NVIDIA_P100_VWS_GPUS = 50
-    NVIDIA_P4_GPUS = 51
-    NVIDIA_P4_VWS_GPUS = 52
-    NVIDIA_T4_GPUS = 53
-    NVIDIA_T4_VWS_GPUS = 54
-    NVIDIA_V100_GPUS = 55
-    PACKET_MIRRORINGS = 56
-    PREEMPTIBLE_CPUS = 57
-    PREEMPTIBLE_LOCAL_SSD_GB = 58
-    PREEMPTIBLE_NVIDIA_K80_GPUS = 59
-    PREEMPTIBLE_NVIDIA_P100_GPUS = 60
-    PREEMPTIBLE_NVIDIA_P100_VWS_GPUS = 61
-    PREEMPTIBLE_NVIDIA_P4_GPUS = 62
-    PREEMPTIBLE_NVIDIA_P4_VWS_GPUS = 63
-    PREEMPTIBLE_NVIDIA_T4_GPUS = 64
-    PREEMPTIBLE_NVIDIA_T4_VWS_GPUS = 65
-    PREEMPTIBLE_NVIDIA_V100_GPUS = 66
-    PRIVATE_V6_ACCESS_SUBNETWORKS = 67
-    PUBLIC_ADVERTISED_PREFIXES = 68
-    PUBLIC_DELEGATED_PREFIXES = 69
-    REGIONAL_AUTOSCALERS = 70
-    REGIONAL_INSTANCE_GROUP_MANAGERS = 71
-    RESERVATIONS = 72
-    RESOURCE_POLICIES = 73
-    ROUTERS = 74
-    ROUTES = 75
-    SECURITY_POLICIES = 76
-    SECURITY_POLICY_CEVAL_RULES = 77
-    SECURITY_POLICY_RULES = 78
-    SNAPSHOTS = 79
-    SSD_TOTAL_GB = 80
-    SSL_CERTIFICATES = 81
-    STATIC_ADDRESSES = 82
-    STATIC_BYOIP_ADDRESSES = 83
-    SUBNETWORKS = 84
-    TARGET_HTTPS_PROXIES = 85
-    TARGET_HTTP_PROXIES = 86
-    TARGET_INSTANCES = 87
-    TARGET_POOLS = 88
-    TARGET_SSL_PROXIES = 89
-    TARGET_TCP_PROXIES = 90
-    TARGET_VPN_GATEWAYS = 91
-    URL_MAPS = 92
-    VPN_GATEWAYS = 93
-    VPN_TUNNELS = 94
+    M1_CPUS = 41
+    M2_CPUS = 42
+    MACHINE_IMAGES = 43
+    N2D_CPUS = 44
+    N2_CPUS = 45
+    NETWORKS = 46
+    NETWORK_ENDPOINT_GROUPS = 47
+    NODE_GROUPS = 48
+    NODE_TEMPLATES = 49
+    NVIDIA_K80_GPUS = 50
+    NVIDIA_P100_GPUS = 51
+    NVIDIA_P100_VWS_GPUS = 52
+    NVIDIA_P4_GPUS = 53
+    NVIDIA_P4_VWS_GPUS = 54
+    NVIDIA_T4_GPUS = 55
+    NVIDIA_T4_VWS_GPUS = 56
+    NVIDIA_V100_GPUS = 57
+    PACKET_MIRRORINGS = 58
+    PREEMPTIBLE_CPUS = 59
+    PREEMPTIBLE_LOCAL_SSD_GB = 60
+    PREEMPTIBLE_NVIDIA_K80_GPUS = 61
+    PREEMPTIBLE_NVIDIA_P100_GPUS = 62
+    PREEMPTIBLE_NVIDIA_P100_VWS_GPUS = 63
+    PREEMPTIBLE_NVIDIA_P4_GPUS = 64
+    PREEMPTIBLE_NVIDIA_P4_VWS_GPUS = 65
+    PREEMPTIBLE_NVIDIA_T4_GPUS = 66
+    PREEMPTIBLE_NVIDIA_T4_VWS_GPUS = 67
+    PREEMPTIBLE_NVIDIA_V100_GPUS = 68
+    PRIVATE_V6_ACCESS_SUBNETWORKS = 69
+    PUBLIC_ADVERTISED_PREFIXES = 70
+    PUBLIC_DELEGATED_PREFIXES = 71
+    REGIONAL_AUTOSCALERS = 72
+    REGIONAL_INSTANCE_GROUP_MANAGERS = 73
+    RESERVATIONS = 74
+    RESOURCE_POLICIES = 75
+    ROUTERS = 76
+    ROUTES = 77
+    SECURITY_POLICIES = 78
+    SECURITY_POLICY_CEVAL_RULES = 79
+    SECURITY_POLICY_RULES = 80
+    SNAPSHOTS = 81
+    SSD_TOTAL_GB = 82
+    SSL_CERTIFICATES = 83
+    STATIC_ADDRESSES = 84
+    STATIC_BYOIP_ADDRESSES = 85
+    SUBNETWORKS = 86
+    TARGET_HTTPS_PROXIES = 87
+    TARGET_HTTP_PROXIES = 88
+    TARGET_INSTANCES = 89
+    TARGET_POOLS = 90
+    TARGET_SSL_PROXIES = 91
+    TARGET_TCP_PROXIES = 92
+    TARGET_VPN_GATEWAYS = 93
+    URL_MAPS = 94
+    VPN_GATEWAYS = 95
+    VPN_TUNNELS = 96
 
   limit = _messages.FloatField(1)
   metric = _messages.EnumField('MetricValueValuesEnum', 2)
@@ -38513,7 +38561,7 @@ class Reference(_messages.Message):
     target: URL of the resource to which this reference points.
   """
 
-  kind = _messages.StringField(1, default=u'compute#reference')
+  kind = _messages.StringField(1, default='compute#reference')
   referenceType = _messages.StringField(2)
   referrer = _messages.StringField(3)
   target = _messages.StringField(4)
@@ -38560,7 +38608,7 @@ class Region(_messages.Message):
   deprecated = _messages.MessageField('DeprecationStatus', 2)
   description = _messages.StringField(3)
   id = _messages.IntegerField(4, variant=_messages.Variant.UINT64)
-  kind = _messages.StringField(5, default=u'compute#region')
+  kind = _messages.StringField(5, default='compute#region')
   name = _messages.StringField(6)
   quotas = _messages.MessageField('Quota', 7, repeated=True)
   selfLink = _messages.StringField(8)
@@ -38686,7 +38734,7 @@ class RegionAutoscalerList(_messages.Message):
 
   id = _messages.StringField(1)
   items = _messages.MessageField('Autoscaler', 2, repeated=True)
-  kind = _messages.StringField(3, default=u'compute#regionAutoscalerList')
+  kind = _messages.StringField(3, default='compute#regionAutoscalerList')
   nextPageToken = _messages.StringField(4)
   selfLink = _messages.StringField(5)
   warning = _messages.MessageField('WarningValue', 6)
@@ -38822,7 +38870,7 @@ class RegionDiskTypeList(_messages.Message):
 
   id = _messages.StringField(1)
   items = _messages.MessageField('DiskType', 2, repeated=True)
-  kind = _messages.StringField(3, default=u'compute#regionDiskTypeList')
+  kind = _messages.StringField(3, default='compute#regionDiskTypeList')
   nextPageToken = _messages.StringField(4)
   selfLink = _messages.StringField(5)
   warning = _messages.MessageField('WarningValue', 6)
@@ -38977,7 +39025,7 @@ class RegionInstanceGroupList(_messages.Message):
 
   id = _messages.StringField(1)
   items = _messages.MessageField('InstanceGroup', 2, repeated=True)
-  kind = _messages.StringField(3, default=u'compute#regionInstanceGroupList')
+  kind = _messages.StringField(3, default='compute#regionInstanceGroupList')
   nextPageToken = _messages.StringField(4)
   selfLink = _messages.StringField(5)
   warning = _messages.MessageField('WarningValue', 6)
@@ -39114,7 +39162,7 @@ class RegionInstanceGroupManagerList(_messages.Message):
 
   id = _messages.StringField(1)
   items = _messages.MessageField('InstanceGroupManager', 2, repeated=True)
-  kind = _messages.StringField(3, default=u'compute#regionInstanceGroupManagerList')
+  kind = _messages.StringField(3, default='compute#regionInstanceGroupManagerList')
   nextPageToken = _messages.StringField(4)
   selfLink = _messages.StringField(5)
   warning = _messages.MessageField('WarningValue', 6)
@@ -39576,7 +39624,7 @@ class RegionInstanceGroupsListInstances(_messages.Message):
 
   id = _messages.StringField(1)
   items = _messages.MessageField('InstanceWithNamedPorts', 2, repeated=True)
-  kind = _messages.StringField(3, default=u'compute#regionInstanceGroupsListInstances')
+  kind = _messages.StringField(3, default='compute#regionInstanceGroupsListInstances')
   nextPageToken = _messages.StringField(4)
   selfLink = _messages.StringField(5)
   warning = _messages.MessageField('WarningValue', 6)
@@ -39748,7 +39796,7 @@ class RegionList(_messages.Message):
 
   id = _messages.StringField(1)
   items = _messages.MessageField('Region', 2, repeated=True)
-  kind = _messages.StringField(3, default=u'compute#regionList')
+  kind = _messages.StringField(3, default='compute#regionList')
   nextPageToken = _messages.StringField(4)
   selfLink = _messages.StringField(5)
   warning = _messages.MessageField('WarningValue', 6)
@@ -39913,7 +39961,7 @@ class Reservation(_messages.Message):
   creationTimestamp = _messages.StringField(2)
   description = _messages.StringField(3)
   id = _messages.IntegerField(4, variant=_messages.Variant.UINT64)
-  kind = _messages.StringField(5, default=u'compute#reservation')
+  kind = _messages.StringField(5, default='compute#reservation')
   name = _messages.StringField(6)
   selfLink = _messages.StringField(7)
   specificReservation = _messages.MessageField('AllocationSpecificSKUReservation', 8)
@@ -40109,7 +40157,7 @@ class ReservationAggregatedList(_messages.Message):
 
   id = _messages.StringField(1)
   items = _messages.MessageField('ItemsValue', 2)
-  kind = _messages.StringField(3, default=u'compute#reservationAggregatedList')
+  kind = _messages.StringField(3, default='compute#reservationAggregatedList')
   nextPageToken = _messages.StringField(4)
   selfLink = _messages.StringField(5)
   warning = _messages.MessageField('WarningValue', 6)
@@ -40234,7 +40282,7 @@ class ReservationList(_messages.Message):
 
   id = _messages.StringField(1)
   items = _messages.MessageField('Reservation', 2, repeated=True)
-  kind = _messages.StringField(3, default=u'compute#reservationList')
+  kind = _messages.StringField(3, default='compute#reservationList')
   nextPageToken = _messages.StringField(4)
   selfLink = _messages.StringField(5)
   warning = _messages.MessageField('WarningValue', 6)
@@ -40584,7 +40632,7 @@ class ResourcePolicy(_messages.Message):
   description = _messages.StringField(2)
   groupPlacementPolicy = _messages.MessageField('ResourcePolicyGroupPlacementPolicy', 3)
   id = _messages.IntegerField(4, variant=_messages.Variant.UINT64)
-  kind = _messages.StringField(5, default=u'compute#resourcePolicy')
+  kind = _messages.StringField(5, default='compute#resourcePolicy')
   name = _messages.StringField(6)
   region = _messages.StringField(7)
   selfLink = _messages.StringField(8)
@@ -40738,7 +40786,7 @@ class ResourcePolicyAggregatedList(_messages.Message):
   etag = _messages.StringField(1)
   id = _messages.StringField(2)
   items = _messages.MessageField('ItemsValue', 3)
-  kind = _messages.StringField(4, default=u'compute#resourcePolicyAggregatedList')
+  kind = _messages.StringField(4, default='compute#resourcePolicyAggregatedList')
   nextPageToken = _messages.StringField(5)
   selfLink = _messages.StringField(6)
   warning = _messages.MessageField('WarningValue', 7)
@@ -40930,7 +40978,7 @@ class ResourcePolicyList(_messages.Message):
   etag = _messages.StringField(1)
   id = _messages.StringField(2)
   items = _messages.MessageField('ResourcePolicy', 3, repeated=True)
-  kind = _messages.StringField(4, default=u'compute#resourcePolicyList')
+  kind = _messages.StringField(4, default='compute#resourcePolicyList')
   nextPageToken = _messages.StringField(5)
   selfLink = _messages.StringField(6)
   warning = _messages.MessageField('WarningValue', 7)
@@ -41268,7 +41316,7 @@ class Route(_messages.Message):
   description = _messages.StringField(2)
   destRange = _messages.StringField(3)
   id = _messages.IntegerField(4, variant=_messages.Variant.UINT64)
-  kind = _messages.StringField(5, default=u'compute#route')
+  kind = _messages.StringField(5, default='compute#route')
   name = _messages.StringField(6)
   network = _messages.StringField(7)
   nextHopGateway = _messages.StringField(8)
@@ -41403,7 +41451,7 @@ class RouteList(_messages.Message):
 
   id = _messages.StringField(1)
   items = _messages.MessageField('Route', 2, repeated=True)
-  kind = _messages.StringField(3, default=u'compute#routeList')
+  kind = _messages.StringField(3, default='compute#routeList')
   nextPageToken = _messages.StringField(4)
   selfLink = _messages.StringField(5)
   warning = _messages.MessageField('WarningValue', 6)
@@ -41450,7 +41498,7 @@ class Router(_messages.Message):
   description = _messages.StringField(4)
   id = _messages.IntegerField(5, variant=_messages.Variant.UINT64)
   interfaces = _messages.MessageField('RouterInterface', 6, repeated=True)
-  kind = _messages.StringField(7, default=u'compute#router')
+  kind = _messages.StringField(7, default='compute#router')
   name = _messages.StringField(8)
   nats = _messages.MessageField('RouterNat', 9, repeated=True)
   network = _messages.StringField(10)
@@ -41614,7 +41662,7 @@ class RouterAggregatedList(_messages.Message):
 
   id = _messages.StringField(1)
   items = _messages.MessageField('ItemsValue', 2)
-  kind = _messages.StringField(3, default=u'compute#routerAggregatedList')
+  kind = _messages.StringField(3, default='compute#routerAggregatedList')
   nextPageToken = _messages.StringField(4)
   selfLink = _messages.StringField(5)
   warning = _messages.MessageField('WarningValue', 6)
@@ -41646,13 +41694,13 @@ class RouterBgp(_messages.Message):
       resource. All VPN tunnels that link to this router will have the same
       local ASN.
     keepaliveInterval: The interval in seconds between BGP keepalive messages
-      that are sent to the peer. Hold time is three times the interval at
-      which keepalive messages are sent, and the hold time is the maximum
-      number of seconds allowed to elapse between successive keepalive
-      messages that BGP receives from a peer. BGP will use the smaller of
-      either the local hold time value or the peer's hold time value as the
-      hold time for the BGP connection between the two peers. If set, this
-      value must be between 1 and 120. The default is 20.
+      that are sent to the peer. Not currently available publicly. Hold time
+      is three times the interval at which keepalive messages are sent, and
+      the hold time is the maximum number of seconds allowed to elapse between
+      successive keepalive messages that BGP receives from a peer. BGP will
+      use the smaller of either the local hold time value or the peer's hold
+      time value as the hold time for the BGP connection between the two
+      peers. If set, this value must be between 1 and 120. The default is 20.
   """
 
   class AdvertiseModeValueValuesEnum(_messages.Enum):
@@ -41688,10 +41736,11 @@ class RouterBgpPeer(_messages.Message):
     AdvertiseModeValueValuesEnum: User-specified flag to indicate which mode
       to use for advertisement.
     AdvertisedGroupsValueListEntryValuesEnum:
-    EnableValueValuesEnum: The status of the BGP peer connection. If set to
-      FALSE, any active session with the peer is terminated and all associated
-      routing information is removed. If set to TRUE, the peer connection can
-      be established with routing information. The default is TRUE.
+    EnableValueValuesEnum: The status of the BGP peer connection. Not
+      currently available publicly. If set to FALSE, any active session with
+      the peer is terminated and all associated routing information is
+      removed. If set to TRUE, the peer connection can be established with
+      routing information. The default is TRUE.
     ManagementTypeValueValuesEnum: [Output Only] The resource that configures
       and manages this BGP peer.  - MANAGED_BY_USER is the default value and
       can be managed by you or other users  - MANAGED_BY_ATTACHMENT is a BGP
@@ -41721,11 +41770,13 @@ class RouterBgpPeer(_messages.Message):
     advertisedRoutePriority: The priority of routes advertised to this BGP
       peer. Where there is more than one matching route of maximum length, the
       routes with the lowest priority value win.
-    bfd: BFD configuration for the BGP peering.
-    enable: The status of the BGP peer connection. If set to FALSE, any active
-      session with the peer is terminated and all associated routing
-      information is removed. If set to TRUE, the peer connection can be
-      established with routing information. The default is TRUE.
+    bfd: BFD configuration for the BGP peering. Not currently available
+      publicly.
+    enable: The status of the BGP peer connection. Not currently available
+      publicly. If set to FALSE, any active session with the peer is
+      terminated and all associated routing information is removed. If set to
+      TRUE, the peer connection can be established with routing information.
+      The default is TRUE.
     interfaceName: Name of the interface the BGP peer is associated with.
     ipAddress: IP address of the interface inside Google Cloud Platform. Only
       IPv4 is supported.
@@ -41767,10 +41818,11 @@ class RouterBgpPeer(_messages.Message):
     ALL_SUBNETS = 0
 
   class EnableValueValuesEnum(_messages.Enum):
-    r"""The status of the BGP peer connection. If set to FALSE, any active
-    session with the peer is terminated and all associated routing information
-    is removed. If set to TRUE, the peer connection can be established with
-    routing information. The default is TRUE.
+    r"""The status of the BGP peer connection. Not currently available
+    publicly. If set to FALSE, any active session with the peer is terminated
+    and all associated routing information is removed. If set to TRUE, the
+    peer connection can be established with routing information. The default
+    is TRUE.
 
     Values:
       FALSE: <no description>
@@ -41814,40 +41866,44 @@ class RouterBgpPeerBfd(_messages.Message):
 
   Enums:
     SessionInitializationModeValueValuesEnum: The BFD session initialization
-      mode for this BGP peer. If set to ACTIVE, the Cloud Router will initiate
-      the BFD session for this BGP peer. If set to PASSIVE, the Cloud Router
-      will wait for the peer router to initiate the BFD session for this BGP
-      peer. If set to DISABLED, BFD is disabled for this BGP peer. The default
-      is PASSIVE.
+      mode for this BGP peer. Not currently available publicly. If set to
+      ACTIVE, the Cloud Router will initiate the BFD session for this BGP
+      peer. If set to PASSIVE, the Cloud Router will wait for the peer router
+      to initiate the BFD session for this BGP peer. If set to DISABLED, BFD
+      is disabled for this BGP peer. The default is PASSIVE.
 
   Fields:
     minReceiveInterval: The minimum interval, in milliseconds, between BFD
       control packets received from the peer router. The actual value is
       negotiated between the two routers and is equal to the greater of this
-      value and the transmit interval of the other router. If set, this value
-      must be between 100 and 30000. The default is 300.
+      value and the transmit interval of the other router. Not currently
+      available publicly. If set, this value must be between 100 and 30000.
+      The default is 300.
     minTransmitInterval: The minimum interval, in milliseconds, between BFD
       control packets transmitted to the peer router. The actual value is
       negotiated between the two routers and is equal to the greater of this
-      value and the corresponding receive interval of the other router. If
-      set, this value must be between 100 and 30000. The default is 300.
+      value and the corresponding receive interval of the other router. Not
+      currently available publicly. If set, this value must be between 100 and
+      30000. The default is 300.
     multiplier: The number of consecutive BFD packets that must be missed
-      before BFD declares that a peer is unavailable. If set, the value must
-      be a value between 2 and 16. The default is 3.
+      before BFD declares that a peer is unavailable. Not currently available
+      publicly. If set, the value must be a value between 2 and 16. The
+      default is 3.
     sessionInitializationMode: The BFD session initialization mode for this
-      BGP peer. If set to ACTIVE, the Cloud Router will initiate the BFD
-      session for this BGP peer. If set to PASSIVE, the Cloud Router will wait
-      for the peer router to initiate the BFD session for this BGP peer. If
-      set to DISABLED, BFD is disabled for this BGP peer. The default is
-      PASSIVE.
+      BGP peer. Not currently available publicly. If set to ACTIVE, the Cloud
+      Router will initiate the BFD session for this BGP peer. If set to
+      PASSIVE, the Cloud Router will wait for the peer router to initiate the
+      BFD session for this BGP peer. If set to DISABLED, BFD is disabled for
+      this BGP peer. The default is PASSIVE.
   """
 
   class SessionInitializationModeValueValuesEnum(_messages.Enum):
-    r"""The BFD session initialization mode for this BGP peer. If set to
-    ACTIVE, the Cloud Router will initiate the BFD session for this BGP peer.
-    If set to PASSIVE, the Cloud Router will wait for the peer router to
-    initiate the BFD session for this BGP peer. If set to DISABLED, BFD is
-    disabled for this BGP peer. The default is PASSIVE.
+    r"""The BFD session initialization mode for this BGP peer. Not currently
+    available publicly. If set to ACTIVE, the Cloud Router will initiate the
+    BFD session for this BGP peer. If set to PASSIVE, the Cloud Router will
+    wait for the peer router to initiate the BFD session for this BGP peer. If
+    set to DISABLED, BFD is disabled for this BGP peer. The default is
+    PASSIVE.
 
     Values:
       ACTIVE: <no description>
@@ -42045,7 +42101,7 @@ class RouterList(_messages.Message):
 
   id = _messages.StringField(1)
   items = _messages.MessageField('Router', 2, repeated=True)
-  kind = _messages.StringField(3, default=u'compute#routerList')
+  kind = _messages.StringField(3, default='compute#routerList')
   nextPageToken = _messages.StringField(4)
   selfLink = _messages.StringField(5)
   warning = _messages.MessageField('WarningValue', 6)
@@ -42353,7 +42409,7 @@ class RouterStatusResponse(_messages.Message):
     result: A RouterStatus attribute.
   """
 
-  kind = _messages.StringField(1, default=u'compute#routerStatusResponse')
+  kind = _messages.StringField(1, default='compute#routerStatusResponse')
   result = _messages.MessageField('RouterStatus', 2)
 
 
@@ -42715,7 +42771,7 @@ class SavedAttachedDisk(_messages.Message):
   guestOsFeatures = _messages.MessageField('GuestOsFeature', 7, repeated=True)
   index = _messages.IntegerField(8, variant=_messages.Variant.INT32)
   interface = _messages.EnumField('InterfaceValueValuesEnum', 9)
-  kind = _messages.StringField(10, default=u'compute#savedAttachedDisk')
+  kind = _messages.StringField(10, default='compute#savedAttachedDisk')
   licenses = _messages.StringField(11, repeated=True)
   mode = _messages.EnumField('ModeValueValuesEnum', 12)
   source = _messages.StringField(13)
@@ -42818,7 +42874,7 @@ class Screenshot(_messages.Message):
   """
 
   contents = _messages.StringField(1)
-  kind = _messages.StringField(2, default=u'compute#screenshot')
+  kind = _messages.StringField(2, default='compute#screenshot')
 
 
 class SecurityPoliciesListPreconfiguredExpressionSetsResponse(_messages.Message):
@@ -42960,7 +43016,7 @@ class SecurityPolicy(_messages.Message):
   displayName = _messages.StringField(4)
   fingerprint = _messages.BytesField(5)
   id = _messages.IntegerField(6, variant=_messages.Variant.UINT64)
-  kind = _messages.StringField(7, default=u'compute#securityPolicy')
+  kind = _messages.StringField(7, default='compute#securityPolicy')
   labelFingerprint = _messages.BytesField(8)
   labels = _messages.MessageField('LabelsValue', 9)
   name = _messages.StringField(10)
@@ -43107,7 +43163,7 @@ class SecurityPolicyList(_messages.Message):
 
   id = _messages.StringField(1)
   items = _messages.MessageField('SecurityPolicy', 2, repeated=True)
-  kind = _messages.StringField(3, default=u'compute#securityPolicyList')
+  kind = _messages.StringField(3, default='compute#securityPolicyList')
   nextPageToken = _messages.StringField(4)
   warning = _messages.MessageField('WarningValue', 5)
 
@@ -43178,7 +43234,7 @@ class SecurityPolicyRule(_messages.Message):
   description = _messages.StringField(2)
   direction = _messages.EnumField('DirectionValueValuesEnum', 3)
   enableLogging = _messages.BooleanField(4)
-  kind = _messages.StringField(5, default=u'compute#securityPolicyRule')
+  kind = _messages.StringField(5, default='compute#securityPolicyRule')
   match = _messages.MessageField('SecurityPolicyRuleMatcher', 6)
   preview = _messages.BooleanField(7)
   priority = _messages.IntegerField(8, variant=_messages.Variant.INT32)
@@ -43309,7 +43365,7 @@ class SerialPortOutput(_messages.Message):
   """
 
   contents = _messages.StringField(1)
-  kind = _messages.StringField(2, default=u'compute#serialPortOutput')
+  kind = _messages.StringField(2, default='compute#serialPortOutput')
   next = _messages.IntegerField(3)
   selfLink = _messages.StringField(4)
   start = _messages.IntegerField(5)
@@ -43382,7 +43438,7 @@ class ShieldedInstanceIdentity(_messages.Message):
   """
 
   encryptionKey = _messages.MessageField('ShieldedInstanceIdentityEntry', 1)
-  kind = _messages.StringField(2, default=u'compute#shieldedInstanceIdentity')
+  kind = _messages.StringField(2, default='compute#shieldedInstanceIdentity')
   signingKey = _messages.MessageField('ShieldedInstanceIdentityEntry', 3)
 
 
@@ -43436,7 +43492,7 @@ class ShieldedVmIdentity(_messages.Message):
   """
 
   encryptionKey = _messages.MessageField('ShieldedVmIdentityEntry', 1)
-  kind = _messages.StringField(2, default=u'compute#shieldedVmIdentity')
+  kind = _messages.StringField(2, default='compute#shieldedVmIdentity')
   signingKey = _messages.MessageField('ShieldedVmIdentityEntry', 3)
 
 
@@ -43628,7 +43684,7 @@ class Snapshot(_messages.Message):
   diskSizeGb = _messages.IntegerField(4)
   downloadBytes = _messages.IntegerField(5)
   id = _messages.IntegerField(6, variant=_messages.Variant.UINT64)
-  kind = _messages.StringField(7, default=u'compute#snapshot')
+  kind = _messages.StringField(7, default='compute#snapshot')
   labelFingerprint = _messages.BytesField(8)
   labels = _messages.MessageField('LabelsValue', 9)
   licenseCodes = _messages.IntegerField(10, repeated=True)
@@ -43763,7 +43819,7 @@ class SnapshotList(_messages.Message):
 
   id = _messages.StringField(1)
   items = _messages.MessageField('Snapshot', 2, repeated=True)
-  kind = _messages.StringField(3, default=u'compute#snapshotList')
+  kind = _messages.StringField(3, default='compute#snapshotList')
   nextPageToken = _messages.StringField(4)
   selfLink = _messages.StringField(5)
   warning = _messages.MessageField('WarningValue', 6)
@@ -43963,7 +44019,7 @@ class SslCertificate(_messages.Message):
   description = _messages.StringField(3)
   expireTime = _messages.StringField(4)
   id = _messages.IntegerField(5, variant=_messages.Variant.UINT64)
-  kind = _messages.StringField(6, default=u'compute#sslCertificate')
+  kind = _messages.StringField(6, default='compute#sslCertificate')
   managed = _messages.MessageField('SslCertificateManagedSslCertificate', 7)
   name = _messages.StringField(8)
   privateKey = _messages.StringField(9)
@@ -44119,7 +44175,7 @@ class SslCertificateAggregatedList(_messages.Message):
 
   id = _messages.StringField(1)
   items = _messages.MessageField('ItemsValue', 2)
-  kind = _messages.StringField(3, default=u'compute#sslCertificateAggregatedList')
+  kind = _messages.StringField(3, default='compute#sslCertificateAggregatedList')
   nextPageToken = _messages.StringField(4)
   selfLink = _messages.StringField(5)
   warning = _messages.MessageField('WarningValue', 6)
@@ -44243,7 +44299,7 @@ class SslCertificateList(_messages.Message):
 
   id = _messages.StringField(1)
   items = _messages.MessageField('SslCertificate', 2, repeated=True)
-  kind = _messages.StringField(3, default=u'compute#sslCertificateList')
+  kind = _messages.StringField(3, default='compute#sslCertificateList')
   nextPageToken = _messages.StringField(4)
   selfLink = _messages.StringField(5)
   warning = _messages.MessageField('WarningValue', 6)
@@ -44588,7 +44644,7 @@ class SslPoliciesList(_messages.Message):
 
   id = _messages.StringField(1)
   items = _messages.MessageField('SslPolicy', 2, repeated=True)
-  kind = _messages.StringField(3, default=u'compute#sslPoliciesList')
+  kind = _messages.StringField(3, default='compute#sslPoliciesList')
   nextPageToken = _messages.StringField(4)
   selfLink = _messages.StringField(5)
   warning = _messages.MessageField('WarningValue', 6)
@@ -44794,7 +44850,7 @@ class SslPolicy(_messages.Message):
   enabledFeatures = _messages.StringField(4, repeated=True)
   fingerprint = _messages.BytesField(5)
   id = _messages.IntegerField(6, variant=_messages.Variant.UINT64)
-  kind = _messages.StringField(7, default=u'compute#sslPolicy')
+  kind = _messages.StringField(7, default='compute#sslPolicy')
   minTlsVersion = _messages.EnumField('MinTlsVersionValueValuesEnum', 8)
   name = _messages.StringField(9)
   profile = _messages.EnumField('ProfileValueValuesEnum', 10)
@@ -44842,7 +44898,7 @@ class StandardQueryParameters(_messages.Message):
     """
     json = 0
 
-  alt = _messages.EnumField('AltValueValuesEnum', 1, default=u'json')
+  alt = _messages.EnumField('AltValueValuesEnum', 1, default='json')
   fields = _messages.StringField(2)
   key = _messages.StringField(3)
   oauth_token = _messages.StringField(4)
@@ -45143,7 +45199,7 @@ class Subnetwork(_messages.Message):
   id = _messages.IntegerField(7, variant=_messages.Variant.UINT64)
   ipCidrRange = _messages.StringField(8)
   ipv6CidrRange = _messages.StringField(9)
-  kind = _messages.StringField(10, default=u'compute#subnetwork')
+  kind = _messages.StringField(10, default='compute#subnetwork')
   logConfig = _messages.MessageField('SubnetworkLogConfig', 11)
   name = _messages.StringField(12)
   network = _messages.StringField(13)
@@ -45303,7 +45359,7 @@ class SubnetworkAggregatedList(_messages.Message):
 
   id = _messages.StringField(1)
   items = _messages.MessageField('ItemsValue', 2)
-  kind = _messages.StringField(3, default=u'compute#subnetworkAggregatedList')
+  kind = _messages.StringField(3, default='compute#subnetworkAggregatedList')
   nextPageToken = _messages.StringField(4)
   selfLink = _messages.StringField(5)
   warning = _messages.MessageField('WarningValue', 6)
@@ -45428,7 +45484,7 @@ class SubnetworkList(_messages.Message):
 
   id = _messages.StringField(1)
   items = _messages.MessageField('Subnetwork', 2, repeated=True)
-  kind = _messages.StringField(3, default=u'compute#subnetworkList')
+  kind = _messages.StringField(3, default='compute#subnetworkList')
   nextPageToken = _messages.StringField(4)
   selfLink = _messages.StringField(5)
   warning = _messages.MessageField('WarningValue', 6)
@@ -45928,7 +45984,7 @@ class TargetHttpProxy(_messages.Message):
   creationTimestamp = _messages.StringField(1)
   description = _messages.StringField(2)
   id = _messages.IntegerField(3, variant=_messages.Variant.UINT64)
-  kind = _messages.StringField(4, default=u'compute#targetHttpProxy')
+  kind = _messages.StringField(4, default='compute#targetHttpProxy')
   name = _messages.StringField(5)
   proxyBind = _messages.BooleanField(6)
   region = _messages.StringField(7)
@@ -46081,7 +46137,7 @@ class TargetHttpProxyAggregatedList(_messages.Message):
 
   id = _messages.StringField(1)
   items = _messages.MessageField('ItemsValue', 2)
-  kind = _messages.StringField(3, default=u'compute#targetHttpProxyAggregatedList')
+  kind = _messages.StringField(3, default='compute#targetHttpProxyAggregatedList')
   nextPageToken = _messages.StringField(4)
   selfLink = _messages.StringField(5)
   warning = _messages.MessageField('WarningValue', 6)
@@ -46206,7 +46262,7 @@ class TargetHttpProxyList(_messages.Message):
 
   id = _messages.StringField(1)
   items = _messages.MessageField('TargetHttpProxy', 2, repeated=True)
-  kind = _messages.StringField(3, default=u'compute#targetHttpProxyList')
+  kind = _messages.StringField(3, default='compute#targetHttpProxyList')
   nextPageToken = _messages.StringField(4)
   selfLink = _messages.StringField(5)
   warning = _messages.MessageField('WarningValue', 6)
@@ -46471,7 +46527,7 @@ class TargetHttpsProxy(_messages.Message):
   creationTimestamp = _messages.StringField(3)
   description = _messages.StringField(4)
   id = _messages.IntegerField(5, variant=_messages.Variant.UINT64)
-  kind = _messages.StringField(6, default=u'compute#targetHttpsProxy')
+  kind = _messages.StringField(6, default='compute#targetHttpsProxy')
   name = _messages.StringField(7)
   proxyBind = _messages.BooleanField(8)
   quicOverride = _messages.EnumField('QuicOverrideValueValuesEnum', 9)
@@ -46627,7 +46683,7 @@ class TargetHttpsProxyAggregatedList(_messages.Message):
 
   id = _messages.StringField(1)
   items = _messages.MessageField('ItemsValue', 2)
-  kind = _messages.StringField(3, default=u'compute#targetHttpsProxyAggregatedList')
+  kind = _messages.StringField(3, default='compute#targetHttpsProxyAggregatedList')
   nextPageToken = _messages.StringField(4)
   selfLink = _messages.StringField(5)
   warning = _messages.MessageField('WarningValue', 6)
@@ -46752,7 +46808,7 @@ class TargetHttpsProxyList(_messages.Message):
 
   id = _messages.StringField(1)
   items = _messages.MessageField('TargetHttpsProxy', 2, repeated=True)
-  kind = _messages.StringField(3, default=u'compute#targetHttpsProxyList')
+  kind = _messages.StringField(3, default='compute#targetHttpsProxyList')
   nextPageToken = _messages.StringField(4)
   selfLink = _messages.StringField(5)
   warning = _messages.MessageField('WarningValue', 6)
@@ -46813,7 +46869,7 @@ class TargetInstance(_messages.Message):
   description = _messages.StringField(2)
   id = _messages.IntegerField(3, variant=_messages.Variant.UINT64)
   instance = _messages.StringField(4)
-  kind = _messages.StringField(5, default=u'compute#targetInstance')
+  kind = _messages.StringField(5, default='compute#targetInstance')
   name = _messages.StringField(6)
   natPolicy = _messages.EnumField('NatPolicyValueValuesEnum', 7)
   selfLink = _messages.StringField(8)
@@ -46964,7 +47020,7 @@ class TargetInstanceAggregatedList(_messages.Message):
 
   id = _messages.StringField(1)
   items = _messages.MessageField('ItemsValue', 2)
-  kind = _messages.StringField(3, default=u'compute#targetInstanceAggregatedList')
+  kind = _messages.StringField(3, default='compute#targetInstanceAggregatedList')
   nextPageToken = _messages.StringField(4)
   selfLink = _messages.StringField(5)
   warning = _messages.MessageField('WarningValue', 6)
@@ -47088,7 +47144,7 @@ class TargetInstanceList(_messages.Message):
 
   id = _messages.StringField(1)
   items = _messages.MessageField('TargetInstance', 2, repeated=True)
-  kind = _messages.StringField(3, default=u'compute#targetInstanceList')
+  kind = _messages.StringField(3, default='compute#targetInstanceList')
   nextPageToken = _messages.StringField(4)
   selfLink = _messages.StringField(5)
   warning = _messages.MessageField('WarningValue', 6)
@@ -47314,7 +47370,7 @@ class TargetPool(_messages.Message):
   healthChecks = _messages.StringField(5, repeated=True)
   id = _messages.IntegerField(6, variant=_messages.Variant.UINT64)
   instances = _messages.StringField(7, repeated=True)
-  kind = _messages.StringField(8, default=u'compute#targetPool')
+  kind = _messages.StringField(8, default='compute#targetPool')
   name = _messages.StringField(9)
   region = _messages.StringField(10)
   selfLink = _messages.StringField(11)
@@ -47466,7 +47522,7 @@ class TargetPoolAggregatedList(_messages.Message):
 
   id = _messages.StringField(1)
   items = _messages.MessageField('ItemsValue', 2)
-  kind = _messages.StringField(3, default=u'compute#targetPoolAggregatedList')
+  kind = _messages.StringField(3, default='compute#targetPoolAggregatedList')
   nextPageToken = _messages.StringField(4)
   selfLink = _messages.StringField(5)
   warning = _messages.MessageField('WarningValue', 6)
@@ -47483,7 +47539,7 @@ class TargetPoolInstanceHealth(_messages.Message):
   """
 
   healthStatus = _messages.MessageField('HealthStatus', 1, repeated=True)
-  kind = _messages.StringField(2, default=u'compute#targetPoolInstanceHealth')
+  kind = _messages.StringField(2, default='compute#targetPoolInstanceHealth')
 
 
 class TargetPoolList(_messages.Message):
@@ -47605,7 +47661,7 @@ class TargetPoolList(_messages.Message):
 
   id = _messages.StringField(1)
   items = _messages.MessageField('TargetPool', 2, repeated=True)
-  kind = _messages.StringField(3, default=u'compute#targetPoolList')
+  kind = _messages.StringField(3, default='compute#targetPoolList')
   nextPageToken = _messages.StringField(4)
   selfLink = _messages.StringField(5)
   warning = _messages.MessageField('WarningValue', 6)
@@ -47642,9 +47698,9 @@ class TargetPoolsRemoveHealthCheckRequest(_messages.Message):
   Fields:
     healthChecks: Health check URL to be removed. This can be a full or valid
       partial URL. For example, the following are valid URLs:   - https://www.
-      googleapis.com/compute/beta/projects/project/global/httpHealthChecks
-      /health-check  - projects/project/global/httpHealthChecks/health-check
-      - global/httpHealthChecks/health-check
+      googleapis.com/compute/beta/projects/project/global/httpHealthChecks/hea
+      lth-check  - projects/project/global/httpHealthChecks/health-check  -
+      global/httpHealthChecks/health-check
   """
 
   healthChecks = _messages.MessageField('HealthCheckReference', 1, repeated=True)
@@ -47887,7 +47943,7 @@ class TargetSslProxy(_messages.Message):
   creationTimestamp = _messages.StringField(1)
   description = _messages.StringField(2)
   id = _messages.IntegerField(3, variant=_messages.Variant.UINT64)
-  kind = _messages.StringField(4, default=u'compute#targetSslProxy')
+  kind = _messages.StringField(4, default='compute#targetSslProxy')
   name = _messages.StringField(5)
   proxyHeader = _messages.EnumField('ProxyHeaderValueValuesEnum', 6)
   selfLink = _messages.StringField(7)
@@ -48014,7 +48070,7 @@ class TargetSslProxyList(_messages.Message):
 
   id = _messages.StringField(1)
   items = _messages.MessageField('TargetSslProxy', 2, repeated=True)
-  kind = _messages.StringField(3, default=u'compute#targetSslProxyList')
+  kind = _messages.StringField(3, default='compute#targetSslProxyList')
   nextPageToken = _messages.StringField(4)
   selfLink = _messages.StringField(5)
   warning = _messages.MessageField('WarningValue', 6)
@@ -48105,7 +48161,7 @@ class TargetTcpProxy(_messages.Message):
   creationTimestamp = _messages.StringField(1)
   description = _messages.StringField(2)
   id = _messages.IntegerField(3, variant=_messages.Variant.UINT64)
-  kind = _messages.StringField(4, default=u'compute#targetTcpProxy')
+  kind = _messages.StringField(4, default='compute#targetTcpProxy')
   name = _messages.StringField(5)
   proxyHeader = _messages.EnumField('ProxyHeaderValueValuesEnum', 6)
   selfLink = _messages.StringField(7)
@@ -48230,7 +48286,7 @@ class TargetTcpProxyList(_messages.Message):
 
   id = _messages.StringField(1)
   items = _messages.MessageField('TargetTcpProxy', 2, repeated=True)
-  kind = _messages.StringField(3, default=u'compute#targetTcpProxyList')
+  kind = _messages.StringField(3, default='compute#targetTcpProxyList')
   nextPageToken = _messages.StringField(4)
   selfLink = _messages.StringField(5)
   warning = _messages.MessageField('WarningValue', 6)
@@ -48339,7 +48395,7 @@ class TargetVpnGateway(_messages.Message):
   description = _messages.StringField(2)
   forwardingRules = _messages.StringField(3, repeated=True)
   id = _messages.IntegerField(4, variant=_messages.Variant.UINT64)
-  kind = _messages.StringField(5, default=u'compute#targetVpnGateway')
+  kind = _messages.StringField(5, default='compute#targetVpnGateway')
   labelFingerprint = _messages.BytesField(6)
   labels = _messages.MessageField('LabelsValue', 7)
   name = _messages.StringField(8)
@@ -48495,7 +48551,7 @@ class TargetVpnGatewayAggregatedList(_messages.Message):
 
   id = _messages.StringField(1)
   items = _messages.MessageField('ItemsValue', 2)
-  kind = _messages.StringField(3, default=u'compute#targetVpnGatewayAggregatedList')
+  kind = _messages.StringField(3, default='compute#targetVpnGatewayAggregatedList')
   nextPageToken = _messages.StringField(4)
   selfLink = _messages.StringField(5)
   warning = _messages.MessageField('WarningValue', 6)
@@ -48620,7 +48676,7 @@ class TargetVpnGatewayList(_messages.Message):
 
   id = _messages.StringField(1)
   items = _messages.MessageField('TargetVpnGateway', 2, repeated=True)
-  kind = _messages.StringField(3, default=u'compute#targetVpnGatewayList')
+  kind = _messages.StringField(3, default='compute#targetVpnGatewayList')
   nextPageToken = _messages.StringField(4)
   selfLink = _messages.StringField(5)
   warning = _messages.MessageField('WarningValue', 6)
@@ -48861,7 +48917,7 @@ class UrlMap(_messages.Message):
   headerAction = _messages.MessageField('HttpHeaderAction', 7)
   hostRules = _messages.MessageField('HostRule', 8, repeated=True)
   id = _messages.IntegerField(9, variant=_messages.Variant.UINT64)
-  kind = _messages.StringField(10, default=u'compute#urlMap')
+  kind = _messages.StringField(10, default='compute#urlMap')
   name = _messages.StringField(11)
   pathMatchers = _messages.MessageField('PathMatcher', 12, repeated=True)
   region = _messages.StringField(13)
@@ -48987,7 +49043,7 @@ class UrlMapList(_messages.Message):
 
   id = _messages.StringField(1)
   items = _messages.MessageField('UrlMap', 2, repeated=True)
-  kind = _messages.StringField(3, default=u'compute#urlMapList')
+  kind = _messages.StringField(3, default='compute#urlMapList')
   nextPageToken = _messages.StringField(4)
   selfLink = _messages.StringField(5)
   warning = _messages.MessageField('WarningValue', 6)
@@ -49181,7 +49237,7 @@ class UrlMapsAggregatedList(_messages.Message):
 
   id = _messages.StringField(1)
   items = _messages.MessageField('ItemsValue', 2)
-  kind = _messages.StringField(3, default=u'compute#urlMapsAggregatedList')
+  kind = _messages.StringField(3, default='compute#urlMapsAggregatedList')
   nextPageToken = _messages.StringField(4)
   selfLink = _messages.StringField(5)
   warning = _messages.MessageField('WarningValue', 6)
@@ -49492,7 +49548,7 @@ class UsableSubnetworksAggregatedList(_messages.Message):
 
   id = _messages.StringField(1)
   items = _messages.MessageField('UsableSubnetwork', 2, repeated=True)
-  kind = _messages.StringField(3, default=u'compute#usableSubnetworksAggregatedList')
+  kind = _messages.StringField(3, default='compute#usableSubnetworksAggregatedList')
   nextPageToken = _messages.StringField(4)
   selfLink = _messages.StringField(5)
   warning = _messages.MessageField('WarningValue', 6)
@@ -49685,7 +49741,7 @@ class VmEndpointNatMappingsList(_messages.Message):
     message = _messages.StringField(3)
 
   id = _messages.StringField(1)
-  kind = _messages.StringField(2, default=u'compute#vmEndpointNatMappingsList')
+  kind = _messages.StringField(2, default='compute#vmEndpointNatMappingsList')
   nextPageToken = _messages.StringField(3)
   result = _messages.MessageField('VmEndpointNatMappings', 4, repeated=True)
   selfLink = _messages.StringField(5)
@@ -49767,7 +49823,7 @@ class VpnGateway(_messages.Message):
   creationTimestamp = _messages.StringField(1)
   description = _messages.StringField(2)
   id = _messages.IntegerField(3, variant=_messages.Variant.UINT64)
-  kind = _messages.StringField(4, default=u'compute#vpnGateway')
+  kind = _messages.StringField(4, default='compute#vpnGateway')
   labelFingerprint = _messages.BytesField(5)
   labels = _messages.MessageField('LabelsValue', 6)
   name = _messages.StringField(7)
@@ -49922,7 +49978,7 @@ class VpnGatewayAggregatedList(_messages.Message):
 
   id = _messages.StringField(1)
   items = _messages.MessageField('ItemsValue', 2)
-  kind = _messages.StringField(3, default=u'compute#vpnGatewayAggregatedList')
+  kind = _messages.StringField(3, default='compute#vpnGatewayAggregatedList')
   nextPageToken = _messages.StringField(4)
   selfLink = _messages.StringField(5)
   warning = _messages.MessageField('WarningValue', 6)
@@ -50047,7 +50103,7 @@ class VpnGatewayList(_messages.Message):
 
   id = _messages.StringField(1)
   items = _messages.MessageField('VpnGateway', 2, repeated=True)
-  kind = _messages.StringField(3, default=u'compute#vpnGatewayList')
+  kind = _messages.StringField(3, default='compute#vpnGatewayList')
   nextPageToken = _messages.StringField(4)
   selfLink = _messages.StringField(5)
   warning = _messages.MessageField('WarningValue', 6)
@@ -50491,7 +50547,7 @@ class VpnTunnel(_messages.Message):
   detailedStatus = _messages.StringField(3)
   id = _messages.IntegerField(4, variant=_messages.Variant.UINT64)
   ikeVersion = _messages.IntegerField(5, variant=_messages.Variant.INT32)
-  kind = _messages.StringField(6, default=u'compute#vpnTunnel')
+  kind = _messages.StringField(6, default='compute#vpnTunnel')
   labelFingerprint = _messages.BytesField(7)
   labels = _messages.MessageField('LabelsValue', 8)
   localTrafficSelector = _messages.StringField(9, repeated=True)
@@ -50657,7 +50713,7 @@ class VpnTunnelAggregatedList(_messages.Message):
 
   id = _messages.StringField(1)
   items = _messages.MessageField('ItemsValue', 2)
-  kind = _messages.StringField(3, default=u'compute#vpnTunnelAggregatedList')
+  kind = _messages.StringField(3, default='compute#vpnTunnelAggregatedList')
   nextPageToken = _messages.StringField(4)
   selfLink = _messages.StringField(5)
   warning = _messages.MessageField('WarningValue', 6)
@@ -50782,7 +50838,7 @@ class VpnTunnelList(_messages.Message):
 
   id = _messages.StringField(1)
   items = _messages.MessageField('VpnTunnel', 2, repeated=True)
-  kind = _messages.StringField(3, default=u'compute#vpnTunnelList')
+  kind = _messages.StringField(3, default='compute#vpnTunnelList')
   nextPageToken = _messages.StringField(4)
   selfLink = _messages.StringField(5)
   warning = _messages.MessageField('WarningValue', 6)
@@ -51083,7 +51139,7 @@ class XpnHostList(_messages.Message):
 
   id = _messages.StringField(1)
   items = _messages.MessageField('Project', 2, repeated=True)
-  kind = _messages.StringField(3, default=u'compute#xpnHostList')
+  kind = _messages.StringField(3, default='compute#xpnHostList')
   nextPageToken = _messages.StringField(4)
   selfLink = _messages.StringField(5)
   warning = _messages.MessageField('WarningValue', 6)
@@ -51159,7 +51215,7 @@ class Zone(_messages.Message):
   deprecated = _messages.MessageField('DeprecationStatus', 3)
   description = _messages.StringField(4)
   id = _messages.IntegerField(5, variant=_messages.Variant.UINT64)
-  kind = _messages.StringField(6, default=u'compute#zone')
+  kind = _messages.StringField(6, default='compute#zone')
   name = _messages.StringField(7)
   region = _messages.StringField(8)
   selfLink = _messages.StringField(9)
@@ -51284,7 +51340,7 @@ class ZoneList(_messages.Message):
 
   id = _messages.StringField(1)
   items = _messages.MessageField('Zone', 2, repeated=True)
-  kind = _messages.StringField(3, default=u'compute#zoneList')
+  kind = _messages.StringField(3, default='compute#zoneList')
   nextPageToken = _messages.StringField(4)
   selfLink = _messages.StringField(5)
   warning = _messages.MessageField('WarningValue', 6)

@@ -31,7 +31,7 @@ class Collections(enum.Enum):
           '':
               'projects/{projectsId}/instances/{instancesId}',
       },
-      [u'name'],
+      ['name'],
       True
   )
   PROJECTS_INSTANCES_WORKERPOOLS = (
@@ -42,7 +42,7 @@ class Collections(enum.Enum):
               'projects/{projectsId}/instances/{instancesId}/workerpools/'
               '{workerpoolsId}',
       },
-      [u'name'],
+      ['name'],
       True
   )
   PROJECTS_OPERATIONS = (
@@ -52,14 +52,14 @@ class Collections(enum.Enum):
           '':
               'projects/{projectsId}/operations/{operationsId}',
       },
-      [u'name'],
+      ['name'],
       True
   )
   PROJECTS = (
       'projects',
       'projects/{projectsId}',
       {},
-      [u'projectsId'],
+      ['projectsId'],
       True
   )
 

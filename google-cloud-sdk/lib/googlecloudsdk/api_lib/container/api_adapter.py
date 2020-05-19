@@ -1153,11 +1153,13 @@ class APIAdapter(object):
         raise util.Error(DISABLE_DEFAULT_SNAT_WITHOUT_IP_ALIAS_ERROR_MSG)
       if not options.enable_private_nodes:
         raise util.Error(DISABLE_DEFAULT_SNAT_WITHOUT_PRIVATE_NODES_ERROR_MSG)
+      default_snat_status = self.messages.DefaultSnatStatus(
+          disabled=options.disable_default_snat)
       if cluster.networkConfig is None:
         cluster.networkConfig = self.messages.NetworkConfig(
-            disableDefaultSnat=options.disable_default_snat)
+            defaultSnatStatus=default_snat_status)
       else:
-        cluster.networkConfig.disableDefaultSnat = options.disable_default_snat
+        cluster.networkConfig.defaultSnatStatus = default_snat_status
 
     if options.enable_l4_ilb_subsetting:
       if cluster.networkConfig is None:

@@ -8,17 +8,17 @@ class RecommenderV1alpha1(base_api.BaseApiClient):
   """Generated client library for service recommender version v1alpha1."""
 
   MESSAGES_MODULE = messages
-  BASE_URL = u'https://recommender.googleapis.com/'
-  MTLS_BASE_URL = u'https://recommender.mtls.googleapis.com/'
+  BASE_URL = 'https://recommender.googleapis.com/'
+  MTLS_BASE_URL = 'https://recommender.mtls.googleapis.com/'
 
-  _PACKAGE = u'recommender'
-  _SCOPES = [u'https://www.googleapis.com/auth/cloud-platform']
-  _VERSION = u'v1alpha1'
+  _PACKAGE = 'recommender'
+  _SCOPES = ['https://www.googleapis.com/auth/cloud-platform']
+  _VERSION = 'v1alpha1'
   _CLIENT_ID = '1042881264118.apps.googleusercontent.com'
   _CLIENT_SECRET = 'x_Tw5K8nnjoRAqULM9PFAC2b'
-  _USER_AGENT = u'google-cloud-sdk'
-  _CLIENT_CLASS_NAME = u'RecommenderV1alpha1'
-  _URL_VERSION = u'v1alpha1'
+  _USER_AGENT = 'google-cloud-sdk'
+  _CLIENT_CLASS_NAME = 'RecommenderV1alpha1'
+  _URL_VERSION = 'v1alpha1'
   _API_KEY = None
 
   def __init__(self, url='', credentials=None,
@@ -45,7 +45,7 @@ class RecommenderV1alpha1(base_api.BaseApiClient):
   class ProjectsLocationsRecommendersRecommendationsService(base_api.BaseApiService):
     """Service class for the projects_locations_recommenders_recommendations resource."""
 
-    _NAME = u'projects_locations_recommenders_recommendations'
+    _NAME = 'projects_locations_recommenders_recommendations'
 
     def __init__(self, client):
       super(RecommenderV1alpha1.ProjectsLocationsRecommendersRecommendationsService, self).__init__(client)
@@ -67,16 +67,16 @@ Check recommender.*.list and recommender.rule.create IAM permissions.
           config, request, global_params=global_params)
 
     CreateRule.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha1/projects/{projectsId}/locations/{locationsId}/recommenders/{recommendersId}/recommendations/{recommendationsId}:createRule',
-        http_method=u'POST',
-        method_id=u'recommender.projects.locations.recommenders.recommendations.createRule',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/recommenders/{recommendersId}/recommendations/{recommendationsId}:createRule',
+        http_method='POST',
+        method_id='recommender.projects.locations.recommenders.recommendations.createRule',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1alpha1/{+name}:createRule',
-        request_field=u'googleCloudRecommenderV1alpha1CreateRecommendationRuleRequest',
-        request_type_name=u'RecommenderProjectsLocationsRecommendersRecommendationsCreateRuleRequest',
-        response_type_name=u'GoogleCloudRecommenderV1alpha1Rule',
+        relative_path='v1alpha1/{+name}:createRule',
+        request_field='googleCloudRecommenderV1alpha1CreateRecommendationRuleRequest',
+        request_type_name='RecommenderProjectsLocationsRecommendersRecommendationsCreateRuleRequest',
+        response_type_name='GoogleCloudRecommenderV1alpha1Rule',
         supports_download=False,
     )
 
@@ -95,16 +95,16 @@ IAM permission.
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha1/projects/{projectsId}/locations/{locationsId}/recommenders/{recommendersId}/recommendations/{recommendationsId}',
-        http_method=u'GET',
-        method_id=u'recommender.projects.locations.recommenders.recommendations.get',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/recommenders/{recommendersId}/recommendations/{recommendationsId}',
+        http_method='GET',
+        method_id='recommender.projects.locations.recommenders.recommendations.get',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1alpha1/{+name}',
+        relative_path='v1alpha1/{+name}',
         request_field='',
-        request_type_name=u'RecommenderProjectsLocationsRecommendersRecommendationsGetRequest',
-        response_type_name=u'GoogleCloudRecommenderV1alpha1Recommendation',
+        request_type_name='RecommenderProjectsLocationsRecommendersRecommendationsGetRequest',
+        response_type_name='GoogleCloudRecommenderV1alpha1Recommendation',
         supports_download=False,
     )
 
@@ -123,16 +123,16 @@ recommendation.*.list IAM permission.
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha1/projects/{projectsId}/locations/{locationsId}/recommenders/{recommendersId}/recommendations',
-        http_method=u'GET',
-        method_id=u'recommender.projects.locations.recommenders.recommendations.list',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'filter', u'pageSize', u'pageToken'],
-        relative_path=u'v1alpha1/{+parent}/recommendations',
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/recommenders/{recommendersId}/recommendations',
+        http_method='GET',
+        method_id='recommender.projects.locations.recommenders.recommendations.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'pageSize', 'pageToken'],
+        relative_path='v1alpha1/{+parent}/recommendations',
         request_field='',
-        request_type_name=u'RecommenderProjectsLocationsRecommendersRecommendationsListRequest',
-        response_type_name=u'GoogleCloudRecommenderV1alpha1ListRecommendationsResponse',
+        request_type_name='RecommenderProjectsLocationsRecommendersRecommendationsListRequest',
+        response_type_name='GoogleCloudRecommenderV1alpha1ListRecommendationsResponse',
         supports_download=False,
     )
 
@@ -156,16 +156,16 @@ recommendation.*.update IAM permission is required to make this change.
           config, request, global_params=global_params)
 
     MarkActive.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha1/projects/{projectsId}/locations/{locationsId}/recommenders/{recommendersId}/recommendations/{recommendationsId}:markActive',
-        http_method=u'POST',
-        method_id=u'recommender.projects.locations.recommenders.recommendations.markActive',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/recommenders/{recommendersId}/recommendations/{recommendationsId}:markActive',
+        http_method='POST',
+        method_id='recommender.projects.locations.recommenders.recommendations.markActive',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1alpha1/{+name}:markActive',
-        request_field=u'googleCloudRecommenderV1alpha1MarkActiveRequest',
-        request_type_name=u'RecommenderProjectsLocationsRecommendersRecommendationsMarkActiveRequest',
-        response_type_name=u'GoogleCloudRecommenderV1alpha1Recommendation',
+        relative_path='v1alpha1/{+name}:markActive',
+        request_field='googleCloudRecommenderV1alpha1MarkActiveRequest',
+        request_type_name='RecommenderProjectsLocationsRecommendersRecommendationsMarkActiveRequest',
+        response_type_name='GoogleCloudRecommenderV1alpha1Recommendation',
         supports_download=False,
     )
 
@@ -190,16 +190,16 @@ recommendation.*.update IAM permission is required to make this change.
           config, request, global_params=global_params)
 
     MarkClaimed.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha1/projects/{projectsId}/locations/{locationsId}/recommenders/{recommendersId}/recommendations/{recommendationsId}:markClaimed',
-        http_method=u'POST',
-        method_id=u'recommender.projects.locations.recommenders.recommendations.markClaimed',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/recommenders/{recommendersId}/recommendations/{recommendationsId}:markClaimed',
+        http_method='POST',
+        method_id='recommender.projects.locations.recommenders.recommendations.markClaimed',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1alpha1/{+name}:markClaimed',
-        request_field=u'googleCloudRecommenderV1alpha1MarkClaimedRequest',
-        request_type_name=u'RecommenderProjectsLocationsRecommendersRecommendationsMarkClaimedRequest',
-        response_type_name=u'GoogleCloudRecommenderV1alpha1Recommendation',
+        relative_path='v1alpha1/{+name}:markClaimed',
+        request_field='googleCloudRecommenderV1alpha1MarkClaimedRequest',
+        request_type_name='RecommenderProjectsLocationsRecommendersRecommendationsMarkClaimedRequest',
+        response_type_name='GoogleCloudRecommenderV1alpha1Recommendation',
         supports_download=False,
     )
 
@@ -225,16 +225,16 @@ recommendation.*.update IAM permission is required to make this change.
           config, request, global_params=global_params)
 
     MarkFailed.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha1/projects/{projectsId}/locations/{locationsId}/recommenders/{recommendersId}/recommendations/{recommendationsId}:markFailed',
-        http_method=u'POST',
-        method_id=u'recommender.projects.locations.recommenders.recommendations.markFailed',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/recommenders/{recommendersId}/recommendations/{recommendationsId}:markFailed',
+        http_method='POST',
+        method_id='recommender.projects.locations.recommenders.recommendations.markFailed',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1alpha1/{+name}:markFailed',
-        request_field=u'googleCloudRecommenderV1alpha1MarkFailedRequest',
-        request_type_name=u'RecommenderProjectsLocationsRecommendersRecommendationsMarkFailedRequest',
-        response_type_name=u'GoogleCloudRecommenderV1alpha1Recommendation',
+        relative_path='v1alpha1/{+name}:markFailed',
+        request_field='googleCloudRecommenderV1alpha1MarkFailedRequest',
+        request_type_name='RecommenderProjectsLocationsRecommendersRecommendationsMarkFailedRequest',
+        response_type_name='GoogleCloudRecommenderV1alpha1Recommendation',
         supports_download=False,
     )
 
@@ -260,23 +260,23 @@ recommendation.*.update IAM permission is required to make this change.
           config, request, global_params=global_params)
 
     MarkSucceeded.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha1/projects/{projectsId}/locations/{locationsId}/recommenders/{recommendersId}/recommendations/{recommendationsId}:markSucceeded',
-        http_method=u'POST',
-        method_id=u'recommender.projects.locations.recommenders.recommendations.markSucceeded',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/recommenders/{recommendersId}/recommendations/{recommendationsId}:markSucceeded',
+        http_method='POST',
+        method_id='recommender.projects.locations.recommenders.recommendations.markSucceeded',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1alpha1/{+name}:markSucceeded',
-        request_field=u'googleCloudRecommenderV1alpha1MarkSucceededRequest',
-        request_type_name=u'RecommenderProjectsLocationsRecommendersRecommendationsMarkSucceededRequest',
-        response_type_name=u'GoogleCloudRecommenderV1alpha1Recommendation',
+        relative_path='v1alpha1/{+name}:markSucceeded',
+        request_field='googleCloudRecommenderV1alpha1MarkSucceededRequest',
+        request_type_name='RecommenderProjectsLocationsRecommendersRecommendationsMarkSucceededRequest',
+        response_type_name='GoogleCloudRecommenderV1alpha1Recommendation',
         supports_download=False,
     )
 
   class ProjectsLocationsRecommendersService(base_api.BaseApiService):
     """Service class for the projects_locations_recommenders resource."""
 
-    _NAME = u'projects_locations_recommenders'
+    _NAME = 'projects_locations_recommenders'
 
     def __init__(self, client):
       super(RecommenderV1alpha1.ProjectsLocationsRecommendersService, self).__init__(client)
@@ -286,7 +286,7 @@ recommendation.*.update IAM permission is required to make this change.
   class ProjectsLocationsService(base_api.BaseApiService):
     """Service class for the projects_locations resource."""
 
-    _NAME = u'projects_locations'
+    _NAME = 'projects_locations'
 
     def __init__(self, client):
       super(RecommenderV1alpha1.ProjectsLocationsService, self).__init__(client)
@@ -296,7 +296,7 @@ recommendation.*.update IAM permission is required to make this change.
   class ProjectsRulesService(base_api.BaseApiService):
     """Service class for the projects_rules resource."""
 
-    _NAME = u'projects_rules'
+    _NAME = 'projects_rules'
 
     def __init__(self, client):
       super(RecommenderV1alpha1.ProjectsRulesService, self).__init__(client)
@@ -319,16 +319,16 @@ Checks recommender.rule.list and recommender.*.update IAM permissions.
           config, request, global_params=global_params)
 
     Apply.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha1/projects/{projectsId}/rules/{rulesId}:apply',
-        http_method=u'POST',
-        method_id=u'recommender.projects.rules.apply',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1alpha1/projects/{projectsId}/rules/{rulesId}:apply',
+        http_method='POST',
+        method_id='recommender.projects.rules.apply',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1alpha1/{+name}:apply',
+        relative_path='v1alpha1/{+name}:apply',
         request_field='',
-        request_type_name=u'RecommenderProjectsRulesApplyRequest',
-        response_type_name=u'GoogleLongrunningOperation',
+        request_type_name='RecommenderProjectsRulesApplyRequest',
+        response_type_name='GoogleLongrunningOperation',
         supports_download=False,
     )
 
@@ -347,16 +347,16 @@ Check recommender.rule.delete IAM permission.
           config, request, global_params=global_params)
 
     Delete.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha1/projects/{projectsId}/rules/{rulesId}',
-        http_method=u'DELETE',
-        method_id=u'recommender.projects.rules.delete',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1alpha1/projects/{projectsId}/rules/{rulesId}',
+        http_method='DELETE',
+        method_id='recommender.projects.rules.delete',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1alpha1/{+name}',
+        relative_path='v1alpha1/{+name}',
         request_field='',
-        request_type_name=u'RecommenderProjectsRulesDeleteRequest',
-        response_type_name=u'GoogleProtobufEmpty',
+        request_type_name='RecommenderProjectsRulesDeleteRequest',
+        response_type_name='GoogleProtobufEmpty',
         supports_download=False,
     )
 
@@ -375,16 +375,16 @@ Check recommender.rule.list IAM permission.
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha1/projects/{projectsId}/rules/{rulesId}',
-        http_method=u'GET',
-        method_id=u'recommender.projects.rules.get',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1alpha1/projects/{projectsId}/rules/{rulesId}',
+        http_method='GET',
+        method_id='recommender.projects.rules.get',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1alpha1/{+name}',
+        relative_path='v1alpha1/{+name}',
         request_field='',
-        request_type_name=u'RecommenderProjectsRulesGetRequest',
-        response_type_name=u'GoogleCloudRecommenderV1alpha1Rule',
+        request_type_name='RecommenderProjectsRulesGetRequest',
+        response_type_name='GoogleCloudRecommenderV1alpha1Rule',
         supports_download=False,
     )
 
@@ -403,23 +403,23 @@ Check recommender.rule.list IAM permission.
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha1/projects/{projectsId}/rules',
-        http_method=u'GET',
-        method_id=u'recommender.projects.rules.list',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'pageSize', u'pageToken'],
-        relative_path=u'v1alpha1/{+parent}/rules',
+        flat_path='v1alpha1/projects/{projectsId}/rules',
+        http_method='GET',
+        method_id='recommender.projects.rules.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v1alpha1/{+parent}/rules',
         request_field='',
-        request_type_name=u'RecommenderProjectsRulesListRequest',
-        response_type_name=u'GoogleCloudRecommenderV1alpha1ListRulesResponse',
+        request_type_name='RecommenderProjectsRulesListRequest',
+        response_type_name='GoogleCloudRecommenderV1alpha1ListRulesResponse',
         supports_download=False,
     )
 
   class ProjectsService(base_api.BaseApiService):
     """Service class for the projects resource."""
 
-    _NAME = u'projects'
+    _NAME = 'projects'
 
     def __init__(self, client):
       super(RecommenderV1alpha1.ProjectsService, self).__init__(client)

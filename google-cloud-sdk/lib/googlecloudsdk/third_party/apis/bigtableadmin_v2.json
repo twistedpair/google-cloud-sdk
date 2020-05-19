@@ -346,6 +346,21 @@
             "SSD",
             "HDD"
           ]
+        },
+        "encryptionConfig": {
+          "description": "Immutable. KMS setting that is only filled in for CMEK-protected clusters, whether\nthis field is used for configuration on input or presented as output.",
+          "$ref": "EncryptionConfig"
+        }
+      }
+    },
+    "EncryptionConfig": {
+      "id": "EncryptionConfig",
+      "description": "Google Cloud Key Management Service (KMS) settings for a CMEK-protected\nBigtable cluster.\nCMEK is not currently available to end users.\nThis feature might be changed in backward-incompatible ways and is not\ncurrently subject to any SLA or deprecation policy.",
+      "type": "object",
+      "properties": {
+        "kmsKeyName": {
+          "description": "Describes the KMS encryption key that will be used to protect the\ndestination Bigtable cluster. The requirements for this key are:\n 1) The Cloud Bigtable service account associated with the project that\n contains this cluster will need to be granted an enc\/dec role on the\n encryption key.\n 2) The regionality of the key must match the location of the cluster.\n 3) All clusters within an instance must use the same KMS key.\nThe key cannot be changed after cluster creation, but it may be rotated.",
+          "type": "string"
         }
       }
     },
@@ -751,6 +766,42 @@
             "READY",
             "READY_OPTIMIZING"
           ]
+        },
+        "encryptionInfo": {
+          "description": "Output only. The encryption information for the table in this cluster.\nIf the encryption key protecting this resource is customer managed, then\nits version can be rotated in KMS. Versions and their corresponding\nstatus will enter this list when the system picks up a rotation and\nwill exit this list when a deep rotation of the underlying data has\ncompleted.",
+          "type": "array",
+          "items": {
+            "$ref": "EncryptionInfo"
+          }
+        }
+      }
+    },
+    "EncryptionInfo": {
+      "id": "EncryptionInfo",
+      "description": "Encryption information for a given resource.\nIf this resource is protected with customer managed encryption, the in-use\nGoogle Cloud Key Management Service (KMS) key versions will be specified\nalong with their status.\nThis feature might be changed in backward-incompatible ways and is not\ncurrently subject to any SLA or deprecation policy.",
+      "type": "object",
+      "properties": {
+        "encryptionType": {
+          "description": "Output only. The type of encryption used to protect this resource.",
+          "enumDescriptions": [
+            "Encryption type was not specified, though data at rest remains encrypted.",
+            "The data backing this resource is encrypted at rest with a key that is\nfully managed by Google. No key version or status will be populated.\nThis is the default state.",
+            "The data backing this resource is encrypted at rest with a key that is\nmanaged by the customer. The active version of the key and its latest\nstatus have been populated."
+          ],
+          "type": "string",
+          "enum": [
+            "ENCRYPTION_TYPE_UNSPECIFIED",
+            "GOOGLE_DEFAULT_ENCRYPTION",
+            "CUSTOMER_MANAGED_ENCRYPTION"
+          ]
+        },
+        "encryptionStatus": {
+          "description": "Output only. The status of encrypt\/decrypt calls on underlying data for this resource.\nRegardless of status, the existing data is always encrypted at rest.",
+          "$ref": "Status"
+        },
+        "kmsKeyVersion": {
+          "description": "Output only. The version of the KMS key specified in the parent cluster that is in-use\nfor the data underlying this table.",
+          "type": "string"
         }
       }
     },
@@ -1035,6 +1086,10 @@
             "CREATING",
             "READY"
           ]
+        },
+        "encryptionInfo": {
+          "description": "Output only. The encryption information for the backup.\nIf encryption_type is CUSTOMER_MANAGED_ENCRYPTION, kms_key_version will be\nfilled in with status UNKNOWN.\nIf encryption_type is GOOGLE_DEFAULT_ENCRYPTION, all other fields will have\ndefault value.\nThis feature might be changed in backward-incompatible ways and is not\ncurrently subject to any SLA or deprecation policy.",
+          "$ref": "EncryptionInfo"
         }
       }
     },
@@ -2561,6 +2616,7 @@
                         "NAME_ONLY",
                         "SCHEMA_VIEW",
                         "REPLICATION_VIEW",
+                        "ENCRYPTION_VIEW",
                         "FULL"
                       ]
                     },
@@ -2614,6 +2670,7 @@
                         "NAME_ONLY",
                         "SCHEMA_VIEW",
                         "REPLICATION_VIEW",
+                        "ENCRYPTION_VIEW",
                         "FULL"
                       ]
                     }

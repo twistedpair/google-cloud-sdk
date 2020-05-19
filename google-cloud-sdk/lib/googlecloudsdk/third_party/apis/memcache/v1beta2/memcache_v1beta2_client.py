@@ -8,17 +8,17 @@ class MemcacheV1beta2(base_api.BaseApiClient):
   """Generated client library for service memcache version v1beta2."""
 
   MESSAGES_MODULE = messages
-  BASE_URL = u'https://memcache.googleapis.com/'
-  MTLS_BASE_URL = u'https://memcache.mtls.googleapis.com/'
+  BASE_URL = 'https://memcache.googleapis.com/'
+  MTLS_BASE_URL = 'https://memcache.mtls.googleapis.com/'
 
-  _PACKAGE = u'memcache'
-  _SCOPES = [u'https://www.googleapis.com/auth/cloud-platform']
-  _VERSION = u'v1beta2'
+  _PACKAGE = 'memcache'
+  _SCOPES = ['https://www.googleapis.com/auth/cloud-platform']
+  _VERSION = 'v1beta2'
   _CLIENT_ID = '1042881264118.apps.googleusercontent.com'
   _CLIENT_SECRET = 'x_Tw5K8nnjoRAqULM9PFAC2b'
-  _USER_AGENT = u'google-cloud-sdk'
-  _CLIENT_CLASS_NAME = u'MemcacheV1beta2'
-  _URL_VERSION = u'v1beta2'
+  _USER_AGENT = 'google-cloud-sdk'
+  _CLIENT_CLASS_NAME = 'MemcacheV1beta2'
+  _URL_VERSION = 'v1beta2'
   _API_KEY = None
 
   def __init__(self, url='', credentials=None,
@@ -44,7 +44,7 @@ class MemcacheV1beta2(base_api.BaseApiClient):
   class ProjectsLocationsInstancesService(base_api.BaseApiService):
     """Service class for the projects_locations_instances resource."""
 
-    _NAME = u'projects_locations_instances'
+    _NAME = 'projects_locations_instances'
 
     def __init__(self, client):
       super(MemcacheV1beta2.ProjectsLocationsInstancesService, self).__init__(client)
@@ -66,16 +66,16 @@ specified nodes of the Memcached Instance.
           config, request, global_params=global_params)
 
     ApplyParameters.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta2/projects/{projectsId}/locations/{locationsId}/instances/{instancesId}:applyParameters',
-        http_method=u'POST',
-        method_id=u'memcache.projects.locations.instances.applyParameters',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1beta2/projects/{projectsId}/locations/{locationsId}/instances/{instancesId}:applyParameters',
+        http_method='POST',
+        method_id='memcache.projects.locations.instances.applyParameters',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1beta2/{+name}:applyParameters',
-        request_field=u'applyParametersRequest',
-        request_type_name=u'MemcacheProjectsLocationsInstancesApplyParametersRequest',
-        response_type_name=u'Operation',
+        relative_path='v1beta2/{+name}:applyParameters',
+        request_field='applyParametersRequest',
+        request_type_name='MemcacheProjectsLocationsInstancesApplyParametersRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -93,16 +93,16 @@ specified nodes of the Memcached Instance.
           config, request, global_params=global_params)
 
     Create.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta2/projects/{projectsId}/locations/{locationsId}/instances',
-        http_method=u'POST',
-        method_id=u'memcache.projects.locations.instances.create',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'instanceId'],
-        relative_path=u'v1beta2/{+parent}/instances',
-        request_field=u'instance',
-        request_type_name=u'MemcacheProjectsLocationsInstancesCreateRequest',
-        response_type_name=u'Operation',
+        flat_path='v1beta2/projects/{projectsId}/locations/{locationsId}/instances',
+        http_method='POST',
+        method_id='memcache.projects.locations.instances.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['instanceId'],
+        relative_path='v1beta2/{+parent}/instances',
+        request_field='instance',
+        request_type_name='MemcacheProjectsLocationsInstancesCreateRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -120,16 +120,16 @@ specified nodes of the Memcached Instance.
           config, request, global_params=global_params)
 
     Delete.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta2/projects/{projectsId}/locations/{locationsId}/instances/{instancesId}',
-        http_method=u'DELETE',
-        method_id=u'memcache.projects.locations.instances.delete',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1beta2/projects/{projectsId}/locations/{locationsId}/instances/{instancesId}',
+        http_method='DELETE',
+        method_id='memcache.projects.locations.instances.delete',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1beta2/{+name}',
+        relative_path='v1beta2/{+name}',
         request_field='',
-        request_type_name=u'MemcacheProjectsLocationsInstancesDeleteRequest',
-        response_type_name=u'Operation',
+        request_type_name='MemcacheProjectsLocationsInstancesDeleteRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -147,16 +147,16 @@ specified nodes of the Memcached Instance.
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta2/projects/{projectsId}/locations/{locationsId}/instances/{instancesId}',
-        http_method=u'GET',
-        method_id=u'memcache.projects.locations.instances.get',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1beta2/projects/{projectsId}/locations/{locationsId}/instances/{instancesId}',
+        http_method='GET',
+        method_id='memcache.projects.locations.instances.get',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1beta2/{+name}',
+        relative_path='v1beta2/{+name}',
         request_field='',
-        request_type_name=u'MemcacheProjectsLocationsInstancesGetRequest',
-        response_type_name=u'Instance',
+        request_type_name='MemcacheProjectsLocationsInstancesGetRequest',
+        response_type_name='Instance',
         supports_download=False,
     )
 
@@ -176,16 +176,16 @@ set.
           config, request, global_params=global_params)
 
     GetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta2/projects/{projectsId}/locations/{locationsId}/instances/{instancesId}:getIamPolicy',
-        http_method=u'GET',
-        method_id=u'memcache.projects.locations.instances.getIamPolicy',
-        ordered_params=[u'resource'],
-        path_params=[u'resource'],
-        query_params=[u'options_requestedPolicyVersion'],
-        relative_path=u'v1beta2/{+resource}:getIamPolicy',
+        flat_path='v1beta2/projects/{projectsId}/locations/{locationsId}/instances/{instancesId}:getIamPolicy',
+        http_method='GET',
+        method_id='memcache.projects.locations.instances.getIamPolicy',
+        ordered_params=['resource'],
+        path_params=['resource'],
+        query_params=['options_requestedPolicyVersion'],
+        relative_path='v1beta2/{+resource}:getIamPolicy',
         request_field='',
-        request_type_name=u'MemcacheProjectsLocationsInstancesGetIamPolicyRequest',
-        response_type_name=u'Policy',
+        request_type_name='MemcacheProjectsLocationsInstancesGetIamPolicyRequest',
+        response_type_name='Policy',
         supports_download=False,
     )
 
@@ -203,16 +203,16 @@ set.
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta2/projects/{projectsId}/locations/{locationsId}/instances',
-        http_method=u'GET',
-        method_id=u'memcache.projects.locations.instances.list',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'filter', u'orderBy', u'pageSize', u'pageToken'],
-        relative_path=u'v1beta2/{+parent}/instances',
+        flat_path='v1beta2/projects/{projectsId}/locations/{locationsId}/instances',
+        http_method='GET',
+        method_id='memcache.projects.locations.instances.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'orderBy', 'pageSize', 'pageToken'],
+        relative_path='v1beta2/{+parent}/instances',
         request_field='',
-        request_type_name=u'MemcacheProjectsLocationsInstancesListRequest',
-        response_type_name=u'ListInstancesResponse',
+        request_type_name='MemcacheProjectsLocationsInstancesListRequest',
+        response_type_name='ListInstancesResponse',
         supports_download=False,
     )
 
@@ -230,16 +230,16 @@ set.
           config, request, global_params=global_params)
 
     Patch.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta2/projects/{projectsId}/locations/{locationsId}/instances/{instancesId}',
-        http_method=u'PATCH',
-        method_id=u'memcache.projects.locations.instances.patch',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[u'updateMask'],
-        relative_path=u'v1beta2/{+name}',
-        request_field=u'instance',
-        request_type_name=u'MemcacheProjectsLocationsInstancesPatchRequest',
-        response_type_name=u'Operation',
+        flat_path='v1beta2/projects/{projectsId}/locations/{locationsId}/instances/{instancesId}',
+        http_method='PATCH',
+        method_id='memcache.projects.locations.instances.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v1beta2/{+name}',
+        request_field='instance',
+        request_type_name='MemcacheProjectsLocationsInstancesPatchRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -260,16 +260,16 @@ Can return `NOT_FOUND`, `INVALID_ARGUMENT`, and `PERMISSION_DENIED` errors.
           config, request, global_params=global_params)
 
     SetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta2/projects/{projectsId}/locations/{locationsId}/instances/{instancesId}:setIamPolicy',
-        http_method=u'POST',
-        method_id=u'memcache.projects.locations.instances.setIamPolicy',
-        ordered_params=[u'resource'],
-        path_params=[u'resource'],
+        flat_path='v1beta2/projects/{projectsId}/locations/{locationsId}/instances/{instancesId}:setIamPolicy',
+        http_method='POST',
+        method_id='memcache.projects.locations.instances.setIamPolicy',
+        ordered_params=['resource'],
+        path_params=['resource'],
         query_params=[],
-        relative_path=u'v1beta2/{+resource}:setIamPolicy',
-        request_field=u'setIamPolicyRequest',
-        request_type_name=u'MemcacheProjectsLocationsInstancesSetIamPolicyRequest',
-        response_type_name=u'Policy',
+        relative_path='v1beta2/{+resource}:setIamPolicy',
+        request_field='setIamPolicyRequest',
+        request_type_name='MemcacheProjectsLocationsInstancesSetIamPolicyRequest',
+        response_type_name='Policy',
         supports_download=False,
     )
 
@@ -293,16 +293,16 @@ may "fail open" without warning.
           config, request, global_params=global_params)
 
     TestIamPermissions.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta2/projects/{projectsId}/locations/{locationsId}/instances/{instancesId}:testIamPermissions',
-        http_method=u'POST',
-        method_id=u'memcache.projects.locations.instances.testIamPermissions',
-        ordered_params=[u'resource'],
-        path_params=[u'resource'],
+        flat_path='v1beta2/projects/{projectsId}/locations/{locationsId}/instances/{instancesId}:testIamPermissions',
+        http_method='POST',
+        method_id='memcache.projects.locations.instances.testIamPermissions',
+        ordered_params=['resource'],
+        path_params=['resource'],
         query_params=[],
-        relative_path=u'v1beta2/{+resource}:testIamPermissions',
-        request_field=u'testIamPermissionsRequest',
-        request_type_name=u'MemcacheProjectsLocationsInstancesTestIamPermissionsRequest',
-        response_type_name=u'TestIamPermissionsResponse',
+        relative_path='v1beta2/{+resource}:testIamPermissions',
+        request_field='testIamPermissionsRequest',
+        request_type_name='MemcacheProjectsLocationsInstancesTestIamPermissionsRequest',
+        response_type_name='TestIamPermissionsResponse',
         supports_download=False,
     )
 
@@ -322,23 +322,23 @@ ApplyParameters to apply the parameters to nodes of the Memcached Instance.
           config, request, global_params=global_params)
 
     UpdateParameters.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta2/projects/{projectsId}/locations/{locationsId}/instances/{instancesId}:updateParameters',
-        http_method=u'PATCH',
-        method_id=u'memcache.projects.locations.instances.updateParameters',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1beta2/projects/{projectsId}/locations/{locationsId}/instances/{instancesId}:updateParameters',
+        http_method='PATCH',
+        method_id='memcache.projects.locations.instances.updateParameters',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1beta2/{+name}:updateParameters',
-        request_field=u'updateParametersRequest',
-        request_type_name=u'MemcacheProjectsLocationsInstancesUpdateParametersRequest',
-        response_type_name=u'Operation',
+        relative_path='v1beta2/{+name}:updateParameters',
+        request_field='updateParametersRequest',
+        request_type_name='MemcacheProjectsLocationsInstancesUpdateParametersRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
   class ProjectsLocationsOperationsService(base_api.BaseApiService):
     """Service class for the projects_locations_operations resource."""
 
-    _NAME = u'projects_locations_operations'
+    _NAME = 'projects_locations_operations'
 
     def __init__(self, client):
       super(MemcacheV1beta2.ProjectsLocationsOperationsService, self).__init__(client)
@@ -368,16 +368,16 @@ corresponding to `Code.CANCELLED`.
           config, request, global_params=global_params)
 
     Cancel.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta2/projects/{projectsId}/locations/{locationsId}/operations/{operationsId}:cancel',
-        http_method=u'POST',
-        method_id=u'memcache.projects.locations.operations.cancel',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1beta2/projects/{projectsId}/locations/{locationsId}/operations/{operationsId}:cancel',
+        http_method='POST',
+        method_id='memcache.projects.locations.operations.cancel',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1beta2/{+name}:cancel',
-        request_field=u'cancelOperationRequest',
-        request_type_name=u'MemcacheProjectsLocationsOperationsCancelRequest',
-        response_type_name=u'Empty',
+        relative_path='v1beta2/{+name}:cancel',
+        request_field='cancelOperationRequest',
+        request_type_name='MemcacheProjectsLocationsOperationsCancelRequest',
+        response_type_name='Empty',
         supports_download=False,
     )
 
@@ -398,16 +398,16 @@ operation. If the server doesn't support this method, it returns
           config, request, global_params=global_params)
 
     Delete.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta2/projects/{projectsId}/locations/{locationsId}/operations/{operationsId}',
-        http_method=u'DELETE',
-        method_id=u'memcache.projects.locations.operations.delete',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1beta2/projects/{projectsId}/locations/{locationsId}/operations/{operationsId}',
+        http_method='DELETE',
+        method_id='memcache.projects.locations.operations.delete',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1beta2/{+name}',
+        relative_path='v1beta2/{+name}',
         request_field='',
-        request_type_name=u'MemcacheProjectsLocationsOperationsDeleteRequest',
-        response_type_name=u'Empty',
+        request_type_name='MemcacheProjectsLocationsOperationsDeleteRequest',
+        response_type_name='Empty',
         supports_download=False,
     )
 
@@ -427,16 +427,16 @@ service.
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta2/projects/{projectsId}/locations/{locationsId}/operations/{operationsId}',
-        http_method=u'GET',
-        method_id=u'memcache.projects.locations.operations.get',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1beta2/projects/{projectsId}/locations/{locationsId}/operations/{operationsId}',
+        http_method='GET',
+        method_id='memcache.projects.locations.operations.get',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1beta2/{+name}',
+        relative_path='v1beta2/{+name}',
         request_field='',
-        request_type_name=u'MemcacheProjectsLocationsOperationsGetRequest',
-        response_type_name=u'Operation',
+        request_type_name='MemcacheProjectsLocationsOperationsGetRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -463,23 +463,23 @@ is the parent resource, without the operations collection id.
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta2/projects/{projectsId}/locations/{locationsId}/operations',
-        http_method=u'GET',
-        method_id=u'memcache.projects.locations.operations.list',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[u'filter', u'pageSize', u'pageToken'],
-        relative_path=u'v1beta2/{+name}/operations',
+        flat_path='v1beta2/projects/{projectsId}/locations/{locationsId}/operations',
+        http_method='GET',
+        method_id='memcache.projects.locations.operations.list',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['filter', 'pageSize', 'pageToken'],
+        relative_path='v1beta2/{+name}/operations',
         request_field='',
-        request_type_name=u'MemcacheProjectsLocationsOperationsListRequest',
-        response_type_name=u'ListOperationsResponse',
+        request_type_name='MemcacheProjectsLocationsOperationsListRequest',
+        response_type_name='ListOperationsResponse',
         supports_download=False,
     )
 
   class ProjectsLocationsService(base_api.BaseApiService):
     """Service class for the projects_locations resource."""
 
-    _NAME = u'projects_locations'
+    _NAME = 'projects_locations'
 
     def __init__(self, client):
       super(MemcacheV1beta2.ProjectsLocationsService, self).__init__(client)
@@ -500,16 +500,16 @@ is the parent resource, without the operations collection id.
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta2/projects/{projectsId}/locations/{locationsId}',
-        http_method=u'GET',
-        method_id=u'memcache.projects.locations.get',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1beta2/projects/{projectsId}/locations/{locationsId}',
+        http_method='GET',
+        method_id='memcache.projects.locations.get',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1beta2/{+name}',
+        relative_path='v1beta2/{+name}',
         request_field='',
-        request_type_name=u'MemcacheProjectsLocationsGetRequest',
-        response_type_name=u'Location',
+        request_type_name='MemcacheProjectsLocationsGetRequest',
+        response_type_name='Location',
         supports_download=False,
     )
 
@@ -527,23 +527,23 @@ is the parent resource, without the operations collection id.
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta2/projects/{projectsId}/locations',
-        http_method=u'GET',
-        method_id=u'memcache.projects.locations.list',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[u'filter', u'pageSize', u'pageToken'],
-        relative_path=u'v1beta2/{+name}/locations',
+        flat_path='v1beta2/projects/{projectsId}/locations',
+        http_method='GET',
+        method_id='memcache.projects.locations.list',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['filter', 'pageSize', 'pageToken'],
+        relative_path='v1beta2/{+name}/locations',
         request_field='',
-        request_type_name=u'MemcacheProjectsLocationsListRequest',
-        response_type_name=u'ListLocationsResponse',
+        request_type_name='MemcacheProjectsLocationsListRequest',
+        response_type_name='ListLocationsResponse',
         supports_download=False,
     )
 
   class ProjectsService(base_api.BaseApiService):
     """Service class for the projects resource."""
 
-    _NAME = u'projects'
+    _NAME = 'projects'
 
     def __init__(self, client):
       super(MemcacheV1beta2.ProjectsService, self).__init__(client)

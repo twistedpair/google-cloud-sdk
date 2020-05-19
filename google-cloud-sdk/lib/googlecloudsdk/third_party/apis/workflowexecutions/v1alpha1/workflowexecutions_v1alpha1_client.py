@@ -8,17 +8,17 @@ class WorkflowexecutionsV1alpha1(base_api.BaseApiClient):
   """Generated client library for service workflowexecutions version v1alpha1."""
 
   MESSAGES_MODULE = messages
-  BASE_URL = u'https://workflowexecutions.googleapis.com/'
-  MTLS_BASE_URL = u'https://workflowexecutions.mtls.googleapis.com/'
+  BASE_URL = 'https://workflowexecutions.googleapis.com/'
+  MTLS_BASE_URL = 'https://workflowexecutions.mtls.googleapis.com/'
 
-  _PACKAGE = u'workflowexecutions'
-  _SCOPES = [u'https://www.googleapis.com/auth/cloud-platform']
-  _VERSION = u'v1alpha1'
+  _PACKAGE = 'workflowexecutions'
+  _SCOPES = ['https://www.googleapis.com/auth/cloud-platform']
+  _VERSION = 'v1alpha1'
   _CLIENT_ID = '1042881264118.apps.googleusercontent.com'
   _CLIENT_SECRET = 'x_Tw5K8nnjoRAqULM9PFAC2b'
-  _USER_AGENT = u'google-cloud-sdk'
-  _CLIENT_CLASS_NAME = u'WorkflowexecutionsV1alpha1'
-  _URL_VERSION = u'v1alpha1'
+  _USER_AGENT = 'google-cloud-sdk'
+  _CLIENT_CLASS_NAME = 'WorkflowexecutionsV1alpha1'
+  _URL_VERSION = 'v1alpha1'
   _API_KEY = None
 
   def __init__(self, url='', credentials=None,
@@ -44,7 +44,7 @@ class WorkflowexecutionsV1alpha1(base_api.BaseApiClient):
   class ProjectsLocationsWorkflowsExecutionsService(base_api.BaseApiService):
     """Service class for the projects_locations_workflows_executions resource."""
 
-    _NAME = u'projects_locations_workflows_executions'
+    _NAME = 'projects_locations_workflows_executions'
 
     def __init__(self, client):
       super(WorkflowexecutionsV1alpha1.ProjectsLocationsWorkflowsExecutionsService, self).__init__(client)
@@ -65,16 +65,16 @@ class WorkflowexecutionsV1alpha1(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Cancel.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha1/projects/{projectsId}/locations/{locationsId}/workflows/{workflowsId}/executions/{executionsId}:cancel',
-        http_method=u'POST',
-        method_id=u'workflowexecutions.projects.locations.workflows.executions.cancel',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/workflows/{workflowsId}/executions/{executionsId}:cancel',
+        http_method='POST',
+        method_id='workflowexecutions.projects.locations.workflows.executions.cancel',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1alpha1/{+name}:cancel',
-        request_field=u'cancelExecutionRequest',
-        request_type_name=u'WorkflowexecutionsProjectsLocationsWorkflowsExecutionsCancelRequest',
-        response_type_name=u'Execution',
+        relative_path='v1alpha1/{+name}:cancel',
+        request_field='cancelExecutionRequest',
+        request_type_name='WorkflowexecutionsProjectsLocationsWorkflowsExecutionsCancelRequest',
+        response_type_name='Execution',
         supports_download=False,
     )
 
@@ -92,16 +92,16 @@ class WorkflowexecutionsV1alpha1(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Create.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha1/projects/{projectsId}/locations/{locationsId}/workflows/{workflowsId}/executions',
-        http_method=u'POST',
-        method_id=u'workflowexecutions.projects.locations.workflows.executions.create',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/workflows/{workflowsId}/executions',
+        http_method='POST',
+        method_id='workflowexecutions.projects.locations.workflows.executions.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
         query_params=[],
-        relative_path=u'v1alpha1/{+parent}/executions',
-        request_field=u'execution',
-        request_type_name=u'WorkflowexecutionsProjectsLocationsWorkflowsExecutionsCreateRequest',
-        response_type_name=u'Execution',
+        relative_path='v1alpha1/{+parent}/executions',
+        request_field='execution',
+        request_type_name='WorkflowexecutionsProjectsLocationsWorkflowsExecutionsCreateRequest',
+        response_type_name='Execution',
         supports_download=False,
     )
 
@@ -119,16 +119,16 @@ class WorkflowexecutionsV1alpha1(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha1/projects/{projectsId}/locations/{locationsId}/workflows/{workflowsId}/executions/{executionsId}',
-        http_method=u'GET',
-        method_id=u'workflowexecutions.projects.locations.workflows.executions.get',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/workflows/{workflowsId}/executions/{executionsId}',
+        http_method='GET',
+        method_id='workflowexecutions.projects.locations.workflows.executions.get',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1alpha1/{+name}',
+        relative_path='v1alpha1/{+name}',
         request_field='',
-        request_type_name=u'WorkflowexecutionsProjectsLocationsWorkflowsExecutionsGetRequest',
-        response_type_name=u'Execution',
+        request_type_name='WorkflowexecutionsProjectsLocationsWorkflowsExecutionsGetRequest',
+        response_type_name='Execution',
         supports_download=False,
     )
 
@@ -148,23 +148,23 @@ versions.
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha1/projects/{projectsId}/locations/{locationsId}/workflows/{workflowsId}/executions',
-        http_method=u'GET',
-        method_id=u'workflowexecutions.projects.locations.workflows.executions.list',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'filter', u'pageSize', u'pageToken'],
-        relative_path=u'v1alpha1/{+parent}/executions',
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/workflows/{workflowsId}/executions',
+        http_method='GET',
+        method_id='workflowexecutions.projects.locations.workflows.executions.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'pageSize', 'pageToken'],
+        relative_path='v1alpha1/{+parent}/executions',
         request_field='',
-        request_type_name=u'WorkflowexecutionsProjectsLocationsWorkflowsExecutionsListRequest',
-        response_type_name=u'ListExecutionsResponse',
+        request_type_name='WorkflowexecutionsProjectsLocationsWorkflowsExecutionsListRequest',
+        response_type_name='ListExecutionsResponse',
         supports_download=False,
     )
 
   class ProjectsLocationsWorkflowsService(base_api.BaseApiService):
     """Service class for the projects_locations_workflows resource."""
 
-    _NAME = u'projects_locations_workflows'
+    _NAME = 'projects_locations_workflows'
 
     def __init__(self, client):
       super(WorkflowexecutionsV1alpha1.ProjectsLocationsWorkflowsService, self).__init__(client)
@@ -174,7 +174,7 @@ versions.
   class ProjectsLocationsService(base_api.BaseApiService):
     """Service class for the projects_locations resource."""
 
-    _NAME = u'projects_locations'
+    _NAME = 'projects_locations'
 
     def __init__(self, client):
       super(WorkflowexecutionsV1alpha1.ProjectsLocationsService, self).__init__(client)
@@ -184,7 +184,7 @@ versions.
   class ProjectsService(base_api.BaseApiService):
     """Service class for the projects resource."""
 
-    _NAME = u'projects'
+    _NAME = 'projects'
 
     def __init__(self, client):
       super(WorkflowexecutionsV1alpha1.ProjectsService, self).__init__(client)

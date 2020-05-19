@@ -269,6 +269,10 @@
           "description": "Feature for Anthos Config Management.",
           "$ref": "ConfigManagementFeatureSpec"
         },
+        "cloudauditloggingFeatureSpec": {
+          "description": "Feature for Anthos Cloud Audit Logging.",
+          "$ref": "CloudAuditLoggingFeatureSpec"
+        },
         "featureState": {
           "description": "Output only. State of the resource itself.",
           "$ref": "FeatureState"
@@ -404,6 +408,20 @@
         }
       }
     },
+    "CloudAuditLoggingFeatureSpec": {
+      "id": "CloudAuditLoggingFeatureSpec",
+      "description": "Spec for Audit Logging Whitelisting.",
+      "type": "object",
+      "properties": {
+        "whitelistedServiceAccounts": {
+          "description": "Service account that should be whitelisted to send the audit logs; eg\ncloudauditlogging@gcp-project.iam.gserviceaccount.com. These accounts must\nalready exist, but do not need to have any permissions granted to them.\nThe customer's entitlements will be checked prior to whitelisting (i.e.\nthe customer must be an Anthos customer.)",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
     "FeatureState": {
       "id": "FeatureState",
       "description": "FeatureState describes the status of any feature.",
@@ -497,6 +515,10 @@
         "configmanagementFeatureState": {
           "description": "State for the Config Management Feature.",
           "$ref": "ConfigManagementFeatureState"
+        },
+        "cloudauditloggingFeatureState": {
+          "description": "The state of the Anthos Cloud Audit Logging feature.",
+          "$ref": "CloudAuditLoggingFeatureState"
         },
         "updateTime": {
           "description": "The last update time of this status by the controllers",
@@ -854,6 +876,13 @@
           "description": "Kubernetes Kind",
           "type": "string"
         }
+      }
+    },
+    "CloudAuditLoggingFeatureState": {
+      "id": "CloudAuditLoggingFeatureState",
+      "description": "An empty state for Audit Logging Whitelisting. This is required since\nFeatureStateDetails requires a state.",
+      "type": "object",
+      "properties": {
       }
     },
     "ListLocationsResponse": {

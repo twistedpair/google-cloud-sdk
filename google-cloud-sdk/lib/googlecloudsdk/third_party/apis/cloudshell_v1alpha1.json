@@ -240,6 +240,13 @@
         "accessToken": {
           "description": "The initial access token passed to the environment. If this is present and\nvalid, the environment will be pre-authenticated with gcloud so that the\nuser can run gcloud commands in Cloud Shell without having to log in. This\ncode can be updated later by calling AuthorizeEnvironment.",
           "type": "string"
+        },
+        "publicKeys": {
+          "description": "Public keys that should be added to the environment before it is started.",
+          "type": "array",
+          "items": {
+            "$ref": "PublicKey"
+          }
         }
       }
     },

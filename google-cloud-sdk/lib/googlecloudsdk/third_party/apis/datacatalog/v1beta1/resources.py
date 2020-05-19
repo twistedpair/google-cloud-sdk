@@ -42,14 +42,14 @@ class Collections(enum.Enum):
       'projects',
       'projects/{projectsId}',
       {},
-      [u'projectsId'],
+      ['projectsId'],
       True
   )
   PROJECTS_LOCATIONS = (
       'projects.locations',
       'projects/{projectsId}/locations/{locationsId}',
       {},
-      [u'projectsId', u'locationsId'],
+      ['projectsId', 'locationsId'],
       True
   )
   PROJECTS_LOCATIONS_ENTRYGROUPS = (
@@ -60,7 +60,7 @@ class Collections(enum.Enum):
               'projects/{projectsId}/locations/{locationsId}/entryGroups/'
               '{entryGroupsId}',
       },
-      [u'name'],
+      ['name'],
       True
   )
   PROJECTS_LOCATIONS_ENTRYGROUPS_ENTRIES = (
@@ -71,7 +71,7 @@ class Collections(enum.Enum):
               'projects/{projectsId}/locations/{locationsId}/entryGroups/'
               '{entryGroupsId}/entries/{entriesId}',
       },
-      [u'name'],
+      ['name'],
       True
   )
   PROJECTS_LOCATIONS_ENTRYGROUPS_ENTRIES_TAGS = (
@@ -79,7 +79,7 @@ class Collections(enum.Enum):
       'projects/{projectsId}/locations/{locationsId}/entryGroups/'
       '{entryGroupsId}/entries/{entriesId}/tags/{tagsId}',
       {},
-      [u'projectsId', u'locationsId', u'entryGroupsId', u'entriesId', u'tagsId'],
+      ['projectsId', 'locationsId', 'entryGroupsId', 'entriesId', 'tagsId'],
       True
   )
   PROJECTS_LOCATIONS_TAGTEMPLATES = (
@@ -90,7 +90,7 @@ class Collections(enum.Enum):
               'projects/{projectsId}/locations/{locationsId}/tagTemplates/'
               '{tagTemplatesId}',
       },
-      [u'name'],
+      ['name'],
       True
   )
   PROJECTS_LOCATIONS_TAGTEMPLATES_FIELDS = (
@@ -98,7 +98,7 @@ class Collections(enum.Enum):
       'projects/{projectsId}/locations/{locationsId}/tagTemplates/'
       '{tagTemplatesId}/fields/{fieldsId}',
       {},
-      [u'projectsId', u'locationsId', u'tagTemplatesId', u'fieldsId'],
+      ['projectsId', 'locationsId', 'tagTemplatesId', 'fieldsId'],
       True
   )
   PROJECTS_LOCATIONS_TAXONOMIES = (
@@ -109,7 +109,7 @@ class Collections(enum.Enum):
               'projects/{projectsId}/locations/{locationsId}/taxonomies/'
               '{taxonomiesId}',
       },
-      [u'name'],
+      ['name'],
       True
   )
   PROJECTS_LOCATIONS_TAXONOMIES_POLICYTAGS = (
@@ -120,7 +120,7 @@ class Collections(enum.Enum):
               'projects/{projectsId}/locations/{locationsId}/taxonomies/'
               '{taxonomiesId}/policyTags/{policyTagsId}',
       },
-      [u'name'],
+      ['name'],
       True
   )
 

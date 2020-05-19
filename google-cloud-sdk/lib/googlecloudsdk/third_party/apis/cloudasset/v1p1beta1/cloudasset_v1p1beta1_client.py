@@ -8,17 +8,17 @@ class CloudassetV1p1beta1(base_api.BaseApiClient):
   """Generated client library for service cloudasset version v1p1beta1."""
 
   MESSAGES_MODULE = messages
-  BASE_URL = u'https://cloudasset.googleapis.com/'
-  MTLS_BASE_URL = u'https://cloudasset.mtls.googleapis.com/'
+  BASE_URL = 'https://cloudasset.googleapis.com/'
+  MTLS_BASE_URL = 'https://cloudasset.mtls.googleapis.com/'
 
-  _PACKAGE = u'cloudasset'
-  _SCOPES = [u'https://www.googleapis.com/auth/cloud-platform']
-  _VERSION = u'v1p1beta1'
+  _PACKAGE = 'cloudasset'
+  _SCOPES = ['https://www.googleapis.com/auth/cloud-platform']
+  _VERSION = 'v1p1beta1'
   _CLIENT_ID = '1042881264118.apps.googleusercontent.com'
   _CLIENT_SECRET = 'x_Tw5K8nnjoRAqULM9PFAC2b'
-  _USER_AGENT = u'google-cloud-sdk'
-  _CLIENT_CLASS_NAME = u'CloudassetV1p1beta1'
-  _URL_VERSION = u'v1p1beta1'
+  _USER_AGENT = 'google-cloud-sdk'
+  _CLIENT_CLASS_NAME = 'CloudassetV1p1beta1'
+  _URL_VERSION = 'v1p1beta1'
   _API_KEY = None
 
   def __init__(self, url='', credentials=None,
@@ -42,7 +42,7 @@ class CloudassetV1p1beta1(base_api.BaseApiClient):
   class IamPoliciesService(base_api.BaseApiService):
     """Service class for the iamPolicies resource."""
 
-    _NAME = u'iamPolicies'
+    _NAME = 'iamPolicies'
 
     def __init__(self, client):
       super(CloudassetV1p1beta1.IamPoliciesService, self).__init__(client)
@@ -63,15 +63,15 @@ class CloudassetV1p1beta1(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Search.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'cloudasset.iamPolicies.search',
+        http_method='GET',
+        method_id='cloudasset.iamPolicies.search',
         ordered_params=[],
         path_params=[],
-        query_params=[u'pageSize', u'pageToken', u'query', u'scope'],
-        relative_path=u'v1p1beta1/iamPolicies:search',
+        query_params=['pageSize', 'pageToken', 'query', 'scope'],
+        relative_path='v1p1beta1/iamPolicies:search',
         request_field='',
-        request_type_name=u'CloudassetIamPoliciesSearchRequest',
-        response_type_name=u'SearchIamPoliciesResponse',
+        request_type_name='CloudassetIamPoliciesSearchRequest',
+        response_type_name='SearchIamPoliciesResponse',
         supports_download=False,
     )
 
@@ -94,23 +94,23 @@ requested scope, otherwise it will be rejected.
           config, request, global_params=global_params)
 
     SearchAll.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1p1beta1/{v1p1beta1Id}/{v1p1beta1Id1}/iamPolicies:searchAll',
-        http_method=u'GET',
-        method_id=u'cloudasset.iamPolicies.searchAll',
-        ordered_params=[u'scope'],
-        path_params=[u'scope'],
-        query_params=[u'pageSize', u'pageToken', u'query'],
-        relative_path=u'v1p1beta1/{+scope}/iamPolicies:searchAll',
+        flat_path='v1p1beta1/{v1p1beta1Id}/{v1p1beta1Id1}/iamPolicies:searchAll',
+        http_method='GET',
+        method_id='cloudasset.iamPolicies.searchAll',
+        ordered_params=['scope'],
+        path_params=['scope'],
+        query_params=['pageSize', 'pageToken', 'query'],
+        relative_path='v1p1beta1/{+scope}/iamPolicies:searchAll',
         request_field='',
-        request_type_name=u'CloudassetIamPoliciesSearchAllRequest',
-        response_type_name=u'SearchAllIamPoliciesResponse',
+        request_type_name='CloudassetIamPoliciesSearchAllRequest',
+        response_type_name='SearchAllIamPoliciesResponse',
         supports_download=False,
     )
 
   class ResourcesService(base_api.BaseApiService):
     """Service class for the resources resource."""
 
-    _NAME = u'resources'
+    _NAME = 'resources'
 
     def __init__(self, client):
       super(CloudassetV1p1beta1.ResourcesService, self).__init__(client)
@@ -131,15 +131,15 @@ requested scope, otherwise it will be rejected.
           config, request, global_params=global_params)
 
     Search.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'cloudasset.resources.search',
+        http_method='GET',
+        method_id='cloudasset.resources.search',
         ordered_params=[],
         path_params=[],
-        query_params=[u'assetTypes', u'orderBy', u'pageSize', u'pageToken', u'query', u'scope'],
-        relative_path=u'v1p1beta1/resources:search',
+        query_params=['assetTypes', 'orderBy', 'pageSize', 'pageToken', 'query', 'scope'],
+        relative_path='v1p1beta1/resources:search',
         request_field='',
-        request_type_name=u'CloudassetResourcesSearchRequest',
-        response_type_name=u'SearchResourcesResponse',
+        request_type_name='CloudassetResourcesSearchRequest',
+        response_type_name='SearchResourcesResponse',
         supports_download=False,
     )
 
@@ -162,15 +162,15 @@ scope, otherwise it will be rejected.
           config, request, global_params=global_params)
 
     SearchAll.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1p1beta1/{v1p1beta1Id}/{v1p1beta1Id1}/resources:searchAll',
-        http_method=u'GET',
-        method_id=u'cloudasset.resources.searchAll',
-        ordered_params=[u'scope'],
-        path_params=[u'scope'],
-        query_params=[u'assetTypes', u'orderBy', u'pageSize', u'pageToken', u'query'],
-        relative_path=u'v1p1beta1/{+scope}/resources:searchAll',
+        flat_path='v1p1beta1/{v1p1beta1Id}/{v1p1beta1Id1}/resources:searchAll',
+        http_method='GET',
+        method_id='cloudasset.resources.searchAll',
+        ordered_params=['scope'],
+        path_params=['scope'],
+        query_params=['assetTypes', 'orderBy', 'pageSize', 'pageToken', 'query'],
+        relative_path='v1p1beta1/{+scope}/resources:searchAll',
         request_field='',
-        request_type_name=u'CloudassetResourcesSearchAllRequest',
-        response_type_name=u'SearchAllResourcesResponse',
+        request_type_name='CloudassetResourcesSearchAllRequest',
+        response_type_name='SearchAllResourcesResponse',
         supports_download=False,
     )

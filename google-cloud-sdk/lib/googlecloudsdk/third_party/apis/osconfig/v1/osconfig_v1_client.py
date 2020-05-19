@@ -8,17 +8,17 @@ class OsconfigV1(base_api.BaseApiClient):
   """Generated client library for service osconfig version v1."""
 
   MESSAGES_MODULE = messages
-  BASE_URL = u'https://osconfig.googleapis.com/'
-  MTLS_BASE_URL = u'https://osconfig.mtls.googleapis.com/'
+  BASE_URL = 'https://osconfig.googleapis.com/'
+  MTLS_BASE_URL = 'https://osconfig.mtls.googleapis.com/'
 
-  _PACKAGE = u'osconfig'
-  _SCOPES = [u'https://www.googleapis.com/auth/cloud-platform']
-  _VERSION = u'v1'
+  _PACKAGE = 'osconfig'
+  _SCOPES = ['https://www.googleapis.com/auth/cloud-platform']
+  _VERSION = 'v1'
   _CLIENT_ID = '1042881264118.apps.googleusercontent.com'
   _CLIENT_SECRET = 'x_Tw5K8nnjoRAqULM9PFAC2b'
-  _USER_AGENT = u'google-cloud-sdk'
-  _CLIENT_CLASS_NAME = u'OsconfigV1'
-  _URL_VERSION = u'v1'
+  _USER_AGENT = 'google-cloud-sdk'
+  _CLIENT_CLASS_NAME = 'OsconfigV1'
+  _URL_VERSION = 'v1'
   _API_KEY = None
 
   def __init__(self, url='', credentials=None,
@@ -44,7 +44,7 @@ class OsconfigV1(base_api.BaseApiClient):
   class ProjectsPatchDeploymentsService(base_api.BaseApiService):
     """Service class for the projects_patchDeployments resource."""
 
-    _NAME = u'projects_patchDeployments'
+    _NAME = 'projects_patchDeployments'
 
     def __init__(self, client):
       super(OsconfigV1.ProjectsPatchDeploymentsService, self).__init__(client)
@@ -65,16 +65,16 @@ class OsconfigV1(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Create.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/patchDeployments',
-        http_method=u'POST',
-        method_id=u'osconfig.projects.patchDeployments.create',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'patchDeploymentId'],
-        relative_path=u'v1/{+parent}/patchDeployments',
-        request_field=u'patchDeployment',
-        request_type_name=u'OsconfigProjectsPatchDeploymentsCreateRequest',
-        response_type_name=u'PatchDeployment',
+        flat_path='v1/projects/{projectsId}/patchDeployments',
+        http_method='POST',
+        method_id='osconfig.projects.patchDeployments.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['patchDeploymentId'],
+        relative_path='v1/{+parent}/patchDeployments',
+        request_field='patchDeployment',
+        request_type_name='OsconfigProjectsPatchDeploymentsCreateRequest',
+        response_type_name='PatchDeployment',
         supports_download=False,
     )
 
@@ -92,16 +92,16 @@ class OsconfigV1(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Delete.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/patchDeployments/{patchDeploymentsId}',
-        http_method=u'DELETE',
-        method_id=u'osconfig.projects.patchDeployments.delete',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1/projects/{projectsId}/patchDeployments/{patchDeploymentsId}',
+        http_method='DELETE',
+        method_id='osconfig.projects.patchDeployments.delete',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1/{+name}',
+        relative_path='v1/{+name}',
         request_field='',
-        request_type_name=u'OsconfigProjectsPatchDeploymentsDeleteRequest',
-        response_type_name=u'Empty',
+        request_type_name='OsconfigProjectsPatchDeploymentsDeleteRequest',
+        response_type_name='Empty',
         supports_download=False,
     )
 
@@ -119,16 +119,16 @@ class OsconfigV1(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/patchDeployments/{patchDeploymentsId}',
-        http_method=u'GET',
-        method_id=u'osconfig.projects.patchDeployments.get',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1/projects/{projectsId}/patchDeployments/{patchDeploymentsId}',
+        http_method='GET',
+        method_id='osconfig.projects.patchDeployments.get',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1/{+name}',
+        relative_path='v1/{+name}',
         request_field='',
-        request_type_name=u'OsconfigProjectsPatchDeploymentsGetRequest',
-        response_type_name=u'PatchDeployment',
+        request_type_name='OsconfigProjectsPatchDeploymentsGetRequest',
+        response_type_name='PatchDeployment',
         supports_download=False,
     )
 
@@ -146,23 +146,23 @@ class OsconfigV1(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/patchDeployments',
-        http_method=u'GET',
-        method_id=u'osconfig.projects.patchDeployments.list',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'pageSize', u'pageToken'],
-        relative_path=u'v1/{+parent}/patchDeployments',
+        flat_path='v1/projects/{projectsId}/patchDeployments',
+        http_method='GET',
+        method_id='osconfig.projects.patchDeployments.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v1/{+parent}/patchDeployments',
         request_field='',
-        request_type_name=u'OsconfigProjectsPatchDeploymentsListRequest',
-        response_type_name=u'ListPatchDeploymentsResponse',
+        request_type_name='OsconfigProjectsPatchDeploymentsListRequest',
+        response_type_name='ListPatchDeploymentsResponse',
         supports_download=False,
     )
 
   class ProjectsPatchJobsInstanceDetailsService(base_api.BaseApiService):
     """Service class for the projects_patchJobs_instanceDetails resource."""
 
-    _NAME = u'projects_patchJobs_instanceDetails'
+    _NAME = 'projects_patchJobs_instanceDetails'
 
     def __init__(self, client):
       super(OsconfigV1.ProjectsPatchJobsInstanceDetailsService, self).__init__(client)
@@ -183,23 +183,23 @@ class OsconfigV1(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/patchJobs/{patchJobsId}/instanceDetails',
-        http_method=u'GET',
-        method_id=u'osconfig.projects.patchJobs.instanceDetails.list',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'filter', u'pageSize', u'pageToken'],
-        relative_path=u'v1/{+parent}/instanceDetails',
+        flat_path='v1/projects/{projectsId}/patchJobs/{patchJobsId}/instanceDetails',
+        http_method='GET',
+        method_id='osconfig.projects.patchJobs.instanceDetails.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'pageSize', 'pageToken'],
+        relative_path='v1/{+parent}/instanceDetails',
         request_field='',
-        request_type_name=u'OsconfigProjectsPatchJobsInstanceDetailsListRequest',
-        response_type_name=u'ListPatchJobInstanceDetailsResponse',
+        request_type_name='OsconfigProjectsPatchJobsInstanceDetailsListRequest',
+        response_type_name='ListPatchJobInstanceDetailsResponse',
         supports_download=False,
     )
 
   class ProjectsPatchJobsService(base_api.BaseApiService):
     """Service class for the projects_patchJobs resource."""
 
-    _NAME = u'projects_patchJobs'
+    _NAME = 'projects_patchJobs'
 
     def __init__(self, client):
       super(OsconfigV1.ProjectsPatchJobsService, self).__init__(client)
@@ -221,16 +221,16 @@ cannot be restarted.
           config, request, global_params=global_params)
 
     Cancel.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/patchJobs/{patchJobsId}:cancel',
-        http_method=u'POST',
-        method_id=u'osconfig.projects.patchJobs.cancel',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1/projects/{projectsId}/patchJobs/{patchJobsId}:cancel',
+        http_method='POST',
+        method_id='osconfig.projects.patchJobs.cancel',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1/{+name}:cancel',
-        request_field=u'cancelPatchJobRequest',
-        request_type_name=u'OsconfigProjectsPatchJobsCancelRequest',
-        response_type_name=u'PatchJob',
+        relative_path='v1/{+name}:cancel',
+        request_field='cancelPatchJobRequest',
+        request_type_name='OsconfigProjectsPatchJobsCancelRequest',
+        response_type_name='PatchJob',
         supports_download=False,
     )
 
@@ -248,16 +248,16 @@ cannot be restarted.
           config, request, global_params=global_params)
 
     Execute.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/patchJobs:execute',
-        http_method=u'POST',
-        method_id=u'osconfig.projects.patchJobs.execute',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
+        flat_path='v1/projects/{projectsId}/patchJobs:execute',
+        http_method='POST',
+        method_id='osconfig.projects.patchJobs.execute',
+        ordered_params=['parent'],
+        path_params=['parent'],
         query_params=[],
-        relative_path=u'v1/{+parent}/patchJobs:execute',
-        request_field=u'executePatchJobRequest',
-        request_type_name=u'OsconfigProjectsPatchJobsExecuteRequest',
-        response_type_name=u'PatchJob',
+        relative_path='v1/{+parent}/patchJobs:execute',
+        request_field='executePatchJobRequest',
+        request_type_name='OsconfigProjectsPatchJobsExecuteRequest',
+        response_type_name='PatchJob',
         supports_download=False,
     )
 
@@ -276,16 +276,16 @@ ongoing patch job or review the details of completed jobs.
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/patchJobs/{patchJobsId}',
-        http_method=u'GET',
-        method_id=u'osconfig.projects.patchJobs.get',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1/projects/{projectsId}/patchJobs/{patchJobsId}',
+        http_method='GET',
+        method_id='osconfig.projects.patchJobs.get',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1/{+name}',
+        relative_path='v1/{+name}',
         request_field='',
-        request_type_name=u'OsconfigProjectsPatchJobsGetRequest',
-        response_type_name=u'PatchJob',
+        request_type_name='OsconfigProjectsPatchJobsGetRequest',
+        response_type_name='PatchJob',
         supports_download=False,
     )
 
@@ -303,23 +303,23 @@ ongoing patch job or review the details of completed jobs.
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/patchJobs',
-        http_method=u'GET',
-        method_id=u'osconfig.projects.patchJobs.list',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'filter', u'pageSize', u'pageToken'],
-        relative_path=u'v1/{+parent}/patchJobs',
+        flat_path='v1/projects/{projectsId}/patchJobs',
+        http_method='GET',
+        method_id='osconfig.projects.patchJobs.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'pageSize', 'pageToken'],
+        relative_path='v1/{+parent}/patchJobs',
         request_field='',
-        request_type_name=u'OsconfigProjectsPatchJobsListRequest',
-        response_type_name=u'ListPatchJobsResponse',
+        request_type_name='OsconfigProjectsPatchJobsListRequest',
+        response_type_name='ListPatchJobsResponse',
         supports_download=False,
     )
 
   class ProjectsService(base_api.BaseApiService):
     """Service class for the projects resource."""
 
-    _NAME = u'projects'
+    _NAME = 'projects'
 
     def __init__(self, client):
       super(OsconfigV1.ProjectsService, self).__init__(client)

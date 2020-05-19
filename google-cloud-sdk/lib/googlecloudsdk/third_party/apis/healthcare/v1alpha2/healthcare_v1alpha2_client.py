@@ -8,17 +8,17 @@ class HealthcareV1alpha2(base_api.BaseApiClient):
   """Generated client library for service healthcare version v1alpha2."""
 
   MESSAGES_MODULE = messages
-  BASE_URL = u'https://healthcare.googleapis.com/'
-  MTLS_BASE_URL = u'https://healthcare.mtls.googleapis.com/'
+  BASE_URL = 'https://healthcare.googleapis.com/'
+  MTLS_BASE_URL = 'https://healthcare.mtls.googleapis.com/'
 
-  _PACKAGE = u'healthcare'
-  _SCOPES = [u'https://www.googleapis.com/auth/cloud-platform']
-  _VERSION = u'v1alpha2'
+  _PACKAGE = 'healthcare'
+  _SCOPES = ['https://www.googleapis.com/auth/cloud-platform']
+  _VERSION = 'v1alpha2'
   _CLIENT_ID = '1042881264118.apps.googleusercontent.com'
   _CLIENT_SECRET = 'x_Tw5K8nnjoRAqULM9PFAC2b'
-  _USER_AGENT = u'google-cloud-sdk'
-  _CLIENT_CLASS_NAME = u'HealthcareV1alpha2'
-  _URL_VERSION = u'v1alpha2'
+  _USER_AGENT = 'google-cloud-sdk'
+  _CLIENT_CLASS_NAME = 'HealthcareV1alpha2'
+  _URL_VERSION = 'v1alpha2'
   _API_KEY = None
 
   def __init__(self, url='', credentials=None,
@@ -55,7 +55,7 @@ class HealthcareV1alpha2(base_api.BaseApiClient):
   class ProjectsLocationsDatasetsAnnotationStoresService(base_api.BaseApiService):
     """Service class for the projects_locations_datasets_annotationStores resource."""
 
-    _NAME = u'projects_locations_datasets_annotationStores'
+    _NAME = 'projects_locations_datasets_annotationStores'
 
     def __init__(self, client):
       super(HealthcareV1alpha2.ProjectsLocationsDatasetsAnnotationStoresService, self).__init__(client)
@@ -76,16 +76,16 @@ class HealthcareV1alpha2(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Create.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha2/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/annotationStores',
-        http_method=u'POST',
-        method_id=u'healthcare.projects.locations.datasets.annotationStores.create',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'annotationStoreId'],
-        relative_path=u'v1alpha2/{+parent}/annotationStores',
-        request_field=u'annotationStore',
-        request_type_name=u'HealthcareProjectsLocationsDatasetsAnnotationStoresCreateRequest',
-        response_type_name=u'AnnotationStore',
+        flat_path='v1alpha2/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/annotationStores',
+        http_method='POST',
+        method_id='healthcare.projects.locations.datasets.annotationStores.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['annotationStoreId'],
+        relative_path='v1alpha2/{+parent}/annotationStores',
+        request_field='annotationStore',
+        request_type_name='HealthcareProjectsLocationsDatasetsAnnotationStoresCreateRequest',
+        response_type_name='AnnotationStore',
         supports_download=False,
     )
 
@@ -104,16 +104,16 @@ contained within it.
           config, request, global_params=global_params)
 
     Delete.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha2/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/annotationStores/{annotationStoresId}',
-        http_method=u'DELETE',
-        method_id=u'healthcare.projects.locations.datasets.annotationStores.delete',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1alpha2/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/annotationStores/{annotationStoresId}',
+        http_method='DELETE',
+        method_id='healthcare.projects.locations.datasets.annotationStores.delete',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1alpha2/{+name}',
+        relative_path='v1alpha2/{+name}',
         request_field='',
-        request_type_name=u'HealthcareProjectsLocationsDatasetsAnnotationStoresDeleteRequest',
-        response_type_name=u'Empty',
+        request_type_name='HealthcareProjectsLocationsDatasetsAnnotationStoresDeleteRequest',
+        response_type_name='Empty',
         supports_download=False,
     )
 
@@ -138,16 +138,16 @@ ImportAnnotations for a sample log entry).
           config, request, global_params=global_params)
 
     Evaluate.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha2/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/annotationStores/{annotationStoresId}:evaluate',
-        http_method=u'POST',
-        method_id=u'healthcare.projects.locations.datasets.annotationStores.evaluate',
-        ordered_params=[u'evalStore'],
-        path_params=[u'evalStore'],
+        flat_path='v1alpha2/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/annotationStores/{annotationStoresId}:evaluate',
+        http_method='POST',
+        method_id='healthcare.projects.locations.datasets.annotationStores.evaluate',
+        ordered_params=['evalStore'],
+        path_params=['evalStore'],
         query_params=[],
-        relative_path=u'v1alpha2/{+evalStore}:evaluate',
-        request_field=u'evaluateAnnotationStoreRequest',
-        request_type_name=u'HealthcareProjectsLocationsDatasetsAnnotationStoresEvaluateRequest',
-        response_type_name=u'Operation',
+        relative_path='v1alpha2/{+evalStore}:evaluate',
+        request_field='evaluateAnnotationStoreRequest',
+        request_type_name='HealthcareProjectsLocationsDatasetsAnnotationStoresEvaluateRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -179,16 +179,16 @@ ImportAnnotations for a sample log entry).
           config, request, global_params=global_params)
 
     Export.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha2/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/annotationStores/{annotationStoresId}:export',
-        http_method=u'POST',
-        method_id=u'healthcare.projects.locations.datasets.annotationStores.export',
-        ordered_params=[u'annotationStore'],
-        path_params=[u'annotationStore'],
+        flat_path='v1alpha2/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/annotationStores/{annotationStoresId}:export',
+        http_method='POST',
+        method_id='healthcare.projects.locations.datasets.annotationStores.export',
+        ordered_params=['annotationStore'],
+        path_params=['annotationStore'],
         query_params=[],
-        relative_path=u'v1alpha2/{+annotationStore}:export',
-        request_field=u'exportAnnotationsRequest',
-        request_type_name=u'HealthcareProjectsLocationsDatasetsAnnotationStoresExportRequest',
-        response_type_name=u'Operation',
+        relative_path='v1alpha2/{+annotationStore}:export',
+        request_field='exportAnnotationsRequest',
+        request_type_name='HealthcareProjectsLocationsDatasetsAnnotationStoresExportRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -207,16 +207,16 @@ exist.
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha2/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/annotationStores/{annotationStoresId}',
-        http_method=u'GET',
-        method_id=u'healthcare.projects.locations.datasets.annotationStores.get',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1alpha2/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/annotationStores/{annotationStoresId}',
+        http_method='GET',
+        method_id='healthcare.projects.locations.datasets.annotationStores.get',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1alpha2/{+name}',
+        relative_path='v1alpha2/{+name}',
         request_field='',
-        request_type_name=u'HealthcareProjectsLocationsDatasetsAnnotationStoresGetRequest',
-        response_type_name=u'AnnotationStore',
+        request_type_name='HealthcareProjectsLocationsDatasetsAnnotationStoresGetRequest',
+        response_type_name='AnnotationStore',
         supports_download=False,
     )
 
@@ -236,16 +236,16 @@ set.
           config, request, global_params=global_params)
 
     GetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha2/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/annotationStores/{annotationStoresId}:getIamPolicy',
-        http_method=u'GET',
-        method_id=u'healthcare.projects.locations.datasets.annotationStores.getIamPolicy',
-        ordered_params=[u'resource'],
-        path_params=[u'resource'],
-        query_params=[u'options_requestedPolicyVersion'],
-        relative_path=u'v1alpha2/{+resource}:getIamPolicy',
+        flat_path='v1alpha2/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/annotationStores/{annotationStoresId}:getIamPolicy',
+        http_method='GET',
+        method_id='healthcare.projects.locations.datasets.annotationStores.getIamPolicy',
+        ordered_params=['resource'],
+        path_params=['resource'],
+        query_params=['options_requestedPolicyVersion'],
+        relative_path='v1alpha2/{+resource}:getIamPolicy',
         request_field='',
-        request_type_name=u'HealthcareProjectsLocationsDatasetsAnnotationStoresGetIamPolicyRequest',
-        response_type_name=u'Policy',
+        request_type_name='HealthcareProjectsLocationsDatasetsAnnotationStoresGetIamPolicyRequest',
+        response_type_name='Policy',
         supports_download=False,
     )
 
@@ -311,16 +311,16 @@ timestamp:  "TIMESTAMP"
           config, request, global_params=global_params)
 
     Import.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha2/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/annotationStores/{annotationStoresId}:import',
-        http_method=u'POST',
-        method_id=u'healthcare.projects.locations.datasets.annotationStores.import',
-        ordered_params=[u'annotationStore'],
-        path_params=[u'annotationStore'],
+        flat_path='v1alpha2/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/annotationStores/{annotationStoresId}:import',
+        http_method='POST',
+        method_id='healthcare.projects.locations.datasets.annotationStores.import',
+        ordered_params=['annotationStore'],
+        path_params=['annotationStore'],
         query_params=[],
-        relative_path=u'v1alpha2/{+annotationStore}:import',
-        request_field=u'importAnnotationsRequest',
-        request_type_name=u'HealthcareProjectsLocationsDatasetsAnnotationStoresImportRequest',
-        response_type_name=u'Operation',
+        relative_path='v1alpha2/{+annotationStore}:import',
+        request_field='importAnnotationsRequest',
+        request_type_name='HealthcareProjectsLocationsDatasetsAnnotationStoresImportRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -338,16 +338,16 @@ timestamp:  "TIMESTAMP"
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha2/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/annotationStores',
-        http_method=u'GET',
-        method_id=u'healthcare.projects.locations.datasets.annotationStores.list',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'filter', u'pageSize', u'pageToken'],
-        relative_path=u'v1alpha2/{+parent}/annotationStores',
+        flat_path='v1alpha2/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/annotationStores',
+        http_method='GET',
+        method_id='healthcare.projects.locations.datasets.annotationStores.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'pageSize', 'pageToken'],
+        relative_path='v1alpha2/{+parent}/annotationStores',
         request_field='',
-        request_type_name=u'HealthcareProjectsLocationsDatasetsAnnotationStoresListRequest',
-        response_type_name=u'ListAnnotationStoresResponse',
+        request_type_name='HealthcareProjectsLocationsDatasetsAnnotationStoresListRequest',
+        response_type_name='ListAnnotationStoresResponse',
         supports_download=False,
     )
 
@@ -365,16 +365,16 @@ timestamp:  "TIMESTAMP"
           config, request, global_params=global_params)
 
     Patch.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha2/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/annotationStores/{annotationStoresId}',
-        http_method=u'PATCH',
-        method_id=u'healthcare.projects.locations.datasets.annotationStores.patch',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[u'updateMask'],
-        relative_path=u'v1alpha2/{+name}',
-        request_field=u'annotationStore',
-        request_type_name=u'HealthcareProjectsLocationsDatasetsAnnotationStoresPatchRequest',
-        response_type_name=u'AnnotationStore',
+        flat_path='v1alpha2/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/annotationStores/{annotationStoresId}',
+        http_method='PATCH',
+        method_id='healthcare.projects.locations.datasets.annotationStores.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v1alpha2/{+name}',
+        request_field='annotationStore',
+        request_type_name='HealthcareProjectsLocationsDatasetsAnnotationStoresPatchRequest',
+        response_type_name='AnnotationStore',
         supports_download=False,
     )
 
@@ -395,16 +395,16 @@ Can return `NOT_FOUND`, `INVALID_ARGUMENT`, and `PERMISSION_DENIED` errors.
           config, request, global_params=global_params)
 
     SetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha2/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/annotationStores/{annotationStoresId}:setIamPolicy',
-        http_method=u'POST',
-        method_id=u'healthcare.projects.locations.datasets.annotationStores.setIamPolicy',
-        ordered_params=[u'resource'],
-        path_params=[u'resource'],
+        flat_path='v1alpha2/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/annotationStores/{annotationStoresId}:setIamPolicy',
+        http_method='POST',
+        method_id='healthcare.projects.locations.datasets.annotationStores.setIamPolicy',
+        ordered_params=['resource'],
+        path_params=['resource'],
         query_params=[],
-        relative_path=u'v1alpha2/{+resource}:setIamPolicy',
-        request_field=u'setIamPolicyRequest',
-        request_type_name=u'HealthcareProjectsLocationsDatasetsAnnotationStoresSetIamPolicyRequest',
-        response_type_name=u'Policy',
+        relative_path='v1alpha2/{+resource}:setIamPolicy',
+        request_field='setIamPolicyRequest',
+        request_type_name='HealthcareProjectsLocationsDatasetsAnnotationStoresSetIamPolicyRequest',
+        response_type_name='Policy',
         supports_download=False,
     )
 
@@ -428,23 +428,23 @@ may "fail open" without warning.
           config, request, global_params=global_params)
 
     TestIamPermissions.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha2/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/annotationStores/{annotationStoresId}:testIamPermissions',
-        http_method=u'POST',
-        method_id=u'healthcare.projects.locations.datasets.annotationStores.testIamPermissions',
-        ordered_params=[u'resource'],
-        path_params=[u'resource'],
+        flat_path='v1alpha2/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/annotationStores/{annotationStoresId}:testIamPermissions',
+        http_method='POST',
+        method_id='healthcare.projects.locations.datasets.annotationStores.testIamPermissions',
+        ordered_params=['resource'],
+        path_params=['resource'],
         query_params=[],
-        relative_path=u'v1alpha2/{+resource}:testIamPermissions',
-        request_field=u'testIamPermissionsRequest',
-        request_type_name=u'HealthcareProjectsLocationsDatasetsAnnotationStoresTestIamPermissionsRequest',
-        response_type_name=u'TestIamPermissionsResponse',
+        relative_path='v1alpha2/{+resource}:testIamPermissions',
+        request_field='testIamPermissionsRequest',
+        request_type_name='HealthcareProjectsLocationsDatasetsAnnotationStoresTestIamPermissionsRequest',
+        response_type_name='TestIamPermissionsResponse',
         supports_download=False,
     )
 
   class ProjectsLocationsDatasetsConsentStoresAttributeDefinitionsService(base_api.BaseApiService):
     """Service class for the projects_locations_datasets_consentStores_attributeDefinitions resource."""
 
-    _NAME = u'projects_locations_datasets_consentStores_attributeDefinitions'
+    _NAME = 'projects_locations_datasets_consentStores_attributeDefinitions'
 
     def __init__(self, client):
       super(HealthcareV1alpha2.ProjectsLocationsDatasetsConsentStoresAttributeDefinitionsService, self).__init__(client)
@@ -466,16 +466,16 @@ parent Consent store.
           config, request, global_params=global_params)
 
     Create.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha2/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/consentStores/{consentStoresId}/attributeDefinitions',
-        http_method=u'POST',
-        method_id=u'healthcare.projects.locations.datasets.consentStores.attributeDefinitions.create',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'attributeDefinitionId'],
-        relative_path=u'v1alpha2/{+parent}/attributeDefinitions',
-        request_field=u'attributeDefinition',
-        request_type_name=u'HealthcareProjectsLocationsDatasetsConsentStoresAttributeDefinitionsCreateRequest',
-        response_type_name=u'AttributeDefinition',
+        flat_path='v1alpha2/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/consentStores/{consentStoresId}/attributeDefinitions',
+        http_method='POST',
+        method_id='healthcare.projects.locations.datasets.consentStores.attributeDefinitions.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['attributeDefinitionId'],
+        relative_path='v1alpha2/{+parent}/attributeDefinitions',
+        request_field='attributeDefinition',
+        request_type_name='HealthcareProjectsLocationsDatasetsConsentStoresAttributeDefinitionsCreateRequest',
+        response_type_name='AttributeDefinition',
         supports_download=False,
     )
 
@@ -494,16 +494,16 @@ is referenced in any Consent or User data mapping.
           config, request, global_params=global_params)
 
     Delete.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha2/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/consentStores/{consentStoresId}/attributeDefinitions/{attributeDefinitionsId}',
-        http_method=u'DELETE',
-        method_id=u'healthcare.projects.locations.datasets.consentStores.attributeDefinitions.delete',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1alpha2/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/consentStores/{consentStoresId}/attributeDefinitions/{attributeDefinitionsId}',
+        http_method='DELETE',
+        method_id='healthcare.projects.locations.datasets.consentStores.attributeDefinitions.delete',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1alpha2/{+name}',
+        relative_path='v1alpha2/{+name}',
         request_field='',
-        request_type_name=u'HealthcareProjectsLocationsDatasetsConsentStoresAttributeDefinitionsDeleteRequest',
-        response_type_name=u'Empty',
+        request_type_name='HealthcareProjectsLocationsDatasetsConsentStoresAttributeDefinitionsDeleteRequest',
+        response_type_name='Empty',
         supports_download=False,
     )
 
@@ -521,16 +521,16 @@ is referenced in any Consent or User data mapping.
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha2/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/consentStores/{consentStoresId}/attributeDefinitions/{attributeDefinitionsId}',
-        http_method=u'GET',
-        method_id=u'healthcare.projects.locations.datasets.consentStores.attributeDefinitions.get',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1alpha2/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/consentStores/{consentStoresId}/attributeDefinitions/{attributeDefinitionsId}',
+        http_method='GET',
+        method_id='healthcare.projects.locations.datasets.consentStores.attributeDefinitions.get',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1alpha2/{+name}',
+        relative_path='v1alpha2/{+name}',
         request_field='',
-        request_type_name=u'HealthcareProjectsLocationsDatasetsConsentStoresAttributeDefinitionsGetRequest',
-        response_type_name=u'AttributeDefinition',
+        request_type_name='HealthcareProjectsLocationsDatasetsConsentStoresAttributeDefinitionsGetRequest',
+        response_type_name='AttributeDefinition',
         supports_download=False,
     )
 
@@ -549,16 +549,16 @@ Consent store.
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha2/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/consentStores/{consentStoresId}/attributeDefinitions',
-        http_method=u'GET',
-        method_id=u'healthcare.projects.locations.datasets.consentStores.attributeDefinitions.list',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'filter', u'pageSize', u'pageToken'],
-        relative_path=u'v1alpha2/{+parent}/attributeDefinitions',
+        flat_path='v1alpha2/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/consentStores/{consentStoresId}/attributeDefinitions',
+        http_method='GET',
+        method_id='healthcare.projects.locations.datasets.consentStores.attributeDefinitions.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'pageSize', 'pageToken'],
+        relative_path='v1alpha2/{+parent}/attributeDefinitions',
         request_field='',
-        request_type_name=u'HealthcareProjectsLocationsDatasetsConsentStoresAttributeDefinitionsListRequest',
-        response_type_name=u'ListAttributeDefinitionsResponse',
+        request_type_name='HealthcareProjectsLocationsDatasetsConsentStoresAttributeDefinitionsListRequest',
+        response_type_name='ListAttributeDefinitionsResponse',
         supports_download=False,
     )
 
@@ -576,23 +576,23 @@ Consent store.
           config, request, global_params=global_params)
 
     Patch.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha2/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/consentStores/{consentStoresId}/attributeDefinitions/{attributeDefinitionsId}',
-        http_method=u'PATCH',
-        method_id=u'healthcare.projects.locations.datasets.consentStores.attributeDefinitions.patch',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[u'updateMask'],
-        relative_path=u'v1alpha2/{+name}',
-        request_field=u'attributeDefinition',
-        request_type_name=u'HealthcareProjectsLocationsDatasetsConsentStoresAttributeDefinitionsPatchRequest',
-        response_type_name=u'AttributeDefinition',
+        flat_path='v1alpha2/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/consentStores/{consentStoresId}/attributeDefinitions/{attributeDefinitionsId}',
+        http_method='PATCH',
+        method_id='healthcare.projects.locations.datasets.consentStores.attributeDefinitions.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v1alpha2/{+name}',
+        request_field='attributeDefinition',
+        request_type_name='HealthcareProjectsLocationsDatasetsConsentStoresAttributeDefinitionsPatchRequest',
+        response_type_name='AttributeDefinition',
         supports_download=False,
     )
 
   class ProjectsLocationsDatasetsConsentStoresConsentArtifactsService(base_api.BaseApiService):
     """Service class for the projects_locations_datasets_consentStores_consentArtifacts resource."""
 
-    _NAME = u'projects_locations_datasets_consentStores_consentArtifacts'
+    _NAME = 'projects_locations_datasets_consentStores_consentArtifacts'
 
     def __init__(self, client):
       super(HealthcareV1alpha2.ProjectsLocationsDatasetsConsentStoresConsentArtifactsService, self).__init__(client)
@@ -614,16 +614,16 @@ parent Consent store.
           config, request, global_params=global_params)
 
     Create.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha2/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/consentStores/{consentStoresId}/consentArtifacts',
-        http_method=u'POST',
-        method_id=u'healthcare.projects.locations.datasets.consentStores.consentArtifacts.create',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
+        flat_path='v1alpha2/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/consentStores/{consentStoresId}/consentArtifacts',
+        http_method='POST',
+        method_id='healthcare.projects.locations.datasets.consentStores.consentArtifacts.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
         query_params=[],
-        relative_path=u'v1alpha2/{+parent}/consentArtifacts',
-        request_field=u'consentArtifact',
-        request_type_name=u'HealthcareProjectsLocationsDatasetsConsentStoresConsentArtifactsCreateRequest',
-        response_type_name=u'ConsentArtifact',
+        relative_path='v1alpha2/{+parent}/consentArtifacts',
+        request_field='consentArtifact',
+        request_type_name='HealthcareProjectsLocationsDatasetsConsentStoresConsentArtifactsCreateRequest',
+        response_type_name='ConsentArtifact',
         supports_download=False,
     )
 
@@ -642,16 +642,16 @@ referenced by any Consent.
           config, request, global_params=global_params)
 
     Delete.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha2/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/consentStores/{consentStoresId}/consentArtifacts/{consentArtifactsId}',
-        http_method=u'DELETE',
-        method_id=u'healthcare.projects.locations.datasets.consentStores.consentArtifacts.delete',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1alpha2/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/consentStores/{consentStoresId}/consentArtifacts/{consentArtifactsId}',
+        http_method='DELETE',
+        method_id='healthcare.projects.locations.datasets.consentStores.consentArtifacts.delete',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1alpha2/{+name}',
+        relative_path='v1alpha2/{+name}',
         request_field='',
-        request_type_name=u'HealthcareProjectsLocationsDatasetsConsentStoresConsentArtifactsDeleteRequest',
-        response_type_name=u'Empty',
+        request_type_name='HealthcareProjectsLocationsDatasetsConsentStoresConsentArtifactsDeleteRequest',
+        response_type_name='Empty',
         supports_download=False,
     )
 
@@ -669,16 +669,16 @@ referenced by any Consent.
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha2/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/consentStores/{consentStoresId}/consentArtifacts/{consentArtifactsId}',
-        http_method=u'GET',
-        method_id=u'healthcare.projects.locations.datasets.consentStores.consentArtifacts.get',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1alpha2/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/consentStores/{consentStoresId}/consentArtifacts/{consentArtifactsId}',
+        http_method='GET',
+        method_id='healthcare.projects.locations.datasets.consentStores.consentArtifacts.get',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1alpha2/{+name}',
+        relative_path='v1alpha2/{+name}',
         request_field='',
-        request_type_name=u'HealthcareProjectsLocationsDatasetsConsentStoresConsentArtifactsGetRequest',
-        response_type_name=u'ConsentArtifact',
+        request_type_name='HealthcareProjectsLocationsDatasetsConsentStoresConsentArtifactsGetRequest',
+        response_type_name='ConsentArtifact',
         supports_download=False,
     )
 
@@ -697,23 +697,23 @@ Consent store.
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha2/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/consentStores/{consentStoresId}/consentArtifacts',
-        http_method=u'GET',
-        method_id=u'healthcare.projects.locations.datasets.consentStores.consentArtifacts.list',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'filter', u'pageSize', u'pageToken'],
-        relative_path=u'v1alpha2/{+parent}/consentArtifacts',
+        flat_path='v1alpha2/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/consentStores/{consentStoresId}/consentArtifacts',
+        http_method='GET',
+        method_id='healthcare.projects.locations.datasets.consentStores.consentArtifacts.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'pageSize', 'pageToken'],
+        relative_path='v1alpha2/{+parent}/consentArtifacts',
         request_field='',
-        request_type_name=u'HealthcareProjectsLocationsDatasetsConsentStoresConsentArtifactsListRequest',
-        response_type_name=u'ListConsentArtifactsResponse',
+        request_type_name='HealthcareProjectsLocationsDatasetsConsentStoresConsentArtifactsListRequest',
+        response_type_name='ListConsentArtifactsResponse',
         supports_download=False,
     )
 
   class ProjectsLocationsDatasetsConsentStoresConsentsHistoryService(base_api.BaseApiService):
     """Service class for the projects_locations_datasets_consentStores_consents_history resource."""
 
-    _NAME = u'projects_locations_datasets_consentStores_consents_history'
+    _NAME = 'projects_locations_datasets_consentStores_consents_history'
 
     def __init__(self, client):
       super(HealthcareV1alpha2.ProjectsLocationsDatasetsConsentStoresConsentsHistoryService, self).__init__(client)
@@ -736,16 +736,16 @@ This operation does not affect the related consent artifact.
           config, request, global_params=global_params)
 
     DeleteAll.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha2/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/consentStores/{consentStoresId}/consents/{consentsId}/history:deleteAll',
-        http_method=u'POST',
-        method_id=u'healthcare.projects.locations.datasets.consentStores.consents.history.deleteAll',
-        ordered_params=[u'consent'],
-        path_params=[u'consent'],
+        flat_path='v1alpha2/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/consentStores/{consentStoresId}/consents/{consentsId}/history:deleteAll',
+        http_method='POST',
+        method_id='healthcare.projects.locations.datasets.consentStores.consents.history.deleteAll',
+        ordered_params=['consent'],
+        path_params=['consent'],
         query_params=[],
-        relative_path=u'v1alpha2/{+consent}/history:deleteAll',
-        request_field=u'deleteAllConsentHistoryRequest',
-        request_type_name=u'HealthcareProjectsLocationsDatasetsConsentStoresConsentsHistoryDeleteAllRequest',
-        response_type_name=u'Empty',
+        relative_path='v1alpha2/{+consent}/history:deleteAll',
+        request_field='deleteAllConsentHistoryRequest',
+        request_type_name='HealthcareProjectsLocationsDatasetsConsentStoresConsentsHistoryDeleteAllRequest',
+        response_type_name='Empty',
         supports_download=False,
     )
 
@@ -764,23 +764,23 @@ current version from the Consent store.
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha2/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/consentStores/{consentStoresId}/consents/{consentsId}/history',
-        http_method=u'GET',
-        method_id=u'healthcare.projects.locations.datasets.consentStores.consents.history.list',
-        ordered_params=[u'consent'],
-        path_params=[u'consent'],
-        query_params=[u'filter', u'pageSize', u'pageToken'],
-        relative_path=u'v1alpha2/{+consent}/history',
+        flat_path='v1alpha2/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/consentStores/{consentStoresId}/consents/{consentsId}/history',
+        http_method='GET',
+        method_id='healthcare.projects.locations.datasets.consentStores.consents.history.list',
+        ordered_params=['consent'],
+        path_params=['consent'],
+        query_params=['filter', 'pageSize', 'pageToken'],
+        relative_path='v1alpha2/{+consent}/history',
         request_field='',
-        request_type_name=u'HealthcareProjectsLocationsDatasetsConsentStoresConsentsHistoryListRequest',
-        response_type_name=u'ListConsentHistoryResponse',
+        request_type_name='HealthcareProjectsLocationsDatasetsConsentStoresConsentsHistoryListRequest',
+        response_type_name='ListConsentHistoryResponse',
         supports_download=False,
     )
 
   class ProjectsLocationsDatasetsConsentStoresConsentsService(base_api.BaseApiService):
     """Service class for the projects_locations_datasets_consentStores_consents resource."""
 
-    _NAME = u'projects_locations_datasets_consentStores_consents'
+    _NAME = 'projects_locations_datasets_consentStores_consents'
 
     def __init__(self, client):
       super(HealthcareV1alpha2.ProjectsLocationsDatasetsConsentStoresConsentsService, self).__init__(client)
@@ -802,16 +802,16 @@ in the parent Consent store.
           config, request, global_params=global_params)
 
     Create.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha2/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/consentStores/{consentStoresId}/consents',
-        http_method=u'POST',
-        method_id=u'healthcare.projects.locations.datasets.consentStores.consents.create',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
+        flat_path='v1alpha2/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/consentStores/{consentStoresId}/consents',
+        http_method='POST',
+        method_id='healthcare.projects.locations.datasets.consentStores.consents.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
         query_params=[],
-        relative_path=u'v1alpha2/{+parent}/consents',
-        request_field=u'consent',
-        request_type_name=u'HealthcareProjectsLocationsDatasetsConsentStoresConsentsCreateRequest',
-        response_type_name=u'Consent',
+        relative_path='v1alpha2/{+parent}/consents',
+        request_field='consent',
+        request_type_name='HealthcareProjectsLocationsDatasetsConsentStoresConsentsCreateRequest',
+        response_type_name='Consent',
         supports_download=False,
     )
 
@@ -833,16 +833,16 @@ consent artifact.
           config, request, global_params=global_params)
 
     Delete.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha2/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/consentStores/{consentStoresId}/consents/{consentsId}',
-        http_method=u'DELETE',
-        method_id=u'healthcare.projects.locations.datasets.consentStores.consents.delete',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1alpha2/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/consentStores/{consentStoresId}/consents/{consentsId}',
+        http_method='DELETE',
+        method_id='healthcare.projects.locations.datasets.consentStores.consents.delete',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1alpha2/{+name}',
+        relative_path='v1alpha2/{+name}',
         request_field='',
-        request_type_name=u'HealthcareProjectsLocationsDatasetsConsentStoresConsentsDeleteRequest',
-        response_type_name=u'Empty',
+        request_type_name='HealthcareProjectsLocationsDatasetsConsentStoresConsentsDeleteRequest',
+        response_type_name='Empty',
         supports_download=False,
     )
 
@@ -860,16 +860,16 @@ consent artifact.
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha2/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/consentStores/{consentStoresId}/consents/{consentsId}',
-        http_method=u'GET',
-        method_id=u'healthcare.projects.locations.datasets.consentStores.consents.get',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1alpha2/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/consentStores/{consentStoresId}/consents/{consentsId}',
+        http_method='GET',
+        method_id='healthcare.projects.locations.datasets.consentStores.consents.get',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1alpha2/{+name}',
+        relative_path='v1alpha2/{+name}',
         request_field='',
-        request_type_name=u'HealthcareProjectsLocationsDatasetsConsentStoresConsentsGetRequest',
-        response_type_name=u'Consent',
+        request_type_name='HealthcareProjectsLocationsDatasetsConsentStoresConsentsGetRequest',
+        response_type_name='Consent',
         supports_download=False,
     )
 
@@ -888,16 +888,16 @@ the given Consent store.
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha2/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/consentStores/{consentStoresId}/consents',
-        http_method=u'GET',
-        method_id=u'healthcare.projects.locations.datasets.consentStores.consents.list',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'filter', u'pageSize', u'pageToken'],
-        relative_path=u'v1alpha2/{+parent}/consents',
+        flat_path='v1alpha2/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/consentStores/{consentStoresId}/consents',
+        http_method='GET',
+        method_id='healthcare.projects.locations.datasets.consentStores.consents.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'pageSize', 'pageToken'],
+        relative_path='v1alpha2/{+parent}/consents',
         request_field='',
-        request_type_name=u'HealthcareProjectsLocationsDatasetsConsentStoresConsentsListRequest',
-        response_type_name=u'ListConsentsResponse',
+        request_type_name='HealthcareProjectsLocationsDatasetsConsentStoresConsentsListRequest',
+        response_type_name='ListConsentsResponse',
         supports_download=False,
     )
 
@@ -918,16 +918,16 @@ the [ListConsentHistory] operation.
           config, request, global_params=global_params)
 
     Patch.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha2/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/consentStores/{consentStoresId}/consents/{consentsId}',
-        http_method=u'PATCH',
-        method_id=u'healthcare.projects.locations.datasets.consentStores.consents.patch',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[u'updateMask'],
-        relative_path=u'v1alpha2/{+name}',
-        request_field=u'consent',
-        request_type_name=u'HealthcareProjectsLocationsDatasetsConsentStoresConsentsPatchRequest',
-        response_type_name=u'Consent',
+        flat_path='v1alpha2/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/consentStores/{consentStoresId}/consents/{consentsId}',
+        http_method='PATCH',
+        method_id='healthcare.projects.locations.datasets.consentStores.consents.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v1alpha2/{+name}',
+        request_field='consent',
+        request_type_name='HealthcareProjectsLocationsDatasetsConsentStoresConsentsPatchRequest',
+        response_type_name='Consent',
         supports_download=False,
     )
 
@@ -945,23 +945,23 @@ the [ListConsentHistory] operation.
           config, request, global_params=global_params)
 
     Revoke.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha2/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/consentStores/{consentStoresId}/consents/{consentsId}:revoke',
-        http_method=u'POST',
-        method_id=u'healthcare.projects.locations.datasets.consentStores.consents.revoke',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1alpha2/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/consentStores/{consentStoresId}/consents/{consentsId}:revoke',
+        http_method='POST',
+        method_id='healthcare.projects.locations.datasets.consentStores.consents.revoke',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1alpha2/{+name}:revoke',
-        request_field=u'revokeConsentRequest',
-        request_type_name=u'HealthcareProjectsLocationsDatasetsConsentStoresConsentsRevokeRequest',
-        response_type_name=u'RevokeConsentResponse',
+        relative_path='v1alpha2/{+name}:revoke',
+        request_field='revokeConsentRequest',
+        request_type_name='HealthcareProjectsLocationsDatasetsConsentStoresConsentsRevokeRequest',
+        response_type_name='RevokeConsentResponse',
         supports_download=False,
     )
 
   class ProjectsLocationsDatasetsConsentStoresUserDataMappingsService(base_api.BaseApiService):
     """Service class for the projects_locations_datasets_consentStores_userDataMappings resource."""
 
-    _NAME = u'projects_locations_datasets_consentStores_userDataMappings'
+    _NAME = 'projects_locations_datasets_consentStores_userDataMappings'
 
     def __init__(self, client):
       super(HealthcareV1alpha2.ProjectsLocationsDatasetsConsentStoresUserDataMappingsService, self).__init__(client)
@@ -982,16 +982,16 @@ the [ListConsentHistory] operation.
           config, request, global_params=global_params)
 
     Archive.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha2/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/consentStores/{consentStoresId}/userDataMappings/{userDataMappingsId}:archive',
-        http_method=u'POST',
-        method_id=u'healthcare.projects.locations.datasets.consentStores.userDataMappings.archive',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1alpha2/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/consentStores/{consentStoresId}/userDataMappings/{userDataMappingsId}:archive',
+        http_method='POST',
+        method_id='healthcare.projects.locations.datasets.consentStores.userDataMappings.archive',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1alpha2/{+name}:archive',
+        relative_path='v1alpha2/{+name}:archive',
         request_field='',
-        request_type_name=u'HealthcareProjectsLocationsDatasetsConsentStoresUserDataMappingsArchiveRequest',
-        response_type_name=u'ArchiveUserDataMappingResponse',
+        request_type_name='HealthcareProjectsLocationsDatasetsConsentStoresUserDataMappingsArchiveRequest',
+        response_type_name='ArchiveUserDataMappingResponse',
         supports_download=False,
     )
 
@@ -1010,16 +1010,16 @@ parent Consent store.
           config, request, global_params=global_params)
 
     Create.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha2/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/consentStores/{consentStoresId}/userDataMappings',
-        http_method=u'POST',
-        method_id=u'healthcare.projects.locations.datasets.consentStores.userDataMappings.create',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
+        flat_path='v1alpha2/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/consentStores/{consentStoresId}/userDataMappings',
+        http_method='POST',
+        method_id='healthcare.projects.locations.datasets.consentStores.userDataMappings.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
         query_params=[],
-        relative_path=u'v1alpha2/{+parent}/userDataMappings',
-        request_field=u'userDataMapping',
-        request_type_name=u'HealthcareProjectsLocationsDatasetsConsentStoresUserDataMappingsCreateRequest',
-        response_type_name=u'UserDataMapping',
+        relative_path='v1alpha2/{+parent}/userDataMappings',
+        request_field='userDataMapping',
+        request_type_name='HealthcareProjectsLocationsDatasetsConsentStoresUserDataMappingsCreateRequest',
+        response_type_name='UserDataMapping',
         supports_download=False,
     )
 
@@ -1037,16 +1037,16 @@ parent Consent store.
           config, request, global_params=global_params)
 
     Delete.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha2/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/consentStores/{consentStoresId}/userDataMappings/{userDataMappingsId}',
-        http_method=u'DELETE',
-        method_id=u'healthcare.projects.locations.datasets.consentStores.userDataMappings.delete',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1alpha2/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/consentStores/{consentStoresId}/userDataMappings/{userDataMappingsId}',
+        http_method='DELETE',
+        method_id='healthcare.projects.locations.datasets.consentStores.userDataMappings.delete',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1alpha2/{+name}',
+        relative_path='v1alpha2/{+name}',
         request_field='',
-        request_type_name=u'HealthcareProjectsLocationsDatasetsConsentStoresUserDataMappingsDeleteRequest',
-        response_type_name=u'Empty',
+        request_type_name='HealthcareProjectsLocationsDatasetsConsentStoresUserDataMappingsDeleteRequest',
+        response_type_name='Empty',
         supports_download=False,
     )
 
@@ -1064,16 +1064,16 @@ parent Consent store.
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha2/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/consentStores/{consentStoresId}/userDataMappings/{userDataMappingsId}',
-        http_method=u'GET',
-        method_id=u'healthcare.projects.locations.datasets.consentStores.userDataMappings.get',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1alpha2/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/consentStores/{consentStoresId}/userDataMappings/{userDataMappingsId}',
+        http_method='GET',
+        method_id='healthcare.projects.locations.datasets.consentStores.userDataMappings.get',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1alpha2/{+name}',
+        relative_path='v1alpha2/{+name}',
         request_field='',
-        request_type_name=u'HealthcareProjectsLocationsDatasetsConsentStoresUserDataMappingsGetRequest',
-        response_type_name=u'UserDataMapping',
+        request_type_name='HealthcareProjectsLocationsDatasetsConsentStoresUserDataMappingsGetRequest',
+        response_type_name='UserDataMapping',
         supports_download=False,
     )
 
@@ -1092,16 +1092,16 @@ Consent store.
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha2/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/consentStores/{consentStoresId}/userDataMappings',
-        http_method=u'GET',
-        method_id=u'healthcare.projects.locations.datasets.consentStores.userDataMappings.list',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'filter', u'pageSize', u'pageToken'],
-        relative_path=u'v1alpha2/{+parent}/userDataMappings',
+        flat_path='v1alpha2/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/consentStores/{consentStoresId}/userDataMappings',
+        http_method='GET',
+        method_id='healthcare.projects.locations.datasets.consentStores.userDataMappings.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'pageSize', 'pageToken'],
+        relative_path='v1alpha2/{+parent}/userDataMappings',
         request_field='',
-        request_type_name=u'HealthcareProjectsLocationsDatasetsConsentStoresUserDataMappingsListRequest',
-        response_type_name=u'ListUserDataMappingsResponse',
+        request_type_name='HealthcareProjectsLocationsDatasetsConsentStoresUserDataMappingsListRequest',
+        response_type_name='ListUserDataMappingsResponse',
         supports_download=False,
     )
 
@@ -1119,23 +1119,23 @@ Consent store.
           config, request, global_params=global_params)
 
     Patch.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha2/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/consentStores/{consentStoresId}/userDataMappings/{userDataMappingsId}',
-        http_method=u'PATCH',
-        method_id=u'healthcare.projects.locations.datasets.consentStores.userDataMappings.patch',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[u'updateMask'],
-        relative_path=u'v1alpha2/{+name}',
-        request_field=u'userDataMapping',
-        request_type_name=u'HealthcareProjectsLocationsDatasetsConsentStoresUserDataMappingsPatchRequest',
-        response_type_name=u'UserDataMapping',
+        flat_path='v1alpha2/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/consentStores/{consentStoresId}/userDataMappings/{userDataMappingsId}',
+        http_method='PATCH',
+        method_id='healthcare.projects.locations.datasets.consentStores.userDataMappings.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v1alpha2/{+name}',
+        request_field='userDataMapping',
+        request_type_name='HealthcareProjectsLocationsDatasetsConsentStoresUserDataMappingsPatchRequest',
+        response_type_name='UserDataMapping',
         supports_download=False,
     )
 
   class ProjectsLocationsDatasetsConsentStoresService(base_api.BaseApiService):
     """Service class for the projects_locations_datasets_consentStores resource."""
 
-    _NAME = u'projects_locations_datasets_consentStores'
+    _NAME = 'projects_locations_datasets_consentStores'
 
     def __init__(self, client):
       super(HealthcareV1alpha2.ProjectsLocationsDatasetsConsentStoresService, self).__init__(client)
@@ -1158,16 +1158,16 @@ consented for a given use.
           config, request, global_params=global_params)
 
     CheckDataAccess.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha2/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/consentStores/{consentStoresId}:checkDataAccess',
-        http_method=u'POST',
-        method_id=u'healthcare.projects.locations.datasets.consentStores.checkDataAccess',
-        ordered_params=[u'consentStore'],
-        path_params=[u'consentStore'],
+        flat_path='v1alpha2/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/consentStores/{consentStoresId}:checkDataAccess',
+        http_method='POST',
+        method_id='healthcare.projects.locations.datasets.consentStores.checkDataAccess',
+        ordered_params=['consentStore'],
+        path_params=['consentStore'],
         query_params=[],
-        relative_path=u'v1alpha2/{+consentStore}:checkDataAccess',
-        request_field=u'checkDataAccessRequest',
-        request_type_name=u'HealthcareProjectsLocationsDatasetsConsentStoresCheckDataAccessRequest',
-        response_type_name=u'CheckDataAccessResponse',
+        relative_path='v1alpha2/{+consentStore}:checkDataAccess',
+        request_field='checkDataAccessRequest',
+        request_type_name='HealthcareProjectsLocationsDatasetsConsentStoresCheckDataAccessRequest',
+        response_type_name='CheckDataAccessResponse',
         supports_download=False,
     )
 
@@ -1187,16 +1187,16 @@ existing store fails with an ALREADY_EXISTS error.
           config, request, global_params=global_params)
 
     Create.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha2/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/consentStores',
-        http_method=u'POST',
-        method_id=u'healthcare.projects.locations.datasets.consentStores.create',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'consentStoreId'],
-        relative_path=u'v1alpha2/{+parent}/consentStores',
-        request_field=u'consentStore',
-        request_type_name=u'HealthcareProjectsLocationsDatasetsConsentStoresCreateRequest',
-        response_type_name=u'ConsentStore',
+        flat_path='v1alpha2/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/consentStores',
+        http_method='POST',
+        method_id='healthcare.projects.locations.datasets.consentStores.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['consentStoreId'],
+        relative_path='v1alpha2/{+parent}/consentStores',
+        request_field='consentStore',
+        request_type_name='HealthcareProjectsLocationsDatasetsConsentStoresCreateRequest',
+        response_type_name='ConsentStore',
         supports_download=False,
     )
 
@@ -1215,16 +1215,16 @@ consent data in the specified consent store.
           config, request, global_params=global_params)
 
     Delete.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha2/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/consentStores/{consentStoresId}',
-        http_method=u'DELETE',
-        method_id=u'healthcare.projects.locations.datasets.consentStores.delete',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1alpha2/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/consentStores/{consentStoresId}',
+        http_method='DELETE',
+        method_id='healthcare.projects.locations.datasets.consentStores.delete',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1alpha2/{+name}',
+        relative_path='v1alpha2/{+name}',
         request_field='',
-        request_type_name=u'HealthcareProjectsLocationsDatasetsConsentStoresDeleteRequest',
-        response_type_name=u'Empty',
+        request_type_name='HealthcareProjectsLocationsDatasetsConsentStoresDeleteRequest',
+        response_type_name='Empty',
         supports_download=False,
     )
 
@@ -1242,16 +1242,16 @@ consent data in the specified consent store.
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha2/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/consentStores/{consentStoresId}',
-        http_method=u'GET',
-        method_id=u'healthcare.projects.locations.datasets.consentStores.get',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1alpha2/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/consentStores/{consentStoresId}',
+        http_method='GET',
+        method_id='healthcare.projects.locations.datasets.consentStores.get',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1alpha2/{+name}',
+        relative_path='v1alpha2/{+name}',
         request_field='',
-        request_type_name=u'HealthcareProjectsLocationsDatasetsConsentStoresGetRequest',
-        response_type_name=u'ConsentStore',
+        request_type_name='HealthcareProjectsLocationsDatasetsConsentStoresGetRequest',
+        response_type_name='ConsentStore',
         supports_download=False,
     )
 
@@ -1271,16 +1271,16 @@ set.
           config, request, global_params=global_params)
 
     GetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha2/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/consentStores/{consentStoresId}:getIamPolicy',
-        http_method=u'GET',
-        method_id=u'healthcare.projects.locations.datasets.consentStores.getIamPolicy',
-        ordered_params=[u'resource'],
-        path_params=[u'resource'],
-        query_params=[u'options_requestedPolicyVersion'],
-        relative_path=u'v1alpha2/{+resource}:getIamPolicy',
+        flat_path='v1alpha2/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/consentStores/{consentStoresId}:getIamPolicy',
+        http_method='GET',
+        method_id='healthcare.projects.locations.datasets.consentStores.getIamPolicy',
+        ordered_params=['resource'],
+        path_params=['resource'],
+        query_params=['options_requestedPolicyVersion'],
+        relative_path='v1alpha2/{+resource}:getIamPolicy',
         request_field='',
-        request_type_name=u'HealthcareProjectsLocationsDatasetsConsentStoresGetIamPolicyRequest',
-        response_type_name=u'Policy',
+        request_type_name='HealthcareProjectsLocationsDatasetsConsentStoresGetIamPolicyRequest',
+        response_type_name='Policy',
         supports_download=False,
     )
 
@@ -1299,16 +1299,16 @@ dataset.
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha2/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/consentStores',
-        http_method=u'GET',
-        method_id=u'healthcare.projects.locations.datasets.consentStores.list',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'filter', u'pageSize', u'pageToken'],
-        relative_path=u'v1alpha2/{+parent}/consentStores',
+        flat_path='v1alpha2/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/consentStores',
+        http_method='GET',
+        method_id='healthcare.projects.locations.datasets.consentStores.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'pageSize', 'pageToken'],
+        relative_path='v1alpha2/{+parent}/consentStores',
         request_field='',
-        request_type_name=u'HealthcareProjectsLocationsDatasetsConsentStoresListRequest',
-        response_type_name=u'ListConsentStoresResponse',
+        request_type_name='HealthcareProjectsLocationsDatasetsConsentStoresListRequest',
+        response_type_name='ListConsentStoresResponse',
         supports_download=False,
     )
 
@@ -1326,16 +1326,16 @@ dataset.
           config, request, global_params=global_params)
 
     Patch.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha2/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/consentStores/{consentStoresId}',
-        http_method=u'PATCH',
-        method_id=u'healthcare.projects.locations.datasets.consentStores.patch',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[u'updateMask'],
-        relative_path=u'v1alpha2/{+name}',
-        request_field=u'consentStore',
-        request_type_name=u'HealthcareProjectsLocationsDatasetsConsentStoresPatchRequest',
-        response_type_name=u'ConsentStore',
+        flat_path='v1alpha2/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/consentStores/{consentStoresId}',
+        http_method='PATCH',
+        method_id='healthcare.projects.locations.datasets.consentStores.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v1alpha2/{+name}',
+        request_field='consentStore',
+        request_type_name='HealthcareProjectsLocationsDatasetsConsentStoresPatchRequest',
+        response_type_name='ConsentStore',
         supports_download=False,
     )
 
@@ -1403,16 +1403,16 @@ timestamp:  "TIMESTAMP"
           config, request, global_params=global_params)
 
     QueryAccessibleData.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha2/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/consentStores/{consentStoresId}:queryAccessibleData',
-        http_method=u'POST',
-        method_id=u'healthcare.projects.locations.datasets.consentStores.queryAccessibleData',
-        ordered_params=[u'consentStore'],
-        path_params=[u'consentStore'],
+        flat_path='v1alpha2/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/consentStores/{consentStoresId}:queryAccessibleData',
+        http_method='POST',
+        method_id='healthcare.projects.locations.datasets.consentStores.queryAccessibleData',
+        ordered_params=['consentStore'],
+        path_params=['consentStore'],
         query_params=[],
-        relative_path=u'v1alpha2/{+consentStore}:queryAccessibleData',
-        request_field=u'queryAccessibleDataRequest',
-        request_type_name=u'HealthcareProjectsLocationsDatasetsConsentStoresQueryAccessibleDataRequest',
-        response_type_name=u'Operation',
+        relative_path='v1alpha2/{+consentStore}:queryAccessibleData',
+        request_field='queryAccessibleDataRequest',
+        request_type_name='HealthcareProjectsLocationsDatasetsConsentStoresQueryAccessibleDataRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -1433,16 +1433,16 @@ Can return `NOT_FOUND`, `INVALID_ARGUMENT`, and `PERMISSION_DENIED` errors.
           config, request, global_params=global_params)
 
     SetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha2/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/consentStores/{consentStoresId}:setIamPolicy',
-        http_method=u'POST',
-        method_id=u'healthcare.projects.locations.datasets.consentStores.setIamPolicy',
-        ordered_params=[u'resource'],
-        path_params=[u'resource'],
+        flat_path='v1alpha2/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/consentStores/{consentStoresId}:setIamPolicy',
+        http_method='POST',
+        method_id='healthcare.projects.locations.datasets.consentStores.setIamPolicy',
+        ordered_params=['resource'],
+        path_params=['resource'],
         query_params=[],
-        relative_path=u'v1alpha2/{+resource}:setIamPolicy',
-        request_field=u'setIamPolicyRequest',
-        request_type_name=u'HealthcareProjectsLocationsDatasetsConsentStoresSetIamPolicyRequest',
-        response_type_name=u'Policy',
+        relative_path='v1alpha2/{+resource}:setIamPolicy',
+        request_field='setIamPolicyRequest',
+        request_type_name='HealthcareProjectsLocationsDatasetsConsentStoresSetIamPolicyRequest',
+        response_type_name='Policy',
         supports_download=False,
     )
 
@@ -1466,23 +1466,23 @@ may "fail open" without warning.
           config, request, global_params=global_params)
 
     TestIamPermissions.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha2/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/consentStores/{consentStoresId}:testIamPermissions',
-        http_method=u'POST',
-        method_id=u'healthcare.projects.locations.datasets.consentStores.testIamPermissions',
-        ordered_params=[u'resource'],
-        path_params=[u'resource'],
+        flat_path='v1alpha2/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/consentStores/{consentStoresId}:testIamPermissions',
+        http_method='POST',
+        method_id='healthcare.projects.locations.datasets.consentStores.testIamPermissions',
+        ordered_params=['resource'],
+        path_params=['resource'],
         query_params=[],
-        relative_path=u'v1alpha2/{+resource}:testIamPermissions',
-        request_field=u'testIamPermissionsRequest',
-        request_type_name=u'HealthcareProjectsLocationsDatasetsConsentStoresTestIamPermissionsRequest',
-        response_type_name=u'TestIamPermissionsResponse',
+        relative_path='v1alpha2/{+resource}:testIamPermissions',
+        request_field='testIamPermissionsRequest',
+        request_type_name='HealthcareProjectsLocationsDatasetsConsentStoresTestIamPermissionsRequest',
+        response_type_name='TestIamPermissionsResponse',
         supports_download=False,
     )
 
   class ProjectsLocationsDatasetsDataProtectionStoresService(base_api.BaseApiService):
     """Service class for the projects_locations_datasets_dataProtectionStores resource."""
 
-    _NAME = u'projects_locations_datasets_dataProtectionStores'
+    _NAME = 'projects_locations_datasets_dataProtectionStores'
 
     def __init__(self, client):
       super(HealthcareV1alpha2.ProjectsLocationsDatasetsDataProtectionStoresService, self).__init__(client)
@@ -1505,16 +1505,16 @@ set.
           config, request, global_params=global_params)
 
     GetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha2/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/dataProtectionStores/{dataProtectionStoresId}:getIamPolicy',
-        http_method=u'GET',
-        method_id=u'healthcare.projects.locations.datasets.dataProtectionStores.getIamPolicy',
-        ordered_params=[u'resource'],
-        path_params=[u'resource'],
-        query_params=[u'options_requestedPolicyVersion'],
-        relative_path=u'v1alpha2/{+resource}:getIamPolicy',
+        flat_path='v1alpha2/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/dataProtectionStores/{dataProtectionStoresId}:getIamPolicy',
+        http_method='GET',
+        method_id='healthcare.projects.locations.datasets.dataProtectionStores.getIamPolicy',
+        ordered_params=['resource'],
+        path_params=['resource'],
+        query_params=['options_requestedPolicyVersion'],
+        relative_path='v1alpha2/{+resource}:getIamPolicy',
         request_field='',
-        request_type_name=u'HealthcareProjectsLocationsDatasetsDataProtectionStoresGetIamPolicyRequest',
-        response_type_name=u'Policy',
+        request_type_name='HealthcareProjectsLocationsDatasetsDataProtectionStoresGetIamPolicyRequest',
+        response_type_name='Policy',
         supports_download=False,
     )
 
@@ -1535,23 +1535,56 @@ Can return `NOT_FOUND`, `INVALID_ARGUMENT`, and `PERMISSION_DENIED` errors.
           config, request, global_params=global_params)
 
     SetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha2/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/dataProtectionStores/{dataProtectionStoresId}:setIamPolicy',
-        http_method=u'POST',
-        method_id=u'healthcare.projects.locations.datasets.dataProtectionStores.setIamPolicy',
-        ordered_params=[u'resource'],
-        path_params=[u'resource'],
+        flat_path='v1alpha2/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/dataProtectionStores/{dataProtectionStoresId}:setIamPolicy',
+        http_method='POST',
+        method_id='healthcare.projects.locations.datasets.dataProtectionStores.setIamPolicy',
+        ordered_params=['resource'],
+        path_params=['resource'],
         query_params=[],
-        relative_path=u'v1alpha2/{+resource}:setIamPolicy',
-        request_field=u'setIamPolicyRequest',
-        request_type_name=u'HealthcareProjectsLocationsDatasetsDataProtectionStoresSetIamPolicyRequest',
-        response_type_name=u'Policy',
+        relative_path='v1alpha2/{+resource}:setIamPolicy',
+        request_field='setIamPolicyRequest',
+        request_type_name='HealthcareProjectsLocationsDatasetsDataProtectionStoresSetIamPolicyRequest',
+        response_type_name='Policy',
+        supports_download=False,
+    )
+
+    def TestIamPermissions(self, request, global_params=None):
+      r"""Returns permissions that a caller has on the specified resource.
+If the resource does not exist, this will return an empty set of
+permissions, not a `NOT_FOUND` error.
+
+Note: This operation is designed to be used for building permission-aware
+UIs and command-line tools, not for authorization checking. This operation
+may "fail open" without warning.
+
+      Args:
+        request: (HealthcareProjectsLocationsDatasetsDataProtectionStoresTestIamPermissionsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (TestIamPermissionsResponse) The response message.
+      """
+      config = self.GetMethodConfig('TestIamPermissions')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    TestIamPermissions.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha2/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/dataProtectionStores/{dataProtectionStoresId}:testIamPermissions',
+        http_method='POST',
+        method_id='healthcare.projects.locations.datasets.dataProtectionStores.testIamPermissions',
+        ordered_params=['resource'],
+        path_params=['resource'],
+        query_params=[],
+        relative_path='v1alpha2/{+resource}:testIamPermissions',
+        request_field='testIamPermissionsRequest',
+        request_type_name='HealthcareProjectsLocationsDatasetsDataProtectionStoresTestIamPermissionsRequest',
+        response_type_name='TestIamPermissionsResponse',
         supports_download=False,
     )
 
   class ProjectsLocationsDatasetsDicomStoresService(base_api.BaseApiService):
     """Service class for the projects_locations_datasets_dicomStores resource."""
 
-    _NAME = u'projects_locations_datasets_dicomStores'
+    _NAME = 'projects_locations_datasets_dicomStores'
 
     def __init__(self, client):
       super(HealthcareV1alpha2.ProjectsLocationsDatasetsDicomStoresService, self).__init__(client)
@@ -1572,16 +1605,16 @@ Can return `NOT_FOUND`, `INVALID_ARGUMENT`, and `PERMISSION_DENIED` errors.
           config, request, global_params=global_params)
 
     Create.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha2/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/dicomStores',
-        http_method=u'POST',
-        method_id=u'healthcare.projects.locations.datasets.dicomStores.create',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'dicomStoreId'],
-        relative_path=u'v1alpha2/{+parent}/dicomStores',
-        request_field=u'dicomStore',
-        request_type_name=u'HealthcareProjectsLocationsDatasetsDicomStoresCreateRequest',
-        response_type_name=u'DicomStore',
+        flat_path='v1alpha2/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/dicomStores',
+        http_method='POST',
+        method_id='healthcare.projects.locations.datasets.dicomStores.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['dicomStoreId'],
+        relative_path='v1alpha2/{+parent}/dicomStores',
+        request_field='dicomStore',
+        request_type_name='HealthcareProjectsLocationsDatasetsDicomStoresCreateRequest',
+        response_type_name='DicomStore',
         supports_download=False,
     )
 
@@ -1600,16 +1633,16 @@ within it.
           config, request, global_params=global_params)
 
     Delete.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha2/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/dicomStores/{dicomStoresId}',
-        http_method=u'DELETE',
-        method_id=u'healthcare.projects.locations.datasets.dicomStores.delete',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1alpha2/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/dicomStores/{dicomStoresId}',
+        http_method='DELETE',
+        method_id='healthcare.projects.locations.datasets.dicomStores.delete',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1alpha2/{+name}',
+        relative_path='v1alpha2/{+name}',
         request_field='',
-        request_type_name=u'HealthcareProjectsLocationsDatasetsDicomStoresDeleteRequest',
-        response_type_name=u'Empty',
+        request_type_name='HealthcareProjectsLocationsDatasetsDicomStoresDeleteRequest',
+        response_type_name='Empty',
         supports_download=False,
     )
 
@@ -1632,16 +1665,16 @@ OperationMetadata.
           config, request, global_params=global_params)
 
     Export.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha2/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/dicomStores/{dicomStoresId}:export',
-        http_method=u'POST',
-        method_id=u'healthcare.projects.locations.datasets.dicomStores.export',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1alpha2/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/dicomStores/{dicomStoresId}:export',
+        http_method='POST',
+        method_id='healthcare.projects.locations.datasets.dicomStores.export',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1alpha2/{+name}:export',
-        request_field=u'exportDicomDataRequest',
-        request_type_name=u'HealthcareProjectsLocationsDatasetsDicomStoresExportRequest',
-        response_type_name=u'Operation',
+        relative_path='v1alpha2/{+name}:export',
+        request_field='exportDicomDataRequest',
+        request_type_name='HealthcareProjectsLocationsDatasetsDicomStoresExportRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -1659,16 +1692,16 @@ OperationMetadata.
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha2/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/dicomStores/{dicomStoresId}',
-        http_method=u'GET',
-        method_id=u'healthcare.projects.locations.datasets.dicomStores.get',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1alpha2/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/dicomStores/{dicomStoresId}',
+        http_method='GET',
+        method_id='healthcare.projects.locations.datasets.dicomStores.get',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1alpha2/{+name}',
+        relative_path='v1alpha2/{+name}',
         request_field='',
-        request_type_name=u'HealthcareProjectsLocationsDatasetsDicomStoresGetRequest',
-        response_type_name=u'DicomStore',
+        request_type_name='HealthcareProjectsLocationsDatasetsDicomStoresGetRequest',
+        response_type_name='DicomStore',
         supports_download=False,
     )
 
@@ -1688,16 +1721,16 @@ set.
           config, request, global_params=global_params)
 
     GetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha2/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/dicomStores/{dicomStoresId}:getIamPolicy',
-        http_method=u'GET',
-        method_id=u'healthcare.projects.locations.datasets.dicomStores.getIamPolicy',
-        ordered_params=[u'resource'],
-        path_params=[u'resource'],
-        query_params=[u'options_requestedPolicyVersion'],
-        relative_path=u'v1alpha2/{+resource}:getIamPolicy',
+        flat_path='v1alpha2/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/dicomStores/{dicomStoresId}:getIamPolicy',
+        http_method='GET',
+        method_id='healthcare.projects.locations.datasets.dicomStores.getIamPolicy',
+        ordered_params=['resource'],
+        path_params=['resource'],
+        query_params=['options_requestedPolicyVersion'],
+        relative_path='v1alpha2/{+resource}:getIamPolicy',
         request_field='',
-        request_type_name=u'HealthcareProjectsLocationsDatasetsDicomStoresGetIamPolicyRequest',
-        response_type_name=u'Policy',
+        request_type_name='HealthcareProjectsLocationsDatasetsDicomStoresGetIamPolicyRequest',
+        response_type_name='Policy',
         supports_download=False,
     )
 
@@ -1721,16 +1754,16 @@ OperationMetadata.
           config, request, global_params=global_params)
 
     Import.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha2/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/dicomStores/{dicomStoresId}:import',
-        http_method=u'POST',
-        method_id=u'healthcare.projects.locations.datasets.dicomStores.import',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1alpha2/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/dicomStores/{dicomStoresId}:import',
+        http_method='POST',
+        method_id='healthcare.projects.locations.datasets.dicomStores.import',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1alpha2/{+name}:import',
-        request_field=u'importDicomDataRequest',
-        request_type_name=u'HealthcareProjectsLocationsDatasetsDicomStoresImportRequest',
-        response_type_name=u'Operation',
+        relative_path='v1alpha2/{+name}:import',
+        request_field='importDicomDataRequest',
+        request_type_name='HealthcareProjectsLocationsDatasetsDicomStoresImportRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -1748,16 +1781,16 @@ OperationMetadata.
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha2/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/dicomStores',
-        http_method=u'GET',
-        method_id=u'healthcare.projects.locations.datasets.dicomStores.list',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'filter', u'pageSize', u'pageToken'],
-        relative_path=u'v1alpha2/{+parent}/dicomStores',
+        flat_path='v1alpha2/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/dicomStores',
+        http_method='GET',
+        method_id='healthcare.projects.locations.datasets.dicomStores.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'pageSize', 'pageToken'],
+        relative_path='v1alpha2/{+parent}/dicomStores',
         request_field='',
-        request_type_name=u'HealthcareProjectsLocationsDatasetsDicomStoresListRequest',
-        response_type_name=u'ListDicomStoresResponse',
+        request_type_name='HealthcareProjectsLocationsDatasetsDicomStoresListRequest',
+        response_type_name='ListDicomStoresResponse',
         supports_download=False,
     )
 
@@ -1775,16 +1808,16 @@ OperationMetadata.
           config, request, global_params=global_params)
 
     Patch.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha2/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/dicomStores/{dicomStoresId}',
-        http_method=u'PATCH',
-        method_id=u'healthcare.projects.locations.datasets.dicomStores.patch',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[u'updateMask'],
-        relative_path=u'v1alpha2/{+name}',
-        request_field=u'dicomStore',
-        request_type_name=u'HealthcareProjectsLocationsDatasetsDicomStoresPatchRequest',
-        response_type_name=u'DicomStore',
+        flat_path='v1alpha2/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/dicomStores/{dicomStoresId}',
+        http_method='PATCH',
+        method_id='healthcare.projects.locations.datasets.dicomStores.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v1alpha2/{+name}',
+        request_field='dicomStore',
+        request_type_name='HealthcareProjectsLocationsDatasetsDicomStoresPatchRequest',
+        response_type_name='DicomStore',
         supports_download=False,
     )
 
@@ -1805,16 +1838,16 @@ Can return `NOT_FOUND`, `INVALID_ARGUMENT`, and `PERMISSION_DENIED` errors.
           config, request, global_params=global_params)
 
     SetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha2/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/dicomStores/{dicomStoresId}:setIamPolicy',
-        http_method=u'POST',
-        method_id=u'healthcare.projects.locations.datasets.dicomStores.setIamPolicy',
-        ordered_params=[u'resource'],
-        path_params=[u'resource'],
+        flat_path='v1alpha2/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/dicomStores/{dicomStoresId}:setIamPolicy',
+        http_method='POST',
+        method_id='healthcare.projects.locations.datasets.dicomStores.setIamPolicy',
+        ordered_params=['resource'],
+        path_params=['resource'],
         query_params=[],
-        relative_path=u'v1alpha2/{+resource}:setIamPolicy',
-        request_field=u'setIamPolicyRequest',
-        request_type_name=u'HealthcareProjectsLocationsDatasetsDicomStoresSetIamPolicyRequest',
-        response_type_name=u'Policy',
+        relative_path='v1alpha2/{+resource}:setIamPolicy',
+        request_field='setIamPolicyRequest',
+        request_type_name='HealthcareProjectsLocationsDatasetsDicomStoresSetIamPolicyRequest',
+        response_type_name='Policy',
         supports_download=False,
     )
 
@@ -1838,23 +1871,23 @@ may "fail open" without warning.
           config, request, global_params=global_params)
 
     TestIamPermissions.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha2/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/dicomStores/{dicomStoresId}:testIamPermissions',
-        http_method=u'POST',
-        method_id=u'healthcare.projects.locations.datasets.dicomStores.testIamPermissions',
-        ordered_params=[u'resource'],
-        path_params=[u'resource'],
+        flat_path='v1alpha2/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/dicomStores/{dicomStoresId}:testIamPermissions',
+        http_method='POST',
+        method_id='healthcare.projects.locations.datasets.dicomStores.testIamPermissions',
+        ordered_params=['resource'],
+        path_params=['resource'],
         query_params=[],
-        relative_path=u'v1alpha2/{+resource}:testIamPermissions',
-        request_field=u'testIamPermissionsRequest',
-        request_type_name=u'HealthcareProjectsLocationsDatasetsDicomStoresTestIamPermissionsRequest',
-        response_type_name=u'TestIamPermissionsResponse',
+        relative_path='v1alpha2/{+resource}:testIamPermissions',
+        request_field='testIamPermissionsRequest',
+        request_type_name='HealthcareProjectsLocationsDatasetsDicomStoresTestIamPermissionsRequest',
+        response_type_name='TestIamPermissionsResponse',
         supports_download=False,
     )
 
   class ProjectsLocationsDatasetsFhirStoresService(base_api.BaseApiService):
     """Service class for the projects_locations_datasets_fhirStores resource."""
 
-    _NAME = u'projects_locations_datasets_fhirStores'
+    _NAME = 'projects_locations_datasets_fhirStores'
 
     def __init__(self, client):
       super(HealthcareV1alpha2.ProjectsLocationsDatasetsFhirStoresService, self).__init__(client)
@@ -1875,16 +1908,16 @@ may "fail open" without warning.
           config, request, global_params=global_params)
 
     Create.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha2/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/fhirStores',
-        http_method=u'POST',
-        method_id=u'healthcare.projects.locations.datasets.fhirStores.create',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'fhirStoreId'],
-        relative_path=u'v1alpha2/{+parent}/fhirStores',
-        request_field=u'fhirStore',
-        request_type_name=u'HealthcareProjectsLocationsDatasetsFhirStoresCreateRequest',
-        response_type_name=u'FhirStore',
+        flat_path='v1alpha2/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/fhirStores',
+        http_method='POST',
+        method_id='healthcare.projects.locations.datasets.fhirStores.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['fhirStoreId'],
+        relative_path='v1alpha2/{+parent}/fhirStores',
+        request_field='fhirStore',
+        request_type_name='HealthcareProjectsLocationsDatasetsFhirStoresCreateRequest',
+        response_type_name='FhirStore',
         supports_download=False,
     )
 
@@ -1902,16 +1935,16 @@ may "fail open" without warning.
           config, request, global_params=global_params)
 
     Delete.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha2/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/fhirStores/{fhirStoresId}',
-        http_method=u'DELETE',
-        method_id=u'healthcare.projects.locations.datasets.fhirStores.delete',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1alpha2/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/fhirStores/{fhirStoresId}',
+        http_method='DELETE',
+        method_id='healthcare.projects.locations.datasets.fhirStores.delete',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1alpha2/{+name}',
+        relative_path='v1alpha2/{+name}',
         request_field='',
-        request_type_name=u'HealthcareProjectsLocationsDatasetsFhirStoresDeleteRequest',
-        response_type_name=u'Empty',
+        request_type_name='HealthcareProjectsLocationsDatasetsFhirStoresDeleteRequest',
+        response_type_name='Empty',
         supports_download=False,
     )
 
@@ -1943,16 +1976,16 @@ operation is OperationMetadata.
           config, request, global_params=global_params)
 
     Export.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha2/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/fhirStores/{fhirStoresId}:export',
-        http_method=u'POST',
-        method_id=u'healthcare.projects.locations.datasets.fhirStores.export',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1alpha2/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/fhirStores/{fhirStoresId}:export',
+        http_method='POST',
+        method_id='healthcare.projects.locations.datasets.fhirStores.export',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1alpha2/{+name}:export',
-        request_field=u'exportResourcesRequest',
-        request_type_name=u'HealthcareProjectsLocationsDatasetsFhirStoresExportRequest',
-        response_type_name=u'Operation',
+        relative_path='v1alpha2/{+name}:export',
+        request_field='exportResourcesRequest',
+        request_type_name='HealthcareProjectsLocationsDatasetsFhirStoresExportRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -1970,16 +2003,16 @@ operation is OperationMetadata.
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha2/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/fhirStores/{fhirStoresId}',
-        http_method=u'GET',
-        method_id=u'healthcare.projects.locations.datasets.fhirStores.get',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1alpha2/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/fhirStores/{fhirStoresId}',
+        http_method='GET',
+        method_id='healthcare.projects.locations.datasets.fhirStores.get',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1alpha2/{+name}',
+        relative_path='v1alpha2/{+name}',
         request_field='',
-        request_type_name=u'HealthcareProjectsLocationsDatasetsFhirStoresGetRequest',
-        response_type_name=u'FhirStore',
+        request_type_name='HealthcareProjectsLocationsDatasetsFhirStoresGetRequest',
+        response_type_name='FhirStore',
         supports_download=False,
     )
 
@@ -1999,16 +2032,16 @@ set.
           config, request, global_params=global_params)
 
     GetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha2/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/fhirStores/{fhirStoresId}:getIamPolicy',
-        http_method=u'GET',
-        method_id=u'healthcare.projects.locations.datasets.fhirStores.getIamPolicy',
-        ordered_params=[u'resource'],
-        path_params=[u'resource'],
-        query_params=[u'options_requestedPolicyVersion'],
-        relative_path=u'v1alpha2/{+resource}:getIamPolicy',
+        flat_path='v1alpha2/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/fhirStores/{fhirStoresId}:getIamPolicy',
+        http_method='GET',
+        method_id='healthcare.projects.locations.datasets.fhirStores.getIamPolicy',
+        ordered_params=['resource'],
+        path_params=['resource'],
+        query_params=['options_requestedPolicyVersion'],
+        relative_path='v1alpha2/{+resource}:getIamPolicy',
         request_field='',
-        request_type_name=u'HealthcareProjectsLocationsDatasetsFhirStoresGetIamPolicyRequest',
-        response_type_name=u'Policy',
+        request_type_name='HealthcareProjectsLocationsDatasetsFhirStoresGetIamPolicyRequest',
+        response_type_name='Policy',
         supports_download=False,
     )
 
@@ -2021,8 +2054,8 @@ an empty FHIR store that is not being used by other clients. In cases
 where this method is not appropriate, consider using ExecuteBundle to
 load data.
 
-Every resource in the input must contain a client-supplied ID and is
-stored using that ID regardless of the
+Every resource in the input must contain a client-supplied ID. Each
+resource is stored using the supplied ID regardless of the
 enable_update_create setting on the FHIR
 store.
 
@@ -2097,16 +2130,16 @@ operation is OperationMetadata.
           config, request, global_params=global_params)
 
     Import.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha2/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/fhirStores/{fhirStoresId}:import',
-        http_method=u'POST',
-        method_id=u'healthcare.projects.locations.datasets.fhirStores.import',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1alpha2/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/fhirStores/{fhirStoresId}:import',
+        http_method='POST',
+        method_id='healthcare.projects.locations.datasets.fhirStores.import',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1alpha2/{+name}:import',
-        request_field=u'importResourcesRequest',
-        request_type_name=u'HealthcareProjectsLocationsDatasetsFhirStoresImportRequest',
-        response_type_name=u'Operation',
+        relative_path='v1alpha2/{+name}:import',
+        request_field='importResourcesRequest',
+        request_type_name='HealthcareProjectsLocationsDatasetsFhirStoresImportRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -2124,16 +2157,16 @@ operation is OperationMetadata.
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha2/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/fhirStores',
-        http_method=u'GET',
-        method_id=u'healthcare.projects.locations.datasets.fhirStores.list',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'filter', u'pageSize', u'pageToken'],
-        relative_path=u'v1alpha2/{+parent}/fhirStores',
+        flat_path='v1alpha2/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/fhirStores',
+        http_method='GET',
+        method_id='healthcare.projects.locations.datasets.fhirStores.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'pageSize', 'pageToken'],
+        relative_path='v1alpha2/{+parent}/fhirStores',
         request_field='',
-        request_type_name=u'HealthcareProjectsLocationsDatasetsFhirStoresListRequest',
-        response_type_name=u'ListFhirStoresResponse',
+        request_type_name='HealthcareProjectsLocationsDatasetsFhirStoresListRequest',
+        response_type_name='ListFhirStoresResponse',
         supports_download=False,
     )
 
@@ -2151,16 +2184,16 @@ operation is OperationMetadata.
           config, request, global_params=global_params)
 
     Patch.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha2/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/fhirStores/{fhirStoresId}',
-        http_method=u'PATCH',
-        method_id=u'healthcare.projects.locations.datasets.fhirStores.patch',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[u'updateMask'],
-        relative_path=u'v1alpha2/{+name}',
-        request_field=u'fhirStore',
-        request_type_name=u'HealthcareProjectsLocationsDatasetsFhirStoresPatchRequest',
-        response_type_name=u'FhirStore',
+        flat_path='v1alpha2/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/fhirStores/{fhirStoresId}',
+        http_method='PATCH',
+        method_id='healthcare.projects.locations.datasets.fhirStores.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v1alpha2/{+name}',
+        request_field='fhirStore',
+        request_type_name='HealthcareProjectsLocationsDatasetsFhirStoresPatchRequest',
+        response_type_name='FhirStore',
         supports_download=False,
     )
 
@@ -2181,16 +2214,16 @@ Can return `NOT_FOUND`, `INVALID_ARGUMENT`, and `PERMISSION_DENIED` errors.
           config, request, global_params=global_params)
 
     SetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha2/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/fhirStores/{fhirStoresId}:setIamPolicy',
-        http_method=u'POST',
-        method_id=u'healthcare.projects.locations.datasets.fhirStores.setIamPolicy',
-        ordered_params=[u'resource'],
-        path_params=[u'resource'],
+        flat_path='v1alpha2/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/fhirStores/{fhirStoresId}:setIamPolicy',
+        http_method='POST',
+        method_id='healthcare.projects.locations.datasets.fhirStores.setIamPolicy',
+        ordered_params=['resource'],
+        path_params=['resource'],
         query_params=[],
-        relative_path=u'v1alpha2/{+resource}:setIamPolicy',
-        request_field=u'setIamPolicyRequest',
-        request_type_name=u'HealthcareProjectsLocationsDatasetsFhirStoresSetIamPolicyRequest',
-        response_type_name=u'Policy',
+        relative_path='v1alpha2/{+resource}:setIamPolicy',
+        request_field='setIamPolicyRequest',
+        request_type_name='HealthcareProjectsLocationsDatasetsFhirStoresSetIamPolicyRequest',
+        response_type_name='Policy',
         supports_download=False,
     )
 
@@ -2214,23 +2247,23 @@ may "fail open" without warning.
           config, request, global_params=global_params)
 
     TestIamPermissions.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha2/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/fhirStores/{fhirStoresId}:testIamPermissions',
-        http_method=u'POST',
-        method_id=u'healthcare.projects.locations.datasets.fhirStores.testIamPermissions',
-        ordered_params=[u'resource'],
-        path_params=[u'resource'],
+        flat_path='v1alpha2/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/fhirStores/{fhirStoresId}:testIamPermissions',
+        http_method='POST',
+        method_id='healthcare.projects.locations.datasets.fhirStores.testIamPermissions',
+        ordered_params=['resource'],
+        path_params=['resource'],
         query_params=[],
-        relative_path=u'v1alpha2/{+resource}:testIamPermissions',
-        request_field=u'testIamPermissionsRequest',
-        request_type_name=u'HealthcareProjectsLocationsDatasetsFhirStoresTestIamPermissionsRequest',
-        response_type_name=u'TestIamPermissionsResponse',
+        relative_path='v1alpha2/{+resource}:testIamPermissions',
+        request_field='testIamPermissionsRequest',
+        request_type_name='HealthcareProjectsLocationsDatasetsFhirStoresTestIamPermissionsRequest',
+        response_type_name='TestIamPermissionsResponse',
         supports_download=False,
     )
 
   class ProjectsLocationsDatasetsHl7V2StoresService(base_api.BaseApiService):
     """Service class for the projects_locations_datasets_hl7V2Stores resource."""
 
-    _NAME = u'projects_locations_datasets_hl7V2Stores'
+    _NAME = 'projects_locations_datasets_hl7V2Stores'
 
     def __init__(self, client):
       super(HealthcareV1alpha2.ProjectsLocationsDatasetsHl7V2StoresService, self).__init__(client)
@@ -2251,22 +2284,22 @@ may "fail open" without warning.
           config, request, global_params=global_params)
 
     Create.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha2/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/hl7V2Stores',
-        http_method=u'POST',
-        method_id=u'healthcare.projects.locations.datasets.hl7V2Stores.create',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'hl7V2StoreId'],
-        relative_path=u'v1alpha2/{+parent}/hl7V2Stores',
-        request_field=u'hl7V2Store',
-        request_type_name=u'HealthcareProjectsLocationsDatasetsHl7V2StoresCreateRequest',
-        response_type_name=u'Hl7V2Store',
+        flat_path='v1alpha2/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/hl7V2Stores',
+        http_method='POST',
+        method_id='healthcare.projects.locations.datasets.hl7V2Stores.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['hl7V2StoreId'],
+        relative_path='v1alpha2/{+parent}/hl7V2Stores',
+        request_field='hl7V2Store',
+        request_type_name='HealthcareProjectsLocationsDatasetsHl7V2StoresCreateRequest',
+        response_type_name='Hl7V2Store',
         supports_download=False,
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes the specified HL7v2 store and removes all messages that are.
-contained within it.
+      r"""Deletes the specified HL7v2 store and removes all messages that it.
+contains.
 
       Args:
         request: (HealthcareProjectsLocationsDatasetsHl7V2StoresDeleteRequest) input message
@@ -2279,16 +2312,16 @@ contained within it.
           config, request, global_params=global_params)
 
     Delete.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha2/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/hl7V2Stores/{hl7V2StoresId}',
-        http_method=u'DELETE',
-        method_id=u'healthcare.projects.locations.datasets.hl7V2Stores.delete',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1alpha2/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/hl7V2Stores/{hl7V2StoresId}',
+        http_method='DELETE',
+        method_id='healthcare.projects.locations.datasets.hl7V2Stores.delete',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1alpha2/{+name}',
+        relative_path='v1alpha2/{+name}',
         request_field='',
-        request_type_name=u'HealthcareProjectsLocationsDatasetsHl7V2StoresDeleteRequest',
-        response_type_name=u'Empty',
+        request_type_name='HealthcareProjectsLocationsDatasetsHl7V2StoresDeleteRequest',
+        response_type_name='Empty',
         supports_download=False,
     )
 
@@ -2306,16 +2339,16 @@ contained within it.
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha2/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/hl7V2Stores/{hl7V2StoresId}',
-        http_method=u'GET',
-        method_id=u'healthcare.projects.locations.datasets.hl7V2Stores.get',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1alpha2/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/hl7V2Stores/{hl7V2StoresId}',
+        http_method='GET',
+        method_id='healthcare.projects.locations.datasets.hl7V2Stores.get',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1alpha2/{+name}',
+        relative_path='v1alpha2/{+name}',
         request_field='',
-        request_type_name=u'HealthcareProjectsLocationsDatasetsHl7V2StoresGetRequest',
-        response_type_name=u'Hl7V2Store',
+        request_type_name='HealthcareProjectsLocationsDatasetsHl7V2StoresGetRequest',
+        response_type_name='Hl7V2Store',
         supports_download=False,
     )
 
@@ -2335,16 +2368,16 @@ set.
           config, request, global_params=global_params)
 
     GetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha2/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/hl7V2Stores/{hl7V2StoresId}:getIamPolicy',
-        http_method=u'GET',
-        method_id=u'healthcare.projects.locations.datasets.hl7V2Stores.getIamPolicy',
-        ordered_params=[u'resource'],
-        path_params=[u'resource'],
-        query_params=[u'options_requestedPolicyVersion'],
-        relative_path=u'v1alpha2/{+resource}:getIamPolicy',
+        flat_path='v1alpha2/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/hl7V2Stores/{hl7V2StoresId}:getIamPolicy',
+        http_method='GET',
+        method_id='healthcare.projects.locations.datasets.hl7V2Stores.getIamPolicy',
+        ordered_params=['resource'],
+        path_params=['resource'],
+        query_params=['options_requestedPolicyVersion'],
+        relative_path='v1alpha2/{+resource}:getIamPolicy',
         request_field='',
-        request_type_name=u'HealthcareProjectsLocationsDatasetsHl7V2StoresGetIamPolicyRequest',
-        response_type_name=u'Policy',
+        request_type_name='HealthcareProjectsLocationsDatasetsHl7V2StoresGetIamPolicyRequest',
+        response_type_name='Policy',
         supports_download=False,
     )
 
@@ -2362,16 +2395,16 @@ set.
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha2/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/hl7V2Stores',
-        http_method=u'GET',
-        method_id=u'healthcare.projects.locations.datasets.hl7V2Stores.list',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'filter', u'pageSize', u'pageToken'],
-        relative_path=u'v1alpha2/{+parent}/hl7V2Stores',
+        flat_path='v1alpha2/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/hl7V2Stores',
+        http_method='GET',
+        method_id='healthcare.projects.locations.datasets.hl7V2Stores.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'pageSize', 'pageToken'],
+        relative_path='v1alpha2/{+parent}/hl7V2Stores',
         request_field='',
-        request_type_name=u'HealthcareProjectsLocationsDatasetsHl7V2StoresListRequest',
-        response_type_name=u'ListHl7V2StoresResponse',
+        request_type_name='HealthcareProjectsLocationsDatasetsHl7V2StoresListRequest',
+        response_type_name='ListHl7V2StoresResponse',
         supports_download=False,
     )
 
@@ -2389,16 +2422,16 @@ set.
           config, request, global_params=global_params)
 
     Patch.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha2/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/hl7V2Stores/{hl7V2StoresId}',
-        http_method=u'PATCH',
-        method_id=u'healthcare.projects.locations.datasets.hl7V2Stores.patch',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[u'updateMask'],
-        relative_path=u'v1alpha2/{+name}',
-        request_field=u'hl7V2Store',
-        request_type_name=u'HealthcareProjectsLocationsDatasetsHl7V2StoresPatchRequest',
-        response_type_name=u'Hl7V2Store',
+        flat_path='v1alpha2/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/hl7V2Stores/{hl7V2StoresId}',
+        http_method='PATCH',
+        method_id='healthcare.projects.locations.datasets.hl7V2Stores.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v1alpha2/{+name}',
+        request_field='hl7V2Store',
+        request_type_name='HealthcareProjectsLocationsDatasetsHl7V2StoresPatchRequest',
+        response_type_name='Hl7V2Store',
         supports_download=False,
     )
 
@@ -2419,16 +2452,16 @@ Can return `NOT_FOUND`, `INVALID_ARGUMENT`, and `PERMISSION_DENIED` errors.
           config, request, global_params=global_params)
 
     SetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha2/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/hl7V2Stores/{hl7V2StoresId}:setIamPolicy',
-        http_method=u'POST',
-        method_id=u'healthcare.projects.locations.datasets.hl7V2Stores.setIamPolicy',
-        ordered_params=[u'resource'],
-        path_params=[u'resource'],
+        flat_path='v1alpha2/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/hl7V2Stores/{hl7V2StoresId}:setIamPolicy',
+        http_method='POST',
+        method_id='healthcare.projects.locations.datasets.hl7V2Stores.setIamPolicy',
+        ordered_params=['resource'],
+        path_params=['resource'],
         query_params=[],
-        relative_path=u'v1alpha2/{+resource}:setIamPolicy',
-        request_field=u'setIamPolicyRequest',
-        request_type_name=u'HealthcareProjectsLocationsDatasetsHl7V2StoresSetIamPolicyRequest',
-        response_type_name=u'Policy',
+        relative_path='v1alpha2/{+resource}:setIamPolicy',
+        request_field='setIamPolicyRequest',
+        request_type_name='HealthcareProjectsLocationsDatasetsHl7V2StoresSetIamPolicyRequest',
+        response_type_name='Policy',
         supports_download=False,
     )
 
@@ -2452,23 +2485,23 @@ may "fail open" without warning.
           config, request, global_params=global_params)
 
     TestIamPermissions.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha2/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/hl7V2Stores/{hl7V2StoresId}:testIamPermissions',
-        http_method=u'POST',
-        method_id=u'healthcare.projects.locations.datasets.hl7V2Stores.testIamPermissions',
-        ordered_params=[u'resource'],
-        path_params=[u'resource'],
+        flat_path='v1alpha2/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/hl7V2Stores/{hl7V2StoresId}:testIamPermissions',
+        http_method='POST',
+        method_id='healthcare.projects.locations.datasets.hl7V2Stores.testIamPermissions',
+        ordered_params=['resource'],
+        path_params=['resource'],
         query_params=[],
-        relative_path=u'v1alpha2/{+resource}:testIamPermissions',
-        request_field=u'testIamPermissionsRequest',
-        request_type_name=u'HealthcareProjectsLocationsDatasetsHl7V2StoresTestIamPermissionsRequest',
-        response_type_name=u'TestIamPermissionsResponse',
+        relative_path='v1alpha2/{+resource}:testIamPermissions',
+        request_field='testIamPermissionsRequest',
+        request_type_name='HealthcareProjectsLocationsDatasetsHl7V2StoresTestIamPermissionsRequest',
+        response_type_name='TestIamPermissionsResponse',
         supports_download=False,
     )
 
   class ProjectsLocationsDatasetsOperationsService(base_api.BaseApiService):
     """Service class for the projects_locations_datasets_operations resource."""
 
-    _NAME = u'projects_locations_datasets_operations'
+    _NAME = 'projects_locations_datasets_operations'
 
     def __init__(self, client):
       super(HealthcareV1alpha2.ProjectsLocationsDatasetsOperationsService, self).__init__(client)
@@ -2498,16 +2531,16 @@ corresponding to `Code.CANCELLED`.
           config, request, global_params=global_params)
 
     Cancel.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha2/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/operations/{operationsId}:cancel',
-        http_method=u'POST',
-        method_id=u'healthcare.projects.locations.datasets.operations.cancel',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1alpha2/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/operations/{operationsId}:cancel',
+        http_method='POST',
+        method_id='healthcare.projects.locations.datasets.operations.cancel',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1alpha2/{+name}:cancel',
-        request_field=u'cancelOperationRequest',
-        request_type_name=u'HealthcareProjectsLocationsDatasetsOperationsCancelRequest',
-        response_type_name=u'Empty',
+        relative_path='v1alpha2/{+name}:cancel',
+        request_field='cancelOperationRequest',
+        request_type_name='HealthcareProjectsLocationsDatasetsOperationsCancelRequest',
+        response_type_name='Empty',
         supports_download=False,
     )
 
@@ -2527,16 +2560,16 @@ service.
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha2/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/operations/{operationsId}',
-        http_method=u'GET',
-        method_id=u'healthcare.projects.locations.datasets.operations.get',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1alpha2/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/operations/{operationsId}',
+        http_method='GET',
+        method_id='healthcare.projects.locations.datasets.operations.get',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1alpha2/{+name}',
+        relative_path='v1alpha2/{+name}',
         request_field='',
-        request_type_name=u'HealthcareProjectsLocationsDatasetsOperationsGetRequest',
-        response_type_name=u'Operation',
+        request_type_name='HealthcareProjectsLocationsDatasetsOperationsGetRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -2563,23 +2596,23 @@ is the parent resource, without the operations collection id.
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha2/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/operations',
-        http_method=u'GET',
-        method_id=u'healthcare.projects.locations.datasets.operations.list',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[u'filter', u'pageSize', u'pageToken'],
-        relative_path=u'v1alpha2/{+name}/operations',
+        flat_path='v1alpha2/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/operations',
+        http_method='GET',
+        method_id='healthcare.projects.locations.datasets.operations.list',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['filter', 'pageSize', 'pageToken'],
+        relative_path='v1alpha2/{+name}/operations',
         request_field='',
-        request_type_name=u'HealthcareProjectsLocationsDatasetsOperationsListRequest',
-        response_type_name=u'ListOperationsResponse',
+        request_type_name='HealthcareProjectsLocationsDatasetsOperationsListRequest',
+        response_type_name='ListOperationsResponse',
         supports_download=False,
     )
 
   class ProjectsLocationsDatasetsService(base_api.BaseApiService):
     """Service class for the projects_locations_datasets resource."""
 
-    _NAME = u'projects_locations_datasets'
+    _NAME = 'projects_locations_datasets'
 
     def __init__(self, client):
       super(HealthcareV1alpha2.ProjectsLocationsDatasetsService, self).__init__(client)
@@ -2606,16 +2639,16 @@ regions.
           config, request, global_params=global_params)
 
     Create.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha2/projects/{projectsId}/locations/{locationsId}/datasets',
-        http_method=u'POST',
-        method_id=u'healthcare.projects.locations.datasets.create',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'datasetId'],
-        relative_path=u'v1alpha2/{+parent}/datasets',
-        request_field=u'dataset',
-        request_type_name=u'HealthcareProjectsLocationsDatasetsCreateRequest',
-        response_type_name=u'Operation',
+        flat_path='v1alpha2/projects/{projectsId}/locations/{locationsId}/datasets',
+        http_method='POST',
+        method_id='healthcare.projects.locations.datasets.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['datasetId'],
+        relative_path='v1alpha2/{+parent}/datasets',
+        request_field='dataset',
+        request_type_name='HealthcareProjectsLocationsDatasetsCreateRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -2648,16 +2681,16 @@ see [Viewing logs](/healthcare/docs/how-tos/logging).
           config, request, global_params=global_params)
 
     Deidentify.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha2/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}:deidentify',
-        http_method=u'POST',
-        method_id=u'healthcare.projects.locations.datasets.deidentify',
-        ordered_params=[u'sourceDataset'],
-        path_params=[u'sourceDataset'],
+        flat_path='v1alpha2/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}:deidentify',
+        http_method='POST',
+        method_id='healthcare.projects.locations.datasets.deidentify',
+        ordered_params=['sourceDataset'],
+        path_params=['sourceDataset'],
         query_params=[],
-        relative_path=u'v1alpha2/{+sourceDataset}:deidentify',
-        request_field=u'deidentifyDatasetRequest',
-        request_type_name=u'HealthcareProjectsLocationsDatasetsDeidentifyRequest',
-        response_type_name=u'Operation',
+        relative_path='v1alpha2/{+sourceDataset}:deidentify',
+        request_field='deidentifyDatasetRequest',
+        request_type_name='HealthcareProjectsLocationsDatasetsDeidentifyRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -2677,16 +2710,16 @@ imported (if any).
           config, request, global_params=global_params)
 
     Delete.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha2/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}',
-        http_method=u'DELETE',
-        method_id=u'healthcare.projects.locations.datasets.delete',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1alpha2/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}',
+        http_method='DELETE',
+        method_id='healthcare.projects.locations.datasets.delete',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1alpha2/{+name}',
+        relative_path='v1alpha2/{+name}',
         request_field='',
-        request_type_name=u'HealthcareProjectsLocationsDatasetsDeleteRequest',
-        response_type_name=u'Empty',
+        request_type_name='HealthcareProjectsLocationsDatasetsDeleteRequest',
+        response_type_name='Empty',
         supports_download=False,
     )
 
@@ -2704,16 +2737,16 @@ imported (if any).
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha2/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}',
-        http_method=u'GET',
-        method_id=u'healthcare.projects.locations.datasets.get',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1alpha2/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}',
+        http_method='GET',
+        method_id='healthcare.projects.locations.datasets.get',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1alpha2/{+name}',
+        relative_path='v1alpha2/{+name}',
         request_field='',
-        request_type_name=u'HealthcareProjectsLocationsDatasetsGetRequest',
-        response_type_name=u'Dataset',
+        request_type_name='HealthcareProjectsLocationsDatasetsGetRequest',
+        response_type_name='Dataset',
         supports_download=False,
     )
 
@@ -2733,16 +2766,16 @@ set.
           config, request, global_params=global_params)
 
     GetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha2/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}:getIamPolicy',
-        http_method=u'GET',
-        method_id=u'healthcare.projects.locations.datasets.getIamPolicy',
-        ordered_params=[u'resource'],
-        path_params=[u'resource'],
-        query_params=[u'options_requestedPolicyVersion'],
-        relative_path=u'v1alpha2/{+resource}:getIamPolicy',
+        flat_path='v1alpha2/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}:getIamPolicy',
+        http_method='GET',
+        method_id='healthcare.projects.locations.datasets.getIamPolicy',
+        ordered_params=['resource'],
+        path_params=['resource'],
+        query_params=['options_requestedPolicyVersion'],
+        relative_path='v1alpha2/{+resource}:getIamPolicy',
         request_field='',
-        request_type_name=u'HealthcareProjectsLocationsDatasetsGetIamPolicyRequest',
-        response_type_name=u'Policy',
+        request_type_name='HealthcareProjectsLocationsDatasetsGetIamPolicyRequest',
+        response_type_name='Policy',
         supports_download=False,
     )
 
@@ -2760,16 +2793,16 @@ set.
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha2/projects/{projectsId}/locations/{locationsId}/datasets',
-        http_method=u'GET',
-        method_id=u'healthcare.projects.locations.datasets.list',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'pageSize', u'pageToken'],
-        relative_path=u'v1alpha2/{+parent}/datasets',
+        flat_path='v1alpha2/projects/{projectsId}/locations/{locationsId}/datasets',
+        http_method='GET',
+        method_id='healthcare.projects.locations.datasets.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v1alpha2/{+parent}/datasets',
         request_field='',
-        request_type_name=u'HealthcareProjectsLocationsDatasetsListRequest',
-        response_type_name=u'ListDatasetsResponse',
+        request_type_name='HealthcareProjectsLocationsDatasetsListRequest',
+        response_type_name='ListDatasetsResponse',
         supports_download=False,
     )
 
@@ -2787,16 +2820,16 @@ set.
           config, request, global_params=global_params)
 
     Patch.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha2/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}',
-        http_method=u'PATCH',
-        method_id=u'healthcare.projects.locations.datasets.patch',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[u'updateMask'],
-        relative_path=u'v1alpha2/{+name}',
-        request_field=u'dataset',
-        request_type_name=u'HealthcareProjectsLocationsDatasetsPatchRequest',
-        response_type_name=u'Dataset',
+        flat_path='v1alpha2/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}',
+        http_method='PATCH',
+        method_id='healthcare.projects.locations.datasets.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v1alpha2/{+name}',
+        request_field='dataset',
+        request_type_name='HealthcareProjectsLocationsDatasetsPatchRequest',
+        response_type_name='Dataset',
         supports_download=False,
     )
 
@@ -2817,16 +2850,16 @@ Can return `NOT_FOUND`, `INVALID_ARGUMENT`, and `PERMISSION_DENIED` errors.
           config, request, global_params=global_params)
 
     SetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha2/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}:setIamPolicy',
-        http_method=u'POST',
-        method_id=u'healthcare.projects.locations.datasets.setIamPolicy',
-        ordered_params=[u'resource'],
-        path_params=[u'resource'],
+        flat_path='v1alpha2/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}:setIamPolicy',
+        http_method='POST',
+        method_id='healthcare.projects.locations.datasets.setIamPolicy',
+        ordered_params=['resource'],
+        path_params=['resource'],
         query_params=[],
-        relative_path=u'v1alpha2/{+resource}:setIamPolicy',
-        request_field=u'setIamPolicyRequest',
-        request_type_name=u'HealthcareProjectsLocationsDatasetsSetIamPolicyRequest',
-        response_type_name=u'Policy',
+        relative_path='v1alpha2/{+resource}:setIamPolicy',
+        request_field='setIamPolicyRequest',
+        request_type_name='HealthcareProjectsLocationsDatasetsSetIamPolicyRequest',
+        response_type_name='Policy',
         supports_download=False,
     )
 
@@ -2850,23 +2883,23 @@ may "fail open" without warning.
           config, request, global_params=global_params)
 
     TestIamPermissions.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha2/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}:testIamPermissions',
-        http_method=u'POST',
-        method_id=u'healthcare.projects.locations.datasets.testIamPermissions',
-        ordered_params=[u'resource'],
-        path_params=[u'resource'],
+        flat_path='v1alpha2/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}:testIamPermissions',
+        http_method='POST',
+        method_id='healthcare.projects.locations.datasets.testIamPermissions',
+        ordered_params=['resource'],
+        path_params=['resource'],
         query_params=[],
-        relative_path=u'v1alpha2/{+resource}:testIamPermissions',
-        request_field=u'testIamPermissionsRequest',
-        request_type_name=u'HealthcareProjectsLocationsDatasetsTestIamPermissionsRequest',
-        response_type_name=u'TestIamPermissionsResponse',
+        relative_path='v1alpha2/{+resource}:testIamPermissions',
+        request_field='testIamPermissionsRequest',
+        request_type_name='HealthcareProjectsLocationsDatasetsTestIamPermissionsRequest',
+        response_type_name='TestIamPermissionsResponse',
         supports_download=False,
     )
 
   class ProjectsLocationsService(base_api.BaseApiService):
     """Service class for the projects_locations resource."""
 
-    _NAME = u'projects_locations'
+    _NAME = 'projects_locations'
 
     def __init__(self, client):
       super(HealthcareV1alpha2.ProjectsLocationsService, self).__init__(client)
@@ -2887,16 +2920,16 @@ may "fail open" without warning.
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha2/projects/{projectsId}/locations/{locationsId}',
-        http_method=u'GET',
-        method_id=u'healthcare.projects.locations.get',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1alpha2/projects/{projectsId}/locations/{locationsId}',
+        http_method='GET',
+        method_id='healthcare.projects.locations.get',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1alpha2/{+name}',
+        relative_path='v1alpha2/{+name}',
         request_field='',
-        request_type_name=u'HealthcareProjectsLocationsGetRequest',
-        response_type_name=u'Location',
+        request_type_name='HealthcareProjectsLocationsGetRequest',
+        response_type_name='Location',
         supports_download=False,
     )
 
@@ -2914,23 +2947,23 @@ may "fail open" without warning.
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha2/projects/{projectsId}/locations',
-        http_method=u'GET',
-        method_id=u'healthcare.projects.locations.list',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[u'filter', u'pageSize', u'pageToken'],
-        relative_path=u'v1alpha2/{+name}/locations',
+        flat_path='v1alpha2/projects/{projectsId}/locations',
+        http_method='GET',
+        method_id='healthcare.projects.locations.list',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['filter', 'pageSize', 'pageToken'],
+        relative_path='v1alpha2/{+name}/locations',
         request_field='',
-        request_type_name=u'HealthcareProjectsLocationsListRequest',
-        response_type_name=u'ListLocationsResponse',
+        request_type_name='HealthcareProjectsLocationsListRequest',
+        response_type_name='ListLocationsResponse',
         supports_download=False,
     )
 
   class ProjectsService(base_api.BaseApiService):
     """Service class for the projects resource."""
 
-    _NAME = u'projects'
+    _NAME = 'projects'
 
     def __init__(self, client):
       super(HealthcareV1alpha2.ProjectsService, self).__init__(client)

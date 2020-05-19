@@ -28,7 +28,7 @@ class Collections(enum.Enum):
       'projects',
       'projects/{projectsId}',
       {},
-      [u'projectsId'],
+      ['projectsId'],
       True
   )
   PROJECTS_LOCATIONS = (
@@ -38,7 +38,7 @@ class Collections(enum.Enum):
           '':
               'projects/{projectsId}/locations/{locationsId}',
       },
-      [u'name'],
+      ['name'],
       True
   )
   PROJECTS_LOCATIONS_CERTIFICATEAUTHORITIES = (
@@ -49,7 +49,7 @@ class Collections(enum.Enum):
               'projects/{projectsId}/locations/{locationsId}/'
               'certificateAuthorities/{certificateAuthoritiesId}',
       },
-      [u'name'],
+      ['name'],
       True
   )
   PROJECTS_LOCATIONS_CERTIFICATEAUTHORITIES_CERTIFICATEREVOCATIONLISTS = (
@@ -61,7 +61,7 @@ class Collections(enum.Enum):
               'certificateAuthorities/{certificateAuthoritiesId}/'
               'certificateRevocationLists/{certificateRevocationListsId}',
       },
-      [u'name'],
+      ['name'],
       True
   )
   PROJECTS_LOCATIONS_CERTIFICATEAUTHORITIES_CERTIFICATES = (
@@ -73,7 +73,7 @@ class Collections(enum.Enum):
               'certificateAuthorities/{certificateAuthoritiesId}/'
               'certificates/{certificatesId}',
       },
-      [u'name'],
+      ['name'],
       True
   )
   PROJECTS_LOCATIONS_OPERATIONS = (
@@ -84,7 +84,7 @@ class Collections(enum.Enum):
               'projects/{projectsId}/locations/{locationsId}/operations/'
               '{operationsId}',
       },
-      [u'name'],
+      ['name'],
       True
   )
   PROJECTS_LOCATIONS_REUSABLECONFIGS = (
@@ -95,7 +95,7 @@ class Collections(enum.Enum):
               'projects/{projectsId}/locations/{locationsId}/reusableConfigs/'
               '{reusableConfigsId}',
       },
-      [u'name'],
+      ['name'],
       True
   )
 

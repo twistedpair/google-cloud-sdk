@@ -8,17 +8,17 @@ class TranslateV3(base_api.BaseApiClient):
   """Generated client library for service translate version v3."""
 
   MESSAGES_MODULE = messages
-  BASE_URL = u'https://translation.googleapis.com/'
-  MTLS_BASE_URL = u'https://translation.mtls.googleapis.com/'
+  BASE_URL = 'https://translation.googleapis.com/'
+  MTLS_BASE_URL = 'https://translation.mtls.googleapis.com/'
 
-  _PACKAGE = u'translate'
-  _SCOPES = [u'https://www.googleapis.com/auth/cloud-platform', u'https://www.googleapis.com/auth/cloud-translation']
-  _VERSION = u'v3'
+  _PACKAGE = 'translate'
+  _SCOPES = ['https://www.googleapis.com/auth/cloud-platform', 'https://www.googleapis.com/auth/cloud-translation']
+  _VERSION = 'v3'
   _CLIENT_ID = '1042881264118.apps.googleusercontent.com'
   _CLIENT_SECRET = 'x_Tw5K8nnjoRAqULM9PFAC2b'
-  _USER_AGENT = u'google-cloud-sdk'
-  _CLIENT_CLASS_NAME = u'TranslateV3'
-  _URL_VERSION = u'v3'
+  _USER_AGENT = 'google-cloud-sdk'
+  _CLIENT_CLASS_NAME = 'TranslateV3'
+  _URL_VERSION = 'v3'
   _API_KEY = None
 
   def __init__(self, url='', credentials=None,
@@ -44,7 +44,7 @@ class TranslateV3(base_api.BaseApiClient):
   class ProjectsLocationsGlossariesService(base_api.BaseApiService):
     """Service class for the projects_locations_glossaries resource."""
 
-    _NAME = u'projects_locations_glossaries'
+    _NAME = 'projects_locations_glossaries'
 
     def __init__(self, client):
       super(TranslateV3.ProjectsLocationsGlossariesService, self).__init__(client)
@@ -66,16 +66,16 @@ NOT_FOUND, if the project doesn't exist.
           config, request, global_params=global_params)
 
     Create.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v3/projects/{projectsId}/locations/{locationsId}/glossaries',
-        http_method=u'POST',
-        method_id=u'translate.projects.locations.glossaries.create',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
+        flat_path='v3/projects/{projectsId}/locations/{locationsId}/glossaries',
+        http_method='POST',
+        method_id='translate.projects.locations.glossaries.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
         query_params=[],
-        relative_path=u'v3/{+parent}/glossaries',
-        request_field=u'glossary',
-        request_type_name=u'TranslateProjectsLocationsGlossariesCreateRequest',
-        response_type_name=u'Operation',
+        relative_path='v3/{+parent}/glossaries',
+        request_field='glossary',
+        request_type_name='TranslateProjectsLocationsGlossariesCreateRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -95,16 +95,16 @@ Returns NOT_FOUND, if the glossary doesn't exist.
           config, request, global_params=global_params)
 
     Delete.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v3/projects/{projectsId}/locations/{locationsId}/glossaries/{glossariesId}',
-        http_method=u'DELETE',
-        method_id=u'translate.projects.locations.glossaries.delete',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v3/projects/{projectsId}/locations/{locationsId}/glossaries/{glossariesId}',
+        http_method='DELETE',
+        method_id='translate.projects.locations.glossaries.delete',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v3/{+name}',
+        relative_path='v3/{+name}',
         request_field='',
-        request_type_name=u'TranslateProjectsLocationsGlossariesDeleteRequest',
-        response_type_name=u'Operation',
+        request_type_name='TranslateProjectsLocationsGlossariesDeleteRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -123,16 +123,16 @@ exist.
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v3/projects/{projectsId}/locations/{locationsId}/glossaries/{glossariesId}',
-        http_method=u'GET',
-        method_id=u'translate.projects.locations.glossaries.get',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v3/projects/{projectsId}/locations/{locationsId}/glossaries/{glossariesId}',
+        http_method='GET',
+        method_id='translate.projects.locations.glossaries.get',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v3/{+name}',
+        relative_path='v3/{+name}',
         request_field='',
-        request_type_name=u'TranslateProjectsLocationsGlossariesGetRequest',
-        response_type_name=u'Glossary',
+        request_type_name='TranslateProjectsLocationsGlossariesGetRequest',
+        response_type_name='Glossary',
         supports_download=False,
     )
 
@@ -151,23 +151,23 @@ exist.
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v3/projects/{projectsId}/locations/{locationsId}/glossaries',
-        http_method=u'GET',
-        method_id=u'translate.projects.locations.glossaries.list',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'filter', u'pageSize', u'pageToken'],
-        relative_path=u'v3/{+parent}/glossaries',
+        flat_path='v3/projects/{projectsId}/locations/{locationsId}/glossaries',
+        http_method='GET',
+        method_id='translate.projects.locations.glossaries.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'pageSize', 'pageToken'],
+        relative_path='v3/{+parent}/glossaries',
         request_field='',
-        request_type_name=u'TranslateProjectsLocationsGlossariesListRequest',
-        response_type_name=u'ListGlossariesResponse',
+        request_type_name='TranslateProjectsLocationsGlossariesListRequest',
+        response_type_name='ListGlossariesResponse',
         supports_download=False,
     )
 
   class ProjectsLocationsOperationsService(base_api.BaseApiService):
     """Service class for the projects_locations_operations resource."""
 
-    _NAME = u'projects_locations_operations'
+    _NAME = 'projects_locations_operations'
 
     def __init__(self, client):
       super(TranslateV3.ProjectsLocationsOperationsService, self).__init__(client)
@@ -197,16 +197,16 @@ corresponding to `Code.CANCELLED`.
           config, request, global_params=global_params)
 
     Cancel.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v3/projects/{projectsId}/locations/{locationsId}/operations/{operationsId}:cancel',
-        http_method=u'POST',
-        method_id=u'translate.projects.locations.operations.cancel',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v3/projects/{projectsId}/locations/{locationsId}/operations/{operationsId}:cancel',
+        http_method='POST',
+        method_id='translate.projects.locations.operations.cancel',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v3/{+name}:cancel',
-        request_field=u'cancelOperationRequest',
-        request_type_name=u'TranslateProjectsLocationsOperationsCancelRequest',
-        response_type_name=u'Empty',
+        relative_path='v3/{+name}:cancel',
+        request_field='cancelOperationRequest',
+        request_type_name='TranslateProjectsLocationsOperationsCancelRequest',
+        response_type_name='Empty',
         supports_download=False,
     )
 
@@ -227,16 +227,16 @@ operation. If the server doesn't support this method, it returns
           config, request, global_params=global_params)
 
     Delete.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v3/projects/{projectsId}/locations/{locationsId}/operations/{operationsId}',
-        http_method=u'DELETE',
-        method_id=u'translate.projects.locations.operations.delete',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v3/projects/{projectsId}/locations/{locationsId}/operations/{operationsId}',
+        http_method='DELETE',
+        method_id='translate.projects.locations.operations.delete',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v3/{+name}',
+        relative_path='v3/{+name}',
         request_field='',
-        request_type_name=u'TranslateProjectsLocationsOperationsDeleteRequest',
-        response_type_name=u'Empty',
+        request_type_name='TranslateProjectsLocationsOperationsDeleteRequest',
+        response_type_name='Empty',
         supports_download=False,
     )
 
@@ -256,16 +256,16 @@ service.
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v3/projects/{projectsId}/locations/{locationsId}/operations/{operationsId}',
-        http_method=u'GET',
-        method_id=u'translate.projects.locations.operations.get',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v3/projects/{projectsId}/locations/{locationsId}/operations/{operationsId}',
+        http_method='GET',
+        method_id='translate.projects.locations.operations.get',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v3/{+name}',
+        relative_path='v3/{+name}',
         request_field='',
-        request_type_name=u'TranslateProjectsLocationsOperationsGetRequest',
-        response_type_name=u'Operation',
+        request_type_name='TranslateProjectsLocationsOperationsGetRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -292,16 +292,16 @@ is the parent resource, without the operations collection id.
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v3/projects/{projectsId}/locations/{locationsId}/operations',
-        http_method=u'GET',
-        method_id=u'translate.projects.locations.operations.list',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[u'filter', u'pageSize', u'pageToken'],
-        relative_path=u'v3/{+name}/operations',
+        flat_path='v3/projects/{projectsId}/locations/{locationsId}/operations',
+        http_method='GET',
+        method_id='translate.projects.locations.operations.list',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['filter', 'pageSize', 'pageToken'],
+        relative_path='v3/{+name}/operations',
         request_field='',
-        request_type_name=u'TranslateProjectsLocationsOperationsListRequest',
-        response_type_name=u'ListOperationsResponse',
+        request_type_name='TranslateProjectsLocationsOperationsListRequest',
+        response_type_name='ListOperationsResponse',
         supports_download=False,
     )
 
@@ -327,23 +327,23 @@ immediate response is no guarantee that the operation is done.
           config, request, global_params=global_params)
 
     Wait.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v3/projects/{projectsId}/locations/{locationsId}/operations/{operationsId}:wait',
-        http_method=u'POST',
-        method_id=u'translate.projects.locations.operations.wait',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v3/projects/{projectsId}/locations/{locationsId}/operations/{operationsId}:wait',
+        http_method='POST',
+        method_id='translate.projects.locations.operations.wait',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v3/{+name}:wait',
-        request_field=u'waitOperationRequest',
-        request_type_name=u'TranslateProjectsLocationsOperationsWaitRequest',
-        response_type_name=u'Operation',
+        relative_path='v3/{+name}:wait',
+        request_field='waitOperationRequest',
+        request_type_name='TranslateProjectsLocationsOperationsWaitRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
   class ProjectsLocationsService(base_api.BaseApiService):
     """Service class for the projects_locations resource."""
 
-    _NAME = u'projects_locations'
+    _NAME = 'projects_locations'
 
     def __init__(self, client):
       super(TranslateV3.ProjectsLocationsService, self).__init__(client)
@@ -370,16 +370,16 @@ use google.longrunning.Operation.name to poll the status of the call.
           config, request, global_params=global_params)
 
     BatchTranslateText.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v3/projects/{projectsId}/locations/{locationsId}:batchTranslateText',
-        http_method=u'POST',
-        method_id=u'translate.projects.locations.batchTranslateText',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
+        flat_path='v3/projects/{projectsId}/locations/{locationsId}:batchTranslateText',
+        http_method='POST',
+        method_id='translate.projects.locations.batchTranslateText',
+        ordered_params=['parent'],
+        path_params=['parent'],
         query_params=[],
-        relative_path=u'v3/{+parent}:batchTranslateText',
-        request_field=u'batchTranslateTextRequest',
-        request_type_name=u'TranslateProjectsLocationsBatchTranslateTextRequest',
-        response_type_name=u'Operation',
+        relative_path='v3/{+parent}:batchTranslateText',
+        request_field='batchTranslateTextRequest',
+        request_type_name='TranslateProjectsLocationsBatchTranslateTextRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -397,16 +397,16 @@ use google.longrunning.Operation.name to poll the status of the call.
           config, request, global_params=global_params)
 
     DetectLanguage.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v3/projects/{projectsId}/locations/{locationsId}:detectLanguage',
-        http_method=u'POST',
-        method_id=u'translate.projects.locations.detectLanguage',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
+        flat_path='v3/projects/{projectsId}/locations/{locationsId}:detectLanguage',
+        http_method='POST',
+        method_id='translate.projects.locations.detectLanguage',
+        ordered_params=['parent'],
+        path_params=['parent'],
         query_params=[],
-        relative_path=u'v3/{+parent}:detectLanguage',
-        request_field=u'detectLanguageRequest',
-        request_type_name=u'TranslateProjectsLocationsDetectLanguageRequest',
-        response_type_name=u'DetectLanguageResponse',
+        relative_path='v3/{+parent}:detectLanguage',
+        request_field='detectLanguageRequest',
+        request_type_name='TranslateProjectsLocationsDetectLanguageRequest',
+        response_type_name='DetectLanguageResponse',
         supports_download=False,
     )
 
@@ -424,16 +424,16 @@ use google.longrunning.Operation.name to poll the status of the call.
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v3/projects/{projectsId}/locations/{locationsId}',
-        http_method=u'GET',
-        method_id=u'translate.projects.locations.get',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v3/projects/{projectsId}/locations/{locationsId}',
+        http_method='GET',
+        method_id='translate.projects.locations.get',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v3/{+name}',
+        relative_path='v3/{+name}',
         request_field='',
-        request_type_name=u'TranslateProjectsLocationsGetRequest',
-        response_type_name=u'Location',
+        request_type_name='TranslateProjectsLocationsGetRequest',
+        response_type_name='Location',
         supports_download=False,
     )
 
@@ -451,16 +451,16 @@ use google.longrunning.Operation.name to poll the status of the call.
           config, request, global_params=global_params)
 
     GetSupportedLanguages.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v3/projects/{projectsId}/locations/{locationsId}/supportedLanguages',
-        http_method=u'GET',
-        method_id=u'translate.projects.locations.getSupportedLanguages',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'displayLanguageCode', u'model'],
-        relative_path=u'v3/{+parent}/supportedLanguages',
+        flat_path='v3/projects/{projectsId}/locations/{locationsId}/supportedLanguages',
+        http_method='GET',
+        method_id='translate.projects.locations.getSupportedLanguages',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['displayLanguageCode', 'model'],
+        relative_path='v3/{+parent}/supportedLanguages',
         request_field='',
-        request_type_name=u'TranslateProjectsLocationsGetSupportedLanguagesRequest',
-        response_type_name=u'SupportedLanguages',
+        request_type_name='TranslateProjectsLocationsGetSupportedLanguagesRequest',
+        response_type_name='SupportedLanguages',
         supports_download=False,
     )
 
@@ -478,16 +478,16 @@ use google.longrunning.Operation.name to poll the status of the call.
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v3/projects/{projectsId}/locations',
-        http_method=u'GET',
-        method_id=u'translate.projects.locations.list',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[u'filter', u'pageSize', u'pageToken'],
-        relative_path=u'v3/{+name}/locations',
+        flat_path='v3/projects/{projectsId}/locations',
+        http_method='GET',
+        method_id='translate.projects.locations.list',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['filter', 'pageSize', 'pageToken'],
+        relative_path='v3/{+name}/locations',
         request_field='',
-        request_type_name=u'TranslateProjectsLocationsListRequest',
-        response_type_name=u'ListLocationsResponse',
+        request_type_name='TranslateProjectsLocationsListRequest',
+        response_type_name='ListLocationsResponse',
         supports_download=False,
     )
 
@@ -505,23 +505,23 @@ use google.longrunning.Operation.name to poll the status of the call.
           config, request, global_params=global_params)
 
     TranslateText.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v3/projects/{projectsId}/locations/{locationsId}:translateText',
-        http_method=u'POST',
-        method_id=u'translate.projects.locations.translateText',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
+        flat_path='v3/projects/{projectsId}/locations/{locationsId}:translateText',
+        http_method='POST',
+        method_id='translate.projects.locations.translateText',
+        ordered_params=['parent'],
+        path_params=['parent'],
         query_params=[],
-        relative_path=u'v3/{+parent}:translateText',
-        request_field=u'translateTextRequest',
-        request_type_name=u'TranslateProjectsLocationsTranslateTextRequest',
-        response_type_name=u'TranslateTextResponse',
+        relative_path='v3/{+parent}:translateText',
+        request_field='translateTextRequest',
+        request_type_name='TranslateProjectsLocationsTranslateTextRequest',
+        response_type_name='TranslateTextResponse',
         supports_download=False,
     )
 
   class ProjectsService(base_api.BaseApiService):
     """Service class for the projects resource."""
 
-    _NAME = u'projects'
+    _NAME = 'projects'
 
     def __init__(self, client):
       super(TranslateV3.ProjectsService, self).__init__(client)
@@ -542,16 +542,16 @@ use google.longrunning.Operation.name to poll the status of the call.
           config, request, global_params=global_params)
 
     DetectLanguage.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v3/projects/{projectsId}:detectLanguage',
-        http_method=u'POST',
-        method_id=u'translate.projects.detectLanguage',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
+        flat_path='v3/projects/{projectsId}:detectLanguage',
+        http_method='POST',
+        method_id='translate.projects.detectLanguage',
+        ordered_params=['parent'],
+        path_params=['parent'],
         query_params=[],
-        relative_path=u'v3/{+parent}:detectLanguage',
-        request_field=u'detectLanguageRequest',
-        request_type_name=u'TranslateProjectsDetectLanguageRequest',
-        response_type_name=u'DetectLanguageResponse',
+        relative_path='v3/{+parent}:detectLanguage',
+        request_field='detectLanguageRequest',
+        request_type_name='TranslateProjectsDetectLanguageRequest',
+        response_type_name='DetectLanguageResponse',
         supports_download=False,
     )
 
@@ -569,16 +569,16 @@ use google.longrunning.Operation.name to poll the status of the call.
           config, request, global_params=global_params)
 
     GetSupportedLanguages.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v3/projects/{projectsId}/supportedLanguages',
-        http_method=u'GET',
-        method_id=u'translate.projects.getSupportedLanguages',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'displayLanguageCode', u'model'],
-        relative_path=u'v3/{+parent}/supportedLanguages',
+        flat_path='v3/projects/{projectsId}/supportedLanguages',
+        http_method='GET',
+        method_id='translate.projects.getSupportedLanguages',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['displayLanguageCode', 'model'],
+        relative_path='v3/{+parent}/supportedLanguages',
         request_field='',
-        request_type_name=u'TranslateProjectsGetSupportedLanguagesRequest',
-        response_type_name=u'SupportedLanguages',
+        request_type_name='TranslateProjectsGetSupportedLanguagesRequest',
+        response_type_name='SupportedLanguages',
         supports_download=False,
     )
 
@@ -596,15 +596,15 @@ use google.longrunning.Operation.name to poll the status of the call.
           config, request, global_params=global_params)
 
     TranslateText.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v3/projects/{projectsId}:translateText',
-        http_method=u'POST',
-        method_id=u'translate.projects.translateText',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
+        flat_path='v3/projects/{projectsId}:translateText',
+        http_method='POST',
+        method_id='translate.projects.translateText',
+        ordered_params=['parent'],
+        path_params=['parent'],
         query_params=[],
-        relative_path=u'v3/{+parent}:translateText',
-        request_field=u'translateTextRequest',
-        request_type_name=u'TranslateProjectsTranslateTextRequest',
-        response_type_name=u'TranslateTextResponse',
+        relative_path='v3/{+parent}:translateText',
+        request_field='translateTextRequest',
+        request_type_name='TranslateProjectsTranslateTextRequest',
+        response_type_name='TranslateTextResponse',
         supports_download=False,
     )

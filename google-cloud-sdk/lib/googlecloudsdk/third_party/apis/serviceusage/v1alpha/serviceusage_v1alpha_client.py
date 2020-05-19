@@ -8,17 +8,17 @@ class ServiceusageV1alpha(base_api.BaseApiClient):
   """Generated client library for service serviceusage version v1alpha."""
 
   MESSAGES_MODULE = messages
-  BASE_URL = u'https://serviceusage.googleapis.com/'
-  MTLS_BASE_URL = u''
+  BASE_URL = 'https://serviceusage.googleapis.com/'
+  MTLS_BASE_URL = ''
 
-  _PACKAGE = u'serviceusage'
-  _SCOPES = [u'https://www.googleapis.com/auth/cloud-platform', u'https://www.googleapis.com/auth/cloud-platform.read-only', u'https://www.googleapis.com/auth/service.management']
-  _VERSION = u'v1alpha'
+  _PACKAGE = 'serviceusage'
+  _SCOPES = ['https://www.googleapis.com/auth/cloud-platform', 'https://www.googleapis.com/auth/cloud-platform.read-only', 'https://www.googleapis.com/auth/service.management']
+  _VERSION = 'v1alpha'
   _CLIENT_ID = '1042881264118.apps.googleusercontent.com'
   _CLIENT_SECRET = 'x_Tw5K8nnjoRAqULM9PFAC2b'
-  _USER_AGENT = u'google-cloud-sdk'
-  _CLIENT_CLASS_NAME = u'ServiceusageV1alpha'
-  _URL_VERSION = u'v1alpha'
+  _USER_AGENT = 'google-cloud-sdk'
+  _CLIENT_CLASS_NAME = 'ServiceusageV1alpha'
+  _URL_VERSION = 'v1alpha'
   _API_KEY = None
 
   def __init__(self, url='', credentials=None,
@@ -42,7 +42,7 @@ class ServiceusageV1alpha(base_api.BaseApiClient):
   class OperationsService(base_api.BaseApiService):
     """Service class for the operations resource."""
 
-    _NAME = u'operations'
+    _NAME = 'operations'
 
     def __init__(self, client):
       super(ServiceusageV1alpha.OperationsService, self).__init__(client)
@@ -65,23 +65,23 @@ service.
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha/operations/{operationsId}',
-        http_method=u'GET',
-        method_id=u'serviceusage.operations.get',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1alpha/operations/{operationsId}',
+        http_method='GET',
+        method_id='serviceusage.operations.get',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1alpha/{+name}',
+        relative_path='v1alpha/{+name}',
         request_field='',
-        request_type_name=u'ServiceusageOperationsGetRequest',
-        response_type_name=u'Operation',
+        request_type_name='ServiceusageOperationsGetRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
   class ServicesService(base_api.BaseApiService):
     """Service class for the services resource."""
 
-    _NAME = u'services'
+    _NAME = 'services'
 
     def __init__(self, client):
       super(ServiceusageV1alpha.ServicesService, self).__init__(client)
@@ -102,16 +102,16 @@ service.
           config, request, global_params=global_params)
 
     GenerateIdentity.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha/{v1alphaId}/{v1alphaId1}/services/{servicesId}:generateIdentity',
-        http_method=u'POST',
-        method_id=u'serviceusage.services.generateIdentity',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
+        flat_path='v1alpha/{v1alphaId}/{v1alphaId1}/services/{servicesId}:generateIdentity',
+        http_method='POST',
+        method_id='serviceusage.services.generateIdentity',
+        ordered_params=['parent'],
+        path_params=['parent'],
         query_params=[],
-        relative_path=u'v1alpha/{+parent}:generateIdentity',
+        relative_path='v1alpha/{+parent}:generateIdentity',
         request_field='',
-        request_type_name=u'ServiceusageServicesGenerateIdentityRequest',
-        response_type_name=u'Operation',
+        request_type_name='ServiceusageServicesGenerateIdentityRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -129,15 +129,15 @@ service.
           config, request, global_params=global_params)
 
     GetIdentity.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha/{v1alphaId}/{v1alphaId1}/services/{servicesId}:getIdentity',
-        http_method=u'GET',
-        method_id=u'serviceusage.services.getIdentity',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
+        flat_path='v1alpha/{v1alphaId}/{v1alphaId1}/services/{servicesId}:getIdentity',
+        http_method='GET',
+        method_id='serviceusage.services.getIdentity',
+        ordered_params=['parent'],
+        path_params=['parent'],
         query_params=[],
-        relative_path=u'v1alpha/{+parent}:getIdentity',
+        relative_path='v1alpha/{+parent}:getIdentity',
         request_field='',
-        request_type_name=u'ServiceusageServicesGetIdentityRequest',
-        response_type_name=u'ServiceIdentity',
+        request_type_name='ServiceusageServicesGetIdentityRequest',
+        response_type_name='ServiceIdentity',
         supports_download=False,
     )

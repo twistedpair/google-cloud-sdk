@@ -8,17 +8,17 @@ class RuntimeconfigV1beta1(base_api.BaseApiClient):
   """Generated client library for service runtimeconfig version v1beta1."""
 
   MESSAGES_MODULE = messages
-  BASE_URL = u'https://runtimeconfig.googleapis.com/'
-  MTLS_BASE_URL = u'https://runtimeconfig.mtls.googleapis.com/'
+  BASE_URL = 'https://runtimeconfig.googleapis.com/'
+  MTLS_BASE_URL = 'https://runtimeconfig.mtls.googleapis.com/'
 
-  _PACKAGE = u'runtimeconfig'
-  _SCOPES = [u'https://www.googleapis.com/auth/cloud-platform', u'https://www.googleapis.com/auth/cloudruntimeconfig']
-  _VERSION = u'v1beta1'
+  _PACKAGE = 'runtimeconfig'
+  _SCOPES = ['https://www.googleapis.com/auth/cloud-platform', 'https://www.googleapis.com/auth/cloudruntimeconfig']
+  _VERSION = 'v1beta1'
   _CLIENT_ID = '1042881264118.apps.googleusercontent.com'
   _CLIENT_SECRET = 'x_Tw5K8nnjoRAqULM9PFAC2b'
-  _USER_AGENT = u'google-cloud-sdk'
-  _CLIENT_CLASS_NAME = u'RuntimeconfigV1beta1'
-  _URL_VERSION = u'v1beta1'
+  _USER_AGENT = 'google-cloud-sdk'
+  _CLIENT_CLASS_NAME = 'RuntimeconfigV1beta1'
+  _URL_VERSION = 'v1beta1'
   _API_KEY = None
 
   def __init__(self, url='', credentials=None,
@@ -45,7 +45,7 @@ class RuntimeconfigV1beta1(base_api.BaseApiClient):
   class ProjectsConfigsOperationsService(base_api.BaseApiService):
     """Service class for the projects_configs_operations resource."""
 
-    _NAME = u'projects_configs_operations'
+    _NAME = 'projects_configs_operations'
 
     def __init__(self, client):
       super(RuntimeconfigV1beta1.ProjectsConfigsOperationsService, self).__init__(client)
@@ -68,16 +68,16 @@ service.
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/projects/{projectsId}/configs/{configsId}/operations/{operationsId}',
-        http_method=u'GET',
-        method_id=u'runtimeconfig.projects.configs.operations.get',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1beta1/projects/{projectsId}/configs/{configsId}/operations/{operationsId}',
+        http_method='GET',
+        method_id='runtimeconfig.projects.configs.operations.get',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1beta1/{+name}',
+        relative_path='v1beta1/{+name}',
         request_field='',
-        request_type_name=u'RuntimeconfigProjectsConfigsOperationsGetRequest',
-        response_type_name=u'Operation',
+        request_type_name='RuntimeconfigProjectsConfigsOperationsGetRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -101,23 +101,23 @@ may "fail open" without warning.
           config, request, global_params=global_params)
 
     TestIamPermissions.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/projects/{projectsId}/configs/{configsId}/operations/{operationsId}:testIamPermissions',
-        http_method=u'POST',
-        method_id=u'runtimeconfig.projects.configs.operations.testIamPermissions',
-        ordered_params=[u'resource'],
-        path_params=[u'resource'],
+        flat_path='v1beta1/projects/{projectsId}/configs/{configsId}/operations/{operationsId}:testIamPermissions',
+        http_method='POST',
+        method_id='runtimeconfig.projects.configs.operations.testIamPermissions',
+        ordered_params=['resource'],
+        path_params=['resource'],
         query_params=[],
-        relative_path=u'v1beta1/{+resource}:testIamPermissions',
-        request_field=u'testIamPermissionsRequest',
-        request_type_name=u'RuntimeconfigProjectsConfigsOperationsTestIamPermissionsRequest',
-        response_type_name=u'TestIamPermissionsResponse',
+        relative_path='v1beta1/{+resource}:testIamPermissions',
+        request_field='testIamPermissionsRequest',
+        request_type_name='RuntimeconfigProjectsConfigsOperationsTestIamPermissionsRequest',
+        response_type_name='TestIamPermissionsResponse',
         supports_download=False,
     )
 
   class ProjectsConfigsVariablesService(base_api.BaseApiService):
     """Service class for the projects_configs_variables resource."""
 
-    _NAME = u'projects_configs_variables'
+    _NAME = 'projects_configs_variables'
 
     def __init__(self, client):
       super(RuntimeconfigV1beta1.ProjectsConfigsVariablesService, self).__init__(client)
@@ -145,16 +145,16 @@ documentation.
           config, request, global_params=global_params)
 
     Create.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/projects/{projectsId}/configs/{configsId}/variables',
-        http_method=u'POST',
-        method_id=u'runtimeconfig.projects.configs.variables.create',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'requestId'],
-        relative_path=u'v1beta1/{+parent}/variables',
-        request_field=u'variable',
-        request_type_name=u'RuntimeconfigProjectsConfigsVariablesCreateRequest',
-        response_type_name=u'Variable',
+        flat_path='v1beta1/projects/{projectsId}/configs/{configsId}/variables',
+        http_method='POST',
+        method_id='runtimeconfig.projects.configs.variables.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['requestId'],
+        relative_path='v1beta1/{+parent}/variables',
+        request_field='variable',
+        request_type_name='RuntimeconfigProjectsConfigsVariablesCreateRequest',
+        response_type_name='Variable',
         supports_download=False,
     )
 
@@ -177,16 +177,16 @@ variables by prefix.
           config, request, global_params=global_params)
 
     Delete.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/projects/{projectsId}/configs/{configsId}/variables/{variablesId}',
-        http_method=u'DELETE',
-        method_id=u'runtimeconfig.projects.configs.variables.delete',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[u'recursive'],
-        relative_path=u'v1beta1/{+name}',
+        flat_path='v1beta1/projects/{projectsId}/configs/{configsId}/variables/{variablesId}',
+        http_method='DELETE',
+        method_id='runtimeconfig.projects.configs.variables.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['recursive'],
+        relative_path='v1beta1/{+name}',
         request_field='',
-        request_type_name=u'RuntimeconfigProjectsConfigsVariablesDeleteRequest',
-        response_type_name=u'Empty',
+        request_type_name='RuntimeconfigProjectsConfigsVariablesDeleteRequest',
+        response_type_name='Empty',
         supports_download=False,
     )
 
@@ -204,16 +204,16 @@ variables by prefix.
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/projects/{projectsId}/configs/{configsId}/variables/{variablesId}',
-        http_method=u'GET',
-        method_id=u'runtimeconfig.projects.configs.variables.get',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1beta1/projects/{projectsId}/configs/{configsId}/variables/{variablesId}',
+        http_method='GET',
+        method_id='runtimeconfig.projects.configs.variables.get',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1beta1/{+name}',
+        relative_path='v1beta1/{+name}',
         request_field='',
-        request_type_name=u'RuntimeconfigProjectsConfigsVariablesGetRequest',
-        response_type_name=u'Variable',
+        request_type_name='RuntimeconfigProjectsConfigsVariablesGetRequest',
+        response_type_name='Variable',
         supports_download=False,
     )
 
@@ -234,16 +234,16 @@ permission to GetVariable will be returned.
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/projects/{projectsId}/configs/{configsId}/variables',
-        http_method=u'GET',
-        method_id=u'runtimeconfig.projects.configs.variables.list',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'filter', u'pageSize', u'pageToken', u'returnValues'],
-        relative_path=u'v1beta1/{+parent}/variables',
+        flat_path='v1beta1/projects/{projectsId}/configs/{configsId}/variables',
+        http_method='GET',
+        method_id='runtimeconfig.projects.configs.variables.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'pageSize', 'pageToken', 'returnValues'],
+        relative_path='v1beta1/{+parent}/variables',
         request_field='',
-        request_type_name=u'RuntimeconfigProjectsConfigsVariablesListRequest',
-        response_type_name=u'ListVariablesResponse',
+        request_type_name='RuntimeconfigProjectsConfigsVariablesListRequest',
+        response_type_name='ListVariablesResponse',
         supports_download=False,
     )
 
@@ -267,16 +267,16 @@ may "fail open" without warning.
           config, request, global_params=global_params)
 
     TestIamPermissions.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/projects/{projectsId}/configs/{configsId}/variables/{variablesId}:testIamPermissions',
-        http_method=u'POST',
-        method_id=u'runtimeconfig.projects.configs.variables.testIamPermissions',
-        ordered_params=[u'resource'],
-        path_params=[u'resource'],
+        flat_path='v1beta1/projects/{projectsId}/configs/{configsId}/variables/{variablesId}:testIamPermissions',
+        http_method='POST',
+        method_id='runtimeconfig.projects.configs.variables.testIamPermissions',
+        ordered_params=['resource'],
+        path_params=['resource'],
         query_params=[],
-        relative_path=u'v1beta1/{+resource}:testIamPermissions',
-        request_field=u'testIamPermissionsRequest',
-        request_type_name=u'RuntimeconfigProjectsConfigsVariablesTestIamPermissionsRequest',
-        response_type_name=u'TestIamPermissionsResponse',
+        relative_path='v1beta1/{+resource}:testIamPermissions',
+        request_field='testIamPermissionsRequest',
+        request_type_name='RuntimeconfigProjectsConfigsVariablesTestIamPermissionsRequest',
+        response_type_name='TestIamPermissionsResponse',
         supports_download=False,
     )
 
@@ -294,16 +294,16 @@ may "fail open" without warning.
           config, request, global_params=global_params)
 
     Update.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/projects/{projectsId}/configs/{configsId}/variables/{variablesId}',
-        http_method=u'PUT',
-        method_id=u'runtimeconfig.projects.configs.variables.update',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1beta1/projects/{projectsId}/configs/{configsId}/variables/{variablesId}',
+        http_method='PUT',
+        method_id='runtimeconfig.projects.configs.variables.update',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1beta1/{+name}',
+        relative_path='v1beta1/{+name}',
         request_field='<request>',
-        request_type_name=u'Variable',
-        response_type_name=u'Variable',
+        request_type_name='Variable',
+        response_type_name='Variable',
         supports_download=False,
     )
 
@@ -334,23 +334,23 @@ documentation.
           config, request, global_params=global_params)
 
     Watch.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/projects/{projectsId}/configs/{configsId}/variables/{variablesId}:watch',
-        http_method=u'POST',
-        method_id=u'runtimeconfig.projects.configs.variables.watch',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1beta1/projects/{projectsId}/configs/{configsId}/variables/{variablesId}:watch',
+        http_method='POST',
+        method_id='runtimeconfig.projects.configs.variables.watch',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1beta1/{+name}:watch',
-        request_field=u'watchVariableRequest',
-        request_type_name=u'RuntimeconfigProjectsConfigsVariablesWatchRequest',
-        response_type_name=u'Variable',
+        relative_path='v1beta1/{+name}:watch',
+        request_field='watchVariableRequest',
+        request_type_name='RuntimeconfigProjectsConfigsVariablesWatchRequest',
+        response_type_name='Variable',
         supports_download=False,
     )
 
   class ProjectsConfigsWaitersService(base_api.BaseApiService):
     """Service class for the projects_configs_waiters resource."""
 
-    _NAME = u'projects_configs_waiters'
+    _NAME = 'projects_configs_waiters'
 
     def __init__(self, client):
       super(RuntimeconfigV1beta1.ProjectsConfigsWaitersService, self).__init__(client)
@@ -375,16 +375,16 @@ still exist and must be deleted prior to subsequent creation attempts.
           config, request, global_params=global_params)
 
     Create.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/projects/{projectsId}/configs/{configsId}/waiters',
-        http_method=u'POST',
-        method_id=u'runtimeconfig.projects.configs.waiters.create',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'requestId'],
-        relative_path=u'v1beta1/{+parent}/waiters',
-        request_field=u'waiter',
-        request_type_name=u'RuntimeconfigProjectsConfigsWaitersCreateRequest',
-        response_type_name=u'Operation',
+        flat_path='v1beta1/projects/{projectsId}/configs/{configsId}/waiters',
+        http_method='POST',
+        method_id='runtimeconfig.projects.configs.waiters.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['requestId'],
+        relative_path='v1beta1/{+parent}/waiters',
+        request_field='waiter',
+        request_type_name='RuntimeconfigProjectsConfigsWaitersCreateRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -402,16 +402,16 @@ still exist and must be deleted prior to subsequent creation attempts.
           config, request, global_params=global_params)
 
     Delete.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/projects/{projectsId}/configs/{configsId}/waiters/{waitersId}',
-        http_method=u'DELETE',
-        method_id=u'runtimeconfig.projects.configs.waiters.delete',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1beta1/projects/{projectsId}/configs/{configsId}/waiters/{waitersId}',
+        http_method='DELETE',
+        method_id='runtimeconfig.projects.configs.waiters.delete',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1beta1/{+name}',
+        relative_path='v1beta1/{+name}',
         request_field='',
-        request_type_name=u'RuntimeconfigProjectsConfigsWaitersDeleteRequest',
-        response_type_name=u'Empty',
+        request_type_name='RuntimeconfigProjectsConfigsWaitersDeleteRequest',
+        response_type_name='Empty',
         supports_download=False,
     )
 
@@ -429,16 +429,16 @@ still exist and must be deleted prior to subsequent creation attempts.
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/projects/{projectsId}/configs/{configsId}/waiters/{waitersId}',
-        http_method=u'GET',
-        method_id=u'runtimeconfig.projects.configs.waiters.get',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1beta1/projects/{projectsId}/configs/{configsId}/waiters/{waitersId}',
+        http_method='GET',
+        method_id='runtimeconfig.projects.configs.waiters.get',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1beta1/{+name}',
+        relative_path='v1beta1/{+name}',
         request_field='',
-        request_type_name=u'RuntimeconfigProjectsConfigsWaitersGetRequest',
-        response_type_name=u'Waiter',
+        request_type_name='RuntimeconfigProjectsConfigsWaitersGetRequest',
+        response_type_name='Waiter',
         supports_download=False,
     )
 
@@ -456,16 +456,16 @@ still exist and must be deleted prior to subsequent creation attempts.
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/projects/{projectsId}/configs/{configsId}/waiters',
-        http_method=u'GET',
-        method_id=u'runtimeconfig.projects.configs.waiters.list',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'pageSize', u'pageToken'],
-        relative_path=u'v1beta1/{+parent}/waiters',
+        flat_path='v1beta1/projects/{projectsId}/configs/{configsId}/waiters',
+        http_method='GET',
+        method_id='runtimeconfig.projects.configs.waiters.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v1beta1/{+parent}/waiters',
         request_field='',
-        request_type_name=u'RuntimeconfigProjectsConfigsWaitersListRequest',
-        response_type_name=u'ListWaitersResponse',
+        request_type_name='RuntimeconfigProjectsConfigsWaitersListRequest',
+        response_type_name='ListWaitersResponse',
         supports_download=False,
     )
 
@@ -489,23 +489,23 @@ may "fail open" without warning.
           config, request, global_params=global_params)
 
     TestIamPermissions.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/projects/{projectsId}/configs/{configsId}/waiters/{waitersId}:testIamPermissions',
-        http_method=u'POST',
-        method_id=u'runtimeconfig.projects.configs.waiters.testIamPermissions',
-        ordered_params=[u'resource'],
-        path_params=[u'resource'],
+        flat_path='v1beta1/projects/{projectsId}/configs/{configsId}/waiters/{waitersId}:testIamPermissions',
+        http_method='POST',
+        method_id='runtimeconfig.projects.configs.waiters.testIamPermissions',
+        ordered_params=['resource'],
+        path_params=['resource'],
         query_params=[],
-        relative_path=u'v1beta1/{+resource}:testIamPermissions',
-        request_field=u'testIamPermissionsRequest',
-        request_type_name=u'RuntimeconfigProjectsConfigsWaitersTestIamPermissionsRequest',
-        response_type_name=u'TestIamPermissionsResponse',
+        relative_path='v1beta1/{+resource}:testIamPermissions',
+        request_field='testIamPermissionsRequest',
+        request_type_name='RuntimeconfigProjectsConfigsWaitersTestIamPermissionsRequest',
+        response_type_name='TestIamPermissionsResponse',
         supports_download=False,
     )
 
   class ProjectsConfigsService(base_api.BaseApiService):
     """Service class for the projects_configs resource."""
 
-    _NAME = u'projects_configs'
+    _NAME = 'projects_configs'
 
     def __init__(self, client):
       super(RuntimeconfigV1beta1.ProjectsConfigsService, self).__init__(client)
@@ -527,16 +527,16 @@ unique within project.
           config, request, global_params=global_params)
 
     Create.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/projects/{projectsId}/configs',
-        http_method=u'POST',
-        method_id=u'runtimeconfig.projects.configs.create',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'requestId'],
-        relative_path=u'v1beta1/{+parent}/configs',
-        request_field=u'runtimeConfig',
-        request_type_name=u'RuntimeconfigProjectsConfigsCreateRequest',
-        response_type_name=u'RuntimeConfig',
+        flat_path='v1beta1/projects/{projectsId}/configs',
+        http_method='POST',
+        method_id='runtimeconfig.projects.configs.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['requestId'],
+        relative_path='v1beta1/{+parent}/configs',
+        request_field='runtimeConfig',
+        request_type_name='RuntimeconfigProjectsConfigsCreateRequest',
+        response_type_name='RuntimeConfig',
         supports_download=False,
     )
 
@@ -554,16 +554,16 @@ unique within project.
           config, request, global_params=global_params)
 
     Delete.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/projects/{projectsId}/configs/{configsId}',
-        http_method=u'DELETE',
-        method_id=u'runtimeconfig.projects.configs.delete',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1beta1/projects/{projectsId}/configs/{configsId}',
+        http_method='DELETE',
+        method_id='runtimeconfig.projects.configs.delete',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1beta1/{+name}',
+        relative_path='v1beta1/{+name}',
         request_field='',
-        request_type_name=u'RuntimeconfigProjectsConfigsDeleteRequest',
-        response_type_name=u'Empty',
+        request_type_name='RuntimeconfigProjectsConfigsDeleteRequest',
+        response_type_name='Empty',
         supports_download=False,
     )
 
@@ -581,16 +581,16 @@ unique within project.
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/projects/{projectsId}/configs/{configsId}',
-        http_method=u'GET',
-        method_id=u'runtimeconfig.projects.configs.get',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1beta1/projects/{projectsId}/configs/{configsId}',
+        http_method='GET',
+        method_id='runtimeconfig.projects.configs.get',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1beta1/{+name}',
+        relative_path='v1beta1/{+name}',
         request_field='',
-        request_type_name=u'RuntimeconfigProjectsConfigsGetRequest',
-        response_type_name=u'RuntimeConfig',
+        request_type_name='RuntimeconfigProjectsConfigsGetRequest',
+        response_type_name='RuntimeConfig',
         supports_download=False,
     )
 
@@ -610,16 +610,16 @@ set.
           config, request, global_params=global_params)
 
     GetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/projects/{projectsId}/configs/{configsId}:getIamPolicy',
-        http_method=u'GET',
-        method_id=u'runtimeconfig.projects.configs.getIamPolicy',
-        ordered_params=[u'resource'],
-        path_params=[u'resource'],
-        query_params=[u'options_requestedPolicyVersion'],
-        relative_path=u'v1beta1/{+resource}:getIamPolicy',
+        flat_path='v1beta1/projects/{projectsId}/configs/{configsId}:getIamPolicy',
+        http_method='GET',
+        method_id='runtimeconfig.projects.configs.getIamPolicy',
+        ordered_params=['resource'],
+        path_params=['resource'],
+        query_params=['options_requestedPolicyVersion'],
+        relative_path='v1beta1/{+resource}:getIamPolicy',
         request_field='',
-        request_type_name=u'RuntimeconfigProjectsConfigsGetIamPolicyRequest',
-        response_type_name=u'Policy',
+        request_type_name='RuntimeconfigProjectsConfigsGetIamPolicyRequest',
+        response_type_name='Policy',
         supports_download=False,
     )
 
@@ -637,16 +637,16 @@ set.
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/projects/{projectsId}/configs',
-        http_method=u'GET',
-        method_id=u'runtimeconfig.projects.configs.list',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'pageSize', u'pageToken'],
-        relative_path=u'v1beta1/{+parent}/configs',
+        flat_path='v1beta1/projects/{projectsId}/configs',
+        http_method='GET',
+        method_id='runtimeconfig.projects.configs.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v1beta1/{+parent}/configs',
         request_field='',
-        request_type_name=u'RuntimeconfigProjectsConfigsListRequest',
-        response_type_name=u'ListConfigsResponse',
+        request_type_name='RuntimeconfigProjectsConfigsListRequest',
+        response_type_name='ListConfigsResponse',
         supports_download=False,
     )
 
@@ -667,16 +667,16 @@ Can return `NOT_FOUND`, `INVALID_ARGUMENT`, and `PERMISSION_DENIED` errors.
           config, request, global_params=global_params)
 
     SetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/projects/{projectsId}/configs/{configsId}:setIamPolicy',
-        http_method=u'POST',
-        method_id=u'runtimeconfig.projects.configs.setIamPolicy',
-        ordered_params=[u'resource'],
-        path_params=[u'resource'],
+        flat_path='v1beta1/projects/{projectsId}/configs/{configsId}:setIamPolicy',
+        http_method='POST',
+        method_id='runtimeconfig.projects.configs.setIamPolicy',
+        ordered_params=['resource'],
+        path_params=['resource'],
         query_params=[],
-        relative_path=u'v1beta1/{+resource}:setIamPolicy',
-        request_field=u'setIamPolicyRequest',
-        request_type_name=u'RuntimeconfigProjectsConfigsSetIamPolicyRequest',
-        response_type_name=u'Policy',
+        relative_path='v1beta1/{+resource}:setIamPolicy',
+        request_field='setIamPolicyRequest',
+        request_type_name='RuntimeconfigProjectsConfigsSetIamPolicyRequest',
+        response_type_name='Policy',
         supports_download=False,
     )
 
@@ -700,16 +700,16 @@ may "fail open" without warning.
           config, request, global_params=global_params)
 
     TestIamPermissions.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/projects/{projectsId}/configs/{configsId}:testIamPermissions',
-        http_method=u'POST',
-        method_id=u'runtimeconfig.projects.configs.testIamPermissions',
-        ordered_params=[u'resource'],
-        path_params=[u'resource'],
+        flat_path='v1beta1/projects/{projectsId}/configs/{configsId}:testIamPermissions',
+        http_method='POST',
+        method_id='runtimeconfig.projects.configs.testIamPermissions',
+        ordered_params=['resource'],
+        path_params=['resource'],
         query_params=[],
-        relative_path=u'v1beta1/{+resource}:testIamPermissions',
-        request_field=u'testIamPermissionsRequest',
-        request_type_name=u'RuntimeconfigProjectsConfigsTestIamPermissionsRequest',
-        response_type_name=u'TestIamPermissionsResponse',
+        relative_path='v1beta1/{+resource}:testIamPermissions',
+        request_field='testIamPermissionsRequest',
+        request_type_name='RuntimeconfigProjectsConfigsTestIamPermissionsRequest',
+        response_type_name='TestIamPermissionsResponse',
         supports_download=False,
     )
 
@@ -727,23 +727,23 @@ may "fail open" without warning.
           config, request, global_params=global_params)
 
     Update.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/projects/{projectsId}/configs/{configsId}',
-        http_method=u'PUT',
-        method_id=u'runtimeconfig.projects.configs.update',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1beta1/projects/{projectsId}/configs/{configsId}',
+        http_method='PUT',
+        method_id='runtimeconfig.projects.configs.update',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1beta1/{+name}',
+        relative_path='v1beta1/{+name}',
         request_field='<request>',
-        request_type_name=u'RuntimeConfig',
-        response_type_name=u'RuntimeConfig',
+        request_type_name='RuntimeConfig',
+        response_type_name='RuntimeConfig',
         supports_download=False,
     )
 
   class ProjectsService(base_api.BaseApiService):
     """Service class for the projects resource."""
 
-    _NAME = u'projects'
+    _NAME = 'projects'
 
     def __init__(self, client):
       super(RuntimeconfigV1beta1.ProjectsService, self).__init__(client)

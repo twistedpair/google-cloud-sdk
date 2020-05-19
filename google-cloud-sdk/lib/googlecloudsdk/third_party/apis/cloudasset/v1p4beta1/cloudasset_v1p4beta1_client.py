@@ -8,17 +8,17 @@ class CloudassetV1p4beta1(base_api.BaseApiClient):
   """Generated client library for service cloudasset version v1p4beta1."""
 
   MESSAGES_MODULE = messages
-  BASE_URL = u'https://cloudasset.googleapis.com/'
-  MTLS_BASE_URL = u'https://cloudasset.mtls.googleapis.com/'
+  BASE_URL = 'https://cloudasset.googleapis.com/'
+  MTLS_BASE_URL = 'https://cloudasset.mtls.googleapis.com/'
 
-  _PACKAGE = u'cloudasset'
-  _SCOPES = [u'https://www.googleapis.com/auth/cloud-platform']
-  _VERSION = u'v1p4beta1'
+  _PACKAGE = 'cloudasset'
+  _SCOPES = ['https://www.googleapis.com/auth/cloud-platform']
+  _VERSION = 'v1p4beta1'
   _CLIENT_ID = '1042881264118.apps.googleusercontent.com'
   _CLIENT_SECRET = 'x_Tw5K8nnjoRAqULM9PFAC2b'
-  _USER_AGENT = u'google-cloud-sdk'
-  _CLIENT_CLASS_NAME = u'CloudassetV1p4beta1'
-  _URL_VERSION = u'v1p4beta1'
+  _USER_AGENT = 'google-cloud-sdk'
+  _CLIENT_CLASS_NAME = 'CloudassetV1p4beta1'
+  _URL_VERSION = 'v1p4beta1'
   _API_KEY = None
 
   def __init__(self, url='', credentials=None,
@@ -41,7 +41,7 @@ class CloudassetV1p4beta1(base_api.BaseApiClient):
   class V1p4beta1Service(base_api.BaseApiService):
     """Service class for the v1p4beta1 resource."""
 
-    _NAME = u'v1p4beta1'
+    _NAME = 'v1p4beta1'
 
     def __init__(self, client):
       super(CloudassetV1p4beta1.V1p4beta1Service, self).__init__(client)
@@ -63,16 +63,16 @@ a list of IamPolicyAnalysisResult matching the request.
           config, request, global_params=global_params)
 
     AnalyzeIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1p4beta1/{v1p4beta1Id}/{v1p4beta1Id1}:analyzeIamPolicy',
-        http_method=u'GET',
-        method_id=u'cloudasset.analyzeIamPolicy',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'analysisQuery_accessSelector_permissions', u'analysisQuery_accessSelector_roles', u'analysisQuery_identitySelector_identity', u'analysisQuery_resourceSelector_fullResourceName', u'options_analyzeServiceAccountImpersonation', u'options_executionTimeout', u'options_expandGroups', u'options_expandResources', u'options_expandRoles', u'options_outputGroupEdges', u'options_outputResourceEdges'],
-        relative_path=u'v1p4beta1/{+parent}:analyzeIamPolicy',
+        flat_path='v1p4beta1/{v1p4beta1Id}/{v1p4beta1Id1}:analyzeIamPolicy',
+        http_method='GET',
+        method_id='cloudasset.analyzeIamPolicy',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['analysisQuery_accessSelector_permissions', 'analysisQuery_accessSelector_roles', 'analysisQuery_identitySelector_identity', 'analysisQuery_resourceSelector_fullResourceName', 'options_analyzeServiceAccountImpersonation', 'options_executionTimeout', 'options_expandGroups', 'options_expandResources', 'options_expandRoles', 'options_outputGroupEdges', 'options_outputResourceEdges'],
+        relative_path='v1p4beta1/{+parent}:analyzeIamPolicy',
         request_field='',
-        request_type_name=u'CloudassetAnalyzeIamPolicyRequest',
-        response_type_name=u'AnalyzeIamPolicyResponse',
+        request_type_name='CloudassetAnalyzeIamPolicyRequest',
+        response_type_name='AnalyzeIamPolicyResponse',
         supports_download=False,
     )
 
@@ -93,15 +93,15 @@ map responses to requests.
           config, request, global_params=global_params)
 
     ExportIamPolicyAnalysis.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1p4beta1/{v1p4beta1Id}/{v1p4beta1Id1}:exportIamPolicyAnalysis',
-        http_method=u'POST',
-        method_id=u'cloudasset.exportIamPolicyAnalysis',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
+        flat_path='v1p4beta1/{v1p4beta1Id}/{v1p4beta1Id1}:exportIamPolicyAnalysis',
+        http_method='POST',
+        method_id='cloudasset.exportIamPolicyAnalysis',
+        ordered_params=['parent'],
+        path_params=['parent'],
         query_params=[],
-        relative_path=u'v1p4beta1/{+parent}:exportIamPolicyAnalysis',
-        request_field=u'exportIamPolicyAnalysisRequest',
-        request_type_name=u'CloudassetExportIamPolicyAnalysisRequest',
-        response_type_name=u'Operation',
+        relative_path='v1p4beta1/{+parent}:exportIamPolicyAnalysis',
+        request_field='exportIamPolicyAnalysisRequest',
+        request_type_name='CloudassetExportIamPolicyAnalysisRequest',
+        response_type_name='Operation',
         supports_download=False,
     )

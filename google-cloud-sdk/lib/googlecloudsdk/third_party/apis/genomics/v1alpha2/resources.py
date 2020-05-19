@@ -31,14 +31,14 @@ class Collections(enum.Enum):
           '':
               'operations/{operationsId}',
       },
-      [u'name'],
+      ['name'],
       True
   )
   PIPELINES = (
       'pipelines',
       'pipelines/{pipelineId}',
       {},
-      [u'pipelineId'],
+      ['pipelineId'],
       True
   )
 

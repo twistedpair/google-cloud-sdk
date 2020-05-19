@@ -28,7 +28,7 @@ class Collections(enum.Enum):
       'projects',
       'projects/{projectsId}',
       {},
-      [u'projectsId'],
+      ['projectsId'],
       True
   )
   PROJECTS_LOCATIONS = (
@@ -38,7 +38,7 @@ class Collections(enum.Enum):
           '':
               'projects/{projectsId}/locations/{locationsId}',
       },
-      [u'name'],
+      ['name'],
       True
   )
   PROJECTS_LOCATIONS_OPERATIONS = (
@@ -49,7 +49,7 @@ class Collections(enum.Enum):
               'projects/{projectsId}/locations/{locationsId}/operations/'
               '{operationsId}',
       },
-      [u'name'],
+      ['name'],
       True
   )
   PROJECTS_LOCATIONS_REPOSITORIES = (
@@ -60,7 +60,7 @@ class Collections(enum.Enum):
               'projects/{projectsId}/locations/{locationsId}/repositories/'
               '{repositoriesId}',
       },
-      [u'name'],
+      ['name'],
       True
   )
   PROJECTS_LOCATIONS_REPOSITORIES_FILES = (
@@ -71,7 +71,7 @@ class Collections(enum.Enum):
               'projects/{projectsId}/locations/{locationsId}/repositories/'
               '{repositoriesId}/files/{filesId}',
       },
-      [u'name'],
+      ['name'],
       True
   )
   PROJECTS_LOCATIONS_REPOSITORIES_PACKAGES = (
@@ -82,7 +82,7 @@ class Collections(enum.Enum):
               'projects/{projectsId}/locations/{locationsId}/repositories/'
               '{repositoriesId}/packages/{packagesId}',
       },
-      [u'name'],
+      ['name'],
       True
   )
   PROJECTS_LOCATIONS_REPOSITORIES_PACKAGES_TAGS = (
@@ -93,7 +93,7 @@ class Collections(enum.Enum):
               'projects/{projectsId}/locations/{locationsId}/repositories/'
               '{repositoriesId}/packages/{packagesId}/tags/{tagsId}',
       },
-      [u'name'],
+      ['name'],
       True
   )
   PROJECTS_LOCATIONS_REPOSITORIES_PACKAGES_VERSIONS = (
@@ -104,7 +104,7 @@ class Collections(enum.Enum):
               'projects/{projectsId}/locations/{locationsId}/repositories/'
               '{repositoriesId}/packages/{packagesId}/versions/{versionsId}',
       },
-      [u'name'],
+      ['name'],
       True
   )
 

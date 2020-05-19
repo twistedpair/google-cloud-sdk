@@ -28,7 +28,7 @@ class Collections(enum.Enum):
       'projects',
       'projects/{projectsId}',
       {},
-      [u'projectsId'],
+      ['projectsId'],
       True
   )
   PROJECTS_SNAPSHOTS = (
@@ -38,7 +38,7 @@ class Collections(enum.Enum):
           '':
               'projects/{projectsId}/snapshots/{snapshotsId}',
       },
-      [u'snapshot'],
+      ['snapshot'],
       True
   )
   PROJECTS_SUBSCRIPTIONS = (
@@ -48,7 +48,7 @@ class Collections(enum.Enum):
           '':
               'projects/{projectsId}/subscriptions/{subscriptionsId}',
       },
-      [u'subscription'],
+      ['subscription'],
       True
   )
   PROJECTS_TOPICS = (
@@ -58,7 +58,7 @@ class Collections(enum.Enum):
           '':
               'projects/{projectsId}/topics/{topicsId}',
       },
-      [u'topic'],
+      ['topic'],
       True
   )
 

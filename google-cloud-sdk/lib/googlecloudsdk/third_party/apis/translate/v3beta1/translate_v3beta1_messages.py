@@ -29,11 +29,11 @@ class BatchTranslateTextRequest(_messages.Message):
       general model, or an AutoML Translation model.  The value format depends
       on model type:  - AutoML Translation models:   `projects/{project-
       number-or-id}/locations/{location-id}/models/{model-id}`  - General
-      (built-in) models:   `projects/{project-number-or-id}/locations
-      /{location-id}/models/general/nmt`,   `projects/{project-number-or-
-      id}/locations/{location-id}/models/general/base`   If the map is empty
-      or a specific model is not requested for a language pair, then default
-      google model (nmt) is used.
+      (built-in) models:   `projects/{project-number-or-
+      id}/locations/{location-id}/models/general/nmt`,   `projects/{project-
+      number-or-id}/locations/{location-id}/models/general/base`   If the map
+      is empty or a specific model is not requested for a language pair, then
+      default google model (nmt) is used.
 
   Fields:
     glossaries: Optional. Glossaries to be applied for translation. It's keyed
@@ -52,11 +52,11 @@ class BatchTranslateTextRequest(_messages.Message):
       general model, or an AutoML Translation model.  The value format depends
       on model type:  - AutoML Translation models:   `projects/{project-
       number-or-id}/locations/{location-id}/models/{model-id}`  - General
-      (built-in) models:   `projects/{project-number-or-id}/locations
-      /{location-id}/models/general/nmt`,   `projects/{project-number-or-
-      id}/locations/{location-id}/models/general/base`   If the map is empty
-      or a specific model is not requested for a language pair, then default
-      google model (nmt) is used.
+      (built-in) models:   `projects/{project-number-or-
+      id}/locations/{location-id}/models/general/nmt`,   `projects/{project-
+      number-or-id}/locations/{location-id}/models/general/base`   If the map
+      is empty or a specific model is not requested for a language pair, then
+      default google model (nmt) is used.
     outputConfig: Required. Output configuration. If 2 input configs match to
       the same file (that is, same input path), we don't generate output for
       duplicate inputs.
@@ -126,10 +126,10 @@ class BatchTranslateTextRequest(_messages.Message):
     type:  - AutoML Translation models:   `projects/{project-number-or-
     id}/locations/{location-id}/models/{model-id}`  - General (built-in)
     models:   `projects/{project-number-or-id}/locations/{location-
-    id}/models/general/nmt`,   `projects/{project-number-or-id}/locations
-    /{location-id}/models/general/base`   If the map is empty or a specific
-    model is not requested for a language pair, then default google model
-    (nmt) is used.
+    id}/models/general/nmt`,   `projects/{project-number-or-
+    id}/locations/{location-id}/models/general/base`   If the map is empty or
+    a specific model is not requested for a language pair, then default google
+    model (nmt) is used.
 
     Messages:
       AdditionalProperty: An additional property for a ModelsValue object.
@@ -187,11 +187,11 @@ class DetectLanguageRequest(_messages.Message):
       "text/html", "text/plain". If left blank, the MIME type defaults to
       "text/html".
     model: Optional. The language detection model to be used.  Format:
-      `projects/{project-number-or-id}/locations/{location-id}/models
-      /language-detection/{model-id}`  Only one language detection model is
-      currently supported: `projects/{project-number-or-id}/locations
-      /{location-id}/models/language-detection/default`.  If not specified,
-      the default model is used.
+      `projects/{project-number-or-id}/locations/{location-
+      id}/models/language-detection/{model-id}`  Only one language detection
+      model is currently supported: `projects/{project-number-or-
+      id}/locations/{location-id}/models/language-detection/default`.  If not
+      specified, the default model is used.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
@@ -297,8 +297,8 @@ class Glossary(_messages.Message):
     languageCodesSet: Used with equivalent term set glossaries.
     languagePair: Used with unidirectional glossaries.
     name: Required. The resource name of the glossary. Glossary names have the
-      form `projects/{project-number-or-id}/locations/{location-id}/glossaries
-      /{glossary-id}`.
+      form `projects/{project-number-or-id}/locations/{location-
+      id}/glossaries/{glossary-id}`.
     submitTime: Output only. When CreateGlossary was called.
   """
 
@@ -726,7 +726,7 @@ class StandardQueryParameters(_messages.Message):
 
   f__xgafv = _messages.EnumField('FXgafvValueValuesEnum', 1)
   access_token = _messages.StringField(2)
-  alt = _messages.EnumField('AltValueValuesEnum', 3, default=u'json')
+  alt = _messages.EnumField('AltValueValuesEnum', 3, default='json')
   callback = _messages.StringField(4)
   fields = _messages.StringField(5)
   key = _messages.StringField(6)
@@ -828,12 +828,12 @@ class TranslateProjectsDetectLanguageRequest(_messages.Message):
     detectLanguageRequest: A DetectLanguageRequest resource to be passed as
       the request body.
     parent: Required. Project or location to make a call. Must refer to a
-      caller's project.  Format: `projects/{project-number-or-id}/locations
-      /{location-id}` or `projects/{project-number-or-id}`.  For global calls,
-      use `projects/{project-number-or-id}/locations/global` or `projects
-      /{project-number-or-id}`.  Only models within the same region (has same
-      location-id) can be used. Otherwise an INVALID_ARGUMENT (400) error is
-      returned.
+      caller's project.  Format: `projects/{project-number-or-
+      id}/locations/{location-id}` or `projects/{project-number-or-id}`.  For
+      global calls, use `projects/{project-number-or-id}/locations/global` or
+      `projects/{project-number-or-id}`.  Only models within the same region
+      (has same location-id) can be used. Otherwise an INVALID_ARGUMENT (400)
+      error is returned.
   """
 
   detectLanguageRequest = _messages.MessageField('DetectLanguageRequest', 1)
@@ -848,13 +848,13 @@ class TranslateProjectsGetSupportedLanguagesRequest(_messages.Message):
       human readable names of supported languages. If missing, then display
       names are not returned in a response.
     model: Optional. Get supported languages of this model.  The format
-      depends on model type:  - AutoML Translation models:   `projects
-      /{project-number-or-id}/locations/{location-id}/models/{model-id}`  -
-      General (built-in) models:   `projects/{project-number-or-id}/locations
-      /{location-id}/models/general/nmt`,   `projects/{project-number-or-
-      id}/locations/{location-id}/models/general/base`   Returns languages
-      supported by the specified model. If missing, we get supported languages
-      of Google general base (PBMT) model.
+      depends on model type:  - AutoML Translation models:
+      `projects/{project-number-or-id}/locations/{location-id}/models/{model-
+      id}`  - General (built-in) models:   `projects/{project-number-or-
+      id}/locations/{location-id}/models/general/nmt`,   `projects/{project-
+      number-or-id}/locations/{location-id}/models/general/base`   Returns
+      languages supported by the specified model. If missing, we get supported
+      languages of Google general base (PBMT) model.
     parent: Required. Project or location to make a call. Must refer to a
       caller's project.  Format: `projects/{project-number-or-id}` or
       `projects/{project-number-or-id}/locations/{location-id}`.  For global
@@ -894,12 +894,12 @@ class TranslateProjectsLocationsDetectLanguageRequest(_messages.Message):
     detectLanguageRequest: A DetectLanguageRequest resource to be passed as
       the request body.
     parent: Required. Project or location to make a call. Must refer to a
-      caller's project.  Format: `projects/{project-number-or-id}/locations
-      /{location-id}` or `projects/{project-number-or-id}`.  For global calls,
-      use `projects/{project-number-or-id}/locations/global` or `projects
-      /{project-number-or-id}`.  Only models within the same region (has same
-      location-id) can be used. Otherwise an INVALID_ARGUMENT (400) error is
-      returned.
+      caller's project.  Format: `projects/{project-number-or-
+      id}/locations/{location-id}` or `projects/{project-number-or-id}`.  For
+      global calls, use `projects/{project-number-or-id}/locations/global` or
+      `projects/{project-number-or-id}`.  Only models within the same region
+      (has same location-id) can be used. Otherwise an INVALID_ARGUMENT (400)
+      error is returned.
   """
 
   detectLanguageRequest = _messages.MessageField('DetectLanguageRequest', 1)
@@ -924,13 +924,13 @@ class TranslateProjectsLocationsGetSupportedLanguagesRequest(_messages.Message):
       human readable names of supported languages. If missing, then display
       names are not returned in a response.
     model: Optional. Get supported languages of this model.  The format
-      depends on model type:  - AutoML Translation models:   `projects
-      /{project-number-or-id}/locations/{location-id}/models/{model-id}`  -
-      General (built-in) models:   `projects/{project-number-or-id}/locations
-      /{location-id}/models/general/nmt`,   `projects/{project-number-or-
-      id}/locations/{location-id}/models/general/base`   Returns languages
-      supported by the specified model. If missing, we get supported languages
-      of Google general base (PBMT) model.
+      depends on model type:  - AutoML Translation models:
+      `projects/{project-number-or-id}/locations/{location-id}/models/{model-
+      id}`  - General (built-in) models:   `projects/{project-number-or-
+      id}/locations/{location-id}/models/general/nmt`,   `projects/{project-
+      number-or-id}/locations/{location-id}/models/general/base`   Returns
+      languages supported by the specified model. If missing, we get supported
+      languages of Google general base (PBMT) model.
     parent: Required. Project or location to make a call. Must refer to a
       caller's project.  Format: `projects/{project-number-or-id}` or
       `projects/{project-number-or-id}/locations/{location-id}`.  For global
@@ -1163,12 +1163,12 @@ class TranslateTextRequest(_messages.Message):
       "text/html",  "text/plain". If left blank, the MIME type defaults to
       "text/html".
     model: Optional. The `model` type requested for this translation.  The
-      format depends on model type:  - AutoML Translation models:   `projects
-      /{project-number-or-id}/locations/{location-id}/models/{model-id}`  -
-      General (built-in) models:   `projects/{project-number-or-id}/locations
-      /{location-id}/models/general/nmt`,   `projects/{project-number-or-
-      id}/locations/{location-id}/models/general/base`   For global (non-
-      regionalized) requests, use `location-id` `global`. For example,
+      format depends on model type:  - AutoML Translation models:
+      `projects/{project-number-or-id}/locations/{location-id}/models/{model-
+      id}`  - General (built-in) models:   `projects/{project-number-or-
+      id}/locations/{location-id}/models/general/nmt`,   `projects/{project-
+      number-or-id}/locations/{location-id}/models/general/base`   For global
+      (non-regionalized) requests, use `location-id` `global`. For example,
       `projects/{project-number-or-id}/locations/global/models/general/nmt`.
       If missing, the system decides which google base model to use.
     sourceLanguageCode: Optional. The BCP-47 language code of the input text
@@ -1245,9 +1245,9 @@ class Translation(_messages.Message):
     glossaryConfig: The `glossary_config` used for this translation.
     model: Only present when `model` is present in the request. `model` here
       is normalized to have project number.  For example: If the `model`
-      requested in TranslationTextRequest is `projects/{project-id}/locations
-      /{location-id}/models/general/nmt` then `model` here would be normalized
-      to `projects/{project-number}/locations/{location-
+      requested in TranslationTextRequest is `projects/{project-
+      id}/locations/{location-id}/models/general/nmt` then `model` here would
+      be normalized to `projects/{project-number}/locations/{location-
       id}/models/general/nmt`.
     translatedText: Text translated into the target language.
   """

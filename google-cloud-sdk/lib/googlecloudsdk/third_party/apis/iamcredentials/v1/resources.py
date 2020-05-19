@@ -28,7 +28,7 @@ class Collections(enum.Enum):
       'serviceAccounts',
       'projects/{projectsId}/serviceAccounts/{serviceAccountsId}',
       {},
-      [u'projectsId', u'serviceAccountsId'],
+      ['projectsId', 'serviceAccountsId'],
       True
   )
 

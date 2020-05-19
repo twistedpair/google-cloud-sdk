@@ -299,6 +299,10 @@
         "autoscale": {
           "description": "The autoscale policy to apply on a pool.",
           "$ref": "GoogleDevtoolsRemotebuildexecutionAdminV1alphaAutoscale"
+        },
+        "channel": {
+          "description": "Channel specifies the release channel of the pool.",
+          "type": "string"
         }
       }
     },
@@ -347,6 +351,10 @@
           "description": "The maximum number of actions a worker can execute concurrently.",
           "type": "string",
           "format": "int64"
+        },
+        "vmImage": {
+          "description": "Output only. The name of the image used by each VM.",
+          "type": "string"
         }
       }
     },
@@ -1100,6 +1108,7 @@
             "The command failed due to permission errors.",
             "The command failed because of some invariants expected by the underlying\nsystem have been broken. This usually indicates a bug wit the system.",
             "The command was aborted.",
+            "The command failed because the system is not in a state required for the\ncommand, e.g. the command inputs cannot be found on the server.",
             "The bot failed to do the cleanup, e.g. unable to delete the command\nworking directory or the command process.",
             "The bot failed to download the inputs.",
             "Unknown error.",
@@ -1137,6 +1146,7 @@
             "PERMISSION_DENIED",
             "INTERNAL",
             "ABORTED",
+            "FAILED_PRECONDITION",
             "CLEANUP_ERROR",
             "DOWNLOAD_INPUTS_ERROR",
             "UNKNOWN",

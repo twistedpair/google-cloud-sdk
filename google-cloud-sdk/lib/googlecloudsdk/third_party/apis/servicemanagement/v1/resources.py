@@ -28,42 +28,42 @@ class Collections(enum.Enum):
       'operations',
       'operations/{operationsId}',
       {},
-      [u'operationsId'],
+      ['operationsId'],
       True
   )
   SERVICES = (
       'services',
       'services/{serviceName}',
       {},
-      [u'serviceName'],
+      ['serviceName'],
       True
   )
   SERVICES_CONFIGS = (
       'services.configs',
       'services/{serviceName}/configs/{configId}',
       {},
-      [u'serviceName', u'configId'],
+      ['serviceName', 'configId'],
       True
   )
   SERVICES_CUSTOMERSETTINGS = (
       'services.customerSettings',
       'services/{serviceName}/customerSettings/{customerId}',
       {},
-      [u'serviceName', u'customerId'],
+      ['serviceName', 'customerId'],
       True
   )
   SERVICES_PROJECTSETTINGS = (
       'services.projectSettings',
       'services/{serviceName}/projectSettings/{consumerProjectId}',
       {},
-      [u'serviceName', u'consumerProjectId'],
+      ['serviceName', 'consumerProjectId'],
       True
   )
   SERVICES_ROLLOUTS = (
       'services.rollouts',
       'services/{serviceName}/rollouts/{rolloutId}',
       {},
-      [u'serviceName', u'rolloutId'],
+      ['serviceName', 'rolloutId'],
       True
   )
 

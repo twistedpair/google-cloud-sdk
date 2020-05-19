@@ -28,7 +28,7 @@ class Collections(enum.Enum):
       'folders',
       'folders/{foldersId}',
       {},
-      [u'foldersId'],
+      ['foldersId'],
       True
   )
   FOLDERS_GUESTPOLICIES = (
@@ -38,14 +38,14 @@ class Collections(enum.Enum):
           '':
               'folders/{foldersId}/guestPolicies/{guestPoliciesId}',
       },
-      [u'name'],
+      ['name'],
       True
   )
   ORGANIZATIONS = (
       'organizations',
       'organizations/{organizationsId}',
       {},
-      [u'organizationsId'],
+      ['organizationsId'],
       True
   )
   ORGANIZATIONS_GUESTPOLICIES = (
@@ -56,14 +56,14 @@ class Collections(enum.Enum):
               'organizations/{organizationsId}/guestPolicies/'
               '{guestPoliciesId}',
       },
-      [u'name'],
+      ['name'],
       True
   )
   PROJECTS = (
       'projects',
       'projects/{projectsId}',
       {},
-      [u'projectsId'],
+      ['projectsId'],
       True
   )
   PROJECTS_GUESTPOLICIES = (
@@ -73,7 +73,7 @@ class Collections(enum.Enum):
           '':
               'projects/{projectsId}/guestPolicies/{guestPoliciesId}',
       },
-      [u'name'],
+      ['name'],
       True
   )
   PROJECTS_PATCHDEPLOYMENTS = (
@@ -83,7 +83,7 @@ class Collections(enum.Enum):
           '':
               'projects/{projectsId}/patchDeployments/{patchDeploymentsId}',
       },
-      [u'name'],
+      ['name'],
       True
   )
   PROJECTS_PATCHJOBS = (
@@ -93,7 +93,7 @@ class Collections(enum.Enum):
           '':
               'projects/{projectsId}/patchJobs/{patchJobsId}',
       },
-      [u'name'],
+      ['name'],
       True
   )
 

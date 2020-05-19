@@ -31,28 +31,28 @@ class Collections(enum.Enum):
           '':
               'liens/{liensId}',
       },
-      [u'liensId'],
+      ['liensId'],
       True
   )
   OPERATIONS = (
       'operations',
       'operations/{operationsId}',
       {},
-      [u'operationsId'],
+      ['operationsId'],
       True
   )
   ORGANIZATIONS = (
       'organizations',
       'organizations/{organizationsId}',
       {},
-      [u'organizationsId'],
+      ['organizationsId'],
       True
   )
   PROJECTS = (
       'projects',
       'projects/{projectId}',
       {},
-      [u'projectId'],
+      ['projectId'],
       True
   )
 

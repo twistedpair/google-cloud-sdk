@@ -8,17 +8,17 @@ class IapV1beta1(base_api.BaseApiClient):
   """Generated client library for service iap version v1beta1."""
 
   MESSAGES_MODULE = messages
-  BASE_URL = u'https://iap.googleapis.com/'
-  MTLS_BASE_URL = u'https://iap.mtls.googleapis.com/'
+  BASE_URL = 'https://iap.googleapis.com/'
+  MTLS_BASE_URL = 'https://iap.mtls.googleapis.com/'
 
-  _PACKAGE = u'iap'
-  _SCOPES = [u'https://www.googleapis.com/auth/cloud-platform']
-  _VERSION = u'v1beta1'
+  _PACKAGE = 'iap'
+  _SCOPES = ['https://www.googleapis.com/auth/cloud-platform']
+  _VERSION = 'v1beta1'
   _CLIENT_ID = '1042881264118.apps.googleusercontent.com'
   _CLIENT_SECRET = 'x_Tw5K8nnjoRAqULM9PFAC2b'
-  _USER_AGENT = u'google-cloud-sdk'
-  _CLIENT_CLASS_NAME = u'IapV1beta1'
-  _URL_VERSION = u'v1beta1'
+  _USER_AGENT = 'google-cloud-sdk'
+  _CLIENT_CLASS_NAME = 'IapV1beta1'
+  _URL_VERSION = 'v1beta1'
   _API_KEY = None
 
   def __init__(self, url='', credentials=None,
@@ -41,7 +41,7 @@ class IapV1beta1(base_api.BaseApiClient):
   class V1beta1Service(base_api.BaseApiService):
     """Service class for the v1beta1 resource."""
 
-    _NAME = u'v1beta1'
+    _NAME = 'v1beta1'
 
     def __init__(self, client):
       super(IapV1beta1.V1beta1Service, self).__init__(client)
@@ -65,16 +65,16 @@ https://cloud.google.com/iap/docs/managing-access#managing_access_via_the_api
           config, request, global_params=global_params)
 
     GetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/{v1beta1Id}:getIamPolicy',
-        http_method=u'POST',
-        method_id=u'iap.getIamPolicy',
-        ordered_params=[u'resource'],
-        path_params=[u'resource'],
+        flat_path='v1beta1/{v1beta1Id}:getIamPolicy',
+        http_method='POST',
+        method_id='iap.getIamPolicy',
+        ordered_params=['resource'],
+        path_params=['resource'],
         query_params=[],
-        relative_path=u'v1beta1/{+resource}:getIamPolicy',
-        request_field=u'getIamPolicyRequest',
-        request_type_name=u'IapGetIamPolicyRequest',
-        response_type_name=u'Policy',
+        relative_path='v1beta1/{+resource}:getIamPolicy',
+        request_field='getIamPolicyRequest',
+        request_type_name='IapGetIamPolicyRequest',
+        response_type_name='Policy',
         supports_download=False,
     )
 
@@ -95,16 +95,16 @@ https://cloud.google.com/iap/docs/managing-access#managing_access_via_the_api
           config, request, global_params=global_params)
 
     SetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/{v1beta1Id}:setIamPolicy',
-        http_method=u'POST',
-        method_id=u'iap.setIamPolicy',
-        ordered_params=[u'resource'],
-        path_params=[u'resource'],
+        flat_path='v1beta1/{v1beta1Id}:setIamPolicy',
+        http_method='POST',
+        method_id='iap.setIamPolicy',
+        ordered_params=['resource'],
+        path_params=['resource'],
         query_params=[],
-        relative_path=u'v1beta1/{+resource}:setIamPolicy',
-        request_field=u'setIamPolicyRequest',
-        request_type_name=u'IapSetIamPolicyRequest',
-        response_type_name=u'Policy',
+        relative_path='v1beta1/{+resource}:setIamPolicy',
+        request_field='setIamPolicyRequest',
+        request_type_name='IapSetIamPolicyRequest',
+        response_type_name='Policy',
         supports_download=False,
     )
 
@@ -127,15 +127,15 @@ https://cloud.google.com/iap/docs/managing-access#managing_access_via_the_api
           config, request, global_params=global_params)
 
     TestIamPermissions.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/{v1beta1Id}:testIamPermissions',
-        http_method=u'POST',
-        method_id=u'iap.testIamPermissions',
-        ordered_params=[u'resource'],
-        path_params=[u'resource'],
+        flat_path='v1beta1/{v1beta1Id}:testIamPermissions',
+        http_method='POST',
+        method_id='iap.testIamPermissions',
+        ordered_params=['resource'],
+        path_params=['resource'],
         query_params=[],
-        relative_path=u'v1beta1/{+resource}:testIamPermissions',
-        request_field=u'testIamPermissionsRequest',
-        request_type_name=u'IapTestIamPermissionsRequest',
-        response_type_name=u'TestIamPermissionsResponse',
+        relative_path='v1beta1/{+resource}:testIamPermissions',
+        request_field='testIamPermissionsRequest',
+        request_type_name='IapTestIamPermissionsRequest',
+        response_type_name='TestIamPermissionsResponse',
         supports_download=False,
     )

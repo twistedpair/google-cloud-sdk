@@ -35,7 +35,7 @@ class Collections(enum.Enum):
       'organizations',
       'organizations/{organizationsId}',
       {},
-      [u'organizationsId'],
+      ['organizationsId'],
       True
   )
   ORGANIZATIONS_DEIDENTIFYTEMPLATES = (
@@ -46,7 +46,7 @@ class Collections(enum.Enum):
               'organizations/{organizationsId}/deidentifyTemplates/'
               '{deidentifyTemplatesId}',
       },
-      [u'name'],
+      ['name'],
       True
   )
   ORGANIZATIONS_INSPECTTEMPLATES = (
@@ -57,14 +57,14 @@ class Collections(enum.Enum):
               'organizations/{organizationsId}/inspectTemplates/'
               '{inspectTemplatesId}',
       },
-      [u'name'],
+      ['name'],
       True
   )
   ORGANIZATIONS_LOCATIONS = (
       'organizations.locations',
       'organizations/{organizationsId}/locations/{locationsId}',
       {},
-      [u'organizationsId', u'locationsId'],
+      ['organizationsId', 'locationsId'],
       True
   )
   ORGANIZATIONS_LOCATIONS_DEIDENTIFYTEMPLATES = (
@@ -75,7 +75,7 @@ class Collections(enum.Enum):
               'organizations/{organizationsId}/locations/{locationsId}/'
               'deidentifyTemplates/{deidentifyTemplatesId}',
       },
-      [u'name'],
+      ['name'],
       True
   )
   ORGANIZATIONS_LOCATIONS_INSPECTTEMPLATES = (
@@ -86,7 +86,7 @@ class Collections(enum.Enum):
               'organizations/{organizationsId}/locations/{locationsId}/'
               'inspectTemplates/{inspectTemplatesId}',
       },
-      [u'name'],
+      ['name'],
       True
   )
   ORGANIZATIONS_LOCATIONS_STOREDINFOTYPES = (
@@ -97,7 +97,7 @@ class Collections(enum.Enum):
               'organizations/{organizationsId}/locations/{locationsId}/'
               'storedInfoTypes/{storedInfoTypesId}',
       },
-      [u'name'],
+      ['name'],
       True
   )
   ORGANIZATIONS_STOREDINFOTYPES = (
@@ -108,21 +108,21 @@ class Collections(enum.Enum):
               'organizations/{organizationsId}/storedInfoTypes/'
               '{storedInfoTypesId}',
       },
-      [u'name'],
+      ['name'],
       True
   )
   PROJECTS = (
       'projects',
       'projects/{projectsId}',
       {},
-      [u'projectsId'],
+      ['projectsId'],
       True
   )
   PROJECTS_CONTENT = (
       'projects.content',
       'projects/{projectsId}',
       {},
-      [u'projectsId'],
+      ['projectsId'],
       False
   )
   PROJECTS_DEIDENTIFYTEMPLATES = (
@@ -133,7 +133,7 @@ class Collections(enum.Enum):
               'projects/{projectsId}/deidentifyTemplates/'
               '{deidentifyTemplatesId}',
       },
-      [u'name'],
+      ['name'],
       True
   )
   PROJECTS_DLPJOBS = (
@@ -143,14 +143,14 @@ class Collections(enum.Enum):
           '':
               'projects/{projectsId}/dlpJobs/{dlpJobsId}',
       },
-      [u'name'],
+      ['name'],
       True
   )
   PROJECTS_IMAGE = (
       'projects.image',
       'projects/{projectsId}',
       {},
-      [u'projectsId'],
+      ['projectsId'],
       False
   )
   PROJECTS_INSPECTTEMPLATES = (
@@ -160,7 +160,7 @@ class Collections(enum.Enum):
           '':
               'projects/{projectsId}/inspectTemplates/{inspectTemplatesId}',
       },
-      [u'name'],
+      ['name'],
       True
   )
   PROJECTS_JOBTRIGGERS = (
@@ -170,14 +170,14 @@ class Collections(enum.Enum):
           '':
               'projects/{projectsId}/jobTriggers/{jobTriggersId}',
       },
-      [u'name'],
+      ['name'],
       True
   )
   PROJECTS_LOCATIONS = (
       'projects.locations',
       'projects/{projectsId}/locations/{locationsId}',
       {},
-      [u'projectsId', u'locationsId'],
+      ['projectsId', 'locationsId'],
       True
   )
   PROJECTS_LOCATIONS_DEIDENTIFYTEMPLATES = (
@@ -188,7 +188,7 @@ class Collections(enum.Enum):
               'projects/{projectsId}/locations/{locationsId}/'
               'deidentifyTemplates/{deidentifyTemplatesId}',
       },
-      [u'name'],
+      ['name'],
       True
   )
   PROJECTS_LOCATIONS_DLPJOBS = (
@@ -199,7 +199,7 @@ class Collections(enum.Enum):
               'projects/{projectsId}/locations/{locationsId}/dlpJobs/'
               '{dlpJobsId}',
       },
-      [u'name'],
+      ['name'],
       True
   )
   PROJECTS_LOCATIONS_INSPECTTEMPLATES = (
@@ -210,7 +210,7 @@ class Collections(enum.Enum):
               'projects/{projectsId}/locations/{locationsId}/'
               'inspectTemplates/{inspectTemplatesId}',
       },
-      [u'name'],
+      ['name'],
       True
   )
   PROJECTS_LOCATIONS_JOBTRIGGERS = (
@@ -221,7 +221,7 @@ class Collections(enum.Enum):
               'projects/{projectsId}/locations/{locationsId}/jobTriggers/'
               '{jobTriggersId}',
       },
-      [u'name'],
+      ['name'],
       True
   )
   PROJECTS_LOCATIONS_STOREDINFOTYPES = (
@@ -232,7 +232,7 @@ class Collections(enum.Enum):
               'projects/{projectsId}/locations/{locationsId}/storedInfoTypes/'
               '{storedInfoTypesId}',
       },
-      [u'name'],
+      ['name'],
       True
   )
   PROJECTS_STOREDINFOTYPES = (
@@ -242,7 +242,7 @@ class Collections(enum.Enum):
           '':
               'projects/{projectsId}/storedInfoTypes/{storedInfoTypesId}',
       },
-      [u'name'],
+      ['name'],
       True
   )
 

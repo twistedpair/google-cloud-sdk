@@ -31,7 +31,7 @@ class Collections(enum.Enum):
           '':
               'namespaces/{namespacesId}',
       },
-      [u'name'],
+      ['name'],
       True
   )
   API_V1_NAMESPACES_SECRETS = (
@@ -41,7 +41,7 @@ class Collections(enum.Enum):
           '':
               'namespaces/{namespacesId}/secrets/{secretsId}',
       },
-      [u'name'],
+      ['name'],
       True
   )
   NAMESPACES_CONFIGURATIONS = (
@@ -51,7 +51,7 @@ class Collections(enum.Enum):
           '':
               'namespaces/{namespacesId}/configurations/{configurationsId}',
       },
-      [u'name'],
+      ['name'],
       True
   )
   NAMESPACES_DOMAINMAPPINGS = (
@@ -61,7 +61,7 @@ class Collections(enum.Enum):
           '':
               'namespaces/{namespacesId}/domainmappings/{domainmappingsId}',
       },
-      [u'name'],
+      ['name'],
       True
   )
   NAMESPACES_REVISIONS = (
@@ -71,7 +71,7 @@ class Collections(enum.Enum):
           '':
               'namespaces/{namespacesId}/revisions/{revisionsId}',
       },
-      [u'name'],
+      ['name'],
       True
   )
   NAMESPACES_ROUTES = (
@@ -81,7 +81,7 @@ class Collections(enum.Enum):
           '':
               'namespaces/{namespacesId}/routes/{routesId}',
       },
-      [u'name'],
+      ['name'],
       True
   )
   NAMESPACES_SERVICES = (
@@ -91,21 +91,21 @@ class Collections(enum.Enum):
           '':
               'namespaces/{namespacesId}/services/{servicesId}',
       },
-      [u'name'],
+      ['name'],
       True
   )
   PROJECTS = (
       'projects',
       'projects/{projectsId}',
       {},
-      [u'projectsId'],
+      ['projectsId'],
       True
   )
   PROJECTS_LOCATIONS = (
       'projects.locations',
       'projects/{projectsId}/locations/{locationsId}',
       {},
-      [u'projectsId', u'locationsId'],
+      ['projectsId', 'locationsId'],
       True
   )
   PROJECTS_LOCATIONS_CONFIGURATIONS = (
@@ -116,7 +116,7 @@ class Collections(enum.Enum):
               'projects/{projectsId}/locations/{locationsId}/configurations/'
               '{configurationsId}',
       },
-      [u'name'],
+      ['name'],
       True
   )
   PROJECTS_LOCATIONS_DOMAINMAPPINGS = (
@@ -127,7 +127,7 @@ class Collections(enum.Enum):
               'projects/{projectsId}/locations/{locationsId}/domainmappings/'
               '{domainmappingsId}',
       },
-      [u'name'],
+      ['name'],
       True
   )
   PROJECTS_LOCATIONS_NAMESPACES = (
@@ -138,7 +138,7 @@ class Collections(enum.Enum):
               'projects/{projectsId}/locations/{locationsId}/namespaces/'
               '{namespacesId}',
       },
-      [u'name'],
+      ['name'],
       True
   )
   PROJECTS_LOCATIONS_REVISIONS = (
@@ -149,7 +149,7 @@ class Collections(enum.Enum):
               'projects/{projectsId}/locations/{locationsId}/revisions/'
               '{revisionsId}',
       },
-      [u'name'],
+      ['name'],
       True
   )
   PROJECTS_LOCATIONS_ROUTES = (
@@ -160,7 +160,7 @@ class Collections(enum.Enum):
               'projects/{projectsId}/locations/{locationsId}/routes/'
               '{routesId}',
       },
-      [u'name'],
+      ['name'],
       True
   )
   PROJECTS_LOCATIONS_SECRETS = (
@@ -171,7 +171,7 @@ class Collections(enum.Enum):
               'projects/{projectsId}/locations/{locationsId}/secrets/'
               '{secretsId}',
       },
-      [u'name'],
+      ['name'],
       True
   )
   PROJECTS_LOCATIONS_SERVICES = (
@@ -182,7 +182,7 @@ class Collections(enum.Enum):
               'projects/{projectsId}/locations/{locationsId}/services/'
               '{servicesId}',
       },
-      [u'name'],
+      ['name'],
       True
   )
 

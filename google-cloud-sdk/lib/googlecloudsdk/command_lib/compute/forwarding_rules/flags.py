@@ -202,11 +202,10 @@ SUBNET_ARG = compute_flags.ResourceArgument(
     regional_collection='compute.subnetworks',
     short_help='Subnet that this forwarding rule applies to.',
     detailed_help="""\
-        (Only for --load-balancing-scheme=INTERNAL) Subnetwork that this
-        forwarding rule applies to. If the network configured for this
-        forwarding rule is in auto subnet mode, this flag is optional and the
-        subnet in the same region of the forwarding rule is used. However,
-        if the network is in custom subnet mode, a subnetwork must be specified.
+        (Only for --load-balancing-scheme=INTERNAL and
+        --load-balancing-scheme=INTERNAL_MANAGED) Subnetwork that this
+        forwarding rule applies to. If the network is auto mode, this flag is
+        optional. If the network is custom mode, this flag is required.
         """,
     region_explanation=('If not specified, the region is set to the'
                         ' region of the forwarding rule.'))

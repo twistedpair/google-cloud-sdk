@@ -90,8 +90,9 @@ class Binding(_messages.Message):
       not apply to the current request. However, a different role binding
       might grant the same role to one or more of the members in this binding.
       To learn which resources support conditions in their IAM policies, see
-      the [IAM documentation](https://cloud.google.com/iam/help/conditions
-      /resource-policies).
+      the [IAM
+      documentation](https://cloud.google.com/iam/help/conditions/resource-
+      policies).
     members: Specifies the identities requesting access for a Cloud Platform
       resource. `members` can have the following values:  * `allUsers`: A
       special identifier that represents anyone who is    on the internet;
@@ -181,13 +182,14 @@ class CloudFunction(_messages.Message):
       deployment of the function.
     buildWorkerPool: Name of the Cloud Build Custom Worker Pool that should be
       used to build the function. The format of this field is
-      `projects/{project}/workerPools/{workerPool}` where {project} is the
-      project id where the worker pool is defined and {workerPool} is the
-      short name of the worker pool.  If the project id is not the same as the
-      function, then the Cloud Functions Service Agent
-      (service-<project_number>@gcf-admin-robot.iam.gserviceaccount.com) must
-      be granted the role Cloud Build Custom Workers Builder
-      (roles/cloudbuild.customworkers.builder) in the project.
+      `projects/{project}/locations/{region}/workerPools/{workerPool}` where
+      {project} and {region} are the project id and region respectively where
+      the worker pool is defined and {workerPool} is the short name of the
+      worker pool.  If the project id is not the same as the function, then
+      the Cloud Functions Service Agent (service-<project_number>@gcf-admin-
+      robot.iam.gserviceaccount.com) must be granted the role Cloud Build
+      Custom Workers Builder (roles/cloudbuild.customworkers.builder) in the
+      project.
     description: User-provided description of a function.
     entryPoint: The name of the function (as defined in source code) that will
       be executed. Defaults to the resource name suffix, if not specified. For
@@ -1115,8 +1117,8 @@ class Policy(_messages.Message):
   timestamp('2020-10-01T00:00:00.000Z')",           }         }       ],
   "etag": "BwWWja0YfJA=",       "version": 3     }  **YAML example:**
   bindings:     - members:       - user:mike@example.com       -
-  group:admins@example.com       - domain:google.com       - serviceAccount
-  :my-project-id@appspot.gserviceaccount.com       role:
+  group:admins@example.com       - domain:google.com       -
+  serviceAccount:my-project-id@appspot.gserviceaccount.com       role:
   roles/resourcemanager.organizationAdmin     - members:       -
   user:eve@example.com       role: roles/resourcemanager.organizationViewer
   condition:         title: expirable access         description: Does not
@@ -1268,7 +1270,7 @@ class StandardQueryParameters(_messages.Message):
 
   f__xgafv = _messages.EnumField('FXgafvValueValuesEnum', 1)
   access_token = _messages.StringField(2)
-  alt = _messages.EnumField('AltValueValuesEnum', 3, default=u'json')
+  alt = _messages.EnumField('AltValueValuesEnum', 3, default='json')
   callback = _messages.StringField(4)
   fields = _messages.StringField(5)
   key = _messages.StringField(6)

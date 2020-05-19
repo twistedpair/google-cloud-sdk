@@ -8,17 +8,17 @@ class CloudfunctionsV1(base_api.BaseApiClient):
   """Generated client library for service cloudfunctions version v1."""
 
   MESSAGES_MODULE = messages
-  BASE_URL = u'https://cloudfunctions.googleapis.com/'
-  MTLS_BASE_URL = u'https://cloudfunctions.mtls.googleapis.com/'
+  BASE_URL = 'https://cloudfunctions.googleapis.com/'
+  MTLS_BASE_URL = 'https://cloudfunctions.mtls.googleapis.com/'
 
-  _PACKAGE = u'cloudfunctions'
-  _SCOPES = [u'https://www.googleapis.com/auth/cloud-platform']
-  _VERSION = u'v1'
+  _PACKAGE = 'cloudfunctions'
+  _SCOPES = ['https://www.googleapis.com/auth/cloud-platform']
+  _VERSION = 'v1'
   _CLIENT_ID = '1042881264118.apps.googleusercontent.com'
   _CLIENT_SECRET = 'x_Tw5K8nnjoRAqULM9PFAC2b'
-  _USER_AGENT = u'google-cloud-sdk'
-  _CLIENT_CLASS_NAME = u'CloudfunctionsV1'
-  _URL_VERSION = u'v1'
+  _USER_AGENT = 'google-cloud-sdk'
+  _CLIENT_CLASS_NAME = 'CloudfunctionsV1'
+  _URL_VERSION = 'v1'
   _API_KEY = None
 
   def __init__(self, url='', credentials=None,
@@ -44,7 +44,7 @@ class CloudfunctionsV1(base_api.BaseApiClient):
   class OperationsService(base_api.BaseApiService):
     """Service class for the operations resource."""
 
-    _NAME = u'operations'
+    _NAME = 'operations'
 
     def __init__(self, client):
       super(CloudfunctionsV1.OperationsService, self).__init__(client)
@@ -67,16 +67,16 @@ service.
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/operations/{operationsId}',
-        http_method=u'GET',
-        method_id=u'cloudfunctions.operations.get',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1/operations/{operationsId}',
+        http_method='GET',
+        method_id='cloudfunctions.operations.get',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1/{+name}',
+        relative_path='v1/{+name}',
         request_field='',
-        request_type_name=u'CloudfunctionsOperationsGetRequest',
-        response_type_name=u'Operation',
+        request_type_name='CloudfunctionsOperationsGetRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -103,22 +103,22 @@ is the parent resource, without the operations collection id.
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'cloudfunctions.operations.list',
+        http_method='GET',
+        method_id='cloudfunctions.operations.list',
         ordered_params=[],
         path_params=[],
-        query_params=[u'filter', u'name', u'pageSize', u'pageToken'],
-        relative_path=u'v1/operations',
+        query_params=['filter', 'name', 'pageSize', 'pageToken'],
+        relative_path='v1/operations',
         request_field='',
-        request_type_name=u'CloudfunctionsOperationsListRequest',
-        response_type_name=u'ListOperationsResponse',
+        request_type_name='CloudfunctionsOperationsListRequest',
+        response_type_name='ListOperationsResponse',
         supports_download=False,
     )
 
   class ProjectsLocationsFunctionsService(base_api.BaseApiService):
     """Service class for the projects_locations_functions resource."""
 
-    _NAME = u'projects_locations_functions'
+    _NAME = 'projects_locations_functions'
 
     def __init__(self, client):
       super(CloudfunctionsV1.ProjectsLocationsFunctionsService, self).__init__(client)
@@ -142,16 +142,16 @@ the actual limits, refer to
           config, request, global_params=global_params)
 
     Call.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/locations/{locationsId}/functions/{functionsId}:call',
-        http_method=u'POST',
-        method_id=u'cloudfunctions.projects.locations.functions.call',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/functions/{functionsId}:call',
+        http_method='POST',
+        method_id='cloudfunctions.projects.locations.functions.call',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1/{+name}:call',
-        request_field=u'callFunctionRequest',
-        request_type_name=u'CloudfunctionsProjectsLocationsFunctionsCallRequest',
-        response_type_name=u'CallFunctionResponse',
+        relative_path='v1/{+name}:call',
+        request_field='callFunctionRequest',
+        request_type_name='CloudfunctionsProjectsLocationsFunctionsCallRequest',
+        response_type_name='CallFunctionResponse',
         supports_download=False,
     )
 
@@ -171,16 +171,16 @@ the specified project, the long running operation will return
           config, request, global_params=global_params)
 
     Create.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/locations/{locationsId}/functions',
-        http_method=u'POST',
-        method_id=u'cloudfunctions.projects.locations.functions.create',
-        ordered_params=[u'location'],
-        path_params=[u'location'],
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/functions',
+        http_method='POST',
+        method_id='cloudfunctions.projects.locations.functions.create',
+        ordered_params=['location'],
+        path_params=['location'],
         query_params=[],
-        relative_path=u'v1/{+location}/functions',
-        request_field=u'cloudFunction',
-        request_type_name=u'CloudfunctionsProjectsLocationsFunctionsCreateRequest',
-        response_type_name=u'Operation',
+        relative_path='v1/{+location}/functions',
+        request_field='cloudFunction',
+        request_type_name='CloudfunctionsProjectsLocationsFunctionsCreateRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -200,16 +200,16 @@ remove this function.
           config, request, global_params=global_params)
 
     Delete.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/locations/{locationsId}/functions/{functionsId}',
-        http_method=u'DELETE',
-        method_id=u'cloudfunctions.projects.locations.functions.delete',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/functions/{functionsId}',
+        http_method='DELETE',
+        method_id='cloudfunctions.projects.locations.functions.delete',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1/{+name}',
+        relative_path='v1/{+name}',
         request_field='',
-        request_type_name=u'CloudfunctionsProjectsLocationsFunctionsDeleteRequest',
-        response_type_name=u'Operation',
+        request_type_name='CloudfunctionsProjectsLocationsFunctionsDeleteRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -231,16 +231,16 @@ https://cloud.google.com/storage/docs/access-control/signed-urls
           config, request, global_params=global_params)
 
     GenerateDownloadUrl.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/locations/{locationsId}/functions/{functionsId}:generateDownloadUrl',
-        http_method=u'POST',
-        method_id=u'cloudfunctions.projects.locations.functions.generateDownloadUrl',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/functions/{functionsId}:generateDownloadUrl',
+        http_method='POST',
+        method_id='cloudfunctions.projects.locations.functions.generateDownloadUrl',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1/{+name}:generateDownloadUrl',
-        request_field=u'generateDownloadUrlRequest',
-        request_type_name=u'CloudfunctionsProjectsLocationsFunctionsGenerateDownloadUrlRequest',
-        response_type_name=u'GenerateDownloadUrlResponse',
+        relative_path='v1/{+name}:generateDownloadUrl',
+        request_field='generateDownloadUrlRequest',
+        request_type_name='CloudfunctionsProjectsLocationsFunctionsGenerateDownloadUrlRequest',
+        response_type_name='GenerateDownloadUrlResponse',
         supports_download=False,
     )
 
@@ -282,16 +282,16 @@ And this header SHOULD NOT be specified:
           config, request, global_params=global_params)
 
     GenerateUploadUrl.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/locations/{locationsId}/functions:generateUploadUrl',
-        http_method=u'POST',
-        method_id=u'cloudfunctions.projects.locations.functions.generateUploadUrl',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/functions:generateUploadUrl',
+        http_method='POST',
+        method_id='cloudfunctions.projects.locations.functions.generateUploadUrl',
+        ordered_params=['parent'],
+        path_params=['parent'],
         query_params=[],
-        relative_path=u'v1/{+parent}/functions:generateUploadUrl',
-        request_field=u'generateUploadUrlRequest',
-        request_type_name=u'CloudfunctionsProjectsLocationsFunctionsGenerateUploadUrlRequest',
-        response_type_name=u'GenerateUploadUrlResponse',
+        relative_path='v1/{+parent}/functions:generateUploadUrl',
+        request_field='generateUploadUrlRequest',
+        request_type_name='CloudfunctionsProjectsLocationsFunctionsGenerateUploadUrlRequest',
+        response_type_name='GenerateUploadUrlResponse',
         supports_download=False,
     )
 
@@ -309,16 +309,16 @@ And this header SHOULD NOT be specified:
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/locations/{locationsId}/functions/{functionsId}',
-        http_method=u'GET',
-        method_id=u'cloudfunctions.projects.locations.functions.get',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/functions/{functionsId}',
+        http_method='GET',
+        method_id='cloudfunctions.projects.locations.functions.get',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1/{+name}',
+        relative_path='v1/{+name}',
         request_field='',
-        request_type_name=u'CloudfunctionsProjectsLocationsFunctionsGetRequest',
-        response_type_name=u'CloudFunction',
+        request_type_name='CloudfunctionsProjectsLocationsFunctionsGetRequest',
+        response_type_name='CloudFunction',
         supports_download=False,
     )
 
@@ -338,16 +338,16 @@ set.
           config, request, global_params=global_params)
 
     GetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/locations/{locationsId}/functions/{functionsId}:getIamPolicy',
-        http_method=u'GET',
-        method_id=u'cloudfunctions.projects.locations.functions.getIamPolicy',
-        ordered_params=[u'resource'],
-        path_params=[u'resource'],
-        query_params=[u'options_requestedPolicyVersion'],
-        relative_path=u'v1/{+resource}:getIamPolicy',
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/functions/{functionsId}:getIamPolicy',
+        http_method='GET',
+        method_id='cloudfunctions.projects.locations.functions.getIamPolicy',
+        ordered_params=['resource'],
+        path_params=['resource'],
+        query_params=['options_requestedPolicyVersion'],
+        relative_path='v1/{+resource}:getIamPolicy',
         request_field='',
-        request_type_name=u'CloudfunctionsProjectsLocationsFunctionsGetIamPolicyRequest',
-        response_type_name=u'Policy',
+        request_type_name='CloudfunctionsProjectsLocationsFunctionsGetIamPolicyRequest',
+        response_type_name='Policy',
         supports_download=False,
     )
 
@@ -365,16 +365,16 @@ set.
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/locations/{locationsId}/functions',
-        http_method=u'GET',
-        method_id=u'cloudfunctions.projects.locations.functions.list',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'pageSize', u'pageToken'],
-        relative_path=u'v1/{+parent}/functions',
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/functions',
+        http_method='GET',
+        method_id='cloudfunctions.projects.locations.functions.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v1/{+parent}/functions',
         request_field='',
-        request_type_name=u'CloudfunctionsProjectsLocationsFunctionsListRequest',
-        response_type_name=u'ListFunctionsResponse',
+        request_type_name='CloudfunctionsProjectsLocationsFunctionsListRequest',
+        response_type_name='ListFunctionsResponse',
         supports_download=False,
     )
 
@@ -392,16 +392,16 @@ set.
           config, request, global_params=global_params)
 
     Patch.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/locations/{locationsId}/functions/{functionsId}',
-        http_method=u'PATCH',
-        method_id=u'cloudfunctions.projects.locations.functions.patch',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[u'updateMask'],
-        relative_path=u'v1/{+name}',
-        request_field=u'cloudFunction',
-        request_type_name=u'CloudfunctionsProjectsLocationsFunctionsPatchRequest',
-        response_type_name=u'Operation',
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/functions/{functionsId}',
+        http_method='PATCH',
+        method_id='cloudfunctions.projects.locations.functions.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v1/{+name}',
+        request_field='cloudFunction',
+        request_type_name='CloudfunctionsProjectsLocationsFunctionsPatchRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -420,16 +420,16 @@ Replaces any existing policy.
           config, request, global_params=global_params)
 
     SetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/locations/{locationsId}/functions/{functionsId}:setIamPolicy',
-        http_method=u'POST',
-        method_id=u'cloudfunctions.projects.locations.functions.setIamPolicy',
-        ordered_params=[u'resource'],
-        path_params=[u'resource'],
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/functions/{functionsId}:setIamPolicy',
+        http_method='POST',
+        method_id='cloudfunctions.projects.locations.functions.setIamPolicy',
+        ordered_params=['resource'],
+        path_params=['resource'],
         query_params=[],
-        relative_path=u'v1/{+resource}:setIamPolicy',
-        request_field=u'setIamPolicyRequest',
-        request_type_name=u'CloudfunctionsProjectsLocationsFunctionsSetIamPolicyRequest',
-        response_type_name=u'Policy',
+        relative_path='v1/{+resource}:setIamPolicy',
+        request_field='setIamPolicyRequest',
+        request_type_name='CloudfunctionsProjectsLocationsFunctionsSetIamPolicyRequest',
+        response_type_name='Policy',
         supports_download=False,
     )
 
@@ -450,23 +450,23 @@ permissions, not a NOT_FOUND error.
           config, request, global_params=global_params)
 
     TestIamPermissions.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/locations/{locationsId}/functions/{functionsId}:testIamPermissions',
-        http_method=u'POST',
-        method_id=u'cloudfunctions.projects.locations.functions.testIamPermissions',
-        ordered_params=[u'resource'],
-        path_params=[u'resource'],
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/functions/{functionsId}:testIamPermissions',
+        http_method='POST',
+        method_id='cloudfunctions.projects.locations.functions.testIamPermissions',
+        ordered_params=['resource'],
+        path_params=['resource'],
         query_params=[],
-        relative_path=u'v1/{+resource}:testIamPermissions',
-        request_field=u'testIamPermissionsRequest',
-        request_type_name=u'CloudfunctionsProjectsLocationsFunctionsTestIamPermissionsRequest',
-        response_type_name=u'TestIamPermissionsResponse',
+        relative_path='v1/{+resource}:testIamPermissions',
+        request_field='testIamPermissionsRequest',
+        request_type_name='CloudfunctionsProjectsLocationsFunctionsTestIamPermissionsRequest',
+        response_type_name='TestIamPermissionsResponse',
         supports_download=False,
     )
 
   class ProjectsLocationsService(base_api.BaseApiService):
     """Service class for the projects_locations resource."""
 
-    _NAME = u'projects_locations'
+    _NAME = 'projects_locations'
 
     def __init__(self, client):
       super(CloudfunctionsV1.ProjectsLocationsService, self).__init__(client)
@@ -487,23 +487,23 @@ permissions, not a NOT_FOUND error.
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/locations',
-        http_method=u'GET',
-        method_id=u'cloudfunctions.projects.locations.list',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[u'filter', u'pageSize', u'pageToken'],
-        relative_path=u'v1/{+name}/locations',
+        flat_path='v1/projects/{projectsId}/locations',
+        http_method='GET',
+        method_id='cloudfunctions.projects.locations.list',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['filter', 'pageSize', 'pageToken'],
+        relative_path='v1/{+name}/locations',
         request_field='',
-        request_type_name=u'CloudfunctionsProjectsLocationsListRequest',
-        response_type_name=u'ListLocationsResponse',
+        request_type_name='CloudfunctionsProjectsLocationsListRequest',
+        response_type_name='ListLocationsResponse',
         supports_download=False,
     )
 
   class ProjectsService(base_api.BaseApiService):
     """Service class for the projects resource."""
 
-    _NAME = u'projects'
+    _NAME = 'projects'
 
     def __init__(self, client):
       super(CloudfunctionsV1.ProjectsService, self).__init__(client)

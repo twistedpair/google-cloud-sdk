@@ -8,17 +8,17 @@ class DeploymentmanagerV2beta(base_api.BaseApiClient):
   """Generated client library for service deploymentmanager version v2beta."""
 
   MESSAGES_MODULE = messages
-  BASE_URL = u'https://www.googleapis.com/deploymentmanager/v2beta/'
-  MTLS_BASE_URL = u''
+  BASE_URL = 'https://www.googleapis.com/deploymentmanager/v2beta/'
+  MTLS_BASE_URL = ''
 
-  _PACKAGE = u'deploymentmanager'
-  _SCOPES = [u'https://www.googleapis.com/auth/cloud-platform', u'https://www.googleapis.com/auth/cloud-platform.read-only', u'https://www.googleapis.com/auth/ndev.cloudman', u'https://www.googleapis.com/auth/ndev.cloudman.readonly']
-  _VERSION = u'v2beta'
+  _PACKAGE = 'deploymentmanager'
+  _SCOPES = ['https://www.googleapis.com/auth/cloud-platform', 'https://www.googleapis.com/auth/cloud-platform.read-only', 'https://www.googleapis.com/auth/ndev.cloudman', 'https://www.googleapis.com/auth/ndev.cloudman.readonly']
+  _VERSION = 'v2beta'
   _CLIENT_ID = '1042881264118.apps.googleusercontent.com'
   _CLIENT_SECRET = 'x_Tw5K8nnjoRAqULM9PFAC2b'
-  _USER_AGENT = u'google-cloud-sdk'
-  _CLIENT_CLASS_NAME = u'DeploymentmanagerV2beta'
-  _URL_VERSION = u'v2beta'
+  _USER_AGENT = 'google-cloud-sdk'
+  _CLIENT_CLASS_NAME = 'DeploymentmanagerV2beta'
+  _URL_VERSION = 'v2beta'
   _API_KEY = None
 
   def __init__(self, url='', credentials=None,
@@ -47,7 +47,7 @@ class DeploymentmanagerV2beta(base_api.BaseApiClient):
   class CompositeTypesService(base_api.BaseApiService):
     """Service class for the compositeTypes resource."""
 
-    _NAME = u'compositeTypes'
+    _NAME = 'compositeTypes'
 
     def __init__(self, client):
       super(DeploymentmanagerV2beta.CompositeTypesService, self).__init__(client)
@@ -68,15 +68,15 @@ class DeploymentmanagerV2beta(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Delete.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'DELETE',
-        method_id=u'deploymentmanager.compositeTypes.delete',
-        ordered_params=[u'project', u'compositeType'],
-        path_params=[u'compositeType', u'project'],
+        http_method='DELETE',
+        method_id='deploymentmanager.compositeTypes.delete',
+        ordered_params=['project', 'compositeType'],
+        path_params=['compositeType', 'project'],
         query_params=[],
-        relative_path=u'projects/{project}/global/compositeTypes/{compositeType}',
+        relative_path='projects/{project}/global/compositeTypes/{compositeType}',
         request_field='',
-        request_type_name=u'DeploymentmanagerCompositeTypesDeleteRequest',
-        response_type_name=u'Operation',
+        request_type_name='DeploymentmanagerCompositeTypesDeleteRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -94,15 +94,15 @@ class DeploymentmanagerV2beta(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'deploymentmanager.compositeTypes.get',
-        ordered_params=[u'project', u'compositeType'],
-        path_params=[u'compositeType', u'project'],
+        http_method='GET',
+        method_id='deploymentmanager.compositeTypes.get',
+        ordered_params=['project', 'compositeType'],
+        path_params=['compositeType', 'project'],
         query_params=[],
-        relative_path=u'projects/{project}/global/compositeTypes/{compositeType}',
+        relative_path='projects/{project}/global/compositeTypes/{compositeType}',
         request_field='',
-        request_type_name=u'DeploymentmanagerCompositeTypesGetRequest',
-        response_type_name=u'CompositeType',
+        request_type_name='DeploymentmanagerCompositeTypesGetRequest',
+        response_type_name='CompositeType',
         supports_download=False,
     )
 
@@ -120,15 +120,15 @@ class DeploymentmanagerV2beta(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Insert.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'deploymentmanager.compositeTypes.insert',
-        ordered_params=[u'project'],
-        path_params=[u'project'],
+        http_method='POST',
+        method_id='deploymentmanager.compositeTypes.insert',
+        ordered_params=['project'],
+        path_params=['project'],
         query_params=[],
-        relative_path=u'projects/{project}/global/compositeTypes',
-        request_field=u'compositeType',
-        request_type_name=u'DeploymentmanagerCompositeTypesInsertRequest',
-        response_type_name=u'Operation',
+        relative_path='projects/{project}/global/compositeTypes',
+        request_field='compositeType',
+        request_type_name='DeploymentmanagerCompositeTypesInsertRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -146,15 +146,15 @@ class DeploymentmanagerV2beta(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'deploymentmanager.compositeTypes.list',
-        ordered_params=[u'project'],
-        path_params=[u'project'],
-        query_params=[u'filter', u'maxResults', u'orderBy', u'pageToken'],
-        relative_path=u'projects/{project}/global/compositeTypes',
+        http_method='GET',
+        method_id='deploymentmanager.compositeTypes.list',
+        ordered_params=['project'],
+        path_params=['project'],
+        query_params=['filter', 'maxResults', 'orderBy', 'pageToken'],
+        relative_path='projects/{project}/global/compositeTypes',
         request_field='',
-        request_type_name=u'DeploymentmanagerCompositeTypesListRequest',
-        response_type_name=u'CompositeTypesListResponse',
+        request_type_name='DeploymentmanagerCompositeTypesListRequest',
+        response_type_name='CompositeTypesListResponse',
         supports_download=False,
     )
 
@@ -172,15 +172,15 @@ class DeploymentmanagerV2beta(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Patch.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'PATCH',
-        method_id=u'deploymentmanager.compositeTypes.patch',
-        ordered_params=[u'project', u'compositeType'],
-        path_params=[u'compositeType', u'project'],
+        http_method='PATCH',
+        method_id='deploymentmanager.compositeTypes.patch',
+        ordered_params=['project', 'compositeType'],
+        path_params=['compositeType', 'project'],
         query_params=[],
-        relative_path=u'projects/{project}/global/compositeTypes/{compositeType}',
-        request_field=u'compositeTypeResource',
-        request_type_name=u'DeploymentmanagerCompositeTypesPatchRequest',
-        response_type_name=u'Operation',
+        relative_path='projects/{project}/global/compositeTypes/{compositeType}',
+        request_field='compositeTypeResource',
+        request_type_name='DeploymentmanagerCompositeTypesPatchRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -198,22 +198,22 @@ class DeploymentmanagerV2beta(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Update.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'PUT',
-        method_id=u'deploymentmanager.compositeTypes.update',
-        ordered_params=[u'project', u'compositeType'],
-        path_params=[u'compositeType', u'project'],
+        http_method='PUT',
+        method_id='deploymentmanager.compositeTypes.update',
+        ordered_params=['project', 'compositeType'],
+        path_params=['compositeType', 'project'],
         query_params=[],
-        relative_path=u'projects/{project}/global/compositeTypes/{compositeType}',
-        request_field=u'compositeTypeResource',
-        request_type_name=u'DeploymentmanagerCompositeTypesUpdateRequest',
-        response_type_name=u'Operation',
+        relative_path='projects/{project}/global/compositeTypes/{compositeType}',
+        request_field='compositeTypeResource',
+        request_type_name='DeploymentmanagerCompositeTypesUpdateRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
   class DeploymentsService(base_api.BaseApiService):
     """Service class for the deployments resource."""
 
-    _NAME = u'deployments'
+    _NAME = 'deployments'
 
     def __init__(self, client):
       super(DeploymentmanagerV2beta.DeploymentsService, self).__init__(client)
@@ -234,15 +234,15 @@ class DeploymentmanagerV2beta(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     CancelPreview.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'deploymentmanager.deployments.cancelPreview',
-        ordered_params=[u'project', u'deployment'],
-        path_params=[u'deployment', u'project'],
+        http_method='POST',
+        method_id='deploymentmanager.deployments.cancelPreview',
+        ordered_params=['project', 'deployment'],
+        path_params=['deployment', 'project'],
         query_params=[],
-        relative_path=u'projects/{project}/global/deployments/{deployment}/cancelPreview',
-        request_field=u'deploymentsCancelPreviewRequest',
-        request_type_name=u'DeploymentmanagerDeploymentsCancelPreviewRequest',
-        response_type_name=u'Operation',
+        relative_path='projects/{project}/global/deployments/{deployment}/cancelPreview',
+        request_field='deploymentsCancelPreviewRequest',
+        request_type_name='DeploymentmanagerDeploymentsCancelPreviewRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -260,15 +260,15 @@ class DeploymentmanagerV2beta(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Delete.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'DELETE',
-        method_id=u'deploymentmanager.deployments.delete',
-        ordered_params=[u'project', u'deployment'],
-        path_params=[u'deployment', u'project'],
-        query_params=[u'deletePolicy'],
-        relative_path=u'projects/{project}/global/deployments/{deployment}',
+        http_method='DELETE',
+        method_id='deploymentmanager.deployments.delete',
+        ordered_params=['project', 'deployment'],
+        path_params=['deployment', 'project'],
+        query_params=['deletePolicy'],
+        relative_path='projects/{project}/global/deployments/{deployment}',
         request_field='',
-        request_type_name=u'DeploymentmanagerDeploymentsDeleteRequest',
-        response_type_name=u'Operation',
+        request_type_name='DeploymentmanagerDeploymentsDeleteRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -286,15 +286,15 @@ class DeploymentmanagerV2beta(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'deploymentmanager.deployments.get',
-        ordered_params=[u'project', u'deployment'],
-        path_params=[u'deployment', u'project'],
+        http_method='GET',
+        method_id='deploymentmanager.deployments.get',
+        ordered_params=['project', 'deployment'],
+        path_params=['deployment', 'project'],
         query_params=[],
-        relative_path=u'projects/{project}/global/deployments/{deployment}',
+        relative_path='projects/{project}/global/deployments/{deployment}',
         request_field='',
-        request_type_name=u'DeploymentmanagerDeploymentsGetRequest',
-        response_type_name=u'Deployment',
+        request_type_name='DeploymentmanagerDeploymentsGetRequest',
+        response_type_name='Deployment',
         supports_download=False,
     )
 
@@ -312,15 +312,15 @@ class DeploymentmanagerV2beta(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     GetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'deploymentmanager.deployments.getIamPolicy',
-        ordered_params=[u'project', u'resource'],
-        path_params=[u'project', u'resource'],
+        http_method='GET',
+        method_id='deploymentmanager.deployments.getIamPolicy',
+        ordered_params=['project', 'resource'],
+        path_params=['project', 'resource'],
         query_params=[],
-        relative_path=u'projects/{project}/global/deployments/{resource}/getIamPolicy',
+        relative_path='projects/{project}/global/deployments/{resource}/getIamPolicy',
         request_field='',
-        request_type_name=u'DeploymentmanagerDeploymentsGetIamPolicyRequest',
-        response_type_name=u'Policy',
+        request_type_name='DeploymentmanagerDeploymentsGetIamPolicyRequest',
+        response_type_name='Policy',
         supports_download=False,
     )
 
@@ -338,15 +338,15 @@ class DeploymentmanagerV2beta(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Insert.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'deploymentmanager.deployments.insert',
-        ordered_params=[u'project'],
-        path_params=[u'project'],
-        query_params=[u'createPolicy', u'preview'],
-        relative_path=u'projects/{project}/global/deployments',
-        request_field=u'deployment',
-        request_type_name=u'DeploymentmanagerDeploymentsInsertRequest',
-        response_type_name=u'Operation',
+        http_method='POST',
+        method_id='deploymentmanager.deployments.insert',
+        ordered_params=['project'],
+        path_params=['project'],
+        query_params=['createPolicy', 'preview'],
+        relative_path='projects/{project}/global/deployments',
+        request_field='deployment',
+        request_type_name='DeploymentmanagerDeploymentsInsertRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -364,15 +364,15 @@ class DeploymentmanagerV2beta(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'deploymentmanager.deployments.list',
-        ordered_params=[u'project'],
-        path_params=[u'project'],
-        query_params=[u'filter', u'maxResults', u'orderBy', u'pageToken'],
-        relative_path=u'projects/{project}/global/deployments',
+        http_method='GET',
+        method_id='deploymentmanager.deployments.list',
+        ordered_params=['project'],
+        path_params=['project'],
+        query_params=['filter', 'maxResults', 'orderBy', 'pageToken'],
+        relative_path='projects/{project}/global/deployments',
         request_field='',
-        request_type_name=u'DeploymentmanagerDeploymentsListRequest',
-        response_type_name=u'DeploymentsListResponse',
+        request_type_name='DeploymentmanagerDeploymentsListRequest',
+        response_type_name='DeploymentsListResponse',
         supports_download=False,
     )
 
@@ -390,15 +390,15 @@ class DeploymentmanagerV2beta(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Patch.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'PATCH',
-        method_id=u'deploymentmanager.deployments.patch',
-        ordered_params=[u'project', u'deployment'],
-        path_params=[u'deployment', u'project'],
-        query_params=[u'createPolicy', u'deletePolicy', u'preview'],
-        relative_path=u'projects/{project}/global/deployments/{deployment}',
-        request_field=u'deploymentResource',
-        request_type_name=u'DeploymentmanagerDeploymentsPatchRequest',
-        response_type_name=u'Operation',
+        http_method='PATCH',
+        method_id='deploymentmanager.deployments.patch',
+        ordered_params=['project', 'deployment'],
+        path_params=['deployment', 'project'],
+        query_params=['createPolicy', 'deletePolicy', 'preview'],
+        relative_path='projects/{project}/global/deployments/{deployment}',
+        request_field='deploymentResource',
+        request_type_name='DeploymentmanagerDeploymentsPatchRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -416,15 +416,15 @@ class DeploymentmanagerV2beta(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     SetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'deploymentmanager.deployments.setIamPolicy',
-        ordered_params=[u'project', u'resource'],
-        path_params=[u'project', u'resource'],
+        http_method='POST',
+        method_id='deploymentmanager.deployments.setIamPolicy',
+        ordered_params=['project', 'resource'],
+        path_params=['project', 'resource'],
         query_params=[],
-        relative_path=u'projects/{project}/global/deployments/{resource}/setIamPolicy',
-        request_field=u'globalSetPolicyRequest',
-        request_type_name=u'DeploymentmanagerDeploymentsSetIamPolicyRequest',
-        response_type_name=u'Policy',
+        relative_path='projects/{project}/global/deployments/{resource}/setIamPolicy',
+        request_field='globalSetPolicyRequest',
+        request_type_name='DeploymentmanagerDeploymentsSetIamPolicyRequest',
+        response_type_name='Policy',
         supports_download=False,
     )
 
@@ -442,15 +442,15 @@ class DeploymentmanagerV2beta(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Stop.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'deploymentmanager.deployments.stop',
-        ordered_params=[u'project', u'deployment'],
-        path_params=[u'deployment', u'project'],
+        http_method='POST',
+        method_id='deploymentmanager.deployments.stop',
+        ordered_params=['project', 'deployment'],
+        path_params=['deployment', 'project'],
         query_params=[],
-        relative_path=u'projects/{project}/global/deployments/{deployment}/stop',
-        request_field=u'deploymentsStopRequest',
-        request_type_name=u'DeploymentmanagerDeploymentsStopRequest',
-        response_type_name=u'Operation',
+        relative_path='projects/{project}/global/deployments/{deployment}/stop',
+        request_field='deploymentsStopRequest',
+        request_type_name='DeploymentmanagerDeploymentsStopRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -468,15 +468,15 @@ class DeploymentmanagerV2beta(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     TestIamPermissions.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'deploymentmanager.deployments.testIamPermissions',
-        ordered_params=[u'project', u'resource'],
-        path_params=[u'project', u'resource'],
+        http_method='POST',
+        method_id='deploymentmanager.deployments.testIamPermissions',
+        ordered_params=['project', 'resource'],
+        path_params=['project', 'resource'],
         query_params=[],
-        relative_path=u'projects/{project}/global/deployments/{resource}/testIamPermissions',
-        request_field=u'testPermissionsRequest',
-        request_type_name=u'DeploymentmanagerDeploymentsTestIamPermissionsRequest',
-        response_type_name=u'TestPermissionsResponse',
+        relative_path='projects/{project}/global/deployments/{resource}/testIamPermissions',
+        request_field='testPermissionsRequest',
+        request_type_name='DeploymentmanagerDeploymentsTestIamPermissionsRequest',
+        response_type_name='TestPermissionsResponse',
         supports_download=False,
     )
 
@@ -494,22 +494,22 @@ class DeploymentmanagerV2beta(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Update.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'PUT',
-        method_id=u'deploymentmanager.deployments.update',
-        ordered_params=[u'project', u'deployment'],
-        path_params=[u'deployment', u'project'],
-        query_params=[u'createPolicy', u'deletePolicy', u'preview'],
-        relative_path=u'projects/{project}/global/deployments/{deployment}',
-        request_field=u'deploymentResource',
-        request_type_name=u'DeploymentmanagerDeploymentsUpdateRequest',
-        response_type_name=u'Operation',
+        http_method='PUT',
+        method_id='deploymentmanager.deployments.update',
+        ordered_params=['project', 'deployment'],
+        path_params=['deployment', 'project'],
+        query_params=['createPolicy', 'deletePolicy', 'preview'],
+        relative_path='projects/{project}/global/deployments/{deployment}',
+        request_field='deploymentResource',
+        request_type_name='DeploymentmanagerDeploymentsUpdateRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
   class ManifestsService(base_api.BaseApiService):
     """Service class for the manifests resource."""
 
-    _NAME = u'manifests'
+    _NAME = 'manifests'
 
     def __init__(self, client):
       super(DeploymentmanagerV2beta.ManifestsService, self).__init__(client)
@@ -530,15 +530,15 @@ class DeploymentmanagerV2beta(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'deploymentmanager.manifests.get',
-        ordered_params=[u'project', u'deployment', u'manifest'],
-        path_params=[u'deployment', u'manifest', u'project'],
+        http_method='GET',
+        method_id='deploymentmanager.manifests.get',
+        ordered_params=['project', 'deployment', 'manifest'],
+        path_params=['deployment', 'manifest', 'project'],
         query_params=[],
-        relative_path=u'projects/{project}/global/deployments/{deployment}/manifests/{manifest}',
+        relative_path='projects/{project}/global/deployments/{deployment}/manifests/{manifest}',
         request_field='',
-        request_type_name=u'DeploymentmanagerManifestsGetRequest',
-        response_type_name=u'Manifest',
+        request_type_name='DeploymentmanagerManifestsGetRequest',
+        response_type_name='Manifest',
         supports_download=False,
     )
 
@@ -556,22 +556,22 @@ class DeploymentmanagerV2beta(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'deploymentmanager.manifests.list',
-        ordered_params=[u'project', u'deployment'],
-        path_params=[u'deployment', u'project'],
-        query_params=[u'filter', u'maxResults', u'orderBy', u'pageToken'],
-        relative_path=u'projects/{project}/global/deployments/{deployment}/manifests',
+        http_method='GET',
+        method_id='deploymentmanager.manifests.list',
+        ordered_params=['project', 'deployment'],
+        path_params=['deployment', 'project'],
+        query_params=['filter', 'maxResults', 'orderBy', 'pageToken'],
+        relative_path='projects/{project}/global/deployments/{deployment}/manifests',
         request_field='',
-        request_type_name=u'DeploymentmanagerManifestsListRequest',
-        response_type_name=u'ManifestsListResponse',
+        request_type_name='DeploymentmanagerManifestsListRequest',
+        response_type_name='ManifestsListResponse',
         supports_download=False,
     )
 
   class OperationsService(base_api.BaseApiService):
     """Service class for the operations resource."""
 
-    _NAME = u'operations'
+    _NAME = 'operations'
 
     def __init__(self, client):
       super(DeploymentmanagerV2beta.OperationsService, self).__init__(client)
@@ -592,15 +592,15 @@ class DeploymentmanagerV2beta(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'deploymentmanager.operations.get',
-        ordered_params=[u'project', u'operation'],
-        path_params=[u'operation', u'project'],
+        http_method='GET',
+        method_id='deploymentmanager.operations.get',
+        ordered_params=['project', 'operation'],
+        path_params=['operation', 'project'],
         query_params=[],
-        relative_path=u'projects/{project}/global/operations/{operation}',
+        relative_path='projects/{project}/global/operations/{operation}',
         request_field='',
-        request_type_name=u'DeploymentmanagerOperationsGetRequest',
-        response_type_name=u'Operation',
+        request_type_name='DeploymentmanagerOperationsGetRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -618,22 +618,22 @@ class DeploymentmanagerV2beta(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'deploymentmanager.operations.list',
-        ordered_params=[u'project'],
-        path_params=[u'project'],
-        query_params=[u'filter', u'maxResults', u'orderBy', u'pageToken'],
-        relative_path=u'projects/{project}/global/operations',
+        http_method='GET',
+        method_id='deploymentmanager.operations.list',
+        ordered_params=['project'],
+        path_params=['project'],
+        query_params=['filter', 'maxResults', 'orderBy', 'pageToken'],
+        relative_path='projects/{project}/global/operations',
         request_field='',
-        request_type_name=u'DeploymentmanagerOperationsListRequest',
-        response_type_name=u'OperationsListResponse',
+        request_type_name='DeploymentmanagerOperationsListRequest',
+        response_type_name='OperationsListResponse',
         supports_download=False,
     )
 
   class ResourcesService(base_api.BaseApiService):
     """Service class for the resources resource."""
 
-    _NAME = u'resources'
+    _NAME = 'resources'
 
     def __init__(self, client):
       super(DeploymentmanagerV2beta.ResourcesService, self).__init__(client)
@@ -654,15 +654,15 @@ class DeploymentmanagerV2beta(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'deploymentmanager.resources.get',
-        ordered_params=[u'project', u'deployment', u'resource'],
-        path_params=[u'deployment', u'project', u'resource'],
+        http_method='GET',
+        method_id='deploymentmanager.resources.get',
+        ordered_params=['project', 'deployment', 'resource'],
+        path_params=['deployment', 'project', 'resource'],
         query_params=[],
-        relative_path=u'projects/{project}/global/deployments/{deployment}/resources/{resource}',
+        relative_path='projects/{project}/global/deployments/{deployment}/resources/{resource}',
         request_field='',
-        request_type_name=u'DeploymentmanagerResourcesGetRequest',
-        response_type_name=u'Resource',
+        request_type_name='DeploymentmanagerResourcesGetRequest',
+        response_type_name='Resource',
         supports_download=False,
     )
 
@@ -680,22 +680,22 @@ class DeploymentmanagerV2beta(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'deploymentmanager.resources.list',
-        ordered_params=[u'project', u'deployment'],
-        path_params=[u'deployment', u'project'],
-        query_params=[u'filter', u'maxResults', u'orderBy', u'pageToken'],
-        relative_path=u'projects/{project}/global/deployments/{deployment}/resources',
+        http_method='GET',
+        method_id='deploymentmanager.resources.list',
+        ordered_params=['project', 'deployment'],
+        path_params=['deployment', 'project'],
+        query_params=['filter', 'maxResults', 'orderBy', 'pageToken'],
+        relative_path='projects/{project}/global/deployments/{deployment}/resources',
         request_field='',
-        request_type_name=u'DeploymentmanagerResourcesListRequest',
-        response_type_name=u'ResourcesListResponse',
+        request_type_name='DeploymentmanagerResourcesListRequest',
+        response_type_name='ResourcesListResponse',
         supports_download=False,
     )
 
   class TypeProvidersService(base_api.BaseApiService):
     """Service class for the typeProviders resource."""
 
-    _NAME = u'typeProviders'
+    _NAME = 'typeProviders'
 
     def __init__(self, client):
       super(DeploymentmanagerV2beta.TypeProvidersService, self).__init__(client)
@@ -716,15 +716,15 @@ class DeploymentmanagerV2beta(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Delete.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'DELETE',
-        method_id=u'deploymentmanager.typeProviders.delete',
-        ordered_params=[u'project', u'typeProvider'],
-        path_params=[u'project', u'typeProvider'],
+        http_method='DELETE',
+        method_id='deploymentmanager.typeProviders.delete',
+        ordered_params=['project', 'typeProvider'],
+        path_params=['project', 'typeProvider'],
         query_params=[],
-        relative_path=u'projects/{project}/global/typeProviders/{typeProvider}',
+        relative_path='projects/{project}/global/typeProviders/{typeProvider}',
         request_field='',
-        request_type_name=u'DeploymentmanagerTypeProvidersDeleteRequest',
-        response_type_name=u'Operation',
+        request_type_name='DeploymentmanagerTypeProvidersDeleteRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -742,15 +742,15 @@ class DeploymentmanagerV2beta(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'deploymentmanager.typeProviders.get',
-        ordered_params=[u'project', u'typeProvider'],
-        path_params=[u'project', u'typeProvider'],
+        http_method='GET',
+        method_id='deploymentmanager.typeProviders.get',
+        ordered_params=['project', 'typeProvider'],
+        path_params=['project', 'typeProvider'],
         query_params=[],
-        relative_path=u'projects/{project}/global/typeProviders/{typeProvider}',
+        relative_path='projects/{project}/global/typeProviders/{typeProvider}',
         request_field='',
-        request_type_name=u'DeploymentmanagerTypeProvidersGetRequest',
-        response_type_name=u'TypeProvider',
+        request_type_name='DeploymentmanagerTypeProvidersGetRequest',
+        response_type_name='TypeProvider',
         supports_download=False,
     )
 
@@ -768,15 +768,15 @@ class DeploymentmanagerV2beta(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     GetType.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'deploymentmanager.typeProviders.getType',
-        ordered_params=[u'project', u'typeProvider', u'type'],
-        path_params=[u'project', u'type', u'typeProvider'],
+        http_method='GET',
+        method_id='deploymentmanager.typeProviders.getType',
+        ordered_params=['project', 'typeProvider', 'type'],
+        path_params=['project', 'type', 'typeProvider'],
         query_params=[],
-        relative_path=u'projects/{project}/global/typeProviders/{typeProvider}/types/{type}',
+        relative_path='projects/{project}/global/typeProviders/{typeProvider}/types/{type}',
         request_field='',
-        request_type_name=u'DeploymentmanagerTypeProvidersGetTypeRequest',
-        response_type_name=u'TypeInfo',
+        request_type_name='DeploymentmanagerTypeProvidersGetTypeRequest',
+        response_type_name='TypeInfo',
         supports_download=False,
     )
 
@@ -794,15 +794,15 @@ class DeploymentmanagerV2beta(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Insert.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'deploymentmanager.typeProviders.insert',
-        ordered_params=[u'project'],
-        path_params=[u'project'],
+        http_method='POST',
+        method_id='deploymentmanager.typeProviders.insert',
+        ordered_params=['project'],
+        path_params=['project'],
         query_params=[],
-        relative_path=u'projects/{project}/global/typeProviders',
-        request_field=u'typeProvider',
-        request_type_name=u'DeploymentmanagerTypeProvidersInsertRequest',
-        response_type_name=u'Operation',
+        relative_path='projects/{project}/global/typeProviders',
+        request_field='typeProvider',
+        request_type_name='DeploymentmanagerTypeProvidersInsertRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -820,15 +820,15 @@ class DeploymentmanagerV2beta(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'deploymentmanager.typeProviders.list',
-        ordered_params=[u'project'],
-        path_params=[u'project'],
-        query_params=[u'filter', u'maxResults', u'orderBy', u'pageToken'],
-        relative_path=u'projects/{project}/global/typeProviders',
+        http_method='GET',
+        method_id='deploymentmanager.typeProviders.list',
+        ordered_params=['project'],
+        path_params=['project'],
+        query_params=['filter', 'maxResults', 'orderBy', 'pageToken'],
+        relative_path='projects/{project}/global/typeProviders',
         request_field='',
-        request_type_name=u'DeploymentmanagerTypeProvidersListRequest',
-        response_type_name=u'TypeProvidersListResponse',
+        request_type_name='DeploymentmanagerTypeProvidersListRequest',
+        response_type_name='TypeProvidersListResponse',
         supports_download=False,
     )
 
@@ -846,15 +846,15 @@ class DeploymentmanagerV2beta(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     ListTypes.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'deploymentmanager.typeProviders.listTypes',
-        ordered_params=[u'project', u'typeProvider'],
-        path_params=[u'project', u'typeProvider'],
-        query_params=[u'filter', u'maxResults', u'orderBy', u'pageToken'],
-        relative_path=u'projects/{project}/global/typeProviders/{typeProvider}/types',
+        http_method='GET',
+        method_id='deploymentmanager.typeProviders.listTypes',
+        ordered_params=['project', 'typeProvider'],
+        path_params=['project', 'typeProvider'],
+        query_params=['filter', 'maxResults', 'orderBy', 'pageToken'],
+        relative_path='projects/{project}/global/typeProviders/{typeProvider}/types',
         request_field='',
-        request_type_name=u'DeploymentmanagerTypeProvidersListTypesRequest',
-        response_type_name=u'TypeProvidersListTypesResponse',
+        request_type_name='DeploymentmanagerTypeProvidersListTypesRequest',
+        response_type_name='TypeProvidersListTypesResponse',
         supports_download=False,
     )
 
@@ -872,15 +872,15 @@ class DeploymentmanagerV2beta(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Patch.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'PATCH',
-        method_id=u'deploymentmanager.typeProviders.patch',
-        ordered_params=[u'project', u'typeProvider'],
-        path_params=[u'project', u'typeProvider'],
+        http_method='PATCH',
+        method_id='deploymentmanager.typeProviders.patch',
+        ordered_params=['project', 'typeProvider'],
+        path_params=['project', 'typeProvider'],
         query_params=[],
-        relative_path=u'projects/{project}/global/typeProviders/{typeProvider}',
-        request_field=u'typeProviderResource',
-        request_type_name=u'DeploymentmanagerTypeProvidersPatchRequest',
-        response_type_name=u'Operation',
+        relative_path='projects/{project}/global/typeProviders/{typeProvider}',
+        request_field='typeProviderResource',
+        request_type_name='DeploymentmanagerTypeProvidersPatchRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -898,22 +898,22 @@ class DeploymentmanagerV2beta(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Update.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'PUT',
-        method_id=u'deploymentmanager.typeProviders.update',
-        ordered_params=[u'project', u'typeProvider'],
-        path_params=[u'project', u'typeProvider'],
+        http_method='PUT',
+        method_id='deploymentmanager.typeProviders.update',
+        ordered_params=['project', 'typeProvider'],
+        path_params=['project', 'typeProvider'],
         query_params=[],
-        relative_path=u'projects/{project}/global/typeProviders/{typeProvider}',
-        request_field=u'typeProviderResource',
-        request_type_name=u'DeploymentmanagerTypeProvidersUpdateRequest',
-        response_type_name=u'Operation',
+        relative_path='projects/{project}/global/typeProviders/{typeProvider}',
+        request_field='typeProviderResource',
+        request_type_name='DeploymentmanagerTypeProvidersUpdateRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
   class TypesService(base_api.BaseApiService):
     """Service class for the types resource."""
 
-    _NAME = u'types'
+    _NAME = 'types'
 
     def __init__(self, client):
       super(DeploymentmanagerV2beta.TypesService, self).__init__(client)
@@ -934,14 +934,14 @@ class DeploymentmanagerV2beta(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'deploymentmanager.types.list',
-        ordered_params=[u'project'],
-        path_params=[u'project'],
-        query_params=[u'filter', u'maxResults', u'orderBy', u'pageToken'],
-        relative_path=u'projects/{project}/global/types',
+        http_method='GET',
+        method_id='deploymentmanager.types.list',
+        ordered_params=['project'],
+        path_params=['project'],
+        query_params=['filter', 'maxResults', 'orderBy', 'pageToken'],
+        relative_path='projects/{project}/global/types',
         request_field='',
-        request_type_name=u'DeploymentmanagerTypesListRequest',
-        response_type_name=u'TypesListResponse',
+        request_type_name='DeploymentmanagerTypesListRequest',
+        response_type_name='TypesListResponse',
         supports_download=False,
     )

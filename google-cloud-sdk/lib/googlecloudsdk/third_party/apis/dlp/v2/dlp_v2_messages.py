@@ -71,8 +71,8 @@ class DlpOrganizationsDeidentifyTemplatesDeleteRequest(_messages.Message):
   Fields:
     name: Required. Resource name of the organization and deidentify template
       to be deleted, for example
-      `organizations/433245324/deidentifyTemplates/432452342` or projects
-      /project-id/deidentifyTemplates/432452342.
+      `organizations/433245324/deidentifyTemplates/432452342` or
+      projects/project-id/deidentifyTemplates/432452342.
   """
 
   name = _messages.StringField(1, required=True)
@@ -84,8 +84,8 @@ class DlpOrganizationsDeidentifyTemplatesGetRequest(_messages.Message):
   Fields:
     name: Required. Resource name of the organization and deidentify template
       to be read, for example
-      `organizations/433245324/deidentifyTemplates/432452342` or projects
-      /project-id/deidentifyTemplates/432452342.
+      `organizations/433245324/deidentifyTemplates/432452342` or
+      projects/project-id/deidentifyTemplates/432452342.
   """
 
   name = _messages.StringField(1, required=True)
@@ -130,8 +130,8 @@ class DlpOrganizationsDeidentifyTemplatesPatchRequest(_messages.Message):
       as the request body.
     name: Required. Resource name of organization and deidentify template to
       be updated, for example
-      `organizations/433245324/deidentifyTemplates/432452342` or projects
-      /project-id/deidentifyTemplates/432452342.
+      `organizations/433245324/deidentifyTemplates/432452342` or
+      projects/project-id/deidentifyTemplates/432452342.
   """
 
   googlePrivacyDlpV2UpdateDeidentifyTemplateRequest = _messages.MessageField('GooglePrivacyDlpV2UpdateDeidentifyTemplateRequest', 1)
@@ -159,8 +159,8 @@ class DlpOrganizationsInspectTemplatesDeleteRequest(_messages.Message):
   Fields:
     name: Required. Resource name of the organization and inspectTemplate to
       be deleted, for example
-      `organizations/433245324/inspectTemplates/432452342` or projects
-      /project-id/inspectTemplates/432452342.
+      `organizations/433245324/inspectTemplates/432452342` or
+      projects/project-id/inspectTemplates/432452342.
   """
 
   name = _messages.StringField(1, required=True)
@@ -172,8 +172,8 @@ class DlpOrganizationsInspectTemplatesGetRequest(_messages.Message):
   Fields:
     name: Required. Resource name of the organization and inspectTemplate to
       be read, for example
-      `organizations/433245324/inspectTemplates/432452342` or projects
-      /project-id/inspectTemplates/432452342.
+      `organizations/433245324/inspectTemplates/432452342` or
+      projects/project-id/inspectTemplates/432452342.
   """
 
   name = _messages.StringField(1, required=True)
@@ -218,8 +218,8 @@ class DlpOrganizationsInspectTemplatesPatchRequest(_messages.Message):
       the request body.
     name: Required. Resource name of organization and inspectTemplate to be
       updated, for example
-      `organizations/433245324/inspectTemplates/432452342` or projects
-      /project-id/inspectTemplates/432452342.
+      `organizations/433245324/inspectTemplates/432452342` or
+      projects/project-id/inspectTemplates/432452342.
   """
 
   googlePrivacyDlpV2UpdateInspectTemplateRequest = _messages.MessageField('GooglePrivacyDlpV2UpdateInspectTemplateRequest', 1)
@@ -250,8 +250,8 @@ class DlpOrganizationsLocationsDeidentifyTemplatesDeleteRequest(_messages.Messag
   Fields:
     name: Required. Resource name of the organization and deidentify template
       to be deleted, for example
-      `organizations/433245324/deidentifyTemplates/432452342` or projects
-      /project-id/deidentifyTemplates/432452342.
+      `organizations/433245324/deidentifyTemplates/432452342` or
+      projects/project-id/deidentifyTemplates/432452342.
   """
 
   name = _messages.StringField(1, required=True)
@@ -263,8 +263,8 @@ class DlpOrganizationsLocationsDeidentifyTemplatesGetRequest(_messages.Message):
   Fields:
     name: Required. Resource name of the organization and deidentify template
       to be read, for example
-      `organizations/433245324/deidentifyTemplates/432452342` or projects
-      /project-id/deidentifyTemplates/432452342.
+      `organizations/433245324/deidentifyTemplates/432452342` or
+      projects/project-id/deidentifyTemplates/432452342.
   """
 
   name = _messages.StringField(1, required=True)
@@ -309,8 +309,8 @@ class DlpOrganizationsLocationsDeidentifyTemplatesPatchRequest(_messages.Message
       as the request body.
     name: Required. Resource name of organization and deidentify template to
       be updated, for example
-      `organizations/433245324/deidentifyTemplates/432452342` or projects
-      /project-id/deidentifyTemplates/432452342.
+      `organizations/433245324/deidentifyTemplates/432452342` or
+      projects/project-id/deidentifyTemplates/432452342.
   """
 
   googlePrivacyDlpV2UpdateDeidentifyTemplateRequest = _messages.MessageField('GooglePrivacyDlpV2UpdateDeidentifyTemplateRequest', 1)
@@ -341,8 +341,8 @@ class DlpOrganizationsLocationsInspectTemplatesDeleteRequest(_messages.Message):
   Fields:
     name: Required. Resource name of the organization and inspectTemplate to
       be deleted, for example
-      `organizations/433245324/inspectTemplates/432452342` or projects
-      /project-id/inspectTemplates/432452342.
+      `organizations/433245324/inspectTemplates/432452342` or
+      projects/project-id/inspectTemplates/432452342.
   """
 
   name = _messages.StringField(1, required=True)
@@ -354,8 +354,8 @@ class DlpOrganizationsLocationsInspectTemplatesGetRequest(_messages.Message):
   Fields:
     name: Required. Resource name of the organization and inspectTemplate to
       be read, for example
-      `organizations/433245324/inspectTemplates/432452342` or projects
-      /project-id/inspectTemplates/432452342.
+      `organizations/433245324/inspectTemplates/432452342` or
+      projects/project-id/inspectTemplates/432452342.
   """
 
   name = _messages.StringField(1, required=True)
@@ -400,8 +400,8 @@ class DlpOrganizationsLocationsInspectTemplatesPatchRequest(_messages.Message):
       the request body.
     name: Required. Resource name of organization and inspectTemplate to be
       updated, for example
-      `organizations/433245324/inspectTemplates/432452342` or projects
-      /project-id/inspectTemplates/432452342.
+      `organizations/433245324/inspectTemplates/432452342` or
+      projects/project-id/inspectTemplates/432452342.
   """
 
   googlePrivacyDlpV2UpdateInspectTemplateRequest = _messages.MessageField('GooglePrivacyDlpV2UpdateInspectTemplateRequest', 1)
@@ -644,8 +644,8 @@ class DlpProjectsDeidentifyTemplatesDeleteRequest(_messages.Message):
   Fields:
     name: Required. Resource name of the organization and deidentify template
       to be deleted, for example
-      `organizations/433245324/deidentifyTemplates/432452342` or projects
-      /project-id/deidentifyTemplates/432452342.
+      `organizations/433245324/deidentifyTemplates/432452342` or
+      projects/project-id/deidentifyTemplates/432452342.
   """
 
   name = _messages.StringField(1, required=True)
@@ -657,8 +657,8 @@ class DlpProjectsDeidentifyTemplatesGetRequest(_messages.Message):
   Fields:
     name: Required. Resource name of the organization and deidentify template
       to be read, for example
-      `organizations/433245324/deidentifyTemplates/432452342` or projects
-      /project-id/deidentifyTemplates/432452342.
+      `organizations/433245324/deidentifyTemplates/432452342` or
+      projects/project-id/deidentifyTemplates/432452342.
   """
 
   name = _messages.StringField(1, required=True)
@@ -703,8 +703,8 @@ class DlpProjectsDeidentifyTemplatesPatchRequest(_messages.Message):
       as the request body.
     name: Required. Resource name of organization and deidentify template to
       be updated, for example
-      `organizations/433245324/deidentifyTemplates/432452342` or projects
-      /project-id/deidentifyTemplates/432452342.
+      `organizations/433245324/deidentifyTemplates/432452342` or
+      projects/project-id/deidentifyTemplates/432452342.
   """
 
   googlePrivacyDlpV2UpdateDeidentifyTemplateRequest = _messages.MessageField('GooglePrivacyDlpV2UpdateDeidentifyTemplateRequest', 1)
@@ -857,8 +857,8 @@ class DlpProjectsInspectTemplatesDeleteRequest(_messages.Message):
   Fields:
     name: Required. Resource name of the organization and inspectTemplate to
       be deleted, for example
-      `organizations/433245324/inspectTemplates/432452342` or projects
-      /project-id/inspectTemplates/432452342.
+      `organizations/433245324/inspectTemplates/432452342` or
+      projects/project-id/inspectTemplates/432452342.
   """
 
   name = _messages.StringField(1, required=True)
@@ -870,8 +870,8 @@ class DlpProjectsInspectTemplatesGetRequest(_messages.Message):
   Fields:
     name: Required. Resource name of the organization and inspectTemplate to
       be read, for example
-      `organizations/433245324/inspectTemplates/432452342` or projects
-      /project-id/inspectTemplates/432452342.
+      `organizations/433245324/inspectTemplates/432452342` or
+      projects/project-id/inspectTemplates/432452342.
   """
 
   name = _messages.StringField(1, required=True)
@@ -916,8 +916,8 @@ class DlpProjectsInspectTemplatesPatchRequest(_messages.Message):
       the request body.
     name: Required. Resource name of organization and inspectTemplate to be
       updated, for example
-      `organizations/433245324/inspectTemplates/432452342` or projects
-      /project-id/inspectTemplates/432452342.
+      `organizations/433245324/inspectTemplates/432452342` or
+      projects/project-id/inspectTemplates/432452342.
   """
 
   googlePrivacyDlpV2UpdateInspectTemplateRequest = _messages.MessageField('GooglePrivacyDlpV2UpdateInspectTemplateRequest', 1)
@@ -1114,8 +1114,8 @@ class DlpProjectsLocationsDeidentifyTemplatesDeleteRequest(_messages.Message):
   Fields:
     name: Required. Resource name of the organization and deidentify template
       to be deleted, for example
-      `organizations/433245324/deidentifyTemplates/432452342` or projects
-      /project-id/deidentifyTemplates/432452342.
+      `organizations/433245324/deidentifyTemplates/432452342` or
+      projects/project-id/deidentifyTemplates/432452342.
   """
 
   name = _messages.StringField(1, required=True)
@@ -1127,8 +1127,8 @@ class DlpProjectsLocationsDeidentifyTemplatesGetRequest(_messages.Message):
   Fields:
     name: Required. Resource name of the organization and deidentify template
       to be read, for example
-      `organizations/433245324/deidentifyTemplates/432452342` or projects
-      /project-id/deidentifyTemplates/432452342.
+      `organizations/433245324/deidentifyTemplates/432452342` or
+      projects/project-id/deidentifyTemplates/432452342.
   """
 
   name = _messages.StringField(1, required=True)
@@ -1173,8 +1173,8 @@ class DlpProjectsLocationsDeidentifyTemplatesPatchRequest(_messages.Message):
       as the request body.
     name: Required. Resource name of organization and deidentify template to
       be updated, for example
-      `organizations/433245324/deidentifyTemplates/432452342` or projects
-      /project-id/deidentifyTemplates/432452342.
+      `organizations/433245324/deidentifyTemplates/432452342` or
+      projects/project-id/deidentifyTemplates/432452342.
   """
 
   googlePrivacyDlpV2UpdateDeidentifyTemplateRequest = _messages.MessageField('GooglePrivacyDlpV2UpdateDeidentifyTemplateRequest', 1)
@@ -1366,8 +1366,8 @@ class DlpProjectsLocationsInspectTemplatesDeleteRequest(_messages.Message):
   Fields:
     name: Required. Resource name of the organization and inspectTemplate to
       be deleted, for example
-      `organizations/433245324/inspectTemplates/432452342` or projects
-      /project-id/inspectTemplates/432452342.
+      `organizations/433245324/inspectTemplates/432452342` or
+      projects/project-id/inspectTemplates/432452342.
   """
 
   name = _messages.StringField(1, required=True)
@@ -1379,8 +1379,8 @@ class DlpProjectsLocationsInspectTemplatesGetRequest(_messages.Message):
   Fields:
     name: Required. Resource name of the organization and inspectTemplate to
       be read, for example
-      `organizations/433245324/inspectTemplates/432452342` or projects
-      /project-id/inspectTemplates/432452342.
+      `organizations/433245324/inspectTemplates/432452342` or
+      projects/project-id/inspectTemplates/432452342.
   """
 
   name = _messages.StringField(1, required=True)
@@ -1425,8 +1425,8 @@ class DlpProjectsLocationsInspectTemplatesPatchRequest(_messages.Message):
       the request body.
     name: Required. Resource name of organization and inspectTemplate to be
       updated, for example
-      `organizations/433245324/inspectTemplates/432452342` or projects
-      /project-id/inspectTemplates/432452342.
+      `organizations/433245324/inspectTemplates/432452342` or
+      projects/project-id/inspectTemplates/432452342.
   """
 
   googlePrivacyDlpV2UpdateInspectTemplateRequest = _messages.MessageField('GooglePrivacyDlpV2UpdateInspectTemplateRequest', 1)
@@ -4282,9 +4282,9 @@ class GooglePrivacyDlpV2KMapEstimationResult(_messages.Message):
 
 class GooglePrivacyDlpV2Key(_messages.Message):
   r"""A unique identifier for a Datastore entity. If a key's partition ID or
-  any of its path kinds or names are reserved/read-only, the key is reserved
-  /read-only. A reserved/read-only key is forbidden in certain documented
-  contexts.
+  any of its path kinds or names are reserved/read-only, the key is
+  reserved/read-only. A reserved/read-only key is forbidden in certain
+  documented contexts.
 
   Fields:
     partitionId: Entities are partitioned into subsets, currently identified
@@ -4734,12 +4734,12 @@ class GooglePrivacyDlpV2PathElement(_messages.Message):
   Fields:
     id: The auto-allocated ID of the entity. Never equal to zero. Values less
       than zero are discouraged and may not be supported in the future.
-    kind: The kind of the entity. A kind matching regex `__.*__` is reserved
-      /read-only. A kind must not contain more than 1500 bytes when UTF-8
+    kind: The kind of the entity. A kind matching regex `__.*__` is
+      reserved/read-only. A kind must not contain more than 1500 bytes when
+      UTF-8 encoded. Cannot be `""`.
+    name: The name of the entity. A name matching regex `__.*__` is
+      reserved/read-only. A name must not be more than 1500 bytes when UTF-8
       encoded. Cannot be `""`.
-    name: The name of the entity. A name matching regex `__.*__` is reserved
-      /read-only. A name must not be more than 1500 bytes when UTF-8 encoded.
-      Cannot be `""`.
   """
 
   id = _messages.IntegerField(1)
@@ -4830,9 +4830,9 @@ class GooglePrivacyDlpV2PublishSummaryToCscc(_messages.Message):
   parts of an organization and whitelisted for the alpha Cloud Security
   Command Center. The action will publish count of finding instances and their
   info types. The summary of findings will be persisted in CSCC and are
-  governed by CSCC service-specific policy, see https://cloud.google.com/terms
-  /service-terms Only a single instance of this action can be specified.
-  Compatible with: Inspect
+  governed by CSCC service-specific policy, see
+  https://cloud.google.com/terms/service-terms Only a single instance of this
+  action can be specified. Compatible with: Inspect
   """
 
 
@@ -5289,8 +5289,8 @@ class GooglePrivacyDlpV2StoredInfoType(_messages.Message):
 
 class GooglePrivacyDlpV2StoredInfoTypeConfig(_messages.Message):
   r"""Configuration for stored infoTypes. All fields and subfield are provided
-  by the user. For more information, see https://cloud.google.com/dlp/docs
-  /creating-custom-infotypes.
+  by the user. For more information, see
+  https://cloud.google.com/dlp/docs/creating-custom-infotypes.
 
   Fields:
     description: Description of the StoredInfoType (max 256 characters).
@@ -5382,8 +5382,8 @@ class GooglePrivacyDlpV2StoredType(_messages.Message):
       used for inspection was created. Output-only field, populated by the
       system.
     name: Resource name of the requested `StoredInfoType`, for example
-      `organizations/433245324/storedInfoTypes/432452342` or `projects
-      /project-id/storedInfoTypes/432452342`.
+      `organizations/433245324/storedInfoTypes/432452342` or
+      `projects/project-id/storedInfoTypes/432452342`.
   """
 
   createTime = _messages.StringField(1)
@@ -5963,7 +5963,7 @@ class StandardQueryParameters(_messages.Message):
 
   f__xgafv = _messages.EnumField('FXgafvValueValuesEnum', 1)
   access_token = _messages.StringField(2)
-  alt = _messages.EnumField('AltValueValuesEnum', 3, default=u'json')
+  alt = _messages.EnumField('AltValueValuesEnum', 3, default='json')
   callback = _messages.StringField(4)
   fields = _messages.StringField(5)
   key = _messages.StringField(6)

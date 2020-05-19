@@ -20,48 +20,12 @@ from __future__ import unicode_literals
 
 import json
 
-import os.path
 import subprocess
-from googlecloudsdk.core import config
-from googlecloudsdk.core.updater import update_manager
-from googlecloudsdk.core.util import files as file_utils
+from googlecloudsdk.command_lib.code import run_subprocess
 import six
 
 
 DEFAULT_CLUSTER_NAME = 'gcloud-local-dev'
-
-
-def _FindOrInstallComponent(component_name):
-  """Finds the path to a component or install it.
-
-  Args:
-    component_name: Name of the component.
-
-  Returns:
-    Path to the component. Returns None if the component can't be found.
-  """
-  if (config.Paths().sdk_root and
-      update_manager.UpdateManager.EnsureInstalledAndRestart([component_name])):
-    return os.path.join(config.Paths().sdk_root, 'bin', component_name)
-
-  return None
-
-
-def _FindExecutable(exe):
-  """Finds the path to an executable.
-
-  Args:
-    exe: Name of the executable.
-
-  Returns:
-    Path to the executable.
-  Raises:
-    EnvironmentError: The exeuctable can't be found.
-  """
-  path = _FindOrInstallComponent(exe) or file_utils.FindExecutableOnPath(exe)
-  if not path:
-    raise EnvironmentError('Unable to locate %s.' % exe)
-  return path
 
 
 class _KubeCluster(object):
@@ -148,7 +112,7 @@ def _StartKindCluster(cluster_name):
   if not _IsKindClusterUp(cluster_name):
     cmd = [_FindKind(), 'create', 'cluster', '--name', cluster_name]
     print("Creating local development environment '%s' ..." % cluster_name)
-    subprocess.check_call(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    subprocess.check_call(cmd)
     print('Development environment created.')
 
 
@@ -176,13 +140,13 @@ def _DeleteKindCluster(cluster_name):
   """
   cmd = [_FindKind(), 'delete', 'cluster', '--name', cluster_name]
   print("Deleting development environment '%s' ..." % cluster_name)
-  _RunWithoutOutput(cmd)
+  run_subprocess.RunWithoutOutput(cmd)
   print('Development environment deleted.')
 
 
 def _FindKind():
   """Finds a path to kind."""
-  return _FindExecutable('kind')
+  return run_subprocess.GetGcloudPreferredExecutable('kind')
 
 
 class MinikubeCluster(_KubeCluster):
@@ -218,7 +182,7 @@ class Minikube(object):
 
 
 def _FindMinikube():
-  return _FindExecutable('minikube')
+  return run_subprocess.GetGcloudPreferredExecutable('minikube')
 
 
 def _StartMinikubeCluster(cluster_name, vm_driver):
@@ -240,7 +204,7 @@ def _StartMinikubeCluster(cluster_name, vm_driver):
         cmd.append('--container-runtime=docker')
 
     print("Starting development environment '%s' ..." % cluster_name)
-    _RunWithoutOutput(cmd)
+    run_subprocess.RunWithoutOutput(cmd)
     print('Development environment created.')
 
 
@@ -271,7 +235,7 @@ def _StopMinikube(cluster_name):
   """Stop a minikube cluster."""
   cmd = [_FindMinikube(), 'stop', '-p', cluster_name]
   print("Stopping development environment '%s' ..." % cluster_name)
-  _RunWithoutOutput(cmd)
+  run_subprocess.RunWithoutOutput(cmd)
   print('Development environment stopped.')
 
 
@@ -279,7 +243,7 @@ def DeleteMinikube(cluster_name):
   """Delete a minikube cluster."""
   cmd = [_FindMinikube(), 'delete', '-p', cluster_name, '--purge']
   print("Deleting development environment '%s' ..." % cluster_name)
-  _RunWithoutOutput(cmd)
+  run_subprocess.RunWithoutOutput(cmd)
   print('Development environment stopped.')
 
 
@@ -316,7 +280,7 @@ class ExternalClusterContext(object):
 
 
 def _FindKubectl():
-  return _FindExecutable('kubectl')
+  return run_subprocess.GetGcloudPreferredExecutable('kubectl')
 
 
 def _NamespaceExists(namespace, context_name=None):
@@ -336,7 +300,7 @@ def _CreateNamespace(namespace, context_name=None):
   if context_name:
     cmd += ['--context', context_name]
   cmd += ['create', 'namespace', namespace]
-  _RunWithoutOutput(cmd)
+  run_subprocess.RunWithoutOutput(cmd)
 
 
 def _DeleteNamespace(namespace, context_name=None):
@@ -344,7 +308,7 @@ def _DeleteNamespace(namespace, context_name=None):
   if context_name:
     cmd += ['--context', context_name]
   cmd += ['delete', 'namespace', namespace]
-  _RunWithoutOutput(cmd)
+  run_subprocess.RunWithoutOutput(cmd)
 
 
 class KubeNamespace(object):
@@ -370,8 +334,3 @@ class KubeNamespace(object):
     if self._delete_namespace:
       _DeleteNamespace(self._namespace, self._context_name)
 
-
-def _RunWithoutOutput(cmd):
-  """Run command and send the output to /dev/null or nul."""
-  with file_utils.FileWriter(os.devnull) as devnull:
-    subprocess.check_call(cmd, stdout=devnull, stderr=devnull)

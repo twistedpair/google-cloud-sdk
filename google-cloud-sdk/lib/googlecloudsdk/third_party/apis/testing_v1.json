@@ -1485,7 +1485,7 @@
           }
         },
         "thumbnailUrl": {
-          "description": "URL of a thumbnail image of the device.",
+          "description": "URL of a thumbnail image (photo) of the device.\ne.g. https:\/\/lh3.googleusercontent.com\/90WcauuJiCYABEl8U0lcZeuS5STUbf2yW...",
           "type": "string"
         }
       }
@@ -1671,7 +1671,7 @@
     },
     "IosModel": {
       "id": "IosModel",
-      "description": "A description of an iOS device tests may be run on.\nNext tag: 12",
+      "description": "A description of an iOS device tests may be run on.\nNext tag: 13",
       "type": "object",
       "properties": {
         "id": {

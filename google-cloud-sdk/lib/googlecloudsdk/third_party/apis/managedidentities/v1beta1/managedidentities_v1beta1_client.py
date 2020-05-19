@@ -8,17 +8,17 @@ class ManagedidentitiesV1beta1(base_api.BaseApiClient):
   """Generated client library for service managedidentities version v1beta1."""
 
   MESSAGES_MODULE = messages
-  BASE_URL = u'https://managedidentities.googleapis.com/'
-  MTLS_BASE_URL = u'https://managedidentities.mtls.googleapis.com/'
+  BASE_URL = 'https://managedidentities.googleapis.com/'
+  MTLS_BASE_URL = 'https://managedidentities.mtls.googleapis.com/'
 
-  _PACKAGE = u'managedidentities'
-  _SCOPES = [u'https://www.googleapis.com/auth/cloud-platform']
-  _VERSION = u'v1beta1'
+  _PACKAGE = 'managedidentities'
+  _SCOPES = ['https://www.googleapis.com/auth/cloud-platform']
+  _VERSION = 'v1beta1'
   _CLIENT_ID = '1042881264118.apps.googleusercontent.com'
   _CLIENT_SECRET = 'x_Tw5K8nnjoRAqULM9PFAC2b'
-  _USER_AGENT = u'google-cloud-sdk'
-  _CLIENT_CLASS_NAME = u'ManagedidentitiesV1beta1'
-  _URL_VERSION = u'v1beta1'
+  _USER_AGENT = 'google-cloud-sdk'
+  _CLIENT_CLASS_NAME = 'ManagedidentitiesV1beta1'
+  _URL_VERSION = 'v1beta1'
   _API_KEY = None
 
   def __init__(self, url='', credentials=None,
@@ -45,7 +45,7 @@ class ManagedidentitiesV1beta1(base_api.BaseApiClient):
   class ProjectsLocationsGlobalDomainsService(base_api.BaseApiService):
     """Service class for the projects_locations_global_domains resource."""
 
-    _NAME = u'projects_locations_global_domains'
+    _NAME = 'projects_locations_global_domains'
 
     def __init__(self, client):
       super(ManagedidentitiesV1beta1.ProjectsLocationsGlobalDomainsService, self).__init__(client)
@@ -66,16 +66,16 @@ class ManagedidentitiesV1beta1(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     AttachTrust.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/projects/{projectsId}/locations/global/domains/{domainsId}:attachTrust',
-        http_method=u'POST',
-        method_id=u'managedidentities.projects.locations.global.domains.attachTrust',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1beta1/projects/{projectsId}/locations/global/domains/{domainsId}:attachTrust',
+        http_method='POST',
+        method_id='managedidentities.projects.locations.global.domains.attachTrust',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1beta1/{+name}:attachTrust',
-        request_field=u'attachTrustRequest',
-        request_type_name=u'ManagedidentitiesProjectsLocationsGlobalDomainsAttachTrustRequest',
-        response_type_name=u'Operation',
+        relative_path='v1beta1/{+name}:attachTrust',
+        request_field='attachTrustRequest',
+        request_type_name='ManagedidentitiesProjectsLocationsGlobalDomainsAttachTrustRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -93,16 +93,16 @@ class ManagedidentitiesV1beta1(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Create.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/projects/{projectsId}/locations/global/domains',
-        http_method=u'POST',
-        method_id=u'managedidentities.projects.locations.global.domains.create',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'domainName'],
-        relative_path=u'v1beta1/{+parent}/domains',
-        request_field=u'domain',
-        request_type_name=u'ManagedidentitiesProjectsLocationsGlobalDomainsCreateRequest',
-        response_type_name=u'Operation',
+        flat_path='v1beta1/projects/{projectsId}/locations/global/domains',
+        http_method='POST',
+        method_id='managedidentities.projects.locations.global.domains.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['domainName'],
+        relative_path='v1beta1/{+parent}/domains',
+        request_field='domain',
+        request_type_name='ManagedidentitiesProjectsLocationsGlobalDomainsCreateRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -120,16 +120,16 @@ class ManagedidentitiesV1beta1(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Delete.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/projects/{projectsId}/locations/global/domains/{domainsId}',
-        http_method=u'DELETE',
-        method_id=u'managedidentities.projects.locations.global.domains.delete',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1beta1/projects/{projectsId}/locations/global/domains/{domainsId}',
+        http_method='DELETE',
+        method_id='managedidentities.projects.locations.global.domains.delete',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1beta1/{+name}',
+        relative_path='v1beta1/{+name}',
         request_field='',
-        request_type_name=u'ManagedidentitiesProjectsLocationsGlobalDomainsDeleteRequest',
-        response_type_name=u'Operation',
+        request_type_name='ManagedidentitiesProjectsLocationsGlobalDomainsDeleteRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -147,16 +147,16 @@ class ManagedidentitiesV1beta1(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     DetachTrust.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/projects/{projectsId}/locations/global/domains/{domainsId}:detachTrust',
-        http_method=u'POST',
-        method_id=u'managedidentities.projects.locations.global.domains.detachTrust',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1beta1/projects/{projectsId}/locations/global/domains/{domainsId}:detachTrust',
+        http_method='POST',
+        method_id='managedidentities.projects.locations.global.domains.detachTrust',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1beta1/{+name}:detachTrust',
-        request_field=u'detachTrustRequest',
-        request_type_name=u'ManagedidentitiesProjectsLocationsGlobalDomainsDetachTrustRequest',
-        response_type_name=u'Operation',
+        relative_path='v1beta1/{+name}:detachTrust',
+        request_field='detachTrustRequest',
+        request_type_name='ManagedidentitiesProjectsLocationsGlobalDomainsDetachTrustRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -174,16 +174,16 @@ class ManagedidentitiesV1beta1(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/projects/{projectsId}/locations/global/domains/{domainsId}',
-        http_method=u'GET',
-        method_id=u'managedidentities.projects.locations.global.domains.get',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1beta1/projects/{projectsId}/locations/global/domains/{domainsId}',
+        http_method='GET',
+        method_id='managedidentities.projects.locations.global.domains.get',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1beta1/{+name}',
+        relative_path='v1beta1/{+name}',
         request_field='',
-        request_type_name=u'ManagedidentitiesProjectsLocationsGlobalDomainsGetRequest',
-        response_type_name=u'Domain',
+        request_type_name='ManagedidentitiesProjectsLocationsGlobalDomainsGetRequest',
+        response_type_name='Domain',
         supports_download=False,
     )
 
@@ -203,16 +203,16 @@ set.
           config, request, global_params=global_params)
 
     GetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/projects/{projectsId}/locations/global/domains/{domainsId}:getIamPolicy',
-        http_method=u'GET',
-        method_id=u'managedidentities.projects.locations.global.domains.getIamPolicy',
-        ordered_params=[u'resource'],
-        path_params=[u'resource'],
-        query_params=[u'options_requestedPolicyVersion'],
-        relative_path=u'v1beta1/{+resource}:getIamPolicy',
+        flat_path='v1beta1/projects/{projectsId}/locations/global/domains/{domainsId}:getIamPolicy',
+        http_method='GET',
+        method_id='managedidentities.projects.locations.global.domains.getIamPolicy',
+        ordered_params=['resource'],
+        path_params=['resource'],
+        query_params=['options_requestedPolicyVersion'],
+        relative_path='v1beta1/{+resource}:getIamPolicy',
         request_field='',
-        request_type_name=u'ManagedidentitiesProjectsLocationsGlobalDomainsGetIamPolicyRequest',
-        response_type_name=u'Policy',
+        request_type_name='ManagedidentitiesProjectsLocationsGlobalDomainsGetIamPolicyRequest',
+        response_type_name='Policy',
         supports_download=False,
     )
 
@@ -230,16 +230,16 @@ set.
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/projects/{projectsId}/locations/global/domains',
-        http_method=u'GET',
-        method_id=u'managedidentities.projects.locations.global.domains.list',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'filter', u'orderBy', u'pageSize', u'pageToken'],
-        relative_path=u'v1beta1/{+parent}/domains',
+        flat_path='v1beta1/projects/{projectsId}/locations/global/domains',
+        http_method='GET',
+        method_id='managedidentities.projects.locations.global.domains.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'orderBy', 'pageSize', 'pageToken'],
+        relative_path='v1beta1/{+parent}/domains',
         request_field='',
-        request_type_name=u'ManagedidentitiesProjectsLocationsGlobalDomainsListRequest',
-        response_type_name=u'ListDomainsResponse',
+        request_type_name='ManagedidentitiesProjectsLocationsGlobalDomainsListRequest',
+        response_type_name='ListDomainsResponse',
         supports_download=False,
     )
 
@@ -257,16 +257,16 @@ set.
           config, request, global_params=global_params)
 
     Patch.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/projects/{projectsId}/locations/global/domains/{domainsId}',
-        http_method=u'PATCH',
-        method_id=u'managedidentities.projects.locations.global.domains.patch',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[u'updateMask'],
-        relative_path=u'v1beta1/{+name}',
-        request_field=u'domain',
-        request_type_name=u'ManagedidentitiesProjectsLocationsGlobalDomainsPatchRequest',
-        response_type_name=u'Operation',
+        flat_path='v1beta1/projects/{projectsId}/locations/global/domains/{domainsId}',
+        http_method='PATCH',
+        method_id='managedidentities.projects.locations.global.domains.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v1beta1/{+name}',
+        request_field='domain',
+        request_type_name='ManagedidentitiesProjectsLocationsGlobalDomainsPatchRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -284,16 +284,16 @@ set.
           config, request, global_params=global_params)
 
     ReconfigureTrust.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/projects/{projectsId}/locations/global/domains/{domainsId}:reconfigureTrust',
-        http_method=u'POST',
-        method_id=u'managedidentities.projects.locations.global.domains.reconfigureTrust',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1beta1/projects/{projectsId}/locations/global/domains/{domainsId}:reconfigureTrust',
+        http_method='POST',
+        method_id='managedidentities.projects.locations.global.domains.reconfigureTrust',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1beta1/{+name}:reconfigureTrust',
-        request_field=u'reconfigureTrustRequest',
-        request_type_name=u'ManagedidentitiesProjectsLocationsGlobalDomainsReconfigureTrustRequest',
-        response_type_name=u'Operation',
+        relative_path='v1beta1/{+name}:reconfigureTrust',
+        request_field='reconfigureTrustRequest',
+        request_type_name='ManagedidentitiesProjectsLocationsGlobalDomainsReconfigureTrustRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -311,16 +311,16 @@ set.
           config, request, global_params=global_params)
 
     ResetAdminPassword.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/projects/{projectsId}/locations/global/domains/{domainsId}:resetAdminPassword',
-        http_method=u'POST',
-        method_id=u'managedidentities.projects.locations.global.domains.resetAdminPassword',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1beta1/projects/{projectsId}/locations/global/domains/{domainsId}:resetAdminPassword',
+        http_method='POST',
+        method_id='managedidentities.projects.locations.global.domains.resetAdminPassword',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1beta1/{+name}:resetAdminPassword',
-        request_field=u'resetAdminPasswordRequest',
-        request_type_name=u'ManagedidentitiesProjectsLocationsGlobalDomainsResetAdminPasswordRequest',
-        response_type_name=u'ResetAdminPasswordResponse',
+        relative_path='v1beta1/{+name}:resetAdminPassword',
+        request_field='resetAdminPasswordRequest',
+        request_type_name='ManagedidentitiesProjectsLocationsGlobalDomainsResetAdminPasswordRequest',
+        response_type_name='ResetAdminPasswordResponse',
         supports_download=False,
     )
 
@@ -341,16 +341,16 @@ Can return `NOT_FOUND`, `INVALID_ARGUMENT`, and `PERMISSION_DENIED` errors.
           config, request, global_params=global_params)
 
     SetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/projects/{projectsId}/locations/global/domains/{domainsId}:setIamPolicy',
-        http_method=u'POST',
-        method_id=u'managedidentities.projects.locations.global.domains.setIamPolicy',
-        ordered_params=[u'resource'],
-        path_params=[u'resource'],
+        flat_path='v1beta1/projects/{projectsId}/locations/global/domains/{domainsId}:setIamPolicy',
+        http_method='POST',
+        method_id='managedidentities.projects.locations.global.domains.setIamPolicy',
+        ordered_params=['resource'],
+        path_params=['resource'],
         query_params=[],
-        relative_path=u'v1beta1/{+resource}:setIamPolicy',
-        request_field=u'setIamPolicyRequest',
-        request_type_name=u'ManagedidentitiesProjectsLocationsGlobalDomainsSetIamPolicyRequest',
-        response_type_name=u'Policy',
+        relative_path='v1beta1/{+resource}:setIamPolicy',
+        request_field='setIamPolicyRequest',
+        request_type_name='ManagedidentitiesProjectsLocationsGlobalDomainsSetIamPolicyRequest',
+        response_type_name='Policy',
         supports_download=False,
     )
 
@@ -374,16 +374,16 @@ may "fail open" without warning.
           config, request, global_params=global_params)
 
     TestIamPermissions.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/projects/{projectsId}/locations/global/domains/{domainsId}:testIamPermissions',
-        http_method=u'POST',
-        method_id=u'managedidentities.projects.locations.global.domains.testIamPermissions',
-        ordered_params=[u'resource'],
-        path_params=[u'resource'],
+        flat_path='v1beta1/projects/{projectsId}/locations/global/domains/{domainsId}:testIamPermissions',
+        http_method='POST',
+        method_id='managedidentities.projects.locations.global.domains.testIamPermissions',
+        ordered_params=['resource'],
+        path_params=['resource'],
         query_params=[],
-        relative_path=u'v1beta1/{+resource}:testIamPermissions',
-        request_field=u'testIamPermissionsRequest',
-        request_type_name=u'ManagedidentitiesProjectsLocationsGlobalDomainsTestIamPermissionsRequest',
-        response_type_name=u'TestIamPermissionsResponse',
+        relative_path='v1beta1/{+resource}:testIamPermissions',
+        request_field='testIamPermissionsRequest',
+        request_type_name='ManagedidentitiesProjectsLocationsGlobalDomainsTestIamPermissionsRequest',
+        response_type_name='TestIamPermissionsResponse',
         supports_download=False,
     )
 
@@ -402,23 +402,23 @@ target domain is able to accept incoming trust requests.
           config, request, global_params=global_params)
 
     ValidateTrust.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/projects/{projectsId}/locations/global/domains/{domainsId}:validateTrust',
-        http_method=u'POST',
-        method_id=u'managedidentities.projects.locations.global.domains.validateTrust',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1beta1/projects/{projectsId}/locations/global/domains/{domainsId}:validateTrust',
+        http_method='POST',
+        method_id='managedidentities.projects.locations.global.domains.validateTrust',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1beta1/{+name}:validateTrust',
-        request_field=u'validateTrustRequest',
-        request_type_name=u'ManagedidentitiesProjectsLocationsGlobalDomainsValidateTrustRequest',
-        response_type_name=u'Operation',
+        relative_path='v1beta1/{+name}:validateTrust',
+        request_field='validateTrustRequest',
+        request_type_name='ManagedidentitiesProjectsLocationsGlobalDomainsValidateTrustRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
   class ProjectsLocationsGlobalOperationsService(base_api.BaseApiService):
     """Service class for the projects_locations_global_operations resource."""
 
-    _NAME = u'projects_locations_global_operations'
+    _NAME = 'projects_locations_global_operations'
 
     def __init__(self, client):
       super(ManagedidentitiesV1beta1.ProjectsLocationsGlobalOperationsService, self).__init__(client)
@@ -448,16 +448,16 @@ corresponding to `Code.CANCELLED`.
           config, request, global_params=global_params)
 
     Cancel.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/projects/{projectsId}/locations/global/operations/{operationsId}:cancel',
-        http_method=u'POST',
-        method_id=u'managedidentities.projects.locations.global.operations.cancel',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1beta1/projects/{projectsId}/locations/global/operations/{operationsId}:cancel',
+        http_method='POST',
+        method_id='managedidentities.projects.locations.global.operations.cancel',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1beta1/{+name}:cancel',
-        request_field=u'cancelOperationRequest',
-        request_type_name=u'ManagedidentitiesProjectsLocationsGlobalOperationsCancelRequest',
-        response_type_name=u'Empty',
+        relative_path='v1beta1/{+name}:cancel',
+        request_field='cancelOperationRequest',
+        request_type_name='ManagedidentitiesProjectsLocationsGlobalOperationsCancelRequest',
+        response_type_name='Empty',
         supports_download=False,
     )
 
@@ -478,16 +478,16 @@ operation. If the server doesn't support this method, it returns
           config, request, global_params=global_params)
 
     Delete.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/projects/{projectsId}/locations/global/operations/{operationsId}',
-        http_method=u'DELETE',
-        method_id=u'managedidentities.projects.locations.global.operations.delete',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1beta1/projects/{projectsId}/locations/global/operations/{operationsId}',
+        http_method='DELETE',
+        method_id='managedidentities.projects.locations.global.operations.delete',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1beta1/{+name}',
+        relative_path='v1beta1/{+name}',
         request_field='',
-        request_type_name=u'ManagedidentitiesProjectsLocationsGlobalOperationsDeleteRequest',
-        response_type_name=u'Empty',
+        request_type_name='ManagedidentitiesProjectsLocationsGlobalOperationsDeleteRequest',
+        response_type_name='Empty',
         supports_download=False,
     )
 
@@ -507,16 +507,16 @@ service.
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/projects/{projectsId}/locations/global/operations/{operationsId}',
-        http_method=u'GET',
-        method_id=u'managedidentities.projects.locations.global.operations.get',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1beta1/projects/{projectsId}/locations/global/operations/{operationsId}',
+        http_method='GET',
+        method_id='managedidentities.projects.locations.global.operations.get',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1beta1/{+name}',
+        relative_path='v1beta1/{+name}',
         request_field='',
-        request_type_name=u'ManagedidentitiesProjectsLocationsGlobalOperationsGetRequest',
-        response_type_name=u'Operation',
+        request_type_name='ManagedidentitiesProjectsLocationsGlobalOperationsGetRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -543,23 +543,23 @@ is the parent resource, without the operations collection id.
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/projects/{projectsId}/locations/global/operations',
-        http_method=u'GET',
-        method_id=u'managedidentities.projects.locations.global.operations.list',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[u'filter', u'pageSize', u'pageToken'],
-        relative_path=u'v1beta1/{+name}',
+        flat_path='v1beta1/projects/{projectsId}/locations/global/operations',
+        http_method='GET',
+        method_id='managedidentities.projects.locations.global.operations.list',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['filter', 'pageSize', 'pageToken'],
+        relative_path='v1beta1/{+name}',
         request_field='',
-        request_type_name=u'ManagedidentitiesProjectsLocationsGlobalOperationsListRequest',
-        response_type_name=u'ListOperationsResponse',
+        request_type_name='ManagedidentitiesProjectsLocationsGlobalOperationsListRequest',
+        response_type_name='ListOperationsResponse',
         supports_download=False,
     )
 
   class ProjectsLocationsGlobalService(base_api.BaseApiService):
     """Service class for the projects_locations_global resource."""
 
-    _NAME = u'projects_locations_global'
+    _NAME = 'projects_locations_global'
 
     def __init__(self, client):
       super(ManagedidentitiesV1beta1.ProjectsLocationsGlobalService, self).__init__(client)
@@ -569,7 +569,7 @@ is the parent resource, without the operations collection id.
   class ProjectsLocationsService(base_api.BaseApiService):
     """Service class for the projects_locations resource."""
 
-    _NAME = u'projects_locations'
+    _NAME = 'projects_locations'
 
     def __init__(self, client):
       super(ManagedidentitiesV1beta1.ProjectsLocationsService, self).__init__(client)
@@ -590,16 +590,16 @@ is the parent resource, without the operations collection id.
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/projects/{projectsId}/locations/{locationsId}',
-        http_method=u'GET',
-        method_id=u'managedidentities.projects.locations.get',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}',
+        http_method='GET',
+        method_id='managedidentities.projects.locations.get',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1beta1/{+name}',
+        relative_path='v1beta1/{+name}',
         request_field='',
-        request_type_name=u'ManagedidentitiesProjectsLocationsGetRequest',
-        response_type_name=u'Location',
+        request_type_name='ManagedidentitiesProjectsLocationsGetRequest',
+        response_type_name='Location',
         supports_download=False,
     )
 
@@ -617,23 +617,23 @@ is the parent resource, without the operations collection id.
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/projects/{projectsId}/locations',
-        http_method=u'GET',
-        method_id=u'managedidentities.projects.locations.list',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[u'filter', u'includeUnrevealedLocations', u'pageSize', u'pageToken'],
-        relative_path=u'v1beta1/{+name}/locations',
+        flat_path='v1beta1/projects/{projectsId}/locations',
+        http_method='GET',
+        method_id='managedidentities.projects.locations.list',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['filter', 'includeUnrevealedLocations', 'pageSize', 'pageToken'],
+        relative_path='v1beta1/{+name}/locations',
         request_field='',
-        request_type_name=u'ManagedidentitiesProjectsLocationsListRequest',
-        response_type_name=u'ListLocationsResponse',
+        request_type_name='ManagedidentitiesProjectsLocationsListRequest',
+        response_type_name='ListLocationsResponse',
         supports_download=False,
     )
 
   class ProjectsService(base_api.BaseApiService):
     """Service class for the projects resource."""
 
-    _NAME = u'projects'
+    _NAME = 'projects'
 
     def __init__(self, client):
       super(ManagedidentitiesV1beta1.ProjectsService, self).__init__(client)

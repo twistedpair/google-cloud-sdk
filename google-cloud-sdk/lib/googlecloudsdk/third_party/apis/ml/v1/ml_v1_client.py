@@ -8,17 +8,17 @@ class MlV1(base_api.BaseApiClient):
   """Generated client library for service ml version v1."""
 
   MESSAGES_MODULE = messages
-  BASE_URL = u'https://ml.googleapis.com/'
-  MTLS_BASE_URL = u'https://ml.mtls.googleapis.com/'
+  BASE_URL = 'https://ml.googleapis.com/'
+  MTLS_BASE_URL = 'https://ml.mtls.googleapis.com/'
 
-  _PACKAGE = u'ml'
-  _SCOPES = [u'https://www.googleapis.com/auth/cloud-platform', u'https://www.googleapis.com/auth/cloud-platform.read-only']
-  _VERSION = u'v1'
+  _PACKAGE = 'ml'
+  _SCOPES = ['https://www.googleapis.com/auth/cloud-platform', 'https://www.googleapis.com/auth/cloud-platform.read-only']
+  _VERSION = 'v1'
   _CLIENT_ID = '1042881264118.apps.googleusercontent.com'
   _CLIENT_SECRET = 'x_Tw5K8nnjoRAqULM9PFAC2b'
-  _USER_AGENT = u'google-cloud-sdk'
-  _CLIENT_CLASS_NAME = u'MlV1'
-  _URL_VERSION = u'v1'
+  _USER_AGENT = 'google-cloud-sdk'
+  _CLIENT_CLASS_NAME = 'MlV1'
+  _URL_VERSION = 'v1'
   _API_KEY = None
 
   def __init__(self, url='', credentials=None,
@@ -49,7 +49,7 @@ class MlV1(base_api.BaseApiClient):
   class ProjectsJobsService(base_api.BaseApiService):
     """Service class for the projects_jobs resource."""
 
-    _NAME = u'projects_jobs'
+    _NAME = 'projects_jobs'
 
     def __init__(self, client):
       super(MlV1.ProjectsJobsService, self).__init__(client)
@@ -70,16 +70,16 @@ class MlV1(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Cancel.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/jobs/{jobsId}:cancel',
-        http_method=u'POST',
-        method_id=u'ml.projects.jobs.cancel',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1/projects/{projectsId}/jobs/{jobsId}:cancel',
+        http_method='POST',
+        method_id='ml.projects.jobs.cancel',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1/{+name}:cancel',
-        request_field=u'googleCloudMlV1CancelJobRequest',
-        request_type_name=u'MlProjectsJobsCancelRequest',
-        response_type_name=u'GoogleProtobufEmpty',
+        relative_path='v1/{+name}:cancel',
+        request_field='googleCloudMlV1CancelJobRequest',
+        request_type_name='MlProjectsJobsCancelRequest',
+        response_type_name='GoogleProtobufEmpty',
         supports_download=False,
     )
 
@@ -97,16 +97,16 @@ class MlV1(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Create.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/jobs',
-        http_method=u'POST',
-        method_id=u'ml.projects.jobs.create',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
+        flat_path='v1/projects/{projectsId}/jobs',
+        http_method='POST',
+        method_id='ml.projects.jobs.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
         query_params=[],
-        relative_path=u'v1/{+parent}/jobs',
-        request_field=u'googleCloudMlV1Job',
-        request_type_name=u'MlProjectsJobsCreateRequest',
-        response_type_name=u'GoogleCloudMlV1Job',
+        relative_path='v1/{+parent}/jobs',
+        request_field='googleCloudMlV1Job',
+        request_type_name='MlProjectsJobsCreateRequest',
+        response_type_name='GoogleCloudMlV1Job',
         supports_download=False,
     )
 
@@ -124,16 +124,16 @@ class MlV1(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/jobs/{jobsId}',
-        http_method=u'GET',
-        method_id=u'ml.projects.jobs.get',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1/projects/{projectsId}/jobs/{jobsId}',
+        http_method='GET',
+        method_id='ml.projects.jobs.get',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1/{+name}',
+        relative_path='v1/{+name}',
         request_field='',
-        request_type_name=u'MlProjectsJobsGetRequest',
-        response_type_name=u'GoogleCloudMlV1Job',
+        request_type_name='MlProjectsJobsGetRequest',
+        response_type_name='GoogleCloudMlV1Job',
         supports_download=False,
     )
 
@@ -153,16 +153,16 @@ set.
           config, request, global_params=global_params)
 
     GetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/jobs/{jobsId}:getIamPolicy',
-        http_method=u'GET',
-        method_id=u'ml.projects.jobs.getIamPolicy',
-        ordered_params=[u'resource'],
-        path_params=[u'resource'],
-        query_params=[u'options_requestedPolicyVersion'],
-        relative_path=u'v1/{+resource}:getIamPolicy',
+        flat_path='v1/projects/{projectsId}/jobs/{jobsId}:getIamPolicy',
+        http_method='GET',
+        method_id='ml.projects.jobs.getIamPolicy',
+        ordered_params=['resource'],
+        path_params=['resource'],
+        query_params=['options_requestedPolicyVersion'],
+        relative_path='v1/{+resource}:getIamPolicy',
         request_field='',
-        request_type_name=u'MlProjectsJobsGetIamPolicyRequest',
-        response_type_name=u'GoogleIamV1Policy',
+        request_type_name='MlProjectsJobsGetIamPolicyRequest',
+        response_type_name='GoogleIamV1Policy',
         supports_download=False,
     )
 
@@ -183,16 +183,16 @@ request returns an empty response body: {}.
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/jobs',
-        http_method=u'GET',
-        method_id=u'ml.projects.jobs.list',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'filter', u'pageSize', u'pageToken'],
-        relative_path=u'v1/{+parent}/jobs',
+        flat_path='v1/projects/{projectsId}/jobs',
+        http_method='GET',
+        method_id='ml.projects.jobs.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'pageSize', 'pageToken'],
+        relative_path='v1/{+parent}/jobs',
         request_field='',
-        request_type_name=u'MlProjectsJobsListRequest',
-        response_type_name=u'GoogleCloudMlV1ListJobsResponse',
+        request_type_name='MlProjectsJobsListRequest',
+        response_type_name='GoogleCloudMlV1ListJobsResponse',
         supports_download=False,
     )
 
@@ -212,16 +212,16 @@ Currently the only supported fields to update are `labels`.
           config, request, global_params=global_params)
 
     Patch.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/jobs/{jobsId}',
-        http_method=u'PATCH',
-        method_id=u'ml.projects.jobs.patch',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[u'updateMask'],
-        relative_path=u'v1/{+name}',
-        request_field=u'googleCloudMlV1Job',
-        request_type_name=u'MlProjectsJobsPatchRequest',
-        response_type_name=u'GoogleCloudMlV1Job',
+        flat_path='v1/projects/{projectsId}/jobs/{jobsId}',
+        http_method='PATCH',
+        method_id='ml.projects.jobs.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v1/{+name}',
+        request_field='googleCloudMlV1Job',
+        request_type_name='MlProjectsJobsPatchRequest',
+        response_type_name='GoogleCloudMlV1Job',
         supports_download=False,
     )
 
@@ -242,16 +242,16 @@ Can return `NOT_FOUND`, `INVALID_ARGUMENT`, and `PERMISSION_DENIED` errors.
           config, request, global_params=global_params)
 
     SetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/jobs/{jobsId}:setIamPolicy',
-        http_method=u'POST',
-        method_id=u'ml.projects.jobs.setIamPolicy',
-        ordered_params=[u'resource'],
-        path_params=[u'resource'],
+        flat_path='v1/projects/{projectsId}/jobs/{jobsId}:setIamPolicy',
+        http_method='POST',
+        method_id='ml.projects.jobs.setIamPolicy',
+        ordered_params=['resource'],
+        path_params=['resource'],
         query_params=[],
-        relative_path=u'v1/{+resource}:setIamPolicy',
-        request_field=u'googleIamV1SetIamPolicyRequest',
-        request_type_name=u'MlProjectsJobsSetIamPolicyRequest',
-        response_type_name=u'GoogleIamV1Policy',
+        relative_path='v1/{+resource}:setIamPolicy',
+        request_field='googleIamV1SetIamPolicyRequest',
+        request_type_name='MlProjectsJobsSetIamPolicyRequest',
+        response_type_name='GoogleIamV1Policy',
         supports_download=False,
     )
 
@@ -275,23 +275,23 @@ may "fail open" without warning.
           config, request, global_params=global_params)
 
     TestIamPermissions.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/jobs/{jobsId}:testIamPermissions',
-        http_method=u'POST',
-        method_id=u'ml.projects.jobs.testIamPermissions',
-        ordered_params=[u'resource'],
-        path_params=[u'resource'],
+        flat_path='v1/projects/{projectsId}/jobs/{jobsId}:testIamPermissions',
+        http_method='POST',
+        method_id='ml.projects.jobs.testIamPermissions',
+        ordered_params=['resource'],
+        path_params=['resource'],
         query_params=[],
-        relative_path=u'v1/{+resource}:testIamPermissions',
-        request_field=u'googleIamV1TestIamPermissionsRequest',
-        request_type_name=u'MlProjectsJobsTestIamPermissionsRequest',
-        response_type_name=u'GoogleIamV1TestIamPermissionsResponse',
+        relative_path='v1/{+resource}:testIamPermissions',
+        request_field='googleIamV1TestIamPermissionsRequest',
+        request_type_name='MlProjectsJobsTestIamPermissionsRequest',
+        response_type_name='GoogleIamV1TestIamPermissionsResponse',
         supports_download=False,
     )
 
   class ProjectsLocationsOperationsService(base_api.BaseApiService):
     """Service class for the projects_locations_operations resource."""
 
-    _NAME = u'projects_locations_operations'
+    _NAME = 'projects_locations_operations'
 
     def __init__(self, client):
       super(MlV1.ProjectsLocationsOperationsService, self).__init__(client)
@@ -321,16 +321,16 @@ corresponding to `Code.CANCELLED`.
           config, request, global_params=global_params)
 
     Cancel.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/locations/{locationsId}/operations/{operationsId}:cancel',
-        http_method=u'POST',
-        method_id=u'ml.projects.locations.operations.cancel',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/operations/{operationsId}:cancel',
+        http_method='POST',
+        method_id='ml.projects.locations.operations.cancel',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1/{+name}:cancel',
+        relative_path='v1/{+name}:cancel',
         request_field='',
-        request_type_name=u'MlProjectsLocationsOperationsCancelRequest',
-        response_type_name=u'GoogleProtobufEmpty',
+        request_type_name='MlProjectsLocationsOperationsCancelRequest',
+        response_type_name='GoogleProtobufEmpty',
         supports_download=False,
     )
 
@@ -350,23 +350,23 @@ service.
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/locations/{locationsId}/operations/{operationsId}',
-        http_method=u'GET',
-        method_id=u'ml.projects.locations.operations.get',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/operations/{operationsId}',
+        http_method='GET',
+        method_id='ml.projects.locations.operations.get',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1/{+name}',
+        relative_path='v1/{+name}',
         request_field='',
-        request_type_name=u'MlProjectsLocationsOperationsGetRequest',
-        response_type_name=u'GoogleLongrunningOperation',
+        request_type_name='MlProjectsLocationsOperationsGetRequest',
+        response_type_name='GoogleLongrunningOperation',
         supports_download=False,
     )
 
   class ProjectsLocationsStudiesTrialsService(base_api.BaseApiService):
     """Service class for the projects_locations_studies_trials resource."""
 
-    _NAME = u'projects_locations_studies_trials'
+    _NAME = 'projects_locations_studies_trials'
 
     def __init__(self, client):
       super(MlV1.ProjectsLocationsStudiesTrialsService, self).__init__(client)
@@ -388,16 +388,16 @@ is assumed to have been taken before the trial is complete.
           config, request, global_params=global_params)
 
     AddMeasurement.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/locations/{locationsId}/studies/{studiesId}/trials/{trialsId}:addMeasurement',
-        http_method=u'POST',
-        method_id=u'ml.projects.locations.studies.trials.addMeasurement',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/studies/{studiesId}/trials/{trialsId}:addMeasurement',
+        http_method='POST',
+        method_id='ml.projects.locations.studies.trials.addMeasurement',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1/{+name}:addMeasurement',
-        request_field=u'googleCloudMlV1AddTrialMeasurementRequest',
-        request_type_name=u'MlProjectsLocationsStudiesTrialsAddMeasurementRequest',
-        response_type_name=u'GoogleCloudMlV1Trial',
+        relative_path='v1/{+name}:addMeasurement',
+        request_field='googleCloudMlV1AddTrialMeasurementRequest',
+        request_type_name='MlProjectsLocationsStudiesTrialsAddMeasurementRequest',
+        response_type_name='GoogleCloudMlV1Trial',
         supports_download=False,
     )
 
@@ -418,16 +418,16 @@ CheckTrialEarlyStoppingStateResponse.
           config, request, global_params=global_params)
 
     CheckEarlyStoppingState.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/locations/{locationsId}/studies/{studiesId}/trials/{trialsId}:checkEarlyStoppingState',
-        http_method=u'POST',
-        method_id=u'ml.projects.locations.studies.trials.checkEarlyStoppingState',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/studies/{studiesId}/trials/{trialsId}:checkEarlyStoppingState',
+        http_method='POST',
+        method_id='ml.projects.locations.studies.trials.checkEarlyStoppingState',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1/{+name}:checkEarlyStoppingState',
-        request_field=u'googleCloudMlV1CheckTrialEarlyStoppingStateRequest',
-        request_type_name=u'MlProjectsLocationsStudiesTrialsCheckEarlyStoppingStateRequest',
-        response_type_name=u'GoogleLongrunningOperation',
+        relative_path='v1/{+name}:checkEarlyStoppingState',
+        request_field='googleCloudMlV1CheckTrialEarlyStoppingStateRequest',
+        request_type_name='MlProjectsLocationsStudiesTrialsCheckEarlyStoppingStateRequest',
+        response_type_name='GoogleLongrunningOperation',
         supports_download=False,
     )
 
@@ -445,16 +445,16 @@ CheckTrialEarlyStoppingStateResponse.
           config, request, global_params=global_params)
 
     Complete.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/locations/{locationsId}/studies/{studiesId}/trials/{trialsId}:complete',
-        http_method=u'POST',
-        method_id=u'ml.projects.locations.studies.trials.complete',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/studies/{studiesId}/trials/{trialsId}:complete',
+        http_method='POST',
+        method_id='ml.projects.locations.studies.trials.complete',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1/{+name}:complete',
-        request_field=u'googleCloudMlV1CompleteTrialRequest',
-        request_type_name=u'MlProjectsLocationsStudiesTrialsCompleteRequest',
-        response_type_name=u'GoogleCloudMlV1Trial',
+        relative_path='v1/{+name}:complete',
+        request_field='googleCloudMlV1CompleteTrialRequest',
+        request_type_name='MlProjectsLocationsStudiesTrialsCompleteRequest',
+        response_type_name='GoogleCloudMlV1Trial',
         supports_download=False,
     )
 
@@ -472,16 +472,16 @@ CheckTrialEarlyStoppingStateResponse.
           config, request, global_params=global_params)
 
     Create.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/locations/{locationsId}/studies/{studiesId}/trials',
-        http_method=u'POST',
-        method_id=u'ml.projects.locations.studies.trials.create',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/studies/{studiesId}/trials',
+        http_method='POST',
+        method_id='ml.projects.locations.studies.trials.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
         query_params=[],
-        relative_path=u'v1/{+parent}/trials',
-        request_field=u'googleCloudMlV1Trial',
-        request_type_name=u'MlProjectsLocationsStudiesTrialsCreateRequest',
-        response_type_name=u'GoogleCloudMlV1Trial',
+        relative_path='v1/{+parent}/trials',
+        request_field='googleCloudMlV1Trial',
+        request_type_name='MlProjectsLocationsStudiesTrialsCreateRequest',
+        response_type_name='GoogleCloudMlV1Trial',
         supports_download=False,
     )
 
@@ -499,16 +499,16 @@ CheckTrialEarlyStoppingStateResponse.
           config, request, global_params=global_params)
 
     Delete.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/locations/{locationsId}/studies/{studiesId}/trials/{trialsId}',
-        http_method=u'DELETE',
-        method_id=u'ml.projects.locations.studies.trials.delete',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/studies/{studiesId}/trials/{trialsId}',
+        http_method='DELETE',
+        method_id='ml.projects.locations.studies.trials.delete',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1/{+name}',
+        relative_path='v1/{+name}',
         request_field='',
-        request_type_name=u'MlProjectsLocationsStudiesTrialsDeleteRequest',
-        response_type_name=u'GoogleProtobufEmpty',
+        request_type_name='MlProjectsLocationsStudiesTrialsDeleteRequest',
+        response_type_name='GoogleProtobufEmpty',
         supports_download=False,
     )
 
@@ -526,16 +526,16 @@ CheckTrialEarlyStoppingStateResponse.
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/locations/{locationsId}/studies/{studiesId}/trials/{trialsId}',
-        http_method=u'GET',
-        method_id=u'ml.projects.locations.studies.trials.get',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/studies/{studiesId}/trials/{trialsId}',
+        http_method='GET',
+        method_id='ml.projects.locations.studies.trials.get',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1/{+name}',
+        relative_path='v1/{+name}',
         request_field='',
-        request_type_name=u'MlProjectsLocationsStudiesTrialsGetRequest',
-        response_type_name=u'GoogleCloudMlV1Trial',
+        request_type_name='MlProjectsLocationsStudiesTrialsGetRequest',
+        response_type_name='GoogleCloudMlV1Trial',
         supports_download=False,
     )
 
@@ -553,16 +553,16 @@ CheckTrialEarlyStoppingStateResponse.
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/locations/{locationsId}/studies/{studiesId}/trials',
-        http_method=u'GET',
-        method_id=u'ml.projects.locations.studies.trials.list',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/studies/{studiesId}/trials',
+        http_method='GET',
+        method_id='ml.projects.locations.studies.trials.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
         query_params=[],
-        relative_path=u'v1/{+parent}/trials',
+        relative_path='v1/{+parent}/trials',
         request_field='',
-        request_type_name=u'MlProjectsLocationsStudiesTrialsListRequest',
-        response_type_name=u'GoogleCloudMlV1ListTrialsResponse',
+        request_type_name='MlProjectsLocationsStudiesTrialsListRequest',
+        response_type_name='GoogleCloudMlV1ListTrialsResponse',
         supports_download=False,
     )
 
@@ -580,16 +580,16 @@ CheckTrialEarlyStoppingStateResponse.
           config, request, global_params=global_params)
 
     Stop.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/locations/{locationsId}/studies/{studiesId}/trials/{trialsId}:stop',
-        http_method=u'POST',
-        method_id=u'ml.projects.locations.studies.trials.stop',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/studies/{studiesId}/trials/{trialsId}:stop',
+        http_method='POST',
+        method_id='ml.projects.locations.studies.trials.stop',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1/{+name}:stop',
-        request_field=u'googleCloudMlV1StopTrialRequest',
-        request_type_name=u'MlProjectsLocationsStudiesTrialsStopRequest',
-        response_type_name=u'GoogleCloudMlV1Trial',
+        relative_path='v1/{+name}:stop',
+        request_field='googleCloudMlV1StopTrialRequest',
+        request_type_name='MlProjectsLocationsStudiesTrialsStopRequest',
+        response_type_name='GoogleCloudMlV1Trial',
         supports_download=False,
     )
 
@@ -611,23 +611,23 @@ a SuggestTrialsResponse.
           config, request, global_params=global_params)
 
     Suggest.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/locations/{locationsId}/studies/{studiesId}/trials:suggest',
-        http_method=u'POST',
-        method_id=u'ml.projects.locations.studies.trials.suggest',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/studies/{studiesId}/trials:suggest',
+        http_method='POST',
+        method_id='ml.projects.locations.studies.trials.suggest',
+        ordered_params=['parent'],
+        path_params=['parent'],
         query_params=[],
-        relative_path=u'v1/{+parent}/trials:suggest',
-        request_field=u'googleCloudMlV1SuggestTrialsRequest',
-        request_type_name=u'MlProjectsLocationsStudiesTrialsSuggestRequest',
-        response_type_name=u'GoogleLongrunningOperation',
+        relative_path='v1/{+parent}/trials:suggest',
+        request_field='googleCloudMlV1SuggestTrialsRequest',
+        request_type_name='MlProjectsLocationsStudiesTrialsSuggestRequest',
+        response_type_name='GoogleLongrunningOperation',
         supports_download=False,
     )
 
   class ProjectsLocationsStudiesService(base_api.BaseApiService):
     """Service class for the projects_locations_studies resource."""
 
-    _NAME = u'projects_locations_studies'
+    _NAME = 'projects_locations_studies'
 
     def __init__(self, client):
       super(MlV1.ProjectsLocationsStudiesService, self).__init__(client)
@@ -648,16 +648,16 @@ a SuggestTrialsResponse.
           config, request, global_params=global_params)
 
     Create.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/locations/{locationsId}/studies',
-        http_method=u'POST',
-        method_id=u'ml.projects.locations.studies.create',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'studyId'],
-        relative_path=u'v1/{+parent}/studies',
-        request_field=u'googleCloudMlV1Study',
-        request_type_name=u'MlProjectsLocationsStudiesCreateRequest',
-        response_type_name=u'GoogleCloudMlV1Study',
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/studies',
+        http_method='POST',
+        method_id='ml.projects.locations.studies.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['studyId'],
+        relative_path='v1/{+parent}/studies',
+        request_field='googleCloudMlV1Study',
+        request_type_name='MlProjectsLocationsStudiesCreateRequest',
+        response_type_name='GoogleCloudMlV1Study',
         supports_download=False,
     )
 
@@ -675,16 +675,16 @@ a SuggestTrialsResponse.
           config, request, global_params=global_params)
 
     Delete.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/locations/{locationsId}/studies/{studiesId}',
-        http_method=u'DELETE',
-        method_id=u'ml.projects.locations.studies.delete',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/studies/{studiesId}',
+        http_method='DELETE',
+        method_id='ml.projects.locations.studies.delete',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1/{+name}',
+        relative_path='v1/{+name}',
         request_field='',
-        request_type_name=u'MlProjectsLocationsStudiesDeleteRequest',
-        response_type_name=u'GoogleProtobufEmpty',
+        request_type_name='MlProjectsLocationsStudiesDeleteRequest',
+        response_type_name='GoogleProtobufEmpty',
         supports_download=False,
     )
 
@@ -702,16 +702,16 @@ a SuggestTrialsResponse.
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/locations/{locationsId}/studies/{studiesId}',
-        http_method=u'GET',
-        method_id=u'ml.projects.locations.studies.get',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/studies/{studiesId}',
+        http_method='GET',
+        method_id='ml.projects.locations.studies.get',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1/{+name}',
+        relative_path='v1/{+name}',
         request_field='',
-        request_type_name=u'MlProjectsLocationsStudiesGetRequest',
-        response_type_name=u'GoogleCloudMlV1Study',
+        request_type_name='MlProjectsLocationsStudiesGetRequest',
+        response_type_name='GoogleCloudMlV1Study',
         supports_download=False,
     )
 
@@ -729,23 +729,23 @@ a SuggestTrialsResponse.
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/locations/{locationsId}/studies',
-        http_method=u'GET',
-        method_id=u'ml.projects.locations.studies.list',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/studies',
+        http_method='GET',
+        method_id='ml.projects.locations.studies.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
         query_params=[],
-        relative_path=u'v1/{+parent}/studies',
+        relative_path='v1/{+parent}/studies',
         request_field='',
-        request_type_name=u'MlProjectsLocationsStudiesListRequest',
-        response_type_name=u'GoogleCloudMlV1ListStudiesResponse',
+        request_type_name='MlProjectsLocationsStudiesListRequest',
+        response_type_name='GoogleCloudMlV1ListStudiesResponse',
         supports_download=False,
     )
 
   class ProjectsLocationsService(base_api.BaseApiService):
     """Service class for the projects_locations resource."""
 
-    _NAME = u'projects_locations'
+    _NAME = 'projects_locations'
 
     def __init__(self, client):
       super(MlV1.ProjectsLocationsService, self).__init__(client)
@@ -767,16 +767,16 @@ location-specific properties.
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/locations/{locationsId}',
-        http_method=u'GET',
-        method_id=u'ml.projects.locations.get',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}',
+        http_method='GET',
+        method_id='ml.projects.locations.get',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1/{+name}',
+        relative_path='v1/{+name}',
         request_field='',
-        request_type_name=u'MlProjectsLocationsGetRequest',
-        response_type_name=u'GoogleCloudMlV1Location',
+        request_type_name='MlProjectsLocationsGetRequest',
+        response_type_name='GoogleCloudMlV1Location',
         supports_download=False,
     )
 
@@ -794,23 +794,23 @@ location-specific properties.
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/locations',
-        http_method=u'GET',
-        method_id=u'ml.projects.locations.list',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'pageSize', u'pageToken'],
-        relative_path=u'v1/{+parent}/locations',
+        flat_path='v1/projects/{projectsId}/locations',
+        http_method='GET',
+        method_id='ml.projects.locations.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v1/{+parent}/locations',
         request_field='',
-        request_type_name=u'MlProjectsLocationsListRequest',
-        response_type_name=u'GoogleCloudMlV1ListLocationsResponse',
+        request_type_name='MlProjectsLocationsListRequest',
+        response_type_name='GoogleCloudMlV1ListLocationsResponse',
         supports_download=False,
     )
 
   class ProjectsModelsVersionsService(base_api.BaseApiService):
     """Service class for the projects_models_versions resource."""
 
-    _NAME = u'projects_models_versions'
+    _NAME = 'projects_models_versions'
 
     def __init__(self, client):
       super(MlV1.ProjectsModelsVersionsService, self).__init__(client)
@@ -838,16 +838,16 @@ projects.models.versions.setDefault.
           config, request, global_params=global_params)
 
     Create.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/models/{modelsId}/versions',
-        http_method=u'POST',
-        method_id=u'ml.projects.models.versions.create',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
+        flat_path='v1/projects/{projectsId}/models/{modelsId}/versions',
+        http_method='POST',
+        method_id='ml.projects.models.versions.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
         query_params=[],
-        relative_path=u'v1/{+parent}/versions',
-        request_field=u'googleCloudMlV1Version',
-        request_type_name=u'MlProjectsModelsVersionsCreateRequest',
-        response_type_name=u'GoogleLongrunningOperation',
+        relative_path='v1/{+parent}/versions',
+        request_field='googleCloudMlV1Version',
+        request_type_name='MlProjectsModelsVersionsCreateRequest',
+        response_type_name='GoogleLongrunningOperation',
         supports_download=False,
     )
 
@@ -871,16 +871,16 @@ of the model unless it is the only remaining version.
           config, request, global_params=global_params)
 
     Delete.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/models/{modelsId}/versions/{versionsId}',
-        http_method=u'DELETE',
-        method_id=u'ml.projects.models.versions.delete',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1/projects/{projectsId}/models/{modelsId}/versions/{versionsId}',
+        http_method='DELETE',
+        method_id='ml.projects.models.versions.delete',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1/{+name}',
+        relative_path='v1/{+name}',
         request_field='',
-        request_type_name=u'MlProjectsModelsVersionsDeleteRequest',
-        response_type_name=u'GoogleLongrunningOperation',
+        request_type_name='MlProjectsModelsVersionsDeleteRequest',
+        response_type_name='GoogleLongrunningOperation',
         supports_download=False,
     )
 
@@ -903,16 +903,16 @@ versions of a model.
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/models/{modelsId}/versions/{versionsId}',
-        http_method=u'GET',
-        method_id=u'ml.projects.models.versions.get',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1/projects/{projectsId}/models/{modelsId}/versions/{versionsId}',
+        http_method='GET',
+        method_id='ml.projects.models.versions.get',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1/{+name}',
+        relative_path='v1/{+name}',
         request_field='',
-        request_type_name=u'MlProjectsModelsVersionsGetRequest',
-        response_type_name=u'GoogleCloudMlV1Version',
+        request_type_name='MlProjectsModelsVersionsGetRequest',
+        response_type_name='GoogleCloudMlV1Version',
         supports_download=False,
     )
 
@@ -937,16 +937,16 @@ request returns an empty response body: {}.
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/models/{modelsId}/versions',
-        http_method=u'GET',
-        method_id=u'ml.projects.models.versions.list',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'filter', u'pageSize', u'pageToken'],
-        relative_path=u'v1/{+parent}/versions',
+        flat_path='v1/projects/{projectsId}/models/{modelsId}/versions',
+        http_method='GET',
+        method_id='ml.projects.models.versions.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'pageSize', 'pageToken'],
+        relative_path='v1/{+parent}/versions',
         request_field='',
-        request_type_name=u'MlProjectsModelsVersionsListRequest',
-        response_type_name=u'GoogleCloudMlV1ListVersionsResponse',
+        request_type_name='MlProjectsModelsVersionsListRequest',
+        response_type_name='GoogleCloudMlV1ListVersionsResponse',
         supports_download=False,
     )
 
@@ -967,16 +967,16 @@ Currently the only update-able fields are `description`,
           config, request, global_params=global_params)
 
     Patch.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/models/{modelsId}/versions/{versionsId}',
-        http_method=u'PATCH',
-        method_id=u'ml.projects.models.versions.patch',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[u'updateMask'],
-        relative_path=u'v1/{+name}',
-        request_field=u'googleCloudMlV1Version',
-        request_type_name=u'MlProjectsModelsVersionsPatchRequest',
-        response_type_name=u'GoogleLongrunningOperation',
+        flat_path='v1/projects/{projectsId}/models/{modelsId}/versions/{versionsId}',
+        http_method='PATCH',
+        method_id='ml.projects.models.versions.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v1/{+name}',
+        request_field='googleCloudMlV1Version',
+        request_type_name='MlProjectsModelsVersionsPatchRequest',
+        response_type_name='GoogleLongrunningOperation',
         supports_download=False,
     )
 
@@ -1001,23 +1001,23 @@ setting manually using this method.
           config, request, global_params=global_params)
 
     SetDefault.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/models/{modelsId}/versions/{versionsId}:setDefault',
-        http_method=u'POST',
-        method_id=u'ml.projects.models.versions.setDefault',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1/projects/{projectsId}/models/{modelsId}/versions/{versionsId}:setDefault',
+        http_method='POST',
+        method_id='ml.projects.models.versions.setDefault',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1/{+name}:setDefault',
-        request_field=u'googleCloudMlV1SetDefaultVersionRequest',
-        request_type_name=u'MlProjectsModelsVersionsSetDefaultRequest',
-        response_type_name=u'GoogleCloudMlV1Version',
+        relative_path='v1/{+name}:setDefault',
+        request_field='googleCloudMlV1SetDefaultVersionRequest',
+        request_type_name='MlProjectsModelsVersionsSetDefaultRequest',
+        response_type_name='GoogleCloudMlV1Version',
         supports_download=False,
     )
 
   class ProjectsModelsService(base_api.BaseApiService):
     """Service class for the projects_models resource."""
 
-    _NAME = u'projects_models'
+    _NAME = 'projects_models'
 
     def __init__(self, client):
       super(MlV1.ProjectsModelsService, self).__init__(client)
@@ -1042,16 +1042,16 @@ projects.models.versions.create.
           config, request, global_params=global_params)
 
     Create.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/models',
-        http_method=u'POST',
-        method_id=u'ml.projects.models.create',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
+        flat_path='v1/projects/{projectsId}/models',
+        http_method='POST',
+        method_id='ml.projects.models.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
         query_params=[],
-        relative_path=u'v1/{+parent}/models',
-        request_field=u'googleCloudMlV1Model',
-        request_type_name=u'MlProjectsModelsCreateRequest',
-        response_type_name=u'GoogleCloudMlV1Model',
+        relative_path='v1/{+parent}/models',
+        request_field='googleCloudMlV1Model',
+        request_type_name='MlProjectsModelsCreateRequest',
+        response_type_name='GoogleCloudMlV1Model',
         supports_download=False,
     )
 
@@ -1073,16 +1073,16 @@ projects.models.versions.delete.
           config, request, global_params=global_params)
 
     Delete.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/models/{modelsId}',
-        http_method=u'DELETE',
-        method_id=u'ml.projects.models.delete',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1/projects/{projectsId}/models/{modelsId}',
+        http_method='DELETE',
+        method_id='ml.projects.models.delete',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1/{+name}',
+        relative_path='v1/{+name}',
         request_field='',
-        request_type_name=u'MlProjectsModelsDeleteRequest',
-        response_type_name=u'GoogleLongrunningOperation',
+        request_type_name='MlProjectsModelsDeleteRequest',
+        response_type_name='GoogleLongrunningOperation',
         supports_download=False,
     )
 
@@ -1102,16 +1102,16 @@ been deployed).
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/models/{modelsId}',
-        http_method=u'GET',
-        method_id=u'ml.projects.models.get',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1/projects/{projectsId}/models/{modelsId}',
+        http_method='GET',
+        method_id='ml.projects.models.get',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1/{+name}',
+        relative_path='v1/{+name}',
         request_field='',
-        request_type_name=u'MlProjectsModelsGetRequest',
-        response_type_name=u'GoogleCloudMlV1Model',
+        request_type_name='MlProjectsModelsGetRequest',
+        response_type_name='GoogleCloudMlV1Model',
         supports_download=False,
     )
 
@@ -1131,16 +1131,16 @@ set.
           config, request, global_params=global_params)
 
     GetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/models/{modelsId}:getIamPolicy',
-        http_method=u'GET',
-        method_id=u'ml.projects.models.getIamPolicy',
-        ordered_params=[u'resource'],
-        path_params=[u'resource'],
-        query_params=[u'options_requestedPolicyVersion'],
-        relative_path=u'v1/{+resource}:getIamPolicy',
+        flat_path='v1/projects/{projectsId}/models/{modelsId}:getIamPolicy',
+        http_method='GET',
+        method_id='ml.projects.models.getIamPolicy',
+        ordered_params=['resource'],
+        path_params=['resource'],
+        query_params=['options_requestedPolicyVersion'],
+        relative_path='v1/{+resource}:getIamPolicy',
         request_field='',
-        request_type_name=u'MlProjectsModelsGetIamPolicyRequest',
-        response_type_name=u'GoogleIamV1Policy',
+        request_type_name='MlProjectsModelsGetIamPolicyRequest',
+        response_type_name='GoogleIamV1Policy',
         supports_download=False,
     )
 
@@ -1164,16 +1164,16 @@ returns an empty response body: {}.
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/models',
-        http_method=u'GET',
-        method_id=u'ml.projects.models.list',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'filter', u'pageSize', u'pageToken'],
-        relative_path=u'v1/{+parent}/models',
+        flat_path='v1/projects/{projectsId}/models',
+        http_method='GET',
+        method_id='ml.projects.models.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'pageSize', 'pageToken'],
+        relative_path='v1/{+parent}/models',
         request_field='',
-        request_type_name=u'MlProjectsModelsListRequest',
-        response_type_name=u'GoogleCloudMlV1ListModelsResponse',
+        request_type_name='MlProjectsModelsListRequest',
+        response_type_name='GoogleCloudMlV1ListModelsResponse',
         supports_download=False,
     )
 
@@ -1194,16 +1194,16 @@ Currently the only supported fields to update are `description` and
           config, request, global_params=global_params)
 
     Patch.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/models/{modelsId}',
-        http_method=u'PATCH',
-        method_id=u'ml.projects.models.patch',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[u'updateMask'],
-        relative_path=u'v1/{+name}',
-        request_field=u'googleCloudMlV1Model',
-        request_type_name=u'MlProjectsModelsPatchRequest',
-        response_type_name=u'GoogleLongrunningOperation',
+        flat_path='v1/projects/{projectsId}/models/{modelsId}',
+        http_method='PATCH',
+        method_id='ml.projects.models.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v1/{+name}',
+        request_field='googleCloudMlV1Model',
+        request_type_name='MlProjectsModelsPatchRequest',
+        response_type_name='GoogleLongrunningOperation',
         supports_download=False,
     )
 
@@ -1224,16 +1224,16 @@ Can return `NOT_FOUND`, `INVALID_ARGUMENT`, and `PERMISSION_DENIED` errors.
           config, request, global_params=global_params)
 
     SetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/models/{modelsId}:setIamPolicy',
-        http_method=u'POST',
-        method_id=u'ml.projects.models.setIamPolicy',
-        ordered_params=[u'resource'],
-        path_params=[u'resource'],
+        flat_path='v1/projects/{projectsId}/models/{modelsId}:setIamPolicy',
+        http_method='POST',
+        method_id='ml.projects.models.setIamPolicy',
+        ordered_params=['resource'],
+        path_params=['resource'],
         query_params=[],
-        relative_path=u'v1/{+resource}:setIamPolicy',
-        request_field=u'googleIamV1SetIamPolicyRequest',
-        request_type_name=u'MlProjectsModelsSetIamPolicyRequest',
-        response_type_name=u'GoogleIamV1Policy',
+        relative_path='v1/{+resource}:setIamPolicy',
+        request_field='googleIamV1SetIamPolicyRequest',
+        request_type_name='MlProjectsModelsSetIamPolicyRequest',
+        response_type_name='GoogleIamV1Policy',
         supports_download=False,
     )
 
@@ -1257,23 +1257,23 @@ may "fail open" without warning.
           config, request, global_params=global_params)
 
     TestIamPermissions.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/models/{modelsId}:testIamPermissions',
-        http_method=u'POST',
-        method_id=u'ml.projects.models.testIamPermissions',
-        ordered_params=[u'resource'],
-        path_params=[u'resource'],
+        flat_path='v1/projects/{projectsId}/models/{modelsId}:testIamPermissions',
+        http_method='POST',
+        method_id='ml.projects.models.testIamPermissions',
+        ordered_params=['resource'],
+        path_params=['resource'],
         query_params=[],
-        relative_path=u'v1/{+resource}:testIamPermissions',
-        request_field=u'googleIamV1TestIamPermissionsRequest',
-        request_type_name=u'MlProjectsModelsTestIamPermissionsRequest',
-        response_type_name=u'GoogleIamV1TestIamPermissionsResponse',
+        relative_path='v1/{+resource}:testIamPermissions',
+        request_field='googleIamV1TestIamPermissionsRequest',
+        request_type_name='MlProjectsModelsTestIamPermissionsRequest',
+        response_type_name='GoogleIamV1TestIamPermissionsResponse',
         supports_download=False,
     )
 
   class ProjectsOperationsService(base_api.BaseApiService):
     """Service class for the projects_operations resource."""
 
-    _NAME = u'projects_operations'
+    _NAME = 'projects_operations'
 
     def __init__(self, client):
       super(MlV1.ProjectsOperationsService, self).__init__(client)
@@ -1303,16 +1303,16 @@ corresponding to `Code.CANCELLED`.
           config, request, global_params=global_params)
 
     Cancel.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/operations/{operationsId}:cancel',
-        http_method=u'POST',
-        method_id=u'ml.projects.operations.cancel',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1/projects/{projectsId}/operations/{operationsId}:cancel',
+        http_method='POST',
+        method_id='ml.projects.operations.cancel',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1/{+name}:cancel',
+        relative_path='v1/{+name}:cancel',
         request_field='',
-        request_type_name=u'MlProjectsOperationsCancelRequest',
-        response_type_name=u'GoogleProtobufEmpty',
+        request_type_name='MlProjectsOperationsCancelRequest',
+        response_type_name='GoogleProtobufEmpty',
         supports_download=False,
     )
 
@@ -1332,16 +1332,16 @@ service.
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/operations/{operationsId}',
-        http_method=u'GET',
-        method_id=u'ml.projects.operations.get',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1/projects/{projectsId}/operations/{operationsId}',
+        http_method='GET',
+        method_id='ml.projects.operations.get',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1/{+name}',
+        relative_path='v1/{+name}',
         request_field='',
-        request_type_name=u'MlProjectsOperationsGetRequest',
-        response_type_name=u'GoogleLongrunningOperation',
+        request_type_name='MlProjectsOperationsGetRequest',
+        response_type_name='GoogleLongrunningOperation',
         supports_download=False,
     )
 
@@ -1368,23 +1368,23 @@ is the parent resource, without the operations collection id.
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/operations',
-        http_method=u'GET',
-        method_id=u'ml.projects.operations.list',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[u'filter', u'pageSize', u'pageToken'],
-        relative_path=u'v1/{+name}/operations',
+        flat_path='v1/projects/{projectsId}/operations',
+        http_method='GET',
+        method_id='ml.projects.operations.list',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['filter', 'pageSize', 'pageToken'],
+        relative_path='v1/{+name}/operations',
         request_field='',
-        request_type_name=u'MlProjectsOperationsListRequest',
-        response_type_name=u'GoogleLongrunningListOperationsResponse',
+        request_type_name='MlProjectsOperationsListRequest',
+        response_type_name='GoogleLongrunningListOperationsResponse',
         supports_download=False,
     )
 
   class ProjectsService(base_api.BaseApiService):
     """Service class for the projects resource."""
 
-    _NAME = u'projects'
+    _NAME = 'projects'
 
     def __init__(self, client):
       super(MlV1.ProjectsService, self).__init__(client)
@@ -1407,16 +1407,16 @@ is the parent resource, without the operations collection id.
           config, request, global_params=global_params)
 
     Explain.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}:explain',
-        http_method=u'POST',
-        method_id=u'ml.projects.explain',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1/projects/{projectsId}:explain',
+        http_method='POST',
+        method_id='ml.projects.explain',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1/{+name}:explain',
-        request_field=u'googleCloudMlV1ExplainRequest',
-        request_type_name=u'MlProjectsExplainRequest',
-        response_type_name=u'GoogleApiHttpBody',
+        relative_path='v1/{+name}:explain',
+        request_field='googleCloudMlV1ExplainRequest',
+        request_type_name='MlProjectsExplainRequest',
+        response_type_name='GoogleApiHttpBody',
         supports_download=False,
     )
 
@@ -1437,16 +1437,16 @@ for training the model with Google Cloud Machine Learning.
           config, request, global_params=global_params)
 
     GetConfig.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}:getConfig',
-        http_method=u'GET',
-        method_id=u'ml.projects.getConfig',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1/projects/{projectsId}:getConfig',
+        http_method='GET',
+        method_id='ml.projects.getConfig',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1/{+name}:getConfig',
+        relative_path='v1/{+name}:getConfig',
         request_field='',
-        request_type_name=u'MlProjectsGetConfigRequest',
-        response_type_name=u'GoogleCloudMlV1GetConfigResponse',
+        request_type_name='MlProjectsGetConfigRequest',
+        response_type_name='GoogleCloudMlV1GetConfigResponse',
         supports_download=False,
     )
 
@@ -1466,15 +1466,15 @@ for training the model with Google Cloud Machine Learning.
           config, request, global_params=global_params)
 
     Predict.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}:predict',
-        http_method=u'POST',
-        method_id=u'ml.projects.predict',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1/projects/{projectsId}:predict',
+        http_method='POST',
+        method_id='ml.projects.predict',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1/{+name}:predict',
-        request_field=u'googleCloudMlV1PredictRequest',
-        request_type_name=u'MlProjectsPredictRequest',
-        response_type_name=u'GoogleApiHttpBody',
+        relative_path='v1/{+name}:predict',
+        request_field='googleCloudMlV1PredictRequest',
+        request_type_name='MlProjectsPredictRequest',
+        response_type_name='GoogleApiHttpBody',
         supports_download=False,
     )

@@ -28,7 +28,7 @@ class Collections(enum.Enum):
       'projects',
       'projects/{projectsId}',
       {},
-      [u'projectsId'],
+      ['projectsId'],
       True
   )
   PROJECTS_ATTESTORS = (
@@ -38,14 +38,14 @@ class Collections(enum.Enum):
           '':
               'projects/{projectsId}/attestors/{attestorsId}',
       },
-      [u'name'],
+      ['name'],
       True
   )
   PROJECTS_POLICY = (
       'projects.policy',
       'projects/{projectsId}/policy',
       {},
-      [u'projectsId'],
+      ['projectsId'],
       True
   )
 

@@ -113,6 +113,12 @@ class Backup(_messages.Message):
     StateValueValuesEnum: Output only. The current state of the backup.
 
   Fields:
+    encryptionInfo: Output only. The encryption information for the backup. If
+      encryption_type is CUSTOMER_MANAGED_ENCRYPTION, kms_key_version will be
+      filled in with status UNKNOWN. If encryption_type is
+      GOOGLE_DEFAULT_ENCRYPTION, all other fields will have default value.
+      This feature might be changed in backward-incompatible ways and is not
+      currently subject to any SLA or deprecation policy.
     endTime: Output only. `end_time` is the time that the backup was finished.
       The row data in the backup will be no newer than this timestamp.
     expireTime: Required. The expiration time of the backup, with microseconds
@@ -122,10 +128,10 @@ class Backup(_messages.Message):
       backup.
     name: A globally unique identifier for the backup which cannot be changed.
       Values are of the form
-      `projects/{project}/instances/{instance}/clusters/{cluster}/    backups
-      /_a-zA-Z0-9*` The final segment of the name must be between 1 and 50
-      characters in length.  The backup is stored in the cluster identified by
-      the prefix of the backup name of the form
+      `projects/{project}/instances/{instance}/clusters/{cluster}/
+      backups/_a-zA-Z0-9*` The final segment of the name must be between 1 and
+      50 characters in length.  The backup is stored in the cluster identified
+      by the prefix of the backup name of the form
       `projects/{project}/instances/{instance}/clusters/{cluster}`.
     sizeBytes: Output only. Size of the backup in bytes.
     sourceTable: Required. Immutable. Name of the table from which this backup
@@ -152,13 +158,14 @@ class Backup(_messages.Message):
     CREATING = 1
     READY = 2
 
-  endTime = _messages.StringField(1)
-  expireTime = _messages.StringField(2)
-  name = _messages.StringField(3)
-  sizeBytes = _messages.IntegerField(4)
-  sourceTable = _messages.StringField(5)
-  startTime = _messages.StringField(6)
-  state = _messages.EnumField('StateValueValuesEnum', 7)
+  encryptionInfo = _messages.MessageField('EncryptionInfo', 1)
+  endTime = _messages.StringField(2)
+  expireTime = _messages.StringField(3)
+  name = _messages.StringField(4)
+  sizeBytes = _messages.IntegerField(5)
+  sourceTable = _messages.StringField(6)
+  startTime = _messages.StringField(7)
+  state = _messages.EnumField('StateValueValuesEnum', 8)
 
 
 class BackupInfo(_messages.Message):
@@ -440,10 +447,10 @@ class BigtableadminProjectsInstancesClustersBackupsPatchRequest(_messages.Messag
     backup: A Backup resource to be passed as the request body.
     name: A globally unique identifier for the backup which cannot be changed.
       Values are of the form
-      `projects/{project}/instances/{instance}/clusters/{cluster}/    backups
-      /_a-zA-Z0-9*` The final segment of the name must be between 1 and 50
-      characters in length.  The backup is stored in the cluster identified by
-      the prefix of the backup name of the form
+      `projects/{project}/instances/{instance}/clusters/{cluster}/
+      backups/_a-zA-Z0-9*` The final segment of the name must be between 1 and
+      50 characters in length.  The backup is stored in the cluster identified
+      by the prefix of the backup name of the form
       `projects/{project}/instances/{instance}/clusters/{cluster}`.
     updateMask: Required. A mask specifying which fields (e.g. `expire_time`)
       in the Backup resource should be updated. This mask is relative to the
@@ -736,13 +743,15 @@ class BigtableadminProjectsInstancesTablesGetRequest(_messages.Message):
       NAME_ONLY: <no description>
       SCHEMA_VIEW: <no description>
       REPLICATION_VIEW: <no description>
+      ENCRYPTION_VIEW: <no description>
       FULL: <no description>
     """
     VIEW_UNSPECIFIED = 0
     NAME_ONLY = 1
     SCHEMA_VIEW = 2
     REPLICATION_VIEW = 3
-    FULL = 4
+    ENCRYPTION_VIEW = 4
+    FULL = 5
 
   name = _messages.StringField(1, required=True)
   view = _messages.EnumField('ViewValueValuesEnum', 2)
@@ -781,13 +790,15 @@ class BigtableadminProjectsInstancesTablesListRequest(_messages.Message):
       NAME_ONLY: <no description>
       SCHEMA_VIEW: <no description>
       REPLICATION_VIEW: <no description>
+      ENCRYPTION_VIEW: <no description>
       FULL: <no description>
     """
     VIEW_UNSPECIFIED = 0
     NAME_ONLY = 1
     SCHEMA_VIEW = 2
     REPLICATION_VIEW = 3
-    FULL = 4
+    ENCRYPTION_VIEW = 4
+    FULL = 5
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(2)
@@ -907,8 +918,9 @@ class Binding(_messages.Message):
       not apply to the current request. However, a different role binding
       might grant the same role to one or more of the members in this binding.
       To learn which resources support conditions in their IAM policies, see
-      the [IAM documentation](https://cloud.google.com/iam/help/conditions
-      /resource-policies).
+      the [IAM
+      documentation](https://cloud.google.com/iam/help/conditions/resource-
+      policies).
     members: Specifies the identities requesting access for a Cloud Platform
       resource. `members` can have the following values:  * `allUsers`: A
       special identifier that represents anyone who is    on the internet;
@@ -986,6 +998,9 @@ class Cluster(_messages.Message):
   Fields:
     defaultStorageType: Immutable. The type of storage used by this cluster to
       serve its parent instance's tables, unless explicitly overridden.
+    encryptionConfig: Immutable. KMS setting that is only filled in for CMEK-
+      protected clusters, whether this field is used for configuration on
+      input or presented as output.
     location: Immutable. The location where this cluster's nodes and storage
       reside. For best performance, clients should be located as close as
       possible to this cluster. Currently only zones are supported, so values
@@ -1035,10 +1050,11 @@ class Cluster(_messages.Message):
     DISABLED = 4
 
   defaultStorageType = _messages.EnumField('DefaultStorageTypeValueValuesEnum', 1)
-  location = _messages.StringField(2)
-  name = _messages.StringField(3)
-  serveNodes = _messages.IntegerField(4, variant=_messages.Variant.INT32)
-  state = _messages.EnumField('StateValueValuesEnum', 5)
+  encryptionConfig = _messages.MessageField('EncryptionConfig', 2)
+  location = _messages.StringField(3)
+  name = _messages.StringField(4)
+  serveNodes = _messages.IntegerField(5, variant=_messages.Variant.INT32)
+  state = _messages.EnumField('StateValueValuesEnum', 6)
 
 
 class ClusterState(_messages.Message):
@@ -1049,6 +1065,12 @@ class ClusterState(_messages.Message):
       the table in this cluster.
 
   Fields:
+    encryptionInfo: Output only. The encryption information for the table in
+      this cluster. If the encryption key protecting this resource is customer
+      managed, then its version can be rotated in KMS. Versions and their
+      corresponding status will enter this list when the system picks up a
+      rotation and will exit this list when a deep rotation of the underlying
+      data has completed.
     replicationState: Output only. The state of replication for the table in
       this cluster.
   """
@@ -1081,7 +1103,8 @@ class ClusterState(_messages.Message):
     READY = 4
     READY_OPTIMIZING = 5
 
-  replicationState = _messages.EnumField('ReplicationStateValueValuesEnum', 1)
+  encryptionInfo = _messages.MessageField('EncryptionInfo', 1, repeated=True)
+  replicationState = _messages.EnumField('ReplicationStateValueValuesEnum', 2)
 
 
 class ColumnFamily(_messages.Message):
@@ -1319,6 +1342,69 @@ class Empty(_messages.Message):
   JSON representation for `Empty` is empty JSON object `{}`.
   """
 
+
+
+class EncryptionConfig(_messages.Message):
+  r"""Google Cloud Key Management Service (KMS) settings for a CMEK-protected
+  Bigtable cluster. CMEK is not currently available to end users. This feature
+  might be changed in backward-incompatible ways and is not currently subject
+  to any SLA or deprecation policy.
+
+  Fields:
+    kmsKeyName: Describes the KMS encryption key that will be used to protect
+      the destination Bigtable cluster. The requirements for this key are:  1)
+      The Cloud Bigtable service account associated with the project that
+      contains this cluster will need to be granted an enc/dec role on the
+      encryption key.  2) The regionality of the key must match the location
+      of the cluster.  3) All clusters within an instance must use the same
+      KMS key. The key cannot be changed after cluster creation, but it may be
+      rotated.
+  """
+
+  kmsKeyName = _messages.StringField(1)
+
+
+class EncryptionInfo(_messages.Message):
+  r"""Encryption information for a given resource. If this resource is
+  protected with customer managed encryption, the in-use Google Cloud Key
+  Management Service (KMS) key versions will be specified along with their
+  status. This feature might be changed in backward-incompatible ways and is
+  not currently subject to any SLA or deprecation policy.
+
+  Enums:
+    EncryptionTypeValueValuesEnum: Output only. The type of encryption used to
+      protect this resource.
+
+  Fields:
+    encryptionStatus: Output only. The status of encrypt/decrypt calls on
+      underlying data for this resource. Regardless of status, the existing
+      data is always encrypted at rest.
+    encryptionType: Output only. The type of encryption used to protect this
+      resource.
+    kmsKeyVersion: Output only. The version of the KMS key specified in the
+      parent cluster that is in-use for the data underlying this table.
+  """
+
+  class EncryptionTypeValueValuesEnum(_messages.Enum):
+    r"""Output only. The type of encryption used to protect this resource.
+
+    Values:
+      ENCRYPTION_TYPE_UNSPECIFIED: Encryption type was not specified, though
+        data at rest remains encrypted.
+      GOOGLE_DEFAULT_ENCRYPTION: The data backing this resource is encrypted
+        at rest with a key that is fully managed by Google. No key version or
+        status will be populated. This is the default state.
+      CUSTOMER_MANAGED_ENCRYPTION: The data backing this resource is encrypted
+        at rest with a key that is managed by the customer. The active version
+        of the key and its latest status have been populated.
+    """
+    ENCRYPTION_TYPE_UNSPECIFIED = 0
+    GOOGLE_DEFAULT_ENCRYPTION = 1
+    CUSTOMER_MANAGED_ENCRYPTION = 2
+
+  encryptionStatus = _messages.MessageField('Status', 1)
+  encryptionType = _messages.EnumField('EncryptionTypeValueValuesEnum', 2)
+  kmsKeyVersion = _messages.StringField(3)
 
 
 class Expr(_messages.Message):
@@ -1954,8 +2040,8 @@ class Policy(_messages.Message):
   timestamp('2020-10-01T00:00:00.000Z')",           }         }       ],
   "etag": "BwWWja0YfJA=",       "version": 3     }  **YAML example:**
   bindings:     - members:       - user:mike@example.com       -
-  group:admins@example.com       - domain:google.com       - serviceAccount
-  :my-project-id@appspot.gserviceaccount.com       role:
+  group:admins@example.com       - domain:google.com       -
+  serviceAccount:my-project-id@appspot.gserviceaccount.com       role:
   roles/resourcemanager.organizationAdmin     - members:       -
   user:eve@example.com       role: roles/resourcemanager.organizationViewer
   condition:         title: expirable access         description: Does not
@@ -2181,7 +2267,7 @@ class StandardQueryParameters(_messages.Message):
 
   f__xgafv = _messages.EnumField('FXgafvValueValuesEnum', 1)
   access_token = _messages.StringField(2)
-  alt = _messages.EnumField('AltValueValuesEnum', 3, default=u'json')
+  alt = _messages.EnumField('AltValueValuesEnum', 3, default='json')
   callback = _messages.StringField(4)
   fields = _messages.StringField(5)
   key = _messages.StringField(6)

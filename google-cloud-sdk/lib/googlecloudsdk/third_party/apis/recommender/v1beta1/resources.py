@@ -28,14 +28,14 @@ class Collections(enum.Enum):
       'projects',
       'projects/{projectsId}',
       {},
-      [u'projectsId'],
+      ['projectsId'],
       True
   )
   PROJECTS_LOCATIONS = (
       'projects.locations',
       'projects/{projectsId}/locations/{locationsId}',
       {},
-      [u'projectsId', u'locationsId'],
+      ['projectsId', 'locationsId'],
       True
   )
   PROJECTS_LOCATIONS_INSIGHTTYPES = (
@@ -43,7 +43,7 @@ class Collections(enum.Enum):
       'projects/{projectsId}/locations/{locationsId}/insightTypes/'
       '{insightTypesId}',
       {},
-      [u'projectsId', u'locationsId', u'insightTypesId'],
+      ['projectsId', 'locationsId', 'insightTypesId'],
       True
   )
   PROJECTS_LOCATIONS_INSIGHTTYPES_INSIGHTS = (
@@ -54,7 +54,7 @@ class Collections(enum.Enum):
               'projects/{projectsId}/locations/{locationsId}/insightTypes/'
               '{insightTypesId}/insights/{insightsId}',
       },
-      [u'name'],
+      ['name'],
       True
   )
   PROJECTS_LOCATIONS_RECOMMENDERS = (
@@ -62,7 +62,7 @@ class Collections(enum.Enum):
       'projects/{projectsId}/locations/{locationsId}/recommenders/'
       '{recommendersId}',
       {},
-      [u'projectsId', u'locationsId', u'recommendersId'],
+      ['projectsId', 'locationsId', 'recommendersId'],
       True
   )
   PROJECTS_LOCATIONS_RECOMMENDERS_RECOMMENDATIONS = (
@@ -73,7 +73,7 @@ class Collections(enum.Enum):
               'projects/{projectsId}/locations/{locationsId}/recommenders/'
               '{recommendersId}/recommendations/{recommendationsId}',
       },
-      [u'name'],
+      ['name'],
       True
   )
 

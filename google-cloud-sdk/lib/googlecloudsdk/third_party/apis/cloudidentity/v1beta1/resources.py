@@ -31,7 +31,7 @@ class Collections(enum.Enum):
           '':
               'devices/{devicesId}',
       },
-      [u'name'],
+      ['name'],
       True
   )
   DEVICES_DEVICEUSERS = (
@@ -41,7 +41,7 @@ class Collections(enum.Enum):
           '':
               'devices/{devicesId}/deviceUsers/{deviceUsersId}',
       },
-      [u'name'],
+      ['name'],
       True
   )
   DEVICES_DEVICEUSERS_CLIENTSTATES = (
@@ -52,7 +52,7 @@ class Collections(enum.Enum):
               'devices/{devicesId}/deviceUsers/{deviceUsersId}/clientStates/'
               '{clientStatesId}',
       },
-      [u'name'],
+      ['name'],
       True
   )
   GROUPS = (
@@ -62,7 +62,7 @@ class Collections(enum.Enum):
           '':
               'groups/{groupId}',
       },
-      [u'name'],
+      ['name'],
       True
   )
   GROUPS_MEMBERSHIPS = (
@@ -72,7 +72,7 @@ class Collections(enum.Enum):
           '':
               'groups/{groupId}/memberships/{membershipId}',
       },
-      [u'name'],
+      ['name'],
       True
   )
 

@@ -1573,6 +1573,24 @@
           "type": "string"
         }
       }
+    },
+    "ListClientStatesResponse": {
+      "id": "ListClientStatesResponse",
+      "description": "Response message that is returned in LRO result of ListClientStates\nOperation.",
+      "type": "object",
+      "properties": {
+        "clientStates": {
+          "description": "Client states meeting the list restrictions.",
+          "type": "array",
+          "items": {
+            "$ref": "ClientState"
+          }
+        },
+        "nextPageToken": {
+          "description": "Token to retrieve the next page of results. Empty if there are no more\nresults.",
+          "type": "string"
+        }
+      }
     }
   },
   "resources": {
@@ -3004,12 +3022,6 @@
                       "description": "Optional. Additional restrictions when fetching list of client states.",
                       "location": "query",
                       "type": "string"
-                    },
-                    "pageSize": {
-                      "description": "Optional. The maximum number of ClientStates to return.\nIf unspecified, at most 5 ClientStates will be returned.\nThe maximum value is 20; values above 20 will be coerced to 20.",
-                      "location": "query",
-                      "type": "integer",
-                      "format": "int32"
                     },
                     "pageToken": {
                       "description": "Optional. A page token, received from a previous `ListClientStates` call.\nProvide this to retrieve the subsequent page.\n\nWhen paginating, all other parameters provided to `ListClientStates` must\nmatch the call that provided the page token.",

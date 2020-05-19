@@ -229,6 +229,44 @@ class ResourcesettingsFoldersSettingsSearchRequest(_messages.Message):
   parent = _messages.StringField(3, required=True)
 
 
+class ResourcesettingsFoldersSettingsUpdateValueRequest(_messages.Message):
+  r"""A ResourcesettingsFoldersSettingsUpdateValueRequest object.
+
+  Fields:
+    googleCloudResourcesettingsV1alpha1SettingValue: A
+      GoogleCloudResourcesettingsV1alpha1SettingValue resource to be passed as
+      the request body.
+    name: The resource name of the setting value. Must be in one of the
+      following forms:  *
+      `projects/{project_number}/settings/{setting_name}/value` *
+      `folders/{folder_id}/settings/{setting_name}/value` *
+      `organizations/{organization_id}/settings/{setting_name}/value`  For
+      example, "/projects/123/settings/gcp-enableMyFeature/value"
+  """
+
+  googleCloudResourcesettingsV1alpha1SettingValue = _messages.MessageField('GoogleCloudResourcesettingsV1alpha1SettingValue', 1)
+  name = _messages.StringField(2, required=True)
+
+
+class ResourcesettingsFoldersSettingsValueCreateRequest(_messages.Message):
+  r"""A ResourcesettingsFoldersSettingsValueCreateRequest object.
+
+  Fields:
+    googleCloudResourcesettingsV1alpha1SettingValue: A
+      GoogleCloudResourcesettingsV1alpha1SettingValue resource to be passed as
+      the request body.
+    name: The resource name of the setting value. Must be in one of the
+      following forms:  *
+      `projects/{project_number}/settings/{setting_name}/value` *
+      `folders/{folder_id}/settings/{setting_name}/value` *
+      `organizations/{organization_id}/settings/{setting_name}/value`  For
+      example, "/projects/123/settings/gcp-enableMyFeature/value"
+  """
+
+  googleCloudResourcesettingsV1alpha1SettingValue = _messages.MessageField('GoogleCloudResourcesettingsV1alpha1SettingValue', 1)
+  name = _messages.StringField(2, required=True)
+
+
 class ResourcesettingsOrganizationsSettingsDeleteValueRequest(_messages.Message):
   r"""A ResourcesettingsOrganizationsSettingsDeleteValueRequest object.
 
@@ -300,6 +338,44 @@ class ResourcesettingsOrganizationsSettingsSearchRequest(_messages.Message):
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(2)
   parent = _messages.StringField(3, required=True)
+
+
+class ResourcesettingsOrganizationsSettingsUpdateValueRequest(_messages.Message):
+  r"""A ResourcesettingsOrganizationsSettingsUpdateValueRequest object.
+
+  Fields:
+    googleCloudResourcesettingsV1alpha1SettingValue: A
+      GoogleCloudResourcesettingsV1alpha1SettingValue resource to be passed as
+      the request body.
+    name: The resource name of the setting value. Must be in one of the
+      following forms:  *
+      `projects/{project_number}/settings/{setting_name}/value` *
+      `folders/{folder_id}/settings/{setting_name}/value` *
+      `organizations/{organization_id}/settings/{setting_name}/value`  For
+      example, "/projects/123/settings/gcp-enableMyFeature/value"
+  """
+
+  googleCloudResourcesettingsV1alpha1SettingValue = _messages.MessageField('GoogleCloudResourcesettingsV1alpha1SettingValue', 1)
+  name = _messages.StringField(2, required=True)
+
+
+class ResourcesettingsOrganizationsSettingsValueCreateRequest(_messages.Message):
+  r"""A ResourcesettingsOrganizationsSettingsValueCreateRequest object.
+
+  Fields:
+    googleCloudResourcesettingsV1alpha1SettingValue: A
+      GoogleCloudResourcesettingsV1alpha1SettingValue resource to be passed as
+      the request body.
+    name: The resource name of the setting value. Must be in one of the
+      following forms:  *
+      `projects/{project_number}/settings/{setting_name}/value` *
+      `folders/{folder_id}/settings/{setting_name}/value` *
+      `organizations/{organization_id}/settings/{setting_name}/value`  For
+      example, "/projects/123/settings/gcp-enableMyFeature/value"
+  """
+
+  googleCloudResourcesettingsV1alpha1SettingValue = _messages.MessageField('GoogleCloudResourcesettingsV1alpha1SettingValue', 1)
+  name = _messages.StringField(2, required=True)
 
 
 class ResourcesettingsProjectsSettingsDeleteValueRequest(_messages.Message):
@@ -374,6 +450,44 @@ class ResourcesettingsProjectsSettingsSearchRequest(_messages.Message):
   parent = _messages.StringField(3, required=True)
 
 
+class ResourcesettingsProjectsSettingsUpdateValueRequest(_messages.Message):
+  r"""A ResourcesettingsProjectsSettingsUpdateValueRequest object.
+
+  Fields:
+    googleCloudResourcesettingsV1alpha1SettingValue: A
+      GoogleCloudResourcesettingsV1alpha1SettingValue resource to be passed as
+      the request body.
+    name: The resource name of the setting value. Must be in one of the
+      following forms:  *
+      `projects/{project_number}/settings/{setting_name}/value` *
+      `folders/{folder_id}/settings/{setting_name}/value` *
+      `organizations/{organization_id}/settings/{setting_name}/value`  For
+      example, "/projects/123/settings/gcp-enableMyFeature/value"
+  """
+
+  googleCloudResourcesettingsV1alpha1SettingValue = _messages.MessageField('GoogleCloudResourcesettingsV1alpha1SettingValue', 1)
+  name = _messages.StringField(2, required=True)
+
+
+class ResourcesettingsProjectsSettingsValueCreateRequest(_messages.Message):
+  r"""A ResourcesettingsProjectsSettingsValueCreateRequest object.
+
+  Fields:
+    googleCloudResourcesettingsV1alpha1SettingValue: A
+      GoogleCloudResourcesettingsV1alpha1SettingValue resource to be passed as
+      the request body.
+    name: The resource name of the setting value. Must be in one of the
+      following forms:  *
+      `projects/{project_number}/settings/{setting_name}/value` *
+      `folders/{folder_id}/settings/{setting_name}/value` *
+      `organizations/{organization_id}/settings/{setting_name}/value`  For
+      example, "/projects/123/settings/gcp-enableMyFeature/value"
+  """
+
+  googleCloudResourcesettingsV1alpha1SettingValue = _messages.MessageField('GoogleCloudResourcesettingsV1alpha1SettingValue', 1)
+  name = _messages.StringField(2, required=True)
+
+
 class StandardQueryParameters(_messages.Message):
   r"""Query parameters accepted by all methods.
 
@@ -425,7 +539,7 @@ class StandardQueryParameters(_messages.Message):
 
   f__xgafv = _messages.EnumField('FXgafvValueValuesEnum', 1)
   access_token = _messages.StringField(2)
-  alt = _messages.EnumField('AltValueValuesEnum', 3, default=u'json')
+  alt = _messages.EnumField('AltValueValuesEnum', 3, default='json')
   callback = _messages.StringField(4)
   fields = _messages.StringField(5)
   key = _messages.StringField(6)

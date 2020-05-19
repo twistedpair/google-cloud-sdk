@@ -28,7 +28,7 @@ class Collections(enum.Enum):
       'projects',
       'projects/{projectsId}',
       {},
-      [u'projectsId'],
+      ['projectsId'],
       True
   )
   PROJECTS_ALERTPOLICIES = (
@@ -38,7 +38,7 @@ class Collections(enum.Enum):
           '':
               'projects/{projectsId}/alertPolicies/{alertPoliciesId}',
       },
-      [u'name'],
+      ['name'],
       True
   )
   PROJECTS_ALERTPOLICIES_CONDITIONS = (
@@ -46,7 +46,7 @@ class Collections(enum.Enum):
       'projects/{projectsId}/alertPolicies/{alertPoliciesId}/conditions/'
       '{conditionsId}',
       {},
-      [u'projectsId', u'alertPoliciesId', u'conditionsId'],
+      ['projectsId', 'alertPoliciesId', 'conditionsId'],
       True
   )
   PROJECTS_GROUPS = (
@@ -56,7 +56,7 @@ class Collections(enum.Enum):
           '':
               'projects/{projectsId}/groups/{groupsId}',
       },
-      [u'name'],
+      ['name'],
       True
   )
   PROJECTS_METRICDESCRIPTORS = (
@@ -66,7 +66,7 @@ class Collections(enum.Enum):
           '':
               'projects/{projectsId}/metricDescriptors/{metricDescriptorsId}',
       },
-      [u'name'],
+      ['name'],
       True
   )
   PROJECTS_MONITOREDRESOURCEDESCRIPTORS = (
@@ -77,7 +77,7 @@ class Collections(enum.Enum):
               'projects/{projectsId}/monitoredResourceDescriptors/'
               '{monitoredResourceDescriptorsId}',
       },
-      [u'name'],
+      ['name'],
       True
   )
   PROJECTS_NOTIFICATIONCHANNELDESCRIPTORS = (
@@ -88,7 +88,7 @@ class Collections(enum.Enum):
               'projects/{projectsId}/notificationChannelDescriptors/'
               '{notificationChannelDescriptorsId}',
       },
-      [u'name'],
+      ['name'],
       True
   )
   PROJECTS_NOTIFICATIONCHANNELS = (
@@ -99,7 +99,7 @@ class Collections(enum.Enum):
               'projects/{projectsId}/notificationChannels/'
               '{notificationChannelsId}',
       },
-      [u'name'],
+      ['name'],
       True
   )
   PROJECTS_UPTIMECHECKCONFIGS = (
@@ -110,7 +110,7 @@ class Collections(enum.Enum):
               'projects/{projectsId}/uptimeCheckConfigs/'
               '{uptimeCheckConfigsId}',
       },
-      [u'name'],
+      ['name'],
       True
   )
 

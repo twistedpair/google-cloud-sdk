@@ -8,17 +8,17 @@ class NetworkservicesV1alpha1(base_api.BaseApiClient):
   """Generated client library for service networkservices version v1alpha1."""
 
   MESSAGES_MODULE = messages
-  BASE_URL = u'https://networkservices.googleapis.com/'
-  MTLS_BASE_URL = u'https://networkservices.mtls.googleapis.com/'
+  BASE_URL = 'https://networkservices.googleapis.com/'
+  MTLS_BASE_URL = 'https://networkservices.mtls.googleapis.com/'
 
-  _PACKAGE = u'networkservices'
-  _SCOPES = [u'https://www.googleapis.com/auth/cloud-platform']
-  _VERSION = u'v1alpha1'
+  _PACKAGE = 'networkservices'
+  _SCOPES = ['https://www.googleapis.com/auth/cloud-platform']
+  _VERSION = 'v1alpha1'
   _CLIENT_ID = '1042881264118.apps.googleusercontent.com'
   _CLIENT_SECRET = 'x_Tw5K8nnjoRAqULM9PFAC2b'
-  _USER_AGENT = u'google-cloud-sdk'
-  _CLIENT_CLASS_NAME = u'NetworkservicesV1alpha1'
-  _URL_VERSION = u'v1alpha1'
+  _USER_AGENT = 'google-cloud-sdk'
+  _CLIENT_CLASS_NAME = 'NetworkservicesV1alpha1'
+  _URL_VERSION = 'v1alpha1'
   _API_KEY = None
 
   def __init__(self, url='', credentials=None,
@@ -45,7 +45,7 @@ class NetworkservicesV1alpha1(base_api.BaseApiClient):
   class ProjectsLocationsEndpointConfigSelectorsService(base_api.BaseApiService):
     """Service class for the projects_locations_endpointConfigSelectors resource."""
 
-    _NAME = u'projects_locations_endpointConfigSelectors'
+    _NAME = 'projects_locations_endpointConfigSelectors'
 
     def __init__(self, client):
       super(NetworkservicesV1alpha1.ProjectsLocationsEndpointConfigSelectorsService, self).__init__(client)
@@ -66,16 +66,16 @@ class NetworkservicesV1alpha1(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Create.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha1/projects/{projectsId}/locations/{locationsId}/endpointConfigSelectors',
-        http_method=u'POST',
-        method_id=u'networkservices.projects.locations.endpointConfigSelectors.create',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'endpointConfigSelectorId'],
-        relative_path=u'v1alpha1/{+parent}/endpointConfigSelectors',
-        request_field=u'endpointConfigSelector',
-        request_type_name=u'NetworkservicesProjectsLocationsEndpointConfigSelectorsCreateRequest',
-        response_type_name=u'Operation',
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/endpointConfigSelectors',
+        http_method='POST',
+        method_id='networkservices.projects.locations.endpointConfigSelectors.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['endpointConfigSelectorId'],
+        relative_path='v1alpha1/{+parent}/endpointConfigSelectors',
+        request_field='endpointConfigSelector',
+        request_type_name='NetworkservicesProjectsLocationsEndpointConfigSelectorsCreateRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -93,16 +93,16 @@ class NetworkservicesV1alpha1(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Delete.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha1/projects/{projectsId}/locations/{locationsId}/endpointConfigSelectors/{endpointConfigSelectorsId}',
-        http_method=u'DELETE',
-        method_id=u'networkservices.projects.locations.endpointConfigSelectors.delete',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/endpointConfigSelectors/{endpointConfigSelectorsId}',
+        http_method='DELETE',
+        method_id='networkservices.projects.locations.endpointConfigSelectors.delete',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1alpha1/{+name}',
+        relative_path='v1alpha1/{+name}',
         request_field='',
-        request_type_name=u'NetworkservicesProjectsLocationsEndpointConfigSelectorsDeleteRequest',
-        response_type_name=u'Operation',
+        request_type_name='NetworkservicesProjectsLocationsEndpointConfigSelectorsDeleteRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -120,16 +120,16 @@ class NetworkservicesV1alpha1(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha1/projects/{projectsId}/locations/{locationsId}/endpointConfigSelectors/{endpointConfigSelectorsId}',
-        http_method=u'GET',
-        method_id=u'networkservices.projects.locations.endpointConfigSelectors.get',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/endpointConfigSelectors/{endpointConfigSelectorsId}',
+        http_method='GET',
+        method_id='networkservices.projects.locations.endpointConfigSelectors.get',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1alpha1/{+name}',
+        relative_path='v1alpha1/{+name}',
         request_field='',
-        request_type_name=u'NetworkservicesProjectsLocationsEndpointConfigSelectorsGetRequest',
-        response_type_name=u'EndpointConfigSelector',
+        request_type_name='NetworkservicesProjectsLocationsEndpointConfigSelectorsGetRequest',
+        response_type_name='EndpointConfigSelector',
         supports_download=False,
     )
 
@@ -149,16 +149,16 @@ set.
           config, request, global_params=global_params)
 
     GetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha1/projects/{projectsId}/locations/{locationsId}/endpointConfigSelectors/{endpointConfigSelectorsId}:getIamPolicy',
-        http_method=u'GET',
-        method_id=u'networkservices.projects.locations.endpointConfigSelectors.getIamPolicy',
-        ordered_params=[u'resource'],
-        path_params=[u'resource'],
-        query_params=[u'options_requestedPolicyVersion'],
-        relative_path=u'v1alpha1/{+resource}:getIamPolicy',
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/endpointConfigSelectors/{endpointConfigSelectorsId}:getIamPolicy',
+        http_method='GET',
+        method_id='networkservices.projects.locations.endpointConfigSelectors.getIamPolicy',
+        ordered_params=['resource'],
+        path_params=['resource'],
+        query_params=['options_requestedPolicyVersion'],
+        relative_path='v1alpha1/{+resource}:getIamPolicy',
         request_field='',
-        request_type_name=u'NetworkservicesProjectsLocationsEndpointConfigSelectorsGetIamPolicyRequest',
-        response_type_name=u'Policy',
+        request_type_name='NetworkservicesProjectsLocationsEndpointConfigSelectorsGetIamPolicyRequest',
+        response_type_name='Policy',
         supports_download=False,
     )
 
@@ -176,16 +176,16 @@ set.
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha1/projects/{projectsId}/locations/{locationsId}/endpointConfigSelectors',
-        http_method=u'GET',
-        method_id=u'networkservices.projects.locations.endpointConfigSelectors.list',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'pageSize', u'pageToken'],
-        relative_path=u'v1alpha1/{+parent}/endpointConfigSelectors',
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/endpointConfigSelectors',
+        http_method='GET',
+        method_id='networkservices.projects.locations.endpointConfigSelectors.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v1alpha1/{+parent}/endpointConfigSelectors',
         request_field='',
-        request_type_name=u'NetworkservicesProjectsLocationsEndpointConfigSelectorsListRequest',
-        response_type_name=u'ListEndpointConfigSelectorsResponse',
+        request_type_name='NetworkservicesProjectsLocationsEndpointConfigSelectorsListRequest',
+        response_type_name='ListEndpointConfigSelectorsResponse',
         supports_download=False,
     )
 
@@ -203,16 +203,16 @@ set.
           config, request, global_params=global_params)
 
     Patch.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha1/projects/{projectsId}/locations/{locationsId}/endpointConfigSelectors/{endpointConfigSelectorsId}',
-        http_method=u'PATCH',
-        method_id=u'networkservices.projects.locations.endpointConfigSelectors.patch',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[u'updateMask'],
-        relative_path=u'v1alpha1/{+name}',
-        request_field=u'endpointConfigSelector',
-        request_type_name=u'NetworkservicesProjectsLocationsEndpointConfigSelectorsPatchRequest',
-        response_type_name=u'Operation',
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/endpointConfigSelectors/{endpointConfigSelectorsId}',
+        http_method='PATCH',
+        method_id='networkservices.projects.locations.endpointConfigSelectors.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v1alpha1/{+name}',
+        request_field='endpointConfigSelector',
+        request_type_name='NetworkservicesProjectsLocationsEndpointConfigSelectorsPatchRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -233,16 +233,16 @@ Can return `NOT_FOUND`, `INVALID_ARGUMENT`, and `PERMISSION_DENIED` errors.
           config, request, global_params=global_params)
 
     SetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha1/projects/{projectsId}/locations/{locationsId}/endpointConfigSelectors/{endpointConfigSelectorsId}:setIamPolicy',
-        http_method=u'POST',
-        method_id=u'networkservices.projects.locations.endpointConfigSelectors.setIamPolicy',
-        ordered_params=[u'resource'],
-        path_params=[u'resource'],
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/endpointConfigSelectors/{endpointConfigSelectorsId}:setIamPolicy',
+        http_method='POST',
+        method_id='networkservices.projects.locations.endpointConfigSelectors.setIamPolicy',
+        ordered_params=['resource'],
+        path_params=['resource'],
         query_params=[],
-        relative_path=u'v1alpha1/{+resource}:setIamPolicy',
-        request_field=u'setIamPolicyRequest',
-        request_type_name=u'NetworkservicesProjectsLocationsEndpointConfigSelectorsSetIamPolicyRequest',
-        response_type_name=u'Policy',
+        relative_path='v1alpha1/{+resource}:setIamPolicy',
+        request_field='setIamPolicyRequest',
+        request_type_name='NetworkservicesProjectsLocationsEndpointConfigSelectorsSetIamPolicyRequest',
+        response_type_name='Policy',
         supports_download=False,
     )
 
@@ -266,23 +266,23 @@ may "fail open" without warning.
           config, request, global_params=global_params)
 
     TestIamPermissions.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha1/projects/{projectsId}/locations/{locationsId}/endpointConfigSelectors/{endpointConfigSelectorsId}:testIamPermissions',
-        http_method=u'POST',
-        method_id=u'networkservices.projects.locations.endpointConfigSelectors.testIamPermissions',
-        ordered_params=[u'resource'],
-        path_params=[u'resource'],
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/endpointConfigSelectors/{endpointConfigSelectorsId}:testIamPermissions',
+        http_method='POST',
+        method_id='networkservices.projects.locations.endpointConfigSelectors.testIamPermissions',
+        ordered_params=['resource'],
+        path_params=['resource'],
         query_params=[],
-        relative_path=u'v1alpha1/{+resource}:testIamPermissions',
-        request_field=u'testIamPermissionsRequest',
-        request_type_name=u'NetworkservicesProjectsLocationsEndpointConfigSelectorsTestIamPermissionsRequest',
-        response_type_name=u'TestIamPermissionsResponse',
+        relative_path='v1alpha1/{+resource}:testIamPermissions',
+        request_field='testIamPermissionsRequest',
+        request_type_name='NetworkservicesProjectsLocationsEndpointConfigSelectorsTestIamPermissionsRequest',
+        response_type_name='TestIamPermissionsResponse',
         supports_download=False,
     )
 
   class ProjectsLocationsHttpFiltersService(base_api.BaseApiService):
     """Service class for the projects_locations_httpFilters resource."""
 
-    _NAME = u'projects_locations_httpFilters'
+    _NAME = 'projects_locations_httpFilters'
 
     def __init__(self, client):
       super(NetworkservicesV1alpha1.ProjectsLocationsHttpFiltersService, self).__init__(client)
@@ -303,16 +303,16 @@ may "fail open" without warning.
           config, request, global_params=global_params)
 
     Create.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha1/projects/{projectsId}/locations/{locationsId}/httpFilters',
-        http_method=u'POST',
-        method_id=u'networkservices.projects.locations.httpFilters.create',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'httpFilterId'],
-        relative_path=u'v1alpha1/{+parent}/httpFilters',
-        request_field=u'httpFilter',
-        request_type_name=u'NetworkservicesProjectsLocationsHttpFiltersCreateRequest',
-        response_type_name=u'Operation',
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/httpFilters',
+        http_method='POST',
+        method_id='networkservices.projects.locations.httpFilters.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['httpFilterId'],
+        relative_path='v1alpha1/{+parent}/httpFilters',
+        request_field='httpFilter',
+        request_type_name='NetworkservicesProjectsLocationsHttpFiltersCreateRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -330,16 +330,16 @@ may "fail open" without warning.
           config, request, global_params=global_params)
 
     Delete.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha1/projects/{projectsId}/locations/{locationsId}/httpFilters/{httpFiltersId}',
-        http_method=u'DELETE',
-        method_id=u'networkservices.projects.locations.httpFilters.delete',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/httpFilters/{httpFiltersId}',
+        http_method='DELETE',
+        method_id='networkservices.projects.locations.httpFilters.delete',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1alpha1/{+name}',
+        relative_path='v1alpha1/{+name}',
         request_field='',
-        request_type_name=u'NetworkservicesProjectsLocationsHttpFiltersDeleteRequest',
-        response_type_name=u'Operation',
+        request_type_name='NetworkservicesProjectsLocationsHttpFiltersDeleteRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -357,16 +357,16 @@ may "fail open" without warning.
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha1/projects/{projectsId}/locations/{locationsId}/httpFilters/{httpFiltersId}',
-        http_method=u'GET',
-        method_id=u'networkservices.projects.locations.httpFilters.get',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/httpFilters/{httpFiltersId}',
+        http_method='GET',
+        method_id='networkservices.projects.locations.httpFilters.get',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1alpha1/{+name}',
+        relative_path='v1alpha1/{+name}',
         request_field='',
-        request_type_name=u'NetworkservicesProjectsLocationsHttpFiltersGetRequest',
-        response_type_name=u'HttpFilter',
+        request_type_name='NetworkservicesProjectsLocationsHttpFiltersGetRequest',
+        response_type_name='HttpFilter',
         supports_download=False,
     )
 
@@ -386,16 +386,16 @@ set.
           config, request, global_params=global_params)
 
     GetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha1/projects/{projectsId}/locations/{locationsId}/httpFilters/{httpFiltersId}:getIamPolicy',
-        http_method=u'GET',
-        method_id=u'networkservices.projects.locations.httpFilters.getIamPolicy',
-        ordered_params=[u'resource'],
-        path_params=[u'resource'],
-        query_params=[u'options_requestedPolicyVersion'],
-        relative_path=u'v1alpha1/{+resource}:getIamPolicy',
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/httpFilters/{httpFiltersId}:getIamPolicy',
+        http_method='GET',
+        method_id='networkservices.projects.locations.httpFilters.getIamPolicy',
+        ordered_params=['resource'],
+        path_params=['resource'],
+        query_params=['options_requestedPolicyVersion'],
+        relative_path='v1alpha1/{+resource}:getIamPolicy',
         request_field='',
-        request_type_name=u'NetworkservicesProjectsLocationsHttpFiltersGetIamPolicyRequest',
-        response_type_name=u'Policy',
+        request_type_name='NetworkservicesProjectsLocationsHttpFiltersGetIamPolicyRequest',
+        response_type_name='Policy',
         supports_download=False,
     )
 
@@ -413,16 +413,16 @@ set.
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha1/projects/{projectsId}/locations/{locationsId}/httpFilters',
-        http_method=u'GET',
-        method_id=u'networkservices.projects.locations.httpFilters.list',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'pageSize', u'pageToken'],
-        relative_path=u'v1alpha1/{+parent}/httpFilters',
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/httpFilters',
+        http_method='GET',
+        method_id='networkservices.projects.locations.httpFilters.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v1alpha1/{+parent}/httpFilters',
         request_field='',
-        request_type_name=u'NetworkservicesProjectsLocationsHttpFiltersListRequest',
-        response_type_name=u'ListHttpFiltersResponse',
+        request_type_name='NetworkservicesProjectsLocationsHttpFiltersListRequest',
+        response_type_name='ListHttpFiltersResponse',
         supports_download=False,
     )
 
@@ -440,16 +440,16 @@ set.
           config, request, global_params=global_params)
 
     Patch.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha1/projects/{projectsId}/locations/{locationsId}/httpFilters/{httpFiltersId}',
-        http_method=u'PATCH',
-        method_id=u'networkservices.projects.locations.httpFilters.patch',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[u'updateMask'],
-        relative_path=u'v1alpha1/{+name}',
-        request_field=u'httpFilter',
-        request_type_name=u'NetworkservicesProjectsLocationsHttpFiltersPatchRequest',
-        response_type_name=u'Operation',
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/httpFilters/{httpFiltersId}',
+        http_method='PATCH',
+        method_id='networkservices.projects.locations.httpFilters.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v1alpha1/{+name}',
+        request_field='httpFilter',
+        request_type_name='NetworkservicesProjectsLocationsHttpFiltersPatchRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -470,16 +470,16 @@ Can return `NOT_FOUND`, `INVALID_ARGUMENT`, and `PERMISSION_DENIED` errors.
           config, request, global_params=global_params)
 
     SetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha1/projects/{projectsId}/locations/{locationsId}/httpFilters/{httpFiltersId}:setIamPolicy',
-        http_method=u'POST',
-        method_id=u'networkservices.projects.locations.httpFilters.setIamPolicy',
-        ordered_params=[u'resource'],
-        path_params=[u'resource'],
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/httpFilters/{httpFiltersId}:setIamPolicy',
+        http_method='POST',
+        method_id='networkservices.projects.locations.httpFilters.setIamPolicy',
+        ordered_params=['resource'],
+        path_params=['resource'],
         query_params=[],
-        relative_path=u'v1alpha1/{+resource}:setIamPolicy',
-        request_field=u'setIamPolicyRequest',
-        request_type_name=u'NetworkservicesProjectsLocationsHttpFiltersSetIamPolicyRequest',
-        response_type_name=u'Policy',
+        relative_path='v1alpha1/{+resource}:setIamPolicy',
+        request_field='setIamPolicyRequest',
+        request_type_name='NetworkservicesProjectsLocationsHttpFiltersSetIamPolicyRequest',
+        response_type_name='Policy',
         supports_download=False,
     )
 
@@ -503,23 +503,23 @@ may "fail open" without warning.
           config, request, global_params=global_params)
 
     TestIamPermissions.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha1/projects/{projectsId}/locations/{locationsId}/httpFilters/{httpFiltersId}:testIamPermissions',
-        http_method=u'POST',
-        method_id=u'networkservices.projects.locations.httpFilters.testIamPermissions',
-        ordered_params=[u'resource'],
-        path_params=[u'resource'],
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/httpFilters/{httpFiltersId}:testIamPermissions',
+        http_method='POST',
+        method_id='networkservices.projects.locations.httpFilters.testIamPermissions',
+        ordered_params=['resource'],
+        path_params=['resource'],
         query_params=[],
-        relative_path=u'v1alpha1/{+resource}:testIamPermissions',
-        request_field=u'testIamPermissionsRequest',
-        request_type_name=u'NetworkservicesProjectsLocationsHttpFiltersTestIamPermissionsRequest',
-        response_type_name=u'TestIamPermissionsResponse',
+        relative_path='v1alpha1/{+resource}:testIamPermissions',
+        request_field='testIamPermissionsRequest',
+        request_type_name='NetworkservicesProjectsLocationsHttpFiltersTestIamPermissionsRequest',
+        response_type_name='TestIamPermissionsResponse',
         supports_download=False,
     )
 
   class ProjectsLocationsOperationsService(base_api.BaseApiService):
     """Service class for the projects_locations_operations resource."""
 
-    _NAME = u'projects_locations_operations'
+    _NAME = 'projects_locations_operations'
 
     def __init__(self, client):
       super(NetworkservicesV1alpha1.ProjectsLocationsOperationsService, self).__init__(client)
@@ -549,16 +549,16 @@ corresponding to `Code.CANCELLED`.
           config, request, global_params=global_params)
 
     Cancel.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha1/projects/{projectsId}/locations/{locationsId}/operations/{operationsId}:cancel',
-        http_method=u'POST',
-        method_id=u'networkservices.projects.locations.operations.cancel',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/operations/{operationsId}:cancel',
+        http_method='POST',
+        method_id='networkservices.projects.locations.operations.cancel',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1alpha1/{+name}:cancel',
-        request_field=u'cancelOperationRequest',
-        request_type_name=u'NetworkservicesProjectsLocationsOperationsCancelRequest',
-        response_type_name=u'Empty',
+        relative_path='v1alpha1/{+name}:cancel',
+        request_field='cancelOperationRequest',
+        request_type_name='NetworkservicesProjectsLocationsOperationsCancelRequest',
+        response_type_name='Empty',
         supports_download=False,
     )
 
@@ -579,16 +579,16 @@ operation. If the server doesn't support this method, it returns
           config, request, global_params=global_params)
 
     Delete.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha1/projects/{projectsId}/locations/{locationsId}/operations/{operationsId}',
-        http_method=u'DELETE',
-        method_id=u'networkservices.projects.locations.operations.delete',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/operations/{operationsId}',
+        http_method='DELETE',
+        method_id='networkservices.projects.locations.operations.delete',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1alpha1/{+name}',
+        relative_path='v1alpha1/{+name}',
         request_field='',
-        request_type_name=u'NetworkservicesProjectsLocationsOperationsDeleteRequest',
-        response_type_name=u'Empty',
+        request_type_name='NetworkservicesProjectsLocationsOperationsDeleteRequest',
+        response_type_name='Empty',
         supports_download=False,
     )
 
@@ -608,16 +608,16 @@ service.
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha1/projects/{projectsId}/locations/{locationsId}/operations/{operationsId}',
-        http_method=u'GET',
-        method_id=u'networkservices.projects.locations.operations.get',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/operations/{operationsId}',
+        http_method='GET',
+        method_id='networkservices.projects.locations.operations.get',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1alpha1/{+name}',
+        relative_path='v1alpha1/{+name}',
         request_field='',
-        request_type_name=u'NetworkservicesProjectsLocationsOperationsGetRequest',
-        response_type_name=u'Operation',
+        request_type_name='NetworkservicesProjectsLocationsOperationsGetRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -644,23 +644,23 @@ is the parent resource, without the operations collection id.
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha1/projects/{projectsId}/locations/{locationsId}/operations',
-        http_method=u'GET',
-        method_id=u'networkservices.projects.locations.operations.list',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[u'filter', u'pageSize', u'pageToken'],
-        relative_path=u'v1alpha1/{+name}/operations',
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/operations',
+        http_method='GET',
+        method_id='networkservices.projects.locations.operations.list',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['filter', 'pageSize', 'pageToken'],
+        relative_path='v1alpha1/{+name}/operations',
         request_field='',
-        request_type_name=u'NetworkservicesProjectsLocationsOperationsListRequest',
-        response_type_name=u'ListOperationsResponse',
+        request_type_name='NetworkservicesProjectsLocationsOperationsListRequest',
+        response_type_name='ListOperationsResponse',
         supports_download=False,
     )
 
   class ProjectsLocationsService(base_api.BaseApiService):
     """Service class for the projects_locations resource."""
 
-    _NAME = u'projects_locations'
+    _NAME = 'projects_locations'
 
     def __init__(self, client):
       super(NetworkservicesV1alpha1.ProjectsLocationsService, self).__init__(client)
@@ -681,16 +681,16 @@ is the parent resource, without the operations collection id.
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha1/projects/{projectsId}/locations/{locationsId}',
-        http_method=u'GET',
-        method_id=u'networkservices.projects.locations.get',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}',
+        http_method='GET',
+        method_id='networkservices.projects.locations.get',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1alpha1/{+name}',
+        relative_path='v1alpha1/{+name}',
         request_field='',
-        request_type_name=u'NetworkservicesProjectsLocationsGetRequest',
-        response_type_name=u'Location',
+        request_type_name='NetworkservicesProjectsLocationsGetRequest',
+        response_type_name='Location',
         supports_download=False,
     )
 
@@ -708,23 +708,23 @@ is the parent resource, without the operations collection id.
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha1/projects/{projectsId}/locations',
-        http_method=u'GET',
-        method_id=u'networkservices.projects.locations.list',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[u'filter', u'pageSize', u'pageToken'],
-        relative_path=u'v1alpha1/{+name}/locations',
+        flat_path='v1alpha1/projects/{projectsId}/locations',
+        http_method='GET',
+        method_id='networkservices.projects.locations.list',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['filter', 'pageSize', 'pageToken'],
+        relative_path='v1alpha1/{+name}/locations',
         request_field='',
-        request_type_name=u'NetworkservicesProjectsLocationsListRequest',
-        response_type_name=u'ListLocationsResponse',
+        request_type_name='NetworkservicesProjectsLocationsListRequest',
+        response_type_name='ListLocationsResponse',
         supports_download=False,
     )
 
   class ProjectsService(base_api.BaseApiService):
     """Service class for the projects resource."""
 
-    _NAME = u'projects'
+    _NAME = 'projects'
 
     def __init__(self, client):
       super(NetworkservicesV1alpha1.ProjectsService, self).__init__(client)

@@ -8,17 +8,17 @@ class DataflowV1b3(base_api.BaseApiClient):
   """Generated client library for service dataflow version v1b3."""
 
   MESSAGES_MODULE = messages
-  BASE_URL = u'https://dataflow.googleapis.com/'
-  MTLS_BASE_URL = u'https://dataflow.mtls.googleapis.com/'
+  BASE_URL = 'https://dataflow.googleapis.com/'
+  MTLS_BASE_URL = 'https://dataflow.mtls.googleapis.com/'
 
-  _PACKAGE = u'dataflow'
-  _SCOPES = [u'https://www.googleapis.com/auth/cloud-platform', u'https://www.googleapis.com/auth/compute', u'https://www.googleapis.com/auth/compute.readonly', u'https://www.googleapis.com/auth/userinfo.email']
-  _VERSION = u'v1b3'
+  _PACKAGE = 'dataflow'
+  _SCOPES = ['https://www.googleapis.com/auth/cloud-platform', 'https://www.googleapis.com/auth/compute', 'https://www.googleapis.com/auth/compute.readonly', 'https://www.googleapis.com/auth/userinfo.email']
+  _VERSION = 'v1b3'
   _CLIENT_ID = '1042881264118.apps.googleusercontent.com'
   _CLIENT_SECRET = 'x_Tw5K8nnjoRAqULM9PFAC2b'
-  _USER_AGENT = u'google-cloud-sdk'
-  _CLIENT_CLASS_NAME = u'DataflowV1b3'
-  _URL_VERSION = u'v1b3'
+  _USER_AGENT = 'google-cloud-sdk'
+  _CLIENT_CLASS_NAME = 'DataflowV1b3'
+  _URL_VERSION = 'v1b3'
   _API_KEY = None
 
   def __init__(self, url='', credentials=None,
@@ -60,7 +60,7 @@ class DataflowV1b3(base_api.BaseApiClient):
   class ProjectsCatalogTemplatesTemplateVersionsService(base_api.BaseApiService):
     """Service class for the projects_catalogTemplates_templateVersions resource."""
 
-    _NAME = u'projects_catalogTemplates_templateVersions'
+    _NAME = 'projects_catalogTemplates_templateVersions'
 
     def __init__(self, client):
       super(DataflowV1b3.ProjectsCatalogTemplatesTemplateVersionsService, self).__init__(client)
@@ -83,23 +83,23 @@ The template display_name is set by the user.
           config, request, global_params=global_params)
 
     Create.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1b3/projects/{projectsId}/catalogTemplates/{catalogTemplatesId}/templateVersions',
-        http_method=u'POST',
-        method_id=u'dataflow.projects.catalogTemplates.templateVersions.create',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
+        flat_path='v1b3/projects/{projectsId}/catalogTemplates/{catalogTemplatesId}/templateVersions',
+        http_method='POST',
+        method_id='dataflow.projects.catalogTemplates.templateVersions.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
         query_params=[],
-        relative_path=u'v1b3/{+parent}/templateVersions',
-        request_field=u'createTemplateVersionRequest',
-        request_type_name=u'DataflowProjectsCatalogTemplatesTemplateVersionsCreateRequest',
-        response_type_name=u'TemplateVersion',
+        relative_path='v1b3/{+parent}/templateVersions',
+        request_field='createTemplateVersionRequest',
+        request_type_name='DataflowProjectsCatalogTemplatesTemplateVersionsCreateRequest',
+        response_type_name='TemplateVersion',
         supports_download=False,
     )
 
   class ProjectsCatalogTemplatesService(base_api.BaseApiService):
     """Service class for the projects_catalogTemplates resource."""
 
-    _NAME = u'projects_catalogTemplates'
+    _NAME = 'projects_catalogTemplates'
 
     def __init__(self, client):
       super(DataflowV1b3.ProjectsCatalogTemplatesService, self).__init__(client)
@@ -121,16 +121,16 @@ spanner table. Requires project_id and display_name (template).
           config, request, global_params=global_params)
 
     Commit.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1b3/projects/{projectsId}/catalogTemplates/{catalogTemplatesId}:commit',
-        http_method=u'POST',
-        method_id=u'dataflow.projects.catalogTemplates.commit',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1b3/projects/{projectsId}/catalogTemplates/{catalogTemplatesId}:commit',
+        http_method='POST',
+        method_id='dataflow.projects.catalogTemplates.commit',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1b3/{+name}:commit',
-        request_field=u'commitTemplateVersionRequest',
-        request_type_name=u'DataflowProjectsCatalogTemplatesCommitRequest',
-        response_type_name=u'TemplateVersion',
+        relative_path='v1b3/{+name}:commit',
+        request_field='commitTemplateVersionRequest',
+        request_type_name='DataflowProjectsCatalogTemplatesCommitRequest',
+        response_type_name='TemplateVersion',
         supports_download=False,
     )
 
@@ -148,16 +148,16 @@ spanner table. Requires project_id and display_name (template).
           config, request, global_params=global_params)
 
     Delete.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1b3/projects/{projectsId}/catalogTemplates/{catalogTemplatesId}',
-        http_method=u'DELETE',
-        method_id=u'dataflow.projects.catalogTemplates.delete',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1b3/projects/{projectsId}/catalogTemplates/{catalogTemplatesId}',
+        http_method='DELETE',
+        method_id='dataflow.projects.catalogTemplates.delete',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1b3/{+name}',
+        relative_path='v1b3/{+name}',
         request_field='',
-        request_type_name=u'DataflowProjectsCatalogTemplatesDeleteRequest',
-        response_type_name=u'Empty',
+        request_type_name='DataflowProjectsCatalogTemplatesDeleteRequest',
+        response_type_name='Empty',
         supports_download=False,
     )
 
@@ -177,16 +177,16 @@ version_id not set.
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1b3/projects/{projectsId}/catalogTemplates/{catalogTemplatesId}',
-        http_method=u'GET',
-        method_id=u'dataflow.projects.catalogTemplates.get',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1b3/projects/{projectsId}/catalogTemplates/{catalogTemplatesId}',
+        http_method='GET',
+        method_id='dataflow.projects.catalogTemplates.get',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1b3/{+name}',
+        relative_path='v1b3/{+name}',
         request_field='',
-        request_type_name=u'DataflowProjectsCatalogTemplatesGetRequest',
-        response_type_name=u'TemplateVersion',
+        request_type_name='DataflowProjectsCatalogTemplatesGetRequest',
+        response_type_name='TemplateVersion',
         supports_download=False,
     )
 
@@ -205,16 +205,16 @@ Template, so either add or remove the label in the TemplateVersion.
           config, request, global_params=global_params)
 
     Label.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1b3/projects/{projectsId}/catalogTemplates/{catalogTemplatesId}:label',
-        http_method=u'POST',
-        method_id=u'dataflow.projects.catalogTemplates.label',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1b3/projects/{projectsId}/catalogTemplates/{catalogTemplatesId}:label',
+        http_method='POST',
+        method_id='dataflow.projects.catalogTemplates.label',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1b3/{+name}:label',
-        request_field=u'modifyTemplateVersionLabelRequest',
-        request_type_name=u'DataflowProjectsCatalogTemplatesLabelRequest',
-        response_type_name=u'ModifyTemplateVersionLabelResponse',
+        relative_path='v1b3/{+name}:label',
+        request_field='modifyTemplateVersionLabelRequest',
+        request_type_name='DataflowProjectsCatalogTemplatesLabelRequest',
+        response_type_name='ModifyTemplateVersionLabelResponse',
         supports_download=False,
     )
 
@@ -236,23 +236,23 @@ remove the tag from this TemplateVersion.
           config, request, global_params=global_params)
 
     Tag.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1b3/projects/{projectsId}/catalogTemplates/{catalogTemplatesId}:tag',
-        http_method=u'POST',
-        method_id=u'dataflow.projects.catalogTemplates.tag',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1b3/projects/{projectsId}/catalogTemplates/{catalogTemplatesId}:tag',
+        http_method='POST',
+        method_id='dataflow.projects.catalogTemplates.tag',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1b3/{+name}:tag',
-        request_field=u'modifyTemplateVersionTagRequest',
-        request_type_name=u'DataflowProjectsCatalogTemplatesTagRequest',
-        response_type_name=u'ModifyTemplateVersionTagResponse',
+        relative_path='v1b3/{+name}:tag',
+        request_field='modifyTemplateVersionTagRequest',
+        request_type_name='DataflowProjectsCatalogTemplatesTagRequest',
+        response_type_name='ModifyTemplateVersionTagResponse',
         supports_download=False,
     )
 
   class ProjectsJobsDebugService(base_api.BaseApiService):
     """Service class for the projects_jobs_debug resource."""
 
-    _NAME = u'projects_jobs_debug'
+    _NAME = 'projects_jobs_debug'
 
     def __init__(self, client):
       super(DataflowV1b3.ProjectsJobsDebugService, self).__init__(client)
@@ -273,15 +273,15 @@ remove the tag from this TemplateVersion.
           config, request, global_params=global_params)
 
     GetConfig.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'dataflow.projects.jobs.debug.getConfig',
-        ordered_params=[u'projectId', u'jobId'],
-        path_params=[u'jobId', u'projectId'],
+        http_method='POST',
+        method_id='dataflow.projects.jobs.debug.getConfig',
+        ordered_params=['projectId', 'jobId'],
+        path_params=['jobId', 'projectId'],
         query_params=[],
-        relative_path=u'v1b3/projects/{projectId}/jobs/{jobId}/debug/getConfig',
-        request_field=u'getDebugConfigRequest',
-        request_type_name=u'DataflowProjectsJobsDebugGetConfigRequest',
-        response_type_name=u'GetDebugConfigResponse',
+        relative_path='v1b3/projects/{projectId}/jobs/{jobId}/debug/getConfig',
+        request_field='getDebugConfigRequest',
+        request_type_name='DataflowProjectsJobsDebugGetConfigRequest',
+        response_type_name='GetDebugConfigResponse',
         supports_download=False,
     )
 
@@ -299,22 +299,22 @@ remove the tag from this TemplateVersion.
           config, request, global_params=global_params)
 
     SendCapture.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'dataflow.projects.jobs.debug.sendCapture',
-        ordered_params=[u'projectId', u'jobId'],
-        path_params=[u'jobId', u'projectId'],
+        http_method='POST',
+        method_id='dataflow.projects.jobs.debug.sendCapture',
+        ordered_params=['projectId', 'jobId'],
+        path_params=['jobId', 'projectId'],
         query_params=[],
-        relative_path=u'v1b3/projects/{projectId}/jobs/{jobId}/debug/sendCapture',
-        request_field=u'sendDebugCaptureRequest',
-        request_type_name=u'DataflowProjectsJobsDebugSendCaptureRequest',
-        response_type_name=u'SendDebugCaptureResponse',
+        relative_path='v1b3/projects/{projectId}/jobs/{jobId}/debug/sendCapture',
+        request_field='sendDebugCaptureRequest',
+        request_type_name='DataflowProjectsJobsDebugSendCaptureRequest',
+        response_type_name='SendDebugCaptureResponse',
         supports_download=False,
     )
 
   class ProjectsJobsMessagesService(base_api.BaseApiService):
     """Service class for the projects_jobs_messages resource."""
 
-    _NAME = u'projects_jobs_messages'
+    _NAME = 'projects_jobs_messages'
 
     def __init__(self, client):
       super(DataflowV1b3.ProjectsJobsMessagesService, self).__init__(client)
@@ -341,22 +341,22 @@ the status of jobs that are running in `us-central1`.
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'dataflow.projects.jobs.messages.list',
-        ordered_params=[u'projectId', u'jobId'],
-        path_params=[u'jobId', u'projectId'],
-        query_params=[u'endTime', u'location', u'minimumImportance', u'pageSize', u'pageToken', u'startTime'],
-        relative_path=u'v1b3/projects/{projectId}/jobs/{jobId}/messages',
+        http_method='GET',
+        method_id='dataflow.projects.jobs.messages.list',
+        ordered_params=['projectId', 'jobId'],
+        path_params=['jobId', 'projectId'],
+        query_params=['endTime', 'location', 'minimumImportance', 'pageSize', 'pageToken', 'startTime'],
+        relative_path='v1b3/projects/{projectId}/jobs/{jobId}/messages',
         request_field='',
-        request_type_name=u'DataflowProjectsJobsMessagesListRequest',
-        response_type_name=u'ListJobMessagesResponse',
+        request_type_name='DataflowProjectsJobsMessagesListRequest',
+        response_type_name='ListJobMessagesResponse',
         supports_download=False,
     )
 
   class ProjectsJobsWorkItemsService(base_api.BaseApiService):
     """Service class for the projects_jobs_workItems resource."""
 
-    _NAME = u'projects_jobs_workItems'
+    _NAME = 'projects_jobs_workItems'
 
     def __init__(self, client):
       super(DataflowV1b3.ProjectsJobsWorkItemsService, self).__init__(client)
@@ -377,15 +377,15 @@ the status of jobs that are running in `us-central1`.
           config, request, global_params=global_params)
 
     Lease.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'dataflow.projects.jobs.workItems.lease',
-        ordered_params=[u'projectId', u'jobId'],
-        path_params=[u'jobId', u'projectId'],
+        http_method='POST',
+        method_id='dataflow.projects.jobs.workItems.lease',
+        ordered_params=['projectId', 'jobId'],
+        path_params=['jobId', 'projectId'],
         query_params=[],
-        relative_path=u'v1b3/projects/{projectId}/jobs/{jobId}/workItems:lease',
-        request_field=u'leaseWorkItemRequest',
-        request_type_name=u'DataflowProjectsJobsWorkItemsLeaseRequest',
-        response_type_name=u'LeaseWorkItemResponse',
+        relative_path='v1b3/projects/{projectId}/jobs/{jobId}/workItems:lease',
+        request_field='leaseWorkItemRequest',
+        request_type_name='DataflowProjectsJobsWorkItemsLeaseRequest',
+        response_type_name='LeaseWorkItemResponse',
         supports_download=False,
     )
 
@@ -403,22 +403,22 @@ the status of jobs that are running in `us-central1`.
           config, request, global_params=global_params)
 
     ReportStatus.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'dataflow.projects.jobs.workItems.reportStatus',
-        ordered_params=[u'projectId', u'jobId'],
-        path_params=[u'jobId', u'projectId'],
+        http_method='POST',
+        method_id='dataflow.projects.jobs.workItems.reportStatus',
+        ordered_params=['projectId', 'jobId'],
+        path_params=['jobId', 'projectId'],
         query_params=[],
-        relative_path=u'v1b3/projects/{projectId}/jobs/{jobId}/workItems:reportStatus',
-        request_field=u'reportWorkItemStatusRequest',
-        request_type_name=u'DataflowProjectsJobsWorkItemsReportStatusRequest',
-        response_type_name=u'ReportWorkItemStatusResponse',
+        relative_path='v1b3/projects/{projectId}/jobs/{jobId}/workItems:reportStatus',
+        request_field='reportWorkItemStatusRequest',
+        request_type_name='DataflowProjectsJobsWorkItemsReportStatusRequest',
+        response_type_name='ReportWorkItemStatusResponse',
         supports_download=False,
     )
 
   class ProjectsJobsService(base_api.BaseApiService):
     """Service class for the projects_jobs resource."""
 
-    _NAME = u'projects_jobs'
+    _NAME = 'projects_jobs'
 
     def __init__(self, client):
       super(DataflowV1b3.ProjectsJobsService, self).__init__(client)
@@ -439,15 +439,15 @@ the status of jobs that are running in `us-central1`.
           config, request, global_params=global_params)
 
     Aggregated.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'dataflow.projects.jobs.aggregated',
-        ordered_params=[u'projectId'],
-        path_params=[u'projectId'],
-        query_params=[u'filter', u'location', u'pageSize', u'pageToken', u'view'],
-        relative_path=u'v1b3/projects/{projectId}/jobs:aggregated',
+        http_method='GET',
+        method_id='dataflow.projects.jobs.aggregated',
+        ordered_params=['projectId'],
+        path_params=['projectId'],
+        query_params=['filter', 'location', 'pageSize', 'pageToken', 'view'],
+        relative_path='v1b3/projects/{projectId}/jobs:aggregated',
         request_field='',
-        request_type_name=u'DataflowProjectsJobsAggregatedRequest',
-        response_type_name=u'ListJobsResponse',
+        request_type_name='DataflowProjectsJobsAggregatedRequest',
+        response_type_name='ListJobsResponse',
         supports_download=False,
     )
 
@@ -471,15 +471,15 @@ in `us-central1`.
           config, request, global_params=global_params)
 
     Create.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'dataflow.projects.jobs.create',
-        ordered_params=[u'projectId'],
-        path_params=[u'projectId'],
-        query_params=[u'location', u'replaceJobId', u'view'],
-        relative_path=u'v1b3/projects/{projectId}/jobs',
-        request_field=u'job',
-        request_type_name=u'DataflowProjectsJobsCreateRequest',
-        response_type_name=u'Job',
+        http_method='POST',
+        method_id='dataflow.projects.jobs.create',
+        ordered_params=['projectId'],
+        path_params=['projectId'],
+        query_params=['location', 'replaceJobId', 'view'],
+        relative_path='v1b3/projects/{projectId}/jobs',
+        request_field='job',
+        request_type_name='DataflowProjectsJobsCreateRequest',
+        response_type_name='Job',
         supports_download=False,
     )
 
@@ -503,15 +503,15 @@ jobs that are running in `us-central1`.
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'dataflow.projects.jobs.get',
-        ordered_params=[u'projectId', u'jobId'],
-        path_params=[u'jobId', u'projectId'],
-        query_params=[u'location', u'view'],
-        relative_path=u'v1b3/projects/{projectId}/jobs/{jobId}',
+        http_method='GET',
+        method_id='dataflow.projects.jobs.get',
+        ordered_params=['projectId', 'jobId'],
+        path_params=['jobId', 'projectId'],
+        query_params=['location', 'view'],
+        relative_path='v1b3/projects/{projectId}/jobs/{jobId}',
         request_field='',
-        request_type_name=u'DataflowProjectsJobsGetRequest',
-        response_type_name=u'Job',
+        request_type_name='DataflowProjectsJobsGetRequest',
+        response_type_name='Job',
         supports_download=False,
     )
 
@@ -535,15 +535,15 @@ status of jobs that are running in `us-central1`.
           config, request, global_params=global_params)
 
     GetMetrics.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'dataflow.projects.jobs.getMetrics',
-        ordered_params=[u'projectId', u'jobId'],
-        path_params=[u'jobId', u'projectId'],
-        query_params=[u'location', u'startTime'],
-        relative_path=u'v1b3/projects/{projectId}/jobs/{jobId}/metrics',
+        http_method='GET',
+        method_id='dataflow.projects.jobs.getMetrics',
+        ordered_params=['projectId', 'jobId'],
+        path_params=['jobId', 'projectId'],
+        query_params=['location', 'startTime'],
+        relative_path='v1b3/projects/{projectId}/jobs/{jobId}/metrics',
         request_field='',
-        request_type_name=u'DataflowProjectsJobsGetMetricsRequest',
-        response_type_name=u'JobMetrics',
+        request_type_name='DataflowProjectsJobsGetMetricsRequest',
+        response_type_name='JobMetrics',
         supports_download=False,
     )
 
@@ -568,15 +568,15 @@ jobs that are running in `us-central1`.
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'dataflow.projects.jobs.list',
-        ordered_params=[u'projectId'],
-        path_params=[u'projectId'],
-        query_params=[u'filter', u'location', u'pageSize', u'pageToken', u'view'],
-        relative_path=u'v1b3/projects/{projectId}/jobs',
+        http_method='GET',
+        method_id='dataflow.projects.jobs.list',
+        ordered_params=['projectId'],
+        path_params=['projectId'],
+        query_params=['filter', 'location', 'pageSize', 'pageToken', 'view'],
+        relative_path='v1b3/projects/{projectId}/jobs',
         request_field='',
-        request_type_name=u'DataflowProjectsJobsListRequest',
-        response_type_name=u'ListJobsResponse',
+        request_type_name='DataflowProjectsJobsListRequest',
+        response_type_name='ListJobsResponse',
         supports_download=False,
     )
 
@@ -594,15 +594,15 @@ jobs that are running in `us-central1`.
           config, request, global_params=global_params)
 
     Snapshot.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'dataflow.projects.jobs.snapshot',
-        ordered_params=[u'projectId', u'jobId'],
-        path_params=[u'jobId', u'projectId'],
+        http_method='POST',
+        method_id='dataflow.projects.jobs.snapshot',
+        ordered_params=['projectId', 'jobId'],
+        path_params=['jobId', 'projectId'],
         query_params=[],
-        relative_path=u'v1b3/projects/{projectId}/jobs/{jobId}:snapshot',
-        request_field=u'snapshotJobRequest',
-        request_type_name=u'DataflowProjectsJobsSnapshotRequest',
-        response_type_name=u'Snapshot',
+        relative_path='v1b3/projects/{projectId}/jobs/{jobId}:snapshot',
+        request_field='snapshotJobRequest',
+        request_type_name='DataflowProjectsJobsSnapshotRequest',
+        response_type_name='Snapshot',
         supports_download=False,
     )
 
@@ -626,22 +626,22 @@ of jobs that are running in `us-central1`.
           config, request, global_params=global_params)
 
     Update.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'PUT',
-        method_id=u'dataflow.projects.jobs.update',
-        ordered_params=[u'projectId', u'jobId'],
-        path_params=[u'jobId', u'projectId'],
-        query_params=[u'location'],
-        relative_path=u'v1b3/projects/{projectId}/jobs/{jobId}',
-        request_field=u'job',
-        request_type_name=u'DataflowProjectsJobsUpdateRequest',
-        response_type_name=u'Job',
+        http_method='PUT',
+        method_id='dataflow.projects.jobs.update',
+        ordered_params=['projectId', 'jobId'],
+        path_params=['jobId', 'projectId'],
+        query_params=['location'],
+        relative_path='v1b3/projects/{projectId}/jobs/{jobId}',
+        request_field='job',
+        request_type_name='DataflowProjectsJobsUpdateRequest',
+        response_type_name='Job',
         supports_download=False,
     )
 
   class ProjectsLocationsFlexTemplatesService(base_api.BaseApiService):
     """Service class for the projects_locations_flexTemplates resource."""
 
-    _NAME = u'projects_locations_flexTemplates'
+    _NAME = 'projects_locations_flexTemplates'
 
     def __init__(self, client):
       super(DataflowV1b3.ProjectsLocationsFlexTemplatesService, self).__init__(client)
@@ -662,22 +662,22 @@ of jobs that are running in `us-central1`.
           config, request, global_params=global_params)
 
     Launch.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'dataflow.projects.locations.flexTemplates.launch',
-        ordered_params=[u'projectId', u'location'],
-        path_params=[u'location', u'projectId'],
+        http_method='POST',
+        method_id='dataflow.projects.locations.flexTemplates.launch',
+        ordered_params=['projectId', 'location'],
+        path_params=['location', 'projectId'],
         query_params=[],
-        relative_path=u'v1b3/projects/{projectId}/locations/{location}/flexTemplates:launch',
-        request_field=u'launchFlexTemplateRequest',
-        request_type_name=u'DataflowProjectsLocationsFlexTemplatesLaunchRequest',
-        response_type_name=u'LaunchFlexTemplateResponse',
+        relative_path='v1b3/projects/{projectId}/locations/{location}/flexTemplates:launch',
+        request_field='launchFlexTemplateRequest',
+        request_type_name='DataflowProjectsLocationsFlexTemplatesLaunchRequest',
+        response_type_name='LaunchFlexTemplateResponse',
         supports_download=False,
     )
 
   class ProjectsLocationsJobsDebugService(base_api.BaseApiService):
     """Service class for the projects_locations_jobs_debug resource."""
 
-    _NAME = u'projects_locations_jobs_debug'
+    _NAME = 'projects_locations_jobs_debug'
 
     def __init__(self, client):
       super(DataflowV1b3.ProjectsLocationsJobsDebugService, self).__init__(client)
@@ -698,15 +698,15 @@ of jobs that are running in `us-central1`.
           config, request, global_params=global_params)
 
     GetConfig.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'dataflow.projects.locations.jobs.debug.getConfig',
-        ordered_params=[u'projectId', u'location', u'jobId'],
-        path_params=[u'jobId', u'location', u'projectId'],
+        http_method='POST',
+        method_id='dataflow.projects.locations.jobs.debug.getConfig',
+        ordered_params=['projectId', 'location', 'jobId'],
+        path_params=['jobId', 'location', 'projectId'],
         query_params=[],
-        relative_path=u'v1b3/projects/{projectId}/locations/{location}/jobs/{jobId}/debug/getConfig',
-        request_field=u'getDebugConfigRequest',
-        request_type_name=u'DataflowProjectsLocationsJobsDebugGetConfigRequest',
-        response_type_name=u'GetDebugConfigResponse',
+        relative_path='v1b3/projects/{projectId}/locations/{location}/jobs/{jobId}/debug/getConfig',
+        request_field='getDebugConfigRequest',
+        request_type_name='DataflowProjectsLocationsJobsDebugGetConfigRequest',
+        response_type_name='GetDebugConfigResponse',
         supports_download=False,
     )
 
@@ -724,22 +724,22 @@ of jobs that are running in `us-central1`.
           config, request, global_params=global_params)
 
     SendCapture.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'dataflow.projects.locations.jobs.debug.sendCapture',
-        ordered_params=[u'projectId', u'location', u'jobId'],
-        path_params=[u'jobId', u'location', u'projectId'],
+        http_method='POST',
+        method_id='dataflow.projects.locations.jobs.debug.sendCapture',
+        ordered_params=['projectId', 'location', 'jobId'],
+        path_params=['jobId', 'location', 'projectId'],
         query_params=[],
-        relative_path=u'v1b3/projects/{projectId}/locations/{location}/jobs/{jobId}/debug/sendCapture',
-        request_field=u'sendDebugCaptureRequest',
-        request_type_name=u'DataflowProjectsLocationsJobsDebugSendCaptureRequest',
-        response_type_name=u'SendDebugCaptureResponse',
+        relative_path='v1b3/projects/{projectId}/locations/{location}/jobs/{jobId}/debug/sendCapture',
+        request_field='sendDebugCaptureRequest',
+        request_type_name='DataflowProjectsLocationsJobsDebugSendCaptureRequest',
+        response_type_name='SendDebugCaptureResponse',
         supports_download=False,
     )
 
   class ProjectsLocationsJobsMessagesService(base_api.BaseApiService):
     """Service class for the projects_locations_jobs_messages resource."""
 
-    _NAME = u'projects_locations_jobs_messages'
+    _NAME = 'projects_locations_jobs_messages'
 
     def __init__(self, client):
       super(DataflowV1b3.ProjectsLocationsJobsMessagesService, self).__init__(client)
@@ -766,22 +766,22 @@ the status of jobs that are running in `us-central1`.
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'dataflow.projects.locations.jobs.messages.list',
-        ordered_params=[u'projectId', u'location', u'jobId'],
-        path_params=[u'jobId', u'location', u'projectId'],
-        query_params=[u'endTime', u'minimumImportance', u'pageSize', u'pageToken', u'startTime'],
-        relative_path=u'v1b3/projects/{projectId}/locations/{location}/jobs/{jobId}/messages',
+        http_method='GET',
+        method_id='dataflow.projects.locations.jobs.messages.list',
+        ordered_params=['projectId', 'location', 'jobId'],
+        path_params=['jobId', 'location', 'projectId'],
+        query_params=['endTime', 'minimumImportance', 'pageSize', 'pageToken', 'startTime'],
+        relative_path='v1b3/projects/{projectId}/locations/{location}/jobs/{jobId}/messages',
         request_field='',
-        request_type_name=u'DataflowProjectsLocationsJobsMessagesListRequest',
-        response_type_name=u'ListJobMessagesResponse',
+        request_type_name='DataflowProjectsLocationsJobsMessagesListRequest',
+        response_type_name='ListJobMessagesResponse',
         supports_download=False,
     )
 
   class ProjectsLocationsJobsSnapshotsService(base_api.BaseApiService):
     """Service class for the projects_locations_jobs_snapshots resource."""
 
-    _NAME = u'projects_locations_jobs_snapshots'
+    _NAME = 'projects_locations_jobs_snapshots'
 
     def __init__(self, client):
       super(DataflowV1b3.ProjectsLocationsJobsSnapshotsService, self).__init__(client)
@@ -802,22 +802,22 @@ the status of jobs that are running in `us-central1`.
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'dataflow.projects.locations.jobs.snapshots.list',
-        ordered_params=[u'projectId', u'location', u'jobId'],
-        path_params=[u'jobId', u'location', u'projectId'],
+        http_method='GET',
+        method_id='dataflow.projects.locations.jobs.snapshots.list',
+        ordered_params=['projectId', 'location', 'jobId'],
+        path_params=['jobId', 'location', 'projectId'],
         query_params=[],
-        relative_path=u'v1b3/projects/{projectId}/locations/{location}/jobs/{jobId}/snapshots',
+        relative_path='v1b3/projects/{projectId}/locations/{location}/jobs/{jobId}/snapshots',
         request_field='',
-        request_type_name=u'DataflowProjectsLocationsJobsSnapshotsListRequest',
-        response_type_name=u'ListSnapshotsResponse',
+        request_type_name='DataflowProjectsLocationsJobsSnapshotsListRequest',
+        response_type_name='ListSnapshotsResponse',
         supports_download=False,
     )
 
   class ProjectsLocationsJobsWorkItemsService(base_api.BaseApiService):
     """Service class for the projects_locations_jobs_workItems resource."""
 
-    _NAME = u'projects_locations_jobs_workItems'
+    _NAME = 'projects_locations_jobs_workItems'
 
     def __init__(self, client):
       super(DataflowV1b3.ProjectsLocationsJobsWorkItemsService, self).__init__(client)
@@ -838,15 +838,15 @@ the status of jobs that are running in `us-central1`.
           config, request, global_params=global_params)
 
     Lease.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'dataflow.projects.locations.jobs.workItems.lease',
-        ordered_params=[u'projectId', u'location', u'jobId'],
-        path_params=[u'jobId', u'location', u'projectId'],
+        http_method='POST',
+        method_id='dataflow.projects.locations.jobs.workItems.lease',
+        ordered_params=['projectId', 'location', 'jobId'],
+        path_params=['jobId', 'location', 'projectId'],
         query_params=[],
-        relative_path=u'v1b3/projects/{projectId}/locations/{location}/jobs/{jobId}/workItems:lease',
-        request_field=u'leaseWorkItemRequest',
-        request_type_name=u'DataflowProjectsLocationsJobsWorkItemsLeaseRequest',
-        response_type_name=u'LeaseWorkItemResponse',
+        relative_path='v1b3/projects/{projectId}/locations/{location}/jobs/{jobId}/workItems:lease',
+        request_field='leaseWorkItemRequest',
+        request_type_name='DataflowProjectsLocationsJobsWorkItemsLeaseRequest',
+        response_type_name='LeaseWorkItemResponse',
         supports_download=False,
     )
 
@@ -864,22 +864,22 @@ the status of jobs that are running in `us-central1`.
           config, request, global_params=global_params)
 
     ReportStatus.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'dataflow.projects.locations.jobs.workItems.reportStatus',
-        ordered_params=[u'projectId', u'location', u'jobId'],
-        path_params=[u'jobId', u'location', u'projectId'],
+        http_method='POST',
+        method_id='dataflow.projects.locations.jobs.workItems.reportStatus',
+        ordered_params=['projectId', 'location', 'jobId'],
+        path_params=['jobId', 'location', 'projectId'],
         query_params=[],
-        relative_path=u'v1b3/projects/{projectId}/locations/{location}/jobs/{jobId}/workItems:reportStatus',
-        request_field=u'reportWorkItemStatusRequest',
-        request_type_name=u'DataflowProjectsLocationsJobsWorkItemsReportStatusRequest',
-        response_type_name=u'ReportWorkItemStatusResponse',
+        relative_path='v1b3/projects/{projectId}/locations/{location}/jobs/{jobId}/workItems:reportStatus',
+        request_field='reportWorkItemStatusRequest',
+        request_type_name='DataflowProjectsLocationsJobsWorkItemsReportStatusRequest',
+        response_type_name='ReportWorkItemStatusResponse',
         supports_download=False,
     )
 
   class ProjectsLocationsJobsService(base_api.BaseApiService):
     """Service class for the projects_locations_jobs resource."""
 
-    _NAME = u'projects_locations_jobs'
+    _NAME = 'projects_locations_jobs'
 
     def __init__(self, client):
       super(DataflowV1b3.ProjectsLocationsJobsService, self).__init__(client)
@@ -906,15 +906,15 @@ in `us-central1`.
           config, request, global_params=global_params)
 
     Create.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'dataflow.projects.locations.jobs.create',
-        ordered_params=[u'projectId', u'location'],
-        path_params=[u'location', u'projectId'],
-        query_params=[u'replaceJobId', u'view'],
-        relative_path=u'v1b3/projects/{projectId}/locations/{location}/jobs',
-        request_field=u'job',
-        request_type_name=u'DataflowProjectsLocationsJobsCreateRequest',
-        response_type_name=u'Job',
+        http_method='POST',
+        method_id='dataflow.projects.locations.jobs.create',
+        ordered_params=['projectId', 'location'],
+        path_params=['location', 'projectId'],
+        query_params=['replaceJobId', 'view'],
+        relative_path='v1b3/projects/{projectId}/locations/{location}/jobs',
+        request_field='job',
+        request_type_name='DataflowProjectsLocationsJobsCreateRequest',
+        response_type_name='Job',
         supports_download=False,
     )
 
@@ -938,15 +938,15 @@ jobs that are running in `us-central1`.
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'dataflow.projects.locations.jobs.get',
-        ordered_params=[u'projectId', u'location', u'jobId'],
-        path_params=[u'jobId', u'location', u'projectId'],
-        query_params=[u'view'],
-        relative_path=u'v1b3/projects/{projectId}/locations/{location}/jobs/{jobId}',
+        http_method='GET',
+        method_id='dataflow.projects.locations.jobs.get',
+        ordered_params=['projectId', 'location', 'jobId'],
+        path_params=['jobId', 'location', 'projectId'],
+        query_params=['view'],
+        relative_path='v1b3/projects/{projectId}/locations/{location}/jobs/{jobId}',
         request_field='',
-        request_type_name=u'DataflowProjectsLocationsJobsGetRequest',
-        response_type_name=u'Job',
+        request_type_name='DataflowProjectsLocationsJobsGetRequest',
+        response_type_name='Job',
         supports_download=False,
     )
 
@@ -970,15 +970,15 @@ status of jobs that are running in `us-central1`.
           config, request, global_params=global_params)
 
     GetMetrics.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'dataflow.projects.locations.jobs.getMetrics',
-        ordered_params=[u'projectId', u'location', u'jobId'],
-        path_params=[u'jobId', u'location', u'projectId'],
-        query_params=[u'startTime'],
-        relative_path=u'v1b3/projects/{projectId}/locations/{location}/jobs/{jobId}/metrics',
+        http_method='GET',
+        method_id='dataflow.projects.locations.jobs.getMetrics',
+        ordered_params=['projectId', 'location', 'jobId'],
+        path_params=['jobId', 'location', 'projectId'],
+        query_params=['startTime'],
+        relative_path='v1b3/projects/{projectId}/locations/{location}/jobs/{jobId}/metrics',
         request_field='',
-        request_type_name=u'DataflowProjectsLocationsJobsGetMetricsRequest',
-        response_type_name=u'JobMetrics',
+        request_type_name='DataflowProjectsLocationsJobsGetMetricsRequest',
+        response_type_name='JobMetrics',
         supports_download=False,
     )
 
@@ -1003,15 +1003,15 @@ jobs that are running in `us-central1`.
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'dataflow.projects.locations.jobs.list',
-        ordered_params=[u'projectId', u'location'],
-        path_params=[u'location', u'projectId'],
-        query_params=[u'filter', u'pageSize', u'pageToken', u'view'],
-        relative_path=u'v1b3/projects/{projectId}/locations/{location}/jobs',
+        http_method='GET',
+        method_id='dataflow.projects.locations.jobs.list',
+        ordered_params=['projectId', 'location'],
+        path_params=['location', 'projectId'],
+        query_params=['filter', 'pageSize', 'pageToken', 'view'],
+        relative_path='v1b3/projects/{projectId}/locations/{location}/jobs',
         request_field='',
-        request_type_name=u'DataflowProjectsLocationsJobsListRequest',
-        response_type_name=u'ListJobsResponse',
+        request_type_name='DataflowProjectsLocationsJobsListRequest',
+        response_type_name='ListJobsResponse',
         supports_download=False,
     )
 
@@ -1029,15 +1029,15 @@ jobs that are running in `us-central1`.
           config, request, global_params=global_params)
 
     Snapshot.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'dataflow.projects.locations.jobs.snapshot',
-        ordered_params=[u'projectId', u'location', u'jobId'],
-        path_params=[u'jobId', u'location', u'projectId'],
+        http_method='POST',
+        method_id='dataflow.projects.locations.jobs.snapshot',
+        ordered_params=['projectId', 'location', 'jobId'],
+        path_params=['jobId', 'location', 'projectId'],
         query_params=[],
-        relative_path=u'v1b3/projects/{projectId}/locations/{location}/jobs/{jobId}:snapshot',
-        request_field=u'snapshotJobRequest',
-        request_type_name=u'DataflowProjectsLocationsJobsSnapshotRequest',
-        response_type_name=u'Snapshot',
+        relative_path='v1b3/projects/{projectId}/locations/{location}/jobs/{jobId}:snapshot',
+        request_field='snapshotJobRequest',
+        request_type_name='DataflowProjectsLocationsJobsSnapshotRequest',
+        response_type_name='Snapshot',
         supports_download=False,
     )
 
@@ -1061,22 +1061,22 @@ of jobs that are running in `us-central1`.
           config, request, global_params=global_params)
 
     Update.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'PUT',
-        method_id=u'dataflow.projects.locations.jobs.update',
-        ordered_params=[u'projectId', u'location', u'jobId'],
-        path_params=[u'jobId', u'location', u'projectId'],
+        http_method='PUT',
+        method_id='dataflow.projects.locations.jobs.update',
+        ordered_params=['projectId', 'location', 'jobId'],
+        path_params=['jobId', 'location', 'projectId'],
         query_params=[],
-        relative_path=u'v1b3/projects/{projectId}/locations/{location}/jobs/{jobId}',
-        request_field=u'job',
-        request_type_name=u'DataflowProjectsLocationsJobsUpdateRequest',
-        response_type_name=u'Job',
+        relative_path='v1b3/projects/{projectId}/locations/{location}/jobs/{jobId}',
+        request_field='job',
+        request_type_name='DataflowProjectsLocationsJobsUpdateRequest',
+        response_type_name='Job',
         supports_download=False,
     )
 
   class ProjectsLocationsSnapshotsService(base_api.BaseApiService):
     """Service class for the projects_locations_snapshots resource."""
 
-    _NAME = u'projects_locations_snapshots'
+    _NAME = 'projects_locations_snapshots'
 
     def __init__(self, client):
       super(DataflowV1b3.ProjectsLocationsSnapshotsService, self).__init__(client)
@@ -1097,15 +1097,15 @@ of jobs that are running in `us-central1`.
           config, request, global_params=global_params)
 
     Delete.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'DELETE',
-        method_id=u'dataflow.projects.locations.snapshots.delete',
-        ordered_params=[u'projectId', u'location', u'snapshotId'],
-        path_params=[u'location', u'projectId', u'snapshotId'],
+        http_method='DELETE',
+        method_id='dataflow.projects.locations.snapshots.delete',
+        ordered_params=['projectId', 'location', 'snapshotId'],
+        path_params=['location', 'projectId', 'snapshotId'],
         query_params=[],
-        relative_path=u'v1b3/projects/{projectId}/locations/{location}/snapshots/{snapshotId}',
+        relative_path='v1b3/projects/{projectId}/locations/{location}/snapshots/{snapshotId}',
         request_field='',
-        request_type_name=u'DataflowProjectsLocationsSnapshotsDeleteRequest',
-        response_type_name=u'DeleteSnapshotResponse',
+        request_type_name='DataflowProjectsLocationsSnapshotsDeleteRequest',
+        response_type_name='DeleteSnapshotResponse',
         supports_download=False,
     )
 
@@ -1123,15 +1123,15 @@ of jobs that are running in `us-central1`.
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'dataflow.projects.locations.snapshots.get',
-        ordered_params=[u'projectId', u'location', u'snapshotId'],
-        path_params=[u'location', u'projectId', u'snapshotId'],
+        http_method='GET',
+        method_id='dataflow.projects.locations.snapshots.get',
+        ordered_params=['projectId', 'location', 'snapshotId'],
+        path_params=['location', 'projectId', 'snapshotId'],
         query_params=[],
-        relative_path=u'v1b3/projects/{projectId}/locations/{location}/snapshots/{snapshotId}',
+        relative_path='v1b3/projects/{projectId}/locations/{location}/snapshots/{snapshotId}',
         request_field='',
-        request_type_name=u'DataflowProjectsLocationsSnapshotsGetRequest',
-        response_type_name=u'Snapshot',
+        request_type_name='DataflowProjectsLocationsSnapshotsGetRequest',
+        response_type_name='Snapshot',
         supports_download=False,
     )
 
@@ -1149,22 +1149,22 @@ of jobs that are running in `us-central1`.
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'dataflow.projects.locations.snapshots.list',
-        ordered_params=[u'projectId', u'location'],
-        path_params=[u'location', u'projectId'],
-        query_params=[u'jobId'],
-        relative_path=u'v1b3/projects/{projectId}/locations/{location}/snapshots',
+        http_method='GET',
+        method_id='dataflow.projects.locations.snapshots.list',
+        ordered_params=['projectId', 'location'],
+        path_params=['location', 'projectId'],
+        query_params=['jobId'],
+        relative_path='v1b3/projects/{projectId}/locations/{location}/snapshots',
         request_field='',
-        request_type_name=u'DataflowProjectsLocationsSnapshotsListRequest',
-        response_type_name=u'ListSnapshotsResponse',
+        request_type_name='DataflowProjectsLocationsSnapshotsListRequest',
+        response_type_name='ListSnapshotsResponse',
         supports_download=False,
     )
 
   class ProjectsLocationsSqlService(base_api.BaseApiService):
     """Service class for the projects_locations_sql resource."""
 
-    _NAME = u'projects_locations_sql'
+    _NAME = 'projects_locations_sql'
 
     def __init__(self, client):
       super(DataflowV1b3.ProjectsLocationsSqlService, self).__init__(client)
@@ -1188,22 +1188,22 @@ analyzes properly as well.
           config, request, global_params=global_params)
 
     Validate.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'dataflow.projects.locations.sql.validate',
-        ordered_params=[u'projectId', u'location'],
-        path_params=[u'location', u'projectId'],
-        query_params=[u'query'],
-        relative_path=u'v1b3/projects/{projectId}/locations/{location}/sql:validate',
+        http_method='GET',
+        method_id='dataflow.projects.locations.sql.validate',
+        ordered_params=['projectId', 'location'],
+        path_params=['location', 'projectId'],
+        query_params=['query'],
+        relative_path='v1b3/projects/{projectId}/locations/{location}/sql:validate',
         request_field='',
-        request_type_name=u'DataflowProjectsLocationsSqlValidateRequest',
-        response_type_name=u'ValidateResponse',
+        request_type_name='DataflowProjectsLocationsSqlValidateRequest',
+        response_type_name='ValidateResponse',
         supports_download=False,
     )
 
   class ProjectsLocationsTemplatesService(base_api.BaseApiService):
     """Service class for the projects_locations_templates resource."""
 
-    _NAME = u'projects_locations_templates'
+    _NAME = 'projects_locations_templates'
 
     def __init__(self, client):
       super(DataflowV1b3.ProjectsLocationsTemplatesService, self).__init__(client)
@@ -1224,15 +1224,15 @@ analyzes properly as well.
           config, request, global_params=global_params)
 
     Create.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'dataflow.projects.locations.templates.create',
-        ordered_params=[u'projectId', u'location'],
-        path_params=[u'location', u'projectId'],
+        http_method='POST',
+        method_id='dataflow.projects.locations.templates.create',
+        ordered_params=['projectId', 'location'],
+        path_params=['location', 'projectId'],
         query_params=[],
-        relative_path=u'v1b3/projects/{projectId}/locations/{location}/templates',
-        request_field=u'createJobFromTemplateRequest',
-        request_type_name=u'DataflowProjectsLocationsTemplatesCreateRequest',
-        response_type_name=u'Job',
+        relative_path='v1b3/projects/{projectId}/locations/{location}/templates',
+        request_field='createJobFromTemplateRequest',
+        request_type_name='DataflowProjectsLocationsTemplatesCreateRequest',
+        response_type_name='Job',
         supports_download=False,
     )
 
@@ -1250,15 +1250,15 @@ analyzes properly as well.
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'dataflow.projects.locations.templates.get',
-        ordered_params=[u'projectId', u'location'],
-        path_params=[u'location', u'projectId'],
-        query_params=[u'gcsPath', u'view'],
-        relative_path=u'v1b3/projects/{projectId}/locations/{location}/templates:get',
+        http_method='GET',
+        method_id='dataflow.projects.locations.templates.get',
+        ordered_params=['projectId', 'location'],
+        path_params=['location', 'projectId'],
+        query_params=['gcsPath', 'view'],
+        relative_path='v1b3/projects/{projectId}/locations/{location}/templates:get',
         request_field='',
-        request_type_name=u'DataflowProjectsLocationsTemplatesGetRequest',
-        response_type_name=u'GetTemplateResponse',
+        request_type_name='DataflowProjectsLocationsTemplatesGetRequest',
+        response_type_name='GetTemplateResponse',
         supports_download=False,
     )
 
@@ -1276,22 +1276,22 @@ analyzes properly as well.
           config, request, global_params=global_params)
 
     Launch.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'dataflow.projects.locations.templates.launch',
-        ordered_params=[u'projectId', u'location'],
-        path_params=[u'location', u'projectId'],
-        query_params=[u'dynamicTemplate_gcsPath', u'dynamicTemplate_stagingLocation', u'gcsPath', u'validateOnly'],
-        relative_path=u'v1b3/projects/{projectId}/locations/{location}/templates:launch',
-        request_field=u'launchTemplateParameters',
-        request_type_name=u'DataflowProjectsLocationsTemplatesLaunchRequest',
-        response_type_name=u'LaunchTemplateResponse',
+        http_method='POST',
+        method_id='dataflow.projects.locations.templates.launch',
+        ordered_params=['projectId', 'location'],
+        path_params=['location', 'projectId'],
+        query_params=['dynamicTemplate_gcsPath', 'dynamicTemplate_stagingLocation', 'gcsPath', 'validateOnly'],
+        relative_path='v1b3/projects/{projectId}/locations/{location}/templates:launch',
+        request_field='launchTemplateParameters',
+        request_type_name='DataflowProjectsLocationsTemplatesLaunchRequest',
+        response_type_name='LaunchTemplateResponse',
         supports_download=False,
     )
 
   class ProjectsLocationsService(base_api.BaseApiService):
     """Service class for the projects_locations resource."""
 
-    _NAME = u'projects_locations'
+    _NAME = 'projects_locations'
 
     def __init__(self, client):
       super(DataflowV1b3.ProjectsLocationsService, self).__init__(client)
@@ -1312,22 +1312,22 @@ analyzes properly as well.
           config, request, global_params=global_params)
 
     WorkerMessages.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'dataflow.projects.locations.workerMessages',
-        ordered_params=[u'projectId', u'location'],
-        path_params=[u'location', u'projectId'],
+        http_method='POST',
+        method_id='dataflow.projects.locations.workerMessages',
+        ordered_params=['projectId', 'location'],
+        path_params=['location', 'projectId'],
         query_params=[],
-        relative_path=u'v1b3/projects/{projectId}/locations/{location}/WorkerMessages',
-        request_field=u'sendWorkerMessagesRequest',
-        request_type_name=u'DataflowProjectsLocationsWorkerMessagesRequest',
-        response_type_name=u'SendWorkerMessagesResponse',
+        relative_path='v1b3/projects/{projectId}/locations/{location}/WorkerMessages',
+        request_field='sendWorkerMessagesRequest',
+        request_type_name='DataflowProjectsLocationsWorkerMessagesRequest',
+        response_type_name='SendWorkerMessagesResponse',
         supports_download=False,
     )
 
   class ProjectsSnapshotsService(base_api.BaseApiService):
     """Service class for the projects_snapshots resource."""
 
-    _NAME = u'projects_snapshots'
+    _NAME = 'projects_snapshots'
 
     def __init__(self, client):
       super(DataflowV1b3.ProjectsSnapshotsService, self).__init__(client)
@@ -1348,15 +1348,15 @@ analyzes properly as well.
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'dataflow.projects.snapshots.get',
-        ordered_params=[u'projectId', u'snapshotId'],
-        path_params=[u'projectId', u'snapshotId'],
-        query_params=[u'location'],
-        relative_path=u'v1b3/projects/{projectId}/snapshots/{snapshotId}',
+        http_method='GET',
+        method_id='dataflow.projects.snapshots.get',
+        ordered_params=['projectId', 'snapshotId'],
+        path_params=['projectId', 'snapshotId'],
+        query_params=['location'],
+        relative_path='v1b3/projects/{projectId}/snapshots/{snapshotId}',
         request_field='',
-        request_type_name=u'DataflowProjectsSnapshotsGetRequest',
-        response_type_name=u'Snapshot',
+        request_type_name='DataflowProjectsSnapshotsGetRequest',
+        response_type_name='Snapshot',
         supports_download=False,
     )
 
@@ -1374,22 +1374,22 @@ analyzes properly as well.
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'dataflow.projects.snapshots.list',
-        ordered_params=[u'projectId'],
-        path_params=[u'projectId'],
-        query_params=[u'jobId', u'location'],
-        relative_path=u'v1b3/projects/{projectId}/snapshots',
+        http_method='GET',
+        method_id='dataflow.projects.snapshots.list',
+        ordered_params=['projectId'],
+        path_params=['projectId'],
+        query_params=['jobId', 'location'],
+        relative_path='v1b3/projects/{projectId}/snapshots',
         request_field='',
-        request_type_name=u'DataflowProjectsSnapshotsListRequest',
-        response_type_name=u'ListSnapshotsResponse',
+        request_type_name='DataflowProjectsSnapshotsListRequest',
+        response_type_name='ListSnapshotsResponse',
         supports_download=False,
     )
 
   class ProjectsTemplateVersionsService(base_api.BaseApiService):
     """Service class for the projects_templateVersions resource."""
 
-    _NAME = u'projects_templateVersions'
+    _NAME = 'projects_templateVersions'
 
     def __init__(self, client):
       super(DataflowV1b3.ProjectsTemplateVersionsService, self).__init__(client)
@@ -1412,23 +1412,23 @@ List all the TemplateVersions in the Project if display_name not set.
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1b3/projects/{projectsId}/templateVersions',
-        http_method=u'GET',
-        method_id=u'dataflow.projects.templateVersions.list',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'pageSize', u'pageToken'],
-        relative_path=u'v1b3/{+parent}/templateVersions',
+        flat_path='v1b3/projects/{projectsId}/templateVersions',
+        http_method='GET',
+        method_id='dataflow.projects.templateVersions.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v1b3/{+parent}/templateVersions',
         request_field='',
-        request_type_name=u'DataflowProjectsTemplateVersionsListRequest',
-        response_type_name=u'ListTemplateVersionsResponse',
+        request_type_name='DataflowProjectsTemplateVersionsListRequest',
+        response_type_name='ListTemplateVersionsResponse',
         supports_download=False,
     )
 
   class ProjectsTemplatesService(base_api.BaseApiService):
     """Service class for the projects_templates resource."""
 
-    _NAME = u'projects_templates'
+    _NAME = 'projects_templates'
 
     def __init__(self, client):
       super(DataflowV1b3.ProjectsTemplatesService, self).__init__(client)
@@ -1449,15 +1449,15 @@ List all the TemplateVersions in the Project if display_name not set.
           config, request, global_params=global_params)
 
     Create.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'dataflow.projects.templates.create',
-        ordered_params=[u'projectId'],
-        path_params=[u'projectId'],
+        http_method='POST',
+        method_id='dataflow.projects.templates.create',
+        ordered_params=['projectId'],
+        path_params=['projectId'],
         query_params=[],
-        relative_path=u'v1b3/projects/{projectId}/templates',
-        request_field=u'createJobFromTemplateRequest',
-        request_type_name=u'DataflowProjectsTemplatesCreateRequest',
-        response_type_name=u'Job',
+        relative_path='v1b3/projects/{projectId}/templates',
+        request_field='createJobFromTemplateRequest',
+        request_type_name='DataflowProjectsTemplatesCreateRequest',
+        response_type_name='Job',
         supports_download=False,
     )
 
@@ -1475,15 +1475,15 @@ List all the TemplateVersions in the Project if display_name not set.
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'dataflow.projects.templates.get',
-        ordered_params=[u'projectId'],
-        path_params=[u'projectId'],
-        query_params=[u'gcsPath', u'location', u'view'],
-        relative_path=u'v1b3/projects/{projectId}/templates:get',
+        http_method='GET',
+        method_id='dataflow.projects.templates.get',
+        ordered_params=['projectId'],
+        path_params=['projectId'],
+        query_params=['gcsPath', 'location', 'view'],
+        relative_path='v1b3/projects/{projectId}/templates:get',
         request_field='',
-        request_type_name=u'DataflowProjectsTemplatesGetRequest',
-        response_type_name=u'GetTemplateResponse',
+        request_type_name='DataflowProjectsTemplatesGetRequest',
+        response_type_name='GetTemplateResponse',
         supports_download=False,
     )
 
@@ -1501,22 +1501,22 @@ List all the TemplateVersions in the Project if display_name not set.
           config, request, global_params=global_params)
 
     Launch.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'dataflow.projects.templates.launch',
-        ordered_params=[u'projectId'],
-        path_params=[u'projectId'],
-        query_params=[u'dynamicTemplate_gcsPath', u'dynamicTemplate_stagingLocation', u'gcsPath', u'location', u'validateOnly'],
-        relative_path=u'v1b3/projects/{projectId}/templates:launch',
-        request_field=u'launchTemplateParameters',
-        request_type_name=u'DataflowProjectsTemplatesLaunchRequest',
-        response_type_name=u'LaunchTemplateResponse',
+        http_method='POST',
+        method_id='dataflow.projects.templates.launch',
+        ordered_params=['projectId'],
+        path_params=['projectId'],
+        query_params=['dynamicTemplate_gcsPath', 'dynamicTemplate_stagingLocation', 'gcsPath', 'location', 'validateOnly'],
+        relative_path='v1b3/projects/{projectId}/templates:launch',
+        request_field='launchTemplateParameters',
+        request_type_name='DataflowProjectsTemplatesLaunchRequest',
+        response_type_name='LaunchTemplateResponse',
         supports_download=False,
     )
 
   class ProjectsService(base_api.BaseApiService):
     """Service class for the projects resource."""
 
-    _NAME = u'projects'
+    _NAME = 'projects'
 
     def __init__(self, client):
       super(DataflowV1b3.ProjectsService, self).__init__(client)
@@ -1537,15 +1537,15 @@ List all the TemplateVersions in the Project if display_name not set.
           config, request, global_params=global_params)
 
     DeleteSnapshots.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'DELETE',
-        method_id=u'dataflow.projects.deleteSnapshots',
-        ordered_params=[u'projectId'],
-        path_params=[u'projectId'],
-        query_params=[u'location', u'snapshotId'],
-        relative_path=u'v1b3/projects/{projectId}/snapshots',
+        http_method='DELETE',
+        method_id='dataflow.projects.deleteSnapshots',
+        ordered_params=['projectId'],
+        path_params=['projectId'],
+        query_params=['location', 'snapshotId'],
+        relative_path='v1b3/projects/{projectId}/snapshots',
         request_field='',
-        request_type_name=u'DataflowProjectsDeleteSnapshotsRequest',
-        response_type_name=u'DeleteSnapshotResponse',
+        request_type_name='DataflowProjectsDeleteSnapshotsRequest',
+        response_type_name='DeleteSnapshotResponse',
         supports_download=False,
     )
 
@@ -1563,14 +1563,14 @@ List all the TemplateVersions in the Project if display_name not set.
           config, request, global_params=global_params)
 
     WorkerMessages.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'dataflow.projects.workerMessages',
-        ordered_params=[u'projectId'],
-        path_params=[u'projectId'],
+        http_method='POST',
+        method_id='dataflow.projects.workerMessages',
+        ordered_params=['projectId'],
+        path_params=['projectId'],
         query_params=[],
-        relative_path=u'v1b3/projects/{projectId}/WorkerMessages',
-        request_field=u'sendWorkerMessagesRequest',
-        request_type_name=u'DataflowProjectsWorkerMessagesRequest',
-        response_type_name=u'SendWorkerMessagesResponse',
+        relative_path='v1b3/projects/{projectId}/WorkerMessages',
+        request_field='sendWorkerMessagesRequest',
+        request_type_name='DataflowProjectsWorkerMessagesRequest',
+        response_type_name='SendWorkerMessagesResponse',
         supports_download=False,
     )

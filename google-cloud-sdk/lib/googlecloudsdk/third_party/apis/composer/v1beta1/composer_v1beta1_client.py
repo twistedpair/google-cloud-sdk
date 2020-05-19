@@ -8,17 +8,17 @@ class ComposerV1beta1(base_api.BaseApiClient):
   """Generated client library for service composer version v1beta1."""
 
   MESSAGES_MODULE = messages
-  BASE_URL = u'https://composer.googleapis.com/'
-  MTLS_BASE_URL = u'https://composer.mtls.googleapis.com/'
+  BASE_URL = 'https://composer.googleapis.com/'
+  MTLS_BASE_URL = 'https://composer.mtls.googleapis.com/'
 
-  _PACKAGE = u'composer'
-  _SCOPES = [u'https://www.googleapis.com/auth/cloud-platform']
-  _VERSION = u'v1beta1'
+  _PACKAGE = 'composer'
+  _SCOPES = ['https://www.googleapis.com/auth/cloud-platform']
+  _VERSION = 'v1beta1'
   _CLIENT_ID = '1042881264118.apps.googleusercontent.com'
   _CLIENT_SECRET = 'x_Tw5K8nnjoRAqULM9PFAC2b'
-  _USER_AGENT = u'google-cloud-sdk'
-  _CLIENT_CLASS_NAME = u'ComposerV1beta1'
-  _URL_VERSION = u'v1beta1'
+  _USER_AGENT = 'google-cloud-sdk'
+  _CLIENT_CLASS_NAME = 'ComposerV1beta1'
+  _URL_VERSION = 'v1beta1'
   _API_KEY = None
 
   def __init__(self, url='', credentials=None,
@@ -45,7 +45,7 @@ class ComposerV1beta1(base_api.BaseApiClient):
   class ProjectsLocationsEnvironmentsService(base_api.BaseApiService):
     """Service class for the projects_locations_environments resource."""
 
-    _NAME = u'projects_locations_environments'
+    _NAME = 'projects_locations_environments'
 
     def __init__(self, client):
       super(ComposerV1beta1.ProjectsLocationsEnvironmentsService, self).__init__(client)
@@ -66,16 +66,16 @@ class ComposerV1beta1(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Create.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/projects/{projectsId}/locations/{locationsId}/environments',
-        http_method=u'POST',
-        method_id=u'composer.projects.locations.environments.create',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/environments',
+        http_method='POST',
+        method_id='composer.projects.locations.environments.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
         query_params=[],
-        relative_path=u'v1beta1/{+parent}/environments',
-        request_field=u'environment',
-        request_type_name=u'ComposerProjectsLocationsEnvironmentsCreateRequest',
-        response_type_name=u'Operation',
+        relative_path='v1beta1/{+parent}/environments',
+        request_field='environment',
+        request_type_name='ComposerProjectsLocationsEnvironmentsCreateRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -93,16 +93,16 @@ class ComposerV1beta1(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Delete.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/projects/{projectsId}/locations/{locationsId}/environments/{environmentsId}',
-        http_method=u'DELETE',
-        method_id=u'composer.projects.locations.environments.delete',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/environments/{environmentsId}',
+        http_method='DELETE',
+        method_id='composer.projects.locations.environments.delete',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1beta1/{+name}',
+        relative_path='v1beta1/{+name}',
         request_field='',
-        request_type_name=u'ComposerProjectsLocationsEnvironmentsDeleteRequest',
-        response_type_name=u'Operation',
+        request_type_name='ComposerProjectsLocationsEnvironmentsDeleteRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -120,16 +120,16 @@ class ComposerV1beta1(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/projects/{projectsId}/locations/{locationsId}/environments/{environmentsId}',
-        http_method=u'GET',
-        method_id=u'composer.projects.locations.environments.get',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/environments/{environmentsId}',
+        http_method='GET',
+        method_id='composer.projects.locations.environments.get',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1beta1/{+name}',
+        relative_path='v1beta1/{+name}',
         request_field='',
-        request_type_name=u'ComposerProjectsLocationsEnvironmentsGetRequest',
-        response_type_name=u'Environment',
+        request_type_name='ComposerProjectsLocationsEnvironmentsGetRequest',
+        response_type_name='Environment',
         supports_download=False,
     )
 
@@ -147,16 +147,16 @@ class ComposerV1beta1(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/projects/{projectsId}/locations/{locationsId}/environments',
-        http_method=u'GET',
-        method_id=u'composer.projects.locations.environments.list',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'pageSize', u'pageToken'],
-        relative_path=u'v1beta1/{+parent}/environments',
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/environments',
+        http_method='GET',
+        method_id='composer.projects.locations.environments.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v1beta1/{+parent}/environments',
         request_field='',
-        request_type_name=u'ComposerProjectsLocationsEnvironmentsListRequest',
-        response_type_name=u'ListEnvironmentsResponse',
+        request_type_name='ComposerProjectsLocationsEnvironmentsListRequest',
+        response_type_name='ListEnvironmentsResponse',
         supports_download=False,
     )
 
@@ -174,23 +174,23 @@ class ComposerV1beta1(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Patch.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/projects/{projectsId}/locations/{locationsId}/environments/{environmentsId}',
-        http_method=u'PATCH',
-        method_id=u'composer.projects.locations.environments.patch',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[u'updateMask'],
-        relative_path=u'v1beta1/{+name}',
-        request_field=u'environment',
-        request_type_name=u'ComposerProjectsLocationsEnvironmentsPatchRequest',
-        response_type_name=u'Operation',
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/environments/{environmentsId}',
+        http_method='PATCH',
+        method_id='composer.projects.locations.environments.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v1beta1/{+name}',
+        request_field='environment',
+        request_type_name='ComposerProjectsLocationsEnvironmentsPatchRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
   class ProjectsLocationsImageVersionsService(base_api.BaseApiService):
     """Service class for the projects_locations_imageVersions resource."""
 
-    _NAME = u'projects_locations_imageVersions'
+    _NAME = 'projects_locations_imageVersions'
 
     def __init__(self, client):
       super(ComposerV1beta1.ProjectsLocationsImageVersionsService, self).__init__(client)
@@ -211,23 +211,23 @@ class ComposerV1beta1(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/projects/{projectsId}/locations/{locationsId}/imageVersions',
-        http_method=u'GET',
-        method_id=u'composer.projects.locations.imageVersions.list',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'pageSize', u'pageToken'],
-        relative_path=u'v1beta1/{+parent}/imageVersions',
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/imageVersions',
+        http_method='GET',
+        method_id='composer.projects.locations.imageVersions.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v1beta1/{+parent}/imageVersions',
         request_field='',
-        request_type_name=u'ComposerProjectsLocationsImageVersionsListRequest',
-        response_type_name=u'ListImageVersionsResponse',
+        request_type_name='ComposerProjectsLocationsImageVersionsListRequest',
+        response_type_name='ListImageVersionsResponse',
         supports_download=False,
     )
 
   class ProjectsLocationsOperationsService(base_api.BaseApiService):
     """Service class for the projects_locations_operations resource."""
 
-    _NAME = u'projects_locations_operations'
+    _NAME = 'projects_locations_operations'
 
     def __init__(self, client):
       super(ComposerV1beta1.ProjectsLocationsOperationsService, self).__init__(client)
@@ -251,16 +251,16 @@ operation. If the server doesn't support this method, it returns
           config, request, global_params=global_params)
 
     Delete.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/projects/{projectsId}/locations/{locationsId}/operations/{operationsId}',
-        http_method=u'DELETE',
-        method_id=u'composer.projects.locations.operations.delete',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/operations/{operationsId}',
+        http_method='DELETE',
+        method_id='composer.projects.locations.operations.delete',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1beta1/{+name}',
+        relative_path='v1beta1/{+name}',
         request_field='',
-        request_type_name=u'ComposerProjectsLocationsOperationsDeleteRequest',
-        response_type_name=u'Empty',
+        request_type_name='ComposerProjectsLocationsOperationsDeleteRequest',
+        response_type_name='Empty',
         supports_download=False,
     )
 
@@ -280,16 +280,16 @@ service.
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/projects/{projectsId}/locations/{locationsId}/operations/{operationsId}',
-        http_method=u'GET',
-        method_id=u'composer.projects.locations.operations.get',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/operations/{operationsId}',
+        http_method='GET',
+        method_id='composer.projects.locations.operations.get',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1beta1/{+name}',
+        relative_path='v1beta1/{+name}',
         request_field='',
-        request_type_name=u'ComposerProjectsLocationsOperationsGetRequest',
-        response_type_name=u'Operation',
+        request_type_name='ComposerProjectsLocationsOperationsGetRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -316,23 +316,23 @@ is the parent resource, without the operations collection id.
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/projects/{projectsId}/locations/{locationsId}/operations',
-        http_method=u'GET',
-        method_id=u'composer.projects.locations.operations.list',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[u'filter', u'pageSize', u'pageToken'],
-        relative_path=u'v1beta1/{+name}/operations',
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/operations',
+        http_method='GET',
+        method_id='composer.projects.locations.operations.list',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['filter', 'pageSize', 'pageToken'],
+        relative_path='v1beta1/{+name}/operations',
         request_field='',
-        request_type_name=u'ComposerProjectsLocationsOperationsListRequest',
-        response_type_name=u'ListOperationsResponse',
+        request_type_name='ComposerProjectsLocationsOperationsListRequest',
+        response_type_name='ListOperationsResponse',
         supports_download=False,
     )
 
   class ProjectsLocationsService(base_api.BaseApiService):
     """Service class for the projects_locations resource."""
 
-    _NAME = u'projects_locations'
+    _NAME = 'projects_locations'
 
     def __init__(self, client):
       super(ComposerV1beta1.ProjectsLocationsService, self).__init__(client)
@@ -342,7 +342,7 @@ is the parent resource, without the operations collection id.
   class ProjectsService(base_api.BaseApiService):
     """Service class for the projects resource."""
 
-    _NAME = u'projects'
+    _NAME = 'projects'
 
     def __init__(self, client):
       super(ComposerV1beta1.ProjectsService, self).__init__(client)

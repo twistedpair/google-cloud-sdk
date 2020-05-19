@@ -114,9 +114,9 @@ class Dataset(_messages.Message):
       custom models.
     languageCode: Required. The language of the supplied audio as a
       [BCP-47](https://www.rfc-editor.org/rfc/bcp/bcp47.txt) language tag.
-      Example: "en-US". See [Language Support](https://cloud.google.com
-      /speech-to-text/docs/languages) for a list of the currently supported
-      language codes.
+      Example: "en-US". See [Language
+      Support](https://cloud.google.com/speech-to-text/docs/languages) for a
+      list of the currently supported language codes.
     lastError: Output only. The error status, if any, of the last operation
       performed on this dataset. Empty if there is still pending operation, or
       if the last operation completed with success.
@@ -143,8 +143,8 @@ class Dataset(_messages.Message):
       utterances like voice commands and search type of use cases. Currently,
       only Google Cloud Storage URIs are supported, which must be specified in
       the following format: `gs://bucket_name/object_name` (other URI formats
-      will be ignored). For more information, see [Request URIs](/storage/docs
-      /reference-uris).
+      will be ignored). For more information, see [Request
+      URIs](/storage/docs/reference-uris).
     useLoggedData: If this is true, then use the previously logged data (for
       the project) The logs data for this project will be preprocessed and
       prepared for downstream pipelines (like training). All logs are logged
@@ -179,6 +179,18 @@ class Empty(_messages.Message):
   JSON representation for `Empty` is empty JSON object `{}`.
   """
 
+
+
+class Endpointer(_messages.Message):
+  r"""Config to enable endpointer settings.
+
+  Fields:
+    sensitivity: Value between 0 and 100 indicating endpointer sensitivity.
+      The higher this value, the shorter the wait before closing the
+      microphone.
+  """
+
+  sensitivity = _messages.IntegerField(1, variant=_messages.Variant.INT32)
 
 
 class EvaluateModelRequest(_messages.Message):
@@ -682,11 +694,16 @@ class RecognitionConfig(_messages.Message):
     encoding: Encoding of audio data sent in all `RecognitionAudio` messages.
       This field is optional for `FLAC` and `WAV` audio files and required for
       all other audio formats. For details, see AudioEncoding.
+    endpointer: Config to enable the configurable endpointer. If enabled, you
+      can set the endpointer slider to a value (0-100) better suited to your
+      application. The slider value controls the aggressiveness of the
+      endpointer. If not enabled, the default behavior is used, with the best
+      general WER/latency tradeoff.
     languageCode: Required. The language of the supplied audio as a
       [BCP-47](https://www.rfc-editor.org/rfc/bcp/bcp47.txt) language tag.
-      Example: "en-US". See [Language Support](https://cloud.google.com
-      /speech-to-text/docs/languages) for a list of the currently supported
-      language codes.
+      Example: "en-US". See [Language
+      Support](https://cloud.google.com/speech-to-text/docs/languages) for a
+      list of the currently supported language codes.
     maxAlternatives: Maximum number of recognition hypotheses to be returned.
       Specifically, the maximum number of `SpeechRecognitionAlternative`
       messages within each `SpeechRecognitionResult`. The server may return
@@ -747,8 +764,8 @@ class RecognitionConfig(_messages.Message):
         requires only about half the bandwidth of `LINEAR16`. `FLAC` stream
         encoding supports 16-bit and 24-bit samples, however, not all fields
         in `STREAMINFO` are supported.
-      MULAW: 8-bit samples that compand 14-bit audio samples using G.711 PCMU
-        /mu-law.
+      MULAW: 8-bit samples that compand 14-bit audio samples using G.711
+        PCMU/mu-law.
       AMR: Adaptive Multi-Rate Narrowband codec. `sample_rate_hertz` must be
         8000.
       AMR_WB: Adaptive Multi-Rate Wideband codec. `sample_rate_hertz` must be
@@ -794,14 +811,15 @@ class RecognitionConfig(_messages.Message):
   enableWordConfidence = _messages.BooleanField(9)
   enableWordTimeOffsets = _messages.BooleanField(10)
   encoding = _messages.EnumField('EncodingValueValuesEnum', 11)
-  languageCode = _messages.StringField(12)
-  maxAlternatives = _messages.IntegerField(13, variant=_messages.Variant.INT32)
-  metadata = _messages.MessageField('RecognitionMetadata', 14)
-  model = _messages.StringField(15)
-  profanityFilter = _messages.BooleanField(16)
-  sampleRateHertz = _messages.IntegerField(17, variant=_messages.Variant.INT32)
-  speechContexts = _messages.MessageField('SpeechContext', 18, repeated=True)
-  useEnhanced = _messages.BooleanField(19)
+  endpointer = _messages.MessageField('Endpointer', 12)
+  languageCode = _messages.StringField(13)
+  maxAlternatives = _messages.IntegerField(14, variant=_messages.Variant.INT32)
+  metadata = _messages.MessageField('RecognitionMetadata', 15)
+  model = _messages.StringField(16)
+  profanityFilter = _messages.BooleanField(17)
+  sampleRateHertz = _messages.IntegerField(18, variant=_messages.Variant.INT32)
+  speechContexts = _messages.MessageField('SpeechContext', 19, repeated=True)
+  useEnhanced = _messages.BooleanField(20)
 
 
 class RecognitionMetadata(_messages.Message):
@@ -985,8 +1003,8 @@ class RefreshDataRequest(_messages.Message):
       utterances like voice commands and search type of use cases. Currently,
       only Google Cloud Storage URIs are supported, which must be specified in
       the following format: `gs://bucket_name/object_name` (other URI formats
-      will be ignored). For more information, see [Request URIs](/storage/docs
-      /reference-uris).
+      will be ignored). For more information, see [Request
+      URIs](/storage/docs/reference-uris).
   """
 
   uri = _messages.StringField(1)
@@ -1561,7 +1579,7 @@ class StandardQueryParameters(_messages.Message):
 
   f__xgafv = _messages.EnumField('FXgafvValueValuesEnum', 1)
   access_token = _messages.StringField(2)
-  alt = _messages.EnumField('AltValueValuesEnum', 3, default=u'json')
+  alt = _messages.EnumField('AltValueValuesEnum', 3, default='json')
   callback = _messages.StringField(4)
   fields = _messages.StringField(5)
   key = _messages.StringField(6)

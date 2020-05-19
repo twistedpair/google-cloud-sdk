@@ -8,17 +8,17 @@ class RunV1beta1(base_api.BaseApiClient):
   """Generated client library for service run version v1beta1."""
 
   MESSAGES_MODULE = messages
-  BASE_URL = u'https://run.googleapis.com/'
-  MTLS_BASE_URL = u'https://run.mtls.googleapis.com/'
+  BASE_URL = 'https://run.googleapis.com/'
+  MTLS_BASE_URL = 'https://run.mtls.googleapis.com/'
 
-  _PACKAGE = u'run'
-  _SCOPES = [u'https://www.googleapis.com/auth/cloud-platform']
-  _VERSION = u'v1beta1'
+  _PACKAGE = 'run'
+  _SCOPES = ['https://www.googleapis.com/auth/cloud-platform']
+  _VERSION = 'v1beta1'
   _CLIENT_ID = '1042881264118.apps.googleusercontent.com'
   _CLIENT_SECRET = 'x_Tw5K8nnjoRAqULM9PFAC2b'
-  _USER_AGENT = u'google-cloud-sdk'
-  _CLIENT_CLASS_NAME = u'RunV1beta1'
-  _URL_VERSION = u'v1beta1'
+  _USER_AGENT = 'google-cloud-sdk'
+  _CLIENT_CLASS_NAME = 'RunV1beta1'
+  _URL_VERSION = 'v1beta1'
   _API_KEY = None
 
   def __init__(self, url='', credentials=None,
@@ -46,7 +46,7 @@ class RunV1beta1(base_api.BaseApiClient):
   class CustomresourcedefinitionsService(base_api.BaseApiService):
     """Service class for the customresourcedefinitions resource."""
 
-    _NAME = u'customresourcedefinitions'
+    _NAME = 'customresourcedefinitions'
 
     def __init__(self, client):
       super(RunV1beta1.CustomresourcedefinitionsService, self).__init__(client)
@@ -67,22 +67,22 @@ class RunV1beta1(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'run.customresourcedefinitions.list',
+        http_method='GET',
+        method_id='run.customresourcedefinitions.list',
         ordered_params=[],
         path_params=[],
-        query_params=[u'continue_', u'fieldSelector', u'includeUninitialized', u'labelSelector', u'limit', u'parent', u'resourceVersion', u'watch'],
-        relative_path=u'apis/apiextensions.k8s.io/v1beta1/customresourcedefinitions',
+        query_params=['continue_', 'fieldSelector', 'includeUninitialized', 'labelSelector', 'limit', 'parent', 'resourceVersion', 'watch'],
+        relative_path='apis/apiextensions.k8s.io/v1beta1/customresourcedefinitions',
         request_field='',
-        request_type_name=u'RunCustomresourcedefinitionsListRequest',
-        response_type_name=u'ListCustomResourceDefinitionsResponse',
+        request_type_name='RunCustomresourcedefinitionsListRequest',
+        response_type_name='ListCustomResourceDefinitionsResponse',
         supports_download=False,
     )
 
   class NamespacesCustomresourcedefinitionsService(base_api.BaseApiService):
     """Service class for the namespaces_customresourcedefinitions resource."""
 
-    _NAME = u'namespaces_customresourcedefinitions'
+    _NAME = 'namespaces_customresourcedefinitions'
 
     def __init__(self, client):
       super(RunV1beta1.NamespacesCustomresourcedefinitionsService, self).__init__(client)
@@ -103,23 +103,23 @@ class RunV1beta1(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'apis/apiextensions.k8s.io/v1beta1/namespaces/{namespacesId}/customresourcedefinitions/{customresourcedefinitionsId}',
-        http_method=u'GET',
-        method_id=u'run.namespaces.customresourcedefinitions.get',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='apis/apiextensions.k8s.io/v1beta1/namespaces/{namespacesId}/customresourcedefinitions/{customresourcedefinitionsId}',
+        http_method='GET',
+        method_id='run.namespaces.customresourcedefinitions.get',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'apis/apiextensions.k8s.io/v1beta1/{+name}',
+        relative_path='apis/apiextensions.k8s.io/v1beta1/{+name}',
         request_field='',
-        request_type_name=u'RunNamespacesCustomresourcedefinitionsGetRequest',
-        response_type_name=u'CustomResourceDefinition',
+        request_type_name='RunNamespacesCustomresourcedefinitionsGetRequest',
+        response_type_name='CustomResourceDefinition',
         supports_download=False,
     )
 
   class NamespacesService(base_api.BaseApiService):
     """Service class for the namespaces resource."""
 
-    _NAME = u'namespaces'
+    _NAME = 'namespaces'
 
     def __init__(self, client):
       super(RunV1beta1.NamespacesService, self).__init__(client)
@@ -129,7 +129,7 @@ class RunV1beta1(base_api.BaseApiClient):
   class ProjectsLocationsCustomresourcedefinitionsService(base_api.BaseApiService):
     """Service class for the projects_locations_customresourcedefinitions resource."""
 
-    _NAME = u'projects_locations_customresourcedefinitions'
+    _NAME = 'projects_locations_customresourcedefinitions'
 
     def __init__(self, client):
       super(RunV1beta1.ProjectsLocationsCustomresourcedefinitionsService, self).__init__(client)
@@ -150,16 +150,16 @@ class RunV1beta1(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/projects/{projectsId}/locations/{locationsId}/customresourcedefinitions/{customresourcedefinitionsId}',
-        http_method=u'GET',
-        method_id=u'run.projects.locations.customresourcedefinitions.get',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/customresourcedefinitions/{customresourcedefinitionsId}',
+        http_method='GET',
+        method_id='run.projects.locations.customresourcedefinitions.get',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1beta1/{+name}',
+        relative_path='v1beta1/{+name}',
         request_field='',
-        request_type_name=u'RunProjectsLocationsCustomresourcedefinitionsGetRequest',
-        response_type_name=u'CustomResourceDefinition',
+        request_type_name='RunProjectsLocationsCustomresourcedefinitionsGetRequest',
+        response_type_name='CustomResourceDefinition',
         supports_download=False,
     )
 
@@ -177,23 +177,23 @@ class RunV1beta1(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/projects/{projectsId}/locations/{locationsId}/customresourcedefinitions',
-        http_method=u'GET',
-        method_id=u'run.projects.locations.customresourcedefinitions.list',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'continue_', u'fieldSelector', u'includeUninitialized', u'labelSelector', u'limit', u'resourceVersion', u'watch'],
-        relative_path=u'v1beta1/{+parent}/customresourcedefinitions',
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/customresourcedefinitions',
+        http_method='GET',
+        method_id='run.projects.locations.customresourcedefinitions.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['continue_', 'fieldSelector', 'includeUninitialized', 'labelSelector', 'limit', 'resourceVersion', 'watch'],
+        relative_path='v1beta1/{+parent}/customresourcedefinitions',
         request_field='',
-        request_type_name=u'RunProjectsLocationsCustomresourcedefinitionsListRequest',
-        response_type_name=u'ListCustomResourceDefinitionsResponse',
+        request_type_name='RunProjectsLocationsCustomresourcedefinitionsListRequest',
+        response_type_name='ListCustomResourceDefinitionsResponse',
         supports_download=False,
     )
 
   class ProjectsLocationsService(base_api.BaseApiService):
     """Service class for the projects_locations resource."""
 
-    _NAME = u'projects_locations'
+    _NAME = 'projects_locations'
 
     def __init__(self, client):
       super(RunV1beta1.ProjectsLocationsService, self).__init__(client)
@@ -203,7 +203,7 @@ class RunV1beta1(base_api.BaseApiClient):
   class ProjectsService(base_api.BaseApiService):
     """Service class for the projects resource."""
 
-    _NAME = u'projects'
+    _NAME = 'projects'
 
     def __init__(self, client):
       super(RunV1beta1.ProjectsService, self).__init__(client)

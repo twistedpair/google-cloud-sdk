@@ -34,46 +34,36 @@ def Delete(cluster_ref):
   client.projects_instances_clusters.Delete(msg)
 
 
-def Create(cluster_ref, zone, serve_nodes=3):
+def Create(cluster_ref, cluster):
   """Create a cluster.
 
   Args:
     cluster_ref: A resource reference to the cluster to create.
-    zone: string, The zone this cluster should be inside.
-    serve_nodes: int, The number of nodes in this cluster.
+    cluster: A Cluster msg object to create.
 
   Returns:
     Long running operation.
   """
   client = util.GetAdminClient()
   msgs = util.GetAdminMessages()
-
-  storage_type = (
-      msgs.Cluster.DefaultStorageTypeValueValuesEnum.STORAGE_TYPE_UNSPECIFIED)
-
-  cluster_msg = msgs.Cluster(
-      serveNodes=serve_nodes,
-      location=util.LocationUrl(zone),
-      defaultStorageType=storage_type)
-
   msg = msgs.BigtableadminProjectsInstancesClustersCreateRequest(
-      cluster=cluster_msg,
+      cluster=cluster,
       clusterId=cluster_ref.Name(),
       parent=cluster_ref.Parent().RelativeName())
   return client.projects_instances_clusters.Create(msg)
 
 
-def Update(cluster_ref, serve_nodes):
+def Update(cluster_ref, num_nodes):
   """Update a cluster.
 
   Args:
     cluster_ref: A resource reference to the cluster to update.
-    serve_nodes: int, The number of nodes in this cluster.
+    num_nodes: int, The number of nodes in this cluster.
 
   Returns:
     Long running operation.
   """
   client = util.GetAdminClient()
   msgs = util.GetAdminMessages()
-  msg = msgs.Cluster(name=cluster_ref.RelativeName(), serveNodes=serve_nodes)
+  msg = msgs.Cluster(name=cluster_ref.RelativeName(), serveNodes=num_nodes)
   return client.projects_instances_clusters.Update(msg)

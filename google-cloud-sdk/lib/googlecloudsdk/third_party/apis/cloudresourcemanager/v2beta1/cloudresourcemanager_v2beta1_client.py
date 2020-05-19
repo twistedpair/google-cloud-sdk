@@ -8,17 +8,17 @@ class CloudresourcemanagerV2beta1(base_api.BaseApiClient):
   """Generated client library for service cloudresourcemanager version v2beta1."""
 
   MESSAGES_MODULE = messages
-  BASE_URL = u'https://cloudresourcemanager.googleapis.com/'
-  MTLS_BASE_URL = u''
+  BASE_URL = 'https://cloudresourcemanager.googleapis.com/'
+  MTLS_BASE_URL = ''
 
-  _PACKAGE = u'cloudresourcemanager'
-  _SCOPES = [u'https://www.googleapis.com/auth/cloud-platform', u'https://www.googleapis.com/auth/cloud-platform.read-only']
-  _VERSION = u'v2beta1'
+  _PACKAGE = 'cloudresourcemanager'
+  _SCOPES = ['https://www.googleapis.com/auth/cloud-platform', 'https://www.googleapis.com/auth/cloud-platform.read-only']
+  _VERSION = 'v2beta1'
   _CLIENT_ID = '1042881264118.apps.googleusercontent.com'
   _CLIENT_SECRET = 'x_Tw5K8nnjoRAqULM9PFAC2b'
-  _USER_AGENT = u'google-cloud-sdk'
-  _CLIENT_CLASS_NAME = u'CloudresourcemanagerV2beta1'
-  _URL_VERSION = u'v2beta1'
+  _USER_AGENT = 'google-cloud-sdk'
+  _CLIENT_CLASS_NAME = 'CloudresourcemanagerV2beta1'
+  _URL_VERSION = 'v2beta1'
   _API_KEY = None
 
   def __init__(self, url='', credentials=None,
@@ -41,7 +41,7 @@ class CloudresourcemanagerV2beta1(base_api.BaseApiClient):
   class FoldersService(base_api.BaseApiService):
     """Service class for the folders resource."""
 
-    _NAME = u'folders'
+    _NAME = 'folders'
 
     def __init__(self, client):
       super(CloudresourcemanagerV2beta1.FoldersService, self).__init__(client)
@@ -87,15 +87,15 @@ identified parent.
           config, request, global_params=global_params)
 
     Create.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'cloudresourcemanager.folders.create',
+        http_method='POST',
+        method_id='cloudresourcemanager.folders.create',
         ordered_params=[],
         path_params=[],
-        query_params=[u'parent'],
-        relative_path=u'v2beta1/folders',
-        request_field=u'folder',
-        request_type_name=u'CloudresourcemanagerFoldersCreateRequest',
-        response_type_name=u'Operation',
+        query_params=['parent'],
+        relative_path='v2beta1/folders',
+        request_field='folder',
+        request_type_name='CloudresourcemanagerFoldersCreateRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -119,15 +119,15 @@ identified folder.
           config, request, global_params=global_params)
 
     Delete.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'DELETE',
-        method_id=u'cloudresourcemanager.folders.delete',
-        ordered_params=[u'foldersId'],
-        path_params=[u'foldersId'],
+        http_method='DELETE',
+        method_id='cloudresourcemanager.folders.delete',
+        ordered_params=['foldersId'],
+        path_params=['foldersId'],
         query_params=[],
-        relative_path=u'v2beta1/folders/{foldersId}',
+        relative_path='v2beta1/folders/{foldersId}',
         request_field='',
-        request_type_name=u'CloudresourcemanagerFoldersDeleteRequest',
-        response_type_name=u'Folder',
+        request_type_name='CloudresourcemanagerFoldersDeleteRequest',
+        response_type_name='Folder',
         supports_download=False,
     )
 
@@ -149,15 +149,15 @@ identified folder.
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'cloudresourcemanager.folders.get',
-        ordered_params=[u'foldersId'],
-        path_params=[u'foldersId'],
+        http_method='GET',
+        method_id='cloudresourcemanager.folders.get',
+        ordered_params=['foldersId'],
+        path_params=['foldersId'],
         query_params=[],
-        relative_path=u'v2beta1/folders/{foldersId}',
+        relative_path='v2beta1/folders/{foldersId}',
         request_field='',
-        request_type_name=u'CloudresourcemanagerFoldersGetRequest',
-        response_type_name=u'Folder',
+        request_type_name='CloudresourcemanagerFoldersGetRequest',
+        response_type_name='Folder',
         supports_download=False,
     )
 
@@ -179,15 +179,15 @@ on the identified folder.
           config, request, global_params=global_params)
 
     GetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'cloudresourcemanager.folders.getIamPolicy',
-        ordered_params=[u'foldersId'],
-        path_params=[u'foldersId'],
+        http_method='POST',
+        method_id='cloudresourcemanager.folders.getIamPolicy',
+        ordered_params=['foldersId'],
+        path_params=['foldersId'],
         query_params=[],
-        relative_path=u'v2beta1/folders/{foldersId}:getIamPolicy',
-        request_field=u'getIamPolicyRequest',
-        request_type_name=u'CloudresourcemanagerFoldersGetIamPolicyRequest',
-        response_type_name=u'Policy',
+        relative_path='v2beta1/folders/{foldersId}:getIamPolicy',
+        request_field='getIamPolicyRequest',
+        request_type_name='CloudresourcemanagerFoldersGetIamPolicyRequest',
+        response_type_name='Policy',
         supports_download=False,
     )
 
@@ -211,15 +211,15 @@ identified parent.
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'cloudresourcemanager.folders.list',
+        http_method='GET',
+        method_id='cloudresourcemanager.folders.list',
         ordered_params=[],
         path_params=[],
-        query_params=[u'pageSize', u'pageToken', u'parent', u'showDeleted'],
-        relative_path=u'v2beta1/folders',
+        query_params=['pageSize', 'pageToken', 'parent', 'showDeleted'],
+        relative_path='v2beta1/folders',
         request_field='',
-        request_type_name=u'CloudresourcemanagerFoldersListRequest',
-        response_type_name=u'ListFoldersResponse',
+        request_type_name='CloudresourcemanagerFoldersListRequest',
+        response_type_name='ListFoldersResponse',
         supports_download=False,
     )
 
@@ -252,15 +252,15 @@ folder's current and proposed new parent.
           config, request, global_params=global_params)
 
     Move.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'cloudresourcemanager.folders.move',
-        ordered_params=[u'foldersId'],
-        path_params=[u'foldersId'],
+        http_method='POST',
+        method_id='cloudresourcemanager.folders.move',
+        ordered_params=['foldersId'],
+        path_params=['foldersId'],
         query_params=[],
-        relative_path=u'v2beta1/folders/{foldersId}:move',
-        request_field=u'moveFolderRequest',
-        request_type_name=u'CloudresourcemanagerFoldersMoveRequest',
-        response_type_name=u'Operation',
+        relative_path='v2beta1/folders/{foldersId}:move',
+        request_field='moveFolderRequest',
+        request_type_name='CloudresourcemanagerFoldersMoveRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -291,15 +291,15 @@ in the Status.details field.
           config, request, global_params=global_params)
 
     Patch.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'PATCH',
-        method_id=u'cloudresourcemanager.folders.patch',
-        ordered_params=[u'foldersId'],
-        path_params=[u'foldersId'],
-        query_params=[u'updateMask'],
-        relative_path=u'v2beta1/folders/{foldersId}',
-        request_field=u'folder',
-        request_type_name=u'CloudresourcemanagerFoldersPatchRequest',
-        response_type_name=u'Folder',
+        http_method='PATCH',
+        method_id='cloudresourcemanager.folders.patch',
+        ordered_params=['foldersId'],
+        path_params=['foldersId'],
+        query_params=['updateMask'],
+        relative_path='v2beta1/folders/{foldersId}',
+        request_field='folder',
+        request_type_name='CloudresourcemanagerFoldersPatchRequest',
+        response_type_name='Folder',
         supports_download=False,
     )
 
@@ -319,15 +319,15 @@ access to which meet the specified filter criteria.
           config, request, global_params=global_params)
 
     Search.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'cloudresourcemanager.folders.search',
+        http_method='POST',
+        method_id='cloudresourcemanager.folders.search',
         ordered_params=[],
         path_params=[],
         query_params=[],
-        relative_path=u'v2beta1/folders:search',
+        relative_path='v2beta1/folders:search',
         request_field='<request>',
-        request_type_name=u'SearchFoldersRequest',
-        response_type_name=u'SearchFoldersResponse',
+        request_type_name='SearchFoldersRequest',
+        response_type_name='SearchFoldersResponse',
         supports_download=False,
     )
 
@@ -349,15 +349,15 @@ on the identified folder.
           config, request, global_params=global_params)
 
     SetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'cloudresourcemanager.folders.setIamPolicy',
-        ordered_params=[u'foldersId'],
-        path_params=[u'foldersId'],
+        http_method='POST',
+        method_id='cloudresourcemanager.folders.setIamPolicy',
+        ordered_params=['foldersId'],
+        path_params=['foldersId'],
         query_params=[],
-        relative_path=u'v2beta1/folders/{foldersId}:setIamPolicy',
-        request_field=u'setIamPolicyRequest',
-        request_type_name=u'CloudresourcemanagerFoldersSetIamPolicyRequest',
-        response_type_name=u'Policy',
+        relative_path='v2beta1/folders/{foldersId}:setIamPolicy',
+        request_field='setIamPolicyRequest',
+        request_type_name='CloudresourcemanagerFoldersSetIamPolicyRequest',
+        response_type_name='Policy',
         supports_download=False,
     )
 
@@ -377,15 +377,15 @@ e.g. "folders/1234".
           config, request, global_params=global_params)
 
     TestIamPermissions.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'cloudresourcemanager.folders.testIamPermissions',
-        ordered_params=[u'foldersId'],
-        path_params=[u'foldersId'],
+        http_method='POST',
+        method_id='cloudresourcemanager.folders.testIamPermissions',
+        ordered_params=['foldersId'],
+        path_params=['foldersId'],
         query_params=[],
-        relative_path=u'v2beta1/folders/{foldersId}:testIamPermissions',
-        request_field=u'testIamPermissionsRequest',
-        request_type_name=u'CloudresourcemanagerFoldersTestIamPermissionsRequest',
-        response_type_name=u'TestIamPermissionsResponse',
+        relative_path='v2beta1/folders/{foldersId}:testIamPermissions',
+        request_field='testIamPermissionsRequest',
+        request_type_name='CloudresourcemanagerFoldersTestIamPermissionsRequest',
+        response_type_name='TestIamPermissionsResponse',
         supports_download=False,
     )
 
@@ -410,14 +410,14 @@ identified folder.
           config, request, global_params=global_params)
 
     Undelete.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'cloudresourcemanager.folders.undelete',
-        ordered_params=[u'foldersId'],
-        path_params=[u'foldersId'],
+        http_method='POST',
+        method_id='cloudresourcemanager.folders.undelete',
+        ordered_params=['foldersId'],
+        path_params=['foldersId'],
         query_params=[],
-        relative_path=u'v2beta1/folders/{foldersId}:undelete',
-        request_field=u'undeleteFolderRequest',
-        request_type_name=u'CloudresourcemanagerFoldersUndeleteRequest',
-        response_type_name=u'Folder',
+        relative_path='v2beta1/folders/{foldersId}:undelete',
+        request_field='undeleteFolderRequest',
+        request_type_name='CloudresourcemanagerFoldersUndeleteRequest',
+        response_type_name='Folder',
         supports_download=False,
     )

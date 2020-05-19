@@ -31,14 +31,14 @@ class Collections(enum.Enum):
           '':
               'operations/{operationsId}',
       },
-      [u'name'],
+      ['name'],
       True
   )
   SERVICES = (
       'services',
       'services/{servicesId}/{servicesId1}/{servicesId2}',
       {},
-      [u'servicesId', u'servicesId1', u'servicesId2'],
+      ['servicesId', 'servicesId1', 'servicesId2'],
       True
   )
   SERVICES_CONSUMERQUOTAMETRICS = (
@@ -49,7 +49,7 @@ class Collections(enum.Enum):
               'services/{servicesId}/{servicesId1}/{servicesId2}/'
               'consumerQuotaMetrics/{consumerQuotaMetricsId}',
       },
-      [u'name'],
+      ['name'],
       True
   )
   SERVICES_CONSUMERQUOTAMETRICS_LIMITS = (
@@ -61,7 +61,7 @@ class Collections(enum.Enum):
               'consumerQuotaMetrics/{consumerQuotaMetricsId}/limits/'
               '{limitsId}',
       },
-      [u'name'],
+      ['name'],
       True
   )
 

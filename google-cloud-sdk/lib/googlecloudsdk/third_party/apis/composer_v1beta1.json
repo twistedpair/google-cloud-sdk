@@ -287,6 +287,14 @@
           "description": "Optional. The network-level access control policy for the Airflow web server. If\nunspecified, no network-level access restrictions will be applied.",
           "$ref": "WebServerNetworkAccessControl"
         },
+        "databaseConfig": {
+          "description": "Optional. The configuration settings for Cloud SQL instance used internally by Apache\nAirflow software.",
+          "$ref": "DatabaseConfig"
+        },
+        "webServerConfig": {
+          "description": "Optional. The configuration settings for the Airflow web server App Engine instance.",
+          "$ref": "WebServerConfig"
+        },
         "airflowUri": {
           "description": "Output only. The URI of the Apache Airflow Web UI hosted within this environment (see\n[Airflow web\ninterface](\/composer\/docs\/how-to\/accessing\/airflow-web-interface)).",
           "type": "string"
@@ -477,6 +485,28 @@
         },
         "description": {
           "description": "Optional. User-provided description. It must contain at most 300 characters.",
+          "type": "string"
+        }
+      }
+    },
+    "DatabaseConfig": {
+      "id": "DatabaseConfig",
+      "description": "The configuration of Cloud SQL instance that is used by the Apache Airflow\nsoftware.",
+      "type": "object",
+      "properties": {
+        "machineType": {
+          "description": "Optional. Cloud SQL tier used by Airflow database.\nIf not specified, db-n1-standard-2 will be used.",
+          "type": "string"
+        }
+      }
+    },
+    "WebServerConfig": {
+      "id": "WebServerConfig",
+      "description": "The configuration settings for the Airflow web server App Engine instance.",
+      "type": "object",
+      "properties": {
+        "machineType": {
+          "description": "Optional. Machine type on which Airflow web server is running.\nFor example: composer-n1-webserver-2, composer-n1-webserver-4,\ncomposer-n1-webserver-8.\nIf not specified, composer-n1-webserver-2 will be used.\nValue custom is returned only in response, if Airflow web server parameters\nwere manually changed to a non-standard values.",
           "type": "string"
         }
       }

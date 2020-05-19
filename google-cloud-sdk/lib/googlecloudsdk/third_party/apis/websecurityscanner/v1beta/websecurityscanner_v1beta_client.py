@@ -8,17 +8,17 @@ class WebsecurityscannerV1beta(base_api.BaseApiClient):
   """Generated client library for service websecurityscanner version v1beta."""
 
   MESSAGES_MODULE = messages
-  BASE_URL = u'https://websecurityscanner.googleapis.com/'
-  MTLS_BASE_URL = u'https://websecurityscanner.mtls.googleapis.com/'
+  BASE_URL = 'https://websecurityscanner.googleapis.com/'
+  MTLS_BASE_URL = 'https://websecurityscanner.mtls.googleapis.com/'
 
-  _PACKAGE = u'websecurityscanner'
-  _SCOPES = [u'https://www.googleapis.com/auth/cloud-platform']
-  _VERSION = u'v1beta'
+  _PACKAGE = 'websecurityscanner'
+  _SCOPES = ['https://www.googleapis.com/auth/cloud-platform']
+  _VERSION = 'v1beta'
   _CLIENT_ID = '1042881264118.apps.googleusercontent.com'
   _CLIENT_SECRET = 'x_Tw5K8nnjoRAqULM9PFAC2b'
-  _USER_AGENT = u'google-cloud-sdk'
-  _CLIENT_CLASS_NAME = u'WebsecurityscannerV1beta'
-  _URL_VERSION = u'v1beta'
+  _USER_AGENT = 'google-cloud-sdk'
+  _CLIENT_CLASS_NAME = 'WebsecurityscannerV1beta'
+  _URL_VERSION = 'v1beta'
   _API_KEY = None
 
   def __init__(self, url='', credentials=None,
@@ -46,7 +46,7 @@ class WebsecurityscannerV1beta(base_api.BaseApiClient):
   class ProjectsScanConfigsScanRunsCrawledUrlsService(base_api.BaseApiService):
     """Service class for the projects_scanConfigs_scanRuns_crawledUrls resource."""
 
-    _NAME = u'projects_scanConfigs_scanRuns_crawledUrls'
+    _NAME = 'projects_scanConfigs_scanRuns_crawledUrls'
 
     def __init__(self, client):
       super(WebsecurityscannerV1beta.ProjectsScanConfigsScanRunsCrawledUrlsService, self).__init__(client)
@@ -67,23 +67,23 @@ class WebsecurityscannerV1beta(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta/projects/{projectsId}/scanConfigs/{scanConfigsId}/scanRuns/{scanRunsId}/crawledUrls',
-        http_method=u'GET',
-        method_id=u'websecurityscanner.projects.scanConfigs.scanRuns.crawledUrls.list',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'pageSize', u'pageToken'],
-        relative_path=u'v1beta/{+parent}/crawledUrls',
+        flat_path='v1beta/projects/{projectsId}/scanConfigs/{scanConfigsId}/scanRuns/{scanRunsId}/crawledUrls',
+        http_method='GET',
+        method_id='websecurityscanner.projects.scanConfigs.scanRuns.crawledUrls.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v1beta/{+parent}/crawledUrls',
         request_field='',
-        request_type_name=u'WebsecurityscannerProjectsScanConfigsScanRunsCrawledUrlsListRequest',
-        response_type_name=u'ListCrawledUrlsResponse',
+        request_type_name='WebsecurityscannerProjectsScanConfigsScanRunsCrawledUrlsListRequest',
+        response_type_name='ListCrawledUrlsResponse',
         supports_download=False,
     )
 
   class ProjectsScanConfigsScanRunsFindingTypeStatsService(base_api.BaseApiService):
     """Service class for the projects_scanConfigs_scanRuns_findingTypeStats resource."""
 
-    _NAME = u'projects_scanConfigs_scanRuns_findingTypeStats'
+    _NAME = 'projects_scanConfigs_scanRuns_findingTypeStats'
 
     def __init__(self, client):
       super(WebsecurityscannerV1beta.ProjectsScanConfigsScanRunsFindingTypeStatsService, self).__init__(client)
@@ -104,23 +104,23 @@ class WebsecurityscannerV1beta(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta/projects/{projectsId}/scanConfigs/{scanConfigsId}/scanRuns/{scanRunsId}/findingTypeStats',
-        http_method=u'GET',
-        method_id=u'websecurityscanner.projects.scanConfigs.scanRuns.findingTypeStats.list',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
+        flat_path='v1beta/projects/{projectsId}/scanConfigs/{scanConfigsId}/scanRuns/{scanRunsId}/findingTypeStats',
+        http_method='GET',
+        method_id='websecurityscanner.projects.scanConfigs.scanRuns.findingTypeStats.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
         query_params=[],
-        relative_path=u'v1beta/{+parent}/findingTypeStats',
+        relative_path='v1beta/{+parent}/findingTypeStats',
         request_field='',
-        request_type_name=u'WebsecurityscannerProjectsScanConfigsScanRunsFindingTypeStatsListRequest',
-        response_type_name=u'ListFindingTypeStatsResponse',
+        request_type_name='WebsecurityscannerProjectsScanConfigsScanRunsFindingTypeStatsListRequest',
+        response_type_name='ListFindingTypeStatsResponse',
         supports_download=False,
     )
 
   class ProjectsScanConfigsScanRunsFindingsService(base_api.BaseApiService):
     """Service class for the projects_scanConfigs_scanRuns_findings resource."""
 
-    _NAME = u'projects_scanConfigs_scanRuns_findings'
+    _NAME = 'projects_scanConfigs_scanRuns_findings'
 
     def __init__(self, client):
       super(WebsecurityscannerV1beta.ProjectsScanConfigsScanRunsFindingsService, self).__init__(client)
@@ -141,16 +141,16 @@ class WebsecurityscannerV1beta(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta/projects/{projectsId}/scanConfigs/{scanConfigsId}/scanRuns/{scanRunsId}/findings/{findingsId}',
-        http_method=u'GET',
-        method_id=u'websecurityscanner.projects.scanConfigs.scanRuns.findings.get',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1beta/projects/{projectsId}/scanConfigs/{scanConfigsId}/scanRuns/{scanRunsId}/findings/{findingsId}',
+        http_method='GET',
+        method_id='websecurityscanner.projects.scanConfigs.scanRuns.findings.get',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1beta/{+name}',
+        relative_path='v1beta/{+name}',
         request_field='',
-        request_type_name=u'WebsecurityscannerProjectsScanConfigsScanRunsFindingsGetRequest',
-        response_type_name=u'Finding',
+        request_type_name='WebsecurityscannerProjectsScanConfigsScanRunsFindingsGetRequest',
+        response_type_name='Finding',
         supports_download=False,
     )
 
@@ -168,23 +168,23 @@ class WebsecurityscannerV1beta(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta/projects/{projectsId}/scanConfigs/{scanConfigsId}/scanRuns/{scanRunsId}/findings',
-        http_method=u'GET',
-        method_id=u'websecurityscanner.projects.scanConfigs.scanRuns.findings.list',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'filter', u'pageSize', u'pageToken'],
-        relative_path=u'v1beta/{+parent}/findings',
+        flat_path='v1beta/projects/{projectsId}/scanConfigs/{scanConfigsId}/scanRuns/{scanRunsId}/findings',
+        http_method='GET',
+        method_id='websecurityscanner.projects.scanConfigs.scanRuns.findings.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'pageSize', 'pageToken'],
+        relative_path='v1beta/{+parent}/findings',
         request_field='',
-        request_type_name=u'WebsecurityscannerProjectsScanConfigsScanRunsFindingsListRequest',
-        response_type_name=u'ListFindingsResponse',
+        request_type_name='WebsecurityscannerProjectsScanConfigsScanRunsFindingsListRequest',
+        response_type_name='ListFindingsResponse',
         supports_download=False,
     )
 
   class ProjectsScanConfigsScanRunsService(base_api.BaseApiService):
     """Service class for the projects_scanConfigs_scanRuns resource."""
 
-    _NAME = u'projects_scanConfigs_scanRuns'
+    _NAME = 'projects_scanConfigs_scanRuns'
 
     def __init__(self, client):
       super(WebsecurityscannerV1beta.ProjectsScanConfigsScanRunsService, self).__init__(client)
@@ -205,16 +205,16 @@ class WebsecurityscannerV1beta(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta/projects/{projectsId}/scanConfigs/{scanConfigsId}/scanRuns/{scanRunsId}',
-        http_method=u'GET',
-        method_id=u'websecurityscanner.projects.scanConfigs.scanRuns.get',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1beta/projects/{projectsId}/scanConfigs/{scanConfigsId}/scanRuns/{scanRunsId}',
+        http_method='GET',
+        method_id='websecurityscanner.projects.scanConfigs.scanRuns.get',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1beta/{+name}',
+        relative_path='v1beta/{+name}',
         request_field='',
-        request_type_name=u'WebsecurityscannerProjectsScanConfigsScanRunsGetRequest',
-        response_type_name=u'ScanRun',
+        request_type_name='WebsecurityscannerProjectsScanConfigsScanRunsGetRequest',
+        response_type_name='ScanRun',
         supports_download=False,
     )
 
@@ -233,16 +233,16 @@ stop time.
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta/projects/{projectsId}/scanConfigs/{scanConfigsId}/scanRuns',
-        http_method=u'GET',
-        method_id=u'websecurityscanner.projects.scanConfigs.scanRuns.list',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'pageSize', u'pageToken'],
-        relative_path=u'v1beta/{+parent}/scanRuns',
+        flat_path='v1beta/projects/{projectsId}/scanConfigs/{scanConfigsId}/scanRuns',
+        http_method='GET',
+        method_id='websecurityscanner.projects.scanConfigs.scanRuns.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v1beta/{+parent}/scanRuns',
         request_field='',
-        request_type_name=u'WebsecurityscannerProjectsScanConfigsScanRunsListRequest',
-        response_type_name=u'ListScanRunsResponse',
+        request_type_name='WebsecurityscannerProjectsScanConfigsScanRunsListRequest',
+        response_type_name='ListScanRunsResponse',
         supports_download=False,
     )
 
@@ -260,23 +260,23 @@ stop time.
           config, request, global_params=global_params)
 
     Stop.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta/projects/{projectsId}/scanConfigs/{scanConfigsId}/scanRuns/{scanRunsId}:stop',
-        http_method=u'POST',
-        method_id=u'websecurityscanner.projects.scanConfigs.scanRuns.stop',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1beta/projects/{projectsId}/scanConfigs/{scanConfigsId}/scanRuns/{scanRunsId}:stop',
+        http_method='POST',
+        method_id='websecurityscanner.projects.scanConfigs.scanRuns.stop',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1beta/{+name}:stop',
-        request_field=u'stopScanRunRequest',
-        request_type_name=u'WebsecurityscannerProjectsScanConfigsScanRunsStopRequest',
-        response_type_name=u'ScanRun',
+        relative_path='v1beta/{+name}:stop',
+        request_field='stopScanRunRequest',
+        request_type_name='WebsecurityscannerProjectsScanConfigsScanRunsStopRequest',
+        response_type_name='ScanRun',
         supports_download=False,
     )
 
   class ProjectsScanConfigsService(base_api.BaseApiService):
     """Service class for the projects_scanConfigs resource."""
 
-    _NAME = u'projects_scanConfigs'
+    _NAME = 'projects_scanConfigs'
 
     def __init__(self, client):
       super(WebsecurityscannerV1beta.ProjectsScanConfigsService, self).__init__(client)
@@ -297,16 +297,16 @@ stop time.
           config, request, global_params=global_params)
 
     Create.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta/projects/{projectsId}/scanConfigs',
-        http_method=u'POST',
-        method_id=u'websecurityscanner.projects.scanConfigs.create',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
+        flat_path='v1beta/projects/{projectsId}/scanConfigs',
+        http_method='POST',
+        method_id='websecurityscanner.projects.scanConfigs.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
         query_params=[],
-        relative_path=u'v1beta/{+parent}/scanConfigs',
-        request_field=u'scanConfig',
-        request_type_name=u'WebsecurityscannerProjectsScanConfigsCreateRequest',
-        response_type_name=u'ScanConfig',
+        relative_path='v1beta/{+parent}/scanConfigs',
+        request_field='scanConfig',
+        request_type_name='WebsecurityscannerProjectsScanConfigsCreateRequest',
+        response_type_name='ScanConfig',
         supports_download=False,
     )
 
@@ -324,16 +324,16 @@ stop time.
           config, request, global_params=global_params)
 
     Delete.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta/projects/{projectsId}/scanConfigs/{scanConfigsId}',
-        http_method=u'DELETE',
-        method_id=u'websecurityscanner.projects.scanConfigs.delete',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1beta/projects/{projectsId}/scanConfigs/{scanConfigsId}',
+        http_method='DELETE',
+        method_id='websecurityscanner.projects.scanConfigs.delete',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1beta/{+name}',
+        relative_path='v1beta/{+name}',
         request_field='',
-        request_type_name=u'WebsecurityscannerProjectsScanConfigsDeleteRequest',
-        response_type_name=u'Empty',
+        request_type_name='WebsecurityscannerProjectsScanConfigsDeleteRequest',
+        response_type_name='Empty',
         supports_download=False,
     )
 
@@ -351,16 +351,16 @@ stop time.
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta/projects/{projectsId}/scanConfigs/{scanConfigsId}',
-        http_method=u'GET',
-        method_id=u'websecurityscanner.projects.scanConfigs.get',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1beta/projects/{projectsId}/scanConfigs/{scanConfigsId}',
+        http_method='GET',
+        method_id='websecurityscanner.projects.scanConfigs.get',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1beta/{+name}',
+        relative_path='v1beta/{+name}',
         request_field='',
-        request_type_name=u'WebsecurityscannerProjectsScanConfigsGetRequest',
-        response_type_name=u'ScanConfig',
+        request_type_name='WebsecurityscannerProjectsScanConfigsGetRequest',
+        response_type_name='ScanConfig',
         supports_download=False,
     )
 
@@ -378,16 +378,16 @@ stop time.
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta/projects/{projectsId}/scanConfigs',
-        http_method=u'GET',
-        method_id=u'websecurityscanner.projects.scanConfigs.list',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'pageSize', u'pageToken'],
-        relative_path=u'v1beta/{+parent}/scanConfigs',
+        flat_path='v1beta/projects/{projectsId}/scanConfigs',
+        http_method='GET',
+        method_id='websecurityscanner.projects.scanConfigs.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v1beta/{+parent}/scanConfigs',
         request_field='',
-        request_type_name=u'WebsecurityscannerProjectsScanConfigsListRequest',
-        response_type_name=u'ListScanConfigsResponse',
+        request_type_name='WebsecurityscannerProjectsScanConfigsListRequest',
+        response_type_name='ListScanConfigsResponse',
         supports_download=False,
     )
 
@@ -405,16 +405,16 @@ stop time.
           config, request, global_params=global_params)
 
     Patch.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta/projects/{projectsId}/scanConfigs/{scanConfigsId}',
-        http_method=u'PATCH',
-        method_id=u'websecurityscanner.projects.scanConfigs.patch',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[u'updateMask'],
-        relative_path=u'v1beta/{+name}',
-        request_field=u'scanConfig',
-        request_type_name=u'WebsecurityscannerProjectsScanConfigsPatchRequest',
-        response_type_name=u'ScanConfig',
+        flat_path='v1beta/projects/{projectsId}/scanConfigs/{scanConfigsId}',
+        http_method='PATCH',
+        method_id='websecurityscanner.projects.scanConfigs.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v1beta/{+name}',
+        request_field='scanConfig',
+        request_type_name='WebsecurityscannerProjectsScanConfigsPatchRequest',
+        response_type_name='ScanConfig',
         supports_download=False,
     )
 
@@ -432,23 +432,23 @@ stop time.
           config, request, global_params=global_params)
 
     Start.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta/projects/{projectsId}/scanConfigs/{scanConfigsId}:start',
-        http_method=u'POST',
-        method_id=u'websecurityscanner.projects.scanConfigs.start',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1beta/projects/{projectsId}/scanConfigs/{scanConfigsId}:start',
+        http_method='POST',
+        method_id='websecurityscanner.projects.scanConfigs.start',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1beta/{+name}:start',
-        request_field=u'startScanRunRequest',
-        request_type_name=u'WebsecurityscannerProjectsScanConfigsStartRequest',
-        response_type_name=u'ScanRun',
+        relative_path='v1beta/{+name}:start',
+        request_field='startScanRunRequest',
+        request_type_name='WebsecurityscannerProjectsScanConfigsStartRequest',
+        response_type_name='ScanRun',
         supports_download=False,
     )
 
   class ProjectsService(base_api.BaseApiService):
     """Service class for the projects resource."""
 
-    _NAME = u'projects'
+    _NAME = 'projects'
 
     def __init__(self, client):
       super(WebsecurityscannerV1beta.ProjectsService, self).__init__(client)

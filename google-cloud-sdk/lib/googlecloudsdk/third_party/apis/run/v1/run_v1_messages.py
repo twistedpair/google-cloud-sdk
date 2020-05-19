@@ -117,8 +117,9 @@ class Binding(_messages.Message):
       not apply to the current request. However, a different role binding
       might grant the same role to one or more of the members in this binding.
       To learn which resources support conditions in their IAM policies, see
-      the [IAM documentation](https://cloud.google.com/iam/help/conditions
-      /resource-policies).
+      the [IAM
+      documentation](https://cloud.google.com/iam/help/conditions/resource-
+      policies).
     members: Specifies the identities requesting access for a Cloud Platform
       resource. `members` can have the following values:  * `allUsers`: A
       special identifier that represents anyone who is    on the internet;
@@ -322,9 +323,9 @@ class Container(_messages.Message):
       resolved, the reference in the input string will be unchanged. The
       $(VAR_NAME) syntax can be escaped with a double $$, ie: $$(VAR_NAME).
       Escaped references will never be expanded, regardless of whether the
-      variable exists or not. More info: https://kubernetes.io/docs/tasks
-      /inject-data-application/define-command-argument-container/#running-a
-      -command-in-a-shell
+      variable exists or not. More info:
+      https://kubernetes.io/docs/tasks/inject-data-application/define-command-
+      argument-container/#running-a-command-in-a-shell
     command: A string attribute.
     env: (Optional)  Cloud Run fully managed: supported  Cloud Run for Anthos:
       supported  List of environment variables to set in the container.
@@ -347,8 +348,8 @@ class Container(_messages.Message):
     livenessProbe: (Optional)  Cloud Run fully managed: not supported  Cloud
       Run for Anthos: supported  Periodic probe of container liveness.
       Container will be restarted if the probe fails. More info:
-      https://kubernetes.io/docs/concepts/workloads/pods/pod-lifecycle
-      #container-probes
+      https://kubernetes.io/docs/concepts/workloads/pods/pod-
+      lifecycle#container-probes
     name: (Optional)  Name of the container specified as a DNS_LABEL.
     ports: (Optional)  List of ports to expose from the container. Only a
       single port can be specified. The specified ports must be listening on
@@ -358,8 +359,9 @@ class Container(_messages.Message):
     readinessProbe: (Optional)  Cloud Run fully managed: not supported  Cloud
       Run for Anthos: supported  Periodic probe of container service
       readiness. Container will be removed from service endpoints if the probe
-      fails. More info: https://kubernetes.io/docs/concepts/workloads/pods
-      /pod-lifecycle#container-probes
+      fails. More info:
+      https://kubernetes.io/docs/concepts/workloads/pods/pod-
+      lifecycle#container-probes
     resources: (Optional)  Cloud Run fully managed: supported  Cloud Run for
       Anthos: supported  Compute Resources required by this container. More
       info: https://kubernetes.io/docs/concepts/storage/persistent-
@@ -367,8 +369,8 @@ class Container(_messages.Message):
     securityContext: (Optional)  Cloud Run fully managed: not supported  Cloud
       Run for Anthos: supported  Security options the pod should run with.
       More info: https://kubernetes.io/docs/concepts/policy/security-context/
-      More info: https://kubernetes.io/docs/tasks/configure-pod-container
-      /security-context/
+      More info: https://kubernetes.io/docs/tasks/configure-pod-
+      container/security-context/
     terminationMessagePath: (Optional)  Cloud Run fully managed: not supported
       Cloud Run for Anthos: supported  Path at which the file to which the
       container's termination message will be written is mounted into the
@@ -631,10 +633,9 @@ class GoogleCloudRunV1Condition(_messages.Message):
       Error, Warning, Info
     status: Status of the condition, one of True, False, Unknown.
     type: type is used to communicate the status of the reconciliation
-      process. See also:
-      https://github.com/knative/serving/blob/master/docs/spec/errors.md
-      #error-conditions-and-reporting Types common to all resources include: *
-      "Ready": True when the Resource is ready.
+      process. See also: https://github.com/knative/serving/blob/master/docs/s
+      pec/errors.md#error-conditions-and-reporting Types common to all
+      resources include: * "Ready": True when the Resource is ready.
   """
 
   lastTransitionTime = _messages.StringField(1)
@@ -788,8 +789,8 @@ class ListMeta(_messages.Message):
       this object that can be used by clients to determine when objects have
       changed. Value must be treated as opaque by clients and passed
       unmodified back to the server. Populated by the system. Read-only. More
-      info: https://git.k8s.io/community/contributors/devel/api-conventions.md
-      #concurrency-control-and-consistency +optional
+      info: https://git.k8s.io/community/contributors/devel/api-
+      conventions.md#concurrency-control-and-consistency +optional
     selfLink: SelfLink is a URL representing this object. Populated by the
       system. Read-only. +optional
   """
@@ -1006,8 +1007,8 @@ class ObjectMeta(_messages.Message):
     AnnotationsValue: (Optional)  Annotations is an unstructured key value map
       stored with a resource that may be set by external tools to store and
       retrieve arbitrary metadata. They are not queryable and should be
-      preserved when modifying objects. More info: http://kubernetes.io/docs
-      /user-guide/annotations
+      preserved when modifying objects. More info:
+      http://kubernetes.io/docs/user-guide/annotations
     LabelsValue: (Optional)  Map of string keys and values that can be used to
       organize and categorize (scope and select) objects. May match selectors
       of replication controllers and routes. More info:
@@ -1017,8 +1018,8 @@ class ObjectMeta(_messages.Message):
     annotations: (Optional)  Annotations is an unstructured key value map
       stored with a resource that may be set by external tools to store and
       retrieve arbitrary metadata. They are not queryable and should be
-      preserved when modifying objects. More info: http://kubernetes.io/docs
-      /user-guide/annotations
+      preserved when modifying objects. More info:
+      http://kubernetes.io/docs/user-guide/annotations
     clusterName: (Optional)  Cloud Run fully managed: not supported  Cloud Run
       for Anthos: supported  The name of the cluster which the object belongs
       to. This is used to distinguish resources with same name and namespace
@@ -1077,8 +1078,9 @@ class ObjectMeta(_messages.Message):
       ServerTimeout indicating a unique name could not be found in the time
       allotted, and the client should retry (optionally after the time
       indicated in the Retry-After header).  Applied only if Name is not
-      specified. More info: https://git.k8s.io/community/contributors/devel
-      /api-conventions.md#idempotency  string generateName = 2;
+      specified. More info:
+      https://git.k8s.io/community/contributors/devel/api-
+      conventions.md#idempotency  string generateName = 2;
     generation: (Optional)  A sequence number representing a specific
       generation of the desired state. Populated by the system. Read-only.
     labels: (Optional)  Map of string keys and values that can be used to
@@ -1089,8 +1091,8 @@ class ObjectMeta(_messages.Message):
       Is required when creating resources, although some resources may allow a
       client to request the generation of an appropriate name automatically.
       Name is primarily intended for creation idempotence and configuration
-      definition. Cannot be updated. More info: http://kubernetes.io/docs
-      /user-guide/identifiers#names +optional
+      definition. Cannot be updated. More info:
+      http://kubernetes.io/docs/user-guide/identifiers#names +optional
     namespace: Namespace defines the space within each name must be unique,
       within a Cloud Run region. In Cloud Run the namespace must be equal to
       either the project ID or project number.
@@ -1106,8 +1108,8 @@ class ObjectMeta(_messages.Message):
       the server. They may only be valid for a particular resource or set of
       resources.  Populated by the system. Read-only. Value must be treated as
       opaque by clients and . More info:
-      https://git.k8s.io/community/contributors/devel/api-conventions.md
-      #concurrency-control-and-consistency
+      https://git.k8s.io/community/contributors/devel/api-
+      conventions.md#concurrency-control-and-consistency
     selfLink: (Optional)  SelfLink is a URL representing this object.
       Populated by the system. Read-only.  string selfLink = 4;
     uid: (Optional)  UID is the unique in time and space value for this
@@ -1149,8 +1151,8 @@ class ObjectMeta(_messages.Message):
   class LabelsValue(_messages.Message):
     r"""(Optional)  Map of string keys and values that can be used to organize
     and categorize (scope and select) objects. May match selectors of
-    replication controllers and routes. More info: http://kubernetes.io/docs
-    /user-guide/labels
+    replication controllers and routes. More info:
+    http://kubernetes.io/docs/user-guide/labels
 
     Messages:
       AdditionalProperty: An additional property for a LabelsValue object.
@@ -1204,8 +1206,8 @@ class OwnerReference(_messages.Message):
     controller: If true, this reference points to the managing controller.
       +optional
     kind: Kind of the referent. More info:
-      https://git.k8s.io/community/contributors/devel/api-conventions.md
-      #types-kinds
+      https://git.k8s.io/community/contributors/devel/api-
+      conventions.md#types-kinds
     name: Name of the referent. More info: http://kubernetes.io/docs/user-
       guide/identifiers#names
     uid: UID of the referent. More info: http://kubernetes.io/docs/user-
@@ -1245,8 +1247,8 @@ class Policy(_messages.Message):
   timestamp('2020-10-01T00:00:00.000Z')",           }         }       ],
   "etag": "BwWWja0YfJA=",       "version": 3     }  **YAML example:**
   bindings:     - members:       - user:mike@example.com       -
-  group:admins@example.com       - domain:google.com       - serviceAccount
-  :my-project-id@appspot.gserviceaccount.com       role:
+  group:admins@example.com       - domain:google.com       -
+  serviceAccount:my-project-id@appspot.gserviceaccount.com       role:
   roles/resourcemanager.organizationAdmin     - members:       -
   user:eve@example.com       role: roles/resourcemanager.organizationViewer
   condition:         title: expirable access         description: Does not
@@ -1316,8 +1318,8 @@ class Probe(_messages.Message):
     initialDelaySeconds: (Optional)  Cloud Run fully managed: not supported
       Cloud Run for Anthos: supported  Number of seconds after the container
       has started before liveness probes are initiated. More info:
-      https://kubernetes.io/docs/concepts/workloads/pods/pod-lifecycle
-      #container-probes
+      https://kubernetes.io/docs/concepts/workloads/pods/pod-
+      lifecycle#container-probes
     periodSeconds: (Optional)  Cloud Run fully managed: not supported  Cloud
       Run for Anthos: supported  How often (in seconds) to perform the probe.
       Default to 10 seconds. Minimum value is 1.
@@ -1332,8 +1334,8 @@ class Probe(_messages.Message):
     timeoutSeconds: (Optional)  Cloud Run fully managed: not supported  Cloud
       Run for Anthos: supported  Number of seconds after which the probe times
       out. Defaults to 1 second. Minimum value is 1. More info:
-      https://kubernetes.io/docs/concepts/workloads/pods/pod-lifecycle
-      #container-probes
+      https://kubernetes.io/docs/concepts/workloads/pods/pod-
+      lifecycle#container-probes
   """
 
   exec_ = _messages.MessageField('ExecAction', 1)
@@ -1517,8 +1519,8 @@ class RevisionSpec(_messages.Message):
       execution for this Revision. In the context of a Revision, we disallow a
       number of fields on this Container, including: name and lifecycle. In
       Cloud Run, only a single container may be provided. The runtime contract
-      is documented here: https://github.com/knative/serving/blob/master/docs
-      /runtime-contract.md
+      is documented here:
+      https://github.com/knative/serving/blob/master/docs/runtime-contract.md
     serviceAccountName: Email address of the IAM service account associated
       with the revision of the service. The service account represents the
       identity of the running revision, and determines what permissions the
@@ -1655,8 +1657,8 @@ class RouteStatus(_messages.Message):
       appears in the spec, this will hold the LatestReadyRevisionName that we
       last observed.
     url: URL holds the url that will distribute traffic over the provided
-      traffic targets. It generally has the form: https://{route-hash
-      }-{project-hash}-{cluster-level-suffix}.a.run.app
+      traffic targets. It generally has the form: https://{route-
+      hash}-{project-hash}-{cluster-level-suffix}.a.run.app
   """
 
   address = _messages.MessageField('Addressable', 1)
@@ -2525,8 +2527,8 @@ class Secret(_messages.Message):
     StringDataValue: stringData allows specifying non-binary secret data in
       string form. It is provided as a write-only convenience method. All keys
       and values are merged into the data field on write, overwriting any
-      existing values. It is never output when reading from the API. +k8s
-      :conversion-gen=false
+      existing values. It is never output when reading from the API.
+      +k8s:conversion-gen=false
 
   Fields:
     data: Data contains the secret data. Each key must consist of alphanumeric
@@ -2856,7 +2858,7 @@ class StandardQueryParameters(_messages.Message):
 
   f__xgafv = _messages.EnumField('FXgafvValueValuesEnum', 1)
   access_token = _messages.StringField(2)
-  alt = _messages.EnumField('AltValueValuesEnum', 3, default=u'json')
+  alt = _messages.EnumField('AltValueValuesEnum', 3, default='json')
   callback = _messages.StringField(4)
   fields = _messages.StringField(5)
   key = _messages.StringField(6)
@@ -2880,15 +2882,15 @@ class Status(_messages.Message):
     message: A human-readable description of the status of this operation.
       +optional
     metadata: Standard list metadata. More info:
-      https://git.k8s.io/community/contributors/devel/api-conventions.md
-      #types-kinds +optional
+      https://git.k8s.io/community/contributors/devel/api-
+      conventions.md#types-kinds +optional
     reason: A machine-readable description of why this operation is in the
       "Failure" status. If this value is empty there is no information
       available. A Reason clarifies an HTTP status code but does not override
       it. +optional
     status: Status of the operation. One of: "Success" or "Failure". More
-      info: https://git.k8s.io/community/contributors/devel/api-conventions.md
-      #spec-and-status +optional
+      info: https://git.k8s.io/community/contributors/devel/api-
+      conventions.md#spec-and-status +optional
   """
 
   code = _messages.IntegerField(1, variant=_messages.Variant.INT32)

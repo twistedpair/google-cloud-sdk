@@ -8,17 +8,17 @@ class MonitoringV3(base_api.BaseApiClient):
   """Generated client library for service monitoring version v3."""
 
   MESSAGES_MODULE = messages
-  BASE_URL = u'https://monitoring.googleapis.com/'
-  MTLS_BASE_URL = u''
+  BASE_URL = 'https://monitoring.googleapis.com/'
+  MTLS_BASE_URL = ''
 
-  _PACKAGE = u'monitoring'
-  _SCOPES = [u'https://www.googleapis.com/auth/cloud-platform', u'https://www.googleapis.com/auth/monitoring', u'https://www.googleapis.com/auth/monitoring.read', u'https://www.googleapis.com/auth/monitoring.write']
-  _VERSION = u'v3'
+  _PACKAGE = 'monitoring'
+  _SCOPES = ['https://www.googleapis.com/auth/cloud-platform', 'https://www.googleapis.com/auth/monitoring', 'https://www.googleapis.com/auth/monitoring.read', 'https://www.googleapis.com/auth/monitoring.write']
+  _VERSION = 'v3'
   _CLIENT_ID = '1042881264118.apps.googleusercontent.com'
   _CLIENT_SECRET = 'x_Tw5K8nnjoRAqULM9PFAC2b'
-  _USER_AGENT = u'google-cloud-sdk'
-  _CLIENT_CLASS_NAME = u'MonitoringV3'
-  _URL_VERSION = u'v3'
+  _USER_AGENT = 'google-cloud-sdk'
+  _CLIENT_CLASS_NAME = 'MonitoringV3'
+  _URL_VERSION = 'v3'
   _API_KEY = None
 
   def __init__(self, url='', credentials=None,
@@ -52,7 +52,7 @@ class MonitoringV3(base_api.BaseApiClient):
   class ProjectsAlertPoliciesService(base_api.BaseApiService):
     """Service class for the projects_alertPolicies resource."""
 
-    _NAME = u'projects_alertPolicies'
+    _NAME = 'projects_alertPolicies'
 
     def __init__(self, client):
       super(MonitoringV3.ProjectsAlertPoliciesService, self).__init__(client)
@@ -73,16 +73,16 @@ class MonitoringV3(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Create.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v3/projects/{projectsId}/alertPolicies',
-        http_method=u'POST',
-        method_id=u'monitoring.projects.alertPolicies.create',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v3/projects/{projectsId}/alertPolicies',
+        http_method='POST',
+        method_id='monitoring.projects.alertPolicies.create',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v3/{+name}/alertPolicies',
-        request_field=u'alertPolicy',
-        request_type_name=u'MonitoringProjectsAlertPoliciesCreateRequest',
-        response_type_name=u'AlertPolicy',
+        relative_path='v3/{+name}/alertPolicies',
+        request_field='alertPolicy',
+        request_type_name='MonitoringProjectsAlertPoliciesCreateRequest',
+        response_type_name='AlertPolicy',
         supports_download=False,
     )
 
@@ -100,16 +100,16 @@ class MonitoringV3(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Delete.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v3/projects/{projectsId}/alertPolicies/{alertPoliciesId}',
-        http_method=u'DELETE',
-        method_id=u'monitoring.projects.alertPolicies.delete',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v3/projects/{projectsId}/alertPolicies/{alertPoliciesId}',
+        http_method='DELETE',
+        method_id='monitoring.projects.alertPolicies.delete',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v3/{+name}',
+        relative_path='v3/{+name}',
         request_field='',
-        request_type_name=u'MonitoringProjectsAlertPoliciesDeleteRequest',
-        response_type_name=u'Empty',
+        request_type_name='MonitoringProjectsAlertPoliciesDeleteRequest',
+        response_type_name='Empty',
         supports_download=False,
     )
 
@@ -127,16 +127,16 @@ class MonitoringV3(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v3/projects/{projectsId}/alertPolicies/{alertPoliciesId}',
-        http_method=u'GET',
-        method_id=u'monitoring.projects.alertPolicies.get',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v3/projects/{projectsId}/alertPolicies/{alertPoliciesId}',
+        http_method='GET',
+        method_id='monitoring.projects.alertPolicies.get',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v3/{+name}',
+        relative_path='v3/{+name}',
         request_field='',
-        request_type_name=u'MonitoringProjectsAlertPoliciesGetRequest',
-        response_type_name=u'AlertPolicy',
+        request_type_name='MonitoringProjectsAlertPoliciesGetRequest',
+        response_type_name='AlertPolicy',
         supports_download=False,
     )
 
@@ -154,16 +154,16 @@ class MonitoringV3(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v3/projects/{projectsId}/alertPolicies',
-        http_method=u'GET',
-        method_id=u'monitoring.projects.alertPolicies.list',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[u'filter', u'orderBy', u'pageSize', u'pageToken'],
-        relative_path=u'v3/{+name}/alertPolicies',
+        flat_path='v3/projects/{projectsId}/alertPolicies',
+        http_method='GET',
+        method_id='monitoring.projects.alertPolicies.list',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['filter', 'orderBy', 'pageSize', 'pageToken'],
+        relative_path='v3/{+name}/alertPolicies',
         request_field='',
-        request_type_name=u'MonitoringProjectsAlertPoliciesListRequest',
-        response_type_name=u'ListAlertPoliciesResponse',
+        request_type_name='MonitoringProjectsAlertPoliciesListRequest',
+        response_type_name='ListAlertPoliciesResponse',
         supports_download=False,
     )
 
@@ -181,23 +181,23 @@ class MonitoringV3(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Patch.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v3/projects/{projectsId}/alertPolicies/{alertPoliciesId}',
-        http_method=u'PATCH',
-        method_id=u'monitoring.projects.alertPolicies.patch',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[u'updateMask'],
-        relative_path=u'v3/{+name}',
-        request_field=u'alertPolicy',
-        request_type_name=u'MonitoringProjectsAlertPoliciesPatchRequest',
-        response_type_name=u'AlertPolicy',
+        flat_path='v3/projects/{projectsId}/alertPolicies/{alertPoliciesId}',
+        http_method='PATCH',
+        method_id='monitoring.projects.alertPolicies.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v3/{+name}',
+        request_field='alertPolicy',
+        request_type_name='MonitoringProjectsAlertPoliciesPatchRequest',
+        response_type_name='AlertPolicy',
         supports_download=False,
     )
 
   class ProjectsCollectdTimeSeriesService(base_api.BaseApiService):
     """Service class for the projects_collectdTimeSeries resource."""
 
-    _NAME = u'projects_collectdTimeSeries'
+    _NAME = 'projects_collectdTimeSeries'
 
     def __init__(self, client):
       super(MonitoringV3.ProjectsCollectdTimeSeriesService, self).__init__(client)
@@ -218,23 +218,23 @@ class MonitoringV3(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Create.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v3/projects/{projectsId}/collectdTimeSeries',
-        http_method=u'POST',
-        method_id=u'monitoring.projects.collectdTimeSeries.create',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v3/projects/{projectsId}/collectdTimeSeries',
+        http_method='POST',
+        method_id='monitoring.projects.collectdTimeSeries.create',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v3/{+name}/collectdTimeSeries',
-        request_field=u'createCollectdTimeSeriesRequest',
-        request_type_name=u'MonitoringProjectsCollectdTimeSeriesCreateRequest',
-        response_type_name=u'CreateCollectdTimeSeriesResponse',
+        relative_path='v3/{+name}/collectdTimeSeries',
+        request_field='createCollectdTimeSeriesRequest',
+        request_type_name='MonitoringProjectsCollectdTimeSeriesCreateRequest',
+        response_type_name='CreateCollectdTimeSeriesResponse',
         supports_download=False,
     )
 
   class ProjectsGroupsMembersService(base_api.BaseApiService):
     """Service class for the projects_groups_members resource."""
 
-    _NAME = u'projects_groups_members'
+    _NAME = 'projects_groups_members'
 
     def __init__(self, client):
       super(MonitoringV3.ProjectsGroupsMembersService, self).__init__(client)
@@ -255,23 +255,23 @@ class MonitoringV3(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v3/projects/{projectsId}/groups/{groupsId}/members',
-        http_method=u'GET',
-        method_id=u'monitoring.projects.groups.members.list',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[u'filter', u'interval_endTime', u'interval_startTime', u'pageSize', u'pageToken'],
-        relative_path=u'v3/{+name}/members',
+        flat_path='v3/projects/{projectsId}/groups/{groupsId}/members',
+        http_method='GET',
+        method_id='monitoring.projects.groups.members.list',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['filter', 'interval_endTime', 'interval_startTime', 'pageSize', 'pageToken'],
+        relative_path='v3/{+name}/members',
         request_field='',
-        request_type_name=u'MonitoringProjectsGroupsMembersListRequest',
-        response_type_name=u'ListGroupMembersResponse',
+        request_type_name='MonitoringProjectsGroupsMembersListRequest',
+        response_type_name='ListGroupMembersResponse',
         supports_download=False,
     )
 
   class ProjectsGroupsService(base_api.BaseApiService):
     """Service class for the projects_groups resource."""
 
-    _NAME = u'projects_groups'
+    _NAME = 'projects_groups'
 
     def __init__(self, client):
       super(MonitoringV3.ProjectsGroupsService, self).__init__(client)
@@ -292,16 +292,16 @@ class MonitoringV3(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Create.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v3/projects/{projectsId}/groups',
-        http_method=u'POST',
-        method_id=u'monitoring.projects.groups.create',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[u'validateOnly'],
-        relative_path=u'v3/{+name}/groups',
-        request_field=u'group',
-        request_type_name=u'MonitoringProjectsGroupsCreateRequest',
-        response_type_name=u'Group',
+        flat_path='v3/projects/{projectsId}/groups',
+        http_method='POST',
+        method_id='monitoring.projects.groups.create',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['validateOnly'],
+        relative_path='v3/{+name}/groups',
+        request_field='group',
+        request_type_name='MonitoringProjectsGroupsCreateRequest',
+        response_type_name='Group',
         supports_download=False,
     )
 
@@ -319,16 +319,16 @@ class MonitoringV3(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Delete.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v3/projects/{projectsId}/groups/{groupsId}',
-        http_method=u'DELETE',
-        method_id=u'monitoring.projects.groups.delete',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v3/projects/{projectsId}/groups/{groupsId}',
+        http_method='DELETE',
+        method_id='monitoring.projects.groups.delete',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v3/{+name}',
+        relative_path='v3/{+name}',
         request_field='',
-        request_type_name=u'MonitoringProjectsGroupsDeleteRequest',
-        response_type_name=u'Empty',
+        request_type_name='MonitoringProjectsGroupsDeleteRequest',
+        response_type_name='Empty',
         supports_download=False,
     )
 
@@ -346,16 +346,16 @@ class MonitoringV3(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v3/projects/{projectsId}/groups/{groupsId}',
-        http_method=u'GET',
-        method_id=u'monitoring.projects.groups.get',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v3/projects/{projectsId}/groups/{groupsId}',
+        http_method='GET',
+        method_id='monitoring.projects.groups.get',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v3/{+name}',
+        relative_path='v3/{+name}',
         request_field='',
-        request_type_name=u'MonitoringProjectsGroupsGetRequest',
-        response_type_name=u'Group',
+        request_type_name='MonitoringProjectsGroupsGetRequest',
+        response_type_name='Group',
         supports_download=False,
     )
 
@@ -373,16 +373,16 @@ class MonitoringV3(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v3/projects/{projectsId}/groups',
-        http_method=u'GET',
-        method_id=u'monitoring.projects.groups.list',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[u'ancestorsOfGroup', u'childrenOfGroup', u'descendantsOfGroup', u'pageSize', u'pageToken'],
-        relative_path=u'v3/{+name}/groups',
+        flat_path='v3/projects/{projectsId}/groups',
+        http_method='GET',
+        method_id='monitoring.projects.groups.list',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['ancestorsOfGroup', 'childrenOfGroup', 'descendantsOfGroup', 'pageSize', 'pageToken'],
+        relative_path='v3/{+name}/groups',
         request_field='',
-        request_type_name=u'MonitoringProjectsGroupsListRequest',
-        response_type_name=u'ListGroupsResponse',
+        request_type_name='MonitoringProjectsGroupsListRequest',
+        response_type_name='ListGroupsResponse',
         supports_download=False,
     )
 
@@ -400,23 +400,23 @@ class MonitoringV3(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Update.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v3/projects/{projectsId}/groups/{groupsId}',
-        http_method=u'PUT',
-        method_id=u'monitoring.projects.groups.update',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[u'validateOnly'],
-        relative_path=u'v3/{+name}',
-        request_field=u'group',
-        request_type_name=u'MonitoringProjectsGroupsUpdateRequest',
-        response_type_name=u'Group',
+        flat_path='v3/projects/{projectsId}/groups/{groupsId}',
+        http_method='PUT',
+        method_id='monitoring.projects.groups.update',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['validateOnly'],
+        relative_path='v3/{+name}',
+        request_field='group',
+        request_type_name='MonitoringProjectsGroupsUpdateRequest',
+        response_type_name='Group',
         supports_download=False,
     )
 
   class ProjectsMetricDescriptorsService(base_api.BaseApiService):
     """Service class for the projects_metricDescriptors resource."""
 
-    _NAME = u'projects_metricDescriptors'
+    _NAME = 'projects_metricDescriptors'
 
     def __init__(self, client):
       super(MonitoringV3.ProjectsMetricDescriptorsService, self).__init__(client)
@@ -437,16 +437,16 @@ class MonitoringV3(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Create.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v3/projects/{projectsId}/metricDescriptors',
-        http_method=u'POST',
-        method_id=u'monitoring.projects.metricDescriptors.create',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v3/projects/{projectsId}/metricDescriptors',
+        http_method='POST',
+        method_id='monitoring.projects.metricDescriptors.create',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v3/{+name}/metricDescriptors',
+        relative_path='v3/{+name}/metricDescriptors',
         request_field='<request>',
-        request_type_name=u'MetricDescriptor',
-        response_type_name=u'MetricDescriptor',
+        request_type_name='MetricDescriptor',
+        response_type_name='MetricDescriptor',
         supports_download=False,
     )
 
@@ -464,16 +464,16 @@ class MonitoringV3(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Delete.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v3/projects/{projectsId}/metricDescriptors/{metricDescriptorsId}',
-        http_method=u'DELETE',
-        method_id=u'monitoring.projects.metricDescriptors.delete',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v3/projects/{projectsId}/metricDescriptors/{metricDescriptorsId}',
+        http_method='DELETE',
+        method_id='monitoring.projects.metricDescriptors.delete',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v3/{+name}',
+        relative_path='v3/{+name}',
         request_field='',
-        request_type_name=u'MonitoringProjectsMetricDescriptorsDeleteRequest',
-        response_type_name=u'Empty',
+        request_type_name='MonitoringProjectsMetricDescriptorsDeleteRequest',
+        response_type_name='Empty',
         supports_download=False,
     )
 
@@ -491,16 +491,16 @@ class MonitoringV3(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v3/projects/{projectsId}/metricDescriptors/{metricDescriptorsId}',
-        http_method=u'GET',
-        method_id=u'monitoring.projects.metricDescriptors.get',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v3/projects/{projectsId}/metricDescriptors/{metricDescriptorsId}',
+        http_method='GET',
+        method_id='monitoring.projects.metricDescriptors.get',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v3/{+name}',
+        relative_path='v3/{+name}',
         request_field='',
-        request_type_name=u'MonitoringProjectsMetricDescriptorsGetRequest',
-        response_type_name=u'MetricDescriptor',
+        request_type_name='MonitoringProjectsMetricDescriptorsGetRequest',
+        response_type_name='MetricDescriptor',
         supports_download=False,
     )
 
@@ -518,23 +518,23 @@ class MonitoringV3(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v3/projects/{projectsId}/metricDescriptors',
-        http_method=u'GET',
-        method_id=u'monitoring.projects.metricDescriptors.list',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[u'filter', u'pageSize', u'pageToken'],
-        relative_path=u'v3/{+name}/metricDescriptors',
+        flat_path='v3/projects/{projectsId}/metricDescriptors',
+        http_method='GET',
+        method_id='monitoring.projects.metricDescriptors.list',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['filter', 'pageSize', 'pageToken'],
+        relative_path='v3/{+name}/metricDescriptors',
         request_field='',
-        request_type_name=u'MonitoringProjectsMetricDescriptorsListRequest',
-        response_type_name=u'ListMetricDescriptorsResponse',
+        request_type_name='MonitoringProjectsMetricDescriptorsListRequest',
+        response_type_name='ListMetricDescriptorsResponse',
         supports_download=False,
     )
 
   class ProjectsMonitoredResourceDescriptorsService(base_api.BaseApiService):
     """Service class for the projects_monitoredResourceDescriptors resource."""
 
-    _NAME = u'projects_monitoredResourceDescriptors'
+    _NAME = 'projects_monitoredResourceDescriptors'
 
     def __init__(self, client):
       super(MonitoringV3.ProjectsMonitoredResourceDescriptorsService, self).__init__(client)
@@ -555,16 +555,16 @@ class MonitoringV3(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v3/projects/{projectsId}/monitoredResourceDescriptors/{monitoredResourceDescriptorsId}',
-        http_method=u'GET',
-        method_id=u'monitoring.projects.monitoredResourceDescriptors.get',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v3/projects/{projectsId}/monitoredResourceDescriptors/{monitoredResourceDescriptorsId}',
+        http_method='GET',
+        method_id='monitoring.projects.monitoredResourceDescriptors.get',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v3/{+name}',
+        relative_path='v3/{+name}',
         request_field='',
-        request_type_name=u'MonitoringProjectsMonitoredResourceDescriptorsGetRequest',
-        response_type_name=u'MonitoredResourceDescriptor',
+        request_type_name='MonitoringProjectsMonitoredResourceDescriptorsGetRequest',
+        response_type_name='MonitoredResourceDescriptor',
         supports_download=False,
     )
 
@@ -582,23 +582,23 @@ class MonitoringV3(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v3/projects/{projectsId}/monitoredResourceDescriptors',
-        http_method=u'GET',
-        method_id=u'monitoring.projects.monitoredResourceDescriptors.list',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[u'filter', u'pageSize', u'pageToken'],
-        relative_path=u'v3/{+name}/monitoredResourceDescriptors',
+        flat_path='v3/projects/{projectsId}/monitoredResourceDescriptors',
+        http_method='GET',
+        method_id='monitoring.projects.monitoredResourceDescriptors.list',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['filter', 'pageSize', 'pageToken'],
+        relative_path='v3/{+name}/monitoredResourceDescriptors',
         request_field='',
-        request_type_name=u'MonitoringProjectsMonitoredResourceDescriptorsListRequest',
-        response_type_name=u'ListMonitoredResourceDescriptorsResponse',
+        request_type_name='MonitoringProjectsMonitoredResourceDescriptorsListRequest',
+        response_type_name='ListMonitoredResourceDescriptorsResponse',
         supports_download=False,
     )
 
   class ProjectsNotificationChannelDescriptorsService(base_api.BaseApiService):
     """Service class for the projects_notificationChannelDescriptors resource."""
 
-    _NAME = u'projects_notificationChannelDescriptors'
+    _NAME = 'projects_notificationChannelDescriptors'
 
     def __init__(self, client):
       super(MonitoringV3.ProjectsNotificationChannelDescriptorsService, self).__init__(client)
@@ -619,16 +619,16 @@ class MonitoringV3(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v3/projects/{projectsId}/notificationChannelDescriptors/{notificationChannelDescriptorsId}',
-        http_method=u'GET',
-        method_id=u'monitoring.projects.notificationChannelDescriptors.get',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v3/projects/{projectsId}/notificationChannelDescriptors/{notificationChannelDescriptorsId}',
+        http_method='GET',
+        method_id='monitoring.projects.notificationChannelDescriptors.get',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v3/{+name}',
+        relative_path='v3/{+name}',
         request_field='',
-        request_type_name=u'MonitoringProjectsNotificationChannelDescriptorsGetRequest',
-        response_type_name=u'NotificationChannelDescriptor',
+        request_type_name='MonitoringProjectsNotificationChannelDescriptorsGetRequest',
+        response_type_name='NotificationChannelDescriptor',
         supports_download=False,
     )
 
@@ -646,23 +646,23 @@ class MonitoringV3(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v3/projects/{projectsId}/notificationChannelDescriptors',
-        http_method=u'GET',
-        method_id=u'monitoring.projects.notificationChannelDescriptors.list',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[u'pageSize', u'pageToken'],
-        relative_path=u'v3/{+name}/notificationChannelDescriptors',
+        flat_path='v3/projects/{projectsId}/notificationChannelDescriptors',
+        http_method='GET',
+        method_id='monitoring.projects.notificationChannelDescriptors.list',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v3/{+name}/notificationChannelDescriptors',
         request_field='',
-        request_type_name=u'MonitoringProjectsNotificationChannelDescriptorsListRequest',
-        response_type_name=u'ListNotificationChannelDescriptorsResponse',
+        request_type_name='MonitoringProjectsNotificationChannelDescriptorsListRequest',
+        response_type_name='ListNotificationChannelDescriptorsResponse',
         supports_download=False,
     )
 
   class ProjectsNotificationChannelsService(base_api.BaseApiService):
     """Service class for the projects_notificationChannels resource."""
 
-    _NAME = u'projects_notificationChannels'
+    _NAME = 'projects_notificationChannels'
 
     def __init__(self, client):
       super(MonitoringV3.ProjectsNotificationChannelsService, self).__init__(client)
@@ -683,16 +683,16 @@ class MonitoringV3(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Create.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v3/projects/{projectsId}/notificationChannels',
-        http_method=u'POST',
-        method_id=u'monitoring.projects.notificationChannels.create',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v3/projects/{projectsId}/notificationChannels',
+        http_method='POST',
+        method_id='monitoring.projects.notificationChannels.create',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v3/{+name}/notificationChannels',
-        request_field=u'notificationChannel',
-        request_type_name=u'MonitoringProjectsNotificationChannelsCreateRequest',
-        response_type_name=u'NotificationChannel',
+        relative_path='v3/{+name}/notificationChannels',
+        request_field='notificationChannel',
+        request_type_name='MonitoringProjectsNotificationChannelsCreateRequest',
+        response_type_name='NotificationChannel',
         supports_download=False,
     )
 
@@ -710,16 +710,16 @@ class MonitoringV3(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Delete.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v3/projects/{projectsId}/notificationChannels/{notificationChannelsId}',
-        http_method=u'DELETE',
-        method_id=u'monitoring.projects.notificationChannels.delete',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[u'force'],
-        relative_path=u'v3/{+name}',
+        flat_path='v3/projects/{projectsId}/notificationChannels/{notificationChannelsId}',
+        http_method='DELETE',
+        method_id='monitoring.projects.notificationChannels.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['force'],
+        relative_path='v3/{+name}',
         request_field='',
-        request_type_name=u'MonitoringProjectsNotificationChannelsDeleteRequest',
-        response_type_name=u'Empty',
+        request_type_name='MonitoringProjectsNotificationChannelsDeleteRequest',
+        response_type_name='Empty',
         supports_download=False,
     )
 
@@ -737,16 +737,16 @@ class MonitoringV3(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v3/projects/{projectsId}/notificationChannels/{notificationChannelsId}',
-        http_method=u'GET',
-        method_id=u'monitoring.projects.notificationChannels.get',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v3/projects/{projectsId}/notificationChannels/{notificationChannelsId}',
+        http_method='GET',
+        method_id='monitoring.projects.notificationChannels.get',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v3/{+name}',
+        relative_path='v3/{+name}',
         request_field='',
-        request_type_name=u'MonitoringProjectsNotificationChannelsGetRequest',
-        response_type_name=u'NotificationChannel',
+        request_type_name='MonitoringProjectsNotificationChannelsGetRequest',
+        response_type_name='NotificationChannel',
         supports_download=False,
     )
 
@@ -764,16 +764,16 @@ class MonitoringV3(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     GetVerificationCode.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v3/projects/{projectsId}/notificationChannels/{notificationChannelsId}:getVerificationCode',
-        http_method=u'POST',
-        method_id=u'monitoring.projects.notificationChannels.getVerificationCode',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v3/projects/{projectsId}/notificationChannels/{notificationChannelsId}:getVerificationCode',
+        http_method='POST',
+        method_id='monitoring.projects.notificationChannels.getVerificationCode',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v3/{+name}:getVerificationCode',
-        request_field=u'getNotificationChannelVerificationCodeRequest',
-        request_type_name=u'MonitoringProjectsNotificationChannelsGetVerificationCodeRequest',
-        response_type_name=u'GetNotificationChannelVerificationCodeResponse',
+        relative_path='v3/{+name}:getVerificationCode',
+        request_field='getNotificationChannelVerificationCodeRequest',
+        request_type_name='MonitoringProjectsNotificationChannelsGetVerificationCodeRequest',
+        response_type_name='GetNotificationChannelVerificationCodeResponse',
         supports_download=False,
     )
 
@@ -791,16 +791,16 @@ class MonitoringV3(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v3/projects/{projectsId}/notificationChannels',
-        http_method=u'GET',
-        method_id=u'monitoring.projects.notificationChannels.list',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[u'filter', u'orderBy', u'pageSize', u'pageToken'],
-        relative_path=u'v3/{+name}/notificationChannels',
+        flat_path='v3/projects/{projectsId}/notificationChannels',
+        http_method='GET',
+        method_id='monitoring.projects.notificationChannels.list',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['filter', 'orderBy', 'pageSize', 'pageToken'],
+        relative_path='v3/{+name}/notificationChannels',
         request_field='',
-        request_type_name=u'MonitoringProjectsNotificationChannelsListRequest',
-        response_type_name=u'ListNotificationChannelsResponse',
+        request_type_name='MonitoringProjectsNotificationChannelsListRequest',
+        response_type_name='ListNotificationChannelsResponse',
         supports_download=False,
     )
 
@@ -818,16 +818,16 @@ class MonitoringV3(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Patch.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v3/projects/{projectsId}/notificationChannels/{notificationChannelsId}',
-        http_method=u'PATCH',
-        method_id=u'monitoring.projects.notificationChannels.patch',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[u'updateMask'],
-        relative_path=u'v3/{+name}',
-        request_field=u'notificationChannel',
-        request_type_name=u'MonitoringProjectsNotificationChannelsPatchRequest',
-        response_type_name=u'NotificationChannel',
+        flat_path='v3/projects/{projectsId}/notificationChannels/{notificationChannelsId}',
+        http_method='PATCH',
+        method_id='monitoring.projects.notificationChannels.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v3/{+name}',
+        request_field='notificationChannel',
+        request_type_name='MonitoringProjectsNotificationChannelsPatchRequest',
+        response_type_name='NotificationChannel',
         supports_download=False,
     )
 
@@ -845,16 +845,16 @@ class MonitoringV3(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     SendVerificationCode.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v3/projects/{projectsId}/notificationChannels/{notificationChannelsId}:sendVerificationCode',
-        http_method=u'POST',
-        method_id=u'monitoring.projects.notificationChannels.sendVerificationCode',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v3/projects/{projectsId}/notificationChannels/{notificationChannelsId}:sendVerificationCode',
+        http_method='POST',
+        method_id='monitoring.projects.notificationChannels.sendVerificationCode',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v3/{+name}:sendVerificationCode',
-        request_field=u'sendNotificationChannelVerificationCodeRequest',
-        request_type_name=u'MonitoringProjectsNotificationChannelsSendVerificationCodeRequest',
-        response_type_name=u'Empty',
+        relative_path='v3/{+name}:sendVerificationCode',
+        request_field='sendNotificationChannelVerificationCodeRequest',
+        request_type_name='MonitoringProjectsNotificationChannelsSendVerificationCodeRequest',
+        response_type_name='Empty',
         supports_download=False,
     )
 
@@ -872,23 +872,23 @@ class MonitoringV3(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Verify.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v3/projects/{projectsId}/notificationChannels/{notificationChannelsId}:verify',
-        http_method=u'POST',
-        method_id=u'monitoring.projects.notificationChannels.verify',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v3/projects/{projectsId}/notificationChannels/{notificationChannelsId}:verify',
+        http_method='POST',
+        method_id='monitoring.projects.notificationChannels.verify',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v3/{+name}:verify',
-        request_field=u'verifyNotificationChannelRequest',
-        request_type_name=u'MonitoringProjectsNotificationChannelsVerifyRequest',
-        response_type_name=u'NotificationChannel',
+        relative_path='v3/{+name}:verify',
+        request_field='verifyNotificationChannelRequest',
+        request_type_name='MonitoringProjectsNotificationChannelsVerifyRequest',
+        response_type_name='NotificationChannel',
         supports_download=False,
     )
 
   class ProjectsTimeSeriesService(base_api.BaseApiService):
     """Service class for the projects_timeSeries resource."""
 
-    _NAME = u'projects_timeSeries'
+    _NAME = 'projects_timeSeries'
 
     def __init__(self, client):
       super(MonitoringV3.ProjectsTimeSeriesService, self).__init__(client)
@@ -909,16 +909,16 @@ class MonitoringV3(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Create.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v3/projects/{projectsId}/timeSeries',
-        http_method=u'POST',
-        method_id=u'monitoring.projects.timeSeries.create',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v3/projects/{projectsId}/timeSeries',
+        http_method='POST',
+        method_id='monitoring.projects.timeSeries.create',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v3/{+name}/timeSeries',
-        request_field=u'createTimeSeriesRequest',
-        request_type_name=u'MonitoringProjectsTimeSeriesCreateRequest',
-        response_type_name=u'Empty',
+        relative_path='v3/{+name}/timeSeries',
+        request_field='createTimeSeriesRequest',
+        request_type_name='MonitoringProjectsTimeSeriesCreateRequest',
+        response_type_name='Empty',
         supports_download=False,
     )
 
@@ -936,23 +936,23 @@ class MonitoringV3(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v3/projects/{projectsId}/timeSeries',
-        http_method=u'GET',
-        method_id=u'monitoring.projects.timeSeries.list',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[u'aggregation_alignmentPeriod', u'aggregation_crossSeriesReducer', u'aggregation_groupByFields', u'aggregation_perSeriesAligner', u'filter', u'interval_endTime', u'interval_startTime', u'orderBy', u'pageSize', u'pageToken', u'view'],
-        relative_path=u'v3/{+name}/timeSeries',
+        flat_path='v3/projects/{projectsId}/timeSeries',
+        http_method='GET',
+        method_id='monitoring.projects.timeSeries.list',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['aggregation_alignmentPeriod', 'aggregation_crossSeriesReducer', 'aggregation_groupByFields', 'aggregation_perSeriesAligner', 'filter', 'interval_endTime', 'interval_startTime', 'orderBy', 'pageSize', 'pageToken', 'view'],
+        relative_path='v3/{+name}/timeSeries',
         request_field='',
-        request_type_name=u'MonitoringProjectsTimeSeriesListRequest',
-        response_type_name=u'ListTimeSeriesResponse',
+        request_type_name='MonitoringProjectsTimeSeriesListRequest',
+        response_type_name='ListTimeSeriesResponse',
         supports_download=False,
     )
 
   class ProjectsUptimeCheckConfigsService(base_api.BaseApiService):
     """Service class for the projects_uptimeCheckConfigs resource."""
 
-    _NAME = u'projects_uptimeCheckConfigs'
+    _NAME = 'projects_uptimeCheckConfigs'
 
     def __init__(self, client):
       super(MonitoringV3.ProjectsUptimeCheckConfigsService, self).__init__(client)
@@ -973,16 +973,16 @@ class MonitoringV3(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Create.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v3/projects/{projectsId}/uptimeCheckConfigs',
-        http_method=u'POST',
-        method_id=u'monitoring.projects.uptimeCheckConfigs.create',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
+        flat_path='v3/projects/{projectsId}/uptimeCheckConfigs',
+        http_method='POST',
+        method_id='monitoring.projects.uptimeCheckConfigs.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
         query_params=[],
-        relative_path=u'v3/{+parent}/uptimeCheckConfigs',
-        request_field=u'uptimeCheckConfig',
-        request_type_name=u'MonitoringProjectsUptimeCheckConfigsCreateRequest',
-        response_type_name=u'UptimeCheckConfig',
+        relative_path='v3/{+parent}/uptimeCheckConfigs',
+        request_field='uptimeCheckConfig',
+        request_type_name='MonitoringProjectsUptimeCheckConfigsCreateRequest',
+        response_type_name='UptimeCheckConfig',
         supports_download=False,
     )
 
@@ -1000,16 +1000,16 @@ class MonitoringV3(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Delete.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v3/projects/{projectsId}/uptimeCheckConfigs/{uptimeCheckConfigsId}',
-        http_method=u'DELETE',
-        method_id=u'monitoring.projects.uptimeCheckConfigs.delete',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v3/projects/{projectsId}/uptimeCheckConfigs/{uptimeCheckConfigsId}',
+        http_method='DELETE',
+        method_id='monitoring.projects.uptimeCheckConfigs.delete',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v3/{+name}',
+        relative_path='v3/{+name}',
         request_field='',
-        request_type_name=u'MonitoringProjectsUptimeCheckConfigsDeleteRequest',
-        response_type_name=u'Empty',
+        request_type_name='MonitoringProjectsUptimeCheckConfigsDeleteRequest',
+        response_type_name='Empty',
         supports_download=False,
     )
 
@@ -1027,16 +1027,16 @@ class MonitoringV3(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v3/projects/{projectsId}/uptimeCheckConfigs/{uptimeCheckConfigsId}',
-        http_method=u'GET',
-        method_id=u'monitoring.projects.uptimeCheckConfigs.get',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v3/projects/{projectsId}/uptimeCheckConfigs/{uptimeCheckConfigsId}',
+        http_method='GET',
+        method_id='monitoring.projects.uptimeCheckConfigs.get',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v3/{+name}',
+        relative_path='v3/{+name}',
         request_field='',
-        request_type_name=u'MonitoringProjectsUptimeCheckConfigsGetRequest',
-        response_type_name=u'UptimeCheckConfig',
+        request_type_name='MonitoringProjectsUptimeCheckConfigsGetRequest',
+        response_type_name='UptimeCheckConfig',
         supports_download=False,
     )
 
@@ -1054,16 +1054,16 @@ class MonitoringV3(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v3/projects/{projectsId}/uptimeCheckConfigs',
-        http_method=u'GET',
-        method_id=u'monitoring.projects.uptimeCheckConfigs.list',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'pageSize', u'pageToken'],
-        relative_path=u'v3/{+parent}/uptimeCheckConfigs',
+        flat_path='v3/projects/{projectsId}/uptimeCheckConfigs',
+        http_method='GET',
+        method_id='monitoring.projects.uptimeCheckConfigs.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v3/{+parent}/uptimeCheckConfigs',
         request_field='',
-        request_type_name=u'MonitoringProjectsUptimeCheckConfigsListRequest',
-        response_type_name=u'ListUptimeCheckConfigsResponse',
+        request_type_name='MonitoringProjectsUptimeCheckConfigsListRequest',
+        response_type_name='ListUptimeCheckConfigsResponse',
         supports_download=False,
     )
 
@@ -1081,23 +1081,23 @@ class MonitoringV3(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Patch.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v3/projects/{projectsId}/uptimeCheckConfigs/{uptimeCheckConfigsId}',
-        http_method=u'PATCH',
-        method_id=u'monitoring.projects.uptimeCheckConfigs.patch',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[u'updateMask'],
-        relative_path=u'v3/{+name}',
-        request_field=u'uptimeCheckConfig',
-        request_type_name=u'MonitoringProjectsUptimeCheckConfigsPatchRequest',
-        response_type_name=u'UptimeCheckConfig',
+        flat_path='v3/projects/{projectsId}/uptimeCheckConfigs/{uptimeCheckConfigsId}',
+        http_method='PATCH',
+        method_id='monitoring.projects.uptimeCheckConfigs.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v3/{+name}',
+        request_field='uptimeCheckConfig',
+        request_type_name='MonitoringProjectsUptimeCheckConfigsPatchRequest',
+        response_type_name='UptimeCheckConfig',
         supports_download=False,
     )
 
   class ProjectsService(base_api.BaseApiService):
     """Service class for the projects resource."""
 
-    _NAME = u'projects'
+    _NAME = 'projects'
 
     def __init__(self, client):
       super(MonitoringV3.ProjectsService, self).__init__(client)
@@ -1107,7 +1107,7 @@ class MonitoringV3(base_api.BaseApiClient):
   class UptimeCheckIpsService(base_api.BaseApiService):
     """Service class for the uptimeCheckIps resource."""
 
-    _NAME = u'uptimeCheckIps'
+    _NAME = 'uptimeCheckIps'
 
     def __init__(self, client):
       super(MonitoringV3.UptimeCheckIpsService, self).__init__(client)
@@ -1128,14 +1128,14 @@ class MonitoringV3(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'monitoring.uptimeCheckIps.list',
+        http_method='GET',
+        method_id='monitoring.uptimeCheckIps.list',
         ordered_params=[],
         path_params=[],
-        query_params=[u'pageSize', u'pageToken'],
-        relative_path=u'v3/uptimeCheckIps',
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v3/uptimeCheckIps',
         request_field='',
-        request_type_name=u'MonitoringUptimeCheckIpsListRequest',
-        response_type_name=u'ListUptimeCheckIpsResponse',
+        request_type_name='MonitoringUptimeCheckIpsListRequest',
+        response_type_name='ListUptimeCheckIpsResponse',
         supports_download=False,
     )

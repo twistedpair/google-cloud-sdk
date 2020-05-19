@@ -119,8 +119,9 @@ class Binding(_messages.Message):
       not apply to the current request. However, a different role binding
       might grant the same role to one or more of the members in this binding.
       To learn which resources support conditions in their IAM policies, see
-      the [IAM documentation](https://cloud.google.com/iam/help/conditions
-      /resource-policies).
+      the [IAM
+      documentation](https://cloud.google.com/iam/help/conditions/resource-
+      policies).
     members: Specifies the identities requesting access for a Cloud Platform
       resource. `members` can have the following values:  * `allUsers`: A
       special identifier that represents anyone who is    on the internet;
@@ -528,10 +529,9 @@ class Condition(_messages.Message):
       Error, Warning, Info
     status: Status of the condition, one of True, False, Unknown.
     type: type is used to communicate the status of the reconciliation
-      process. See also:
-      https://github.com/knative/serving/blob/master/docs/spec/errors.md
-      #error-conditions-and-reporting Types common to all resources include: *
-      "Ready": True when the Resource is ready.
+      process. See also: https://github.com/knative/serving/blob/master/docs/s
+      pec/errors.md#error-conditions-and-reporting Types common to all
+      resources include: * "Ready": True when the Resource is ready.
   """
 
   lastTransitionTime = _messages.StringField(1)
@@ -654,9 +654,9 @@ class ConfigurationCondition(_messages.Message):
       Warning, Info +optional
     status: Status of the condition, one of True, False, Unknown.
     type: ConfigurationConditionType is used to communicate the status of the
-      reconciliation process. See also:
-      https://github.com/knative/serving/blob/master/docs/spec/errors.md
-      #error-conditions-and-reporting Types include:"Ready"
+      reconciliation process. See also: https://github.com/knative/serving/blo
+      b/master/docs/spec/errors.md#error-conditions-and-reporting Types
+      include:"Ready"
   """
 
   lastTransitionTime = _messages.StringField(1)
@@ -766,8 +766,8 @@ class Container(_messages.Message):
       container lifecycle events. Cannot be updated. +optional
     livenessProbe: Periodic probe of container liveness. Container will be
       restarted if the probe fails. Cannot be updated. More info:
-      https://kubernetes.io/docs/concepts/workloads/pods/pod-lifecycle
-      #container-probes +optional
+      https://kubernetes.io/docs/concepts/workloads/pods/pod-
+      lifecycle#container-probes +optional
     name: Name of the container specified as a DNS_LABEL. Each container must
       have a unique name (DNS_LABEL). Cannot be updated.
     ports: List of ports to expose from the container. Exposing a port here
@@ -778,11 +778,13 @@ class Container(_messages.Message):
       accessible from the network. Cannot be updated. +optional
     readinessProbe: Periodic probe of container service readiness. Container
       will be removed from service endpoints if the probe fails. Cannot be
-      updated. More info: https://kubernetes.io/docs/concepts/workloads/pods
-      /pod-lifecycle#container-probes +optional
+      updated. More info:
+      https://kubernetes.io/docs/concepts/workloads/pods/pod-
+      lifecycle#container-probes +optional
     resources: Compute Resources required by this container. Cannot be
-      updated. More info: https://kubernetes.io/docs/concepts/storage
-      /persistent-volumes#resources +optional
+      updated. More info:
+      https://kubernetes.io/docs/concepts/storage/persistent-volumes#resources
+      +optional
     securityContext: Security options the pod should run with. More info:
       https://kubernetes.io/docs/concepts/policy/security-context/ More info:
       https://kubernetes.io/docs/tasks/configure-pod-container/security-
@@ -1199,15 +1201,15 @@ class Lifecycle(_messages.Message):
       If the handler fails, the container is terminated and restarted
       according to its restart policy. Other management of the container
       blocks until the hook completes. More info:
-      https://kubernetes.io/docs/concepts/containers/container-lifecycle-hooks
-      /#container-hooks +optional
+      https://kubernetes.io/docs/concepts/containers/container-lifecycle-
+      hooks/#container-hooks +optional
     preStop: PreStop is called immediately before a container is terminated.
       The container is terminated after the handler completes. The reason for
       termination is passed to the handler. Regardless of the outcome of the
       handler, the container is eventually terminated. Other management of the
       container blocks until the hook completes. More info:
-      https://kubernetes.io/docs/concepts/containers/container-lifecycle-hooks
-      /#container-hooks +optional
+      https://kubernetes.io/docs/concepts/containers/container-lifecycle-
+      hooks/#container-hooks +optional
   """
 
   postStart = _messages.MessageField('Handler', 1)
@@ -1374,8 +1376,8 @@ class ListMeta(_messages.Message):
       this object that can be used by clients to determine when objects have
       changed. Value must be treated as opaque by clients and passed
       unmodified back to the server. Populated by the system. Read-only. More
-      info: https://git.k8s.io/community/contributors/devel/api-conventions.md
-      #concurrency-control-and-consistency +optional
+      info: https://git.k8s.io/community/contributors/devel/api-
+      conventions.md#concurrency-control-and-consistency +optional
     selfLink: SelfLink is a URL representing this object. Populated by the
       system. Read-only. +optional
   """
@@ -1566,8 +1568,8 @@ class ObjectMeta(_messages.Message):
       guide/annotations +optional
     LabelsValue: Map of string keys and values that can be used to organize
       and categorize (scope and select) objects. May match selectors of
-      replication controllers and routes. More info: http://kubernetes.io/docs
-      /user-guide/labels +optional
+      replication controllers and routes. More info:
+      http://kubernetes.io/docs/user-guide/labels +optional
 
   Fields:
     annotations: Annotations is an unstructured key value map stored with a
@@ -1635,14 +1637,14 @@ class ObjectMeta(_messages.Message):
       desired state. Populated by the system. Read-only. +optional
     labels: Map of string keys and values that can be used to organize and
       categorize (scope and select) objects. May match selectors of
-      replication controllers and routes. More info: http://kubernetes.io/docs
-      /user-guide/labels +optional
+      replication controllers and routes. More info:
+      http://kubernetes.io/docs/user-guide/labels +optional
     name: Name must be unique within a namespace, within a Cloud Run region.
       Is required when creating resources, although some resources may allow a
       client to request the generation of an appropriate name automatically.
       Name is primarily intended for creation idempotence and configuration
-      definition. Cannot be updated. More info: http://kubernetes.io/docs
-      /user-guide/identifiers#names +optional
+      definition. Cannot be updated. More info:
+      http://kubernetes.io/docs/user-guide/identifiers#names +optional
     namespace: Namespace defines the space within each name must be unique,
       within a Cloud Run region. In Cloud Run the namespace must be equal to
       either the project ID or project number.
@@ -1656,8 +1658,9 @@ class ObjectMeta(_messages.Message):
       treat these values as opaque and passed unmodified back to the server.
       They may only be valid for a particular resource or set of resources.
       Populated by the system. Read-only. Value must be treated as opaque by
-      clients and . More info: https://git.k8s.io/community/contributors/devel
-      /api-conventions.md#concurrency-control-and-consistency +optional
+      clients and . More info:
+      https://git.k8s.io/community/contributors/devel/api-
+      conventions.md#concurrency-control-and-consistency +optional
     selfLink: SelfLink is a URL representing this object. Populated by the
       system. Read-only. +optional  string selfLink = 4;
     uid: UID is the unique in time and space value for this object. It is
@@ -1756,8 +1759,8 @@ class ObjectReference(_messages.Message):
       This syntax is chosen only to have some well-defined way of referencing
       a part of an object.
     kind: Kind of the referent. More info:
-      https://git.k8s.io/community/contributors/devel/api-conventions.md
-      #types-kinds +optional
+      https://git.k8s.io/community/contributors/devel/api-
+      conventions.md#types-kinds +optional
     name: Name of the referent. More info:
       https://kubernetes.io/docs/concepts/overview/working-with-
       objects/names/#names +optional
@@ -1796,8 +1799,8 @@ class OwnerReference(_messages.Message):
     controller: If true, this reference points to the managing controller.
       +optional
     kind: Kind of the referent. More info:
-      https://git.k8s.io/community/contributors/devel/api-conventions.md
-      #types-kinds
+      https://git.k8s.io/community/contributors/devel/api-
+      conventions.md#types-kinds
     name: Name of the referent. More info: http://kubernetes.io/docs/user-
       guide/identifiers#names
     uid: UID of the referent. More info: http://kubernetes.io/docs/user-
@@ -1837,8 +1840,8 @@ class Policy(_messages.Message):
   timestamp('2020-10-01T00:00:00.000Z')",           }         }       ],
   "etag": "BwWWja0YfJA=",       "version": 3     }  **YAML example:**
   bindings:     - members:       - user:mike@example.com       -
-  group:admins@example.com       - domain:google.com       - serviceAccount
-  :my-project-id@appspot.gserviceaccount.com       role:
+  group:admins@example.com       - domain:google.com       -
+  serviceAccount:my-project-id@appspot.gserviceaccount.com       role:
   roles/resourcemanager.organizationAdmin     - members:       -
   user:eve@example.com       role: roles/resourcemanager.organizationViewer
   condition:         title: expirable access         description: Does not
@@ -1899,8 +1902,8 @@ class Probe(_messages.Message):
     handler: The action taken to determine the health of a container
     initialDelaySeconds: Number of seconds after the container has started
       before liveness probes are initiated. More info:
-      https://kubernetes.io/docs/concepts/workloads/pods/pod-lifecycle
-      #container-probes +optional
+      https://kubernetes.io/docs/concepts/workloads/pods/pod-
+      lifecycle#container-probes +optional
     periodSeconds: How often (in seconds) to perform the probe. Default to 10
       seconds. Minimum value is 1. +optional
     successThreshold: Minimum consecutive successes for the probe to be
@@ -1908,8 +1911,8 @@ class Probe(_messages.Message):
       liveness. Minimum value is 1. +optional
     timeoutSeconds: Number of seconds after which the probe times out.
       Defaults to 1 second. Minimum value is 1. More info:
-      https://kubernetes.io/docs/concepts/workloads/pods/pod-lifecycle
-      #container-probes +optional
+      https://kubernetes.io/docs/concepts/workloads/pods/pod-
+      lifecycle#container-probes +optional
   """
 
   failureThreshold = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -2174,13 +2177,12 @@ class RevisionCondition(_messages.Message):
       Warning, Info +optional
     status: Status of the condition, one of True, False, Unknown.
     type: RevisionConditionType is used to communicate the status of the
-      reconciliation process. See also:
-      https://github.com/knative/serving/blob/master/docs/spec/errors.md
-      #error-conditions-and-reporting Types include:  * "Ready": True when the
-      Revision is ready. * "ResourcesAvailable": True when underlying
-      resources have been provisioned. * "ContainerHealthy": True when the
-      Revision readiness check completes. * "Active": True when the Revision
-      may receive traffic.
+      reconciliation process. See also: https://github.com/knative/serving/blo
+      b/master/docs/spec/errors.md#error-conditions-and-reporting Types
+      include:  * "Ready": True when the Revision is ready. *
+      "ResourcesAvailable": True when underlying resources have been
+      provisioned. * "ContainerHealthy": True when the Revision readiness
+      check completes. * "Active": True when the Revision may receive traffic.
   """
 
   lastTransitionTime = _messages.StringField(1)
@@ -2366,9 +2368,9 @@ class RouteCondition(_messages.Message):
       Warning, Info +optional
     status: Status of the condition, one of "True", "False", "Unknown".
     type: RouteConditionType is used to communicate the status of the
-      reconciliation process. See also:
-      https://github.com/knative/serving/blob/master/docs/spec/errors.md
-      #error-conditions-and-reporting Types include: "Ready".
+      reconciliation process. See also: https://github.com/knative/serving/blo
+      b/master/docs/spec/errors.md#error-conditions-and-reporting Types
+      include: "Ready".
   """
 
   lastTransitionTime = _messages.StringField(1)
@@ -2423,8 +2425,8 @@ class RouteStatus(_messages.Message):
       appears in the spec, this will hold the LatestReadyRevisionName that we
       last observed.
     url: URL holds the url that will distribute traffic over the provided
-      traffic targets. It generally has the form https://{route-hash
-      }-{project-hash}-{cluster-level-suffix}.a.run.app
+      traffic targets. It generally has the form https://{route-
+      hash}-{project-hash}-{cluster-level-suffix}.a.run.app
   """
 
   address = _messages.MessageField('Addressable', 1)
@@ -4165,11 +4167,10 @@ class ServiceCondition(_messages.Message):
       Warning, Info +optional
     status: Status of the condition, one of True, False, Unknown.
     type: ServiceConditionType is used to communicate the status of the
-      reconciliation process. See also:
-      https://github.com/knative/serving/blob/master/docs/spec/errors.md
-      #error-conditions-and-reporting  Types include: "Ready",
-      "ConfigurationsReady", and "RoutesReady". "Ready" will be true when the
-      underlying Route and Configuration are ready.
+      reconciliation process. See also: https://github.com/knative/serving/blo
+      b/master/docs/spec/errors.md#error-conditions-and-reporting  Types
+      include: "Ready", "ConfigurationsReady", and "RoutesReady". "Ready" will
+      be true when the underlying Route and Configuration are ready.
   """
 
   lastTransitionTime = _messages.StringField(1)
@@ -4381,7 +4382,7 @@ class StandardQueryParameters(_messages.Message):
 
   f__xgafv = _messages.EnumField('FXgafvValueValuesEnum', 1)
   access_token = _messages.StringField(2)
-  alt = _messages.EnumField('AltValueValuesEnum', 3, default=u'json')
+  alt = _messages.EnumField('AltValueValuesEnum', 3, default='json')
   callback = _messages.StringField(4)
   fields = _messages.StringField(5)
   key = _messages.StringField(6)

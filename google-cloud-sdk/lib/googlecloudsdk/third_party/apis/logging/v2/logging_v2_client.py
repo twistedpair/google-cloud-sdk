@@ -8,17 +8,17 @@ class LoggingV2(base_api.BaseApiClient):
   """Generated client library for service logging version v2."""
 
   MESSAGES_MODULE = messages
-  BASE_URL = u'https://logging.googleapis.com/'
-  MTLS_BASE_URL = u'https://logging.mtls.googleapis.com/'
+  BASE_URL = 'https://logging.googleapis.com/'
+  MTLS_BASE_URL = 'https://logging.mtls.googleapis.com/'
 
-  _PACKAGE = u'logging'
-  _SCOPES = [u'https://www.googleapis.com/auth/cloud-platform', u'https://www.googleapis.com/auth/cloud-platform.read-only', u'https://www.googleapis.com/auth/logging.admin', u'https://www.googleapis.com/auth/logging.read', u'https://www.googleapis.com/auth/logging.write']
-  _VERSION = u'v2'
+  _PACKAGE = 'logging'
+  _SCOPES = ['https://www.googleapis.com/auth/cloud-platform', 'https://www.googleapis.com/auth/cloud-platform.read-only', 'https://www.googleapis.com/auth/logging.admin', 'https://www.googleapis.com/auth/logging.read', 'https://www.googleapis.com/auth/logging.write']
+  _VERSION = 'v2'
   _CLIENT_ID = '1042881264118.apps.googleusercontent.com'
   _CLIENT_SECRET = 'x_Tw5K8nnjoRAqULM9PFAC2b'
-  _USER_AGENT = u'google-cloud-sdk'
-  _CLIENT_CLASS_NAME = u'LoggingV2'
-  _URL_VERSION = u'v2'
+  _USER_AGENT = 'google-cloud-sdk'
+  _CLIENT_CLASS_NAME = 'LoggingV2'
+  _URL_VERSION = 'v2'
   _API_KEY = None
 
   def __init__(self, url='', credentials=None,
@@ -80,7 +80,7 @@ class LoggingV2(base_api.BaseApiClient):
   class BillingAccountsBucketsViewsService(base_api.BaseApiService):
     """Service class for the billingAccounts_buckets_views resource."""
 
-    _NAME = u'billingAccounts_buckets_views'
+    _NAME = 'billingAccounts_buckets_views'
 
     def __init__(self, client):
       super(LoggingV2.BillingAccountsBucketsViewsService, self).__init__(client)
@@ -101,23 +101,23 @@ class LoggingV2(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v2/billingAccounts/{billingAccountsId}/buckets/{bucketsId}/views/{viewsId}',
-        http_method=u'GET',
-        method_id=u'logging.billingAccounts.buckets.views.get',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v2/billingAccounts/{billingAccountsId}/buckets/{bucketsId}/views/{viewsId}',
+        http_method='GET',
+        method_id='logging.billingAccounts.buckets.views.get',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v2/{+name}',
+        relative_path='v2/{+name}',
         request_field='',
-        request_type_name=u'LoggingBillingAccountsBucketsViewsGetRequest',
-        response_type_name=u'LogView',
+        request_type_name='LoggingBillingAccountsBucketsViewsGetRequest',
+        response_type_name='LogView',
         supports_download=False,
     )
 
   class BillingAccountsBucketsService(base_api.BaseApiService):
     """Service class for the billingAccounts_buckets resource."""
 
-    _NAME = u'billingAccounts_buckets'
+    _NAME = 'billingAccounts_buckets'
 
     def __init__(self, client):
       super(LoggingV2.BillingAccountsBucketsService, self).__init__(client)
@@ -138,23 +138,23 @@ class LoggingV2(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v2/billingAccounts/{billingAccountsId}/buckets/{bucketsId}',
-        http_method=u'GET',
-        method_id=u'logging.billingAccounts.buckets.get',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v2/billingAccounts/{billingAccountsId}/buckets/{bucketsId}',
+        http_method='GET',
+        method_id='logging.billingAccounts.buckets.get',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v2/{+name}',
+        relative_path='v2/{+name}',
         request_field='',
-        request_type_name=u'LoggingBillingAccountsBucketsGetRequest',
-        response_type_name=u'LogBucket',
+        request_type_name='LoggingBillingAccountsBucketsGetRequest',
+        response_type_name='LogBucket',
         supports_download=False,
     )
 
   class BillingAccountsExclusionsService(base_api.BaseApiService):
     """Service class for the billingAccounts_exclusions resource."""
 
-    _NAME = u'billingAccounts_exclusions'
+    _NAME = 'billingAccounts_exclusions'
 
     def __init__(self, client):
       super(LoggingV2.BillingAccountsExclusionsService, self).__init__(client)
@@ -175,16 +175,16 @@ class LoggingV2(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Create.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v2/billingAccounts/{billingAccountsId}/exclusions',
-        http_method=u'POST',
-        method_id=u'logging.billingAccounts.exclusions.create',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
+        flat_path='v2/billingAccounts/{billingAccountsId}/exclusions',
+        http_method='POST',
+        method_id='logging.billingAccounts.exclusions.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
         query_params=[],
-        relative_path=u'v2/{+parent}/exclusions',
-        request_field=u'logExclusion',
-        request_type_name=u'LoggingBillingAccountsExclusionsCreateRequest',
-        response_type_name=u'LogExclusion',
+        relative_path='v2/{+parent}/exclusions',
+        request_field='logExclusion',
+        request_type_name='LoggingBillingAccountsExclusionsCreateRequest',
+        response_type_name='LogExclusion',
         supports_download=False,
     )
 
@@ -202,16 +202,16 @@ class LoggingV2(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Delete.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v2/billingAccounts/{billingAccountsId}/exclusions/{exclusionsId}',
-        http_method=u'DELETE',
-        method_id=u'logging.billingAccounts.exclusions.delete',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v2/billingAccounts/{billingAccountsId}/exclusions/{exclusionsId}',
+        http_method='DELETE',
+        method_id='logging.billingAccounts.exclusions.delete',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v2/{+name}',
+        relative_path='v2/{+name}',
         request_field='',
-        request_type_name=u'LoggingBillingAccountsExclusionsDeleteRequest',
-        response_type_name=u'Empty',
+        request_type_name='LoggingBillingAccountsExclusionsDeleteRequest',
+        response_type_name='Empty',
         supports_download=False,
     )
 
@@ -229,16 +229,16 @@ class LoggingV2(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v2/billingAccounts/{billingAccountsId}/exclusions/{exclusionsId}',
-        http_method=u'GET',
-        method_id=u'logging.billingAccounts.exclusions.get',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v2/billingAccounts/{billingAccountsId}/exclusions/{exclusionsId}',
+        http_method='GET',
+        method_id='logging.billingAccounts.exclusions.get',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v2/{+name}',
+        relative_path='v2/{+name}',
         request_field='',
-        request_type_name=u'LoggingBillingAccountsExclusionsGetRequest',
-        response_type_name=u'LogExclusion',
+        request_type_name='LoggingBillingAccountsExclusionsGetRequest',
+        response_type_name='LogExclusion',
         supports_download=False,
     )
 
@@ -256,16 +256,16 @@ class LoggingV2(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v2/billingAccounts/{billingAccountsId}/exclusions',
-        http_method=u'GET',
-        method_id=u'logging.billingAccounts.exclusions.list',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'pageSize', u'pageToken'],
-        relative_path=u'v2/{+parent}/exclusions',
+        flat_path='v2/billingAccounts/{billingAccountsId}/exclusions',
+        http_method='GET',
+        method_id='logging.billingAccounts.exclusions.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v2/{+parent}/exclusions',
         request_field='',
-        request_type_name=u'LoggingBillingAccountsExclusionsListRequest',
-        response_type_name=u'ListExclusionsResponse',
+        request_type_name='LoggingBillingAccountsExclusionsListRequest',
+        response_type_name='ListExclusionsResponse',
         supports_download=False,
     )
 
@@ -283,23 +283,23 @@ class LoggingV2(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Patch.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v2/billingAccounts/{billingAccountsId}/exclusions/{exclusionsId}',
-        http_method=u'PATCH',
-        method_id=u'logging.billingAccounts.exclusions.patch',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[u'updateMask'],
-        relative_path=u'v2/{+name}',
-        request_field=u'logExclusion',
-        request_type_name=u'LoggingBillingAccountsExclusionsPatchRequest',
-        response_type_name=u'LogExclusion',
+        flat_path='v2/billingAccounts/{billingAccountsId}/exclusions/{exclusionsId}',
+        http_method='PATCH',
+        method_id='logging.billingAccounts.exclusions.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v2/{+name}',
+        request_field='logExclusion',
+        request_type_name='LoggingBillingAccountsExclusionsPatchRequest',
+        response_type_name='LogExclusion',
         supports_download=False,
     )
 
   class BillingAccountsLocationsBucketsViewsService(base_api.BaseApiService):
     """Service class for the billingAccounts_locations_buckets_views resource."""
 
-    _NAME = u'billingAccounts_locations_buckets_views'
+    _NAME = 'billingAccounts_locations_buckets_views'
 
     def __init__(self, client):
       super(LoggingV2.BillingAccountsLocationsBucketsViewsService, self).__init__(client)
@@ -320,16 +320,16 @@ class LoggingV2(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Create.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v2/billingAccounts/{billingAccountsId}/locations/{locationsId}/buckets/{bucketsId}/views',
-        http_method=u'POST',
-        method_id=u'logging.billingAccounts.locations.buckets.views.create',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'viewId'],
-        relative_path=u'v2/{+parent}/views',
-        request_field=u'logView',
-        request_type_name=u'LoggingBillingAccountsLocationsBucketsViewsCreateRequest',
-        response_type_name=u'LogView',
+        flat_path='v2/billingAccounts/{billingAccountsId}/locations/{locationsId}/buckets/{bucketsId}/views',
+        http_method='POST',
+        method_id='logging.billingAccounts.locations.buckets.views.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['viewId'],
+        relative_path='v2/{+parent}/views',
+        request_field='logView',
+        request_type_name='LoggingBillingAccountsLocationsBucketsViewsCreateRequest',
+        response_type_name='LogView',
         supports_download=False,
     )
 
@@ -347,16 +347,16 @@ class LoggingV2(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Delete.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v2/billingAccounts/{billingAccountsId}/locations/{locationsId}/buckets/{bucketsId}/views/{viewsId}',
-        http_method=u'DELETE',
-        method_id=u'logging.billingAccounts.locations.buckets.views.delete',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v2/billingAccounts/{billingAccountsId}/locations/{locationsId}/buckets/{bucketsId}/views/{viewsId}',
+        http_method='DELETE',
+        method_id='logging.billingAccounts.locations.buckets.views.delete',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v2/{+name}',
+        relative_path='v2/{+name}',
         request_field='',
-        request_type_name=u'LoggingBillingAccountsLocationsBucketsViewsDeleteRequest',
-        response_type_name=u'Empty',
+        request_type_name='LoggingBillingAccountsLocationsBucketsViewsDeleteRequest',
+        response_type_name='Empty',
         supports_download=False,
     )
 
@@ -374,16 +374,16 @@ class LoggingV2(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v2/billingAccounts/{billingAccountsId}/locations/{locationsId}/buckets/{bucketsId}/views',
-        http_method=u'GET',
-        method_id=u'logging.billingAccounts.locations.buckets.views.list',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'pageSize', u'pageToken'],
-        relative_path=u'v2/{+parent}/views',
+        flat_path='v2/billingAccounts/{billingAccountsId}/locations/{locationsId}/buckets/{bucketsId}/views',
+        http_method='GET',
+        method_id='logging.billingAccounts.locations.buckets.views.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v2/{+parent}/views',
         request_field='',
-        request_type_name=u'LoggingBillingAccountsLocationsBucketsViewsListRequest',
-        response_type_name=u'ListViewsResponse',
+        request_type_name='LoggingBillingAccountsLocationsBucketsViewsListRequest',
+        response_type_name='ListViewsResponse',
         supports_download=False,
     )
 
@@ -401,23 +401,23 @@ class LoggingV2(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Patch.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v2/billingAccounts/{billingAccountsId}/locations/{locationsId}/buckets/{bucketsId}/views/{viewsId}',
-        http_method=u'PATCH',
-        method_id=u'logging.billingAccounts.locations.buckets.views.patch',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[u'updateMask'],
-        relative_path=u'v2/{+name}',
-        request_field=u'logView',
-        request_type_name=u'LoggingBillingAccountsLocationsBucketsViewsPatchRequest',
-        response_type_name=u'LogView',
+        flat_path='v2/billingAccounts/{billingAccountsId}/locations/{locationsId}/buckets/{bucketsId}/views/{viewsId}',
+        http_method='PATCH',
+        method_id='logging.billingAccounts.locations.buckets.views.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v2/{+name}',
+        request_field='logView',
+        request_type_name='LoggingBillingAccountsLocationsBucketsViewsPatchRequest',
+        response_type_name='LogView',
         supports_download=False,
     )
 
   class BillingAccountsLocationsBucketsService(base_api.BaseApiService):
     """Service class for the billingAccounts_locations_buckets resource."""
 
-    _NAME = u'billingAccounts_locations_buckets'
+    _NAME = 'billingAccounts_locations_buckets'
 
     def __init__(self, client):
       super(LoggingV2.BillingAccountsLocationsBucketsService, self).__init__(client)
@@ -438,16 +438,16 @@ class LoggingV2(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Create.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v2/billingAccounts/{billingAccountsId}/locations/{locationsId}/buckets',
-        http_method=u'POST',
-        method_id=u'logging.billingAccounts.locations.buckets.create',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'bucketId'],
-        relative_path=u'v2/{+parent}/buckets',
-        request_field=u'logBucket',
-        request_type_name=u'LoggingBillingAccountsLocationsBucketsCreateRequest',
-        response_type_name=u'LogBucket',
+        flat_path='v2/billingAccounts/{billingAccountsId}/locations/{locationsId}/buckets',
+        http_method='POST',
+        method_id='logging.billingAccounts.locations.buckets.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['bucketId'],
+        relative_path='v2/{+parent}/buckets',
+        request_field='logBucket',
+        request_type_name='LoggingBillingAccountsLocationsBucketsCreateRequest',
+        response_type_name='LogBucket',
         supports_download=False,
     )
 
@@ -465,16 +465,16 @@ class LoggingV2(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Delete.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v2/billingAccounts/{billingAccountsId}/locations/{locationsId}/buckets/{bucketsId}',
-        http_method=u'DELETE',
-        method_id=u'logging.billingAccounts.locations.buckets.delete',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v2/billingAccounts/{billingAccountsId}/locations/{locationsId}/buckets/{bucketsId}',
+        http_method='DELETE',
+        method_id='logging.billingAccounts.locations.buckets.delete',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v2/{+name}',
+        relative_path='v2/{+name}',
         request_field='',
-        request_type_name=u'LoggingBillingAccountsLocationsBucketsDeleteRequest',
-        response_type_name=u'Empty',
+        request_type_name='LoggingBillingAccountsLocationsBucketsDeleteRequest',
+        response_type_name='Empty',
         supports_download=False,
     )
 
@@ -492,16 +492,16 @@ class LoggingV2(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v2/billingAccounts/{billingAccountsId}/locations/{locationsId}/buckets',
-        http_method=u'GET',
-        method_id=u'logging.billingAccounts.locations.buckets.list',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'pageSize', u'pageToken'],
-        relative_path=u'v2/{+parent}/buckets',
+        flat_path='v2/billingAccounts/{billingAccountsId}/locations/{locationsId}/buckets',
+        http_method='GET',
+        method_id='logging.billingAccounts.locations.buckets.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v2/{+parent}/buckets',
         request_field='',
-        request_type_name=u'LoggingBillingAccountsLocationsBucketsListRequest',
-        response_type_name=u'ListBucketsResponse',
+        request_type_name='LoggingBillingAccountsLocationsBucketsListRequest',
+        response_type_name='ListBucketsResponse',
         supports_download=False,
     )
 
@@ -519,16 +519,16 @@ class LoggingV2(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Patch.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v2/billingAccounts/{billingAccountsId}/locations/{locationsId}/buckets/{bucketsId}',
-        http_method=u'PATCH',
-        method_id=u'logging.billingAccounts.locations.buckets.patch',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[u'updateMask'],
-        relative_path=u'v2/{+name}',
-        request_field=u'logBucket',
-        request_type_name=u'LoggingBillingAccountsLocationsBucketsPatchRequest',
-        response_type_name=u'LogBucket',
+        flat_path='v2/billingAccounts/{billingAccountsId}/locations/{locationsId}/buckets/{bucketsId}',
+        http_method='PATCH',
+        method_id='logging.billingAccounts.locations.buckets.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v2/{+name}',
+        request_field='logBucket',
+        request_type_name='LoggingBillingAccountsLocationsBucketsPatchRequest',
+        response_type_name='LogBucket',
         supports_download=False,
     )
 
@@ -546,23 +546,23 @@ class LoggingV2(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Undelete.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v2/billingAccounts/{billingAccountsId}/locations/{locationsId}/buckets/{bucketsId}:undelete',
-        http_method=u'POST',
-        method_id=u'logging.billingAccounts.locations.buckets.undelete',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v2/billingAccounts/{billingAccountsId}/locations/{locationsId}/buckets/{bucketsId}:undelete',
+        http_method='POST',
+        method_id='logging.billingAccounts.locations.buckets.undelete',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v2/{+name}:undelete',
-        request_field=u'undeleteBucketRequest',
-        request_type_name=u'LoggingBillingAccountsLocationsBucketsUndeleteRequest',
-        response_type_name=u'Empty',
+        relative_path='v2/{+name}:undelete',
+        request_field='undeleteBucketRequest',
+        request_type_name='LoggingBillingAccountsLocationsBucketsUndeleteRequest',
+        response_type_name='Empty',
         supports_download=False,
     )
 
   class BillingAccountsLocationsService(base_api.BaseApiService):
     """Service class for the billingAccounts_locations resource."""
 
-    _NAME = u'billingAccounts_locations'
+    _NAME = 'billingAccounts_locations'
 
     def __init__(self, client):
       super(LoggingV2.BillingAccountsLocationsService, self).__init__(client)
@@ -572,7 +572,7 @@ class LoggingV2(base_api.BaseApiClient):
   class BillingAccountsLogsService(base_api.BaseApiService):
     """Service class for the billingAccounts_logs resource."""
 
-    _NAME = u'billingAccounts_logs'
+    _NAME = 'billingAccounts_logs'
 
     def __init__(self, client):
       super(LoggingV2.BillingAccountsLogsService, self).__init__(client)
@@ -593,16 +593,16 @@ class LoggingV2(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Delete.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v2/billingAccounts/{billingAccountsId}/logs/{logsId}',
-        http_method=u'DELETE',
-        method_id=u'logging.billingAccounts.logs.delete',
-        ordered_params=[u'logName'],
-        path_params=[u'logName'],
+        flat_path='v2/billingAccounts/{billingAccountsId}/logs/{logsId}',
+        http_method='DELETE',
+        method_id='logging.billingAccounts.logs.delete',
+        ordered_params=['logName'],
+        path_params=['logName'],
         query_params=[],
-        relative_path=u'v2/{+logName}',
+        relative_path='v2/{+logName}',
         request_field='',
-        request_type_name=u'LoggingBillingAccountsLogsDeleteRequest',
-        response_type_name=u'Empty',
+        request_type_name='LoggingBillingAccountsLogsDeleteRequest',
+        response_type_name='Empty',
         supports_download=False,
     )
 
@@ -620,23 +620,23 @@ class LoggingV2(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v2/billingAccounts/{billingAccountsId}/logs',
-        http_method=u'GET',
-        method_id=u'logging.billingAccounts.logs.list',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'pageSize', u'pageToken', u'resourceNames'],
-        relative_path=u'v2/{+parent}/logs',
+        flat_path='v2/billingAccounts/{billingAccountsId}/logs',
+        http_method='GET',
+        method_id='logging.billingAccounts.logs.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken', 'resourceNames'],
+        relative_path='v2/{+parent}/logs',
         request_field='',
-        request_type_name=u'LoggingBillingAccountsLogsListRequest',
-        response_type_name=u'ListLogsResponse',
+        request_type_name='LoggingBillingAccountsLogsListRequest',
+        response_type_name='ListLogsResponse',
         supports_download=False,
     )
 
   class BillingAccountsSinksService(base_api.BaseApiService):
     """Service class for the billingAccounts_sinks resource."""
 
-    _NAME = u'billingAccounts_sinks'
+    _NAME = 'billingAccounts_sinks'
 
     def __init__(self, client):
       super(LoggingV2.BillingAccountsSinksService, self).__init__(client)
@@ -657,16 +657,16 @@ class LoggingV2(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Create.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v2/billingAccounts/{billingAccountsId}/sinks',
-        http_method=u'POST',
-        method_id=u'logging.billingAccounts.sinks.create',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'uniqueWriterIdentity'],
-        relative_path=u'v2/{+parent}/sinks',
-        request_field=u'logSink',
-        request_type_name=u'LoggingBillingAccountsSinksCreateRequest',
-        response_type_name=u'LogSink',
+        flat_path='v2/billingAccounts/{billingAccountsId}/sinks',
+        http_method='POST',
+        method_id='logging.billingAccounts.sinks.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['uniqueWriterIdentity'],
+        relative_path='v2/{+parent}/sinks',
+        request_field='logSink',
+        request_type_name='LoggingBillingAccountsSinksCreateRequest',
+        response_type_name='LogSink',
         supports_download=False,
     )
 
@@ -684,16 +684,16 @@ class LoggingV2(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Delete.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v2/billingAccounts/{billingAccountsId}/sinks/{sinksId}',
-        http_method=u'DELETE',
-        method_id=u'logging.billingAccounts.sinks.delete',
-        ordered_params=[u'sinkName'],
-        path_params=[u'sinkName'],
+        flat_path='v2/billingAccounts/{billingAccountsId}/sinks/{sinksId}',
+        http_method='DELETE',
+        method_id='logging.billingAccounts.sinks.delete',
+        ordered_params=['sinkName'],
+        path_params=['sinkName'],
         query_params=[],
-        relative_path=u'v2/{+sinkName}',
+        relative_path='v2/{+sinkName}',
         request_field='',
-        request_type_name=u'LoggingBillingAccountsSinksDeleteRequest',
-        response_type_name=u'Empty',
+        request_type_name='LoggingBillingAccountsSinksDeleteRequest',
+        response_type_name='Empty',
         supports_download=False,
     )
 
@@ -711,16 +711,16 @@ class LoggingV2(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v2/billingAccounts/{billingAccountsId}/sinks/{sinksId}',
-        http_method=u'GET',
-        method_id=u'logging.billingAccounts.sinks.get',
-        ordered_params=[u'sinkName'],
-        path_params=[u'sinkName'],
+        flat_path='v2/billingAccounts/{billingAccountsId}/sinks/{sinksId}',
+        http_method='GET',
+        method_id='logging.billingAccounts.sinks.get',
+        ordered_params=['sinkName'],
+        path_params=['sinkName'],
         query_params=[],
-        relative_path=u'v2/{+sinkName}',
+        relative_path='v2/{+sinkName}',
         request_field='',
-        request_type_name=u'LoggingBillingAccountsSinksGetRequest',
-        response_type_name=u'LogSink',
+        request_type_name='LoggingBillingAccountsSinksGetRequest',
+        response_type_name='LogSink',
         supports_download=False,
     )
 
@@ -738,16 +738,16 @@ class LoggingV2(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v2/billingAccounts/{billingAccountsId}/sinks',
-        http_method=u'GET',
-        method_id=u'logging.billingAccounts.sinks.list',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'pageSize', u'pageToken'],
-        relative_path=u'v2/{+parent}/sinks',
+        flat_path='v2/billingAccounts/{billingAccountsId}/sinks',
+        http_method='GET',
+        method_id='logging.billingAccounts.sinks.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v2/{+parent}/sinks',
         request_field='',
-        request_type_name=u'LoggingBillingAccountsSinksListRequest',
-        response_type_name=u'ListSinksResponse',
+        request_type_name='LoggingBillingAccountsSinksListRequest',
+        response_type_name='ListSinksResponse',
         supports_download=False,
     )
 
@@ -765,16 +765,16 @@ class LoggingV2(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Patch.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v2/billingAccounts/{billingAccountsId}/sinks/{sinksId}',
-        http_method=u'PATCH',
-        method_id=u'logging.billingAccounts.sinks.patch',
-        ordered_params=[u'sinkName'],
-        path_params=[u'sinkName'],
-        query_params=[u'uniqueWriterIdentity', u'updateMask'],
-        relative_path=u'v2/{+sinkName}',
-        request_field=u'logSink',
-        request_type_name=u'LoggingBillingAccountsSinksPatchRequest',
-        response_type_name=u'LogSink',
+        flat_path='v2/billingAccounts/{billingAccountsId}/sinks/{sinksId}',
+        http_method='PATCH',
+        method_id='logging.billingAccounts.sinks.patch',
+        ordered_params=['sinkName'],
+        path_params=['sinkName'],
+        query_params=['uniqueWriterIdentity', 'updateMask'],
+        relative_path='v2/{+sinkName}',
+        request_field='logSink',
+        request_type_name='LoggingBillingAccountsSinksPatchRequest',
+        response_type_name='LogSink',
         supports_download=False,
     )
 
@@ -792,23 +792,23 @@ class LoggingV2(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Update.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v2/billingAccounts/{billingAccountsId}/sinks/{sinksId}',
-        http_method=u'PUT',
-        method_id=u'logging.billingAccounts.sinks.update',
-        ordered_params=[u'sinkName'],
-        path_params=[u'sinkName'],
-        query_params=[u'uniqueWriterIdentity', u'updateMask'],
-        relative_path=u'v2/{+sinkName}',
-        request_field=u'logSink',
-        request_type_name=u'LoggingBillingAccountsSinksUpdateRequest',
-        response_type_name=u'LogSink',
+        flat_path='v2/billingAccounts/{billingAccountsId}/sinks/{sinksId}',
+        http_method='PUT',
+        method_id='logging.billingAccounts.sinks.update',
+        ordered_params=['sinkName'],
+        path_params=['sinkName'],
+        query_params=['uniqueWriterIdentity', 'updateMask'],
+        relative_path='v2/{+sinkName}',
+        request_field='logSink',
+        request_type_name='LoggingBillingAccountsSinksUpdateRequest',
+        response_type_name='LogSink',
         supports_download=False,
     )
 
   class BillingAccountsService(base_api.BaseApiService):
     """Service class for the billingAccounts resource."""
 
-    _NAME = u'billingAccounts'
+    _NAME = 'billingAccounts'
 
     def __init__(self, client):
       super(LoggingV2.BillingAccountsService, self).__init__(client)
@@ -818,7 +818,7 @@ class LoggingV2(base_api.BaseApiClient):
   class EntriesService(base_api.BaseApiService):
     """Service class for the entries resource."""
 
-    _NAME = u'entries'
+    _NAME = 'entries'
 
     def __init__(self, client):
       super(LoggingV2.EntriesService, self).__init__(client)
@@ -839,15 +839,15 @@ class LoggingV2(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'logging.entries.list',
+        http_method='POST',
+        method_id='logging.entries.list',
         ordered_params=[],
         path_params=[],
         query_params=[],
-        relative_path=u'v2/entries:list',
+        relative_path='v2/entries:list',
         request_field='<request>',
-        request_type_name=u'ListLogEntriesRequest',
-        response_type_name=u'ListLogEntriesResponse',
+        request_type_name='ListLogEntriesRequest',
+        response_type_name='ListLogEntriesResponse',
         supports_download=False,
     )
 
@@ -865,22 +865,22 @@ class LoggingV2(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Write.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'logging.entries.write',
+        http_method='POST',
+        method_id='logging.entries.write',
         ordered_params=[],
         path_params=[],
         query_params=[],
-        relative_path=u'v2/entries:write',
+        relative_path='v2/entries:write',
         request_field='<request>',
-        request_type_name=u'WriteLogEntriesRequest',
-        response_type_name=u'WriteLogEntriesResponse',
+        request_type_name='WriteLogEntriesRequest',
+        response_type_name='WriteLogEntriesResponse',
         supports_download=False,
     )
 
   class ExclusionsService(base_api.BaseApiService):
     """Service class for the exclusions resource."""
 
-    _NAME = u'exclusions'
+    _NAME = 'exclusions'
 
     def __init__(self, client):
       super(LoggingV2.ExclusionsService, self).__init__(client)
@@ -901,16 +901,16 @@ class LoggingV2(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Create.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v2/{v2Id}/{v2Id1}/exclusions',
-        http_method=u'POST',
-        method_id=u'logging.exclusions.create',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
+        flat_path='v2/{v2Id}/{v2Id1}/exclusions',
+        http_method='POST',
+        method_id='logging.exclusions.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
         query_params=[],
-        relative_path=u'v2/{+parent}/exclusions',
-        request_field=u'logExclusion',
-        request_type_name=u'LoggingExclusionsCreateRequest',
-        response_type_name=u'LogExclusion',
+        relative_path='v2/{+parent}/exclusions',
+        request_field='logExclusion',
+        request_type_name='LoggingExclusionsCreateRequest',
+        response_type_name='LogExclusion',
         supports_download=False,
     )
 
@@ -928,16 +928,16 @@ class LoggingV2(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Delete.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v2/{v2Id}/{v2Id1}/exclusions/{exclusionsId}',
-        http_method=u'DELETE',
-        method_id=u'logging.exclusions.delete',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v2/{v2Id}/{v2Id1}/exclusions/{exclusionsId}',
+        http_method='DELETE',
+        method_id='logging.exclusions.delete',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v2/{+name}',
+        relative_path='v2/{+name}',
         request_field='',
-        request_type_name=u'LoggingExclusionsDeleteRequest',
-        response_type_name=u'Empty',
+        request_type_name='LoggingExclusionsDeleteRequest',
+        response_type_name='Empty',
         supports_download=False,
     )
 
@@ -955,16 +955,16 @@ class LoggingV2(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v2/{v2Id}/{v2Id1}/exclusions/{exclusionsId}',
-        http_method=u'GET',
-        method_id=u'logging.exclusions.get',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v2/{v2Id}/{v2Id1}/exclusions/{exclusionsId}',
+        http_method='GET',
+        method_id='logging.exclusions.get',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v2/{+name}',
+        relative_path='v2/{+name}',
         request_field='',
-        request_type_name=u'LoggingExclusionsGetRequest',
-        response_type_name=u'LogExclusion',
+        request_type_name='LoggingExclusionsGetRequest',
+        response_type_name='LogExclusion',
         supports_download=False,
     )
 
@@ -982,16 +982,16 @@ class LoggingV2(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v2/{v2Id}/{v2Id1}/exclusions',
-        http_method=u'GET',
-        method_id=u'logging.exclusions.list',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'pageSize', u'pageToken'],
-        relative_path=u'v2/{+parent}/exclusions',
+        flat_path='v2/{v2Id}/{v2Id1}/exclusions',
+        http_method='GET',
+        method_id='logging.exclusions.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v2/{+parent}/exclusions',
         request_field='',
-        request_type_name=u'LoggingExclusionsListRequest',
-        response_type_name=u'ListExclusionsResponse',
+        request_type_name='LoggingExclusionsListRequest',
+        response_type_name='ListExclusionsResponse',
         supports_download=False,
     )
 
@@ -1009,23 +1009,23 @@ class LoggingV2(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Patch.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v2/{v2Id}/{v2Id1}/exclusions/{exclusionsId}',
-        http_method=u'PATCH',
-        method_id=u'logging.exclusions.patch',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[u'updateMask'],
-        relative_path=u'v2/{+name}',
-        request_field=u'logExclusion',
-        request_type_name=u'LoggingExclusionsPatchRequest',
-        response_type_name=u'LogExclusion',
+        flat_path='v2/{v2Id}/{v2Id1}/exclusions/{exclusionsId}',
+        http_method='PATCH',
+        method_id='logging.exclusions.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v2/{+name}',
+        request_field='logExclusion',
+        request_type_name='LoggingExclusionsPatchRequest',
+        response_type_name='LogExclusion',
         supports_download=False,
     )
 
   class FoldersExclusionsService(base_api.BaseApiService):
     """Service class for the folders_exclusions resource."""
 
-    _NAME = u'folders_exclusions'
+    _NAME = 'folders_exclusions'
 
     def __init__(self, client):
       super(LoggingV2.FoldersExclusionsService, self).__init__(client)
@@ -1046,16 +1046,16 @@ class LoggingV2(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Create.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v2/folders/{foldersId}/exclusions',
-        http_method=u'POST',
-        method_id=u'logging.folders.exclusions.create',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
+        flat_path='v2/folders/{foldersId}/exclusions',
+        http_method='POST',
+        method_id='logging.folders.exclusions.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
         query_params=[],
-        relative_path=u'v2/{+parent}/exclusions',
-        request_field=u'logExclusion',
-        request_type_name=u'LoggingFoldersExclusionsCreateRequest',
-        response_type_name=u'LogExclusion',
+        relative_path='v2/{+parent}/exclusions',
+        request_field='logExclusion',
+        request_type_name='LoggingFoldersExclusionsCreateRequest',
+        response_type_name='LogExclusion',
         supports_download=False,
     )
 
@@ -1073,16 +1073,16 @@ class LoggingV2(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Delete.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v2/folders/{foldersId}/exclusions/{exclusionsId}',
-        http_method=u'DELETE',
-        method_id=u'logging.folders.exclusions.delete',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v2/folders/{foldersId}/exclusions/{exclusionsId}',
+        http_method='DELETE',
+        method_id='logging.folders.exclusions.delete',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v2/{+name}',
+        relative_path='v2/{+name}',
         request_field='',
-        request_type_name=u'LoggingFoldersExclusionsDeleteRequest',
-        response_type_name=u'Empty',
+        request_type_name='LoggingFoldersExclusionsDeleteRequest',
+        response_type_name='Empty',
         supports_download=False,
     )
 
@@ -1100,16 +1100,16 @@ class LoggingV2(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v2/folders/{foldersId}/exclusions/{exclusionsId}',
-        http_method=u'GET',
-        method_id=u'logging.folders.exclusions.get',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v2/folders/{foldersId}/exclusions/{exclusionsId}',
+        http_method='GET',
+        method_id='logging.folders.exclusions.get',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v2/{+name}',
+        relative_path='v2/{+name}',
         request_field='',
-        request_type_name=u'LoggingFoldersExclusionsGetRequest',
-        response_type_name=u'LogExclusion',
+        request_type_name='LoggingFoldersExclusionsGetRequest',
+        response_type_name='LogExclusion',
         supports_download=False,
     )
 
@@ -1127,16 +1127,16 @@ class LoggingV2(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v2/folders/{foldersId}/exclusions',
-        http_method=u'GET',
-        method_id=u'logging.folders.exclusions.list',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'pageSize', u'pageToken'],
-        relative_path=u'v2/{+parent}/exclusions',
+        flat_path='v2/folders/{foldersId}/exclusions',
+        http_method='GET',
+        method_id='logging.folders.exclusions.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v2/{+parent}/exclusions',
         request_field='',
-        request_type_name=u'LoggingFoldersExclusionsListRequest',
-        response_type_name=u'ListExclusionsResponse',
+        request_type_name='LoggingFoldersExclusionsListRequest',
+        response_type_name='ListExclusionsResponse',
         supports_download=False,
     )
 
@@ -1154,23 +1154,23 @@ class LoggingV2(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Patch.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v2/folders/{foldersId}/exclusions/{exclusionsId}',
-        http_method=u'PATCH',
-        method_id=u'logging.folders.exclusions.patch',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[u'updateMask'],
-        relative_path=u'v2/{+name}',
-        request_field=u'logExclusion',
-        request_type_name=u'LoggingFoldersExclusionsPatchRequest',
-        response_type_name=u'LogExclusion',
+        flat_path='v2/folders/{foldersId}/exclusions/{exclusionsId}',
+        http_method='PATCH',
+        method_id='logging.folders.exclusions.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v2/{+name}',
+        request_field='logExclusion',
+        request_type_name='LoggingFoldersExclusionsPatchRequest',
+        response_type_name='LogExclusion',
         supports_download=False,
     )
 
   class FoldersLocationsBucketsViewsService(base_api.BaseApiService):
     """Service class for the folders_locations_buckets_views resource."""
 
-    _NAME = u'folders_locations_buckets_views'
+    _NAME = 'folders_locations_buckets_views'
 
     def __init__(self, client):
       super(LoggingV2.FoldersLocationsBucketsViewsService, self).__init__(client)
@@ -1191,16 +1191,16 @@ class LoggingV2(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Create.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v2/folders/{foldersId}/locations/{locationsId}/buckets/{bucketsId}/views',
-        http_method=u'POST',
-        method_id=u'logging.folders.locations.buckets.views.create',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'viewId'],
-        relative_path=u'v2/{+parent}/views',
-        request_field=u'logView',
-        request_type_name=u'LoggingFoldersLocationsBucketsViewsCreateRequest',
-        response_type_name=u'LogView',
+        flat_path='v2/folders/{foldersId}/locations/{locationsId}/buckets/{bucketsId}/views',
+        http_method='POST',
+        method_id='logging.folders.locations.buckets.views.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['viewId'],
+        relative_path='v2/{+parent}/views',
+        request_field='logView',
+        request_type_name='LoggingFoldersLocationsBucketsViewsCreateRequest',
+        response_type_name='LogView',
         supports_download=False,
     )
 
@@ -1218,16 +1218,16 @@ class LoggingV2(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Delete.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v2/folders/{foldersId}/locations/{locationsId}/buckets/{bucketsId}/views/{viewsId}',
-        http_method=u'DELETE',
-        method_id=u'logging.folders.locations.buckets.views.delete',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v2/folders/{foldersId}/locations/{locationsId}/buckets/{bucketsId}/views/{viewsId}',
+        http_method='DELETE',
+        method_id='logging.folders.locations.buckets.views.delete',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v2/{+name}',
+        relative_path='v2/{+name}',
         request_field='',
-        request_type_name=u'LoggingFoldersLocationsBucketsViewsDeleteRequest',
-        response_type_name=u'Empty',
+        request_type_name='LoggingFoldersLocationsBucketsViewsDeleteRequest',
+        response_type_name='Empty',
         supports_download=False,
     )
 
@@ -1245,16 +1245,16 @@ class LoggingV2(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v2/folders/{foldersId}/locations/{locationsId}/buckets/{bucketsId}/views/{viewsId}',
-        http_method=u'GET',
-        method_id=u'logging.folders.locations.buckets.views.get',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v2/folders/{foldersId}/locations/{locationsId}/buckets/{bucketsId}/views/{viewsId}',
+        http_method='GET',
+        method_id='logging.folders.locations.buckets.views.get',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v2/{+name}',
+        relative_path='v2/{+name}',
         request_field='',
-        request_type_name=u'LoggingFoldersLocationsBucketsViewsGetRequest',
-        response_type_name=u'LogView',
+        request_type_name='LoggingFoldersLocationsBucketsViewsGetRequest',
+        response_type_name='LogView',
         supports_download=False,
     )
 
@@ -1272,16 +1272,16 @@ class LoggingV2(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v2/folders/{foldersId}/locations/{locationsId}/buckets/{bucketsId}/views',
-        http_method=u'GET',
-        method_id=u'logging.folders.locations.buckets.views.list',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'pageSize', u'pageToken'],
-        relative_path=u'v2/{+parent}/views',
+        flat_path='v2/folders/{foldersId}/locations/{locationsId}/buckets/{bucketsId}/views',
+        http_method='GET',
+        method_id='logging.folders.locations.buckets.views.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v2/{+parent}/views',
         request_field='',
-        request_type_name=u'LoggingFoldersLocationsBucketsViewsListRequest',
-        response_type_name=u'ListViewsResponse',
+        request_type_name='LoggingFoldersLocationsBucketsViewsListRequest',
+        response_type_name='ListViewsResponse',
         supports_download=False,
     )
 
@@ -1299,23 +1299,23 @@ class LoggingV2(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Patch.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v2/folders/{foldersId}/locations/{locationsId}/buckets/{bucketsId}/views/{viewsId}',
-        http_method=u'PATCH',
-        method_id=u'logging.folders.locations.buckets.views.patch',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[u'updateMask'],
-        relative_path=u'v2/{+name}',
-        request_field=u'logView',
-        request_type_name=u'LoggingFoldersLocationsBucketsViewsPatchRequest',
-        response_type_name=u'LogView',
+        flat_path='v2/folders/{foldersId}/locations/{locationsId}/buckets/{bucketsId}/views/{viewsId}',
+        http_method='PATCH',
+        method_id='logging.folders.locations.buckets.views.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v2/{+name}',
+        request_field='logView',
+        request_type_name='LoggingFoldersLocationsBucketsViewsPatchRequest',
+        response_type_name='LogView',
         supports_download=False,
     )
 
   class FoldersLocationsBucketsService(base_api.BaseApiService):
     """Service class for the folders_locations_buckets resource."""
 
-    _NAME = u'folders_locations_buckets'
+    _NAME = 'folders_locations_buckets'
 
     def __init__(self, client):
       super(LoggingV2.FoldersLocationsBucketsService, self).__init__(client)
@@ -1336,16 +1336,16 @@ class LoggingV2(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Create.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v2/folders/{foldersId}/locations/{locationsId}/buckets',
-        http_method=u'POST',
-        method_id=u'logging.folders.locations.buckets.create',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'bucketId'],
-        relative_path=u'v2/{+parent}/buckets',
-        request_field=u'logBucket',
-        request_type_name=u'LoggingFoldersLocationsBucketsCreateRequest',
-        response_type_name=u'LogBucket',
+        flat_path='v2/folders/{foldersId}/locations/{locationsId}/buckets',
+        http_method='POST',
+        method_id='logging.folders.locations.buckets.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['bucketId'],
+        relative_path='v2/{+parent}/buckets',
+        request_field='logBucket',
+        request_type_name='LoggingFoldersLocationsBucketsCreateRequest',
+        response_type_name='LogBucket',
         supports_download=False,
     )
 
@@ -1363,16 +1363,16 @@ class LoggingV2(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Delete.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v2/folders/{foldersId}/locations/{locationsId}/buckets/{bucketsId}',
-        http_method=u'DELETE',
-        method_id=u'logging.folders.locations.buckets.delete',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v2/folders/{foldersId}/locations/{locationsId}/buckets/{bucketsId}',
+        http_method='DELETE',
+        method_id='logging.folders.locations.buckets.delete',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v2/{+name}',
+        relative_path='v2/{+name}',
         request_field='',
-        request_type_name=u'LoggingFoldersLocationsBucketsDeleteRequest',
-        response_type_name=u'Empty',
+        request_type_name='LoggingFoldersLocationsBucketsDeleteRequest',
+        response_type_name='Empty',
         supports_download=False,
     )
 
@@ -1390,16 +1390,16 @@ class LoggingV2(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v2/folders/{foldersId}/locations/{locationsId}/buckets/{bucketsId}',
-        http_method=u'GET',
-        method_id=u'logging.folders.locations.buckets.get',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v2/folders/{foldersId}/locations/{locationsId}/buckets/{bucketsId}',
+        http_method='GET',
+        method_id='logging.folders.locations.buckets.get',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v2/{+name}',
+        relative_path='v2/{+name}',
         request_field='',
-        request_type_name=u'LoggingFoldersLocationsBucketsGetRequest',
-        response_type_name=u'LogBucket',
+        request_type_name='LoggingFoldersLocationsBucketsGetRequest',
+        response_type_name='LogBucket',
         supports_download=False,
     )
 
@@ -1417,16 +1417,16 @@ class LoggingV2(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v2/folders/{foldersId}/locations/{locationsId}/buckets',
-        http_method=u'GET',
-        method_id=u'logging.folders.locations.buckets.list',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'pageSize', u'pageToken'],
-        relative_path=u'v2/{+parent}/buckets',
+        flat_path='v2/folders/{foldersId}/locations/{locationsId}/buckets',
+        http_method='GET',
+        method_id='logging.folders.locations.buckets.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v2/{+parent}/buckets',
         request_field='',
-        request_type_name=u'LoggingFoldersLocationsBucketsListRequest',
-        response_type_name=u'ListBucketsResponse',
+        request_type_name='LoggingFoldersLocationsBucketsListRequest',
+        response_type_name='ListBucketsResponse',
         supports_download=False,
     )
 
@@ -1444,16 +1444,16 @@ class LoggingV2(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Patch.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v2/folders/{foldersId}/locations/{locationsId}/buckets/{bucketsId}',
-        http_method=u'PATCH',
-        method_id=u'logging.folders.locations.buckets.patch',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[u'updateMask'],
-        relative_path=u'v2/{+name}',
-        request_field=u'logBucket',
-        request_type_name=u'LoggingFoldersLocationsBucketsPatchRequest',
-        response_type_name=u'LogBucket',
+        flat_path='v2/folders/{foldersId}/locations/{locationsId}/buckets/{bucketsId}',
+        http_method='PATCH',
+        method_id='logging.folders.locations.buckets.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v2/{+name}',
+        request_field='logBucket',
+        request_type_name='LoggingFoldersLocationsBucketsPatchRequest',
+        response_type_name='LogBucket',
         supports_download=False,
     )
 
@@ -1471,23 +1471,23 @@ class LoggingV2(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Undelete.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v2/folders/{foldersId}/locations/{locationsId}/buckets/{bucketsId}:undelete',
-        http_method=u'POST',
-        method_id=u'logging.folders.locations.buckets.undelete',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v2/folders/{foldersId}/locations/{locationsId}/buckets/{bucketsId}:undelete',
+        http_method='POST',
+        method_id='logging.folders.locations.buckets.undelete',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v2/{+name}:undelete',
-        request_field=u'undeleteBucketRequest',
-        request_type_name=u'LoggingFoldersLocationsBucketsUndeleteRequest',
-        response_type_name=u'Empty',
+        relative_path='v2/{+name}:undelete',
+        request_field='undeleteBucketRequest',
+        request_type_name='LoggingFoldersLocationsBucketsUndeleteRequest',
+        response_type_name='Empty',
         supports_download=False,
     )
 
   class FoldersLocationsService(base_api.BaseApiService):
     """Service class for the folders_locations resource."""
 
-    _NAME = u'folders_locations'
+    _NAME = 'folders_locations'
 
     def __init__(self, client):
       super(LoggingV2.FoldersLocationsService, self).__init__(client)
@@ -1497,7 +1497,7 @@ class LoggingV2(base_api.BaseApiClient):
   class FoldersLogsService(base_api.BaseApiService):
     """Service class for the folders_logs resource."""
 
-    _NAME = u'folders_logs'
+    _NAME = 'folders_logs'
 
     def __init__(self, client):
       super(LoggingV2.FoldersLogsService, self).__init__(client)
@@ -1518,16 +1518,16 @@ class LoggingV2(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Delete.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v2/folders/{foldersId}/logs/{logsId}',
-        http_method=u'DELETE',
-        method_id=u'logging.folders.logs.delete',
-        ordered_params=[u'logName'],
-        path_params=[u'logName'],
+        flat_path='v2/folders/{foldersId}/logs/{logsId}',
+        http_method='DELETE',
+        method_id='logging.folders.logs.delete',
+        ordered_params=['logName'],
+        path_params=['logName'],
         query_params=[],
-        relative_path=u'v2/{+logName}',
+        relative_path='v2/{+logName}',
         request_field='',
-        request_type_name=u'LoggingFoldersLogsDeleteRequest',
-        response_type_name=u'Empty',
+        request_type_name='LoggingFoldersLogsDeleteRequest',
+        response_type_name='Empty',
         supports_download=False,
     )
 
@@ -1545,23 +1545,23 @@ class LoggingV2(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v2/folders/{foldersId}/logs',
-        http_method=u'GET',
-        method_id=u'logging.folders.logs.list',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'pageSize', u'pageToken', u'resourceNames'],
-        relative_path=u'v2/{+parent}/logs',
+        flat_path='v2/folders/{foldersId}/logs',
+        http_method='GET',
+        method_id='logging.folders.logs.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken', 'resourceNames'],
+        relative_path='v2/{+parent}/logs',
         request_field='',
-        request_type_name=u'LoggingFoldersLogsListRequest',
-        response_type_name=u'ListLogsResponse',
+        request_type_name='LoggingFoldersLogsListRequest',
+        response_type_name='ListLogsResponse',
         supports_download=False,
     )
 
   class FoldersSinksService(base_api.BaseApiService):
     """Service class for the folders_sinks resource."""
 
-    _NAME = u'folders_sinks'
+    _NAME = 'folders_sinks'
 
     def __init__(self, client):
       super(LoggingV2.FoldersSinksService, self).__init__(client)
@@ -1582,16 +1582,16 @@ class LoggingV2(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Create.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v2/folders/{foldersId}/sinks',
-        http_method=u'POST',
-        method_id=u'logging.folders.sinks.create',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'uniqueWriterIdentity'],
-        relative_path=u'v2/{+parent}/sinks',
-        request_field=u'logSink',
-        request_type_name=u'LoggingFoldersSinksCreateRequest',
-        response_type_name=u'LogSink',
+        flat_path='v2/folders/{foldersId}/sinks',
+        http_method='POST',
+        method_id='logging.folders.sinks.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['uniqueWriterIdentity'],
+        relative_path='v2/{+parent}/sinks',
+        request_field='logSink',
+        request_type_name='LoggingFoldersSinksCreateRequest',
+        response_type_name='LogSink',
         supports_download=False,
     )
 
@@ -1609,16 +1609,16 @@ class LoggingV2(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Delete.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v2/folders/{foldersId}/sinks/{sinksId}',
-        http_method=u'DELETE',
-        method_id=u'logging.folders.sinks.delete',
-        ordered_params=[u'sinkName'],
-        path_params=[u'sinkName'],
+        flat_path='v2/folders/{foldersId}/sinks/{sinksId}',
+        http_method='DELETE',
+        method_id='logging.folders.sinks.delete',
+        ordered_params=['sinkName'],
+        path_params=['sinkName'],
         query_params=[],
-        relative_path=u'v2/{+sinkName}',
+        relative_path='v2/{+sinkName}',
         request_field='',
-        request_type_name=u'LoggingFoldersSinksDeleteRequest',
-        response_type_name=u'Empty',
+        request_type_name='LoggingFoldersSinksDeleteRequest',
+        response_type_name='Empty',
         supports_download=False,
     )
 
@@ -1636,16 +1636,16 @@ class LoggingV2(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v2/folders/{foldersId}/sinks/{sinksId}',
-        http_method=u'GET',
-        method_id=u'logging.folders.sinks.get',
-        ordered_params=[u'sinkName'],
-        path_params=[u'sinkName'],
+        flat_path='v2/folders/{foldersId}/sinks/{sinksId}',
+        http_method='GET',
+        method_id='logging.folders.sinks.get',
+        ordered_params=['sinkName'],
+        path_params=['sinkName'],
         query_params=[],
-        relative_path=u'v2/{+sinkName}',
+        relative_path='v2/{+sinkName}',
         request_field='',
-        request_type_name=u'LoggingFoldersSinksGetRequest',
-        response_type_name=u'LogSink',
+        request_type_name='LoggingFoldersSinksGetRequest',
+        response_type_name='LogSink',
         supports_download=False,
     )
 
@@ -1663,16 +1663,16 @@ class LoggingV2(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v2/folders/{foldersId}/sinks',
-        http_method=u'GET',
-        method_id=u'logging.folders.sinks.list',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'pageSize', u'pageToken'],
-        relative_path=u'v2/{+parent}/sinks',
+        flat_path='v2/folders/{foldersId}/sinks',
+        http_method='GET',
+        method_id='logging.folders.sinks.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v2/{+parent}/sinks',
         request_field='',
-        request_type_name=u'LoggingFoldersSinksListRequest',
-        response_type_name=u'ListSinksResponse',
+        request_type_name='LoggingFoldersSinksListRequest',
+        response_type_name='ListSinksResponse',
         supports_download=False,
     )
 
@@ -1690,16 +1690,16 @@ class LoggingV2(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Patch.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v2/folders/{foldersId}/sinks/{sinksId}',
-        http_method=u'PATCH',
-        method_id=u'logging.folders.sinks.patch',
-        ordered_params=[u'sinkName'],
-        path_params=[u'sinkName'],
-        query_params=[u'uniqueWriterIdentity', u'updateMask'],
-        relative_path=u'v2/{+sinkName}',
-        request_field=u'logSink',
-        request_type_name=u'LoggingFoldersSinksPatchRequest',
-        response_type_name=u'LogSink',
+        flat_path='v2/folders/{foldersId}/sinks/{sinksId}',
+        http_method='PATCH',
+        method_id='logging.folders.sinks.patch',
+        ordered_params=['sinkName'],
+        path_params=['sinkName'],
+        query_params=['uniqueWriterIdentity', 'updateMask'],
+        relative_path='v2/{+sinkName}',
+        request_field='logSink',
+        request_type_name='LoggingFoldersSinksPatchRequest',
+        response_type_name='LogSink',
         supports_download=False,
     )
 
@@ -1717,23 +1717,23 @@ class LoggingV2(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Update.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v2/folders/{foldersId}/sinks/{sinksId}',
-        http_method=u'PUT',
-        method_id=u'logging.folders.sinks.update',
-        ordered_params=[u'sinkName'],
-        path_params=[u'sinkName'],
-        query_params=[u'uniqueWriterIdentity', u'updateMask'],
-        relative_path=u'v2/{+sinkName}',
-        request_field=u'logSink',
-        request_type_name=u'LoggingFoldersSinksUpdateRequest',
-        response_type_name=u'LogSink',
+        flat_path='v2/folders/{foldersId}/sinks/{sinksId}',
+        http_method='PUT',
+        method_id='logging.folders.sinks.update',
+        ordered_params=['sinkName'],
+        path_params=['sinkName'],
+        query_params=['uniqueWriterIdentity', 'updateMask'],
+        relative_path='v2/{+sinkName}',
+        request_field='logSink',
+        request_type_name='LoggingFoldersSinksUpdateRequest',
+        response_type_name='LogSink',
         supports_download=False,
     )
 
   class FoldersService(base_api.BaseApiService):
     """Service class for the folders resource."""
 
-    _NAME = u'folders'
+    _NAME = 'folders'
 
     def __init__(self, client):
       super(LoggingV2.FoldersService, self).__init__(client)
@@ -1743,7 +1743,7 @@ class LoggingV2(base_api.BaseApiClient):
   class LocationsBucketsViewsService(base_api.BaseApiService):
     """Service class for the locations_buckets_views resource."""
 
-    _NAME = u'locations_buckets_views'
+    _NAME = 'locations_buckets_views'
 
     def __init__(self, client):
       super(LoggingV2.LocationsBucketsViewsService, self).__init__(client)
@@ -1764,16 +1764,16 @@ class LoggingV2(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Create.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v2/{v2Id}/{v2Id1}/locations/{locationsId}/buckets/{bucketsId}/views',
-        http_method=u'POST',
-        method_id=u'logging.locations.buckets.views.create',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'viewId'],
-        relative_path=u'v2/{+parent}/views',
-        request_field=u'logView',
-        request_type_name=u'LoggingLocationsBucketsViewsCreateRequest',
-        response_type_name=u'LogView',
+        flat_path='v2/{v2Id}/{v2Id1}/locations/{locationsId}/buckets/{bucketsId}/views',
+        http_method='POST',
+        method_id='logging.locations.buckets.views.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['viewId'],
+        relative_path='v2/{+parent}/views',
+        request_field='logView',
+        request_type_name='LoggingLocationsBucketsViewsCreateRequest',
+        response_type_name='LogView',
         supports_download=False,
     )
 
@@ -1791,16 +1791,16 @@ class LoggingV2(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Delete.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v2/{v2Id}/{v2Id1}/locations/{locationsId}/buckets/{bucketsId}/views/{viewsId}',
-        http_method=u'DELETE',
-        method_id=u'logging.locations.buckets.views.delete',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v2/{v2Id}/{v2Id1}/locations/{locationsId}/buckets/{bucketsId}/views/{viewsId}',
+        http_method='DELETE',
+        method_id='logging.locations.buckets.views.delete',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v2/{+name}',
+        relative_path='v2/{+name}',
         request_field='',
-        request_type_name=u'LoggingLocationsBucketsViewsDeleteRequest',
-        response_type_name=u'Empty',
+        request_type_name='LoggingLocationsBucketsViewsDeleteRequest',
+        response_type_name='Empty',
         supports_download=False,
     )
 
@@ -1818,16 +1818,16 @@ class LoggingV2(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v2/{v2Id}/{v2Id1}/locations/{locationsId}/buckets/{bucketsId}/views/{viewsId}',
-        http_method=u'GET',
-        method_id=u'logging.locations.buckets.views.get',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v2/{v2Id}/{v2Id1}/locations/{locationsId}/buckets/{bucketsId}/views/{viewsId}',
+        http_method='GET',
+        method_id='logging.locations.buckets.views.get',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v2/{+name}',
+        relative_path='v2/{+name}',
         request_field='',
-        request_type_name=u'LoggingLocationsBucketsViewsGetRequest',
-        response_type_name=u'LogView',
+        request_type_name='LoggingLocationsBucketsViewsGetRequest',
+        response_type_name='LogView',
         supports_download=False,
     )
 
@@ -1845,16 +1845,16 @@ class LoggingV2(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v2/{v2Id}/{v2Id1}/locations/{locationsId}/buckets/{bucketsId}/views',
-        http_method=u'GET',
-        method_id=u'logging.locations.buckets.views.list',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'pageSize', u'pageToken'],
-        relative_path=u'v2/{+parent}/views',
+        flat_path='v2/{v2Id}/{v2Id1}/locations/{locationsId}/buckets/{bucketsId}/views',
+        http_method='GET',
+        method_id='logging.locations.buckets.views.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v2/{+parent}/views',
         request_field='',
-        request_type_name=u'LoggingLocationsBucketsViewsListRequest',
-        response_type_name=u'ListViewsResponse',
+        request_type_name='LoggingLocationsBucketsViewsListRequest',
+        response_type_name='ListViewsResponse',
         supports_download=False,
     )
 
@@ -1872,23 +1872,23 @@ class LoggingV2(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Patch.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v2/{v2Id}/{v2Id1}/locations/{locationsId}/buckets/{bucketsId}/views/{viewsId}',
-        http_method=u'PATCH',
-        method_id=u'logging.locations.buckets.views.patch',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[u'updateMask'],
-        relative_path=u'v2/{+name}',
-        request_field=u'logView',
-        request_type_name=u'LoggingLocationsBucketsViewsPatchRequest',
-        response_type_name=u'LogView',
+        flat_path='v2/{v2Id}/{v2Id1}/locations/{locationsId}/buckets/{bucketsId}/views/{viewsId}',
+        http_method='PATCH',
+        method_id='logging.locations.buckets.views.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v2/{+name}',
+        request_field='logView',
+        request_type_name='LoggingLocationsBucketsViewsPatchRequest',
+        response_type_name='LogView',
         supports_download=False,
     )
 
   class LocationsBucketsService(base_api.BaseApiService):
     """Service class for the locations_buckets resource."""
 
-    _NAME = u'locations_buckets'
+    _NAME = 'locations_buckets'
 
     def __init__(self, client):
       super(LoggingV2.LocationsBucketsService, self).__init__(client)
@@ -1909,16 +1909,16 @@ class LoggingV2(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Create.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v2/{v2Id}/{v2Id1}/locations/{locationsId}/buckets',
-        http_method=u'POST',
-        method_id=u'logging.locations.buckets.create',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'bucketId'],
-        relative_path=u'v2/{+parent}/buckets',
-        request_field=u'logBucket',
-        request_type_name=u'LoggingLocationsBucketsCreateRequest',
-        response_type_name=u'LogBucket',
+        flat_path='v2/{v2Id}/{v2Id1}/locations/{locationsId}/buckets',
+        http_method='POST',
+        method_id='logging.locations.buckets.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['bucketId'],
+        relative_path='v2/{+parent}/buckets',
+        request_field='logBucket',
+        request_type_name='LoggingLocationsBucketsCreateRequest',
+        response_type_name='LogBucket',
         supports_download=False,
     )
 
@@ -1936,16 +1936,16 @@ class LoggingV2(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Delete.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v2/{v2Id}/{v2Id1}/locations/{locationsId}/buckets/{bucketsId}',
-        http_method=u'DELETE',
-        method_id=u'logging.locations.buckets.delete',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v2/{v2Id}/{v2Id1}/locations/{locationsId}/buckets/{bucketsId}',
+        http_method='DELETE',
+        method_id='logging.locations.buckets.delete',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v2/{+name}',
+        relative_path='v2/{+name}',
         request_field='',
-        request_type_name=u'LoggingLocationsBucketsDeleteRequest',
-        response_type_name=u'Empty',
+        request_type_name='LoggingLocationsBucketsDeleteRequest',
+        response_type_name='Empty',
         supports_download=False,
     )
 
@@ -1963,16 +1963,16 @@ class LoggingV2(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v2/{v2Id}/{v2Id1}/locations/{locationsId}/buckets/{bucketsId}',
-        http_method=u'GET',
-        method_id=u'logging.locations.buckets.get',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v2/{v2Id}/{v2Id1}/locations/{locationsId}/buckets/{bucketsId}',
+        http_method='GET',
+        method_id='logging.locations.buckets.get',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v2/{+name}',
+        relative_path='v2/{+name}',
         request_field='',
-        request_type_name=u'LoggingLocationsBucketsGetRequest',
-        response_type_name=u'LogBucket',
+        request_type_name='LoggingLocationsBucketsGetRequest',
+        response_type_name='LogBucket',
         supports_download=False,
     )
 
@@ -1990,16 +1990,16 @@ class LoggingV2(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v2/{v2Id}/{v2Id1}/locations/{locationsId}/buckets',
-        http_method=u'GET',
-        method_id=u'logging.locations.buckets.list',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'pageSize', u'pageToken'],
-        relative_path=u'v2/{+parent}/buckets',
+        flat_path='v2/{v2Id}/{v2Id1}/locations/{locationsId}/buckets',
+        http_method='GET',
+        method_id='logging.locations.buckets.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v2/{+parent}/buckets',
         request_field='',
-        request_type_name=u'LoggingLocationsBucketsListRequest',
-        response_type_name=u'ListBucketsResponse',
+        request_type_name='LoggingLocationsBucketsListRequest',
+        response_type_name='ListBucketsResponse',
         supports_download=False,
     )
 
@@ -2017,16 +2017,16 @@ class LoggingV2(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Patch.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v2/{v2Id}/{v2Id1}/locations/{locationsId}/buckets/{bucketsId}',
-        http_method=u'PATCH',
-        method_id=u'logging.locations.buckets.patch',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[u'updateMask'],
-        relative_path=u'v2/{+name}',
-        request_field=u'logBucket',
-        request_type_name=u'LoggingLocationsBucketsPatchRequest',
-        response_type_name=u'LogBucket',
+        flat_path='v2/{v2Id}/{v2Id1}/locations/{locationsId}/buckets/{bucketsId}',
+        http_method='PATCH',
+        method_id='logging.locations.buckets.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v2/{+name}',
+        request_field='logBucket',
+        request_type_name='LoggingLocationsBucketsPatchRequest',
+        response_type_name='LogBucket',
         supports_download=False,
     )
 
@@ -2044,23 +2044,23 @@ class LoggingV2(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Undelete.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v2/{v2Id}/{v2Id1}/locations/{locationsId}/buckets/{bucketsId}:undelete',
-        http_method=u'POST',
-        method_id=u'logging.locations.buckets.undelete',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v2/{v2Id}/{v2Id1}/locations/{locationsId}/buckets/{bucketsId}:undelete',
+        http_method='POST',
+        method_id='logging.locations.buckets.undelete',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v2/{+name}:undelete',
-        request_field=u'undeleteBucketRequest',
-        request_type_name=u'LoggingLocationsBucketsUndeleteRequest',
-        response_type_name=u'Empty',
+        relative_path='v2/{+name}:undelete',
+        request_field='undeleteBucketRequest',
+        request_type_name='LoggingLocationsBucketsUndeleteRequest',
+        response_type_name='Empty',
         supports_download=False,
     )
 
   class LocationsService(base_api.BaseApiService):
     """Service class for the locations resource."""
 
-    _NAME = u'locations'
+    _NAME = 'locations'
 
     def __init__(self, client):
       super(LoggingV2.LocationsService, self).__init__(client)
@@ -2070,7 +2070,7 @@ class LoggingV2(base_api.BaseApiClient):
   class LogsService(base_api.BaseApiService):
     """Service class for the logs resource."""
 
-    _NAME = u'logs'
+    _NAME = 'logs'
 
     def __init__(self, client):
       super(LoggingV2.LogsService, self).__init__(client)
@@ -2091,16 +2091,16 @@ class LoggingV2(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Delete.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v2/{v2Id}/{v2Id1}/logs/{logsId}',
-        http_method=u'DELETE',
-        method_id=u'logging.logs.delete',
-        ordered_params=[u'logName'],
-        path_params=[u'logName'],
+        flat_path='v2/{v2Id}/{v2Id1}/logs/{logsId}',
+        http_method='DELETE',
+        method_id='logging.logs.delete',
+        ordered_params=['logName'],
+        path_params=['logName'],
         query_params=[],
-        relative_path=u'v2/{+logName}',
+        relative_path='v2/{+logName}',
         request_field='',
-        request_type_name=u'LoggingLogsDeleteRequest',
-        response_type_name=u'Empty',
+        request_type_name='LoggingLogsDeleteRequest',
+        response_type_name='Empty',
         supports_download=False,
     )
 
@@ -2118,23 +2118,23 @@ class LoggingV2(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v2/{v2Id}/{v2Id1}/logs',
-        http_method=u'GET',
-        method_id=u'logging.logs.list',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'pageSize', u'pageToken', u'resourceNames'],
-        relative_path=u'v2/{+parent}/logs',
+        flat_path='v2/{v2Id}/{v2Id1}/logs',
+        http_method='GET',
+        method_id='logging.logs.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken', 'resourceNames'],
+        relative_path='v2/{+parent}/logs',
         request_field='',
-        request_type_name=u'LoggingLogsListRequest',
-        response_type_name=u'ListLogsResponse',
+        request_type_name='LoggingLogsListRequest',
+        response_type_name='ListLogsResponse',
         supports_download=False,
     )
 
   class MonitoredResourceDescriptorsService(base_api.BaseApiService):
     """Service class for the monitoredResourceDescriptors resource."""
 
-    _NAME = u'monitoredResourceDescriptors'
+    _NAME = 'monitoredResourceDescriptors'
 
     def __init__(self, client):
       super(LoggingV2.MonitoredResourceDescriptorsService, self).__init__(client)
@@ -2155,22 +2155,22 @@ class LoggingV2(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'logging.monitoredResourceDescriptors.list',
+        http_method='GET',
+        method_id='logging.monitoredResourceDescriptors.list',
         ordered_params=[],
         path_params=[],
-        query_params=[u'pageSize', u'pageToken'],
-        relative_path=u'v2/monitoredResourceDescriptors',
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v2/monitoredResourceDescriptors',
         request_field='',
-        request_type_name=u'LoggingMonitoredResourceDescriptorsListRequest',
-        response_type_name=u'ListMonitoredResourceDescriptorsResponse',
+        request_type_name='LoggingMonitoredResourceDescriptorsListRequest',
+        response_type_name='ListMonitoredResourceDescriptorsResponse',
         supports_download=False,
     )
 
   class OrganizationsExclusionsService(base_api.BaseApiService):
     """Service class for the organizations_exclusions resource."""
 
-    _NAME = u'organizations_exclusions'
+    _NAME = 'organizations_exclusions'
 
     def __init__(self, client):
       super(LoggingV2.OrganizationsExclusionsService, self).__init__(client)
@@ -2191,16 +2191,16 @@ class LoggingV2(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Create.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v2/organizations/{organizationsId}/exclusions',
-        http_method=u'POST',
-        method_id=u'logging.organizations.exclusions.create',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
+        flat_path='v2/organizations/{organizationsId}/exclusions',
+        http_method='POST',
+        method_id='logging.organizations.exclusions.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
         query_params=[],
-        relative_path=u'v2/{+parent}/exclusions',
-        request_field=u'logExclusion',
-        request_type_name=u'LoggingOrganizationsExclusionsCreateRequest',
-        response_type_name=u'LogExclusion',
+        relative_path='v2/{+parent}/exclusions',
+        request_field='logExclusion',
+        request_type_name='LoggingOrganizationsExclusionsCreateRequest',
+        response_type_name='LogExclusion',
         supports_download=False,
     )
 
@@ -2218,16 +2218,16 @@ class LoggingV2(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Delete.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v2/organizations/{organizationsId}/exclusions/{exclusionsId}',
-        http_method=u'DELETE',
-        method_id=u'logging.organizations.exclusions.delete',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v2/organizations/{organizationsId}/exclusions/{exclusionsId}',
+        http_method='DELETE',
+        method_id='logging.organizations.exclusions.delete',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v2/{+name}',
+        relative_path='v2/{+name}',
         request_field='',
-        request_type_name=u'LoggingOrganizationsExclusionsDeleteRequest',
-        response_type_name=u'Empty',
+        request_type_name='LoggingOrganizationsExclusionsDeleteRequest',
+        response_type_name='Empty',
         supports_download=False,
     )
 
@@ -2245,16 +2245,16 @@ class LoggingV2(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v2/organizations/{organizationsId}/exclusions/{exclusionsId}',
-        http_method=u'GET',
-        method_id=u'logging.organizations.exclusions.get',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v2/organizations/{organizationsId}/exclusions/{exclusionsId}',
+        http_method='GET',
+        method_id='logging.organizations.exclusions.get',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v2/{+name}',
+        relative_path='v2/{+name}',
         request_field='',
-        request_type_name=u'LoggingOrganizationsExclusionsGetRequest',
-        response_type_name=u'LogExclusion',
+        request_type_name='LoggingOrganizationsExclusionsGetRequest',
+        response_type_name='LogExclusion',
         supports_download=False,
     )
 
@@ -2272,16 +2272,16 @@ class LoggingV2(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v2/organizations/{organizationsId}/exclusions',
-        http_method=u'GET',
-        method_id=u'logging.organizations.exclusions.list',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'pageSize', u'pageToken'],
-        relative_path=u'v2/{+parent}/exclusions',
+        flat_path='v2/organizations/{organizationsId}/exclusions',
+        http_method='GET',
+        method_id='logging.organizations.exclusions.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v2/{+parent}/exclusions',
         request_field='',
-        request_type_name=u'LoggingOrganizationsExclusionsListRequest',
-        response_type_name=u'ListExclusionsResponse',
+        request_type_name='LoggingOrganizationsExclusionsListRequest',
+        response_type_name='ListExclusionsResponse',
         supports_download=False,
     )
 
@@ -2299,23 +2299,23 @@ class LoggingV2(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Patch.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v2/organizations/{organizationsId}/exclusions/{exclusionsId}',
-        http_method=u'PATCH',
-        method_id=u'logging.organizations.exclusions.patch',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[u'updateMask'],
-        relative_path=u'v2/{+name}',
-        request_field=u'logExclusion',
-        request_type_name=u'LoggingOrganizationsExclusionsPatchRequest',
-        response_type_name=u'LogExclusion',
+        flat_path='v2/organizations/{organizationsId}/exclusions/{exclusionsId}',
+        http_method='PATCH',
+        method_id='logging.organizations.exclusions.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v2/{+name}',
+        request_field='logExclusion',
+        request_type_name='LoggingOrganizationsExclusionsPatchRequest',
+        response_type_name='LogExclusion',
         supports_download=False,
     )
 
   class OrganizationsLocationsBucketsViewsService(base_api.BaseApiService):
     """Service class for the organizations_locations_buckets_views resource."""
 
-    _NAME = u'organizations_locations_buckets_views'
+    _NAME = 'organizations_locations_buckets_views'
 
     def __init__(self, client):
       super(LoggingV2.OrganizationsLocationsBucketsViewsService, self).__init__(client)
@@ -2336,16 +2336,16 @@ class LoggingV2(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Create.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v2/organizations/{organizationsId}/locations/{locationsId}/buckets/{bucketsId}/views',
-        http_method=u'POST',
-        method_id=u'logging.organizations.locations.buckets.views.create',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'viewId'],
-        relative_path=u'v2/{+parent}/views',
-        request_field=u'logView',
-        request_type_name=u'LoggingOrganizationsLocationsBucketsViewsCreateRequest',
-        response_type_name=u'LogView',
+        flat_path='v2/organizations/{organizationsId}/locations/{locationsId}/buckets/{bucketsId}/views',
+        http_method='POST',
+        method_id='logging.organizations.locations.buckets.views.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['viewId'],
+        relative_path='v2/{+parent}/views',
+        request_field='logView',
+        request_type_name='LoggingOrganizationsLocationsBucketsViewsCreateRequest',
+        response_type_name='LogView',
         supports_download=False,
     )
 
@@ -2363,16 +2363,16 @@ class LoggingV2(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Delete.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v2/organizations/{organizationsId}/locations/{locationsId}/buckets/{bucketsId}/views/{viewsId}',
-        http_method=u'DELETE',
-        method_id=u'logging.organizations.locations.buckets.views.delete',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v2/organizations/{organizationsId}/locations/{locationsId}/buckets/{bucketsId}/views/{viewsId}',
+        http_method='DELETE',
+        method_id='logging.organizations.locations.buckets.views.delete',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v2/{+name}',
+        relative_path='v2/{+name}',
         request_field='',
-        request_type_name=u'LoggingOrganizationsLocationsBucketsViewsDeleteRequest',
-        response_type_name=u'Empty',
+        request_type_name='LoggingOrganizationsLocationsBucketsViewsDeleteRequest',
+        response_type_name='Empty',
         supports_download=False,
     )
 
@@ -2390,16 +2390,16 @@ class LoggingV2(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v2/organizations/{organizationsId}/locations/{locationsId}/buckets/{bucketsId}/views/{viewsId}',
-        http_method=u'GET',
-        method_id=u'logging.organizations.locations.buckets.views.get',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v2/organizations/{organizationsId}/locations/{locationsId}/buckets/{bucketsId}/views/{viewsId}',
+        http_method='GET',
+        method_id='logging.organizations.locations.buckets.views.get',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v2/{+name}',
+        relative_path='v2/{+name}',
         request_field='',
-        request_type_name=u'LoggingOrganizationsLocationsBucketsViewsGetRequest',
-        response_type_name=u'LogView',
+        request_type_name='LoggingOrganizationsLocationsBucketsViewsGetRequest',
+        response_type_name='LogView',
         supports_download=False,
     )
 
@@ -2417,16 +2417,16 @@ class LoggingV2(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v2/organizations/{organizationsId}/locations/{locationsId}/buckets/{bucketsId}/views',
-        http_method=u'GET',
-        method_id=u'logging.organizations.locations.buckets.views.list',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'pageSize', u'pageToken'],
-        relative_path=u'v2/{+parent}/views',
+        flat_path='v2/organizations/{organizationsId}/locations/{locationsId}/buckets/{bucketsId}/views',
+        http_method='GET',
+        method_id='logging.organizations.locations.buckets.views.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v2/{+parent}/views',
         request_field='',
-        request_type_name=u'LoggingOrganizationsLocationsBucketsViewsListRequest',
-        response_type_name=u'ListViewsResponse',
+        request_type_name='LoggingOrganizationsLocationsBucketsViewsListRequest',
+        response_type_name='ListViewsResponse',
         supports_download=False,
     )
 
@@ -2444,23 +2444,23 @@ class LoggingV2(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Patch.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v2/organizations/{organizationsId}/locations/{locationsId}/buckets/{bucketsId}/views/{viewsId}',
-        http_method=u'PATCH',
-        method_id=u'logging.organizations.locations.buckets.views.patch',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[u'updateMask'],
-        relative_path=u'v2/{+name}',
-        request_field=u'logView',
-        request_type_name=u'LoggingOrganizationsLocationsBucketsViewsPatchRequest',
-        response_type_name=u'LogView',
+        flat_path='v2/organizations/{organizationsId}/locations/{locationsId}/buckets/{bucketsId}/views/{viewsId}',
+        http_method='PATCH',
+        method_id='logging.organizations.locations.buckets.views.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v2/{+name}',
+        request_field='logView',
+        request_type_name='LoggingOrganizationsLocationsBucketsViewsPatchRequest',
+        response_type_name='LogView',
         supports_download=False,
     )
 
   class OrganizationsLocationsBucketsService(base_api.BaseApiService):
     """Service class for the organizations_locations_buckets resource."""
 
-    _NAME = u'organizations_locations_buckets'
+    _NAME = 'organizations_locations_buckets'
 
     def __init__(self, client):
       super(LoggingV2.OrganizationsLocationsBucketsService, self).__init__(client)
@@ -2481,16 +2481,16 @@ class LoggingV2(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Create.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v2/organizations/{organizationsId}/locations/{locationsId}/buckets',
-        http_method=u'POST',
-        method_id=u'logging.organizations.locations.buckets.create',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'bucketId'],
-        relative_path=u'v2/{+parent}/buckets',
-        request_field=u'logBucket',
-        request_type_name=u'LoggingOrganizationsLocationsBucketsCreateRequest',
-        response_type_name=u'LogBucket',
+        flat_path='v2/organizations/{organizationsId}/locations/{locationsId}/buckets',
+        http_method='POST',
+        method_id='logging.organizations.locations.buckets.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['bucketId'],
+        relative_path='v2/{+parent}/buckets',
+        request_field='logBucket',
+        request_type_name='LoggingOrganizationsLocationsBucketsCreateRequest',
+        response_type_name='LogBucket',
         supports_download=False,
     )
 
@@ -2508,16 +2508,16 @@ class LoggingV2(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Delete.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v2/organizations/{organizationsId}/locations/{locationsId}/buckets/{bucketsId}',
-        http_method=u'DELETE',
-        method_id=u'logging.organizations.locations.buckets.delete',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v2/organizations/{organizationsId}/locations/{locationsId}/buckets/{bucketsId}',
+        http_method='DELETE',
+        method_id='logging.organizations.locations.buckets.delete',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v2/{+name}',
+        relative_path='v2/{+name}',
         request_field='',
-        request_type_name=u'LoggingOrganizationsLocationsBucketsDeleteRequest',
-        response_type_name=u'Empty',
+        request_type_name='LoggingOrganizationsLocationsBucketsDeleteRequest',
+        response_type_name='Empty',
         supports_download=False,
     )
 
@@ -2535,16 +2535,16 @@ class LoggingV2(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v2/organizations/{organizationsId}/locations/{locationsId}/buckets/{bucketsId}',
-        http_method=u'GET',
-        method_id=u'logging.organizations.locations.buckets.get',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v2/organizations/{organizationsId}/locations/{locationsId}/buckets/{bucketsId}',
+        http_method='GET',
+        method_id='logging.organizations.locations.buckets.get',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v2/{+name}',
+        relative_path='v2/{+name}',
         request_field='',
-        request_type_name=u'LoggingOrganizationsLocationsBucketsGetRequest',
-        response_type_name=u'LogBucket',
+        request_type_name='LoggingOrganizationsLocationsBucketsGetRequest',
+        response_type_name='LogBucket',
         supports_download=False,
     )
 
@@ -2562,16 +2562,16 @@ class LoggingV2(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v2/organizations/{organizationsId}/locations/{locationsId}/buckets',
-        http_method=u'GET',
-        method_id=u'logging.organizations.locations.buckets.list',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'pageSize', u'pageToken'],
-        relative_path=u'v2/{+parent}/buckets',
+        flat_path='v2/organizations/{organizationsId}/locations/{locationsId}/buckets',
+        http_method='GET',
+        method_id='logging.organizations.locations.buckets.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v2/{+parent}/buckets',
         request_field='',
-        request_type_name=u'LoggingOrganizationsLocationsBucketsListRequest',
-        response_type_name=u'ListBucketsResponse',
+        request_type_name='LoggingOrganizationsLocationsBucketsListRequest',
+        response_type_name='ListBucketsResponse',
         supports_download=False,
     )
 
@@ -2589,16 +2589,16 @@ class LoggingV2(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Patch.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v2/organizations/{organizationsId}/locations/{locationsId}/buckets/{bucketsId}',
-        http_method=u'PATCH',
-        method_id=u'logging.organizations.locations.buckets.patch',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[u'updateMask'],
-        relative_path=u'v2/{+name}',
-        request_field=u'logBucket',
-        request_type_name=u'LoggingOrganizationsLocationsBucketsPatchRequest',
-        response_type_name=u'LogBucket',
+        flat_path='v2/organizations/{organizationsId}/locations/{locationsId}/buckets/{bucketsId}',
+        http_method='PATCH',
+        method_id='logging.organizations.locations.buckets.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v2/{+name}',
+        request_field='logBucket',
+        request_type_name='LoggingOrganizationsLocationsBucketsPatchRequest',
+        response_type_name='LogBucket',
         supports_download=False,
     )
 
@@ -2616,23 +2616,23 @@ class LoggingV2(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Undelete.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v2/organizations/{organizationsId}/locations/{locationsId}/buckets/{bucketsId}:undelete',
-        http_method=u'POST',
-        method_id=u'logging.organizations.locations.buckets.undelete',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v2/organizations/{organizationsId}/locations/{locationsId}/buckets/{bucketsId}:undelete',
+        http_method='POST',
+        method_id='logging.organizations.locations.buckets.undelete',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v2/{+name}:undelete',
-        request_field=u'undeleteBucketRequest',
-        request_type_name=u'LoggingOrganizationsLocationsBucketsUndeleteRequest',
-        response_type_name=u'Empty',
+        relative_path='v2/{+name}:undelete',
+        request_field='undeleteBucketRequest',
+        request_type_name='LoggingOrganizationsLocationsBucketsUndeleteRequest',
+        response_type_name='Empty',
         supports_download=False,
     )
 
   class OrganizationsLocationsService(base_api.BaseApiService):
     """Service class for the organizations_locations resource."""
 
-    _NAME = u'organizations_locations'
+    _NAME = 'organizations_locations'
 
     def __init__(self, client):
       super(LoggingV2.OrganizationsLocationsService, self).__init__(client)
@@ -2642,7 +2642,7 @@ class LoggingV2(base_api.BaseApiClient):
   class OrganizationsLogsService(base_api.BaseApiService):
     """Service class for the organizations_logs resource."""
 
-    _NAME = u'organizations_logs'
+    _NAME = 'organizations_logs'
 
     def __init__(self, client):
       super(LoggingV2.OrganizationsLogsService, self).__init__(client)
@@ -2663,16 +2663,16 @@ class LoggingV2(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Delete.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v2/organizations/{organizationsId}/logs/{logsId}',
-        http_method=u'DELETE',
-        method_id=u'logging.organizations.logs.delete',
-        ordered_params=[u'logName'],
-        path_params=[u'logName'],
+        flat_path='v2/organizations/{organizationsId}/logs/{logsId}',
+        http_method='DELETE',
+        method_id='logging.organizations.logs.delete',
+        ordered_params=['logName'],
+        path_params=['logName'],
         query_params=[],
-        relative_path=u'v2/{+logName}',
+        relative_path='v2/{+logName}',
         request_field='',
-        request_type_name=u'LoggingOrganizationsLogsDeleteRequest',
-        response_type_name=u'Empty',
+        request_type_name='LoggingOrganizationsLogsDeleteRequest',
+        response_type_name='Empty',
         supports_download=False,
     )
 
@@ -2690,23 +2690,23 @@ class LoggingV2(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v2/organizations/{organizationsId}/logs',
-        http_method=u'GET',
-        method_id=u'logging.organizations.logs.list',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'pageSize', u'pageToken', u'resourceNames'],
-        relative_path=u'v2/{+parent}/logs',
+        flat_path='v2/organizations/{organizationsId}/logs',
+        http_method='GET',
+        method_id='logging.organizations.logs.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken', 'resourceNames'],
+        relative_path='v2/{+parent}/logs',
         request_field='',
-        request_type_name=u'LoggingOrganizationsLogsListRequest',
-        response_type_name=u'ListLogsResponse',
+        request_type_name='LoggingOrganizationsLogsListRequest',
+        response_type_name='ListLogsResponse',
         supports_download=False,
     )
 
   class OrganizationsSinksService(base_api.BaseApiService):
     """Service class for the organizations_sinks resource."""
 
-    _NAME = u'organizations_sinks'
+    _NAME = 'organizations_sinks'
 
     def __init__(self, client):
       super(LoggingV2.OrganizationsSinksService, self).__init__(client)
@@ -2727,16 +2727,16 @@ class LoggingV2(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Create.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v2/organizations/{organizationsId}/sinks',
-        http_method=u'POST',
-        method_id=u'logging.organizations.sinks.create',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'uniqueWriterIdentity'],
-        relative_path=u'v2/{+parent}/sinks',
-        request_field=u'logSink',
-        request_type_name=u'LoggingOrganizationsSinksCreateRequest',
-        response_type_name=u'LogSink',
+        flat_path='v2/organizations/{organizationsId}/sinks',
+        http_method='POST',
+        method_id='logging.organizations.sinks.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['uniqueWriterIdentity'],
+        relative_path='v2/{+parent}/sinks',
+        request_field='logSink',
+        request_type_name='LoggingOrganizationsSinksCreateRequest',
+        response_type_name='LogSink',
         supports_download=False,
     )
 
@@ -2754,16 +2754,16 @@ class LoggingV2(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Delete.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v2/organizations/{organizationsId}/sinks/{sinksId}',
-        http_method=u'DELETE',
-        method_id=u'logging.organizations.sinks.delete',
-        ordered_params=[u'sinkName'],
-        path_params=[u'sinkName'],
+        flat_path='v2/organizations/{organizationsId}/sinks/{sinksId}',
+        http_method='DELETE',
+        method_id='logging.organizations.sinks.delete',
+        ordered_params=['sinkName'],
+        path_params=['sinkName'],
         query_params=[],
-        relative_path=u'v2/{+sinkName}',
+        relative_path='v2/{+sinkName}',
         request_field='',
-        request_type_name=u'LoggingOrganizationsSinksDeleteRequest',
-        response_type_name=u'Empty',
+        request_type_name='LoggingOrganizationsSinksDeleteRequest',
+        response_type_name='Empty',
         supports_download=False,
     )
 
@@ -2781,16 +2781,16 @@ class LoggingV2(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v2/organizations/{organizationsId}/sinks/{sinksId}',
-        http_method=u'GET',
-        method_id=u'logging.organizations.sinks.get',
-        ordered_params=[u'sinkName'],
-        path_params=[u'sinkName'],
+        flat_path='v2/organizations/{organizationsId}/sinks/{sinksId}',
+        http_method='GET',
+        method_id='logging.organizations.sinks.get',
+        ordered_params=['sinkName'],
+        path_params=['sinkName'],
         query_params=[],
-        relative_path=u'v2/{+sinkName}',
+        relative_path='v2/{+sinkName}',
         request_field='',
-        request_type_name=u'LoggingOrganizationsSinksGetRequest',
-        response_type_name=u'LogSink',
+        request_type_name='LoggingOrganizationsSinksGetRequest',
+        response_type_name='LogSink',
         supports_download=False,
     )
 
@@ -2808,16 +2808,16 @@ class LoggingV2(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v2/organizations/{organizationsId}/sinks',
-        http_method=u'GET',
-        method_id=u'logging.organizations.sinks.list',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'pageSize', u'pageToken'],
-        relative_path=u'v2/{+parent}/sinks',
+        flat_path='v2/organizations/{organizationsId}/sinks',
+        http_method='GET',
+        method_id='logging.organizations.sinks.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v2/{+parent}/sinks',
         request_field='',
-        request_type_name=u'LoggingOrganizationsSinksListRequest',
-        response_type_name=u'ListSinksResponse',
+        request_type_name='LoggingOrganizationsSinksListRequest',
+        response_type_name='ListSinksResponse',
         supports_download=False,
     )
 
@@ -2835,16 +2835,16 @@ class LoggingV2(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Patch.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v2/organizations/{organizationsId}/sinks/{sinksId}',
-        http_method=u'PATCH',
-        method_id=u'logging.organizations.sinks.patch',
-        ordered_params=[u'sinkName'],
-        path_params=[u'sinkName'],
-        query_params=[u'uniqueWriterIdentity', u'updateMask'],
-        relative_path=u'v2/{+sinkName}',
-        request_field=u'logSink',
-        request_type_name=u'LoggingOrganizationsSinksPatchRequest',
-        response_type_name=u'LogSink',
+        flat_path='v2/organizations/{organizationsId}/sinks/{sinksId}',
+        http_method='PATCH',
+        method_id='logging.organizations.sinks.patch',
+        ordered_params=['sinkName'],
+        path_params=['sinkName'],
+        query_params=['uniqueWriterIdentity', 'updateMask'],
+        relative_path='v2/{+sinkName}',
+        request_field='logSink',
+        request_type_name='LoggingOrganizationsSinksPatchRequest',
+        response_type_name='LogSink',
         supports_download=False,
     )
 
@@ -2862,23 +2862,23 @@ class LoggingV2(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Update.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v2/organizations/{organizationsId}/sinks/{sinksId}',
-        http_method=u'PUT',
-        method_id=u'logging.organizations.sinks.update',
-        ordered_params=[u'sinkName'],
-        path_params=[u'sinkName'],
-        query_params=[u'uniqueWriterIdentity', u'updateMask'],
-        relative_path=u'v2/{+sinkName}',
-        request_field=u'logSink',
-        request_type_name=u'LoggingOrganizationsSinksUpdateRequest',
-        response_type_name=u'LogSink',
+        flat_path='v2/organizations/{organizationsId}/sinks/{sinksId}',
+        http_method='PUT',
+        method_id='logging.organizations.sinks.update',
+        ordered_params=['sinkName'],
+        path_params=['sinkName'],
+        query_params=['uniqueWriterIdentity', 'updateMask'],
+        relative_path='v2/{+sinkName}',
+        request_field='logSink',
+        request_type_name='LoggingOrganizationsSinksUpdateRequest',
+        response_type_name='LogSink',
         supports_download=False,
     )
 
   class OrganizationsService(base_api.BaseApiService):
     """Service class for the organizations resource."""
 
-    _NAME = u'organizations'
+    _NAME = 'organizations'
 
     def __init__(self, client):
       super(LoggingV2.OrganizationsService, self).__init__(client)
@@ -2899,16 +2899,16 @@ class LoggingV2(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     GetCmekSettings.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v2/organizations/{organizationsId}/cmekSettings',
-        http_method=u'GET',
-        method_id=u'logging.organizations.getCmekSettings',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v2/organizations/{organizationsId}/cmekSettings',
+        http_method='GET',
+        method_id='logging.organizations.getCmekSettings',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v2/{+name}/cmekSettings',
+        relative_path='v2/{+name}/cmekSettings',
         request_field='',
-        request_type_name=u'LoggingOrganizationsGetCmekSettingsRequest',
-        response_type_name=u'CmekSettings',
+        request_type_name='LoggingOrganizationsGetCmekSettingsRequest',
+        response_type_name='CmekSettings',
         supports_download=False,
     )
 
@@ -2926,23 +2926,23 @@ class LoggingV2(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     UpdateCmekSettings.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v2/organizations/{organizationsId}/cmekSettings',
-        http_method=u'PATCH',
-        method_id=u'logging.organizations.updateCmekSettings',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[u'updateMask'],
-        relative_path=u'v2/{+name}/cmekSettings',
-        request_field=u'cmekSettings',
-        request_type_name=u'LoggingOrganizationsUpdateCmekSettingsRequest',
-        response_type_name=u'CmekSettings',
+        flat_path='v2/organizations/{organizationsId}/cmekSettings',
+        http_method='PATCH',
+        method_id='logging.organizations.updateCmekSettings',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v2/{+name}/cmekSettings',
+        request_field='cmekSettings',
+        request_type_name='LoggingOrganizationsUpdateCmekSettingsRequest',
+        response_type_name='CmekSettings',
         supports_download=False,
     )
 
   class ProjectsExclusionsService(base_api.BaseApiService):
     """Service class for the projects_exclusions resource."""
 
-    _NAME = u'projects_exclusions'
+    _NAME = 'projects_exclusions'
 
     def __init__(self, client):
       super(LoggingV2.ProjectsExclusionsService, self).__init__(client)
@@ -2963,16 +2963,16 @@ class LoggingV2(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Create.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v2/projects/{projectsId}/exclusions',
-        http_method=u'POST',
-        method_id=u'logging.projects.exclusions.create',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
+        flat_path='v2/projects/{projectsId}/exclusions',
+        http_method='POST',
+        method_id='logging.projects.exclusions.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
         query_params=[],
-        relative_path=u'v2/{+parent}/exclusions',
-        request_field=u'logExclusion',
-        request_type_name=u'LoggingProjectsExclusionsCreateRequest',
-        response_type_name=u'LogExclusion',
+        relative_path='v2/{+parent}/exclusions',
+        request_field='logExclusion',
+        request_type_name='LoggingProjectsExclusionsCreateRequest',
+        response_type_name='LogExclusion',
         supports_download=False,
     )
 
@@ -2990,16 +2990,16 @@ class LoggingV2(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Delete.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v2/projects/{projectsId}/exclusions/{exclusionsId}',
-        http_method=u'DELETE',
-        method_id=u'logging.projects.exclusions.delete',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v2/projects/{projectsId}/exclusions/{exclusionsId}',
+        http_method='DELETE',
+        method_id='logging.projects.exclusions.delete',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v2/{+name}',
+        relative_path='v2/{+name}',
         request_field='',
-        request_type_name=u'LoggingProjectsExclusionsDeleteRequest',
-        response_type_name=u'Empty',
+        request_type_name='LoggingProjectsExclusionsDeleteRequest',
+        response_type_name='Empty',
         supports_download=False,
     )
 
@@ -3017,16 +3017,16 @@ class LoggingV2(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v2/projects/{projectsId}/exclusions/{exclusionsId}',
-        http_method=u'GET',
-        method_id=u'logging.projects.exclusions.get',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v2/projects/{projectsId}/exclusions/{exclusionsId}',
+        http_method='GET',
+        method_id='logging.projects.exclusions.get',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v2/{+name}',
+        relative_path='v2/{+name}',
         request_field='',
-        request_type_name=u'LoggingProjectsExclusionsGetRequest',
-        response_type_name=u'LogExclusion',
+        request_type_name='LoggingProjectsExclusionsGetRequest',
+        response_type_name='LogExclusion',
         supports_download=False,
     )
 
@@ -3044,16 +3044,16 @@ class LoggingV2(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v2/projects/{projectsId}/exclusions',
-        http_method=u'GET',
-        method_id=u'logging.projects.exclusions.list',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'pageSize', u'pageToken'],
-        relative_path=u'v2/{+parent}/exclusions',
+        flat_path='v2/projects/{projectsId}/exclusions',
+        http_method='GET',
+        method_id='logging.projects.exclusions.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v2/{+parent}/exclusions',
         request_field='',
-        request_type_name=u'LoggingProjectsExclusionsListRequest',
-        response_type_name=u'ListExclusionsResponse',
+        request_type_name='LoggingProjectsExclusionsListRequest',
+        response_type_name='ListExclusionsResponse',
         supports_download=False,
     )
 
@@ -3071,23 +3071,23 @@ class LoggingV2(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Patch.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v2/projects/{projectsId}/exclusions/{exclusionsId}',
-        http_method=u'PATCH',
-        method_id=u'logging.projects.exclusions.patch',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[u'updateMask'],
-        relative_path=u'v2/{+name}',
-        request_field=u'logExclusion',
-        request_type_name=u'LoggingProjectsExclusionsPatchRequest',
-        response_type_name=u'LogExclusion',
+        flat_path='v2/projects/{projectsId}/exclusions/{exclusionsId}',
+        http_method='PATCH',
+        method_id='logging.projects.exclusions.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v2/{+name}',
+        request_field='logExclusion',
+        request_type_name='LoggingProjectsExclusionsPatchRequest',
+        response_type_name='LogExclusion',
         supports_download=False,
     )
 
   class ProjectsLocationsBucketsViewsService(base_api.BaseApiService):
     """Service class for the projects_locations_buckets_views resource."""
 
-    _NAME = u'projects_locations_buckets_views'
+    _NAME = 'projects_locations_buckets_views'
 
     def __init__(self, client):
       super(LoggingV2.ProjectsLocationsBucketsViewsService, self).__init__(client)
@@ -3108,16 +3108,16 @@ class LoggingV2(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Create.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v2/projects/{projectsId}/locations/{locationsId}/buckets/{bucketsId}/views',
-        http_method=u'POST',
-        method_id=u'logging.projects.locations.buckets.views.create',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'viewId'],
-        relative_path=u'v2/{+parent}/views',
-        request_field=u'logView',
-        request_type_name=u'LoggingProjectsLocationsBucketsViewsCreateRequest',
-        response_type_name=u'LogView',
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/buckets/{bucketsId}/views',
+        http_method='POST',
+        method_id='logging.projects.locations.buckets.views.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['viewId'],
+        relative_path='v2/{+parent}/views',
+        request_field='logView',
+        request_type_name='LoggingProjectsLocationsBucketsViewsCreateRequest',
+        response_type_name='LogView',
         supports_download=False,
     )
 
@@ -3135,16 +3135,16 @@ class LoggingV2(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Delete.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v2/projects/{projectsId}/locations/{locationsId}/buckets/{bucketsId}/views/{viewsId}',
-        http_method=u'DELETE',
-        method_id=u'logging.projects.locations.buckets.views.delete',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/buckets/{bucketsId}/views/{viewsId}',
+        http_method='DELETE',
+        method_id='logging.projects.locations.buckets.views.delete',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v2/{+name}',
+        relative_path='v2/{+name}',
         request_field='',
-        request_type_name=u'LoggingProjectsLocationsBucketsViewsDeleteRequest',
-        response_type_name=u'Empty',
+        request_type_name='LoggingProjectsLocationsBucketsViewsDeleteRequest',
+        response_type_name='Empty',
         supports_download=False,
     )
 
@@ -3162,16 +3162,16 @@ class LoggingV2(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v2/projects/{projectsId}/locations/{locationsId}/buckets/{bucketsId}/views/{viewsId}',
-        http_method=u'GET',
-        method_id=u'logging.projects.locations.buckets.views.get',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/buckets/{bucketsId}/views/{viewsId}',
+        http_method='GET',
+        method_id='logging.projects.locations.buckets.views.get',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v2/{+name}',
+        relative_path='v2/{+name}',
         request_field='',
-        request_type_name=u'LoggingProjectsLocationsBucketsViewsGetRequest',
-        response_type_name=u'LogView',
+        request_type_name='LoggingProjectsLocationsBucketsViewsGetRequest',
+        response_type_name='LogView',
         supports_download=False,
     )
 
@@ -3189,16 +3189,16 @@ class LoggingV2(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v2/projects/{projectsId}/locations/{locationsId}/buckets/{bucketsId}/views',
-        http_method=u'GET',
-        method_id=u'logging.projects.locations.buckets.views.list',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'pageSize', u'pageToken'],
-        relative_path=u'v2/{+parent}/views',
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/buckets/{bucketsId}/views',
+        http_method='GET',
+        method_id='logging.projects.locations.buckets.views.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v2/{+parent}/views',
         request_field='',
-        request_type_name=u'LoggingProjectsLocationsBucketsViewsListRequest',
-        response_type_name=u'ListViewsResponse',
+        request_type_name='LoggingProjectsLocationsBucketsViewsListRequest',
+        response_type_name='ListViewsResponse',
         supports_download=False,
     )
 
@@ -3216,23 +3216,23 @@ class LoggingV2(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Patch.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v2/projects/{projectsId}/locations/{locationsId}/buckets/{bucketsId}/views/{viewsId}',
-        http_method=u'PATCH',
-        method_id=u'logging.projects.locations.buckets.views.patch',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[u'updateMask'],
-        relative_path=u'v2/{+name}',
-        request_field=u'logView',
-        request_type_name=u'LoggingProjectsLocationsBucketsViewsPatchRequest',
-        response_type_name=u'LogView',
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/buckets/{bucketsId}/views/{viewsId}',
+        http_method='PATCH',
+        method_id='logging.projects.locations.buckets.views.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v2/{+name}',
+        request_field='logView',
+        request_type_name='LoggingProjectsLocationsBucketsViewsPatchRequest',
+        response_type_name='LogView',
         supports_download=False,
     )
 
   class ProjectsLocationsBucketsService(base_api.BaseApiService):
     """Service class for the projects_locations_buckets resource."""
 
-    _NAME = u'projects_locations_buckets'
+    _NAME = 'projects_locations_buckets'
 
     def __init__(self, client):
       super(LoggingV2.ProjectsLocationsBucketsService, self).__init__(client)
@@ -3253,16 +3253,16 @@ class LoggingV2(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Create.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v2/projects/{projectsId}/locations/{locationsId}/buckets',
-        http_method=u'POST',
-        method_id=u'logging.projects.locations.buckets.create',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'bucketId'],
-        relative_path=u'v2/{+parent}/buckets',
-        request_field=u'logBucket',
-        request_type_name=u'LoggingProjectsLocationsBucketsCreateRequest',
-        response_type_name=u'LogBucket',
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/buckets',
+        http_method='POST',
+        method_id='logging.projects.locations.buckets.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['bucketId'],
+        relative_path='v2/{+parent}/buckets',
+        request_field='logBucket',
+        request_type_name='LoggingProjectsLocationsBucketsCreateRequest',
+        response_type_name='LogBucket',
         supports_download=False,
     )
 
@@ -3280,16 +3280,16 @@ class LoggingV2(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Delete.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v2/projects/{projectsId}/locations/{locationsId}/buckets/{bucketsId}',
-        http_method=u'DELETE',
-        method_id=u'logging.projects.locations.buckets.delete',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/buckets/{bucketsId}',
+        http_method='DELETE',
+        method_id='logging.projects.locations.buckets.delete',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v2/{+name}',
+        relative_path='v2/{+name}',
         request_field='',
-        request_type_name=u'LoggingProjectsLocationsBucketsDeleteRequest',
-        response_type_name=u'Empty',
+        request_type_name='LoggingProjectsLocationsBucketsDeleteRequest',
+        response_type_name='Empty',
         supports_download=False,
     )
 
@@ -3307,16 +3307,16 @@ class LoggingV2(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v2/projects/{projectsId}/locations/{locationsId}/buckets/{bucketsId}',
-        http_method=u'GET',
-        method_id=u'logging.projects.locations.buckets.get',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/buckets/{bucketsId}',
+        http_method='GET',
+        method_id='logging.projects.locations.buckets.get',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v2/{+name}',
+        relative_path='v2/{+name}',
         request_field='',
-        request_type_name=u'LoggingProjectsLocationsBucketsGetRequest',
-        response_type_name=u'LogBucket',
+        request_type_name='LoggingProjectsLocationsBucketsGetRequest',
+        response_type_name='LogBucket',
         supports_download=False,
     )
 
@@ -3334,16 +3334,16 @@ class LoggingV2(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v2/projects/{projectsId}/locations/{locationsId}/buckets',
-        http_method=u'GET',
-        method_id=u'logging.projects.locations.buckets.list',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'pageSize', u'pageToken'],
-        relative_path=u'v2/{+parent}/buckets',
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/buckets',
+        http_method='GET',
+        method_id='logging.projects.locations.buckets.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v2/{+parent}/buckets',
         request_field='',
-        request_type_name=u'LoggingProjectsLocationsBucketsListRequest',
-        response_type_name=u'ListBucketsResponse',
+        request_type_name='LoggingProjectsLocationsBucketsListRequest',
+        response_type_name='ListBucketsResponse',
         supports_download=False,
     )
 
@@ -3361,16 +3361,16 @@ class LoggingV2(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Patch.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v2/projects/{projectsId}/locations/{locationsId}/buckets/{bucketsId}',
-        http_method=u'PATCH',
-        method_id=u'logging.projects.locations.buckets.patch',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[u'updateMask'],
-        relative_path=u'v2/{+name}',
-        request_field=u'logBucket',
-        request_type_name=u'LoggingProjectsLocationsBucketsPatchRequest',
-        response_type_name=u'LogBucket',
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/buckets/{bucketsId}',
+        http_method='PATCH',
+        method_id='logging.projects.locations.buckets.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v2/{+name}',
+        request_field='logBucket',
+        request_type_name='LoggingProjectsLocationsBucketsPatchRequest',
+        response_type_name='LogBucket',
         supports_download=False,
     )
 
@@ -3388,23 +3388,23 @@ class LoggingV2(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Undelete.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v2/projects/{projectsId}/locations/{locationsId}/buckets/{bucketsId}:undelete',
-        http_method=u'POST',
-        method_id=u'logging.projects.locations.buckets.undelete',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/buckets/{bucketsId}:undelete',
+        http_method='POST',
+        method_id='logging.projects.locations.buckets.undelete',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v2/{+name}:undelete',
-        request_field=u'undeleteBucketRequest',
-        request_type_name=u'LoggingProjectsLocationsBucketsUndeleteRequest',
-        response_type_name=u'Empty',
+        relative_path='v2/{+name}:undelete',
+        request_field='undeleteBucketRequest',
+        request_type_name='LoggingProjectsLocationsBucketsUndeleteRequest',
+        response_type_name='Empty',
         supports_download=False,
     )
 
   class ProjectsLocationsService(base_api.BaseApiService):
     """Service class for the projects_locations resource."""
 
-    _NAME = u'projects_locations'
+    _NAME = 'projects_locations'
 
     def __init__(self, client):
       super(LoggingV2.ProjectsLocationsService, self).__init__(client)
@@ -3414,7 +3414,7 @@ class LoggingV2(base_api.BaseApiClient):
   class ProjectsLogsService(base_api.BaseApiService):
     """Service class for the projects_logs resource."""
 
-    _NAME = u'projects_logs'
+    _NAME = 'projects_logs'
 
     def __init__(self, client):
       super(LoggingV2.ProjectsLogsService, self).__init__(client)
@@ -3435,16 +3435,16 @@ class LoggingV2(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Delete.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v2/projects/{projectsId}/logs/{logsId}',
-        http_method=u'DELETE',
-        method_id=u'logging.projects.logs.delete',
-        ordered_params=[u'logName'],
-        path_params=[u'logName'],
+        flat_path='v2/projects/{projectsId}/logs/{logsId}',
+        http_method='DELETE',
+        method_id='logging.projects.logs.delete',
+        ordered_params=['logName'],
+        path_params=['logName'],
         query_params=[],
-        relative_path=u'v2/{+logName}',
+        relative_path='v2/{+logName}',
         request_field='',
-        request_type_name=u'LoggingProjectsLogsDeleteRequest',
-        response_type_name=u'Empty',
+        request_type_name='LoggingProjectsLogsDeleteRequest',
+        response_type_name='Empty',
         supports_download=False,
     )
 
@@ -3462,23 +3462,23 @@ class LoggingV2(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v2/projects/{projectsId}/logs',
-        http_method=u'GET',
-        method_id=u'logging.projects.logs.list',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'pageSize', u'pageToken', u'resourceNames'],
-        relative_path=u'v2/{+parent}/logs',
+        flat_path='v2/projects/{projectsId}/logs',
+        http_method='GET',
+        method_id='logging.projects.logs.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken', 'resourceNames'],
+        relative_path='v2/{+parent}/logs',
         request_field='',
-        request_type_name=u'LoggingProjectsLogsListRequest',
-        response_type_name=u'ListLogsResponse',
+        request_type_name='LoggingProjectsLogsListRequest',
+        response_type_name='ListLogsResponse',
         supports_download=False,
     )
 
   class ProjectsMetricsService(base_api.BaseApiService):
     """Service class for the projects_metrics resource."""
 
-    _NAME = u'projects_metrics'
+    _NAME = 'projects_metrics'
 
     def __init__(self, client):
       super(LoggingV2.ProjectsMetricsService, self).__init__(client)
@@ -3499,16 +3499,16 @@ class LoggingV2(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Create.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v2/projects/{projectsId}/metrics',
-        http_method=u'POST',
-        method_id=u'logging.projects.metrics.create',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
+        flat_path='v2/projects/{projectsId}/metrics',
+        http_method='POST',
+        method_id='logging.projects.metrics.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
         query_params=[],
-        relative_path=u'v2/{+parent}/metrics',
-        request_field=u'logMetric',
-        request_type_name=u'LoggingProjectsMetricsCreateRequest',
-        response_type_name=u'LogMetric',
+        relative_path='v2/{+parent}/metrics',
+        request_field='logMetric',
+        request_type_name='LoggingProjectsMetricsCreateRequest',
+        response_type_name='LogMetric',
         supports_download=False,
     )
 
@@ -3526,16 +3526,16 @@ class LoggingV2(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Delete.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v2/projects/{projectsId}/metrics/{metricsId}',
-        http_method=u'DELETE',
-        method_id=u'logging.projects.metrics.delete',
-        ordered_params=[u'metricName'],
-        path_params=[u'metricName'],
+        flat_path='v2/projects/{projectsId}/metrics/{metricsId}',
+        http_method='DELETE',
+        method_id='logging.projects.metrics.delete',
+        ordered_params=['metricName'],
+        path_params=['metricName'],
         query_params=[],
-        relative_path=u'v2/{+metricName}',
+        relative_path='v2/{+metricName}',
         request_field='',
-        request_type_name=u'LoggingProjectsMetricsDeleteRequest',
-        response_type_name=u'Empty',
+        request_type_name='LoggingProjectsMetricsDeleteRequest',
+        response_type_name='Empty',
         supports_download=False,
     )
 
@@ -3553,16 +3553,16 @@ class LoggingV2(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v2/projects/{projectsId}/metrics/{metricsId}',
-        http_method=u'GET',
-        method_id=u'logging.projects.metrics.get',
-        ordered_params=[u'metricName'],
-        path_params=[u'metricName'],
+        flat_path='v2/projects/{projectsId}/metrics/{metricsId}',
+        http_method='GET',
+        method_id='logging.projects.metrics.get',
+        ordered_params=['metricName'],
+        path_params=['metricName'],
         query_params=[],
-        relative_path=u'v2/{+metricName}',
+        relative_path='v2/{+metricName}',
         request_field='',
-        request_type_name=u'LoggingProjectsMetricsGetRequest',
-        response_type_name=u'LogMetric',
+        request_type_name='LoggingProjectsMetricsGetRequest',
+        response_type_name='LogMetric',
         supports_download=False,
     )
 
@@ -3580,16 +3580,16 @@ class LoggingV2(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v2/projects/{projectsId}/metrics',
-        http_method=u'GET',
-        method_id=u'logging.projects.metrics.list',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'pageSize', u'pageToken'],
-        relative_path=u'v2/{+parent}/metrics',
+        flat_path='v2/projects/{projectsId}/metrics',
+        http_method='GET',
+        method_id='logging.projects.metrics.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v2/{+parent}/metrics',
         request_field='',
-        request_type_name=u'LoggingProjectsMetricsListRequest',
-        response_type_name=u'ListLogMetricsResponse',
+        request_type_name='LoggingProjectsMetricsListRequest',
+        response_type_name='ListLogMetricsResponse',
         supports_download=False,
     )
 
@@ -3607,23 +3607,23 @@ class LoggingV2(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Update.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v2/projects/{projectsId}/metrics/{metricsId}',
-        http_method=u'PUT',
-        method_id=u'logging.projects.metrics.update',
-        ordered_params=[u'metricName'],
-        path_params=[u'metricName'],
+        flat_path='v2/projects/{projectsId}/metrics/{metricsId}',
+        http_method='PUT',
+        method_id='logging.projects.metrics.update',
+        ordered_params=['metricName'],
+        path_params=['metricName'],
         query_params=[],
-        relative_path=u'v2/{+metricName}',
-        request_field=u'logMetric',
-        request_type_name=u'LoggingProjectsMetricsUpdateRequest',
-        response_type_name=u'LogMetric',
+        relative_path='v2/{+metricName}',
+        request_field='logMetric',
+        request_type_name='LoggingProjectsMetricsUpdateRequest',
+        response_type_name='LogMetric',
         supports_download=False,
     )
 
   class ProjectsSinksService(base_api.BaseApiService):
     """Service class for the projects_sinks resource."""
 
-    _NAME = u'projects_sinks'
+    _NAME = 'projects_sinks'
 
     def __init__(self, client):
       super(LoggingV2.ProjectsSinksService, self).__init__(client)
@@ -3644,16 +3644,16 @@ class LoggingV2(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Create.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v2/projects/{projectsId}/sinks',
-        http_method=u'POST',
-        method_id=u'logging.projects.sinks.create',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'uniqueWriterIdentity'],
-        relative_path=u'v2/{+parent}/sinks',
-        request_field=u'logSink',
-        request_type_name=u'LoggingProjectsSinksCreateRequest',
-        response_type_name=u'LogSink',
+        flat_path='v2/projects/{projectsId}/sinks',
+        http_method='POST',
+        method_id='logging.projects.sinks.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['uniqueWriterIdentity'],
+        relative_path='v2/{+parent}/sinks',
+        request_field='logSink',
+        request_type_name='LoggingProjectsSinksCreateRequest',
+        response_type_name='LogSink',
         supports_download=False,
     )
 
@@ -3671,16 +3671,16 @@ class LoggingV2(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Delete.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v2/projects/{projectsId}/sinks/{sinksId}',
-        http_method=u'DELETE',
-        method_id=u'logging.projects.sinks.delete',
-        ordered_params=[u'sinkName'],
-        path_params=[u'sinkName'],
+        flat_path='v2/projects/{projectsId}/sinks/{sinksId}',
+        http_method='DELETE',
+        method_id='logging.projects.sinks.delete',
+        ordered_params=['sinkName'],
+        path_params=['sinkName'],
         query_params=[],
-        relative_path=u'v2/{+sinkName}',
+        relative_path='v2/{+sinkName}',
         request_field='',
-        request_type_name=u'LoggingProjectsSinksDeleteRequest',
-        response_type_name=u'Empty',
+        request_type_name='LoggingProjectsSinksDeleteRequest',
+        response_type_name='Empty',
         supports_download=False,
     )
 
@@ -3698,16 +3698,16 @@ class LoggingV2(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v2/projects/{projectsId}/sinks/{sinksId}',
-        http_method=u'GET',
-        method_id=u'logging.projects.sinks.get',
-        ordered_params=[u'sinkName'],
-        path_params=[u'sinkName'],
+        flat_path='v2/projects/{projectsId}/sinks/{sinksId}',
+        http_method='GET',
+        method_id='logging.projects.sinks.get',
+        ordered_params=['sinkName'],
+        path_params=['sinkName'],
         query_params=[],
-        relative_path=u'v2/{+sinkName}',
+        relative_path='v2/{+sinkName}',
         request_field='',
-        request_type_name=u'LoggingProjectsSinksGetRequest',
-        response_type_name=u'LogSink',
+        request_type_name='LoggingProjectsSinksGetRequest',
+        response_type_name='LogSink',
         supports_download=False,
     )
 
@@ -3725,16 +3725,16 @@ class LoggingV2(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v2/projects/{projectsId}/sinks',
-        http_method=u'GET',
-        method_id=u'logging.projects.sinks.list',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'pageSize', u'pageToken'],
-        relative_path=u'v2/{+parent}/sinks',
+        flat_path='v2/projects/{projectsId}/sinks',
+        http_method='GET',
+        method_id='logging.projects.sinks.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v2/{+parent}/sinks',
         request_field='',
-        request_type_name=u'LoggingProjectsSinksListRequest',
-        response_type_name=u'ListSinksResponse',
+        request_type_name='LoggingProjectsSinksListRequest',
+        response_type_name='ListSinksResponse',
         supports_download=False,
     )
 
@@ -3752,16 +3752,16 @@ class LoggingV2(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Patch.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v2/projects/{projectsId}/sinks/{sinksId}',
-        http_method=u'PATCH',
-        method_id=u'logging.projects.sinks.patch',
-        ordered_params=[u'sinkName'],
-        path_params=[u'sinkName'],
-        query_params=[u'uniqueWriterIdentity', u'updateMask'],
-        relative_path=u'v2/{+sinkName}',
-        request_field=u'logSink',
-        request_type_name=u'LoggingProjectsSinksPatchRequest',
-        response_type_name=u'LogSink',
+        flat_path='v2/projects/{projectsId}/sinks/{sinksId}',
+        http_method='PATCH',
+        method_id='logging.projects.sinks.patch',
+        ordered_params=['sinkName'],
+        path_params=['sinkName'],
+        query_params=['uniqueWriterIdentity', 'updateMask'],
+        relative_path='v2/{+sinkName}',
+        request_field='logSink',
+        request_type_name='LoggingProjectsSinksPatchRequest',
+        response_type_name='LogSink',
         supports_download=False,
     )
 
@@ -3779,23 +3779,23 @@ class LoggingV2(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Update.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v2/projects/{projectsId}/sinks/{sinksId}',
-        http_method=u'PUT',
-        method_id=u'logging.projects.sinks.update',
-        ordered_params=[u'sinkName'],
-        path_params=[u'sinkName'],
-        query_params=[u'uniqueWriterIdentity', u'updateMask'],
-        relative_path=u'v2/{+sinkName}',
-        request_field=u'logSink',
-        request_type_name=u'LoggingProjectsSinksUpdateRequest',
-        response_type_name=u'LogSink',
+        flat_path='v2/projects/{projectsId}/sinks/{sinksId}',
+        http_method='PUT',
+        method_id='logging.projects.sinks.update',
+        ordered_params=['sinkName'],
+        path_params=['sinkName'],
+        query_params=['uniqueWriterIdentity', 'updateMask'],
+        relative_path='v2/{+sinkName}',
+        request_field='logSink',
+        request_type_name='LoggingProjectsSinksUpdateRequest',
+        response_type_name='LogSink',
         supports_download=False,
     )
 
   class ProjectsService(base_api.BaseApiService):
     """Service class for the projects resource."""
 
-    _NAME = u'projects'
+    _NAME = 'projects'
 
     def __init__(self, client):
       super(LoggingV2.ProjectsService, self).__init__(client)
@@ -3805,7 +3805,7 @@ class LoggingV2(base_api.BaseApiClient):
   class SinksService(base_api.BaseApiService):
     """Service class for the sinks resource."""
 
-    _NAME = u'sinks'
+    _NAME = 'sinks'
 
     def __init__(self, client):
       super(LoggingV2.SinksService, self).__init__(client)
@@ -3826,16 +3826,16 @@ class LoggingV2(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Create.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v2/{v2Id}/{v2Id1}/sinks',
-        http_method=u'POST',
-        method_id=u'logging.sinks.create',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'uniqueWriterIdentity'],
-        relative_path=u'v2/{+parent}/sinks',
-        request_field=u'logSink',
-        request_type_name=u'LoggingSinksCreateRequest',
-        response_type_name=u'LogSink',
+        flat_path='v2/{v2Id}/{v2Id1}/sinks',
+        http_method='POST',
+        method_id='logging.sinks.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['uniqueWriterIdentity'],
+        relative_path='v2/{+parent}/sinks',
+        request_field='logSink',
+        request_type_name='LoggingSinksCreateRequest',
+        response_type_name='LogSink',
         supports_download=False,
     )
 
@@ -3853,16 +3853,16 @@ class LoggingV2(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Delete.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v2/{v2Id}/{v2Id1}/sinks/{sinksId}',
-        http_method=u'DELETE',
-        method_id=u'logging.sinks.delete',
-        ordered_params=[u'sinkName'],
-        path_params=[u'sinkName'],
+        flat_path='v2/{v2Id}/{v2Id1}/sinks/{sinksId}',
+        http_method='DELETE',
+        method_id='logging.sinks.delete',
+        ordered_params=['sinkName'],
+        path_params=['sinkName'],
         query_params=[],
-        relative_path=u'v2/{+sinkName}',
+        relative_path='v2/{+sinkName}',
         request_field='',
-        request_type_name=u'LoggingSinksDeleteRequest',
-        response_type_name=u'Empty',
+        request_type_name='LoggingSinksDeleteRequest',
+        response_type_name='Empty',
         supports_download=False,
     )
 
@@ -3880,16 +3880,16 @@ class LoggingV2(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v2/{v2Id}/{v2Id1}/sinks/{sinksId}',
-        http_method=u'GET',
-        method_id=u'logging.sinks.get',
-        ordered_params=[u'sinkName'],
-        path_params=[u'sinkName'],
+        flat_path='v2/{v2Id}/{v2Id1}/sinks/{sinksId}',
+        http_method='GET',
+        method_id='logging.sinks.get',
+        ordered_params=['sinkName'],
+        path_params=['sinkName'],
         query_params=[],
-        relative_path=u'v2/{+sinkName}',
+        relative_path='v2/{+sinkName}',
         request_field='',
-        request_type_name=u'LoggingSinksGetRequest',
-        response_type_name=u'LogSink',
+        request_type_name='LoggingSinksGetRequest',
+        response_type_name='LogSink',
         supports_download=False,
     )
 
@@ -3907,16 +3907,16 @@ class LoggingV2(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v2/{v2Id}/{v2Id1}/sinks',
-        http_method=u'GET',
-        method_id=u'logging.sinks.list',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'pageSize', u'pageToken'],
-        relative_path=u'v2/{+parent}/sinks',
+        flat_path='v2/{v2Id}/{v2Id1}/sinks',
+        http_method='GET',
+        method_id='logging.sinks.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v2/{+parent}/sinks',
         request_field='',
-        request_type_name=u'LoggingSinksListRequest',
-        response_type_name=u'ListSinksResponse',
+        request_type_name='LoggingSinksListRequest',
+        response_type_name='ListSinksResponse',
         supports_download=False,
     )
 
@@ -3934,23 +3934,23 @@ class LoggingV2(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Update.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v2/{v2Id}/{v2Id1}/sinks/{sinksId}',
-        http_method=u'PUT',
-        method_id=u'logging.sinks.update',
-        ordered_params=[u'sinkName'],
-        path_params=[u'sinkName'],
-        query_params=[u'uniqueWriterIdentity', u'updateMask'],
-        relative_path=u'v2/{+sinkName}',
-        request_field=u'logSink',
-        request_type_name=u'LoggingSinksUpdateRequest',
-        response_type_name=u'LogSink',
+        flat_path='v2/{v2Id}/{v2Id1}/sinks/{sinksId}',
+        http_method='PUT',
+        method_id='logging.sinks.update',
+        ordered_params=['sinkName'],
+        path_params=['sinkName'],
+        query_params=['uniqueWriterIdentity', 'updateMask'],
+        relative_path='v2/{+sinkName}',
+        request_field='logSink',
+        request_type_name='LoggingSinksUpdateRequest',
+        response_type_name='LogSink',
         supports_download=False,
     )
 
   class V2Service(base_api.BaseApiService):
     """Service class for the v2 resource."""
 
-    _NAME = u'v2'
+    _NAME = 'v2'
 
     def __init__(self, client):
       super(LoggingV2.V2Service, self).__init__(client)
@@ -3971,16 +3971,16 @@ class LoggingV2(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     GetCmekSettings.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v2/{v2Id}/{v2Id1}/cmekSettings',
-        http_method=u'GET',
-        method_id=u'logging.getCmekSettings',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v2/{v2Id}/{v2Id1}/cmekSettings',
+        http_method='GET',
+        method_id='logging.getCmekSettings',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v2/{+name}/cmekSettings',
+        relative_path='v2/{+name}/cmekSettings',
         request_field='',
-        request_type_name=u'LoggingGetCmekSettingsRequest',
-        response_type_name=u'CmekSettings',
+        request_type_name='LoggingGetCmekSettingsRequest',
+        response_type_name='CmekSettings',
         supports_download=False,
     )
 
@@ -3998,15 +3998,15 @@ class LoggingV2(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     UpdateCmekSettings.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v2/{v2Id}/{v2Id1}/cmekSettings',
-        http_method=u'PATCH',
-        method_id=u'logging.updateCmekSettings',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[u'updateMask'],
-        relative_path=u'v2/{+name}/cmekSettings',
-        request_field=u'cmekSettings',
-        request_type_name=u'LoggingUpdateCmekSettingsRequest',
-        response_type_name=u'CmekSettings',
+        flat_path='v2/{v2Id}/{v2Id1}/cmekSettings',
+        http_method='PATCH',
+        method_id='logging.updateCmekSettings',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v2/{+name}/cmekSettings',
+        request_field='cmekSettings',
+        request_type_name='LoggingUpdateCmekSettingsRequest',
+        response_type_name='CmekSettings',
         supports_download=False,
     )

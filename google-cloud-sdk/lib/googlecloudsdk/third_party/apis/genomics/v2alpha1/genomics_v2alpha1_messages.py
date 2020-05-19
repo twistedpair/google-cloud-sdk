@@ -903,8 +903,8 @@ class Operation(_messages.Message):
     metadata: An OperationMetadata or Metadata object. This will always be
       returned with the Operation.
     name: The server-assigned name, which is only unique within the same
-      service that originally returns it. For example&#58; `operations
-      /CJHU7Oi_ChDrveSpBRjfuL-qzoWAgEw`
+      service that originally returns it. For example&#58;
+      `operations/CJHU7Oi_ChDrveSpBRjfuL-qzoWAgEw`
     response: An Empty object.
   """
 
@@ -1354,7 +1354,7 @@ class StandardQueryParameters(_messages.Message):
 
   f__xgafv = _messages.EnumField('FXgafvValueValuesEnum', 1)
   access_token = _messages.StringField(2)
-  alt = _messages.EnumField('AltValueValuesEnum', 3, default=u'json')
+  alt = _messages.EnumField('AltValueValuesEnum', 3, default='json')
   callback = _messages.StringField(4)
   fields = _messages.StringField(5)
   key = _messages.StringField(6)

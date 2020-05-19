@@ -241,8 +241,8 @@ class GoogleCloudSaasacceleratorManagementProvidersV1Instance(_messages.Message)
     name: Unique name of the resource. It uses the form:
       `projects/{project_id}/locations/{location_id}/instances/{instance_id}`
     producerMetadata: Output only. Custom string attributes used primarily to
-      expose producer-specific information in monitoring dashboards. See go
-      /get-instance-metadata.
+      expose producer-specific information in monitoring dashboards. See
+      go/get-instance-metadata.
     provisionedResources: Output only. The list of data plane resources
       provisioned for this instance, e.g. compute VMs. See go/get-instance-
       metadata.
@@ -822,8 +822,9 @@ class NetworkConfig(_messages.Message):
       2}:{block 3}:{block 4}:{block 5}:{block 6}:{block 7}:{block 8}.
     modes: Internet protocol versions for which the instance has IP addresses
       assigned. For this version, only MODE_IPV4 is supported.
-    network: The name of the Google Compute Engine [VPC network](/compute/docs
-      /networks-and-firewalls#networks) to which the instance is connected.
+    network: The name of the Google Compute Engine [VPC
+      network](/compute/docs/networks-and-firewalls#networks) to which the
+      instance is connected.
     reservedIpRange: A /29 CIDR block in one of the [internal IP address
       ranges](https://www.arin.net/knowledge/address_filters.html) that
       identifies the range of IP addresses reserved for this instance. For
@@ -1034,7 +1035,7 @@ class StandardQueryParameters(_messages.Message):
 
   f__xgafv = _messages.EnumField('FXgafvValueValuesEnum', 1)
   access_token = _messages.StringField(2)
-  alt = _messages.EnumField('AltValueValuesEnum', 3, default=u'json')
+  alt = _messages.EnumField('AltValueValuesEnum', 3, default='json')
   callback = _messages.StringField(4)
   fields = _messages.StringField(5)
   key = _messages.StringField(6)

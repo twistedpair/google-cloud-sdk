@@ -8,17 +8,17 @@ class NetworkmanagementV1(base_api.BaseApiClient):
   """Generated client library for service networkmanagement version v1."""
 
   MESSAGES_MODULE = messages
-  BASE_URL = u'https://networkmanagement.googleapis.com/'
-  MTLS_BASE_URL = u'https://networkmanagement.mtls.googleapis.com/'
+  BASE_URL = 'https://networkmanagement.googleapis.com/'
+  MTLS_BASE_URL = 'https://networkmanagement.mtls.googleapis.com/'
 
-  _PACKAGE = u'networkmanagement'
-  _SCOPES = [u'https://www.googleapis.com/auth/cloud-platform']
-  _VERSION = u'v1'
+  _PACKAGE = 'networkmanagement'
+  _SCOPES = ['https://www.googleapis.com/auth/cloud-platform']
+  _VERSION = 'v1'
   _CLIENT_ID = '1042881264118.apps.googleusercontent.com'
   _CLIENT_SECRET = 'x_Tw5K8nnjoRAqULM9PFAC2b'
-  _USER_AGENT = u'google-cloud-sdk'
-  _CLIENT_CLASS_NAME = u'NetworkmanagementV1'
-  _URL_VERSION = u'v1'
+  _USER_AGENT = 'google-cloud-sdk'
+  _CLIENT_CLASS_NAME = 'NetworkmanagementV1'
+  _URL_VERSION = 'v1'
   _API_KEY = None
 
   def __init__(self, url='', credentials=None,
@@ -45,7 +45,7 @@ class NetworkmanagementV1(base_api.BaseApiClient):
   class ProjectsLocationsGlobalConnectivityTestsService(base_api.BaseApiService):
     """Service class for the projects_locations_global_connectivityTests resource."""
 
-    _NAME = u'projects_locations_global_connectivityTests'
+    _NAME = 'projects_locations_global_connectivityTests'
 
     def __init__(self, client):
       super(NetworkmanagementV1.ProjectsLocationsGlobalConnectivityTestsService, self).__init__(client)
@@ -78,16 +78,16 @@ see the Connectivity Test documentation.
           config, request, global_params=global_params)
 
     Create.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/locations/global/connectivityTests',
-        http_method=u'POST',
-        method_id=u'networkmanagement.projects.locations.global.connectivityTests.create',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'testId'],
-        relative_path=u'v1/{+parent}/connectivityTests',
-        request_field=u'connectivityTest',
-        request_type_name=u'NetworkmanagementProjectsLocationsGlobalConnectivityTestsCreateRequest',
-        response_type_name=u'Operation',
+        flat_path='v1/projects/{projectsId}/locations/global/connectivityTests',
+        http_method='POST',
+        method_id='networkmanagement.projects.locations.global.connectivityTests.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['testId'],
+        relative_path='v1/{+parent}/connectivityTests',
+        request_field='connectivityTest',
+        request_type_name='NetworkmanagementProjectsLocationsGlobalConnectivityTestsCreateRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -105,16 +105,16 @@ see the Connectivity Test documentation.
           config, request, global_params=global_params)
 
     Delete.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/locations/global/connectivityTests/{connectivityTestsId}',
-        http_method=u'DELETE',
-        method_id=u'networkmanagement.projects.locations.global.connectivityTests.delete',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1/projects/{projectsId}/locations/global/connectivityTests/{connectivityTestsId}',
+        http_method='DELETE',
+        method_id='networkmanagement.projects.locations.global.connectivityTests.delete',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1/{+name}',
+        relative_path='v1/{+name}',
         request_field='',
-        request_type_name=u'NetworkmanagementProjectsLocationsGlobalConnectivityTestsDeleteRequest',
-        response_type_name=u'Operation',
+        request_type_name='NetworkmanagementProjectsLocationsGlobalConnectivityTestsDeleteRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -132,16 +132,16 @@ see the Connectivity Test documentation.
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/locations/global/connectivityTests/{connectivityTestsId}',
-        http_method=u'GET',
-        method_id=u'networkmanagement.projects.locations.global.connectivityTests.get',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1/projects/{projectsId}/locations/global/connectivityTests/{connectivityTestsId}',
+        http_method='GET',
+        method_id='networkmanagement.projects.locations.global.connectivityTests.get',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1/{+name}',
+        relative_path='v1/{+name}',
         request_field='',
-        request_type_name=u'NetworkmanagementProjectsLocationsGlobalConnectivityTestsGetRequest',
-        response_type_name=u'ConnectivityTest',
+        request_type_name='NetworkmanagementProjectsLocationsGlobalConnectivityTestsGetRequest',
+        response_type_name='ConnectivityTest',
         supports_download=False,
     )
 
@@ -161,16 +161,16 @@ set.
           config, request, global_params=global_params)
 
     GetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/locations/global/connectivityTests/{connectivityTestsId}:getIamPolicy',
-        http_method=u'GET',
-        method_id=u'networkmanagement.projects.locations.global.connectivityTests.getIamPolicy',
-        ordered_params=[u'resource'],
-        path_params=[u'resource'],
-        query_params=[u'options_requestedPolicyVersion'],
-        relative_path=u'v1/{+resource}:getIamPolicy',
+        flat_path='v1/projects/{projectsId}/locations/global/connectivityTests/{connectivityTestsId}:getIamPolicy',
+        http_method='GET',
+        method_id='networkmanagement.projects.locations.global.connectivityTests.getIamPolicy',
+        ordered_params=['resource'],
+        path_params=['resource'],
+        query_params=['options_requestedPolicyVersion'],
+        relative_path='v1/{+resource}:getIamPolicy',
         request_field='',
-        request_type_name=u'NetworkmanagementProjectsLocationsGlobalConnectivityTestsGetIamPolicyRequest',
-        response_type_name=u'Policy',
+        request_type_name='NetworkmanagementProjectsLocationsGlobalConnectivityTestsGetIamPolicyRequest',
+        response_type_name='Policy',
         supports_download=False,
     )
 
@@ -188,16 +188,16 @@ set.
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/locations/global/connectivityTests',
-        http_method=u'GET',
-        method_id=u'networkmanagement.projects.locations.global.connectivityTests.list',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'filter', u'orderBy', u'pageSize', u'pageToken'],
-        relative_path=u'v1/{+parent}/connectivityTests',
+        flat_path='v1/projects/{projectsId}/locations/global/connectivityTests',
+        http_method='GET',
+        method_id='networkmanagement.projects.locations.global.connectivityTests.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'orderBy', 'pageSize', 'pageToken'],
+        relative_path='v1/{+parent}/connectivityTests',
         request_field='',
-        request_type_name=u'NetworkmanagementProjectsLocationsGlobalConnectivityTestsListRequest',
-        response_type_name=u'ListConnectivityTestsResponse',
+        request_type_name='NetworkmanagementProjectsLocationsGlobalConnectivityTestsListRequest',
+        response_type_name='ListConnectivityTestsResponse',
         supports_download=False,
     )
 
@@ -228,16 +228,16 @@ in `ConnectivityTest` for for more details.
           config, request, global_params=global_params)
 
     Patch.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/locations/global/connectivityTests/{connectivityTestsId}',
-        http_method=u'PATCH',
-        method_id=u'networkmanagement.projects.locations.global.connectivityTests.patch',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[u'updateMask'],
-        relative_path=u'v1/{+name}',
-        request_field=u'connectivityTest',
-        request_type_name=u'NetworkmanagementProjectsLocationsGlobalConnectivityTestsPatchRequest',
-        response_type_name=u'Operation',
+        flat_path='v1/projects/{projectsId}/locations/global/connectivityTests/{connectivityTestsId}',
+        http_method='PATCH',
+        method_id='networkmanagement.projects.locations.global.connectivityTests.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v1/{+name}',
+        request_field='connectivityTest',
+        request_type_name='NetworkmanagementProjectsLocationsGlobalConnectivityTestsPatchRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -266,16 +266,16 @@ the reachability result returns a value of `UNKNOWN`.
           config, request, global_params=global_params)
 
     Rerun.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/locations/global/connectivityTests/{connectivityTestsId}:rerun',
-        http_method=u'POST',
-        method_id=u'networkmanagement.projects.locations.global.connectivityTests.rerun',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1/projects/{projectsId}/locations/global/connectivityTests/{connectivityTestsId}:rerun',
+        http_method='POST',
+        method_id='networkmanagement.projects.locations.global.connectivityTests.rerun',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1/{+name}:rerun',
-        request_field=u'rerunConnectivityTestRequest',
-        request_type_name=u'NetworkmanagementProjectsLocationsGlobalConnectivityTestsRerunRequest',
-        response_type_name=u'Operation',
+        relative_path='v1/{+name}:rerun',
+        request_field='rerunConnectivityTestRequest',
+        request_type_name='NetworkmanagementProjectsLocationsGlobalConnectivityTestsRerunRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -296,16 +296,16 @@ Can return Public Errors: NOT_FOUND, INVALID_ARGUMENT and PERMISSION_DENIED
           config, request, global_params=global_params)
 
     SetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/locations/global/connectivityTests/{connectivityTestsId}:setIamPolicy',
-        http_method=u'POST',
-        method_id=u'networkmanagement.projects.locations.global.connectivityTests.setIamPolicy',
-        ordered_params=[u'resource'],
-        path_params=[u'resource'],
+        flat_path='v1/projects/{projectsId}/locations/global/connectivityTests/{connectivityTestsId}:setIamPolicy',
+        http_method='POST',
+        method_id='networkmanagement.projects.locations.global.connectivityTests.setIamPolicy',
+        ordered_params=['resource'],
+        path_params=['resource'],
         query_params=[],
-        relative_path=u'v1/{+resource}:setIamPolicy',
-        request_field=u'setIamPolicyRequest',
-        request_type_name=u'NetworkmanagementProjectsLocationsGlobalConnectivityTestsSetIamPolicyRequest',
-        response_type_name=u'Policy',
+        relative_path='v1/{+resource}:setIamPolicy',
+        request_field='setIamPolicyRequest',
+        request_type_name='NetworkmanagementProjectsLocationsGlobalConnectivityTestsSetIamPolicyRequest',
+        response_type_name='Policy',
         supports_download=False,
     )
 
@@ -329,23 +329,23 @@ may "fail open" without warning.
           config, request, global_params=global_params)
 
     TestIamPermissions.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/locations/global/connectivityTests/{connectivityTestsId}:testIamPermissions',
-        http_method=u'POST',
-        method_id=u'networkmanagement.projects.locations.global.connectivityTests.testIamPermissions',
-        ordered_params=[u'resource'],
-        path_params=[u'resource'],
+        flat_path='v1/projects/{projectsId}/locations/global/connectivityTests/{connectivityTestsId}:testIamPermissions',
+        http_method='POST',
+        method_id='networkmanagement.projects.locations.global.connectivityTests.testIamPermissions',
+        ordered_params=['resource'],
+        path_params=['resource'],
         query_params=[],
-        relative_path=u'v1/{+resource}:testIamPermissions',
-        request_field=u'testIamPermissionsRequest',
-        request_type_name=u'NetworkmanagementProjectsLocationsGlobalConnectivityTestsTestIamPermissionsRequest',
-        response_type_name=u'TestIamPermissionsResponse',
+        relative_path='v1/{+resource}:testIamPermissions',
+        request_field='testIamPermissionsRequest',
+        request_type_name='NetworkmanagementProjectsLocationsGlobalConnectivityTestsTestIamPermissionsRequest',
+        response_type_name='TestIamPermissionsResponse',
         supports_download=False,
     )
 
   class ProjectsLocationsGlobalOperationsService(base_api.BaseApiService):
     """Service class for the projects_locations_global_operations resource."""
 
-    _NAME = u'projects_locations_global_operations'
+    _NAME = 'projects_locations_global_operations'
 
     def __init__(self, client):
       super(NetworkmanagementV1.ProjectsLocationsGlobalOperationsService, self).__init__(client)
@@ -375,16 +375,16 @@ corresponding to `Code.CANCELLED`.
           config, request, global_params=global_params)
 
     Cancel.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/locations/global/operations/{operationsId}:cancel',
-        http_method=u'POST',
-        method_id=u'networkmanagement.projects.locations.global.operations.cancel',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1/projects/{projectsId}/locations/global/operations/{operationsId}:cancel',
+        http_method='POST',
+        method_id='networkmanagement.projects.locations.global.operations.cancel',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1/{+name}:cancel',
-        request_field=u'cancelOperationRequest',
-        request_type_name=u'NetworkmanagementProjectsLocationsGlobalOperationsCancelRequest',
-        response_type_name=u'Empty',
+        relative_path='v1/{+name}:cancel',
+        request_field='cancelOperationRequest',
+        request_type_name='NetworkmanagementProjectsLocationsGlobalOperationsCancelRequest',
+        response_type_name='Empty',
         supports_download=False,
     )
 
@@ -405,16 +405,16 @@ operation. If the server doesn't support this method, it returns
           config, request, global_params=global_params)
 
     Delete.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/locations/global/operations/{operationsId}',
-        http_method=u'DELETE',
-        method_id=u'networkmanagement.projects.locations.global.operations.delete',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1/projects/{projectsId}/locations/global/operations/{operationsId}',
+        http_method='DELETE',
+        method_id='networkmanagement.projects.locations.global.operations.delete',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1/{+name}',
+        relative_path='v1/{+name}',
         request_field='',
-        request_type_name=u'NetworkmanagementProjectsLocationsGlobalOperationsDeleteRequest',
-        response_type_name=u'Empty',
+        request_type_name='NetworkmanagementProjectsLocationsGlobalOperationsDeleteRequest',
+        response_type_name='Empty',
         supports_download=False,
     )
 
@@ -434,16 +434,16 @@ service.
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/locations/global/operations/{operationsId}',
-        http_method=u'GET',
-        method_id=u'networkmanagement.projects.locations.global.operations.get',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1/projects/{projectsId}/locations/global/operations/{operationsId}',
+        http_method='GET',
+        method_id='networkmanagement.projects.locations.global.operations.get',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1/{+name}',
+        relative_path='v1/{+name}',
         request_field='',
-        request_type_name=u'NetworkmanagementProjectsLocationsGlobalOperationsGetRequest',
-        response_type_name=u'Operation',
+        request_type_name='NetworkmanagementProjectsLocationsGlobalOperationsGetRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -470,23 +470,23 @@ is the parent resource, without the operations collection id.
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/locations/global/operations',
-        http_method=u'GET',
-        method_id=u'networkmanagement.projects.locations.global.operations.list',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[u'filter', u'pageSize', u'pageToken'],
-        relative_path=u'v1/{+name}/operations',
+        flat_path='v1/projects/{projectsId}/locations/global/operations',
+        http_method='GET',
+        method_id='networkmanagement.projects.locations.global.operations.list',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['filter', 'pageSize', 'pageToken'],
+        relative_path='v1/{+name}/operations',
         request_field='',
-        request_type_name=u'NetworkmanagementProjectsLocationsGlobalOperationsListRequest',
-        response_type_name=u'ListOperationsResponse',
+        request_type_name='NetworkmanagementProjectsLocationsGlobalOperationsListRequest',
+        response_type_name='ListOperationsResponse',
         supports_download=False,
     )
 
   class ProjectsLocationsGlobalService(base_api.BaseApiService):
     """Service class for the projects_locations_global resource."""
 
-    _NAME = u'projects_locations_global'
+    _NAME = 'projects_locations_global'
 
     def __init__(self, client):
       super(NetworkmanagementV1.ProjectsLocationsGlobalService, self).__init__(client)
@@ -496,7 +496,7 @@ is the parent resource, without the operations collection id.
   class ProjectsLocationsService(base_api.BaseApiService):
     """Service class for the projects_locations resource."""
 
-    _NAME = u'projects_locations'
+    _NAME = 'projects_locations'
 
     def __init__(self, client):
       super(NetworkmanagementV1.ProjectsLocationsService, self).__init__(client)
@@ -517,16 +517,16 @@ is the parent resource, without the operations collection id.
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/locations/{locationsId}',
-        http_method=u'GET',
-        method_id=u'networkmanagement.projects.locations.get',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}',
+        http_method='GET',
+        method_id='networkmanagement.projects.locations.get',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1/{+name}',
+        relative_path='v1/{+name}',
         request_field='',
-        request_type_name=u'NetworkmanagementProjectsLocationsGetRequest',
-        response_type_name=u'Location',
+        request_type_name='NetworkmanagementProjectsLocationsGetRequest',
+        response_type_name='Location',
         supports_download=False,
     )
 
@@ -544,23 +544,23 @@ is the parent resource, without the operations collection id.
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/locations',
-        http_method=u'GET',
-        method_id=u'networkmanagement.projects.locations.list',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[u'filter', u'pageSize', u'pageToken'],
-        relative_path=u'v1/{+name}/locations',
+        flat_path='v1/projects/{projectsId}/locations',
+        http_method='GET',
+        method_id='networkmanagement.projects.locations.list',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['filter', 'pageSize', 'pageToken'],
+        relative_path='v1/{+name}/locations',
         request_field='',
-        request_type_name=u'NetworkmanagementProjectsLocationsListRequest',
-        response_type_name=u'ListLocationsResponse',
+        request_type_name='NetworkmanagementProjectsLocationsListRequest',
+        response_type_name='ListLocationsResponse',
         supports_download=False,
     )
 
   class ProjectsService(base_api.BaseApiService):
     """Service class for the projects resource."""
 
-    _NAME = u'projects'
+    _NAME = 'projects'
 
     def __init__(self, client):
       super(NetworkmanagementV1.ProjectsService, self).__init__(client)

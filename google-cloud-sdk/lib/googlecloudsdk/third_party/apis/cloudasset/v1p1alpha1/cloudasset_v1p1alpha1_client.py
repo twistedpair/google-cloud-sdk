@@ -8,17 +8,17 @@ class CloudassetV1p1alpha1(base_api.BaseApiClient):
   """Generated client library for service cloudasset version v1p1alpha1."""
 
   MESSAGES_MODULE = messages
-  BASE_URL = u'https://cloudasset.googleapis.com/'
-  MTLS_BASE_URL = u''
+  BASE_URL = 'https://cloudasset.googleapis.com/'
+  MTLS_BASE_URL = ''
 
-  _PACKAGE = u'cloudasset'
-  _SCOPES = [u'https://www.googleapis.com/auth/cloud-platform']
-  _VERSION = u'v1p1alpha1'
+  _PACKAGE = 'cloudasset'
+  _SCOPES = ['https://www.googleapis.com/auth/cloud-platform']
+  _VERSION = 'v1p1alpha1'
   _CLIENT_ID = '1042881264118.apps.googleusercontent.com'
   _CLIENT_SECRET = 'x_Tw5K8nnjoRAqULM9PFAC2b'
-  _USER_AGENT = u'google-cloud-sdk'
-  _CLIENT_CLASS_NAME = u'CloudassetV1p1alpha1'
-  _URL_VERSION = u'v1p1alpha1'
+  _USER_AGENT = 'google-cloud-sdk'
+  _CLIENT_CLASS_NAME = 'CloudassetV1p1alpha1'
+  _URL_VERSION = 'v1p1alpha1'
   _API_KEY = None
 
   def __init__(self, url='', credentials=None,
@@ -43,7 +43,7 @@ class CloudassetV1p1alpha1(base_api.BaseApiClient):
   class IamPoliciesService(base_api.BaseApiService):
     """Service class for the iamPolicies resource."""
 
-    _NAME = u'iamPolicies'
+    _NAME = 'iamPolicies'
 
     def __init__(self, client):
       super(CloudassetV1p1alpha1.IamPoliciesService, self).__init__(client)
@@ -64,22 +64,22 @@ class CloudassetV1p1alpha1(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Search.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'cloudasset.iamPolicies.search',
+        http_method='GET',
+        method_id='cloudasset.iamPolicies.search',
         ordered_params=[],
         path_params=[],
-        query_params=[u'pageSize', u'pageToken', u'query'],
-        relative_path=u'v1p1alpha1/iamPolicies:search',
+        query_params=['pageSize', 'pageToken', 'query'],
+        relative_path='v1p1alpha1/iamPolicies:search',
         request_field='',
-        request_type_name=u'CloudassetIamPoliciesSearchRequest',
-        response_type_name=u'SearchIamPoliciesResponse',
+        request_type_name='CloudassetIamPoliciesSearchRequest',
+        response_type_name='SearchIamPoliciesResponse',
         supports_download=False,
     )
 
   class OperationsService(base_api.BaseApiService):
     """Service class for the operations resource."""
 
-    _NAME = u'operations'
+    _NAME = 'operations'
 
     def __init__(self, client):
       super(CloudassetV1p1alpha1.OperationsService, self).__init__(client)
@@ -102,23 +102,23 @@ service.
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1p1alpha1/{v1p1alpha1Id}/{v1p1alpha1Id1}/operations/{operationsId}/{operationsId1}',
-        http_method=u'GET',
-        method_id=u'cloudasset.operations.get',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1p1alpha1/{v1p1alpha1Id}/{v1p1alpha1Id1}/operations/{operationsId}/{operationsId1}',
+        http_method='GET',
+        method_id='cloudasset.operations.get',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1p1alpha1/{+name}',
+        relative_path='v1p1alpha1/{+name}',
         request_field='',
-        request_type_name=u'CloudassetOperationsGetRequest',
-        response_type_name=u'Operation',
+        request_type_name='CloudassetOperationsGetRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
   class V1p1alpha1Service(base_api.BaseApiService):
     """Service class for the v1p1alpha1 resource."""
 
-    _NAME = u'v1p1alpha1'
+    _NAME = 'v1p1alpha1'
 
     def __init__(self, client):
       super(CloudassetV1p1alpha1.V1p1alpha1Service, self).__init__(client)
@@ -145,16 +145,16 @@ error.
           config, request, global_params=global_params)
 
     BatchGetAssetsHistory.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1p1alpha1/{v1p1alpha1Id}/{v1p1alpha1Id1}:batchGetAssetsHistory',
-        http_method=u'GET',
-        method_id=u'cloudasset.batchGetAssetsHistory',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'assetNames', u'contentType', u'readTimeWindow_endTime', u'readTimeWindow_startTime'],
-        relative_path=u'v1p1alpha1/{+parent}:batchGetAssetsHistory',
+        flat_path='v1p1alpha1/{v1p1alpha1Id}/{v1p1alpha1Id1}:batchGetAssetsHistory',
+        http_method='GET',
+        method_id='cloudasset.batchGetAssetsHistory',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['assetNames', 'contentType', 'readTimeWindow_endTime', 'readTimeWindow_startTime'],
+        relative_path='v1p1alpha1/{+parent}:batchGetAssetsHistory',
         request_field='',
-        request_type_name=u'CloudassetBatchGetAssetsHistoryRequest',
-        response_type_name=u'BatchGetAssetsHistoryResponse',
+        request_type_name='CloudassetBatchGetAssetsHistoryRequest',
+        response_type_name='BatchGetAssetsHistoryResponse',
         supports_download=False,
     )
 
@@ -175,15 +175,15 @@ to keep track of the export.
           config, request, global_params=global_params)
 
     ExportAssets.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1p1alpha1/{v1p1alpha1Id}/{v1p1alpha1Id1}:exportAssets',
-        http_method=u'POST',
-        method_id=u'cloudasset.exportAssets',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
+        flat_path='v1p1alpha1/{v1p1alpha1Id}/{v1p1alpha1Id1}:exportAssets',
+        http_method='POST',
+        method_id='cloudasset.exportAssets',
+        ordered_params=['parent'],
+        path_params=['parent'],
         query_params=[],
-        relative_path=u'v1p1alpha1/{+parent}:exportAssets',
-        request_field=u'exportAssetsRequest',
-        request_type_name=u'CloudassetExportAssetsRequest',
-        response_type_name=u'Operation',
+        relative_path='v1p1alpha1/{+parent}:exportAssets',
+        request_field='exportAssetsRequest',
+        request_type_name='CloudassetExportAssetsRequest',
+        response_type_name='Operation',
         supports_download=False,
     )

@@ -8,17 +8,17 @@ class DatamigrationV1alpha2(base_api.BaseApiClient):
   """Generated client library for service datamigration version v1alpha2."""
 
   MESSAGES_MODULE = messages
-  BASE_URL = u'https://datamigration.googleapis.com/'
-  MTLS_BASE_URL = u'https://datamigration.mtls.googleapis.com/'
+  BASE_URL = 'https://datamigration.googleapis.com/'
+  MTLS_BASE_URL = 'https://datamigration.mtls.googleapis.com/'
 
-  _PACKAGE = u'datamigration'
-  _SCOPES = [u'https://www.googleapis.com/auth/cloud-platform']
-  _VERSION = u'v1alpha2'
+  _PACKAGE = 'datamigration'
+  _SCOPES = ['https://www.googleapis.com/auth/cloud-platform']
+  _VERSION = 'v1alpha2'
   _CLIENT_ID = '1042881264118.apps.googleusercontent.com'
   _CLIENT_SECRET = 'x_Tw5K8nnjoRAqULM9PFAC2b'
-  _USER_AGENT = u'google-cloud-sdk'
-  _CLIENT_CLASS_NAME = u'DatamigrationV1alpha2'
-  _URL_VERSION = u'v1alpha2'
+  _USER_AGENT = 'google-cloud-sdk'
+  _CLIENT_CLASS_NAME = 'DatamigrationV1alpha2'
+  _URL_VERSION = 'v1alpha2'
   _API_KEY = None
 
   def __init__(self, url='', credentials=None,
@@ -45,7 +45,7 @@ class DatamigrationV1alpha2(base_api.BaseApiClient):
   class ProjectsLocationsConnectionProfilesService(base_api.BaseApiService):
     """Service class for the projects_locations_connectionProfiles resource."""
 
-    _NAME = u'projects_locations_connectionProfiles'
+    _NAME = 'projects_locations_connectionProfiles'
 
     def __init__(self, client):
       super(DatamigrationV1alpha2.ProjectsLocationsConnectionProfilesService, self).__init__(client)
@@ -66,16 +66,16 @@ class DatamigrationV1alpha2(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Create.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha2/projects/{projectsId}/locations/{locationsId}/connectionProfiles',
-        http_method=u'POST',
-        method_id=u'datamigration.projects.locations.connectionProfiles.create',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'connectionProfileId', u'requestId'],
-        relative_path=u'v1alpha2/{+parent}/connectionProfiles',
-        request_field=u'connectionProfile',
-        request_type_name=u'DatamigrationProjectsLocationsConnectionProfilesCreateRequest',
-        response_type_name=u'Operation',
+        flat_path='v1alpha2/projects/{projectsId}/locations/{locationsId}/connectionProfiles',
+        http_method='POST',
+        method_id='datamigration.projects.locations.connectionProfiles.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['connectionProfileId', 'requestId'],
+        relative_path='v1alpha2/{+parent}/connectionProfiles',
+        request_field='connectionProfile',
+        request_type_name='DatamigrationProjectsLocationsConnectionProfilesCreateRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -95,16 +95,16 @@ active migration jobs.
           config, request, global_params=global_params)
 
     Delete.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha2/projects/{projectsId}/locations/{locationsId}/connectionProfiles/{connectionProfilesId}',
-        http_method=u'DELETE',
-        method_id=u'datamigration.projects.locations.connectionProfiles.delete',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[u'force', u'requestId'],
-        relative_path=u'v1alpha2/{+name}',
+        flat_path='v1alpha2/projects/{projectsId}/locations/{locationsId}/connectionProfiles/{connectionProfilesId}',
+        http_method='DELETE',
+        method_id='datamigration.projects.locations.connectionProfiles.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['force', 'requestId'],
+        relative_path='v1alpha2/{+name}',
         request_field='',
-        request_type_name=u'DatamigrationProjectsLocationsConnectionProfilesDeleteRequest',
-        response_type_name=u'Operation',
+        request_type_name='DatamigrationProjectsLocationsConnectionProfilesDeleteRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -122,16 +122,16 @@ active migration jobs.
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha2/projects/{projectsId}/locations/{locationsId}/connectionProfiles/{connectionProfilesId}',
-        http_method=u'GET',
-        method_id=u'datamigration.projects.locations.connectionProfiles.get',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1alpha2/projects/{projectsId}/locations/{locationsId}/connectionProfiles/{connectionProfilesId}',
+        http_method='GET',
+        method_id='datamigration.projects.locations.connectionProfiles.get',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1alpha2/{+name}',
+        relative_path='v1alpha2/{+name}',
         request_field='',
-        request_type_name=u'DatamigrationProjectsLocationsConnectionProfilesGetRequest',
-        response_type_name=u'ConnectionProfile',
+        request_type_name='DatamigrationProjectsLocationsConnectionProfilesGetRequest',
+        response_type_name='ConnectionProfile',
         supports_download=False,
     )
 
@@ -149,16 +149,16 @@ active migration jobs.
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha2/projects/{projectsId}/locations/{locationsId}/connectionProfiles',
-        http_method=u'GET',
-        method_id=u'datamigration.projects.locations.connectionProfiles.list',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'filter', u'orderBy', u'pageSize', u'pageToken'],
-        relative_path=u'v1alpha2/{+parent}/connectionProfiles',
+        flat_path='v1alpha2/projects/{projectsId}/locations/{locationsId}/connectionProfiles',
+        http_method='GET',
+        method_id='datamigration.projects.locations.connectionProfiles.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'orderBy', 'pageSize', 'pageToken'],
+        relative_path='v1alpha2/{+parent}/connectionProfiles',
         request_field='',
-        request_type_name=u'DatamigrationProjectsLocationsConnectionProfilesListRequest',
-        response_type_name=u'ListConnectionProfilesResponse',
+        request_type_name='DatamigrationProjectsLocationsConnectionProfilesListRequest',
+        response_type_name='ListConnectionProfilesResponse',
         supports_download=False,
     )
 
@@ -176,23 +176,23 @@ active migration jobs.
           config, request, global_params=global_params)
 
     Patch.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha2/projects/{projectsId}/locations/{locationsId}/connectionProfiles/{connectionProfilesId}',
-        http_method=u'PATCH',
-        method_id=u'datamigration.projects.locations.connectionProfiles.patch',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[u'requestId', u'updateMask'],
-        relative_path=u'v1alpha2/{+name}',
-        request_field=u'connectionProfile',
-        request_type_name=u'DatamigrationProjectsLocationsConnectionProfilesPatchRequest',
-        response_type_name=u'Operation',
+        flat_path='v1alpha2/projects/{projectsId}/locations/{locationsId}/connectionProfiles/{connectionProfilesId}',
+        http_method='PATCH',
+        method_id='datamigration.projects.locations.connectionProfiles.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['requestId', 'updateMask'],
+        relative_path='v1alpha2/{+name}',
+        request_field='connectionProfile',
+        request_type_name='DatamigrationProjectsLocationsConnectionProfilesPatchRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
   class ProjectsLocationsMigrationJobsService(base_api.BaseApiService):
     """Service class for the projects_locations_migrationJobs resource."""
 
-    _NAME = u'projects_locations_migrationJobs'
+    _NAME = 'projects_locations_migrationJobs'
 
     def __init__(self, client):
       super(DatamigrationV1alpha2.ProjectsLocationsMigrationJobsService, self).__init__(client)
@@ -213,16 +213,16 @@ active migration jobs.
           config, request, global_params=global_params)
 
     Create.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha2/projects/{projectsId}/locations/{locationsId}/migrationJobs',
-        http_method=u'POST',
-        method_id=u'datamigration.projects.locations.migrationJobs.create',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'migrationJobId', u'requestId'],
-        relative_path=u'v1alpha2/{+parent}/migrationJobs',
-        request_field=u'migrationJob',
-        request_type_name=u'DatamigrationProjectsLocationsMigrationJobsCreateRequest',
-        response_type_name=u'Operation',
+        flat_path='v1alpha2/projects/{projectsId}/locations/{locationsId}/migrationJobs',
+        http_method='POST',
+        method_id='datamigration.projects.locations.migrationJobs.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['migrationJobId', 'requestId'],
+        relative_path='v1alpha2/{+parent}/migrationJobs',
+        request_field='migrationJob',
+        request_type_name='DatamigrationProjectsLocationsMigrationJobsCreateRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -240,16 +240,16 @@ active migration jobs.
           config, request, global_params=global_params)
 
     Delete.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha2/projects/{projectsId}/locations/{locationsId}/migrationJobs/{migrationJobsId}',
-        http_method=u'DELETE',
-        method_id=u'datamigration.projects.locations.migrationJobs.delete',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[u'force', u'requestId'],
-        relative_path=u'v1alpha2/{+name}',
+        flat_path='v1alpha2/projects/{projectsId}/locations/{locationsId}/migrationJobs/{migrationJobsId}',
+        http_method='DELETE',
+        method_id='datamigration.projects.locations.migrationJobs.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['force', 'requestId'],
+        relative_path='v1alpha2/{+name}',
         request_field='',
-        request_type_name=u'DatamigrationProjectsLocationsMigrationJobsDeleteRequest',
-        response_type_name=u'Operation',
+        request_type_name='DatamigrationProjectsLocationsMigrationJobsDeleteRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -268,16 +268,16 @@ connectivity.
           config, request, global_params=global_params)
 
     GenerateSshScript.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha2/projects/{projectsId}/locations/{locationsId}/migrationJobs/{migrationJobsId}:generateSshScript',
-        http_method=u'POST',
-        method_id=u'datamigration.projects.locations.migrationJobs.generateSshScript',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1alpha2/projects/{projectsId}/locations/{locationsId}/migrationJobs/{migrationJobsId}:generateSshScript',
+        http_method='POST',
+        method_id='datamigration.projects.locations.migrationJobs.generateSshScript',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1alpha2/{+name}:generateSshScript',
-        request_field=u'generateSshScriptRequest',
-        request_type_name=u'DatamigrationProjectsLocationsMigrationJobsGenerateSshScriptRequest',
-        response_type_name=u'SshScript',
+        relative_path='v1alpha2/{+name}:generateSshScript',
+        request_field='generateSshScriptRequest',
+        request_type_name='DatamigrationProjectsLocationsMigrationJobsGenerateSshScriptRequest',
+        response_type_name='SshScript',
         supports_download=False,
     )
 
@@ -295,16 +295,16 @@ connectivity.
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha2/projects/{projectsId}/locations/{locationsId}/migrationJobs/{migrationJobsId}',
-        http_method=u'GET',
-        method_id=u'datamigration.projects.locations.migrationJobs.get',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1alpha2/projects/{projectsId}/locations/{locationsId}/migrationJobs/{migrationJobsId}',
+        http_method='GET',
+        method_id='datamigration.projects.locations.migrationJobs.get',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1alpha2/{+name}',
+        relative_path='v1alpha2/{+name}',
         request_field='',
-        request_type_name=u'DatamigrationProjectsLocationsMigrationJobsGetRequest',
-        response_type_name=u'MigrationJob',
+        request_type_name='DatamigrationProjectsLocationsMigrationJobsGetRequest',
+        response_type_name='MigrationJob',
         supports_download=False,
     )
 
@@ -322,16 +322,16 @@ connectivity.
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha2/projects/{projectsId}/locations/{locationsId}/migrationJobs',
-        http_method=u'GET',
-        method_id=u'datamigration.projects.locations.migrationJobs.list',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'filter', u'orderBy', u'pageSize', u'pageToken'],
-        relative_path=u'v1alpha2/{+parent}/migrationJobs',
+        flat_path='v1alpha2/projects/{projectsId}/locations/{locationsId}/migrationJobs',
+        http_method='GET',
+        method_id='datamigration.projects.locations.migrationJobs.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'orderBy', 'pageSize', 'pageToken'],
+        relative_path='v1alpha2/{+parent}/migrationJobs',
         request_field='',
-        request_type_name=u'DatamigrationProjectsLocationsMigrationJobsListRequest',
-        response_type_name=u'ListMigrationJobsResponse',
+        request_type_name='DatamigrationProjectsLocationsMigrationJobsListRequest',
+        response_type_name='ListMigrationJobsResponse',
         supports_download=False,
     )
 
@@ -349,16 +349,16 @@ connectivity.
           config, request, global_params=global_params)
 
     Patch.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha2/projects/{projectsId}/locations/{locationsId}/migrationJobs/{migrationJobsId}',
-        http_method=u'PATCH',
-        method_id=u'datamigration.projects.locations.migrationJobs.patch',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[u'requestId', u'updateMask'],
-        relative_path=u'v1alpha2/{+name}',
-        request_field=u'migrationJob',
-        request_type_name=u'DatamigrationProjectsLocationsMigrationJobsPatchRequest',
-        response_type_name=u'Operation',
+        flat_path='v1alpha2/projects/{projectsId}/locations/{locationsId}/migrationJobs/{migrationJobsId}',
+        http_method='PATCH',
+        method_id='datamigration.projects.locations.migrationJobs.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['requestId', 'updateMask'],
+        relative_path='v1alpha2/{+name}',
+        request_field='migrationJob',
+        request_type_name='DatamigrationProjectsLocationsMigrationJobsPatchRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -377,16 +377,16 @@ promoting the destination to be a standalone database.
           config, request, global_params=global_params)
 
     Promote.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha2/projects/{projectsId}/locations/{locationsId}/migrationJobs/{migrationJobsId}:promote',
-        http_method=u'POST',
-        method_id=u'datamigration.projects.locations.migrationJobs.promote',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1alpha2/projects/{projectsId}/locations/{locationsId}/migrationJobs/{migrationJobsId}:promote',
+        http_method='POST',
+        method_id='datamigration.projects.locations.migrationJobs.promote',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1alpha2/{+name}:promote',
-        request_field=u'promoteMigrationJobRequest',
-        request_type_name=u'DatamigrationProjectsLocationsMigrationJobsPromoteRequest',
-        response_type_name=u'Operation',
+        relative_path='v1alpha2/{+name}:promote',
+        request_field='promoteMigrationJobRequest',
+        request_type_name='DatamigrationProjectsLocationsMigrationJobsPromoteRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -406,16 +406,16 @@ scratch.
           config, request, global_params=global_params)
 
     Restart.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha2/projects/{projectsId}/locations/{locationsId}/migrationJobs/{migrationJobsId}:restart',
-        http_method=u'POST',
-        method_id=u'datamigration.projects.locations.migrationJobs.restart',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1alpha2/projects/{projectsId}/locations/{locationsId}/migrationJobs/{migrationJobsId}:restart',
+        http_method='POST',
+        method_id='datamigration.projects.locations.migrationJobs.restart',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1alpha2/{+name}:restart',
-        request_field=u'restartMigrationJobRequest',
-        request_type_name=u'DatamigrationProjectsLocationsMigrationJobsRestartRequest',
-        response_type_name=u'Operation',
+        relative_path='v1alpha2/{+name}:restart',
+        request_field='restartMigrationJobRequest',
+        request_type_name='DatamigrationProjectsLocationsMigrationJobsRestartRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -434,16 +434,16 @@ stopped during CDC phase).
           config, request, global_params=global_params)
 
     Resume.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha2/projects/{projectsId}/locations/{locationsId}/migrationJobs/{migrationJobsId}:resume',
-        http_method=u'POST',
-        method_id=u'datamigration.projects.locations.migrationJobs.resume',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1alpha2/projects/{projectsId}/locations/{locationsId}/migrationJobs/{migrationJobsId}:resume',
+        http_method='POST',
+        method_id='datamigration.projects.locations.migrationJobs.resume',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1alpha2/{+name}:resume',
-        request_field=u'resumeMigrationJobRequest',
-        request_type_name=u'DatamigrationProjectsLocationsMigrationJobsResumeRequest',
-        response_type_name=u'Operation',
+        relative_path='v1alpha2/{+name}:resume',
+        request_field='resumeMigrationJobRequest',
+        request_type_name='DatamigrationProjectsLocationsMigrationJobsResumeRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -461,16 +461,16 @@ stopped during CDC phase).
           config, request, global_params=global_params)
 
     Start.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha2/projects/{projectsId}/locations/{locationsId}/migrationJobs/{migrationJobsId}:start',
-        http_method=u'POST',
-        method_id=u'datamigration.projects.locations.migrationJobs.start',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1alpha2/projects/{projectsId}/locations/{locationsId}/migrationJobs/{migrationJobsId}:start',
+        http_method='POST',
+        method_id='datamigration.projects.locations.migrationJobs.start',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1alpha2/{+name}:start',
-        request_field=u'startMigrationJobRequest',
-        request_type_name=u'DatamigrationProjectsLocationsMigrationJobsStartRequest',
-        response_type_name=u'Operation',
+        relative_path='v1alpha2/{+name}:start',
+        request_field='startMigrationJobRequest',
+        request_type_name='DatamigrationProjectsLocationsMigrationJobsStartRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -488,16 +488,16 @@ stopped during CDC phase).
           config, request, global_params=global_params)
 
     Stop.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha2/projects/{projectsId}/locations/{locationsId}/migrationJobs/{migrationJobsId}:stop',
-        http_method=u'POST',
-        method_id=u'datamigration.projects.locations.migrationJobs.stop',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1alpha2/projects/{projectsId}/locations/{locationsId}/migrationJobs/{migrationJobsId}:stop',
+        http_method='POST',
+        method_id='datamigration.projects.locations.migrationJobs.stop',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1alpha2/{+name}:stop',
-        request_field=u'stopMigrationJobRequest',
-        request_type_name=u'DatamigrationProjectsLocationsMigrationJobsStopRequest',
-        response_type_name=u'Operation',
+        relative_path='v1alpha2/{+name}:stop',
+        request_field='stopMigrationJobRequest',
+        request_type_name='DatamigrationProjectsLocationsMigrationJobsStopRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -516,23 +516,23 @@ and that all configuration and prerequisites are met.
           config, request, global_params=global_params)
 
     Verify.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha2/projects/{projectsId}/locations/{locationsId}/migrationJobs/{migrationJobsId}:verify',
-        http_method=u'POST',
-        method_id=u'datamigration.projects.locations.migrationJobs.verify',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1alpha2/projects/{projectsId}/locations/{locationsId}/migrationJobs/{migrationJobsId}:verify',
+        http_method='POST',
+        method_id='datamigration.projects.locations.migrationJobs.verify',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1alpha2/{+name}:verify',
-        request_field=u'verifyMigrationJobRequest',
-        request_type_name=u'DatamigrationProjectsLocationsMigrationJobsVerifyRequest',
-        response_type_name=u'Operation',
+        relative_path='v1alpha2/{+name}:verify',
+        request_field='verifyMigrationJobRequest',
+        request_type_name='DatamigrationProjectsLocationsMigrationJobsVerifyRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
   class ProjectsLocationsOperationsService(base_api.BaseApiService):
     """Service class for the projects_locations_operations resource."""
 
-    _NAME = u'projects_locations_operations'
+    _NAME = 'projects_locations_operations'
 
     def __init__(self, client):
       super(DatamigrationV1alpha2.ProjectsLocationsOperationsService, self).__init__(client)
@@ -562,16 +562,16 @@ corresponding to `Code.CANCELLED`.
           config, request, global_params=global_params)
 
     Cancel.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha2/projects/{projectsId}/locations/{locationsId}/operations/{operationsId}:cancel',
-        http_method=u'POST',
-        method_id=u'datamigration.projects.locations.operations.cancel',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1alpha2/projects/{projectsId}/locations/{locationsId}/operations/{operationsId}:cancel',
+        http_method='POST',
+        method_id='datamigration.projects.locations.operations.cancel',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1alpha2/{+name}:cancel',
-        request_field=u'cancelOperationRequest',
-        request_type_name=u'DatamigrationProjectsLocationsOperationsCancelRequest',
-        response_type_name=u'Empty',
+        relative_path='v1alpha2/{+name}:cancel',
+        request_field='cancelOperationRequest',
+        request_type_name='DatamigrationProjectsLocationsOperationsCancelRequest',
+        response_type_name='Empty',
         supports_download=False,
     )
 
@@ -592,16 +592,16 @@ operation. If the server doesn't support this method, it returns
           config, request, global_params=global_params)
 
     Delete.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha2/projects/{projectsId}/locations/{locationsId}/operations/{operationsId}',
-        http_method=u'DELETE',
-        method_id=u'datamigration.projects.locations.operations.delete',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1alpha2/projects/{projectsId}/locations/{locationsId}/operations/{operationsId}',
+        http_method='DELETE',
+        method_id='datamigration.projects.locations.operations.delete',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1alpha2/{+name}',
+        relative_path='v1alpha2/{+name}',
         request_field='',
-        request_type_name=u'DatamigrationProjectsLocationsOperationsDeleteRequest',
-        response_type_name=u'Empty',
+        request_type_name='DatamigrationProjectsLocationsOperationsDeleteRequest',
+        response_type_name='Empty',
         supports_download=False,
     )
 
@@ -621,16 +621,16 @@ service.
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha2/projects/{projectsId}/locations/{locationsId}/operations/{operationsId}',
-        http_method=u'GET',
-        method_id=u'datamigration.projects.locations.operations.get',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1alpha2/projects/{projectsId}/locations/{locationsId}/operations/{operationsId}',
+        http_method='GET',
+        method_id='datamigration.projects.locations.operations.get',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1alpha2/{+name}',
+        relative_path='v1alpha2/{+name}',
         request_field='',
-        request_type_name=u'DatamigrationProjectsLocationsOperationsGetRequest',
-        response_type_name=u'Operation',
+        request_type_name='DatamigrationProjectsLocationsOperationsGetRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -657,23 +657,23 @@ is the parent resource, without the operations collection id.
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha2/projects/{projectsId}/locations/{locationsId}/operations',
-        http_method=u'GET',
-        method_id=u'datamigration.projects.locations.operations.list',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[u'filter', u'pageSize', u'pageToken'],
-        relative_path=u'v1alpha2/{+name}/operations',
+        flat_path='v1alpha2/projects/{projectsId}/locations/{locationsId}/operations',
+        http_method='GET',
+        method_id='datamigration.projects.locations.operations.list',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['filter', 'pageSize', 'pageToken'],
+        relative_path='v1alpha2/{+name}/operations',
         request_field='',
-        request_type_name=u'DatamigrationProjectsLocationsOperationsListRequest',
-        response_type_name=u'ListOperationsResponse',
+        request_type_name='DatamigrationProjectsLocationsOperationsListRequest',
+        response_type_name='ListOperationsResponse',
         supports_download=False,
     )
 
   class ProjectsLocationsService(base_api.BaseApiService):
     """Service class for the projects_locations resource."""
 
-    _NAME = u'projects_locations'
+    _NAME = 'projects_locations'
 
     def __init__(self, client):
       super(DatamigrationV1alpha2.ProjectsLocationsService, self).__init__(client)
@@ -694,16 +694,16 @@ is the parent resource, without the operations collection id.
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha2/projects/{projectsId}/locations/{locationsId}',
-        http_method=u'GET',
-        method_id=u'datamigration.projects.locations.get',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1alpha2/projects/{projectsId}/locations/{locationsId}',
+        http_method='GET',
+        method_id='datamigration.projects.locations.get',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1alpha2/{+name}',
+        relative_path='v1alpha2/{+name}',
         request_field='',
-        request_type_name=u'DatamigrationProjectsLocationsGetRequest',
-        response_type_name=u'Location',
+        request_type_name='DatamigrationProjectsLocationsGetRequest',
+        response_type_name='Location',
         supports_download=False,
     )
 
@@ -721,23 +721,23 @@ is the parent resource, without the operations collection id.
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha2/projects/{projectsId}/locations',
-        http_method=u'GET',
-        method_id=u'datamigration.projects.locations.list',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[u'filter', u'includeUnrevealedLocations', u'pageSize', u'pageToken'],
-        relative_path=u'v1alpha2/{+name}/locations',
+        flat_path='v1alpha2/projects/{projectsId}/locations',
+        http_method='GET',
+        method_id='datamigration.projects.locations.list',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['filter', 'includeUnrevealedLocations', 'pageSize', 'pageToken'],
+        relative_path='v1alpha2/{+name}/locations',
         request_field='',
-        request_type_name=u'DatamigrationProjectsLocationsListRequest',
-        response_type_name=u'ListLocationsResponse',
+        request_type_name='DatamigrationProjectsLocationsListRequest',
+        response_type_name='ListLocationsResponse',
         supports_download=False,
     )
 
   class ProjectsService(base_api.BaseApiService):
     """Service class for the projects resource."""
 
-    _NAME = u'projects'
+    _NAME = 'projects'
 
     def __init__(self, client):
       super(DatamigrationV1alpha2.ProjectsService, self).__init__(client)

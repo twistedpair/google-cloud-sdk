@@ -58,7 +58,7 @@ class TableCompleter(completers.ListCommandCompleter):
         **kwargs)
 
 
-def ProcessInstanceTypeAndNodes(args, instance_type):
+def ProcessInstanceTypeAndNodes(args):
   """Ensure that --instance-type and --num-nodes are consistent.
 
   If --instance-type is DEVELOPMENT, then no --cluster-num-nodes can be
@@ -67,7 +67,6 @@ def ProcessInstanceTypeAndNodes(args, instance_type):
 
   Args:
     args: an argparse namespace.
-    instance_type: string, The instance type; PRODUCTION or DEVELOPMENT.
 
   Raises:
     exceptions.InvalidArgumentException: If --cluster-num-nodes is specified
@@ -79,6 +78,7 @@ def ProcessInstanceTypeAndNodes(args, instance_type):
   """
   msgs = util.GetAdminMessages()
   num_nodes = args.cluster_num_nodes
+  instance_type = msgs.Instance.TypeValueValuesEnum(args.instance_type)
   if not args.IsSpecified('cluster_num_nodes'):
     if instance_type == msgs.Instance.TypeValueValuesEnum.PRODUCTION:
       num_nodes = 3
@@ -270,6 +270,26 @@ def BackupAttributeConfig():
       name='backup', help_text='Cloud Bigtable backup for the {resource}.')
 
 
+def KmsKeyAttributeConfig():
+  # For anchor attribute, help text is generated automatically.
+  return concepts.ResourceParameterAttributeConfig(name='kms-key')
+
+
+def KmsKeyringAttributeConfig():
+  return concepts.ResourceParameterAttributeConfig(
+      name='kms-keyring', help_text='The KMS keyring id of the {resource}.')
+
+
+def KmsLocationAttributeConfig():
+  return concepts.ResourceParameterAttributeConfig(
+      name='kms-location', help_text='The Cloud location for the {resource}.')
+
+
+def KmsProjectAttributeConfig():
+  return concepts.ResourceParameterAttributeConfig(
+      name='kms-project', help_text='The Cloud project id for the {resource}.')
+
+
 def GetInstanceResourceSpec():
   """Return the resource specification for a Bigtable instance."""
   return concepts.ResourceSpec(
@@ -309,6 +329,17 @@ def GetAppProfileResourceSpec():
       resource_name='app profile',
       instancesId=InstanceAttributeConfig(),
       projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
+      disable_auto_completers=False)
+
+
+def GetKmsKeyResourceSpec():
+  return concepts.ResourceSpec(
+      'cloudkms.projects.locations.keyRings.cryptoKeys',
+      resource_name='key',
+      cryptoKeysId=KmsKeyAttributeConfig(),
+      keyRingsId=KmsKeyringAttributeConfig(),
+      locationsId=KmsLocationAttributeConfig(),
+      projectsId=KmsProjectAttributeConfig(),
       disable_auto_completers=False)
 
 
@@ -396,3 +427,47 @@ def AddTableRestoreResourceArg(parser):
       '--destination.instance': ['--source.instance']
   }
   concept_parsers.ConceptParser(arg_specs, fallthroughs).AddToParser(parser)
+
+
+def AddKmsKeyResourceArg(parser, resource, flag_overrides=None, required=False):
+  """Add a resource argument for a KMS key.
+
+  Args:
+    parser: the parser for the command.
+    resource: str, the name of the resource that the cryptokey will be used to
+      protect.
+    flag_overrides: dict, The default flag names are 'kms-key', 'kms-keyring',
+      'kms-location' and 'kms-project'. You can pass a dict of overrides where
+      the keys of the dict are the default flag names, and the values are the
+      override names.
+    required: bool, optional. True if the flag must be parsable by the parser.
+  """
+  # TODO(b/153734534): Adding this resource arg to its own group is currently
+  # the only way to hide a resource arg. When ready to publish this arg to
+  # public, remove this group and add this resource arg directly (and generate
+  # the help text).
+  group_parser = parser.add_argument_group(hidden=True)
+  concept_parsers.ConceptParser.ForResource(
+      '--kms-key',
+      GetKmsKeyResourceSpec(),
+      'The Cloud KMS (Key Management Service) cryptokey that will be used to '
+      'protect the {}.'.format(resource),
+      flag_name_overrides=flag_overrides,
+      required=required).AddToParser(group_parser)
+
+
+def GetAndValidateKmsKeyName(args):
+  """Parse the KMS key resource arg, make sure the key format is correct."""
+  kms_ref = args.CONCEPTS.kms_key.Parse()
+  if kms_ref:
+    return kms_ref.RelativeName()
+  else:
+    # If parsing failed but args were specified, raise error
+    for keyword in ['kms-key', 'kms-keyring', 'kms-location', 'kms-project']:
+      if getattr(args, keyword.replace('-', '_'), None):
+        raise exceptions.InvalidArgumentException(
+            '--kms-project --kms-location --kms-keyring --kms-key',
+            'Specify fully qualified KMS key ID with --kms-key, or use ' +
+            'combination of --kms-project, --kms-location, --kms-keyring and ' +
+            '--kms-key to specify the key ID in pieces.')
+    return None  # User didn't specify KMS key

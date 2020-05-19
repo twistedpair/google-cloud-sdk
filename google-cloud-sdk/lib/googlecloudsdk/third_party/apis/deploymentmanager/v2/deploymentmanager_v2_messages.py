@@ -80,8 +80,9 @@ class Binding(_messages.Message):
       not apply to the current request. However, a different role binding
       might grant the same role to one or more of the members in this binding.
       To learn which resources support conditions in their IAM policies, see
-      the [IAM documentation](https://cloud.google.com/iam/help/conditions
-      /resource-policies).
+      the [IAM
+      documentation](https://cloud.google.com/iam/help/conditions/resource-
+      policies).
     members: Specifies the identities requesting access for a Cloud Platform
       resource. `members` can have the following values:  * `allUsers`: A
       special identifier that represents anyone who is on the internet; with
@@ -290,7 +291,7 @@ class DeploymentmanagerDeploymentsDeleteRequest(_messages.Message):
     ABANDON = 0
     DELETE = 1
 
-  deletePolicy = _messages.EnumField('DeletePolicyValueValuesEnum', 1, default=u'DELETE')
+  deletePolicy = _messages.EnumField('DeletePolicyValueValuesEnum', 1, default='DELETE')
   deployment = _messages.StringField(2, required=True)
   project = _messages.StringField(3, required=True)
 
@@ -350,7 +351,7 @@ class DeploymentmanagerDeploymentsInsertRequest(_messages.Message):
     ACQUIRE = 0
     CREATE_OR_ACQUIRE = 1
 
-  createPolicy = _messages.EnumField('CreatePolicyValueValuesEnum', 1, default=u'CREATE_OR_ACQUIRE')
+  createPolicy = _messages.EnumField('CreatePolicyValueValuesEnum', 1, default='CREATE_OR_ACQUIRE')
   deployment = _messages.MessageField('Deployment', 2)
   preview = _messages.BooleanField(3)
   project = _messages.StringField(4, required=True)
@@ -451,8 +452,8 @@ class DeploymentmanagerDeploymentsPatchRequest(_messages.Message):
     ABANDON = 0
     DELETE = 1
 
-  createPolicy = _messages.EnumField('CreatePolicyValueValuesEnum', 1, default=u'CREATE_OR_ACQUIRE')
-  deletePolicy = _messages.EnumField('DeletePolicyValueValuesEnum', 2, default=u'DELETE')
+  createPolicy = _messages.EnumField('CreatePolicyValueValuesEnum', 1, default='CREATE_OR_ACQUIRE')
+  deletePolicy = _messages.EnumField('DeletePolicyValueValuesEnum', 2, default='DELETE')
   deployment = _messages.StringField(3, required=True)
   deploymentResource = _messages.MessageField('Deployment', 4)
   preview = _messages.BooleanField(5, default=False)
@@ -552,8 +553,8 @@ class DeploymentmanagerDeploymentsUpdateRequest(_messages.Message):
     ABANDON = 0
     DELETE = 1
 
-  createPolicy = _messages.EnumField('CreatePolicyValueValuesEnum', 1, default=u'CREATE_OR_ACQUIRE')
-  deletePolicy = _messages.EnumField('DeletePolicyValueValuesEnum', 2, default=u'DELETE')
+  createPolicy = _messages.EnumField('CreatePolicyValueValuesEnum', 1, default='CREATE_OR_ACQUIRE')
+  deletePolicy = _messages.EnumField('DeletePolicyValueValuesEnum', 2, default='DELETE')
   deployment = _messages.StringField(3, required=True)
   deploymentResource = _messages.MessageField('Deployment', 4)
   preview = _messages.BooleanField(5, default=False)
@@ -1173,7 +1174,7 @@ class Operation(_messages.Message):
   httpErrorStatusCode = _messages.IntegerField(7, variant=_messages.Variant.INT32)
   id = _messages.IntegerField(8, variant=_messages.Variant.UINT64)
   insertTime = _messages.StringField(9)
-  kind = _messages.StringField(10, default=u'deploymentmanager#operation')
+  kind = _messages.StringField(10, default='deploymentmanager#operation')
   name = _messages.StringField(11)
   operationType = _messages.StringField(12)
   progress = _messages.IntegerField(13, variant=_messages.Variant.INT32)
@@ -1546,7 +1547,7 @@ class StandardQueryParameters(_messages.Message):
     """
     json = 0
 
-  alt = _messages.EnumField('AltValueValuesEnum', 1, default=u'json')
+  alt = _messages.EnumField('AltValueValuesEnum', 1, default='json')
   fields = _messages.StringField(2)
   key = _messages.StringField(3)
   oauth_token = _messages.StringField(4)

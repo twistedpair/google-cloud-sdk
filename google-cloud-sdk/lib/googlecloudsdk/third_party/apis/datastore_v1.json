@@ -567,7 +567,7 @@
           "$ref": "Key"
         },
         "stringValue": {
-          "description": "A UTF-8 encoded string value.\nWhen `exclude_from_indexes` is false (it is indexed) , may have at most 1500 bytes.\nOtherwise, may be set to at least 1,000,000 bytes.",
+          "description": "A UTF-8 encoded string value.\nWhen `exclude_from_indexes` is false (it is indexed) , may have at most 1500 bytes.\nOtherwise, may be set to at most 1,000,000 bytes.",
           "type": "string"
         },
         "blobValue": {

@@ -8,17 +8,17 @@ class SpeechV1(base_api.BaseApiClient):
   """Generated client library for service speech version v1."""
 
   MESSAGES_MODULE = messages
-  BASE_URL = u'https://speech.googleapis.com/'
-  MTLS_BASE_URL = u'https://speech.mtls.googleapis.com/'
+  BASE_URL = 'https://speech.googleapis.com/'
+  MTLS_BASE_URL = 'https://speech.mtls.googleapis.com/'
 
-  _PACKAGE = u'speech'
-  _SCOPES = [u'https://www.googleapis.com/auth/cloud-platform']
-  _VERSION = u'v1'
+  _PACKAGE = 'speech'
+  _SCOPES = ['https://www.googleapis.com/auth/cloud-platform']
+  _VERSION = 'v1'
   _CLIENT_ID = '1042881264118.apps.googleusercontent.com'
   _CLIENT_SECRET = 'x_Tw5K8nnjoRAqULM9PFAC2b'
-  _USER_AGENT = u'google-cloud-sdk'
-  _CLIENT_CLASS_NAME = u'SpeechV1'
-  _URL_VERSION = u'v1'
+  _USER_AGENT = 'google-cloud-sdk'
+  _CLIENT_CLASS_NAME = 'SpeechV1'
+  _URL_VERSION = 'v1'
   _API_KEY = None
 
   def __init__(self, url='', credentials=None,
@@ -45,7 +45,7 @@ class SpeechV1(base_api.BaseApiClient):
   class OperationsService(base_api.BaseApiService):
     """Service class for the operations resource."""
 
-    _NAME = u'operations'
+    _NAME = 'operations'
 
     def __init__(self, client):
       super(SpeechV1.OperationsService, self).__init__(client)
@@ -68,16 +68,16 @@ service.
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/operations/{operationsId}',
-        http_method=u'GET',
-        method_id=u'speech.operations.get',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1/operations/{operationsId}',
+        http_method='GET',
+        method_id='speech.operations.get',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1/operations/{+name}',
+        relative_path='v1/operations/{+name}',
         request_field='',
-        request_type_name=u'SpeechOperationsGetRequest',
-        response_type_name=u'Operation',
+        request_type_name='SpeechOperationsGetRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -104,22 +104,22 @@ is the parent resource, without the operations collection id.
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'speech.operations.list',
+        http_method='GET',
+        method_id='speech.operations.list',
         ordered_params=[],
         path_params=[],
-        query_params=[u'filter', u'name', u'pageSize', u'pageToken'],
-        relative_path=u'v1/operations',
+        query_params=['filter', 'name', 'pageSize', 'pageToken'],
+        relative_path='v1/operations',
         request_field='',
-        request_type_name=u'SpeechOperationsListRequest',
-        response_type_name=u'ListOperationsResponse',
+        request_type_name='SpeechOperationsListRequest',
+        response_type_name='ListOperationsResponse',
         supports_download=False,
     )
 
   class ProjectsLocationsOperationsService(base_api.BaseApiService):
     """Service class for the projects_locations_operations resource."""
 
-    _NAME = u'projects_locations_operations'
+    _NAME = 'projects_locations_operations'
 
     def __init__(self, client):
       super(SpeechV1.ProjectsLocationsOperationsService, self).__init__(client)
@@ -142,16 +142,16 @@ service.
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/locations/{locationsId}/operations/{operationsId}',
-        http_method=u'GET',
-        method_id=u'speech.projects.locations.operations.get',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/operations/{operationsId}',
+        http_method='GET',
+        method_id='speech.projects.locations.operations.get',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1/{+name}',
+        relative_path='v1/{+name}',
         request_field='',
-        request_type_name=u'SpeechProjectsLocationsOperationsGetRequest',
-        response_type_name=u'Operation',
+        request_type_name='SpeechProjectsLocationsOperationsGetRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -178,23 +178,23 @@ is the parent resource, without the operations collection id.
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/locations/{locationsId}/operations',
-        http_method=u'GET',
-        method_id=u'speech.projects.locations.operations.list',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[u'filter', u'pageSize', u'pageToken'],
-        relative_path=u'v1/{+name}/operations',
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/operations',
+        http_method='GET',
+        method_id='speech.projects.locations.operations.list',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['filter', 'pageSize', 'pageToken'],
+        relative_path='v1/{+name}/operations',
         request_field='',
-        request_type_name=u'SpeechProjectsLocationsOperationsListRequest',
-        response_type_name=u'ListOperationsResponse',
+        request_type_name='SpeechProjectsLocationsOperationsListRequest',
+        response_type_name='ListOperationsResponse',
         supports_download=False,
     )
 
   class ProjectsLocationsService(base_api.BaseApiService):
     """Service class for the projects_locations resource."""
 
-    _NAME = u'projects_locations'
+    _NAME = 'projects_locations'
 
     def __init__(self, client):
       super(SpeechV1.ProjectsLocationsService, self).__init__(client)
@@ -204,7 +204,7 @@ is the parent resource, without the operations collection id.
   class ProjectsService(base_api.BaseApiService):
     """Service class for the projects resource."""
 
-    _NAME = u'projects'
+    _NAME = 'projects'
 
     def __init__(self, client):
       super(SpeechV1.ProjectsService, self).__init__(client)
@@ -214,7 +214,7 @@ is the parent resource, without the operations collection id.
   class SpeechService(base_api.BaseApiService):
     """Service class for the speech resource."""
 
-    _NAME = u'speech'
+    _NAME = 'speech'
 
     def __init__(self, client):
       super(SpeechV1.SpeechService, self).__init__(client)
@@ -240,15 +240,15 @@ For more information on asynchronous speech recognition, see the
           config, request, global_params=global_params)
 
     Longrunningrecognize.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'speech.speech.longrunningrecognize',
+        http_method='POST',
+        method_id='speech.speech.longrunningrecognize',
         ordered_params=[],
         path_params=[],
         query_params=[],
-        relative_path=u'v1/speech:longrunningrecognize',
+        relative_path='v1/speech:longrunningrecognize',
         request_field='<request>',
-        request_type_name=u'LongRunningRecognizeRequest',
-        response_type_name=u'Operation',
+        request_type_name='LongRunningRecognizeRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -267,14 +267,14 @@ has been sent and processed.
           config, request, global_params=global_params)
 
     Recognize.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'speech.speech.recognize',
+        http_method='POST',
+        method_id='speech.speech.recognize',
         ordered_params=[],
         path_params=[],
         query_params=[],
-        relative_path=u'v1/speech:recognize',
+        relative_path='v1/speech:recognize',
         request_field='<request>',
-        request_type_name=u'RecognizeRequest',
-        response_type_name=u'RecognizeResponse',
+        request_type_name='RecognizeRequest',
+        response_type_name='RecognizeResponse',
         supports_download=False,
     )

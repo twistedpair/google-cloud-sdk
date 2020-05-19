@@ -77,38 +77,39 @@ class ComposerProjectsLocationsEnvironmentsPatchRequest(_messages.Message):
       `Environment`, of fields to update. For example, to set the version of
       scikit-learn to install in the environment to 0.19.0 and to remove an
       existing installation of numpy, the `updateMask` parameter would include
-      the following two `paths` values: "config.softwareConfig.pypiPackages
-      .scikit-learn" and "config.softwareConfig.pypiPackages.numpy". The
-      included patch environment would specify the scikit-learn version as
-      follows:      {       "config":{         "softwareConfig":{
-      "pypiPackages":{             "scikit-learn":"==0.19.0"           }
-      }       }     }  Note that in the above example, any existing PyPI
-      packages other than scikit-learn and numpy will be unaffected.  Only one
-      update type may be included in a single request's `updateMask`. For
-      example, one cannot update both the PyPI packages and labels in the same
-      request. However, it is possible to update multiple members of a map
-      field simultaneously in the same request. For example, to set the labels
-      "label1" and "label2" while clearing "label3" (assuming it already
-      exists), one can provide the paths "labels.label1", "labels.label2", and
-      "labels.label3" and populate the patch environment as follows:      {
-      "labels":{         "label1":"new-label1-value"         "label2":"new-
-      label2-value"       }     }  Note that in the above example, any
-      existing labels that are not included in the `updateMask` will be
-      unaffected.  It is also possible to replace an entire map field by
-      providing the map field's path in the `updateMask`. The new value of the
-      field will be that which is provided in the patch environment. For
-      example, to delete all pre-existing user-specified PyPI packages and
-      install botocore at version 1.7.14, the `updateMask` would contain the
-      path "config.softwareConfig.pypiPackages", and the patch environment
-      would be the following:      {       "config":{
-      "softwareConfig":{           "pypiPackages":{
-      "botocore":"==1.7.14"           }         }       }     }  **Note:**
-      Only the following fields can be updated:   <table>  <tbody>  <tr>
-      <td><strong>Mask</strong></td>  <td><strong>Purpose</strong></td>  </tr>
-      <tr>  <td>config.softwareConfig.pypiPackages  </td>  <td>Replace all
-      custom custom PyPI packages. If a replacement  package map is not
-      included in `environment`, all custom  PyPI packages are cleared. It is
-      an error to provide both this mask and a  mask specifying an individual
+      the following two `paths` values:
+      "config.softwareConfig.pypiPackages.scikit-learn" and
+      "config.softwareConfig.pypiPackages.numpy". The included patch
+      environment would specify the scikit-learn version as follows:      {
+      "config":{         "softwareConfig":{           "pypiPackages":{
+      "scikit-learn":"==0.19.0"           }         }       }     }  Note that
+      in the above example, any existing PyPI packages other than scikit-learn
+      and numpy will be unaffected.  Only one update type may be included in a
+      single request's `updateMask`. For example, one cannot update both the
+      PyPI packages and labels in the same request. However, it is possible to
+      update multiple members of a map field simultaneously in the same
+      request. For example, to set the labels "label1" and "label2" while
+      clearing "label3" (assuming it already exists), one can provide the
+      paths "labels.label1", "labels.label2", and "labels.label3" and populate
+      the patch environment as follows:      {       "labels":{
+      "label1":"new-label1-value"         "label2":"new-label2-value"       }
+      }  Note that in the above example, any existing labels that are not
+      included in the `updateMask` will be unaffected.  It is also possible to
+      replace an entire map field by providing the map field's path in the
+      `updateMask`. The new value of the field will be that which is provided
+      in the patch environment. For example, to delete all pre-existing user-
+      specified PyPI packages and install botocore at version 1.7.14, the
+      `updateMask` would contain the path
+      "config.softwareConfig.pypiPackages", and the patch environment would be
+      the following:      {       "config":{         "softwareConfig":{
+      "pypiPackages":{             "botocore":"==1.7.14"           }         }
+      }     }  **Note:** Only the following fields can be updated:   <table>
+      <tbody>  <tr>  <td><strong>Mask</strong></td>
+      <td><strong>Purpose</strong></td>  </tr>  <tr>
+      <td>config.softwareConfig.pypiPackages  </td>  <td>Replace all custom
+      custom PyPI packages. If a replacement  package map is not included in
+      `environment`, all custom  PyPI packages are cleared. It is an error to
+      provide both this mask and a  mask specifying an individual
       package.</td>  </tr>  <tr>
       <td>config.softwareConfig.pypiPackages.<var>packagename</var></td>
       <td>Update the custom PyPI package <var>packagename</var>,  preserving
@@ -458,10 +459,10 @@ class NodeConfig(_messages.Message):
       field (`location` or `nodeConfig.machineType`) is specified, the
       location information from the specified field will be propagated to the
       unspecified field.
-    machineType: Optional. The Compute Engine [machine type](/compute/docs
-      /machine-types) used for cluster instances, specified as a [relative
-      resource name](/apis/design/resource_names#relative_resource_name). For
-      example:
+    machineType: Optional. The Compute Engine [machine
+      type](/compute/docs/machine-types) used for cluster instances, specified
+      as a [relative resource
+      name](/apis/design/resource_names#relative_resource_name). For example:
       "projects/{projectId}/zones/{zoneId}/machineTypes/{machineTypeId}".  The
       `machineType` must belong to the enclosing environment's project and
       location. If both this field and `nodeConfig.location` are specified,
@@ -978,7 +979,7 @@ class StandardQueryParameters(_messages.Message):
 
   f__xgafv = _messages.EnumField('FXgafvValueValuesEnum', 1)
   access_token = _messages.StringField(2)
-  alt = _messages.EnumField('AltValueValuesEnum', 3, default=u'json')
+  alt = _messages.EnumField('AltValueValuesEnum', 3, default='json')
   callback = _messages.StringField(4)
   fields = _messages.StringField(5)
   key = _messages.StringField(6)

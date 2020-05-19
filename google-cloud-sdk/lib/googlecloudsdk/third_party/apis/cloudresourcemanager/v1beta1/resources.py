@@ -28,14 +28,14 @@ class Collections(enum.Enum):
       'organizations',
       'organizations/{organizationsId}',
       {},
-      [u'organizationsId'],
+      ['organizationsId'],
       True
   )
   PROJECTS = (
       'projects',
       'projects/{projectId}',
       {},
-      [u'projectId'],
+      ['projectId'],
       True
   )
 

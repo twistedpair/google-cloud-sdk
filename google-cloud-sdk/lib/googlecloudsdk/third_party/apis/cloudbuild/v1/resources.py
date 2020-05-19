@@ -31,28 +31,28 @@ class Collections(enum.Enum):
           '':
               'operations/{operationsId}',
       },
-      [u'name'],
+      ['name'],
       True
   )
   PROJECTS = (
       'projects',
       'projects/{projectId}',
       {},
-      [u'projectId'],
+      ['projectId'],
       True
   )
   PROJECTS_BUILDS = (
       'projects.builds',
       'projects/{projectId}/builds/{id}',
       {},
-      [u'projectId', u'id'],
+      ['projectId', 'id'],
       True
   )
   PROJECTS_TRIGGERS = (
       'projects.triggers',
       'projects/{projectId}/triggers/{triggerId}',
       {},
-      [u'projectId', u'triggerId'],
+      ['projectId', 'triggerId'],
       True
   )
 

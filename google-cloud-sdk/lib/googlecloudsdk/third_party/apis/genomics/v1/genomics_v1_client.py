@@ -8,17 +8,17 @@ class GenomicsV1(base_api.BaseApiClient):
   """Generated client library for service genomics version v1."""
 
   MESSAGES_MODULE = messages
-  BASE_URL = u'https://genomics.googleapis.com/'
-  MTLS_BASE_URL = u'https://genomics.mtls.googleapis.com/'
+  BASE_URL = 'https://genomics.googleapis.com/'
+  MTLS_BASE_URL = 'https://genomics.mtls.googleapis.com/'
 
-  _PACKAGE = u'genomics'
-  _SCOPES = [u'https://www.googleapis.com/auth/cloud-platform', u'https://www.googleapis.com/auth/genomics']
-  _VERSION = u'v1'
+  _PACKAGE = 'genomics'
+  _SCOPES = ['https://www.googleapis.com/auth/cloud-platform', 'https://www.googleapis.com/auth/genomics']
+  _VERSION = 'v1'
   _CLIENT_ID = '1042881264118.apps.googleusercontent.com'
   _CLIENT_SECRET = 'x_Tw5K8nnjoRAqULM9PFAC2b'
-  _USER_AGENT = u'google-cloud-sdk'
-  _CLIENT_CLASS_NAME = u'GenomicsV1'
-  _URL_VERSION = u'v1'
+  _USER_AGENT = 'google-cloud-sdk'
+  _CLIENT_CLASS_NAME = 'GenomicsV1'
+  _URL_VERSION = 'v1'
   _API_KEY = None
 
   def __init__(self, url='', credentials=None,
@@ -41,7 +41,7 @@ class GenomicsV1(base_api.BaseApiClient):
   class OperationsService(base_api.BaseApiService):
     """Service class for the operations resource."""
 
-    _NAME = u'operations'
+    _NAME = 'operations'
 
     def __init__(self, client):
       super(GenomicsV1.OperationsService, self).__init__(client)
@@ -70,16 +70,16 @@ Authorization requires the following [Google IAM](https://cloud.google.com/iam) 
           config, request, global_params=global_params)
 
     Cancel.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/operations/{operationsId}:cancel',
-        http_method=u'POST',
-        method_id=u'genomics.operations.cancel',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1/operations/{operationsId}:cancel',
+        http_method='POST',
+        method_id='genomics.operations.cancel',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1/{+name}:cancel',
-        request_field=u'cancelOperationRequest',
-        request_type_name=u'GenomicsOperationsCancelRequest',
-        response_type_name=u'Empty',
+        relative_path='v1/{+name}:cancel',
+        request_field='cancelOperationRequest',
+        request_type_name='GenomicsOperationsCancelRequest',
+        response_type_name='Empty',
         supports_download=False,
     )
 
@@ -102,16 +102,16 @@ Authorization requires the following [Google IAM](https://cloud.google.com/iam) 
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/operations/{operationsId}',
-        http_method=u'GET',
-        method_id=u'genomics.operations.get',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1/operations/{operationsId}',
+        http_method='GET',
+        method_id='genomics.operations.get',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1/{+name}',
+        relative_path='v1/{+name}',
         request_field='',
-        request_type_name=u'GenomicsOperationsGetRequest',
-        response_type_name=u'Operation',
+        request_type_name='GenomicsOperationsGetRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -132,15 +132,15 @@ Authorization requires the following [Google IAM](https://cloud.google.com/iam) 
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/operations',
-        http_method=u'GET',
-        method_id=u'genomics.operations.list',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[u'filter', u'pageSize', u'pageToken'],
-        relative_path=u'v1/{+name}',
+        flat_path='v1/operations',
+        http_method='GET',
+        method_id='genomics.operations.list',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['filter', 'pageSize', 'pageToken'],
+        relative_path='v1/{+name}',
         request_field='',
-        request_type_name=u'GenomicsOperationsListRequest',
-        response_type_name=u'ListOperationsResponse',
+        request_type_name='GenomicsOperationsListRequest',
+        response_type_name='ListOperationsResponse',
         supports_download=False,
     )

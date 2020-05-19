@@ -402,8 +402,8 @@ class Policy(_messages.Message):
   timestamp('2020-10-01T00:00:00.000Z')",           }         }       ],
   "etag": "BwWWja0YfJA=",       "version": 3     }  **YAML example:**
   bindings:     - members:       - user:mike@example.com       -
-  group:admins@example.com       - domain:google.com       - serviceAccount
-  :my-project-id@appspot.gserviceaccount.com       role:
+  group:admins@example.com       - domain:google.com       -
+  serviceAccount:my-project-id@appspot.gserviceaccount.com       role:
   roles/resourcemanager.organizationAdmin     - members:       -
   user:eve@example.com       role: roles/resourcemanager.organizationViewer
   condition:         title: expirable access         description: Does not
@@ -563,7 +563,7 @@ class StandardQueryParameters(_messages.Message):
 
   f__xgafv = _messages.EnumField('FXgafvValueValuesEnum', 1)
   access_token = _messages.StringField(2)
-  alt = _messages.EnumField('AltValueValuesEnum', 3, default=u'json')
+  alt = _messages.EnumField('AltValueValuesEnum', 3, default='json')
   callback = _messages.StringField(4)
   fields = _messages.StringField(5)
   key = _messages.StringField(6)
@@ -599,9 +599,9 @@ class StandardResourceMetadata(_messages.Message):
       ) for more information.
     networkTags: Network tags associated with this resource. Like labels,
       network tags are a type of annotations used to group GCP resources. See
-      [Labelling GCP resources](lhttps://cloud.google.com/blog/products/gcp
-      /labelling-and-grouping-your-google-cloud-platform-resources) for more
-      information.
+      [Labelling GCP
+      resources](lhttps://cloud.google.com/blog/products/gcp/labelling-and-
+      grouping-your-google-cloud-platform-resources) for more information.
     project: The project that this resource belongs to, in the form of
       `projects/{project_number}`.
   """

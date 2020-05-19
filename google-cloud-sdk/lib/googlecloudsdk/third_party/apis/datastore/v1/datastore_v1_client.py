@@ -8,17 +8,17 @@ class DatastoreV1(base_api.BaseApiClient):
   """Generated client library for service datastore version v1."""
 
   MESSAGES_MODULE = messages
-  BASE_URL = u'https://datastore.googleapis.com/'
-  MTLS_BASE_URL = u'https://datastore.mtls.googleapis.com/'
+  BASE_URL = 'https://datastore.googleapis.com/'
+  MTLS_BASE_URL = 'https://datastore.mtls.googleapis.com/'
 
-  _PACKAGE = u'datastore'
-  _SCOPES = [u'https://www.googleapis.com/auth/cloud-platform', u'https://www.googleapis.com/auth/datastore']
-  _VERSION = u'v1'
+  _PACKAGE = 'datastore'
+  _SCOPES = ['https://www.googleapis.com/auth/cloud-platform', 'https://www.googleapis.com/auth/datastore']
+  _VERSION = 'v1'
   _CLIENT_ID = '1042881264118.apps.googleusercontent.com'
   _CLIENT_SECRET = 'x_Tw5K8nnjoRAqULM9PFAC2b'
-  _USER_AGENT = u'google-cloud-sdk'
-  _CLIENT_CLASS_NAME = u'DatastoreV1'
-  _URL_VERSION = u'v1'
+  _USER_AGENT = 'google-cloud-sdk'
+  _CLIENT_CLASS_NAME = 'DatastoreV1'
+  _URL_VERSION = 'v1'
   _API_KEY = None
 
   def __init__(self, url='', credentials=None,
@@ -43,7 +43,7 @@ class DatastoreV1(base_api.BaseApiClient):
   class ProjectsIndexesService(base_api.BaseApiService):
     """Service class for the projects_indexes resource."""
 
-    _NAME = u'projects_indexes'
+    _NAME = 'projects_indexes'
 
     def __init__(self, client):
       super(DatastoreV1.ProjectsIndexesService, self).__init__(client)
@@ -76,15 +76,15 @@ Indexes with a single property cannot be created.
           config, request, global_params=global_params)
 
     Create.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'datastore.projects.indexes.create',
-        ordered_params=[u'projectId'],
-        path_params=[u'projectId'],
+        http_method='POST',
+        method_id='datastore.projects.indexes.create',
+        ordered_params=['projectId'],
+        path_params=['projectId'],
         query_params=[],
-        relative_path=u'v1/projects/{projectId}/indexes',
+        relative_path='v1/projects/{projectId}/indexes',
         request_field='<request>',
-        request_type_name=u'GoogleDatastoreAdminV1Index',
-        response_type_name=u'GoogleLongrunningOperation',
+        request_type_name='GoogleDatastoreAdminV1Index',
+        response_type_name='GoogleLongrunningOperation',
         supports_download=False,
     )
 
@@ -111,15 +111,15 @@ delete again.
           config, request, global_params=global_params)
 
     Delete.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'DELETE',
-        method_id=u'datastore.projects.indexes.delete',
-        ordered_params=[u'projectId', u'indexId'],
-        path_params=[u'indexId', u'projectId'],
+        http_method='DELETE',
+        method_id='datastore.projects.indexes.delete',
+        ordered_params=['projectId', 'indexId'],
+        path_params=['indexId', 'projectId'],
         query_params=[],
-        relative_path=u'v1/projects/{projectId}/indexes/{indexId}',
+        relative_path='v1/projects/{projectId}/indexes/{indexId}',
         request_field='',
-        request_type_name=u'DatastoreProjectsIndexesDeleteRequest',
-        response_type_name=u'GoogleLongrunningOperation',
+        request_type_name='DatastoreProjectsIndexesDeleteRequest',
+        response_type_name='GoogleLongrunningOperation',
         supports_download=False,
     )
 
@@ -137,15 +137,15 @@ delete again.
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'datastore.projects.indexes.get',
-        ordered_params=[u'projectId', u'indexId'],
-        path_params=[u'indexId', u'projectId'],
+        http_method='GET',
+        method_id='datastore.projects.indexes.get',
+        ordered_params=['projectId', 'indexId'],
+        path_params=['indexId', 'projectId'],
         query_params=[],
-        relative_path=u'v1/projects/{projectId}/indexes/{indexId}',
+        relative_path='v1/projects/{projectId}/indexes/{indexId}',
         request_field='',
-        request_type_name=u'DatastoreProjectsIndexesGetRequest',
-        response_type_name=u'GoogleDatastoreAdminV1Index',
+        request_type_name='DatastoreProjectsIndexesGetRequest',
+        response_type_name='GoogleDatastoreAdminV1Index',
         supports_download=False,
     )
 
@@ -165,22 +165,22 @@ occasionally return stale results.
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'datastore.projects.indexes.list',
-        ordered_params=[u'projectId'],
-        path_params=[u'projectId'],
-        query_params=[u'filter', u'pageSize', u'pageToken'],
-        relative_path=u'v1/projects/{projectId}/indexes',
+        http_method='GET',
+        method_id='datastore.projects.indexes.list',
+        ordered_params=['projectId'],
+        path_params=['projectId'],
+        query_params=['filter', 'pageSize', 'pageToken'],
+        relative_path='v1/projects/{projectId}/indexes',
         request_field='',
-        request_type_name=u'DatastoreProjectsIndexesListRequest',
-        response_type_name=u'GoogleDatastoreAdminV1ListIndexesResponse',
+        request_type_name='DatastoreProjectsIndexesListRequest',
+        response_type_name='GoogleDatastoreAdminV1ListIndexesResponse',
         supports_download=False,
     )
 
   class ProjectsOperationsService(base_api.BaseApiService):
     """Service class for the projects_operations resource."""
 
-    _NAME = u'projects_operations'
+    _NAME = 'projects_operations'
 
     def __init__(self, client):
       super(DatastoreV1.ProjectsOperationsService, self).__init__(client)
@@ -210,16 +210,16 @@ corresponding to `Code.CANCELLED`.
           config, request, global_params=global_params)
 
     Cancel.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/operations/{operationsId}:cancel',
-        http_method=u'POST',
-        method_id=u'datastore.projects.operations.cancel',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1/projects/{projectsId}/operations/{operationsId}:cancel',
+        http_method='POST',
+        method_id='datastore.projects.operations.cancel',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1/{+name}:cancel',
+        relative_path='v1/{+name}:cancel',
         request_field='',
-        request_type_name=u'DatastoreProjectsOperationsCancelRequest',
-        response_type_name=u'Empty',
+        request_type_name='DatastoreProjectsOperationsCancelRequest',
+        response_type_name='Empty',
         supports_download=False,
     )
 
@@ -240,16 +240,16 @@ operation. If the server doesn't support this method, it returns
           config, request, global_params=global_params)
 
     Delete.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/operations/{operationsId}',
-        http_method=u'DELETE',
-        method_id=u'datastore.projects.operations.delete',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1/projects/{projectsId}/operations/{operationsId}',
+        http_method='DELETE',
+        method_id='datastore.projects.operations.delete',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1/{+name}',
+        relative_path='v1/{+name}',
         request_field='',
-        request_type_name=u'DatastoreProjectsOperationsDeleteRequest',
-        response_type_name=u'Empty',
+        request_type_name='DatastoreProjectsOperationsDeleteRequest',
+        response_type_name='Empty',
         supports_download=False,
     )
 
@@ -269,16 +269,16 @@ service.
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/operations/{operationsId}',
-        http_method=u'GET',
-        method_id=u'datastore.projects.operations.get',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1/projects/{projectsId}/operations/{operationsId}',
+        http_method='GET',
+        method_id='datastore.projects.operations.get',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1/{+name}',
+        relative_path='v1/{+name}',
         request_field='',
-        request_type_name=u'DatastoreProjectsOperationsGetRequest',
-        response_type_name=u'GoogleLongrunningOperation',
+        request_type_name='DatastoreProjectsOperationsGetRequest',
+        response_type_name='GoogleLongrunningOperation',
         supports_download=False,
     )
 
@@ -305,23 +305,23 @@ is the parent resource, without the operations collection id.
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/operations',
-        http_method=u'GET',
-        method_id=u'datastore.projects.operations.list',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[u'filter', u'pageSize', u'pageToken'],
-        relative_path=u'v1/{+name}/operations',
+        flat_path='v1/projects/{projectsId}/operations',
+        http_method='GET',
+        method_id='datastore.projects.operations.list',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['filter', 'pageSize', 'pageToken'],
+        relative_path='v1/{+name}/operations',
         request_field='',
-        request_type_name=u'DatastoreProjectsOperationsListRequest',
-        response_type_name=u'GoogleLongrunningListOperationsResponse',
+        request_type_name='DatastoreProjectsOperationsListRequest',
+        response_type_name='GoogleLongrunningListOperationsResponse',
         supports_download=False,
     )
 
   class ProjectsService(base_api.BaseApiService):
     """Service class for the projects resource."""
 
-    _NAME = u'projects'
+    _NAME = 'projects'
 
     def __init__(self, client):
       super(DatastoreV1.ProjectsService, self).__init__(client)
@@ -343,15 +343,15 @@ before it is inserted.
           config, request, global_params=global_params)
 
     AllocateIds.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'datastore.projects.allocateIds',
-        ordered_params=[u'projectId'],
-        path_params=[u'projectId'],
+        http_method='POST',
+        method_id='datastore.projects.allocateIds',
+        ordered_params=['projectId'],
+        path_params=['projectId'],
         query_params=[],
-        relative_path=u'v1/projects/{projectId}:allocateIds',
-        request_field=u'allocateIdsRequest',
-        request_type_name=u'DatastoreProjectsAllocateIdsRequest',
-        response_type_name=u'AllocateIdsResponse',
+        relative_path='v1/projects/{projectId}:allocateIds',
+        request_field='allocateIdsRequest',
+        request_type_name='DatastoreProjectsAllocateIdsRequest',
+        response_type_name='AllocateIdsResponse',
         supports_download=False,
     )
 
@@ -369,15 +369,15 @@ before it is inserted.
           config, request, global_params=global_params)
 
     BeginTransaction.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'datastore.projects.beginTransaction',
-        ordered_params=[u'projectId'],
-        path_params=[u'projectId'],
+        http_method='POST',
+        method_id='datastore.projects.beginTransaction',
+        ordered_params=['projectId'],
+        path_params=['projectId'],
         query_params=[],
-        relative_path=u'v1/projects/{projectId}:beginTransaction',
-        request_field=u'beginTransactionRequest',
-        request_type_name=u'DatastoreProjectsBeginTransactionRequest',
-        response_type_name=u'BeginTransactionResponse',
+        relative_path='v1/projects/{projectId}:beginTransaction',
+        request_field='beginTransactionRequest',
+        request_type_name='DatastoreProjectsBeginTransactionRequest',
+        response_type_name='BeginTransactionResponse',
         supports_download=False,
     )
 
@@ -396,15 +396,15 @@ entities.
           config, request, global_params=global_params)
 
     Commit.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'datastore.projects.commit',
-        ordered_params=[u'projectId'],
-        path_params=[u'projectId'],
+        http_method='POST',
+        method_id='datastore.projects.commit',
+        ordered_params=['projectId'],
+        path_params=['projectId'],
         query_params=[],
-        relative_path=u'v1/projects/{projectId}:commit',
-        request_field=u'commitRequest',
-        request_type_name=u'DatastoreProjectsCommitRequest',
-        response_type_name=u'CommitResponse',
+        relative_path='v1/projects/{projectId}:commit',
+        request_field='commitRequest',
+        request_type_name='DatastoreProjectsCommitRequest',
+        response_type_name='CommitResponse',
         supports_download=False,
     )
 
@@ -429,15 +429,15 @@ Cloud Storage.
           config, request, global_params=global_params)
 
     Export.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'datastore.projects.export',
-        ordered_params=[u'projectId'],
-        path_params=[u'projectId'],
+        http_method='POST',
+        method_id='datastore.projects.export',
+        ordered_params=['projectId'],
+        path_params=['projectId'],
         query_params=[],
-        relative_path=u'v1/projects/{projectId}:export',
-        request_field=u'googleDatastoreAdminV1ExportEntitiesRequest',
-        request_type_name=u'DatastoreProjectsExportRequest',
-        response_type_name=u'GoogleLongrunningOperation',
+        relative_path='v1/projects/{projectId}:export',
+        request_field='googleDatastoreAdminV1ExportEntitiesRequest',
+        request_type_name='DatastoreProjectsExportRequest',
+        response_type_name='GoogleLongrunningOperation',
         supports_download=False,
     )
 
@@ -459,15 +459,15 @@ that a subset of the data has already been imported to Cloud Datastore.
           config, request, global_params=global_params)
 
     Import.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'datastore.projects.import',
-        ordered_params=[u'projectId'],
-        path_params=[u'projectId'],
+        http_method='POST',
+        method_id='datastore.projects.import',
+        ordered_params=['projectId'],
+        path_params=['projectId'],
         query_params=[],
-        relative_path=u'v1/projects/{projectId}:import',
-        request_field=u'googleDatastoreAdminV1ImportEntitiesRequest',
-        request_type_name=u'DatastoreProjectsImportRequest',
-        response_type_name=u'GoogleLongrunningOperation',
+        relative_path='v1/projects/{projectId}:import',
+        request_field='googleDatastoreAdminV1ImportEntitiesRequest',
+        request_type_name='DatastoreProjectsImportRequest',
+        response_type_name='GoogleLongrunningOperation',
         supports_download=False,
     )
 
@@ -485,15 +485,15 @@ that a subset of the data has already been imported to Cloud Datastore.
           config, request, global_params=global_params)
 
     Lookup.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'datastore.projects.lookup',
-        ordered_params=[u'projectId'],
-        path_params=[u'projectId'],
+        http_method='POST',
+        method_id='datastore.projects.lookup',
+        ordered_params=['projectId'],
+        path_params=['projectId'],
         query_params=[],
-        relative_path=u'v1/projects/{projectId}:lookup',
-        request_field=u'lookupRequest',
-        request_type_name=u'DatastoreProjectsLookupRequest',
-        response_type_name=u'LookupResponse',
+        relative_path='v1/projects/{projectId}:lookup',
+        request_field='lookupRequest',
+        request_type_name='DatastoreProjectsLookupRequest',
+        response_type_name='LookupResponse',
         supports_download=False,
     )
 
@@ -512,15 +512,15 @@ Datastore.
           config, request, global_params=global_params)
 
     ReserveIds.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'datastore.projects.reserveIds',
-        ordered_params=[u'projectId'],
-        path_params=[u'projectId'],
+        http_method='POST',
+        method_id='datastore.projects.reserveIds',
+        ordered_params=['projectId'],
+        path_params=['projectId'],
         query_params=[],
-        relative_path=u'v1/projects/{projectId}:reserveIds',
-        request_field=u'reserveIdsRequest',
-        request_type_name=u'DatastoreProjectsReserveIdsRequest',
-        response_type_name=u'ReserveIdsResponse',
+        relative_path='v1/projects/{projectId}:reserveIds',
+        request_field='reserveIdsRequest',
+        request_type_name='DatastoreProjectsReserveIdsRequest',
+        response_type_name='ReserveIdsResponse',
         supports_download=False,
     )
 
@@ -538,15 +538,15 @@ Datastore.
           config, request, global_params=global_params)
 
     Rollback.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'datastore.projects.rollback',
-        ordered_params=[u'projectId'],
-        path_params=[u'projectId'],
+        http_method='POST',
+        method_id='datastore.projects.rollback',
+        ordered_params=['projectId'],
+        path_params=['projectId'],
         query_params=[],
-        relative_path=u'v1/projects/{projectId}:rollback',
-        request_field=u'rollbackRequest',
-        request_type_name=u'DatastoreProjectsRollbackRequest',
-        response_type_name=u'RollbackResponse',
+        relative_path='v1/projects/{projectId}:rollback',
+        request_field='rollbackRequest',
+        request_type_name='DatastoreProjectsRollbackRequest',
+        response_type_name='RollbackResponse',
         supports_download=False,
     )
 
@@ -564,14 +564,14 @@ Datastore.
           config, request, global_params=global_params)
 
     RunQuery.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'datastore.projects.runQuery',
-        ordered_params=[u'projectId'],
-        path_params=[u'projectId'],
+        http_method='POST',
+        method_id='datastore.projects.runQuery',
+        ordered_params=['projectId'],
+        path_params=['projectId'],
         query_params=[],
-        relative_path=u'v1/projects/{projectId}:runQuery',
-        request_field=u'runQueryRequest',
-        request_type_name=u'DatastoreProjectsRunQueryRequest',
-        response_type_name=u'RunQueryResponse',
+        relative_path='v1/projects/{projectId}:runQuery',
+        request_field='runQueryRequest',
+        request_type_name='DatastoreProjectsRunQueryRequest',
+        response_type_name='RunQueryResponse',
         supports_download=False,
     )

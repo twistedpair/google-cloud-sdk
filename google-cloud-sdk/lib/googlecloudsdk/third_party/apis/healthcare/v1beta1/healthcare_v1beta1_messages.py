@@ -90,8 +90,9 @@ class Binding(_messages.Message):
       not apply to the current request. However, a different role binding
       might grant the same role to one or more of the members in this binding.
       To learn which resources support conditions in their IAM policies, see
-      the [IAM documentation](https://cloud.google.com/iam/help/conditions
-      /resource-policies).
+      the [IAM
+      documentation](https://cloud.google.com/iam/help/conditions/resource-
+      policies).
     members: Specifies the identities requesting access for a Cloud Platform
       resource. `members` can have the following values:  * `allUsers`: A
       special identifier that represents anyone who is    on the internet;
@@ -159,7 +160,7 @@ class CreateMessageRequest(_messages.Message):
 class CryptoHashConfig(_messages.Message):
   r"""Pseudonymization method that generates surrogates via cryptographic
   hashing. Uses SHA-256. Outputs a base64-encoded representation of the hashed
-  output (for example, `L7k0BHmF1ha5U3NfGykjro4xWi1MPVQPjhMAZbSV9mM=`).
+  output. For example, `L7k0BHmF1ha5U3NfGykjro4xWi1MPVQPjhMAZbSV9mM=`.
 
   Fields:
     cryptoKey: An AES 128/192/256 bit key. Causes the hash to be computed
@@ -507,12 +508,12 @@ class ExportResourcesRequest(_messages.Message):
   Fields:
     bigqueryDestination: The BigQuery output destination.  The BigQuery
       location requires two IAM roles: `roles/bigquery.dataEditor` and
-      `roles/bigquery.jobUser`.  The output will be one BigQuery table per
-      resource type.
+      `roles/bigquery.jobUser`.  The output is one BigQuery table per resource
+      type.
     gcsDestination: The Cloud Storage output destination.  The Cloud Storage
       location requires the `roles/storage.objectAdmin` Cloud IAM role.  The
-      exported outputs are organized by FHIR resource types. The server will
-      create one object per resource type. Each object contains newline
+      exported outputs are organized by FHIR resource types. The server
+      creates one object per resource type. Each object contains newline
       delimited JSON, and each line is a FHIR resource.
   """
 
@@ -658,10 +659,10 @@ class FhirStore(_messages.Message):
       you must add the required
       [`bigquery.dataEditor`](https://cloud.google.com/bigquery/docs/access-
       control#bigquery.dataEditor) role to your project's **Cloud Healthcare
-      Service Agent** [service account](https://cloud.google.com/iam/docs
-      /service-accounts). Some lag (typically on the order of dozens of
-      seconds) is expected before the results show up in the streaming
-      destination.
+      Service Agent** [service
+      account](https://cloud.google.com/iam/docs/service-accounts). Some lag
+      (typically on the order of dozens of seconds) is expected before the
+      results show up in the streaming destination.
     version: The FHIR specification version that this FHIR store supports
       natively. This field is immutable after store creation. Requests are
       rejected if they contain FHIR resources of a different version. An empty
@@ -767,13 +768,13 @@ class FieldMetadata(_messages.Message):
       matched by "Patient.Address.String". Path also supports partial
       matching. For example, "Patient.Address.city" can be matched by
       "Address.city" (Patient omitted). Partial matching and type matching can
-      be combined, for example "Patient.Address.city" can be matched by
+      be combined. For example, "Patient.Address.city" can be matched by
       "Address.String". For "choice" types (those defined in the FHIR spec
       with the form: field[x]), use two separate components. For example,
       "deceasedAge.unit" is matched by "Deceased.Age.unit". Supported types
       are: AdministrativeGenderCode, Code, Date, DateTime, Decimal, HumanName,
       Id, LanguageCode, Markdown, Oid, String, Uri, Uuid, Xhtml. The sub-type
-      for HumanName(for example HumanName.given, HumanName.family) can be
+      for HumanName, such as HumanName.given or HumanName.family, can be
       omitted.
   """
 
@@ -784,8 +785,8 @@ class FieldMetadata(_messages.Message):
       ACTION_UNSPECIFIED: No action specified.
       TRANSFORM: Transform the entire field based on transformations specified
         in TextConfig. When the specified transformation cannot be applied to
-        a field (for example, a Crypto Hash transformation cannot be applied
-        to a FHIR Date field), RedactConfig is used.
+        a field, RedactConfig is used. For example, a Crypto Hash
+        transformation can't be applied to a FHIR Date field.
       INSPECT_AND_TRANSFORM: Inspect and transform any found PHI.
       DO_NOT_TRANSFORM: Do not transform.
     """
@@ -937,9 +938,9 @@ class GoogleCloudHealthcareV1beta1FhirRestExportResourcesErrorDetails(_messages.
 
 
 class GoogleCloudHealthcareV1beta1FhirRestExportResourcesResponse(_messages.Message):
-  r"""Response when all resources export successfully. This structure will be
-  included in the response to describe the detailed outcome. It will only be
-  included when the operation finishes successfully.
+  r"""Response when all resources export successfully. This structure is
+  included in the response to describe the detailed outcome after the
+  operation finishes successfully.
 
   Fields:
     fhirStore: The name of the FHIR store where resources have been exported,
@@ -959,8 +960,8 @@ class GoogleCloudHealthcareV1beta1FhirRestGcsDestination(_messages.Message):
   Fields:
     uriPrefix: URI for a Cloud Storage directory where result files should be
       written (in the format `gs://{bucket-id}/{path/to/destination/dir}`). If
-      there is no trailing slash, the service will append one when composing
-      the object path. The user is responsible for creating the Cloud Storage
+      there is no trailing slash, the service appends one when composing the
+      object path. The user is responsible for creating the Cloud Storage
       bucket referenced in `uri_prefix`.
   """
 
@@ -989,9 +990,9 @@ class GoogleCloudHealthcareV1beta1FhirRestGcsSource(_messages.Message):
 
 
 class GoogleCloudHealthcareV1beta1FhirRestImportResourcesErrorDetails(_messages.Message):
-  r"""Error response of importing resources. This structure will be included
-  in the error details to describe the detailed error. It will only be
-  included when the operation finishes with some failure.
+  r"""Error response of importing resources. This structure is included in the
+  error details to describe the detailed error after the operation finishes
+  with some failure.
 
   Fields:
     errorCount: The number of resources that had errors.
@@ -1010,9 +1011,9 @@ class GoogleCloudHealthcareV1beta1FhirRestImportResourcesErrorDetails(_messages.
 
 
 class GoogleCloudHealthcareV1beta1FhirRestImportResourcesResponse(_messages.Message):
-  r"""Final response of importing resources. This structure will be included
-  in the response to describe the detailed outcome. It will only be included
-  when the operation finishes successfully.
+  r"""Final response of importing resources. This structure is included in the
+  response to describe the detailed outcome after the operation finishes
+  successfully.
 
   Fields:
     fhirStore: The name of the FHIR store where the resources have been
@@ -1689,9 +1690,9 @@ class HealthcareProjectsLocationsDatasetsFhirStoresExportRequest(_messages.Messa
   Fields:
     exportResourcesRequest: A ExportResourcesRequest resource to be passed as
       the request body.
-    name: The name of the FHIR store to export resource from. The name should
-      be in the format of `projects/{project_id}/locations/{location_id}/datas
-      ets/{dataset_id}/fhirStores/{fhir_store_id}`.
+    name: The name of the FHIR store to export resource from, in the format of
+      `projects/{project_id}/locations/{location_id}/datasets/{dataset_id}/fhi
+      rStores/{fhir_store_id}`.
   """
 
   exportResourcesRequest = _messages.MessageField('ExportResourcesRequest', 1)
@@ -1764,10 +1765,10 @@ class HealthcareProjectsLocationsDatasetsFhirStoresFhirConditionalDeleteRequest(
   Fields:
     parent: The name of the FHIR store this resource belongs to.
     type: The FHIR resource type to delete, such as Patient or Observation.
-      For a complete list, see the FHIR Resource Index ([DSTU2](http://hl7.org
-      /implement/standards/fhir/DSTU2/resourcelist.html),
-      [STU3](http://hl7.org/implement/standards/fhir/STU3/resourcelist.html),
-      [R4](http://hl7.org/implement/standards/fhir/R4/resourcelist.html)).
+      For a complete list, see the FHIR Resource Index ([DSTU2](https://hl7.or
+      g/implement/standards/fhir/DSTU2/resourcelist.html),
+      [STU3](https://hl7.org/implement/standards/fhir/STU3/resourcelist.html),
+      [R4](https://hl7.org/implement/standards/fhir/R4/resourcelist.html)).
   """
 
   parent = _messages.StringField(1, required=True)
@@ -1783,10 +1784,10 @@ class HealthcareProjectsLocationsDatasetsFhirStoresFhirConditionalPatchRequest(_
     httpBody: A HttpBody resource to be passed as the request body.
     parent: The name of the FHIR store this resource belongs to.
     type: The FHIR resource type to update, such as Patient or Observation.
-      For a complete list, see the FHIR Resource Index ([DSTU2](http://hl7.org
-      /implement/standards/fhir/DSTU2/resourcelist.html),
-      [STU3](http://hl7.org/implement/standards/fhir/STU3/resourcelist.html),
-      [R4](http://hl7.org/implement/standards/fhir/R4/resourcelist.html)).
+      For a complete list, see the FHIR Resource Index ([DSTU2](https://hl7.or
+      g/implement/standards/fhir/DSTU2/resourcelist.html),
+      [STU3](https://hl7.org/implement/standards/fhir/STU3/resourcelist.html),
+      [R4](https://hl7.org/implement/standards/fhir/R4/resourcelist.html)).
   """
 
   httpBody = _messages.MessageField('HttpBody', 1)
@@ -1803,10 +1804,10 @@ class HealthcareProjectsLocationsDatasetsFhirStoresFhirConditionalUpdateRequest(
     httpBody: A HttpBody resource to be passed as the request body.
     parent: The name of the FHIR store this resource belongs to.
     type: The FHIR resource type to update, such as Patient or Observation.
-      For a complete list, see the FHIR Resource Index ([DSTU2](http://hl7.org
-      /implement/standards/fhir/DSTU2/resourcelist.html),
-      [STU3](http://hl7.org/implement/standards/fhir/STU3/resourcelist.html),
-      [R4](http://hl7.org/implement/standards/fhir/R4/resourcelist.html)).
+      For a complete list, see the FHIR Resource Index ([DSTU2](https://hl7.or
+      g/implement/standards/fhir/DSTU2/resourcelist.html),
+      [STU3](https://hl7.org/implement/standards/fhir/STU3/resourcelist.html),
+      [R4](https://hl7.org/implement/standards/fhir/R4/resourcelist.html)).
       Must match the resource type in the provided content.
   """
 
@@ -1822,10 +1823,10 @@ class HealthcareProjectsLocationsDatasetsFhirStoresFhirCreateRequest(_messages.M
     httpBody: A HttpBody resource to be passed as the request body.
     parent: The name of the FHIR store this resource belongs to.
     type: The FHIR resource type to create, such as Patient or Observation.
-      For a complete list, see the FHIR Resource Index ([DSTU2](http://hl7.org
-      /implement/standards/fhir/DSTU2/resourcelist.html),
-      [STU3](http://hl7.org/implement/standards/fhir/STU3/resourcelist.html),
-      [R4](http://hl7.org/implement/standards/fhir/R4/resourcelist.html)).
+      For a complete list, see the FHIR Resource Index ([DSTU2](https://hl7.or
+      g/implement/standards/fhir/DSTU2/resourcelist.html),
+      [STU3](https://hl7.org/implement/standards/fhir/STU3/resourcelist.html),
+      [R4](https://hl7.org/implement/standards/fhir/R4/resourcelist.html)).
       Must match the resource type in the provided content.
   """
 
@@ -1922,9 +1923,9 @@ class HealthcareProjectsLocationsDatasetsFhirStoresFhirPatientEverythingRequest(
   Fields:
     _count: Maximum number of resources in a page. Defaults to 100.
     _page_token: Used to retrieve the next or previous page of results when
-      using pagination. Value should be set to the value of page_token set in
-      next or previous page links' urls. Next and previous page are returned
-      in the response bundle's links field, where `link.relation` is
+      using pagination. Value should be set to the value of `page_token` set
+      in next or previous page links' URLs. Next and previous page are
+      returned in the response bundle's links field, where `link.relation` is
       "previous" or "next".  Omit `page_token` if no previous request has been
       made.
     end: The response includes records prior to the end date. If no end date
@@ -2036,9 +2037,9 @@ class HealthcareProjectsLocationsDatasetsFhirStoresImportRequest(_messages.Messa
   Fields:
     importResourcesRequest: A ImportResourcesRequest resource to be passed as
       the request body.
-    name: The name of the FHIR store to import FHIR resources to. The name
-      should be in the format of `projects/{project_id}/locations/{location_id
-      }/datasets/{dataset_id}/fhirStores/{fhir_store_id}`.
+    name: The name of the FHIR store to import FHIR resources to, in the
+      format of `projects/{project_id}/locations/{location_id}/datasets/{datas
+      et_id}/fhirStores/{fhir_store_id}`.
   """
 
   importResourcesRequest = _messages.MessageField('ImportResourcesRequest', 1)
@@ -2311,22 +2312,22 @@ class HealthcareProjectsLocationsDatasetsHl7V2StoresMessagesListRequest(_message
   Fields:
     filter: Restricts messages returned to those matching a filter. Syntax: ht
       tps://cloud.google.com/appengine/docs/standard/python/search/query_strin
-      gs  Fields/functions available for filtering are:  *  `message_type`,
-      from the MSH-9.1 field. For example, `NOT message_type = "ADT"`. *
-      `send_date` or `sendDate`, the YYYY-MM-DD date the message was sent in
-      the dataset's time_zone, from the MSH-7 segment. For example, `send_date
-      < "2017-01-02"`. *  `send_time`, the timestamp when the message was
-      sent, using the RFC3339 time format for comparisons, from the MSH-7
-      segment. For example, `send_time < "2017-01-02T00:00:00-05:00"`. *
-      `send_facility`, the care center that the message came from, from the
-      MSH-4 segment. For example, `send_facility = "ABC"`. *
-      `PatientId(value, type)`, which matches if the message lists a patient
-      having an ID of the given value and type in the PID-2, PID-3, or PID-4
-      segments. For example, `PatientId("123456", "MRN")`. *  `labels.x`, a
-      string value of the label with key `x` as set using the Message.labels
-      map. For example, `labels."priority"="high"`. The operator `:*` can be
-      used to assert the existence of a label. For example,
-      `labels."priority":*`.
+      gs  The following fields and functions are available for filtering:  *
+      `message_type`, from the MSH-9.1 field. For example, `NOT message_type =
+      "ADT"`. *  `send_date` or `sendDate`, the YYYY-MM-DD date the message
+      was sent in the dataset's time_zone, from the MSH-7 segment. For
+      example, `send_date < "2017-01-02"`. *  `send_time`, the timestamp when
+      the message was sent, using the RFC3339 time format for comparisons,
+      from the MSH-7 segment. For example, `send_time <
+      "2017-01-02T00:00:00-05:00"`. *  `send_facility`, the care center that
+      the message came from, from the MSH-4 segment. For example,
+      `send_facility = "ABC"`. *  `PatientId(value, type)`, which matches if
+      the message lists a patient having an ID of the given value and type in
+      the PID-2, PID-3, or PID-4 segments. For example, `PatientId("123456",
+      "MRN")`. *  `labels.x`, a string value of the label with key `x` as set
+      using the Message.labels map. For example, `labels."priority"="high"`.
+      The operator `:*` can be used to assert the existence of a label. For
+      example, `labels."priority":*`.
     orderBy: Orders messages returned by the specified order_by clause.
       Syntax:
       https://cloud.google.com/apis/design/design_patterns#sorting_order
@@ -2634,37 +2635,38 @@ class Hl7V2NotificationConfig(_messages.Message):
   Fields:
     filter: Restricts notifications sent for messages matching a filter. If
       this is empty, all messages are matched. Syntax: https://cloud.google.co
-      m/appengine/docs/standard/python/search/query_strings  Fields/functions
-      available for filtering are:  *  `message_type`, from the MSH-9.1 field.
-      For example, `NOT message_type = "ADT"`. *  `send_date` or `sendDate`,
-      the YYYY-MM-DD date the message was sent in the dataset's time_zone,
-      from the MSH-7 segment. For example, `send_date < "2017-01-02"`. *
-      `send_time`, the timestamp when the message was sent, using the RFC3339
-      time format for comparisons, from the MSH-7 segment. For example,
-      `send_time < "2017-01-02T00:00:00-05:00"`. *  `send_facility`, the care
-      center that the message came from, from the MSH-4 segment. For example,
-      `send_facility = "ABC"`. *  `PatientId(value, type)`, which matches if
-      the message lists a patient having an ID of the given value and type in
-      the PID-2, PID-3, or PID-4 segments. For example, `PatientId("123456",
-      "MRN")`. *  `labels.x`, a string value of the label with key `x` as set
-      using the Message.labels map. For example, `labels."priority"="high"`.
-      The operator `:*` can be used to assert the existence of a label. For
-      example, `labels."priority":*`.
+      m/appengine/docs/standard/python/search/query_strings  The following
+      fields and functions are available for filtering:  *  `message_type`,
+      from the MSH-9.1 field. For example, `NOT message_type = "ADT"`. *
+      `send_date` or `sendDate`, the YYYY-MM-DD date the message was sent in
+      the dataset's time_zone, from the MSH-7 segment. For example, `send_date
+      < "2017-01-02"`. *  `send_time`, the timestamp when the message was
+      sent, using the RFC3339 time format for comparisons, from the MSH-7
+      segment. For example, `send_time < "2017-01-02T00:00:00-05:00"`. *
+      `send_facility`, the care center that the message came from, from the
+      MSH-4 segment. For example, `send_facility = "ABC"`. *
+      `PatientId(value, type)`, which matches if the message lists a patient
+      having an ID of the given value and type in the PID-2, PID-3, or PID-4
+      segments. For example, `PatientId("123456", "MRN")`. *  `labels.x`, a
+      string value of the label with key `x` as set using the Message.labels
+      map. For example, `labels."priority"="high"`. The operator `:*` can be
+      used to assert the existence of a label. For example,
+      `labels."priority":*`.
     pubsubTopic: The [Cloud Pub/Sub](https://cloud.google.com/pubsub/docs/)
       topic that notifications of changes are published on. Supplied by the
       client. The notification is a `PubsubMessage` with the following fields:
       *  `PubsubMessage.Data` contains the resource name. *
       `PubsubMessage.MessageId` is the ID of this notification. It is
       guaranteed to be unique within the topic. *  `PubsubMessage.PublishTime`
-      is the time at which the message was published.  Note that notifications
-      are only sent if the topic is non-empty. [Topic
+      is the time when the message was published.  Note that notifications are
+      only sent if the topic is non-empty. [Topic
       names](https://cloud.google.com/pubsub/docs/overview#names) must be
       scoped to a project. Cloud Healthcare API service account must have
       publisher permissions on the given Pub/Sub topic. Not having adequate
       permissions causes the calls that send notifications to fail.  If a
-      notification cannot be published to Cloud Pub/Sub, errors will be logged
-      to Cloud Logging (see [Viewing logs](/healthcare/docs/how-
-      tos/logging)).
+      notification can't be published to Cloud Pub/Sub, errors are logged to
+      Cloud Logging. For more information, see [Viewing error logs in Cloud
+      Logging](/healthcare/docs/how-tos/logging).
   """
 
   filter = _messages.StringField(1)
@@ -2705,16 +2707,15 @@ class Hl7V2Store(_messages.Message):
       name is sent as part of the notification. Supplied by the client.
     parserConfig: The configuration for the parser. It determines how the
       server parses the messages.
-    rejectDuplicateMessage: Determines whether duplicate messages should be
-      rejected. A duplicate message is a message with the same raw bytes as a
-      message that has already been ingested/created in this HL7v2 store. The
-      default value is false, meaning that the store accepts the duplicate
-      messages and it also returns the same ACK message in the
-      IngestMessageResponse as has been returned previously. Note that only
-      one resource is created in the store. When this field is set to true,
-      CreateMessage/IngestMessage requests with a duplicate message will be
-      rejected by the store, and IngestMessageErrorDetail returns a NACK
-      message upon rejection.
+    rejectDuplicateMessage: Determines whether to reject duplicate messages. A
+      duplicate message is a message with the same raw bytes as a message that
+      has already been ingested/created in this HL7v2 store. The default value
+      is false, meaning that the store accepts the duplicate messages and it
+      also returns the same ACK message in the IngestMessageResponse as has
+      been returned previously. Note that only one resource is created in the
+      store. When this field is set to true, CreateMessage/IngestMessage
+      requests with a duplicate message will be rejected by the store, and
+      IngestMessageErrorDetail returns a NACK message upon rejection.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
@@ -2903,9 +2904,9 @@ class ImportResourcesRequest(_messages.Message):
 
     Values:
       CONTENT_STRUCTURE_UNSPECIFIED: If the content structure is not
-        specified, the default value `BUNDLE` will be used.
+        specified, the default value `BUNDLE` is used.
       BUNDLE: The source file contains one or more lines of newline-delimited
-        JSON (ndjson). Each line is a bundle, which contains one or more
+        JSON (ndjson). Each line is a bundle that contains one or more
         resources. Set the bundle type to `history` to import resource
         versions.
       RESOURCE: The source file contains one or more lines of newline-
@@ -3148,9 +3149,9 @@ class Location(_messages.Message):
 
 
 class Message(_messages.Message):
-  r"""A complete HL7v2 message. See
-  http://www.hl7.org/implement/standards/index.cfm?ref=common for details on
-  the standard.
+  r"""A complete HL7v2 message. See [Introduction to HL7 Standards]
+  (https://www.hl7.org/implement/standards/index.cfm?ref=common) for details
+  on the standard.
 
   Messages:
     LabelsValue: User-supplied key-value pairs used to organize HL7v2 stores.
@@ -3450,8 +3451,8 @@ class Policy(_messages.Message):
   timestamp('2020-10-01T00:00:00.000Z')",           }         }       ],
   "etag": "BwWWja0YfJA=",       "version": 3     }  **YAML example:**
   bindings:     - members:       - user:mike@example.com       -
-  group:admins@example.com       - domain:google.com       - serviceAccount
-  :my-project-id@appspot.gserviceaccount.com       role:
+  group:admins@example.com       - domain:google.com       -
+  serviceAccount:my-project-id@appspot.gserviceaccount.com       role:
   roles/resourcemanager.organizationAdmin     - members:       -
   user:eve@example.com       role: roles/resourcemanager.organizationViewer
   condition:         title: expirable access         description: Does not
@@ -3683,9 +3684,9 @@ class SearchResourcesRequest(_messages.Message):
   Fields:
     resourceType: The FHIR resource type to search, such as Patient or
       Observation. For a complete list, see the FHIR Resource Index ([DSTU2](h
-      ttp://hl7.org/implement/standards/fhir/DSTU2/resourcelist.html),
-      [STU3](http://hl7.org/implement/standards/fhir/STU3/resourcelist.html),
-      [R4](http://hl7.org/implement/standards/fhir/R4/resourcelist.html)).
+      ttps://hl7.org/implement/standards/fhir/DSTU2/resourcelist.html),
+      [STU3](https://hl7.org/implement/standards/fhir/STU3/resourcelist.html),
+      [R4](https://hl7.org/implement/standards/fhir/R4/resourcelist.html)).
   """
 
   resourceType = _messages.StringField(1)
@@ -3829,7 +3830,7 @@ class StandardQueryParameters(_messages.Message):
 
   f__xgafv = _messages.EnumField('FXgafvValueValuesEnum', 1)
   access_token = _messages.StringField(2)
-  alt = _messages.EnumField('AltValueValuesEnum', 3, default=u'json')
+  alt = _messages.EnumField('AltValueValuesEnum', 3, default='json')
   callback = _messages.StringField(4)
   fields = _messages.StringField(5)
   key = _messages.StringField(6)
@@ -3893,7 +3894,7 @@ class Status(_messages.Message):
 
 
 class StreamConfig(_messages.Message):
-  r"""This structure contains configuration for streaming FHIR export.
+  r"""Contains configuration for streaming FHIR export.
 
   Fields:
     bigqueryDestination: The destination BigQuery structure that contains both
@@ -3943,7 +3944,7 @@ class TagFilterList(_messages.Message):
     tags: Tags to be filtered. Tags must be DICOM Data Elements, File Meta
       Elements, or Directory Structuring Elements, as defined at: http://dicom
       .nema.org/medical/dicom/current/output/html/part06.html#table_6-1,. They
-      may be provided by "Keyword" or "Tag". For example "PatientID",
+      may be provided by "Keyword" or "Tag". For example, "PatientID",
       "00100010".
   """
 

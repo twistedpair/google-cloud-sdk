@@ -25,12 +25,14 @@ class AcceleratorConfig(_messages.Message):
       AcceleratorTypes (https://cloud.google.com/compute/docs/reference/beta/a
       cceleratorTypes)Examples *
       https://www.googleapis.com/compute/beta/projects/[project_id]/zones/us-
-      east1-a/acceleratorTypes/nvidia-tesla-k80 * projects/[project_id]/zones
-      /us-east1-a/acceleratorTypes/nvidia-tesla-k80 * nvidia-tesla-k80Auto
-      Zone Exception: If you are using the Dataproc Auto Zone Placement
-      (https://cloud.google.com/dataproc/docs/concepts/configuring-clusters
-      /auto-zone#using_auto_zone_placement) feature, you must use the short
-      name of the accelerator type resource, for example, nvidia-tesla-k80.
+      east1-a/acceleratorTypes/nvidia-tesla-k80 *
+      projects/[project_id]/zones/us-east1-a/acceleratorTypes/nvidia-tesla-k80
+      * nvidia-tesla-k80Auto Zone Exception: If you are using the Dataproc
+      Auto Zone Placement
+      (https://cloud.google.com/dataproc/docs/concepts/configuring-
+      clusters/auto-zone#using_auto_zone_placement) feature, you must use the
+      short name of the accelerator type resource, for example, nvidia-
+      tesla-k80.
   """
 
   acceleratorCount = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -147,8 +149,8 @@ class Binding(_messages.Message):
       apply to the current request. However, a different role binding might
       grant the same role to one or more of the members in this binding.To
       learn which resources support conditions in their IAM policies, see the
-      IAM documentation (https://cloud.google.com/iam/help/conditions
-      /resource-policies).
+      IAM documentation
+      (https://cloud.google.com/iam/help/conditions/resource-policies).
     members: Specifies the identities requesting access for a Cloud Platform
       resource. members can have the following values: allUsers: A special
       identifier that represents anyone who is  on the internet; with or
@@ -276,8 +278,9 @@ class ClusterConfig(_messages.Message):
       location (US, ASIA, or EU) for your cluster's staging bucket according
       to the Compute Engine zone where your cluster is deployed, and then
       create and manage this project-level, per-location bucket (see Dataproc
-      staging bucket (https://cloud.google.com/dataproc/docs/concepts
-      /configuring-clusters/staging-bucket)).
+      staging bucket
+      (https://cloud.google.com/dataproc/docs/concepts/configuring-
+      clusters/staging-bucket)).
     encryptionConfig: Optional. Encryption settings for the cluster.
     endpointConfig: Optional. Port/endpoint configuration for this cluster
     gceClusterConfig: Optional. The shared Compute Engine config settings for
@@ -1991,8 +1994,9 @@ class GceClusterConfig(_messages.Message):
       dependencies must be configured to be accessible without external IP
       addresses.
     metadata: The Compute Engine metadata entries to add to all instances (see
-      Project and instance metadata (https://cloud.google.com/compute/docs
-      /storing-retrieving-metadata#project_and_instance_metadata)).
+      Project and instance metadata
+      (https://cloud.google.com/compute/docs/storing-retrieving-
+      metadata#project_and_instance_metadata)).
     networkUri: Optional. The Compute Engine network to be used for machine
       communications. Cannot be specified with subnetwork_uri. If neither
       network_uri nor subnetwork_uri is specified, the "default" network of
@@ -2005,12 +2009,13 @@ class GceClusterConfig(_messages.Message):
     reservationAffinity: Optional. Reservation Affinity for consuming Zonal
       reservation.
     serviceAccount: Optional. The Dataproc service account
-      (https://cloud.google.com/dataproc/docs/concepts/configuring-clusters
-      /service-accounts#service_accounts_in_cloud_dataproc) (also see VM Data
-      Plane identity (https://cloud.google.com/dataproc/docs/concepts/iam
-      /dataproc-principals#vm_service_account_data_plane_identity)) used by
-      Dataproc cluster VM instances to access Google Cloud Platform
-      services.If not specified, the Compute Engine default service account
+      (https://cloud.google.com/dataproc/docs/concepts/configuring-
+      clusters/service-accounts#service_accounts_in_cloud_dataproc) (also see
+      VM Data Plane identity
+      (https://cloud.google.com/dataproc/docs/concepts/iam/dataproc-
+      principals#vm_service_account_data_plane_identity)) used by Dataproc
+      cluster VM instances to access Google Cloud Platform services.If not
+      specified, the Compute Engine default service account
       (https://cloud.google.com/compute/docs/access/service-
       accounts#default_service_account) is used.
     serviceAccountScopes: Optional. The URIs of service account scopes to be
@@ -2046,8 +2051,9 @@ class GceClusterConfig(_messages.Message):
   @encoding.MapUnrecognizedFields('additionalProperties')
   class MetadataValue(_messages.Message):
     r"""The Compute Engine metadata entries to add to all instances (see
-    Project and instance metadata (https://cloud.google.com/compute/docs
-    /storing-retrieving-metadata#project_and_instance_metadata)).
+    Project and instance metadata
+    (https://cloud.google.com/compute/docs/storing-retrieving-
+    metadata#project_and_instance_metadata)).
 
     Messages:
       AdditionalProperty: An additional property for a MetadataValue object.
@@ -2356,9 +2362,9 @@ class InstanceGroupConfig(_messages.Message):
       east1-a/machineTypes/n1-standard-2 projects/[project_id]/zones/us-
       east1-a/machineTypes/n1-standard-2 n1-standard-2Auto Zone Exception: If
       you are using the Dataproc Auto Zone Placement
-      (https://cloud.google.com/dataproc/docs/concepts/configuring-clusters
-      /auto-zone#using_auto_zone_placement) feature, you must use the short
-      name of the machine type resource, for example, n1-standard-2.
+      (https://cloud.google.com/dataproc/docs/concepts/configuring-
+      clusters/auto-zone#using_auto_zone_placement) feature, you must use the
+      short name of the machine type resource, for example, n1-standard-2.
     managedGroupConfig: Output only. The config for Compute Engine Instance
       Group Manager that manages this group. This is only used for preemptible
       instance groups.
@@ -2770,8 +2776,8 @@ class LifecycleConfig(_messages.Message):
 
   Fields:
     autoDeleteTime: Optional. The time when cluster will be auto-deleted. (see
-      JSON representation of Timestamp (https://developers.google.com
-      /protocol-buffers/docs/proto3#json)).
+      JSON representation of Timestamp
+      (https://developers.google.com/protocol-buffers/docs/proto3#json)).
     autoDeleteTtl: Optional. The lifetime duration of cluster. The cluster
       will be auto-deleted at the end of this period. Minimum value is 10
       minutes; maximum value is 14 days (see JSON representation of Duration
@@ -2779,8 +2785,8 @@ class LifecycleConfig(_messages.Message):
     idleDeleteTtl: Optional. The duration to keep the cluster alive while
       idling (when no jobs are running). Passing this threshold will cause the
       cluster to be deleted. Minimum value is 10 minutes; maximum value is 14
-      days (see JSON representation of Duration (https://developers.google.com
-      /protocol-buffers/docs/proto3#json).
+      days (see JSON representation of Duration
+      (https://developers.google.com/protocol-buffers/docs/proto3#json).
     idleStartTime: Output only. The time when cluster became idle (most recent
       job finished) and became eligible for deletion due to idleness (see JSON
       representation of Timestamp (https://developers.google.com/protocol-
@@ -3999,7 +4005,7 @@ class StandardQueryParameters(_messages.Message):
 
   f__xgafv = _messages.EnumField('FXgafvValueValuesEnum', 1)
   access_token = _messages.StringField(2)
-  alt = _messages.EnumField('AltValueValuesEnum', 3, default=u'json')
+  alt = _messages.EnumField('AltValueValuesEnum', 3, default='json')
   callback = _messages.StringField(4)
   fields = _messages.StringField(5)
   key = _messages.StringField(6)
@@ -4142,19 +4148,20 @@ class TemplateParameter(_messages.Message):
       placement.managedCluster.labels'key'
       placement.clusterSelector.clusterLabels'key' jobs'step-id'.labels'key'
       Jobs in the jobs list can be referenced by step-id: jobs'step-
-      id'.hadoopJob.mainJarFileUri jobs'step-id'.hiveJob.queryFileUri jobs
-      'step-id'.pySparkJob.mainPythonFileUri jobs'step-
-      id'.hadoopJob.jarFileUris0 jobs'step-id'.hadoopJob.archiveUris0 jobs
-      'step-id'.hadoopJob.fileUris0 jobs'step-id'.pySparkJob.pythonFileUris0
-      Items in repeated fields can be referenced by a zero-based index: jobs
-      'step-id'.sparkJob.args0 Other examples: jobs'step-
-      id'.hadoopJob.properties'key' jobs'step-id'.hadoopJob.args0 jobs'step-
-      id'.hiveJob.scriptVariables'key' jobs'step-id'.hadoopJob.mainJarFileUri
-      placement.clusterSelector.zoneIt may not be possible to parameterize
-      maps and repeated fields in their entirety since only individual map
-      values and individual items in repeated fields can be referenced. For
-      example, the following field paths are invalid:
-      placement.clusterSelector.clusterLabels jobs'step-id'.sparkJob.args
+      id'.hadoopJob.mainJarFileUri jobs'step-id'.hiveJob.queryFileUri
+      jobs'step-id'.pySparkJob.mainPythonFileUri jobs'step-
+      id'.hadoopJob.jarFileUris0 jobs'step-id'.hadoopJob.archiveUris0
+      jobs'step-id'.hadoopJob.fileUris0 jobs'step-
+      id'.pySparkJob.pythonFileUris0 Items in repeated fields can be
+      referenced by a zero-based index: jobs'step-id'.sparkJob.args0 Other
+      examples: jobs'step-id'.hadoopJob.properties'key' jobs'step-
+      id'.hadoopJob.args0 jobs'step-id'.hiveJob.scriptVariables'key'
+      jobs'step-id'.hadoopJob.mainJarFileUri placement.clusterSelector.zoneIt
+      may not be possible to parameterize maps and repeated fields in their
+      entirety since only individual map values and individual items in
+      repeated fields can be referenced. For example, the following field
+      paths are invalid: placement.clusterSelector.clusterLabels jobs'step-
+      id'.sparkJob.args
     name: Required. Parameter name. The parameter name is used as the key, and
       paired with the parameter value, which are passed to the template when
       the template is instantiated. The name must contain only capital letters

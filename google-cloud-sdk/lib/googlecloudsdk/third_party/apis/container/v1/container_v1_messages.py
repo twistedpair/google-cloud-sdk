@@ -263,8 +263,9 @@ class Cluster(_messages.Message):
     legacyAbac: Configuration for the legacy ABAC authorization mode.
     location: [Output only] The name of the Google Compute Engine
       [zone](https://cloud.google.com/compute/docs/regions-zones/regions-
-      zones#available) or [region](https://cloud.google.com/compute/docs
-      /regions-zones/regions-zones#available) in which the cluster resides.
+      zones#available) or
+      [region](https://cloud.google.com/compute/docs/regions-zones/regions-
+      zones#available) in which the cluster resides.
     locations: The list of Google Compute Engine
       [zones](https://cloud.google.com/compute/docs/zones#available) in which
       the cluster's nodes should be located.
@@ -325,9 +326,10 @@ class Cluster(_messages.Message):
       Resource usage export is disabled when this config is unspecified.
     selfLink: [Output only] Server-defined URL for the resource.
     servicesIpv4Cidr: [Output only] The IP address range of the Kubernetes
-      services in this cluster, in [CIDR](http://en.wikipedia.org/wiki
-      /Classless_Inter-Domain_Routing) notation (e.g. `1.2.3.4/29`). Service
-      addresses are typically put in the last `/16` from the container CIDR.
+      services in this cluster, in
+      [CIDR](http://en.wikipedia.org/wiki/Classless_Inter-Domain_Routing)
+      notation (e.g. `1.2.3.4/29`). Service addresses are typically put in the
+      last `/16` from the container CIDR.
     shieldedNodes: Shielded Nodes configuration.
     status: [Output only] The current status of this cluster.
     statusMessage: [Output only] Additional information about the current
@@ -1090,8 +1092,9 @@ class CreateClusterRequest(_messages.Message):
   r"""CreateClusterRequest creates a cluster.
 
   Fields:
-    cluster: Required. A [cluster resource](https://cloud.google.com
-      /container-engine/reference/rest/v1/projects.zones.clusters)
+    cluster: Required. A [cluster
+      resource](https://cloud.google.com/container-
+      engine/reference/rest/v1/projects.zones.clusters)
     parent: The parent (project and location) where the cluster will be
       created. Specified in the format `projects/*/locations/*`.
     projectId: Deprecated. The Google Developers Console [project ID or
@@ -1635,8 +1638,8 @@ class NetworkConfig(_messages.Message):
       network.
     network: Output only. The relative name of the Google Compute Engine
       network(https://cloud.google.com/compute/docs/networks-and-
-      firewalls#networks) to which the cluster is connected. Example: projects
-      /my-project/global/networks/my-network
+      firewalls#networks) to which the cluster is connected. Example:
+      projects/my-project/global/networks/my-network
     subnetwork: Output only. The relative name of the Google Compute Engine
       [subnetwork](https://cloud.google.com/compute/docs/vpc) to which the
       cluster is connected. Example: projects/my-project/regions/us-
@@ -1935,8 +1938,9 @@ class NodePool(_messages.Message):
       quotas">resource quota</a> is sufficient for this number of instances.
       You must also have available firewall and routes quota.
     instanceGroupUrls: [Output only] The resource URLs of the [managed
-      instance groups](https://cloud.google.com/compute/docs/instance-groups
-      /creating-groups-of-managed-instances) associated with this node pool.
+      instance groups](https://cloud.google.com/compute/docs/instance-
+      groups/creating-groups-of-managed-instances) associated with this node
+      pool.
     locations: The list of Google Compute Engine
       [zones](https://cloud.google.com/compute/docs/zones#available) in which
       the NodePool's nodes should be located.
@@ -2022,9 +2026,9 @@ class NodePoolAutoscaling(_messages.Message):
 class NodeTaint(_messages.Message):
   r"""Kubernetes taint is comprised of three fields: key, value, and effect.
   Effect can only be one of three types:  NoSchedule, PreferNoSchedule or
-  NoExecute.  See [here](https://kubernetes.io/docs/concepts/configuration
-  /taint-and-toleration) for more information, including usage and the valid
-  values.
+  NoExecute.  See
+  [here](https://kubernetes.io/docs/concepts/configuration/taint-and-
+  toleration) for more information, including usage and the valid values.
 
   Enums:
     EffectValueValuesEnum: Effect for taint.
@@ -2069,8 +2073,9 @@ class Operation(_messages.Message):
       [RFC3339](https://www.ietf.org/rfc/rfc3339.txt) text format.
     location: [Output only] The name of the Google Compute Engine
       [zone](https://cloud.google.com/compute/docs/regions-zones/regions-
-      zones#available) or [region](https://cloud.google.com/compute/docs
-      /regions-zones/regions-zones#available) in which the cluster resides.
+      zones#available) or
+      [region](https://cloud.google.com/compute/docs/regions-zones/regions-
+      zones#available) in which the cluster resides.
     name: The server-assigned ID for the operation.
     nodepoolConditions: Which conditions caused the current node pool state.
     operationType: The operation type.
@@ -2261,9 +2266,9 @@ class RecurringTimeWindow(_messages.Message):
 
 
 class ReservationAffinity(_messages.Message):
-  r"""[ReservationAffinity](https://cloud.google.com/compute/docs/instances
-  /reserving-zonal-resources) is the configuration of desired reservation
-  which instances could take capacity from.
+  r"""[ReservationAffinity](https://cloud.google.com/compute/docs/instances/re
+  serving-zonal-resources) is the configuration of desired reservation which
+  instances could take capacity from.
 
   Enums:
     ConsumeReservationTypeValueValuesEnum: Corresponds to the type of
@@ -2885,7 +2890,7 @@ class StandardQueryParameters(_messages.Message):
 
   f__xgafv = _messages.EnumField('FXgafvValueValuesEnum', 1)
   access_token = _messages.StringField(2)
-  alt = _messages.EnumField('AltValueValuesEnum', 3, default=u'json')
+  alt = _messages.EnumField('AltValueValuesEnum', 3, default='json')
   callback = _messages.StringField(4)
   fields = _messages.StringField(5)
   key = _messages.StringField(6)

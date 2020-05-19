@@ -942,6 +942,11 @@
                       "description": "The next_page_token value to use if there are additional\nresults to retrieve for this list request.",
                       "location": "query",
                       "type": "string"
+                    },
+                    "latestPatchOnly": {
+                      "description": "Whether or not to return the latest patch of every available minor version.\nIf true, only the latest patch will be returned. Ex. if allowed versions is\n[6.1.1, 6.1.2, 6.2.0] then response will be [6.1.2, 6.2.0]",
+                      "location": "query",
+                      "type": "boolean"
                     }
                   },
                   "parameterOrder": [

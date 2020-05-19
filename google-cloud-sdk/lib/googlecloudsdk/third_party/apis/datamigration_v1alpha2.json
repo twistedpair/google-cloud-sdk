@@ -275,7 +275,9 @@
             "The migration job is currently stopped.",
             "The migration job has been deleted.",
             "The migration job is being updated.",
-            "The migration job is starting."
+            "The migration job is starting.",
+            "The migration job is restarting.",
+            "The migration job is resuming."
           ],
           "type": "string",
           "enum": [
@@ -292,7 +294,9 @@
             "STOPPED",
             "DELETED",
             "UPDATING",
-            "STARTING"
+            "STARTING",
+            "RESTARTING",
+            "RESUMING"
           ]
         },
         "phase": {

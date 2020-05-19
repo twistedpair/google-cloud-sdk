@@ -28,7 +28,7 @@ class Collections(enum.Enum):
       'projects',
       'projects/{projectsId}',
       {},
-      [u'projectsId'],
+      ['projectsId'],
       True
   )
   PROJECTS_JOBS = (
@@ -38,7 +38,7 @@ class Collections(enum.Enum):
           '':
               'projects/{projectsId}/jobs/{jobsId}',
       },
-      [u'name'],
+      ['name'],
       True
   )
   PROJECTS_LOCATIONS = (
@@ -48,7 +48,7 @@ class Collections(enum.Enum):
           '':
               'projects/{projectsId}/locations/{locationsId}',
       },
-      [u'name'],
+      ['name'],
       True
   )
   PROJECTS_LOCATIONS_OPERATIONS = (
@@ -59,7 +59,7 @@ class Collections(enum.Enum):
               'projects/{projectsId}/locations/{locationsId}/operations/'
               '{operationsId}',
       },
-      [u'name'],
+      ['name'],
       True
   )
   PROJECTS_LOCATIONS_STUDIES = (
@@ -70,7 +70,7 @@ class Collections(enum.Enum):
               'projects/{projectsId}/locations/{locationsId}/studies/'
               '{studiesId}',
       },
-      [u'name'],
+      ['name'],
       True
   )
   PROJECTS_LOCATIONS_STUDIES_TRIALS = (
@@ -81,7 +81,7 @@ class Collections(enum.Enum):
               'projects/{projectsId}/locations/{locationsId}/studies/'
               '{studiesId}/trials/{trialsId}',
       },
-      [u'name'],
+      ['name'],
       True
   )
   PROJECTS_MODELS = (
@@ -91,7 +91,7 @@ class Collections(enum.Enum):
           '':
               'projects/{projectsId}/models/{modelsId}',
       },
-      [u'name'],
+      ['name'],
       True
   )
   PROJECTS_MODELS_VERSIONS = (
@@ -101,7 +101,7 @@ class Collections(enum.Enum):
           '':
               'projects/{projectsId}/models/{modelsId}/versions/{versionsId}',
       },
-      [u'name'],
+      ['name'],
       True
   )
   PROJECTS_OPERATIONS = (
@@ -111,7 +111,7 @@ class Collections(enum.Enum):
           '':
               'projects/{projectsId}/operations/{operationsId}',
       },
-      [u'name'],
+      ['name'],
       True
   )
 

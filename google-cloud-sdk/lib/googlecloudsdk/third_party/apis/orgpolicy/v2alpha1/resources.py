@@ -31,7 +31,7 @@ class Collections(enum.Enum):
           '':
               '{v2alpha1Id}/{v2alpha1Id1}/policies/{policiesId}',
       },
-      [u'name'],
+      ['name'],
       True
   )
 

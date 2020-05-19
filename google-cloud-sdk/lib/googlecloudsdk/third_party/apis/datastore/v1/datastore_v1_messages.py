@@ -1420,12 +1420,12 @@ class PathElement(_messages.Message):
   Fields:
     id: The auto-allocated ID of the entity. Never equal to zero. Values less
       than zero are discouraged and may not be supported in the future.
-    kind: The kind of the entity. A kind matching regex `__.*__` is reserved
-      /read-only. A kind must not contain more than 1500 bytes when UTF-8
+    kind: The kind of the entity. A kind matching regex `__.*__` is
+      reserved/read-only. A kind must not contain more than 1500 bytes when
+      UTF-8 encoded. Cannot be `""`.
+    name: The name of the entity. A name matching regex `__.*__` is
+      reserved/read-only. A name must not be more than 1500 bytes when UTF-8
       encoded. Cannot be `""`.
-    name: The name of the entity. A name matching regex `__.*__` is reserved
-      /read-only. A name must not be more than 1500 bytes when UTF-8 encoded.
-      Cannot be `""`.
   """
 
   id = _messages.IntegerField(1)
@@ -1792,7 +1792,7 @@ class StandardQueryParameters(_messages.Message):
 
   f__xgafv = _messages.EnumField('FXgafvValueValuesEnum', 1)
   access_token = _messages.StringField(2)
-  alt = _messages.EnumField('AltValueValuesEnum', 3, default=u'json')
+  alt = _messages.EnumField('AltValueValuesEnum', 3, default='json')
   callback = _messages.StringField(4)
   fields = _messages.StringField(5)
   key = _messages.StringField(6)
@@ -1898,7 +1898,7 @@ class Value(_messages.Message):
     nullValue: A null value.
     stringValue: A UTF-8 encoded string value. When `exclude_from_indexes` is
       false (it is indexed) , may have at most 1500 bytes. Otherwise, may be
-      set to at least 1,000,000 bytes.
+      set to at most 1,000,000 bytes.
     timestampValue: A timestamp value. When stored in the Datastore, precise
       only to microseconds; any additional precision is rounded down.
   """

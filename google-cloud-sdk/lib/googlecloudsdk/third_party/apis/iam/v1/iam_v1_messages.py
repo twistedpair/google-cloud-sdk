@@ -193,8 +193,9 @@ class Binding(_messages.Message):
       not apply to the current request. However, a different role binding
       might grant the same role to one or more of the members in this binding.
       To learn which resources support conditions in their IAM policies, see
-      the [IAM documentation](https://cloud.google.com/iam/help/conditions
-      /resource-policies).
+      the [IAM
+      documentation](https://cloud.google.com/iam/help/conditions/resource-
+      policies).
     members: Specifies the identities requesting access for a Cloud Platform
       resource. `members` can have the following values:  * `allUsers`: A
       special identifier that represents anyone who is    on the internet;
@@ -515,10 +516,10 @@ class IamOrganizationsRolesGetRequest(_messages.Message):
       [`organizations`](/iam/reference/rest/v1/organizations.roles). Each
       resource type's `name` value format is described below:  *
       [`roles.get()`](/iam/reference/rest/v1/roles/get): `roles/{ROLE_NAME}`.
-      This method returns results from all   [predefined roles](/iam/docs
-      /understanding-roles#predefined_roles) in   Cloud IAM. Example request
-      URL:   `https://iam.googleapis.com/v1/roles/{ROLE_NAME}`  *
-      [`projects.roles.get()`](/iam/reference/rest/v1/projects.roles/get):
+      This method returns results from all   [predefined
+      roles](/iam/docs/understanding-roles#predefined_roles) in   Cloud IAM.
+      Example request URL:   `https://iam.googleapis.com/v1/roles/{ROLE_NAME}`
+      * [`projects.roles.get()`](/iam/reference/rest/v1/projects.roles/get):
       `projects/{PROJECT_ID}/roles/{CUSTOM_ROLE_ID}`. This method returns only
       [custom roles](/iam/docs/understanding-custom-roles) that have been
       created at the project level. Example request URL:   `https://iam.google
@@ -717,10 +718,10 @@ class IamProjectsRolesGetRequest(_messages.Message):
       [`organizations`](/iam/reference/rest/v1/organizations.roles). Each
       resource type's `name` value format is described below:  *
       [`roles.get()`](/iam/reference/rest/v1/roles/get): `roles/{ROLE_NAME}`.
-      This method returns results from all   [predefined roles](/iam/docs
-      /understanding-roles#predefined_roles) in   Cloud IAM. Example request
-      URL:   `https://iam.googleapis.com/v1/roles/{ROLE_NAME}`  *
-      [`projects.roles.get()`](/iam/reference/rest/v1/projects.roles/get):
+      This method returns results from all   [predefined
+      roles](/iam/docs/understanding-roles#predefined_roles) in   Cloud IAM.
+      Example request URL:   `https://iam.googleapis.com/v1/roles/{ROLE_NAME}`
+      * [`projects.roles.get()`](/iam/reference/rest/v1/projects.roles/get):
       `projects/{PROJECT_ID}/roles/{CUSTOM_ROLE_ID}`. This method returns only
       [custom roles](/iam/docs/understanding-custom-roles) that have been
       created at the project level. Example request URL:   `https://iam.google
@@ -1260,10 +1261,10 @@ class IamRolesGetRequest(_messages.Message):
       [`organizations`](/iam/reference/rest/v1/organizations.roles). Each
       resource type's `name` value format is described below:  *
       [`roles.get()`](/iam/reference/rest/v1/roles/get): `roles/{ROLE_NAME}`.
-      This method returns results from all   [predefined roles](/iam/docs
-      /understanding-roles#predefined_roles) in   Cloud IAM. Example request
-      URL:   `https://iam.googleapis.com/v1/roles/{ROLE_NAME}`  *
-      [`projects.roles.get()`](/iam/reference/rest/v1/projects.roles/get):
+      This method returns results from all   [predefined
+      roles](/iam/docs/understanding-roles#predefined_roles) in   Cloud IAM.
+      Example request URL:   `https://iam.googleapis.com/v1/roles/{ROLE_NAME}`
+      * [`projects.roles.get()`](/iam/reference/rest/v1/projects.roles/get):
       `projects/{PROJECT_ID}/roles/{CUSTOM_ROLE_ID}`. This method returns only
       [custom roles](/iam/docs/understanding-custom-roles) that have been
       created at the project level. Example request URL:   `https://iam.google
@@ -1602,8 +1603,8 @@ class Policy(_messages.Message):
   timestamp('2020-10-01T00:00:00.000Z')",           }         }       ],
   "etag": "BwWWja0YfJA=",       "version": 3     }  **YAML example:**
   bindings:     - members:       - user:mike@example.com       -
-  group:admins@example.com       - domain:google.com       - serviceAccount
-  :my-project-id@appspot.gserviceaccount.com       role:
+  group:admins@example.com       - domain:google.com       -
+  serviceAccount:my-project-id@appspot.gserviceaccount.com       role:
   roles/resourcemanager.organizationAdmin     - members:       -
   user:eve@example.com       role: roles/resourcemanager.organizationViewer
   condition:         title: expirable access         description: Does not
@@ -1670,8 +1671,8 @@ class QueryAuditableServicesRequest(_messages.Message):
     fullResourceName: Required. The full resource name to query from the list
       of auditable services.  The name follows the Google Cloud Platform
       resource format. For example, a Cloud Platform project with id `my-
-      project` will be named `//cloudresourcemanager.googleapis.com/projects
-      /my-project`.
+      project` will be named
+      `//cloudresourcemanager.googleapis.com/projects/my-project`.
   """
 
   fullResourceName = _messages.StringField(1)
@@ -1742,8 +1743,8 @@ class QueryTestablePermissionsRequest(_messages.Message):
     fullResourceName: Required. The full resource name to query from the list
       of testable permissions.  The name follows the Google Cloud Platform
       resource format. For example, a Cloud Platform project with id `my-
-      project` will be named `//cloudresourcemanager.googleapis.com/projects
-      /my-project`.
+      project` will be named
+      `//cloudresourcemanager.googleapis.com/projects/my-project`.
     pageSize: Optional limit on the number of permissions to include in the
       response.
     pageToken: Optional pagination token returned in an earlier
@@ -2135,7 +2136,7 @@ class StandardQueryParameters(_messages.Message):
 
   f__xgafv = _messages.EnumField('FXgafvValueValuesEnum', 1)
   access_token = _messages.StringField(2)
-  alt = _messages.EnumField('AltValueValuesEnum', 3, default=u'json')
+  alt = _messages.EnumField('AltValueValuesEnum', 3, default='json')
   callback = _messages.StringField(4)
   fields = _messages.StringField(5)
   key = _messages.StringField(6)

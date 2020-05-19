@@ -317,6 +317,10 @@
         "useEnhanced": {
           "description": "Set to true to use an enhanced model for speech recognition.\nIf `use_enhanced` is set to true and the `model` field is not set, then\nan appropriate enhanced model is chosen if an enhanced model exists for\nthe audio.\n\nIf `use_enhanced` is true and an enhanced version of the specified model\ndoes not exist, then the speech is recognized using the standard version\nof the specified model.",
           "type": "boolean"
+        },
+        "endpointer": {
+          "description": "Config to enable the configurable endpointer. If enabled, you can set the\nendpointer slider to a value (0-100) better suited to your application. The\nslider value controls the aggressiveness of the endpointer. If not enabled,\nthe default behavior is used, with the best general WER\/latency tradeoff.",
+          "$ref": "Endpointer"
         }
       }
     },
@@ -576,6 +580,18 @@
           "items": {
             "type": "string"
           }
+        }
+      }
+    },
+    "Endpointer": {
+      "id": "Endpointer",
+      "description": "Config to enable endpointer settings.",
+      "type": "object",
+      "properties": {
+        "sensitivity": {
+          "description": "Value between 0 and 100 indicating endpointer sensitivity. The higher this\nvalue, the shorter the wait before closing the microphone.",
+          "type": "integer",
+          "format": "int32"
         }
       }
     },

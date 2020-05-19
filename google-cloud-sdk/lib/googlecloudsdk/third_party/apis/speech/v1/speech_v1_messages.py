@@ -252,9 +252,9 @@ class RecognitionConfig(_messages.Message):
       all other audio formats. For details, see AudioEncoding.
     languageCode: Required. The language of the supplied audio as a
       [BCP-47](https://www.rfc-editor.org/rfc/bcp/bcp47.txt) language tag.
-      Example: "en-US". See [Language Support](https://cloud.google.com
-      /speech-to-text/docs/languages) for a list of the currently supported
-      language codes.
+      Example: "en-US". See [Language
+      Support](https://cloud.google.com/speech-to-text/docs/languages) for a
+      list of the currently supported language codes.
     maxAlternatives: Maximum number of recognition hypotheses to be returned.
       Specifically, the maximum number of `SpeechRecognitionAlternative`
       messages within each `SpeechRecognitionResult`. The server may return
@@ -315,8 +315,8 @@ class RecognitionConfig(_messages.Message):
         requires only about half the bandwidth of `LINEAR16`. `FLAC` stream
         encoding supports 16-bit and 24-bit samples, however, not all fields
         in `STREAMINFO` are supported.
-      MULAW: 8-bit samples that compand 14-bit audio samples using G.711 PCMU
-        /mu-law.
+      MULAW: 8-bit samples that compand 14-bit audio samples using G.711
+        PCMU/mu-law.
       AMR: Adaptive Multi-Rate Narrowband codec. `sample_rate_hertz` must be
         8000.
       AMR_WB: Adaptive Multi-Rate Wideband codec. `sample_rate_hertz` must be
@@ -704,7 +704,7 @@ class StandardQueryParameters(_messages.Message):
 
   f__xgafv = _messages.EnumField('FXgafvValueValuesEnum', 1)
   access_token = _messages.StringField(2)
-  alt = _messages.EnumField('AltValueValuesEnum', 3, default=u'json')
+  alt = _messages.EnumField('AltValueValuesEnum', 3, default='json')
   callback = _messages.StringField(4)
   fields = _messages.StringField(5)
   key = _messages.StringField(6)

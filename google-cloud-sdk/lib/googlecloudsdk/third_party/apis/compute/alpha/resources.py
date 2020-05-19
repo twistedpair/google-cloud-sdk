@@ -28,105 +28,105 @@ class Collections(enum.Enum):
       'acceleratorTypes',
       'projects/{project}/zones/{zone}/acceleratorTypes/{acceleratorType}',
       {},
-      [u'project', u'zone', u'acceleratorType'],
+      ['project', 'zone', 'acceleratorType'],
       True
   )
   ADDRESSES = (
       'addresses',
       'projects/{project}/regions/{region}/addresses/{address}',
       {},
-      [u'project', u'region', u'address'],
+      ['project', 'region', 'address'],
       True
   )
   AUTOSCALERS = (
       'autoscalers',
       'projects/{project}/zones/{zone}/autoscalers/{autoscaler}',
       {},
-      [u'project', u'zone', u'autoscaler'],
+      ['project', 'zone', 'autoscaler'],
       True
   )
   BACKENDBUCKETS = (
       'backendBuckets',
       'projects/{project}/global/backendBuckets/{backendBucket}',
       {},
-      [u'project', u'backendBucket'],
+      ['project', 'backendBucket'],
       True
   )
   BACKENDSERVICES = (
       'backendServices',
       'projects/{project}/global/backendServices/{backendService}',
       {},
-      [u'project', u'backendService'],
+      ['project', 'backendService'],
       True
   )
   DISKTYPES = (
       'diskTypes',
       'projects/{project}/zones/{zone}/diskTypes/{diskType}',
       {},
-      [u'project', u'zone', u'diskType'],
+      ['project', 'zone', 'diskType'],
       True
   )
   DISKS = (
       'disks',
       'projects/{project}/zones/{zone}/disks/{disk}',
       {},
-      [u'project', u'zone', u'disk'],
+      ['project', 'zone', 'disk'],
       True
   )
   EXTERNALVPNGATEWAYS = (
       'externalVpnGateways',
       'projects/{project}/global/externalVpnGateways/{externalVpnGateway}',
       {},
-      [u'project', u'externalVpnGateway'],
+      ['project', 'externalVpnGateway'],
       True
   )
   FIREWALLS = (
       'firewalls',
       'projects/{project}/global/firewalls/{firewall}',
       {},
-      [u'project', u'firewall'],
+      ['project', 'firewall'],
       True
   )
   FORWARDINGRULES = (
       'forwardingRules',
       'projects/{project}/regions/{region}/forwardingRules/{forwardingRule}',
       {},
-      [u'project', u'region', u'forwardingRule'],
+      ['project', 'region', 'forwardingRule'],
       True
   )
   GLOBALADDRESSES = (
       'globalAddresses',
       'projects/{project}/global/addresses/{address}',
       {},
-      [u'project', u'address'],
+      ['project', 'address'],
       True
   )
   GLOBALFORWARDINGRULES = (
       'globalForwardingRules',
       'projects/{project}/global/forwardingRules/{forwardingRule}',
       {},
-      [u'project', u'forwardingRule'],
+      ['project', 'forwardingRule'],
       True
   )
   GLOBALNETWORKENDPOINTGROUPS = (
       'globalNetworkEndpointGroups',
       'projects/{project}/global/networkEndpointGroups/{networkEndpointGroup}',
       {},
-      [u'project', u'networkEndpointGroup'],
+      ['project', 'networkEndpointGroup'],
       True
   )
   GLOBALOPERATIONS = (
       'globalOperations',
       'projects/{project}/global/operations/{operation}',
       {},
-      [u'project', u'operation'],
+      ['project', 'operation'],
       True
   )
   GLOBALORGANIZATIONOPERATIONS = (
       'globalOrganizationOperations',
       'projects/locations/global/operations/{operation}',
       {},
-      [u'operation'],
+      ['operation'],
       True
   )
   GLOBALPUBLICDELEGATEDPREFIXES = (
@@ -134,35 +134,35 @@ class Collections(enum.Enum):
       'projects/{project}/global/publicDelegatedPrefixes/'
       '{publicDelegatedPrefix}',
       {},
-      [u'project', u'publicDelegatedPrefix'],
+      ['project', 'publicDelegatedPrefix'],
       True
   )
   HEALTHCHECKS = (
       'healthChecks',
       'projects/{project}/global/healthChecks/{healthCheck}',
       {},
-      [u'project', u'healthCheck'],
+      ['project', 'healthCheck'],
       True
   )
   HTTPHEALTHCHECKS = (
       'httpHealthChecks',
       'projects/{project}/global/httpHealthChecks/{httpHealthCheck}',
       {},
-      [u'project', u'httpHealthCheck'],
+      ['project', 'httpHealthCheck'],
       True
   )
   HTTPSHEALTHCHECKS = (
       'httpsHealthChecks',
       'projects/{project}/global/httpsHealthChecks/{httpsHealthCheck}',
       {},
-      [u'project', u'httpsHealthCheck'],
+      ['project', 'httpsHealthCheck'],
       True
   )
   IMAGES = (
       'images',
       'projects/{project}/global/images/{image}',
       {},
-      [u'project', u'image'],
+      ['project', 'image'],
       True
   )
   INSTANCEGROUPMANAGERS = (
@@ -170,28 +170,28 @@ class Collections(enum.Enum):
       'projects/{project}/zones/{zone}/instanceGroupManagers/'
       '{instanceGroupManager}',
       {},
-      [u'project', u'zone', u'instanceGroupManager'],
+      ['project', 'zone', 'instanceGroupManager'],
       True
   )
   INSTANCEGROUPS = (
       'instanceGroups',
       'projects/{project}/zones/{zone}/instanceGroups/{instanceGroup}',
       {},
-      [u'project', u'zone', u'instanceGroup'],
+      ['project', 'zone', 'instanceGroup'],
       True
   )
   INSTANCETEMPLATES = (
       'instanceTemplates',
       'projects/{project}/global/instanceTemplates/{instanceTemplate}',
       {},
-      [u'project', u'instanceTemplate'],
+      ['project', 'instanceTemplate'],
       True
   )
   INSTANCES = (
       'instances',
       'projects/{project}/zones/{zone}/instances/{instance}',
       {},
-      [u'project', u'zone', u'instance'],
+      ['project', 'zone', 'instance'],
       True
   )
   INTERCONNECTATTACHMENTS = (
@@ -199,49 +199,49 @@ class Collections(enum.Enum):
       'projects/{project}/regions/{region}/interconnectAttachments/'
       '{interconnectAttachment}',
       {},
-      [u'project', u'region', u'interconnectAttachment'],
+      ['project', 'region', 'interconnectAttachment'],
       True
   )
   INTERCONNECTLOCATIONS = (
       'interconnectLocations',
       'projects/{project}/global/interconnectLocations/{interconnectLocation}',
       {},
-      [u'project', u'interconnectLocation'],
+      ['project', 'interconnectLocation'],
       True
   )
   INTERCONNECTS = (
       'interconnects',
       'projects/{project}/global/interconnects/{interconnect}',
       {},
-      [u'project', u'interconnect'],
+      ['project', 'interconnect'],
       True
   )
   LICENSECODES = (
       'licenseCodes',
       'projects/{project}/global/licenseCodes/{licenseCode}',
       {},
-      [u'project', u'licenseCode'],
+      ['project', 'licenseCode'],
       True
   )
   LICENSES = (
       'licenses',
       'projects/{project}/global/licenses/{license}',
       {},
-      [u'project', u'license'],
+      ['project', 'license'],
       True
   )
   MACHINEIMAGES = (
       'machineImages',
       'projects/{project}/global/machineImages/{machineImage}',
       {},
-      [u'project', u'machineImage'],
+      ['project', 'machineImage'],
       True
   )
   MACHINETYPES = (
       'machineTypes',
       'projects/{project}/zones/{zone}/machineTypes/{machineType}',
       {},
-      [u'project', u'zone', u'machineType'],
+      ['project', 'zone', 'machineType'],
       True
   )
   NETWORKENDPOINTGROUPS = (
@@ -249,63 +249,63 @@ class Collections(enum.Enum):
       'projects/{project}/zones/{zone}/networkEndpointGroups/'
       '{networkEndpointGroup}',
       {},
-      [u'project', u'zone', u'networkEndpointGroup'],
+      ['project', 'zone', 'networkEndpointGroup'],
       True
   )
   NETWORKS = (
       'networks',
       'projects/{project}/global/networks/{network}',
       {},
-      [u'project', u'network'],
+      ['project', 'network'],
       True
   )
   NEXTHOPGATEWAYS = (
       'nextHopGateways',
       'projects/{project}/global/gateways/{nextHopGateway}',
       {},
-      [u'project', u'nextHopGateway'],
+      ['project', 'nextHopGateway'],
       True
   )
   NODEGROUPS = (
       'nodeGroups',
       'projects/{project}/zones/{zone}/nodeGroups/{nodeGroup}',
       {},
-      [u'project', u'zone', u'nodeGroup'],
+      ['project', 'zone', 'nodeGroup'],
       True
   )
   NODETEMPLATES = (
       'nodeTemplates',
       'projects/{project}/regions/{region}/nodeTemplates/{nodeTemplate}',
       {},
-      [u'project', u'region', u'nodeTemplate'],
+      ['project', 'region', 'nodeTemplate'],
       True
   )
   NODETYPES = (
       'nodeTypes',
       'projects/{project}/zones/{zone}/nodeTypes/{nodeType}',
       {},
-      [u'project', u'zone', u'nodeType'],
+      ['project', 'zone', 'nodeType'],
       True
   )
   ORGANIZATIONSECURITYPOLICIES = (
       'organizationSecurityPolicies',
       'projects/locations/global/securityPolicies/{securityPolicy}',
       {},
-      [u'securityPolicy'],
+      ['securityPolicy'],
       True
   )
   PACKETMIRRORINGS = (
       'packetMirrorings',
       'projects/{project}/regions/{region}/packetMirrorings/{packetMirroring}',
       {},
-      [u'project', u'region', u'packetMirroring'],
+      ['project', 'region', 'packetMirroring'],
       True
   )
   PROJECTS = (
       'projects',
       'projects/{project}',
       {},
-      [u'project'],
+      ['project'],
       True
   )
   PUBLICADVERTISEDPREFIXES = (
@@ -313,7 +313,7 @@ class Collections(enum.Enum):
       'projects/{project}/global/publicAdvertisedPrefixes/'
       '{publicAdvertisedPrefix}',
       {},
-      [u'project', u'publicAdvertisedPrefix'],
+      ['project', 'publicAdvertisedPrefix'],
       True
   )
   PUBLICDELEGATEDPREFIXES = (
@@ -321,49 +321,49 @@ class Collections(enum.Enum):
       'projects/{project}/regions/{region}/publicDelegatedPrefixes/'
       '{publicDelegatedPrefix}',
       {},
-      [u'project', u'region', u'publicDelegatedPrefix'],
+      ['project', 'region', 'publicDelegatedPrefix'],
       True
   )
   REGIONACCELERATORTYPES = (
       'regionAcceleratorTypes',
       'projects/{project}/regions/{region}/acceleratorTypes/{acceleratorType}',
       {},
-      [u'project', u'region', u'acceleratorType'],
+      ['project', 'region', 'acceleratorType'],
       True
   )
   REGIONAUTOSCALERS = (
       'regionAutoscalers',
       'projects/{project}/regions/{region}/autoscalers/{autoscaler}',
       {},
-      [u'project', u'region', u'autoscaler'],
+      ['project', 'region', 'autoscaler'],
       True
   )
   REGIONBACKENDSERVICES = (
       'regionBackendServices',
       'projects/{project}/regions/{region}/backendServices/{backendService}',
       {},
-      [u'project', u'region', u'backendService'],
+      ['project', 'region', 'backendService'],
       True
   )
   REGIONCOMMITMENTS = (
       'regionCommitments',
       'projects/{project}/regions/{region}/commitments/{commitment}',
       {},
-      [u'project', u'region', u'commitment'],
+      ['project', 'region', 'commitment'],
       True
   )
   REGIONDISKTYPES = (
       'regionDiskTypes',
       'projects/{project}/regions/{region}/diskTypes/{diskType}',
       {},
-      [u'project', u'region', u'diskType'],
+      ['project', 'region', 'diskType'],
       True
   )
   REGIONDISKS = (
       'regionDisks',
       'projects/{project}/regions/{region}/disks/{disk}',
       {},
-      [u'project', u'region', u'disk'],
+      ['project', 'region', 'disk'],
       True
   )
   REGIONHEALTHCHECKSERVICES = (
@@ -371,21 +371,21 @@ class Collections(enum.Enum):
       'projects/{project}/regions/{region}/healthCheckServices/'
       '{healthCheckService}',
       {},
-      [u'project', u'region', u'healthCheckService'],
+      ['project', 'region', 'healthCheckService'],
       True
   )
   REGIONHEALTHCHECKS = (
       'regionHealthChecks',
       'projects/{project}/regions/{region}/healthChecks/{healthCheck}',
       {},
-      [u'project', u'region', u'healthCheck'],
+      ['project', 'region', 'healthCheck'],
       True
   )
   REGIONINPLACESNAPSHOTS = (
       'regionInPlaceSnapshots',
       'projects/{project}/regions/{region}/inPlaceSnapshots/{inPlaceSnapshot}',
       {},
-      [u'project', u'region', u'inPlaceSnapshot'],
+      ['project', 'region', 'inPlaceSnapshot'],
       True
   )
   REGIONINSTANCEGROUPMANAGERS = (
@@ -393,21 +393,21 @@ class Collections(enum.Enum):
       'projects/{project}/regions/{region}/instanceGroupManagers/'
       '{instanceGroupManager}',
       {},
-      [u'project', u'region', u'instanceGroupManager'],
+      ['project', 'region', 'instanceGroupManager'],
       True
   )
   REGIONINSTANCEGROUPS = (
       'regionInstanceGroups',
       'projects/{project}/regions/{region}/instanceGroups/{instanceGroup}',
       {},
-      [u'project', u'region', u'instanceGroup'],
+      ['project', 'region', 'instanceGroup'],
       True
   )
   REGIONMACHINETYPES = (
       'regionMachineTypes',
       'projects/{project}/regions/{region}/machineTypes/{machineType}',
       {},
-      [u'project', u'region', u'machineType'],
+      ['project', 'region', 'machineType'],
       True
   )
   REGIONNETWORKENDPOINTGROUPS = (
@@ -415,7 +415,7 @@ class Collections(enum.Enum):
       'projects/{project}/regions/{region}/networkEndpointGroups/'
       '{networkEndpointGroup}',
       {},
-      [u'project', u'region', u'networkEndpointGroup'],
+      ['project', 'region', 'networkEndpointGroup'],
       True
   )
   REGIONNOTIFICATIONENDPOINTS = (
@@ -423,21 +423,21 @@ class Collections(enum.Enum):
       'projects/{project}/regions/{region}/notificationEndpoints/'
       '{notificationEndpoint}',
       {},
-      [u'project', u'region', u'notificationEndpoint'],
+      ['project', 'region', 'notificationEndpoint'],
       True
   )
   REGIONOPERATIONS = (
       'regionOperations',
       'projects/{project}/regions/{region}/operations/{operation}',
       {},
-      [u'project', u'region', u'operation'],
+      ['project', 'region', 'operation'],
       True
   )
   REGIONSSLCERTIFICATES = (
       'regionSslCertificates',
       'projects/{project}/regions/{region}/sslCertificates/{sslCertificate}',
       {},
-      [u'project', u'region', u'sslCertificate'],
+      ['project', 'region', 'sslCertificate'],
       True
   )
   REGIONTARGETHTTPPROXIES = (
@@ -445,7 +445,7 @@ class Collections(enum.Enum):
       'projects/{project}/regions/{region}/targetHttpProxies/'
       '{targetHttpProxy}',
       {},
-      [u'project', u'region', u'targetHttpProxy'],
+      ['project', 'region', 'targetHttpProxy'],
       True
   )
   REGIONTARGETHTTPSPROXIES = (
@@ -453,56 +453,56 @@ class Collections(enum.Enum):
       'projects/{project}/regions/{region}/targetHttpsProxies/'
       '{targetHttpsProxy}',
       {},
-      [u'project', u'region', u'targetHttpsProxy'],
+      ['project', 'region', 'targetHttpsProxy'],
       True
   )
   REGIONURLMAPS = (
       'regionUrlMaps',
       'projects/{project}/regions/{region}/urlMaps/{urlMap}',
       {},
-      [u'project', u'region', u'urlMap'],
+      ['project', 'region', 'urlMap'],
       True
   )
   REGIONS = (
       'regions',
       'projects/{project}/regions/{region}',
       {},
-      [u'project', u'region'],
+      ['project', 'region'],
       True
   )
   RESERVATIONS = (
       'reservations',
       'projects/{project}/zones/{zone}/reservations/{reservation}',
       {},
-      [u'project', u'zone', u'reservation'],
+      ['project', 'zone', 'reservation'],
       True
   )
   RESOURCEPOLICIES = (
       'resourcePolicies',
       'projects/{project}/regions/{region}/resourcePolicies/{resourcePolicy}',
       {},
-      [u'project', u'region', u'resourcePolicy'],
+      ['project', 'region', 'resourcePolicy'],
       True
   )
   ROUTERS = (
       'routers',
       'projects/{project}/regions/{region}/routers/{router}',
       {},
-      [u'project', u'region', u'router'],
+      ['project', 'region', 'router'],
       True
   )
   ROUTES = (
       'routes',
       'projects/{project}/global/routes/{route}',
       {},
-      [u'project', u'route'],
+      ['project', 'route'],
       True
   )
   SECURITYPOLICIES = (
       'securityPolicies',
       'projects/{project}/global/securityPolicies/{securityPolicy}',
       {},
-      [u'project', u'securityPolicy'],
+      ['project', 'securityPolicy'],
       True
   )
   SECURITYPOLICYRULES = (
@@ -510,7 +510,7 @@ class Collections(enum.Enum):
       'projects/{project}/global/securityPolicies/{securityPolicy}/'
       'securityPolicyRules/{securityPolicyRule}',
       {},
-      [u'project', u'securityPolicy', u'securityPolicyRule'],
+      ['project', 'securityPolicy', 'securityPolicyRule'],
       True
   )
   SERVICEATTACHMENTS = (
@@ -518,84 +518,84 @@ class Collections(enum.Enum):
       'projects/{project}/regions/{region}/serviceAttachments/'
       '{serviceAttachment}',
       {},
-      [u'project', u'region', u'serviceAttachment'],
+      ['project', 'region', 'serviceAttachment'],
       True
   )
   SNAPSHOTS = (
       'snapshots',
       'projects/{project}/global/snapshots/{snapshot}',
       {},
-      [u'project', u'snapshot'],
+      ['project', 'snapshot'],
       True
   )
   SSLCERTIFICATES = (
       'sslCertificates',
       'projects/{project}/global/sslCertificates/{sslCertificate}',
       {},
-      [u'project', u'sslCertificate'],
+      ['project', 'sslCertificate'],
       True
   )
   SSLPOLICIES = (
       'sslPolicies',
       'projects/{project}/global/sslPolicies/{sslPolicy}',
       {},
-      [u'project', u'sslPolicy'],
+      ['project', 'sslPolicy'],
       True
   )
   SUBNETWORKS = (
       'subnetworks',
       'projects/{project}/regions/{region}/subnetworks/{subnetwork}',
       {},
-      [u'project', u'region', u'subnetwork'],
+      ['project', 'region', 'subnetwork'],
       True
   )
   TARGETGRPCPROXIES = (
       'targetGrpcProxies',
       'projects/{project}/global/targetGrpcProxies/{targetGrpcProxy}',
       {},
-      [u'project', u'targetGrpcProxy'],
+      ['project', 'targetGrpcProxy'],
       True
   )
   TARGETHTTPPROXIES = (
       'targetHttpProxies',
       'projects/{project}/global/targetHttpProxies/{targetHttpProxy}',
       {},
-      [u'project', u'targetHttpProxy'],
+      ['project', 'targetHttpProxy'],
       True
   )
   TARGETHTTPSPROXIES = (
       'targetHttpsProxies',
       'projects/{project}/global/targetHttpsProxies/{targetHttpsProxy}',
       {},
-      [u'project', u'targetHttpsProxy'],
+      ['project', 'targetHttpsProxy'],
       True
   )
   TARGETINSTANCES = (
       'targetInstances',
       'projects/{project}/zones/{zone}/targetInstances/{targetInstance}',
       {},
-      [u'project', u'zone', u'targetInstance'],
+      ['project', 'zone', 'targetInstance'],
       True
   )
   TARGETPOOLS = (
       'targetPools',
       'projects/{project}/regions/{region}/targetPools/{targetPool}',
       {},
-      [u'project', u'region', u'targetPool'],
+      ['project', 'region', 'targetPool'],
       True
   )
   TARGETSSLPROXIES = (
       'targetSslProxies',
       'projects/{project}/global/targetSslProxies/{targetSslProxy}',
       {},
-      [u'project', u'targetSslProxy'],
+      ['project', 'targetSslProxy'],
       True
   )
   TARGETTCPPROXIES = (
       'targetTcpProxies',
       'projects/{project}/global/targetTcpProxies/{targetTcpProxy}',
       {},
-      [u'project', u'targetTcpProxy'],
+      ['project', 'targetTcpProxy'],
       True
   )
   TARGETVPNGATEWAYS = (
@@ -603,49 +603,49 @@ class Collections(enum.Enum):
       'projects/{project}/regions/{region}/targetVpnGateways/'
       '{targetVpnGateway}',
       {},
-      [u'project', u'region', u'targetVpnGateway'],
+      ['project', 'region', 'targetVpnGateway'],
       True
   )
   URLMAPS = (
       'urlMaps',
       'projects/{project}/global/urlMaps/{urlMap}',
       {},
-      [u'project', u'urlMap'],
+      ['project', 'urlMap'],
       True
   )
   VPNGATEWAYS = (
       'vpnGateways',
       'projects/{project}/regions/{region}/vpnGateways/{vpnGateway}',
       {},
-      [u'project', u'region', u'vpnGateway'],
+      ['project', 'region', 'vpnGateway'],
       True
   )
   VPNTUNNELS = (
       'vpnTunnels',
       'projects/{project}/regions/{region}/vpnTunnels/{vpnTunnel}',
       {},
-      [u'project', u'region', u'vpnTunnel'],
+      ['project', 'region', 'vpnTunnel'],
       True
   )
   ZONEINPLACESNAPSHOTS = (
       'zoneInPlaceSnapshots',
       'projects/{project}/zones/{zone}/inPlaceSnapshots/{inPlaceSnapshot}',
       {},
-      [u'project', u'zone', u'inPlaceSnapshot'],
+      ['project', 'zone', 'inPlaceSnapshot'],
       True
   )
   ZONEOPERATIONS = (
       'zoneOperations',
       'projects/{project}/zones/{zone}/operations/{operation}',
       {},
-      [u'project', u'zone', u'operation'],
+      ['project', 'zone', 'operation'],
       True
   )
   ZONES = (
       'zones',
       'projects/{project}/zones/{zone}',
       {},
-      [u'project', u'zone'],
+      ['project', 'zone'],
       True
   )
 

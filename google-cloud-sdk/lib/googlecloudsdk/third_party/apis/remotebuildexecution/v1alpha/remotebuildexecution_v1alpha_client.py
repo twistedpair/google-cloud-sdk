@@ -8,17 +8,17 @@ class RemotebuildexecutionV1alpha(base_api.BaseApiClient):
   """Generated client library for service remotebuildexecution version v1alpha."""
 
   MESSAGES_MODULE = messages
-  BASE_URL = u'https://admin-remotebuildexecution.googleapis.com/'
-  MTLS_BASE_URL = u'https://admin-remotebuildexecution.mtls.googleapis.com/'
+  BASE_URL = 'https://admin-remotebuildexecution.googleapis.com/'
+  MTLS_BASE_URL = 'https://admin-remotebuildexecution.mtls.googleapis.com/'
 
-  _PACKAGE = u'remotebuildexecution'
-  _SCOPES = [u'https://www.googleapis.com/auth/cloud-platform']
-  _VERSION = u'v1alpha'
+  _PACKAGE = 'remotebuildexecution'
+  _SCOPES = ['https://www.googleapis.com/auth/cloud-platform']
+  _VERSION = 'v1alpha'
   _CLIENT_ID = '1042881264118.apps.googleusercontent.com'
   _CLIENT_SECRET = 'x_Tw5K8nnjoRAqULM9PFAC2b'
-  _USER_AGENT = u'google-cloud-sdk'
-  _CLIENT_CLASS_NAME = u'RemotebuildexecutionV1alpha'
-  _URL_VERSION = u'v1alpha'
+  _USER_AGENT = 'google-cloud-sdk'
+  _CLIENT_CLASS_NAME = 'RemotebuildexecutionV1alpha'
+  _URL_VERSION = 'v1alpha'
   _API_KEY = None
 
   def __init__(self, url='', credentials=None,
@@ -44,7 +44,7 @@ class RemotebuildexecutionV1alpha(base_api.BaseApiClient):
   class ProjectsInstancesWorkerpoolsService(base_api.BaseApiService):
     """Service class for the projects_instances_workerpools resource."""
 
-    _NAME = u'projects_instances_workerpools'
+    _NAME = 'projects_instances_workerpools'
 
     def __init__(self, client):
       super(RemotebuildexecutionV1alpha.ProjectsInstancesWorkerpoolsService, self).__init__(client)
@@ -68,16 +68,16 @@ completion. While the long running operation is in progress, any call to
           config, request, global_params=global_params)
 
     Create.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha/projects/{projectsId}/instances/{instancesId}/workerpools',
-        http_method=u'POST',
-        method_id=u'remotebuildexecution.projects.instances.workerpools.create',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
+        flat_path='v1alpha/projects/{projectsId}/instances/{instancesId}/workerpools',
+        http_method='POST',
+        method_id='remotebuildexecution.projects.instances.workerpools.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
         query_params=[],
-        relative_path=u'v1alpha/{+parent}/workerpools',
+        relative_path='v1alpha/{+parent}/workerpools',
         request_field='<request>',
-        request_type_name=u'GoogleDevtoolsRemotebuildexecutionAdminV1alphaCreateWorkerPoolRequest',
-        response_type_name=u'GoogleLongrunningOperation',
+        request_type_name='GoogleDevtoolsRemotebuildexecutionAdminV1alphaCreateWorkerPoolRequest',
+        response_type_name='GoogleLongrunningOperation',
         supports_download=False,
     )
 
@@ -99,16 +99,16 @@ While the long running operation is in progress, any call to
           config, request, global_params=global_params)
 
     Delete.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha/projects/{projectsId}/instances/{instancesId}/workerpools/{workerpoolsId}',
-        http_method=u'DELETE',
-        method_id=u'remotebuildexecution.projects.instances.workerpools.delete',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1alpha/projects/{projectsId}/instances/{instancesId}/workerpools/{workerpoolsId}',
+        http_method='DELETE',
+        method_id='remotebuildexecution.projects.instances.workerpools.delete',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1alpha/{+name}',
+        relative_path='v1alpha/{+name}',
         request_field='',
-        request_type_name=u'RemotebuildexecutionProjectsInstancesWorkerpoolsDeleteRequest',
-        response_type_name=u'GoogleLongrunningOperation',
+        request_type_name='RemotebuildexecutionProjectsInstancesWorkerpoolsDeleteRequest',
+        response_type_name='GoogleLongrunningOperation',
         supports_download=False,
     )
 
@@ -126,16 +126,16 @@ While the long running operation is in progress, any call to
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha/projects/{projectsId}/instances/{instancesId}/workerpools/{workerpoolsId}',
-        http_method=u'GET',
-        method_id=u'remotebuildexecution.projects.instances.workerpools.get',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1alpha/projects/{projectsId}/instances/{instancesId}/workerpools/{workerpoolsId}',
+        http_method='GET',
+        method_id='remotebuildexecution.projects.instances.workerpools.get',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1alpha/{+name}',
+        relative_path='v1alpha/{+name}',
         request_field='',
-        request_type_name=u'RemotebuildexecutionProjectsInstancesWorkerpoolsGetRequest',
-        response_type_name=u'GoogleDevtoolsRemotebuildexecutionAdminV1alphaWorkerPool',
+        request_type_name='RemotebuildexecutionProjectsInstancesWorkerpoolsGetRequest',
+        response_type_name='GoogleDevtoolsRemotebuildexecutionAdminV1alphaWorkerPool',
         supports_download=False,
     )
 
@@ -153,16 +153,16 @@ While the long running operation is in progress, any call to
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha/projects/{projectsId}/instances/{instancesId}/workerpools',
-        http_method=u'GET',
-        method_id=u'remotebuildexecution.projects.instances.workerpools.list',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'filter'],
-        relative_path=u'v1alpha/{+parent}/workerpools',
+        flat_path='v1alpha/projects/{projectsId}/instances/{instancesId}/workerpools',
+        http_method='GET',
+        method_id='remotebuildexecution.projects.instances.workerpools.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter'],
+        relative_path='v1alpha/{+parent}/workerpools',
         request_field='',
-        request_type_name=u'RemotebuildexecutionProjectsInstancesWorkerpoolsListRequest',
-        response_type_name=u'GoogleDevtoolsRemotebuildexecutionAdminV1alphaListWorkerPoolsResponse',
+        request_type_name='RemotebuildexecutionProjectsInstancesWorkerpoolsListRequest',
+        response_type_name='GoogleDevtoolsRemotebuildexecutionAdminV1alphaListWorkerPoolsResponse',
         supports_download=False,
     )
 
@@ -183,23 +183,23 @@ completion. While the long running operation is in progress, any call to
           config, request, global_params=global_params)
 
     Patch.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha/projects/{projectsId}/instances/{instancesId}/workerpools/{workerpoolsId}',
-        http_method=u'PATCH',
-        method_id=u'remotebuildexecution.projects.instances.workerpools.patch',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1alpha/projects/{projectsId}/instances/{instancesId}/workerpools/{workerpoolsId}',
+        http_method='PATCH',
+        method_id='remotebuildexecution.projects.instances.workerpools.patch',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1alpha/{+name}',
-        request_field=u'googleDevtoolsRemotebuildexecutionAdminV1alphaUpdateWorkerPoolRequest',
-        request_type_name=u'RemotebuildexecutionProjectsInstancesWorkerpoolsPatchRequest',
-        response_type_name=u'GoogleLongrunningOperation',
+        relative_path='v1alpha/{+name}',
+        request_field='googleDevtoolsRemotebuildexecutionAdminV1alphaUpdateWorkerPoolRequest',
+        request_type_name='RemotebuildexecutionProjectsInstancesWorkerpoolsPatchRequest',
+        response_type_name='GoogleLongrunningOperation',
         supports_download=False,
     )
 
   class ProjectsInstancesService(base_api.BaseApiService):
     """Service class for the projects_instances resource."""
 
-    _NAME = u'projects_instances'
+    _NAME = 'projects_instances'
 
     def __init__(self, client):
       super(RemotebuildexecutionV1alpha.ProjectsInstancesService, self).__init__(client)
@@ -223,16 +223,16 @@ returns an instance in state `CREATING`.
           config, request, global_params=global_params)
 
     Create.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha/projects/{projectsId}/instances',
-        http_method=u'POST',
-        method_id=u'remotebuildexecution.projects.instances.create',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
+        flat_path='v1alpha/projects/{projectsId}/instances',
+        http_method='POST',
+        method_id='remotebuildexecution.projects.instances.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
         query_params=[],
-        relative_path=u'v1alpha/{+parent}/instances',
+        relative_path='v1alpha/{+parent}/instances',
         request_field='<request>',
-        request_type_name=u'GoogleDevtoolsRemotebuildexecutionAdminV1alphaCreateInstanceRequest',
-        response_type_name=u'GoogleLongrunningOperation',
+        request_type_name='GoogleDevtoolsRemotebuildexecutionAdminV1alphaCreateInstanceRequest',
+        response_type_name='GoogleLongrunningOperation',
         supports_download=False,
     )
 
@@ -254,16 +254,16 @@ pools.
           config, request, global_params=global_params)
 
     Delete.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha/projects/{projectsId}/instances/{instancesId}',
-        http_method=u'DELETE',
-        method_id=u'remotebuildexecution.projects.instances.delete',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1alpha/projects/{projectsId}/instances/{instancesId}',
+        http_method='DELETE',
+        method_id='remotebuildexecution.projects.instances.delete',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1alpha/{+name}',
+        relative_path='v1alpha/{+name}',
         request_field='',
-        request_type_name=u'RemotebuildexecutionProjectsInstancesDeleteRequest',
-        response_type_name=u'GoogleLongrunningOperation',
+        request_type_name='RemotebuildexecutionProjectsInstancesDeleteRequest',
+        response_type_name='GoogleLongrunningOperation',
         supports_download=False,
     )
 
@@ -281,16 +281,16 @@ pools.
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha/projects/{projectsId}/instances/{instancesId}',
-        http_method=u'GET',
-        method_id=u'remotebuildexecution.projects.instances.get',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1alpha/projects/{projectsId}/instances/{instancesId}',
+        http_method='GET',
+        method_id='remotebuildexecution.projects.instances.get',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1alpha/{+name}',
+        relative_path='v1alpha/{+name}',
         request_field='',
-        request_type_name=u'RemotebuildexecutionProjectsInstancesGetRequest',
-        response_type_name=u'GoogleDevtoolsRemotebuildexecutionAdminV1alphaInstance',
+        request_type_name='RemotebuildexecutionProjectsInstancesGetRequest',
+        response_type_name='GoogleDevtoolsRemotebuildexecutionAdminV1alphaInstance',
         supports_download=False,
     )
 
@@ -308,23 +308,23 @@ pools.
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha/projects/{projectsId}/instances',
-        http_method=u'GET',
-        method_id=u'remotebuildexecution.projects.instances.list',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
+        flat_path='v1alpha/projects/{projectsId}/instances',
+        http_method='GET',
+        method_id='remotebuildexecution.projects.instances.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
         query_params=[],
-        relative_path=u'v1alpha/{+parent}/instances',
+        relative_path='v1alpha/{+parent}/instances',
         request_field='',
-        request_type_name=u'RemotebuildexecutionProjectsInstancesListRequest',
-        response_type_name=u'GoogleDevtoolsRemotebuildexecutionAdminV1alphaListInstancesResponse',
+        request_type_name='RemotebuildexecutionProjectsInstancesListRequest',
+        response_type_name='GoogleDevtoolsRemotebuildexecutionAdminV1alphaListInstancesResponse',
         supports_download=False,
     )
 
   class ProjectsOperationsService(base_api.BaseApiService):
     """Service class for the projects_operations resource."""
 
-    _NAME = u'projects_operations'
+    _NAME = 'projects_operations'
 
     def __init__(self, client):
       super(RemotebuildexecutionV1alpha.ProjectsOperationsService, self).__init__(client)
@@ -347,23 +347,23 @@ service.
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha/projects/{projectsId}/operations/{operationsId}',
-        http_method=u'GET',
-        method_id=u'remotebuildexecution.projects.operations.get',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1alpha/projects/{projectsId}/operations/{operationsId}',
+        http_method='GET',
+        method_id='remotebuildexecution.projects.operations.get',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1alpha/{+name}',
+        relative_path='v1alpha/{+name}',
         request_field='',
-        request_type_name=u'RemotebuildexecutionProjectsOperationsGetRequest',
-        response_type_name=u'GoogleLongrunningOperation',
+        request_type_name='RemotebuildexecutionProjectsOperationsGetRequest',
+        response_type_name='GoogleLongrunningOperation',
         supports_download=False,
     )
 
   class ProjectsService(base_api.BaseApiService):
     """Service class for the projects resource."""
 
-    _NAME = u'projects'
+    _NAME = 'projects'
 
     def __init__(self, client):
       super(RemotebuildexecutionV1alpha.ProjectsService, self).__init__(client)

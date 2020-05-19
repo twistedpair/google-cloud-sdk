@@ -28,35 +28,35 @@ class Collections(enum.Enum):
       'datasets',
       'projects/{projectId}/datasets/{datasetId}',
       {},
-      [u'projectId', u'datasetId'],
+      ['projectId', 'datasetId'],
       True
   )
   JOBS = (
       'jobs',
       'projects/{projectId}/jobs/{jobId}',
       {},
-      [u'projectId', u'jobId'],
+      ['projectId', 'jobId'],
       True
   )
   PROJECTS = (
       'projects',
       'projects/{projectId}',
       {},
-      [u'projectId'],
+      ['projectId'],
       True
   )
   TABLEDATA = (
       'tabledata',
       'projects/{projectId}/datasets/{datasetId}/tables/{tableId}',
       {},
-      [u'projectId', u'datasetId', u'tableId'],
+      ['projectId', 'datasetId', 'tableId'],
       False
   )
   TABLES = (
       'tables',
       'projects/{projectId}/datasets/{datasetId}/tables/{tableId}',
       {},
-      [u'projectId', u'datasetId', u'tableId'],
+      ['projectId', 'datasetId', 'tableId'],
       True
   )
 

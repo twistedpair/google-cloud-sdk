@@ -28,7 +28,7 @@ class Collections(enum.Enum):
       'folders',
       'folders/{foldersId}',
       {},
-      [u'foldersId'],
+      ['foldersId'],
       True
   )
   FOLDERS_APPROVALREQUESTS = (
@@ -38,14 +38,14 @@ class Collections(enum.Enum):
           '':
               'folders/{foldersId}/approvalRequests/{approvalRequestsId}',
       },
-      [u'name'],
+      ['name'],
       True
   )
   ORGANIZATIONS = (
       'organizations',
       'organizations/{organizationsId}',
       {},
-      [u'organizationsId'],
+      ['organizationsId'],
       True
   )
   ORGANIZATIONS_APPROVALREQUESTS = (
@@ -56,14 +56,14 @@ class Collections(enum.Enum):
               'organizations/{organizationsId}/approvalRequests/'
               '{approvalRequestsId}',
       },
-      [u'name'],
+      ['name'],
       True
   )
   PROJECTS = (
       'projects',
       'projects/{projectsId}',
       {},
-      [u'projectsId'],
+      ['projectsId'],
       True
   )
   PROJECTS_APPROVALREQUESTS = (
@@ -73,7 +73,7 @@ class Collections(enum.Enum):
           '':
               'projects/{projectsId}/approvalRequests/{approvalRequestsId}',
       },
-      [u'name'],
+      ['name'],
       True
   )
 

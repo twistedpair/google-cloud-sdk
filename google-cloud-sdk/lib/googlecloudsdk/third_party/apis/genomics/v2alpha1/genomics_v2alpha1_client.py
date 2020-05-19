@@ -8,17 +8,17 @@ class GenomicsV2alpha1(base_api.BaseApiClient):
   """Generated client library for service genomics version v2alpha1."""
 
   MESSAGES_MODULE = messages
-  BASE_URL = u'https://genomics.googleapis.com/'
-  MTLS_BASE_URL = u'https://genomics.mtls.googleapis.com/'
+  BASE_URL = 'https://genomics.googleapis.com/'
+  MTLS_BASE_URL = 'https://genomics.mtls.googleapis.com/'
 
-  _PACKAGE = u'genomics'
-  _SCOPES = [u'https://www.googleapis.com/auth/cloud-platform', u'https://www.googleapis.com/auth/genomics']
-  _VERSION = u'v2alpha1'
+  _PACKAGE = 'genomics'
+  _SCOPES = ['https://www.googleapis.com/auth/cloud-platform', 'https://www.googleapis.com/auth/genomics']
+  _VERSION = 'v2alpha1'
   _CLIENT_ID = '1042881264118.apps.googleusercontent.com'
   _CLIENT_SECRET = 'x_Tw5K8nnjoRAqULM9PFAC2b'
-  _USER_AGENT = u'google-cloud-sdk'
-  _CLIENT_CLASS_NAME = u'GenomicsV2alpha1'
-  _URL_VERSION = u'v2alpha1'
+  _USER_AGENT = 'google-cloud-sdk'
+  _CLIENT_CLASS_NAME = 'GenomicsV2alpha1'
+  _URL_VERSION = 'v2alpha1'
   _API_KEY = None
 
   def __init__(self, url='', credentials=None,
@@ -45,7 +45,7 @@ class GenomicsV2alpha1(base_api.BaseApiClient):
   class PipelinesService(base_api.BaseApiService):
     """Service class for the pipelines resource."""
 
-    _NAME = u'pipelines'
+    _NAME = 'pipelines'
 
     def __init__(self, client):
       super(GenomicsV2alpha1.PipelinesService, self).__init__(client)
@@ -83,22 +83,22 @@ IAM](https://cloud.google.com/iam/) permission:
           config, request, global_params=global_params)
 
     Run.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'genomics.pipelines.run',
+        http_method='POST',
+        method_id='genomics.pipelines.run',
         ordered_params=[],
         path_params=[],
         query_params=[],
-        relative_path=u'v2alpha1/pipelines:run',
+        relative_path='v2alpha1/pipelines:run',
         request_field='<request>',
-        request_type_name=u'RunPipelineRequest',
-        response_type_name=u'Operation',
+        request_type_name='RunPipelineRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
   class ProjectsOperationsService(base_api.BaseApiService):
     """Service class for the projects_operations resource."""
 
-    _NAME = u'projects_operations'
+    _NAME = 'projects_operations'
 
     def __init__(self, client):
       super(GenomicsV2alpha1.ProjectsOperationsService, self).__init__(client)
@@ -127,16 +127,16 @@ Authorization requires the following [Google IAM](https://cloud.google.com/iam) 
           config, request, global_params=global_params)
 
     Cancel.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v2alpha1/projects/{projectsId}/operations/{operationsId}:cancel',
-        http_method=u'POST',
-        method_id=u'genomics.projects.operations.cancel',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v2alpha1/projects/{projectsId}/operations/{operationsId}:cancel',
+        http_method='POST',
+        method_id='genomics.projects.operations.cancel',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v2alpha1/{+name}:cancel',
-        request_field=u'cancelOperationRequest',
-        request_type_name=u'GenomicsProjectsOperationsCancelRequest',
-        response_type_name=u'Empty',
+        relative_path='v2alpha1/{+name}:cancel',
+        request_field='cancelOperationRequest',
+        request_type_name='GenomicsProjectsOperationsCancelRequest',
+        response_type_name='Empty',
         supports_download=False,
     )
 
@@ -159,16 +159,16 @@ Authorization requires the following [Google IAM](https://cloud.google.com/iam) 
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v2alpha1/projects/{projectsId}/operations/{operationsId}',
-        http_method=u'GET',
-        method_id=u'genomics.projects.operations.get',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v2alpha1/projects/{projectsId}/operations/{operationsId}',
+        http_method='GET',
+        method_id='genomics.projects.operations.get',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v2alpha1/{+name}',
+        relative_path='v2alpha1/{+name}',
         request_field='',
-        request_type_name=u'GenomicsProjectsOperationsGetRequest',
-        response_type_name=u'Operation',
+        request_type_name='GenomicsProjectsOperationsGetRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -189,23 +189,23 @@ Authorization requires the following [Google IAM](https://cloud.google.com/iam) 
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v2alpha1/projects/{projectsId}/operations',
-        http_method=u'GET',
-        method_id=u'genomics.projects.operations.list',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[u'filter', u'pageSize', u'pageToken'],
-        relative_path=u'v2alpha1/{+name}',
+        flat_path='v2alpha1/projects/{projectsId}/operations',
+        http_method='GET',
+        method_id='genomics.projects.operations.list',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['filter', 'pageSize', 'pageToken'],
+        relative_path='v2alpha1/{+name}',
         request_field='',
-        request_type_name=u'GenomicsProjectsOperationsListRequest',
-        response_type_name=u'ListOperationsResponse',
+        request_type_name='GenomicsProjectsOperationsListRequest',
+        response_type_name='ListOperationsResponse',
         supports_download=False,
     )
 
   class ProjectsWorkersService(base_api.BaseApiService):
     """Service class for the projects_workers resource."""
 
-    _NAME = u'projects_workers'
+    _NAME = 'projects_workers'
 
     def __init__(self, client):
       super(GenomicsV2alpha1.ProjectsWorkersService, self).__init__(client)
@@ -227,23 +227,23 @@ provide periodic status updates.
           config, request, global_params=global_params)
 
     CheckIn.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v2alpha1/projects/{projectsId}/workers/{workersId}:checkIn',
-        http_method=u'POST',
-        method_id=u'genomics.projects.workers.checkIn',
-        ordered_params=[u'id'],
-        path_params=[u'id'],
+        flat_path='v2alpha1/projects/{projectsId}/workers/{workersId}:checkIn',
+        http_method='POST',
+        method_id='genomics.projects.workers.checkIn',
+        ordered_params=['id'],
+        path_params=['id'],
         query_params=[],
-        relative_path=u'v2alpha1/{+id}:checkIn',
-        request_field=u'checkInRequest',
-        request_type_name=u'GenomicsProjectsWorkersCheckInRequest',
-        response_type_name=u'CheckInResponse',
+        relative_path='v2alpha1/{+id}:checkIn',
+        request_field='checkInRequest',
+        request_type_name='GenomicsProjectsWorkersCheckInRequest',
+        response_type_name='CheckInResponse',
         supports_download=False,
     )
 
   class ProjectsService(base_api.BaseApiService):
     """Service class for the projects resource."""
 
-    _NAME = u'projects'
+    _NAME = 'projects'
 
     def __init__(self, client):
       super(GenomicsV2alpha1.ProjectsService, self).__init__(client)
@@ -253,7 +253,7 @@ provide periodic status updates.
   class WorkersService(base_api.BaseApiService):
     """Service class for the workers resource."""
 
-    _NAME = u'workers'
+    _NAME = 'workers'
 
     def __init__(self, client):
       super(GenomicsV2alpha1.WorkersService, self).__init__(client)
@@ -275,14 +275,14 @@ provide periodic status updates.
           config, request, global_params=global_params)
 
     CheckIn.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'genomics.workers.checkIn',
-        ordered_params=[u'id'],
-        path_params=[u'id'],
+        http_method='POST',
+        method_id='genomics.workers.checkIn',
+        ordered_params=['id'],
+        path_params=['id'],
         query_params=[],
-        relative_path=u'v2alpha1/workers/{id}:checkIn',
-        request_field=u'checkInRequest',
-        request_type_name=u'GenomicsWorkersCheckInRequest',
-        response_type_name=u'CheckInResponse',
+        relative_path='v2alpha1/workers/{id}:checkIn',
+        request_field='checkInRequest',
+        request_type_name='GenomicsWorkersCheckInRequest',
+        response_type_name='CheckInResponse',
         supports_download=False,
     )

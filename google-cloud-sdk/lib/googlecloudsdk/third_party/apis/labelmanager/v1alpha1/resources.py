@@ -31,7 +31,7 @@ class Collections(enum.Enum):
           '':
               'labelKeys/{labelKeysId}',
       },
-      [u'name'],
+      ['name'],
       True
   )
   LABELVALUES = (
@@ -41,7 +41,7 @@ class Collections(enum.Enum):
           '':
               'labelValues/{labelValuesId}',
       },
-      [u'name'],
+      ['name'],
       True
   )
   OPERATIONS = (
@@ -51,7 +51,7 @@ class Collections(enum.Enum):
           '':
               'operations/{operationsId}',
       },
-      [u'name'],
+      ['name'],
       True
   )
 

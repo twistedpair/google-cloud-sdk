@@ -618,7 +618,8 @@ class ResourceArgument(object):
                zone_hidden=False,
                short_help=None,
                detailed_help=None,
-               custom_plural=None):
+               custom_plural=None,
+               use_existing_default_scope=None):
 
     """Constructor.
 
@@ -653,6 +654,9 @@ class ResourceArgument(object):
                           provided there will be no detailed help for the flag.
       custom_plural: str, If plural is True then this string will be used as
                           plural resource name.
+      use_existing_default_scope: bool, when set to True, already existing
+                                  zone and/or region flags will be used for
+                                  this argument.
 
     Raises:
       exceptions.Error: if there some inconsistency in arguments.
@@ -660,12 +664,13 @@ class ResourceArgument(object):
     self.name_arg = name or 'name'
     self._short_help = short_help
     self._detailed_help = detailed_help
-
+    self.use_existing_default_scope = use_existing_default_scope
     if self.name_arg.startswith('--'):
       self.is_flag = True
       self.name = self.name_arg[2:].replace('-', '_')
-      self.scopes = ResourceArgScopes(flag_prefix=self.name_arg[2:])
-
+      flag_prefix = (None if self.use_existing_default_scope else
+                     self.name_arg[2:])
+      self.scopes = ResourceArgScopes(flag_prefix=flag_prefix)
     else:  # positional
       self.scopes = ResourceArgScopes(flag_prefix=None)
       self.name = self.name_arg  # arg name is same as its spec.
@@ -740,6 +745,9 @@ class ResourceArgument(object):
         params['nargs'] = '*' if self.plural else '?'
 
     (mutex_group or parser).add_argument(self.name_arg, **params)
+
+    if self.use_existing_default_scope:
+      return
 
     if len(self.scopes) > 1:
       scope = parser.add_mutually_exclusive_group()

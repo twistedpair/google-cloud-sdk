@@ -8,17 +8,17 @@ class CloudassetV1beta1(base_api.BaseApiClient):
   """Generated client library for service cloudasset version v1beta1."""
 
   MESSAGES_MODULE = messages
-  BASE_URL = u'https://cloudasset.googleapis.com/'
-  MTLS_BASE_URL = u'https://cloudasset.mtls.googleapis.com/'
+  BASE_URL = 'https://cloudasset.googleapis.com/'
+  MTLS_BASE_URL = 'https://cloudasset.mtls.googleapis.com/'
 
-  _PACKAGE = u'cloudasset'
-  _SCOPES = [u'https://www.googleapis.com/auth/cloud-platform']
-  _VERSION = u'v1beta1'
+  _PACKAGE = 'cloudasset'
+  _SCOPES = ['https://www.googleapis.com/auth/cloud-platform']
+  _VERSION = 'v1beta1'
   _CLIENT_ID = '1042881264118.apps.googleusercontent.com'
   _CLIENT_SECRET = 'x_Tw5K8nnjoRAqULM9PFAC2b'
-  _USER_AGENT = u'google-cloud-sdk'
-  _CLIENT_CLASS_NAME = u'CloudassetV1beta1'
-  _URL_VERSION = u'v1beta1'
+  _USER_AGENT = 'google-cloud-sdk'
+  _CLIENT_CLASS_NAME = 'CloudassetV1beta1'
+  _URL_VERSION = 'v1beta1'
   _API_KEY = None
 
   def __init__(self, url='', credentials=None,
@@ -46,7 +46,7 @@ class CloudassetV1beta1(base_api.BaseApiClient):
   class FoldersOperationsService(base_api.BaseApiService):
     """Service class for the folders_operations resource."""
 
-    _NAME = u'folders_operations'
+    _NAME = 'folders_operations'
 
     def __init__(self, client):
       super(CloudassetV1beta1.FoldersOperationsService, self).__init__(client)
@@ -69,23 +69,23 @@ service.
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/folders/{foldersId}/operations/{operationsId}/{operationsId1}',
-        http_method=u'GET',
-        method_id=u'cloudasset.folders.operations.get',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1beta1/folders/{foldersId}/operations/{operationsId}/{operationsId1}',
+        http_method='GET',
+        method_id='cloudasset.folders.operations.get',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1beta1/{+name}',
+        relative_path='v1beta1/{+name}',
         request_field='',
-        request_type_name=u'CloudassetFoldersOperationsGetRequest',
-        response_type_name=u'Operation',
+        request_type_name='CloudassetFoldersOperationsGetRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
   class FoldersService(base_api.BaseApiService):
     """Service class for the folders resource."""
 
-    _NAME = u'folders'
+    _NAME = 'folders'
 
     def __init__(self, client):
       super(CloudassetV1beta1.FoldersService, self).__init__(client)
@@ -112,23 +112,23 @@ regular-size resource parent, the export operation usually finishes within
           config, request, global_params=global_params)
 
     ExportAssets.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/folders/{foldersId}:exportAssets',
-        http_method=u'POST',
-        method_id=u'cloudasset.folders.exportAssets',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
+        flat_path='v1beta1/folders/{foldersId}:exportAssets',
+        http_method='POST',
+        method_id='cloudasset.folders.exportAssets',
+        ordered_params=['parent'],
+        path_params=['parent'],
         query_params=[],
-        relative_path=u'v1beta1/{+parent}:exportAssets',
-        request_field=u'exportAssetsRequest',
-        request_type_name=u'CloudassetFoldersExportAssetsRequest',
-        response_type_name=u'Operation',
+        relative_path='v1beta1/{+parent}:exportAssets',
+        request_field='exportAssetsRequest',
+        request_type_name='CloudassetFoldersExportAssetsRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
   class OrganizationsOperationsService(base_api.BaseApiService):
     """Service class for the organizations_operations resource."""
 
-    _NAME = u'organizations_operations'
+    _NAME = 'organizations_operations'
 
     def __init__(self, client):
       super(CloudassetV1beta1.OrganizationsOperationsService, self).__init__(client)
@@ -151,23 +151,23 @@ service.
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/organizations/{organizationsId}/operations/{operationsId}/{operationsId1}',
-        http_method=u'GET',
-        method_id=u'cloudasset.organizations.operations.get',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1beta1/organizations/{organizationsId}/operations/{operationsId}/{operationsId1}',
+        http_method='GET',
+        method_id='cloudasset.organizations.operations.get',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1beta1/{+name}',
+        relative_path='v1beta1/{+name}',
         request_field='',
-        request_type_name=u'CloudassetOrganizationsOperationsGetRequest',
-        response_type_name=u'Operation',
+        request_type_name='CloudassetOrganizationsOperationsGetRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
   class OrganizationsService(base_api.BaseApiService):
     """Service class for the organizations resource."""
 
-    _NAME = u'organizations'
+    _NAME = 'organizations'
 
     def __init__(self, client):
       super(CloudassetV1beta1.OrganizationsService, self).__init__(client)
@@ -194,16 +194,16 @@ error.
           config, request, global_params=global_params)
 
     BatchGetAssetsHistory.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/organizations/{organizationsId}:batchGetAssetsHistory',
-        http_method=u'GET',
-        method_id=u'cloudasset.organizations.batchGetAssetsHistory',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'assetNames', u'contentType', u'readTimeWindow_endTime', u'readTimeWindow_startTime'],
-        relative_path=u'v1beta1/{+parent}:batchGetAssetsHistory',
+        flat_path='v1beta1/organizations/{organizationsId}:batchGetAssetsHistory',
+        http_method='GET',
+        method_id='cloudasset.organizations.batchGetAssetsHistory',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['assetNames', 'contentType', 'readTimeWindow_endTime', 'readTimeWindow_startTime'],
+        relative_path='v1beta1/{+parent}:batchGetAssetsHistory',
         request_field='',
-        request_type_name=u'CloudassetOrganizationsBatchGetAssetsHistoryRequest',
-        response_type_name=u'BatchGetAssetsHistoryResponse',
+        request_type_name='CloudassetOrganizationsBatchGetAssetsHistoryRequest',
+        response_type_name='BatchGetAssetsHistoryResponse',
         supports_download=False,
     )
 
@@ -227,23 +227,23 @@ regular-size resource parent, the export operation usually finishes within
           config, request, global_params=global_params)
 
     ExportAssets.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/organizations/{organizationsId}:exportAssets',
-        http_method=u'POST',
-        method_id=u'cloudasset.organizations.exportAssets',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
+        flat_path='v1beta1/organizations/{organizationsId}:exportAssets',
+        http_method='POST',
+        method_id='cloudasset.organizations.exportAssets',
+        ordered_params=['parent'],
+        path_params=['parent'],
         query_params=[],
-        relative_path=u'v1beta1/{+parent}:exportAssets',
-        request_field=u'exportAssetsRequest',
-        request_type_name=u'CloudassetOrganizationsExportAssetsRequest',
-        response_type_name=u'Operation',
+        relative_path='v1beta1/{+parent}:exportAssets',
+        request_field='exportAssetsRequest',
+        request_type_name='CloudassetOrganizationsExportAssetsRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
   class ProjectsOperationsService(base_api.BaseApiService):
     """Service class for the projects_operations resource."""
 
-    _NAME = u'projects_operations'
+    _NAME = 'projects_operations'
 
     def __init__(self, client):
       super(CloudassetV1beta1.ProjectsOperationsService, self).__init__(client)
@@ -266,23 +266,23 @@ service.
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/projects/{projectsId}/operations/{operationsId}/{operationsId1}',
-        http_method=u'GET',
-        method_id=u'cloudasset.projects.operations.get',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1beta1/projects/{projectsId}/operations/{operationsId}/{operationsId1}',
+        http_method='GET',
+        method_id='cloudasset.projects.operations.get',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1beta1/{+name}',
+        relative_path='v1beta1/{+name}',
         request_field='',
-        request_type_name=u'CloudassetProjectsOperationsGetRequest',
-        response_type_name=u'Operation',
+        request_type_name='CloudassetProjectsOperationsGetRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
   class ProjectsService(base_api.BaseApiService):
     """Service class for the projects resource."""
 
-    _NAME = u'projects'
+    _NAME = 'projects'
 
     def __init__(self, client):
       super(CloudassetV1beta1.ProjectsService, self).__init__(client)
@@ -309,16 +309,16 @@ error.
           config, request, global_params=global_params)
 
     BatchGetAssetsHistory.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/projects/{projectsId}:batchGetAssetsHistory',
-        http_method=u'GET',
-        method_id=u'cloudasset.projects.batchGetAssetsHistory',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'assetNames', u'contentType', u'readTimeWindow_endTime', u'readTimeWindow_startTime'],
-        relative_path=u'v1beta1/{+parent}:batchGetAssetsHistory',
+        flat_path='v1beta1/projects/{projectsId}:batchGetAssetsHistory',
+        http_method='GET',
+        method_id='cloudasset.projects.batchGetAssetsHistory',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['assetNames', 'contentType', 'readTimeWindow_endTime', 'readTimeWindow_startTime'],
+        relative_path='v1beta1/{+parent}:batchGetAssetsHistory',
         request_field='',
-        request_type_name=u'CloudassetProjectsBatchGetAssetsHistoryRequest',
-        response_type_name=u'BatchGetAssetsHistoryResponse',
+        request_type_name='CloudassetProjectsBatchGetAssetsHistoryRequest',
+        response_type_name='BatchGetAssetsHistoryResponse',
         supports_download=False,
     )
 
@@ -342,15 +342,15 @@ regular-size resource parent, the export operation usually finishes within
           config, request, global_params=global_params)
 
     ExportAssets.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/projects/{projectsId}:exportAssets',
-        http_method=u'POST',
-        method_id=u'cloudasset.projects.exportAssets',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
+        flat_path='v1beta1/projects/{projectsId}:exportAssets',
+        http_method='POST',
+        method_id='cloudasset.projects.exportAssets',
+        ordered_params=['parent'],
+        path_params=['parent'],
         query_params=[],
-        relative_path=u'v1beta1/{+parent}:exportAssets',
-        request_field=u'exportAssetsRequest',
-        request_type_name=u'CloudassetProjectsExportAssetsRequest',
-        response_type_name=u'Operation',
+        relative_path='v1beta1/{+parent}:exportAssets',
+        request_field='exportAssetsRequest',
+        request_type_name='CloudassetProjectsExportAssetsRequest',
+        response_type_name='Operation',
         supports_download=False,
     )

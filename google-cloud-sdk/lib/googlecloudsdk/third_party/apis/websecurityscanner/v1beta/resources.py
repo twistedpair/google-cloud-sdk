@@ -28,7 +28,7 @@ class Collections(enum.Enum):
       'projects',
       'projects/{projectsId}',
       {},
-      [u'projectsId'],
+      ['projectsId'],
       True
   )
   PROJECTS_SCANCONFIGS = (
@@ -38,7 +38,7 @@ class Collections(enum.Enum):
           '':
               'projects/{projectsId}/scanConfigs/{scanConfigsId}',
       },
-      [u'name'],
+      ['name'],
       True
   )
   PROJECTS_SCANCONFIGS_SCANRUNS = (
@@ -49,7 +49,7 @@ class Collections(enum.Enum):
               'projects/{projectsId}/scanConfigs/{scanConfigsId}/scanRuns/'
               '{scanRunsId}',
       },
-      [u'name'],
+      ['name'],
       True
   )
   PROJECTS_SCANCONFIGS_SCANRUNS_CRAWLEDURLS = (
@@ -57,7 +57,7 @@ class Collections(enum.Enum):
       'projects/{projectsId}/scanConfigs/{scanConfigsId}/scanRuns/'
       '{scanRunsId}',
       {},
-      [u'projectsId', u'scanConfigsId', u'scanRunsId'],
+      ['projectsId', 'scanConfigsId', 'scanRunsId'],
       False
   )
   PROJECTS_SCANCONFIGS_SCANRUNS_FINDINGS = (
@@ -68,7 +68,7 @@ class Collections(enum.Enum):
               'projects/{projectsId}/scanConfigs/{scanConfigsId}/scanRuns/'
               '{scanRunsId}/findings/{findingsId}',
       },
-      [u'name'],
+      ['name'],
       True
   )
 

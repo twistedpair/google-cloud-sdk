@@ -8,17 +8,17 @@ class BigquerydatatransferV1(base_api.BaseApiClient):
   """Generated client library for service bigquerydatatransfer version v1."""
 
   MESSAGES_MODULE = messages
-  BASE_URL = u'https://bigquerydatatransfer.googleapis.com/'
-  MTLS_BASE_URL = u'https://bigquerydatatransfer.mtls.googleapis.com/'
+  BASE_URL = 'https://bigquerydatatransfer.googleapis.com/'
+  MTLS_BASE_URL = 'https://bigquerydatatransfer.mtls.googleapis.com/'
 
-  _PACKAGE = u'bigquerydatatransfer'
-  _SCOPES = [u'https://www.googleapis.com/auth/bigquery', u'https://www.googleapis.com/auth/bigquery.readonly', u'https://www.googleapis.com/auth/cloud-platform', u'https://www.googleapis.com/auth/cloud-platform.read-only']
-  _VERSION = u'v1'
+  _PACKAGE = 'bigquerydatatransfer'
+  _SCOPES = ['https://www.googleapis.com/auth/bigquery', 'https://www.googleapis.com/auth/bigquery.readonly', 'https://www.googleapis.com/auth/cloud-platform', 'https://www.googleapis.com/auth/cloud-platform.read-only']
+  _VERSION = 'v1'
   _CLIENT_ID = '1042881264118.apps.googleusercontent.com'
   _CLIENT_SECRET = 'x_Tw5K8nnjoRAqULM9PFAC2b'
-  _USER_AGENT = u'google-cloud-sdk'
-  _CLIENT_CLASS_NAME = u'BigquerydatatransferV1'
-  _URL_VERSION = u'v1'
+  _USER_AGENT = 'google-cloud-sdk'
+  _CLIENT_CLASS_NAME = 'BigquerydatatransferV1'
+  _URL_VERSION = 'v1'
   _API_KEY = None
 
   def __init__(self, url='', credentials=None,
@@ -50,7 +50,7 @@ class BigquerydatatransferV1(base_api.BaseApiClient):
   class ProjectsDataSourcesService(base_api.BaseApiService):
     """Service class for the projects_dataSources resource."""
 
-    _NAME = u'projects_dataSources'
+    _NAME = 'projects_dataSources'
 
     def __init__(self, client):
       super(BigquerydatatransferV1.ProjectsDataSourcesService, self).__init__(client)
@@ -76,16 +76,16 @@ create a transfer config.
           config, request, global_params=global_params)
 
     CheckValidCreds.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/dataSources/{dataSourcesId}:checkValidCreds',
-        http_method=u'POST',
-        method_id=u'bigquerydatatransfer.projects.dataSources.checkValidCreds',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1/projects/{projectsId}/dataSources/{dataSourcesId}:checkValidCreds',
+        http_method='POST',
+        method_id='bigquerydatatransfer.projects.dataSources.checkValidCreds',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1/{+name}:checkValidCreds',
-        request_field=u'checkValidCredsRequest',
-        request_type_name=u'BigquerydatatransferProjectsDataSourcesCheckValidCredsRequest',
-        response_type_name=u'CheckValidCredsResponse',
+        relative_path='v1/{+name}:checkValidCreds',
+        request_field='checkValidCredsRequest',
+        request_type_name='BigquerydatatransferProjectsDataSourcesCheckValidCredsRequest',
+        response_type_name='CheckValidCredsResponse',
         supports_download=False,
     )
 
@@ -104,16 +104,16 @@ which can be used for UI rendering.
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/dataSources/{dataSourcesId}',
-        http_method=u'GET',
-        method_id=u'bigquerydatatransfer.projects.dataSources.get',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1/projects/{projectsId}/dataSources/{dataSourcesId}',
+        http_method='GET',
+        method_id='bigquerydatatransfer.projects.dataSources.get',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1/{+name}',
+        relative_path='v1/{+name}',
         request_field='',
-        request_type_name=u'BigquerydatatransferProjectsDataSourcesGetRequest',
-        response_type_name=u'DataSource',
+        request_type_name='BigquerydatatransferProjectsDataSourcesGetRequest',
+        response_type_name='DataSource',
         supports_download=False,
     )
 
@@ -132,23 +132,23 @@ which can be used for UI rendering.
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/dataSources',
-        http_method=u'GET',
-        method_id=u'bigquerydatatransfer.projects.dataSources.list',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'pageSize', u'pageToken'],
-        relative_path=u'v1/{+parent}/dataSources',
+        flat_path='v1/projects/{projectsId}/dataSources',
+        http_method='GET',
+        method_id='bigquerydatatransfer.projects.dataSources.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v1/{+parent}/dataSources',
         request_field='',
-        request_type_name=u'BigquerydatatransferProjectsDataSourcesListRequest',
-        response_type_name=u'ListDataSourcesResponse',
+        request_type_name='BigquerydatatransferProjectsDataSourcesListRequest',
+        response_type_name='ListDataSourcesResponse',
         supports_download=False,
     )
 
   class ProjectsLocationsDataSourcesService(base_api.BaseApiService):
     """Service class for the projects_locations_dataSources resource."""
 
-    _NAME = u'projects_locations_dataSources'
+    _NAME = 'projects_locations_dataSources'
 
     def __init__(self, client):
       super(BigquerydatatransferV1.ProjectsLocationsDataSourcesService, self).__init__(client)
@@ -174,16 +174,16 @@ create a transfer config.
           config, request, global_params=global_params)
 
     CheckValidCreds.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/locations/{locationsId}/dataSources/{dataSourcesId}:checkValidCreds',
-        http_method=u'POST',
-        method_id=u'bigquerydatatransfer.projects.locations.dataSources.checkValidCreds',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/dataSources/{dataSourcesId}:checkValidCreds',
+        http_method='POST',
+        method_id='bigquerydatatransfer.projects.locations.dataSources.checkValidCreds',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1/{+name}:checkValidCreds',
-        request_field=u'checkValidCredsRequest',
-        request_type_name=u'BigquerydatatransferProjectsLocationsDataSourcesCheckValidCredsRequest',
-        response_type_name=u'CheckValidCredsResponse',
+        relative_path='v1/{+name}:checkValidCreds',
+        request_field='checkValidCredsRequest',
+        request_type_name='BigquerydatatransferProjectsLocationsDataSourcesCheckValidCredsRequest',
+        response_type_name='CheckValidCredsResponse',
         supports_download=False,
     )
 
@@ -202,16 +202,16 @@ which can be used for UI rendering.
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/locations/{locationsId}/dataSources/{dataSourcesId}',
-        http_method=u'GET',
-        method_id=u'bigquerydatatransfer.projects.locations.dataSources.get',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/dataSources/{dataSourcesId}',
+        http_method='GET',
+        method_id='bigquerydatatransfer.projects.locations.dataSources.get',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1/{+name}',
+        relative_path='v1/{+name}',
         request_field='',
-        request_type_name=u'BigquerydatatransferProjectsLocationsDataSourcesGetRequest',
-        response_type_name=u'DataSource',
+        request_type_name='BigquerydatatransferProjectsLocationsDataSourcesGetRequest',
+        response_type_name='DataSource',
         supports_download=False,
     )
 
@@ -230,23 +230,23 @@ which can be used for UI rendering.
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/locations/{locationsId}/dataSources',
-        http_method=u'GET',
-        method_id=u'bigquerydatatransfer.projects.locations.dataSources.list',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'pageSize', u'pageToken'],
-        relative_path=u'v1/{+parent}/dataSources',
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/dataSources',
+        http_method='GET',
+        method_id='bigquerydatatransfer.projects.locations.dataSources.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v1/{+parent}/dataSources',
         request_field='',
-        request_type_name=u'BigquerydatatransferProjectsLocationsDataSourcesListRequest',
-        response_type_name=u'ListDataSourcesResponse',
+        request_type_name='BigquerydatatransferProjectsLocationsDataSourcesListRequest',
+        response_type_name='ListDataSourcesResponse',
         supports_download=False,
     )
 
   class ProjectsLocationsTransferConfigsRunsTransferLogsService(base_api.BaseApiService):
     """Service class for the projects_locations_transferConfigs_runs_transferLogs resource."""
 
-    _NAME = u'projects_locations_transferConfigs_runs_transferLogs'
+    _NAME = 'projects_locations_transferConfigs_runs_transferLogs'
 
     def __init__(self, client):
       super(BigquerydatatransferV1.ProjectsLocationsTransferConfigsRunsTransferLogsService, self).__init__(client)
@@ -267,23 +267,23 @@ which can be used for UI rendering.
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/locations/{locationsId}/transferConfigs/{transferConfigsId}/runs/{runsId}/transferLogs',
-        http_method=u'GET',
-        method_id=u'bigquerydatatransfer.projects.locations.transferConfigs.runs.transferLogs.list',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'messageTypes', u'pageSize', u'pageToken'],
-        relative_path=u'v1/{+parent}/transferLogs',
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/transferConfigs/{transferConfigsId}/runs/{runsId}/transferLogs',
+        http_method='GET',
+        method_id='bigquerydatatransfer.projects.locations.transferConfigs.runs.transferLogs.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['messageTypes', 'pageSize', 'pageToken'],
+        relative_path='v1/{+parent}/transferLogs',
         request_field='',
-        request_type_name=u'BigquerydatatransferProjectsLocationsTransferConfigsRunsTransferLogsListRequest',
-        response_type_name=u'ListTransferLogsResponse',
+        request_type_name='BigquerydatatransferProjectsLocationsTransferConfigsRunsTransferLogsListRequest',
+        response_type_name='ListTransferLogsResponse',
         supports_download=False,
     )
 
   class ProjectsLocationsTransferConfigsRunsService(base_api.BaseApiService):
     """Service class for the projects_locations_transferConfigs_runs resource."""
 
-    _NAME = u'projects_locations_transferConfigs_runs'
+    _NAME = 'projects_locations_transferConfigs_runs'
 
     def __init__(self, client):
       super(BigquerydatatransferV1.ProjectsLocationsTransferConfigsRunsService, self).__init__(client)
@@ -304,16 +304,16 @@ which can be used for UI rendering.
           config, request, global_params=global_params)
 
     Delete.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/locations/{locationsId}/transferConfigs/{transferConfigsId}/runs/{runsId}',
-        http_method=u'DELETE',
-        method_id=u'bigquerydatatransfer.projects.locations.transferConfigs.runs.delete',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/transferConfigs/{transferConfigsId}/runs/{runsId}',
+        http_method='DELETE',
+        method_id='bigquerydatatransfer.projects.locations.transferConfigs.runs.delete',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1/{+name}',
+        relative_path='v1/{+name}',
         request_field='',
-        request_type_name=u'BigquerydatatransferProjectsLocationsTransferConfigsRunsDeleteRequest',
-        response_type_name=u'Empty',
+        request_type_name='BigquerydatatransferProjectsLocationsTransferConfigsRunsDeleteRequest',
+        response_type_name='Empty',
         supports_download=False,
     )
 
@@ -331,16 +331,16 @@ which can be used for UI rendering.
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/locations/{locationsId}/transferConfigs/{transferConfigsId}/runs/{runsId}',
-        http_method=u'GET',
-        method_id=u'bigquerydatatransfer.projects.locations.transferConfigs.runs.get',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/transferConfigs/{transferConfigsId}/runs/{runsId}',
+        http_method='GET',
+        method_id='bigquerydatatransfer.projects.locations.transferConfigs.runs.get',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1/{+name}',
+        relative_path='v1/{+name}',
         request_field='',
-        request_type_name=u'BigquerydatatransferProjectsLocationsTransferConfigsRunsGetRequest',
-        response_type_name=u'TransferRun',
+        request_type_name='BigquerydatatransferProjectsLocationsTransferConfigsRunsGetRequest',
+        response_type_name='TransferRun',
         supports_download=False,
     )
 
@@ -358,23 +358,23 @@ which can be used for UI rendering.
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/locations/{locationsId}/transferConfigs/{transferConfigsId}/runs',
-        http_method=u'GET',
-        method_id=u'bigquerydatatransfer.projects.locations.transferConfigs.runs.list',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'pageSize', u'pageToken', u'runAttempt', u'states'],
-        relative_path=u'v1/{+parent}/runs',
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/transferConfigs/{transferConfigsId}/runs',
+        http_method='GET',
+        method_id='bigquerydatatransfer.projects.locations.transferConfigs.runs.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken', 'runAttempt', 'states'],
+        relative_path='v1/{+parent}/runs',
         request_field='',
-        request_type_name=u'BigquerydatatransferProjectsLocationsTransferConfigsRunsListRequest',
-        response_type_name=u'ListTransferRunsResponse',
+        request_type_name='BigquerydatatransferProjectsLocationsTransferConfigsRunsListRequest',
+        response_type_name='ListTransferRunsResponse',
         supports_download=False,
     )
 
   class ProjectsLocationsTransferConfigsService(base_api.BaseApiService):
     """Service class for the projects_locations_transferConfigs resource."""
 
-    _NAME = u'projects_locations_transferConfigs'
+    _NAME = 'projects_locations_transferConfigs'
 
     def __init__(self, client):
       super(BigquerydatatransferV1.ProjectsLocationsTransferConfigsService, self).__init__(client)
@@ -395,16 +395,16 @@ which can be used for UI rendering.
           config, request, global_params=global_params)
 
     Create.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/locations/{locationsId}/transferConfigs',
-        http_method=u'POST',
-        method_id=u'bigquerydatatransfer.projects.locations.transferConfigs.create',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'authorizationCode', u'serviceAccountName', u'versionInfo'],
-        relative_path=u'v1/{+parent}/transferConfigs',
-        request_field=u'transferConfig',
-        request_type_name=u'BigquerydatatransferProjectsLocationsTransferConfigsCreateRequest',
-        response_type_name=u'TransferConfig',
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/transferConfigs',
+        http_method='POST',
+        method_id='bigquerydatatransfer.projects.locations.transferConfigs.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['authorizationCode', 'serviceAccountName', 'versionInfo'],
+        relative_path='v1/{+parent}/transferConfigs',
+        request_field='transferConfig',
+        request_type_name='BigquerydatatransferProjectsLocationsTransferConfigsCreateRequest',
+        response_type_name='TransferConfig',
         supports_download=False,
     )
 
@@ -423,16 +423,16 @@ including any associated transfer runs and logs.
           config, request, global_params=global_params)
 
     Delete.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/locations/{locationsId}/transferConfigs/{transferConfigsId}',
-        http_method=u'DELETE',
-        method_id=u'bigquerydatatransfer.projects.locations.transferConfigs.delete',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/transferConfigs/{transferConfigsId}',
+        http_method='DELETE',
+        method_id='bigquerydatatransfer.projects.locations.transferConfigs.delete',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1/{+name}',
+        relative_path='v1/{+name}',
         request_field='',
-        request_type_name=u'BigquerydatatransferProjectsLocationsTransferConfigsDeleteRequest',
-        response_type_name=u'Empty',
+        request_type_name='BigquerydatatransferProjectsLocationsTransferConfigsDeleteRequest',
+        response_type_name='Empty',
         supports_download=False,
     )
 
@@ -450,16 +450,16 @@ including any associated transfer runs and logs.
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/locations/{locationsId}/transferConfigs/{transferConfigsId}',
-        http_method=u'GET',
-        method_id=u'bigquerydatatransfer.projects.locations.transferConfigs.get',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/transferConfigs/{transferConfigsId}',
+        http_method='GET',
+        method_id='bigquerydatatransfer.projects.locations.transferConfigs.get',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1/{+name}',
+        relative_path='v1/{+name}',
         request_field='',
-        request_type_name=u'BigquerydatatransferProjectsLocationsTransferConfigsGetRequest',
-        response_type_name=u'TransferConfig',
+        request_type_name='BigquerydatatransferProjectsLocationsTransferConfigsGetRequest',
+        response_type_name='TransferConfig',
         supports_download=False,
     )
 
@@ -477,16 +477,16 @@ including any associated transfer runs and logs.
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/locations/{locationsId}/transferConfigs',
-        http_method=u'GET',
-        method_id=u'bigquerydatatransfer.projects.locations.transferConfigs.list',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'dataSourceIds', u'pageSize', u'pageToken'],
-        relative_path=u'v1/{+parent}/transferConfigs',
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/transferConfigs',
+        http_method='GET',
+        method_id='bigquerydatatransfer.projects.locations.transferConfigs.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['dataSourceIds', 'pageSize', 'pageToken'],
+        relative_path='v1/{+parent}/transferConfigs',
         request_field='',
-        request_type_name=u'BigquerydatatransferProjectsLocationsTransferConfigsListRequest',
-        response_type_name=u'ListTransferConfigsResponse',
+        request_type_name='BigquerydatatransferProjectsLocationsTransferConfigsListRequest',
+        response_type_name='ListTransferConfigsResponse',
         supports_download=False,
     )
 
@@ -505,16 +505,16 @@ All fields must be set, even if they are not updated.
           config, request, global_params=global_params)
 
     Patch.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/locations/{locationsId}/transferConfigs/{transferConfigsId}',
-        http_method=u'PATCH',
-        method_id=u'bigquerydatatransfer.projects.locations.transferConfigs.patch',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[u'authorizationCode', u'serviceAccountName', u'updateMask', u'versionInfo'],
-        relative_path=u'v1/{+name}',
-        request_field=u'transferConfig',
-        request_type_name=u'BigquerydatatransferProjectsLocationsTransferConfigsPatchRequest',
-        response_type_name=u'TransferConfig',
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/transferConfigs/{transferConfigsId}',
+        http_method='PATCH',
+        method_id='bigquerydatatransfer.projects.locations.transferConfigs.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['authorizationCode', 'serviceAccountName', 'updateMask', 'versionInfo'],
+        relative_path='v1/{+name}',
+        request_field='transferConfig',
+        request_type_name='BigquerydatatransferProjectsLocationsTransferConfigsPatchRequest',
+        response_type_name='TransferConfig',
         supports_download=False,
     )
 
@@ -536,16 +536,16 @@ DEPRECATED: use StartManualTransferRuns instead.
           config, request, global_params=global_params)
 
     ScheduleRuns.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/locations/{locationsId}/transferConfigs/{transferConfigsId}:scheduleRuns',
-        http_method=u'POST',
-        method_id=u'bigquerydatatransfer.projects.locations.transferConfigs.scheduleRuns',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/transferConfigs/{transferConfigsId}:scheduleRuns',
+        http_method='POST',
+        method_id='bigquerydatatransfer.projects.locations.transferConfigs.scheduleRuns',
+        ordered_params=['parent'],
+        path_params=['parent'],
         query_params=[],
-        relative_path=u'v1/{+parent}:scheduleRuns',
-        request_field=u'scheduleTransferRunsRequest',
-        request_type_name=u'BigquerydatatransferProjectsLocationsTransferConfigsScheduleRunsRequest',
-        response_type_name=u'ScheduleTransferRunsResponse',
+        relative_path='v1/{+parent}:scheduleRuns',
+        request_field='scheduleTransferRunsRequest',
+        request_type_name='BigquerydatatransferProjectsLocationsTransferConfigsScheduleRunsRequest',
+        response_type_name='ScheduleTransferRunsResponse',
         supports_download=False,
     )
 
@@ -566,23 +566,23 @@ a specific run_time.
           config, request, global_params=global_params)
 
     StartManualRuns.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/locations/{locationsId}/transferConfigs/{transferConfigsId}:startManualRuns',
-        http_method=u'POST',
-        method_id=u'bigquerydatatransfer.projects.locations.transferConfigs.startManualRuns',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/transferConfigs/{transferConfigsId}:startManualRuns',
+        http_method='POST',
+        method_id='bigquerydatatransfer.projects.locations.transferConfigs.startManualRuns',
+        ordered_params=['parent'],
+        path_params=['parent'],
         query_params=[],
-        relative_path=u'v1/{+parent}:startManualRuns',
-        request_field=u'startManualTransferRunsRequest',
-        request_type_name=u'BigquerydatatransferProjectsLocationsTransferConfigsStartManualRunsRequest',
-        response_type_name=u'StartManualTransferRunsResponse',
+        relative_path='v1/{+parent}:startManualRuns',
+        request_field='startManualTransferRunsRequest',
+        request_type_name='BigquerydatatransferProjectsLocationsTransferConfigsStartManualRunsRequest',
+        response_type_name='StartManualTransferRunsResponse',
         supports_download=False,
     )
 
   class ProjectsLocationsService(base_api.BaseApiService):
     """Service class for the projects_locations resource."""
 
-    _NAME = u'projects_locations'
+    _NAME = 'projects_locations'
 
     def __init__(self, client):
       super(BigquerydatatransferV1.ProjectsLocationsService, self).__init__(client)
@@ -603,16 +603,16 @@ a specific run_time.
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/locations/{locationsId}',
-        http_method=u'GET',
-        method_id=u'bigquerydatatransfer.projects.locations.get',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}',
+        http_method='GET',
+        method_id='bigquerydatatransfer.projects.locations.get',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1/{+name}',
+        relative_path='v1/{+name}',
         request_field='',
-        request_type_name=u'BigquerydatatransferProjectsLocationsGetRequest',
-        response_type_name=u'Location',
+        request_type_name='BigquerydatatransferProjectsLocationsGetRequest',
+        response_type_name='Location',
         supports_download=False,
     )
 
@@ -630,23 +630,23 @@ a specific run_time.
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/locations',
-        http_method=u'GET',
-        method_id=u'bigquerydatatransfer.projects.locations.list',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[u'filter', u'pageSize', u'pageToken'],
-        relative_path=u'v1/{+name}/locations',
+        flat_path='v1/projects/{projectsId}/locations',
+        http_method='GET',
+        method_id='bigquerydatatransfer.projects.locations.list',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['filter', 'pageSize', 'pageToken'],
+        relative_path='v1/{+name}/locations',
         request_field='',
-        request_type_name=u'BigquerydatatransferProjectsLocationsListRequest',
-        response_type_name=u'ListLocationsResponse',
+        request_type_name='BigquerydatatransferProjectsLocationsListRequest',
+        response_type_name='ListLocationsResponse',
         supports_download=False,
     )
 
   class ProjectsTransferConfigsRunsTransferLogsService(base_api.BaseApiService):
     """Service class for the projects_transferConfigs_runs_transferLogs resource."""
 
-    _NAME = u'projects_transferConfigs_runs_transferLogs'
+    _NAME = 'projects_transferConfigs_runs_transferLogs'
 
     def __init__(self, client):
       super(BigquerydatatransferV1.ProjectsTransferConfigsRunsTransferLogsService, self).__init__(client)
@@ -667,23 +667,23 @@ a specific run_time.
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/transferConfigs/{transferConfigsId}/runs/{runsId}/transferLogs',
-        http_method=u'GET',
-        method_id=u'bigquerydatatransfer.projects.transferConfigs.runs.transferLogs.list',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'messageTypes', u'pageSize', u'pageToken'],
-        relative_path=u'v1/{+parent}/transferLogs',
+        flat_path='v1/projects/{projectsId}/transferConfigs/{transferConfigsId}/runs/{runsId}/transferLogs',
+        http_method='GET',
+        method_id='bigquerydatatransfer.projects.transferConfigs.runs.transferLogs.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['messageTypes', 'pageSize', 'pageToken'],
+        relative_path='v1/{+parent}/transferLogs',
         request_field='',
-        request_type_name=u'BigquerydatatransferProjectsTransferConfigsRunsTransferLogsListRequest',
-        response_type_name=u'ListTransferLogsResponse',
+        request_type_name='BigquerydatatransferProjectsTransferConfigsRunsTransferLogsListRequest',
+        response_type_name='ListTransferLogsResponse',
         supports_download=False,
     )
 
   class ProjectsTransferConfigsRunsService(base_api.BaseApiService):
     """Service class for the projects_transferConfigs_runs resource."""
 
-    _NAME = u'projects_transferConfigs_runs'
+    _NAME = 'projects_transferConfigs_runs'
 
     def __init__(self, client):
       super(BigquerydatatransferV1.ProjectsTransferConfigsRunsService, self).__init__(client)
@@ -704,16 +704,16 @@ a specific run_time.
           config, request, global_params=global_params)
 
     Delete.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/transferConfigs/{transferConfigsId}/runs/{runsId}',
-        http_method=u'DELETE',
-        method_id=u'bigquerydatatransfer.projects.transferConfigs.runs.delete',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1/projects/{projectsId}/transferConfigs/{transferConfigsId}/runs/{runsId}',
+        http_method='DELETE',
+        method_id='bigquerydatatransfer.projects.transferConfigs.runs.delete',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1/{+name}',
+        relative_path='v1/{+name}',
         request_field='',
-        request_type_name=u'BigquerydatatransferProjectsTransferConfigsRunsDeleteRequest',
-        response_type_name=u'Empty',
+        request_type_name='BigquerydatatransferProjectsTransferConfigsRunsDeleteRequest',
+        response_type_name='Empty',
         supports_download=False,
     )
 
@@ -731,16 +731,16 @@ a specific run_time.
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/transferConfigs/{transferConfigsId}/runs/{runsId}',
-        http_method=u'GET',
-        method_id=u'bigquerydatatransfer.projects.transferConfigs.runs.get',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1/projects/{projectsId}/transferConfigs/{transferConfigsId}/runs/{runsId}',
+        http_method='GET',
+        method_id='bigquerydatatransfer.projects.transferConfigs.runs.get',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1/{+name}',
+        relative_path='v1/{+name}',
         request_field='',
-        request_type_name=u'BigquerydatatransferProjectsTransferConfigsRunsGetRequest',
-        response_type_name=u'TransferRun',
+        request_type_name='BigquerydatatransferProjectsTransferConfigsRunsGetRequest',
+        response_type_name='TransferRun',
         supports_download=False,
     )
 
@@ -758,23 +758,23 @@ a specific run_time.
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/transferConfigs/{transferConfigsId}/runs',
-        http_method=u'GET',
-        method_id=u'bigquerydatatransfer.projects.transferConfigs.runs.list',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'pageSize', u'pageToken', u'runAttempt', u'states'],
-        relative_path=u'v1/{+parent}/runs',
+        flat_path='v1/projects/{projectsId}/transferConfigs/{transferConfigsId}/runs',
+        http_method='GET',
+        method_id='bigquerydatatransfer.projects.transferConfigs.runs.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken', 'runAttempt', 'states'],
+        relative_path='v1/{+parent}/runs',
         request_field='',
-        request_type_name=u'BigquerydatatransferProjectsTransferConfigsRunsListRequest',
-        response_type_name=u'ListTransferRunsResponse',
+        request_type_name='BigquerydatatransferProjectsTransferConfigsRunsListRequest',
+        response_type_name='ListTransferRunsResponse',
         supports_download=False,
     )
 
   class ProjectsTransferConfigsService(base_api.BaseApiService):
     """Service class for the projects_transferConfigs resource."""
 
-    _NAME = u'projects_transferConfigs'
+    _NAME = 'projects_transferConfigs'
 
     def __init__(self, client):
       super(BigquerydatatransferV1.ProjectsTransferConfigsService, self).__init__(client)
@@ -795,16 +795,16 @@ a specific run_time.
           config, request, global_params=global_params)
 
     Create.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/transferConfigs',
-        http_method=u'POST',
-        method_id=u'bigquerydatatransfer.projects.transferConfigs.create',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'authorizationCode', u'serviceAccountName', u'versionInfo'],
-        relative_path=u'v1/{+parent}/transferConfigs',
-        request_field=u'transferConfig',
-        request_type_name=u'BigquerydatatransferProjectsTransferConfigsCreateRequest',
-        response_type_name=u'TransferConfig',
+        flat_path='v1/projects/{projectsId}/transferConfigs',
+        http_method='POST',
+        method_id='bigquerydatatransfer.projects.transferConfigs.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['authorizationCode', 'serviceAccountName', 'versionInfo'],
+        relative_path='v1/{+parent}/transferConfigs',
+        request_field='transferConfig',
+        request_type_name='BigquerydatatransferProjectsTransferConfigsCreateRequest',
+        response_type_name='TransferConfig',
         supports_download=False,
     )
 
@@ -823,16 +823,16 @@ including any associated transfer runs and logs.
           config, request, global_params=global_params)
 
     Delete.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/transferConfigs/{transferConfigsId}',
-        http_method=u'DELETE',
-        method_id=u'bigquerydatatransfer.projects.transferConfigs.delete',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1/projects/{projectsId}/transferConfigs/{transferConfigsId}',
+        http_method='DELETE',
+        method_id='bigquerydatatransfer.projects.transferConfigs.delete',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1/{+name}',
+        relative_path='v1/{+name}',
         request_field='',
-        request_type_name=u'BigquerydatatransferProjectsTransferConfigsDeleteRequest',
-        response_type_name=u'Empty',
+        request_type_name='BigquerydatatransferProjectsTransferConfigsDeleteRequest',
+        response_type_name='Empty',
         supports_download=False,
     )
 
@@ -850,16 +850,16 @@ including any associated transfer runs and logs.
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/transferConfigs/{transferConfigsId}',
-        http_method=u'GET',
-        method_id=u'bigquerydatatransfer.projects.transferConfigs.get',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1/projects/{projectsId}/transferConfigs/{transferConfigsId}',
+        http_method='GET',
+        method_id='bigquerydatatransfer.projects.transferConfigs.get',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1/{+name}',
+        relative_path='v1/{+name}',
         request_field='',
-        request_type_name=u'BigquerydatatransferProjectsTransferConfigsGetRequest',
-        response_type_name=u'TransferConfig',
+        request_type_name='BigquerydatatransferProjectsTransferConfigsGetRequest',
+        response_type_name='TransferConfig',
         supports_download=False,
     )
 
@@ -877,16 +877,16 @@ including any associated transfer runs and logs.
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/transferConfigs',
-        http_method=u'GET',
-        method_id=u'bigquerydatatransfer.projects.transferConfigs.list',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'dataSourceIds', u'pageSize', u'pageToken'],
-        relative_path=u'v1/{+parent}/transferConfigs',
+        flat_path='v1/projects/{projectsId}/transferConfigs',
+        http_method='GET',
+        method_id='bigquerydatatransfer.projects.transferConfigs.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['dataSourceIds', 'pageSize', 'pageToken'],
+        relative_path='v1/{+parent}/transferConfigs',
         request_field='',
-        request_type_name=u'BigquerydatatransferProjectsTransferConfigsListRequest',
-        response_type_name=u'ListTransferConfigsResponse',
+        request_type_name='BigquerydatatransferProjectsTransferConfigsListRequest',
+        response_type_name='ListTransferConfigsResponse',
         supports_download=False,
     )
 
@@ -905,16 +905,16 @@ All fields must be set, even if they are not updated.
           config, request, global_params=global_params)
 
     Patch.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/transferConfigs/{transferConfigsId}',
-        http_method=u'PATCH',
-        method_id=u'bigquerydatatransfer.projects.transferConfigs.patch',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[u'authorizationCode', u'serviceAccountName', u'updateMask', u'versionInfo'],
-        relative_path=u'v1/{+name}',
-        request_field=u'transferConfig',
-        request_type_name=u'BigquerydatatransferProjectsTransferConfigsPatchRequest',
-        response_type_name=u'TransferConfig',
+        flat_path='v1/projects/{projectsId}/transferConfigs/{transferConfigsId}',
+        http_method='PATCH',
+        method_id='bigquerydatatransfer.projects.transferConfigs.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['authorizationCode', 'serviceAccountName', 'updateMask', 'versionInfo'],
+        relative_path='v1/{+name}',
+        request_field='transferConfig',
+        request_type_name='BigquerydatatransferProjectsTransferConfigsPatchRequest',
+        response_type_name='TransferConfig',
         supports_download=False,
     )
 
@@ -936,16 +936,16 @@ DEPRECATED: use StartManualTransferRuns instead.
           config, request, global_params=global_params)
 
     ScheduleRuns.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/transferConfigs/{transferConfigsId}:scheduleRuns',
-        http_method=u'POST',
-        method_id=u'bigquerydatatransfer.projects.transferConfigs.scheduleRuns',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
+        flat_path='v1/projects/{projectsId}/transferConfigs/{transferConfigsId}:scheduleRuns',
+        http_method='POST',
+        method_id='bigquerydatatransfer.projects.transferConfigs.scheduleRuns',
+        ordered_params=['parent'],
+        path_params=['parent'],
         query_params=[],
-        relative_path=u'v1/{+parent}:scheduleRuns',
-        request_field=u'scheduleTransferRunsRequest',
-        request_type_name=u'BigquerydatatransferProjectsTransferConfigsScheduleRunsRequest',
-        response_type_name=u'ScheduleTransferRunsResponse',
+        relative_path='v1/{+parent}:scheduleRuns',
+        request_field='scheduleTransferRunsRequest',
+        request_type_name='BigquerydatatransferProjectsTransferConfigsScheduleRunsRequest',
+        response_type_name='ScheduleTransferRunsResponse',
         supports_download=False,
     )
 
@@ -966,23 +966,23 @@ a specific run_time.
           config, request, global_params=global_params)
 
     StartManualRuns.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/transferConfigs/{transferConfigsId}:startManualRuns',
-        http_method=u'POST',
-        method_id=u'bigquerydatatransfer.projects.transferConfigs.startManualRuns',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
+        flat_path='v1/projects/{projectsId}/transferConfigs/{transferConfigsId}:startManualRuns',
+        http_method='POST',
+        method_id='bigquerydatatransfer.projects.transferConfigs.startManualRuns',
+        ordered_params=['parent'],
+        path_params=['parent'],
         query_params=[],
-        relative_path=u'v1/{+parent}:startManualRuns',
-        request_field=u'startManualTransferRunsRequest',
-        request_type_name=u'BigquerydatatransferProjectsTransferConfigsStartManualRunsRequest',
-        response_type_name=u'StartManualTransferRunsResponse',
+        relative_path='v1/{+parent}:startManualRuns',
+        request_field='startManualTransferRunsRequest',
+        request_type_name='BigquerydatatransferProjectsTransferConfigsStartManualRunsRequest',
+        response_type_name='StartManualTransferRunsResponse',
         supports_download=False,
     )
 
   class ProjectsService(base_api.BaseApiService):
     """Service class for the projects resource."""
 
-    _NAME = u'projects'
+    _NAME = 'projects'
 
     def __init__(self, client):
       super(BigquerydatatransferV1.ProjectsService, self).__init__(client)

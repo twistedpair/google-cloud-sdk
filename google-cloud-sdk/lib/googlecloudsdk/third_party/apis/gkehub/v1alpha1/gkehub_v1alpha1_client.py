@@ -8,17 +8,17 @@ class GkehubV1alpha1(base_api.BaseApiClient):
   """Generated client library for service gkehub version v1alpha1."""
 
   MESSAGES_MODULE = messages
-  BASE_URL = u'https://gkehub.googleapis.com/'
-  MTLS_BASE_URL = u'https://gkehub.mtls.googleapis.com/'
+  BASE_URL = 'https://gkehub.googleapis.com/'
+  MTLS_BASE_URL = 'https://gkehub.mtls.googleapis.com/'
 
-  _PACKAGE = u'gkehub'
-  _SCOPES = [u'https://www.googleapis.com/auth/cloud-platform']
-  _VERSION = u'v1alpha1'
+  _PACKAGE = 'gkehub'
+  _SCOPES = ['https://www.googleapis.com/auth/cloud-platform']
+  _VERSION = 'v1alpha1'
   _CLIENT_ID = '1042881264118.apps.googleusercontent.com'
   _CLIENT_SECRET = 'x_Tw5K8nnjoRAqULM9PFAC2b'
-  _USER_AGENT = u'google-cloud-sdk'
-  _CLIENT_CLASS_NAME = u'GkehubV1alpha1'
-  _URL_VERSION = u'v1alpha1'
+  _USER_AGENT = 'google-cloud-sdk'
+  _CLIENT_CLASS_NAME = 'GkehubV1alpha1'
+  _URL_VERSION = 'v1alpha1'
   _API_KEY = None
 
   def __init__(self, url='', credentials=None,
@@ -46,7 +46,7 @@ class GkehubV1alpha1(base_api.BaseApiClient):
   class ProjectsLocationsFeaturesService(base_api.BaseApiService):
     """Service class for the projects_locations_features resource."""
 
-    _NAME = u'projects_locations_features'
+    _NAME = 'projects_locations_features'
 
     def __init__(self, client):
       super(GkehubV1alpha1.ProjectsLocationsFeaturesService, self).__init__(client)
@@ -69,16 +69,16 @@ set.
           config, request, global_params=global_params)
 
     GetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha1/projects/{projectsId}/locations/{locationsId}/features/{featuresId}:getIamPolicy',
-        http_method=u'GET',
-        method_id=u'gkehub.projects.locations.features.getIamPolicy',
-        ordered_params=[u'resource'],
-        path_params=[u'resource'],
-        query_params=[u'options_requestedPolicyVersion'],
-        relative_path=u'v1alpha1/{+resource}:getIamPolicy',
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/features/{featuresId}:getIamPolicy',
+        http_method='GET',
+        method_id='gkehub.projects.locations.features.getIamPolicy',
+        ordered_params=['resource'],
+        path_params=['resource'],
+        query_params=['options_requestedPolicyVersion'],
+        relative_path='v1alpha1/{+resource}:getIamPolicy',
         request_field='',
-        request_type_name=u'GkehubProjectsLocationsFeaturesGetIamPolicyRequest',
-        response_type_name=u'Policy',
+        request_type_name='GkehubProjectsLocationsFeaturesGetIamPolicyRequest',
+        response_type_name='Policy',
         supports_download=False,
     )
 
@@ -99,16 +99,16 @@ Can return `NOT_FOUND`, `INVALID_ARGUMENT`, and `PERMISSION_DENIED` errors.
           config, request, global_params=global_params)
 
     SetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha1/projects/{projectsId}/locations/{locationsId}/features/{featuresId}:setIamPolicy',
-        http_method=u'POST',
-        method_id=u'gkehub.projects.locations.features.setIamPolicy',
-        ordered_params=[u'resource'],
-        path_params=[u'resource'],
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/features/{featuresId}:setIamPolicy',
+        http_method='POST',
+        method_id='gkehub.projects.locations.features.setIamPolicy',
+        ordered_params=['resource'],
+        path_params=['resource'],
         query_params=[],
-        relative_path=u'v1alpha1/{+resource}:setIamPolicy',
-        request_field=u'setIamPolicyRequest',
-        request_type_name=u'GkehubProjectsLocationsFeaturesSetIamPolicyRequest',
-        response_type_name=u'Policy',
+        relative_path='v1alpha1/{+resource}:setIamPolicy',
+        request_field='setIamPolicyRequest',
+        request_type_name='GkehubProjectsLocationsFeaturesSetIamPolicyRequest',
+        response_type_name='Policy',
         supports_download=False,
     )
 
@@ -132,23 +132,23 @@ may "fail open" without warning.
           config, request, global_params=global_params)
 
     TestIamPermissions.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha1/projects/{projectsId}/locations/{locationsId}/features/{featuresId}:testIamPermissions',
-        http_method=u'POST',
-        method_id=u'gkehub.projects.locations.features.testIamPermissions',
-        ordered_params=[u'resource'],
-        path_params=[u'resource'],
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/features/{featuresId}:testIamPermissions',
+        http_method='POST',
+        method_id='gkehub.projects.locations.features.testIamPermissions',
+        ordered_params=['resource'],
+        path_params=['resource'],
         query_params=[],
-        relative_path=u'v1alpha1/{+resource}:testIamPermissions',
-        request_field=u'testIamPermissionsRequest',
-        request_type_name=u'GkehubProjectsLocationsFeaturesTestIamPermissionsRequest',
-        response_type_name=u'TestIamPermissionsResponse',
+        relative_path='v1alpha1/{+resource}:testIamPermissions',
+        request_field='testIamPermissionsRequest',
+        request_type_name='GkehubProjectsLocationsFeaturesTestIamPermissionsRequest',
+        response_type_name='TestIamPermissionsResponse',
         supports_download=False,
     )
 
   class ProjectsLocationsGlobalFeaturesService(base_api.BaseApiService):
     """Service class for the projects_locations_global_features resource."""
 
-    _NAME = u'projects_locations_global_features'
+    _NAME = 'projects_locations_global_features'
 
     def __init__(self, client):
       super(GkehubV1alpha1.ProjectsLocationsGlobalFeaturesService, self).__init__(client)
@@ -169,16 +169,16 @@ may "fail open" without warning.
           config, request, global_params=global_params)
 
     Create.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha1/projects/{projectsId}/locations/global/features',
-        http_method=u'POST',
-        method_id=u'gkehub.projects.locations.global.features.create',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'featureId'],
-        relative_path=u'v1alpha1/{+parent}/features',
-        request_field=u'feature',
-        request_type_name=u'GkehubProjectsLocationsGlobalFeaturesCreateRequest',
-        response_type_name=u'Operation',
+        flat_path='v1alpha1/projects/{projectsId}/locations/global/features',
+        http_method='POST',
+        method_id='gkehub.projects.locations.global.features.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['featureId'],
+        relative_path='v1alpha1/{+parent}/features',
+        request_field='feature',
+        request_type_name='GkehubProjectsLocationsGlobalFeaturesCreateRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -196,16 +196,16 @@ may "fail open" without warning.
           config, request, global_params=global_params)
 
     Delete.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha1/projects/{projectsId}/locations/global/features/{featuresId}',
-        http_method=u'DELETE',
-        method_id=u'gkehub.projects.locations.global.features.delete',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[u'force'],
-        relative_path=u'v1alpha1/{+name}',
+        flat_path='v1alpha1/projects/{projectsId}/locations/global/features/{featuresId}',
+        http_method='DELETE',
+        method_id='gkehub.projects.locations.global.features.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['force'],
+        relative_path='v1alpha1/{+name}',
         request_field='',
-        request_type_name=u'GkehubProjectsLocationsGlobalFeaturesDeleteRequest',
-        response_type_name=u'Operation',
+        request_type_name='GkehubProjectsLocationsGlobalFeaturesDeleteRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -223,16 +223,16 @@ may "fail open" without warning.
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha1/projects/{projectsId}/locations/global/features/{featuresId}',
-        http_method=u'GET',
-        method_id=u'gkehub.projects.locations.global.features.get',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1alpha1/projects/{projectsId}/locations/global/features/{featuresId}',
+        http_method='GET',
+        method_id='gkehub.projects.locations.global.features.get',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1alpha1/{+name}',
+        relative_path='v1alpha1/{+name}',
         request_field='',
-        request_type_name=u'GkehubProjectsLocationsGlobalFeaturesGetRequest',
-        response_type_name=u'Feature',
+        request_type_name='GkehubProjectsLocationsGlobalFeaturesGetRequest',
+        response_type_name='Feature',
         supports_download=False,
     )
 
@@ -250,16 +250,16 @@ may "fail open" without warning.
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha1/projects/{projectsId}/locations/global/features',
-        http_method=u'GET',
-        method_id=u'gkehub.projects.locations.global.features.list',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'filter', u'orderBy', u'pageSize', u'pageToken'],
-        relative_path=u'v1alpha1/{+parent}/features',
+        flat_path='v1alpha1/projects/{projectsId}/locations/global/features',
+        http_method='GET',
+        method_id='gkehub.projects.locations.global.features.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'orderBy', 'pageSize', 'pageToken'],
+        relative_path='v1alpha1/{+parent}/features',
         request_field='',
-        request_type_name=u'GkehubProjectsLocationsGlobalFeaturesListRequest',
-        response_type_name=u'ListFeaturesResponse',
+        request_type_name='GkehubProjectsLocationsGlobalFeaturesListRequest',
+        response_type_name='ListFeaturesResponse',
         supports_download=False,
     )
 
@@ -277,23 +277,23 @@ may "fail open" without warning.
           config, request, global_params=global_params)
 
     Patch.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha1/projects/{projectsId}/locations/global/features/{featuresId}',
-        http_method=u'PATCH',
-        method_id=u'gkehub.projects.locations.global.features.patch',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[u'updateMask'],
-        relative_path=u'v1alpha1/{+name}',
-        request_field=u'feature',
-        request_type_name=u'GkehubProjectsLocationsGlobalFeaturesPatchRequest',
-        response_type_name=u'Operation',
+        flat_path='v1alpha1/projects/{projectsId}/locations/global/features/{featuresId}',
+        http_method='PATCH',
+        method_id='gkehub.projects.locations.global.features.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v1alpha1/{+name}',
+        request_field='feature',
+        request_type_name='GkehubProjectsLocationsGlobalFeaturesPatchRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
   class ProjectsLocationsGlobalService(base_api.BaseApiService):
     """Service class for the projects_locations_global resource."""
 
-    _NAME = u'projects_locations_global'
+    _NAME = 'projects_locations_global'
 
     def __init__(self, client):
       super(GkehubV1alpha1.ProjectsLocationsGlobalService, self).__init__(client)
@@ -303,7 +303,7 @@ may "fail open" without warning.
   class ProjectsLocationsOperationsService(base_api.BaseApiService):
     """Service class for the projects_locations_operations resource."""
 
-    _NAME = u'projects_locations_operations'
+    _NAME = 'projects_locations_operations'
 
     def __init__(self, client):
       super(GkehubV1alpha1.ProjectsLocationsOperationsService, self).__init__(client)
@@ -333,16 +333,16 @@ corresponding to `Code.CANCELLED`.
           config, request, global_params=global_params)
 
     Cancel.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha1/projects/{projectsId}/locations/{locationsId}/operations/{operationsId}:cancel',
-        http_method=u'POST',
-        method_id=u'gkehub.projects.locations.operations.cancel',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/operations/{operationsId}:cancel',
+        http_method='POST',
+        method_id='gkehub.projects.locations.operations.cancel',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1alpha1/{+name}:cancel',
-        request_field=u'cancelOperationRequest',
-        request_type_name=u'GkehubProjectsLocationsOperationsCancelRequest',
-        response_type_name=u'Empty',
+        relative_path='v1alpha1/{+name}:cancel',
+        request_field='cancelOperationRequest',
+        request_type_name='GkehubProjectsLocationsOperationsCancelRequest',
+        response_type_name='Empty',
         supports_download=False,
     )
 
@@ -363,16 +363,16 @@ operation. If the server doesn't support this method, it returns
           config, request, global_params=global_params)
 
     Delete.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha1/projects/{projectsId}/locations/{locationsId}/operations/{operationsId}',
-        http_method=u'DELETE',
-        method_id=u'gkehub.projects.locations.operations.delete',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/operations/{operationsId}',
+        http_method='DELETE',
+        method_id='gkehub.projects.locations.operations.delete',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1alpha1/{+name}',
+        relative_path='v1alpha1/{+name}',
         request_field='',
-        request_type_name=u'GkehubProjectsLocationsOperationsDeleteRequest',
-        response_type_name=u'Empty',
+        request_type_name='GkehubProjectsLocationsOperationsDeleteRequest',
+        response_type_name='Empty',
         supports_download=False,
     )
 
@@ -392,16 +392,16 @@ service.
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha1/projects/{projectsId}/locations/{locationsId}/operations/{operationsId}',
-        http_method=u'GET',
-        method_id=u'gkehub.projects.locations.operations.get',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/operations/{operationsId}',
+        http_method='GET',
+        method_id='gkehub.projects.locations.operations.get',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1alpha1/{+name}',
+        relative_path='v1alpha1/{+name}',
         request_field='',
-        request_type_name=u'GkehubProjectsLocationsOperationsGetRequest',
-        response_type_name=u'Operation',
+        request_type_name='GkehubProjectsLocationsOperationsGetRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -428,23 +428,23 @@ is the parent resource, without the operations collection id.
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha1/projects/{projectsId}/locations/{locationsId}/operations',
-        http_method=u'GET',
-        method_id=u'gkehub.projects.locations.operations.list',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[u'filter', u'pageSize', u'pageToken'],
-        relative_path=u'v1alpha1/{+name}/operations',
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/operations',
+        http_method='GET',
+        method_id='gkehub.projects.locations.operations.list',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['filter', 'pageSize', 'pageToken'],
+        relative_path='v1alpha1/{+name}/operations',
         request_field='',
-        request_type_name=u'GkehubProjectsLocationsOperationsListRequest',
-        response_type_name=u'ListOperationsResponse',
+        request_type_name='GkehubProjectsLocationsOperationsListRequest',
+        response_type_name='ListOperationsResponse',
         supports_download=False,
     )
 
   class ProjectsLocationsService(base_api.BaseApiService):
     """Service class for the projects_locations resource."""
 
-    _NAME = u'projects_locations'
+    _NAME = 'projects_locations'
 
     def __init__(self, client):
       super(GkehubV1alpha1.ProjectsLocationsService, self).__init__(client)
@@ -465,16 +465,16 @@ is the parent resource, without the operations collection id.
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha1/projects/{projectsId}/locations/{locationsId}',
-        http_method=u'GET',
-        method_id=u'gkehub.projects.locations.get',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}',
+        http_method='GET',
+        method_id='gkehub.projects.locations.get',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1alpha1/{+name}',
+        relative_path='v1alpha1/{+name}',
         request_field='',
-        request_type_name=u'GkehubProjectsLocationsGetRequest',
-        response_type_name=u'Location',
+        request_type_name='GkehubProjectsLocationsGetRequest',
+        response_type_name='Location',
         supports_download=False,
     )
 
@@ -492,23 +492,23 @@ is the parent resource, without the operations collection id.
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha1/projects/{projectsId}/locations',
-        http_method=u'GET',
-        method_id=u'gkehub.projects.locations.list',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[u'filter', u'includeUnrevealedLocations', u'pageSize', u'pageToken'],
-        relative_path=u'v1alpha1/{+name}/locations',
+        flat_path='v1alpha1/projects/{projectsId}/locations',
+        http_method='GET',
+        method_id='gkehub.projects.locations.list',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['filter', 'includeUnrevealedLocations', 'pageSize', 'pageToken'],
+        relative_path='v1alpha1/{+name}/locations',
         request_field='',
-        request_type_name=u'GkehubProjectsLocationsListRequest',
-        response_type_name=u'ListLocationsResponse',
+        request_type_name='GkehubProjectsLocationsListRequest',
+        response_type_name='ListLocationsResponse',
         supports_download=False,
     )
 
   class ProjectsService(base_api.BaseApiService):
     """Service class for the projects resource."""
 
-    _NAME = u'projects'
+    _NAME = 'projects'
 
     def __init__(self, client):
       super(GkehubV1alpha1.ProjectsService, self).__init__(client)

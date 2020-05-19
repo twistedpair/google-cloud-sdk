@@ -8,17 +8,17 @@ class LanguageV1beta2(base_api.BaseApiClient):
   """Generated client library for service language version v1beta2."""
 
   MESSAGES_MODULE = messages
-  BASE_URL = u'https://language.googleapis.com/'
-  MTLS_BASE_URL = u''
+  BASE_URL = 'https://language.googleapis.com/'
+  MTLS_BASE_URL = ''
 
-  _PACKAGE = u'language'
-  _SCOPES = [u'https://www.googleapis.com/auth/cloud-language', u'https://www.googleapis.com/auth/cloud-platform']
-  _VERSION = u'v1beta2'
+  _PACKAGE = 'language'
+  _SCOPES = ['https://www.googleapis.com/auth/cloud-language', 'https://www.googleapis.com/auth/cloud-platform']
+  _VERSION = 'v1beta2'
   _CLIENT_ID = '1042881264118.apps.googleusercontent.com'
   _CLIENT_SECRET = 'x_Tw5K8nnjoRAqULM9PFAC2b'
-  _USER_AGENT = u'google-cloud-sdk'
-  _CLIENT_CLASS_NAME = u'LanguageV1beta2'
-  _URL_VERSION = u'v1beta2'
+  _USER_AGENT = 'google-cloud-sdk'
+  _CLIENT_CLASS_NAME = 'LanguageV1beta2'
+  _URL_VERSION = 'v1beta2'
   _API_KEY = None
 
   def __init__(self, url='', credentials=None,
@@ -41,7 +41,7 @@ class LanguageV1beta2(base_api.BaseApiClient):
   class DocumentsService(base_api.BaseApiService):
     """Service class for the documents resource."""
 
-    _NAME = u'documents'
+    _NAME = 'documents'
 
     def __init__(self, client):
       super(LanguageV1beta2.DocumentsService, self).__init__(client)
@@ -64,15 +64,15 @@ other properties.
           config, request, global_params=global_params)
 
     AnalyzeEntities.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'language.documents.analyzeEntities',
+        http_method='POST',
+        method_id='language.documents.analyzeEntities',
         ordered_params=[],
         path_params=[],
         query_params=[],
-        relative_path=u'v1beta2/documents:analyzeEntities',
+        relative_path='v1beta2/documents:analyzeEntities',
         request_field='<request>',
-        request_type_name=u'AnalyzeEntitiesRequest',
-        response_type_name=u'AnalyzeEntitiesResponse',
+        request_type_name='AnalyzeEntitiesRequest',
+        response_type_name='AnalyzeEntitiesResponse',
         supports_download=False,
     )
 
@@ -91,15 +91,15 @@ sentiment associated with each entity and its mentions.
           config, request, global_params=global_params)
 
     AnalyzeEntitySentiment.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'language.documents.analyzeEntitySentiment',
+        http_method='POST',
+        method_id='language.documents.analyzeEntitySentiment',
         ordered_params=[],
         path_params=[],
         query_params=[],
-        relative_path=u'v1beta2/documents:analyzeEntitySentiment',
+        relative_path='v1beta2/documents:analyzeEntitySentiment',
         request_field='<request>',
-        request_type_name=u'AnalyzeEntitySentimentRequest',
-        response_type_name=u'AnalyzeEntitySentimentResponse',
+        request_type_name='AnalyzeEntitySentimentRequest',
+        response_type_name='AnalyzeEntitySentimentResponse',
         supports_download=False,
     )
 
@@ -117,15 +117,15 @@ sentiment associated with each entity and its mentions.
           config, request, global_params=global_params)
 
     AnalyzeSentiment.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'language.documents.analyzeSentiment',
+        http_method='POST',
+        method_id='language.documents.analyzeSentiment',
         ordered_params=[],
         path_params=[],
         query_params=[],
-        relative_path=u'v1beta2/documents:analyzeSentiment',
+        relative_path='v1beta2/documents:analyzeSentiment',
         request_field='<request>',
-        request_type_name=u'AnalyzeSentimentRequest',
-        response_type_name=u'AnalyzeSentimentResponse',
+        request_type_name='AnalyzeSentimentRequest',
+        response_type_name='AnalyzeSentimentResponse',
         supports_download=False,
     )
 
@@ -145,15 +145,15 @@ properties.
           config, request, global_params=global_params)
 
     AnalyzeSyntax.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'language.documents.analyzeSyntax',
+        http_method='POST',
+        method_id='language.documents.analyzeSyntax',
         ordered_params=[],
         path_params=[],
         query_params=[],
-        relative_path=u'v1beta2/documents:analyzeSyntax',
+        relative_path='v1beta2/documents:analyzeSyntax',
         request_field='<request>',
-        request_type_name=u'AnalyzeSyntaxRequest',
-        response_type_name=u'AnalyzeSyntaxResponse',
+        request_type_name='AnalyzeSyntaxRequest',
+        response_type_name='AnalyzeSyntaxResponse',
         supports_download=False,
     )
 
@@ -172,15 +172,15 @@ classification features in one call.
           config, request, global_params=global_params)
 
     AnnotateText.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'language.documents.annotateText',
+        http_method='POST',
+        method_id='language.documents.annotateText',
         ordered_params=[],
         path_params=[],
         query_params=[],
-        relative_path=u'v1beta2/documents:annotateText',
+        relative_path='v1beta2/documents:annotateText',
         request_field='<request>',
-        request_type_name=u'AnnotateTextRequest',
-        response_type_name=u'AnnotateTextResponse',
+        request_type_name='AnnotateTextRequest',
+        response_type_name='AnnotateTextResponse',
         supports_download=False,
     )
 
@@ -198,14 +198,14 @@ classification features in one call.
           config, request, global_params=global_params)
 
     ClassifyText.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'language.documents.classifyText',
+        http_method='POST',
+        method_id='language.documents.classifyText',
         ordered_params=[],
         path_params=[],
         query_params=[],
-        relative_path=u'v1beta2/documents:classifyText',
+        relative_path='v1beta2/documents:classifyText',
         request_field='<request>',
-        request_type_name=u'ClassifyTextRequest',
-        response_type_name=u'ClassifyTextResponse',
+        request_type_name='ClassifyTextRequest',
+        response_type_name='ClassifyTextResponse',
         supports_download=False,
     )

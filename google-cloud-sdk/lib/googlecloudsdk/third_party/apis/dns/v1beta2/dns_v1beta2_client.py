@@ -8,17 +8,17 @@ class DnsV1beta2(base_api.BaseApiClient):
   """Generated client library for service dns version v1beta2."""
 
   MESSAGES_MODULE = messages
-  BASE_URL = u'https://dns.googleapis.com/dns/v1beta2/'
-  MTLS_BASE_URL = u''
+  BASE_URL = 'https://dns.googleapis.com/dns/v1beta2/'
+  MTLS_BASE_URL = ''
 
-  _PACKAGE = u'dns'
-  _SCOPES = [u'https://www.googleapis.com/auth/cloud-platform', u'https://www.googleapis.com/auth/cloud-platform.read-only', u'https://www.googleapis.com/auth/ndev.clouddns.readonly', u'https://www.googleapis.com/auth/ndev.clouddns.readwrite']
-  _VERSION = u'v1beta2'
+  _PACKAGE = 'dns'
+  _SCOPES = ['https://www.googleapis.com/auth/cloud-platform', 'https://www.googleapis.com/auth/cloud-platform.read-only', 'https://www.googleapis.com/auth/ndev.clouddns.readonly', 'https://www.googleapis.com/auth/ndev.clouddns.readwrite']
+  _VERSION = 'v1beta2'
   _CLIENT_ID = '1042881264118.apps.googleusercontent.com'
   _CLIENT_SECRET = 'x_Tw5K8nnjoRAqULM9PFAC2b'
-  _USER_AGENT = u'google-cloud-sdk'
-  _CLIENT_CLASS_NAME = u'DnsV1beta2'
-  _URL_VERSION = u'v1beta2'
+  _USER_AGENT = 'google-cloud-sdk'
+  _CLIENT_CLASS_NAME = 'DnsV1beta2'
+  _URL_VERSION = 'v1beta2'
   _API_KEY = None
 
   def __init__(self, url='', credentials=None,
@@ -47,7 +47,7 @@ class DnsV1beta2(base_api.BaseApiClient):
   class ChangesService(base_api.BaseApiService):
     """Service class for the changes resource."""
 
-    _NAME = u'changes'
+    _NAME = 'changes'
 
     def __init__(self, client):
       super(DnsV1beta2.ChangesService, self).__init__(client)
@@ -68,15 +68,15 @@ class DnsV1beta2(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Create.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'dns.changes.create',
-        ordered_params=[u'project', u'managedZone'],
-        path_params=[u'managedZone', u'project'],
-        query_params=[u'clientOperationId'],
-        relative_path=u'projects/{project}/managedZones/{managedZone}/changes',
-        request_field=u'change',
-        request_type_name=u'DnsChangesCreateRequest',
-        response_type_name=u'Change',
+        http_method='POST',
+        method_id='dns.changes.create',
+        ordered_params=['project', 'managedZone'],
+        path_params=['managedZone', 'project'],
+        query_params=['clientOperationId'],
+        relative_path='projects/{project}/managedZones/{managedZone}/changes',
+        request_field='change',
+        request_type_name='DnsChangesCreateRequest',
+        response_type_name='Change',
         supports_download=False,
     )
 
@@ -94,15 +94,15 @@ class DnsV1beta2(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'dns.changes.get',
-        ordered_params=[u'project', u'managedZone', u'changeId'],
-        path_params=[u'changeId', u'managedZone', u'project'],
-        query_params=[u'clientOperationId'],
-        relative_path=u'projects/{project}/managedZones/{managedZone}/changes/{changeId}',
+        http_method='GET',
+        method_id='dns.changes.get',
+        ordered_params=['project', 'managedZone', 'changeId'],
+        path_params=['changeId', 'managedZone', 'project'],
+        query_params=['clientOperationId'],
+        relative_path='projects/{project}/managedZones/{managedZone}/changes/{changeId}',
         request_field='',
-        request_type_name=u'DnsChangesGetRequest',
-        response_type_name=u'Change',
+        request_type_name='DnsChangesGetRequest',
+        response_type_name='Change',
         supports_download=False,
     )
 
@@ -120,22 +120,22 @@ class DnsV1beta2(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'dns.changes.list',
-        ordered_params=[u'project', u'managedZone'],
-        path_params=[u'managedZone', u'project'],
-        query_params=[u'maxResults', u'pageToken', u'sortBy', u'sortOrder'],
-        relative_path=u'projects/{project}/managedZones/{managedZone}/changes',
+        http_method='GET',
+        method_id='dns.changes.list',
+        ordered_params=['project', 'managedZone'],
+        path_params=['managedZone', 'project'],
+        query_params=['maxResults', 'pageToken', 'sortBy', 'sortOrder'],
+        relative_path='projects/{project}/managedZones/{managedZone}/changes',
         request_field='',
-        request_type_name=u'DnsChangesListRequest',
-        response_type_name=u'ChangesListResponse',
+        request_type_name='DnsChangesListRequest',
+        response_type_name='ChangesListResponse',
         supports_download=False,
     )
 
   class DnsKeysService(base_api.BaseApiService):
     """Service class for the dnsKeys resource."""
 
-    _NAME = u'dnsKeys'
+    _NAME = 'dnsKeys'
 
     def __init__(self, client):
       super(DnsV1beta2.DnsKeysService, self).__init__(client)
@@ -156,15 +156,15 @@ class DnsV1beta2(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'dns.dnsKeys.get',
-        ordered_params=[u'project', u'managedZone', u'dnsKeyId'],
-        path_params=[u'dnsKeyId', u'managedZone', u'project'],
-        query_params=[u'clientOperationId', u'digestType'],
-        relative_path=u'projects/{project}/managedZones/{managedZone}/dnsKeys/{dnsKeyId}',
+        http_method='GET',
+        method_id='dns.dnsKeys.get',
+        ordered_params=['project', 'managedZone', 'dnsKeyId'],
+        path_params=['dnsKeyId', 'managedZone', 'project'],
+        query_params=['clientOperationId', 'digestType'],
+        relative_path='projects/{project}/managedZones/{managedZone}/dnsKeys/{dnsKeyId}',
         request_field='',
-        request_type_name=u'DnsDnsKeysGetRequest',
-        response_type_name=u'DnsKey',
+        request_type_name='DnsDnsKeysGetRequest',
+        response_type_name='DnsKey',
         supports_download=False,
     )
 
@@ -182,22 +182,22 @@ class DnsV1beta2(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'dns.dnsKeys.list',
-        ordered_params=[u'project', u'managedZone'],
-        path_params=[u'managedZone', u'project'],
-        query_params=[u'digestType', u'maxResults', u'pageToken'],
-        relative_path=u'projects/{project}/managedZones/{managedZone}/dnsKeys',
+        http_method='GET',
+        method_id='dns.dnsKeys.list',
+        ordered_params=['project', 'managedZone'],
+        path_params=['managedZone', 'project'],
+        query_params=['digestType', 'maxResults', 'pageToken'],
+        relative_path='projects/{project}/managedZones/{managedZone}/dnsKeys',
         request_field='',
-        request_type_name=u'DnsDnsKeysListRequest',
-        response_type_name=u'DnsKeysListResponse',
+        request_type_name='DnsDnsKeysListRequest',
+        response_type_name='DnsKeysListResponse',
         supports_download=False,
     )
 
   class ManagedZoneOperationsService(base_api.BaseApiService):
     """Service class for the managedZoneOperations resource."""
 
-    _NAME = u'managedZoneOperations'
+    _NAME = 'managedZoneOperations'
 
     def __init__(self, client):
       super(DnsV1beta2.ManagedZoneOperationsService, self).__init__(client)
@@ -218,15 +218,15 @@ class DnsV1beta2(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'dns.managedZoneOperations.get',
-        ordered_params=[u'project', u'managedZone', u'operation'],
-        path_params=[u'managedZone', u'operation', u'project'],
-        query_params=[u'clientOperationId'],
-        relative_path=u'projects/{project}/managedZones/{managedZone}/operations/{operation}',
+        http_method='GET',
+        method_id='dns.managedZoneOperations.get',
+        ordered_params=['project', 'managedZone', 'operation'],
+        path_params=['managedZone', 'operation', 'project'],
+        query_params=['clientOperationId'],
+        relative_path='projects/{project}/managedZones/{managedZone}/operations/{operation}',
         request_field='',
-        request_type_name=u'DnsManagedZoneOperationsGetRequest',
-        response_type_name=u'Operation',
+        request_type_name='DnsManagedZoneOperationsGetRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -244,22 +244,22 @@ class DnsV1beta2(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'dns.managedZoneOperations.list',
-        ordered_params=[u'project', u'managedZone'],
-        path_params=[u'managedZone', u'project'],
-        query_params=[u'maxResults', u'pageToken', u'sortBy'],
-        relative_path=u'projects/{project}/managedZones/{managedZone}/operations',
+        http_method='GET',
+        method_id='dns.managedZoneOperations.list',
+        ordered_params=['project', 'managedZone'],
+        path_params=['managedZone', 'project'],
+        query_params=['maxResults', 'pageToken', 'sortBy'],
+        relative_path='projects/{project}/managedZones/{managedZone}/operations',
         request_field='',
-        request_type_name=u'DnsManagedZoneOperationsListRequest',
-        response_type_name=u'ManagedZoneOperationsListResponse',
+        request_type_name='DnsManagedZoneOperationsListRequest',
+        response_type_name='ManagedZoneOperationsListResponse',
         supports_download=False,
     )
 
   class ManagedZonesService(base_api.BaseApiService):
     """Service class for the managedZones resource."""
 
-    _NAME = u'managedZones'
+    _NAME = 'managedZones'
 
     def __init__(self, client):
       super(DnsV1beta2.ManagedZonesService, self).__init__(client)
@@ -280,15 +280,15 @@ class DnsV1beta2(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Create.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'dns.managedZones.create',
-        ordered_params=[u'project'],
-        path_params=[u'project'],
-        query_params=[u'clientOperationId'],
-        relative_path=u'projects/{project}/managedZones',
-        request_field=u'managedZone',
-        request_type_name=u'DnsManagedZonesCreateRequest',
-        response_type_name=u'ManagedZone',
+        http_method='POST',
+        method_id='dns.managedZones.create',
+        ordered_params=['project'],
+        path_params=['project'],
+        query_params=['clientOperationId'],
+        relative_path='projects/{project}/managedZones',
+        request_field='managedZone',
+        request_type_name='DnsManagedZonesCreateRequest',
+        response_type_name='ManagedZone',
         supports_download=False,
     )
 
@@ -306,15 +306,15 @@ class DnsV1beta2(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Delete.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'DELETE',
-        method_id=u'dns.managedZones.delete',
-        ordered_params=[u'project', u'managedZone'],
-        path_params=[u'managedZone', u'project'],
-        query_params=[u'clientOperationId'],
-        relative_path=u'projects/{project}/managedZones/{managedZone}',
+        http_method='DELETE',
+        method_id='dns.managedZones.delete',
+        ordered_params=['project', 'managedZone'],
+        path_params=['managedZone', 'project'],
+        query_params=['clientOperationId'],
+        relative_path='projects/{project}/managedZones/{managedZone}',
         request_field='',
-        request_type_name=u'DnsManagedZonesDeleteRequest',
-        response_type_name=u'DnsManagedZonesDeleteResponse',
+        request_type_name='DnsManagedZonesDeleteRequest',
+        response_type_name='DnsManagedZonesDeleteResponse',
         supports_download=False,
     )
 
@@ -332,15 +332,15 @@ class DnsV1beta2(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'dns.managedZones.get',
-        ordered_params=[u'project', u'managedZone'],
-        path_params=[u'managedZone', u'project'],
-        query_params=[u'clientOperationId'],
-        relative_path=u'projects/{project}/managedZones/{managedZone}',
+        http_method='GET',
+        method_id='dns.managedZones.get',
+        ordered_params=['project', 'managedZone'],
+        path_params=['managedZone', 'project'],
+        query_params=['clientOperationId'],
+        relative_path='projects/{project}/managedZones/{managedZone}',
         request_field='',
-        request_type_name=u'DnsManagedZonesGetRequest',
-        response_type_name=u'ManagedZone',
+        request_type_name='DnsManagedZonesGetRequest',
+        response_type_name='ManagedZone',
         supports_download=False,
     )
 
@@ -358,15 +358,15 @@ class DnsV1beta2(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'dns.managedZones.list',
-        ordered_params=[u'project'],
-        path_params=[u'project'],
-        query_params=[u'dnsName', u'maxResults', u'pageToken'],
-        relative_path=u'projects/{project}/managedZones',
+        http_method='GET',
+        method_id='dns.managedZones.list',
+        ordered_params=['project'],
+        path_params=['project'],
+        query_params=['dnsName', 'maxResults', 'pageToken'],
+        relative_path='projects/{project}/managedZones',
         request_field='',
-        request_type_name=u'DnsManagedZonesListRequest',
-        response_type_name=u'ManagedZonesListResponse',
+        request_type_name='DnsManagedZonesListRequest',
+        response_type_name='ManagedZonesListResponse',
         supports_download=False,
     )
 
@@ -384,15 +384,15 @@ class DnsV1beta2(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Patch.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'PATCH',
-        method_id=u'dns.managedZones.patch',
-        ordered_params=[u'project', u'managedZone'],
-        path_params=[u'managedZone', u'project'],
-        query_params=[u'clientOperationId'],
-        relative_path=u'projects/{project}/managedZones/{managedZone}',
-        request_field=u'managedZoneResource',
-        request_type_name=u'DnsManagedZonesPatchRequest',
-        response_type_name=u'Operation',
+        http_method='PATCH',
+        method_id='dns.managedZones.patch',
+        ordered_params=['project', 'managedZone'],
+        path_params=['managedZone', 'project'],
+        query_params=['clientOperationId'],
+        relative_path='projects/{project}/managedZones/{managedZone}',
+        request_field='managedZoneResource',
+        request_type_name='DnsManagedZonesPatchRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -410,22 +410,22 @@ class DnsV1beta2(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Update.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'PUT',
-        method_id=u'dns.managedZones.update',
-        ordered_params=[u'project', u'managedZone'],
-        path_params=[u'managedZone', u'project'],
-        query_params=[u'clientOperationId'],
-        relative_path=u'projects/{project}/managedZones/{managedZone}',
-        request_field=u'managedZoneResource',
-        request_type_name=u'DnsManagedZonesUpdateRequest',
-        response_type_name=u'Operation',
+        http_method='PUT',
+        method_id='dns.managedZones.update',
+        ordered_params=['project', 'managedZone'],
+        path_params=['managedZone', 'project'],
+        query_params=['clientOperationId'],
+        relative_path='projects/{project}/managedZones/{managedZone}',
+        request_field='managedZoneResource',
+        request_type_name='DnsManagedZonesUpdateRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
   class PoliciesService(base_api.BaseApiService):
     """Service class for the policies resource."""
 
-    _NAME = u'policies'
+    _NAME = 'policies'
 
     def __init__(self, client):
       super(DnsV1beta2.PoliciesService, self).__init__(client)
@@ -446,15 +446,15 @@ class DnsV1beta2(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Create.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'dns.policies.create',
-        ordered_params=[u'project'],
-        path_params=[u'project'],
-        query_params=[u'clientOperationId'],
-        relative_path=u'projects/{project}/policies',
-        request_field=u'policy',
-        request_type_name=u'DnsPoliciesCreateRequest',
-        response_type_name=u'Policy',
+        http_method='POST',
+        method_id='dns.policies.create',
+        ordered_params=['project'],
+        path_params=['project'],
+        query_params=['clientOperationId'],
+        relative_path='projects/{project}/policies',
+        request_field='policy',
+        request_type_name='DnsPoliciesCreateRequest',
+        response_type_name='Policy',
         supports_download=False,
     )
 
@@ -472,15 +472,15 @@ class DnsV1beta2(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Delete.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'DELETE',
-        method_id=u'dns.policies.delete',
-        ordered_params=[u'project', u'policy'],
-        path_params=[u'policy', u'project'],
-        query_params=[u'clientOperationId'],
-        relative_path=u'projects/{project}/policies/{policy}',
+        http_method='DELETE',
+        method_id='dns.policies.delete',
+        ordered_params=['project', 'policy'],
+        path_params=['policy', 'project'],
+        query_params=['clientOperationId'],
+        relative_path='projects/{project}/policies/{policy}',
         request_field='',
-        request_type_name=u'DnsPoliciesDeleteRequest',
-        response_type_name=u'DnsPoliciesDeleteResponse',
+        request_type_name='DnsPoliciesDeleteRequest',
+        response_type_name='DnsPoliciesDeleteResponse',
         supports_download=False,
     )
 
@@ -498,15 +498,15 @@ class DnsV1beta2(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'dns.policies.get',
-        ordered_params=[u'project', u'policy'],
-        path_params=[u'policy', u'project'],
-        query_params=[u'clientOperationId'],
-        relative_path=u'projects/{project}/policies/{policy}',
+        http_method='GET',
+        method_id='dns.policies.get',
+        ordered_params=['project', 'policy'],
+        path_params=['policy', 'project'],
+        query_params=['clientOperationId'],
+        relative_path='projects/{project}/policies/{policy}',
         request_field='',
-        request_type_name=u'DnsPoliciesGetRequest',
-        response_type_name=u'Policy',
+        request_type_name='DnsPoliciesGetRequest',
+        response_type_name='Policy',
         supports_download=False,
     )
 
@@ -524,15 +524,15 @@ class DnsV1beta2(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'dns.policies.list',
-        ordered_params=[u'project'],
-        path_params=[u'project'],
-        query_params=[u'maxResults', u'pageToken'],
-        relative_path=u'projects/{project}/policies',
+        http_method='GET',
+        method_id='dns.policies.list',
+        ordered_params=['project'],
+        path_params=['project'],
+        query_params=['maxResults', 'pageToken'],
+        relative_path='projects/{project}/policies',
         request_field='',
-        request_type_name=u'DnsPoliciesListRequest',
-        response_type_name=u'PoliciesListResponse',
+        request_type_name='DnsPoliciesListRequest',
+        response_type_name='PoliciesListResponse',
         supports_download=False,
     )
 
@@ -550,15 +550,15 @@ class DnsV1beta2(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Patch.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'PATCH',
-        method_id=u'dns.policies.patch',
-        ordered_params=[u'project', u'policy'],
-        path_params=[u'policy', u'project'],
-        query_params=[u'clientOperationId'],
-        relative_path=u'projects/{project}/policies/{policy}',
-        request_field=u'policyResource',
-        request_type_name=u'DnsPoliciesPatchRequest',
-        response_type_name=u'PoliciesPatchResponse',
+        http_method='PATCH',
+        method_id='dns.policies.patch',
+        ordered_params=['project', 'policy'],
+        path_params=['policy', 'project'],
+        query_params=['clientOperationId'],
+        relative_path='projects/{project}/policies/{policy}',
+        request_field='policyResource',
+        request_type_name='DnsPoliciesPatchRequest',
+        response_type_name='PoliciesPatchResponse',
         supports_download=False,
     )
 
@@ -576,22 +576,22 @@ class DnsV1beta2(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Update.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'PUT',
-        method_id=u'dns.policies.update',
-        ordered_params=[u'project', u'policy'],
-        path_params=[u'policy', u'project'],
-        query_params=[u'clientOperationId'],
-        relative_path=u'projects/{project}/policies/{policy}',
-        request_field=u'policyResource',
-        request_type_name=u'DnsPoliciesUpdateRequest',
-        response_type_name=u'PoliciesUpdateResponse',
+        http_method='PUT',
+        method_id='dns.policies.update',
+        ordered_params=['project', 'policy'],
+        path_params=['policy', 'project'],
+        query_params=['clientOperationId'],
+        relative_path='projects/{project}/policies/{policy}',
+        request_field='policyResource',
+        request_type_name='DnsPoliciesUpdateRequest',
+        response_type_name='PoliciesUpdateResponse',
         supports_download=False,
     )
 
   class ProjectsService(base_api.BaseApiService):
     """Service class for the projects resource."""
 
-    _NAME = u'projects'
+    _NAME = 'projects'
 
     def __init__(self, client):
       super(DnsV1beta2.ProjectsService, self).__init__(client)
@@ -612,22 +612,22 @@ class DnsV1beta2(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'dns.projects.get',
-        ordered_params=[u'project'],
-        path_params=[u'project'],
-        query_params=[u'clientOperationId'],
-        relative_path=u'projects/{project}',
+        http_method='GET',
+        method_id='dns.projects.get',
+        ordered_params=['project'],
+        path_params=['project'],
+        query_params=['clientOperationId'],
+        relative_path='projects/{project}',
         request_field='',
-        request_type_name=u'DnsProjectsGetRequest',
-        response_type_name=u'Project',
+        request_type_name='DnsProjectsGetRequest',
+        response_type_name='Project',
         supports_download=False,
     )
 
   class ResourceRecordSetsService(base_api.BaseApiService):
     """Service class for the resourceRecordSets resource."""
 
-    _NAME = u'resourceRecordSets'
+    _NAME = 'resourceRecordSets'
 
     def __init__(self, client):
       super(DnsV1beta2.ResourceRecordSetsService, self).__init__(client)
@@ -648,14 +648,14 @@ class DnsV1beta2(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'dns.resourceRecordSets.list',
-        ordered_params=[u'project', u'managedZone'],
-        path_params=[u'managedZone', u'project'],
-        query_params=[u'maxResults', u'name', u'pageToken', u'type'],
-        relative_path=u'projects/{project}/managedZones/{managedZone}/rrsets',
+        http_method='GET',
+        method_id='dns.resourceRecordSets.list',
+        ordered_params=['project', 'managedZone'],
+        path_params=['managedZone', 'project'],
+        query_params=['maxResults', 'name', 'pageToken', 'type'],
+        relative_path='projects/{project}/managedZones/{managedZone}/rrsets',
         request_field='',
-        request_type_name=u'DnsResourceRecordSetsListRequest',
-        response_type_name=u'ResourceRecordSetsListResponse',
+        request_type_name='DnsResourceRecordSetsListRequest',
+        response_type_name='ResourceRecordSetsListResponse',
         supports_download=False,
     )

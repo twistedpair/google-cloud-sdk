@@ -8,17 +8,17 @@ class ClouderrorreportingV1beta1(base_api.BaseApiClient):
   """Generated client library for service clouderrorreporting version v1beta1."""
 
   MESSAGES_MODULE = messages
-  BASE_URL = u'https://clouderrorreporting.googleapis.com/'
-  MTLS_BASE_URL = u'https://clouderrorreporting.mtls.googleapis.com/'
+  BASE_URL = 'https://clouderrorreporting.googleapis.com/'
+  MTLS_BASE_URL = 'https://clouderrorreporting.mtls.googleapis.com/'
 
-  _PACKAGE = u'clouderrorreporting'
-  _SCOPES = [u'https://www.googleapis.com/auth/cloud-platform']
-  _VERSION = u'v1beta1'
+  _PACKAGE = 'clouderrorreporting'
+  _SCOPES = ['https://www.googleapis.com/auth/cloud-platform']
+  _VERSION = 'v1beta1'
   _CLIENT_ID = '1042881264118.apps.googleusercontent.com'
   _CLIENT_SECRET = 'x_Tw5K8nnjoRAqULM9PFAC2b'
-  _USER_AGENT = u'google-cloud-sdk'
-  _CLIENT_CLASS_NAME = u'ClouderrorreportingV1beta1'
-  _URL_VERSION = u'v1beta1'
+  _USER_AGENT = 'google-cloud-sdk'
+  _CLIENT_CLASS_NAME = 'ClouderrorreportingV1beta1'
+  _URL_VERSION = 'v1beta1'
   _API_KEY = None
 
   def __init__(self, url='', credentials=None,
@@ -44,7 +44,7 @@ class ClouderrorreportingV1beta1(base_api.BaseApiClient):
   class ProjectsEventsService(base_api.BaseApiService):
     """Service class for the projects_events resource."""
 
-    _NAME = u'projects_events'
+    _NAME = 'projects_events'
 
     def __init__(self, client):
       super(ClouderrorreportingV1beta1.ProjectsEventsService, self).__init__(client)
@@ -65,16 +65,16 @@ class ClouderrorreportingV1beta1(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/projects/{projectsId}/events',
-        http_method=u'GET',
-        method_id=u'clouderrorreporting.projects.events.list',
-        ordered_params=[u'projectName'],
-        path_params=[u'projectName'],
-        query_params=[u'groupId', u'pageSize', u'pageToken', u'serviceFilter_resourceType', u'serviceFilter_service', u'serviceFilter_version', u'timeRange_period'],
-        relative_path=u'v1beta1/{+projectName}/events',
+        flat_path='v1beta1/projects/{projectsId}/events',
+        http_method='GET',
+        method_id='clouderrorreporting.projects.events.list',
+        ordered_params=['projectName'],
+        path_params=['projectName'],
+        query_params=['groupId', 'pageSize', 'pageToken', 'serviceFilter_resourceType', 'serviceFilter_service', 'serviceFilter_version', 'timeRange_period'],
+        relative_path='v1beta1/{+projectName}/events',
         request_field='',
-        request_type_name=u'ClouderrorreportingProjectsEventsListRequest',
-        response_type_name=u'ListEventsResponse',
+        request_type_name='ClouderrorreportingProjectsEventsListRequest',
+        response_type_name='ListEventsResponse',
         supports_download=False,
     )
 
@@ -100,23 +100,23 @@ https://clouderrorreporting.googleapis.com/v1beta1/{projectName}/events:report?k
           config, request, global_params=global_params)
 
     Report.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/projects/{projectsId}/events:report',
-        http_method=u'POST',
-        method_id=u'clouderrorreporting.projects.events.report',
-        ordered_params=[u'projectName'],
-        path_params=[u'projectName'],
+        flat_path='v1beta1/projects/{projectsId}/events:report',
+        http_method='POST',
+        method_id='clouderrorreporting.projects.events.report',
+        ordered_params=['projectName'],
+        path_params=['projectName'],
         query_params=[],
-        relative_path=u'v1beta1/{+projectName}/events:report',
-        request_field=u'reportedErrorEvent',
-        request_type_name=u'ClouderrorreportingProjectsEventsReportRequest',
-        response_type_name=u'ReportErrorEventResponse',
+        relative_path='v1beta1/{+projectName}/events:report',
+        request_field='reportedErrorEvent',
+        request_type_name='ClouderrorreportingProjectsEventsReportRequest',
+        response_type_name='ReportErrorEventResponse',
         supports_download=False,
     )
 
   class ProjectsGroupStatsService(base_api.BaseApiService):
     """Service class for the projects_groupStats resource."""
 
-    _NAME = u'projects_groupStats'
+    _NAME = 'projects_groupStats'
 
     def __init__(self, client):
       super(ClouderrorreportingV1beta1.ProjectsGroupStatsService, self).__init__(client)
@@ -137,23 +137,23 @@ https://clouderrorreporting.googleapis.com/v1beta1/{projectName}/events:report?k
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/projects/{projectsId}/groupStats',
-        http_method=u'GET',
-        method_id=u'clouderrorreporting.projects.groupStats.list',
-        ordered_params=[u'projectName'],
-        path_params=[u'projectName'],
-        query_params=[u'alignment', u'alignmentTime', u'groupId', u'order', u'pageSize', u'pageToken', u'serviceFilter_resourceType', u'serviceFilter_service', u'serviceFilter_version', u'timeRange_period', u'timedCountDuration'],
-        relative_path=u'v1beta1/{+projectName}/groupStats',
+        flat_path='v1beta1/projects/{projectsId}/groupStats',
+        http_method='GET',
+        method_id='clouderrorreporting.projects.groupStats.list',
+        ordered_params=['projectName'],
+        path_params=['projectName'],
+        query_params=['alignment', 'alignmentTime', 'groupId', 'order', 'pageSize', 'pageToken', 'serviceFilter_resourceType', 'serviceFilter_service', 'serviceFilter_version', 'timeRange_period', 'timedCountDuration'],
+        relative_path='v1beta1/{+projectName}/groupStats',
         request_field='',
-        request_type_name=u'ClouderrorreportingProjectsGroupStatsListRequest',
-        response_type_name=u'ListGroupStatsResponse',
+        request_type_name='ClouderrorreportingProjectsGroupStatsListRequest',
+        response_type_name='ListGroupStatsResponse',
         supports_download=False,
     )
 
   class ProjectsGroupsService(base_api.BaseApiService):
     """Service class for the projects_groups resource."""
 
-    _NAME = u'projects_groups'
+    _NAME = 'projects_groups'
 
     def __init__(self, client):
       super(ClouderrorreportingV1beta1.ProjectsGroupsService, self).__init__(client)
@@ -174,16 +174,16 @@ https://clouderrorreporting.googleapis.com/v1beta1/{projectName}/events:report?k
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/projects/{projectsId}/groups/{groupsId}',
-        http_method=u'GET',
-        method_id=u'clouderrorreporting.projects.groups.get',
-        ordered_params=[u'groupName'],
-        path_params=[u'groupName'],
+        flat_path='v1beta1/projects/{projectsId}/groups/{groupsId}',
+        http_method='GET',
+        method_id='clouderrorreporting.projects.groups.get',
+        ordered_params=['groupName'],
+        path_params=['groupName'],
         query_params=[],
-        relative_path=u'v1beta1/{+groupName}',
+        relative_path='v1beta1/{+groupName}',
         request_field='',
-        request_type_name=u'ClouderrorreportingProjectsGroupsGetRequest',
-        response_type_name=u'ErrorGroup',
+        request_type_name='ClouderrorreportingProjectsGroupsGetRequest',
+        response_type_name='ErrorGroup',
         supports_download=False,
     )
 
@@ -202,23 +202,23 @@ Fails if the group does not exist.
           config, request, global_params=global_params)
 
     Update.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/projects/{projectsId}/groups/{groupsId}',
-        http_method=u'PUT',
-        method_id=u'clouderrorreporting.projects.groups.update',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1beta1/projects/{projectsId}/groups/{groupsId}',
+        http_method='PUT',
+        method_id='clouderrorreporting.projects.groups.update',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1beta1/{+name}',
+        relative_path='v1beta1/{+name}',
         request_field='<request>',
-        request_type_name=u'ErrorGroup',
-        response_type_name=u'ErrorGroup',
+        request_type_name='ErrorGroup',
+        response_type_name='ErrorGroup',
         supports_download=False,
     )
 
   class ProjectsService(base_api.BaseApiService):
     """Service class for the projects resource."""
 
-    _NAME = u'projects'
+    _NAME = 'projects'
 
     def __init__(self, client):
       super(ClouderrorreportingV1beta1.ProjectsService, self).__init__(client)
@@ -239,15 +239,15 @@ Fails if the group does not exist.
           config, request, global_params=global_params)
 
     DeleteEvents.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/projects/{projectsId}/events',
-        http_method=u'DELETE',
-        method_id=u'clouderrorreporting.projects.deleteEvents',
-        ordered_params=[u'projectName'],
-        path_params=[u'projectName'],
+        flat_path='v1beta1/projects/{projectsId}/events',
+        http_method='DELETE',
+        method_id='clouderrorreporting.projects.deleteEvents',
+        ordered_params=['projectName'],
+        path_params=['projectName'],
         query_params=[],
-        relative_path=u'v1beta1/{+projectName}/events',
+        relative_path='v1beta1/{+projectName}/events',
         request_field='',
-        request_type_name=u'ClouderrorreportingProjectsDeleteEventsRequest',
-        response_type_name=u'DeleteEventsResponse',
+        request_type_name='ClouderrorreportingProjectsDeleteEventsRequest',
+        response_type_name='DeleteEventsResponse',
         supports_download=False,
     )

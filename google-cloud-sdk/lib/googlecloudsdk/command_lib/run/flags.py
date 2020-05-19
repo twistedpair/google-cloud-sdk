@@ -229,7 +229,7 @@ def AddNoTrafficFlag(parser):
       help='True to avoid sending traffic to the revision being deployed. '
       'Setting this flag assigns any traffic assigned to the LATEST revision '
       'to the specific revision bound to LATEST before the deployment. The '
-      'effect is that the revsion being deployed will not receive traffic. '
+      'effect is that the revision being deployed will not receive traffic. '
       'After a deployment with this flag the LATEST revision will not receive '
       'traffic on future deployments.')
 

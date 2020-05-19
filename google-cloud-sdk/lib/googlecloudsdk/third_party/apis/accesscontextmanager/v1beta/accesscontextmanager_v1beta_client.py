@@ -8,17 +8,17 @@ class AccesscontextmanagerV1beta(base_api.BaseApiClient):
   """Generated client library for service accesscontextmanager version v1beta."""
 
   MESSAGES_MODULE = messages
-  BASE_URL = u'https://accesscontextmanager.googleapis.com/'
-  MTLS_BASE_URL = u'https://accesscontextmanager.mtls.googleapis.com/'
+  BASE_URL = 'https://accesscontextmanager.googleapis.com/'
+  MTLS_BASE_URL = 'https://accesscontextmanager.mtls.googleapis.com/'
 
-  _PACKAGE = u'accesscontextmanager'
-  _SCOPES = [u'https://www.googleapis.com/auth/cloud-platform']
-  _VERSION = u'v1beta'
+  _PACKAGE = 'accesscontextmanager'
+  _SCOPES = ['https://www.googleapis.com/auth/cloud-platform']
+  _VERSION = 'v1beta'
   _CLIENT_ID = '1042881264118.apps.googleusercontent.com'
   _CLIENT_SECRET = 'x_Tw5K8nnjoRAqULM9PFAC2b'
-  _USER_AGENT = u'google-cloud-sdk'
-  _CLIENT_CLASS_NAME = u'AccesscontextmanagerV1beta'
-  _URL_VERSION = u'v1beta'
+  _USER_AGENT = 'google-cloud-sdk'
+  _CLIENT_CLASS_NAME = 'AccesscontextmanagerV1beta'
+  _URL_VERSION = 'v1beta'
   _API_KEY = None
 
   def __init__(self, url='', credentials=None,
@@ -44,7 +44,7 @@ class AccesscontextmanagerV1beta(base_api.BaseApiClient):
   class AccessPoliciesAccessLevelsService(base_api.BaseApiService):
     """Service class for the accessPolicies_accessLevels resource."""
 
-    _NAME = u'accessPolicies_accessLevels'
+    _NAME = 'accessPolicies_accessLevels'
 
     def __init__(self, client):
       super(AccesscontextmanagerV1beta.AccessPoliciesAccessLevelsService, self).__init__(client)
@@ -69,16 +69,16 @@ errors will result in an error response for the first error encountered.
           config, request, global_params=global_params)
 
     Create.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta/accessPolicies/{accessPoliciesId}/accessLevels',
-        http_method=u'POST',
-        method_id=u'accesscontextmanager.accessPolicies.accessLevels.create',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
+        flat_path='v1beta/accessPolicies/{accessPoliciesId}/accessLevels',
+        http_method='POST',
+        method_id='accesscontextmanager.accessPolicies.accessLevels.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
         query_params=[],
-        relative_path=u'v1beta/{+parent}/accessLevels',
-        request_field=u'accessLevel',
-        request_type_name=u'AccesscontextmanagerAccessPoliciesAccessLevelsCreateRequest',
-        response_type_name=u'Operation',
+        relative_path='v1beta/{+parent}/accessLevels',
+        request_field='accessLevel',
+        request_type_name='AccesscontextmanagerAccessPoliciesAccessLevelsCreateRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -99,16 +99,16 @@ from long-lasting storage.
           config, request, global_params=global_params)
 
     Delete.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta/accessPolicies/{accessPoliciesId}/accessLevels/{accessLevelsId}',
-        http_method=u'DELETE',
-        method_id=u'accesscontextmanager.accessPolicies.accessLevels.delete',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1beta/accessPolicies/{accessPoliciesId}/accessLevels/{accessLevelsId}',
+        http_method='DELETE',
+        method_id='accesscontextmanager.accessPolicies.accessLevels.delete',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1beta/{+name}',
+        relative_path='v1beta/{+name}',
         request_field='',
-        request_type_name=u'AccesscontextmanagerAccessPoliciesAccessLevelsDeleteRequest',
-        response_type_name=u'Operation',
+        request_type_name='AccesscontextmanagerAccessPoliciesAccessLevelsDeleteRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -127,16 +127,16 @@ name.
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta/accessPolicies/{accessPoliciesId}/accessLevels/{accessLevelsId}',
-        http_method=u'GET',
-        method_id=u'accesscontextmanager.accessPolicies.accessLevels.get',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[u'accessLevelFormat'],
-        relative_path=u'v1beta/{+name}',
+        flat_path='v1beta/accessPolicies/{accessPoliciesId}/accessLevels/{accessLevelsId}',
+        http_method='GET',
+        method_id='accesscontextmanager.accessPolicies.accessLevels.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['accessLevelFormat'],
+        relative_path='v1beta/{+name}',
         request_field='',
-        request_type_name=u'AccesscontextmanagerAccessPoliciesAccessLevelsGetRequest',
-        response_type_name=u'AccessLevel',
+        request_type_name='AccesscontextmanagerAccessPoliciesAccessLevelsGetRequest',
+        response_type_name='AccessLevel',
         supports_download=False,
     )
 
@@ -155,16 +155,16 @@ policy.
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta/accessPolicies/{accessPoliciesId}/accessLevels',
-        http_method=u'GET',
-        method_id=u'accesscontextmanager.accessPolicies.accessLevels.list',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'accessLevelFormat', u'pageSize', u'pageToken'],
-        relative_path=u'v1beta/{+parent}/accessLevels',
+        flat_path='v1beta/accessPolicies/{accessPoliciesId}/accessLevels',
+        http_method='GET',
+        method_id='accesscontextmanager.accessPolicies.accessLevels.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['accessLevelFormat', 'pageSize', 'pageToken'],
+        relative_path='v1beta/{+parent}/accessLevels',
         request_field='',
-        request_type_name=u'AccesscontextmanagerAccessPoliciesAccessLevelsListRequest',
-        response_type_name=u'ListAccessLevelsResponse',
+        request_type_name='AccesscontextmanagerAccessPoliciesAccessLevelsListRequest',
+        response_type_name='ListAccessLevelsResponse',
         supports_download=False,
     )
 
@@ -186,16 +186,16 @@ errors will result in an error response for the first error encountered.
           config, request, global_params=global_params)
 
     Patch.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta/accessPolicies/{accessPoliciesId}/accessLevels/{accessLevelsId}',
-        http_method=u'PATCH',
-        method_id=u'accesscontextmanager.accessPolicies.accessLevels.patch',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[u'updateMask'],
-        relative_path=u'v1beta/{+name}',
-        request_field=u'accessLevel',
-        request_type_name=u'AccesscontextmanagerAccessPoliciesAccessLevelsPatchRequest',
-        response_type_name=u'Operation',
+        flat_path='v1beta/accessPolicies/{accessPoliciesId}/accessLevels/{accessLevelsId}',
+        http_method='PATCH',
+        method_id='accesscontextmanager.accessPolicies.accessLevels.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v1beta/{+name}',
+        request_field='accessLevel',
+        request_type_name='AccesscontextmanagerAccessPoliciesAccessLevelsPatchRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -222,23 +222,23 @@ ReplaceAccessLevelsResponse.
           config, request, global_params=global_params)
 
     ReplaceAll.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta/accessPolicies/{accessPoliciesId}/accessLevels:replaceAll',
-        http_method=u'POST',
-        method_id=u'accesscontextmanager.accessPolicies.accessLevels.replaceAll',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
+        flat_path='v1beta/accessPolicies/{accessPoliciesId}/accessLevels:replaceAll',
+        http_method='POST',
+        method_id='accesscontextmanager.accessPolicies.accessLevels.replaceAll',
+        ordered_params=['parent'],
+        path_params=['parent'],
         query_params=[],
-        relative_path=u'v1beta/{+parent}/accessLevels:replaceAll',
-        request_field=u'replaceAccessLevelsRequest',
-        request_type_name=u'AccesscontextmanagerAccessPoliciesAccessLevelsReplaceAllRequest',
-        response_type_name=u'Operation',
+        relative_path='v1beta/{+parent}/accessLevels:replaceAll',
+        request_field='replaceAccessLevelsRequest',
+        request_type_name='AccesscontextmanagerAccessPoliciesAccessLevelsReplaceAllRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
   class AccessPoliciesServicePerimetersService(base_api.BaseApiService):
     """Service class for the accessPolicies_servicePerimeters resource."""
 
-    _NAME = u'accessPolicies_servicePerimeters'
+    _NAME = 'accessPolicies_servicePerimeters'
 
     def __init__(self, client):
       super(AccesscontextmanagerV1beta.AccessPoliciesServicePerimetersService, self).__init__(client)
@@ -263,16 +263,16 @@ errors will result in an error response for the first error encountered.
           config, request, global_params=global_params)
 
     Create.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta/accessPolicies/{accessPoliciesId}/servicePerimeters',
-        http_method=u'POST',
-        method_id=u'accesscontextmanager.accessPolicies.servicePerimeters.create',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
+        flat_path='v1beta/accessPolicies/{accessPoliciesId}/servicePerimeters',
+        http_method='POST',
+        method_id='accesscontextmanager.accessPolicies.servicePerimeters.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
         query_params=[],
-        relative_path=u'v1beta/{+parent}/servicePerimeters',
-        request_field=u'servicePerimeter',
-        request_type_name=u'AccesscontextmanagerAccessPoliciesServicePerimetersCreateRequest',
-        response_type_name=u'Operation',
+        relative_path='v1beta/{+parent}/servicePerimeters',
+        request_field='servicePerimeter',
+        request_type_name='AccesscontextmanagerAccessPoliciesServicePerimetersCreateRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -293,16 +293,16 @@ removed from long-lasting storage.
           config, request, global_params=global_params)
 
     Delete.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta/accessPolicies/{accessPoliciesId}/servicePerimeters/{servicePerimetersId}',
-        http_method=u'DELETE',
-        method_id=u'accesscontextmanager.accessPolicies.servicePerimeters.delete',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1beta/accessPolicies/{accessPoliciesId}/servicePerimeters/{servicePerimetersId}',
+        http_method='DELETE',
+        method_id='accesscontextmanager.accessPolicies.servicePerimeters.delete',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1beta/{+name}',
+        relative_path='v1beta/{+name}',
         request_field='',
-        request_type_name=u'AccesscontextmanagerAccessPoliciesServicePerimetersDeleteRequest',
-        response_type_name=u'Operation',
+        request_type_name='AccesscontextmanagerAccessPoliciesServicePerimetersDeleteRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -321,16 +321,16 @@ name.
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta/accessPolicies/{accessPoliciesId}/servicePerimeters/{servicePerimetersId}',
-        http_method=u'GET',
-        method_id=u'accesscontextmanager.accessPolicies.servicePerimeters.get',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1beta/accessPolicies/{accessPoliciesId}/servicePerimeters/{servicePerimetersId}',
+        http_method='GET',
+        method_id='accesscontextmanager.accessPolicies.servicePerimeters.get',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1beta/{+name}',
+        relative_path='v1beta/{+name}',
         request_field='',
-        request_type_name=u'AccesscontextmanagerAccessPoliciesServicePerimetersGetRequest',
-        response_type_name=u'ServicePerimeter',
+        request_type_name='AccesscontextmanagerAccessPoliciesServicePerimetersGetRequest',
+        response_type_name='ServicePerimeter',
         supports_download=False,
     )
 
@@ -349,16 +349,16 @@ access policy.
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta/accessPolicies/{accessPoliciesId}/servicePerimeters',
-        http_method=u'GET',
-        method_id=u'accesscontextmanager.accessPolicies.servicePerimeters.list',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'pageSize', u'pageToken'],
-        relative_path=u'v1beta/{+parent}/servicePerimeters',
+        flat_path='v1beta/accessPolicies/{accessPoliciesId}/servicePerimeters',
+        http_method='GET',
+        method_id='accesscontextmanager.accessPolicies.servicePerimeters.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v1beta/{+parent}/servicePerimeters',
         request_field='',
-        request_type_name=u'AccesscontextmanagerAccessPoliciesServicePerimetersListRequest',
-        response_type_name=u'ListServicePerimetersResponse',
+        request_type_name='AccesscontextmanagerAccessPoliciesServicePerimetersListRequest',
+        response_type_name='ListServicePerimetersResponse',
         supports_download=False,
     )
 
@@ -380,16 +380,16 @@ errors will result in an error response for the first error encountered.
           config, request, global_params=global_params)
 
     Patch.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta/accessPolicies/{accessPoliciesId}/servicePerimeters/{servicePerimetersId}',
-        http_method=u'PATCH',
-        method_id=u'accesscontextmanager.accessPolicies.servicePerimeters.patch',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[u'updateMask'],
-        relative_path=u'v1beta/{+name}',
-        request_field=u'servicePerimeter',
-        request_type_name=u'AccesscontextmanagerAccessPoliciesServicePerimetersPatchRequest',
-        response_type_name=u'Operation',
+        flat_path='v1beta/accessPolicies/{accessPoliciesId}/servicePerimeters/{servicePerimetersId}',
+        http_method='PATCH',
+        method_id='accesscontextmanager.accessPolicies.servicePerimeters.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v1beta/{+name}',
+        request_field='servicePerimeter',
+        request_type_name='AccesscontextmanagerAccessPoliciesServicePerimetersPatchRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -418,23 +418,23 @@ should be set or all status fields should be set, but not both.
           config, request, global_params=global_params)
 
     ReplaceAll.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta/accessPolicies/{accessPoliciesId}/servicePerimeters:replaceAll',
-        http_method=u'POST',
-        method_id=u'accesscontextmanager.accessPolicies.servicePerimeters.replaceAll',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
+        flat_path='v1beta/accessPolicies/{accessPoliciesId}/servicePerimeters:replaceAll',
+        http_method='POST',
+        method_id='accesscontextmanager.accessPolicies.servicePerimeters.replaceAll',
+        ordered_params=['parent'],
+        path_params=['parent'],
         query_params=[],
-        relative_path=u'v1beta/{+parent}/servicePerimeters:replaceAll',
-        request_field=u'replaceServicePerimetersRequest',
-        request_type_name=u'AccesscontextmanagerAccessPoliciesServicePerimetersReplaceAllRequest',
-        response_type_name=u'Operation',
+        relative_path='v1beta/{+parent}/servicePerimeters:replaceAll',
+        request_field='replaceServicePerimetersRequest',
+        request_type_name='AccesscontextmanagerAccessPoliciesServicePerimetersReplaceAllRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
   class AccessPoliciesService(base_api.BaseApiService):
     """Service class for the accessPolicies resource."""
 
-    _NAME = u'accessPolicies'
+    _NAME = 'accessPolicies'
 
     def __init__(self, client):
       super(AccesscontextmanagerV1beta.AccessPoliciesService, self).__init__(client)
@@ -459,15 +459,15 @@ BadRequest proto.
           config, request, global_params=global_params)
 
     Create.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'accesscontextmanager.accessPolicies.create',
+        http_method='POST',
+        method_id='accesscontextmanager.accessPolicies.create',
         ordered_params=[],
         path_params=[],
         query_params=[],
-        relative_path=u'v1beta/accessPolicies',
+        relative_path='v1beta/accessPolicies',
         request_field='<request>',
-        request_type_name=u'AccessPolicy',
-        response_type_name=u'Operation',
+        request_type_name='AccessPolicy',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -488,16 +488,16 @@ has been removed from long-lasting storage.
           config, request, global_params=global_params)
 
     Delete.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta/accessPolicies/{accessPoliciesId}',
-        http_method=u'DELETE',
-        method_id=u'accesscontextmanager.accessPolicies.delete',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1beta/accessPolicies/{accessPoliciesId}',
+        http_method='DELETE',
+        method_id='accesscontextmanager.accessPolicies.delete',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1beta/{+name}',
+        relative_path='v1beta/{+name}',
         request_field='',
-        request_type_name=u'AccesscontextmanagerAccessPoliciesDeleteRequest',
-        response_type_name=u'Operation',
+        request_type_name='AccesscontextmanagerAccessPoliciesDeleteRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -515,16 +515,16 @@ has been removed from long-lasting storage.
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta/accessPolicies/{accessPoliciesId}',
-        http_method=u'GET',
-        method_id=u'accesscontextmanager.accessPolicies.get',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1beta/accessPolicies/{accessPoliciesId}',
+        http_method='GET',
+        method_id='accesscontextmanager.accessPolicies.get',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1beta/{+name}',
+        relative_path='v1beta/{+name}',
         request_field='',
-        request_type_name=u'AccesscontextmanagerAccessPoliciesGetRequest',
-        response_type_name=u'AccessPolicy',
+        request_type_name='AccesscontextmanagerAccessPoliciesGetRequest',
+        response_type_name='AccessPolicy',
         supports_download=False,
     )
 
@@ -543,15 +543,15 @@ container.
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'accesscontextmanager.accessPolicies.list',
+        http_method='GET',
+        method_id='accesscontextmanager.accessPolicies.list',
         ordered_params=[],
         path_params=[],
-        query_params=[u'pageSize', u'pageToken', u'parent'],
-        relative_path=u'v1beta/accessPolicies',
+        query_params=['pageSize', 'pageToken', 'parent'],
+        relative_path='v1beta/accessPolicies',
         request_field='',
-        request_type_name=u'AccesscontextmanagerAccessPoliciesListRequest',
-        response_type_name=u'ListAccessPoliciesResponse',
+        request_type_name='AccesscontextmanagerAccessPoliciesListRequest',
+        response_type_name='ListAccessPoliciesResponse',
         supports_download=False,
     )
 
@@ -573,23 +573,23 @@ returned in `metadata` as a BadRequest proto.
           config, request, global_params=global_params)
 
     Patch.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta/accessPolicies/{accessPoliciesId}',
-        http_method=u'PATCH',
-        method_id=u'accesscontextmanager.accessPolicies.patch',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[u'updateMask'],
-        relative_path=u'v1beta/{+name}',
-        request_field=u'accessPolicy',
-        request_type_name=u'AccesscontextmanagerAccessPoliciesPatchRequest',
-        response_type_name=u'Operation',
+        flat_path='v1beta/accessPolicies/{accessPoliciesId}',
+        http_method='PATCH',
+        method_id='accesscontextmanager.accessPolicies.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v1beta/{+name}',
+        request_field='accessPolicy',
+        request_type_name='AccesscontextmanagerAccessPoliciesPatchRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
   class OperationsService(base_api.BaseApiService):
     """Service class for the operations resource."""
 
-    _NAME = u'operations'
+    _NAME = 'operations'
 
     def __init__(self, client):
       super(AccesscontextmanagerV1beta.OperationsService, self).__init__(client)
@@ -612,15 +612,15 @@ service.
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta/operations/{operationsId}',
-        http_method=u'GET',
-        method_id=u'accesscontextmanager.operations.get',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1beta/operations/{operationsId}',
+        http_method='GET',
+        method_id='accesscontextmanager.operations.get',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1beta/{+name}',
+        relative_path='v1beta/{+name}',
         request_field='',
-        request_type_name=u'AccesscontextmanagerOperationsGetRequest',
-        response_type_name=u'Operation',
+        request_type_name='AccesscontextmanagerOperationsGetRequest',
+        response_type_name='Operation',
         supports_download=False,
     )

@@ -19,23 +19,17 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
-import platform
-import re
 import time
-import uuid
 import enum
 import google_auth_httplib2
 
-from googlecloudsdk.core import config
 from googlecloudsdk.core import context_aware
 from googlecloudsdk.core import http_proxy
 from googlecloudsdk.core import log
 from googlecloudsdk.core import metrics
 from googlecloudsdk.core import properties
-from googlecloudsdk.core.console import console_attr
-from googlecloudsdk.core.console import console_io
+from googlecloudsdk.core import transport
 from googlecloudsdk.core.util import encoding
-from googlecloudsdk.core.util import platforms
 
 import httplib2
 import six
@@ -71,13 +65,11 @@ def Http(timeout='unset', response_encoding=None, ca_certs=None):
     for gcloud.
   """
   # Wrap the request method to put in our own user-agent, and trace reporting.
-  gcloud_ua = MakeUserAgentString(properties.VALUES.metrics.command_name.Get())
+  command_name = properties.VALUES.metrics.command_name.Get()
+  gcloud_ua = transport.MakeUserAgentString(command_name)
   http_client = _CreateRawHttpClient(timeout, ca_certs)
   http_client = _Wrap(
       http_client,
-      properties.VALUES.core.trace_token.Get(),
-      properties.VALUES.core.trace_email.Get(),
-      properties.VALUES.core.trace_log.GetBool(),
       properties.VALUES.core.request_reason.Get(),
       gcloud_ua,
       properties.VALUES.core.log_http.GetBool(),
@@ -133,7 +125,10 @@ def _CreateRawHttpClient(timeout='unset', ca_certs=None):
   # Compared with setting the default timeout in the function signature (i.e.
   # timeout=300), this lets you test with short default timeouts by mocking
   # GetDefaultTimeout.
-  effective_timeout = timeout if timeout != 'unset' else GetDefaultTimeout()
+  if timeout != 'unset':
+    effective_timeout = timeout
+  else:
+    effective_timeout = transport.GetDefaultTimeout()
   no_validate = properties.VALUES.auth.disable_ssl_validation.GetBool() or False
   ca_certs_property = properties.VALUES.core.custom_ca_certs_file.Get()
   # Believe an explicitly-set ca_certs property over anything we added.
@@ -147,55 +142,13 @@ def _CreateRawHttpClient(timeout='unset', ca_certs=None):
                     disable_ssl_certificate_validation=no_validate)
 
 
-def MakeUserAgentString(cmd_path=None):
-  """Return a user-agent string for this request.
-
-  Contains 'gcloud' in addition to several other product IDs used for tracing in
-  metrics reporting.
-
-  Args:
-    cmd_path: str representing the current command for tracing.
-
-  Returns:
-    str, User Agent string.
-  """
-  return ('gcloud/{version}'
-          ' command/{cmd}'
-          ' invocation-id/{inv_id}'
-          ' environment/{environment}'
-          ' environment-version/{env_version}'
-          ' interactive/{is_interactive}'
-          ' from-script/{from_script}'
-          ' python/{py_version}'
-          ' term/{term}'
-          ' {ua_fragment}').format(
-              version=config.CLOUD_SDK_VERSION.replace(' ', '_'),
-              cmd=(cmd_path or properties.VALUES.metrics.command_name.Get()),
-              inv_id=uuid.uuid4().hex,
-              environment=properties.GetMetricsEnvironment(),
-              env_version=properties.VALUES.metrics.environment_version.Get(),
-              is_interactive=console_io.IsInteractive(error=True,
-                                                      heuristic=True),
-              py_version=platform.python_version(),
-              ua_fragment=platforms.Platform.Current().UserAgentFragment(),
-              from_script=console_io.IsRunFromShellScript(),
-              term=console_attr.GetConsoleAttr().GetTermIdentifier())
-
-
-def GetDefaultTimeout():
-  return properties.VALUES.core.http_timeout.GetInt() or 300
-
-
 def _Wrap(
-    http_client, trace_token, trace_email, trace_log, request_reason, gcloud_ua,
+    http_client, request_reason, gcloud_ua,
     log_http, log_http_redact_token, response_encoding):
   """Wrap request with user-agent, and trace reporting.
 
   Args:
     http_client: The original http object.
-    trace_token: str, Token to be used to route service request traces.
-    trace_email: str, username to which service request traces should be sent.
-    trace_log: bool, Enable/disable server side logging of service requests.
     request_reason: str, Justification for access.
     gcloud_ua: str, User agent string to be included in the request.
     log_http: bool, True to enable request/response logging.
@@ -215,14 +168,7 @@ def _Wrap(
   handlers.append(Modifiers.Handler(
       Modifiers.AppendToHeader(_NORMALIZED_USER_AGENT, gcloud_ua)))
 
-  trace_value = None
-  if trace_token:
-    trace_value = 'token:{0}'.format(trace_token)
-  elif trace_email:
-    trace_value = 'email:{0}'.format(trace_email)
-  elif trace_log:
-    trace_value = 'log'
-
+  trace_value = transport.GetTraceValue()
   if trace_value:
     handlers.append(Modifiers.Handler(
         Modifiers.AddQueryParam('trace', trace_value)))
@@ -502,7 +448,7 @@ class Modifiers(object):
       redact_req_body_reason = None
       redact_resp_body_reason = None
 
-      if redact_token and IsTokenUri(uri):
+      if redact_token and transport.IsTokenUri(uri):
         redact_req_body_reason = (
             'Contains oauth token. Set log_http_redact_token property to false '
             'to print the body of this request.'
@@ -631,21 +577,6 @@ class RequestParam(enum.Enum):
       args[self.index] = value
     else:
       kwargs[self.arg_name] = value
-
-
-def IsTokenUri(uri):
-  """Determine if the given URI is for requesting an access token."""
-  if uri in ['https://accounts.google.com/o/oauth2/token',
-             'https://www.googleapis.com/oauth2/v3/token',
-             'https://www.googleapis.com/oauth2/v4/token',
-             'https://oauth2.googleapis.com/token',
-             'https://oauth2.googleapis.com/oauth2/v4/token']:
-    return True
-
-  metadata_regexp = ('metadata.google.internal/computeMetadata/.*?/instance/'
-                     'service-accounts/.*?/token')
-
-  return re.search(metadata_regexp, uri) is not None
 
 
 def GoogleAuthRequest(http=None):

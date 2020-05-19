@@ -33,8 +33,9 @@ class Binding(_messages.Message):
       not apply to the current request. However, a different role binding
       might grant the same role to one or more of the members in this binding.
       To learn which resources support conditions in their IAM policies, see
-      the [IAM documentation](https://cloud.google.com/iam/help/conditions
-      /resource-policies).
+      the [IAM
+      documentation](https://cloud.google.com/iam/help/conditions/resource-
+      policies).
     members: Specifies the identities requesting access for a Cloud Platform
       resource. `members` can have the following values:  * `allUsers`: A
       special identifier that represents anyone who is    on the internet;
@@ -382,8 +383,8 @@ class Policy(_messages.Message):
   timestamp('2020-10-01T00:00:00.000Z')",           }         }       ],
   "etag": "BwWWja0YfJA=",       "version": 3     }  **YAML example:**
   bindings:     - members:       - user:mike@example.com       -
-  group:admins@example.com       - domain:google.com       - serviceAccount
-  :my-project-id@appspot.gserviceaccount.com       role:
+  group:admins@example.com       - domain:google.com       -
+  serviceAccount:my-project-id@appspot.gserviceaccount.com       role:
   roles/resourcemanager.organizationAdmin     - members:       -
   user:eve@example.com       role: roles/resourcemanager.organizationViewer
   condition:         title: expirable access         description: Does not
@@ -1104,18 +1105,17 @@ class ReceivedMessage(_messages.Message):
 
   Fields:
     ackId: This ID can be used to acknowledge the received message.
-    deliveryAttempt: Delivery attempt counter is 1 + (the sum of number of
-      NACKs and number of ack_deadline exceeds) for this message.  A NACK is
-      any call to ModifyAckDeadline with a 0 deadline. An ack_deadline exceeds
-      event is whenever a message is not acknowledged within ack_deadline.
-      Note that ack_deadline is initially Subscription.ackDeadlineSeconds, but
-      may get extended automatically by the client library.  The first
-      delivery of a given message will have this value as 1. The value is
-      calculated at best effort and is approximate.  If a DeadLetterPolicy is
-      not set on the subscription, this will be 0. <b>EXPERIMENTAL:</b> This
-      feature is part of a closed alpha release. This API might be changed in
-      backward-incompatible ways and is not recommended for production use. It
-      is not subject to any SLA or deprecation policy.
+    deliveryAttempt: The approximate number of times that Cloud Pub/Sub has
+      attempted to deliver the associated message to a subscriber.  More
+      precisely, this is 1 + (number of NACKs) + (number of ack_deadline
+      exceeds) for this message.  A NACK is any call to ModifyAckDeadline with
+      a 0 deadline. An ack_deadline exceeds event is whenever a message is not
+      acknowledged within ack_deadline. Note that ack_deadline is initially
+      Subscription.ackDeadlineSeconds, but may get extended automatically by
+      the client library.  Upon the first delivery of a given message,
+      `delivery_attempt` will have a value of 1. The value is calculated at
+      best effort and is approximate.  If a DeadLetterPolicy is not set on the
+      subscription, this will be 0.
     message: The message.
   """
 
@@ -1298,7 +1298,7 @@ class StandardQueryParameters(_messages.Message):
 
   f__xgafv = _messages.EnumField('FXgafvValueValuesEnum', 1)
   access_token = _messages.StringField(2)
-  alt = _messages.EnumField('AltValueValuesEnum', 3, default=u'json')
+  alt = _messages.EnumField('AltValueValuesEnum', 3, default='json')
   callback = _messages.StringField(4)
   fields = _messages.StringField(5)
   key = _messages.StringField(6)

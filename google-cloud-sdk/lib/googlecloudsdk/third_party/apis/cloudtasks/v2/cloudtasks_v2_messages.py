@@ -15,12 +15,12 @@ package = 'cloudtasks'
 class AppEngineHttpRequest(_messages.Message):
   r"""App Engine HTTP request.  The message defines the HTTP request that is
   sent to an App Engine app when the task is dispatched.  Using
-  AppEngineHttpRequest requires
-  [`appengine.applications.get`](https://cloud.google.com/appengine/docs
-  /admin-api/access-control) Google IAM permission for the project and the
-  following scope:  `https://www.googleapis.com/auth/cloud-platform`  The task
-  will be delivered to the App Engine app which belongs to the same project as
-  the queue. For more information, see [How Requests are
+  AppEngineHttpRequest requires [`appengine.applications.get`](https://cloud.g
+  oogle.com/appengine/docs/admin-api/access-control) Google IAM permission for
+  the project and the following scope:
+  `https://www.googleapis.com/auth/cloud-platform`  The task will be delivered
+  to the App Engine app which belongs to the same project as the queue. For
+  more information, see [How Requests are
   Routed](https://cloud.google.com/appengine/docs/standard/python/how-
   requests-are-routed) and how routing is affected by [dispatch
   files](https://cloud.google.com/appengine/docs/python/config/dispatchref).
@@ -55,10 +55,10 @@ class AppEngineHttpRequest(_messages.Message):
       default is POST.  The app's request handler for the task's target URL
       must be able to handle HTTP requests with this http_method, otherwise
       the task attempt fails with error code 405 (Method Not Allowed). See
-      [Writing a push task request
-      handler](https://cloud.google.com/appengine/docs/java/taskqueue/push
-      /creating-handlers#writing_a_push_task_request_handler) and the App
-      Engine documentation for your runtime on [How Requests are
+      [Writing a push task request handler](https://cloud.google.com/appengine
+      /docs/java/taskqueue/push/creating-
+      handlers#writing_a_push_task_request_handler) and the App Engine
+      documentation for your runtime on [How Requests are
       Handled](https://cloud.google.com/appengine/docs/standard/python3/how-
       requests-are-handled).
 
@@ -81,13 +81,14 @@ class AppEngineHttpRequest(_messages.Message):
       below cannot be set or overridden:  * `Host` * `X-Google-*` *
       `X-AppEngine-*`  In addition, Cloud Tasks sets some headers when the
       task is dispatched, such as headers containing information about the
-      task; see [request headers](https://cloud.google.com/tasks/docs
-      /creating-appengine-handlers#reading_request_headers). These headers are
-      set only when the task is dispatched, so they are not visible when the
-      task is returned in a Cloud Tasks response.  Although there is no
-      specific limit for the maximum number of headers or the size, there is a
-      limit on the maximum size of the Task. For more information, see the
-      CreateTask documentation.
+      task; see [request
+      headers](https://cloud.google.com/tasks/docs/creating-appengine-
+      handlers#reading_request_headers). These headers are set only when the
+      task is dispatched, so they are not visible when the task is returned in
+      a Cloud Tasks response.  Although there is no specific limit for the
+      maximum number of headers or the size, there is a limit on the maximum
+      size of the Task. For more information, see the CreateTask
+      documentation.
 
   Fields:
     appEngineRouting: Task-level setting for App Engine routing.  * If
@@ -115,20 +116,20 @@ class AppEngineHttpRequest(_messages.Message):
       below cannot be set or overridden:  * `Host` * `X-Google-*` *
       `X-AppEngine-*`  In addition, Cloud Tasks sets some headers when the
       task is dispatched, such as headers containing information about the
-      task; see [request headers](https://cloud.google.com/tasks/docs
-      /creating-appengine-handlers#reading_request_headers). These headers are
-      set only when the task is dispatched, so they are not visible when the
-      task is returned in a Cloud Tasks response.  Although there is no
-      specific limit for the maximum number of headers or the size, there is a
-      limit on the maximum size of the Task. For more information, see the
-      CreateTask documentation.
+      task; see [request
+      headers](https://cloud.google.com/tasks/docs/creating-appengine-
+      handlers#reading_request_headers). These headers are set only when the
+      task is dispatched, so they are not visible when the task is returned in
+      a Cloud Tasks response.  Although there is no specific limit for the
+      maximum number of headers or the size, there is a limit on the maximum
+      size of the Task. For more information, see the CreateTask
+      documentation.
     httpMethod: The HTTP method to use for the request. The default is POST.
       The app's request handler for the task's target URL must be able to
       handle HTTP requests with this http_method, otherwise the task attempt
       fails with error code 405 (Method Not Allowed). See [Writing a push task
-      request
-      handler](https://cloud.google.com/appengine/docs/java/taskqueue/push
-      /creating-handlers#writing_a_push_task_request_handler) and the App
+      request handler](https://cloud.google.com/appengine/docs/java/taskqueue/
+      push/creating-handlers#writing_a_push_task_request_handler) and the App
       Engine documentation for your runtime on [How Requests are
       Handled](https://cloud.google.com/appengine/docs/standard/python3/how-
       requests-are-handled).
@@ -143,9 +144,9 @@ class AppEngineHttpRequest(_messages.Message):
     r"""The HTTP method to use for the request. The default is POST.  The
     app's request handler for the task's target URL must be able to handle
     HTTP requests with this http_method, otherwise the task attempt fails with
-    error code 405 (Method Not Allowed). See [Writing a push task request
-    handler](https://cloud.google.com/appengine/docs/java/taskqueue/push
-    /creating-handlers#writing_a_push_task_request_handler) and the App Engine
+    error code 405 (Method Not Allowed). See [Writing a push task request hand
+    ler](https://cloud.google.com/appengine/docs/java/taskqueue/push/creating-
+    handlers#writing_a_push_task_request_handler) and the App Engine
     documentation for your runtime on [How Requests are
     Handled](https://cloud.google.com/appengine/docs/standard/python3/how-
     requests-are-handled).
@@ -179,12 +180,12 @@ class AppEngineHttpRequest(_messages.Message):
     header can be modified, but Cloud Tasks will append   `"AppEngine-Google;
     (+http://code.google.com/appengine)"` to the   modified `User-Agent`.  If
     the task has a body, Cloud Tasks sets the following headers:  * `Content-
-    Type`: By default, the `Content-Type` header is set to   `"application
-    /octet-stream"`. The default can be overridden by explicitly   setting
-    `Content-Type` to a particular media type when the   task is created.
-    For example, `Content-Type` can be set to `"application/json"`. *
-    `Content-Length`: This is computed by Cloud Tasks. This value is   output
-    only.   It cannot be changed.  The headers below cannot be set or
+    Type`: By default, the `Content-Type` header is set to
+    `"application/octet-stream"`. The default can be overridden by explicitly
+    setting `Content-Type` to a particular media type when the   task is
+    created.   For example, `Content-Type` can be set to `"application/json"`.
+    * `Content-Length`: This is computed by Cloud Tasks. This value is
+    output only.   It cannot be changed.  The headers below cannot be set or
     overridden:  * `Host` * `X-Google-*` * `X-AppEngine-*`  In addition, Cloud
     Tasks sets some headers when the task is dispatched, such as headers
     containing information about the task; see [request
@@ -233,10 +234,10 @@ class AppEngineRouting(_messages.Message):
   routing](https://cloud.google.com/appengine/docs/standard/python/how-
   requests-are-routed), and [App Engine Flex request
   routing](https://cloud.google.com/appengine/docs/flexible/python/how-
-  requests-are-routed).  Using AppEngineRouting requires
-  [`appengine.applications.get`](https://cloud.google.com/appengine/docs
-  /admin-api/access-control) Google IAM permission for the project and the
-  following scope:  `https://www.googleapis.com/auth/cloud-platform`
+  requests-are-routed).  Using AppEngineRouting requires [`appengine.applicati
+  ons.get`](https://cloud.google.com/appengine/docs/admin-api/access-control)
+  Google IAM permission for the project and the following scope:
+  `https://www.googleapis.com/auth/cloud-platform`
 
   Fields:
     host: Output only. The host that the task is sent to.  The host is
@@ -311,8 +312,9 @@ class Binding(_messages.Message):
       not apply to the current request. However, a different role binding
       might grant the same role to one or more of the members in this binding.
       To learn which resources support conditions in their IAM policies, see
-      the [IAM documentation](https://cloud.google.com/iam/help/conditions
-      /resource-policies).
+      the [IAM
+      documentation](https://cloud.google.com/iam/help/conditions/resource-
+      policies).
     members: Specifies the identities requesting access for a Cloud Platform
       resource. `members` can have the following values:  * `allUsers`: A
       special identifier that represents anyone who is    on the internet;
@@ -469,13 +471,13 @@ class CloudtasksProjectsLocationsQueuesPatchRequest(_messages.Message):
       format: `projects/PROJECT_ID/locations/LOCATION_ID/queues/QUEUE_ID`  *
       `PROJECT_ID` can contain letters ([A-Za-z]), numbers ([0-9]),    hyphens
       (-), colons (:), or periods (.).    For more information, see
-      [Identifying    projects](https://cloud.google.com/resource-manager/docs
-      /creating-managing-projects#identifying_projects) * `LOCATION_ID` is the
-      canonical ID for the queue's location.    The list of available
-      locations can be obtained by calling    ListLocations.    For more
-      information, see https://cloud.google.com/about/locations/. * `QUEUE_ID`
-      can contain letters ([A-Za-z]), numbers ([0-9]), or   hyphens (-). The
-      maximum length is 100 characters.
+      [Identifying    projects](https://cloud.google.com/resource-
+      manager/docs/creating-managing-projects#identifying_projects) *
+      `LOCATION_ID` is the canonical ID for the queue's location.    The list
+      of available locations can be obtained by calling    ListLocations.
+      For more information, see https://cloud.google.com/about/locations/. *
+      `QUEUE_ID` can contain letters ([A-Za-z]), numbers ([0-9]), or   hyphens
+      (-). The maximum length is 100 characters.
     queue: A Queue resource to be passed as the request body.
     updateMask: A mask used to specify which fields of the queue are being
       updated.  If empty, then all fields will be updated.
@@ -964,10 +966,10 @@ class HttpRequest(_messages.Message):
     set to `"Google-Cloud-Tasks"`. * X-Google-*: Google use only. *
     X-AppEngine-*: Google use only.  `Content-Type` won't be set by Cloud
     Tasks. You can explicitly set `Content-Type` to a media type when the
-    task is created.  For example, `Content-Type` can be set to `"application
-    /octet-stream"` or  `"application/json"`.  Headers which can have multiple
-    values (according to RFC2616) can be specified using comma-separated
-    values.  The size of the headers must be less than 80KB.
+    task is created.  For example, `Content-Type` can be set to
+    `"application/octet-stream"` or  `"application/json"`.  Headers which can
+    have multiple values (according to RFC2616) can be specified using comma-
+    separated values.  The size of the headers must be less than 80KB.
 
     Messages:
       AdditionalProperty: An additional property for a HeadersValue object.
@@ -1189,8 +1191,8 @@ class Policy(_messages.Message):
   timestamp('2020-10-01T00:00:00.000Z')",           }         }       ],
   "etag": "BwWWja0YfJA=",       "version": 3     }  **YAML example:**
   bindings:     - members:       - user:mike@example.com       -
-  group:admins@example.com       - domain:google.com       - serviceAccount
-  :my-project-id@appspot.gserviceaccount.com       role:
+  group:admins@example.com       - domain:google.com       -
+  serviceAccount:my-project-id@appspot.gserviceaccount.com       role:
   roles/resourcemanager.organizationAdmin     - members:       -
   user:eve@example.com       role: roles/resourcemanager.organizationViewer
   condition:         title: expirable access         description: Does not
@@ -1264,18 +1266,18 @@ class Queue(_messages.Message):
       format: `projects/PROJECT_ID/locations/LOCATION_ID/queues/QUEUE_ID`  *
       `PROJECT_ID` can contain letters ([A-Za-z]), numbers ([0-9]),    hyphens
       (-), colons (:), or periods (.).    For more information, see
-      [Identifying    projects](https://cloud.google.com/resource-manager/docs
-      /creating-managing-projects#identifying_projects) * `LOCATION_ID` is the
-      canonical ID for the queue's location.    The list of available
-      locations can be obtained by calling    ListLocations.    For more
-      information, see https://cloud.google.com/about/locations/. * `QUEUE_ID`
-      can contain letters ([A-Za-z]), numbers ([0-9]), or   hyphens (-). The
-      maximum length is 100 characters.
+      [Identifying    projects](https://cloud.google.com/resource-
+      manager/docs/creating-managing-projects#identifying_projects) *
+      `LOCATION_ID` is the canonical ID for the queue's location.    The list
+      of available locations can be obtained by calling    ListLocations.
+      For more information, see https://cloud.google.com/about/locations/. *
+      `QUEUE_ID` can contain letters ([A-Za-z]), numbers ([0-9]), or   hyphens
+      (-). The maximum length is 100 characters.
     purgeTime: Output only. The last time this queue was purged.  All tasks
       that were created before this time were purged.  A queue can be purged
       using PurgeQueue, the [App Engine Task Queue SDK, or the Cloud Console](
-      https://cloud.google.com/appengine/docs/standard/python/taskqueue/push
-      /deleting-tasks-and-queues#purging_all_tasks_from_a_queue).  Purge time
+      https://cloud.google.com/appengine/docs/standard/python/taskqueue/push/d
+      eleting-tasks-and-queues#purging_all_tasks_from_a_queue).  Purge time
       will be truncated to the nearest microsecond. Purge time will be unset
       if the queue has never been purged.
     rateLimits: Rate limits for task dispatches.  rate_limits and retry_config
@@ -1298,8 +1300,8 @@ class Queue(_messages.Message):
       Engine SDK: the queue-level retry   settings apply to all tasks in the
       queue which do not have retry settings   explicitly set on the task and
       were created by the App Engine SDK. See   [App Engine   documentation](h
-      ttps://cloud.google.com/appengine/docs/standard/python/taskqueue/push
-      /retrying-tasks).
+      ttps://cloud.google.com/appengine/docs/standard/python/taskqueue/push/re
+      trying-tasks).
     stackdriverLoggingConfig: Configuration options for writing logs to
       [Stackdriver Logging](https://cloud.google.com/logging/docs/). If this
       field is unset, then no logs are written.
@@ -1584,7 +1586,7 @@ class StandardQueryParameters(_messages.Message):
 
   f__xgafv = _messages.EnumField('FXgafvValueValuesEnum', 1)
   access_token = _messages.StringField(2)
-  alt = _messages.EnumField('AltValueValuesEnum', 3, default=u'json')
+  alt = _messages.EnumField('AltValueValuesEnum', 3, default='json')
   callback = _messages.StringField(4)
   fields = _messages.StringField(5)
   key = _messages.StringField(6)

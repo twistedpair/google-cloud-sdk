@@ -28,21 +28,21 @@ class Collections(enum.Enum):
       'projects',
       'projects/{projectId}',
       {},
-      [u'projectId'],
+      ['projectId'],
       True
   )
   PROJECTS_TESTMATRICES = (
       'projects.testMatrices',
       'projects/{projectId}/testMatrices/{testMatrixId}',
       {},
-      [u'projectId', u'testMatrixId'],
+      ['projectId', 'testMatrixId'],
       True
   )
   TESTENVIRONMENTCATALOG = (
       'testEnvironmentCatalog',
       'testEnvironmentCatalog/{environmentType}',
       {},
-      [u'environmentType'],
+      ['environmentType'],
       True
   )
 

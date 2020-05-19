@@ -8,17 +8,17 @@ class EventflowV1beta2(base_api.BaseApiClient):
   """Generated client library for service eventflow version v1beta2."""
 
   MESSAGES_MODULE = messages
-  BASE_URL = u'https://eventflow.googleapis.com/'
-  MTLS_BASE_URL = u'https://eventflow.mtls.googleapis.com/'
+  BASE_URL = 'https://eventflow.googleapis.com/'
+  MTLS_BASE_URL = 'https://eventflow.mtls.googleapis.com/'
 
-  _PACKAGE = u'eventflow'
-  _SCOPES = [u'https://www.googleapis.com/auth/cloud-platform', u'https://www.googleapis.com/auth/firebase']
-  _VERSION = u'v1beta2'
+  _PACKAGE = 'eventflow'
+  _SCOPES = ['https://www.googleapis.com/auth/cloud-platform', 'https://www.googleapis.com/auth/firebase']
+  _VERSION = 'v1beta2'
   _CLIENT_ID = '1042881264118.apps.googleusercontent.com'
   _CLIENT_SECRET = 'x_Tw5K8nnjoRAqULM9PFAC2b'
-  _USER_AGENT = u'google-cloud-sdk'
-  _CLIENT_CLASS_NAME = u'EventflowV1beta2'
-  _URL_VERSION = u'v1beta2'
+  _USER_AGENT = 'google-cloud-sdk'
+  _CLIENT_CLASS_NAME = 'EventflowV1beta2'
+  _URL_VERSION = 'v1beta2'
   _API_KEY = None
 
   def __init__(self, url='', credentials=None,
@@ -42,7 +42,7 @@ class EventflowV1beta2(base_api.BaseApiClient):
   class ProjectsFlowsService(base_api.BaseApiService):
     """Service class for the projects_flows resource."""
 
-    _NAME = u'projects_flows'
+    _NAME = 'projects_flows'
 
     def __init__(self, client):
       super(EventflowV1beta2.ProjectsFlowsService, self).__init__(client)
@@ -63,16 +63,16 @@ class EventflowV1beta2(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Create.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta2/projects/{projectsId}/flows',
-        http_method=u'POST',
-        method_id=u'eventflow.projects.flows.create',
-        ordered_params=[u'namespace'],
-        path_params=[u'namespace'],
+        flat_path='v1beta2/projects/{projectsId}/flows',
+        http_method='POST',
+        method_id='eventflow.projects.flows.create',
+        ordered_params=['namespace'],
+        path_params=['namespace'],
         query_params=[],
-        relative_path=u'v1beta2/projects/{+namespace}/flows',
-        request_field=u'flow',
-        request_type_name=u'EventflowProjectsFlowsCreateRequest',
-        response_type_name=u'Flow',
+        relative_path='v1beta2/projects/{+namespace}/flows',
+        request_field='flow',
+        request_type_name='EventflowProjectsFlowsCreateRequest',
+        response_type_name='Flow',
         supports_download=False,
     )
 
@@ -90,16 +90,16 @@ class EventflowV1beta2(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Delete.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta2/projects/{projectsId}/flows/{flowsId}',
-        http_method=u'DELETE',
-        method_id=u'eventflow.projects.flows.delete',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1beta2/projects/{projectsId}/flows/{flowsId}',
+        http_method='DELETE',
+        method_id='eventflow.projects.flows.delete',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1beta2/{+name}',
+        relative_path='v1beta2/{+name}',
         request_field='',
-        request_type_name=u'EventflowProjectsFlowsDeleteRequest',
-        response_type_name=u'Empty',
+        request_type_name='EventflowProjectsFlowsDeleteRequest',
+        response_type_name='Empty',
         supports_download=False,
     )
 
@@ -117,16 +117,16 @@ class EventflowV1beta2(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta2/projects/{projectsId}/flows/{flowsId}',
-        http_method=u'GET',
-        method_id=u'eventflow.projects.flows.get',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1beta2/projects/{projectsId}/flows/{flowsId}',
+        http_method='GET',
+        method_id='eventflow.projects.flows.get',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1beta2/{+name}',
+        relative_path='v1beta2/{+name}',
         request_field='',
-        request_type_name=u'EventflowProjectsFlowsGetRequest',
-        response_type_name=u'Flow',
+        request_type_name='EventflowProjectsFlowsGetRequest',
+        response_type_name='Flow',
         supports_download=False,
     )
 
@@ -144,16 +144,16 @@ class EventflowV1beta2(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta2/projects/{projectsId}/flows',
-        http_method=u'GET',
-        method_id=u'eventflow.projects.flows.list',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'pageSize', u'pageToken'],
-        relative_path=u'v1beta2/{+parent}/flows',
+        flat_path='v1beta2/projects/{projectsId}/flows',
+        http_method='GET',
+        method_id='eventflow.projects.flows.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v1beta2/{+parent}/flows',
         request_field='',
-        request_type_name=u'EventflowProjectsFlowsListRequest',
-        response_type_name=u'ListFlowsResponse',
+        request_type_name='EventflowProjectsFlowsListRequest',
+        response_type_name='ListFlowsResponse',
         supports_download=False,
     )
 
@@ -174,23 +174,23 @@ change.  trigger.event_type is changed.
           config, request, global_params=global_params)
 
     Update.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta2/projects/{projectsId}/flows/{flowsId}',
-        http_method=u'PUT',
-        method_id=u'eventflow.projects.flows.update',
-        ordered_params=[u'namespace', u'name'],
-        path_params=[u'name', u'namespace'],
+        flat_path='v1beta2/projects/{projectsId}/flows/{flowsId}',
+        http_method='PUT',
+        method_id='eventflow.projects.flows.update',
+        ordered_params=['namespace', 'name'],
+        path_params=['name', 'namespace'],
         query_params=[],
-        relative_path=u'v1beta2/projects/{+namespace}/flows/{+name}',
-        request_field=u'flow',
-        request_type_name=u'EventflowProjectsFlowsUpdateRequest',
-        response_type_name=u'Flow',
+        relative_path='v1beta2/projects/{+namespace}/flows/{+name}',
+        request_field='flow',
+        request_type_name='EventflowProjectsFlowsUpdateRequest',
+        response_type_name='Flow',
         supports_download=False,
     )
 
   class ProjectsService(base_api.BaseApiService):
     """Service class for the projects resource."""
 
-    _NAME = u'projects'
+    _NAME = 'projects'
 
     def __init__(self, client):
       super(EventflowV1beta2.ProjectsService, self).__init__(client)

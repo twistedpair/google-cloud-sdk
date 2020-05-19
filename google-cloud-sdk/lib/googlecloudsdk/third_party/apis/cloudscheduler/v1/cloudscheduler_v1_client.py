@@ -8,17 +8,17 @@ class CloudschedulerV1(base_api.BaseApiClient):
   """Generated client library for service cloudscheduler version v1."""
 
   MESSAGES_MODULE = messages
-  BASE_URL = u'https://cloudscheduler.googleapis.com/'
-  MTLS_BASE_URL = u''
+  BASE_URL = 'https://cloudscheduler.googleapis.com/'
+  MTLS_BASE_URL = ''
 
-  _PACKAGE = u'cloudscheduler'
-  _SCOPES = [u'https://www.googleapis.com/auth/cloud-platform']
-  _VERSION = u'v1'
+  _PACKAGE = 'cloudscheduler'
+  _SCOPES = ['https://www.googleapis.com/auth/cloud-platform']
+  _VERSION = 'v1'
   _CLIENT_ID = '1042881264118.apps.googleusercontent.com'
   _CLIENT_SECRET = 'x_Tw5K8nnjoRAqULM9PFAC2b'
-  _USER_AGENT = u'google-cloud-sdk'
-  _CLIENT_CLASS_NAME = u'CloudschedulerV1'
-  _URL_VERSION = u'v1'
+  _USER_AGENT = 'google-cloud-sdk'
+  _CLIENT_CLASS_NAME = 'CloudschedulerV1'
+  _URL_VERSION = 'v1'
   _API_KEY = None
 
   def __init__(self, url='', credentials=None,
@@ -43,7 +43,7 @@ class CloudschedulerV1(base_api.BaseApiClient):
   class ProjectsLocationsJobsService(base_api.BaseApiService):
     """Service class for the projects_locations_jobs resource."""
 
-    _NAME = u'projects_locations_jobs'
+    _NAME = 'projects_locations_jobs'
 
     def __init__(self, client):
       super(CloudschedulerV1.ProjectsLocationsJobsService, self).__init__(client)
@@ -64,16 +64,16 @@ class CloudschedulerV1(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Create.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/locations/{locationsId}/jobs',
-        http_method=u'POST',
-        method_id=u'cloudscheduler.projects.locations.jobs.create',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/jobs',
+        http_method='POST',
+        method_id='cloudscheduler.projects.locations.jobs.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
         query_params=[],
-        relative_path=u'v1/{+parent}/jobs',
-        request_field=u'job',
-        request_type_name=u'CloudschedulerProjectsLocationsJobsCreateRequest',
-        response_type_name=u'Job',
+        relative_path='v1/{+parent}/jobs',
+        request_field='job',
+        request_type_name='CloudschedulerProjectsLocationsJobsCreateRequest',
+        response_type_name='Job',
         supports_download=False,
     )
 
@@ -91,16 +91,16 @@ class CloudschedulerV1(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Delete.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/locations/{locationsId}/jobs/{jobsId}',
-        http_method=u'DELETE',
-        method_id=u'cloudscheduler.projects.locations.jobs.delete',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/jobs/{jobsId}',
+        http_method='DELETE',
+        method_id='cloudscheduler.projects.locations.jobs.delete',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1/{+name}',
+        relative_path='v1/{+name}',
         request_field='',
-        request_type_name=u'CloudschedulerProjectsLocationsJobsDeleteRequest',
-        response_type_name=u'Empty',
+        request_type_name='CloudschedulerProjectsLocationsJobsDeleteRequest',
+        response_type_name='Empty',
         supports_download=False,
     )
 
@@ -118,16 +118,16 @@ class CloudschedulerV1(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/locations/{locationsId}/jobs/{jobsId}',
-        http_method=u'GET',
-        method_id=u'cloudscheduler.projects.locations.jobs.get',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/jobs/{jobsId}',
+        http_method='GET',
+        method_id='cloudscheduler.projects.locations.jobs.get',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1/{+name}',
+        relative_path='v1/{+name}',
         request_field='',
-        request_type_name=u'CloudschedulerProjectsLocationsJobsGetRequest',
-        response_type_name=u'Job',
+        request_type_name='CloudschedulerProjectsLocationsJobsGetRequest',
+        response_type_name='Job',
         supports_download=False,
     )
 
@@ -145,16 +145,16 @@ class CloudschedulerV1(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/locations/{locationsId}/jobs',
-        http_method=u'GET',
-        method_id=u'cloudscheduler.projects.locations.jobs.list',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'pageSize', u'pageToken'],
-        relative_path=u'v1/{+parent}/jobs',
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/jobs',
+        http_method='GET',
+        method_id='cloudscheduler.projects.locations.jobs.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v1/{+parent}/jobs',
         request_field='',
-        request_type_name=u'CloudschedulerProjectsLocationsJobsListRequest',
-        response_type_name=u'ListJobsResponse',
+        request_type_name='CloudschedulerProjectsLocationsJobsListRequest',
+        response_type_name='ListJobsResponse',
         supports_download=False,
     )
 
@@ -180,16 +180,16 @@ until a successful response is received.
           config, request, global_params=global_params)
 
     Patch.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/locations/{locationsId}/jobs/{jobsId}',
-        http_method=u'PATCH',
-        method_id=u'cloudscheduler.projects.locations.jobs.patch',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[u'updateMask'],
-        relative_path=u'v1/{+name}',
-        request_field=u'job',
-        request_type_name=u'CloudschedulerProjectsLocationsJobsPatchRequest',
-        response_type_name=u'Job',
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/jobs/{jobsId}',
+        http_method='PATCH',
+        method_id='cloudscheduler.projects.locations.jobs.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v1/{+name}',
+        request_field='job',
+        request_type_name='CloudschedulerProjectsLocationsJobsPatchRequest',
+        response_type_name='Job',
         supports_download=False,
     )
 
@@ -213,16 +213,16 @@ to be paused.
           config, request, global_params=global_params)
 
     Pause.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/locations/{locationsId}/jobs/{jobsId}:pause',
-        http_method=u'POST',
-        method_id=u'cloudscheduler.projects.locations.jobs.pause',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/jobs/{jobsId}:pause',
+        http_method='POST',
+        method_id='cloudscheduler.projects.locations.jobs.pause',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1/{+name}:pause',
-        request_field=u'pauseJobRequest',
-        request_type_name=u'CloudschedulerProjectsLocationsJobsPauseRequest',
-        response_type_name=u'Job',
+        relative_path='v1/{+name}:pause',
+        request_field='pauseJobRequest',
+        request_type_name='CloudschedulerProjectsLocationsJobsPauseRequest',
+        response_type_name='Job',
         supports_download=False,
     )
 
@@ -245,16 +245,16 @@ Job.State.PAUSED to be resumed.
           config, request, global_params=global_params)
 
     Resume.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/locations/{locationsId}/jobs/{jobsId}:resume',
-        http_method=u'POST',
-        method_id=u'cloudscheduler.projects.locations.jobs.resume',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/jobs/{jobsId}:resume',
+        http_method='POST',
+        method_id='cloudscheduler.projects.locations.jobs.resume',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1/{+name}:resume',
-        request_field=u'resumeJobRequest',
-        request_type_name=u'CloudschedulerProjectsLocationsJobsResumeRequest',
-        response_type_name=u'Job',
+        relative_path='v1/{+name}:resume',
+        request_field='resumeJobRequest',
+        request_type_name='CloudschedulerProjectsLocationsJobsResumeRequest',
+        response_type_name='Job',
         supports_download=False,
     )
 
@@ -275,23 +275,23 @@ if the job is already running.
           config, request, global_params=global_params)
 
     Run.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/locations/{locationsId}/jobs/{jobsId}:run',
-        http_method=u'POST',
-        method_id=u'cloudscheduler.projects.locations.jobs.run',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/jobs/{jobsId}:run',
+        http_method='POST',
+        method_id='cloudscheduler.projects.locations.jobs.run',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1/{+name}:run',
-        request_field=u'runJobRequest',
-        request_type_name=u'CloudschedulerProjectsLocationsJobsRunRequest',
-        response_type_name=u'Job',
+        relative_path='v1/{+name}:run',
+        request_field='runJobRequest',
+        request_type_name='CloudschedulerProjectsLocationsJobsRunRequest',
+        response_type_name='Job',
         supports_download=False,
     )
 
   class ProjectsLocationsService(base_api.BaseApiService):
     """Service class for the projects_locations resource."""
 
-    _NAME = u'projects_locations'
+    _NAME = 'projects_locations'
 
     def __init__(self, client):
       super(CloudschedulerV1.ProjectsLocationsService, self).__init__(client)
@@ -312,16 +312,16 @@ if the job is already running.
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/locations/{locationsId}',
-        http_method=u'GET',
-        method_id=u'cloudscheduler.projects.locations.get',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}',
+        http_method='GET',
+        method_id='cloudscheduler.projects.locations.get',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1/{+name}',
+        relative_path='v1/{+name}',
         request_field='',
-        request_type_name=u'CloudschedulerProjectsLocationsGetRequest',
-        response_type_name=u'Location',
+        request_type_name='CloudschedulerProjectsLocationsGetRequest',
+        response_type_name='Location',
         supports_download=False,
     )
 
@@ -339,23 +339,23 @@ if the job is already running.
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/locations',
-        http_method=u'GET',
-        method_id=u'cloudscheduler.projects.locations.list',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[u'filter', u'pageSize', u'pageToken'],
-        relative_path=u'v1/{+name}/locations',
+        flat_path='v1/projects/{projectsId}/locations',
+        http_method='GET',
+        method_id='cloudscheduler.projects.locations.list',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['filter', 'pageSize', 'pageToken'],
+        relative_path='v1/{+name}/locations',
         request_field='',
-        request_type_name=u'CloudschedulerProjectsLocationsListRequest',
-        response_type_name=u'ListLocationsResponse',
+        request_type_name='CloudschedulerProjectsLocationsListRequest',
+        response_type_name='ListLocationsResponse',
         supports_download=False,
     )
 
   class ProjectsService(base_api.BaseApiService):
     """Service class for the projects resource."""
 
-    _NAME = u'projects'
+    _NAME = 'projects'
 
     def __init__(self, client):
       super(CloudschedulerV1.ProjectsService, self).__init__(client)

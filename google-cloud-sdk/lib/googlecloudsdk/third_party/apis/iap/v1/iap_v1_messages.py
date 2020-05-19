@@ -68,8 +68,9 @@ class Binding(_messages.Message):
       not apply to the current request. However, a different role binding
       might grant the same role to one or more of the members in this binding.
       To learn which resources support conditions in their IAM policies, see
-      the [IAM documentation](https://cloud.google.com/iam/help/conditions
-      /resource-policies).
+      the [IAM
+      documentation](https://cloud.google.com/iam/help/conditions/resource-
+      policies).
     members: Specifies the identities requesting access for a Cloud Platform
       resource. `members` can have the following values:  * `allUsers`: A
       special identifier that represents anyone who is    on the internet;
@@ -119,7 +120,7 @@ class Brand(_messages.Message):
       achieves the same brand identification purpose as only one brand per
       project can be created.
     orgInternalOnly: Output only. Whether the brand is only intended for usage
-      inside the GSuite organization only.
+      inside the G Suite organization only.
     supportEmail: Support email displayed on the OAuth consent screen.
   """
 
@@ -308,7 +309,7 @@ class IapProjectsBrandsIdentityAwareProxyClientsCreateRequest(_messages.Message)
       as the request body.
     parent: Required. Path to create the client in. In the following format:
       projects/{project_number/id}/brands/{brand}. The project must belong to
-      a GSuite account.
+      a G Suite account.
   """
 
   identityAwareProxyClient = _messages.MessageField('IdentityAwareProxyClient', 1)
@@ -494,12 +495,11 @@ class OAuthSettings(_messages.Message):
   Fields:
     clientId: OAuth 2.0 client ID used in the OAuth flow to generate an access
       token. If this field is set, you can skip obtaining the OAuth
-      credentials in this step:
-      https://developers.google.com/identity/protocols/OAuth2?hl=en_US#1
-      .-obtain-oauth-2.0-credentials-from-the-google-api-console. However,
-      this could allow for client sharing. The risks of client sharing are
-      outlined here: https://cloud.google.com/iap/docs/sharing-oauth-
-      clients#risks.
+      credentials in this step: https://developers.google.com/identity/protoco
+      ls/OAuth2?hl=en_US#1.-obtain-oauth-2.0-credentials-from-the-google-api-
+      console. However, this could allow for client sharing. The risks of
+      client sharing are outlined here:
+      https://cloud.google.com/iap/docs/sharing-oauth-clients#risks.
     loginHint: Domain hint to send as hd=? parameter in OAuth request flow.
       Enables redirect to primary IDP by skipping Google's login screen.
       https://developers.google.com/identity/protocols/OpenIDConnect#hd-param
@@ -536,8 +536,8 @@ class Policy(_messages.Message):
   timestamp('2020-10-01T00:00:00.000Z')",           }         }       ],
   "etag": "BwWWja0YfJA=",       "version": 3     }  **YAML example:**
   bindings:     - members:       - user:mike@example.com       -
-  group:admins@example.com       - domain:google.com       - serviceAccount
-  :my-project-id@appspot.gserviceaccount.com       role:
+  group:admins@example.com       - domain:google.com       -
+  serviceAccount:my-project-id@appspot.gserviceaccount.com       role:
   roles/resourcemanager.organizationAdmin     - members:       -
   user:eve@example.com       role: roles/resourcemanager.organizationViewer
   condition:         title: expirable access         description: Does not
@@ -616,9 +616,9 @@ class PolicyName(_messages.Message):
     id: A string attribute.
     region: For Cloud IAM: The location of the Policy. Must be empty or
       "global" for Policies owned by global IAM.  Must name a region from
-      prodspec/cloud-iam-cloudspec for Regional IAM Policies, see go/iam-faq
-      #where-is-iam-currently-deployed.  For Local IAM: This field should be
-      set to "local".
+      prodspec/cloud-iam-cloudspec for Regional IAM Policies, see go/iam-
+      faq#where-is-iam-currently-deployed.  For Local IAM: This field should
+      be set to "local".
     type: Valid values for type might be 'gce', 'gcs', 'project', 'account'
       etc.
   """
@@ -664,13 +664,13 @@ class Resource(_messages.Message):
       Talk to iam-conditions-eng@ about your use case.
     name: Name of the resource on which conditions will be evaluated. Must use
       the Relative Resource Name of the resource, which is the URI path of the
-      resource without the leading "/". Examples are "projects/_/buckets
-      /[BUCKET-ID]" for storage buckets or "projects/[PROJECT-
-      ID]/global/firewalls/[FIREWALL-ID]" for a firewall.  This field is
-      required for evaluating conditions with rules on resource names. For a
-      `list` permission check, the resource.name value must be set to the
-      parent resource. If the parent resource is a project, this field should
-      be left unset.
+      resource without the leading "/". Examples are
+      "projects/_/buckets/[BUCKET-ID]" for storage buckets or
+      "projects/[PROJECT-ID]/global/firewalls/[FIREWALL-ID]" for a firewall.
+      This field is required for evaluating conditions with rules on resource
+      names. For a `list` permission check, the resource.name value must be
+      set to the parent resource. If the parent resource is a project, this
+      field should be left unset.
     service: The name of the service this resource belongs to. It is
       configured using the official_service_name of the Service as defined in
       service configurations under //configs/cloud/resourcetypes. For example,
@@ -792,7 +792,7 @@ class StandardQueryParameters(_messages.Message):
 
   f__xgafv = _messages.EnumField('FXgafvValueValuesEnum', 1)
   access_token = _messages.StringField(2)
-  alt = _messages.EnumField('AltValueValuesEnum', 3, default=u'json')
+  alt = _messages.EnumField('AltValueValuesEnum', 3, default='json')
   callback = _messages.StringField(4)
   fields = _messages.StringField(5)
   key = _messages.StringField(6)

@@ -8,17 +8,17 @@ class IamassistV1alpha3(base_api.BaseApiClient):
   """Generated client library for service iamassist version v1alpha3."""
 
   MESSAGES_MODULE = messages
-  BASE_URL = u'https://iamassist.googleapis.com/'
-  MTLS_BASE_URL = u'https://iamassist.mtls.googleapis.com/'
+  BASE_URL = 'https://iamassist.googleapis.com/'
+  MTLS_BASE_URL = 'https://iamassist.mtls.googleapis.com/'
 
-  _PACKAGE = u'iamassist'
-  _SCOPES = [u'https://www.googleapis.com/auth/cloud-platform']
-  _VERSION = u'v1alpha3'
+  _PACKAGE = 'iamassist'
+  _SCOPES = ['https://www.googleapis.com/auth/cloud-platform']
+  _VERSION = 'v1alpha3'
   _CLIENT_ID = '1042881264118.apps.googleusercontent.com'
   _CLIENT_SECRET = 'x_Tw5K8nnjoRAqULM9PFAC2b'
-  _USER_AGENT = u'google-cloud-sdk'
-  _CLIENT_CLASS_NAME = u'IamassistV1alpha3'
-  _URL_VERSION = u'v1alpha3'
+  _USER_AGENT = 'google-cloud-sdk'
+  _CLIENT_CLASS_NAME = 'IamassistV1alpha3'
+  _URL_VERSION = 'v1alpha3'
   _API_KEY = None
 
   def __init__(self, url='', credentials=None,
@@ -43,7 +43,7 @@ class IamassistV1alpha3(base_api.BaseApiClient):
   class OperationsService(base_api.BaseApiService):
     """Service class for the operations resource."""
 
-    _NAME = u'operations'
+    _NAME = 'operations'
 
     def __init__(self, client):
       super(IamassistV1alpha3.OperationsService, self).__init__(client)
@@ -66,16 +66,16 @@ service.
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha3/operations/{operationsId}',
-        http_method=u'GET',
-        method_id=u'iamassist.operations.get',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1alpha3/operations/{operationsId}',
+        http_method='GET',
+        method_id='iamassist.operations.get',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1alpha3/{+name}',
+        relative_path='v1alpha3/{+name}',
         request_field='',
-        request_type_name=u'IamassistOperationsGetRequest',
-        response_type_name=u'GoogleLongrunningOperation',
+        request_type_name='IamassistOperationsGetRequest',
+        response_type_name='GoogleLongrunningOperation',
         supports_download=False,
     )
 
@@ -102,22 +102,22 @@ is the parent resource, without the operations collection id.
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'iamassist.operations.list',
+        http_method='GET',
+        method_id='iamassist.operations.list',
         ordered_params=[],
         path_params=[],
-        query_params=[u'filter', u'name', u'pageSize', u'pageToken'],
-        relative_path=u'v1alpha3/operations',
+        query_params=['filter', 'name', 'pageSize', 'pageToken'],
+        relative_path='v1alpha3/operations',
         request_field='',
-        request_type_name=u'IamassistOperationsListRequest',
-        response_type_name=u'GoogleLongrunningListOperationsResponse',
+        request_type_name='IamassistOperationsListRequest',
+        response_type_name='GoogleLongrunningListOperationsResponse',
         supports_download=False,
     )
 
   class ReplaysResultsService(base_api.BaseApiService):
     """Service class for the replays_results resource."""
 
-    _NAME = u'replays_results'
+    _NAME = 'replays_results'
 
     def __init__(self, client):
       super(IamassistV1alpha3.ReplaysResultsService, self).__init__(client)
@@ -138,23 +138,23 @@ is the parent resource, without the operations collection id.
           config, request, global_params=global_params)
 
     Export.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha3/replays/{replaysId}/results:export',
-        http_method=u'POST',
-        method_id=u'iamassist.replays.results.export',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
+        flat_path='v1alpha3/replays/{replaysId}/results:export',
+        http_method='POST',
+        method_id='iamassist.replays.results.export',
+        ordered_params=['parent'],
+        path_params=['parent'],
         query_params=[],
-        relative_path=u'v1alpha3/{+parent}/results:export',
-        request_field=u'googleIamAssistV1alpha3ExportReplayResultsRequest',
-        request_type_name=u'IamassistReplaysResultsExportRequest',
-        response_type_name=u'GoogleLongrunningOperation',
+        relative_path='v1alpha3/{+parent}/results:export',
+        request_field='googleIamAssistV1alpha3ExportReplayResultsRequest',
+        request_type_name='IamassistReplaysResultsExportRequest',
+        response_type_name='GoogleLongrunningOperation',
         supports_download=False,
     )
 
   class ReplaysService(base_api.BaseApiService):
     """Service class for the replays resource."""
 
-    _NAME = u'replays'
+    _NAME = 'replays'
 
     def __init__(self, client):
       super(IamassistV1alpha3.ReplaysService, self).__init__(client)
@@ -175,15 +175,15 @@ is the parent resource, without the operations collection id.
           config, request, global_params=global_params)
 
     Create.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'iamassist.replays.create',
+        http_method='POST',
+        method_id='iamassist.replays.create',
         ordered_params=[],
         path_params=[],
         query_params=[],
-        relative_path=u'v1alpha3/replays',
+        relative_path='v1alpha3/replays',
         request_field='<request>',
-        request_type_name=u'GoogleIamAssistV1alpha3Replay',
-        response_type_name=u'GoogleLongrunningOperation',
+        request_type_name='GoogleIamAssistV1alpha3Replay',
+        response_type_name='GoogleLongrunningOperation',
         supports_download=False,
     )
 
@@ -201,16 +201,16 @@ is the parent resource, without the operations collection id.
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha3/replays/{replaysId}',
-        http_method=u'GET',
-        method_id=u'iamassist.replays.get',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1alpha3/replays/{replaysId}',
+        http_method='GET',
+        method_id='iamassist.replays.get',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1alpha3/{+name}',
+        relative_path='v1alpha3/{+name}',
         request_field='',
-        request_type_name=u'IamassistReplaysGetRequest',
-        response_type_name=u'GoogleIamAssistV1alpha3Replay',
+        request_type_name='IamassistReplaysGetRequest',
+        response_type_name='GoogleIamAssistV1alpha3Replay',
         supports_download=False,
     )
 
@@ -228,14 +228,14 @@ is the parent resource, without the operations collection id.
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'iamassist.replays.list',
+        http_method='GET',
+        method_id='iamassist.replays.list',
         ordered_params=[],
         path_params=[],
-        query_params=[u'pageSize', u'pageToken'],
-        relative_path=u'v1alpha3/replays',
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v1alpha3/replays',
         request_field='',
-        request_type_name=u'IamassistReplaysListRequest',
-        response_type_name=u'GoogleIamAssistV1alpha3ListReplaysResponse',
+        request_type_name='IamassistReplaysListRequest',
+        response_type_name='GoogleIamAssistV1alpha3ListReplaysResponse',
         supports_download=False,
     )

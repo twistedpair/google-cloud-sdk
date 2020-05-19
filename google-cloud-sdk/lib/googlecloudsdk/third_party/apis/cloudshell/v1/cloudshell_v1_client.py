@@ -8,17 +8,17 @@ class CloudshellV1(base_api.BaseApiClient):
   """Generated client library for service cloudshell version v1."""
 
   MESSAGES_MODULE = messages
-  BASE_URL = u'https://cloudshell.googleapis.com/'
-  MTLS_BASE_URL = u'https://cloudshell.mtls.googleapis.com/'
+  BASE_URL = 'https://cloudshell.googleapis.com/'
+  MTLS_BASE_URL = 'https://cloudshell.mtls.googleapis.com/'
 
-  _PACKAGE = u'cloudshell'
-  _SCOPES = [u'https://www.googleapis.com/auth/cloud-platform']
-  _VERSION = u'v1'
+  _PACKAGE = 'cloudshell'
+  _SCOPES = ['https://www.googleapis.com/auth/cloud-platform']
+  _VERSION = 'v1'
   _CLIENT_ID = '1042881264118.apps.googleusercontent.com'
   _CLIENT_SECRET = 'x_Tw5K8nnjoRAqULM9PFAC2b'
-  _USER_AGENT = u'google-cloud-sdk'
-  _CLIENT_CLASS_NAME = u'CloudshellV1'
-  _URL_VERSION = u'v1'
+  _USER_AGENT = 'google-cloud-sdk'
+  _CLIENT_CLASS_NAME = 'CloudshellV1'
+  _URL_VERSION = 'v1'
   _API_KEY = None
 
   def __init__(self, url='', credentials=None,
@@ -41,7 +41,7 @@ class CloudshellV1(base_api.BaseApiClient):
   class OperationsService(base_api.BaseApiService):
     """Service class for the operations resource."""
 
-    _NAME = u'operations'
+    _NAME = 'operations'
 
     def __init__(self, client):
       super(CloudshellV1.OperationsService, self).__init__(client)
@@ -71,16 +71,16 @@ corresponding to `Code.CANCELLED`.
           config, request, global_params=global_params)
 
     Cancel.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/operations/{operationsId}:cancel',
-        http_method=u'POST',
-        method_id=u'cloudshell.operations.cancel',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1/operations/{operationsId}:cancel',
+        http_method='POST',
+        method_id='cloudshell.operations.cancel',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1/{+name}:cancel',
-        request_field=u'cancelOperationRequest',
-        request_type_name=u'CloudshellOperationsCancelRequest',
-        response_type_name=u'Empty',
+        relative_path='v1/{+name}:cancel',
+        request_field='cancelOperationRequest',
+        request_type_name='CloudshellOperationsCancelRequest',
+        response_type_name='Empty',
         supports_download=False,
     )
 
@@ -101,16 +101,16 @@ operation. If the server doesn't support this method, it returns
           config, request, global_params=global_params)
 
     Delete.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/operations/{operationsId}',
-        http_method=u'DELETE',
-        method_id=u'cloudshell.operations.delete',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1/operations/{operationsId}',
+        http_method='DELETE',
+        method_id='cloudshell.operations.delete',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1/{+name}',
+        relative_path='v1/{+name}',
         request_field='',
-        request_type_name=u'CloudshellOperationsDeleteRequest',
-        response_type_name=u'Empty',
+        request_type_name='CloudshellOperationsDeleteRequest',
+        response_type_name='Empty',
         supports_download=False,
     )
 
@@ -130,16 +130,16 @@ service.
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/operations/{operationsId}',
-        http_method=u'GET',
-        method_id=u'cloudshell.operations.get',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1/operations/{operationsId}',
+        http_method='GET',
+        method_id='cloudshell.operations.get',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1/{+name}',
+        relative_path='v1/{+name}',
         request_field='',
-        request_type_name=u'CloudshellOperationsGetRequest',
-        response_type_name=u'Operation',
+        request_type_name='CloudshellOperationsGetRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -166,15 +166,15 @@ is the parent resource, without the operations collection id.
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/operations',
-        http_method=u'GET',
-        method_id=u'cloudshell.operations.list',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[u'filter', u'pageSize', u'pageToken'],
-        relative_path=u'v1/{+name}',
+        flat_path='v1/operations',
+        http_method='GET',
+        method_id='cloudshell.operations.list',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['filter', 'pageSize', 'pageToken'],
+        relative_path='v1/{+name}',
         request_field='',
-        request_type_name=u'CloudshellOperationsListRequest',
-        response_type_name=u'ListOperationsResponse',
+        request_type_name='CloudshellOperationsListRequest',
+        response_type_name='ListOperationsResponse',
         supports_download=False,
     )

@@ -8,17 +8,17 @@ class ApikeysV2alpha1(base_api.BaseApiClient):
   """Generated client library for service apikeys version v2alpha1."""
 
   MESSAGES_MODULE = messages
-  BASE_URL = u'https://apikeys.googleapis.com/'
-  MTLS_BASE_URL = u'https://apikeys.mtls.googleapis.com/'
+  BASE_URL = 'https://apikeys.googleapis.com/'
+  MTLS_BASE_URL = 'https://apikeys.mtls.googleapis.com/'
 
-  _PACKAGE = u'apikeys'
-  _SCOPES = [u'https://www.googleapis.com/auth/cloud-platform', u'https://www.googleapis.com/auth/cloud-platform.read-only']
-  _VERSION = u'v2alpha1'
+  _PACKAGE = 'apikeys'
+  _SCOPES = ['https://www.googleapis.com/auth/cloud-platform', 'https://www.googleapis.com/auth/cloud-platform.read-only']
+  _VERSION = 'v2alpha1'
   _CLIENT_ID = '1042881264118.apps.googleusercontent.com'
   _CLIENT_SECRET = 'x_Tw5K8nnjoRAqULM9PFAC2b'
-  _USER_AGENT = u'google-cloud-sdk'
-  _CLIENT_CLASS_NAME = u'ApikeysV2alpha1'
-  _URL_VERSION = u'v2alpha1'
+  _USER_AGENT = 'google-cloud-sdk'
+  _CLIENT_CLASS_NAME = 'ApikeysV2alpha1'
+  _URL_VERSION = 'v2alpha1'
   _API_KEY = None
 
   def __init__(self, url='', credentials=None,
@@ -44,7 +44,7 @@ class ApikeysV2alpha1(base_api.BaseApiClient):
   class OperationsService(base_api.BaseApiService):
     """Service class for the operations resource."""
 
-    _NAME = u'operations'
+    _NAME = 'operations'
 
     def __init__(self, client):
       super(ApikeysV2alpha1.OperationsService, self).__init__(client)
@@ -67,23 +67,23 @@ service.
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v2alpha1/operations/{operationsId}',
-        http_method=u'GET',
-        method_id=u'apikeys.operations.get',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v2alpha1/operations/{operationsId}',
+        http_method='GET',
+        method_id='apikeys.operations.get',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v2alpha1/{+name}',
+        relative_path='v2alpha1/{+name}',
         request_field='',
-        request_type_name=u'ApikeysOperationsGetRequest',
-        response_type_name=u'Operation',
+        request_type_name='ApikeysOperationsGetRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
   class ProjectsKeysService(base_api.BaseApiService):
     """Service class for the projects_keys resource."""
 
-    _NAME = u'projects_keys'
+    _NAME = 'projects_keys'
 
     def __init__(self, client):
       super(ApikeysV2alpha1.ProjectsKeysService, self).__init__(client)
@@ -104,16 +104,16 @@ service.
           config, request, global_params=global_params)
 
     Clone.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v2alpha1/projects/{projectsId}/keys/{keysId}:clone',
-        http_method=u'POST',
-        method_id=u'apikeys.projects.keys.clone',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v2alpha1/projects/{projectsId}/keys/{keysId}:clone',
+        http_method='POST',
+        method_id='apikeys.projects.keys.clone',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v2alpha1/{+name}:clone',
-        request_field=u'v2alpha1CloneKeyRequest',
-        request_type_name=u'ApikeysProjectsKeysCloneRequest',
-        response_type_name=u'Operation',
+        relative_path='v2alpha1/{+name}:clone',
+        request_field='v2alpha1CloneKeyRequest',
+        request_type_name='ApikeysProjectsKeysCloneRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -131,16 +131,16 @@ service.
           config, request, global_params=global_params)
 
     Create.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v2alpha1/projects/{projectsId}/keys',
-        http_method=u'POST',
-        method_id=u'apikeys.projects.keys.create',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
+        flat_path='v2alpha1/projects/{projectsId}/keys',
+        http_method='POST',
+        method_id='apikeys.projects.keys.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
         query_params=[],
-        relative_path=u'v2alpha1/{+parent}/keys',
-        request_field=u'v2alpha1ApiKey',
-        request_type_name=u'ApikeysProjectsKeysCreateRequest',
-        response_type_name=u'Operation',
+        relative_path='v2alpha1/{+parent}/keys',
+        request_field='v2alpha1ApiKey',
+        request_type_name='ApikeysProjectsKeysCreateRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -158,16 +158,16 @@ service.
           config, request, global_params=global_params)
 
     Delete.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v2alpha1/projects/{projectsId}/keys/{keysId}',
-        http_method=u'DELETE',
-        method_id=u'apikeys.projects.keys.delete',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v2alpha1/projects/{projectsId}/keys/{keysId}',
+        http_method='DELETE',
+        method_id='apikeys.projects.keys.delete',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v2alpha1/{+name}',
+        relative_path='v2alpha1/{+name}',
         request_field='',
-        request_type_name=u'ApikeysProjectsKeysDeleteRequest',
-        response_type_name=u'Operation',
+        request_type_name='ApikeysProjectsKeysDeleteRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -186,16 +186,16 @@ response.
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v2alpha1/projects/{projectsId}/keys/{keysId}',
-        http_method=u'GET',
-        method_id=u'apikeys.projects.keys.get',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v2alpha1/projects/{projectsId}/keys/{keysId}',
+        http_method='GET',
+        method_id='apikeys.projects.keys.get',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v2alpha1/{+name}',
+        relative_path='v2alpha1/{+name}',
         request_field='',
-        request_type_name=u'ApikeysProjectsKeysGetRequest',
-        response_type_name=u'V2alpha1ApiKey',
+        request_type_name='ApikeysProjectsKeysGetRequest',
+        response_type_name='V2alpha1ApiKey',
         supports_download=False,
     )
 
@@ -213,16 +213,16 @@ response.
           config, request, global_params=global_params)
 
     GetKeyString.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v2alpha1/projects/{projectsId}/keys/{keysId}/keyString',
-        http_method=u'GET',
-        method_id=u'apikeys.projects.keys.getKeyString',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v2alpha1/projects/{projectsId}/keys/{keysId}/keyString',
+        http_method='GET',
+        method_id='apikeys.projects.keys.getKeyString',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v2alpha1/{+name}/keyString',
+        relative_path='v2alpha1/{+name}/keyString',
         request_field='',
-        request_type_name=u'ApikeysProjectsKeysGetKeyStringRequest',
-        response_type_name=u'V2alpha1GetKeyStringResponse',
+        request_type_name='ApikeysProjectsKeysGetKeyStringRequest',
+        response_type_name='V2alpha1GetKeyStringResponse',
         supports_download=False,
     )
 
@@ -241,16 +241,16 @@ set.
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v2alpha1/projects/{projectsId}/keys',
-        http_method=u'GET',
-        method_id=u'apikeys.projects.keys.list',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'filter', u'pageSize', u'pageToken'],
-        relative_path=u'v2alpha1/{+parent}/keys',
+        flat_path='v2alpha1/projects/{projectsId}/keys',
+        http_method='GET',
+        method_id='apikeys.projects.keys.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'pageSize', 'pageToken'],
+        relative_path='v2alpha1/{+parent}/keys',
         request_field='',
-        request_type_name=u'ApikeysProjectsKeysListRequest',
-        response_type_name=u'V2alpha1ListKeysResponse',
+        request_type_name='ApikeysProjectsKeysListRequest',
+        response_type_name='V2alpha1ListKeysResponse',
         supports_download=False,
     )
 
@@ -270,16 +270,16 @@ operation.
           config, request, global_params=global_params)
 
     Patch.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v2alpha1/projects/{projectsId}/keys/{keysId}',
-        http_method=u'PATCH',
-        method_id=u'apikeys.projects.keys.patch',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[u'updateMask'],
-        relative_path=u'v2alpha1/{+name}',
-        request_field=u'v2alpha1ApiKey',
-        request_type_name=u'ApikeysProjectsKeysPatchRequest',
-        response_type_name=u'Operation',
+        flat_path='v2alpha1/projects/{projectsId}/keys/{keysId}',
+        http_method='PATCH',
+        method_id='apikeys.projects.keys.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v2alpha1/{+name}',
+        request_field='v2alpha1ApiKey',
+        request_type_name='ApikeysProjectsKeysPatchRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -297,23 +297,23 @@ operation.
           config, request, global_params=global_params)
 
     Undelete.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v2alpha1/projects/{projectsId}/keys/{keysId}:undelete',
-        http_method=u'POST',
-        method_id=u'apikeys.projects.keys.undelete',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v2alpha1/projects/{projectsId}/keys/{keysId}:undelete',
+        http_method='POST',
+        method_id='apikeys.projects.keys.undelete',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v2alpha1/{+name}:undelete',
-        request_field=u'v2alpha1UndeleteKeyRequest',
-        request_type_name=u'ApikeysProjectsKeysUndeleteRequest',
-        response_type_name=u'Operation',
+        relative_path='v2alpha1/{+name}:undelete',
+        request_field='v2alpha1UndeleteKeyRequest',
+        request_type_name='ApikeysProjectsKeysUndeleteRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
   class ProjectsService(base_api.BaseApiService):
     """Service class for the projects resource."""
 
-    _NAME = u'projects'
+    _NAME = 'projects'
 
     def __init__(self, client):
       super(ApikeysV2alpha1.ProjectsService, self).__init__(client)
@@ -323,7 +323,7 @@ operation.
   class V2alpha1Service(base_api.BaseApiService):
     """Service class for the v2alpha1 resource."""
 
-    _NAME = u'v2alpha1'
+    _NAME = 'v2alpha1'
 
     def __init__(self, client):
       super(ApikeysV2alpha1.V2alpha1Service, self).__init__(client)
@@ -345,14 +345,14 @@ Permission `apikeys.keys.getKeyStringName` is required on the parent.
           config, request, global_params=global_params)
 
     GetKeyStringName.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'apikeys.getKeyStringName',
+        http_method='GET',
+        method_id='apikeys.getKeyStringName',
         ordered_params=[],
         path_params=[],
-        query_params=[u'keyString'],
-        relative_path=u'v2alpha1/keyStringName',
+        query_params=['keyString'],
+        relative_path='v2alpha1/keyStringName',
         request_field='',
-        request_type_name=u'ApikeysGetKeyStringNameRequest',
-        response_type_name=u'V2alpha1GetKeyStringNameResponse',
+        request_type_name='ApikeysGetKeyStringNameRequest',
+        response_type_name='V2alpha1GetKeyStringNameResponse',
         supports_download=False,
     )

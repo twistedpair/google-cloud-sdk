@@ -461,6 +461,20 @@
       "description": "Defined management settings of the Registration.",
       "type": "object",
       "properties": {
+        "renewalMethod": {
+          "description": "Output only. The renewal method for this Registration.",
+          "enumDescriptions": [
+            "The renewal method is undefined.",
+            "Your domain will be automatically renewed each year, and will be billed\naccording to the billing method specified in the `billing_method` field.\nIf your billing method is `GOOGLE_CLOUD`, automatic renewal is\nthe only supported renewal method.",
+            "To keep your domain, you must explicitly renew it each year before its\nexpiration date (registration.expire_time). The manual renewal option is\nonly available when your Registration is billed through a separate\nservice such as Google Domains. Visit\nhttps:\/\/domains.google.com\/m\/registrar\/[domain_name] to manage the\ndomain's current billing & renewal settings."
+          ],
+          "type": "string",
+          "enum": [
+            "RENEWAL_METHOD_UNSPECIFIED",
+            "AUTOMATIC_RENEWAL",
+            "MANUAL_RENEWAL"
+          ]
+        },
         "transferLockState": {
           "description": "Transfer Lock of the Registration. It needs to be unlocked in order to\ntransfer the domain to another registrar. The default is LOCKED. Can only\nbe changed after Create operation is finished",
           "enumDescriptions": [
@@ -482,13 +496,13 @@
       "description": "Defines DNS configuration of the Registration.",
       "type": "object",
       "properties": {
-        "thirdPartyDns": {
-          "description": "A third-party DNS provider identified by its name servers.",
-          "$ref": "ThirdPartyDns"
+        "customDns": {
+          "description": "An arbitrary DNS provider identified by its name servers.",
+          "$ref": "CustomDns"
         },
-        "googleDomains": {
+        "googleDomainsDns": {
           "description": "The free DNS zone provided by Google Domains.",
-          "$ref": "GoogleDomains"
+          "$ref": "GoogleDomainsDns"
         },
         "glueRecords": {
           "description": "The list of glue records defined for this registration.",
@@ -499,9 +513,9 @@
         }
       }
     },
-    "ThirdPartyDns": {
-      "id": "ThirdPartyDns",
-      "description": "Configuration for a third-party DNS provider.",
+    "CustomDns": {
+      "id": "CustomDns",
+      "description": "Configuration for an arbitrary DNS provider.",
       "type": "object",
       "properties": {
         "nameServers": {
@@ -588,8 +602,8 @@
         }
       }
     },
-    "GoogleDomains": {
-      "id": "GoogleDomains",
+    "GoogleDomainsDns": {
+      "id": "GoogleDomainsDns",
       "description": "Configuration for using the free DNS zone provided by Google Domains.",
       "type": "object",
       "properties": {

@@ -274,6 +274,7 @@ def AddDatabaseVersion(parser, restrict_choices=True):
       'POSTGRES_9_6',
       'POSTGRES_10',
       'POSTGRES_11',
+      'POSTGRES_12',
       'SQLSERVER_2017_EXPRESS',
       'SQLSERVER_2017_WEB',
       'SQLSERVER_2017_STANDARD',

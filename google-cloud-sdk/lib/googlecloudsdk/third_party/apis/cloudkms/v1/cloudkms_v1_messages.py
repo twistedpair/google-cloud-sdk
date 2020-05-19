@@ -19,24 +19,9 @@ class AsymmetricDecryptRequest(_messages.Message):
   Fields:
     ciphertext: Required. The data encrypted with the named CryptoKeyVersion's
       public key using OAEP.
-    ciphertextCrc32c: Optional. An optional CRC32C checksum of the
-      AsymmetricDecryptRequest.ciphertext. If specified, KeyManagementService
-      will verify the integrity of the received
-      AsymmetricDecryptRequest.ciphertext using this checksum.
-      KeyManagementService will report an error if the checksum verification
-      fails. If you receive a checksum error, your client should verify that
-      CRC32C(AsymmetricDecryptRequest.ciphertext) is equal to
-      AsymmetricDecryptRequest.ciphertext_crc32c, and if so, perform a limited
-      number of retries. A persistent mismatch may indicate an issue in your
-      computation of the CRC32C checksum. Note: This field is defined as int64
-      for reasons of compatibility across different languages. However, it is
-      a non-negative integer, which will never exceed 2^32-1, and can be
-      safely downconverted to uint32 in languages that support this type.
-      NOTE: This field is in Beta.
   """
 
   ciphertext = _messages.BytesField(1)
-  ciphertextCrc32c = _messages.IntegerField(2)
 
 
 class AsymmetricDecryptResponse(_messages.Message):
@@ -45,32 +30,9 @@ class AsymmetricDecryptResponse(_messages.Message):
   Fields:
     plaintext: The decrypted data originally encrypted with the matching
       public key.
-    plaintextCrc32c: Integrity verification field. A CRC32C checksum of the
-      returned AsymmetricDecryptResponse.plaintext. An integrity check of
-      AsymmetricDecryptResponse.plaintext can be performed by computing the
-      CRC32C checksum of AsymmetricDecryptResponse.plaintext and comparing
-      your results to this field. Discard the response in case of non-matching
-      checksum values, and perform a limited number of retries. A persistent
-      mismatch may indicate an issue in your computation of the CRC32C
-      checksum. Note: This field is defined as int64 for reasons of
-      compatibility across different languages. However, it is a non-negative
-      integer, which will never exceed 2^32-1, and can be safely downconverted
-      to uint32 in languages that support this type.  NOTE: This field is in
-      Beta.
-    verifiedCiphertextCrc32c: Integrity verification field. A flag indicating
-      whether AsymmetricDecryptRequest.ciphertext_crc32c was received by
-      KeyManagementService and used for the integrity verification of the
-      ciphertext. A false value of this field indicates either that
-      AsymmetricDecryptRequest.ciphertext_crc32c was left unset or that it was
-      not delivered to KeyManagementService. If you've set
-      AsymmetricDecryptRequest.ciphertext_crc32c but this field is still
-      false, discard the response and perform a limited number of retries.
-      NOTE: This field is in Beta.
   """
 
   plaintext = _messages.BytesField(1)
-  plaintextCrc32c = _messages.IntegerField(2)
-  verifiedCiphertextCrc32c = _messages.BooleanField(3)
 
 
 class AsymmetricSignRequest(_messages.Message):
@@ -80,60 +42,19 @@ class AsymmetricSignRequest(_messages.Message):
     digest: Required. The digest of the data to sign. The digest must be
       produced with the same digest algorithm as specified by the key
       version's algorithm.
-    digestCrc32c: Optional. An optional CRC32C checksum of the
-      AsymmetricSignRequest.digest. If specified, KeyManagementService will
-      verify the integrity of the received AsymmetricSignRequest.digest using
-      this checksum. KeyManagementService will report an error if the checksum
-      verification fails. If you receive a checksum error, your client should
-      verify that CRC32C(AsymmetricSignRequest.digest) is equal to
-      AsymmetricSignRequest.digest_crc32c, and if so, perform a limited number
-      of retries. A persistent mismatch may indicate an issue in your
-      computation of the CRC32C checksum. Note: This field is defined as int64
-      for reasons of compatibility across different languages. However, it is
-      a non-negative integer, which will never exceed 2^32-1, and can be
-      safely downconverted to uint32 in languages that support this type.
-      NOTE: This field is in Beta.
   """
 
   digest = _messages.MessageField('Digest', 1)
-  digestCrc32c = _messages.IntegerField(2)
 
 
 class AsymmetricSignResponse(_messages.Message):
   r"""Response message for KeyManagementService.AsymmetricSign.
 
   Fields:
-    name: The resource name of the CryptoKeyVersion used for signing. Check
-      this field to verify that the intended resource was used for signing.
-      NOTE: This field is in Beta.
     signature: The created signature.
-    signatureCrc32c: Integrity verification field. A CRC32C checksum of the
-      returned AsymmetricSignResponse.signature. An integrity check of
-      AsymmetricSignResponse.signature can be performed by computing the
-      CRC32C checksum of AsymmetricSignResponse.signature and comparing your
-      results to this field. Discard the response in case of non-matching
-      checksum values, and perform a limited number of retries. A persistent
-      mismatch may indicate an issue in your computation of the CRC32C
-      checksum. Note: This field is defined as int64 for reasons of
-      compatibility across different languages. However, it is a non-negative
-      integer, which will never exceed 2^32-1, and can be safely downconverted
-      to uint32 in languages that support this type.  NOTE: This field is in
-      Beta.
-    verifiedDigestCrc32c: Integrity verification field. A flag indicating
-      whether AsymmetricSignRequest.digest_crc32c was received by
-      KeyManagementService and used for the integrity verification of the
-      digest. A false value of this field indicates either that
-      AsymmetricSignRequest.digest_crc32c was left unset or that it was not
-      delivered to KeyManagementService. If you've set
-      AsymmetricSignRequest.digest_crc32c but this field is still false,
-      discard the response and perform a limited number of retries.  NOTE:
-      This field is in Beta.
   """
 
-  name = _messages.StringField(1)
-  signature = _messages.BytesField(2)
-  signatureCrc32c = _messages.IntegerField(3)
-  verifiedDigestCrc32c = _messages.BooleanField(4)
+  signature = _messages.BytesField(1)
 
 
 class AuditConfig(_messages.Message):
@@ -214,8 +135,9 @@ class Binding(_messages.Message):
       not apply to the current request. However, a different role binding
       might grant the same role to one or more of the members in this binding.
       To learn which resources support conditions in their IAM policies, see
-      the [IAM documentation](https://cloud.google.com/iam/help/conditions
-      /resource-policies).
+      the [IAM
+      documentation](https://cloud.google.com/iam/help/conditions/resource-
+      policies).
     members: Specifies the identities requesting access for a Cloud Platform
       resource. `members` can have the following values:  * `allUsers`: A
       special identifier that represents anyone who is    on the internet;
@@ -1213,41 +1135,12 @@ class DecryptRequest(_messages.Message):
     additionalAuthenticatedData: Optional. Optional data that must match the
       data originally supplied in
       EncryptRequest.additional_authenticated_data.
-    additionalAuthenticatedDataCrc32c: Optional. An optional CRC32C checksum
-      of the DecryptRequest.additional_authenticated_data. If specified,
-      KeyManagementService will verify the integrity of the received
-      DecryptRequest.additional_authenticated_data using this checksum.
-      KeyManagementService will report an error if the checksum verification
-      fails. If you receive a checksum error, your client should verify that
-      CRC32C(DecryptRequest.additional_authenticated_data) is equal to
-      DecryptRequest.additional_authenticated_data_crc32c, and if so, perform
-      a limited number of retries. A persistent mismatch may indicate an issue
-      in your computation of the CRC32C checksum. Note: This field is defined
-      as int64 for reasons of compatibility across different languages.
-      However, it is a non-negative integer, which will never exceed 2^32-1,
-      and can be safely downconverted to uint32 in languages that support this
-      type.  NOTE: This field is in Beta.
     ciphertext: Required. The encrypted data originally returned in
       EncryptResponse.ciphertext.
-    ciphertextCrc32c: Optional. An optional CRC32C checksum of the
-      DecryptRequest.ciphertext. If specified, KeyManagementService will
-      verify the integrity of the received DecryptRequest.ciphertext using
-      this checksum. KeyManagementService will report an error if the checksum
-      verification fails. If you receive a checksum error, your client should
-      verify that CRC32C(DecryptRequest.ciphertext) is equal to
-      DecryptRequest.ciphertext_crc32c, and if so, perform a limited number of
-      retries. A persistent mismatch may indicate an issue in your computation
-      of the CRC32C checksum. Note: This field is defined as int64 for reasons
-      of compatibility across different languages. However, it is a non-
-      negative integer, which will never exceed 2^32-1, and can be safely
-      downconverted to uint32 in languages that support this type.  NOTE: This
-      field is in Beta.
   """
 
   additionalAuthenticatedData = _messages.BytesField(1)
-  additionalAuthenticatedDataCrc32c = _messages.IntegerField(2)
-  ciphertext = _messages.BytesField(3)
-  ciphertextCrc32c = _messages.IntegerField(4)
+  ciphertext = _messages.BytesField(2)
 
 
 class DecryptResponse(_messages.Message):
@@ -1256,23 +1149,9 @@ class DecryptResponse(_messages.Message):
   Fields:
     plaintext: The decrypted data originally supplied in
       EncryptRequest.plaintext.
-    plaintextCrc32c: Integrity verification field. A CRC32C checksum of the
-      returned DecryptResponse.plaintext. An integrity check of
-      DecryptResponse.plaintext can be performed by computing the CRC32C
-      checksum of DecryptResponse.plaintext and comparing your results to this
-      field. Discard the response in case of non-matching checksum values, and
-      perform a limited number of retries. A persistent mismatch may indicate
-      an issue in your computation of the CRC32C checksum. Note: receiving
-      this response message indicates that KeyManagementService is able to
-      successfully decrypt the ciphertext. Note: This field is defined as
-      int64 for reasons of compatibility across different languages. However,
-      it is a non-negative integer, which will never exceed 2^32-1, and can be
-      safely downconverted to uint32 in languages that support this type.
-      NOTE: This field is in Beta.
   """
 
   plaintext = _messages.BytesField(1)
-  plaintextCrc32c = _messages.IntegerField(2)
 
 
 class DestroyCryptoKeyVersionRequest(_messages.Message):
@@ -1304,44 +1183,15 @@ class EncryptRequest(_messages.Message):
       be no larger than 64KiB. For HSM keys, the combined length of the
       plaintext and additional_authenticated_data fields must be no larger
       than 8KiB.
-    additionalAuthenticatedDataCrc32c: Optional. An optional CRC32C checksum
-      of the EncryptRequest.additional_authenticated_data. If specified,
-      KeyManagementService will verify the integrity of the received
-      EncryptRequest.additional_authenticated_data using this checksum.
-      KeyManagementService will report an error if the checksum verification
-      fails. If you receive a checksum error, your client should verify that
-      CRC32C(EncryptRequest.additional_authenticated_data) is equal to
-      EncryptRequest.additional_authenticated_data_crc32c, and if so, perform
-      a limited number of retries. A persistent mismatch may indicate an issue
-      in your computation of the CRC32C checksum. Note: This field is defined
-      as int64 for reasons of compatibility across different languages.
-      However, it is a non-negative integer, which will never exceed 2^32-1,
-      and can be safely downconverted to uint32 in languages that support this
-      type.  NOTE: This field is in Beta.
     plaintext: Required. The data to encrypt. Must be no larger than 64KiB.
       The maximum size depends on the key version's protection_level. For
       SOFTWARE keys, the plaintext must be no larger than 64KiB. For HSM keys,
       the combined length of the plaintext and additional_authenticated_data
       fields must be no larger than 8KiB.
-    plaintextCrc32c: Optional. An optional CRC32C checksum of the
-      EncryptRequest.plaintext. If specified, KeyManagementService will verify
-      the integrity of the received EncryptRequest.plaintext using this
-      checksum. KeyManagementService will report an error if the checksum
-      verification fails. If you receive a checksum error, your client should
-      verify that CRC32C(EncryptRequest.plaintext) is equal to
-      EncryptRequest.plaintext_crc32c, and if so, perform a limited number of
-      retries. A persistent mismatch may indicate an issue in your computation
-      of the CRC32C checksum. Note: This field is defined as int64 for reasons
-      of compatibility across different languages. However, it is a non-
-      negative integer, which will never exceed 2^32-1, and can be safely
-      downconverted to uint32 in languages that support this type.  NOTE: This
-      field is in Beta.
   """
 
   additionalAuthenticatedData = _messages.BytesField(1)
-  additionalAuthenticatedDataCrc32c = _messages.IntegerField(2)
-  plaintext = _messages.BytesField(3)
-  plaintextCrc32c = _messages.IntegerField(4)
+  plaintext = _messages.BytesField(2)
 
 
 class EncryptResponse(_messages.Message):
@@ -1349,45 +1199,12 @@ class EncryptResponse(_messages.Message):
 
   Fields:
     ciphertext: The encrypted data.
-    ciphertextCrc32c: Integrity verification field. A CRC32C checksum of the
-      returned EncryptResponse.ciphertext. An integrity check of
-      EncryptResponse.ciphertext can be performed by computing the CRC32C
-      checksum of EncryptResponse.ciphertext and comparing your results to
-      this field. Discard the response in case of non-matching checksum
-      values, and perform a limited number of retries. A persistent mismatch
-      may indicate an issue in your computation of the CRC32C checksum. Note:
-      This field is defined as int64 for reasons of compatibility across
-      different languages. However, it is a non-negative integer, which will
-      never exceed 2^32-1, and can be safely downconverted to uint32 in
-      languages that support this type.  NOTE: This field is in Beta.
     name: The resource name of the CryptoKeyVersion used in encryption. Check
       this field to verify that the intended resource was used for encryption.
-    verifiedAdditionalAuthenticatedDataCrc32c: Integrity verification field. A
-      flag indicating whether
-      EncryptRequest.additional_authenticated_data_crc32c was received by
-      KeyManagementService and used for the integrity verification of the AAD.
-      A false value of this field indicates either that
-      EncryptRequest.additional_authenticated_data_crc32c was left unset or
-      that it was not delivered to KeyManagementService. If you've set
-      EncryptRequest.additional_authenticated_data_crc32c but this field is
-      still false, discard the response and perform a limited number of
-      retries.  NOTE: This field is in Beta.
-    verifiedPlaintextCrc32c: Integrity verification field. A flag indicating
-      whether EncryptRequest.plaintext_crc32c was received by
-      KeyManagementService and used for the integrity verification of the
-      plaintext. A false value of this field indicates either that
-      EncryptRequest.plaintext_crc32c was left unset or that it was not
-      delivered to KeyManagementService. If you've set
-      EncryptRequest.plaintext_crc32c but this field is still false, discard
-      the response and perform a limited number of retries.  NOTE: This field
-      is in Beta.
   """
 
   ciphertext = _messages.BytesField(1)
-  ciphertextCrc32c = _messages.IntegerField(2)
-  name = _messages.StringField(3)
-  verifiedAdditionalAuthenticatedDataCrc32c = _messages.BooleanField(4)
-  verifiedPlaintextCrc32c = _messages.BooleanField(5)
+  name = _messages.StringField(2)
 
 
 class Expr(_messages.Message):
@@ -1650,8 +1467,8 @@ class ImportJob(_messages.Message):
 
 class KeyOperationAttestation(_messages.Message):
   r"""Contains an HSM-generated attestation about a key operation. For more
-  information, see [Verifying attestations] (https://cloud.google.com/kms/docs
-  /attest-key).
+  information, see [Verifying attestations]
+  (https://cloud.google.com/kms/docs/attest-key).
 
   Enums:
     FormatValueValuesEnum: Output only. The format of the attestation data.
@@ -1889,8 +1706,8 @@ class Policy(_messages.Message):
   timestamp('2020-10-01T00:00:00.000Z')",           }         }       ],
   "etag": "BwWWja0YfJA=",       "version": 3     }  **YAML example:**
   bindings:     - members:       - user:mike@example.com       -
-  group:admins@example.com       - domain:google.com       - serviceAccount
-  :my-project-id@appspot.gserviceaccount.com       role:
+  group:admins@example.com       - domain:google.com       -
+  serviceAccount:my-project-id@appspot.gserviceaccount.com       role:
   roles/resourcemanager.organizationAdmin     - members:       -
   user:eve@example.com       role: roles/resourcemanager.organizationViewer
   condition:         title: expirable access         description: Does not
@@ -1948,24 +1765,11 @@ class PublicKey(_messages.Message):
 
   Fields:
     algorithm: The Algorithm associated with this key.
-    name: The name of the CryptoKeyVersion public key. Provided here for
-      verification.  NOTE: This field is in Beta.
     pem: The public key, encoded in PEM format. For more information, see the
       [RFC 7468](https://tools.ietf.org/html/rfc7468) sections for [General
       Considerations](https://tools.ietf.org/html/rfc7468#section-2) and
       [Textual Encoding of Subject Public Key Info]
       (https://tools.ietf.org/html/rfc7468#section-13).
-    pemCrc32c: Integrity verification field. A CRC32C checksum of the returned
-      PublicKey.pem. An integrity check of PublicKey.pem can be performed by
-      computing the CRC32C checksum of PublicKey.pem and comparing your
-      results to this field. Discard the response in case of non-matching
-      checksum values, and perform a limited number of retries. A persistent
-      mismatch may indicate an issue in your computation of the CRC32C
-      checksum. Note: This field is defined as int64 for reasons of
-      compatibility across different languages. However, it is a non-negative
-      integer, which will never exceed 2^32-1, and can be safely downconverted
-      to uint32 in languages that support this type.  NOTE: This field is in
-      Beta.
   """
 
   class AlgorithmValueValuesEnum(_messages.Enum):
@@ -2018,9 +1822,7 @@ class PublicKey(_messages.Message):
     EXTERNAL_SYMMETRIC_ENCRYPTION = 16
 
   algorithm = _messages.EnumField('AlgorithmValueValuesEnum', 1)
-  name = _messages.StringField(2)
-  pem = _messages.StringField(3)
-  pemCrc32c = _messages.IntegerField(4)
+  pem = _messages.StringField(2)
 
 
 class RestoreCryptoKeyVersionRequest(_messages.Message):
@@ -2095,7 +1897,7 @@ class StandardQueryParameters(_messages.Message):
 
   f__xgafv = _messages.EnumField('FXgafvValueValuesEnum', 1)
   access_token = _messages.StringField(2)
-  alt = _messages.EnumField('AltValueValuesEnum', 3, default=u'json')
+  alt = _messages.EnumField('AltValueValuesEnum', 3, default='json')
   callback = _messages.StringField(4)
   fields = _messages.StringField(5)
   key = _messages.StringField(6)

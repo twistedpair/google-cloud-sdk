@@ -8,17 +8,17 @@ class VpcaccessV1alpha1(base_api.BaseApiClient):
   """Generated client library for service vpcaccess version v1alpha1."""
 
   MESSAGES_MODULE = messages
-  BASE_URL = u'https://vpcaccess.googleapis.com/'
-  MTLS_BASE_URL = u'https://vpcaccess.mtls.googleapis.com/'
+  BASE_URL = 'https://vpcaccess.googleapis.com/'
+  MTLS_BASE_URL = 'https://vpcaccess.mtls.googleapis.com/'
 
-  _PACKAGE = u'vpcaccess'
-  _SCOPES = [u'https://www.googleapis.com/auth/cloud-platform']
-  _VERSION = u'v1alpha1'
+  _PACKAGE = 'vpcaccess'
+  _SCOPES = ['https://www.googleapis.com/auth/cloud-platform']
+  _VERSION = 'v1alpha1'
   _CLIENT_ID = '1042881264118.apps.googleusercontent.com'
   _CLIENT_SECRET = 'x_Tw5K8nnjoRAqULM9PFAC2b'
-  _USER_AGENT = u'google-cloud-sdk'
-  _CLIENT_CLASS_NAME = u'VpcaccessV1alpha1'
-  _URL_VERSION = u'v1alpha1'
+  _USER_AGENT = 'google-cloud-sdk'
+  _CLIENT_CLASS_NAME = 'VpcaccessV1alpha1'
+  _URL_VERSION = 'v1alpha1'
   _API_KEY = None
 
   def __init__(self, url='', credentials=None,
@@ -44,7 +44,7 @@ class VpcaccessV1alpha1(base_api.BaseApiClient):
   class ProjectsLocationsConnectorsService(base_api.BaseApiService):
     """Service class for the projects_locations_connectors resource."""
 
-    _NAME = u'projects_locations_connectors'
+    _NAME = 'projects_locations_connectors'
 
     def __init__(self, client):
       super(VpcaccessV1alpha1.ProjectsLocationsConnectorsService, self).__init__(client)
@@ -65,16 +65,16 @@ class VpcaccessV1alpha1(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Create.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha1/projects/{projectsId}/locations/{locationsId}/connectors',
-        http_method=u'POST',
-        method_id=u'vpcaccess.projects.locations.connectors.create',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/connectors',
+        http_method='POST',
+        method_id='vpcaccess.projects.locations.connectors.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
         query_params=[],
-        relative_path=u'v1alpha1/{+parent}/connectors',
-        request_field=u'connector',
-        request_type_name=u'VpcaccessProjectsLocationsConnectorsCreateRequest',
-        response_type_name=u'Operation',
+        relative_path='v1alpha1/{+parent}/connectors',
+        request_field='connector',
+        request_type_name='VpcaccessProjectsLocationsConnectorsCreateRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -93,16 +93,16 @@ resource does not exist.
           config, request, global_params=global_params)
 
     Delete.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha1/projects/{projectsId}/locations/{locationsId}/connectors/{connectorsId}',
-        http_method=u'DELETE',
-        method_id=u'vpcaccess.projects.locations.connectors.delete',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/connectors/{connectorsId}',
+        http_method='DELETE',
+        method_id='vpcaccess.projects.locations.connectors.delete',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1alpha1/{+name}',
+        relative_path='v1alpha1/{+name}',
         request_field='',
-        request_type_name=u'VpcaccessProjectsLocationsConnectorsDeleteRequest',
-        response_type_name=u'Operation',
+        request_type_name='VpcaccessProjectsLocationsConnectorsDeleteRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -121,16 +121,16 @@ does not exist.
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha1/projects/{projectsId}/locations/{locationsId}/connectors/{connectorsId}',
-        http_method=u'GET',
-        method_id=u'vpcaccess.projects.locations.connectors.get',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/connectors/{connectorsId}',
+        http_method='GET',
+        method_id='vpcaccess.projects.locations.connectors.get',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1alpha1/{+name}',
+        relative_path='v1alpha1/{+name}',
         request_field='',
-        request_type_name=u'VpcaccessProjectsLocationsConnectorsGetRequest',
-        response_type_name=u'Connector',
+        request_type_name='VpcaccessProjectsLocationsConnectorsGetRequest',
+        response_type_name='Connector',
         supports_download=False,
     )
 
@@ -148,16 +148,16 @@ does not exist.
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha1/projects/{projectsId}/locations/{locationsId}/connectors',
-        http_method=u'GET',
-        method_id=u'vpcaccess.projects.locations.connectors.list',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'pageSize', u'pageToken'],
-        relative_path=u'v1alpha1/{+parent}/connectors',
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/connectors',
+        http_method='GET',
+        method_id='vpcaccess.projects.locations.connectors.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v1alpha1/{+parent}/connectors',
         request_field='',
-        request_type_name=u'VpcaccessProjectsLocationsConnectorsListRequest',
-        response_type_name=u'ListConnectorsResponse',
+        request_type_name='VpcaccessProjectsLocationsConnectorsListRequest',
+        response_type_name='ListConnectorsResponse',
         supports_download=False,
     )
 
@@ -175,23 +175,23 @@ does not exist.
           config, request, global_params=global_params)
 
     Patch.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha1/projects/{projectsId}/locations/{locationsId}/connectors/{connectorsId}',
-        http_method=u'PATCH',
-        method_id=u'vpcaccess.projects.locations.connectors.patch',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[u'updateMask'],
-        relative_path=u'v1alpha1/{+name}',
-        request_field=u'connector',
-        request_type_name=u'VpcaccessProjectsLocationsConnectorsPatchRequest',
-        response_type_name=u'Operation',
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/connectors/{connectorsId}',
+        http_method='PATCH',
+        method_id='vpcaccess.projects.locations.connectors.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v1alpha1/{+name}',
+        request_field='connector',
+        request_type_name='VpcaccessProjectsLocationsConnectorsPatchRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
   class ProjectsLocationsOperationsService(base_api.BaseApiService):
     """Service class for the projects_locations_operations resource."""
 
-    _NAME = u'projects_locations_operations'
+    _NAME = 'projects_locations_operations'
 
     def __init__(self, client):
       super(VpcaccessV1alpha1.ProjectsLocationsOperationsService, self).__init__(client)
@@ -214,16 +214,16 @@ service.
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha1/projects/{projectsId}/locations/{locationsId}/operations/{operationsId}',
-        http_method=u'GET',
-        method_id=u'vpcaccess.projects.locations.operations.get',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/operations/{operationsId}',
+        http_method='GET',
+        method_id='vpcaccess.projects.locations.operations.get',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1alpha1/{+name}',
+        relative_path='v1alpha1/{+name}',
         request_field='',
-        request_type_name=u'VpcaccessProjectsLocationsOperationsGetRequest',
-        response_type_name=u'Operation',
+        request_type_name='VpcaccessProjectsLocationsOperationsGetRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -250,23 +250,23 @@ is the parent resource, without the operations collection id.
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha1/projects/{projectsId}/locations/{locationsId}/operations',
-        http_method=u'GET',
-        method_id=u'vpcaccess.projects.locations.operations.list',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[u'filter', u'pageSize', u'pageToken'],
-        relative_path=u'v1alpha1/{+name}/operations',
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/operations',
+        http_method='GET',
+        method_id='vpcaccess.projects.locations.operations.list',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['filter', 'pageSize', 'pageToken'],
+        relative_path='v1alpha1/{+name}/operations',
         request_field='',
-        request_type_name=u'VpcaccessProjectsLocationsOperationsListRequest',
-        response_type_name=u'ListOperationsResponse',
+        request_type_name='VpcaccessProjectsLocationsOperationsListRequest',
+        response_type_name='ListOperationsResponse',
         supports_download=False,
     )
 
   class ProjectsLocationsService(base_api.BaseApiService):
     """Service class for the projects_locations resource."""
 
-    _NAME = u'projects_locations'
+    _NAME = 'projects_locations'
 
     def __init__(self, client):
       super(VpcaccessV1alpha1.ProjectsLocationsService, self).__init__(client)
@@ -287,23 +287,23 @@ is the parent resource, without the operations collection id.
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha1/projects/{projectsId}/locations',
-        http_method=u'GET',
-        method_id=u'vpcaccess.projects.locations.list',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[u'filter', u'pageSize', u'pageToken'],
-        relative_path=u'v1alpha1/{+name}/locations',
+        flat_path='v1alpha1/projects/{projectsId}/locations',
+        http_method='GET',
+        method_id='vpcaccess.projects.locations.list',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['filter', 'pageSize', 'pageToken'],
+        relative_path='v1alpha1/{+name}/locations',
         request_field='',
-        request_type_name=u'VpcaccessProjectsLocationsListRequest',
-        response_type_name=u'ListLocationsResponse',
+        request_type_name='VpcaccessProjectsLocationsListRequest',
+        response_type_name='ListLocationsResponse',
         supports_download=False,
     )
 
   class ProjectsService(base_api.BaseApiService):
     """Service class for the projects resource."""
 
-    _NAME = u'projects'
+    _NAME = 'projects'
 
     def __init__(self, client):
       super(VpcaccessV1alpha1.ProjectsService, self).__init__(client)

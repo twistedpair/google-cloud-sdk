@@ -28,7 +28,7 @@ class Collections(enum.Enum):
       'projects',
       'projects/{projectsId}',
       {},
-      [u'projectsId'],
+      ['projectsId'],
       True
   )
   PROJECTS_LOCATIONS = (
@@ -38,7 +38,7 @@ class Collections(enum.Enum):
           '':
               'projects/{projectsId}/locations/{locationsId}',
       },
-      [u'name'],
+      ['name'],
       True
   )
   PROJECTS_LOCATIONS_DATASETS = (
@@ -49,7 +49,7 @@ class Collections(enum.Enum):
               'projects/{projectsId}/locations/{locationsId}/datasets/'
               '{datasetsId}',
       },
-      [u'name'],
+      ['name'],
       True
   )
   PROJECTS_LOCATIONS_DATASETS_ANNOTATIONSTORES = (
@@ -60,7 +60,7 @@ class Collections(enum.Enum):
               'projects/{projectsId}/locations/{locationsId}/datasets/'
               '{datasetsId}/annotationStores/{annotationStoresId}',
       },
-      [u'name'],
+      ['name'],
       True
   )
   PROJECTS_LOCATIONS_DATASETS_CONSENTSTORES = (
@@ -71,7 +71,7 @@ class Collections(enum.Enum):
               'projects/{projectsId}/locations/{locationsId}/datasets/'
               '{datasetsId}/consentStores/{consentStoresId}',
       },
-      [u'name'],
+      ['name'],
       True
   )
   PROJECTS_LOCATIONS_DATASETS_CONSENTSTORES_ATTRIBUTEDEFINITIONS = (
@@ -83,7 +83,7 @@ class Collections(enum.Enum):
               '{datasetsId}/consentStores/{consentStoresId}/'
               'attributeDefinitions/{attributeDefinitionsId}',
       },
-      [u'name'],
+      ['name'],
       True
   )
   PROJECTS_LOCATIONS_DATASETS_CONSENTSTORES_CONSENTARTIFACTS = (
@@ -95,7 +95,7 @@ class Collections(enum.Enum):
               '{datasetsId}/consentStores/{consentStoresId}/consentArtifacts/'
               '{consentArtifactsId}',
       },
-      [u'name'],
+      ['name'],
       True
   )
   PROJECTS_LOCATIONS_DATASETS_CONSENTSTORES_CONSENTS = (
@@ -107,7 +107,7 @@ class Collections(enum.Enum):
               '{datasetsId}/consentStores/{consentStoresId}/consents/'
               '{consentsId}',
       },
-      [u'name'],
+      ['name'],
       True
   )
   PROJECTS_LOCATIONS_DATASETS_CONSENTSTORES_USERDATAMAPPINGS = (
@@ -119,7 +119,7 @@ class Collections(enum.Enum):
               '{datasetsId}/consentStores/{consentStoresId}/userDataMappings/'
               '{userDataMappingsId}',
       },
-      [u'name'],
+      ['name'],
       True
   )
   PROJECTS_LOCATIONS_DATASETS_DICOMSTORES = (
@@ -130,7 +130,7 @@ class Collections(enum.Enum):
               'projects/{projectsId}/locations/{locationsId}/datasets/'
               '{datasetsId}/dicomStores/{dicomStoresId}',
       },
-      [u'name'],
+      ['name'],
       True
   )
   PROJECTS_LOCATIONS_DATASETS_FHIRSTORES = (
@@ -141,7 +141,7 @@ class Collections(enum.Enum):
               'projects/{projectsId}/locations/{locationsId}/datasets/'
               '{datasetsId}/fhirStores/{fhirStoresId}',
       },
-      [u'name'],
+      ['name'],
       True
   )
   PROJECTS_LOCATIONS_DATASETS_HL7V2STORES = (
@@ -152,7 +152,7 @@ class Collections(enum.Enum):
               'projects/{projectsId}/locations/{locationsId}/datasets/'
               '{datasetsId}/hl7V2Stores/{hl7V2StoresId}',
       },
-      [u'name'],
+      ['name'],
       True
   )
   PROJECTS_LOCATIONS_DATASETS_OPERATIONS = (
@@ -163,7 +163,7 @@ class Collections(enum.Enum):
               'projects/{projectsId}/locations/{locationsId}/datasets/'
               '{datasetsId}/operations/{operationsId}',
       },
-      [u'name'],
+      ['name'],
       True
   )
 

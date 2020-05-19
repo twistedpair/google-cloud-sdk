@@ -101,10 +101,11 @@ class AuthProvider(_messages.Message):
     jwksUri: URL of the provider's public key set to validate signature of the
       JWT. See [OpenID Discovery](https://openid.net/specs/openid-connect-
       discovery-1_0.html#ProviderMetadata). Optional if the key set document:
-      - can be retrieved from    [OpenID Discovery](https://openid.net/specs
-      /openid-connect-discovery-1_0.html    of the issuer.  - can be inferred
-      from the email domain of the issuer (e.g. a Google service account).
-      Example: https://www.googleapis.com/oauth2/v1/certs
+      - can be retrieved from    [OpenID
+      Discovery](https://openid.net/specs/openid-connect-discovery-1_0.html
+      of the issuer.  - can be inferred from the email domain of the issuer
+      (e.g. a Google service account).  Example:
+      https://www.googleapis.com/oauth2/v1/certs
   """
 
   audiences = _messages.StringField(1)
@@ -1066,15 +1067,15 @@ class HttpRule(_messages.Message):
   all characters except `[-_.~0-9a-zA-Z]` are percent-encoded. Such variables
   show up in the Discovery Document as `{var}`.  If a variable contains one or
   more path segments, such as `"{var=foo/*}"` or `"{var=**}"`, when such a
-  variable is expanded into a URL path, all characters except `[-_.~/0-9a-
-  zA-Z]` are percent-encoded. Such variables show up in the Discovery Document
-  as `{+var}`.  NOTE: While the single segment variable matches the semantics
-  of [RFC 6570](https://tools.ietf.org/html/rfc6570) Section 3.2.2 Simple
-  String Expansion, the multi segment variable **does not** match RFC 6570
-  Reserved Expansion. The reason is that the Reserved Expansion does not
-  expand special characters like `?` and `#`, which would lead to invalid
-  URLs.  NOTE: the field paths in variables and in the `body` must not refer
-  to repeated fields or map fields.
+  variable is expanded into a URL path, all characters except
+  `[-_.~/0-9a-zA-Z]` are percent-encoded. Such variables show up in the
+  Discovery Document as `{+var}`.  NOTE: While the single segment variable
+  matches the semantics of [RFC 6570](https://tools.ietf.org/html/rfc6570)
+  Section 3.2.2 Simple String Expansion, the multi segment variable **does
+  not** match RFC 6570 Reserved Expansion. The reason is that the Reserved
+  Expansion does not expand special characters like `?` and `#`, which would
+  lead to invalid URLs.  NOTE: the field paths in variables and in the `body`
+  must not refer to repeated fields or map fields.
 
   Fields:
     additionalBindings: Additional HTTP bindings for the selector. Nested
@@ -2338,7 +2339,7 @@ class StandardQueryParameters(_messages.Message):
 
   f__xgafv = _messages.EnumField('FXgafvValueValuesEnum', 1)
   access_token = _messages.StringField(2)
-  alt = _messages.EnumField('AltValueValuesEnum', 3, default=u'json')
+  alt = _messages.EnumField('AltValueValuesEnum', 3, default='json')
   callback = _messages.StringField(4)
   fields = _messages.StringField(5)
   key = _messages.StringField(6)

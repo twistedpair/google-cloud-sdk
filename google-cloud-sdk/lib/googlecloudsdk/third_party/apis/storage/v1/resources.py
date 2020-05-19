@@ -28,63 +28,63 @@ class Collections(enum.Enum):
       'bucketAccessControls',
       'b/{bucket}/acl/{entity}',
       {},
-      [u'bucket', u'entity'],
+      ['bucket', 'entity'],
       True
   )
   BUCKETS = (
       'buckets',
       'b/{bucket}',
       {},
-      [u'bucket'],
+      ['bucket'],
       True
   )
   DEFAULTOBJECTACCESSCONTROLS = (
       'defaultObjectAccessControls',
       'b/{bucket}/defaultObjectAcl/{entity}',
       {},
-      [u'bucket', u'entity'],
+      ['bucket', 'entity'],
       True
   )
   NOTIFICATIONS = (
       'notifications',
       'b/{bucket}/notificationConfigs/{notification}',
       {},
-      [u'bucket', u'notification'],
+      ['bucket', 'notification'],
       True
   )
   OBJECTACCESSCONTROLS = (
       'objectAccessControls',
       'b/{bucket}/o/{object}/acl/{entity}',
       {},
-      [u'bucket', u'object', u'entity'],
+      ['bucket', 'object', 'entity'],
       True
   )
   OBJECTS = (
       'objects',
       'b/{bucket}/o/{object}',
       {},
-      [u'bucket', u'object'],
+      ['bucket', 'object'],
       True
   )
   PROJECTS = (
       'projects',
       'projects/{project}',
       {},
-      [u'project'],
+      ['project'],
       True
   )
   PROJECTS_HMACKEYS = (
       'projects.hmacKeys',
       'projects/{projectId}/hmacKeys/{accessId}',
       {},
-      [u'projectId', u'accessId'],
+      ['projectId', 'accessId'],
       True
   )
   PROJECTS_SERVICEACCOUNT = (
       'projects.serviceAccount',
       'projects/{projectId}/serviceAccount',
       {},
-      [u'projectId'],
+      ['projectId'],
       True
   )
 

@@ -28,14 +28,14 @@ class Collections(enum.Enum):
       'projects',
       'projects/{projectsId}',
       {},
-      [u'projectsId'],
+      ['projectsId'],
       True
   )
   PROJECTS_DATABASES = (
       'projects.databases',
       'projects/{projectsId}/databases/{databasesId}',
       {},
-      [u'projectsId', u'databasesId'],
+      ['projectsId', 'databasesId'],
       True
   )
   PROJECTS_DATABASES_DOCUMENTS = (
@@ -46,7 +46,7 @@ class Collections(enum.Enum):
               'projects/{projectsId}/databases/{databasesId}/documents/'
               '{documentsId}/{documentsId1}',
       },
-      [u'name'],
+      ['name'],
       True
   )
   PROJECTS_DATABASES_INDEXES = (
@@ -57,7 +57,7 @@ class Collections(enum.Enum):
               'projects/{projectsId}/databases/{databasesId}/indexes/'
               '{indexesId}',
       },
-      [u'name'],
+      ['name'],
       True
   )
 

@@ -119,8 +119,8 @@ class AutoscalerDetails(_messages.Message):
 
   Fields:
     autoscalerName: The name of the Agones autoscaler.
-    scalingConfigName: The name of the Agones scaling config (within the Game
-      Server Config) that is used to create the Agones autoscalar.
+    scalingConfigName: The name of the Agones scaling config, within the game
+      server config, that is used to create the Agones autoscalar.
   """
 
   autoscalerName = _messages.StringField(1)
@@ -137,8 +137,9 @@ class Binding(_messages.Message):
       not apply to the current request. However, a different role binding
       might grant the same role to one or more of the members in this binding.
       To learn which resources support conditions in their IAM policies, see
-      the [IAM documentation](https://cloud.google.com/iam/help/conditions
-      /resource-policies).
+      the [IAM
+      documentation](https://cloud.google.com/iam/help/conditions/resource-
+      policies).
     members: Specifies the identities requesting access for a Cloud Platform
       resource. `members` can have the following values:  * `allUsers`: A
       special identifier that represents anyone who is    on the internet;
@@ -237,21 +238,21 @@ class Condition(_messages.Message):
       AUTHORITY: Either principal or (if present) authority selector.
       ATTRIBUTION: The principal (even if an authority selector is present),
         which must only be used for attribution, not authorization.
-      SECURITY_REALM: Any of the security realms in the IAMContext (go
-        /security-realms). When used with IN, the condition indicates "any of
-        the request's realms match one of the given values; with NOT_IN, "none
-        of the realms match any of the given values". Note that a value can
-        be:  - 'self' (i.e., allow connections from clients that are in the
-        same  security realm)  - 'self:cloud-region' (i.e., allow connections
-        from clients that are in  the same cloud region)  - 'guardians' (i.e.,
-        allow connections from its guardian realms. See  go/security-realms-
-        glossary#guardian for more information.)  - a realm (e.g., 'campus-
-        abc')  - a realm group (e.g., 'realms-for-borg-cell-xx', see: go
-        /realm-groups) A match is determined by a realm group membership check
-        performed by a RealmAclRep object (go/realm-acl-howto). It is not
-        permitted to grant access based on the *absence* of a realm, so realm
-        conditions can only be used in a "positive" context (e.g., ALLOW/IN or
-        DENY/NOT_IN).
+      SECURITY_REALM: Any of the security realms in the IAMContext
+        (go/security-realms). When used with IN, the condition indicates "any
+        of the request's realms match one of the given values; with NOT_IN,
+        "none of the realms match any of the given values". Note that a value
+        can be:  - 'self' (i.e., allow connections from clients that are in
+        the same  security realm)  - 'self:cloud-region' (i.e., allow
+        connections from clients that are in  the same cloud region)  -
+        'guardians' (i.e., allow connections from its guardian realms. See
+        go/security-realms-glossary#guardian for more information.)  - a realm
+        (e.g., 'campus-abc')  - a realm group (e.g., 'realms-for-borg-cell-
+        xx', see: go/realm-groups) A match is determined by a realm group
+        membership check performed by a RealmAclRep object (go/realm-acl-
+        howto). It is not permitted to grant access based on the *absence* of
+        a realm, so realm conditions can only be used in a "positive" context
+        (e.g., ALLOW/IN or DENY/NOT_IN).
       APPROVER: An approver (distinct from the requester) that has authorized
         this request. When used with IN, the condition indicates that one of
         the approvers associated with the request matches the specified
@@ -402,12 +403,12 @@ class DataAccessOptions(_messages.Message):
 
 
 class DeployedClusterState(_messages.Message):
-  r"""The Game Server Cluster changes made by the Game Server Deployment.
+  r"""The game server cluster changes made by the game server deployment.
 
   Fields:
     cluster: The name of the cluster.
     fleetDetails: The details about the Agones fleets and autoscalers created
-      in the Game Server Cluster.
+      in the game server cluster.
   """
 
   cluster = _messages.StringField(1)
@@ -547,9 +548,9 @@ class FetchDeploymentStateResponse(_messages.Message):
   r"""Response message for GameServerDeploymentsService.FetchDeploymentState.
 
   Fields:
-    clusterState: The state of the Game Server Deployment in each Game Server
-      Cluster.
-    unavailable: List of Locations that could not be reached.
+    clusterState: The state of the game server deployment in each game server
+      cluster.
+    unavailable: List of locations that could not be reached.
   """
 
   clusterState = _messages.MessageField('DeployedClusterState', 1, repeated=True)
@@ -575,8 +576,8 @@ class FleetDetails(_messages.Message):
   Fields:
     autoscalerDetails: Details about the Agones autoscaler.
     fleetName: The name of the Agones fleet.
-    gameServerClusterName: The Game Server Cluster name.
-    gameServerConfigName: The name of the Game Server Config used to create
+    gameServerClusterName: The game server cluster name.
+    gameServerConfigName: The name of the game server config used to create
       the Agones fleet.
   """
 
@@ -587,21 +588,21 @@ class FleetDetails(_messages.Message):
 
 
 class GameServerCluster(_messages.Message):
-  r"""A Game Server Cluster resource.
+  r"""A game server cluster resource.
 
   Messages:
-    LabelsValue: The labels associated with this Game Server Cluster. Each
+    LabelsValue: The labels associated with this game server cluster. Each
       label is a key-value pair.
 
   Fields:
-    connectionInfo: Game Server Cluster connection information. This
-      information is used to manage Game Server Clusters.
+    connectionInfo: The game server cluster connection information. This
+      information is used to manage game server clusters.
     createTime: Output only. The creation time.
     description: Human readable description of the cluster.
     etag: ETag of the resource.
-    labels: The labels associated with this Game Server Cluster. Each label is
+    labels: The labels associated with this game server cluster. Each label is
       a key-value pair.
-    name: Required. The resource name of the Game Server Cluster. Uses the
+    name: Required. The resource name of the game server cluster. Uses the
       form:  `projects/{project}/locations/{location}/realms/{realm}/gameServe
       rClusters/{cluster}`. For example,  `projects/my-
       project/locations/{location}/realms/zanzibar/gameServerClusters/my-
@@ -611,7 +612,7 @@ class GameServerCluster(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
-    r"""The labels associated with this Game Server Cluster. Each label is a
+    r"""The labels associated with this game server cluster. Each label is a
     key-value pair.
 
     Messages:
@@ -644,7 +645,7 @@ class GameServerCluster(_messages.Message):
 
 
 class GameServerClusterConnectionInfo(_messages.Message):
-  r"""The Game Server Cluster connection information.
+  r"""The game server cluster connection information.
 
   Fields:
     gkeClusterReference: Reference to the GKE cluster where the game servers
@@ -652,7 +653,7 @@ class GameServerClusterConnectionInfo(_messages.Message):
     gkeHubClusterReference: Reference to a Kubernetes cluster registered
       through GKE Hub. See https://cloud.google.com/anthos/multicluster-
       management/ for more information about registering Kubernetes clusters.
-    namespace: Namespace designated on the Game Server Cluster where the
+    namespace: Namespace designated on the game server cluster where the
       Agones game server instances will be created. Existence of the namespace
       will be validated during creation.
   """
@@ -663,20 +664,20 @@ class GameServerClusterConnectionInfo(_messages.Message):
 
 
 class GameServerConfig(_messages.Message):
-  r"""A Game Server Config resource.
+  r"""A game server config resource.
 
   Messages:
-    LabelsValue: The labels associated with this Game Server Config. Each
+    LabelsValue: The labels associated with this game server config. Each
       label is a key-value pair.
 
   Fields:
     createTime: Output only. The creation time.
-    description: The description of the Game Server Config.
+    description: The description of the game server config.
     fleetConfigs: FleetConfig contains a list of Agones fleet specs. Only one
       FleetConfig is allowed.
-    labels: The labels associated with this Game Server Config. Each label is
+    labels: The labels associated with this game server config. Each label is
       a key-value pair.
-    name: The resource name of the Game Server Config. Uses the form:  `projec
+    name: The resource name of the game server config. Uses the form:  `projec
       ts/{project}/locations/{location}/gameServerDeployments/{deployment}/con
       figs/{config}`. For example,  `projects/my-
       project/locations/global/gameServerDeployments/my-game/configs/my-
@@ -687,7 +688,7 @@ class GameServerConfig(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
-    r"""The labels associated with this Game Server Config. Each label is a
+    r"""The labels associated with this game server config. Each label is a
     key-value pair.
 
     Messages:
@@ -720,7 +721,7 @@ class GameServerConfig(_messages.Message):
 
 
 class GameServerConfigOverride(_messages.Message):
-  r"""A Game Server Config override.
+  r"""A game server config override.
 
   Fields:
     configVersion: The game server config for this override.
@@ -732,19 +733,19 @@ class GameServerConfigOverride(_messages.Message):
 
 
 class GameServerDeployment(_messages.Message):
-  r"""A Game Server Deployment resource.
+  r"""A game server deployment resource.
 
   Messages:
-    LabelsValue: The labels associated with this Game Server Deployment. Each
+    LabelsValue: The labels associated with this game server deployment. Each
       label is a key-value pair.
 
   Fields:
     createTime: Output only. The creation time.
-    description: Human readable description of the Game Server Deployment.
+    description: Human readable description of the game server delpoyment.
     etag: ETag of the resource.
-    labels: The labels associated with this Game Server Deployment. Each label
+    labels: The labels associated with this game server deployment. Each label
       is a key-value pair.
-    name: The resource name of the Game Server Deployment. Uses the form:  `pr
+    name: The resource name of the game server deployment. Uses the form:  `pr
       ojects/{project}/locations/{location}/gameServerDeployments/{deployment}
       `. For example,  `projects/my-
       project/locations/{location}/gameServerDeployments/my-deployment`.
@@ -753,7 +754,7 @@ class GameServerDeployment(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
-    r"""The labels associated with this Game Server Deployment. Each label is
+    r"""The labels associated with this game server deployment. Each label is
     a key-value pair.
 
     Messages:
@@ -785,20 +786,20 @@ class GameServerDeployment(_messages.Message):
 
 
 class GameServerDeploymentRollout(_messages.Message):
-  r"""The Game Server Deployment Rollout which represents the desired rollout
+  r"""The game server deployment rollout which represents the desired rollout
   state.
 
   Fields:
     createTime: Output only. The creation time.
-    defaultGameServerConfig: The default Game Server Config is applied to all
-      Realms unless overridden in the Rollout. For example,  `projects/my-
+    defaultGameServerConfig: The default game server config is applied to all
+      realms unless overridden in the rollout. For example,  `projects/my-
       project/locations/global/gameServerDeployments/my-game/configs/my-
       config`.
     etag: ETag of the resource.
-    gameServerConfigOverrides: Contains the Game Server Config Rollout
+    gameServerConfigOverrides: Contains the game server config rollout
       overrides. Overrides are processed in the order they are listed. Once a
-      match is found for a Realm, the rest of the list is not processed.
-    name: The resource name of the Game Server Deployment Rollout. Uses the
+      match is found for a realm, the rest of the list is not processed.
+    name: The resource name of the game server deployment rollout. Uses the
       form:  `projects/{project}/locations/{location}/gameServerDeployments/{d
       eployment}/rollout`. For example,  `projects/my-
       project/locations/{location}/gameServerDeployments/my-
@@ -819,7 +820,7 @@ class GameservicesProjectsLocationsGameServerDeploymentsConfigsCreateRequest(_me
   object.
 
   Fields:
-    configId: Required. The ID of the Game Server Config resource to be
+    configId: Required. The ID of the game server config resource to be
       created.
     gameServerConfig: A GameServerConfig resource to be passed as the request
       body.
@@ -837,7 +838,7 @@ class GameservicesProjectsLocationsGameServerDeploymentsConfigsDeleteRequest(_me
   object.
 
   Fields:
-    name: Required. The name of the Game Server Config to delete. Uses the
+    name: Required. The name of the game server config to delete. Uses the
       form:  `projects/{project}/locations/{location}/gameServerDeployments/{d
       eployment}/configs/{config}`.
   """
@@ -850,7 +851,7 @@ class GameservicesProjectsLocationsGameServerDeploymentsConfigsGetRequest(_messa
   object.
 
   Fields:
-    name: Required. The name of the Game Server Config to retrieve. Uses the
+    name: Required. The name of the game server config to retrieve. Uses the
       form:  `projects/{project}/locations/{location}/gameServerDeployments/{d
       eployment}/configs/{config}`.
   """
@@ -872,7 +873,7 @@ class GameservicesProjectsLocationsGameServerDeploymentsConfigsListRequest(_mess
       next_page_token to determine if there are more GameServerConfigs left to
       be queried.
     pageToken: Optional. The next_page_token value returned from a previous
-      List request, if any.
+      list request, if any.
     parent: Required. The parent resource name. Uses the form:  `projects/{pro
       ject}/locations/{location}/gameServerDeployments/{deployment}/configs/*`
       .
@@ -890,7 +891,7 @@ class GameservicesProjectsLocationsGameServerDeploymentsCreateRequest(_messages.
   object.
 
   Fields:
-    deploymentId: Required. The ID of the Game Server Deployment resource to
+    deploymentId: Required. The ID of the game server delpoyment resource to
       be created.
     gameServerDeployment: A GameServerDeployment resource to be passed as the
       request body.
@@ -908,7 +909,7 @@ class GameservicesProjectsLocationsGameServerDeploymentsDeleteRequest(_messages.
   object.
 
   Fields:
-    name: Required. The name of the Game Server Deployment to delete. Uses the
+    name: Required. The name of the game server delpoyment to delete. Uses the
       form:  `projects/{project}/locations/{location}/gameServerDeployments/{d
       eployment}`.
   """
@@ -923,7 +924,7 @@ class GameservicesProjectsLocationsGameServerDeploymentsFetchDeploymentStateRequ
   Fields:
     fetchDeploymentStateRequest: A FetchDeploymentStateRequest resource to be
       passed as the request body.
-    name: Required. The name of the Game Server Deployment. Uses the form:  `p
+    name: Required. The name of the game server delpoyment. Uses the form:  `p
       rojects/{project}/locations/{location}/gameServerDeployments/{deployment
       }`.
   """
@@ -958,7 +959,7 @@ class GameservicesProjectsLocationsGameServerDeploymentsGetRequest(_messages.Mes
   r"""A GameservicesProjectsLocationsGameServerDeploymentsGetRequest object.
 
   Fields:
-    name: Required. The name of the Game Server Deployment to retrieve. Uses
+    name: Required. The name of the game server delpoyment to retrieve. Uses
       the form:  `projects/{project}/locations/{location}/gameServerDeployment
       s/{deployment}`.
   """
@@ -971,7 +972,7 @@ class GameservicesProjectsLocationsGameServerDeploymentsGetRolloutRequest(_messa
   object.
 
   Fields:
-    name: Required. The name of the Game Server Deployment to retrieve. Uses
+    name: Required. The name of the game server delpoyment to retrieve. Uses
       the form:  `projects/{project}/locations/{location}/gameServerDeployment
       s/{deployment}/rollout`.
   """
@@ -987,10 +988,10 @@ class GameservicesProjectsLocationsGameServerDeploymentsListRequest(_messages.Me
     orderBy: Optional. Specifies the ordering of results following syntax at
       https://cloud.google.com/apis/design/design_patterns#sorting_order.
     pageSize: Optional. The maximum number of items to return.  If
-      unspecified, server will pick an appropriate default. Server may return
-      fewer items than requested. A caller should only rely on response's
-      next_page_token to determine if there are more GameServerDeployments
-      left to be queried.
+      unspecified, the server will pick an appropriate default. The server may
+      return fewer items than requested. A caller should only rely on
+      response's next_page_token to determine if there are more
+      GameServerDeployments left to be queried.
     pageToken: Optional. The next_page_token value returned from a previous
       List request, if any.
     parent: Required. The parent resource name. Uses the form:
@@ -1010,7 +1011,7 @@ class GameservicesProjectsLocationsGameServerDeploymentsPatchRequest(_messages.M
   Fields:
     gameServerDeployment: A GameServerDeployment resource to be passed as the
       request body.
-    name: The resource name of the Game Server Deployment. Uses the form:  `pr
+    name: The resource name of the game server deployment. Uses the form:  `pr
       ojects/{project}/locations/{location}/gameServerDeployments/{deployment}
       `. For example,  `projects/my-
       project/locations/{location}/gameServerDeployments/my-deployment`.
@@ -1033,13 +1034,13 @@ class GameservicesProjectsLocationsGameServerDeploymentsPreviewRolloutRequest(_m
   Fields:
     gameServerDeploymentRollout: A GameServerDeploymentRollout resource to be
       passed as the request body.
-    name: The resource name of the Game Server Deployment Rollout. Uses the
+    name: The resource name of the game server deployment rollout. Uses the
       form:  `projects/{project}/locations/{location}/gameServerDeployments/{d
       eployment}/rollout`. For example,  `projects/my-
       project/locations/{location}/gameServerDeployments/my-
       deployment/rollout`.
     previewTime: Optional. The target timestamp to compute the preview.
-      Defaults to the immediately after the proposed Rollout completes.
+      Defaults to the immediately after the proposed rollout completes.
     updateMask: Optional. Mask of fields to update. At least one path must be
       supplied in this field. For the `FieldMask` definition, see  https:
       //developers.google.com/protocol-buffers //
@@ -1092,7 +1093,7 @@ class GameservicesProjectsLocationsGameServerDeploymentsUpdateRolloutRequest(_me
   Fields:
     gameServerDeploymentRollout: A GameServerDeploymentRollout resource to be
       passed as the request body.
-    name: The resource name of the Game Server Deployment Rollout. Uses the
+    name: The resource name of the game server deployment rollout. Uses the
       form:  `projects/{project}/locations/{location}/gameServerDeployments/{d
       eployment}/rollout`. For example,  `projects/my-
       project/locations/{location}/gameServerDeployments/my-
@@ -1193,7 +1194,7 @@ class GameservicesProjectsLocationsRealmsCreateRequest(_messages.Message):
     parent: Required. The parent resource name. Uses the form:
       `projects/{project}/locations/{location}`.
     realm: A Realm resource to be passed as the request body.
-    realmId: Required. The ID of the Realm resource to be created.
+    realmId: Required. The ID of the realm resource to be created.
   """
 
   parent = _messages.StringField(1, required=True)
@@ -1205,7 +1206,7 @@ class GameservicesProjectsLocationsRealmsDeleteRequest(_messages.Message):
   r"""A GameservicesProjectsLocationsRealmsDeleteRequest object.
 
   Fields:
-    name: Required. The name of the Realm to delete. Uses the form:
+    name: Required. The name of the realm to delete. Uses the form:
       `projects/{project}/locations/{location}/realms/{realm}`.
   """
 
@@ -1219,7 +1220,7 @@ class GameservicesProjectsLocationsRealmsGameServerClustersCreateRequest(_messag
   Fields:
     gameServerCluster: A GameServerCluster resource to be passed as the
       request body.
-    gameServerClusterId: Required. The ID of the Game Server Cluster resource
+    gameServerClusterId: Required. The ID of the game server cluster resource
       to be created.
     parent: Required. The parent resource name. Uses the form:
       `projects/{project}/locations/{location}/realms/{realm-id}`.
@@ -1235,7 +1236,7 @@ class GameservicesProjectsLocationsRealmsGameServerClustersDeleteRequest(_messag
   object.
 
   Fields:
-    name: Required. The name of the Game Server Cluster to delete. Uses the
+    name: Required. The name of the game server cluster to delete. Uses the
       form:
       `projects/{project}/locations/{location}/gameServerClusters/{cluster}`.
   """
@@ -1248,7 +1249,7 @@ class GameservicesProjectsLocationsRealmsGameServerClustersGetRequest(_messages.
   object.
 
   Fields:
-    name: Required. The name of the Game Server Cluster to retrieve. Uses the
+    name: Required. The name of the game server cluster to retrieve. Uses the
       form:  `projects/{project}/locations/{location}/realms/{realm-
       id}/gameServerClusters/{cluster}`.
   """
@@ -1265,10 +1266,10 @@ class GameservicesProjectsLocationsRealmsGameServerClustersListRequest(_messages
     orderBy: Optional. Specifies the ordering of results following syntax at
       https://cloud.google.com/apis/design/design_patterns#sorting_order.
     pageSize: Optional. The maximum number of items to return.  If
-      unspecified, server will pick an appropriate default. Server may return
-      fewer items than requested. A caller should only rely on response's
-      next_page_token to determine if there are more GameServerClusters left
-      to be queried.
+      unspecified, the server will pick an appropriate default. The server may
+      return fewer items than requested. A caller should only rely on
+      response's next_page_token to determine if there are more
+      GameServerClusters left to be queried.
     pageToken: Optional. The next_page_token value returned from a previous
       List request, if any.
     parent: Required. The parent resource name. Uses the form:
@@ -1289,7 +1290,7 @@ class GameservicesProjectsLocationsRealmsGameServerClustersPatchRequest(_message
   Fields:
     gameServerCluster: A GameServerCluster resource to be passed as the
       request body.
-    name: Required. The resource name of the Game Server Cluster. Uses the
+    name: Required. The resource name of the game server cluster. Uses the
       form:  `projects/{project}/locations/{location}/realms/{realm}/gameServe
       rClusters/{cluster}`. For example,  `projects/my-
       project/locations/{location}/realms/zanzibar/gameServerClusters/my-
@@ -1313,7 +1314,7 @@ class GameservicesProjectsLocationsRealmsGameServerClustersPreviewCreateRequest(
   Fields:
     gameServerCluster: A GameServerCluster resource to be passed as the
       request body.
-    gameServerClusterId: Required. The ID of the Game Server Cluster resource
+    gameServerClusterId: Required. The ID of the game server cluster resource
       to be created.
     parent: Required. The parent resource name. Uses the form:
       `projects/{project}/locations/{location}/realms/{realm}`.
@@ -1332,7 +1333,7 @@ class GameservicesProjectsLocationsRealmsGameServerClustersPreviewDeleteRequest(
   object.
 
   Fields:
-    name: Required. The name of the Game Server Cluster to delete. Uses the
+    name: Required. The name of the game server cluster to delete. Uses the
       form:
       `projects/{project}/locations/{location}/gameServerClusters/{cluster}`.
     previewTime: Optional. The target timestamp to compute the preview.
@@ -1350,7 +1351,7 @@ class GameservicesProjectsLocationsRealmsGameServerClustersPreviewUpdateRequest(
   Fields:
     gameServerCluster: A GameServerCluster resource to be passed as the
       request body.
-    name: Required. The resource name of the Game Server Cluster. Uses the
+    name: Required. The resource name of the game server cluster. Uses the
       form:  `projects/{project}/locations/{location}/realms/{realm}/gameServe
       rClusters/{cluster}`. For example,  `projects/my-
       project/locations/{location}/realms/zanzibar/gameServerClusters/my-
@@ -1372,7 +1373,7 @@ class GameservicesProjectsLocationsRealmsGetRequest(_messages.Message):
   r"""A GameservicesProjectsLocationsRealmsGetRequest object.
 
   Fields:
-    name: Required. The name of the Realm to retrieve. Uses the form:
+    name: Required. The name of the realm to retrieve. Uses the form:
       `projects/{project}/locations/{location}/realms/{realm}`.
   """
 
@@ -1389,7 +1390,7 @@ class GameservicesProjectsLocationsRealmsListRequest(_messages.Message):
     pageSize: Optional. The maximum number of items to return.  If
       unspecified, server will pick an appropriate default. Server may return
       fewer items than requested. A caller should only rely on response's
-      next_page_token to determine if there are more Realms left to be
+      next_page_token to determine if there are more realms left to be
       queried.
     pageToken: Optional. The next_page_token value returned from a previous
       List request, if any.
@@ -1408,7 +1409,7 @@ class GameservicesProjectsLocationsRealmsPatchRequest(_messages.Message):
   r"""A GameservicesProjectsLocationsRealmsPatchRequest object.
 
   Fields:
-    name: The resource name of the Realm. Uses the form:
+    name: The resource name of the realm. Uses the form:
       `projects/{project}/locations/{location}/realms/{realm}`. For example,
       `projects/my-project/locations/{location}/realms/my-realm`.
     realm: A Realm resource to be passed as the request body.
@@ -1426,7 +1427,7 @@ class GameservicesProjectsLocationsRealmsPreviewUpdateRequest(_messages.Message)
   r"""A GameservicesProjectsLocationsRealmsPreviewUpdateRequest object.
 
   Fields:
-    name: The resource name of the Realm. Uses the form:
+    name: The resource name of the realm. Uses the form:
       `projects/{project}/locations/{location}/realms/{realm}`. For example,
       `projects/my-project/locations/{location}/realms/my-realm`.
     previewTime: Optional. The target timestamp to compute the preview.
@@ -1516,11 +1517,11 @@ class ListGameServerClustersResponse(_messages.Message):
   r"""Response message for GameServerClustersService.ListGameServerClusters.
 
   Fields:
-    gameServerClusters: The list of Game Server Clusters.
+    gameServerClusters: The list of game server clusters.
     nextPageToken: Token to retrieve the next page of results, or empty if
       there are no more results in the list.
-    unreachable: List of Locations that could not be reached.
-    unreachableLocations: List of Locations that could not be reached.
+    unreachable: List of locations that could not be reached.
+    unreachableLocations: List of locations that could not be reached.
   """
 
   gameServerClusters = _messages.MessageField('GameServerCluster', 1, repeated=True)
@@ -1533,11 +1534,11 @@ class ListGameServerConfigsResponse(_messages.Message):
   r"""Response message for GameServerConfigsService.ListGameServerConfigs.
 
   Fields:
-    gameServerConfigs: The list of Game Server Configs.
+    gameServerConfigs: The list of game server configs.
     nextPageToken: Token to retrieve the next page of results, or empty if
       there are no more results in the list.
-    unreachable: List of Locations that could not be reached.
-    unreachableLocations: List of Locations that could not be reached.
+    unreachable: List of locations that could not be reached.
+    unreachableLocations: List of locations that could not be reached.
   """
 
   gameServerConfigs = _messages.MessageField('GameServerConfig', 1, repeated=True)
@@ -1551,11 +1552,11 @@ class ListGameServerDeploymentsResponse(_messages.Message):
   GameServerDeploymentsService.ListGameServerDeployments.
 
   Fields:
-    gameServerDeployments: The list of Game Server Delpoyments.
+    gameServerDeployments: The list of game server deployments.
     nextPageToken: Token to retrieve the next page of results, or empty if
       there are no more results in the list.
-    unreachable: List of Locations that could not be reached.
-    unreachableLocations: List of Locations that could not be reached.
+    unreachable: List of locations that could not be reached.
+    unreachableLocations: List of locations that could not be reached.
   """
 
   gameServerDeployments = _messages.MessageField('GameServerDeployment', 1, repeated=True)
@@ -1596,8 +1597,8 @@ class ListRealmsResponse(_messages.Message):
   Fields:
     nextPageToken: Token to retrieve the next page of results, or empty if
       there are no more results in the list.
-    realms: The list of Realms.
-    unreachable: List of Locations that could not be reached.
+    realms: The list of realms.
+    unreachable: List of locations that could not be reached.
   """
 
   nextPageToken = _messages.StringField(1)
@@ -1811,7 +1812,7 @@ class OperationMetadata(_messages.Message):
   r"""Represents the metadata of the long-running operation.
 
   Messages:
-    OperationStatusValue: Output only. Operation status for gameservices API
+    OperationStatusValue: Output only. Operation status for Game Services API
       operations. Operation status is in the form of key-value pairs where
       keys are resource IDs and the values show the status of the operation.
       In case of failures, the value includes an error code and error message.
@@ -1820,7 +1821,7 @@ class OperationMetadata(_messages.Message):
     apiVersion: Output only. API version used to start the operation.
     createTime: Output only. The time the operation was created.
     endTime: Output only. The time the operation finished running.
-    operationStatus: Output only. Operation status for gameservices API
+    operationStatus: Output only. Operation status for Game Services API
       operations. Operation status is in the form of key-value pairs where
       keys are resource IDs and the values show the status of the operation.
       In case of failures, the value includes an error code and error message.
@@ -1838,7 +1839,7 @@ class OperationMetadata(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class OperationStatusValue(_messages.Message):
-    r"""Output only. Operation status for gameservices API operations.
+    r"""Output only. Operation status for Game Services API operations.
     Operation status is in the form of key-value pairs where keys are resource
     IDs and the values show the status of the operation. In case of failures,
     the value includes an error code and error message.
@@ -1931,8 +1932,8 @@ class Policy(_messages.Message):
   timestamp('2020-10-01T00:00:00.000Z')",           }         }       ],
   "etag": "BwWWja0YfJA=",       "version": 3     }  **YAML example:**
   bindings:     - members:       - user:mike@example.com       -
-  group:admins@example.com       - domain:google.com       - serviceAccount
-  :my-project-id@appspot.gserviceaccount.com       role:
+  group:admins@example.com       - domain:google.com       -
+  serviceAccount:my-project-id@appspot.gserviceaccount.com       role:
   roles/resourcemanager.organizationAdmin     - members:       -
   user:eve@example.com       role: roles/resourcemanager.organizationViewer
   condition:         title: expirable access         description: Does not
@@ -2028,7 +2029,7 @@ class PreviewGameServerDeploymentRolloutResponse(_messages.Message):
 
   Fields:
     deployedState: The deployed state.
-    etag: ETag of the Game Server Deployment.
+    etag: ETag of the game server deployment.
     targetState: The target state.
     unavailable: Locations that could not be reached on this request.
   """
@@ -2069,22 +2070,22 @@ class PreviewUpdateGameServerClusterResponse(_messages.Message):
 
 
 class Realm(_messages.Message):
-  r"""A Realm resource.
+  r"""A realm resource.
 
   Messages:
-    LabelsValue: The labels associated with this Realm. Each label is a key-
+    LabelsValue: The labels associated with this realm. Each label is a key-
       value pair.
 
   Fields:
     createTime: Output only. The creation time.
-    description: Human readable description of the Realm.
+    description: Human readable description of the realm.
     etag: ETag of the resource.
-    labels: The labels associated with this Realm. Each label is a key-value
+    labels: The labels associated with this realm. Each label is a key-value
       pair.
-    name: The resource name of the Realm. Uses the form:
+    name: The resource name of the realm. Uses the form:
       `projects/{project}/locations/{location}/realms/{realm}`. For example,
       `projects/my-project/locations/{location}/realms/my-realm`.
-    timeZone: Required. Time zone where all policies targeting this Realm are
+    timeZone: Required. Time zone where all policies targeting this realm are
       evaluated. The value of this field must be from the IANA time zone
       database: https://www.iana.org/time-zones.
     updateTime: Output only. The last-modified time.
@@ -2092,7 +2093,7 @@ class Realm(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
-    r"""The labels associated with this Realm. Each label is a key-value pair.
+    r"""The labels associated with this realm. Each label is a key-value pair.
 
     Messages:
       AdditionalProperty: An additional property for a LabelsValue object.
@@ -2124,10 +2125,10 @@ class Realm(_messages.Message):
 
 
 class RealmSelector(_messages.Message):
-  r"""The Realm selector, used to match Realm resources.
+  r"""The realm selector, used to match realm resources.
 
   Fields:
-    realms: List of Realms to match.
+    realms: List of realms to match.
   """
 
   realms = _messages.StringField(1, repeated=True)
@@ -2195,8 +2196,8 @@ class ScalingConfig(_messages.Message):
       https://agones.dev/site/docs/reference/fleetautoscaler/
     name: Required. The name of the Scaling Config
     schedules: The schedules to which this Scaling Config applies.
-    selectors: Labels used to identify the Game Server Clusters to which this
-      Agones scaling config applies. A Game Server Cluster is subject to this
+    selectors: Labels used to identify the game server clusters to which this
+      Agones scaling config applies. A game server cluster is subject to this
       Agones scaling config if its labels match any of the selector entries.
   """
 
@@ -2220,7 +2221,7 @@ class Schedule(_messages.Message):
       event is effective after the cron job's start time.
     cronSpec: The cron definition of the scheduled event. See
       https://en.wikipedia.org/wiki/Cron. Cron spec specifies the local time
-      as defined by the Realm.
+      as defined by the realm.
     endTime: The end time of the event.
     startTime: The start time of the event.
   """
@@ -2252,7 +2253,7 @@ class SpecSource(_messages.Message):
   r"""Encapsulates Agones fleet spec and Agones autoscaler spec sources.
 
   Fields:
-    gameServerConfigName: The Game Server Config resource. Uses the form:  `pr
+    gameServerConfigName: The game server config resource. Uses the form:  `pr
       ojects/{project}/locations/{location}/gameServerDeployments/{deployment_
       id}/configs/{config_id}`.
     name: The name of the Agones leet config or Agones scaling config used to
@@ -2314,7 +2315,7 @@ class StandardQueryParameters(_messages.Message):
 
   f__xgafv = _messages.EnumField('FXgafvValueValuesEnum', 1)
   access_token = _messages.StringField(2)
-  alt = _messages.EnumField('AltValueValuesEnum', 3, default=u'json')
+  alt = _messages.EnumField('AltValueValuesEnum', 3, default='json')
   callback = _messages.StringField(4)
   fields = _messages.StringField(5)
   key = _messages.StringField(6)
@@ -2381,12 +2382,12 @@ class TargetDetails(_messages.Message):
   r"""Details about the Agones resources.
 
   Fields:
-    fleetDetails: Agones fleet details for Game Server Clusters and Game
-      Server Deployments.
-    gameServerClusterName: The Game Server Cluster name. Uses the form:  `proj
+    fleetDetails: Agones fleet details for game server clusters and game
+      server deployments.
+    gameServerClusterName: The game server cluster name. Uses the form:  `proj
       ects/{project}/locations/{location}/realms/{realm}/gameServerClusters/{c
       luster}`.
-    gameServerDeploymentName: The Game Server Deployment name. Uses the form:
+    gameServerDeploymentName: The game server deployment name. Uses the form:
       `projects/{project}/locations/{location}/gameServerDeployments/{deployme
       nt_id}`.
   """

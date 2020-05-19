@@ -28,7 +28,7 @@ class Collections(enum.Enum):
       'apis.versions',
       '{api}/{version}',
       {},
-      [u'api', u'version'],
+      ['api', 'version'],
       True
   )
 

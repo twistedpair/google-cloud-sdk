@@ -842,6 +842,9 @@ class GoogleDevtoolsRemotebuildbotCommandStatus(_messages.Message):
         underlying system have been broken. This usually indicates a bug wit
         the system.
       ABORTED: The command was aborted.
+      FAILED_PRECONDITION: The command failed because the system is not in a
+        state required for the command, e.g. the command inputs cannot be
+        found on the server.
       CLEANUP_ERROR: The bot failed to do the cleanup, e.g. unable to delete
         the command working directory or the command process.
       DOWNLOAD_INPUTS_ERROR: The bot failed to download the inputs.
@@ -888,33 +891,34 @@ class GoogleDevtoolsRemotebuildbotCommandStatus(_messages.Message):
     PERMISSION_DENIED = 4
     INTERNAL = 5
     ABORTED = 6
-    CLEANUP_ERROR = 7
-    DOWNLOAD_INPUTS_ERROR = 8
-    UNKNOWN = 9
-    UPLOAD_OUTPUTS_ERROR = 10
-    DOCKER_LOGIN_ERROR = 11
-    DOCKER_IMAGE_PULL_ERROR = 12
-    DOCKER_IMAGE_EXIST_ERROR = 13
-    DUPLICATE_INPUTS = 14
-    DOCKER_IMAGE_PERMISSION_DENIED = 15
-    DOCKER_IMAGE_NOT_FOUND = 16
-    WORKING_DIR_NOT_FOUND = 17
-    WORKING_DIR_NOT_IN_BASE_DIR = 18
-    DOCKER_UNAVAILABLE = 19
-    NO_CUDA_CAPABLE_DEVICE = 20
-    REMOTE_CAS_DOWNLOAD_ERROR = 21
-    REMOTE_CAS_UPLOAD_ERROR = 22
-    LOCAL_CASPROXY_NOT_RUNNING = 23
-    DOCKER_CREATE_CONTAINER_ERROR = 24
-    DOCKER_INVALID_ULIMIT = 25
-    DOCKER_UNKNOWN_RUNTIME = 26
-    DOCKER_UNKNOWN_CAPABILITY = 27
-    DOCKER_UNKNOWN_ERROR = 28
-    DOCKER_CREATE_COMPUTE_SYSTEM_ERROR = 29
-    DOCKER_PREPARELAYER_ERROR = 30
-    DOCKER_INCOMPATIBLE_OS_ERROR = 31
-    DOCKER_CREATE_RUNTIME_FILE_NOT_FOUND = 32
-    DOCKER_CREATE_RUNTIME_PERMISSION_DENIED = 33
+    FAILED_PRECONDITION = 7
+    CLEANUP_ERROR = 8
+    DOWNLOAD_INPUTS_ERROR = 9
+    UNKNOWN = 10
+    UPLOAD_OUTPUTS_ERROR = 11
+    DOCKER_LOGIN_ERROR = 12
+    DOCKER_IMAGE_PULL_ERROR = 13
+    DOCKER_IMAGE_EXIST_ERROR = 14
+    DUPLICATE_INPUTS = 15
+    DOCKER_IMAGE_PERMISSION_DENIED = 16
+    DOCKER_IMAGE_NOT_FOUND = 17
+    WORKING_DIR_NOT_FOUND = 18
+    WORKING_DIR_NOT_IN_BASE_DIR = 19
+    DOCKER_UNAVAILABLE = 20
+    NO_CUDA_CAPABLE_DEVICE = 21
+    REMOTE_CAS_DOWNLOAD_ERROR = 22
+    REMOTE_CAS_UPLOAD_ERROR = 23
+    LOCAL_CASPROXY_NOT_RUNNING = 24
+    DOCKER_CREATE_CONTAINER_ERROR = 25
+    DOCKER_INVALID_ULIMIT = 26
+    DOCKER_UNKNOWN_RUNTIME = 27
+    DOCKER_UNKNOWN_CAPABILITY = 28
+    DOCKER_UNKNOWN_ERROR = 29
+    DOCKER_CREATE_COMPUTE_SYSTEM_ERROR = 30
+    DOCKER_PREPARELAYER_ERROR = 31
+    DOCKER_INCOMPATIBLE_OS_ERROR = 32
+    DOCKER_CREATE_RUNTIME_FILE_NOT_FOUND = 33
+    DOCKER_CREATE_RUNTIME_PERMISSION_DENIED = 34
 
   code = _messages.EnumField('CodeValueValuesEnum', 1)
   message = _messages.StringField(2)
@@ -1246,6 +1250,7 @@ class GoogleDevtoolsRemotebuildexecutionAdminV1alphaWorkerConfig(_messages.Messa
       Compute Engine on-demand VM and therefore won't be preempted). See
       [Preemptible VMs](https://cloud.google.com/preemptible-vms/) for more
       details.
+    vmImage: Output only. The name of the image used by each VM.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
@@ -1285,6 +1290,7 @@ class GoogleDevtoolsRemotebuildexecutionAdminV1alphaWorkerConfig(_messages.Messa
   minCpuPlatform = _messages.StringField(7)
   networkAccess = _messages.StringField(8)
   reserved = _messages.BooleanField(9)
+  vmImage = _messages.StringField(10)
 
 
 class GoogleDevtoolsRemotebuildexecutionAdminV1alphaWorkerPool(_messages.Message):
@@ -1295,6 +1301,7 @@ class GoogleDevtoolsRemotebuildexecutionAdminV1alphaWorkerPool(_messages.Message
 
   Fields:
     autoscale: The autoscale policy to apply on a pool.
+    channel: Channel specifies the release channel of the pool.
     name: WorkerPool resource name formatted as:
       `projects/[PROJECT_ID]/instances/[INSTANCE_ID]/workerpools/[POOL_ID]`.
       name should not be populated when creating a worker pool since it is
@@ -1332,10 +1339,11 @@ class GoogleDevtoolsRemotebuildexecutionAdminV1alphaWorkerPool(_messages.Message
     INACTIVE = 5
 
   autoscale = _messages.MessageField('GoogleDevtoolsRemotebuildexecutionAdminV1alphaAutoscale', 1)
-  name = _messages.StringField(2)
-  state = _messages.EnumField('StateValueValuesEnum', 3)
-  workerConfig = _messages.MessageField('GoogleDevtoolsRemotebuildexecutionAdminV1alphaWorkerConfig', 4)
-  workerCount = _messages.IntegerField(5)
+  channel = _messages.StringField(2)
+  name = _messages.StringField(3)
+  state = _messages.EnumField('StateValueValuesEnum', 4)
+  workerConfig = _messages.MessageField('GoogleDevtoolsRemotebuildexecutionAdminV1alphaWorkerConfig', 5)
+  workerCount = _messages.IntegerField(6)
 
 
 class GoogleDevtoolsRemoteworkersV1test2AdminTemp(_messages.Message):
@@ -2002,7 +2010,7 @@ class StandardQueryParameters(_messages.Message):
 
   f__xgafv = _messages.EnumField('FXgafvValueValuesEnum', 1)
   access_token = _messages.StringField(2)
-  alt = _messages.EnumField('AltValueValuesEnum', 3, default=u'json')
+  alt = _messages.EnumField('AltValueValuesEnum', 3, default='json')
   callback = _messages.StringField(4)
   fields = _messages.StringField(5)
   key = _messages.StringField(6)

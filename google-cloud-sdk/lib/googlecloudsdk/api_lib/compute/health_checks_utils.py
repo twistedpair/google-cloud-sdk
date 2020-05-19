@@ -140,9 +140,8 @@ def AddHttpRelatedCreationArgs(parser):
       '--host',
       help="""\
       The value of the host header used in this HTTP health check request.
-      By default, this is empty and Google Compute Engine automatically sets
-      the host header in health requests to the same external IP address as
-      the forwarding rule associated with the target pool.
+      The host header is empty by default. When empty, the health check sets
+      the host header to the IP address of the backend VM or endpoint.
       """)
 
   parser.add_argument(
@@ -176,10 +175,9 @@ def AddHttpRelatedUpdateArgs(parser):
       '--host',
       help="""\
       The value of the host header used in this HTTP health check request.
-      By default, this is empty and Google Compute Engine automatically sets
-      the host header in health requests to the same external IP address as
-      the forwarding rule associated with the target pool. Setting this to
-      an empty string will clear any existing host value.
+      The host header is empty by default. When empty, the health check will set
+      the host header to the IP address of the backend VM or endpoint. You can
+      set the host header to an empty value to return to this default behavior.
       """)
 
   parser.add_argument(

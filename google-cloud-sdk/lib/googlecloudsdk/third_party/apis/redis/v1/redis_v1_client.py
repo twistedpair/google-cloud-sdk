@@ -8,17 +8,17 @@ class RedisV1(base_api.BaseApiClient):
   """Generated client library for service redis version v1."""
 
   MESSAGES_MODULE = messages
-  BASE_URL = u'https://redis.googleapis.com/'
-  MTLS_BASE_URL = u'https://redis.mtls.googleapis.com/'
+  BASE_URL = 'https://redis.googleapis.com/'
+  MTLS_BASE_URL = 'https://redis.mtls.googleapis.com/'
 
-  _PACKAGE = u'redis'
-  _SCOPES = [u'https://www.googleapis.com/auth/cloud-platform']
-  _VERSION = u'v1'
+  _PACKAGE = 'redis'
+  _SCOPES = ['https://www.googleapis.com/auth/cloud-platform']
+  _VERSION = 'v1'
   _CLIENT_ID = '1042881264118.apps.googleusercontent.com'
   _CLIENT_SECRET = 'x_Tw5K8nnjoRAqULM9PFAC2b'
-  _USER_AGENT = u'google-cloud-sdk'
-  _CLIENT_CLASS_NAME = u'RedisV1'
-  _URL_VERSION = u'v1'
+  _USER_AGENT = 'google-cloud-sdk'
+  _CLIENT_CLASS_NAME = 'RedisV1'
+  _URL_VERSION = 'v1'
   _API_KEY = None
 
   def __init__(self, url='', credentials=None,
@@ -44,7 +44,7 @@ class RedisV1(base_api.BaseApiClient):
   class ProjectsLocationsInstancesService(base_api.BaseApiService):
     """Service class for the projects_locations_instances resource."""
 
-    _NAME = u'projects_locations_instances'
+    _NAME = 'projects_locations_instances'
 
     def __init__(self, client):
       super(RedisV1.ProjectsLocationsInstancesService, self).__init__(client)
@@ -76,16 +76,16 @@ is no need to call DeleteOperation.
           config, request, global_params=global_params)
 
     Create.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/locations/{locationsId}/instances',
-        http_method=u'POST',
-        method_id=u'redis.projects.locations.instances.create',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'instanceId'],
-        relative_path=u'v1/{+parent}/instances',
-        request_field=u'instance',
-        request_type_name=u'RedisProjectsLocationsInstancesCreateRequest',
-        response_type_name=u'Operation',
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/instances',
+        http_method='POST',
+        method_id='redis.projects.locations.instances.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['instanceId'],
+        relative_path='v1/{+parent}/instances',
+        request_field='instance',
+        request_type_name='RedisProjectsLocationsInstancesCreateRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -104,16 +104,16 @@ deleted.
           config, request, global_params=global_params)
 
     Delete.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/locations/{locationsId}/instances/{instancesId}',
-        http_method=u'DELETE',
-        method_id=u'redis.projects.locations.instances.delete',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/instances/{instancesId}',
+        http_method='DELETE',
+        method_id='redis.projects.locations.instances.delete',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1/{+name}',
+        relative_path='v1/{+name}',
         request_field='',
-        request_type_name=u'RedisProjectsLocationsInstancesDeleteRequest',
-        response_type_name=u'Operation',
+        request_type_name='RedisProjectsLocationsInstancesDeleteRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -136,16 +136,16 @@ there is no need to call DeleteOperation.
           config, request, global_params=global_params)
 
     Export.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/locations/{locationsId}/instances/{instancesId}:export',
-        http_method=u'POST',
-        method_id=u'redis.projects.locations.instances.export',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/instances/{instancesId}:export',
+        http_method='POST',
+        method_id='redis.projects.locations.instances.export',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1/{+name}:export',
-        request_field=u'exportInstanceRequest',
-        request_type_name=u'RedisProjectsLocationsInstancesExportRequest',
-        response_type_name=u'Operation',
+        relative_path='v1/{+name}:export',
+        request_field='exportInstanceRequest',
+        request_type_name='RedisProjectsLocationsInstancesExportRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -164,16 +164,16 @@ specific STANDARD tier Cloud Memorystore for Redis instance.
           config, request, global_params=global_params)
 
     Failover.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/locations/{locationsId}/instances/{instancesId}:failover',
-        http_method=u'POST',
-        method_id=u'redis.projects.locations.instances.failover',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/instances/{instancesId}:failover',
+        http_method='POST',
+        method_id='redis.projects.locations.instances.failover',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1/{+name}:failover',
-        request_field=u'failoverInstanceRequest',
-        request_type_name=u'RedisProjectsLocationsInstancesFailoverRequest',
-        response_type_name=u'Operation',
+        relative_path='v1/{+name}:failover',
+        request_field='failoverInstanceRequest',
+        request_type_name='RedisProjectsLocationsInstancesFailoverRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -191,16 +191,16 @@ specific STANDARD tier Cloud Memorystore for Redis instance.
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/locations/{locationsId}/instances/{instancesId}',
-        http_method=u'GET',
-        method_id=u'redis.projects.locations.instances.get',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/instances/{instancesId}',
+        http_method='GET',
+        method_id='redis.projects.locations.instances.get',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1/{+name}',
+        relative_path='v1/{+name}',
         request_field='',
-        request_type_name=u'RedisProjectsLocationsInstancesGetRequest',
-        response_type_name=u'Instance',
+        request_type_name='RedisProjectsLocationsInstancesGetRequest',
+        response_type_name='Instance',
         supports_download=False,
     )
 
@@ -225,16 +225,16 @@ there is no need to call DeleteOperation.
           config, request, global_params=global_params)
 
     Import.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/locations/{locationsId}/instances/{instancesId}:import',
-        http_method=u'POST',
-        method_id=u'redis.projects.locations.instances.import',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/instances/{instancesId}:import',
+        http_method='POST',
+        method_id='redis.projects.locations.instances.import',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1/{+name}:import',
-        request_field=u'importInstanceRequest',
-        request_type_name=u'RedisProjectsLocationsInstancesImportRequest',
-        response_type_name=u'Operation',
+        relative_path='v1/{+name}:import',
+        request_field='importInstanceRequest',
+        request_type_name='RedisProjectsLocationsInstancesImportRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -260,16 +260,16 @@ available to the project are queried, and the results are aggregated.
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/locations/{locationsId}/instances',
-        http_method=u'GET',
-        method_id=u'redis.projects.locations.instances.list',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'pageSize', u'pageToken'],
-        relative_path=u'v1/{+parent}/instances',
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/instances',
+        http_method='GET',
+        method_id='redis.projects.locations.instances.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v1/{+parent}/instances',
         request_field='',
-        request_type_name=u'RedisProjectsLocationsInstancesListRequest',
-        response_type_name=u'ListInstancesResponse',
+        request_type_name='RedisProjectsLocationsInstancesListRequest',
+        response_type_name='ListInstancesResponse',
         supports_download=False,
     )
 
@@ -291,16 +291,16 @@ after a few hours, so there is no need to call DeleteOperation.
           config, request, global_params=global_params)
 
     Patch.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/locations/{locationsId}/instances/{instancesId}',
-        http_method=u'PATCH',
-        method_id=u'redis.projects.locations.instances.patch',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[u'updateMask'],
-        relative_path=u'v1/{+name}',
-        request_field=u'instance',
-        request_type_name=u'RedisProjectsLocationsInstancesPatchRequest',
-        response_type_name=u'Operation',
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/instances/{instancesId}',
+        http_method='PATCH',
+        method_id='redis.projects.locations.instances.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v1/{+name}',
+        request_field='instance',
+        request_type_name='RedisProjectsLocationsInstancesPatchRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -319,23 +319,23 @@ request.
           config, request, global_params=global_params)
 
     Upgrade.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/locations/{locationsId}/instances/{instancesId}:upgrade',
-        http_method=u'POST',
-        method_id=u'redis.projects.locations.instances.upgrade',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/instances/{instancesId}:upgrade',
+        http_method='POST',
+        method_id='redis.projects.locations.instances.upgrade',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1/{+name}:upgrade',
-        request_field=u'upgradeInstanceRequest',
-        request_type_name=u'RedisProjectsLocationsInstancesUpgradeRequest',
-        response_type_name=u'Operation',
+        relative_path='v1/{+name}:upgrade',
+        request_field='upgradeInstanceRequest',
+        request_type_name='RedisProjectsLocationsInstancesUpgradeRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
   class ProjectsLocationsOperationsService(base_api.BaseApiService):
     """Service class for the projects_locations_operations resource."""
 
-    _NAME = u'projects_locations_operations'
+    _NAME = 'projects_locations_operations'
 
     def __init__(self, client):
       super(RedisV1.ProjectsLocationsOperationsService, self).__init__(client)
@@ -365,16 +365,16 @@ corresponding to `Code.CANCELLED`.
           config, request, global_params=global_params)
 
     Cancel.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/locations/{locationsId}/operations/{operationsId}:cancel',
-        http_method=u'POST',
-        method_id=u'redis.projects.locations.operations.cancel',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/operations/{operationsId}:cancel',
+        http_method='POST',
+        method_id='redis.projects.locations.operations.cancel',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1/{+name}:cancel',
+        relative_path='v1/{+name}:cancel',
         request_field='',
-        request_type_name=u'RedisProjectsLocationsOperationsCancelRequest',
-        response_type_name=u'Empty',
+        request_type_name='RedisProjectsLocationsOperationsCancelRequest',
+        response_type_name='Empty',
         supports_download=False,
     )
 
@@ -395,16 +395,16 @@ operation. If the server doesn't support this method, it returns
           config, request, global_params=global_params)
 
     Delete.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/locations/{locationsId}/operations/{operationsId}',
-        http_method=u'DELETE',
-        method_id=u'redis.projects.locations.operations.delete',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/operations/{operationsId}',
+        http_method='DELETE',
+        method_id='redis.projects.locations.operations.delete',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1/{+name}',
+        relative_path='v1/{+name}',
         request_field='',
-        request_type_name=u'RedisProjectsLocationsOperationsDeleteRequest',
-        response_type_name=u'Empty',
+        request_type_name='RedisProjectsLocationsOperationsDeleteRequest',
+        response_type_name='Empty',
         supports_download=False,
     )
 
@@ -424,16 +424,16 @@ service.
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/locations/{locationsId}/operations/{operationsId}',
-        http_method=u'GET',
-        method_id=u'redis.projects.locations.operations.get',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/operations/{operationsId}',
+        http_method='GET',
+        method_id='redis.projects.locations.operations.get',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1/{+name}',
+        relative_path='v1/{+name}',
         request_field='',
-        request_type_name=u'RedisProjectsLocationsOperationsGetRequest',
-        response_type_name=u'Operation',
+        request_type_name='RedisProjectsLocationsOperationsGetRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -460,23 +460,23 @@ is the parent resource, without the operations collection id.
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/locations/{locationsId}/operations',
-        http_method=u'GET',
-        method_id=u'redis.projects.locations.operations.list',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[u'filter', u'pageSize', u'pageToken'],
-        relative_path=u'v1/{+name}/operations',
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/operations',
+        http_method='GET',
+        method_id='redis.projects.locations.operations.list',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['filter', 'pageSize', 'pageToken'],
+        relative_path='v1/{+name}/operations',
         request_field='',
-        request_type_name=u'RedisProjectsLocationsOperationsListRequest',
-        response_type_name=u'ListOperationsResponse',
+        request_type_name='RedisProjectsLocationsOperationsListRequest',
+        response_type_name='ListOperationsResponse',
         supports_download=False,
     )
 
   class ProjectsLocationsService(base_api.BaseApiService):
     """Service class for the projects_locations resource."""
 
-    _NAME = u'projects_locations'
+    _NAME = 'projects_locations'
 
     def __init__(self, client):
       super(RedisV1.ProjectsLocationsService, self).__init__(client)
@@ -497,16 +497,16 @@ is the parent resource, without the operations collection id.
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/locations/{locationsId}',
-        http_method=u'GET',
-        method_id=u'redis.projects.locations.get',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}',
+        http_method='GET',
+        method_id='redis.projects.locations.get',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1/{+name}',
+        relative_path='v1/{+name}',
         request_field='',
-        request_type_name=u'RedisProjectsLocationsGetRequest',
-        response_type_name=u'Location',
+        request_type_name='RedisProjectsLocationsGetRequest',
+        response_type_name='Location',
         supports_download=False,
     )
 
@@ -524,23 +524,23 @@ is the parent resource, without the operations collection id.
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/locations',
-        http_method=u'GET',
-        method_id=u'redis.projects.locations.list',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[u'filter', u'pageSize', u'pageToken'],
-        relative_path=u'v1/{+name}/locations',
+        flat_path='v1/projects/{projectsId}/locations',
+        http_method='GET',
+        method_id='redis.projects.locations.list',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['filter', 'pageSize', 'pageToken'],
+        relative_path='v1/{+name}/locations',
         request_field='',
-        request_type_name=u'RedisProjectsLocationsListRequest',
-        response_type_name=u'ListLocationsResponse',
+        request_type_name='RedisProjectsLocationsListRequest',
+        response_type_name='ListLocationsResponse',
         supports_download=False,
     )
 
   class ProjectsService(base_api.BaseApiService):
     """Service class for the projects resource."""
 
-    _NAME = u'projects'
+    _NAME = 'projects'
 
     def __init__(self, client):
       super(RedisV1.ProjectsService, self).__init__(client)

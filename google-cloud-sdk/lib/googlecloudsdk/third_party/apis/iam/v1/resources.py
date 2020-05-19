@@ -35,7 +35,7 @@ class Collections(enum.Enum):
       'organizations',
       'organizations/{organizationsId}',
       {},
-      [u'organizationsId'],
+      ['organizationsId'],
       True
   )
   ORGANIZATIONS_ROLES = (
@@ -45,14 +45,14 @@ class Collections(enum.Enum):
           '':
               'organizations/{organizationsId}/roles/{rolesId}',
       },
-      [u'name'],
+      ['name'],
       True
   )
   PROJECTS = (
       'projects',
       'projects/{projectsId}',
       {},
-      [u'projectsId'],
+      ['projectsId'],
       True
   )
   PROJECTS_ROLES = (
@@ -62,7 +62,7 @@ class Collections(enum.Enum):
           '':
               'projects/{projectsId}/roles/{rolesId}',
       },
-      [u'name'],
+      ['name'],
       True
   )
   PROJECTS_SERVICEACCOUNTS = (
@@ -72,7 +72,7 @@ class Collections(enum.Enum):
           '':
               'projects/{projectsId}/serviceAccounts/{serviceAccountsId}',
       },
-      [u'name'],
+      ['name'],
       True
   )
   PROJECTS_SERVICEACCOUNTS_IDENTITYBINDINGS = (
@@ -83,7 +83,7 @@ class Collections(enum.Enum):
               'projects/{projectsId}/serviceAccounts/{serviceAccountsId}/'
               'identityBindings/{identityBindingsId}',
       },
-      [u'name'],
+      ['name'],
       True
   )
   PROJECTS_SERVICEACCOUNTS_KEYS = (
@@ -94,7 +94,7 @@ class Collections(enum.Enum):
               'projects/{projectsId}/serviceAccounts/{serviceAccountsId}/'
               'keys/{keysId}',
       },
-      [u'name'],
+      ['name'],
       True
   )
   ROLES = (
@@ -104,7 +104,7 @@ class Collections(enum.Enum):
           '':
               'roles/{rolesId}',
       },
-      [u'name'],
+      ['name'],
       True
   )
 

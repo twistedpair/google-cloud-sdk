@@ -8,17 +8,17 @@ class RunV1(base_api.BaseApiClient):
   """Generated client library for service run version v1."""
 
   MESSAGES_MODULE = messages
-  BASE_URL = u'https://run.googleapis.com/'
-  MTLS_BASE_URL = u'https://run.mtls.googleapis.com/'
+  BASE_URL = 'https://run.googleapis.com/'
+  MTLS_BASE_URL = 'https://run.mtls.googleapis.com/'
 
-  _PACKAGE = u'run'
-  _SCOPES = [u'https://www.googleapis.com/auth/cloud-platform']
-  _VERSION = u'v1'
+  _PACKAGE = 'run'
+  _SCOPES = ['https://www.googleapis.com/auth/cloud-platform']
+  _VERSION = 'v1'
   _CLIENT_ID = '1042881264118.apps.googleusercontent.com'
   _CLIENT_SECRET = 'x_Tw5K8nnjoRAqULM9PFAC2b'
-  _USER_AGENT = u'google-cloud-sdk'
-  _CLIENT_CLASS_NAME = u'RunV1'
-  _URL_VERSION = u'v1'
+  _USER_AGENT = 'google-cloud-sdk'
+  _CLIENT_CLASS_NAME = 'RunV1'
+  _URL_VERSION = 'v1'
   _API_KEY = None
 
   def __init__(self, url='', credentials=None,
@@ -61,7 +61,7 @@ class RunV1(base_api.BaseApiClient):
   class ApiV1NamespacesSecretsService(base_api.BaseApiService):
     """Service class for the api_v1_namespaces_secrets resource."""
 
-    _NAME = u'api_v1_namespaces_secrets'
+    _NAME = 'api_v1_namespaces_secrets'
 
     def __init__(self, client):
       super(RunV1.ApiV1NamespacesSecretsService, self).__init__(client)
@@ -82,16 +82,16 @@ class RunV1(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Create.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'api/v1/namespaces/{namespacesId}/secrets',
-        http_method=u'POST',
-        method_id=u'run.api.v1.namespaces.secrets.create',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
+        flat_path='api/v1/namespaces/{namespacesId}/secrets',
+        http_method='POST',
+        method_id='run.api.v1.namespaces.secrets.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
         query_params=[],
-        relative_path=u'api/v1/{+parent}/secrets',
-        request_field=u'secret',
-        request_type_name=u'RunApiV1NamespacesSecretsCreateRequest',
-        response_type_name=u'Secret',
+        relative_path='api/v1/{+parent}/secrets',
+        request_field='secret',
+        request_type_name='RunApiV1NamespacesSecretsCreateRequest',
+        response_type_name='Secret',
         supports_download=False,
     )
 
@@ -109,16 +109,16 @@ class RunV1(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'api/v1/namespaces/{namespacesId}/secrets/{secretsId}',
-        http_method=u'GET',
-        method_id=u'run.api.v1.namespaces.secrets.get',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='api/v1/namespaces/{namespacesId}/secrets/{secretsId}',
+        http_method='GET',
+        method_id='run.api.v1.namespaces.secrets.get',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'api/v1/{+name}',
+        relative_path='api/v1/{+name}',
         request_field='',
-        request_type_name=u'RunApiV1NamespacesSecretsGetRequest',
-        response_type_name=u'Secret',
+        request_type_name='RunApiV1NamespacesSecretsGetRequest',
+        response_type_name='Secret',
         supports_download=False,
     )
 
@@ -143,23 +143,23 @@ optimistic concurrency control.
           config, request, global_params=global_params)
 
     ReplaceSecret.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'api/v1/namespaces/{namespacesId}/secrets/{secretsId}',
-        http_method=u'PUT',
-        method_id=u'run.api.v1.namespaces.secrets.replaceSecret',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='api/v1/namespaces/{namespacesId}/secrets/{secretsId}',
+        http_method='PUT',
+        method_id='run.api.v1.namespaces.secrets.replaceSecret',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'api/v1/{+name}',
-        request_field=u'secret',
-        request_type_name=u'RunApiV1NamespacesSecretsReplaceSecretRequest',
-        response_type_name=u'Secret',
+        relative_path='api/v1/{+name}',
+        request_field='secret',
+        request_type_name='RunApiV1NamespacesSecretsReplaceSecretRequest',
+        response_type_name='Secret',
         supports_download=False,
     )
 
   class ApiV1NamespacesService(base_api.BaseApiService):
     """Service class for the api_v1_namespaces resource."""
 
-    _NAME = u'api_v1_namespaces'
+    _NAME = 'api_v1_namespaces'
 
     def __init__(self, client):
       super(RunV1.ApiV1NamespacesService, self).__init__(client)
@@ -180,16 +180,16 @@ optimistic concurrency control.
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'api/v1/namespaces/{namespacesId}',
-        http_method=u'GET',
-        method_id=u'run.api.v1.namespaces.get',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='api/v1/namespaces/{namespacesId}',
+        http_method='GET',
+        method_id='run.api.v1.namespaces.get',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'api/v1/{+name}',
+        relative_path='api/v1/{+name}',
         request_field='',
-        request_type_name=u'RunApiV1NamespacesGetRequest',
-        response_type_name=u'Namespace',
+        request_type_name='RunApiV1NamespacesGetRequest',
+        response_type_name='Namespace',
         supports_download=False,
     )
 
@@ -207,23 +207,23 @@ optimistic concurrency control.
           config, request, global_params=global_params)
 
     Patch.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'api/v1/namespaces/{namespacesId}',
-        http_method=u'PATCH',
-        method_id=u'run.api.v1.namespaces.patch',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[u'updateMask'],
-        relative_path=u'api/v1/{+name}',
-        request_field=u'namespace',
-        request_type_name=u'RunApiV1NamespacesPatchRequest',
-        response_type_name=u'Namespace',
+        flat_path='api/v1/namespaces/{namespacesId}',
+        http_method='PATCH',
+        method_id='run.api.v1.namespaces.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='api/v1/{+name}',
+        request_field='namespace',
+        request_type_name='RunApiV1NamespacesPatchRequest',
+        response_type_name='Namespace',
         supports_download=False,
     )
 
   class ApiV1Service(base_api.BaseApiService):
     """Service class for the api_v1 resource."""
 
-    _NAME = u'api_v1'
+    _NAME = 'api_v1'
 
     def __init__(self, client):
       super(RunV1.ApiV1Service, self).__init__(client)
@@ -233,7 +233,7 @@ optimistic concurrency control.
   class ApiService(base_api.BaseApiService):
     """Service class for the api resource."""
 
-    _NAME = u'api'
+    _NAME = 'api'
 
     def __init__(self, client):
       super(RunV1.ApiService, self).__init__(client)
@@ -243,7 +243,7 @@ optimistic concurrency control.
   class NamespacesAuthorizeddomainsService(base_api.BaseApiService):
     """Service class for the namespaces_authorizeddomains resource."""
 
-    _NAME = u'namespaces_authorizeddomains'
+    _NAME = 'namespaces_authorizeddomains'
 
     def __init__(self, client):
       super(RunV1.NamespacesAuthorizeddomainsService, self).__init__(client)
@@ -264,23 +264,23 @@ optimistic concurrency control.
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'apis/domains.cloudrun.com/v1/namespaces/{namespacesId}/authorizeddomains',
-        http_method=u'GET',
-        method_id=u'run.namespaces.authorizeddomains.list',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'pageSize', u'pageToken'],
-        relative_path=u'apis/domains.cloudrun.com/v1/{+parent}/authorizeddomains',
+        flat_path='apis/domains.cloudrun.com/v1/namespaces/{namespacesId}/authorizeddomains',
+        http_method='GET',
+        method_id='run.namespaces.authorizeddomains.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='apis/domains.cloudrun.com/v1/{+parent}/authorizeddomains',
         request_field='',
-        request_type_name=u'RunNamespacesAuthorizeddomainsListRequest',
-        response_type_name=u'ListAuthorizedDomainsResponse',
+        request_type_name='RunNamespacesAuthorizeddomainsListRequest',
+        response_type_name='ListAuthorizedDomainsResponse',
         supports_download=False,
     )
 
   class NamespacesConfigurationsService(base_api.BaseApiService):
     """Service class for the namespaces_configurations resource."""
 
-    _NAME = u'namespaces_configurations'
+    _NAME = 'namespaces_configurations'
 
     def __init__(self, client):
       super(RunV1.NamespacesConfigurationsService, self).__init__(client)
@@ -301,16 +301,16 @@ optimistic concurrency control.
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'apis/serving.knative.dev/v1/namespaces/{namespacesId}/configurations/{configurationsId}',
-        http_method=u'GET',
-        method_id=u'run.namespaces.configurations.get',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='apis/serving.knative.dev/v1/namespaces/{namespacesId}/configurations/{configurationsId}',
+        http_method='GET',
+        method_id='run.namespaces.configurations.get',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'apis/serving.knative.dev/v1/{+name}',
+        relative_path='apis/serving.knative.dev/v1/{+name}',
         request_field='',
-        request_type_name=u'RunNamespacesConfigurationsGetRequest',
-        response_type_name=u'Configuration',
+        request_type_name='RunNamespacesConfigurationsGetRequest',
+        response_type_name='Configuration',
         supports_download=False,
     )
 
@@ -328,23 +328,23 @@ optimistic concurrency control.
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'apis/serving.knative.dev/v1/namespaces/{namespacesId}/configurations',
-        http_method=u'GET',
-        method_id=u'run.namespaces.configurations.list',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'continue_', u'fieldSelector', u'includeUninitialized', u'labelSelector', u'limit', u'resourceVersion', u'watch'],
-        relative_path=u'apis/serving.knative.dev/v1/{+parent}/configurations',
+        flat_path='apis/serving.knative.dev/v1/namespaces/{namespacesId}/configurations',
+        http_method='GET',
+        method_id='run.namespaces.configurations.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['continue_', 'fieldSelector', 'includeUninitialized', 'labelSelector', 'limit', 'resourceVersion', 'watch'],
+        relative_path='apis/serving.knative.dev/v1/{+parent}/configurations',
         request_field='',
-        request_type_name=u'RunNamespacesConfigurationsListRequest',
-        response_type_name=u'ListConfigurationsResponse',
+        request_type_name='RunNamespacesConfigurationsListRequest',
+        response_type_name='ListConfigurationsResponse',
         supports_download=False,
     )
 
   class NamespacesDomainmappingsService(base_api.BaseApiService):
     """Service class for the namespaces_domainmappings resource."""
 
-    _NAME = u'namespaces_domainmappings'
+    _NAME = 'namespaces_domainmappings'
 
     def __init__(self, client):
       super(RunV1.NamespacesDomainmappingsService, self).__init__(client)
@@ -365,16 +365,16 @@ optimistic concurrency control.
           config, request, global_params=global_params)
 
     Create.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'apis/domains.cloudrun.com/v1/namespaces/{namespacesId}/domainmappings',
-        http_method=u'POST',
-        method_id=u'run.namespaces.domainmappings.create',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
+        flat_path='apis/domains.cloudrun.com/v1/namespaces/{namespacesId}/domainmappings',
+        http_method='POST',
+        method_id='run.namespaces.domainmappings.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
         query_params=[],
-        relative_path=u'apis/domains.cloudrun.com/v1/{+parent}/domainmappings',
-        request_field=u'domainMapping',
-        request_type_name=u'RunNamespacesDomainmappingsCreateRequest',
-        response_type_name=u'DomainMapping',
+        relative_path='apis/domains.cloudrun.com/v1/{+parent}/domainmappings',
+        request_field='domainMapping',
+        request_type_name='RunNamespacesDomainmappingsCreateRequest',
+        response_type_name='DomainMapping',
         supports_download=False,
     )
 
@@ -392,16 +392,16 @@ optimistic concurrency control.
           config, request, global_params=global_params)
 
     Delete.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'apis/domains.cloudrun.com/v1/namespaces/{namespacesId}/domainmappings/{domainmappingsId}',
-        http_method=u'DELETE',
-        method_id=u'run.namespaces.domainmappings.delete',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[u'apiVersion', u'kind', u'propagationPolicy'],
-        relative_path=u'apis/domains.cloudrun.com/v1/{+name}',
+        flat_path='apis/domains.cloudrun.com/v1/namespaces/{namespacesId}/domainmappings/{domainmappingsId}',
+        http_method='DELETE',
+        method_id='run.namespaces.domainmappings.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['apiVersion', 'kind', 'propagationPolicy'],
+        relative_path='apis/domains.cloudrun.com/v1/{+name}',
         request_field='',
-        request_type_name=u'RunNamespacesDomainmappingsDeleteRequest',
-        response_type_name=u'Status',
+        request_type_name='RunNamespacesDomainmappingsDeleteRequest',
+        response_type_name='Status',
         supports_download=False,
     )
 
@@ -419,16 +419,16 @@ optimistic concurrency control.
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'apis/domains.cloudrun.com/v1/namespaces/{namespacesId}/domainmappings/{domainmappingsId}',
-        http_method=u'GET',
-        method_id=u'run.namespaces.domainmappings.get',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='apis/domains.cloudrun.com/v1/namespaces/{namespacesId}/domainmappings/{domainmappingsId}',
+        http_method='GET',
+        method_id='run.namespaces.domainmappings.get',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'apis/domains.cloudrun.com/v1/{+name}',
+        relative_path='apis/domains.cloudrun.com/v1/{+name}',
         request_field='',
-        request_type_name=u'RunNamespacesDomainmappingsGetRequest',
-        response_type_name=u'DomainMapping',
+        request_type_name='RunNamespacesDomainmappingsGetRequest',
+        response_type_name='DomainMapping',
         supports_download=False,
     )
 
@@ -446,23 +446,23 @@ optimistic concurrency control.
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'apis/domains.cloudrun.com/v1/namespaces/{namespacesId}/domainmappings',
-        http_method=u'GET',
-        method_id=u'run.namespaces.domainmappings.list',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'continue_', u'fieldSelector', u'includeUninitialized', u'labelSelector', u'limit', u'resourceVersion', u'watch'],
-        relative_path=u'apis/domains.cloudrun.com/v1/{+parent}/domainmappings',
+        flat_path='apis/domains.cloudrun.com/v1/namespaces/{namespacesId}/domainmappings',
+        http_method='GET',
+        method_id='run.namespaces.domainmappings.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['continue_', 'fieldSelector', 'includeUninitialized', 'labelSelector', 'limit', 'resourceVersion', 'watch'],
+        relative_path='apis/domains.cloudrun.com/v1/{+parent}/domainmappings',
         request_field='',
-        request_type_name=u'RunNamespacesDomainmappingsListRequest',
-        response_type_name=u'ListDomainMappingsResponse',
+        request_type_name='RunNamespacesDomainmappingsListRequest',
+        response_type_name='ListDomainMappingsResponse',
         supports_download=False,
     )
 
   class NamespacesRevisionsService(base_api.BaseApiService):
     """Service class for the namespaces_revisions resource."""
 
-    _NAME = u'namespaces_revisions'
+    _NAME = 'namespaces_revisions'
 
     def __init__(self, client):
       super(RunV1.NamespacesRevisionsService, self).__init__(client)
@@ -483,16 +483,16 @@ optimistic concurrency control.
           config, request, global_params=global_params)
 
     Delete.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'apis/serving.knative.dev/v1/namespaces/{namespacesId}/revisions/{revisionsId}',
-        http_method=u'DELETE',
-        method_id=u'run.namespaces.revisions.delete',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[u'apiVersion', u'kind', u'propagationPolicy'],
-        relative_path=u'apis/serving.knative.dev/v1/{+name}',
+        flat_path='apis/serving.knative.dev/v1/namespaces/{namespacesId}/revisions/{revisionsId}',
+        http_method='DELETE',
+        method_id='run.namespaces.revisions.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['apiVersion', 'kind', 'propagationPolicy'],
+        relative_path='apis/serving.knative.dev/v1/{+name}',
         request_field='',
-        request_type_name=u'RunNamespacesRevisionsDeleteRequest',
-        response_type_name=u'Status',
+        request_type_name='RunNamespacesRevisionsDeleteRequest',
+        response_type_name='Status',
         supports_download=False,
     )
 
@@ -510,16 +510,16 @@ optimistic concurrency control.
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'apis/serving.knative.dev/v1/namespaces/{namespacesId}/revisions/{revisionsId}',
-        http_method=u'GET',
-        method_id=u'run.namespaces.revisions.get',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='apis/serving.knative.dev/v1/namespaces/{namespacesId}/revisions/{revisionsId}',
+        http_method='GET',
+        method_id='run.namespaces.revisions.get',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'apis/serving.knative.dev/v1/{+name}',
+        relative_path='apis/serving.knative.dev/v1/{+name}',
         request_field='',
-        request_type_name=u'RunNamespacesRevisionsGetRequest',
-        response_type_name=u'Revision',
+        request_type_name='RunNamespacesRevisionsGetRequest',
+        response_type_name='Revision',
         supports_download=False,
     )
 
@@ -537,23 +537,23 @@ optimistic concurrency control.
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'apis/serving.knative.dev/v1/namespaces/{namespacesId}/revisions',
-        http_method=u'GET',
-        method_id=u'run.namespaces.revisions.list',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'continue_', u'fieldSelector', u'includeUninitialized', u'labelSelector', u'limit', u'resourceVersion', u'watch'],
-        relative_path=u'apis/serving.knative.dev/v1/{+parent}/revisions',
+        flat_path='apis/serving.knative.dev/v1/namespaces/{namespacesId}/revisions',
+        http_method='GET',
+        method_id='run.namespaces.revisions.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['continue_', 'fieldSelector', 'includeUninitialized', 'labelSelector', 'limit', 'resourceVersion', 'watch'],
+        relative_path='apis/serving.knative.dev/v1/{+parent}/revisions',
         request_field='',
-        request_type_name=u'RunNamespacesRevisionsListRequest',
-        response_type_name=u'ListRevisionsResponse',
+        request_type_name='RunNamespacesRevisionsListRequest',
+        response_type_name='ListRevisionsResponse',
         supports_download=False,
     )
 
   class NamespacesRoutesService(base_api.BaseApiService):
     """Service class for the namespaces_routes resource."""
 
-    _NAME = u'namespaces_routes'
+    _NAME = 'namespaces_routes'
 
     def __init__(self, client):
       super(RunV1.NamespacesRoutesService, self).__init__(client)
@@ -574,16 +574,16 @@ optimistic concurrency control.
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'apis/serving.knative.dev/v1/namespaces/{namespacesId}/routes/{routesId}',
-        http_method=u'GET',
-        method_id=u'run.namespaces.routes.get',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='apis/serving.knative.dev/v1/namespaces/{namespacesId}/routes/{routesId}',
+        http_method='GET',
+        method_id='run.namespaces.routes.get',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'apis/serving.knative.dev/v1/{+name}',
+        relative_path='apis/serving.knative.dev/v1/{+name}',
         request_field='',
-        request_type_name=u'RunNamespacesRoutesGetRequest',
-        response_type_name=u'Route',
+        request_type_name='RunNamespacesRoutesGetRequest',
+        response_type_name='Route',
         supports_download=False,
     )
 
@@ -601,23 +601,23 @@ optimistic concurrency control.
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'apis/serving.knative.dev/v1/namespaces/{namespacesId}/routes',
-        http_method=u'GET',
-        method_id=u'run.namespaces.routes.list',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'continue_', u'fieldSelector', u'includeUninitialized', u'labelSelector', u'limit', u'resourceVersion', u'watch'],
-        relative_path=u'apis/serving.knative.dev/v1/{+parent}/routes',
+        flat_path='apis/serving.knative.dev/v1/namespaces/{namespacesId}/routes',
+        http_method='GET',
+        method_id='run.namespaces.routes.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['continue_', 'fieldSelector', 'includeUninitialized', 'labelSelector', 'limit', 'resourceVersion', 'watch'],
+        relative_path='apis/serving.knative.dev/v1/{+parent}/routes',
         request_field='',
-        request_type_name=u'RunNamespacesRoutesListRequest',
-        response_type_name=u'ListRoutesResponse',
+        request_type_name='RunNamespacesRoutesListRequest',
+        response_type_name='ListRoutesResponse',
         supports_download=False,
     )
 
   class NamespacesServicesService(base_api.BaseApiService):
     """Service class for the namespaces_services resource."""
 
-    _NAME = u'namespaces_services'
+    _NAME = 'namespaces_services'
 
     def __init__(self, client):
       super(RunV1.NamespacesServicesService, self).__init__(client)
@@ -638,16 +638,16 @@ optimistic concurrency control.
           config, request, global_params=global_params)
 
     Create.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'apis/serving.knative.dev/v1/namespaces/{namespacesId}/services',
-        http_method=u'POST',
-        method_id=u'run.namespaces.services.create',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
+        flat_path='apis/serving.knative.dev/v1/namespaces/{namespacesId}/services',
+        http_method='POST',
+        method_id='run.namespaces.services.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
         query_params=[],
-        relative_path=u'apis/serving.knative.dev/v1/{+parent}/services',
-        request_field=u'service',
-        request_type_name=u'RunNamespacesServicesCreateRequest',
-        response_type_name=u'Service',
+        relative_path='apis/serving.knative.dev/v1/{+parent}/services',
+        request_field='service',
+        request_type_name='RunNamespacesServicesCreateRequest',
+        response_type_name='Service',
         supports_download=False,
     )
 
@@ -667,16 +667,16 @@ child entities like Routes, Configurations and Revisions.
           config, request, global_params=global_params)
 
     Delete.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'apis/serving.knative.dev/v1/namespaces/{namespacesId}/services/{servicesId}',
-        http_method=u'DELETE',
-        method_id=u'run.namespaces.services.delete',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[u'apiVersion', u'kind', u'propagationPolicy'],
-        relative_path=u'apis/serving.knative.dev/v1/{+name}',
+        flat_path='apis/serving.knative.dev/v1/namespaces/{namespacesId}/services/{servicesId}',
+        http_method='DELETE',
+        method_id='run.namespaces.services.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['apiVersion', 'kind', 'propagationPolicy'],
+        relative_path='apis/serving.knative.dev/v1/{+name}',
         request_field='',
-        request_type_name=u'RunNamespacesServicesDeleteRequest',
-        response_type_name=u'Status',
+        request_type_name='RunNamespacesServicesDeleteRequest',
+        response_type_name='Status',
         supports_download=False,
     )
 
@@ -694,16 +694,16 @@ child entities like Routes, Configurations and Revisions.
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'apis/serving.knative.dev/v1/namespaces/{namespacesId}/services/{servicesId}',
-        http_method=u'GET',
-        method_id=u'run.namespaces.services.get',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='apis/serving.knative.dev/v1/namespaces/{namespacesId}/services/{servicesId}',
+        http_method='GET',
+        method_id='run.namespaces.services.get',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'apis/serving.knative.dev/v1/{+name}',
+        relative_path='apis/serving.knative.dev/v1/{+name}',
         request_field='',
-        request_type_name=u'RunNamespacesServicesGetRequest',
-        response_type_name=u'Service',
+        request_type_name='RunNamespacesServicesGetRequest',
+        response_type_name='Service',
         supports_download=False,
     )
 
@@ -721,16 +721,16 @@ child entities like Routes, Configurations and Revisions.
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'apis/serving.knative.dev/v1/namespaces/{namespacesId}/services',
-        http_method=u'GET',
-        method_id=u'run.namespaces.services.list',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'continue_', u'fieldSelector', u'includeUninitialized', u'labelSelector', u'limit', u'resourceVersion', u'watch'],
-        relative_path=u'apis/serving.knative.dev/v1/{+parent}/services',
+        flat_path='apis/serving.knative.dev/v1/namespaces/{namespacesId}/services',
+        http_method='GET',
+        method_id='run.namespaces.services.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['continue_', 'fieldSelector', 'includeUninitialized', 'labelSelector', 'limit', 'resourceVersion', 'watch'],
+        relative_path='apis/serving.knative.dev/v1/{+parent}/services',
         request_field='',
-        request_type_name=u'RunNamespacesServicesListRequest',
-        response_type_name=u'ListServicesResponse',
+        request_type_name='RunNamespacesServicesListRequest',
+        response_type_name='ListServicesResponse',
         supports_download=False,
     )
 
@@ -755,23 +755,23 @@ optimistic concurrency control.
           config, request, global_params=global_params)
 
     ReplaceService.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'apis/serving.knative.dev/v1/namespaces/{namespacesId}/services/{servicesId}',
-        http_method=u'PUT',
-        method_id=u'run.namespaces.services.replaceService',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='apis/serving.knative.dev/v1/namespaces/{namespacesId}/services/{servicesId}',
+        http_method='PUT',
+        method_id='run.namespaces.services.replaceService',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'apis/serving.knative.dev/v1/{+name}',
-        request_field=u'service',
-        request_type_name=u'RunNamespacesServicesReplaceServiceRequest',
-        response_type_name=u'Service',
+        relative_path='apis/serving.knative.dev/v1/{+name}',
+        request_field='service',
+        request_type_name='RunNamespacesServicesReplaceServiceRequest',
+        response_type_name='Service',
         supports_download=False,
     )
 
   class NamespacesService(base_api.BaseApiService):
     """Service class for the namespaces resource."""
 
-    _NAME = u'namespaces'
+    _NAME = 'namespaces'
 
     def __init__(self, client):
       super(RunV1.NamespacesService, self).__init__(client)
@@ -781,7 +781,7 @@ optimistic concurrency control.
   class ProjectsLocationsAuthorizeddomainsService(base_api.BaseApiService):
     """Service class for the projects_locations_authorizeddomains resource."""
 
-    _NAME = u'projects_locations_authorizeddomains'
+    _NAME = 'projects_locations_authorizeddomains'
 
     def __init__(self, client):
       super(RunV1.ProjectsLocationsAuthorizeddomainsService, self).__init__(client)
@@ -802,23 +802,23 @@ optimistic concurrency control.
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/locations/{locationsId}/authorizeddomains',
-        http_method=u'GET',
-        method_id=u'run.projects.locations.authorizeddomains.list',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'pageSize', u'pageToken'],
-        relative_path=u'v1/{+parent}/authorizeddomains',
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/authorizeddomains',
+        http_method='GET',
+        method_id='run.projects.locations.authorizeddomains.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v1/{+parent}/authorizeddomains',
         request_field='',
-        request_type_name=u'RunProjectsLocationsAuthorizeddomainsListRequest',
-        response_type_name=u'ListAuthorizedDomainsResponse',
+        request_type_name='RunProjectsLocationsAuthorizeddomainsListRequest',
+        response_type_name='ListAuthorizedDomainsResponse',
         supports_download=False,
     )
 
   class ProjectsLocationsConfigurationsService(base_api.BaseApiService):
     """Service class for the projects_locations_configurations resource."""
 
-    _NAME = u'projects_locations_configurations'
+    _NAME = 'projects_locations_configurations'
 
     def __init__(self, client):
       super(RunV1.ProjectsLocationsConfigurationsService, self).__init__(client)
@@ -839,16 +839,16 @@ optimistic concurrency control.
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/locations/{locationsId}/configurations/{configurationsId}',
-        http_method=u'GET',
-        method_id=u'run.projects.locations.configurations.get',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/configurations/{configurationsId}',
+        http_method='GET',
+        method_id='run.projects.locations.configurations.get',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1/{+name}',
+        relative_path='v1/{+name}',
         request_field='',
-        request_type_name=u'RunProjectsLocationsConfigurationsGetRequest',
-        response_type_name=u'Configuration',
+        request_type_name='RunProjectsLocationsConfigurationsGetRequest',
+        response_type_name='Configuration',
         supports_download=False,
     )
 
@@ -866,23 +866,23 @@ optimistic concurrency control.
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/locations/{locationsId}/configurations',
-        http_method=u'GET',
-        method_id=u'run.projects.locations.configurations.list',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'continue_', u'fieldSelector', u'includeUninitialized', u'labelSelector', u'limit', u'resourceVersion', u'watch'],
-        relative_path=u'v1/{+parent}/configurations',
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/configurations',
+        http_method='GET',
+        method_id='run.projects.locations.configurations.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['continue_', 'fieldSelector', 'includeUninitialized', 'labelSelector', 'limit', 'resourceVersion', 'watch'],
+        relative_path='v1/{+parent}/configurations',
         request_field='',
-        request_type_name=u'RunProjectsLocationsConfigurationsListRequest',
-        response_type_name=u'ListConfigurationsResponse',
+        request_type_name='RunProjectsLocationsConfigurationsListRequest',
+        response_type_name='ListConfigurationsResponse',
         supports_download=False,
     )
 
   class ProjectsLocationsDomainmappingsService(base_api.BaseApiService):
     """Service class for the projects_locations_domainmappings resource."""
 
-    _NAME = u'projects_locations_domainmappings'
+    _NAME = 'projects_locations_domainmappings'
 
     def __init__(self, client):
       super(RunV1.ProjectsLocationsDomainmappingsService, self).__init__(client)
@@ -903,16 +903,16 @@ optimistic concurrency control.
           config, request, global_params=global_params)
 
     Create.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/locations/{locationsId}/domainmappings',
-        http_method=u'POST',
-        method_id=u'run.projects.locations.domainmappings.create',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/domainmappings',
+        http_method='POST',
+        method_id='run.projects.locations.domainmappings.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
         query_params=[],
-        relative_path=u'v1/{+parent}/domainmappings',
-        request_field=u'domainMapping',
-        request_type_name=u'RunProjectsLocationsDomainmappingsCreateRequest',
-        response_type_name=u'DomainMapping',
+        relative_path='v1/{+parent}/domainmappings',
+        request_field='domainMapping',
+        request_type_name='RunProjectsLocationsDomainmappingsCreateRequest',
+        response_type_name='DomainMapping',
         supports_download=False,
     )
 
@@ -930,16 +930,16 @@ optimistic concurrency control.
           config, request, global_params=global_params)
 
     Delete.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/locations/{locationsId}/domainmappings/{domainmappingsId}',
-        http_method=u'DELETE',
-        method_id=u'run.projects.locations.domainmappings.delete',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[u'apiVersion', u'kind', u'propagationPolicy'],
-        relative_path=u'v1/{+name}',
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/domainmappings/{domainmappingsId}',
+        http_method='DELETE',
+        method_id='run.projects.locations.domainmappings.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['apiVersion', 'kind', 'propagationPolicy'],
+        relative_path='v1/{+name}',
         request_field='',
-        request_type_name=u'RunProjectsLocationsDomainmappingsDeleteRequest',
-        response_type_name=u'Status',
+        request_type_name='RunProjectsLocationsDomainmappingsDeleteRequest',
+        response_type_name='Status',
         supports_download=False,
     )
 
@@ -957,16 +957,16 @@ optimistic concurrency control.
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/locations/{locationsId}/domainmappings/{domainmappingsId}',
-        http_method=u'GET',
-        method_id=u'run.projects.locations.domainmappings.get',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/domainmappings/{domainmappingsId}',
+        http_method='GET',
+        method_id='run.projects.locations.domainmappings.get',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1/{+name}',
+        relative_path='v1/{+name}',
         request_field='',
-        request_type_name=u'RunProjectsLocationsDomainmappingsGetRequest',
-        response_type_name=u'DomainMapping',
+        request_type_name='RunProjectsLocationsDomainmappingsGetRequest',
+        response_type_name='DomainMapping',
         supports_download=False,
     )
 
@@ -984,23 +984,23 @@ optimistic concurrency control.
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/locations/{locationsId}/domainmappings',
-        http_method=u'GET',
-        method_id=u'run.projects.locations.domainmappings.list',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'continue_', u'fieldSelector', u'includeUninitialized', u'labelSelector', u'limit', u'resourceVersion', u'watch'],
-        relative_path=u'v1/{+parent}/domainmappings',
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/domainmappings',
+        http_method='GET',
+        method_id='run.projects.locations.domainmappings.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['continue_', 'fieldSelector', 'includeUninitialized', 'labelSelector', 'limit', 'resourceVersion', 'watch'],
+        relative_path='v1/{+parent}/domainmappings',
         request_field='',
-        request_type_name=u'RunProjectsLocationsDomainmappingsListRequest',
-        response_type_name=u'ListDomainMappingsResponse',
+        request_type_name='RunProjectsLocationsDomainmappingsListRequest',
+        response_type_name='ListDomainMappingsResponse',
         supports_download=False,
     )
 
   class ProjectsLocationsNamespacesService(base_api.BaseApiService):
     """Service class for the projects_locations_namespaces resource."""
 
-    _NAME = u'projects_locations_namespaces'
+    _NAME = 'projects_locations_namespaces'
 
     def __init__(self, client):
       super(RunV1.ProjectsLocationsNamespacesService, self).__init__(client)
@@ -1021,16 +1021,16 @@ optimistic concurrency control.
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/locations/{locationsId}/namespaces/{namespacesId}',
-        http_method=u'GET',
-        method_id=u'run.projects.locations.namespaces.get',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/namespaces/{namespacesId}',
+        http_method='GET',
+        method_id='run.projects.locations.namespaces.get',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1/{+name}',
+        relative_path='v1/{+name}',
         request_field='',
-        request_type_name=u'RunProjectsLocationsNamespacesGetRequest',
-        response_type_name=u'Namespace',
+        request_type_name='RunProjectsLocationsNamespacesGetRequest',
+        response_type_name='Namespace',
         supports_download=False,
     )
 
@@ -1048,23 +1048,23 @@ optimistic concurrency control.
           config, request, global_params=global_params)
 
     Patch.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/locations/{locationsId}/namespaces/{namespacesId}',
-        http_method=u'PATCH',
-        method_id=u'run.projects.locations.namespaces.patch',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[u'updateMask'],
-        relative_path=u'v1/{+name}',
-        request_field=u'namespace',
-        request_type_name=u'RunProjectsLocationsNamespacesPatchRequest',
-        response_type_name=u'Namespace',
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/namespaces/{namespacesId}',
+        http_method='PATCH',
+        method_id='run.projects.locations.namespaces.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v1/{+name}',
+        request_field='namespace',
+        request_type_name='RunProjectsLocationsNamespacesPatchRequest',
+        response_type_name='Namespace',
         supports_download=False,
     )
 
   class ProjectsLocationsRevisionsService(base_api.BaseApiService):
     """Service class for the projects_locations_revisions resource."""
 
-    _NAME = u'projects_locations_revisions'
+    _NAME = 'projects_locations_revisions'
 
     def __init__(self, client):
       super(RunV1.ProjectsLocationsRevisionsService, self).__init__(client)
@@ -1085,16 +1085,16 @@ optimistic concurrency control.
           config, request, global_params=global_params)
 
     Delete.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/locations/{locationsId}/revisions/{revisionsId}',
-        http_method=u'DELETE',
-        method_id=u'run.projects.locations.revisions.delete',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[u'apiVersion', u'kind', u'propagationPolicy'],
-        relative_path=u'v1/{+name}',
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/revisions/{revisionsId}',
+        http_method='DELETE',
+        method_id='run.projects.locations.revisions.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['apiVersion', 'kind', 'propagationPolicy'],
+        relative_path='v1/{+name}',
         request_field='',
-        request_type_name=u'RunProjectsLocationsRevisionsDeleteRequest',
-        response_type_name=u'Status',
+        request_type_name='RunProjectsLocationsRevisionsDeleteRequest',
+        response_type_name='Status',
         supports_download=False,
     )
 
@@ -1112,16 +1112,16 @@ optimistic concurrency control.
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/locations/{locationsId}/revisions/{revisionsId}',
-        http_method=u'GET',
-        method_id=u'run.projects.locations.revisions.get',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/revisions/{revisionsId}',
+        http_method='GET',
+        method_id='run.projects.locations.revisions.get',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1/{+name}',
+        relative_path='v1/{+name}',
         request_field='',
-        request_type_name=u'RunProjectsLocationsRevisionsGetRequest',
-        response_type_name=u'Revision',
+        request_type_name='RunProjectsLocationsRevisionsGetRequest',
+        response_type_name='Revision',
         supports_download=False,
     )
 
@@ -1139,23 +1139,23 @@ optimistic concurrency control.
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/locations/{locationsId}/revisions',
-        http_method=u'GET',
-        method_id=u'run.projects.locations.revisions.list',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'continue_', u'fieldSelector', u'includeUninitialized', u'labelSelector', u'limit', u'resourceVersion', u'watch'],
-        relative_path=u'v1/{+parent}/revisions',
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/revisions',
+        http_method='GET',
+        method_id='run.projects.locations.revisions.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['continue_', 'fieldSelector', 'includeUninitialized', 'labelSelector', 'limit', 'resourceVersion', 'watch'],
+        relative_path='v1/{+parent}/revisions',
         request_field='',
-        request_type_name=u'RunProjectsLocationsRevisionsListRequest',
-        response_type_name=u'ListRevisionsResponse',
+        request_type_name='RunProjectsLocationsRevisionsListRequest',
+        response_type_name='ListRevisionsResponse',
         supports_download=False,
     )
 
   class ProjectsLocationsRoutesService(base_api.BaseApiService):
     """Service class for the projects_locations_routes resource."""
 
-    _NAME = u'projects_locations_routes'
+    _NAME = 'projects_locations_routes'
 
     def __init__(self, client):
       super(RunV1.ProjectsLocationsRoutesService, self).__init__(client)
@@ -1176,16 +1176,16 @@ optimistic concurrency control.
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/locations/{locationsId}/routes/{routesId}',
-        http_method=u'GET',
-        method_id=u'run.projects.locations.routes.get',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/routes/{routesId}',
+        http_method='GET',
+        method_id='run.projects.locations.routes.get',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1/{+name}',
+        relative_path='v1/{+name}',
         request_field='',
-        request_type_name=u'RunProjectsLocationsRoutesGetRequest',
-        response_type_name=u'Route',
+        request_type_name='RunProjectsLocationsRoutesGetRequest',
+        response_type_name='Route',
         supports_download=False,
     )
 
@@ -1203,23 +1203,23 @@ optimistic concurrency control.
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/locations/{locationsId}/routes',
-        http_method=u'GET',
-        method_id=u'run.projects.locations.routes.list',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'continue_', u'fieldSelector', u'includeUninitialized', u'labelSelector', u'limit', u'resourceVersion', u'watch'],
-        relative_path=u'v1/{+parent}/routes',
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/routes',
+        http_method='GET',
+        method_id='run.projects.locations.routes.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['continue_', 'fieldSelector', 'includeUninitialized', 'labelSelector', 'limit', 'resourceVersion', 'watch'],
+        relative_path='v1/{+parent}/routes',
         request_field='',
-        request_type_name=u'RunProjectsLocationsRoutesListRequest',
-        response_type_name=u'ListRoutesResponse',
+        request_type_name='RunProjectsLocationsRoutesListRequest',
+        response_type_name='ListRoutesResponse',
         supports_download=False,
     )
 
   class ProjectsLocationsSecretsService(base_api.BaseApiService):
     """Service class for the projects_locations_secrets resource."""
 
-    _NAME = u'projects_locations_secrets'
+    _NAME = 'projects_locations_secrets'
 
     def __init__(self, client):
       super(RunV1.ProjectsLocationsSecretsService, self).__init__(client)
@@ -1240,16 +1240,16 @@ optimistic concurrency control.
           config, request, global_params=global_params)
 
     Create.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/locations/{locationsId}/secrets',
-        http_method=u'POST',
-        method_id=u'run.projects.locations.secrets.create',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/secrets',
+        http_method='POST',
+        method_id='run.projects.locations.secrets.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
         query_params=[],
-        relative_path=u'v1/{+parent}/secrets',
-        request_field=u'secret',
-        request_type_name=u'RunProjectsLocationsSecretsCreateRequest',
-        response_type_name=u'Secret',
+        relative_path='v1/{+parent}/secrets',
+        request_field='secret',
+        request_type_name='RunProjectsLocationsSecretsCreateRequest',
+        response_type_name='Secret',
         supports_download=False,
     )
 
@@ -1267,16 +1267,16 @@ optimistic concurrency control.
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/locations/{locationsId}/secrets/{secretsId}',
-        http_method=u'GET',
-        method_id=u'run.projects.locations.secrets.get',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/secrets/{secretsId}',
+        http_method='GET',
+        method_id='run.projects.locations.secrets.get',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1/{+name}',
+        relative_path='v1/{+name}',
         request_field='',
-        request_type_name=u'RunProjectsLocationsSecretsGetRequest',
-        response_type_name=u'Secret',
+        request_type_name='RunProjectsLocationsSecretsGetRequest',
+        response_type_name='Secret',
         supports_download=False,
     )
 
@@ -1301,23 +1301,23 @@ optimistic concurrency control.
           config, request, global_params=global_params)
 
     ReplaceSecret.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/locations/{locationsId}/secrets/{secretsId}',
-        http_method=u'PUT',
-        method_id=u'run.projects.locations.secrets.replaceSecret',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/secrets/{secretsId}',
+        http_method='PUT',
+        method_id='run.projects.locations.secrets.replaceSecret',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1/{+name}',
-        request_field=u'secret',
-        request_type_name=u'RunProjectsLocationsSecretsReplaceSecretRequest',
-        response_type_name=u'Secret',
+        relative_path='v1/{+name}',
+        request_field='secret',
+        request_type_name='RunProjectsLocationsSecretsReplaceSecretRequest',
+        response_type_name='Secret',
         supports_download=False,
     )
 
   class ProjectsLocationsServicesService(base_api.BaseApiService):
     """Service class for the projects_locations_services resource."""
 
-    _NAME = u'projects_locations_services'
+    _NAME = 'projects_locations_services'
 
     def __init__(self, client):
       super(RunV1.ProjectsLocationsServicesService, self).__init__(client)
@@ -1338,16 +1338,16 @@ optimistic concurrency control.
           config, request, global_params=global_params)
 
     Create.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/locations/{locationsId}/services',
-        http_method=u'POST',
-        method_id=u'run.projects.locations.services.create',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/services',
+        http_method='POST',
+        method_id='run.projects.locations.services.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
         query_params=[],
-        relative_path=u'v1/{+parent}/services',
-        request_field=u'service',
-        request_type_name=u'RunProjectsLocationsServicesCreateRequest',
-        response_type_name=u'Service',
+        relative_path='v1/{+parent}/services',
+        request_field='service',
+        request_type_name='RunProjectsLocationsServicesCreateRequest',
+        response_type_name='Service',
         supports_download=False,
     )
 
@@ -1367,16 +1367,16 @@ child entities like Routes, Configurations and Revisions.
           config, request, global_params=global_params)
 
     Delete.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/locations/{locationsId}/services/{servicesId}',
-        http_method=u'DELETE',
-        method_id=u'run.projects.locations.services.delete',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[u'apiVersion', u'kind', u'propagationPolicy'],
-        relative_path=u'v1/{+name}',
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/services/{servicesId}',
+        http_method='DELETE',
+        method_id='run.projects.locations.services.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['apiVersion', 'kind', 'propagationPolicy'],
+        relative_path='v1/{+name}',
         request_field='',
-        request_type_name=u'RunProjectsLocationsServicesDeleteRequest',
-        response_type_name=u'Status',
+        request_type_name='RunProjectsLocationsServicesDeleteRequest',
+        response_type_name='Status',
         supports_download=False,
     )
 
@@ -1394,16 +1394,16 @@ child entities like Routes, Configurations and Revisions.
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/locations/{locationsId}/services/{servicesId}',
-        http_method=u'GET',
-        method_id=u'run.projects.locations.services.get',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/services/{servicesId}',
+        http_method='GET',
+        method_id='run.projects.locations.services.get',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1/{+name}',
+        relative_path='v1/{+name}',
         request_field='',
-        request_type_name=u'RunProjectsLocationsServicesGetRequest',
-        response_type_name=u'Service',
+        request_type_name='RunProjectsLocationsServicesGetRequest',
+        response_type_name='Service',
         supports_download=False,
     )
 
@@ -1422,16 +1422,16 @@ Cloud Run service. This result does not include any inherited policies.
           config, request, global_params=global_params)
 
     GetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/locations/{locationsId}/services/{servicesId}:getIamPolicy',
-        http_method=u'GET',
-        method_id=u'run.projects.locations.services.getIamPolicy',
-        ordered_params=[u'resource'],
-        path_params=[u'resource'],
-        query_params=[u'options_requestedPolicyVersion'],
-        relative_path=u'v1/{+resource}:getIamPolicy',
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/services/{servicesId}:getIamPolicy',
+        http_method='GET',
+        method_id='run.projects.locations.services.getIamPolicy',
+        ordered_params=['resource'],
+        path_params=['resource'],
+        query_params=['options_requestedPolicyVersion'],
+        relative_path='v1/{+resource}:getIamPolicy',
         request_field='',
-        request_type_name=u'RunProjectsLocationsServicesGetIamPolicyRequest',
-        response_type_name=u'Policy',
+        request_type_name='RunProjectsLocationsServicesGetIamPolicyRequest',
+        response_type_name='Policy',
         supports_download=False,
     )
 
@@ -1449,16 +1449,16 @@ Cloud Run service. This result does not include any inherited policies.
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/locations/{locationsId}/services',
-        http_method=u'GET',
-        method_id=u'run.projects.locations.services.list',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'continue_', u'fieldSelector', u'includeUninitialized', u'labelSelector', u'limit', u'resourceVersion', u'watch'],
-        relative_path=u'v1/{+parent}/services',
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/services',
+        http_method='GET',
+        method_id='run.projects.locations.services.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['continue_', 'fieldSelector', 'includeUninitialized', 'labelSelector', 'limit', 'resourceVersion', 'watch'],
+        relative_path='v1/{+parent}/services',
         request_field='',
-        request_type_name=u'RunProjectsLocationsServicesListRequest',
-        response_type_name=u'ListServicesResponse',
+        request_type_name='RunProjectsLocationsServicesListRequest',
+        response_type_name='ListServicesResponse',
         supports_download=False,
     )
 
@@ -1483,16 +1483,16 @@ optimistic concurrency control.
           config, request, global_params=global_params)
 
     ReplaceService.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/locations/{locationsId}/services/{servicesId}',
-        http_method=u'PUT',
-        method_id=u'run.projects.locations.services.replaceService',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/services/{servicesId}',
+        http_method='PUT',
+        method_id='run.projects.locations.services.replaceService',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1/{+name}',
-        request_field=u'service',
-        request_type_name=u'RunProjectsLocationsServicesReplaceServiceRequest',
-        response_type_name=u'Service',
+        relative_path='v1/{+name}',
+        request_field='service',
+        request_type_name='RunProjectsLocationsServicesReplaceServiceRequest',
+        response_type_name='Service',
         supports_download=False,
     )
 
@@ -1511,16 +1511,16 @@ any existing policy.
           config, request, global_params=global_params)
 
     SetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/locations/{locationsId}/services/{servicesId}:setIamPolicy',
-        http_method=u'POST',
-        method_id=u'run.projects.locations.services.setIamPolicy',
-        ordered_params=[u'resource'],
-        path_params=[u'resource'],
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/services/{servicesId}:setIamPolicy',
+        http_method='POST',
+        method_id='run.projects.locations.services.setIamPolicy',
+        ordered_params=['resource'],
+        path_params=['resource'],
         query_params=[],
-        relative_path=u'v1/{+resource}:setIamPolicy',
-        request_field=u'setIamPolicyRequest',
-        request_type_name=u'RunProjectsLocationsServicesSetIamPolicyRequest',
-        response_type_name=u'Policy',
+        relative_path='v1/{+resource}:setIamPolicy',
+        request_field='setIamPolicyRequest',
+        request_type_name='RunProjectsLocationsServicesSetIamPolicyRequest',
+        response_type_name='Policy',
         supports_download=False,
     )
 
@@ -1540,23 +1540,23 @@ There are no permissions required for making this API call.
           config, request, global_params=global_params)
 
     TestIamPermissions.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/locations/{locationsId}/services/{servicesId}:testIamPermissions',
-        http_method=u'POST',
-        method_id=u'run.projects.locations.services.testIamPermissions',
-        ordered_params=[u'resource'],
-        path_params=[u'resource'],
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/services/{servicesId}:testIamPermissions',
+        http_method='POST',
+        method_id='run.projects.locations.services.testIamPermissions',
+        ordered_params=['resource'],
+        path_params=['resource'],
         query_params=[],
-        relative_path=u'v1/{+resource}:testIamPermissions',
-        request_field=u'testIamPermissionsRequest',
-        request_type_name=u'RunProjectsLocationsServicesTestIamPermissionsRequest',
-        response_type_name=u'TestIamPermissionsResponse',
+        relative_path='v1/{+resource}:testIamPermissions',
+        request_field='testIamPermissionsRequest',
+        request_type_name='RunProjectsLocationsServicesTestIamPermissionsRequest',
+        response_type_name='TestIamPermissionsResponse',
         supports_download=False,
     )
 
   class ProjectsLocationsService(base_api.BaseApiService):
     """Service class for the projects_locations resource."""
 
-    _NAME = u'projects_locations'
+    _NAME = 'projects_locations'
 
     def __init__(self, client):
       super(RunV1.ProjectsLocationsService, self).__init__(client)
@@ -1577,23 +1577,23 @@ There are no permissions required for making this API call.
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/locations',
-        http_method=u'GET',
-        method_id=u'run.projects.locations.list',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[u'filter', u'pageSize', u'pageToken'],
-        relative_path=u'v1/{+name}/locations',
+        flat_path='v1/projects/{projectsId}/locations',
+        http_method='GET',
+        method_id='run.projects.locations.list',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['filter', 'pageSize', 'pageToken'],
+        relative_path='v1/{+name}/locations',
         request_field='',
-        request_type_name=u'RunProjectsLocationsListRequest',
-        response_type_name=u'ListLocationsResponse',
+        request_type_name='RunProjectsLocationsListRequest',
+        response_type_name='ListLocationsResponse',
         supports_download=False,
     )
 
   class ProjectsService(base_api.BaseApiService):
     """Service class for the projects resource."""
 
-    _NAME = u'projects'
+    _NAME = 'projects'
 
     def __init__(self, client):
       super(RunV1.ProjectsService, self).__init__(client)

@@ -8,17 +8,17 @@ class SecuritycenterV1(base_api.BaseApiClient):
   """Generated client library for service securitycenter version v1."""
 
   MESSAGES_MODULE = messages
-  BASE_URL = u'https://securitycenter.googleapis.com/'
-  MTLS_BASE_URL = u'https://securitycenter.mtls.googleapis.com/'
+  BASE_URL = 'https://securitycenter.googleapis.com/'
+  MTLS_BASE_URL = 'https://securitycenter.mtls.googleapis.com/'
 
-  _PACKAGE = u'securitycenter'
-  _SCOPES = [u'https://www.googleapis.com/auth/cloud-platform']
-  _VERSION = u'v1'
+  _PACKAGE = 'securitycenter'
+  _SCOPES = ['https://www.googleapis.com/auth/cloud-platform']
+  _VERSION = 'v1'
   _CLIENT_ID = '1042881264118.apps.googleusercontent.com'
   _CLIENT_SECRET = 'x_Tw5K8nnjoRAqULM9PFAC2b'
-  _USER_AGENT = u'google-cloud-sdk'
-  _CLIENT_CLASS_NAME = u'SecuritycenterV1'
-  _URL_VERSION = u'v1'
+  _USER_AGENT = 'google-cloud-sdk'
+  _CLIENT_CLASS_NAME = 'SecuritycenterV1'
+  _URL_VERSION = 'v1'
   _API_KEY = None
 
   def __init__(self, url='', credentials=None,
@@ -46,7 +46,7 @@ class SecuritycenterV1(base_api.BaseApiClient):
   class OrganizationsAssetsService(base_api.BaseApiService):
     """Service class for the organizations_assets resource."""
 
-    _NAME = u'organizations_assets'
+    _NAME = 'organizations_assets'
 
     def __init__(self, client):
       super(SecuritycenterV1.OrganizationsAssetsService, self).__init__(client)
@@ -68,16 +68,16 @@ properties.
           config, request, global_params=global_params)
 
     Group.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/organizations/{organizationsId}/assets:group',
-        http_method=u'POST',
-        method_id=u'securitycenter.organizations.assets.group',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
+        flat_path='v1/organizations/{organizationsId}/assets:group',
+        http_method='POST',
+        method_id='securitycenter.organizations.assets.group',
+        ordered_params=['parent'],
+        path_params=['parent'],
         query_params=[],
-        relative_path=u'v1/{+parent}/assets:group',
-        request_field=u'groupAssetsRequest',
-        request_type_name=u'SecuritycenterOrganizationsAssetsGroupRequest',
-        response_type_name=u'GroupAssetsResponse',
+        relative_path='v1/{+parent}/assets:group',
+        request_field='groupAssetsRequest',
+        request_type_name='SecuritycenterOrganizationsAssetsGroupRequest',
+        response_type_name='GroupAssetsResponse',
         supports_download=False,
     )
 
@@ -95,16 +95,16 @@ properties.
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/organizations/{organizationsId}/assets',
-        http_method=u'GET',
-        method_id=u'securitycenter.organizations.assets.list',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'compareDuration', u'fieldMask', u'filter', u'orderBy', u'pageSize', u'pageToken', u'readTime'],
-        relative_path=u'v1/{+parent}/assets',
+        flat_path='v1/organizations/{organizationsId}/assets',
+        http_method='GET',
+        method_id='securitycenter.organizations.assets.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['compareDuration', 'fieldMask', 'filter', 'orderBy', 'pageSize', 'pageToken', 'readTime'],
+        relative_path='v1/{+parent}/assets',
         request_field='',
-        request_type_name=u'SecuritycenterOrganizationsAssetsListRequest',
-        response_type_name=u'ListAssetsResponse',
+        request_type_name='SecuritycenterOrganizationsAssetsListRequest',
+        response_type_name='ListAssetsResponse',
         supports_download=False,
     )
 
@@ -127,16 +127,16 @@ error.
           config, request, global_params=global_params)
 
     RunDiscovery.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/organizations/{organizationsId}/assets:runDiscovery',
-        http_method=u'POST',
-        method_id=u'securitycenter.organizations.assets.runDiscovery',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
+        flat_path='v1/organizations/{organizationsId}/assets:runDiscovery',
+        http_method='POST',
+        method_id='securitycenter.organizations.assets.runDiscovery',
+        ordered_params=['parent'],
+        path_params=['parent'],
         query_params=[],
-        relative_path=u'v1/{+parent}/assets:runDiscovery',
-        request_field=u'runAssetDiscoveryRequest',
-        request_type_name=u'SecuritycenterOrganizationsAssetsRunDiscoveryRequest',
-        response_type_name=u'Operation',
+        relative_path='v1/{+parent}/assets:runDiscovery',
+        request_field='runAssetDiscoveryRequest',
+        request_type_name='SecuritycenterOrganizationsAssetsRunDiscoveryRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -154,23 +154,23 @@ error.
           config, request, global_params=global_params)
 
     UpdateSecurityMarks.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/organizations/{organizationsId}/assets/{assetsId}/securityMarks',
-        http_method=u'PATCH',
-        method_id=u'securitycenter.organizations.assets.updateSecurityMarks',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[u'startTime', u'updateMask'],
-        relative_path=u'v1/{+name}',
-        request_field=u'securityMarks',
-        request_type_name=u'SecuritycenterOrganizationsAssetsUpdateSecurityMarksRequest',
-        response_type_name=u'SecurityMarks',
+        flat_path='v1/organizations/{organizationsId}/assets/{assetsId}/securityMarks',
+        http_method='PATCH',
+        method_id='securitycenter.organizations.assets.updateSecurityMarks',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['startTime', 'updateMask'],
+        relative_path='v1/{+name}',
+        request_field='securityMarks',
+        request_type_name='SecuritycenterOrganizationsAssetsUpdateSecurityMarksRequest',
+        response_type_name='SecurityMarks',
         supports_download=False,
     )
 
   class OrganizationsNotificationConfigsService(base_api.BaseApiService):
     """Service class for the organizations_notificationConfigs resource."""
 
-    _NAME = u'organizations_notificationConfigs'
+    _NAME = 'organizations_notificationConfigs'
 
     def __init__(self, client):
       super(SecuritycenterV1.OrganizationsNotificationConfigsService, self).__init__(client)
@@ -191,16 +191,16 @@ error.
           config, request, global_params=global_params)
 
     Create.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/organizations/{organizationsId}/notificationConfigs',
-        http_method=u'POST',
-        method_id=u'securitycenter.organizations.notificationConfigs.create',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'configId'],
-        relative_path=u'v1/{+parent}/notificationConfigs',
-        request_field=u'notificationConfig',
-        request_type_name=u'SecuritycenterOrganizationsNotificationConfigsCreateRequest',
-        response_type_name=u'NotificationConfig',
+        flat_path='v1/organizations/{organizationsId}/notificationConfigs',
+        http_method='POST',
+        method_id='securitycenter.organizations.notificationConfigs.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['configId'],
+        relative_path='v1/{+parent}/notificationConfigs',
+        request_field='notificationConfig',
+        request_type_name='SecuritycenterOrganizationsNotificationConfigsCreateRequest',
+        response_type_name='NotificationConfig',
         supports_download=False,
     )
 
@@ -218,16 +218,16 @@ error.
           config, request, global_params=global_params)
 
     Delete.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/organizations/{organizationsId}/notificationConfigs/{notificationConfigsId}',
-        http_method=u'DELETE',
-        method_id=u'securitycenter.organizations.notificationConfigs.delete',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1/organizations/{organizationsId}/notificationConfigs/{notificationConfigsId}',
+        http_method='DELETE',
+        method_id='securitycenter.organizations.notificationConfigs.delete',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1/{+name}',
+        relative_path='v1/{+name}',
         request_field='',
-        request_type_name=u'SecuritycenterOrganizationsNotificationConfigsDeleteRequest',
-        response_type_name=u'Empty',
+        request_type_name='SecuritycenterOrganizationsNotificationConfigsDeleteRequest',
+        response_type_name='Empty',
         supports_download=False,
     )
 
@@ -245,16 +245,16 @@ error.
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/organizations/{organizationsId}/notificationConfigs/{notificationConfigsId}',
-        http_method=u'GET',
-        method_id=u'securitycenter.organizations.notificationConfigs.get',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1/organizations/{organizationsId}/notificationConfigs/{notificationConfigsId}',
+        http_method='GET',
+        method_id='securitycenter.organizations.notificationConfigs.get',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1/{+name}',
+        relative_path='v1/{+name}',
         request_field='',
-        request_type_name=u'SecuritycenterOrganizationsNotificationConfigsGetRequest',
-        response_type_name=u'NotificationConfig',
+        request_type_name='SecuritycenterOrganizationsNotificationConfigsGetRequest',
+        response_type_name='NotificationConfig',
         supports_download=False,
     )
 
@@ -272,16 +272,16 @@ error.
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/organizations/{organizationsId}/notificationConfigs',
-        http_method=u'GET',
-        method_id=u'securitycenter.organizations.notificationConfigs.list',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'pageSize', u'pageToken'],
-        relative_path=u'v1/{+parent}/notificationConfigs',
+        flat_path='v1/organizations/{organizationsId}/notificationConfigs',
+        http_method='GET',
+        method_id='securitycenter.organizations.notificationConfigs.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v1/{+parent}/notificationConfigs',
         request_field='',
-        request_type_name=u'SecuritycenterOrganizationsNotificationConfigsListRequest',
-        response_type_name=u'ListNotificationConfigsResponse',
+        request_type_name='SecuritycenterOrganizationsNotificationConfigsListRequest',
+        response_type_name='ListNotificationConfigsResponse',
         supports_download=False,
     )
 
@@ -300,23 +300,23 @@ Updates a notification config.
           config, request, global_params=global_params)
 
     Patch.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/organizations/{organizationsId}/notificationConfigs/{notificationConfigsId}',
-        http_method=u'PATCH',
-        method_id=u'securitycenter.organizations.notificationConfigs.patch',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[u'updateMask'],
-        relative_path=u'v1/{+name}',
-        request_field=u'notificationConfig',
-        request_type_name=u'SecuritycenterOrganizationsNotificationConfigsPatchRequest',
-        response_type_name=u'NotificationConfig',
+        flat_path='v1/organizations/{organizationsId}/notificationConfigs/{notificationConfigsId}',
+        http_method='PATCH',
+        method_id='securitycenter.organizations.notificationConfigs.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v1/{+name}',
+        request_field='notificationConfig',
+        request_type_name='SecuritycenterOrganizationsNotificationConfigsPatchRequest',
+        response_type_name='NotificationConfig',
         supports_download=False,
     )
 
   class OrganizationsOperationsService(base_api.BaseApiService):
     """Service class for the organizations_operations resource."""
 
-    _NAME = u'organizations_operations'
+    _NAME = 'organizations_operations'
 
     def __init__(self, client):
       super(SecuritycenterV1.OrganizationsOperationsService, self).__init__(client)
@@ -346,16 +346,16 @@ corresponding to `Code.CANCELLED`.
           config, request, global_params=global_params)
 
     Cancel.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/organizations/{organizationsId}/operations/{operationsId}:cancel',
-        http_method=u'POST',
-        method_id=u'securitycenter.organizations.operations.cancel',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1/organizations/{organizationsId}/operations/{operationsId}:cancel',
+        http_method='POST',
+        method_id='securitycenter.organizations.operations.cancel',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1/{+name}:cancel',
+        relative_path='v1/{+name}:cancel',
         request_field='',
-        request_type_name=u'SecuritycenterOrganizationsOperationsCancelRequest',
-        response_type_name=u'Empty',
+        request_type_name='SecuritycenterOrganizationsOperationsCancelRequest',
+        response_type_name='Empty',
         supports_download=False,
     )
 
@@ -376,16 +376,16 @@ operation. If the server doesn't support this method, it returns
           config, request, global_params=global_params)
 
     Delete.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/organizations/{organizationsId}/operations/{operationsId}',
-        http_method=u'DELETE',
-        method_id=u'securitycenter.organizations.operations.delete',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1/organizations/{organizationsId}/operations/{operationsId}',
+        http_method='DELETE',
+        method_id='securitycenter.organizations.operations.delete',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1/{+name}',
+        relative_path='v1/{+name}',
         request_field='',
-        request_type_name=u'SecuritycenterOrganizationsOperationsDeleteRequest',
-        response_type_name=u'Empty',
+        request_type_name='SecuritycenterOrganizationsOperationsDeleteRequest',
+        response_type_name='Empty',
         supports_download=False,
     )
 
@@ -405,16 +405,16 @@ service.
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/organizations/{organizationsId}/operations/{operationsId}',
-        http_method=u'GET',
-        method_id=u'securitycenter.organizations.operations.get',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1/organizations/{organizationsId}/operations/{operationsId}',
+        http_method='GET',
+        method_id='securitycenter.organizations.operations.get',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1/{+name}',
+        relative_path='v1/{+name}',
         request_field='',
-        request_type_name=u'SecuritycenterOrganizationsOperationsGetRequest',
-        response_type_name=u'Operation',
+        request_type_name='SecuritycenterOrganizationsOperationsGetRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -441,23 +441,23 @@ is the parent resource, without the operations collection id.
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/organizations/{organizationsId}/operations',
-        http_method=u'GET',
-        method_id=u'securitycenter.organizations.operations.list',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[u'filter', u'pageSize', u'pageToken'],
-        relative_path=u'v1/{+name}',
+        flat_path='v1/organizations/{organizationsId}/operations',
+        http_method='GET',
+        method_id='securitycenter.organizations.operations.list',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['filter', 'pageSize', 'pageToken'],
+        relative_path='v1/{+name}',
         request_field='',
-        request_type_name=u'SecuritycenterOrganizationsOperationsListRequest',
-        response_type_name=u'ListOperationsResponse',
+        request_type_name='SecuritycenterOrganizationsOperationsListRequest',
+        response_type_name='ListOperationsResponse',
         supports_download=False,
     )
 
   class OrganizationsSourcesFindingsService(base_api.BaseApiService):
     """Service class for the organizations_sources_findings resource."""
 
-    _NAME = u'organizations_sources_findings'
+    _NAME = 'organizations_sources_findings'
 
     def __init__(self, client):
       super(SecuritycenterV1.OrganizationsSourcesFindingsService, self).__init__(client)
@@ -479,16 +479,16 @@ to succeed.
           config, request, global_params=global_params)
 
     Create.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/organizations/{organizationsId}/sources/{sourcesId}/findings',
-        http_method=u'POST',
-        method_id=u'securitycenter.organizations.sources.findings.create',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'findingId'],
-        relative_path=u'v1/{+parent}/findings',
-        request_field=u'finding',
-        request_type_name=u'SecuritycenterOrganizationsSourcesFindingsCreateRequest',
-        response_type_name=u'Finding',
+        flat_path='v1/organizations/{organizationsId}/sources/{sourcesId}/findings',
+        http_method='POST',
+        method_id='securitycenter.organizations.sources.findings.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['findingId'],
+        relative_path='v1/{+parent}/findings',
+        request_field='finding',
+        request_type_name='SecuritycenterOrganizationsSourcesFindingsCreateRequest',
+        response_type_name='Finding',
         supports_download=False,
     )
 
@@ -510,16 +510,16 @@ Example: /v1/organizations/{organization_id}/sources/-/findings
           config, request, global_params=global_params)
 
     Group.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/organizations/{organizationsId}/sources/{sourcesId}/findings:group',
-        http_method=u'POST',
-        method_id=u'securitycenter.organizations.sources.findings.group',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
+        flat_path='v1/organizations/{organizationsId}/sources/{sourcesId}/findings:group',
+        http_method='POST',
+        method_id='securitycenter.organizations.sources.findings.group',
+        ordered_params=['parent'],
+        path_params=['parent'],
         query_params=[],
-        relative_path=u'v1/{+parent}/findings:group',
-        request_field=u'groupFindingsRequest',
-        request_type_name=u'SecuritycenterOrganizationsSourcesFindingsGroupRequest',
-        response_type_name=u'GroupFindingsResponse',
+        relative_path='v1/{+parent}/findings:group',
+        request_field='groupFindingsRequest',
+        request_type_name='SecuritycenterOrganizationsSourcesFindingsGroupRequest',
+        response_type_name='GroupFindingsResponse',
         supports_download=False,
     )
 
@@ -540,16 +540,16 @@ Example: /v1/organizations/{organization_id}/sources/-/findings
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/organizations/{organizationsId}/sources/{sourcesId}/findings',
-        http_method=u'GET',
-        method_id=u'securitycenter.organizations.sources.findings.list',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'compareDuration', u'fieldMask', u'filter', u'orderBy', u'pageSize', u'pageToken', u'readTime'],
-        relative_path=u'v1/{+parent}/findings',
+        flat_path='v1/organizations/{organizationsId}/sources/{sourcesId}/findings',
+        http_method='GET',
+        method_id='securitycenter.organizations.sources.findings.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['compareDuration', 'fieldMask', 'filter', 'orderBy', 'pageSize', 'pageToken', 'readTime'],
+        relative_path='v1/{+parent}/findings',
         request_field='',
-        request_type_name=u'SecuritycenterOrganizationsSourcesFindingsListRequest',
-        response_type_name=u'ListFindingsResponse',
+        request_type_name='SecuritycenterOrganizationsSourcesFindingsListRequest',
+        response_type_name='ListFindingsResponse',
         supports_download=False,
     )
 
@@ -568,16 +568,16 @@ finding creation to succeed.
           config, request, global_params=global_params)
 
     Patch.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/organizations/{organizationsId}/sources/{sourcesId}/findings/{findingsId}',
-        http_method=u'PATCH',
-        method_id=u'securitycenter.organizations.sources.findings.patch',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[u'updateMask'],
-        relative_path=u'v1/{+name}',
-        request_field=u'finding',
-        request_type_name=u'SecuritycenterOrganizationsSourcesFindingsPatchRequest',
-        response_type_name=u'Finding',
+        flat_path='v1/organizations/{organizationsId}/sources/{sourcesId}/findings/{findingsId}',
+        http_method='PATCH',
+        method_id='securitycenter.organizations.sources.findings.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v1/{+name}',
+        request_field='finding',
+        request_type_name='SecuritycenterOrganizationsSourcesFindingsPatchRequest',
+        response_type_name='Finding',
         supports_download=False,
     )
 
@@ -595,16 +595,16 @@ finding creation to succeed.
           config, request, global_params=global_params)
 
     SetState.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/organizations/{organizationsId}/sources/{sourcesId}/findings/{findingsId}:setState',
-        http_method=u'POST',
-        method_id=u'securitycenter.organizations.sources.findings.setState',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1/organizations/{organizationsId}/sources/{sourcesId}/findings/{findingsId}:setState',
+        http_method='POST',
+        method_id='securitycenter.organizations.sources.findings.setState',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1/{+name}:setState',
-        request_field=u'setFindingStateRequest',
-        request_type_name=u'SecuritycenterOrganizationsSourcesFindingsSetStateRequest',
-        response_type_name=u'Finding',
+        relative_path='v1/{+name}:setState',
+        request_field='setFindingStateRequest',
+        request_type_name='SecuritycenterOrganizationsSourcesFindingsSetStateRequest',
+        response_type_name='Finding',
         supports_download=False,
     )
 
@@ -622,23 +622,23 @@ finding creation to succeed.
           config, request, global_params=global_params)
 
     UpdateSecurityMarks.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/organizations/{organizationsId}/sources/{sourcesId}/findings/{findingsId}/securityMarks',
-        http_method=u'PATCH',
-        method_id=u'securitycenter.organizations.sources.findings.updateSecurityMarks',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[u'startTime', u'updateMask'],
-        relative_path=u'v1/{+name}',
-        request_field=u'securityMarks',
-        request_type_name=u'SecuritycenterOrganizationsSourcesFindingsUpdateSecurityMarksRequest',
-        response_type_name=u'SecurityMarks',
+        flat_path='v1/organizations/{organizationsId}/sources/{sourcesId}/findings/{findingsId}/securityMarks',
+        http_method='PATCH',
+        method_id='securitycenter.organizations.sources.findings.updateSecurityMarks',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['startTime', 'updateMask'],
+        relative_path='v1/{+name}',
+        request_field='securityMarks',
+        request_type_name='SecuritycenterOrganizationsSourcesFindingsUpdateSecurityMarksRequest',
+        response_type_name='SecurityMarks',
         supports_download=False,
     )
 
   class OrganizationsSourcesService(base_api.BaseApiService):
     """Service class for the organizations_sources resource."""
 
-    _NAME = u'organizations_sources'
+    _NAME = 'organizations_sources'
 
     def __init__(self, client):
       super(SecuritycenterV1.OrganizationsSourcesService, self).__init__(client)
@@ -659,16 +659,16 @@ finding creation to succeed.
           config, request, global_params=global_params)
 
     Create.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/organizations/{organizationsId}/sources',
-        http_method=u'POST',
-        method_id=u'securitycenter.organizations.sources.create',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
+        flat_path='v1/organizations/{organizationsId}/sources',
+        http_method='POST',
+        method_id='securitycenter.organizations.sources.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
         query_params=[],
-        relative_path=u'v1/{+parent}/sources',
-        request_field=u'source',
-        request_type_name=u'SecuritycenterOrganizationsSourcesCreateRequest',
-        response_type_name=u'Source',
+        relative_path='v1/{+parent}/sources',
+        request_field='source',
+        request_type_name='SecuritycenterOrganizationsSourcesCreateRequest',
+        response_type_name='Source',
         supports_download=False,
     )
 
@@ -686,16 +686,16 @@ finding creation to succeed.
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/organizations/{organizationsId}/sources/{sourcesId}',
-        http_method=u'GET',
-        method_id=u'securitycenter.organizations.sources.get',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1/organizations/{organizationsId}/sources/{sourcesId}',
+        http_method='GET',
+        method_id='securitycenter.organizations.sources.get',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1/{+name}',
+        relative_path='v1/{+name}',
         request_field='',
-        request_type_name=u'SecuritycenterOrganizationsSourcesGetRequest',
-        response_type_name=u'Source',
+        request_type_name='SecuritycenterOrganizationsSourcesGetRequest',
+        response_type_name='Source',
         supports_download=False,
     )
 
@@ -713,16 +713,16 @@ finding creation to succeed.
           config, request, global_params=global_params)
 
     GetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/organizations/{organizationsId}/sources/{sourcesId}:getIamPolicy',
-        http_method=u'POST',
-        method_id=u'securitycenter.organizations.sources.getIamPolicy',
-        ordered_params=[u'resource'],
-        path_params=[u'resource'],
+        flat_path='v1/organizations/{organizationsId}/sources/{sourcesId}:getIamPolicy',
+        http_method='POST',
+        method_id='securitycenter.organizations.sources.getIamPolicy',
+        ordered_params=['resource'],
+        path_params=['resource'],
         query_params=[],
-        relative_path=u'v1/{+resource}:getIamPolicy',
-        request_field=u'getIamPolicyRequest',
-        request_type_name=u'SecuritycenterOrganizationsSourcesGetIamPolicyRequest',
-        response_type_name=u'Policy',
+        relative_path='v1/{+resource}:getIamPolicy',
+        request_field='getIamPolicyRequest',
+        request_type_name='SecuritycenterOrganizationsSourcesGetIamPolicyRequest',
+        response_type_name='Policy',
         supports_download=False,
     )
 
@@ -740,16 +740,16 @@ finding creation to succeed.
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/organizations/{organizationsId}/sources',
-        http_method=u'GET',
-        method_id=u'securitycenter.organizations.sources.list',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'pageSize', u'pageToken'],
-        relative_path=u'v1/{+parent}/sources',
+        flat_path='v1/organizations/{organizationsId}/sources',
+        http_method='GET',
+        method_id='securitycenter.organizations.sources.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v1/{+parent}/sources',
         request_field='',
-        request_type_name=u'SecuritycenterOrganizationsSourcesListRequest',
-        response_type_name=u'ListSourcesResponse',
+        request_type_name='SecuritycenterOrganizationsSourcesListRequest',
+        response_type_name='ListSourcesResponse',
         supports_download=False,
     )
 
@@ -767,16 +767,16 @@ finding creation to succeed.
           config, request, global_params=global_params)
 
     Patch.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/organizations/{organizationsId}/sources/{sourcesId}',
-        http_method=u'PATCH',
-        method_id=u'securitycenter.organizations.sources.patch',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[u'updateMask'],
-        relative_path=u'v1/{+name}',
-        request_field=u'source',
-        request_type_name=u'SecuritycenterOrganizationsSourcesPatchRequest',
-        response_type_name=u'Source',
+        flat_path='v1/organizations/{organizationsId}/sources/{sourcesId}',
+        http_method='PATCH',
+        method_id='securitycenter.organizations.sources.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v1/{+name}',
+        request_field='source',
+        request_type_name='SecuritycenterOrganizationsSourcesPatchRequest',
+        response_type_name='Source',
         supports_download=False,
     )
 
@@ -794,16 +794,16 @@ finding creation to succeed.
           config, request, global_params=global_params)
 
     SetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/organizations/{organizationsId}/sources/{sourcesId}:setIamPolicy',
-        http_method=u'POST',
-        method_id=u'securitycenter.organizations.sources.setIamPolicy',
-        ordered_params=[u'resource'],
-        path_params=[u'resource'],
+        flat_path='v1/organizations/{organizationsId}/sources/{sourcesId}:setIamPolicy',
+        http_method='POST',
+        method_id='securitycenter.organizations.sources.setIamPolicy',
+        ordered_params=['resource'],
+        path_params=['resource'],
         query_params=[],
-        relative_path=u'v1/{+resource}:setIamPolicy',
-        request_field=u'setIamPolicyRequest',
-        request_type_name=u'SecuritycenterOrganizationsSourcesSetIamPolicyRequest',
-        response_type_name=u'Policy',
+        relative_path='v1/{+resource}:setIamPolicy',
+        request_field='setIamPolicyRequest',
+        request_type_name='SecuritycenterOrganizationsSourcesSetIamPolicyRequest',
+        response_type_name='Policy',
         supports_download=False,
     )
 
@@ -821,23 +821,23 @@ finding creation to succeed.
           config, request, global_params=global_params)
 
     TestIamPermissions.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/organizations/{organizationsId}/sources/{sourcesId}:testIamPermissions',
-        http_method=u'POST',
-        method_id=u'securitycenter.organizations.sources.testIamPermissions',
-        ordered_params=[u'resource'],
-        path_params=[u'resource'],
+        flat_path='v1/organizations/{organizationsId}/sources/{sourcesId}:testIamPermissions',
+        http_method='POST',
+        method_id='securitycenter.organizations.sources.testIamPermissions',
+        ordered_params=['resource'],
+        path_params=['resource'],
         query_params=[],
-        relative_path=u'v1/{+resource}:testIamPermissions',
-        request_field=u'testIamPermissionsRequest',
-        request_type_name=u'SecuritycenterOrganizationsSourcesTestIamPermissionsRequest',
-        response_type_name=u'TestIamPermissionsResponse',
+        relative_path='v1/{+resource}:testIamPermissions',
+        request_field='testIamPermissionsRequest',
+        request_type_name='SecuritycenterOrganizationsSourcesTestIamPermissionsRequest',
+        response_type_name='TestIamPermissionsResponse',
         supports_download=False,
     )
 
   class OrganizationsService(base_api.BaseApiService):
     """Service class for the organizations resource."""
 
-    _NAME = u'organizations'
+    _NAME = 'organizations'
 
     def __init__(self, client):
       super(SecuritycenterV1.OrganizationsService, self).__init__(client)
@@ -858,16 +858,16 @@ finding creation to succeed.
           config, request, global_params=global_params)
 
     GetOrganizationSettings.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/organizations/{organizationsId}/organizationSettings',
-        http_method=u'GET',
-        method_id=u'securitycenter.organizations.getOrganizationSettings',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1/organizations/{organizationsId}/organizationSettings',
+        http_method='GET',
+        method_id='securitycenter.organizations.getOrganizationSettings',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1/{+name}',
+        relative_path='v1/{+name}',
         request_field='',
-        request_type_name=u'SecuritycenterOrganizationsGetOrganizationSettingsRequest',
-        response_type_name=u'OrganizationSettings',
+        request_type_name='SecuritycenterOrganizationsGetOrganizationSettingsRequest',
+        response_type_name='OrganizationSettings',
         supports_download=False,
     )
 
@@ -885,15 +885,15 @@ finding creation to succeed.
           config, request, global_params=global_params)
 
     UpdateOrganizationSettings.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/organizations/{organizationsId}/organizationSettings',
-        http_method=u'PATCH',
-        method_id=u'securitycenter.organizations.updateOrganizationSettings',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[u'updateMask'],
-        relative_path=u'v1/{+name}',
-        request_field=u'organizationSettings',
-        request_type_name=u'SecuritycenterOrganizationsUpdateOrganizationSettingsRequest',
-        response_type_name=u'OrganizationSettings',
+        flat_path='v1/organizations/{organizationsId}/organizationSettings',
+        http_method='PATCH',
+        method_id='securitycenter.organizations.updateOrganizationSettings',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v1/{+name}',
+        request_field='organizationSettings',
+        request_type_name='SecuritycenterOrganizationsUpdateOrganizationSettingsRequest',
+        response_type_name='OrganizationSettings',
         supports_download=False,
     )

@@ -8,17 +8,17 @@ class CloudiotV1(base_api.BaseApiClient):
   """Generated client library for service cloudiot version v1."""
 
   MESSAGES_MODULE = messages
-  BASE_URL = u'https://cloudiot.googleapis.com/'
-  MTLS_BASE_URL = u'https://cloudiot.mtls.googleapis.com/'
+  BASE_URL = 'https://cloudiot.googleapis.com/'
+  MTLS_BASE_URL = 'https://cloudiot.mtls.googleapis.com/'
 
-  _PACKAGE = u'cloudiot'
-  _SCOPES = [u'https://www.googleapis.com/auth/cloud-platform', u'https://www.googleapis.com/auth/cloudiot']
-  _VERSION = u'v1'
+  _PACKAGE = 'cloudiot'
+  _SCOPES = ['https://www.googleapis.com/auth/cloud-platform', 'https://www.googleapis.com/auth/cloudiot']
+  _VERSION = 'v1'
   _CLIENT_ID = '1042881264118.apps.googleusercontent.com'
   _CLIENT_SECRET = 'x_Tw5K8nnjoRAqULM9PFAC2b'
-  _USER_AGENT = u'google-cloud-sdk'
-  _CLIENT_CLASS_NAME = u'CloudiotV1'
-  _URL_VERSION = u'v1'
+  _USER_AGENT = 'google-cloud-sdk'
+  _CLIENT_CLASS_NAME = 'CloudiotV1'
+  _URL_VERSION = 'v1'
   _API_KEY = None
 
   def __init__(self, url='', credentials=None,
@@ -48,7 +48,7 @@ class CloudiotV1(base_api.BaseApiClient):
   class ProjectsLocationsRegistriesDevicesConfigVersionsService(base_api.BaseApiService):
     """Service class for the projects_locations_registries_devices_configVersions resource."""
 
-    _NAME = u'projects_locations_registries_devices_configVersions'
+    _NAME = 'projects_locations_registries_devices_configVersions'
 
     def __init__(self, client):
       super(CloudiotV1.ProjectsLocationsRegistriesDevicesConfigVersionsService, self).__init__(client)
@@ -70,23 +70,23 @@ order (i.e.: newest first).
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/locations/{locationsId}/registries/{registriesId}/devices/{devicesId}/configVersions',
-        http_method=u'GET',
-        method_id=u'cloudiot.projects.locations.registries.devices.configVersions.list',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[u'numVersions'],
-        relative_path=u'v1/{+name}/configVersions',
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/registries/{registriesId}/devices/{devicesId}/configVersions',
+        http_method='GET',
+        method_id='cloudiot.projects.locations.registries.devices.configVersions.list',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['numVersions'],
+        relative_path='v1/{+name}/configVersions',
         request_field='',
-        request_type_name=u'CloudiotProjectsLocationsRegistriesDevicesConfigVersionsListRequest',
-        response_type_name=u'ListDeviceConfigVersionsResponse',
+        request_type_name='CloudiotProjectsLocationsRegistriesDevicesConfigVersionsListRequest',
+        response_type_name='ListDeviceConfigVersionsResponse',
         supports_download=False,
     )
 
   class ProjectsLocationsRegistriesDevicesStatesService(base_api.BaseApiService):
     """Service class for the projects_locations_registries_devices_states resource."""
 
-    _NAME = u'projects_locations_registries_devices_states'
+    _NAME = 'projects_locations_registries_devices_states'
 
     def __init__(self, client):
       super(CloudiotV1.ProjectsLocationsRegistriesDevicesStatesService, self).__init__(client)
@@ -108,23 +108,23 @@ newest first).
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/locations/{locationsId}/registries/{registriesId}/devices/{devicesId}/states',
-        http_method=u'GET',
-        method_id=u'cloudiot.projects.locations.registries.devices.states.list',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[u'numStates'],
-        relative_path=u'v1/{+name}/states',
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/registries/{registriesId}/devices/{devicesId}/states',
+        http_method='GET',
+        method_id='cloudiot.projects.locations.registries.devices.states.list',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['numStates'],
+        relative_path='v1/{+name}/states',
         request_field='',
-        request_type_name=u'CloudiotProjectsLocationsRegistriesDevicesStatesListRequest',
-        response_type_name=u'ListDeviceStatesResponse',
+        request_type_name='CloudiotProjectsLocationsRegistriesDevicesStatesListRequest',
+        response_type_name='ListDeviceStatesResponse',
         supports_download=False,
     )
 
   class ProjectsLocationsRegistriesDevicesService(base_api.BaseApiService):
     """Service class for the projects_locations_registries_devices resource."""
 
-    _NAME = u'projects_locations_registries_devices'
+    _NAME = 'projects_locations_registries_devices'
 
     def __init__(self, client):
       super(CloudiotV1.ProjectsLocationsRegistriesDevicesService, self).__init__(client)
@@ -145,16 +145,16 @@ newest first).
           config, request, global_params=global_params)
 
     Create.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/locations/{locationsId}/registries/{registriesId}/devices',
-        http_method=u'POST',
-        method_id=u'cloudiot.projects.locations.registries.devices.create',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/registries/{registriesId}/devices',
+        http_method='POST',
+        method_id='cloudiot.projects.locations.registries.devices.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
         query_params=[],
-        relative_path=u'v1/{+parent}/devices',
-        request_field=u'device',
-        request_type_name=u'CloudiotProjectsLocationsRegistriesDevicesCreateRequest',
-        response_type_name=u'Device',
+        relative_path='v1/{+parent}/devices',
+        request_field='device',
+        request_type_name='CloudiotProjectsLocationsRegistriesDevicesCreateRequest',
+        response_type_name='Device',
         supports_download=False,
     )
 
@@ -172,16 +172,16 @@ newest first).
           config, request, global_params=global_params)
 
     Delete.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/locations/{locationsId}/registries/{registriesId}/devices/{devicesId}',
-        http_method=u'DELETE',
-        method_id=u'cloudiot.projects.locations.registries.devices.delete',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/registries/{registriesId}/devices/{devicesId}',
+        http_method='DELETE',
+        method_id='cloudiot.projects.locations.registries.devices.delete',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1/{+name}',
+        relative_path='v1/{+name}',
         request_field='',
-        request_type_name=u'CloudiotProjectsLocationsRegistriesDevicesDeleteRequest',
-        response_type_name=u'Empty',
+        request_type_name='CloudiotProjectsLocationsRegistriesDevicesDeleteRequest',
+        response_type_name='Empty',
         supports_download=False,
     )
 
@@ -199,16 +199,16 @@ newest first).
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/locations/{locationsId}/registries/{registriesId}/devices/{devicesId}',
-        http_method=u'GET',
-        method_id=u'cloudiot.projects.locations.registries.devices.get',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[u'fieldMask'],
-        relative_path=u'v1/{+name}',
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/registries/{registriesId}/devices/{devicesId}',
+        http_method='GET',
+        method_id='cloudiot.projects.locations.registries.devices.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['fieldMask'],
+        relative_path='v1/{+name}',
         request_field='',
-        request_type_name=u'CloudiotProjectsLocationsRegistriesDevicesGetRequest',
-        response_type_name=u'Device',
+        request_type_name='CloudiotProjectsLocationsRegistriesDevicesGetRequest',
+        response_type_name='Device',
         supports_download=False,
     )
 
@@ -226,16 +226,16 @@ newest first).
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/locations/{locationsId}/registries/{registriesId}/devices',
-        http_method=u'GET',
-        method_id=u'cloudiot.projects.locations.registries.devices.list',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'deviceIds', u'deviceNumIds', u'fieldMask', u'gatewayListOptions_associationsDeviceId', u'gatewayListOptions_associationsGatewayId', u'gatewayListOptions_gatewayType', u'pageSize', u'pageToken'],
-        relative_path=u'v1/{+parent}/devices',
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/registries/{registriesId}/devices',
+        http_method='GET',
+        method_id='cloudiot.projects.locations.registries.devices.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['deviceIds', 'deviceNumIds', 'fieldMask', 'gatewayListOptions_associationsDeviceId', 'gatewayListOptions_associationsGatewayId', 'gatewayListOptions_gatewayType', 'pageSize', 'pageToken'],
+        relative_path='v1/{+parent}/devices',
         request_field='',
-        request_type_name=u'CloudiotProjectsLocationsRegistriesDevicesListRequest',
-        response_type_name=u'ListDevicesResponse',
+        request_type_name='CloudiotProjectsLocationsRegistriesDevicesListRequest',
+        response_type_name='ListDevicesResponse',
         supports_download=False,
     )
 
@@ -255,16 +255,16 @@ its metadata.
           config, request, global_params=global_params)
 
     ModifyCloudToDeviceConfig.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/locations/{locationsId}/registries/{registriesId}/devices/{devicesId}:modifyCloudToDeviceConfig',
-        http_method=u'POST',
-        method_id=u'cloudiot.projects.locations.registries.devices.modifyCloudToDeviceConfig',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/registries/{registriesId}/devices/{devicesId}:modifyCloudToDeviceConfig',
+        http_method='POST',
+        method_id='cloudiot.projects.locations.registries.devices.modifyCloudToDeviceConfig',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1/{+name}:modifyCloudToDeviceConfig',
-        request_field=u'modifyCloudToDeviceConfigRequest',
-        request_type_name=u'CloudiotProjectsLocationsRegistriesDevicesModifyCloudToDeviceConfigRequest',
-        response_type_name=u'DeviceConfig',
+        relative_path='v1/{+name}:modifyCloudToDeviceConfig',
+        request_field='modifyCloudToDeviceConfigRequest',
+        request_type_name='CloudiotProjectsLocationsRegistriesDevicesModifyCloudToDeviceConfigRequest',
+        response_type_name='DeviceConfig',
         supports_download=False,
     )
 
@@ -282,16 +282,16 @@ its metadata.
           config, request, global_params=global_params)
 
     Patch.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/locations/{locationsId}/registries/{registriesId}/devices/{devicesId}',
-        http_method=u'PATCH',
-        method_id=u'cloudiot.projects.locations.registries.devices.patch',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[u'updateMask'],
-        relative_path=u'v1/{+name}',
-        request_field=u'device',
-        request_type_name=u'CloudiotProjectsLocationsRegistriesDevicesPatchRequest',
-        response_type_name=u'Device',
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/registries/{registriesId}/devices/{devicesId}',
+        http_method='PATCH',
+        method_id='cloudiot.projects.locations.registries.devices.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v1/{+name}',
+        request_field='device',
+        request_type_name='CloudiotProjectsLocationsRegistriesDevicesPatchRequest',
+        response_type_name='Device',
         supports_download=False,
     )
 
@@ -321,23 +321,23 @@ guaranteed; for QoS 0, no acknowledgment will be expected from the device.
           config, request, global_params=global_params)
 
     SendCommandToDevice.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/locations/{locationsId}/registries/{registriesId}/devices/{devicesId}:sendCommandToDevice',
-        http_method=u'POST',
-        method_id=u'cloudiot.projects.locations.registries.devices.sendCommandToDevice',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/registries/{registriesId}/devices/{devicesId}:sendCommandToDevice',
+        http_method='POST',
+        method_id='cloudiot.projects.locations.registries.devices.sendCommandToDevice',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1/{+name}:sendCommandToDevice',
-        request_field=u'sendCommandToDeviceRequest',
-        request_type_name=u'CloudiotProjectsLocationsRegistriesDevicesSendCommandToDeviceRequest',
-        response_type_name=u'SendCommandToDeviceResponse',
+        relative_path='v1/{+name}:sendCommandToDevice',
+        request_field='sendCommandToDeviceRequest',
+        request_type_name='CloudiotProjectsLocationsRegistriesDevicesSendCommandToDeviceRequest',
+        response_type_name='SendCommandToDeviceResponse',
         supports_download=False,
     )
 
   class ProjectsLocationsRegistriesGroupsDevicesService(base_api.BaseApiService):
     """Service class for the projects_locations_registries_groups_devices resource."""
 
-    _NAME = u'projects_locations_registries_groups_devices'
+    _NAME = 'projects_locations_registries_groups_devices'
 
     def __init__(self, client):
       super(CloudiotV1.ProjectsLocationsRegistriesGroupsDevicesService, self).__init__(client)
@@ -358,23 +358,23 @@ guaranteed; for QoS 0, no acknowledgment will be expected from the device.
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/locations/{locationsId}/registries/{registriesId}/groups/{groupsId}/devices',
-        http_method=u'GET',
-        method_id=u'cloudiot.projects.locations.registries.groups.devices.list',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'deviceIds', u'deviceNumIds', u'fieldMask', u'gatewayListOptions_associationsDeviceId', u'gatewayListOptions_associationsGatewayId', u'gatewayListOptions_gatewayType', u'pageSize', u'pageToken'],
-        relative_path=u'v1/{+parent}/devices',
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/registries/{registriesId}/groups/{groupsId}/devices',
+        http_method='GET',
+        method_id='cloudiot.projects.locations.registries.groups.devices.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['deviceIds', 'deviceNumIds', 'fieldMask', 'gatewayListOptions_associationsDeviceId', 'gatewayListOptions_associationsGatewayId', 'gatewayListOptions_gatewayType', 'pageSize', 'pageToken'],
+        relative_path='v1/{+parent}/devices',
         request_field='',
-        request_type_name=u'CloudiotProjectsLocationsRegistriesGroupsDevicesListRequest',
-        response_type_name=u'ListDevicesResponse',
+        request_type_name='CloudiotProjectsLocationsRegistriesGroupsDevicesListRequest',
+        response_type_name='ListDevicesResponse',
         supports_download=False,
     )
 
   class ProjectsLocationsRegistriesGroupsService(base_api.BaseApiService):
     """Service class for the projects_locations_registries_groups resource."""
 
-    _NAME = u'projects_locations_registries_groups'
+    _NAME = 'projects_locations_registries_groups'
 
     def __init__(self, client):
       super(CloudiotV1.ProjectsLocationsRegistriesGroupsService, self).__init__(client)
@@ -397,16 +397,16 @@ set.
           config, request, global_params=global_params)
 
     GetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/locations/{locationsId}/registries/{registriesId}/groups/{groupsId}:getIamPolicy',
-        http_method=u'POST',
-        method_id=u'cloudiot.projects.locations.registries.groups.getIamPolicy',
-        ordered_params=[u'resource'],
-        path_params=[u'resource'],
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/registries/{registriesId}/groups/{groupsId}:getIamPolicy',
+        http_method='POST',
+        method_id='cloudiot.projects.locations.registries.groups.getIamPolicy',
+        ordered_params=['resource'],
+        path_params=['resource'],
         query_params=[],
-        relative_path=u'v1/{+resource}:getIamPolicy',
-        request_field=u'getIamPolicyRequest',
-        request_type_name=u'CloudiotProjectsLocationsRegistriesGroupsGetIamPolicyRequest',
-        response_type_name=u'Policy',
+        relative_path='v1/{+resource}:getIamPolicy',
+        request_field='getIamPolicyRequest',
+        request_type_name='CloudiotProjectsLocationsRegistriesGroupsGetIamPolicyRequest',
+        response_type_name='Policy',
         supports_download=False,
     )
 
@@ -425,16 +425,16 @@ existing policy.
           config, request, global_params=global_params)
 
     SetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/locations/{locationsId}/registries/{registriesId}/groups/{groupsId}:setIamPolicy',
-        http_method=u'POST',
-        method_id=u'cloudiot.projects.locations.registries.groups.setIamPolicy',
-        ordered_params=[u'resource'],
-        path_params=[u'resource'],
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/registries/{registriesId}/groups/{groupsId}:setIamPolicy',
+        http_method='POST',
+        method_id='cloudiot.projects.locations.registries.groups.setIamPolicy',
+        ordered_params=['resource'],
+        path_params=['resource'],
         query_params=[],
-        relative_path=u'v1/{+resource}:setIamPolicy',
-        request_field=u'setIamPolicyRequest',
-        request_type_name=u'CloudiotProjectsLocationsRegistriesGroupsSetIamPolicyRequest',
-        response_type_name=u'Policy',
+        relative_path='v1/{+resource}:setIamPolicy',
+        request_field='setIamPolicyRequest',
+        request_type_name='CloudiotProjectsLocationsRegistriesGroupsSetIamPolicyRequest',
+        response_type_name='Policy',
         supports_download=False,
     )
 
@@ -454,23 +454,23 @@ permissions, not a NOT_FOUND error.
           config, request, global_params=global_params)
 
     TestIamPermissions.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/locations/{locationsId}/registries/{registriesId}/groups/{groupsId}:testIamPermissions',
-        http_method=u'POST',
-        method_id=u'cloudiot.projects.locations.registries.groups.testIamPermissions',
-        ordered_params=[u'resource'],
-        path_params=[u'resource'],
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/registries/{registriesId}/groups/{groupsId}:testIamPermissions',
+        http_method='POST',
+        method_id='cloudiot.projects.locations.registries.groups.testIamPermissions',
+        ordered_params=['resource'],
+        path_params=['resource'],
         query_params=[],
-        relative_path=u'v1/{+resource}:testIamPermissions',
-        request_field=u'testIamPermissionsRequest',
-        request_type_name=u'CloudiotProjectsLocationsRegistriesGroupsTestIamPermissionsRequest',
-        response_type_name=u'TestIamPermissionsResponse',
+        relative_path='v1/{+resource}:testIamPermissions',
+        request_field='testIamPermissionsRequest',
+        request_type_name='CloudiotProjectsLocationsRegistriesGroupsTestIamPermissionsRequest',
+        response_type_name='TestIamPermissionsResponse',
         supports_download=False,
     )
 
   class ProjectsLocationsRegistriesService(base_api.BaseApiService):
     """Service class for the projects_locations_registries resource."""
 
-    _NAME = u'projects_locations_registries'
+    _NAME = 'projects_locations_registries'
 
     def __init__(self, client):
       super(CloudiotV1.ProjectsLocationsRegistriesService, self).__init__(client)
@@ -491,16 +491,16 @@ permissions, not a NOT_FOUND error.
           config, request, global_params=global_params)
 
     BindDeviceToGateway.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/locations/{locationsId}/registries/{registriesId}:bindDeviceToGateway',
-        http_method=u'POST',
-        method_id=u'cloudiot.projects.locations.registries.bindDeviceToGateway',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/registries/{registriesId}:bindDeviceToGateway',
+        http_method='POST',
+        method_id='cloudiot.projects.locations.registries.bindDeviceToGateway',
+        ordered_params=['parent'],
+        path_params=['parent'],
         query_params=[],
-        relative_path=u'v1/{+parent}:bindDeviceToGateway',
-        request_field=u'bindDeviceToGatewayRequest',
-        request_type_name=u'CloudiotProjectsLocationsRegistriesBindDeviceToGatewayRequest',
-        response_type_name=u'BindDeviceToGatewayResponse',
+        relative_path='v1/{+parent}:bindDeviceToGateway',
+        request_field='bindDeviceToGatewayRequest',
+        request_type_name='CloudiotProjectsLocationsRegistriesBindDeviceToGatewayRequest',
+        response_type_name='BindDeviceToGatewayResponse',
         supports_download=False,
     )
 
@@ -518,16 +518,16 @@ permissions, not a NOT_FOUND error.
           config, request, global_params=global_params)
 
     Create.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/locations/{locationsId}/registries',
-        http_method=u'POST',
-        method_id=u'cloudiot.projects.locations.registries.create',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/registries',
+        http_method='POST',
+        method_id='cloudiot.projects.locations.registries.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
         query_params=[],
-        relative_path=u'v1/{+parent}/registries',
-        request_field=u'deviceRegistry',
-        request_type_name=u'CloudiotProjectsLocationsRegistriesCreateRequest',
-        response_type_name=u'DeviceRegistry',
+        relative_path='v1/{+parent}/registries',
+        request_field='deviceRegistry',
+        request_type_name='CloudiotProjectsLocationsRegistriesCreateRequest',
+        response_type_name='DeviceRegistry',
         supports_download=False,
     )
 
@@ -545,16 +545,16 @@ permissions, not a NOT_FOUND error.
           config, request, global_params=global_params)
 
     Delete.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/locations/{locationsId}/registries/{registriesId}',
-        http_method=u'DELETE',
-        method_id=u'cloudiot.projects.locations.registries.delete',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/registries/{registriesId}',
+        http_method='DELETE',
+        method_id='cloudiot.projects.locations.registries.delete',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1/{+name}',
+        relative_path='v1/{+name}',
         request_field='',
-        request_type_name=u'CloudiotProjectsLocationsRegistriesDeleteRequest',
-        response_type_name=u'Empty',
+        request_type_name='CloudiotProjectsLocationsRegistriesDeleteRequest',
+        response_type_name='Empty',
         supports_download=False,
     )
 
@@ -572,16 +572,16 @@ permissions, not a NOT_FOUND error.
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/locations/{locationsId}/registries/{registriesId}',
-        http_method=u'GET',
-        method_id=u'cloudiot.projects.locations.registries.get',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/registries/{registriesId}',
+        http_method='GET',
+        method_id='cloudiot.projects.locations.registries.get',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1/{+name}',
+        relative_path='v1/{+name}',
         request_field='',
-        request_type_name=u'CloudiotProjectsLocationsRegistriesGetRequest',
-        response_type_name=u'DeviceRegistry',
+        request_type_name='CloudiotProjectsLocationsRegistriesGetRequest',
+        response_type_name='DeviceRegistry',
         supports_download=False,
     )
 
@@ -601,16 +601,16 @@ set.
           config, request, global_params=global_params)
 
     GetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/locations/{locationsId}/registries/{registriesId}:getIamPolicy',
-        http_method=u'POST',
-        method_id=u'cloudiot.projects.locations.registries.getIamPolicy',
-        ordered_params=[u'resource'],
-        path_params=[u'resource'],
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/registries/{registriesId}:getIamPolicy',
+        http_method='POST',
+        method_id='cloudiot.projects.locations.registries.getIamPolicy',
+        ordered_params=['resource'],
+        path_params=['resource'],
         query_params=[],
-        relative_path=u'v1/{+resource}:getIamPolicy',
-        request_field=u'getIamPolicyRequest',
-        request_type_name=u'CloudiotProjectsLocationsRegistriesGetIamPolicyRequest',
-        response_type_name=u'Policy',
+        relative_path='v1/{+resource}:getIamPolicy',
+        request_field='getIamPolicyRequest',
+        request_type_name='CloudiotProjectsLocationsRegistriesGetIamPolicyRequest',
+        response_type_name='Policy',
         supports_download=False,
     )
 
@@ -628,16 +628,16 @@ set.
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/locations/{locationsId}/registries',
-        http_method=u'GET',
-        method_id=u'cloudiot.projects.locations.registries.list',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'pageSize', u'pageToken'],
-        relative_path=u'v1/{+parent}/registries',
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/registries',
+        http_method='GET',
+        method_id='cloudiot.projects.locations.registries.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v1/{+parent}/registries',
         request_field='',
-        request_type_name=u'CloudiotProjectsLocationsRegistriesListRequest',
-        response_type_name=u'ListDeviceRegistriesResponse',
+        request_type_name='CloudiotProjectsLocationsRegistriesListRequest',
+        response_type_name='ListDeviceRegistriesResponse',
         supports_download=False,
     )
 
@@ -655,16 +655,16 @@ set.
           config, request, global_params=global_params)
 
     Patch.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/locations/{locationsId}/registries/{registriesId}',
-        http_method=u'PATCH',
-        method_id=u'cloudiot.projects.locations.registries.patch',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[u'updateMask'],
-        relative_path=u'v1/{+name}',
-        request_field=u'deviceRegistry',
-        request_type_name=u'CloudiotProjectsLocationsRegistriesPatchRequest',
-        response_type_name=u'DeviceRegistry',
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/registries/{registriesId}',
+        http_method='PATCH',
+        method_id='cloudiot.projects.locations.registries.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v1/{+name}',
+        request_field='deviceRegistry',
+        request_type_name='CloudiotProjectsLocationsRegistriesPatchRequest',
+        response_type_name='DeviceRegistry',
         supports_download=False,
     )
 
@@ -683,16 +683,16 @@ existing policy.
           config, request, global_params=global_params)
 
     SetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/locations/{locationsId}/registries/{registriesId}:setIamPolicy',
-        http_method=u'POST',
-        method_id=u'cloudiot.projects.locations.registries.setIamPolicy',
-        ordered_params=[u'resource'],
-        path_params=[u'resource'],
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/registries/{registriesId}:setIamPolicy',
+        http_method='POST',
+        method_id='cloudiot.projects.locations.registries.setIamPolicy',
+        ordered_params=['resource'],
+        path_params=['resource'],
         query_params=[],
-        relative_path=u'v1/{+resource}:setIamPolicy',
-        request_field=u'setIamPolicyRequest',
-        request_type_name=u'CloudiotProjectsLocationsRegistriesSetIamPolicyRequest',
-        response_type_name=u'Policy',
+        relative_path='v1/{+resource}:setIamPolicy',
+        request_field='setIamPolicyRequest',
+        request_type_name='CloudiotProjectsLocationsRegistriesSetIamPolicyRequest',
+        response_type_name='Policy',
         supports_download=False,
     )
 
@@ -712,16 +712,16 @@ permissions, not a NOT_FOUND error.
           config, request, global_params=global_params)
 
     TestIamPermissions.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/locations/{locationsId}/registries/{registriesId}:testIamPermissions',
-        http_method=u'POST',
-        method_id=u'cloudiot.projects.locations.registries.testIamPermissions',
-        ordered_params=[u'resource'],
-        path_params=[u'resource'],
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/registries/{registriesId}:testIamPermissions',
+        http_method='POST',
+        method_id='cloudiot.projects.locations.registries.testIamPermissions',
+        ordered_params=['resource'],
+        path_params=['resource'],
         query_params=[],
-        relative_path=u'v1/{+resource}:testIamPermissions',
-        request_field=u'testIamPermissionsRequest',
-        request_type_name=u'CloudiotProjectsLocationsRegistriesTestIamPermissionsRequest',
-        response_type_name=u'TestIamPermissionsResponse',
+        relative_path='v1/{+resource}:testIamPermissions',
+        request_field='testIamPermissionsRequest',
+        request_type_name='CloudiotProjectsLocationsRegistriesTestIamPermissionsRequest',
+        response_type_name='TestIamPermissionsResponse',
         supports_download=False,
     )
 
@@ -739,23 +739,23 @@ permissions, not a NOT_FOUND error.
           config, request, global_params=global_params)
 
     UnbindDeviceFromGateway.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/locations/{locationsId}/registries/{registriesId}:unbindDeviceFromGateway',
-        http_method=u'POST',
-        method_id=u'cloudiot.projects.locations.registries.unbindDeviceFromGateway',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/registries/{registriesId}:unbindDeviceFromGateway',
+        http_method='POST',
+        method_id='cloudiot.projects.locations.registries.unbindDeviceFromGateway',
+        ordered_params=['parent'],
+        path_params=['parent'],
         query_params=[],
-        relative_path=u'v1/{+parent}:unbindDeviceFromGateway',
-        request_field=u'unbindDeviceFromGatewayRequest',
-        request_type_name=u'CloudiotProjectsLocationsRegistriesUnbindDeviceFromGatewayRequest',
-        response_type_name=u'UnbindDeviceFromGatewayResponse',
+        relative_path='v1/{+parent}:unbindDeviceFromGateway',
+        request_field='unbindDeviceFromGatewayRequest',
+        request_type_name='CloudiotProjectsLocationsRegistriesUnbindDeviceFromGatewayRequest',
+        response_type_name='UnbindDeviceFromGatewayResponse',
         supports_download=False,
     )
 
   class ProjectsLocationsService(base_api.BaseApiService):
     """Service class for the projects_locations resource."""
 
-    _NAME = u'projects_locations'
+    _NAME = 'projects_locations'
 
     def __init__(self, client):
       super(CloudiotV1.ProjectsLocationsService, self).__init__(client)
@@ -765,7 +765,7 @@ permissions, not a NOT_FOUND error.
   class ProjectsService(base_api.BaseApiService):
     """Service class for the projects resource."""
 
-    _NAME = u'projects'
+    _NAME = 'projects'
 
     def __init__(self, client):
       super(CloudiotV1.ProjectsService, self).__init__(client)

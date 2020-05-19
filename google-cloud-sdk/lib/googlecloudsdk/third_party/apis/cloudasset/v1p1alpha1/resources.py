@@ -39,7 +39,7 @@ class Collections(enum.Enum):
               '{v1p1alpha1Id}/{v1p1alpha1Id1}/operations/{operationsId}/'
               '{operationsId1}',
       },
-      [u'name'],
+      ['name'],
       True
   )
 

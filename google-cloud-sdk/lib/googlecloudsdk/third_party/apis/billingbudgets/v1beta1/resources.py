@@ -28,7 +28,7 @@ class Collections(enum.Enum):
       'billingAccounts',
       'billingAccounts/{billingAccountsId}',
       {},
-      [u'billingAccountsId'],
+      ['billingAccountsId'],
       True
   )
   BILLINGACCOUNTS_BUDGETS = (
@@ -38,7 +38,7 @@ class Collections(enum.Enum):
           '':
               'billingAccounts/{billingAccountsId}/budgets/{budgetsId}',
       },
-      [u'name'],
+      ['name'],
       True
   )
 

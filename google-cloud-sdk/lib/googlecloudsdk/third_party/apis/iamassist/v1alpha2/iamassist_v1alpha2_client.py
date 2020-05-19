@@ -8,17 +8,17 @@ class IamassistV1alpha2(base_api.BaseApiClient):
   """Generated client library for service iamassist version v1alpha2."""
 
   MESSAGES_MODULE = messages
-  BASE_URL = u'https://iamassist.googleapis.com/'
-  MTLS_BASE_URL = u'https://iamassist.mtls.googleapis.com/'
+  BASE_URL = 'https://iamassist.googleapis.com/'
+  MTLS_BASE_URL = 'https://iamassist.mtls.googleapis.com/'
 
-  _PACKAGE = u'iamassist'
-  _SCOPES = [u'https://www.googleapis.com/auth/cloud-platform']
-  _VERSION = u'v1alpha2'
+  _PACKAGE = 'iamassist'
+  _SCOPES = ['https://www.googleapis.com/auth/cloud-platform']
+  _VERSION = 'v1alpha2'
   _CLIENT_ID = '1042881264118.apps.googleusercontent.com'
   _CLIENT_SECRET = 'x_Tw5K8nnjoRAqULM9PFAC2b'
-  _USER_AGENT = u'google-cloud-sdk'
-  _CLIENT_CLASS_NAME = u'IamassistV1alpha2'
-  _URL_VERSION = u'v1alpha2'
+  _USER_AGENT = 'google-cloud-sdk'
+  _CLIENT_CLASS_NAME = 'IamassistV1alpha2'
+  _URL_VERSION = 'v1alpha2'
   _API_KEY = None
 
   def __init__(self, url='', credentials=None,
@@ -41,7 +41,7 @@ class IamassistV1alpha2(base_api.BaseApiClient):
   class SimulatorService(base_api.BaseApiService):
     """Service class for the simulator resource."""
 
-    _NAME = u'simulator'
+    _NAME = 'simulator'
 
     def __init__(self, client):
       super(IamassistV1alpha2.SimulatorService, self).__init__(client)
@@ -64,15 +64,15 @@ to their mapped resources.
           config, request, global_params=global_params)
 
     CheckAccess.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'iamassist.simulator.checkAccess',
+        http_method='POST',
+        method_id='iamassist.simulator.checkAccess',
         ordered_params=[],
         path_params=[],
         query_params=[],
-        relative_path=u'v1alpha2/simulator:checkAccess',
+        relative_path='v1alpha2/simulator:checkAccess',
         request_field='<request>',
-        request_type_name=u'GoogleIamAssistV1alpha2CheckAccessRequest',
-        response_type_name=u'GoogleIamAssistV1alpha2CheckAccessResponse',
+        request_type_name='GoogleIamAssistV1alpha2CheckAccessRequest',
+        response_type_name='GoogleIamAssistV1alpha2CheckAccessResponse',
         supports_download=False,
     )
 
@@ -99,14 +99,14 @@ only occurred within the past 7 days may not be captured by the replay.
           config, request, global_params=global_params)
 
     ReplayRecentAccesses.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'iamassist.simulator.replayRecentAccesses',
+        http_method='POST',
+        method_id='iamassist.simulator.replayRecentAccesses',
         ordered_params=[],
         path_params=[],
         query_params=[],
-        relative_path=u'v1alpha2/simulator:replayRecentAccesses',
+        relative_path='v1alpha2/simulator:replayRecentAccesses',
         request_field='<request>',
-        request_type_name=u'GoogleIamAssistV1alpha2ReplayRecentAccessesRequest',
-        response_type_name=u'GoogleLongrunningOperation',
+        request_type_name='GoogleIamAssistV1alpha2ReplayRecentAccessesRequest',
+        response_type_name='GoogleLongrunningOperation',
         supports_download=False,
     )

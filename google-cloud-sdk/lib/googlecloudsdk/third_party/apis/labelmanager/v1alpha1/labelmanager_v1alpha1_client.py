@@ -8,17 +8,17 @@ class LabelmanagerV1alpha1(base_api.BaseApiClient):
   """Generated client library for service labelmanager version v1alpha1."""
 
   MESSAGES_MODULE = messages
-  BASE_URL = u'https://labelmanager.googleapis.com/'
-  MTLS_BASE_URL = u'https://labelmanager.mtls.googleapis.com/'
+  BASE_URL = 'https://labelmanager.googleapis.com/'
+  MTLS_BASE_URL = 'https://labelmanager.mtls.googleapis.com/'
 
-  _PACKAGE = u'labelmanager'
-  _SCOPES = [u'https://www.googleapis.com/auth/cloud-platform']
-  _VERSION = u'v1alpha1'
+  _PACKAGE = 'labelmanager'
+  _SCOPES = ['https://www.googleapis.com/auth/cloud-platform']
+  _VERSION = 'v1alpha1'
   _CLIENT_ID = '1042881264118.apps.googleusercontent.com'
   _CLIENT_SECRET = 'x_Tw5K8nnjoRAqULM9PFAC2b'
-  _USER_AGENT = u'google-cloud-sdk'
-  _CLIENT_CLASS_NAME = u'LabelmanagerV1alpha1'
-  _URL_VERSION = u'v1alpha1'
+  _USER_AGENT = 'google-cloud-sdk'
+  _CLIENT_CLASS_NAME = 'LabelmanagerV1alpha1'
+  _URL_VERSION = 'v1alpha1'
   _API_KEY = None
 
   def __init__(self, url='', credentials=None,
@@ -44,7 +44,7 @@ class LabelmanagerV1alpha1(base_api.BaseApiClient):
   class LabelBindingsService(base_api.BaseApiService):
     """Service class for the labelBindings resource."""
 
-    _NAME = u'labelBindings'
+    _NAME = 'labelBindings'
 
     def __init__(self, client):
       super(LabelmanagerV1alpha1.LabelBindingsService, self).__init__(client)
@@ -66,15 +66,15 @@ class LabelmanagerV1alpha1(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Create.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'labelmanager.labelBindings.create',
+        http_method='POST',
+        method_id='labelmanager.labelBindings.create',
         ordered_params=[],
         path_params=[],
         query_params=[],
-        relative_path=u'v1alpha1/labelBindings',
+        relative_path='v1alpha1/labelBindings',
         request_field='<request>',
-        request_type_name=u'LabelBinding',
-        response_type_name=u'Operation',
+        request_type_name='LabelBinding',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -92,16 +92,16 @@ class LabelmanagerV1alpha1(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Delete.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha1/labelBindings/{labelBindingsId}',
-        http_method=u'DELETE',
-        method_id=u'labelmanager.labelBindings.delete',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1alpha1/labelBindings/{labelBindingsId}',
+        http_method='DELETE',
+        method_id='labelmanager.labelBindings.delete',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1alpha1/{+name}',
+        relative_path='v1alpha1/{+name}',
         request_field='',
-        request_type_name=u'LabelmanagerLabelBindingsDeleteRequest',
-        response_type_name=u'Operation',
+        request_type_name='LabelmanagerLabelBindingsDeleteRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -130,22 +130,22 @@ https://cloud.google.com/apis/design/resource_names#full_resource_name.
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'labelmanager.labelBindings.list',
+        http_method='GET',
+        method_id='labelmanager.labelBindings.list',
         ordered_params=[],
         path_params=[],
-        query_params=[u'filter', u'pageSize', u'pageToken'],
-        relative_path=u'v1alpha1/labelBindings',
+        query_params=['filter', 'pageSize', 'pageToken'],
+        relative_path='v1alpha1/labelBindings',
         request_field='',
-        request_type_name=u'LabelmanagerLabelBindingsListRequest',
-        response_type_name=u'ListLabelBindingsResponse',
+        request_type_name='LabelmanagerLabelBindingsListRequest',
+        response_type_name='ListLabelBindingsResponse',
         supports_download=False,
     )
 
   class LabelKeysService(base_api.BaseApiService):
     """Service class for the labelKeys resource."""
 
-    _NAME = u'labelKeys'
+    _NAME = 'labelKeys'
 
     def __init__(self, client):
       super(LabelmanagerV1alpha1.LabelKeysService, self).__init__(client)
@@ -169,15 +169,15 @@ state) can exist under a parent at any given time.
           config, request, global_params=global_params)
 
     Create.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'labelmanager.labelKeys.create',
+        http_method='POST',
+        method_id='labelmanager.labelKeys.create',
         ordered_params=[],
         path_params=[],
         query_params=[],
-        relative_path=u'v1alpha1/labelKeys',
+        relative_path='v1alpha1/labelKeys',
         request_field='<request>',
-        request_type_name=u'LabelKey',
-        response_type_name=u'Operation',
+        request_type_name='LabelKey',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -199,16 +199,16 @@ ACTIVE state.
           config, request, global_params=global_params)
 
     Delete.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha1/labelKeys/{labelKeysId}',
-        http_method=u'DELETE',
-        method_id=u'labelmanager.labelKeys.delete',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1alpha1/labelKeys/{labelKeysId}',
+        http_method='DELETE',
+        method_id='labelmanager.labelKeys.delete',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1alpha1/{+name}',
+        relative_path='v1alpha1/{+name}',
         request_field='',
-        request_type_name=u'LabelmanagerLabelKeysDeleteRequest',
-        response_type_name=u'Operation',
+        request_type_name='LabelmanagerLabelKeysDeleteRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -227,16 +227,16 @@ key does not exist or the user does not have permission to view it.
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha1/labelKeys/{labelKeysId}',
-        http_method=u'GET',
-        method_id=u'labelmanager.labelKeys.get',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1alpha1/labelKeys/{labelKeysId}',
+        http_method='GET',
+        method_id='labelmanager.labelKeys.get',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1alpha1/{+name}',
+        relative_path='v1alpha1/{+name}',
         request_field='',
-        request_type_name=u'LabelmanagerLabelKeysGetRequest',
-        response_type_name=u'LabelKey',
+        request_type_name='LabelmanagerLabelKeysGetRequest',
+        response_type_name='LabelKey',
         supports_download=False,
     )
 
@@ -256,16 +256,16 @@ set.
           config, request, global_params=global_params)
 
     GetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha1/labelKeys/{labelKeysId}:getIamPolicy',
-        http_method=u'GET',
-        method_id=u'labelmanager.labelKeys.getIamPolicy',
-        ordered_params=[u'resource'],
-        path_params=[u'resource'],
-        query_params=[u'options_requestedPolicyVersion'],
-        relative_path=u'v1alpha1/{+resource}:getIamPolicy',
+        flat_path='v1alpha1/labelKeys/{labelKeysId}:getIamPolicy',
+        http_method='GET',
+        method_id='labelmanager.labelKeys.getIamPolicy',
+        ordered_params=['resource'],
+        path_params=['resource'],
+        query_params=['options_requestedPolicyVersion'],
+        relative_path='v1alpha1/{+resource}:getIamPolicy',
         request_field='',
-        request_type_name=u'LabelmanagerLabelKeysGetIamPolicyRequest',
-        response_type_name=u'Policy',
+        request_type_name='LabelmanagerLabelKeysGetIamPolicyRequest',
+        response_type_name='Policy',
         supports_download=False,
     )
 
@@ -283,15 +283,15 @@ set.
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'labelmanager.labelKeys.list',
+        http_method='GET',
+        method_id='labelmanager.labelKeys.list',
         ordered_params=[],
         path_params=[],
-        query_params=[u'pageSize', u'pageToken', u'parent', u'showDeleted'],
-        relative_path=u'v1alpha1/labelKeys',
+        query_params=['pageSize', 'pageToken', 'parent', 'showDeleted'],
+        relative_path='v1alpha1/labelKeys',
         request_field='',
-        request_type_name=u'LabelmanagerLabelKeysListRequest',
-        response_type_name=u'ListLabelKeysResponse',
+        request_type_name='LabelmanagerLabelKeysListRequest',
+        response_type_name='ListLabelKeysResponse',
         supports_download=False,
     )
 
@@ -309,16 +309,16 @@ set.
           config, request, global_params=global_params)
 
     Patch.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha1/labelKeys/{labelKeysId}',
-        http_method=u'PATCH',
-        method_id=u'labelmanager.labelKeys.patch',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[u'updateMask'],
-        relative_path=u'v1alpha1/{+name}',
-        request_field=u'labelKey',
-        request_type_name=u'LabelmanagerLabelKeysPatchRequest',
-        response_type_name=u'Operation',
+        flat_path='v1alpha1/labelKeys/{labelKeysId}',
+        http_method='PATCH',
+        method_id='labelmanager.labelKeys.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v1alpha1/{+name}',
+        request_field='labelKey',
+        request_type_name='LabelmanagerLabelKeysPatchRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -339,16 +339,16 @@ Can return `NOT_FOUND`, `INVALID_ARGUMENT`, and `PERMISSION_DENIED` errors.
           config, request, global_params=global_params)
 
     SetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha1/labelKeys/{labelKeysId}:setIamPolicy',
-        http_method=u'POST',
-        method_id=u'labelmanager.labelKeys.setIamPolicy',
-        ordered_params=[u'resource'],
-        path_params=[u'resource'],
+        flat_path='v1alpha1/labelKeys/{labelKeysId}:setIamPolicy',
+        http_method='POST',
+        method_id='labelmanager.labelKeys.setIamPolicy',
+        ordered_params=['resource'],
+        path_params=['resource'],
         query_params=[],
-        relative_path=u'v1alpha1/{+resource}:setIamPolicy',
-        request_field=u'setIamPolicyRequest',
-        request_type_name=u'LabelmanagerLabelKeysSetIamPolicyRequest',
-        response_type_name=u'Policy',
+        relative_path='v1alpha1/{+resource}:setIamPolicy',
+        request_field='setIamPolicyRequest',
+        request_type_name='LabelmanagerLabelKeysSetIamPolicyRequest',
+        response_type_name='Policy',
         supports_download=False,
     )
 
@@ -372,16 +372,16 @@ may "fail open" without warning.
           config, request, global_params=global_params)
 
     TestIamPermissions.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha1/labelKeys/{labelKeysId}:testIamPermissions',
-        http_method=u'POST',
-        method_id=u'labelmanager.labelKeys.testIamPermissions',
-        ordered_params=[u'resource'],
-        path_params=[u'resource'],
+        flat_path='v1alpha1/labelKeys/{labelKeysId}:testIamPermissions',
+        http_method='POST',
+        method_id='labelmanager.labelKeys.testIamPermissions',
+        ordered_params=['resource'],
+        path_params=['resource'],
         query_params=[],
-        relative_path=u'v1alpha1/{+resource}:testIamPermissions',
-        request_field=u'testIamPermissionsRequest',
-        request_type_name=u'LabelmanagerLabelKeysTestIamPermissionsRequest',
-        response_type_name=u'TestIamPermissionsResponse',
+        relative_path='v1alpha1/{+resource}:testIamPermissions',
+        request_field='testIamPermissionsRequest',
+        request_type_name='LabelmanagerLabelKeysTestIamPermissionsRequest',
+        response_type_name='TestIamPermissionsResponse',
         supports_download=False,
     )
 
@@ -402,23 +402,23 @@ In order to succeed, the LabelKey's parent must be in the active state.
           config, request, global_params=global_params)
 
     Undelete.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha1/labelKeys/{labelKeysId}:undelete',
-        http_method=u'POST',
-        method_id=u'labelmanager.labelKeys.undelete',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1alpha1/labelKeys/{labelKeysId}:undelete',
+        http_method='POST',
+        method_id='labelmanager.labelKeys.undelete',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1alpha1/{+name}:undelete',
-        request_field=u'undeleteLabelKeyRequest',
-        request_type_name=u'LabelmanagerLabelKeysUndeleteRequest',
-        response_type_name=u'Operation',
+        relative_path='v1alpha1/{+name}:undelete',
+        request_field='undeleteLabelKeyRequest',
+        request_type_name='LabelmanagerLabelKeysUndeleteRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
   class LabelValuesService(base_api.BaseApiService):
     """Service class for the labelValues resource."""
 
-    _NAME = u'labelValues'
+    _NAME = 'labelValues'
 
     def __init__(self, client):
       super(LabelmanagerV1alpha1.LabelValuesService, self).__init__(client)
@@ -443,15 +443,15 @@ given time.
           config, request, global_params=global_params)
 
     Create.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'labelmanager.labelValues.create',
+        http_method='POST',
+        method_id='labelmanager.labelValues.create',
         ordered_params=[],
         path_params=[],
         query_params=[],
-        relative_path=u'v1alpha1/labelValues',
+        relative_path='v1alpha1/labelValues',
         request_field='<request>',
-        request_type_name=u'LabelValue',
-        response_type_name=u'Operation',
+        request_type_name='LabelValue',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -472,16 +472,16 @@ cannot have any bindings when it is deleted.
           config, request, global_params=global_params)
 
     Delete.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha1/labelValues/{labelValuesId}',
-        http_method=u'DELETE',
-        method_id=u'labelmanager.labelValues.delete',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1alpha1/labelValues/{labelValuesId}',
+        http_method='DELETE',
+        method_id='labelmanager.labelValues.delete',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1alpha1/{+name}',
+        relative_path='v1alpha1/{+name}',
         request_field='',
-        request_type_name=u'LabelmanagerLabelValuesDeleteRequest',
-        response_type_name=u'Operation',
+        request_type_name='LabelmanagerLabelValuesDeleteRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -500,16 +500,16 @@ LabelValue does not exist or the user does not have permission to view it.
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha1/labelValues/{labelValuesId}',
-        http_method=u'GET',
-        method_id=u'labelmanager.labelValues.get',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1alpha1/labelValues/{labelValuesId}',
+        http_method='GET',
+        method_id='labelmanager.labelValues.get',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1alpha1/{+name}',
+        relative_path='v1alpha1/{+name}',
         request_field='',
-        request_type_name=u'LabelmanagerLabelValuesGetRequest',
-        response_type_name=u'LabelValue',
+        request_type_name='LabelmanagerLabelValuesGetRequest',
+        response_type_name='LabelValue',
         supports_download=False,
     )
 
@@ -527,15 +527,15 @@ LabelValue does not exist or the user does not have permission to view it.
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'labelmanager.labelValues.list',
+        http_method='GET',
+        method_id='labelmanager.labelValues.list',
         ordered_params=[],
         path_params=[],
-        query_params=[u'pageSize', u'pageToken', u'parent', u'showDeleted'],
-        relative_path=u'v1alpha1/labelValues',
+        query_params=['pageSize', 'pageToken', 'parent', 'showDeleted'],
+        relative_path='v1alpha1/labelValues',
         request_field='',
-        request_type_name=u'LabelmanagerLabelValuesListRequest',
-        response_type_name=u'ListLabelValuesResponse',
+        request_type_name='LabelmanagerLabelValuesListRequest',
+        response_type_name='ListLabelValuesResponse',
         supports_download=False,
     )
 
@@ -553,16 +553,16 @@ LabelValue does not exist or the user does not have permission to view it.
           config, request, global_params=global_params)
 
     Patch.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha1/labelValues/{labelValuesId}',
-        http_method=u'PATCH',
-        method_id=u'labelmanager.labelValues.patch',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[u'updateMask'],
-        relative_path=u'v1alpha1/{+name}',
-        request_field=u'labelValue',
-        request_type_name=u'LabelmanagerLabelValuesPatchRequest',
-        response_type_name=u'Operation',
+        flat_path='v1alpha1/labelValues/{labelValuesId}',
+        http_method='PATCH',
+        method_id='labelmanager.labelValues.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v1alpha1/{+name}',
+        request_field='labelValue',
+        request_type_name='LabelmanagerLabelValuesPatchRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -584,23 +584,23 @@ ACTIVE state.
           config, request, global_params=global_params)
 
     Undelete.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha1/labelValues/{labelValuesId}:undelete',
-        http_method=u'POST',
-        method_id=u'labelmanager.labelValues.undelete',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1alpha1/labelValues/{labelValuesId}:undelete',
+        http_method='POST',
+        method_id='labelmanager.labelValues.undelete',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1alpha1/{+name}:undelete',
-        request_field=u'undeleteLabelValueRequest',
-        request_type_name=u'LabelmanagerLabelValuesUndeleteRequest',
-        response_type_name=u'Operation',
+        relative_path='v1alpha1/{+name}:undelete',
+        request_field='undeleteLabelValueRequest',
+        request_type_name='LabelmanagerLabelValuesUndeleteRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
   class OperationsService(base_api.BaseApiService):
     """Service class for the operations resource."""
 
-    _NAME = u'operations'
+    _NAME = 'operations'
 
     def __init__(self, client):
       super(LabelmanagerV1alpha1.OperationsService, self).__init__(client)
@@ -623,15 +623,15 @@ service.
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha1/operations/{operationsId}',
-        http_method=u'GET',
-        method_id=u'labelmanager.operations.get',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1alpha1/operations/{operationsId}',
+        http_method='GET',
+        method_id='labelmanager.operations.get',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1alpha1/{+name}',
+        relative_path='v1alpha1/{+name}',
         request_field='',
-        request_type_name=u'LabelmanagerOperationsGetRequest',
-        response_type_name=u'Operation',
+        request_type_name='LabelmanagerOperationsGetRequest',
+        response_type_name='Operation',
         supports_download=False,
     )

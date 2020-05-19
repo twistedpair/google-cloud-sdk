@@ -8,17 +8,17 @@ class CloudbuildV1(base_api.BaseApiClient):
   """Generated client library for service cloudbuild version v1."""
 
   MESSAGES_MODULE = messages
-  BASE_URL = u'https://cloudbuild.googleapis.com/'
-  MTLS_BASE_URL = u'https://cloudbuild.mtls.googleapis.com/'
+  BASE_URL = 'https://cloudbuild.googleapis.com/'
+  MTLS_BASE_URL = 'https://cloudbuild.mtls.googleapis.com/'
 
-  _PACKAGE = u'cloudbuild'
-  _SCOPES = [u'https://www.googleapis.com/auth/cloud-platform']
-  _VERSION = u'v1'
+  _PACKAGE = 'cloudbuild'
+  _SCOPES = ['https://www.googleapis.com/auth/cloud-platform']
+  _VERSION = 'v1'
   _CLIENT_ID = '1042881264118.apps.googleusercontent.com'
   _CLIENT_SECRET = 'x_Tw5K8nnjoRAqULM9PFAC2b'
-  _USER_AGENT = u'google-cloud-sdk'
-  _CLIENT_CLASS_NAME = u'CloudbuildV1'
-  _URL_VERSION = u'v1'
+  _USER_AGENT = 'google-cloud-sdk'
+  _CLIENT_CLASS_NAME = 'CloudbuildV1'
+  _URL_VERSION = 'v1'
   _API_KEY = None
 
   def __init__(self, url='', credentials=None,
@@ -44,7 +44,7 @@ class CloudbuildV1(base_api.BaseApiClient):
   class OperationsService(base_api.BaseApiService):
     """Service class for the operations resource."""
 
-    _NAME = u'operations'
+    _NAME = 'operations'
 
     def __init__(self, client):
       super(CloudbuildV1.OperationsService, self).__init__(client)
@@ -74,16 +74,16 @@ corresponding to `Code.CANCELLED`.
           config, request, global_params=global_params)
 
     Cancel.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/operations/{operationsId}:cancel',
-        http_method=u'POST',
-        method_id=u'cloudbuild.operations.cancel',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1/operations/{operationsId}:cancel',
+        http_method='POST',
+        method_id='cloudbuild.operations.cancel',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1/{+name}:cancel',
-        request_field=u'cancelOperationRequest',
-        request_type_name=u'CloudbuildOperationsCancelRequest',
-        response_type_name=u'Empty',
+        relative_path='v1/{+name}:cancel',
+        request_field='cancelOperationRequest',
+        request_type_name='CloudbuildOperationsCancelRequest',
+        response_type_name='Empty',
         supports_download=False,
     )
 
@@ -103,16 +103,16 @@ service.
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/operations/{operationsId}',
-        http_method=u'GET',
-        method_id=u'cloudbuild.operations.get',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1/operations/{operationsId}',
+        http_method='GET',
+        method_id='cloudbuild.operations.get',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1/{+name}',
+        relative_path='v1/{+name}',
         request_field='',
-        request_type_name=u'CloudbuildOperationsGetRequest',
-        response_type_name=u'Operation',
+        request_type_name='CloudbuildOperationsGetRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -139,23 +139,23 @@ is the parent resource, without the operations collection id.
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/operations',
-        http_method=u'GET',
-        method_id=u'cloudbuild.operations.list',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[u'filter', u'pageSize', u'pageToken'],
-        relative_path=u'v1/{+name}',
+        flat_path='v1/operations',
+        http_method='GET',
+        method_id='cloudbuild.operations.list',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['filter', 'pageSize', 'pageToken'],
+        relative_path='v1/{+name}',
         request_field='',
-        request_type_name=u'CloudbuildOperationsListRequest',
-        response_type_name=u'ListOperationsResponse',
+        request_type_name='CloudbuildOperationsListRequest',
+        response_type_name='ListOperationsResponse',
         supports_download=False,
     )
 
   class ProjectsBuildsService(base_api.BaseApiService):
     """Service class for the projects_builds resource."""
 
-    _NAME = u'projects_builds'
+    _NAME = 'projects_builds'
 
     def __init__(self, client):
       super(CloudbuildV1.ProjectsBuildsService, self).__init__(client)
@@ -176,15 +176,15 @@ is the parent resource, without the operations collection id.
           config, request, global_params=global_params)
 
     Cancel.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'cloudbuild.projects.builds.cancel',
-        ordered_params=[u'projectId', u'id'],
-        path_params=[u'id', u'projectId'],
+        http_method='POST',
+        method_id='cloudbuild.projects.builds.cancel',
+        ordered_params=['projectId', 'id'],
+        path_params=['id', 'projectId'],
         query_params=[],
-        relative_path=u'v1/projects/{projectId}/builds/{id}:cancel',
-        request_field=u'cancelBuildRequest',
-        request_type_name=u'CloudbuildProjectsBuildsCancelRequest',
-        response_type_name=u'Build',
+        relative_path='v1/projects/{projectId}/builds/{id}:cancel',
+        request_field='cancelBuildRequest',
+        request_type_name='CloudbuildProjectsBuildsCancelRequest',
+        response_type_name='Build',
         supports_download=False,
     )
 
@@ -206,15 +206,15 @@ ID. Pass the build ID to `GetBuild` to determine the build status (such as
           config, request, global_params=global_params)
 
     Create.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'cloudbuild.projects.builds.create',
-        ordered_params=[u'projectId'],
-        path_params=[u'projectId'],
+        http_method='POST',
+        method_id='cloudbuild.projects.builds.create',
+        ordered_params=['projectId'],
+        path_params=['projectId'],
         query_params=[],
-        relative_path=u'v1/projects/{projectId}/builds',
-        request_field=u'build',
-        request_type_name=u'CloudbuildProjectsBuildsCreateRequest',
-        response_type_name=u'Operation',
+        relative_path='v1/projects/{projectId}/builds',
+        request_field='build',
+        request_type_name='CloudbuildProjectsBuildsCreateRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -235,15 +235,15 @@ The `Build` that is returned includes its status (such as `SUCCESS`,
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'cloudbuild.projects.builds.get',
-        ordered_params=[u'projectId', u'id'],
-        path_params=[u'id', u'projectId'],
+        http_method='GET',
+        method_id='cloudbuild.projects.builds.get',
+        ordered_params=['projectId', 'id'],
+        path_params=['id', 'projectId'],
         query_params=[],
-        relative_path=u'v1/projects/{projectId}/builds/{id}',
+        relative_path='v1/projects/{projectId}/builds/{id}',
         request_field='',
-        request_type_name=u'CloudbuildProjectsBuildsGetRequest',
-        response_type_name=u'Build',
+        request_type_name='CloudbuildProjectsBuildsGetRequest',
+        response_type_name='Build',
         supports_download=False,
     )
 
@@ -264,15 +264,15 @@ successfully or unsuccessfully.
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'cloudbuild.projects.builds.list',
-        ordered_params=[u'projectId'],
-        path_params=[u'projectId'],
-        query_params=[u'filter', u'pageSize', u'pageToken'],
-        relative_path=u'v1/projects/{projectId}/builds',
+        http_method='GET',
+        method_id='cloudbuild.projects.builds.list',
+        ordered_params=['projectId'],
+        path_params=['projectId'],
+        query_params=['filter', 'pageSize', 'pageToken'],
+        relative_path='v1/projects/{projectId}/builds',
         request_field='',
-        request_type_name=u'CloudbuildProjectsBuildsListRequest',
-        response_type_name=u'ListBuildsResponse',
+        request_type_name='CloudbuildProjectsBuildsListRequest',
+        response_type_name='ListBuildsResponse',
         supports_download=False,
     )
 
@@ -316,22 +316,22 @@ lifecycle management settings.
           config, request, global_params=global_params)
 
     Retry.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'cloudbuild.projects.builds.retry',
-        ordered_params=[u'projectId', u'id'],
-        path_params=[u'id', u'projectId'],
+        http_method='POST',
+        method_id='cloudbuild.projects.builds.retry',
+        ordered_params=['projectId', 'id'],
+        path_params=['id', 'projectId'],
         query_params=[],
-        relative_path=u'v1/projects/{projectId}/builds/{id}:retry',
-        request_field=u'retryBuildRequest',
-        request_type_name=u'CloudbuildProjectsBuildsRetryRequest',
-        response_type_name=u'Operation',
+        relative_path='v1/projects/{projectId}/builds/{id}:retry',
+        request_field='retryBuildRequest',
+        request_type_name='CloudbuildProjectsBuildsRetryRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
   class ProjectsTriggersService(base_api.BaseApiService):
     """Service class for the projects_triggers resource."""
 
-    _NAME = u'projects_triggers'
+    _NAME = 'projects_triggers'
 
     def __init__(self, client):
       super(CloudbuildV1.ProjectsTriggersService, self).__init__(client)
@@ -354,15 +354,15 @@ This API is experimental.
           config, request, global_params=global_params)
 
     Create.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'cloudbuild.projects.triggers.create',
-        ordered_params=[u'projectId'],
-        path_params=[u'projectId'],
+        http_method='POST',
+        method_id='cloudbuild.projects.triggers.create',
+        ordered_params=['projectId'],
+        path_params=['projectId'],
         query_params=[],
-        relative_path=u'v1/projects/{projectId}/triggers',
-        request_field=u'buildTrigger',
-        request_type_name=u'CloudbuildProjectsTriggersCreateRequest',
-        response_type_name=u'BuildTrigger',
+        relative_path='v1/projects/{projectId}/triggers',
+        request_field='buildTrigger',
+        request_type_name='CloudbuildProjectsTriggersCreateRequest',
+        response_type_name='BuildTrigger',
         supports_download=False,
     )
 
@@ -382,15 +382,15 @@ This API is experimental.
           config, request, global_params=global_params)
 
     Delete.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'DELETE',
-        method_id=u'cloudbuild.projects.triggers.delete',
-        ordered_params=[u'projectId', u'triggerId'],
-        path_params=[u'projectId', u'triggerId'],
+        http_method='DELETE',
+        method_id='cloudbuild.projects.triggers.delete',
+        ordered_params=['projectId', 'triggerId'],
+        path_params=['projectId', 'triggerId'],
         query_params=[],
-        relative_path=u'v1/projects/{projectId}/triggers/{triggerId}',
+        relative_path='v1/projects/{projectId}/triggers/{triggerId}',
         request_field='',
-        request_type_name=u'CloudbuildProjectsTriggersDeleteRequest',
-        response_type_name=u'Empty',
+        request_type_name='CloudbuildProjectsTriggersDeleteRequest',
+        response_type_name='Empty',
         supports_download=False,
     )
 
@@ -410,15 +410,15 @@ This API is experimental.
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'cloudbuild.projects.triggers.get',
-        ordered_params=[u'projectId', u'triggerId'],
-        path_params=[u'projectId', u'triggerId'],
+        http_method='GET',
+        method_id='cloudbuild.projects.triggers.get',
+        ordered_params=['projectId', 'triggerId'],
+        path_params=['projectId', 'triggerId'],
         query_params=[],
-        relative_path=u'v1/projects/{projectId}/triggers/{triggerId}',
+        relative_path='v1/projects/{projectId}/triggers/{triggerId}',
         request_field='',
-        request_type_name=u'CloudbuildProjectsTriggersGetRequest',
-        response_type_name=u'BuildTrigger',
+        request_type_name='CloudbuildProjectsTriggersGetRequest',
+        response_type_name='BuildTrigger',
         supports_download=False,
     )
 
@@ -438,15 +438,15 @@ This API is experimental.
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'cloudbuild.projects.triggers.list',
-        ordered_params=[u'projectId'],
-        path_params=[u'projectId'],
-        query_params=[u'pageSize', u'pageToken'],
-        relative_path=u'v1/projects/{projectId}/triggers',
+        http_method='GET',
+        method_id='cloudbuild.projects.triggers.list',
+        ordered_params=['projectId'],
+        path_params=['projectId'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v1/projects/{projectId}/triggers',
         request_field='',
-        request_type_name=u'CloudbuildProjectsTriggersListRequest',
-        response_type_name=u'ListBuildTriggersResponse',
+        request_type_name='CloudbuildProjectsTriggersListRequest',
+        response_type_name='ListBuildTriggersResponse',
         supports_download=False,
     )
 
@@ -466,15 +466,15 @@ This API is experimental.
           config, request, global_params=global_params)
 
     Patch.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'PATCH',
-        method_id=u'cloudbuild.projects.triggers.patch',
-        ordered_params=[u'projectId', u'triggerId'],
-        path_params=[u'projectId', u'triggerId'],
+        http_method='PATCH',
+        method_id='cloudbuild.projects.triggers.patch',
+        ordered_params=['projectId', 'triggerId'],
+        path_params=['projectId', 'triggerId'],
         query_params=[],
-        relative_path=u'v1/projects/{projectId}/triggers/{triggerId}',
-        request_field=u'buildTrigger',
-        request_type_name=u'CloudbuildProjectsTriggersPatchRequest',
-        response_type_name=u'BuildTrigger',
+        relative_path='v1/projects/{projectId}/triggers/{triggerId}',
+        request_field='buildTrigger',
+        request_type_name='CloudbuildProjectsTriggersPatchRequest',
+        response_type_name='BuildTrigger',
         supports_download=False,
     )
 
@@ -492,22 +492,22 @@ This API is experimental.
           config, request, global_params=global_params)
 
     Run.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'cloudbuild.projects.triggers.run',
-        ordered_params=[u'projectId', u'triggerId'],
-        path_params=[u'projectId', u'triggerId'],
+        http_method='POST',
+        method_id='cloudbuild.projects.triggers.run',
+        ordered_params=['projectId', 'triggerId'],
+        path_params=['projectId', 'triggerId'],
         query_params=[],
-        relative_path=u'v1/projects/{projectId}/triggers/{triggerId}:run',
-        request_field=u'repoSource',
-        request_type_name=u'CloudbuildProjectsTriggersRunRequest',
-        response_type_name=u'Operation',
+        relative_path='v1/projects/{projectId}/triggers/{triggerId}:run',
+        request_field='repoSource',
+        request_type_name='CloudbuildProjectsTriggersRunRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
   class ProjectsService(base_api.BaseApiService):
     """Service class for the projects resource."""
 
-    _NAME = u'projects'
+    _NAME = 'projects'
 
     def __init__(self, client):
       super(CloudbuildV1.ProjectsService, self).__init__(client)

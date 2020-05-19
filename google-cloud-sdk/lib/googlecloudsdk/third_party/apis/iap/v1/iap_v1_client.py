@@ -8,17 +8,17 @@ class IapV1(base_api.BaseApiClient):
   """Generated client library for service iap version v1."""
 
   MESSAGES_MODULE = messages
-  BASE_URL = u'https://iap.googleapis.com/'
-  MTLS_BASE_URL = u'https://iap.mtls.googleapis.com/'
+  BASE_URL = 'https://iap.googleapis.com/'
+  MTLS_BASE_URL = 'https://iap.mtls.googleapis.com/'
 
-  _PACKAGE = u'iap'
-  _SCOPES = [u'https://www.googleapis.com/auth/cloud-platform']
-  _VERSION = u'v1'
+  _PACKAGE = 'iap'
+  _SCOPES = ['https://www.googleapis.com/auth/cloud-platform']
+  _VERSION = 'v1'
   _CLIENT_ID = '1042881264118.apps.googleusercontent.com'
   _CLIENT_SECRET = 'x_Tw5K8nnjoRAqULM9PFAC2b'
-  _USER_AGENT = u'google-cloud-sdk'
-  _CLIENT_CLASS_NAME = u'IapV1'
-  _URL_VERSION = u'v1'
+  _USER_AGENT = 'google-cloud-sdk'
+  _CLIENT_CLASS_NAME = 'IapV1'
+  _URL_VERSION = 'v1'
   _API_KEY = None
 
   def __init__(self, url='', credentials=None,
@@ -44,7 +44,7 @@ class IapV1(base_api.BaseApiClient):
   class ProjectsBrandsIdentityAwareProxyClientsService(base_api.BaseApiService):
     """Service class for the projects_brands_identityAwareProxyClients resource."""
 
-    _NAME = u'projects_brands_identityAwareProxyClients'
+    _NAME = 'projects_brands_identityAwareProxyClients'
 
     def __init__(self, client):
       super(IapV1.ProjectsBrandsIdentityAwareProxyClientsService, self).__init__(client)
@@ -67,16 +67,16 @@ set for internal-only use.
           config, request, global_params=global_params)
 
     Create.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/brands/{brandsId}/identityAwareProxyClients',
-        http_method=u'POST',
-        method_id=u'iap.projects.brands.identityAwareProxyClients.create',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
+        flat_path='v1/projects/{projectsId}/brands/{brandsId}/identityAwareProxyClients',
+        http_method='POST',
+        method_id='iap.projects.brands.identityAwareProxyClients.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
         query_params=[],
-        relative_path=u'v1/{+parent}/identityAwareProxyClients',
-        request_field=u'identityAwareProxyClient',
-        request_type_name=u'IapProjectsBrandsIdentityAwareProxyClientsCreateRequest',
-        response_type_name=u'IdentityAwareProxyClient',
+        relative_path='v1/{+parent}/identityAwareProxyClients',
+        request_field='identityAwareProxyClient',
+        request_type_name='IapProjectsBrandsIdentityAwareProxyClientsCreateRequest',
+        response_type_name='IdentityAwareProxyClient',
         supports_download=False,
     )
 
@@ -96,16 +96,16 @@ cleaning up after tests. Requires that the client is owned by IAP.
           config, request, global_params=global_params)
 
     Delete.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/brands/{brandsId}/identityAwareProxyClients/{identityAwareProxyClientsId}',
-        http_method=u'DELETE',
-        method_id=u'iap.projects.brands.identityAwareProxyClients.delete',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1/projects/{projectsId}/brands/{brandsId}/identityAwareProxyClients/{identityAwareProxyClientsId}',
+        http_method='DELETE',
+        method_id='iap.projects.brands.identityAwareProxyClients.delete',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1/{+name}',
+        relative_path='v1/{+name}',
         request_field='',
-        request_type_name=u'IapProjectsBrandsIdentityAwareProxyClientsDeleteRequest',
-        response_type_name=u'Empty',
+        request_type_name='IapProjectsBrandsIdentityAwareProxyClientsDeleteRequest',
+        response_type_name='Empty',
         supports_download=False,
     )
 
@@ -124,16 +124,16 @@ Requires that the client is owned by IAP.
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/brands/{brandsId}/identityAwareProxyClients/{identityAwareProxyClientsId}',
-        http_method=u'GET',
-        method_id=u'iap.projects.brands.identityAwareProxyClients.get',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1/projects/{projectsId}/brands/{brandsId}/identityAwareProxyClients/{identityAwareProxyClientsId}',
+        http_method='GET',
+        method_id='iap.projects.brands.identityAwareProxyClients.get',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1/{+name}',
+        relative_path='v1/{+name}',
         request_field='',
-        request_type_name=u'IapProjectsBrandsIdentityAwareProxyClientsGetRequest',
-        response_type_name=u'IdentityAwareProxyClient',
+        request_type_name='IapProjectsBrandsIdentityAwareProxyClientsGetRequest',
+        response_type_name='IdentityAwareProxyClient',
         supports_download=False,
     )
 
@@ -151,16 +151,16 @@ Requires that the client is owned by IAP.
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/brands/{brandsId}/identityAwareProxyClients',
-        http_method=u'GET',
-        method_id=u'iap.projects.brands.identityAwareProxyClients.list',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'pageSize', u'pageToken'],
-        relative_path=u'v1/{+parent}/identityAwareProxyClients',
+        flat_path='v1/projects/{projectsId}/brands/{brandsId}/identityAwareProxyClients',
+        http_method='GET',
+        method_id='iap.projects.brands.identityAwareProxyClients.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v1/{+parent}/identityAwareProxyClients',
         request_field='',
-        request_type_name=u'IapProjectsBrandsIdentityAwareProxyClientsListRequest',
-        response_type_name=u'ListIdentityAwareProxyClientsResponse',
+        request_type_name='IapProjectsBrandsIdentityAwareProxyClientsListRequest',
+        response_type_name='ListIdentityAwareProxyClientsResponse',
         supports_download=False,
     )
 
@@ -179,23 +179,23 @@ secret was compromised. Requires that the client is owned by IAP.
           config, request, global_params=global_params)
 
     ResetSecret.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/brands/{brandsId}/identityAwareProxyClients/{identityAwareProxyClientsId}:resetSecret',
-        http_method=u'POST',
-        method_id=u'iap.projects.brands.identityAwareProxyClients.resetSecret',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1/projects/{projectsId}/brands/{brandsId}/identityAwareProxyClients/{identityAwareProxyClientsId}:resetSecret',
+        http_method='POST',
+        method_id='iap.projects.brands.identityAwareProxyClients.resetSecret',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1/{+name}:resetSecret',
-        request_field=u'resetIdentityAwareProxyClientSecretRequest',
-        request_type_name=u'IapProjectsBrandsIdentityAwareProxyClientsResetSecretRequest',
-        response_type_name=u'IdentityAwareProxyClient',
+        relative_path='v1/{+name}:resetSecret',
+        request_field='resetIdentityAwareProxyClientSecretRequest',
+        request_type_name='IapProjectsBrandsIdentityAwareProxyClientsResetSecretRequest',
+        response_type_name='IdentityAwareProxyClient',
         supports_download=False,
     )
 
   class ProjectsBrandsService(base_api.BaseApiService):
     """Service class for the projects_brands resource."""
 
-    _NAME = u'projects_brands'
+    _NAME = 'projects_brands'
 
     def __init__(self, client):
       super(IapV1.ProjectsBrandsService, self).__init__(client)
@@ -222,16 +222,16 @@ project, and that the specified support email is owned by the caller.
           config, request, global_params=global_params)
 
     Create.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/brands',
-        http_method=u'POST',
-        method_id=u'iap.projects.brands.create',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
+        flat_path='v1/projects/{projectsId}/brands',
+        http_method='POST',
+        method_id='iap.projects.brands.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
         query_params=[],
-        relative_path=u'v1/{+parent}/brands',
-        request_field=u'brand',
-        request_type_name=u'IapProjectsBrandsCreateRequest',
-        response_type_name=u'Brand',
+        relative_path='v1/{+parent}/brands',
+        request_field='brand',
+        request_type_name='IapProjectsBrandsCreateRequest',
+        response_type_name='Brand',
         supports_download=False,
     )
 
@@ -249,16 +249,16 @@ project, and that the specified support email is owned by the caller.
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/brands/{brandsId}',
-        http_method=u'GET',
-        method_id=u'iap.projects.brands.get',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1/projects/{projectsId}/brands/{brandsId}',
+        http_method='GET',
+        method_id='iap.projects.brands.get',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1/{+name}',
+        relative_path='v1/{+name}',
         request_field='',
-        request_type_name=u'IapProjectsBrandsGetRequest',
-        response_type_name=u'Brand',
+        request_type_name='IapProjectsBrandsGetRequest',
+        response_type_name='Brand',
         supports_download=False,
     )
 
@@ -276,23 +276,23 @@ project, and that the specified support email is owned by the caller.
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/brands',
-        http_method=u'GET',
-        method_id=u'iap.projects.brands.list',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
+        flat_path='v1/projects/{projectsId}/brands',
+        http_method='GET',
+        method_id='iap.projects.brands.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
         query_params=[],
-        relative_path=u'v1/{+parent}/brands',
+        relative_path='v1/{+parent}/brands',
         request_field='',
-        request_type_name=u'IapProjectsBrandsListRequest',
-        response_type_name=u'ListBrandsResponse',
+        request_type_name='IapProjectsBrandsListRequest',
+        response_type_name='ListBrandsResponse',
         supports_download=False,
     )
 
   class ProjectsService(base_api.BaseApiService):
     """Service class for the projects resource."""
 
-    _NAME = u'projects'
+    _NAME = 'projects'
 
     def __init__(self, client):
       super(IapV1.ProjectsService, self).__init__(client)
@@ -302,7 +302,7 @@ project, and that the specified support email is owned by the caller.
   class V1Service(base_api.BaseApiService):
     """Service class for the v1 resource."""
 
-    _NAME = u'v1'
+    _NAME = 'v1'
 
     def __init__(self, client):
       super(IapV1.V1Service, self).__init__(client)
@@ -326,16 +326,16 @@ https://cloud.google.com/iap/docs/managing-access#managing_access_via_the_api
           config, request, global_params=global_params)
 
     GetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/{v1Id}:getIamPolicy',
-        http_method=u'POST',
-        method_id=u'iap.getIamPolicy',
-        ordered_params=[u'resource'],
-        path_params=[u'resource'],
+        flat_path='v1/{v1Id}:getIamPolicy',
+        http_method='POST',
+        method_id='iap.getIamPolicy',
+        ordered_params=['resource'],
+        path_params=['resource'],
         query_params=[],
-        relative_path=u'v1/{+resource}:getIamPolicy',
-        request_field=u'getIamPolicyRequest',
-        request_type_name=u'IapGetIamPolicyRequest',
-        response_type_name=u'Policy',
+        relative_path='v1/{+resource}:getIamPolicy',
+        request_field='getIamPolicyRequest',
+        request_type_name='IapGetIamPolicyRequest',
+        response_type_name='Policy',
         supports_download=False,
     )
 
@@ -353,16 +353,16 @@ https://cloud.google.com/iap/docs/managing-access#managing_access_via_the_api
           config, request, global_params=global_params)
 
     GetIapSettings.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/{v1Id}:iapSettings',
-        http_method=u'GET',
-        method_id=u'iap.getIapSettings',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1/{v1Id}:iapSettings',
+        http_method='GET',
+        method_id='iap.getIapSettings',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1/{+name}:iapSettings',
+        relative_path='v1/{+name}:iapSettings',
         request_field='',
-        request_type_name=u'IapGetIapSettingsRequest',
-        response_type_name=u'IapSettings',
+        request_type_name='IapGetIapSettingsRequest',
+        response_type_name='IapSettings',
         supports_download=False,
     )
 
@@ -383,16 +383,16 @@ https://cloud.google.com/iap/docs/managing-access#managing_access_via_the_api
           config, request, global_params=global_params)
 
     SetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/{v1Id}:setIamPolicy',
-        http_method=u'POST',
-        method_id=u'iap.setIamPolicy',
-        ordered_params=[u'resource'],
-        path_params=[u'resource'],
+        flat_path='v1/{v1Id}:setIamPolicy',
+        http_method='POST',
+        method_id='iap.setIamPolicy',
+        ordered_params=['resource'],
+        path_params=['resource'],
         query_params=[],
-        relative_path=u'v1/{+resource}:setIamPolicy',
-        request_field=u'setIamPolicyRequest',
-        request_type_name=u'IapSetIamPolicyRequest',
-        response_type_name=u'Policy',
+        relative_path='v1/{+resource}:setIamPolicy',
+        request_field='setIamPolicyRequest',
+        request_type_name='IapSetIamPolicyRequest',
+        response_type_name='Policy',
         supports_download=False,
     )
 
@@ -413,16 +413,16 @@ https://cloud.google.com/iap/docs/managing-access#managing_access_via_the_api
           config, request, global_params=global_params)
 
     TestIamPermissions.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/{v1Id}:testIamPermissions',
-        http_method=u'POST',
-        method_id=u'iap.testIamPermissions',
-        ordered_params=[u'resource'],
-        path_params=[u'resource'],
+        flat_path='v1/{v1Id}:testIamPermissions',
+        http_method='POST',
+        method_id='iap.testIamPermissions',
+        ordered_params=['resource'],
+        path_params=['resource'],
         query_params=[],
-        relative_path=u'v1/{+resource}:testIamPermissions',
-        request_field=u'testIamPermissionsRequest',
-        request_type_name=u'IapTestIamPermissionsRequest',
-        response_type_name=u'TestIamPermissionsResponse',
+        relative_path='v1/{+resource}:testIamPermissions',
+        request_field='testIamPermissionsRequest',
+        request_type_name='IapTestIamPermissionsRequest',
+        response_type_name='TestIamPermissionsResponse',
         supports_download=False,
     )
 
@@ -441,15 +441,15 @@ replaces all fields unless the `update_mask` is set.
           config, request, global_params=global_params)
 
     UpdateIapSettings.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/{v1Id}:iapSettings',
-        http_method=u'PATCH',
-        method_id=u'iap.updateIapSettings',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[u'updateMask'],
-        relative_path=u'v1/{+name}:iapSettings',
-        request_field=u'iapSettings',
-        request_type_name=u'IapUpdateIapSettingsRequest',
-        response_type_name=u'IapSettings',
+        flat_path='v1/{v1Id}:iapSettings',
+        http_method='PATCH',
+        method_id='iap.updateIapSettings',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v1/{+name}:iapSettings',
+        request_field='iapSettings',
+        request_type_name='IapUpdateIapSettingsRequest',
+        response_type_name='IapSettings',
         supports_download=False,
     )

@@ -8,17 +8,17 @@ class SpeechV1p1beta1(base_api.BaseApiClient):
   """Generated client library for service speech version v1p1beta1."""
 
   MESSAGES_MODULE = messages
-  BASE_URL = u'https://speech.googleapis.com/'
-  MTLS_BASE_URL = u'https://speech.mtls.googleapis.com/'
+  BASE_URL = 'https://speech.googleapis.com/'
+  MTLS_BASE_URL = 'https://speech.mtls.googleapis.com/'
 
-  _PACKAGE = u'speech'
-  _SCOPES = [u'https://www.googleapis.com/auth/cloud-platform']
-  _VERSION = u'v1p1beta1'
+  _PACKAGE = 'speech'
+  _SCOPES = ['https://www.googleapis.com/auth/cloud-platform']
+  _VERSION = 'v1p1beta1'
   _CLIENT_ID = '1042881264118.apps.googleusercontent.com'
   _CLIENT_SECRET = 'x_Tw5K8nnjoRAqULM9PFAC2b'
-  _USER_AGENT = u'google-cloud-sdk'
-  _CLIENT_CLASS_NAME = u'SpeechV1p1beta1'
-  _URL_VERSION = u'v1p1beta1'
+  _USER_AGENT = 'google-cloud-sdk'
+  _CLIENT_CLASS_NAME = 'SpeechV1p1beta1'
+  _URL_VERSION = 'v1p1beta1'
   _API_KEY = None
 
   def __init__(self, url='', credentials=None,
@@ -50,7 +50,7 @@ class SpeechV1p1beta1(base_api.BaseApiClient):
   class OperationsService(base_api.BaseApiService):
     """Service class for the operations resource."""
 
-    _NAME = u'operations'
+    _NAME = 'operations'
 
     def __init__(self, client):
       super(SpeechV1p1beta1.OperationsService, self).__init__(client)
@@ -73,16 +73,16 @@ service.
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1p1beta1/operations/{operationsId}',
-        http_method=u'GET',
-        method_id=u'speech.operations.get',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1p1beta1/operations/{operationsId}',
+        http_method='GET',
+        method_id='speech.operations.get',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1p1beta1/operations/{+name}',
+        relative_path='v1p1beta1/operations/{+name}',
         request_field='',
-        request_type_name=u'SpeechOperationsGetRequest',
-        response_type_name=u'Operation',
+        request_type_name='SpeechOperationsGetRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -109,22 +109,22 @@ is the parent resource, without the operations collection id.
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'speech.operations.list',
+        http_method='GET',
+        method_id='speech.operations.list',
         ordered_params=[],
         path_params=[],
-        query_params=[u'filter', u'name', u'pageSize', u'pageToken'],
-        relative_path=u'v1p1beta1/operations',
+        query_params=['filter', 'name', 'pageSize', 'pageToken'],
+        relative_path='v1p1beta1/operations',
         request_field='',
-        request_type_name=u'SpeechOperationsListRequest',
-        response_type_name=u'ListOperationsResponse',
+        request_type_name='SpeechOperationsListRequest',
+        response_type_name='ListOperationsResponse',
         supports_download=False,
     )
 
   class ProjectsLocationsCustomClassesService(base_api.BaseApiService):
     """Service class for the projects_locations_customClasses resource."""
 
-    _NAME = u'projects_locations_customClasses'
+    _NAME = 'projects_locations_customClasses'
 
     def __init__(self, client):
       super(SpeechV1p1beta1.ProjectsLocationsCustomClassesService, self).__init__(client)
@@ -145,16 +145,16 @@ is the parent resource, without the operations collection id.
           config, request, global_params=global_params)
 
     Create.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1p1beta1/projects/{projectsId}/locations/{locationsId}/customClasses',
-        http_method=u'POST',
-        method_id=u'speech.projects.locations.customClasses.create',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'customClassId'],
-        relative_path=u'v1p1beta1/{+parent}/customClasses',
-        request_field=u'customClass',
-        request_type_name=u'SpeechProjectsLocationsCustomClassesCreateRequest',
-        response_type_name=u'CustomClass',
+        flat_path='v1p1beta1/projects/{projectsId}/locations/{locationsId}/customClasses',
+        http_method='POST',
+        method_id='speech.projects.locations.customClasses.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['customClassId'],
+        relative_path='v1p1beta1/{+parent}/customClasses',
+        request_field='customClass',
+        request_type_name='SpeechProjectsLocationsCustomClassesCreateRequest',
+        response_type_name='CustomClass',
         supports_download=False,
     )
 
@@ -172,16 +172,16 @@ is the parent resource, without the operations collection id.
           config, request, global_params=global_params)
 
     Delete.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1p1beta1/projects/{projectsId}/locations/{locationsId}/customClasses/{customClassesId}',
-        http_method=u'DELETE',
-        method_id=u'speech.projects.locations.customClasses.delete',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1p1beta1/projects/{projectsId}/locations/{locationsId}/customClasses/{customClassesId}',
+        http_method='DELETE',
+        method_id='speech.projects.locations.customClasses.delete',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1p1beta1/{+name}',
+        relative_path='v1p1beta1/{+name}',
         request_field='',
-        request_type_name=u'SpeechProjectsLocationsCustomClassesDeleteRequest',
-        response_type_name=u'Empty',
+        request_type_name='SpeechProjectsLocationsCustomClassesDeleteRequest',
+        response_type_name='Empty',
         supports_download=False,
     )
 
@@ -199,16 +199,16 @@ is the parent resource, without the operations collection id.
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1p1beta1/projects/{projectsId}/locations/{locationsId}/customClasses/{customClassesId}',
-        http_method=u'GET',
-        method_id=u'speech.projects.locations.customClasses.get',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1p1beta1/projects/{projectsId}/locations/{locationsId}/customClasses/{customClassesId}',
+        http_method='GET',
+        method_id='speech.projects.locations.customClasses.get',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1p1beta1/{+name}',
+        relative_path='v1p1beta1/{+name}',
         request_field='',
-        request_type_name=u'SpeechProjectsLocationsCustomClassesGetRequest',
-        response_type_name=u'CustomClass',
+        request_type_name='SpeechProjectsLocationsCustomClassesGetRequest',
+        response_type_name='CustomClass',
         supports_download=False,
     )
 
@@ -226,16 +226,16 @@ is the parent resource, without the operations collection id.
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1p1beta1/projects/{projectsId}/locations/{locationsId}/customClasses',
-        http_method=u'GET',
-        method_id=u'speech.projects.locations.customClasses.list',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'pageSize', u'pageToken'],
-        relative_path=u'v1p1beta1/{+parent}/customClasses',
+        flat_path='v1p1beta1/projects/{projectsId}/locations/{locationsId}/customClasses',
+        http_method='GET',
+        method_id='speech.projects.locations.customClasses.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v1p1beta1/{+parent}/customClasses',
         request_field='',
-        request_type_name=u'SpeechProjectsLocationsCustomClassesListRequest',
-        response_type_name=u'ListCustomClassesResponse',
+        request_type_name='SpeechProjectsLocationsCustomClassesListRequest',
+        response_type_name='ListCustomClassesResponse',
         supports_download=False,
     )
 
@@ -253,23 +253,23 @@ is the parent resource, without the operations collection id.
           config, request, global_params=global_params)
 
     Patch.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1p1beta1/projects/{projectsId}/locations/{locationsId}/customClasses/{customClassesId}',
-        http_method=u'PATCH',
-        method_id=u'speech.projects.locations.customClasses.patch',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[u'updateMask'],
-        relative_path=u'v1p1beta1/{+name}',
-        request_field=u'customClass',
-        request_type_name=u'SpeechProjectsLocationsCustomClassesPatchRequest',
-        response_type_name=u'CustomClass',
+        flat_path='v1p1beta1/projects/{projectsId}/locations/{locationsId}/customClasses/{customClassesId}',
+        http_method='PATCH',
+        method_id='speech.projects.locations.customClasses.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v1p1beta1/{+name}',
+        request_field='customClass',
+        request_type_name='SpeechProjectsLocationsCustomClassesPatchRequest',
+        response_type_name='CustomClass',
         supports_download=False,
     )
 
   class ProjectsLocationsDatasetsService(base_api.BaseApiService):
     """Service class for the projects_locations_datasets resource."""
 
-    _NAME = u'projects_locations_datasets'
+    _NAME = 'projects_locations_datasets'
 
     def __init__(self, client):
       super(SpeechV1p1beta1.ProjectsLocationsDatasetsService, self).__init__(client)
@@ -292,16 +292,16 @@ is SpeechOperationMetadata. Response type is Empty.
           config, request, global_params=global_params)
 
     Create.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1p1beta1/projects/{projectsId}/locations/{locationsId}/datasets',
-        http_method=u'POST',
-        method_id=u'speech.projects.locations.datasets.create',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
+        flat_path='v1p1beta1/projects/{projectsId}/locations/{locationsId}/datasets',
+        http_method='POST',
+        method_id='speech.projects.locations.datasets.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
         query_params=[],
-        relative_path=u'v1p1beta1/{+parent}/datasets',
-        request_field=u'dataset',
-        request_type_name=u'SpeechProjectsLocationsDatasetsCreateRequest',
-        response_type_name=u'Operation',
+        relative_path='v1p1beta1/{+parent}/datasets',
+        request_field='dataset',
+        request_type_name='SpeechProjectsLocationsDatasetsCreateRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -319,16 +319,16 @@ is SpeechOperationMetadata. Response type is Empty.
           config, request, global_params=global_params)
 
     Delete.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1p1beta1/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}',
-        http_method=u'DELETE',
-        method_id=u'speech.projects.locations.datasets.delete',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1p1beta1/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}',
+        http_method='DELETE',
+        method_id='speech.projects.locations.datasets.delete',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1p1beta1/{+name}',
+        relative_path='v1p1beta1/{+name}',
         request_field='',
-        request_type_name=u'SpeechProjectsLocationsDatasetsDeleteRequest',
-        response_type_name=u'Operation',
+        request_type_name='SpeechProjectsLocationsDatasetsDeleteRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -346,16 +346,16 @@ is SpeechOperationMetadata. Response type is Empty.
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1p1beta1/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}',
-        http_method=u'GET',
-        method_id=u'speech.projects.locations.datasets.get',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[u'includeModelInfo'],
-        relative_path=u'v1p1beta1/{+name}',
+        flat_path='v1p1beta1/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}',
+        http_method='GET',
+        method_id='speech.projects.locations.datasets.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['includeModelInfo'],
+        relative_path='v1p1beta1/{+name}',
         request_field='',
-        request_type_name=u'SpeechProjectsLocationsDatasetsGetRequest',
-        response_type_name=u'Dataset',
+        request_type_name='SpeechProjectsLocationsDatasetsGetRequest',
+        response_type_name='Dataset',
         supports_download=False,
     )
 
@@ -373,16 +373,16 @@ is SpeechOperationMetadata. Response type is Empty.
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1p1beta1/projects/{projectsId}/locations/{locationsId}/datasets',
-        http_method=u'GET',
-        method_id=u'speech.projects.locations.datasets.list',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'filter', u'includeModelInfo', u'pageSize', u'pageToken'],
-        relative_path=u'v1p1beta1/{+parent}/datasets',
+        flat_path='v1p1beta1/projects/{projectsId}/locations/{locationsId}/datasets',
+        http_method='GET',
+        method_id='speech.projects.locations.datasets.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'includeModelInfo', 'pageSize', 'pageToken'],
+        relative_path='v1p1beta1/{+parent}/datasets',
         request_field='',
-        request_type_name=u'SpeechProjectsLocationsDatasetsListRequest',
-        response_type_name=u'ListDatasetsResponse',
+        request_type_name='SpeechProjectsLocationsDatasetsListRequest',
+        response_type_name='ListDatasetsResponse',
         supports_download=False,
     )
 
@@ -400,23 +400,23 @@ is SpeechOperationMetadata. Response type is Empty.
           config, request, global_params=global_params)
 
     RefreshData.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1p1beta1/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}:refreshData',
-        http_method=u'POST',
-        method_id=u'speech.projects.locations.datasets.refreshData',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1p1beta1/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}:refreshData',
+        http_method='POST',
+        method_id='speech.projects.locations.datasets.refreshData',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1p1beta1/{+name}:refreshData',
-        request_field=u'refreshDataRequest',
-        request_type_name=u'SpeechProjectsLocationsDatasetsRefreshDataRequest',
-        response_type_name=u'Operation',
+        relative_path='v1p1beta1/{+name}:refreshData',
+        request_field='refreshDataRequest',
+        request_type_name='SpeechProjectsLocationsDatasetsRefreshDataRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
   class ProjectsLocationsLogDataStatsService(base_api.BaseApiService):
     """Service class for the projects_locations_log_data_stats resource."""
 
-    _NAME = u'projects_locations_log_data_stats'
+    _NAME = 'projects_locations_log_data_stats'
 
     def __init__(self, client):
       super(SpeechV1p1beta1.ProjectsLocationsLogDataStatsService, self).__init__(client)
@@ -437,23 +437,23 @@ is SpeechOperationMetadata. Response type is Empty.
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1p1beta1/projects/{projectsId}/locations/{locationsId}/log_data_stats',
-        http_method=u'GET',
-        method_id=u'speech.projects.locations.log_data_stats.list',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
+        flat_path='v1p1beta1/projects/{projectsId}/locations/{locationsId}/log_data_stats',
+        http_method='GET',
+        method_id='speech.projects.locations.log_data_stats.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
         query_params=[],
-        relative_path=u'v1p1beta1/{+parent}/log_data_stats',
+        relative_path='v1p1beta1/{+parent}/log_data_stats',
         request_field='',
-        request_type_name=u'SpeechProjectsLocationsLogDataStatsListRequest',
-        response_type_name=u'ListLogDataStatsResponse',
+        request_type_name='SpeechProjectsLocationsLogDataStatsListRequest',
+        response_type_name='ListLogDataStatsResponse',
         supports_download=False,
     )
 
   class ProjectsLocationsModelsService(base_api.BaseApiService):
     """Service class for the projects_locations_models resource."""
 
-    _NAME = u'projects_locations_models'
+    _NAME = 'projects_locations_models'
 
     def __init__(self, client):
       super(SpeechV1p1beta1.ProjectsLocationsModelsService, self).__init__(client)
@@ -475,16 +475,16 @@ Response type is Model.
           config, request, global_params=global_params)
 
     Create.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1p1beta1/projects/{projectsId}/locations/{locationsId}/models',
-        http_method=u'POST',
-        method_id=u'speech.projects.locations.models.create',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'name'],
-        relative_path=u'v1p1beta1/{+parent}/models',
-        request_field=u'model',
-        request_type_name=u'SpeechProjectsLocationsModelsCreateRequest',
-        response_type_name=u'Operation',
+        flat_path='v1p1beta1/projects/{projectsId}/locations/{locationsId}/models',
+        http_method='POST',
+        method_id='speech.projects.locations.models.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['name'],
+        relative_path='v1p1beta1/{+parent}/models',
+        request_field='model',
+        request_type_name='SpeechProjectsLocationsModelsCreateRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -502,16 +502,16 @@ Response type is Model.
           config, request, global_params=global_params)
 
     Delete.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1p1beta1/projects/{projectsId}/locations/{locationsId}/models/{modelsId}',
-        http_method=u'DELETE',
-        method_id=u'speech.projects.locations.models.delete',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1p1beta1/projects/{projectsId}/locations/{locationsId}/models/{modelsId}',
+        http_method='DELETE',
+        method_id='speech.projects.locations.models.delete',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1p1beta1/{+name}',
+        relative_path='v1p1beta1/{+name}',
         request_field='',
-        request_type_name=u'SpeechProjectsLocationsModelsDeleteRequest',
-        response_type_name=u'Operation',
+        request_type_name='SpeechProjectsLocationsModelsDeleteRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -532,16 +532,16 @@ a `google.protobuf.Empty` if the deployment was successful.
           config, request, global_params=global_params)
 
     Deploy.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1p1beta1/projects/{projectsId}/locations/{locationsId}/models/{modelsId}:deploy',
-        http_method=u'POST',
-        method_id=u'speech.projects.locations.models.deploy',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1p1beta1/projects/{projectsId}/locations/{locationsId}/models/{modelsId}:deploy',
+        http_method='POST',
+        method_id='speech.projects.locations.models.deploy',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1p1beta1/{+name}:deploy',
-        request_field=u'deployModelRequest',
-        request_type_name=u'SpeechProjectsLocationsModelsDeployRequest',
-        response_type_name=u'Operation',
+        relative_path='v1p1beta1/{+name}:deploy',
+        request_field='deployModelRequest',
+        request_type_name='SpeechProjectsLocationsModelsDeployRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -562,16 +562,16 @@ a `EvaluateModelResponse` with the evaluation results.
           config, request, global_params=global_params)
 
     Evaluate.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1p1beta1/projects/{projectsId}/locations/{locationsId}/models/{modelsId}:evaluate',
-        http_method=u'POST',
-        method_id=u'speech.projects.locations.models.evaluate',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1p1beta1/projects/{projectsId}/locations/{locationsId}/models/{modelsId}:evaluate',
+        http_method='POST',
+        method_id='speech.projects.locations.models.evaluate',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1p1beta1/{+name}:evaluate',
-        request_field=u'evaluateModelRequest',
-        request_type_name=u'SpeechProjectsLocationsModelsEvaluateRequest',
-        response_type_name=u'Operation',
+        relative_path='v1p1beta1/{+name}:evaluate',
+        request_field='evaluateModelRequest',
+        request_type_name='SpeechProjectsLocationsModelsEvaluateRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -589,23 +589,23 @@ a `EvaluateModelResponse` with the evaluation results.
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1p1beta1/projects/{projectsId}/locations/{locationsId}/models',
-        http_method=u'GET',
-        method_id=u'speech.projects.locations.models.list',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'filter', u'pageSize', u'pageToken'],
-        relative_path=u'v1p1beta1/{+parent}/models',
+        flat_path='v1p1beta1/projects/{projectsId}/locations/{locationsId}/models',
+        http_method='GET',
+        method_id='speech.projects.locations.models.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'pageSize', 'pageToken'],
+        relative_path='v1p1beta1/{+parent}/models',
         request_field='',
-        request_type_name=u'SpeechProjectsLocationsModelsListRequest',
-        response_type_name=u'ListModelsResponse',
+        request_type_name='SpeechProjectsLocationsModelsListRequest',
+        response_type_name='ListModelsResponse',
         supports_download=False,
     )
 
   class ProjectsLocationsOperationsService(base_api.BaseApiService):
     """Service class for the projects_locations_operations resource."""
 
-    _NAME = u'projects_locations_operations'
+    _NAME = 'projects_locations_operations'
 
     def __init__(self, client):
       super(SpeechV1p1beta1.ProjectsLocationsOperationsService, self).__init__(client)
@@ -628,16 +628,16 @@ service.
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1p1beta1/projects/{projectsId}/locations/{locationsId}/operations/{operationsId}',
-        http_method=u'GET',
-        method_id=u'speech.projects.locations.operations.get',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1p1beta1/projects/{projectsId}/locations/{locationsId}/operations/{operationsId}',
+        http_method='GET',
+        method_id='speech.projects.locations.operations.get',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1p1beta1/{+name}',
+        relative_path='v1p1beta1/{+name}',
         request_field='',
-        request_type_name=u'SpeechProjectsLocationsOperationsGetRequest',
-        response_type_name=u'Operation',
+        request_type_name='SpeechProjectsLocationsOperationsGetRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -664,23 +664,23 @@ is the parent resource, without the operations collection id.
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1p1beta1/projects/{projectsId}/locations/{locationsId}/operations',
-        http_method=u'GET',
-        method_id=u'speech.projects.locations.operations.list',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[u'filter', u'pageSize', u'pageToken'],
-        relative_path=u'v1p1beta1/{+name}/operations',
+        flat_path='v1p1beta1/projects/{projectsId}/locations/{locationsId}/operations',
+        http_method='GET',
+        method_id='speech.projects.locations.operations.list',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['filter', 'pageSize', 'pageToken'],
+        relative_path='v1p1beta1/{+name}/operations',
         request_field='',
-        request_type_name=u'SpeechProjectsLocationsOperationsListRequest',
-        response_type_name=u'ListOperationsResponse',
+        request_type_name='SpeechProjectsLocationsOperationsListRequest',
+        response_type_name='ListOperationsResponse',
         supports_download=False,
     )
 
   class ProjectsLocationsPhraseSetsService(base_api.BaseApiService):
     """Service class for the projects_locations_phraseSets resource."""
 
-    _NAME = u'projects_locations_phraseSets'
+    _NAME = 'projects_locations_phraseSets'
 
     def __init__(self, client):
       super(SpeechV1p1beta1.ProjectsLocationsPhraseSetsService, self).__init__(client)
@@ -703,16 +703,16 @@ recognition model when you send a call that includes the PhraseSet.
           config, request, global_params=global_params)
 
     Create.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1p1beta1/projects/{projectsId}/locations/{locationsId}/phraseSets',
-        http_method=u'POST',
-        method_id=u'speech.projects.locations.phraseSets.create',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'phraseSetId'],
-        relative_path=u'v1p1beta1/{+parent}/phraseSets',
-        request_field=u'phraseSet',
-        request_type_name=u'SpeechProjectsLocationsPhraseSetsCreateRequest',
-        response_type_name=u'PhraseSet',
+        flat_path='v1p1beta1/projects/{projectsId}/locations/{locationsId}/phraseSets',
+        http_method='POST',
+        method_id='speech.projects.locations.phraseSets.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['phraseSetId'],
+        relative_path='v1p1beta1/{+parent}/phraseSets',
+        request_field='phraseSet',
+        request_type_name='SpeechProjectsLocationsPhraseSetsCreateRequest',
+        response_type_name='PhraseSet',
         supports_download=False,
     )
 
@@ -730,16 +730,16 @@ recognition model when you send a call that includes the PhraseSet.
           config, request, global_params=global_params)
 
     Delete.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1p1beta1/projects/{projectsId}/locations/{locationsId}/phraseSets/{phraseSetsId}',
-        http_method=u'DELETE',
-        method_id=u'speech.projects.locations.phraseSets.delete',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1p1beta1/projects/{projectsId}/locations/{locationsId}/phraseSets/{phraseSetsId}',
+        http_method='DELETE',
+        method_id='speech.projects.locations.phraseSets.delete',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1p1beta1/{+name}',
+        relative_path='v1p1beta1/{+name}',
         request_field='',
-        request_type_name=u'SpeechProjectsLocationsPhraseSetsDeleteRequest',
-        response_type_name=u'Empty',
+        request_type_name='SpeechProjectsLocationsPhraseSetsDeleteRequest',
+        response_type_name='Empty',
         supports_download=False,
     )
 
@@ -757,16 +757,16 @@ recognition model when you send a call that includes the PhraseSet.
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1p1beta1/projects/{projectsId}/locations/{locationsId}/phraseSets/{phraseSetsId}',
-        http_method=u'GET',
-        method_id=u'speech.projects.locations.phraseSets.get',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1p1beta1/projects/{projectsId}/locations/{locationsId}/phraseSets/{phraseSetsId}',
+        http_method='GET',
+        method_id='speech.projects.locations.phraseSets.get',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1p1beta1/{+name}',
+        relative_path='v1p1beta1/{+name}',
         request_field='',
-        request_type_name=u'SpeechProjectsLocationsPhraseSetsGetRequest',
-        response_type_name=u'PhraseSet',
+        request_type_name='SpeechProjectsLocationsPhraseSetsGetRequest',
+        response_type_name='PhraseSet',
         supports_download=False,
     )
 
@@ -784,16 +784,16 @@ recognition model when you send a call that includes the PhraseSet.
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1p1beta1/projects/{projectsId}/locations/{locationsId}/phraseSets',
-        http_method=u'GET',
-        method_id=u'speech.projects.locations.phraseSets.list',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'pageSize', u'pageToken'],
-        relative_path=u'v1p1beta1/{+parent}/phraseSets',
+        flat_path='v1p1beta1/projects/{projectsId}/locations/{locationsId}/phraseSets',
+        http_method='GET',
+        method_id='speech.projects.locations.phraseSets.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v1p1beta1/{+parent}/phraseSets',
         request_field='',
-        request_type_name=u'SpeechProjectsLocationsPhraseSetsListRequest',
-        response_type_name=u'ListPhraseSetResponse',
+        request_type_name='SpeechProjectsLocationsPhraseSetsListRequest',
+        response_type_name='ListPhraseSetResponse',
         supports_download=False,
     )
 
@@ -811,23 +811,23 @@ recognition model when you send a call that includes the PhraseSet.
           config, request, global_params=global_params)
 
     Patch.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1p1beta1/projects/{projectsId}/locations/{locationsId}/phraseSets/{phraseSetsId}',
-        http_method=u'PATCH',
-        method_id=u'speech.projects.locations.phraseSets.patch',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[u'updateMask'],
-        relative_path=u'v1p1beta1/{+name}',
-        request_field=u'phraseSet',
-        request_type_name=u'SpeechProjectsLocationsPhraseSetsPatchRequest',
-        response_type_name=u'PhraseSet',
+        flat_path='v1p1beta1/projects/{projectsId}/locations/{locationsId}/phraseSets/{phraseSetsId}',
+        http_method='PATCH',
+        method_id='speech.projects.locations.phraseSets.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v1p1beta1/{+name}',
+        request_field='phraseSet',
+        request_type_name='SpeechProjectsLocationsPhraseSetsPatchRequest',
+        response_type_name='PhraseSet',
         supports_download=False,
     )
 
   class ProjectsLocationsService(base_api.BaseApiService):
     """Service class for the projects_locations resource."""
 
-    _NAME = u'projects_locations'
+    _NAME = 'projects_locations'
 
     def __init__(self, client):
       super(SpeechV1p1beta1.ProjectsLocationsService, self).__init__(client)
@@ -853,23 +853,23 @@ purged, call this method 3 days after last recognition call.
           config, request, global_params=global_params)
 
     LogData.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1p1beta1/projects/{projectsId}/locations/{locationsId}/log_data',
-        http_method=u'DELETE',
-        method_id=u'speech.projects.locations.log_data',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'bucketName'],
-        relative_path=u'v1p1beta1/{+parent}/log_data',
+        flat_path='v1p1beta1/projects/{projectsId}/locations/{locationsId}/log_data',
+        http_method='DELETE',
+        method_id='speech.projects.locations.log_data',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['bucketName'],
+        relative_path='v1p1beta1/{+parent}/log_data',
         request_field='',
-        request_type_name=u'SpeechProjectsLocationsLogDataRequest',
-        response_type_name=u'Operation',
+        request_type_name='SpeechProjectsLocationsLogDataRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
   class ProjectsService(base_api.BaseApiService):
     """Service class for the projects resource."""
 
-    _NAME = u'projects'
+    _NAME = 'projects'
 
     def __init__(self, client):
       super(SpeechV1p1beta1.ProjectsService, self).__init__(client)
@@ -879,7 +879,7 @@ purged, call this method 3 days after last recognition call.
   class SpeechService(base_api.BaseApiService):
     """Service class for the speech resource."""
 
-    _NAME = u'speech'
+    _NAME = 'speech'
 
     def __init__(self, client):
       super(SpeechV1p1beta1.SpeechService, self).__init__(client)
@@ -905,15 +905,15 @@ For more information on asynchronous speech recognition, see the
           config, request, global_params=global_params)
 
     Longrunningrecognize.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'speech.speech.longrunningrecognize',
+        http_method='POST',
+        method_id='speech.speech.longrunningrecognize',
         ordered_params=[],
         path_params=[],
         query_params=[],
-        relative_path=u'v1p1beta1/speech:longrunningrecognize',
+        relative_path='v1p1beta1/speech:longrunningrecognize',
         request_field='<request>',
-        request_type_name=u'LongRunningRecognizeRequest',
-        response_type_name=u'Operation',
+        request_type_name='LongRunningRecognizeRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -932,14 +932,14 @@ has been sent and processed.
           config, request, global_params=global_params)
 
     Recognize.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'speech.speech.recognize',
+        http_method='POST',
+        method_id='speech.speech.recognize',
         ordered_params=[],
         path_params=[],
         query_params=[],
-        relative_path=u'v1p1beta1/speech:recognize',
+        relative_path='v1p1beta1/speech:recognize',
         request_field='<request>',
-        request_type_name=u'RecognizeRequest',
-        response_type_name=u'RecognizeResponse',
+        request_type_name='RecognizeRequest',
+        response_type_name='RecognizeResponse',
         supports_download=False,
     )

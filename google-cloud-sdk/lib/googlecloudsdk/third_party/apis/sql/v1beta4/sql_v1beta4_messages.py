@@ -1223,8 +1223,9 @@ class MaintenanceWindow(_messages.Message):
 
   Enums:
     UpdateTrackValueValuesEnum: Maintenance timing setting: <b>canary</b>
-      (Earlier) or <b>stable</b> (Later). <br /><a href="/sql/docs/db_path
-      /instance-settings#maintenance-timing-2ndgen"> Learn more</a>.
+      (Earlier) or <b>stable</b> (Later). <br /><a
+      href="/sql/docs/db_path/instance-settings#maintenance-timing-2ndgen">
+      Learn more</a>.
 
   Fields:
     day: day of week (1-7), starting on Monday.
@@ -2809,7 +2810,7 @@ class StandardQueryParameters(_messages.Message):
 
   f__xgafv = _messages.EnumField('FXgafvValueValuesEnum', 1)
   access_token = _messages.StringField(2)
-  alt = _messages.EnumField('AltValueValuesEnum', 3, default=u'json')
+  alt = _messages.EnumField('AltValueValuesEnum', 3, default='json')
   callback = _messages.StringField(4)
   fields = _messages.StringField(5)
   key = _messages.StringField(6)

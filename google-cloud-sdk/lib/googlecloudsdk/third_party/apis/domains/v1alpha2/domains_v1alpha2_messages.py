@@ -135,8 +135,9 @@ class Binding(_messages.Message):
       not apply to the current request. However, a different role binding
       might grant the same role to one or more of the members in this binding.
       To learn which resources support conditions in their IAM policies, see
-      the [IAM documentation](https://cloud.google.com/iam/help/conditions
-      /resource-policies).
+      the [IAM
+      documentation](https://cloud.google.com/iam/help/conditions/resource-
+      policies).
     members: Specifies the identities requesting access for a Cloud Platform
       resource. `members` can have the following values:  * `allUsers`: A
       special identifier that represents anyone who is    on the internet;
@@ -231,21 +232,21 @@ class Condition(_messages.Message):
       AUTHORITY: Either principal or (if present) authority selector.
       ATTRIBUTION: The principal (even if an authority selector is present),
         which must only be used for attribution, not authorization.
-      SECURITY_REALM: Any of the security realms in the IAMContext (go
-        /security-realms). When used with IN, the condition indicates "any of
-        the request's realms match one of the given values; with NOT_IN, "none
-        of the realms match any of the given values". Note that a value can
-        be:  - 'self' (i.e., allow connections from clients that are in the
-        same  security realm)  - 'self:cloud-region' (i.e., allow connections
-        from clients that are in  the same cloud region)  - 'guardians' (i.e.,
-        allow connections from its guardian realms. See  go/security-realms-
-        glossary#guardian for more information.)  - a realm (e.g., 'campus-
-        abc')  - a realm group (e.g., 'realms-for-borg-cell-xx', see: go
-        /realm-groups) A match is determined by a realm group membership check
-        performed by a RealmAclRep object (go/realm-acl-howto). It is not
-        permitted to grant access based on the *absence* of a realm, so realm
-        conditions can only be used in a "positive" context (e.g., ALLOW/IN or
-        DENY/NOT_IN).
+      SECURITY_REALM: Any of the security realms in the IAMContext
+        (go/security-realms). When used with IN, the condition indicates "any
+        of the request's realms match one of the given values; with NOT_IN,
+        "none of the realms match any of the given values". Note that a value
+        can be:  - 'self' (i.e., allow connections from clients that are in
+        the same  security realm)  - 'self:cloud-region' (i.e., allow
+        connections from clients that are in  the same cloud region)  -
+        'guardians' (i.e., allow connections from its guardian realms. See
+        go/security-realms-glossary#guardian for more information.)  - a realm
+        (e.g., 'campus-abc')  - a realm group (e.g., 'realms-for-borg-cell-
+        xx', see: go/realm-groups) A match is determined by a realm group
+        membership check performed by a RealmAclRep object (go/realm-acl-
+        howto). It is not permitted to grant access based on the *absence* of
+        a realm, so realm conditions can only be used in a "positive" context
+        (e.g., ALLOW/IN or DENY/NOT_IN).
       APPROVER: An approver (distinct from the requester) that has authorized
         this request. When used with IN, the condition indicates that one of
         the approvers associated with the request matches the specified
@@ -470,6 +471,22 @@ class CounterOptions(_messages.Message):
   metric = _messages.StringField(3)
 
 
+class CustomDns(_messages.Message):
+  r"""Configuration for an arbitrary DNS provider.
+
+  Fields:
+    dsRecords: The list of DS records for this domain. Needed to enabled
+      DNSSEC.
+    nameServers: Required. The list of name servers that store the DNS zone
+      for this domain. Formatted as a fully-qualified domain name in ASCII-
+      only format, without a trailing dot. Unicode domain names must be
+      expressed in Punycode.
+  """
+
+  dsRecords = _messages.MessageField('DsRecord', 1, repeated=True)
+  nameServers = _messages.StringField(2, repeated=True)
+
+
 class CustomField(_messages.Message):
   r"""Custom fields. These can be used to create a counter with arbitrary
   field/value pairs. See: go/rpcsp-custom-fields.
@@ -523,14 +540,14 @@ class DnsSettings(_messages.Message):
   r"""Defines DNS configuration of the Registration.
 
   Fields:
+    customDns: An arbitrary DNS provider identified by its name servers.
     glueRecords: The list of glue records defined for this registration.
-    googleDomains: The free DNS zone provided by Google Domains.
-    thirdPartyDns: A third-party DNS provider identified by its name servers.
+    googleDomainsDns: The free DNS zone provided by Google Domains.
   """
 
-  glueRecords = _messages.MessageField('GlueRecord', 1, repeated=True)
-  googleDomains = _messages.MessageField('GoogleDomains', 2)
-  thirdPartyDns = _messages.MessageField('ThirdPartyDns', 3)
+  customDns = _messages.MessageField('CustomDns', 1)
+  glueRecords = _messages.MessageField('GlueRecord', 2, repeated=True)
+  googleDomainsDns = _messages.MessageField('GoogleDomainsDns', 3)
 
 
 class DomainsProjectsLocationsGetRequest(_messages.Message):
@@ -974,7 +991,7 @@ class GlueRecord(_messages.Message):
   ipv6Addresses = _messages.StringField(3, repeated=True)
 
 
-class GoogleDomains(_messages.Message):
+class GoogleDomainsDns(_messages.Message):
   r"""Configuration for using the free DNS zone provided by Google Domains.
 
   Enums:
@@ -1168,17 +1185,40 @@ class ManagementSettings(_messages.Message):
   r"""Defined management settings of the Registration.
 
   Enums:
+    RenewalMethodValueValuesEnum: Output only. The renewal method for this
+      Registration.
     TransferLockStateValueValuesEnum: Transfer Lock of the Registration. It
       needs to be unlocked in order to transfer the domain to another
       registrar. The default is LOCKED. Can only be changed after Create
       operation is finished
 
   Fields:
+    renewalMethod: Output only. The renewal method for this Registration.
     transferLockState: Transfer Lock of the Registration. It needs to be
       unlocked in order to transfer the domain to another registrar. The
       default is LOCKED. Can only be changed after Create operation is
       finished
   """
+
+  class RenewalMethodValueValuesEnum(_messages.Enum):
+    r"""Output only. The renewal method for this Registration.
+
+    Values:
+      RENEWAL_METHOD_UNSPECIFIED: The renewal method is undefined.
+      AUTOMATIC_RENEWAL: Your domain will be automatically renewed each year,
+        and will be billed according to the billing method specified in the
+        `billing_method` field. If your billing method is `GOOGLE_CLOUD`,
+        automatic renewal is the only supported renewal method.
+      MANUAL_RENEWAL: To keep your domain, you must explicitly renew it each
+        year before its expiration date (registration.expire_time). The manual
+        renewal option is only available when your Registration is billed
+        through a separate service such as Google Domains. Visit
+        https://domains.google.com/m/registrar/[domain_name] to manage the
+        domain's current billing & renewal settings.
+    """
+    RENEWAL_METHOD_UNSPECIFIED = 0
+    AUTOMATIC_RENEWAL = 1
+    MANUAL_RENEWAL = 2
 
   class TransferLockStateValueValuesEnum(_messages.Enum):
     r"""Transfer Lock of the Registration. It needs to be unlocked in order to
@@ -1194,7 +1234,8 @@ class ManagementSettings(_messages.Message):
     UNLOCKED = 1
     LOCKED = 2
 
-  transferLockState = _messages.EnumField('TransferLockStateValueValuesEnum', 1)
+  renewalMethod = _messages.EnumField('RenewalMethodValueValuesEnum', 1)
+  transferLockState = _messages.EnumField('TransferLockStateValueValuesEnum', 2)
 
 
 class Money(_messages.Message):
@@ -1370,8 +1411,8 @@ class Policy(_messages.Message):
   timestamp('2020-10-01T00:00:00.000Z')",           }         }       ],
   "etag": "BwWWja0YfJA=",       "version": 3     }  **YAML example:**
   bindings:     - members:       - user:mike@example.com       -
-  group:admins@example.com       - domain:google.com       - serviceAccount
-  :my-project-id@appspot.gserviceaccount.com       role:
+  group:admins@example.com       - domain:google.com       -
+  serviceAccount:my-project-id@appspot.gserviceaccount.com       role:
   roles/resourcemanager.organizationAdmin     - members:       -
   user:eve@example.com       role: roles/resourcemanager.organizationViewer
   condition:         title: expirable access         description: Does not
@@ -1919,7 +1960,7 @@ class StandardQueryParameters(_messages.Message):
 
   f__xgafv = _messages.EnumField('FXgafvValueValuesEnum', 1)
   access_token = _messages.StringField(2)
-  alt = _messages.EnumField('AltValueValuesEnum', 3, default=u'json')
+  alt = _messages.EnumField('AltValueValuesEnum', 3, default='json')
   callback = _messages.StringField(4)
   fields = _messages.StringField(5)
   key = _messages.StringField(6)
@@ -2004,22 +2045,6 @@ class TestIamPermissionsResponse(_messages.Message):
   """
 
   permissions = _messages.StringField(1, repeated=True)
-
-
-class ThirdPartyDns(_messages.Message):
-  r"""Configuration for a third-party DNS provider.
-
-  Fields:
-    dsRecords: The list of DS records for this domain. Needed to enabled
-      DNSSEC.
-    nameServers: Required. The list of name servers that store the DNS zone
-      for this domain. Formatted as a fully-qualified domain name in ASCII-
-      only format, without a trailing dot. Unicode domain names must be
-      expressed in Punycode.
-  """
-
-  dsRecords = _messages.MessageField('DsRecord', 1, repeated=True)
-  nameServers = _messages.StringField(2, repeated=True)
 
 
 encoding.AddCustomJsonFieldMapping(

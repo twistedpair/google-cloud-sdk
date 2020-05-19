@@ -1053,9 +1053,9 @@ class ProjectSettings(_messages.Message):
     defaultBucket: The name of the Google Cloud Storage bucket to which
       results are written.  By default, this is unset.  In update request:
       optional In response: optional
-    name: The name of the project's settings.  Always of the form: projects
-      /{project-id}/settings  In update request: never set In response: always
-      set
+    name: The name of the project's settings.  Always of the form:
+      projects/{project-id}/settings  In update request: never set In
+      response: always set
   """
 
   defaultBucket = _messages.StringField(1)
@@ -1231,7 +1231,7 @@ class StandardQueryParameters(_messages.Message):
     """
     json = 0
 
-  alt = _messages.EnumField('AltValueValuesEnum', 1, default=u'json')
+  alt = _messages.EnumField('AltValueValuesEnum', 1, default='json')
   fields = _messages.StringField(2)
   key = _messages.StringField(3)
   oauth_token = _messages.StringField(4)

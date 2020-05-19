@@ -28,14 +28,14 @@ class Collections(enum.Enum):
       'users',
       'users/{usersId}',
       {},
-      [u'usersId'],
+      ['usersId'],
       True
   )
   USERS_PROJECTS = (
       'users.projects',
       'users/{user}/projects/{project}',
       {},
-      [u'user', u'project'],
+      ['user', 'project'],
       True
   )
   USERS_SSHPUBLICKEYS = (
@@ -45,7 +45,7 @@ class Collections(enum.Enum):
           '':
               'users/{usersId}/sshPublicKeys/{sshPublicKeysId}',
       },
-      [u'name'],
+      ['name'],
       True
   )
 

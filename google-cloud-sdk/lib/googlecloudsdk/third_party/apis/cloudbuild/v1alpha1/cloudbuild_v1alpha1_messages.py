@@ -922,7 +922,7 @@ class StandardQueryParameters(_messages.Message):
 
   f__xgafv = _messages.EnumField('FXgafvValueValuesEnum', 1)
   access_token = _messages.StringField(2)
-  alt = _messages.EnumField('AltValueValuesEnum', 3, default=u'json')
+  alt = _messages.EnumField('AltValueValuesEnum', 3, default='json')
   callback = _messages.StringField(4)
   fields = _messages.StringField(5)
   key = _messages.StringField(6)
@@ -991,8 +991,9 @@ class WorkerConfig(_messages.Message):
       Build will use a standard disk size. `disk_size` is overridden if you
       specify a different disk size in `build_options`. In this case, a VM
       with a disk size specified in the `build_options` will be created on
-      demand at build time. For more information see https://cloud.google.com
-      /cloud-build/docs/api/reference/rest/v1/projects.builds#buildoptions
+      demand at build time. For more information see
+      https://cloud.google.com/cloud-
+      build/docs/api/reference/rest/v1/projects.builds#buildoptions
     machineType: Machine Type of the worker, such as n1-standard-1. See
       https://cloud.google.com/compute/docs/machine-types. If left blank,
       Cloud Build will use a standard unspecified machine to create the worker

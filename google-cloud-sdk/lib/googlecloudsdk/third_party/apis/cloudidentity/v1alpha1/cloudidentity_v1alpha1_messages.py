@@ -16,48 +16,19 @@ class AndroidAttributes(_messages.Message):
   r"""Resource representing the Android specific attributes of a Device.
 
   Enums:
-    EncryptionStateValueValuesEnum: Device encryption state.
     OwnershipPrivilegeValueValuesEnum: Ownership privileges on device.
 
   Fields:
-    basebandVersion: Baseband version of Android device.
-    bootloaderVersion: Device bootloader version. Example: 0.6.7.
-    buildNumber: Build number of Android device.
-    enabledDeveloperOptions: Whether developer options is enabled on device.
     enabledUnknownSources: Whether applications from unknown sources can be
       installed on device.
-    enabledUsbDebugging: Whether adb (USB debugging) is enabled on device.
-    encryptionState: Device encryption state.
-    hardware: Device hardware. Example: Sprout.
-    kernelVersion: Kernel version of Android device.
-    otherAccounts: Domain name for Google accounts on device. Type for other
-      accounts on device. Will only be populated if |ownership_privilege| is
-      |PROFILE_OWNER| or |DEVICE_OWNER|. Does not include the account signed
-      in to the device policy app if that account's domain has only one
-      account. Examples: "com.example", "xyz.com".
     ownerProfileAccount: Whether this account is on an owner/primary profile.
       For phones, only true for owner profiles. Android 4+ devices can have
       secondary or restricted user profiles.
     ownershipPrivilege: Ownership privileges on device.
-    securityPatchTime: OS security patch update time on device.
     supportsWorkProfile: Whether device supports Android work profiles. If
       false, this service will not block access to corp data even if an
       administrator turns on the "Enforce Work Profile" policy.
   """
-
-  class EncryptionStateValueValuesEnum(_messages.Enum):
-    r"""Device encryption state.
-
-    Values:
-      ENCRYPTION_STATE_UNSPECIFIED: Encryption Status is not set.
-      UNSUPPORTED_BY_DEVICE: Device doesn't support encryption.
-      ENCRYPTED: Device is encrypted.
-      NOT_ENCRYPTED: Device is not encrypted.
-    """
-    ENCRYPTION_STATE_UNSPECIFIED = 0
-    UNSUPPORTED_BY_DEVICE = 1
-    ENCRYPTED = 2
-    NOT_ENCRYPTED = 3
 
   class OwnershipPrivilegeValueValuesEnum(_messages.Enum):
     r"""Ownership privileges on device.
@@ -75,20 +46,10 @@ class AndroidAttributes(_messages.Message):
     PROFILE_OWNER = 2
     DEVICE_OWNER = 3
 
-  basebandVersion = _messages.StringField(1)
-  bootloaderVersion = _messages.StringField(2)
-  buildNumber = _messages.StringField(3)
-  enabledDeveloperOptions = _messages.BooleanField(4)
-  enabledUnknownSources = _messages.BooleanField(5)
-  enabledUsbDebugging = _messages.BooleanField(6)
-  encryptionState = _messages.EnumField('EncryptionStateValueValuesEnum', 7)
-  hardware = _messages.StringField(8)
-  kernelVersion = _messages.StringField(9)
-  otherAccounts = _messages.StringField(10, repeated=True)
-  ownerProfileAccount = _messages.BooleanField(11)
-  ownershipPrivilege = _messages.EnumField('OwnershipPrivilegeValueValuesEnum', 12)
-  securityPatchTime = _messages.StringField(13)
-  supportsWorkProfile = _messages.BooleanField(14)
+  enabledUnknownSources = _messages.BooleanField(1)
+  ownerProfileAccount = _messages.BooleanField(2)
+  ownershipPrivilege = _messages.EnumField('OwnershipPrivilegeValueValuesEnum', 3)
+  supportsWorkProfile = _messages.BooleanField(4)
 
 
 class ApproveDeviceUserResponse(_messages.Message):
@@ -1071,6 +1032,20 @@ class Group(_messages.Message):
   updateTime = _messages.StringField(9)
 
 
+class ListClientStatesResponse(_messages.Message):
+  r"""Response message that is returned in LRO result of ListClientStates
+  Operation.
+
+  Fields:
+    clientStates: Client states meeting the list restrictions.
+    nextPageToken: Token to retrieve the next page of results. Empty if there
+      are no more results.
+  """
+
+  clientStates = _messages.MessageField('ClientState', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+
+
 class ListDeviceUsersResponse(_messages.Message):
   r"""Response message that is returned in LRO result of ListDeviceUsers
   Operation.
@@ -1482,7 +1457,7 @@ class StandardQueryParameters(_messages.Message):
 
   f__xgafv = _messages.EnumField('FXgafvValueValuesEnum', 1)
   access_token = _messages.StringField(2)
-  alt = _messages.EnumField('AltValueValuesEnum', 3, default=u'json')
+  alt = _messages.EnumField('AltValueValuesEnum', 3, default='json')
   callback = _messages.StringField(4)
   fields = _messages.StringField(5)
   key = _messages.StringField(6)

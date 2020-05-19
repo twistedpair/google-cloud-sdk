@@ -20,6 +20,7 @@ from __future__ import division
 from __future__ import unicode_literals
 
 import os
+import time
 import zipfile
 import six
 
@@ -32,7 +33,7 @@ except ImportError:
   _ZIP_COMPRESSION = zipfile.ZIP_STORED
 
 
-def MakeZipFromDir(dest_zip_file, src_dir, predicate=None):
+def MakeZipFromDir(dest_zip_file, src_dir, predicate=None, update_date=False):
   """Similar to shutil.make_archive (which is available in python >=2.7).
 
   Examples:
@@ -57,7 +58,11 @@ def MakeZipFromDir(dest_zip_file, src_dir, predicate=None):
     predicate: callable, takes one argument (file path). File will be included
                in the zip if and only if the predicate(file_path). Defaults to
                always true.
+    update_date: bool, If true, update modification date of the files to 1980 if
+                 the date was earlier than 1980. Update dates back when zip
+                 is done.
   """
+  bump_list = []
   if predicate is None:
     predicate = lambda x: True
   zip_file = zipfile.ZipFile(dest_zip_file, 'w', _ZIP_COMPRESSION)
@@ -68,6 +73,8 @@ def MakeZipFromDir(dest_zip_file, src_dir, predicate=None):
       if not predicate(path):
         continue
       if path and path != os.curdir:
+        if update_date:
+          ValidateAndBumpModTime(root, bump_list)
         zip_file.write(root, path)
       for f in filelist:
         filename = os.path.normpath(os.path.join(root, f))
@@ -75,6 +82,22 @@ def MakeZipFromDir(dest_zip_file, src_dir, predicate=None):
         if not predicate(relpath):
           continue
         if os.path.isfile(filename):
+          if update_date:
+            ValidateAndBumpModTime(filename, bump_list)
           zip_file.write(filename, relpath)
   finally:
     zip_file.close()
+    BumpBack(bump_list)
+
+
+def ValidateAndBumpModTime(path, bump_list):
+  mtime = os.path.getmtime(path)
+  atime = os.path.getatime(path)
+  if time.localtime(mtime)[0] < 1980:
+    os.utime(path, (atime, 315619200))  # 1980-01-01
+    bump_list.append((path, (atime, mtime)))
+
+
+def BumpBack(bump_list):
+  for item in bump_list:
+    os.utime(item[0], item[1])

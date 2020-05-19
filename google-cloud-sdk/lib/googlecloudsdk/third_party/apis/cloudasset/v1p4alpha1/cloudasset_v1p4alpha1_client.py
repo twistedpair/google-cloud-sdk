@@ -8,17 +8,17 @@ class CloudassetV1p4alpha1(base_api.BaseApiClient):
   """Generated client library for service cloudasset version v1p4alpha1."""
 
   MESSAGES_MODULE = messages
-  BASE_URL = u'https://cloudasset.googleapis.com/'
-  MTLS_BASE_URL = u''
+  BASE_URL = 'https://cloudasset.googleapis.com/'
+  MTLS_BASE_URL = ''
 
-  _PACKAGE = u'cloudasset'
-  _SCOPES = [u'https://www.googleapis.com/auth/cloud-platform']
-  _VERSION = u'v1p4alpha1'
+  _PACKAGE = 'cloudasset'
+  _SCOPES = ['https://www.googleapis.com/auth/cloud-platform']
+  _VERSION = 'v1p4alpha1'
   _CLIENT_ID = '1042881264118.apps.googleusercontent.com'
   _CLIENT_SECRET = 'x_Tw5K8nnjoRAqULM9PFAC2b'
-  _USER_AGENT = u'google-cloud-sdk'
-  _CLIENT_CLASS_NAME = u'CloudassetV1p4alpha1'
-  _URL_VERSION = u'v1p4alpha1'
+  _USER_AGENT = 'google-cloud-sdk'
+  _CLIENT_CLASS_NAME = 'CloudassetV1p4alpha1'
+  _URL_VERSION = 'v1p4alpha1'
   _API_KEY = None
 
   def __init__(self, url='', credentials=None,
@@ -41,7 +41,7 @@ class CloudassetV1p4alpha1(base_api.BaseApiClient):
   class V1p4alpha1Service(base_api.BaseApiService):
     """Service class for the v1p4alpha1 resource."""
 
-    _NAME = u'v1p4alpha1'
+    _NAME = 'v1p4alpha1'
 
     def __init__(self, client):
       super(CloudassetV1p4alpha1.V1p4alpha1Service, self).__init__(client)
@@ -63,15 +63,15 @@ a list of IamPolicyAnalysisResult matching the request.
           config, request, global_params=global_params)
 
     AnalyzeIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1p4alpha1/{v1p4alpha1Id}/{v1p4alpha1Id1}:analyzeIamPolicy',
-        http_method=u'GET',
-        method_id=u'cloudasset.analyzeIamPolicy',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'accessSelector_permissions', u'accessSelector_roles', u'identitySelector_identity', u'options_expandGroups', u'options_expandResources', u'options_expandRoles', u'options_maxFanoutsPerGroup', u'options_maxFanoutsPerResource', u'options_outputGroupEdges', u'options_outputPartialResultBeforeTimeout', u'options_outputResourceEdges', u'resourceSelector_fullResourceName'],
-        relative_path=u'v1p4alpha1/{+parent}:analyzeIamPolicy',
+        flat_path='v1p4alpha1/{v1p4alpha1Id}/{v1p4alpha1Id1}:analyzeIamPolicy',
+        http_method='GET',
+        method_id='cloudasset.analyzeIamPolicy',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['accessSelector_permissions', 'accessSelector_roles', 'identitySelector_identity', 'options_expandGroups', 'options_expandResources', 'options_expandRoles', 'options_maxFanoutsPerGroup', 'options_maxFanoutsPerResource', 'options_outputGroupEdges', 'options_outputPartialResultBeforeTimeout', 'options_outputResourceEdges', 'resourceSelector_fullResourceName'],
+        relative_path='v1p4alpha1/{+parent}:analyzeIamPolicy',
         request_field='',
-        request_type_name=u'CloudassetAnalyzeIamPolicyRequest',
-        response_type_name=u'AnalyzeIamPolicyResponse',
+        request_type_name='CloudassetAnalyzeIamPolicyRequest',
+        response_type_name='AnalyzeIamPolicyResponse',
         supports_download=False,
     )

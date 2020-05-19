@@ -8,17 +8,17 @@ class GameservicesV1alpha(base_api.BaseApiClient):
   """Generated client library for service gameservices version v1alpha."""
 
   MESSAGES_MODULE = messages
-  BASE_URL = u'https://gameservices.googleapis.com/'
-  MTLS_BASE_URL = u'https://gameservices.mtls.googleapis.com/'
+  BASE_URL = 'https://gameservices.googleapis.com/'
+  MTLS_BASE_URL = 'https://gameservices.mtls.googleapis.com/'
 
-  _PACKAGE = u'gameservices'
-  _SCOPES = [u'https://www.googleapis.com/auth/cloud-platform']
-  _VERSION = u'v1alpha'
+  _PACKAGE = 'gameservices'
+  _SCOPES = ['https://www.googleapis.com/auth/cloud-platform']
+  _VERSION = 'v1alpha'
   _CLIENT_ID = '1042881264118.apps.googleusercontent.com'
   _CLIENT_SECRET = 'x_Tw5K8nnjoRAqULM9PFAC2b'
-  _USER_AGENT = u'google-cloud-sdk'
-  _CLIENT_CLASS_NAME = u'GameservicesV1alpha'
-  _URL_VERSION = u'v1alpha'
+  _USER_AGENT = 'google-cloud-sdk'
+  _CLIENT_CLASS_NAME = 'GameservicesV1alpha'
+  _URL_VERSION = 'v1alpha'
   _API_KEY = None
 
   def __init__(self, url='', credentials=None,
@@ -47,7 +47,7 @@ class GameservicesV1alpha(base_api.BaseApiClient):
   class ProjectsLocationsGameServerDeploymentsConfigsService(base_api.BaseApiService):
     """Service class for the projects_locations_gameServerDeployments_configs resource."""
 
-    _NAME = u'projects_locations_gameServerDeployments_configs'
+    _NAME = 'projects_locations_gameServerDeployments_configs'
 
     def __init__(self, client):
       super(GameservicesV1alpha.ProjectsLocationsGameServerDeploymentsConfigsService, self).__init__(client)
@@ -55,9 +55,9 @@ class GameservicesV1alpha(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      r"""Creates a new Game Server Config in a given project, Location, and Game.
-Server Deployment. Game Server Configs are immutable, and are not applied
-until referenced in the Game Server Deployment Rollout resource.
+      r"""Creates a new game server config in a given project, location, and game.
+server deployment. Game server configs are immutable, and are not applied
+until referenced in the game server deployment rollout resource.
 
       Args:
         request: (GameservicesProjectsLocationsGameServerDeploymentsConfigsCreateRequest) input message
@@ -70,22 +70,22 @@ until referenced in the Game Server Deployment Rollout resource.
           config, request, global_params=global_params)
 
     Create.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha/projects/{projectsId}/locations/{locationsId}/gameServerDeployments/{gameServerDeploymentsId}/configs',
-        http_method=u'POST',
-        method_id=u'gameservices.projects.locations.gameServerDeployments.configs.create',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'configId'],
-        relative_path=u'v1alpha/{+parent}/configs',
-        request_field=u'gameServerConfig',
-        request_type_name=u'GameservicesProjectsLocationsGameServerDeploymentsConfigsCreateRequest',
-        response_type_name=u'Operation',
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/gameServerDeployments/{gameServerDeploymentsId}/configs',
+        http_method='POST',
+        method_id='gameservices.projects.locations.gameServerDeployments.configs.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['configId'],
+        relative_path='v1alpha/{+parent}/configs',
+        request_field='gameServerConfig',
+        request_type_name='GameservicesProjectsLocationsGameServerDeploymentsConfigsCreateRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes a single Game Server Config. The deletion will fail if the Game.
-Server Config is referenced in a Game Server Deployment Rollout.
+      r"""Deletes a single game server config. The deletion will fail if the game.
+server config is referenced in a game server deployment rollout.
 
       Args:
         request: (GameservicesProjectsLocationsGameServerDeploymentsConfigsDeleteRequest) input message
@@ -98,21 +98,21 @@ Server Config is referenced in a Game Server Deployment Rollout.
           config, request, global_params=global_params)
 
     Delete.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha/projects/{projectsId}/locations/{locationsId}/gameServerDeployments/{gameServerDeploymentsId}/configs/{configsId}',
-        http_method=u'DELETE',
-        method_id=u'gameservices.projects.locations.gameServerDeployments.configs.delete',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/gameServerDeployments/{gameServerDeploymentsId}/configs/{configsId}',
+        http_method='DELETE',
+        method_id='gameservices.projects.locations.gameServerDeployments.configs.delete',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1alpha/{+name}',
+        relative_path='v1alpha/{+name}',
         request_field='',
-        request_type_name=u'GameservicesProjectsLocationsGameServerDeploymentsConfigsDeleteRequest',
-        response_type_name=u'Operation',
+        request_type_name='GameservicesProjectsLocationsGameServerDeploymentsConfigsDeleteRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
     def Get(self, request, global_params=None):
-      r"""Gets details of a single Game Server Config.
+      r"""Gets details of a single game server config.
 
       Args:
         request: (GameservicesProjectsLocationsGameServerDeploymentsConfigsGetRequest) input message
@@ -125,22 +125,22 @@ Server Config is referenced in a Game Server Deployment Rollout.
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha/projects/{projectsId}/locations/{locationsId}/gameServerDeployments/{gameServerDeploymentsId}/configs/{configsId}',
-        http_method=u'GET',
-        method_id=u'gameservices.projects.locations.gameServerDeployments.configs.get',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/gameServerDeployments/{gameServerDeploymentsId}/configs/{configsId}',
+        http_method='GET',
+        method_id='gameservices.projects.locations.gameServerDeployments.configs.get',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1alpha/{+name}',
+        relative_path='v1alpha/{+name}',
         request_field='',
-        request_type_name=u'GameservicesProjectsLocationsGameServerDeploymentsConfigsGetRequest',
-        response_type_name=u'GameServerConfig',
+        request_type_name='GameservicesProjectsLocationsGameServerDeploymentsConfigsGetRequest',
+        response_type_name='GameServerConfig',
         supports_download=False,
     )
 
     def List(self, request, global_params=None):
-      r"""Lists Game Server Configs in a given project, Location, and Game Server.
-Deployment.
+      r"""Lists game server configs in a given project, location, and game server.
+deployment.
 
       Args:
         request: (GameservicesProjectsLocationsGameServerDeploymentsConfigsListRequest) input message
@@ -153,23 +153,23 @@ Deployment.
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha/projects/{projectsId}/locations/{locationsId}/gameServerDeployments/{gameServerDeploymentsId}/configs',
-        http_method=u'GET',
-        method_id=u'gameservices.projects.locations.gameServerDeployments.configs.list',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'filter', u'orderBy', u'pageSize', u'pageToken'],
-        relative_path=u'v1alpha/{+parent}/configs',
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/gameServerDeployments/{gameServerDeploymentsId}/configs',
+        http_method='GET',
+        method_id='gameservices.projects.locations.gameServerDeployments.configs.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'orderBy', 'pageSize', 'pageToken'],
+        relative_path='v1alpha/{+parent}/configs',
         request_field='',
-        request_type_name=u'GameservicesProjectsLocationsGameServerDeploymentsConfigsListRequest',
-        response_type_name=u'ListGameServerConfigsResponse',
+        request_type_name='GameservicesProjectsLocationsGameServerDeploymentsConfigsListRequest',
+        response_type_name='ListGameServerConfigsResponse',
         supports_download=False,
     )
 
   class ProjectsLocationsGameServerDeploymentsService(base_api.BaseApiService):
     """Service class for the projects_locations_gameServerDeployments resource."""
 
-    _NAME = u'projects_locations_gameServerDeployments'
+    _NAME = 'projects_locations_gameServerDeployments'
 
     def __init__(self, client):
       super(GameservicesV1alpha.ProjectsLocationsGameServerDeploymentsService, self).__init__(client)
@@ -177,7 +177,7 @@ Deployment.
           }
 
     def Create(self, request, global_params=None):
-      r"""Creates a new Game Server Deployment in a given project and Location.
+      r"""Creates a new game server deployment in a given project and location.
 
       Args:
         request: (GameservicesProjectsLocationsGameServerDeploymentsCreateRequest) input message
@@ -190,21 +190,21 @@ Deployment.
           config, request, global_params=global_params)
 
     Create.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha/projects/{projectsId}/locations/{locationsId}/gameServerDeployments',
-        http_method=u'POST',
-        method_id=u'gameservices.projects.locations.gameServerDeployments.create',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'deploymentId'],
-        relative_path=u'v1alpha/{+parent}/gameServerDeployments',
-        request_field=u'gameServerDeployment',
-        request_type_name=u'GameservicesProjectsLocationsGameServerDeploymentsCreateRequest',
-        response_type_name=u'Operation',
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/gameServerDeployments',
+        http_method='POST',
+        method_id='gameservices.projects.locations.gameServerDeployments.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['deploymentId'],
+        relative_path='v1alpha/{+parent}/gameServerDeployments',
+        request_field='gameServerDeployment',
+        request_type_name='GameservicesProjectsLocationsGameServerDeploymentsCreateRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes a single Game Server Deployment.
+      r"""Deletes a single game server deployment.
 
       Args:
         request: (GameservicesProjectsLocationsGameServerDeploymentsDeleteRequest) input message
@@ -217,23 +217,23 @@ Deployment.
           config, request, global_params=global_params)
 
     Delete.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha/projects/{projectsId}/locations/{locationsId}/gameServerDeployments/{gameServerDeploymentsId}',
-        http_method=u'DELETE',
-        method_id=u'gameservices.projects.locations.gameServerDeployments.delete',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/gameServerDeployments/{gameServerDeploymentsId}',
+        http_method='DELETE',
+        method_id='gameservices.projects.locations.gameServerDeployments.delete',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1alpha/{+name}',
+        relative_path='v1alpha/{+name}',
         request_field='',
-        request_type_name=u'GameservicesProjectsLocationsGameServerDeploymentsDeleteRequest',
-        response_type_name=u'Operation',
+        request_type_name='GameservicesProjectsLocationsGameServerDeploymentsDeleteRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
     def FetchDeploymentState(self, request, global_params=None):
-      r"""Retrieves information about the current state of the Game Server.
-Ddeployment. Gathers all the Agones fleets and Agones autoscalers,
-including fleets running an older version of the Game Server Deployment.
+      r"""Retrieves information about the current state of the game server.
+deployment. Gathers all the Agones fleets and Agones autoscalers,
+including fleets running an older version of the game server deployment.
 
       Args:
         request: (GameservicesProjectsLocationsGameServerDeploymentsFetchDeploymentStateRequest) input message
@@ -246,21 +246,21 @@ including fleets running an older version of the Game Server Deployment.
           config, request, global_params=global_params)
 
     FetchDeploymentState.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha/projects/{projectsId}/locations/{locationsId}/gameServerDeployments/{gameServerDeploymentsId}:fetchDeploymentState',
-        http_method=u'POST',
-        method_id=u'gameservices.projects.locations.gameServerDeployments.fetchDeploymentState',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/gameServerDeployments/{gameServerDeploymentsId}:fetchDeploymentState',
+        http_method='POST',
+        method_id='gameservices.projects.locations.gameServerDeployments.fetchDeploymentState',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1alpha/{+name}:fetchDeploymentState',
-        request_field=u'fetchDeploymentStateRequest',
-        request_type_name=u'GameservicesProjectsLocationsGameServerDeploymentsFetchDeploymentStateRequest',
-        response_type_name=u'FetchDeploymentStateResponse',
+        relative_path='v1alpha/{+name}:fetchDeploymentState',
+        request_field='fetchDeploymentStateRequest',
+        request_type_name='GameservicesProjectsLocationsGameServerDeploymentsFetchDeploymentStateRequest',
+        response_type_name='FetchDeploymentStateResponse',
         supports_download=False,
     )
 
     def Get(self, request, global_params=None):
-      r"""Gets details of a single Game Server Deployment.
+      r"""Gets details of a single game server deployment.
 
       Args:
         request: (GameservicesProjectsLocationsGameServerDeploymentsGetRequest) input message
@@ -273,16 +273,16 @@ including fleets running an older version of the Game Server Deployment.
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha/projects/{projectsId}/locations/{locationsId}/gameServerDeployments/{gameServerDeploymentsId}',
-        http_method=u'GET',
-        method_id=u'gameservices.projects.locations.gameServerDeployments.get',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/gameServerDeployments/{gameServerDeploymentsId}',
+        http_method='GET',
+        method_id='gameservices.projects.locations.gameServerDeployments.get',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1alpha/{+name}',
+        relative_path='v1alpha/{+name}',
         request_field='',
-        request_type_name=u'GameservicesProjectsLocationsGameServerDeploymentsGetRequest',
-        response_type_name=u'GameServerDeployment',
+        request_type_name='GameservicesProjectsLocationsGameServerDeploymentsGetRequest',
+        response_type_name='GameServerDeployment',
         supports_download=False,
     )
 
@@ -302,21 +302,21 @@ set.
           config, request, global_params=global_params)
 
     GetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha/projects/{projectsId}/locations/{locationsId}/gameServerDeployments/{gameServerDeploymentsId}:getIamPolicy',
-        http_method=u'GET',
-        method_id=u'gameservices.projects.locations.gameServerDeployments.getIamPolicy',
-        ordered_params=[u'resource'],
-        path_params=[u'resource'],
-        query_params=[u'options_requestedPolicyVersion'],
-        relative_path=u'v1alpha/{+resource}:getIamPolicy',
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/gameServerDeployments/{gameServerDeploymentsId}:getIamPolicy',
+        http_method='GET',
+        method_id='gameservices.projects.locations.gameServerDeployments.getIamPolicy',
+        ordered_params=['resource'],
+        path_params=['resource'],
+        query_params=['options_requestedPolicyVersion'],
+        relative_path='v1alpha/{+resource}:getIamPolicy',
         request_field='',
-        request_type_name=u'GameservicesProjectsLocationsGameServerDeploymentsGetIamPolicyRequest',
-        response_type_name=u'Policy',
+        request_type_name='GameservicesProjectsLocationsGameServerDeploymentsGetIamPolicyRequest',
+        response_type_name='Policy',
         supports_download=False,
     )
 
     def GetRollout(self, request, global_params=None):
-      r"""Gets details a single Game Server Deployment Rollout.
+      r"""Gets details a single game server deployment rollout.
 
       Args:
         request: (GameservicesProjectsLocationsGameServerDeploymentsGetRolloutRequest) input message
@@ -329,21 +329,21 @@ set.
           config, request, global_params=global_params)
 
     GetRollout.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha/projects/{projectsId}/locations/{locationsId}/gameServerDeployments/{gameServerDeploymentsId}/rollout',
-        http_method=u'GET',
-        method_id=u'gameservices.projects.locations.gameServerDeployments.getRollout',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/gameServerDeployments/{gameServerDeploymentsId}/rollout',
+        http_method='GET',
+        method_id='gameservices.projects.locations.gameServerDeployments.getRollout',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1alpha/{+name}/rollout',
+        relative_path='v1alpha/{+name}/rollout',
         request_field='',
-        request_type_name=u'GameservicesProjectsLocationsGameServerDeploymentsGetRolloutRequest',
-        response_type_name=u'GameServerDeploymentRollout',
+        request_type_name='GameservicesProjectsLocationsGameServerDeploymentsGetRolloutRequest',
+        response_type_name='GameServerDeploymentRollout',
         supports_download=False,
     )
 
     def List(self, request, global_params=None):
-      r"""Lists Game Server Deployments in a given project and Location.
+      r"""Lists game server deployments in a given project and location.
 
       Args:
         request: (GameservicesProjectsLocationsGameServerDeploymentsListRequest) input message
@@ -356,21 +356,21 @@ set.
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha/projects/{projectsId}/locations/{locationsId}/gameServerDeployments',
-        http_method=u'GET',
-        method_id=u'gameservices.projects.locations.gameServerDeployments.list',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'filter', u'orderBy', u'pageSize', u'pageToken'],
-        relative_path=u'v1alpha/{+parent}/gameServerDeployments',
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/gameServerDeployments',
+        http_method='GET',
+        method_id='gameservices.projects.locations.gameServerDeployments.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'orderBy', 'pageSize', 'pageToken'],
+        relative_path='v1alpha/{+parent}/gameServerDeployments',
         request_field='',
-        request_type_name=u'GameservicesProjectsLocationsGameServerDeploymentsListRequest',
-        response_type_name=u'ListGameServerDeploymentsResponse',
+        request_type_name='GameservicesProjectsLocationsGameServerDeploymentsListRequest',
+        response_type_name='ListGameServerDeploymentsResponse',
         supports_download=False,
     )
 
     def Patch(self, request, global_params=None):
-      r"""Patches a Game Server Deployment.
+      r"""Patches a game server deployment.
 
       Args:
         request: (GameservicesProjectsLocationsGameServerDeploymentsPatchRequest) input message
@@ -383,22 +383,22 @@ set.
           config, request, global_params=global_params)
 
     Patch.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha/projects/{projectsId}/locations/{locationsId}/gameServerDeployments/{gameServerDeploymentsId}',
-        http_method=u'PATCH',
-        method_id=u'gameservices.projects.locations.gameServerDeployments.patch',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[u'updateMask'],
-        relative_path=u'v1alpha/{+name}',
-        request_field=u'gameServerDeployment',
-        request_type_name=u'GameservicesProjectsLocationsGameServerDeploymentsPatchRequest',
-        response_type_name=u'Operation',
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/gameServerDeployments/{gameServerDeploymentsId}',
+        http_method='PATCH',
+        method_id='gameservices.projects.locations.gameServerDeployments.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v1alpha/{+name}',
+        request_field='gameServerDeployment',
+        request_type_name='GameservicesProjectsLocationsGameServerDeploymentsPatchRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
     def PreviewRollout(self, request, global_params=None):
-      r"""Previews the Game Server Deployment Rollout. This API does not mutate the.
-Rollout resource.
+      r"""Previews the game server deployment rollout. This API does not mutate the.
+rollout resource.
 
       Args:
         request: (GameservicesProjectsLocationsGameServerDeploymentsPreviewRolloutRequest) input message
@@ -411,16 +411,16 @@ Rollout resource.
           config, request, global_params=global_params)
 
     PreviewRollout.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha/projects/{projectsId}/locations/{locationsId}/gameServerDeployments/{gameServerDeploymentsId}/rollout:preview',
-        http_method=u'PATCH',
-        method_id=u'gameservices.projects.locations.gameServerDeployments.previewRollout',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[u'previewTime', u'updateMask'],
-        relative_path=u'v1alpha/{+name}/rollout:preview',
-        request_field=u'gameServerDeploymentRollout',
-        request_type_name=u'GameservicesProjectsLocationsGameServerDeploymentsPreviewRolloutRequest',
-        response_type_name=u'PreviewGameServerDeploymentRolloutResponse',
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/gameServerDeployments/{gameServerDeploymentsId}/rollout:preview',
+        http_method='PATCH',
+        method_id='gameservices.projects.locations.gameServerDeployments.previewRollout',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['previewTime', 'updateMask'],
+        relative_path='v1alpha/{+name}/rollout:preview',
+        request_field='gameServerDeploymentRollout',
+        request_type_name='GameservicesProjectsLocationsGameServerDeploymentsPreviewRolloutRequest',
+        response_type_name='PreviewGameServerDeploymentRolloutResponse',
         supports_download=False,
     )
 
@@ -441,16 +441,16 @@ Can return `NOT_FOUND`, `INVALID_ARGUMENT`, and `PERMISSION_DENIED` errors.
           config, request, global_params=global_params)
 
     SetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha/projects/{projectsId}/locations/{locationsId}/gameServerDeployments/{gameServerDeploymentsId}:setIamPolicy',
-        http_method=u'POST',
-        method_id=u'gameservices.projects.locations.gameServerDeployments.setIamPolicy',
-        ordered_params=[u'resource'],
-        path_params=[u'resource'],
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/gameServerDeployments/{gameServerDeploymentsId}:setIamPolicy',
+        http_method='POST',
+        method_id='gameservices.projects.locations.gameServerDeployments.setIamPolicy',
+        ordered_params=['resource'],
+        path_params=['resource'],
         query_params=[],
-        relative_path=u'v1alpha/{+resource}:setIamPolicy',
-        request_field=u'setIamPolicyRequest',
-        request_type_name=u'GameservicesProjectsLocationsGameServerDeploymentsSetIamPolicyRequest',
-        response_type_name=u'Policy',
+        relative_path='v1alpha/{+resource}:setIamPolicy',
+        request_field='setIamPolicyRequest',
+        request_type_name='GameservicesProjectsLocationsGameServerDeploymentsSetIamPolicyRequest',
+        response_type_name='Policy',
         supports_download=False,
     )
 
@@ -474,21 +474,21 @@ may "fail open" without warning.
           config, request, global_params=global_params)
 
     TestIamPermissions.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha/projects/{projectsId}/locations/{locationsId}/gameServerDeployments/{gameServerDeploymentsId}:testIamPermissions',
-        http_method=u'POST',
-        method_id=u'gameservices.projects.locations.gameServerDeployments.testIamPermissions',
-        ordered_params=[u'resource'],
-        path_params=[u'resource'],
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/gameServerDeployments/{gameServerDeploymentsId}:testIamPermissions',
+        http_method='POST',
+        method_id='gameservices.projects.locations.gameServerDeployments.testIamPermissions',
+        ordered_params=['resource'],
+        path_params=['resource'],
         query_params=[],
-        relative_path=u'v1alpha/{+resource}:testIamPermissions',
-        request_field=u'testIamPermissionsRequest',
-        request_type_name=u'GameservicesProjectsLocationsGameServerDeploymentsTestIamPermissionsRequest',
-        response_type_name=u'TestIamPermissionsResponse',
+        relative_path='v1alpha/{+resource}:testIamPermissions',
+        request_field='testIamPermissionsRequest',
+        request_type_name='GameservicesProjectsLocationsGameServerDeploymentsTestIamPermissionsRequest',
+        response_type_name='TestIamPermissionsResponse',
         supports_download=False,
     )
 
     def UpdateRollout(self, request, global_params=None):
-      r"""Patches a single Game Server Deployment Rollout.
+      r"""Patches a single game server deployment rollout.
 The method will not return an error if the update does not affect any
 existing realms. For example - if the default_game_server_config is changed
 but all existing realms use the override, that is valid. Similarly, if a
@@ -506,23 +506,23 @@ field, that will also not result in an error.
           config, request, global_params=global_params)
 
     UpdateRollout.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha/projects/{projectsId}/locations/{locationsId}/gameServerDeployments/{gameServerDeploymentsId}/rollout',
-        http_method=u'PATCH',
-        method_id=u'gameservices.projects.locations.gameServerDeployments.updateRollout',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[u'updateMask'],
-        relative_path=u'v1alpha/{+name}/rollout',
-        request_field=u'gameServerDeploymentRollout',
-        request_type_name=u'GameservicesProjectsLocationsGameServerDeploymentsUpdateRolloutRequest',
-        response_type_name=u'Operation',
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/gameServerDeployments/{gameServerDeploymentsId}/rollout',
+        http_method='PATCH',
+        method_id='gameservices.projects.locations.gameServerDeployments.updateRollout',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v1alpha/{+name}/rollout',
+        request_field='gameServerDeploymentRollout',
+        request_type_name='GameservicesProjectsLocationsGameServerDeploymentsUpdateRolloutRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
   class ProjectsLocationsOperationsService(base_api.BaseApiService):
     """Service class for the projects_locations_operations resource."""
 
-    _NAME = u'projects_locations_operations'
+    _NAME = 'projects_locations_operations'
 
     def __init__(self, client):
       super(GameservicesV1alpha.ProjectsLocationsOperationsService, self).__init__(client)
@@ -552,16 +552,16 @@ corresponding to `Code.CANCELLED`.
           config, request, global_params=global_params)
 
     Cancel.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha/projects/{projectsId}/locations/{locationsId}/operations/{operationsId}:cancel',
-        http_method=u'POST',
-        method_id=u'gameservices.projects.locations.operations.cancel',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/operations/{operationsId}:cancel',
+        http_method='POST',
+        method_id='gameservices.projects.locations.operations.cancel',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1alpha/{+name}:cancel',
-        request_field=u'cancelOperationRequest',
-        request_type_name=u'GameservicesProjectsLocationsOperationsCancelRequest',
-        response_type_name=u'Empty',
+        relative_path='v1alpha/{+name}:cancel',
+        request_field='cancelOperationRequest',
+        request_type_name='GameservicesProjectsLocationsOperationsCancelRequest',
+        response_type_name='Empty',
         supports_download=False,
     )
 
@@ -582,16 +582,16 @@ operation. If the server doesn't support this method, it returns
           config, request, global_params=global_params)
 
     Delete.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha/projects/{projectsId}/locations/{locationsId}/operations/{operationsId}',
-        http_method=u'DELETE',
-        method_id=u'gameservices.projects.locations.operations.delete',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/operations/{operationsId}',
+        http_method='DELETE',
+        method_id='gameservices.projects.locations.operations.delete',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1alpha/{+name}',
+        relative_path='v1alpha/{+name}',
         request_field='',
-        request_type_name=u'GameservicesProjectsLocationsOperationsDeleteRequest',
-        response_type_name=u'Empty',
+        request_type_name='GameservicesProjectsLocationsOperationsDeleteRequest',
+        response_type_name='Empty',
         supports_download=False,
     )
 
@@ -611,16 +611,16 @@ service.
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha/projects/{projectsId}/locations/{locationsId}/operations/{operationsId}',
-        http_method=u'GET',
-        method_id=u'gameservices.projects.locations.operations.get',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/operations/{operationsId}',
+        http_method='GET',
+        method_id='gameservices.projects.locations.operations.get',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1alpha/{+name}',
+        relative_path='v1alpha/{+name}',
         request_field='',
-        request_type_name=u'GameservicesProjectsLocationsOperationsGetRequest',
-        response_type_name=u'Operation',
+        request_type_name='GameservicesProjectsLocationsOperationsGetRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -647,23 +647,23 @@ is the parent resource, without the operations collection id.
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha/projects/{projectsId}/locations/{locationsId}/operations',
-        http_method=u'GET',
-        method_id=u'gameservices.projects.locations.operations.list',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[u'filter', u'pageSize', u'pageToken'],
-        relative_path=u'v1alpha/{+name}/operations',
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/operations',
+        http_method='GET',
+        method_id='gameservices.projects.locations.operations.list',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['filter', 'pageSize', 'pageToken'],
+        relative_path='v1alpha/{+name}/operations',
         request_field='',
-        request_type_name=u'GameservicesProjectsLocationsOperationsListRequest',
-        response_type_name=u'ListOperationsResponse',
+        request_type_name='GameservicesProjectsLocationsOperationsListRequest',
+        response_type_name='ListOperationsResponse',
         supports_download=False,
     )
 
   class ProjectsLocationsRealmsGameServerClustersService(base_api.BaseApiService):
     """Service class for the projects_locations_realms_gameServerClusters resource."""
 
-    _NAME = u'projects_locations_realms_gameServerClusters'
+    _NAME = 'projects_locations_realms_gameServerClusters'
 
     def __init__(self, client):
       super(GameservicesV1alpha.ProjectsLocationsRealmsGameServerClustersService, self).__init__(client)
@@ -684,16 +684,16 @@ is the parent resource, without the operations collection id.
           config, request, global_params=global_params)
 
     Create.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha/projects/{projectsId}/locations/{locationsId}/realms/{realmsId}/gameServerClusters',
-        http_method=u'POST',
-        method_id=u'gameservices.projects.locations.realms.gameServerClusters.create',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'gameServerClusterId'],
-        relative_path=u'v1alpha/{+parent}/gameServerClusters',
-        request_field=u'gameServerCluster',
-        request_type_name=u'GameservicesProjectsLocationsRealmsGameServerClustersCreateRequest',
-        response_type_name=u'Operation',
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/realms/{realmsId}/gameServerClusters',
+        http_method='POST',
+        method_id='gameservices.projects.locations.realms.gameServerClusters.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['gameServerClusterId'],
+        relative_path='v1alpha/{+parent}/gameServerClusters',
+        request_field='gameServerCluster',
+        request_type_name='GameservicesProjectsLocationsRealmsGameServerClustersCreateRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -711,16 +711,16 @@ is the parent resource, without the operations collection id.
           config, request, global_params=global_params)
 
     Delete.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha/projects/{projectsId}/locations/{locationsId}/realms/{realmsId}/gameServerClusters/{gameServerClustersId}',
-        http_method=u'DELETE',
-        method_id=u'gameservices.projects.locations.realms.gameServerClusters.delete',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/realms/{realmsId}/gameServerClusters/{gameServerClustersId}',
+        http_method='DELETE',
+        method_id='gameservices.projects.locations.realms.gameServerClusters.delete',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1alpha/{+name}',
+        relative_path='v1alpha/{+name}',
         request_field='',
-        request_type_name=u'GameservicesProjectsLocationsRealmsGameServerClustersDeleteRequest',
-        response_type_name=u'Operation',
+        request_type_name='GameservicesProjectsLocationsRealmsGameServerClustersDeleteRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -738,21 +738,21 @@ is the parent resource, without the operations collection id.
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha/projects/{projectsId}/locations/{locationsId}/realms/{realmsId}/gameServerClusters/{gameServerClustersId}',
-        http_method=u'GET',
-        method_id=u'gameservices.projects.locations.realms.gameServerClusters.get',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/realms/{realmsId}/gameServerClusters/{gameServerClustersId}',
+        http_method='GET',
+        method_id='gameservices.projects.locations.realms.gameServerClusters.get',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1alpha/{+name}',
+        relative_path='v1alpha/{+name}',
         request_field='',
-        request_type_name=u'GameservicesProjectsLocationsRealmsGameServerClustersGetRequest',
-        response_type_name=u'GameServerCluster',
+        request_type_name='GameservicesProjectsLocationsRealmsGameServerClustersGetRequest',
+        response_type_name='GameServerCluster',
         supports_download=False,
     )
 
     def List(self, request, global_params=None):
-      r"""Lists Game Server Clusters in a given project and location.
+      r"""Lists game server clusters in a given project and location.
 
       Args:
         request: (GameservicesProjectsLocationsRealmsGameServerClustersListRequest) input message
@@ -765,16 +765,16 @@ is the parent resource, without the operations collection id.
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha/projects/{projectsId}/locations/{locationsId}/realms/{realmsId}/gameServerClusters',
-        http_method=u'GET',
-        method_id=u'gameservices.projects.locations.realms.gameServerClusters.list',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'filter', u'orderBy', u'pageSize', u'pageToken'],
-        relative_path=u'v1alpha/{+parent}/gameServerClusters',
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/realms/{realmsId}/gameServerClusters',
+        http_method='GET',
+        method_id='gameservices.projects.locations.realms.gameServerClusters.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'orderBy', 'pageSize', 'pageToken'],
+        relative_path='v1alpha/{+parent}/gameServerClusters',
         request_field='',
-        request_type_name=u'GameservicesProjectsLocationsRealmsGameServerClustersListRequest',
-        response_type_name=u'ListGameServerClustersResponse',
+        request_type_name='GameservicesProjectsLocationsRealmsGameServerClustersListRequest',
+        response_type_name='ListGameServerClustersResponse',
         supports_download=False,
     )
 
@@ -792,16 +792,16 @@ is the parent resource, without the operations collection id.
           config, request, global_params=global_params)
 
     Patch.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha/projects/{projectsId}/locations/{locationsId}/realms/{realmsId}/gameServerClusters/{gameServerClustersId}',
-        http_method=u'PATCH',
-        method_id=u'gameservices.projects.locations.realms.gameServerClusters.patch',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[u'updateMask'],
-        relative_path=u'v1alpha/{+name}',
-        request_field=u'gameServerCluster',
-        request_type_name=u'GameservicesProjectsLocationsRealmsGameServerClustersPatchRequest',
-        response_type_name=u'Operation',
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/realms/{realmsId}/gameServerClusters/{gameServerClustersId}',
+        http_method='PATCH',
+        method_id='gameservices.projects.locations.realms.gameServerClusters.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v1alpha/{+name}',
+        request_field='gameServerCluster',
+        request_type_name='GameservicesProjectsLocationsRealmsGameServerClustersPatchRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -820,16 +820,16 @@ location.
           config, request, global_params=global_params)
 
     PreviewCreate.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha/projects/{projectsId}/locations/{locationsId}/realms/{realmsId}/gameServerClusters:previewCreate',
-        http_method=u'POST',
-        method_id=u'gameservices.projects.locations.realms.gameServerClusters.previewCreate',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'gameServerClusterId', u'previewTime'],
-        relative_path=u'v1alpha/{+parent}/gameServerClusters:previewCreate',
-        request_field=u'gameServerCluster',
-        request_type_name=u'GameservicesProjectsLocationsRealmsGameServerClustersPreviewCreateRequest',
-        response_type_name=u'PreviewCreateGameServerClusterResponse',
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/realms/{realmsId}/gameServerClusters:previewCreate',
+        http_method='POST',
+        method_id='gameservices.projects.locations.realms.gameServerClusters.previewCreate',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['gameServerClusterId', 'previewTime'],
+        relative_path='v1alpha/{+parent}/gameServerClusters:previewCreate',
+        request_field='gameServerCluster',
+        request_type_name='GameservicesProjectsLocationsRealmsGameServerClustersPreviewCreateRequest',
+        response_type_name='PreviewCreateGameServerClusterResponse',
         supports_download=False,
     )
 
@@ -847,16 +847,16 @@ location.
           config, request, global_params=global_params)
 
     PreviewDelete.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha/projects/{projectsId}/locations/{locationsId}/realms/{realmsId}/gameServerClusters/{gameServerClustersId}:previewDelete',
-        http_method=u'DELETE',
-        method_id=u'gameservices.projects.locations.realms.gameServerClusters.previewDelete',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[u'previewTime'],
-        relative_path=u'v1alpha/{+name}:previewDelete',
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/realms/{realmsId}/gameServerClusters/{gameServerClustersId}:previewDelete',
+        http_method='DELETE',
+        method_id='gameservices.projects.locations.realms.gameServerClusters.previewDelete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['previewTime'],
+        relative_path='v1alpha/{+name}:previewDelete',
         request_field='',
-        request_type_name=u'GameservicesProjectsLocationsRealmsGameServerClustersPreviewDeleteRequest',
-        response_type_name=u'PreviewDeleteGameServerClusterResponse',
+        request_type_name='GameservicesProjectsLocationsRealmsGameServerClustersPreviewDeleteRequest',
+        response_type_name='PreviewDeleteGameServerClusterResponse',
         supports_download=False,
     )
 
@@ -874,23 +874,23 @@ location.
           config, request, global_params=global_params)
 
     PreviewUpdate.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha/projects/{projectsId}/locations/{locationsId}/realms/{realmsId}/gameServerClusters/{gameServerClustersId}:previewUpdate',
-        http_method=u'PATCH',
-        method_id=u'gameservices.projects.locations.realms.gameServerClusters.previewUpdate',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[u'previewTime', u'updateMask'],
-        relative_path=u'v1alpha/{+name}:previewUpdate',
-        request_field=u'gameServerCluster',
-        request_type_name=u'GameservicesProjectsLocationsRealmsGameServerClustersPreviewUpdateRequest',
-        response_type_name=u'PreviewUpdateGameServerClusterResponse',
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/realms/{realmsId}/gameServerClusters/{gameServerClustersId}:previewUpdate',
+        http_method='PATCH',
+        method_id='gameservices.projects.locations.realms.gameServerClusters.previewUpdate',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['previewTime', 'updateMask'],
+        relative_path='v1alpha/{+name}:previewUpdate',
+        request_field='gameServerCluster',
+        request_type_name='GameservicesProjectsLocationsRealmsGameServerClustersPreviewUpdateRequest',
+        response_type_name='PreviewUpdateGameServerClusterResponse',
         supports_download=False,
     )
 
   class ProjectsLocationsRealmsService(base_api.BaseApiService):
     """Service class for the projects_locations_realms resource."""
 
-    _NAME = u'projects_locations_realms'
+    _NAME = 'projects_locations_realms'
 
     def __init__(self, client):
       super(GameservicesV1alpha.ProjectsLocationsRealmsService, self).__init__(client)
@@ -898,7 +898,7 @@ location.
           }
 
     def Create(self, request, global_params=None):
-      r"""Creates a new Realm in a given project and Location.
+      r"""Creates a new realm in a given project and location.
 
       Args:
         request: (GameservicesProjectsLocationsRealmsCreateRequest) input message
@@ -911,21 +911,21 @@ location.
           config, request, global_params=global_params)
 
     Create.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha/projects/{projectsId}/locations/{locationsId}/realms',
-        http_method=u'POST',
-        method_id=u'gameservices.projects.locations.realms.create',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'realmId'],
-        relative_path=u'v1alpha/{+parent}/realms',
-        request_field=u'realm',
-        request_type_name=u'GameservicesProjectsLocationsRealmsCreateRequest',
-        response_type_name=u'Operation',
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/realms',
+        http_method='POST',
+        method_id='gameservices.projects.locations.realms.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['realmId'],
+        relative_path='v1alpha/{+parent}/realms',
+        request_field='realm',
+        request_type_name='GameservicesProjectsLocationsRealmsCreateRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes a single Realm.
+      r"""Deletes a single realm.
 
       Args:
         request: (GameservicesProjectsLocationsRealmsDeleteRequest) input message
@@ -938,21 +938,21 @@ location.
           config, request, global_params=global_params)
 
     Delete.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha/projects/{projectsId}/locations/{locationsId}/realms/{realmsId}',
-        http_method=u'DELETE',
-        method_id=u'gameservices.projects.locations.realms.delete',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/realms/{realmsId}',
+        http_method='DELETE',
+        method_id='gameservices.projects.locations.realms.delete',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1alpha/{+name}',
+        relative_path='v1alpha/{+name}',
         request_field='',
-        request_type_name=u'GameservicesProjectsLocationsRealmsDeleteRequest',
-        response_type_name=u'Operation',
+        request_type_name='GameservicesProjectsLocationsRealmsDeleteRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
     def Get(self, request, global_params=None):
-      r"""Gets details of a single Realm.
+      r"""Gets details of a single realm.
 
       Args:
         request: (GameservicesProjectsLocationsRealmsGetRequest) input message
@@ -965,21 +965,21 @@ location.
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha/projects/{projectsId}/locations/{locationsId}/realms/{realmsId}',
-        http_method=u'GET',
-        method_id=u'gameservices.projects.locations.realms.get',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/realms/{realmsId}',
+        http_method='GET',
+        method_id='gameservices.projects.locations.realms.get',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1alpha/{+name}',
+        relative_path='v1alpha/{+name}',
         request_field='',
-        request_type_name=u'GameservicesProjectsLocationsRealmsGetRequest',
-        response_type_name=u'Realm',
+        request_type_name='GameservicesProjectsLocationsRealmsGetRequest',
+        response_type_name='Realm',
         supports_download=False,
     )
 
     def List(self, request, global_params=None):
-      r"""Lists Realms in a given project and Location.
+      r"""Lists realms in a given project and location.
 
       Args:
         request: (GameservicesProjectsLocationsRealmsListRequest) input message
@@ -992,21 +992,21 @@ location.
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha/projects/{projectsId}/locations/{locationsId}/realms',
-        http_method=u'GET',
-        method_id=u'gameservices.projects.locations.realms.list',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'filter', u'orderBy', u'pageSize', u'pageToken'],
-        relative_path=u'v1alpha/{+parent}/realms',
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/realms',
+        http_method='GET',
+        method_id='gameservices.projects.locations.realms.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'orderBy', 'pageSize', 'pageToken'],
+        relative_path='v1alpha/{+parent}/realms',
         request_field='',
-        request_type_name=u'GameservicesProjectsLocationsRealmsListRequest',
-        response_type_name=u'ListRealmsResponse',
+        request_type_name='GameservicesProjectsLocationsRealmsListRequest',
+        response_type_name='ListRealmsResponse',
         supports_download=False,
     )
 
     def Patch(self, request, global_params=None):
-      r"""Patches a single Realm.
+      r"""Patches a single realm.
 
       Args:
         request: (GameservicesProjectsLocationsRealmsPatchRequest) input message
@@ -1019,21 +1019,21 @@ location.
           config, request, global_params=global_params)
 
     Patch.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha/projects/{projectsId}/locations/{locationsId}/realms/{realmsId}',
-        http_method=u'PATCH',
-        method_id=u'gameservices.projects.locations.realms.patch',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[u'updateMask'],
-        relative_path=u'v1alpha/{+name}',
-        request_field=u'realm',
-        request_type_name=u'GameservicesProjectsLocationsRealmsPatchRequest',
-        response_type_name=u'Operation',
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/realms/{realmsId}',
+        http_method='PATCH',
+        method_id='gameservices.projects.locations.realms.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v1alpha/{+name}',
+        request_field='realm',
+        request_type_name='GameservicesProjectsLocationsRealmsPatchRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
     def PreviewUpdate(self, request, global_params=None):
-      r"""Previews patches to a single Realm.
+      r"""Previews patches to a single realm.
 
       Args:
         request: (GameservicesProjectsLocationsRealmsPreviewUpdateRequest) input message
@@ -1046,23 +1046,23 @@ location.
           config, request, global_params=global_params)
 
     PreviewUpdate.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha/projects/{projectsId}/locations/{locationsId}/realms/{realmsId}:previewUpdate',
-        http_method=u'PATCH',
-        method_id=u'gameservices.projects.locations.realms.previewUpdate',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[u'previewTime', u'updateMask'],
-        relative_path=u'v1alpha/{+name}:previewUpdate',
-        request_field=u'realm',
-        request_type_name=u'GameservicesProjectsLocationsRealmsPreviewUpdateRequest',
-        response_type_name=u'PreviewRealmUpdateResponse',
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/realms/{realmsId}:previewUpdate',
+        http_method='PATCH',
+        method_id='gameservices.projects.locations.realms.previewUpdate',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['previewTime', 'updateMask'],
+        relative_path='v1alpha/{+name}:previewUpdate',
+        request_field='realm',
+        request_type_name='GameservicesProjectsLocationsRealmsPreviewUpdateRequest',
+        response_type_name='PreviewRealmUpdateResponse',
         supports_download=False,
     )
 
   class ProjectsLocationsService(base_api.BaseApiService):
     """Service class for the projects_locations resource."""
 
-    _NAME = u'projects_locations'
+    _NAME = 'projects_locations'
 
     def __init__(self, client):
       super(GameservicesV1alpha.ProjectsLocationsService, self).__init__(client)
@@ -1083,16 +1083,16 @@ location.
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha/projects/{projectsId}/locations/{locationsId}',
-        http_method=u'GET',
-        method_id=u'gameservices.projects.locations.get',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}',
+        http_method='GET',
+        method_id='gameservices.projects.locations.get',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1alpha/{+name}',
+        relative_path='v1alpha/{+name}',
         request_field='',
-        request_type_name=u'GameservicesProjectsLocationsGetRequest',
-        response_type_name=u'Location',
+        request_type_name='GameservicesProjectsLocationsGetRequest',
+        response_type_name='Location',
         supports_download=False,
     )
 
@@ -1110,23 +1110,23 @@ location.
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha/projects/{projectsId}/locations',
-        http_method=u'GET',
-        method_id=u'gameservices.projects.locations.list',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[u'filter', u'includeUnrevealedLocations', u'pageSize', u'pageToken'],
-        relative_path=u'v1alpha/{+name}/locations',
+        flat_path='v1alpha/projects/{projectsId}/locations',
+        http_method='GET',
+        method_id='gameservices.projects.locations.list',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['filter', 'includeUnrevealedLocations', 'pageSize', 'pageToken'],
+        relative_path='v1alpha/{+name}/locations',
         request_field='',
-        request_type_name=u'GameservicesProjectsLocationsListRequest',
-        response_type_name=u'ListLocationsResponse',
+        request_type_name='GameservicesProjectsLocationsListRequest',
+        response_type_name='ListLocationsResponse',
         supports_download=False,
     )
 
   class ProjectsService(base_api.BaseApiService):
     """Service class for the projects resource."""
 
-    _NAME = u'projects'
+    _NAME = 'projects'
 
     def __init__(self, client):
       super(GameservicesV1alpha.ProjectsService, self).__init__(client)

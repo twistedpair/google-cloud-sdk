@@ -1783,6 +1783,32 @@
         "errorMessage": {
           "description": "Will be empty if validation succeeds.",
           "type": "string"
+        },
+        "queryInfo": {
+          "description": "Information about the validated query. Not defined if validation fails.",
+          "$ref": "QueryInfo"
+        }
+      }
+    },
+    "QueryInfo": {
+      "id": "QueryInfo",
+      "description": "Information about a validated query.",
+      "type": "object",
+      "properties": {
+        "queryProperty": {
+          "description": "Includes an entry for each satisfied QueryProperty.",
+          "enumDescriptions": [
+            "The query property is unknown or unspecified.",
+            "Indicates this query reads from >= 1 unbounded source."
+          ],
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": [
+              "QUERY_PROPERTY_UNSPECIFIED",
+              "HAS_UNBOUNDED_SOURCE"
+            ]
+          }
         }
       }
     },

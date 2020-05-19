@@ -28,7 +28,7 @@ class Collections(enum.Enum):
       'folders',
       'folders/{foldersId}',
       {},
-      [u'foldersId'],
+      ['foldersId'],
       True
   )
   FOLDERS_OPERATIONS = (
@@ -38,14 +38,14 @@ class Collections(enum.Enum):
           '':
               'folders/{foldersId}/operations/{operationsId}/{operationsId1}',
       },
-      [u'name'],
+      ['name'],
       True
   )
   ORGANIZATIONS = (
       'organizations',
       'organizations/{organizationsId}',
       {},
-      [u'organizationsId'],
+      ['organizationsId'],
       True
   )
   ORGANIZATIONS_OPERATIONS = (
@@ -56,14 +56,14 @@ class Collections(enum.Enum):
               'organizations/{organizationsId}/operations/{operationsId}/'
               '{operationsId1}',
       },
-      [u'name'],
+      ['name'],
       True
   )
   PROJECTS = (
       'projects',
       'projects/{projectsId}',
       {},
-      [u'projectsId'],
+      ['projectsId'],
       True
   )
   PROJECTS_OPERATIONS = (
@@ -74,7 +74,7 @@ class Collections(enum.Enum):
               'projects/{projectsId}/operations/{operationsId}/'
               '{operationsId1}',
       },
-      [u'name'],
+      ['name'],
       True
   )
 

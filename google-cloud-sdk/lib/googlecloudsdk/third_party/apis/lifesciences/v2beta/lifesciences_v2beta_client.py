@@ -8,17 +8,17 @@ class LifesciencesV2beta(base_api.BaseApiClient):
   """Generated client library for service lifesciences version v2beta."""
 
   MESSAGES_MODULE = messages
-  BASE_URL = u'https://lifesciences.googleapis.com/'
-  MTLS_BASE_URL = u'https://lifesciences.mtls.googleapis.com/'
+  BASE_URL = 'https://lifesciences.googleapis.com/'
+  MTLS_BASE_URL = 'https://lifesciences.mtls.googleapis.com/'
 
-  _PACKAGE = u'lifesciences'
-  _SCOPES = [u'https://www.googleapis.com/auth/cloud-platform']
-  _VERSION = u'v2beta'
+  _PACKAGE = 'lifesciences'
+  _SCOPES = ['https://www.googleapis.com/auth/cloud-platform']
+  _VERSION = 'v2beta'
   _CLIENT_ID = '1042881264118.apps.googleusercontent.com'
   _CLIENT_SECRET = 'x_Tw5K8nnjoRAqULM9PFAC2b'
-  _USER_AGENT = u'google-cloud-sdk'
-  _CLIENT_CLASS_NAME = u'LifesciencesV2beta'
-  _URL_VERSION = u'v2beta'
+  _USER_AGENT = 'google-cloud-sdk'
+  _CLIENT_CLASS_NAME = 'LifesciencesV2beta'
+  _URL_VERSION = 'v2beta'
   _API_KEY = None
 
   def __init__(self, url='', credentials=None,
@@ -44,7 +44,7 @@ class LifesciencesV2beta(base_api.BaseApiClient):
   class ProjectsLocationsOperationsService(base_api.BaseApiService):
     """Service class for the projects_locations_operations resource."""
 
-    _NAME = u'projects_locations_operations'
+    _NAME = 'projects_locations_operations'
 
     def __init__(self, client):
       super(LifesciencesV2beta.ProjectsLocationsOperationsService, self).__init__(client)
@@ -73,16 +73,16 @@ Authorization requires the following [Google IAM](https://cloud.google.com/iam) 
           config, request, global_params=global_params)
 
     Cancel.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v2beta/projects/{projectsId}/locations/{locationsId}/operations/{operationsId}:cancel',
-        http_method=u'POST',
-        method_id=u'lifesciences.projects.locations.operations.cancel',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v2beta/projects/{projectsId}/locations/{locationsId}/operations/{operationsId}:cancel',
+        http_method='POST',
+        method_id='lifesciences.projects.locations.operations.cancel',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v2beta/{+name}:cancel',
-        request_field=u'cancelOperationRequest',
-        request_type_name=u'LifesciencesProjectsLocationsOperationsCancelRequest',
-        response_type_name=u'Empty',
+        relative_path='v2beta/{+name}:cancel',
+        request_field='cancelOperationRequest',
+        request_type_name='LifesciencesProjectsLocationsOperationsCancelRequest',
+        response_type_name='Empty',
         supports_download=False,
     )
 
@@ -105,16 +105,16 @@ Authorization requires the following [Google IAM](https://cloud.google.com/iam) 
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v2beta/projects/{projectsId}/locations/{locationsId}/operations/{operationsId}',
-        http_method=u'GET',
-        method_id=u'lifesciences.projects.locations.operations.get',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v2beta/projects/{projectsId}/locations/{locationsId}/operations/{operationsId}',
+        http_method='GET',
+        method_id='lifesciences.projects.locations.operations.get',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v2beta/{+name}',
+        relative_path='v2beta/{+name}',
         request_field='',
-        request_type_name=u'LifesciencesProjectsLocationsOperationsGetRequest',
-        response_type_name=u'Operation',
+        request_type_name='LifesciencesProjectsLocationsOperationsGetRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -135,23 +135,23 @@ Authorization requires the following [Google IAM](https://cloud.google.com/iam) 
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v2beta/projects/{projectsId}/locations/{locationsId}/operations',
-        http_method=u'GET',
-        method_id=u'lifesciences.projects.locations.operations.list',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[u'filter', u'pageSize', u'pageToken'],
-        relative_path=u'v2beta/{+name}/operations',
+        flat_path='v2beta/projects/{projectsId}/locations/{locationsId}/operations',
+        http_method='GET',
+        method_id='lifesciences.projects.locations.operations.list',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['filter', 'pageSize', 'pageToken'],
+        relative_path='v2beta/{+name}/operations',
         request_field='',
-        request_type_name=u'LifesciencesProjectsLocationsOperationsListRequest',
-        response_type_name=u'ListOperationsResponse',
+        request_type_name='LifesciencesProjectsLocationsOperationsListRequest',
+        response_type_name='ListOperationsResponse',
         supports_download=False,
     )
 
   class ProjectsLocationsPipelinesService(base_api.BaseApiService):
     """Service class for the projects_locations_pipelines resource."""
 
-    _NAME = u'projects_locations_pipelines'
+    _NAME = 'projects_locations_pipelines'
 
     def __init__(self, client):
       super(LifesciencesV2beta.ProjectsLocationsPipelinesService, self).__init__(client)
@@ -187,23 +187,23 @@ IAM](https://cloud.google.com/iam/) permission:
           config, request, global_params=global_params)
 
     Run.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v2beta/projects/{projectsId}/locations/{locationsId}/pipelines:run',
-        http_method=u'POST',
-        method_id=u'lifesciences.projects.locations.pipelines.run',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
+        flat_path='v2beta/projects/{projectsId}/locations/{locationsId}/pipelines:run',
+        http_method='POST',
+        method_id='lifesciences.projects.locations.pipelines.run',
+        ordered_params=['parent'],
+        path_params=['parent'],
         query_params=[],
-        relative_path=u'v2beta/{+parent}/pipelines:run',
-        request_field=u'runPipelineRequest',
-        request_type_name=u'LifesciencesProjectsLocationsPipelinesRunRequest',
-        response_type_name=u'Operation',
+        relative_path='v2beta/{+parent}/pipelines:run',
+        request_field='runPipelineRequest',
+        request_type_name='LifesciencesProjectsLocationsPipelinesRunRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
   class ProjectsLocationsService(base_api.BaseApiService):
     """Service class for the projects_locations resource."""
 
-    _NAME = u'projects_locations'
+    _NAME = 'projects_locations'
 
     def __init__(self, client):
       super(LifesciencesV2beta.ProjectsLocationsService, self).__init__(client)
@@ -224,16 +224,16 @@ IAM](https://cloud.google.com/iam/) permission:
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v2beta/projects/{projectsId}/locations/{locationsId}',
-        http_method=u'GET',
-        method_id=u'lifesciences.projects.locations.get',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v2beta/projects/{projectsId}/locations/{locationsId}',
+        http_method='GET',
+        method_id='lifesciences.projects.locations.get',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v2beta/{+name}',
+        relative_path='v2beta/{+name}',
         request_field='',
-        request_type_name=u'LifesciencesProjectsLocationsGetRequest',
-        response_type_name=u'Location',
+        request_type_name='LifesciencesProjectsLocationsGetRequest',
+        response_type_name='Location',
         supports_download=False,
     )
 
@@ -251,23 +251,23 @@ IAM](https://cloud.google.com/iam/) permission:
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v2beta/projects/{projectsId}/locations',
-        http_method=u'GET',
-        method_id=u'lifesciences.projects.locations.list',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[u'filter', u'pageSize', u'pageToken'],
-        relative_path=u'v2beta/{+name}/locations',
+        flat_path='v2beta/projects/{projectsId}/locations',
+        http_method='GET',
+        method_id='lifesciences.projects.locations.list',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['filter', 'pageSize', 'pageToken'],
+        relative_path='v2beta/{+name}/locations',
         request_field='',
-        request_type_name=u'LifesciencesProjectsLocationsListRequest',
-        response_type_name=u'ListLocationsResponse',
+        request_type_name='LifesciencesProjectsLocationsListRequest',
+        response_type_name='ListLocationsResponse',
         supports_download=False,
     )
 
   class ProjectsService(base_api.BaseApiService):
     """Service class for the projects resource."""
 
-    _NAME = u'projects'
+    _NAME = 'projects'
 
     def __init__(self, client):
       super(LifesciencesV2beta.ProjectsService, self).__init__(client)

@@ -1028,6 +1028,8 @@ class MigrationJob(_messages.Message):
       DELETED: The migration job has been deleted.
       UPDATING: The migration job is being updated.
       STARTING: The migration job is starting.
+      RESTARTING: The migration job is restarting.
+      RESUMING: The migration job is resuming.
     """
     STATE_UNSPECIFIED = 0
     MAINTENANCE = 1
@@ -1043,6 +1045,8 @@ class MigrationJob(_messages.Message):
     DELETED = 11
     UPDATING = 12
     STARTING = 13
+    RESTARTING = 14
+    RESUMING = 15
 
   class TypeValueValuesEnum(_messages.Enum):
     r"""Required. The migration job type.
@@ -1485,7 +1489,7 @@ class StandardQueryParameters(_messages.Message):
 
   f__xgafv = _messages.EnumField('FXgafvValueValuesEnum', 1)
   access_token = _messages.StringField(2)
-  alt = _messages.EnumField('AltValueValuesEnum', 3, default=u'json')
+  alt = _messages.EnumField('AltValueValuesEnum', 3, default='json')
   callback = _messages.StringField(4)
   fields = _messages.StringField(5)
   key = _messages.StringField(6)

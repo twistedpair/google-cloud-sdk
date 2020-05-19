@@ -8,17 +8,17 @@ class CloudidentityV1alpha1(base_api.BaseApiClient):
   """Generated client library for service cloudidentity version v1alpha1."""
 
   MESSAGES_MODULE = messages
-  BASE_URL = u'https://cloudidentity.googleapis.com/'
-  MTLS_BASE_URL = u'https://cloudidentity.mtls.googleapis.com/'
+  BASE_URL = 'https://cloudidentity.googleapis.com/'
+  MTLS_BASE_URL = 'https://cloudidentity.mtls.googleapis.com/'
 
-  _PACKAGE = u'cloudidentity'
-  _SCOPES = [u'https://www.googleapis.com/auth/cloud-identity.groups', u'https://www.googleapis.com/auth/cloud-identity.groups.readonly', u'https://www.googleapis.com/auth/cloud-platform']
-  _VERSION = u'v1alpha1'
+  _PACKAGE = 'cloudidentity'
+  _SCOPES = ['https://www.googleapis.com/auth/cloud-identity.groups', 'https://www.googleapis.com/auth/cloud-identity.groups.readonly', 'https://www.googleapis.com/auth/cloud-platform']
+  _VERSION = 'v1alpha1'
   _CLIENT_ID = '1042881264118.apps.googleusercontent.com'
   _CLIENT_SECRET = 'x_Tw5K8nnjoRAqULM9PFAC2b'
-  _USER_AGENT = u'google-cloud-sdk'
-  _CLIENT_CLASS_NAME = u'CloudidentityV1alpha1'
-  _URL_VERSION = u'v1alpha1'
+  _USER_AGENT = 'google-cloud-sdk'
+  _CLIENT_CLASS_NAME = 'CloudidentityV1alpha1'
+  _URL_VERSION = 'v1alpha1'
   _API_KEY = None
 
   def __init__(self, url='', credentials=None,
@@ -42,7 +42,7 @@ class CloudidentityV1alpha1(base_api.BaseApiClient):
   class GroupsMembershipsService(base_api.BaseApiService):
     """Service class for the groups_memberships resource."""
 
-    _NAME = u'groups_memberships'
+    _NAME = 'groups_memberships'
 
     def __init__(self, client):
       super(CloudidentityV1alpha1.GroupsMembershipsService, self).__init__(client)
@@ -63,16 +63,16 @@ class CloudidentityV1alpha1(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Create.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha1/groups/{groupsId}/memberships',
-        http_method=u'POST',
-        method_id=u'cloudidentity.groups.memberships.create',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
+        flat_path='v1alpha1/groups/{groupsId}/memberships',
+        http_method='POST',
+        method_id='cloudidentity.groups.memberships.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
         query_params=[],
-        relative_path=u'v1alpha1/{+parent}/memberships',
-        request_field=u'membership',
-        request_type_name=u'CloudidentityGroupsMembershipsCreateRequest',
-        response_type_name=u'Operation',
+        relative_path='v1alpha1/{+parent}/memberships',
+        request_field='membership',
+        request_type_name='CloudidentityGroupsMembershipsCreateRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -90,16 +90,16 @@ class CloudidentityV1alpha1(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Delete.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha1/groups/{groupsId}/memberships/{membershipsId}',
-        http_method=u'DELETE',
-        method_id=u'cloudidentity.groups.memberships.delete',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1alpha1/groups/{groupsId}/memberships/{membershipsId}',
+        http_method='DELETE',
+        method_id='cloudidentity.groups.memberships.delete',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1alpha1/{+name}',
+        relative_path='v1alpha1/{+name}',
         request_field='',
-        request_type_name=u'CloudidentityGroupsMembershipsDeleteRequest',
-        response_type_name=u'Operation',
+        request_type_name='CloudidentityGroupsMembershipsDeleteRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -117,16 +117,16 @@ class CloudidentityV1alpha1(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha1/groups/{groupsId}/memberships/{membershipsId}',
-        http_method=u'GET',
-        method_id=u'cloudidentity.groups.memberships.get',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1alpha1/groups/{groupsId}/memberships/{membershipsId}',
+        http_method='GET',
+        method_id='cloudidentity.groups.memberships.get',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1alpha1/{+name}',
+        relative_path='v1alpha1/{+name}',
         request_field='',
-        request_type_name=u'CloudidentityGroupsMembershipsGetRequest',
-        response_type_name=u'Membership',
+        request_type_name='CloudidentityGroupsMembershipsGetRequest',
+        response_type_name='Membership',
         supports_download=False,
     )
 
@@ -144,16 +144,16 @@ class CloudidentityV1alpha1(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha1/groups/{groupsId}/memberships',
-        http_method=u'GET',
-        method_id=u'cloudidentity.groups.memberships.list',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'pageSize', u'pageToken', u'view'],
-        relative_path=u'v1alpha1/{+parent}/memberships',
+        flat_path='v1alpha1/groups/{groupsId}/memberships',
+        http_method='GET',
+        method_id='cloudidentity.groups.memberships.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken', 'view'],
+        relative_path='v1alpha1/{+parent}/memberships',
         request_field='',
-        request_type_name=u'CloudidentityGroupsMembershipsListRequest',
-        response_type_name=u'ListMembershipsResponse',
+        request_type_name='CloudidentityGroupsMembershipsListRequest',
+        response_type_name='ListMembershipsResponse',
         supports_download=False,
     )
 
@@ -173,16 +173,16 @@ name](https://cloud.google.com/apis/design/resource_names) of a
           config, request, global_params=global_params)
 
     Lookup.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha1/groups/{groupsId}/memberships:lookup',
-        http_method=u'GET',
-        method_id=u'cloudidentity.groups.memberships.lookup',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'memberKey_id', u'memberKey_namespace'],
-        relative_path=u'v1alpha1/{+parent}/memberships:lookup',
+        flat_path='v1alpha1/groups/{groupsId}/memberships:lookup',
+        http_method='GET',
+        method_id='cloudidentity.groups.memberships.lookup',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['memberKey_id', 'memberKey_namespace'],
+        relative_path='v1alpha1/{+parent}/memberships:lookup',
         request_field='',
-        request_type_name=u'CloudidentityGroupsMembershipsLookupRequest',
-        response_type_name=u'LookupMembershipNameResponse',
+        request_type_name='CloudidentityGroupsMembershipsLookupRequest',
+        response_type_name='LookupMembershipNameResponse',
         supports_download=False,
     )
 
@@ -200,16 +200,16 @@ name](https://cloud.google.com/apis/design/resource_names) of a
           config, request, global_params=global_params)
 
     ModifyMembershipRoles.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha1/groups/{groupsId}/memberships/{membershipsId}:modifyMembershipRoles',
-        http_method=u'POST',
-        method_id=u'cloudidentity.groups.memberships.modifyMembershipRoles',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1alpha1/groups/{groupsId}/memberships/{membershipsId}:modifyMembershipRoles',
+        http_method='POST',
+        method_id='cloudidentity.groups.memberships.modifyMembershipRoles',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1alpha1/{+name}:modifyMembershipRoles',
-        request_field=u'modifyMembershipRolesRequest',
-        request_type_name=u'CloudidentityGroupsMembershipsModifyMembershipRolesRequest',
-        response_type_name=u'ModifyMembershipRolesResponse',
+        relative_path='v1alpha1/{+name}:modifyMembershipRoles',
+        request_field='modifyMembershipRolesRequest',
+        request_type_name='CloudidentityGroupsMembershipsModifyMembershipRolesRequest',
+        response_type_name='ModifyMembershipRolesResponse',
         supports_download=False,
     )
 
@@ -227,23 +227,23 @@ name](https://cloud.google.com/apis/design/resource_names) of a
           config, request, global_params=global_params)
 
     Patch.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha1/groups/{groupsId}/memberships/{membershipsId}',
-        http_method=u'PATCH',
-        method_id=u'cloudidentity.groups.memberships.patch',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[u'updateMask'],
-        relative_path=u'v1alpha1/{+name}',
-        request_field=u'membership',
-        request_type_name=u'CloudidentityGroupsMembershipsPatchRequest',
-        response_type_name=u'Operation',
+        flat_path='v1alpha1/groups/{groupsId}/memberships/{membershipsId}',
+        http_method='PATCH',
+        method_id='cloudidentity.groups.memberships.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v1alpha1/{+name}',
+        request_field='membership',
+        request_type_name='CloudidentityGroupsMembershipsPatchRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
   class GroupsService(base_api.BaseApiService):
     """Service class for the groups resource."""
 
-    _NAME = u'groups'
+    _NAME = 'groups'
 
     def __init__(self, client):
       super(CloudidentityV1alpha1.GroupsService, self).__init__(client)
@@ -264,15 +264,15 @@ name](https://cloud.google.com/apis/design/resource_names) of a
           config, request, global_params=global_params)
 
     Create.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'cloudidentity.groups.create',
+        http_method='POST',
+        method_id='cloudidentity.groups.create',
         ordered_params=[],
         path_params=[],
-        query_params=[u'initialGroupConfig'],
-        relative_path=u'v1alpha1/groups',
-        request_field=u'group',
-        request_type_name=u'CloudidentityGroupsCreateRequest',
-        response_type_name=u'Operation',
+        query_params=['initialGroupConfig'],
+        relative_path='v1alpha1/groups',
+        request_field='group',
+        request_type_name='CloudidentityGroupsCreateRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -290,16 +290,16 @@ name](https://cloud.google.com/apis/design/resource_names) of a
           config, request, global_params=global_params)
 
     Delete.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha1/groups/{groupsId}',
-        http_method=u'DELETE',
-        method_id=u'cloudidentity.groups.delete',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1alpha1/groups/{groupsId}',
+        http_method='DELETE',
+        method_id='cloudidentity.groups.delete',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1alpha1/{+name}',
+        relative_path='v1alpha1/{+name}',
         request_field='',
-        request_type_name=u'CloudidentityGroupsDeleteRequest',
-        response_type_name=u'Operation',
+        request_type_name='CloudidentityGroupsDeleteRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -317,16 +317,16 @@ name](https://cloud.google.com/apis/design/resource_names) of a
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha1/groups/{groupsId}',
-        http_method=u'GET',
-        method_id=u'cloudidentity.groups.get',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1alpha1/groups/{groupsId}',
+        http_method='GET',
+        method_id='cloudidentity.groups.get',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1alpha1/{+name}',
+        relative_path='v1alpha1/{+name}',
         request_field='',
-        request_type_name=u'CloudidentityGroupsGetRequest',
-        response_type_name=u'Group',
+        request_type_name='CloudidentityGroupsGetRequest',
+        response_type_name='Group',
         supports_download=False,
     )
 
@@ -344,15 +344,15 @@ name](https://cloud.google.com/apis/design/resource_names) of a
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'cloudidentity.groups.list',
+        http_method='GET',
+        method_id='cloudidentity.groups.list',
         ordered_params=[],
         path_params=[],
-        query_params=[u'pageSize', u'pageToken', u'parent', u'view'],
-        relative_path=u'v1alpha1/groups',
+        query_params=['pageSize', 'pageToken', 'parent', 'view'],
+        relative_path='v1alpha1/groups',
         request_field='',
-        request_type_name=u'CloudidentityGroupsListRequest',
-        response_type_name=u'ListGroupsResponse',
+        request_type_name='CloudidentityGroupsListRequest',
+        response_type_name='ListGroupsResponse',
         supports_download=False,
     )
 
@@ -372,15 +372,15 @@ its `EntityKey`.
           config, request, global_params=global_params)
 
     Lookup.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'cloudidentity.groups.lookup',
+        http_method='GET',
+        method_id='cloudidentity.groups.lookup',
         ordered_params=[],
         path_params=[],
-        query_params=[u'groupKey_id', u'groupKey_namespace'],
-        relative_path=u'v1alpha1/groups:lookup',
+        query_params=['groupKey_id', 'groupKey_namespace'],
+        relative_path='v1alpha1/groups:lookup',
         request_field='',
-        request_type_name=u'CloudidentityGroupsLookupRequest',
-        response_type_name=u'LookupGroupNameResponse',
+        request_type_name='CloudidentityGroupsLookupRequest',
+        response_type_name='LookupGroupNameResponse',
         supports_download=False,
     )
 
@@ -398,16 +398,16 @@ its `EntityKey`.
           config, request, global_params=global_params)
 
     Patch.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha1/groups/{groupsId}',
-        http_method=u'PATCH',
-        method_id=u'cloudidentity.groups.patch',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[u'updateMask'],
-        relative_path=u'v1alpha1/{+name}',
-        request_field=u'group',
-        request_type_name=u'CloudidentityGroupsPatchRequest',
-        response_type_name=u'Operation',
+        flat_path='v1alpha1/groups/{groupsId}',
+        http_method='PATCH',
+        method_id='cloudidentity.groups.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v1alpha1/{+name}',
+        request_field='group',
+        request_type_name='CloudidentityGroupsPatchRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -425,14 +425,14 @@ its `EntityKey`.
           config, request, global_params=global_params)
 
     Search.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'cloudidentity.groups.search',
+        http_method='GET',
+        method_id='cloudidentity.groups.search',
         ordered_params=[],
         path_params=[],
-        query_params=[u'pageSize', u'pageToken', u'query', u'view'],
-        relative_path=u'v1alpha1/groups:search',
+        query_params=['pageSize', 'pageToken', 'query', 'view'],
+        relative_path='v1alpha1/groups:search',
         request_field='',
-        request_type_name=u'CloudidentityGroupsSearchRequest',
-        response_type_name=u'SearchGroupsResponse',
+        request_type_name='CloudidentityGroupsSearchRequest',
+        response_type_name='SearchGroupsResponse',
         supports_download=False,
     )

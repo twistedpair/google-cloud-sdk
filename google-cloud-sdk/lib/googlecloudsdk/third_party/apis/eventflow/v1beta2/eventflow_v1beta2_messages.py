@@ -70,8 +70,8 @@ class Condition(_messages.Message):
       DEPLOYED: Whether the flow is deployed to all regions. The reason field
         will be of the following form:   0of4RegionsDeployed
         1of4RegionsDeployed   4of4RegionsDeployed The message field will be a
-        comma-separated list of regions deployed. For example "us-west1
-        ,europe-west1,us-east1,asia-east1"
+        comma-separated list of regions deployed. For example "us-
+        west1,europe-west1,us-east1,asia-east1"
       SOURCE_ACTIVATED: Whether the source is activated. The reason field will
         be one of:   DoesNotNeedActivation   AwaitingResponse
         AcknowledgedActivation   ActivationFailed The message field will be
@@ -332,8 +332,8 @@ class ObjectMeta(_messages.Message):
       guide/annotations +optional
     LabelsValue: Map of string keys and values that can be used to organize
       and categorize (scope and select) objects. May match selectors of
-      replication controllers and routes. More info: http://kubernetes.io/docs
-      /user-guide/labels +optional
+      replication controllers and routes. More info:
+      http://kubernetes.io/docs/user-guide/labels +optional
 
   Fields:
     annotations: Annotations is an unstructured key value map stored with a
@@ -366,8 +366,8 @@ class ObjectMeta(_messages.Message):
       desired state. Populated by the system. Read-only. +optional
     labels: Map of string keys and values that can be used to organize and
       categorize (scope and select) objects. May match selectors of
-      replication controllers and routes. More info: http://kubernetes.io/docs
-      /user-guide/labels +optional
+      replication controllers and routes. More info:
+      http://kubernetes.io/docs/user-guide/labels +optional
     name: Name must be unique within a namespace. Is required when creating
       resources, although some resources may allow a client to request the
       generation of an appropriate name automatically. Name is primarily
@@ -387,8 +387,9 @@ class ObjectMeta(_messages.Message):
       treat these values as opaque and passed unmodified back to the server.
       They may only be valid for a particular resource or set of resources.
       Populated by the system. Read-only. Value must be treated as opaque by
-      clients and . More info: https://git.k8s.io/community/contributors/devel
-      /api-conventions.md#concurrency-control-and-consistency +optional
+      clients and . More info:
+      https://git.k8s.io/community/contributors/devel/api-
+      conventions.md#concurrency-control-and-consistency +optional
     selfLink: SelfLink is a URL representing this object. Populated by the
       system. Read-only. +optional  string selfLink = 4;
     uid: UID is the unique in time and space value for this object. It is
@@ -517,7 +518,7 @@ class StandardQueryParameters(_messages.Message):
 
   f__xgafv = _messages.EnumField('FXgafvValueValuesEnum', 1)
   access_token = _messages.StringField(2)
-  alt = _messages.EnumField('AltValueValuesEnum', 3, default=u'json')
+  alt = _messages.EnumField('AltValueValuesEnum', 3, default='json')
   callback = _messages.StringField(4)
   fields = _messages.StringField(5)
   key = _messages.StringField(6)

@@ -28,21 +28,21 @@ class Collections(enum.Enum):
       'projects',
       'projects/{projectId}',
       {},
-      [u'projectId'],
+      ['projectId'],
       True
   )
   PROJECTS_REPOS = (
       'projects.repos',
       'projects/{projectId}/repos/{repoName}',
       {},
-      [u'projectId', u'repoName'],
+      ['projectId', 'repoName'],
       True
   )
   PROJECTS_REPOS_ALIASES = (
       'projects.repos.aliases',
       'projects/{projectId}/repos/{repoName}/aliases/{kind}/{name}',
       {},
-      [u'projectId', u'repoName', u'kind', u'name'],
+      ['projectId', 'repoName', 'kind', 'name'],
       True
   )
   PROJECTS_REPOS_ALIASES_FILES = (
@@ -54,14 +54,14 @@ class Collections(enum.Enum):
               'projects/{projectId}/repos/{repoName}/aliases/{kind}/{name}/'
               'files/{filesId}',
       },
-      [u'projectId', u'repoName', u'kind', u'name', u'path'],
+      ['projectId', 'repoName', 'kind', 'name', 'path'],
       True
   )
   PROJECTS_REPOS_REVISIONS = (
       'projects.repos.revisions',
       'projects/{projectId}/repos/{repoName}/revisions/{revisionId}',
       {},
-      [u'projectId', u'repoName', u'revisionId'],
+      ['projectId', 'repoName', 'revisionId'],
       True
   )
   PROJECTS_REPOS_REVISIONS_FILES = (
@@ -73,14 +73,14 @@ class Collections(enum.Enum):
               'projects/{projectId}/repos/{repoName}/revisions/{revisionId}/'
               'files/{filesId}',
       },
-      [u'projectId', u'repoName', u'revisionId', u'path'],
+      ['projectId', 'repoName', 'revisionId', 'path'],
       True
   )
   PROJECTS_REPOS_WORKSPACES = (
       'projects.repos.workspaces',
       'projects/{projectId}/repos/{repoName}/workspaces/{name}',
       {},
-      [u'projectId', u'repoName', u'name'],
+      ['projectId', 'repoName', 'name'],
       True
   )
   PROJECTS_REPOS_WORKSPACES_FILES = (
@@ -91,7 +91,7 @@ class Collections(enum.Enum):
               'projects/{projectId}/repos/{repoName}/workspaces/{name}/files/'
               '{filesId}',
       },
-      [u'projectId', u'repoName', u'name', u'path'],
+      ['projectId', 'repoName', 'name', 'path'],
       True
   )
   PROJECTS_REPOS_WORKSPACES_SNAPSHOTS = (
@@ -99,7 +99,7 @@ class Collections(enum.Enum):
       'projects/{projectId}/repos/{repoName}/workspaces/{name}/snapshots/'
       '{snapshotId}',
       {},
-      [u'projectId', u'repoName', u'name', u'snapshotId'],
+      ['projectId', 'repoName', 'name', 'snapshotId'],
       True
   )
   PROJECTS_REPOS_WORKSPACES_SNAPSHOTS_FILES = (
@@ -111,7 +111,7 @@ class Collections(enum.Enum):
               'projects/{projectId}/repos/{repoName}/workspaces/{name}/'
               'snapshots/{snapshotId}/files/{filesId}',
       },
-      [u'projectId', u'repoName', u'name', u'snapshotId', u'path'],
+      ['projectId', 'repoName', 'name', 'snapshotId', 'path'],
       True
   )
 

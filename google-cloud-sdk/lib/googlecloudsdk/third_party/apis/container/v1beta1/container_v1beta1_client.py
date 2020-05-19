@@ -8,17 +8,17 @@ class ContainerV1beta1(base_api.BaseApiClient):
   """Generated client library for service container version v1beta1."""
 
   MESSAGES_MODULE = messages
-  BASE_URL = u'https://container.googleapis.com/'
-  MTLS_BASE_URL = u'https://container.mtls.googleapis.com/'
+  BASE_URL = 'https://container.googleapis.com/'
+  MTLS_BASE_URL = 'https://container.mtls.googleapis.com/'
 
-  _PACKAGE = u'container'
-  _SCOPES = [u'https://www.googleapis.com/auth/cloud-platform']
-  _VERSION = u'v1beta1'
+  _PACKAGE = 'container'
+  _SCOPES = ['https://www.googleapis.com/auth/cloud-platform']
+  _VERSION = 'v1beta1'
   _CLIENT_ID = '1042881264118.apps.googleusercontent.com'
   _CLIENT_SECRET = 'x_Tw5K8nnjoRAqULM9PFAC2b'
-  _USER_AGENT = u'google-cloud-sdk'
-  _CLIENT_CLASS_NAME = u'ContainerV1beta1'
-  _URL_VERSION = u'v1beta1'
+  _USER_AGENT = 'google-cloud-sdk'
+  _CLIENT_CLASS_NAME = 'ContainerV1beta1'
+  _URL_VERSION = 'v1beta1'
   _API_KEY = None
 
   def __init__(self, url='', credentials=None,
@@ -52,7 +52,7 @@ class ContainerV1beta1(base_api.BaseApiClient):
   class ProjectsAggregatedUsableSubnetworksService(base_api.BaseApiService):
     """Service class for the projects_aggregated_usableSubnetworks resource."""
 
-    _NAME = u'projects_aggregated_usableSubnetworks'
+    _NAME = 'projects_aggregated_usableSubnetworks'
 
     def __init__(self, client):
       super(ContainerV1beta1.ProjectsAggregatedUsableSubnetworksService, self).__init__(client)
@@ -73,23 +73,23 @@ class ContainerV1beta1(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/projects/{projectsId}/aggregated/usableSubnetworks',
-        http_method=u'GET',
-        method_id=u'container.projects.aggregated.usableSubnetworks.list',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'filter', u'pageSize', u'pageToken'],
-        relative_path=u'v1beta1/{+parent}/aggregated/usableSubnetworks',
+        flat_path='v1beta1/projects/{projectsId}/aggregated/usableSubnetworks',
+        http_method='GET',
+        method_id='container.projects.aggregated.usableSubnetworks.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'pageSize', 'pageToken'],
+        relative_path='v1beta1/{+parent}/aggregated/usableSubnetworks',
         request_field='',
-        request_type_name=u'ContainerProjectsAggregatedUsableSubnetworksListRequest',
-        response_type_name=u'ListUsableSubnetworksResponse',
+        request_type_name='ContainerProjectsAggregatedUsableSubnetworksListRequest',
+        response_type_name='ListUsableSubnetworksResponse',
         supports_download=False,
     )
 
   class ProjectsAggregatedService(base_api.BaseApiService):
     """Service class for the projects_aggregated resource."""
 
-    _NAME = u'projects_aggregated'
+    _NAME = 'projects_aggregated'
 
     def __init__(self, client):
       super(ContainerV1beta1.ProjectsAggregatedService, self).__init__(client)
@@ -99,7 +99,7 @@ class ContainerV1beta1(base_api.BaseApiClient):
   class ProjectsLocationsClustersNodePoolsService(base_api.BaseApiService):
     """Service class for the projects_locations_clusters_nodePools resource."""
 
-    _NAME = u'projects_locations_clusters_nodePools'
+    _NAME = 'projects_locations_clusters_nodePools'
 
     def __init__(self, client):
       super(ContainerV1beta1.ProjectsLocationsClustersNodePoolsService, self).__init__(client)
@@ -120,16 +120,16 @@ class ContainerV1beta1(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Create.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/projects/{projectsId}/locations/{locationsId}/clusters/{clustersId}/nodePools',
-        http_method=u'POST',
-        method_id=u'container.projects.locations.clusters.nodePools.create',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/clusters/{clustersId}/nodePools',
+        http_method='POST',
+        method_id='container.projects.locations.clusters.nodePools.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
         query_params=[],
-        relative_path=u'v1beta1/{+parent}/nodePools',
+        relative_path='v1beta1/{+parent}/nodePools',
         request_field='<request>',
-        request_type_name=u'CreateNodePoolRequest',
-        response_type_name=u'Operation',
+        request_type_name='CreateNodePoolRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -147,16 +147,16 @@ class ContainerV1beta1(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Delete.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/projects/{projectsId}/locations/{locationsId}/clusters/{clustersId}/nodePools/{nodePoolsId}',
-        http_method=u'DELETE',
-        method_id=u'container.projects.locations.clusters.nodePools.delete',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[u'clusterId', u'nodePoolId', u'projectId', u'zone'],
-        relative_path=u'v1beta1/{+name}',
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/clusters/{clustersId}/nodePools/{nodePoolsId}',
+        http_method='DELETE',
+        method_id='container.projects.locations.clusters.nodePools.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['clusterId', 'nodePoolId', 'projectId', 'zone'],
+        relative_path='v1beta1/{+name}',
         request_field='',
-        request_type_name=u'ContainerProjectsLocationsClustersNodePoolsDeleteRequest',
-        response_type_name=u'Operation',
+        request_type_name='ContainerProjectsLocationsClustersNodePoolsDeleteRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -174,16 +174,16 @@ class ContainerV1beta1(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/projects/{projectsId}/locations/{locationsId}/clusters/{clustersId}/nodePools/{nodePoolsId}',
-        http_method=u'GET',
-        method_id=u'container.projects.locations.clusters.nodePools.get',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[u'clusterId', u'nodePoolId', u'projectId', u'zone'],
-        relative_path=u'v1beta1/{+name}',
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/clusters/{clustersId}/nodePools/{nodePoolsId}',
+        http_method='GET',
+        method_id='container.projects.locations.clusters.nodePools.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['clusterId', 'nodePoolId', 'projectId', 'zone'],
+        relative_path='v1beta1/{+name}',
         request_field='',
-        request_type_name=u'ContainerProjectsLocationsClustersNodePoolsGetRequest',
-        response_type_name=u'NodePool',
+        request_type_name='ContainerProjectsLocationsClustersNodePoolsGetRequest',
+        response_type_name='NodePool',
         supports_download=False,
     )
 
@@ -201,16 +201,16 @@ class ContainerV1beta1(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/projects/{projectsId}/locations/{locationsId}/clusters/{clustersId}/nodePools',
-        http_method=u'GET',
-        method_id=u'container.projects.locations.clusters.nodePools.list',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'clusterId', u'projectId', u'zone'],
-        relative_path=u'v1beta1/{+parent}/nodePools',
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/clusters/{clustersId}/nodePools',
+        http_method='GET',
+        method_id='container.projects.locations.clusters.nodePools.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['clusterId', 'projectId', 'zone'],
+        relative_path='v1beta1/{+parent}/nodePools',
         request_field='',
-        request_type_name=u'ContainerProjectsLocationsClustersNodePoolsListRequest',
-        response_type_name=u'ListNodePoolsResponse',
+        request_type_name='ContainerProjectsLocationsClustersNodePoolsListRequest',
+        response_type_name='ListNodePoolsResponse',
         supports_download=False,
     )
 
@@ -229,16 +229,16 @@ This makes no changes if the last upgrade successfully completed.
           config, request, global_params=global_params)
 
     Rollback.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/projects/{projectsId}/locations/{locationsId}/clusters/{clustersId}/nodePools/{nodePoolsId}:rollback',
-        http_method=u'POST',
-        method_id=u'container.projects.locations.clusters.nodePools.rollback',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/clusters/{clustersId}/nodePools/{nodePoolsId}:rollback',
+        http_method='POST',
+        method_id='container.projects.locations.clusters.nodePools.rollback',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1beta1/{+name}:rollback',
+        relative_path='v1beta1/{+name}:rollback',
         request_field='<request>',
-        request_type_name=u'RollbackNodePoolUpgradeRequest',
-        response_type_name=u'Operation',
+        request_type_name='RollbackNodePoolUpgradeRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -256,16 +256,16 @@ This makes no changes if the last upgrade successfully completed.
           config, request, global_params=global_params)
 
     SetAutoscaling.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/projects/{projectsId}/locations/{locationsId}/clusters/{clustersId}/nodePools/{nodePoolsId}:setAutoscaling',
-        http_method=u'POST',
-        method_id=u'container.projects.locations.clusters.nodePools.setAutoscaling',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/clusters/{clustersId}/nodePools/{nodePoolsId}:setAutoscaling',
+        http_method='POST',
+        method_id='container.projects.locations.clusters.nodePools.setAutoscaling',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1beta1/{+name}:setAutoscaling',
+        relative_path='v1beta1/{+name}:setAutoscaling',
         request_field='<request>',
-        request_type_name=u'SetNodePoolAutoscalingRequest',
-        response_type_name=u'Operation',
+        request_type_name='SetNodePoolAutoscalingRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -283,16 +283,16 @@ This makes no changes if the last upgrade successfully completed.
           config, request, global_params=global_params)
 
     SetManagement.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/projects/{projectsId}/locations/{locationsId}/clusters/{clustersId}/nodePools/{nodePoolsId}:setManagement',
-        http_method=u'POST',
-        method_id=u'container.projects.locations.clusters.nodePools.setManagement',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/clusters/{clustersId}/nodePools/{nodePoolsId}:setManagement',
+        http_method='POST',
+        method_id='container.projects.locations.clusters.nodePools.setManagement',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1beta1/{+name}:setManagement',
+        relative_path='v1beta1/{+name}:setManagement',
         request_field='<request>',
-        request_type_name=u'SetNodePoolManagementRequest',
-        response_type_name=u'Operation',
+        request_type_name='SetNodePoolManagementRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -310,16 +310,16 @@ This makes no changes if the last upgrade successfully completed.
           config, request, global_params=global_params)
 
     SetSize.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/projects/{projectsId}/locations/{locationsId}/clusters/{clustersId}/nodePools/{nodePoolsId}:setSize',
-        http_method=u'POST',
-        method_id=u'container.projects.locations.clusters.nodePools.setSize',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/clusters/{clustersId}/nodePools/{nodePoolsId}:setSize',
+        http_method='POST',
+        method_id='container.projects.locations.clusters.nodePools.setSize',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1beta1/{+name}:setSize',
+        relative_path='v1beta1/{+name}:setSize',
         request_field='<request>',
-        request_type_name=u'SetNodePoolSizeRequest',
-        response_type_name=u'Operation',
+        request_type_name='SetNodePoolSizeRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -337,23 +337,23 @@ This makes no changes if the last upgrade successfully completed.
           config, request, global_params=global_params)
 
     Update.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/projects/{projectsId}/locations/{locationsId}/clusters/{clustersId}/nodePools/{nodePoolsId}',
-        http_method=u'PUT',
-        method_id=u'container.projects.locations.clusters.nodePools.update',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/clusters/{clustersId}/nodePools/{nodePoolsId}',
+        http_method='PUT',
+        method_id='container.projects.locations.clusters.nodePools.update',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1beta1/{+name}',
+        relative_path='v1beta1/{+name}',
         request_field='<request>',
-        request_type_name=u'UpdateNodePoolRequest',
-        response_type_name=u'Operation',
+        request_type_name='UpdateNodePoolRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
   class ProjectsLocationsClustersWellKnownService(base_api.BaseApiService):
     """Service class for the projects_locations_clusters_well_known resource."""
 
-    _NAME = u'projects_locations_clusters_well_known'
+    _NAME = 'projects_locations_clusters_well_known'
 
     def __init__(self, client):
       super(ContainerV1beta1.ProjectsLocationsClustersWellKnownService, self).__init__(client)
@@ -380,23 +380,23 @@ clusters.
           config, request, global_params=global_params)
 
     GetOpenid_configuration.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/projects/{projectsId}/locations/{locationsId}/clusters/{clustersId}/.well-known/openid-configuration',
-        http_method=u'GET',
-        method_id=u'container.projects.locations.clusters.well-known.getOpenid-configuration',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/clusters/{clustersId}/.well-known/openid-configuration',
+        http_method='GET',
+        method_id='container.projects.locations.clusters.well-known.getOpenid-configuration',
+        ordered_params=['parent'],
+        path_params=['parent'],
         query_params=[],
-        relative_path=u'v1beta1/{+parent}/.well-known/openid-configuration',
+        relative_path='v1beta1/{+parent}/.well-known/openid-configuration',
         request_field='',
-        request_type_name=u'ContainerProjectsLocationsClustersWellKnownGetOpenidConfigurationRequest',
-        response_type_name=u'GetOpenIDConfigResponse',
+        request_type_name='ContainerProjectsLocationsClustersWellKnownGetOpenidConfigurationRequest',
+        response_type_name='GetOpenIDConfigResponse',
         supports_download=False,
     )
 
   class ProjectsLocationsClustersService(base_api.BaseApiService):
     """Service class for the projects_locations_clusters resource."""
 
-    _NAME = u'projects_locations_clusters'
+    _NAME = 'projects_locations_clusters'
 
     def __init__(self, client):
       super(ContainerV1beta1.ProjectsLocationsClustersService, self).__init__(client)
@@ -417,16 +417,16 @@ clusters.
           config, request, global_params=global_params)
 
     CompleteIpRotation.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/projects/{projectsId}/locations/{locationsId}/clusters/{clustersId}:completeIpRotation',
-        http_method=u'POST',
-        method_id=u'container.projects.locations.clusters.completeIpRotation',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/clusters/{clustersId}:completeIpRotation',
+        http_method='POST',
+        method_id='container.projects.locations.clusters.completeIpRotation',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1beta1/{+name}:completeIpRotation',
+        relative_path='v1beta1/{+name}:completeIpRotation',
         request_field='<request>',
-        request_type_name=u'CompleteIPRotationRequest',
-        response_type_name=u'Operation',
+        request_type_name='CompleteIPRotationRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -457,16 +457,16 @@ which CIDR range the cluster is using.
           config, request, global_params=global_params)
 
     Create.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/projects/{projectsId}/locations/{locationsId}/clusters',
-        http_method=u'POST',
-        method_id=u'container.projects.locations.clusters.create',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/clusters',
+        http_method='POST',
+        method_id='container.projects.locations.clusters.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
         query_params=[],
-        relative_path=u'v1beta1/{+parent}/clusters',
+        relative_path='v1beta1/{+parent}/clusters',
         request_field='<request>',
-        request_type_name=u'CreateClusterRequest',
-        response_type_name=u'Operation',
+        request_type_name='CreateClusterRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -492,16 +492,16 @@ when the cluster was initially created.
           config, request, global_params=global_params)
 
     Delete.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/projects/{projectsId}/locations/{locationsId}/clusters/{clustersId}',
-        http_method=u'DELETE',
-        method_id=u'container.projects.locations.clusters.delete',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[u'clusterId', u'projectId', u'zone'],
-        relative_path=u'v1beta1/{+name}',
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/clusters/{clustersId}',
+        http_method='DELETE',
+        method_id='container.projects.locations.clusters.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['clusterId', 'projectId', 'zone'],
+        relative_path='v1beta1/{+name}',
         request_field='',
-        request_type_name=u'ContainerProjectsLocationsClustersDeleteRequest',
-        response_type_name=u'Operation',
+        request_type_name='ContainerProjectsLocationsClustersDeleteRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -519,16 +519,16 @@ when the cluster was initially created.
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/projects/{projectsId}/locations/{locationsId}/clusters/{clustersId}',
-        http_method=u'GET',
-        method_id=u'container.projects.locations.clusters.get',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[u'clusterId', u'projectId', u'zone'],
-        relative_path=u'v1beta1/{+name}',
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/clusters/{clustersId}',
+        http_method='GET',
+        method_id='container.projects.locations.clusters.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['clusterId', 'projectId', 'zone'],
+        relative_path='v1beta1/{+name}',
         request_field='',
-        request_type_name=u'ContainerProjectsLocationsClustersGetRequest',
-        response_type_name=u'Cluster',
+        request_type_name='ContainerProjectsLocationsClustersGetRequest',
+        response_type_name='Cluster',
         supports_download=False,
     )
 
@@ -549,16 +549,16 @@ clusters.
           config, request, global_params=global_params)
 
     GetJwks.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/projects/{projectsId}/locations/{locationsId}/clusters/{clustersId}/jwks',
-        http_method=u'GET',
-        method_id=u'container.projects.locations.clusters.getJwks',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/clusters/{clustersId}/jwks',
+        http_method='GET',
+        method_id='container.projects.locations.clusters.getJwks',
+        ordered_params=['parent'],
+        path_params=['parent'],
         query_params=[],
-        relative_path=u'v1beta1/{+parent}/jwks',
+        relative_path='v1beta1/{+parent}/jwks',
         request_field='',
-        request_type_name=u'ContainerProjectsLocationsClustersGetJwksRequest',
-        response_type_name=u'GetJSONWebKeysResponse',
+        request_type_name='ContainerProjectsLocationsClustersGetJwksRequest',
+        response_type_name='GetJSONWebKeysResponse',
         supports_download=False,
     )
 
@@ -577,16 +577,16 @@ zones.
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/projects/{projectsId}/locations/{locationsId}/clusters',
-        http_method=u'GET',
-        method_id=u'container.projects.locations.clusters.list',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'projectId', u'zone'],
-        relative_path=u'v1beta1/{+parent}/clusters',
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/clusters',
+        http_method='GET',
+        method_id='container.projects.locations.clusters.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['projectId', 'zone'],
+        relative_path='v1beta1/{+parent}/clusters',
         request_field='',
-        request_type_name=u'ContainerProjectsLocationsClustersListRequest',
-        response_type_name=u'ListClustersResponse',
+        request_type_name='ContainerProjectsLocationsClustersListRequest',
+        response_type_name='ListClustersResponse',
         supports_download=False,
     )
 
@@ -604,16 +604,16 @@ zones.
           config, request, global_params=global_params)
 
     SetAddons.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/projects/{projectsId}/locations/{locationsId}/clusters/{clustersId}:setAddons',
-        http_method=u'POST',
-        method_id=u'container.projects.locations.clusters.setAddons',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/clusters/{clustersId}:setAddons',
+        http_method='POST',
+        method_id='container.projects.locations.clusters.setAddons',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1beta1/{+name}:setAddons',
+        relative_path='v1beta1/{+name}:setAddons',
         request_field='<request>',
-        request_type_name=u'SetAddonsConfigRequest',
-        response_type_name=u'Operation',
+        request_type_name='SetAddonsConfigRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -631,16 +631,16 @@ zones.
           config, request, global_params=global_params)
 
     SetLegacyAbac.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/projects/{projectsId}/locations/{locationsId}/clusters/{clustersId}:setLegacyAbac',
-        http_method=u'POST',
-        method_id=u'container.projects.locations.clusters.setLegacyAbac',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/clusters/{clustersId}:setLegacyAbac',
+        http_method='POST',
+        method_id='container.projects.locations.clusters.setLegacyAbac',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1beta1/{+name}:setLegacyAbac',
+        relative_path='v1beta1/{+name}:setLegacyAbac',
         request_field='<request>',
-        request_type_name=u'SetLegacyAbacRequest',
-        response_type_name=u'Operation',
+        request_type_name='SetLegacyAbacRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -661,16 +661,16 @@ instead.
           config, request, global_params=global_params)
 
     SetLocations.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/projects/{projectsId}/locations/{locationsId}/clusters/{clustersId}:setLocations',
-        http_method=u'POST',
-        method_id=u'container.projects.locations.clusters.setLocations',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/clusters/{clustersId}:setLocations',
+        http_method='POST',
+        method_id='container.projects.locations.clusters.setLocations',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1beta1/{+name}:setLocations',
+        relative_path='v1beta1/{+name}:setLocations',
         request_field='<request>',
-        request_type_name=u'SetLocationsRequest',
-        response_type_name=u'Operation',
+        request_type_name='SetLocationsRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -688,16 +688,16 @@ instead.
           config, request, global_params=global_params)
 
     SetLogging.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/projects/{projectsId}/locations/{locationsId}/clusters/{clustersId}:setLogging',
-        http_method=u'POST',
-        method_id=u'container.projects.locations.clusters.setLogging',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/clusters/{clustersId}:setLogging',
+        http_method='POST',
+        method_id='container.projects.locations.clusters.setLogging',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1beta1/{+name}:setLogging',
+        relative_path='v1beta1/{+name}:setLogging',
         request_field='<request>',
-        request_type_name=u'SetLoggingServiceRequest',
-        response_type_name=u'Operation',
+        request_type_name='SetLoggingServiceRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -715,16 +715,16 @@ instead.
           config, request, global_params=global_params)
 
     SetMaintenancePolicy.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/projects/{projectsId}/locations/{locationsId}/clusters/{clustersId}:setMaintenancePolicy',
-        http_method=u'POST',
-        method_id=u'container.projects.locations.clusters.setMaintenancePolicy',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/clusters/{clustersId}:setMaintenancePolicy',
+        http_method='POST',
+        method_id='container.projects.locations.clusters.setMaintenancePolicy',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1beta1/{+name}:setMaintenancePolicy',
+        relative_path='v1beta1/{+name}:setMaintenancePolicy',
         request_field='<request>',
-        request_type_name=u'SetMaintenancePolicyRequest',
-        response_type_name=u'Operation',
+        request_type_name='SetMaintenancePolicyRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -744,16 +744,16 @@ the password.
           config, request, global_params=global_params)
 
     SetMasterAuth.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/projects/{projectsId}/locations/{locationsId}/clusters/{clustersId}:setMasterAuth',
-        http_method=u'POST',
-        method_id=u'container.projects.locations.clusters.setMasterAuth',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/clusters/{clustersId}:setMasterAuth',
+        http_method='POST',
+        method_id='container.projects.locations.clusters.setMasterAuth',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1beta1/{+name}:setMasterAuth',
+        relative_path='v1beta1/{+name}:setMasterAuth',
         request_field='<request>',
-        request_type_name=u'SetMasterAuthRequest',
-        response_type_name=u'Operation',
+        request_type_name='SetMasterAuthRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -771,16 +771,16 @@ the password.
           config, request, global_params=global_params)
 
     SetMonitoring.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/projects/{projectsId}/locations/{locationsId}/clusters/{clustersId}:setMonitoring',
-        http_method=u'POST',
-        method_id=u'container.projects.locations.clusters.setMonitoring',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/clusters/{clustersId}:setMonitoring',
+        http_method='POST',
+        method_id='container.projects.locations.clusters.setMonitoring',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1beta1/{+name}:setMonitoring',
+        relative_path='v1beta1/{+name}:setMonitoring',
         request_field='<request>',
-        request_type_name=u'SetMonitoringServiceRequest',
-        response_type_name=u'Operation',
+        request_type_name='SetMonitoringServiceRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -798,16 +798,16 @@ the password.
           config, request, global_params=global_params)
 
     SetNetworkPolicy.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/projects/{projectsId}/locations/{locationsId}/clusters/{clustersId}:setNetworkPolicy',
-        http_method=u'POST',
-        method_id=u'container.projects.locations.clusters.setNetworkPolicy',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/clusters/{clustersId}:setNetworkPolicy',
+        http_method='POST',
+        method_id='container.projects.locations.clusters.setNetworkPolicy',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1beta1/{+name}:setNetworkPolicy',
+        relative_path='v1beta1/{+name}:setNetworkPolicy',
         request_field='<request>',
-        request_type_name=u'SetNetworkPolicyRequest',
-        response_type_name=u'Operation',
+        request_type_name='SetNetworkPolicyRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -825,16 +825,16 @@ the password.
           config, request, global_params=global_params)
 
     SetResourceLabels.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/projects/{projectsId}/locations/{locationsId}/clusters/{clustersId}:setResourceLabels',
-        http_method=u'POST',
-        method_id=u'container.projects.locations.clusters.setResourceLabels',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/clusters/{clustersId}:setResourceLabels',
+        http_method='POST',
+        method_id='container.projects.locations.clusters.setResourceLabels',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1beta1/{+name}:setResourceLabels',
+        relative_path='v1beta1/{+name}:setResourceLabels',
         request_field='<request>',
-        request_type_name=u'SetLabelsRequest',
-        response_type_name=u'Operation',
+        request_type_name='SetLabelsRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -852,16 +852,16 @@ the password.
           config, request, global_params=global_params)
 
     StartIpRotation.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/projects/{projectsId}/locations/{locationsId}/clusters/{clustersId}:startIpRotation',
-        http_method=u'POST',
-        method_id=u'container.projects.locations.clusters.startIpRotation',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/clusters/{clustersId}:startIpRotation',
+        http_method='POST',
+        method_id='container.projects.locations.clusters.startIpRotation',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1beta1/{+name}:startIpRotation',
+        relative_path='v1beta1/{+name}:startIpRotation',
         request_field='<request>',
-        request_type_name=u'StartIPRotationRequest',
-        response_type_name=u'Operation',
+        request_type_name='StartIPRotationRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -879,16 +879,16 @@ the password.
           config, request, global_params=global_params)
 
     Update.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/projects/{projectsId}/locations/{locationsId}/clusters/{clustersId}',
-        http_method=u'PUT',
-        method_id=u'container.projects.locations.clusters.update',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/clusters/{clustersId}',
+        http_method='PUT',
+        method_id='container.projects.locations.clusters.update',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1beta1/{+name}',
+        relative_path='v1beta1/{+name}',
         request_field='<request>',
-        request_type_name=u'UpdateClusterRequest',
-        response_type_name=u'Operation',
+        request_type_name='UpdateClusterRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -906,23 +906,23 @@ the password.
           config, request, global_params=global_params)
 
     UpdateMaster.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/projects/{projectsId}/locations/{locationsId}/clusters/{clustersId}:updateMaster',
-        http_method=u'POST',
-        method_id=u'container.projects.locations.clusters.updateMaster',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/clusters/{clustersId}:updateMaster',
+        http_method='POST',
+        method_id='container.projects.locations.clusters.updateMaster',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1beta1/{+name}:updateMaster',
+        relative_path='v1beta1/{+name}:updateMaster',
         request_field='<request>',
-        request_type_name=u'UpdateMasterRequest',
-        response_type_name=u'Operation',
+        request_type_name='UpdateMasterRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
   class ProjectsLocationsOperationsService(base_api.BaseApiService):
     """Service class for the projects_locations_operations resource."""
 
-    _NAME = u'projects_locations_operations'
+    _NAME = 'projects_locations_operations'
 
     def __init__(self, client):
       super(ContainerV1beta1.ProjectsLocationsOperationsService, self).__init__(client)
@@ -943,16 +943,16 @@ the password.
           config, request, global_params=global_params)
 
     Cancel.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/projects/{projectsId}/locations/{locationsId}/operations/{operationsId}:cancel',
-        http_method=u'POST',
-        method_id=u'container.projects.locations.operations.cancel',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/operations/{operationsId}:cancel',
+        http_method='POST',
+        method_id='container.projects.locations.operations.cancel',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1beta1/{+name}:cancel',
+        relative_path='v1beta1/{+name}:cancel',
         request_field='<request>',
-        request_type_name=u'CancelOperationRequest',
-        response_type_name=u'Empty',
+        request_type_name='CancelOperationRequest',
+        response_type_name='Empty',
         supports_download=False,
     )
 
@@ -970,16 +970,16 @@ the password.
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/projects/{projectsId}/locations/{locationsId}/operations/{operationsId}',
-        http_method=u'GET',
-        method_id=u'container.projects.locations.operations.get',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[u'operationId', u'projectId', u'zone'],
-        relative_path=u'v1beta1/{+name}',
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/operations/{operationsId}',
+        http_method='GET',
+        method_id='container.projects.locations.operations.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['operationId', 'projectId', 'zone'],
+        relative_path='v1beta1/{+name}',
         request_field='',
-        request_type_name=u'ContainerProjectsLocationsOperationsGetRequest',
-        response_type_name=u'Operation',
+        request_type_name='ContainerProjectsLocationsOperationsGetRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -997,23 +997,23 @@ the password.
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/projects/{projectsId}/locations/{locationsId}/operations',
-        http_method=u'GET',
-        method_id=u'container.projects.locations.operations.list',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'projectId', u'zone'],
-        relative_path=u'v1beta1/{+parent}/operations',
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/operations',
+        http_method='GET',
+        method_id='container.projects.locations.operations.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['projectId', 'zone'],
+        relative_path='v1beta1/{+parent}/operations',
         request_field='',
-        request_type_name=u'ContainerProjectsLocationsOperationsListRequest',
-        response_type_name=u'ListOperationsResponse',
+        request_type_name='ContainerProjectsLocationsOperationsListRequest',
+        response_type_name='ListOperationsResponse',
         supports_download=False,
     )
 
   class ProjectsLocationsService(base_api.BaseApiService):
     """Service class for the projects_locations resource."""
 
-    _NAME = u'projects_locations'
+    _NAME = 'projects_locations'
 
     def __init__(self, client):
       super(ContainerV1beta1.ProjectsLocationsService, self).__init__(client)
@@ -1034,16 +1034,16 @@ the password.
           config, request, global_params=global_params)
 
     GetServerConfig.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/projects/{projectsId}/locations/{locationsId}/serverConfig',
-        http_method=u'GET',
-        method_id=u'container.projects.locations.getServerConfig',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[u'projectId', u'zone'],
-        relative_path=u'v1beta1/{+name}/serverConfig',
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/serverConfig',
+        http_method='GET',
+        method_id='container.projects.locations.getServerConfig',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['projectId', 'zone'],
+        relative_path='v1beta1/{+name}/serverConfig',
         request_field='',
-        request_type_name=u'ContainerProjectsLocationsGetServerConfigRequest',
-        response_type_name=u'ServerConfig',
+        request_type_name='ContainerProjectsLocationsGetServerConfigRequest',
+        response_type_name='ServerConfig',
         supports_download=False,
     )
 
@@ -1061,23 +1061,23 @@ the password.
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/projects/{projectsId}/locations',
-        http_method=u'GET',
-        method_id=u'container.projects.locations.list',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
+        flat_path='v1beta1/projects/{projectsId}/locations',
+        http_method='GET',
+        method_id='container.projects.locations.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
         query_params=[],
-        relative_path=u'v1beta1/{+parent}/locations',
+        relative_path='v1beta1/{+parent}/locations',
         request_field='',
-        request_type_name=u'ContainerProjectsLocationsListRequest',
-        response_type_name=u'ListLocationsResponse',
+        request_type_name='ContainerProjectsLocationsListRequest',
+        response_type_name='ListLocationsResponse',
         supports_download=False,
     )
 
   class ProjectsZonesClustersNodePoolsService(base_api.BaseApiService):
     """Service class for the projects_zones_clusters_nodePools resource."""
 
-    _NAME = u'projects_zones_clusters_nodePools'
+    _NAME = 'projects_zones_clusters_nodePools'
 
     def __init__(self, client):
       super(ContainerV1beta1.ProjectsZonesClustersNodePoolsService, self).__init__(client)
@@ -1098,15 +1098,15 @@ the password.
           config, request, global_params=global_params)
 
     Autoscaling.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'container.projects.zones.clusters.nodePools.autoscaling',
-        ordered_params=[u'projectId', u'zone', u'clusterId', u'nodePoolId'],
-        path_params=[u'clusterId', u'nodePoolId', u'projectId', u'zone'],
+        http_method='POST',
+        method_id='container.projects.zones.clusters.nodePools.autoscaling',
+        ordered_params=['projectId', 'zone', 'clusterId', 'nodePoolId'],
+        path_params=['clusterId', 'nodePoolId', 'projectId', 'zone'],
         query_params=[],
-        relative_path=u'v1beta1/projects/{projectId}/zones/{zone}/clusters/{clusterId}/nodePools/{nodePoolId}/autoscaling',
+        relative_path='v1beta1/projects/{projectId}/zones/{zone}/clusters/{clusterId}/nodePools/{nodePoolId}/autoscaling',
         request_field='<request>',
-        request_type_name=u'SetNodePoolAutoscalingRequest',
-        response_type_name=u'Operation',
+        request_type_name='SetNodePoolAutoscalingRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -1124,15 +1124,15 @@ the password.
           config, request, global_params=global_params)
 
     Create.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'container.projects.zones.clusters.nodePools.create',
-        ordered_params=[u'projectId', u'zone', u'clusterId'],
-        path_params=[u'clusterId', u'projectId', u'zone'],
+        http_method='POST',
+        method_id='container.projects.zones.clusters.nodePools.create',
+        ordered_params=['projectId', 'zone', 'clusterId'],
+        path_params=['clusterId', 'projectId', 'zone'],
         query_params=[],
-        relative_path=u'v1beta1/projects/{projectId}/zones/{zone}/clusters/{clusterId}/nodePools',
+        relative_path='v1beta1/projects/{projectId}/zones/{zone}/clusters/{clusterId}/nodePools',
         request_field='<request>',
-        request_type_name=u'CreateNodePoolRequest',
-        response_type_name=u'Operation',
+        request_type_name='CreateNodePoolRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -1150,15 +1150,15 @@ the password.
           config, request, global_params=global_params)
 
     Delete.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'DELETE',
-        method_id=u'container.projects.zones.clusters.nodePools.delete',
-        ordered_params=[u'projectId', u'zone', u'clusterId', u'nodePoolId'],
-        path_params=[u'clusterId', u'nodePoolId', u'projectId', u'zone'],
-        query_params=[u'name'],
-        relative_path=u'v1beta1/projects/{projectId}/zones/{zone}/clusters/{clusterId}/nodePools/{nodePoolId}',
+        http_method='DELETE',
+        method_id='container.projects.zones.clusters.nodePools.delete',
+        ordered_params=['projectId', 'zone', 'clusterId', 'nodePoolId'],
+        path_params=['clusterId', 'nodePoolId', 'projectId', 'zone'],
+        query_params=['name'],
+        relative_path='v1beta1/projects/{projectId}/zones/{zone}/clusters/{clusterId}/nodePools/{nodePoolId}',
         request_field='',
-        request_type_name=u'ContainerProjectsZonesClustersNodePoolsDeleteRequest',
-        response_type_name=u'Operation',
+        request_type_name='ContainerProjectsZonesClustersNodePoolsDeleteRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -1176,15 +1176,15 @@ the password.
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'container.projects.zones.clusters.nodePools.get',
-        ordered_params=[u'projectId', u'zone', u'clusterId', u'nodePoolId'],
-        path_params=[u'clusterId', u'nodePoolId', u'projectId', u'zone'],
-        query_params=[u'name'],
-        relative_path=u'v1beta1/projects/{projectId}/zones/{zone}/clusters/{clusterId}/nodePools/{nodePoolId}',
+        http_method='GET',
+        method_id='container.projects.zones.clusters.nodePools.get',
+        ordered_params=['projectId', 'zone', 'clusterId', 'nodePoolId'],
+        path_params=['clusterId', 'nodePoolId', 'projectId', 'zone'],
+        query_params=['name'],
+        relative_path='v1beta1/projects/{projectId}/zones/{zone}/clusters/{clusterId}/nodePools/{nodePoolId}',
         request_field='',
-        request_type_name=u'ContainerProjectsZonesClustersNodePoolsGetRequest',
-        response_type_name=u'NodePool',
+        request_type_name='ContainerProjectsZonesClustersNodePoolsGetRequest',
+        response_type_name='NodePool',
         supports_download=False,
     )
 
@@ -1202,15 +1202,15 @@ the password.
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'container.projects.zones.clusters.nodePools.list',
-        ordered_params=[u'projectId', u'zone', u'clusterId'],
-        path_params=[u'clusterId', u'projectId', u'zone'],
-        query_params=[u'parent'],
-        relative_path=u'v1beta1/projects/{projectId}/zones/{zone}/clusters/{clusterId}/nodePools',
+        http_method='GET',
+        method_id='container.projects.zones.clusters.nodePools.list',
+        ordered_params=['projectId', 'zone', 'clusterId'],
+        path_params=['clusterId', 'projectId', 'zone'],
+        query_params=['parent'],
+        relative_path='v1beta1/projects/{projectId}/zones/{zone}/clusters/{clusterId}/nodePools',
         request_field='',
-        request_type_name=u'ContainerProjectsZonesClustersNodePoolsListRequest',
-        response_type_name=u'ListNodePoolsResponse',
+        request_type_name='ContainerProjectsZonesClustersNodePoolsListRequest',
+        response_type_name='ListNodePoolsResponse',
         supports_download=False,
     )
 
@@ -1229,15 +1229,15 @@ This makes no changes if the last upgrade successfully completed.
           config, request, global_params=global_params)
 
     Rollback.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'container.projects.zones.clusters.nodePools.rollback',
-        ordered_params=[u'projectId', u'zone', u'clusterId', u'nodePoolId'],
-        path_params=[u'clusterId', u'nodePoolId', u'projectId', u'zone'],
+        http_method='POST',
+        method_id='container.projects.zones.clusters.nodePools.rollback',
+        ordered_params=['projectId', 'zone', 'clusterId', 'nodePoolId'],
+        path_params=['clusterId', 'nodePoolId', 'projectId', 'zone'],
         query_params=[],
-        relative_path=u'v1beta1/projects/{projectId}/zones/{zone}/clusters/{clusterId}/nodePools/{nodePoolId}:rollback',
+        relative_path='v1beta1/projects/{projectId}/zones/{zone}/clusters/{clusterId}/nodePools/{nodePoolId}:rollback',
         request_field='<request>',
-        request_type_name=u'RollbackNodePoolUpgradeRequest',
-        response_type_name=u'Operation',
+        request_type_name='RollbackNodePoolUpgradeRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -1255,15 +1255,15 @@ This makes no changes if the last upgrade successfully completed.
           config, request, global_params=global_params)
 
     SetManagement.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'container.projects.zones.clusters.nodePools.setManagement',
-        ordered_params=[u'projectId', u'zone', u'clusterId', u'nodePoolId'],
-        path_params=[u'clusterId', u'nodePoolId', u'projectId', u'zone'],
+        http_method='POST',
+        method_id='container.projects.zones.clusters.nodePools.setManagement',
+        ordered_params=['projectId', 'zone', 'clusterId', 'nodePoolId'],
+        path_params=['clusterId', 'nodePoolId', 'projectId', 'zone'],
         query_params=[],
-        relative_path=u'v1beta1/projects/{projectId}/zones/{zone}/clusters/{clusterId}/nodePools/{nodePoolId}/setManagement',
+        relative_path='v1beta1/projects/{projectId}/zones/{zone}/clusters/{clusterId}/nodePools/{nodePoolId}/setManagement',
         request_field='<request>',
-        request_type_name=u'SetNodePoolManagementRequest',
-        response_type_name=u'Operation',
+        request_type_name='SetNodePoolManagementRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -1281,15 +1281,15 @@ This makes no changes if the last upgrade successfully completed.
           config, request, global_params=global_params)
 
     SetSize.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'container.projects.zones.clusters.nodePools.setSize',
-        ordered_params=[u'projectId', u'zone', u'clusterId', u'nodePoolId'],
-        path_params=[u'clusterId', u'nodePoolId', u'projectId', u'zone'],
+        http_method='POST',
+        method_id='container.projects.zones.clusters.nodePools.setSize',
+        ordered_params=['projectId', 'zone', 'clusterId', 'nodePoolId'],
+        path_params=['clusterId', 'nodePoolId', 'projectId', 'zone'],
         query_params=[],
-        relative_path=u'v1beta1/projects/{projectId}/zones/{zone}/clusters/{clusterId}/nodePools/{nodePoolId}/setSize',
+        relative_path='v1beta1/projects/{projectId}/zones/{zone}/clusters/{clusterId}/nodePools/{nodePoolId}/setSize',
         request_field='<request>',
-        request_type_name=u'SetNodePoolSizeRequest',
-        response_type_name=u'Operation',
+        request_type_name='SetNodePoolSizeRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -1307,22 +1307,22 @@ This makes no changes if the last upgrade successfully completed.
           config, request, global_params=global_params)
 
     Update.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'container.projects.zones.clusters.nodePools.update',
-        ordered_params=[u'projectId', u'zone', u'clusterId', u'nodePoolId'],
-        path_params=[u'clusterId', u'nodePoolId', u'projectId', u'zone'],
+        http_method='POST',
+        method_id='container.projects.zones.clusters.nodePools.update',
+        ordered_params=['projectId', 'zone', 'clusterId', 'nodePoolId'],
+        path_params=['clusterId', 'nodePoolId', 'projectId', 'zone'],
         query_params=[],
-        relative_path=u'v1beta1/projects/{projectId}/zones/{zone}/clusters/{clusterId}/nodePools/{nodePoolId}/update',
+        relative_path='v1beta1/projects/{projectId}/zones/{zone}/clusters/{clusterId}/nodePools/{nodePoolId}/update',
         request_field='<request>',
-        request_type_name=u'UpdateNodePoolRequest',
-        response_type_name=u'Operation',
+        request_type_name='UpdateNodePoolRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
   class ProjectsZonesClustersService(base_api.BaseApiService):
     """Service class for the projects_zones_clusters resource."""
 
-    _NAME = u'projects_zones_clusters'
+    _NAME = 'projects_zones_clusters'
 
     def __init__(self, client):
       super(ContainerV1beta1.ProjectsZonesClustersService, self).__init__(client)
@@ -1343,15 +1343,15 @@ This makes no changes if the last upgrade successfully completed.
           config, request, global_params=global_params)
 
     Addons.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'container.projects.zones.clusters.addons',
-        ordered_params=[u'projectId', u'zone', u'clusterId'],
-        path_params=[u'clusterId', u'projectId', u'zone'],
+        http_method='POST',
+        method_id='container.projects.zones.clusters.addons',
+        ordered_params=['projectId', 'zone', 'clusterId'],
+        path_params=['clusterId', 'projectId', 'zone'],
         query_params=[],
-        relative_path=u'v1beta1/projects/{projectId}/zones/{zone}/clusters/{clusterId}/addons',
+        relative_path='v1beta1/projects/{projectId}/zones/{zone}/clusters/{clusterId}/addons',
         request_field='<request>',
-        request_type_name=u'SetAddonsConfigRequest',
-        response_type_name=u'Operation',
+        request_type_name='SetAddonsConfigRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -1369,15 +1369,15 @@ This makes no changes if the last upgrade successfully completed.
           config, request, global_params=global_params)
 
     CompleteIpRotation.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'container.projects.zones.clusters.completeIpRotation',
-        ordered_params=[u'projectId', u'zone', u'clusterId'],
-        path_params=[u'clusterId', u'projectId', u'zone'],
+        http_method='POST',
+        method_id='container.projects.zones.clusters.completeIpRotation',
+        ordered_params=['projectId', 'zone', 'clusterId'],
+        path_params=['clusterId', 'projectId', 'zone'],
         query_params=[],
-        relative_path=u'v1beta1/projects/{projectId}/zones/{zone}/clusters/{clusterId}:completeIpRotation',
+        relative_path='v1beta1/projects/{projectId}/zones/{zone}/clusters/{clusterId}:completeIpRotation',
         request_field='<request>',
-        request_type_name=u'CompleteIPRotationRequest',
-        response_type_name=u'Operation',
+        request_type_name='CompleteIPRotationRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -1408,15 +1408,15 @@ which CIDR range the cluster is using.
           config, request, global_params=global_params)
 
     Create.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'container.projects.zones.clusters.create',
-        ordered_params=[u'projectId', u'zone'],
-        path_params=[u'projectId', u'zone'],
+        http_method='POST',
+        method_id='container.projects.zones.clusters.create',
+        ordered_params=['projectId', 'zone'],
+        path_params=['projectId', 'zone'],
         query_params=[],
-        relative_path=u'v1beta1/projects/{projectId}/zones/{zone}/clusters',
+        relative_path='v1beta1/projects/{projectId}/zones/{zone}/clusters',
         request_field='<request>',
-        request_type_name=u'CreateClusterRequest',
-        response_type_name=u'Operation',
+        request_type_name='CreateClusterRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -1442,15 +1442,15 @@ when the cluster was initially created.
           config, request, global_params=global_params)
 
     Delete.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'DELETE',
-        method_id=u'container.projects.zones.clusters.delete',
-        ordered_params=[u'projectId', u'zone', u'clusterId'],
-        path_params=[u'clusterId', u'projectId', u'zone'],
-        query_params=[u'name'],
-        relative_path=u'v1beta1/projects/{projectId}/zones/{zone}/clusters/{clusterId}',
+        http_method='DELETE',
+        method_id='container.projects.zones.clusters.delete',
+        ordered_params=['projectId', 'zone', 'clusterId'],
+        path_params=['clusterId', 'projectId', 'zone'],
+        query_params=['name'],
+        relative_path='v1beta1/projects/{projectId}/zones/{zone}/clusters/{clusterId}',
         request_field='',
-        request_type_name=u'ContainerProjectsZonesClustersDeleteRequest',
-        response_type_name=u'Operation',
+        request_type_name='ContainerProjectsZonesClustersDeleteRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -1468,15 +1468,15 @@ when the cluster was initially created.
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'container.projects.zones.clusters.get',
-        ordered_params=[u'projectId', u'zone', u'clusterId'],
-        path_params=[u'clusterId', u'projectId', u'zone'],
-        query_params=[u'name'],
-        relative_path=u'v1beta1/projects/{projectId}/zones/{zone}/clusters/{clusterId}',
+        http_method='GET',
+        method_id='container.projects.zones.clusters.get',
+        ordered_params=['projectId', 'zone', 'clusterId'],
+        path_params=['clusterId', 'projectId', 'zone'],
+        query_params=['name'],
+        relative_path='v1beta1/projects/{projectId}/zones/{zone}/clusters/{clusterId}',
         request_field='',
-        request_type_name=u'ContainerProjectsZonesClustersGetRequest',
-        response_type_name=u'Cluster',
+        request_type_name='ContainerProjectsZonesClustersGetRequest',
+        response_type_name='Cluster',
         supports_download=False,
     )
 
@@ -1494,15 +1494,15 @@ when the cluster was initially created.
           config, request, global_params=global_params)
 
     LegacyAbac.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'container.projects.zones.clusters.legacyAbac',
-        ordered_params=[u'projectId', u'zone', u'clusterId'],
-        path_params=[u'clusterId', u'projectId', u'zone'],
+        http_method='POST',
+        method_id='container.projects.zones.clusters.legacyAbac',
+        ordered_params=['projectId', 'zone', 'clusterId'],
+        path_params=['clusterId', 'projectId', 'zone'],
         query_params=[],
-        relative_path=u'v1beta1/projects/{projectId}/zones/{zone}/clusters/{clusterId}/legacyAbac',
+        relative_path='v1beta1/projects/{projectId}/zones/{zone}/clusters/{clusterId}/legacyAbac',
         request_field='<request>',
-        request_type_name=u'SetLegacyAbacRequest',
-        response_type_name=u'Operation',
+        request_type_name='SetLegacyAbacRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -1521,15 +1521,15 @@ zones.
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'container.projects.zones.clusters.list',
-        ordered_params=[u'projectId', u'zone'],
-        path_params=[u'projectId', u'zone'],
-        query_params=[u'parent'],
-        relative_path=u'v1beta1/projects/{projectId}/zones/{zone}/clusters',
+        http_method='GET',
+        method_id='container.projects.zones.clusters.list',
+        ordered_params=['projectId', 'zone'],
+        path_params=['projectId', 'zone'],
+        query_params=['parent'],
+        relative_path='v1beta1/projects/{projectId}/zones/{zone}/clusters',
         request_field='',
-        request_type_name=u'ContainerProjectsZonesClustersListRequest',
-        response_type_name=u'ListClustersResponse',
+        request_type_name='ContainerProjectsZonesClustersListRequest',
+        response_type_name='ListClustersResponse',
         supports_download=False,
     )
 
@@ -1550,15 +1550,15 @@ instead.
           config, request, global_params=global_params)
 
     Locations.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'container.projects.zones.clusters.locations',
-        ordered_params=[u'projectId', u'zone', u'clusterId'],
-        path_params=[u'clusterId', u'projectId', u'zone'],
+        http_method='POST',
+        method_id='container.projects.zones.clusters.locations',
+        ordered_params=['projectId', 'zone', 'clusterId'],
+        path_params=['clusterId', 'projectId', 'zone'],
         query_params=[],
-        relative_path=u'v1beta1/projects/{projectId}/zones/{zone}/clusters/{clusterId}/locations',
+        relative_path='v1beta1/projects/{projectId}/zones/{zone}/clusters/{clusterId}/locations',
         request_field='<request>',
-        request_type_name=u'SetLocationsRequest',
-        response_type_name=u'Operation',
+        request_type_name='SetLocationsRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -1576,15 +1576,15 @@ instead.
           config, request, global_params=global_params)
 
     Logging.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'container.projects.zones.clusters.logging',
-        ordered_params=[u'projectId', u'zone', u'clusterId'],
-        path_params=[u'clusterId', u'projectId', u'zone'],
+        http_method='POST',
+        method_id='container.projects.zones.clusters.logging',
+        ordered_params=['projectId', 'zone', 'clusterId'],
+        path_params=['clusterId', 'projectId', 'zone'],
         query_params=[],
-        relative_path=u'v1beta1/projects/{projectId}/zones/{zone}/clusters/{clusterId}/logging',
+        relative_path='v1beta1/projects/{projectId}/zones/{zone}/clusters/{clusterId}/logging',
         request_field='<request>',
-        request_type_name=u'SetLoggingServiceRequest',
-        response_type_name=u'Operation',
+        request_type_name='SetLoggingServiceRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -1602,15 +1602,15 @@ instead.
           config, request, global_params=global_params)
 
     Master.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'container.projects.zones.clusters.master',
-        ordered_params=[u'projectId', u'zone', u'clusterId'],
-        path_params=[u'clusterId', u'projectId', u'zone'],
+        http_method='POST',
+        method_id='container.projects.zones.clusters.master',
+        ordered_params=['projectId', 'zone', 'clusterId'],
+        path_params=['clusterId', 'projectId', 'zone'],
         query_params=[],
-        relative_path=u'v1beta1/projects/{projectId}/zones/{zone}/clusters/{clusterId}/master',
+        relative_path='v1beta1/projects/{projectId}/zones/{zone}/clusters/{clusterId}/master',
         request_field='<request>',
-        request_type_name=u'UpdateMasterRequest',
-        response_type_name=u'Operation',
+        request_type_name='UpdateMasterRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -1628,15 +1628,15 @@ instead.
           config, request, global_params=global_params)
 
     Monitoring.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'container.projects.zones.clusters.monitoring',
-        ordered_params=[u'projectId', u'zone', u'clusterId'],
-        path_params=[u'clusterId', u'projectId', u'zone'],
+        http_method='POST',
+        method_id='container.projects.zones.clusters.monitoring',
+        ordered_params=['projectId', 'zone', 'clusterId'],
+        path_params=['clusterId', 'projectId', 'zone'],
         query_params=[],
-        relative_path=u'v1beta1/projects/{projectId}/zones/{zone}/clusters/{clusterId}/monitoring',
+        relative_path='v1beta1/projects/{projectId}/zones/{zone}/clusters/{clusterId}/monitoring',
         request_field='<request>',
-        request_type_name=u'SetMonitoringServiceRequest',
-        response_type_name=u'Operation',
+        request_type_name='SetMonitoringServiceRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -1654,15 +1654,15 @@ instead.
           config, request, global_params=global_params)
 
     ResourceLabels.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'container.projects.zones.clusters.resourceLabels',
-        ordered_params=[u'projectId', u'zone', u'clusterId'],
-        path_params=[u'clusterId', u'projectId', u'zone'],
+        http_method='POST',
+        method_id='container.projects.zones.clusters.resourceLabels',
+        ordered_params=['projectId', 'zone', 'clusterId'],
+        path_params=['clusterId', 'projectId', 'zone'],
         query_params=[],
-        relative_path=u'v1beta1/projects/{projectId}/zones/{zone}/clusters/{clusterId}/resourceLabels',
+        relative_path='v1beta1/projects/{projectId}/zones/{zone}/clusters/{clusterId}/resourceLabels',
         request_field='<request>',
-        request_type_name=u'SetLabelsRequest',
-        response_type_name=u'Operation',
+        request_type_name='SetLabelsRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -1680,15 +1680,15 @@ instead.
           config, request, global_params=global_params)
 
     SetMaintenancePolicy.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'container.projects.zones.clusters.setMaintenancePolicy',
-        ordered_params=[u'projectId', u'zone', u'clusterId'],
-        path_params=[u'clusterId', u'projectId', u'zone'],
+        http_method='POST',
+        method_id='container.projects.zones.clusters.setMaintenancePolicy',
+        ordered_params=['projectId', 'zone', 'clusterId'],
+        path_params=['clusterId', 'projectId', 'zone'],
         query_params=[],
-        relative_path=u'v1beta1/projects/{projectId}/zones/{zone}/clusters/{clusterId}:setMaintenancePolicy',
+        relative_path='v1beta1/projects/{projectId}/zones/{zone}/clusters/{clusterId}:setMaintenancePolicy',
         request_field='<request>',
-        request_type_name=u'SetMaintenancePolicyRequest',
-        response_type_name=u'Operation',
+        request_type_name='SetMaintenancePolicyRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -1708,15 +1708,15 @@ the password.
           config, request, global_params=global_params)
 
     SetMasterAuth.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'container.projects.zones.clusters.setMasterAuth',
-        ordered_params=[u'projectId', u'zone', u'clusterId'],
-        path_params=[u'clusterId', u'projectId', u'zone'],
+        http_method='POST',
+        method_id='container.projects.zones.clusters.setMasterAuth',
+        ordered_params=['projectId', 'zone', 'clusterId'],
+        path_params=['clusterId', 'projectId', 'zone'],
         query_params=[],
-        relative_path=u'v1beta1/projects/{projectId}/zones/{zone}/clusters/{clusterId}:setMasterAuth',
+        relative_path='v1beta1/projects/{projectId}/zones/{zone}/clusters/{clusterId}:setMasterAuth',
         request_field='<request>',
-        request_type_name=u'SetMasterAuthRequest',
-        response_type_name=u'Operation',
+        request_type_name='SetMasterAuthRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -1734,15 +1734,15 @@ the password.
           config, request, global_params=global_params)
 
     SetNetworkPolicy.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'container.projects.zones.clusters.setNetworkPolicy',
-        ordered_params=[u'projectId', u'zone', u'clusterId'],
-        path_params=[u'clusterId', u'projectId', u'zone'],
+        http_method='POST',
+        method_id='container.projects.zones.clusters.setNetworkPolicy',
+        ordered_params=['projectId', 'zone', 'clusterId'],
+        path_params=['clusterId', 'projectId', 'zone'],
         query_params=[],
-        relative_path=u'v1beta1/projects/{projectId}/zones/{zone}/clusters/{clusterId}:setNetworkPolicy',
+        relative_path='v1beta1/projects/{projectId}/zones/{zone}/clusters/{clusterId}:setNetworkPolicy',
         request_field='<request>',
-        request_type_name=u'SetNetworkPolicyRequest',
-        response_type_name=u'Operation',
+        request_type_name='SetNetworkPolicyRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -1760,15 +1760,15 @@ the password.
           config, request, global_params=global_params)
 
     StartIpRotation.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'container.projects.zones.clusters.startIpRotation',
-        ordered_params=[u'projectId', u'zone', u'clusterId'],
-        path_params=[u'clusterId', u'projectId', u'zone'],
+        http_method='POST',
+        method_id='container.projects.zones.clusters.startIpRotation',
+        ordered_params=['projectId', 'zone', 'clusterId'],
+        path_params=['clusterId', 'projectId', 'zone'],
         query_params=[],
-        relative_path=u'v1beta1/projects/{projectId}/zones/{zone}/clusters/{clusterId}:startIpRotation',
+        relative_path='v1beta1/projects/{projectId}/zones/{zone}/clusters/{clusterId}:startIpRotation',
         request_field='<request>',
-        request_type_name=u'StartIPRotationRequest',
-        response_type_name=u'Operation',
+        request_type_name='StartIPRotationRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -1786,22 +1786,22 @@ the password.
           config, request, global_params=global_params)
 
     Update.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'PUT',
-        method_id=u'container.projects.zones.clusters.update',
-        ordered_params=[u'projectId', u'zone', u'clusterId'],
-        path_params=[u'clusterId', u'projectId', u'zone'],
+        http_method='PUT',
+        method_id='container.projects.zones.clusters.update',
+        ordered_params=['projectId', 'zone', 'clusterId'],
+        path_params=['clusterId', 'projectId', 'zone'],
         query_params=[],
-        relative_path=u'v1beta1/projects/{projectId}/zones/{zone}/clusters/{clusterId}',
+        relative_path='v1beta1/projects/{projectId}/zones/{zone}/clusters/{clusterId}',
         request_field='<request>',
-        request_type_name=u'UpdateClusterRequest',
-        response_type_name=u'Operation',
+        request_type_name='UpdateClusterRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
   class ProjectsZonesOperationsService(base_api.BaseApiService):
     """Service class for the projects_zones_operations resource."""
 
-    _NAME = u'projects_zones_operations'
+    _NAME = 'projects_zones_operations'
 
     def __init__(self, client):
       super(ContainerV1beta1.ProjectsZonesOperationsService, self).__init__(client)
@@ -1822,15 +1822,15 @@ the password.
           config, request, global_params=global_params)
 
     Cancel.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'container.projects.zones.operations.cancel',
-        ordered_params=[u'projectId', u'zone', u'operationId'],
-        path_params=[u'operationId', u'projectId', u'zone'],
+        http_method='POST',
+        method_id='container.projects.zones.operations.cancel',
+        ordered_params=['projectId', 'zone', 'operationId'],
+        path_params=['operationId', 'projectId', 'zone'],
         query_params=[],
-        relative_path=u'v1beta1/projects/{projectId}/zones/{zone}/operations/{operationId}:cancel',
+        relative_path='v1beta1/projects/{projectId}/zones/{zone}/operations/{operationId}:cancel',
         request_field='<request>',
-        request_type_name=u'CancelOperationRequest',
-        response_type_name=u'Empty',
+        request_type_name='CancelOperationRequest',
+        response_type_name='Empty',
         supports_download=False,
     )
 
@@ -1848,15 +1848,15 @@ the password.
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'container.projects.zones.operations.get',
-        ordered_params=[u'projectId', u'zone', u'operationId'],
-        path_params=[u'operationId', u'projectId', u'zone'],
-        query_params=[u'name'],
-        relative_path=u'v1beta1/projects/{projectId}/zones/{zone}/operations/{operationId}',
+        http_method='GET',
+        method_id='container.projects.zones.operations.get',
+        ordered_params=['projectId', 'zone', 'operationId'],
+        path_params=['operationId', 'projectId', 'zone'],
+        query_params=['name'],
+        relative_path='v1beta1/projects/{projectId}/zones/{zone}/operations/{operationId}',
         request_field='',
-        request_type_name=u'ContainerProjectsZonesOperationsGetRequest',
-        response_type_name=u'Operation',
+        request_type_name='ContainerProjectsZonesOperationsGetRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -1874,22 +1874,22 @@ the password.
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'container.projects.zones.operations.list',
-        ordered_params=[u'projectId', u'zone'],
-        path_params=[u'projectId', u'zone'],
-        query_params=[u'parent'],
-        relative_path=u'v1beta1/projects/{projectId}/zones/{zone}/operations',
+        http_method='GET',
+        method_id='container.projects.zones.operations.list',
+        ordered_params=['projectId', 'zone'],
+        path_params=['projectId', 'zone'],
+        query_params=['parent'],
+        relative_path='v1beta1/projects/{projectId}/zones/{zone}/operations',
         request_field='',
-        request_type_name=u'ContainerProjectsZonesOperationsListRequest',
-        response_type_name=u'ListOperationsResponse',
+        request_type_name='ContainerProjectsZonesOperationsListRequest',
+        response_type_name='ListOperationsResponse',
         supports_download=False,
     )
 
   class ProjectsZonesService(base_api.BaseApiService):
     """Service class for the projects_zones resource."""
 
-    _NAME = u'projects_zones'
+    _NAME = 'projects_zones'
 
     def __init__(self, client):
       super(ContainerV1beta1.ProjectsZonesService, self).__init__(client)
@@ -1910,22 +1910,22 @@ the password.
           config, request, global_params=global_params)
 
     GetServerconfig.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'container.projects.zones.getServerconfig',
-        ordered_params=[u'projectId', u'zone'],
-        path_params=[u'projectId', u'zone'],
-        query_params=[u'name'],
-        relative_path=u'v1beta1/projects/{projectId}/zones/{zone}/serverconfig',
+        http_method='GET',
+        method_id='container.projects.zones.getServerconfig',
+        ordered_params=['projectId', 'zone'],
+        path_params=['projectId', 'zone'],
+        query_params=['name'],
+        relative_path='v1beta1/projects/{projectId}/zones/{zone}/serverconfig',
         request_field='',
-        request_type_name=u'ContainerProjectsZonesGetServerconfigRequest',
-        response_type_name=u'ServerConfig',
+        request_type_name='ContainerProjectsZonesGetServerconfigRequest',
+        response_type_name='ServerConfig',
         supports_download=False,
     )
 
   class ProjectsService(base_api.BaseApiService):
     """Service class for the projects resource."""
 
-    _NAME = u'projects'
+    _NAME = 'projects'
 
     def __init__(self, client):
       super(ContainerV1beta1.ProjectsService, self).__init__(client)

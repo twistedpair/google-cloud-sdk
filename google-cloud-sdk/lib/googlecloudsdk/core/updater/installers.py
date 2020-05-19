@@ -25,9 +25,9 @@ import ssl
 import tarfile
 
 from googlecloudsdk.core import exceptions
-from googlecloudsdk.core import http
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
+from googlecloudsdk.core import transport
 from googlecloudsdk.core import url_opener
 from googlecloudsdk.core.console import console_io
 from googlecloudsdk.core.credentials import store
@@ -282,7 +282,7 @@ class ComponentInstaller(object):
     headers = {
         b'Cache-Control': b'no-cache',
         b'User-Agent': http_encoding.Encode(
-            http.MakeUserAgentString(command_path))
+            transport.MakeUserAgentString(command_path))
     }
     timeout = TIMEOUT_IN_SEC
     if command_path == UPDATE_MANAGER_COMMAND_PATH:

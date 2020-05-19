@@ -28,7 +28,7 @@ class Collections(enum.Enum):
       'projects',
       'projects/{projectsId}',
       {},
-      [u'projectsId'],
+      ['projectsId'],
       True
   )
   PROJECTS_LOCATIONS = (
@@ -38,7 +38,7 @@ class Collections(enum.Enum):
           '':
               'projects/{projectsId}/locations/{locationsId}',
       },
-      [u'name'],
+      ['name'],
       True
   )
   PROJECTS_LOCATIONS_GAMESERVERDEPLOYMENTS = (
@@ -49,7 +49,7 @@ class Collections(enum.Enum):
               'projects/{projectsId}/locations/{locationsId}/'
               'gameServerDeployments/{gameServerDeploymentsId}',
       },
-      [u'name'],
+      ['name'],
       True
   )
   PROJECTS_LOCATIONS_GAMESERVERDEPLOYMENTS_CONFIGS = (
@@ -61,7 +61,7 @@ class Collections(enum.Enum):
               'gameServerDeployments/{gameServerDeploymentsId}/configs/'
               '{configsId}',
       },
-      [u'name'],
+      ['name'],
       True
   )
   PROJECTS_LOCATIONS_OPERATIONS = (
@@ -72,7 +72,7 @@ class Collections(enum.Enum):
               'projects/{projectsId}/locations/{locationsId}/operations/'
               '{operationsId}',
       },
-      [u'name'],
+      ['name'],
       True
   )
   PROJECTS_LOCATIONS_REALMS = (
@@ -83,7 +83,7 @@ class Collections(enum.Enum):
               'projects/{projectsId}/locations/{locationsId}/realms/'
               '{realmsId}',
       },
-      [u'name'],
+      ['name'],
       True
   )
   PROJECTS_LOCATIONS_REALMS_GAMESERVERCLUSTERS = (
@@ -94,7 +94,7 @@ class Collections(enum.Enum):
               'projects/{projectsId}/locations/{locationsId}/realms/'
               '{realmsId}/gameServerClusters/{gameServerClustersId}',
       },
-      [u'name'],
+      ['name'],
       True
   )
 

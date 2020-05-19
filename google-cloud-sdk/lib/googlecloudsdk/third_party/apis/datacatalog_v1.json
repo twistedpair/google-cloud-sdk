@@ -452,13 +452,15 @@
           "enumDescriptions": [
             "Default unknown type.",
             "Table view.",
-            "BigQuery native table."
+            "BigQuery native table.",
+            "BigQuery materialized view."
           ],
           "type": "string",
           "enum": [
             "TABLE_SOURCE_TYPE_UNSPECIFIED",
             "BIGQUERY_VIEW",
-            "BIGQUERY_TABLE"
+            "BIGQUERY_TABLE",
+            "BIGQUERY_MATERIALIZED_VIEW"
           ]
         },
         "viewSpec": {

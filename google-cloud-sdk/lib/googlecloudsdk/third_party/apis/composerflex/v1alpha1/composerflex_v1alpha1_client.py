@@ -8,17 +8,17 @@ class ComposerflexV1alpha1(base_api.BaseApiClient):
   """Generated client library for service composerflex version v1alpha1."""
 
   MESSAGES_MODULE = messages
-  BASE_URL = u'https://composerflex.googleapis.com/'
-  MTLS_BASE_URL = u'https://composerflex.mtls.googleapis.com/'
+  BASE_URL = 'https://composerflex.googleapis.com/'
+  MTLS_BASE_URL = 'https://composerflex.mtls.googleapis.com/'
 
-  _PACKAGE = u'composerflex'
-  _SCOPES = [u'https://www.googleapis.com/auth/cloud-platform']
-  _VERSION = u'v1alpha1'
+  _PACKAGE = 'composerflex'
+  _SCOPES = ['https://www.googleapis.com/auth/cloud-platform']
+  _VERSION = 'v1alpha1'
   _CLIENT_ID = '1042881264118.apps.googleusercontent.com'
   _CLIENT_SECRET = 'x_Tw5K8nnjoRAqULM9PFAC2b'
-  _USER_AGENT = u'google-cloud-sdk'
-  _CLIENT_CLASS_NAME = u'ComposerflexV1alpha1'
-  _URL_VERSION = u'v1alpha1'
+  _USER_AGENT = 'google-cloud-sdk'
+  _CLIENT_CLASS_NAME = 'ComposerflexV1alpha1'
+  _URL_VERSION = 'v1alpha1'
   _API_KEY = None
 
   def __init__(self, url='', credentials=None,
@@ -45,7 +45,7 @@ class ComposerflexV1alpha1(base_api.BaseApiClient):
   class ProjectsLocationsContextsService(base_api.BaseApiService):
     """Service class for the projects_locations_contexts resource."""
 
-    _NAME = u'projects_locations_contexts'
+    _NAME = 'projects_locations_contexts'
 
     def __init__(self, client):
       super(ComposerflexV1alpha1.ProjectsLocationsContextsService, self).__init__(client)
@@ -66,16 +66,16 @@ class ComposerflexV1alpha1(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Create.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha1/projects/{projectsId}/locations/{locationsId}/contexts',
-        http_method=u'POST',
-        method_id=u'composerflex.projects.locations.contexts.create',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/contexts',
+        http_method='POST',
+        method_id='composerflex.projects.locations.contexts.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
         query_params=[],
-        relative_path=u'v1alpha1/{+parent}/contexts',
-        request_field=u'context',
-        request_type_name=u'ComposerflexProjectsLocationsContextsCreateRequest',
-        response_type_name=u'Operation',
+        relative_path='v1alpha1/{+parent}/contexts',
+        request_field='context',
+        request_type_name='ComposerflexProjectsLocationsContextsCreateRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -94,16 +94,16 @@ to it.
           config, request, global_params=global_params)
 
     Delete.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha1/projects/{projectsId}/locations/{locationsId}/contexts/{contextsId}',
-        http_method=u'DELETE',
-        method_id=u'composerflex.projects.locations.contexts.delete',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/contexts/{contextsId}',
+        http_method='DELETE',
+        method_id='composerflex.projects.locations.contexts.delete',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1alpha1/{+name}',
+        relative_path='v1alpha1/{+name}',
         request_field='',
-        request_type_name=u'ComposerflexProjectsLocationsContextsDeleteRequest',
-        response_type_name=u'Operation',
+        request_type_name='ComposerflexProjectsLocationsContextsDeleteRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -121,16 +121,16 @@ to it.
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha1/projects/{projectsId}/locations/{locationsId}/contexts/{contextsId}',
-        http_method=u'GET',
-        method_id=u'composerflex.projects.locations.contexts.get',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/contexts/{contextsId}',
+        http_method='GET',
+        method_id='composerflex.projects.locations.contexts.get',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1alpha1/{+name}',
+        relative_path='v1alpha1/{+name}',
         request_field='',
-        request_type_name=u'ComposerflexProjectsLocationsContextsGetRequest',
-        response_type_name=u'Context',
+        request_type_name='ComposerflexProjectsLocationsContextsGetRequest',
+        response_type_name='Context',
         supports_download=False,
     )
 
@@ -148,23 +148,23 @@ to it.
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha1/projects/{projectsId}/locations/{locationsId}/contexts',
-        http_method=u'GET',
-        method_id=u'composerflex.projects.locations.contexts.list',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'filter', u'orderBy', u'pageSize', u'pageToken'],
-        relative_path=u'v1alpha1/{+parent}/contexts',
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/contexts',
+        http_method='GET',
+        method_id='composerflex.projects.locations.contexts.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'orderBy', 'pageSize', 'pageToken'],
+        relative_path='v1alpha1/{+parent}/contexts',
         request_field='',
-        request_type_name=u'ComposerflexProjectsLocationsContextsListRequest',
-        response_type_name=u'ListContextsResponse',
+        request_type_name='ComposerflexProjectsLocationsContextsListRequest',
+        response_type_name='ListContextsResponse',
         supports_download=False,
     )
 
   class ProjectsLocationsWorkflowsRunsService(base_api.BaseApiService):
     """Service class for the projects_locations_workflows_runs resource."""
 
-    _NAME = u'projects_locations_workflows_runs'
+    _NAME = 'projects_locations_workflows_runs'
 
     def __init__(self, client):
       super(ComposerflexV1alpha1.ProjectsLocationsWorkflowsRunsService, self).__init__(client)
@@ -185,16 +185,16 @@ to it.
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha1/projects/{projectsId}/locations/{locationsId}/workflows/{workflowsId}/runs/{runsId}',
-        http_method=u'GET',
-        method_id=u'composerflex.projects.locations.workflows.runs.get',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/workflows/{workflowsId}/runs/{runsId}',
+        http_method='GET',
+        method_id='composerflex.projects.locations.workflows.runs.get',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1alpha1/{+name}',
+        relative_path='v1alpha1/{+name}',
         request_field='',
-        request_type_name=u'ComposerflexProjectsLocationsWorkflowsRunsGetRequest',
-        response_type_name=u'WorkflowRun',
+        request_type_name='ComposerflexProjectsLocationsWorkflowsRunsGetRequest',
+        response_type_name='WorkflowRun',
         supports_download=False,
     )
 
@@ -214,23 +214,23 @@ workflows in the project and location will be listed.
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha1/projects/{projectsId}/locations/{locationsId}/workflows/{workflowsId}/runs',
-        http_method=u'GET',
-        method_id=u'composerflex.projects.locations.workflows.runs.list',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'filter', u'orderBy', u'pageSize', u'pageToken'],
-        relative_path=u'v1alpha1/{+parent}/runs',
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/workflows/{workflowsId}/runs',
+        http_method='GET',
+        method_id='composerflex.projects.locations.workflows.runs.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'orderBy', 'pageSize', 'pageToken'],
+        relative_path='v1alpha1/{+parent}/runs',
         request_field='',
-        request_type_name=u'ComposerflexProjectsLocationsWorkflowsRunsListRequest',
-        response_type_name=u'ListWorkflowRunsResponse',
+        request_type_name='ComposerflexProjectsLocationsWorkflowsRunsListRequest',
+        response_type_name='ListWorkflowRunsResponse',
         supports_download=False,
     )
 
   class ProjectsLocationsWorkflowsService(base_api.BaseApiService):
     """Service class for the projects_locations_workflows resource."""
 
-    _NAME = u'projects_locations_workflows'
+    _NAME = 'projects_locations_workflows'
 
     def __init__(self, client):
       super(ComposerflexV1alpha1.ProjectsLocationsWorkflowsService, self).__init__(client)
@@ -251,16 +251,16 @@ workflows in the project and location will be listed.
           config, request, global_params=global_params)
 
     Create.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha1/projects/{projectsId}/locations/{locationsId}/workflows',
-        http_method=u'POST',
-        method_id=u'composerflex.projects.locations.workflows.create',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/workflows',
+        http_method='POST',
+        method_id='composerflex.projects.locations.workflows.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
         query_params=[],
-        relative_path=u'v1alpha1/{+parent}/workflows',
-        request_field=u'workflow',
-        request_type_name=u'ComposerflexProjectsLocationsWorkflowsCreateRequest',
-        response_type_name=u'Operation',
+        relative_path='v1alpha1/{+parent}/workflows',
+        request_field='workflow',
+        request_type_name='ComposerflexProjectsLocationsWorkflowsCreateRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -280,16 +280,16 @@ continue.
           config, request, global_params=global_params)
 
     Delete.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha1/projects/{projectsId}/locations/{locationsId}/workflows/{workflowsId}',
-        http_method=u'DELETE',
-        method_id=u'composerflex.projects.locations.workflows.delete',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/workflows/{workflowsId}',
+        http_method='DELETE',
+        method_id='composerflex.projects.locations.workflows.delete',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1alpha1/{+name}',
+        relative_path='v1alpha1/{+name}',
         request_field='',
-        request_type_name=u'ComposerflexProjectsLocationsWorkflowsDeleteRequest',
-        response_type_name=u'Operation',
+        request_type_name='ComposerflexProjectsLocationsWorkflowsDeleteRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -307,16 +307,16 @@ continue.
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha1/projects/{projectsId}/locations/{locationsId}/workflows/{workflowsId}',
-        http_method=u'GET',
-        method_id=u'composerflex.projects.locations.workflows.get',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/workflows/{workflowsId}',
+        http_method='GET',
+        method_id='composerflex.projects.locations.workflows.get',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1alpha1/{+name}',
+        relative_path='v1alpha1/{+name}',
         request_field='',
-        request_type_name=u'ComposerflexProjectsLocationsWorkflowsGetRequest',
-        response_type_name=u'Workflow',
+        request_type_name='ComposerflexProjectsLocationsWorkflowsGetRequest',
+        response_type_name='Workflow',
         supports_download=False,
     )
 
@@ -334,23 +334,23 @@ continue.
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha1/projects/{projectsId}/locations/{locationsId}/workflows',
-        http_method=u'GET',
-        method_id=u'composerflex.projects.locations.workflows.list',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'filter', u'orderBy', u'pageSize', u'pageToken'],
-        relative_path=u'v1alpha1/{+parent}/workflows',
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/workflows',
+        http_method='GET',
+        method_id='composerflex.projects.locations.workflows.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'orderBy', 'pageSize', 'pageToken'],
+        relative_path='v1alpha1/{+parent}/workflows',
         request_field='',
-        request_type_name=u'ComposerflexProjectsLocationsWorkflowsListRequest',
-        response_type_name=u'ListWorkflowsResponse',
+        request_type_name='ComposerflexProjectsLocationsWorkflowsListRequest',
+        response_type_name='ListWorkflowsResponse',
         supports_download=False,
     )
 
   class ProjectsLocationsService(base_api.BaseApiService):
     """Service class for the projects_locations resource."""
 
-    _NAME = u'projects_locations'
+    _NAME = 'projects_locations'
 
     def __init__(self, client):
       super(ComposerflexV1alpha1.ProjectsLocationsService, self).__init__(client)
@@ -360,7 +360,7 @@ continue.
   class ProjectsService(base_api.BaseApiService):
     """Service class for the projects resource."""
 
-    _NAME = u'projects'
+    _NAME = 'projects'
 
     def __init__(self, client):
       super(ComposerflexV1alpha1.ProjectsService, self).__init__(client)

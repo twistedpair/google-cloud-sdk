@@ -8,17 +8,17 @@ class ContaineranalysisV1beta1(base_api.BaseApiClient):
   """Generated client library for service containeranalysis version v1beta1."""
 
   MESSAGES_MODULE = messages
-  BASE_URL = u'https://containeranalysis.googleapis.com/'
-  MTLS_BASE_URL = u'https://containeranalysis.mtls.googleapis.com/'
+  BASE_URL = 'https://containeranalysis.googleapis.com/'
+  MTLS_BASE_URL = 'https://containeranalysis.mtls.googleapis.com/'
 
-  _PACKAGE = u'containeranalysis'
-  _SCOPES = [u'https://www.googleapis.com/auth/cloud-platform']
-  _VERSION = u'v1beta1'
+  _PACKAGE = 'containeranalysis'
+  _SCOPES = ['https://www.googleapis.com/auth/cloud-platform']
+  _VERSION = 'v1beta1'
   _CLIENT_ID = '1042881264118.apps.googleusercontent.com'
   _CLIENT_SECRET = 'x_Tw5K8nnjoRAqULM9PFAC2b'
-  _USER_AGENT = u'google-cloud-sdk'
-  _CLIENT_CLASS_NAME = u'ContaineranalysisV1beta1'
-  _URL_VERSION = u'v1beta1'
+  _USER_AGENT = 'google-cloud-sdk'
+  _CLIENT_CLASS_NAME = 'ContaineranalysisV1beta1'
+  _URL_VERSION = 'v1beta1'
   _API_KEY = None
 
   def __init__(self, url='', credentials=None,
@@ -45,7 +45,7 @@ class ContaineranalysisV1beta1(base_api.BaseApiClient):
   class ProjectsNotesOccurrencesService(base_api.BaseApiService):
     """Service class for the projects_notes_occurrences resource."""
 
-    _NAME = u'projects_notes_occurrences'
+    _NAME = 'projects_notes_occurrences'
 
     def __init__(self, client):
       super(ContaineranalysisV1beta1.ProjectsNotesOccurrencesService, self).__init__(client)
@@ -68,23 +68,23 @@ specified note.
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/projects/{projectsId}/notes/{notesId}/occurrences',
-        http_method=u'GET',
-        method_id=u'containeranalysis.projects.notes.occurrences.list',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[u'filter', u'pageSize', u'pageToken'],
-        relative_path=u'v1beta1/{+name}/occurrences',
+        flat_path='v1beta1/projects/{projectsId}/notes/{notesId}/occurrences',
+        http_method='GET',
+        method_id='containeranalysis.projects.notes.occurrences.list',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['filter', 'pageSize', 'pageToken'],
+        relative_path='v1beta1/{+name}/occurrences',
         request_field='',
-        request_type_name=u'ContaineranalysisProjectsNotesOccurrencesListRequest',
-        response_type_name=u'ListNoteOccurrencesResponse',
+        request_type_name='ContaineranalysisProjectsNotesOccurrencesListRequest',
+        response_type_name='ListNoteOccurrencesResponse',
         supports_download=False,
     )
 
   class ProjectsNotesService(base_api.BaseApiService):
     """Service class for the projects_notes resource."""
 
-    _NAME = u'projects_notes'
+    _NAME = 'projects_notes'
 
     def __init__(self, client):
       super(ContaineranalysisV1beta1.ProjectsNotesService, self).__init__(client)
@@ -105,16 +105,16 @@ specified note.
           config, request, global_params=global_params)
 
     BatchCreate.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/projects/{projectsId}/notes:batchCreate',
-        http_method=u'POST',
-        method_id=u'containeranalysis.projects.notes.batchCreate',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
+        flat_path='v1beta1/projects/{projectsId}/notes:batchCreate',
+        http_method='POST',
+        method_id='containeranalysis.projects.notes.batchCreate',
+        ordered_params=['parent'],
+        path_params=['parent'],
         query_params=[],
-        relative_path=u'v1beta1/{+parent}/notes:batchCreate',
-        request_field=u'batchCreateNotesRequest',
-        request_type_name=u'ContaineranalysisProjectsNotesBatchCreateRequest',
-        response_type_name=u'BatchCreateNotesResponse',
+        relative_path='v1beta1/{+parent}/notes:batchCreate',
+        request_field='batchCreateNotesRequest',
+        request_type_name='ContaineranalysisProjectsNotesBatchCreateRequest',
+        response_type_name='BatchCreateNotesResponse',
         supports_download=False,
     )
 
@@ -132,16 +132,16 @@ specified note.
           config, request, global_params=global_params)
 
     Create.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/projects/{projectsId}/notes',
-        http_method=u'POST',
-        method_id=u'containeranalysis.projects.notes.create',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'noteId'],
-        relative_path=u'v1beta1/{+parent}/notes',
-        request_field=u'note',
-        request_type_name=u'ContaineranalysisProjectsNotesCreateRequest',
-        response_type_name=u'Note',
+        flat_path='v1beta1/projects/{projectsId}/notes',
+        http_method='POST',
+        method_id='containeranalysis.projects.notes.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['noteId'],
+        relative_path='v1beta1/{+parent}/notes',
+        request_field='note',
+        request_type_name='ContaineranalysisProjectsNotesCreateRequest',
+        response_type_name='Note',
         supports_download=False,
     )
 
@@ -159,16 +159,16 @@ specified note.
           config, request, global_params=global_params)
 
     Delete.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/projects/{projectsId}/notes/{notesId}',
-        http_method=u'DELETE',
-        method_id=u'containeranalysis.projects.notes.delete',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1beta1/projects/{projectsId}/notes/{notesId}',
+        http_method='DELETE',
+        method_id='containeranalysis.projects.notes.delete',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1beta1/{+name}',
+        relative_path='v1beta1/{+name}',
         request_field='',
-        request_type_name=u'ContaineranalysisProjectsNotesDeleteRequest',
-        response_type_name=u'Empty',
+        request_type_name='ContaineranalysisProjectsNotesDeleteRequest',
+        response_type_name='Empty',
         supports_download=False,
     )
 
@@ -186,16 +186,16 @@ specified note.
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/projects/{projectsId}/notes/{notesId}',
-        http_method=u'GET',
-        method_id=u'containeranalysis.projects.notes.get',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1beta1/projects/{projectsId}/notes/{notesId}',
+        http_method='GET',
+        method_id='containeranalysis.projects.notes.get',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1beta1/{+name}',
+        relative_path='v1beta1/{+name}',
         request_field='',
-        request_type_name=u'ContaineranalysisProjectsNotesGetRequest',
-        response_type_name=u'Note',
+        request_type_name='ContaineranalysisProjectsNotesGetRequest',
+        response_type_name='Note',
         supports_download=False,
     )
 
@@ -220,16 +220,16 @@ occurrences.
           config, request, global_params=global_params)
 
     GetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/projects/{projectsId}/notes/{notesId}:getIamPolicy',
-        http_method=u'POST',
-        method_id=u'containeranalysis.projects.notes.getIamPolicy',
-        ordered_params=[u'resource'],
-        path_params=[u'resource'],
+        flat_path='v1beta1/projects/{projectsId}/notes/{notesId}:getIamPolicy',
+        http_method='POST',
+        method_id='containeranalysis.projects.notes.getIamPolicy',
+        ordered_params=['resource'],
+        path_params=['resource'],
         query_params=[],
-        relative_path=u'v1beta1/{+resource}:getIamPolicy',
-        request_field=u'getIamPolicyRequest',
-        request_type_name=u'ContaineranalysisProjectsNotesGetIamPolicyRequest',
-        response_type_name=u'Policy',
+        relative_path='v1beta1/{+resource}:getIamPolicy',
+        request_field='getIamPolicyRequest',
+        request_type_name='ContaineranalysisProjectsNotesGetIamPolicyRequest',
+        response_type_name='Policy',
         supports_download=False,
     )
 
@@ -247,16 +247,16 @@ occurrences.
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/projects/{projectsId}/notes',
-        http_method=u'GET',
-        method_id=u'containeranalysis.projects.notes.list',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'filter', u'pageSize', u'pageToken'],
-        relative_path=u'v1beta1/{+parent}/notes',
+        flat_path='v1beta1/projects/{projectsId}/notes',
+        http_method='GET',
+        method_id='containeranalysis.projects.notes.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'pageSize', 'pageToken'],
+        relative_path='v1beta1/{+parent}/notes',
         request_field='',
-        request_type_name=u'ContaineranalysisProjectsNotesListRequest',
-        response_type_name=u'ListNotesResponse',
+        request_type_name='ContaineranalysisProjectsNotesListRequest',
+        response_type_name='ListNotesResponse',
         supports_download=False,
     )
 
@@ -274,16 +274,16 @@ occurrences.
           config, request, global_params=global_params)
 
     Patch.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/projects/{projectsId}/notes/{notesId}',
-        http_method=u'PATCH',
-        method_id=u'containeranalysis.projects.notes.patch',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[u'updateMask'],
-        relative_path=u'v1beta1/{+name}',
-        request_field=u'note',
-        request_type_name=u'ContaineranalysisProjectsNotesPatchRequest',
-        response_type_name=u'Note',
+        flat_path='v1beta1/projects/{projectsId}/notes/{notesId}',
+        http_method='PATCH',
+        method_id='containeranalysis.projects.notes.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v1beta1/{+name}',
+        request_field='note',
+        request_type_name='ContaineranalysisProjectsNotesPatchRequest',
+        response_type_name='Note',
         supports_download=False,
     )
 
@@ -308,16 +308,16 @@ occurrences.
           config, request, global_params=global_params)
 
     SetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/projects/{projectsId}/notes/{notesId}:setIamPolicy',
-        http_method=u'POST',
-        method_id=u'containeranalysis.projects.notes.setIamPolicy',
-        ordered_params=[u'resource'],
-        path_params=[u'resource'],
+        flat_path='v1beta1/projects/{projectsId}/notes/{notesId}:setIamPolicy',
+        http_method='POST',
+        method_id='containeranalysis.projects.notes.setIamPolicy',
+        ordered_params=['resource'],
+        path_params=['resource'],
         query_params=[],
-        relative_path=u'v1beta1/{+resource}:setIamPolicy',
-        request_field=u'setIamPolicyRequest',
-        request_type_name=u'ContaineranalysisProjectsNotesSetIamPolicyRequest',
-        response_type_name=u'Policy',
+        relative_path='v1beta1/{+resource}:setIamPolicy',
+        request_field='setIamPolicyRequest',
+        request_type_name='ContaineranalysisProjectsNotesSetIamPolicyRequest',
+        response_type_name='Policy',
         supports_download=False,
     )
 
@@ -341,23 +341,23 @@ occurrences.
           config, request, global_params=global_params)
 
     TestIamPermissions.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/projects/{projectsId}/notes/{notesId}:testIamPermissions',
-        http_method=u'POST',
-        method_id=u'containeranalysis.projects.notes.testIamPermissions',
-        ordered_params=[u'resource'],
-        path_params=[u'resource'],
+        flat_path='v1beta1/projects/{projectsId}/notes/{notesId}:testIamPermissions',
+        http_method='POST',
+        method_id='containeranalysis.projects.notes.testIamPermissions',
+        ordered_params=['resource'],
+        path_params=['resource'],
         query_params=[],
-        relative_path=u'v1beta1/{+resource}:testIamPermissions',
-        request_field=u'testIamPermissionsRequest',
-        request_type_name=u'ContaineranalysisProjectsNotesTestIamPermissionsRequest',
-        response_type_name=u'TestIamPermissionsResponse',
+        relative_path='v1beta1/{+resource}:testIamPermissions',
+        request_field='testIamPermissionsRequest',
+        request_type_name='ContaineranalysisProjectsNotesTestIamPermissionsRequest',
+        response_type_name='TestIamPermissionsResponse',
         supports_download=False,
     )
 
   class ProjectsOccurrencesService(base_api.BaseApiService):
     """Service class for the projects_occurrences resource."""
 
-    _NAME = u'projects_occurrences'
+    _NAME = 'projects_occurrences'
 
     def __init__(self, client):
       super(ContaineranalysisV1beta1.ProjectsOccurrencesService, self).__init__(client)
@@ -378,16 +378,16 @@ occurrences.
           config, request, global_params=global_params)
 
     BatchCreate.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/projects/{projectsId}/occurrences:batchCreate',
-        http_method=u'POST',
-        method_id=u'containeranalysis.projects.occurrences.batchCreate',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
+        flat_path='v1beta1/projects/{projectsId}/occurrences:batchCreate',
+        http_method='POST',
+        method_id='containeranalysis.projects.occurrences.batchCreate',
+        ordered_params=['parent'],
+        path_params=['parent'],
         query_params=[],
-        relative_path=u'v1beta1/{+parent}/occurrences:batchCreate',
-        request_field=u'batchCreateOccurrencesRequest',
-        request_type_name=u'ContaineranalysisProjectsOccurrencesBatchCreateRequest',
-        response_type_name=u'BatchCreateOccurrencesResponse',
+        relative_path='v1beta1/{+parent}/occurrences:batchCreate',
+        request_field='batchCreateOccurrencesRequest',
+        request_type_name='ContaineranalysisProjectsOccurrencesBatchCreateRequest',
+        response_type_name='BatchCreateOccurrencesResponse',
         supports_download=False,
     )
 
@@ -405,16 +405,16 @@ occurrences.
           config, request, global_params=global_params)
 
     Create.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/projects/{projectsId}/occurrences',
-        http_method=u'POST',
-        method_id=u'containeranalysis.projects.occurrences.create',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
+        flat_path='v1beta1/projects/{projectsId}/occurrences',
+        http_method='POST',
+        method_id='containeranalysis.projects.occurrences.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
         query_params=[],
-        relative_path=u'v1beta1/{+parent}/occurrences',
-        request_field=u'occurrence',
-        request_type_name=u'ContaineranalysisProjectsOccurrencesCreateRequest',
-        response_type_name=u'Occurrence',
+        relative_path='v1beta1/{+parent}/occurrences',
+        request_field='occurrence',
+        request_type_name='ContaineranalysisProjectsOccurrencesCreateRequest',
+        response_type_name='Occurrence',
         supports_download=False,
     )
 
@@ -434,16 +434,16 @@ resource.
           config, request, global_params=global_params)
 
     Delete.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/projects/{projectsId}/occurrences/{occurrencesId}',
-        http_method=u'DELETE',
-        method_id=u'containeranalysis.projects.occurrences.delete',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1beta1/projects/{projectsId}/occurrences/{occurrencesId}',
+        http_method='DELETE',
+        method_id='containeranalysis.projects.occurrences.delete',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1beta1/{+name}',
+        relative_path='v1beta1/{+name}',
         request_field='',
-        request_type_name=u'ContaineranalysisProjectsOccurrencesDeleteRequest',
-        response_type_name=u'Empty',
+        request_type_name='ContaineranalysisProjectsOccurrencesDeleteRequest',
+        response_type_name='Empty',
         supports_download=False,
     )
 
@@ -461,16 +461,16 @@ resource.
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/projects/{projectsId}/occurrences/{occurrencesId}',
-        http_method=u'GET',
-        method_id=u'containeranalysis.projects.occurrences.get',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1beta1/projects/{projectsId}/occurrences/{occurrencesId}',
+        http_method='GET',
+        method_id='containeranalysis.projects.occurrences.get',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1beta1/{+name}',
+        relative_path='v1beta1/{+name}',
         request_field='',
-        request_type_name=u'ContaineranalysisProjectsOccurrencesGetRequest',
-        response_type_name=u'Occurrence',
+        request_type_name='ContaineranalysisProjectsOccurrencesGetRequest',
+        response_type_name='Occurrence',
         supports_download=False,
     )
 
@@ -495,16 +495,16 @@ occurrences.
           config, request, global_params=global_params)
 
     GetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/projects/{projectsId}/occurrences/{occurrencesId}:getIamPolicy',
-        http_method=u'POST',
-        method_id=u'containeranalysis.projects.occurrences.getIamPolicy',
-        ordered_params=[u'resource'],
-        path_params=[u'resource'],
+        flat_path='v1beta1/projects/{projectsId}/occurrences/{occurrencesId}:getIamPolicy',
+        http_method='POST',
+        method_id='containeranalysis.projects.occurrences.getIamPolicy',
+        ordered_params=['resource'],
+        path_params=['resource'],
         query_params=[],
-        relative_path=u'v1beta1/{+resource}:getIamPolicy',
-        request_field=u'getIamPolicyRequest',
-        request_type_name=u'ContaineranalysisProjectsOccurrencesGetIamPolicyRequest',
-        response_type_name=u'Policy',
+        relative_path='v1beta1/{+resource}:getIamPolicy',
+        request_field='getIamPolicyRequest',
+        request_type_name='ContaineranalysisProjectsOccurrencesGetIamPolicyRequest',
+        response_type_name='Policy',
         supports_download=False,
     )
 
@@ -523,16 +523,16 @@ use this method to get a note that belongs to a provider project.
           config, request, global_params=global_params)
 
     GetNotes.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/projects/{projectsId}/occurrences/{occurrencesId}/notes',
-        http_method=u'GET',
-        method_id=u'containeranalysis.projects.occurrences.getNotes',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1beta1/projects/{projectsId}/occurrences/{occurrencesId}/notes',
+        http_method='GET',
+        method_id='containeranalysis.projects.occurrences.getNotes',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1beta1/{+name}/notes',
+        relative_path='v1beta1/{+name}/notes',
         request_field='',
-        request_type_name=u'ContaineranalysisProjectsOccurrencesGetNotesRequest',
-        response_type_name=u'Note',
+        request_type_name='ContaineranalysisProjectsOccurrencesGetNotesRequest',
+        response_type_name='Note',
         supports_download=False,
     )
 
@@ -550,16 +550,16 @@ use this method to get a note that belongs to a provider project.
           config, request, global_params=global_params)
 
     GetVulnerabilitySummary.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/projects/{projectsId}/occurrences:vulnerabilitySummary',
-        http_method=u'GET',
-        method_id=u'containeranalysis.projects.occurrences.getVulnerabilitySummary',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'filter'],
-        relative_path=u'v1beta1/{+parent}/occurrences:vulnerabilitySummary',
+        flat_path='v1beta1/projects/{projectsId}/occurrences:vulnerabilitySummary',
+        http_method='GET',
+        method_id='containeranalysis.projects.occurrences.getVulnerabilitySummary',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter'],
+        relative_path='v1beta1/{+parent}/occurrences:vulnerabilitySummary',
         request_field='',
-        request_type_name=u'ContaineranalysisProjectsOccurrencesGetVulnerabilitySummaryRequest',
-        response_type_name=u'VulnerabilityOccurrencesSummary',
+        request_type_name='ContaineranalysisProjectsOccurrencesGetVulnerabilitySummaryRequest',
+        response_type_name='VulnerabilityOccurrencesSummary',
         supports_download=False,
     )
 
@@ -577,16 +577,16 @@ use this method to get a note that belongs to a provider project.
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/projects/{projectsId}/occurrences',
-        http_method=u'GET',
-        method_id=u'containeranalysis.projects.occurrences.list',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'filter', u'pageSize', u'pageToken'],
-        relative_path=u'v1beta1/{+parent}/occurrences',
+        flat_path='v1beta1/projects/{projectsId}/occurrences',
+        http_method='GET',
+        method_id='containeranalysis.projects.occurrences.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'pageSize', 'pageToken'],
+        relative_path='v1beta1/{+parent}/occurrences',
         request_field='',
-        request_type_name=u'ContaineranalysisProjectsOccurrencesListRequest',
-        response_type_name=u'ListOccurrencesResponse',
+        request_type_name='ContaineranalysisProjectsOccurrencesListRequest',
+        response_type_name='ListOccurrencesResponse',
         supports_download=False,
     )
 
@@ -604,16 +604,16 @@ use this method to get a note that belongs to a provider project.
           config, request, global_params=global_params)
 
     Patch.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/projects/{projectsId}/occurrences/{occurrencesId}',
-        http_method=u'PATCH',
-        method_id=u'containeranalysis.projects.occurrences.patch',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[u'updateMask'],
-        relative_path=u'v1beta1/{+name}',
-        request_field=u'occurrence',
-        request_type_name=u'ContaineranalysisProjectsOccurrencesPatchRequest',
-        response_type_name=u'Occurrence',
+        flat_path='v1beta1/projects/{projectsId}/occurrences/{occurrencesId}',
+        http_method='PATCH',
+        method_id='containeranalysis.projects.occurrences.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v1beta1/{+name}',
+        request_field='occurrence',
+        request_type_name='ContaineranalysisProjectsOccurrencesPatchRequest',
+        response_type_name='Occurrence',
         supports_download=False,
     )
 
@@ -638,16 +638,16 @@ occurrences.
           config, request, global_params=global_params)
 
     SetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/projects/{projectsId}/occurrences/{occurrencesId}:setIamPolicy',
-        http_method=u'POST',
-        method_id=u'containeranalysis.projects.occurrences.setIamPolicy',
-        ordered_params=[u'resource'],
-        path_params=[u'resource'],
+        flat_path='v1beta1/projects/{projectsId}/occurrences/{occurrencesId}:setIamPolicy',
+        http_method='POST',
+        method_id='containeranalysis.projects.occurrences.setIamPolicy',
+        ordered_params=['resource'],
+        path_params=['resource'],
         query_params=[],
-        relative_path=u'v1beta1/{+resource}:setIamPolicy',
-        request_field=u'setIamPolicyRequest',
-        request_type_name=u'ContaineranalysisProjectsOccurrencesSetIamPolicyRequest',
-        response_type_name=u'Policy',
+        relative_path='v1beta1/{+resource}:setIamPolicy',
+        request_field='setIamPolicyRequest',
+        request_type_name='ContaineranalysisProjectsOccurrencesSetIamPolicyRequest',
+        response_type_name='Policy',
         supports_download=False,
     )
 
@@ -671,23 +671,23 @@ occurrences.
           config, request, global_params=global_params)
 
     TestIamPermissions.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/projects/{projectsId}/occurrences/{occurrencesId}:testIamPermissions',
-        http_method=u'POST',
-        method_id=u'containeranalysis.projects.occurrences.testIamPermissions',
-        ordered_params=[u'resource'],
-        path_params=[u'resource'],
+        flat_path='v1beta1/projects/{projectsId}/occurrences/{occurrencesId}:testIamPermissions',
+        http_method='POST',
+        method_id='containeranalysis.projects.occurrences.testIamPermissions',
+        ordered_params=['resource'],
+        path_params=['resource'],
         query_params=[],
-        relative_path=u'v1beta1/{+resource}:testIamPermissions',
-        request_field=u'testIamPermissionsRequest',
-        request_type_name=u'ContaineranalysisProjectsOccurrencesTestIamPermissionsRequest',
-        response_type_name=u'TestIamPermissionsResponse',
+        relative_path='v1beta1/{+resource}:testIamPermissions',
+        request_field='testIamPermissionsRequest',
+        request_type_name='ContaineranalysisProjectsOccurrencesTestIamPermissionsRequest',
+        response_type_name='TestIamPermissionsResponse',
         supports_download=False,
     )
 
   class ProjectsScanConfigsService(base_api.BaseApiService):
     """Service class for the projects_scanConfigs resource."""
 
-    _NAME = u'projects_scanConfigs'
+    _NAME = 'projects_scanConfigs'
 
     def __init__(self, client):
       super(ContaineranalysisV1beta1.ProjectsScanConfigsService, self).__init__(client)
@@ -708,16 +708,16 @@ occurrences.
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/projects/{projectsId}/scanConfigs/{scanConfigsId}',
-        http_method=u'GET',
-        method_id=u'containeranalysis.projects.scanConfigs.get',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1beta1/projects/{projectsId}/scanConfigs/{scanConfigsId}',
+        http_method='GET',
+        method_id='containeranalysis.projects.scanConfigs.get',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1beta1/{+name}',
+        relative_path='v1beta1/{+name}',
         request_field='',
-        request_type_name=u'ContaineranalysisProjectsScanConfigsGetRequest',
-        response_type_name=u'ScanConfig',
+        request_type_name='ContaineranalysisProjectsScanConfigsGetRequest',
+        response_type_name='ScanConfig',
         supports_download=False,
     )
 
@@ -735,16 +735,16 @@ occurrences.
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/projects/{projectsId}/scanConfigs',
-        http_method=u'GET',
-        method_id=u'containeranalysis.projects.scanConfigs.list',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'filter', u'pageSize', u'pageToken'],
-        relative_path=u'v1beta1/{+parent}/scanConfigs',
+        flat_path='v1beta1/projects/{projectsId}/scanConfigs',
+        http_method='GET',
+        method_id='containeranalysis.projects.scanConfigs.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'pageSize', 'pageToken'],
+        relative_path='v1beta1/{+parent}/scanConfigs',
         request_field='',
-        request_type_name=u'ContaineranalysisProjectsScanConfigsListRequest',
-        response_type_name=u'ListScanConfigsResponse',
+        request_type_name='ContaineranalysisProjectsScanConfigsListRequest',
+        response_type_name='ListScanConfigsResponse',
         supports_download=False,
     )
 
@@ -762,23 +762,23 @@ occurrences.
           config, request, global_params=global_params)
 
     Update.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/projects/{projectsId}/scanConfigs/{scanConfigsId}',
-        http_method=u'PUT',
-        method_id=u'containeranalysis.projects.scanConfigs.update',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1beta1/projects/{projectsId}/scanConfigs/{scanConfigsId}',
+        http_method='PUT',
+        method_id='containeranalysis.projects.scanConfigs.update',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1beta1/{+name}',
+        relative_path='v1beta1/{+name}',
         request_field='<request>',
-        request_type_name=u'ScanConfig',
-        response_type_name=u'ScanConfig',
+        request_type_name='ScanConfig',
+        response_type_name='ScanConfig',
         supports_download=False,
     )
 
   class ProjectsService(base_api.BaseApiService):
     """Service class for the projects resource."""
 
-    _NAME = u'projects'
+    _NAME = 'projects'
 
     def __init__(self, client):
       super(ContaineranalysisV1beta1.ProjectsService, self).__init__(client)

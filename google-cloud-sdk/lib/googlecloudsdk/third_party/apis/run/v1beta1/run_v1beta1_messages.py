@@ -22,8 +22,8 @@ class CustomResourceColumnDefinition(_messages.Message):
     format: format is an optional OpenAPI type definition for this column. The
       'name' format is applied to the primary identifier column to assist in
       clients identifying column is the resource name. See
-      https://github.com/OAI/OpenAPI-Specification/blob/master/versions/2.0.md
-      #data-types for more. +optional
+      https://github.com/OAI/OpenAPI-
+      Specification/blob/master/versions/2.0.md#data-types for more. +optional
     jsonPath: JSONPath is a simple JSON path, i.e. with array notation.
     name: name is a human readable name for the column.
     priority: priority is an integer defining the relative importance of this
@@ -31,8 +31,8 @@ class CustomResourceColumnDefinition(_messages.Message):
       Columns that may be omitted in limited space scenarios should be given a
       higher priority. +optional
     type: type is an OpenAPI type definition for this column. See
-      https://github.com/OAI/OpenAPI-Specification/blob/master/versions/2.0.md
-      #data-types for more.
+      https://github.com/OAI/OpenAPI-
+      Specification/blob/master/versions/2.0.md#data-types for more.
   """
 
   description = _messages.StringField(1)
@@ -244,8 +244,8 @@ class JSON(_messages.Message):
 
 
 class JSONSchemaProps(_messages.Message):
-  r"""JSONSchemaProps is a JSON-Schema following Specification Draft 4 (http
-  ://json-schema.org/).
+  r"""JSONSchemaProps is a JSON-Schema following Specification Draft 4
+  (http://json-schema.org/).
 
   Messages:
     DefinitionsValue: A DefinitionsValue object.
@@ -508,8 +508,8 @@ class ListMeta(_messages.Message):
       this object that can be used by clients to determine when objects have
       changed. Value must be treated as opaque by clients and passed
       unmodified back to the server. Populated by the system. Read-only. More
-      info: https://git.k8s.io/community/contributors/devel/api-conventions.md
-      #concurrency-control-and-consistency +optional
+      info: https://git.k8s.io/community/contributors/devel/api-
+      conventions.md#concurrency-control-and-consistency +optional
     selfLink: SelfLink is a URL representing this object. Populated by the
       system. Read-only. +optional
   """
@@ -527,8 +527,8 @@ class ObjectMeta(_messages.Message):
     AnnotationsValue: (Optional)  Annotations is an unstructured key value map
       stored with a resource that may be set by external tools to store and
       retrieve arbitrary metadata. They are not queryable and should be
-      preserved when modifying objects. More info: http://kubernetes.io/docs
-      /user-guide/annotations
+      preserved when modifying objects. More info:
+      http://kubernetes.io/docs/user-guide/annotations
     LabelsValue: (Optional)  Map of string keys and values that can be used to
       organize and categorize (scope and select) objects. May match selectors
       of replication controllers and routes. More info:
@@ -538,8 +538,8 @@ class ObjectMeta(_messages.Message):
     annotations: (Optional)  Annotations is an unstructured key value map
       stored with a resource that may be set by external tools to store and
       retrieve arbitrary metadata. They are not queryable and should be
-      preserved when modifying objects. More info: http://kubernetes.io/docs
-      /user-guide/annotations
+      preserved when modifying objects. More info:
+      http://kubernetes.io/docs/user-guide/annotations
     clusterName: (Optional)  Cloud Run fully managed: not supported  Cloud Run
       for Anthos: supported  The name of the cluster which the object belongs
       to. This is used to distinguish resources with same name and namespace
@@ -598,8 +598,9 @@ class ObjectMeta(_messages.Message):
       ServerTimeout indicating a unique name could not be found in the time
       allotted, and the client should retry (optionally after the time
       indicated in the Retry-After header).  Applied only if Name is not
-      specified. More info: https://git.k8s.io/community/contributors/devel
-      /api-conventions.md#idempotency  string generateName = 2;
+      specified. More info:
+      https://git.k8s.io/community/contributors/devel/api-
+      conventions.md#idempotency  string generateName = 2;
     generation: (Optional)  A sequence number representing a specific
       generation of the desired state. Populated by the system. Read-only.
     labels: (Optional)  Map of string keys and values that can be used to
@@ -610,8 +611,8 @@ class ObjectMeta(_messages.Message):
       Is required when creating resources, although some resources may allow a
       client to request the generation of an appropriate name automatically.
       Name is primarily intended for creation idempotence and configuration
-      definition. Cannot be updated. More info: http://kubernetes.io/docs
-      /user-guide/identifiers#names +optional
+      definition. Cannot be updated. More info:
+      http://kubernetes.io/docs/user-guide/identifiers#names +optional
     namespace: Namespace defines the space within each name must be unique,
       within a Cloud Run region. In Cloud Run the namespace must be equal to
       either the project ID or project number.
@@ -627,8 +628,8 @@ class ObjectMeta(_messages.Message):
       the server. They may only be valid for a particular resource or set of
       resources.  Populated by the system. Read-only. Value must be treated as
       opaque by clients and . More info:
-      https://git.k8s.io/community/contributors/devel/api-conventions.md
-      #concurrency-control-and-consistency
+      https://git.k8s.io/community/contributors/devel/api-
+      conventions.md#concurrency-control-and-consistency
     selfLink: (Optional)  SelfLink is a URL representing this object.
       Populated by the system. Read-only.  string selfLink = 4;
     uid: (Optional)  UID is the unique in time and space value for this
@@ -670,8 +671,8 @@ class ObjectMeta(_messages.Message):
   class LabelsValue(_messages.Message):
     r"""(Optional)  Map of string keys and values that can be used to organize
     and categorize (scope and select) objects. May match selectors of
-    replication controllers and routes. More info: http://kubernetes.io/docs
-    /user-guide/labels
+    replication controllers and routes. More info:
+    http://kubernetes.io/docs/user-guide/labels
 
     Messages:
       AdditionalProperty: An additional property for a LabelsValue object.
@@ -725,8 +726,8 @@ class OwnerReference(_messages.Message):
     controller: If true, this reference points to the managing controller.
       +optional
     kind: Kind of the referent. More info:
-      https://git.k8s.io/community/contributors/devel/api-conventions.md
-      #types-kinds
+      https://git.k8s.io/community/contributors/devel/api-
+      conventions.md#types-kinds
     name: Name of the referent. More info: http://kubernetes.io/docs/user-
       guide/identifiers#names
     uid: UID of the referent. More info: http://kubernetes.io/docs/user-
@@ -874,7 +875,7 @@ class StandardQueryParameters(_messages.Message):
 
   f__xgafv = _messages.EnumField('FXgafvValueValuesEnum', 1)
   access_token = _messages.StringField(2)
-  alt = _messages.EnumField('AltValueValuesEnum', 3, default=u'json')
+  alt = _messages.EnumField('AltValueValuesEnum', 3, default='json')
   callback = _messages.StringField(4)
   fields = _messages.StringField(5)
   key = _messages.StringField(6)

@@ -8,17 +8,17 @@ class ComputeBeta(base_api.BaseApiClient):
   """Generated client library for service compute version beta."""
 
   MESSAGES_MODULE = messages
-  BASE_URL = u'https://compute.googleapis.com/compute/beta/'
-  MTLS_BASE_URL = u''
+  BASE_URL = 'https://compute.googleapis.com/compute/beta/'
+  MTLS_BASE_URL = ''
 
-  _PACKAGE = u'compute'
-  _SCOPES = [u'https://www.googleapis.com/auth/cloud-platform', u'https://www.googleapis.com/auth/compute', u'https://www.googleapis.com/auth/compute.readonly', u'https://www.googleapis.com/auth/devstorage.full_control', u'https://www.googleapis.com/auth/devstorage.read_only', u'https://www.googleapis.com/auth/devstorage.read_write']
-  _VERSION = u'beta'
+  _PACKAGE = 'compute'
+  _SCOPES = ['https://www.googleapis.com/auth/cloud-platform', 'https://www.googleapis.com/auth/compute', 'https://www.googleapis.com/auth/compute.readonly', 'https://www.googleapis.com/auth/devstorage.full_control', 'https://www.googleapis.com/auth/devstorage.read_only', 'https://www.googleapis.com/auth/devstorage.read_write']
+  _VERSION = 'beta'
   _CLIENT_ID = '1042881264118.apps.googleusercontent.com'
   _CLIENT_SECRET = 'x_Tw5K8nnjoRAqULM9PFAC2b'
-  _USER_AGENT = u'google-cloud-sdk'
-  _CLIENT_CLASS_NAME = u'ComputeBeta'
-  _URL_VERSION = u'beta'
+  _USER_AGENT = 'google-cloud-sdk'
+  _CLIENT_CLASS_NAME = 'ComputeBeta'
+  _URL_VERSION = 'beta'
   _API_KEY = None
 
   def __init__(self, url='', credentials=None,
@@ -115,7 +115,7 @@ class ComputeBeta(base_api.BaseApiClient):
   class AcceleratorTypesService(base_api.BaseApiService):
     """Service class for the acceleratorTypes resource."""
 
-    _NAME = u'acceleratorTypes'
+    _NAME = 'acceleratorTypes'
 
     def __init__(self, client):
       super(ComputeBeta.AcceleratorTypesService, self).__init__(client)
@@ -136,15 +136,15 @@ class ComputeBeta(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     AggregatedList.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'compute.acceleratorTypes.aggregatedList',
-        ordered_params=[u'project'],
-        path_params=[u'project'],
-        query_params=[u'filter', u'includeAllScopes', u'maxResults', u'orderBy', u'pageToken'],
-        relative_path=u'projects/{project}/aggregated/acceleratorTypes',
+        http_method='GET',
+        method_id='compute.acceleratorTypes.aggregatedList',
+        ordered_params=['project'],
+        path_params=['project'],
+        query_params=['filter', 'includeAllScopes', 'maxResults', 'orderBy', 'pageToken'],
+        relative_path='projects/{project}/aggregated/acceleratorTypes',
         request_field='',
-        request_type_name=u'ComputeAcceleratorTypesAggregatedListRequest',
-        response_type_name=u'AcceleratorTypeAggregatedList',
+        request_type_name='ComputeAcceleratorTypesAggregatedListRequest',
+        response_type_name='AcceleratorTypeAggregatedList',
         supports_download=False,
     )
 
@@ -162,15 +162,15 @@ class ComputeBeta(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'compute.acceleratorTypes.get',
-        ordered_params=[u'project', u'zone', u'acceleratorType'],
-        path_params=[u'acceleratorType', u'project', u'zone'],
+        http_method='GET',
+        method_id='compute.acceleratorTypes.get',
+        ordered_params=['project', 'zone', 'acceleratorType'],
+        path_params=['acceleratorType', 'project', 'zone'],
         query_params=[],
-        relative_path=u'projects/{project}/zones/{zone}/acceleratorTypes/{acceleratorType}',
+        relative_path='projects/{project}/zones/{zone}/acceleratorTypes/{acceleratorType}',
         request_field='',
-        request_type_name=u'ComputeAcceleratorTypesGetRequest',
-        response_type_name=u'AcceleratorType',
+        request_type_name='ComputeAcceleratorTypesGetRequest',
+        response_type_name='AcceleratorType',
         supports_download=False,
     )
 
@@ -188,22 +188,22 @@ class ComputeBeta(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'compute.acceleratorTypes.list',
-        ordered_params=[u'project', u'zone'],
-        path_params=[u'project', u'zone'],
-        query_params=[u'filter', u'maxResults', u'orderBy', u'pageToken'],
-        relative_path=u'projects/{project}/zones/{zone}/acceleratorTypes',
+        http_method='GET',
+        method_id='compute.acceleratorTypes.list',
+        ordered_params=['project', 'zone'],
+        path_params=['project', 'zone'],
+        query_params=['filter', 'maxResults', 'orderBy', 'pageToken'],
+        relative_path='projects/{project}/zones/{zone}/acceleratorTypes',
         request_field='',
-        request_type_name=u'ComputeAcceleratorTypesListRequest',
-        response_type_name=u'AcceleratorTypeList',
+        request_type_name='ComputeAcceleratorTypesListRequest',
+        response_type_name='AcceleratorTypeList',
         supports_download=False,
     )
 
   class AddressesService(base_api.BaseApiService):
     """Service class for the addresses resource."""
 
-    _NAME = u'addresses'
+    _NAME = 'addresses'
 
     def __init__(self, client):
       super(ComputeBeta.AddressesService, self).__init__(client)
@@ -224,15 +224,15 @@ class ComputeBeta(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     AggregatedList.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'compute.addresses.aggregatedList',
-        ordered_params=[u'project'],
-        path_params=[u'project'],
-        query_params=[u'filter', u'includeAllScopes', u'maxResults', u'orderBy', u'pageToken'],
-        relative_path=u'projects/{project}/aggregated/addresses',
+        http_method='GET',
+        method_id='compute.addresses.aggregatedList',
+        ordered_params=['project'],
+        path_params=['project'],
+        query_params=['filter', 'includeAllScopes', 'maxResults', 'orderBy', 'pageToken'],
+        relative_path='projects/{project}/aggregated/addresses',
         request_field='',
-        request_type_name=u'ComputeAddressesAggregatedListRequest',
-        response_type_name=u'AddressAggregatedList',
+        request_type_name='ComputeAddressesAggregatedListRequest',
+        response_type_name='AddressAggregatedList',
         supports_download=False,
     )
 
@@ -250,15 +250,15 @@ class ComputeBeta(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Delete.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'DELETE',
-        method_id=u'compute.addresses.delete',
-        ordered_params=[u'project', u'region', u'address'],
-        path_params=[u'address', u'project', u'region'],
-        query_params=[u'requestId'],
-        relative_path=u'projects/{project}/regions/{region}/addresses/{address}',
+        http_method='DELETE',
+        method_id='compute.addresses.delete',
+        ordered_params=['project', 'region', 'address'],
+        path_params=['address', 'project', 'region'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/regions/{region}/addresses/{address}',
         request_field='',
-        request_type_name=u'ComputeAddressesDeleteRequest',
-        response_type_name=u'Operation',
+        request_type_name='ComputeAddressesDeleteRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -276,15 +276,15 @@ class ComputeBeta(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'compute.addresses.get',
-        ordered_params=[u'project', u'region', u'address'],
-        path_params=[u'address', u'project', u'region'],
+        http_method='GET',
+        method_id='compute.addresses.get',
+        ordered_params=['project', 'region', 'address'],
+        path_params=['address', 'project', 'region'],
         query_params=[],
-        relative_path=u'projects/{project}/regions/{region}/addresses/{address}',
+        relative_path='projects/{project}/regions/{region}/addresses/{address}',
         request_field='',
-        request_type_name=u'ComputeAddressesGetRequest',
-        response_type_name=u'Address',
+        request_type_name='ComputeAddressesGetRequest',
+        response_type_name='Address',
         supports_download=False,
     )
 
@@ -302,15 +302,15 @@ class ComputeBeta(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Insert.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'compute.addresses.insert',
-        ordered_params=[u'project', u'region'],
-        path_params=[u'project', u'region'],
-        query_params=[u'requestId'],
-        relative_path=u'projects/{project}/regions/{region}/addresses',
-        request_field=u'address',
-        request_type_name=u'ComputeAddressesInsertRequest',
-        response_type_name=u'Operation',
+        http_method='POST',
+        method_id='compute.addresses.insert',
+        ordered_params=['project', 'region'],
+        path_params=['project', 'region'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/regions/{region}/addresses',
+        request_field='address',
+        request_type_name='ComputeAddressesInsertRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -328,15 +328,15 @@ class ComputeBeta(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'compute.addresses.list',
-        ordered_params=[u'project', u'region'],
-        path_params=[u'project', u'region'],
-        query_params=[u'filter', u'maxResults', u'orderBy', u'pageToken'],
-        relative_path=u'projects/{project}/regions/{region}/addresses',
+        http_method='GET',
+        method_id='compute.addresses.list',
+        ordered_params=['project', 'region'],
+        path_params=['project', 'region'],
+        query_params=['filter', 'maxResults', 'orderBy', 'pageToken'],
+        relative_path='projects/{project}/regions/{region}/addresses',
         request_field='',
-        request_type_name=u'ComputeAddressesListRequest',
-        response_type_name=u'AddressList',
+        request_type_name='ComputeAddressesListRequest',
+        response_type_name='AddressList',
         supports_download=False,
     )
 
@@ -354,15 +354,15 @@ class ComputeBeta(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     SetLabels.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'compute.addresses.setLabels',
-        ordered_params=[u'project', u'region', u'resource'],
-        path_params=[u'project', u'region', u'resource'],
-        query_params=[u'requestId'],
-        relative_path=u'projects/{project}/regions/{region}/addresses/{resource}/setLabels',
-        request_field=u'regionSetLabelsRequest',
-        request_type_name=u'ComputeAddressesSetLabelsRequest',
-        response_type_name=u'Operation',
+        http_method='POST',
+        method_id='compute.addresses.setLabels',
+        ordered_params=['project', 'region', 'resource'],
+        path_params=['project', 'region', 'resource'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/regions/{region}/addresses/{resource}/setLabels',
+        request_field='regionSetLabelsRequest',
+        request_type_name='ComputeAddressesSetLabelsRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -380,22 +380,22 @@ class ComputeBeta(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     TestIamPermissions.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'compute.addresses.testIamPermissions',
-        ordered_params=[u'project', u'region', u'resource'],
-        path_params=[u'project', u'region', u'resource'],
+        http_method='POST',
+        method_id='compute.addresses.testIamPermissions',
+        ordered_params=['project', 'region', 'resource'],
+        path_params=['project', 'region', 'resource'],
         query_params=[],
-        relative_path=u'projects/{project}/regions/{region}/addresses/{resource}/testIamPermissions',
-        request_field=u'testPermissionsRequest',
-        request_type_name=u'ComputeAddressesTestIamPermissionsRequest',
-        response_type_name=u'TestPermissionsResponse',
+        relative_path='projects/{project}/regions/{region}/addresses/{resource}/testIamPermissions',
+        request_field='testPermissionsRequest',
+        request_type_name='ComputeAddressesTestIamPermissionsRequest',
+        response_type_name='TestPermissionsResponse',
         supports_download=False,
     )
 
   class AutoscalersService(base_api.BaseApiService):
     """Service class for the autoscalers resource."""
 
-    _NAME = u'autoscalers'
+    _NAME = 'autoscalers'
 
     def __init__(self, client):
       super(ComputeBeta.AutoscalersService, self).__init__(client)
@@ -416,15 +416,15 @@ class ComputeBeta(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     AggregatedList.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'compute.autoscalers.aggregatedList',
-        ordered_params=[u'project'],
-        path_params=[u'project'],
-        query_params=[u'filter', u'includeAllScopes', u'maxResults', u'orderBy', u'pageToken'],
-        relative_path=u'projects/{project}/aggregated/autoscalers',
+        http_method='GET',
+        method_id='compute.autoscalers.aggregatedList',
+        ordered_params=['project'],
+        path_params=['project'],
+        query_params=['filter', 'includeAllScopes', 'maxResults', 'orderBy', 'pageToken'],
+        relative_path='projects/{project}/aggregated/autoscalers',
         request_field='',
-        request_type_name=u'ComputeAutoscalersAggregatedListRequest',
-        response_type_name=u'AutoscalerAggregatedList',
+        request_type_name='ComputeAutoscalersAggregatedListRequest',
+        response_type_name='AutoscalerAggregatedList',
         supports_download=False,
     )
 
@@ -442,15 +442,15 @@ class ComputeBeta(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Delete.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'DELETE',
-        method_id=u'compute.autoscalers.delete',
-        ordered_params=[u'project', u'zone', u'autoscaler'],
-        path_params=[u'autoscaler', u'project', u'zone'],
-        query_params=[u'requestId'],
-        relative_path=u'projects/{project}/zones/{zone}/autoscalers/{autoscaler}',
+        http_method='DELETE',
+        method_id='compute.autoscalers.delete',
+        ordered_params=['project', 'zone', 'autoscaler'],
+        path_params=['autoscaler', 'project', 'zone'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/zones/{zone}/autoscalers/{autoscaler}',
         request_field='',
-        request_type_name=u'ComputeAutoscalersDeleteRequest',
-        response_type_name=u'Operation',
+        request_type_name='ComputeAutoscalersDeleteRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -468,15 +468,15 @@ class ComputeBeta(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'compute.autoscalers.get',
-        ordered_params=[u'project', u'zone', u'autoscaler'],
-        path_params=[u'autoscaler', u'project', u'zone'],
+        http_method='GET',
+        method_id='compute.autoscalers.get',
+        ordered_params=['project', 'zone', 'autoscaler'],
+        path_params=['autoscaler', 'project', 'zone'],
         query_params=[],
-        relative_path=u'projects/{project}/zones/{zone}/autoscalers/{autoscaler}',
+        relative_path='projects/{project}/zones/{zone}/autoscalers/{autoscaler}',
         request_field='',
-        request_type_name=u'ComputeAutoscalersGetRequest',
-        response_type_name=u'Autoscaler',
+        request_type_name='ComputeAutoscalersGetRequest',
+        response_type_name='Autoscaler',
         supports_download=False,
     )
 
@@ -494,15 +494,15 @@ class ComputeBeta(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Insert.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'compute.autoscalers.insert',
-        ordered_params=[u'project', u'zone'],
-        path_params=[u'project', u'zone'],
-        query_params=[u'requestId'],
-        relative_path=u'projects/{project}/zones/{zone}/autoscalers',
-        request_field=u'autoscaler',
-        request_type_name=u'ComputeAutoscalersInsertRequest',
-        response_type_name=u'Operation',
+        http_method='POST',
+        method_id='compute.autoscalers.insert',
+        ordered_params=['project', 'zone'],
+        path_params=['project', 'zone'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/zones/{zone}/autoscalers',
+        request_field='autoscaler',
+        request_type_name='ComputeAutoscalersInsertRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -520,15 +520,15 @@ class ComputeBeta(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'compute.autoscalers.list',
-        ordered_params=[u'project', u'zone'],
-        path_params=[u'project', u'zone'],
-        query_params=[u'filter', u'maxResults', u'orderBy', u'pageToken'],
-        relative_path=u'projects/{project}/zones/{zone}/autoscalers',
+        http_method='GET',
+        method_id='compute.autoscalers.list',
+        ordered_params=['project', 'zone'],
+        path_params=['project', 'zone'],
+        query_params=['filter', 'maxResults', 'orderBy', 'pageToken'],
+        relative_path='projects/{project}/zones/{zone}/autoscalers',
         request_field='',
-        request_type_name=u'ComputeAutoscalersListRequest',
-        response_type_name=u'AutoscalerList',
+        request_type_name='ComputeAutoscalersListRequest',
+        response_type_name='AutoscalerList',
         supports_download=False,
     )
 
@@ -546,15 +546,15 @@ class ComputeBeta(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Patch.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'PATCH',
-        method_id=u'compute.autoscalers.patch',
-        ordered_params=[u'project', u'zone'],
-        path_params=[u'project', u'zone'],
-        query_params=[u'autoscaler', u'requestId'],
-        relative_path=u'projects/{project}/zones/{zone}/autoscalers',
-        request_field=u'autoscalerResource',
-        request_type_name=u'ComputeAutoscalersPatchRequest',
-        response_type_name=u'Operation',
+        http_method='PATCH',
+        method_id='compute.autoscalers.patch',
+        ordered_params=['project', 'zone'],
+        path_params=['project', 'zone'],
+        query_params=['autoscaler', 'requestId'],
+        relative_path='projects/{project}/zones/{zone}/autoscalers',
+        request_field='autoscalerResource',
+        request_type_name='ComputeAutoscalersPatchRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -572,15 +572,15 @@ class ComputeBeta(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     TestIamPermissions.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'compute.autoscalers.testIamPermissions',
-        ordered_params=[u'project', u'zone', u'resource'],
-        path_params=[u'project', u'resource', u'zone'],
+        http_method='POST',
+        method_id='compute.autoscalers.testIamPermissions',
+        ordered_params=['project', 'zone', 'resource'],
+        path_params=['project', 'resource', 'zone'],
         query_params=[],
-        relative_path=u'projects/{project}/zones/{zone}/autoscalers/{resource}/testIamPermissions',
-        request_field=u'testPermissionsRequest',
-        request_type_name=u'ComputeAutoscalersTestIamPermissionsRequest',
-        response_type_name=u'TestPermissionsResponse',
+        relative_path='projects/{project}/zones/{zone}/autoscalers/{resource}/testIamPermissions',
+        request_field='testPermissionsRequest',
+        request_type_name='ComputeAutoscalersTestIamPermissionsRequest',
+        response_type_name='TestPermissionsResponse',
         supports_download=False,
     )
 
@@ -598,22 +598,22 @@ class ComputeBeta(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Update.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'PUT',
-        method_id=u'compute.autoscalers.update',
-        ordered_params=[u'project', u'zone'],
-        path_params=[u'project', u'zone'],
-        query_params=[u'autoscaler', u'requestId'],
-        relative_path=u'projects/{project}/zones/{zone}/autoscalers',
-        request_field=u'autoscalerResource',
-        request_type_name=u'ComputeAutoscalersUpdateRequest',
-        response_type_name=u'Operation',
+        http_method='PUT',
+        method_id='compute.autoscalers.update',
+        ordered_params=['project', 'zone'],
+        path_params=['project', 'zone'],
+        query_params=['autoscaler', 'requestId'],
+        relative_path='projects/{project}/zones/{zone}/autoscalers',
+        request_field='autoscalerResource',
+        request_type_name='ComputeAutoscalersUpdateRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
   class BackendBucketsService(base_api.BaseApiService):
     """Service class for the backendBuckets resource."""
 
-    _NAME = u'backendBuckets'
+    _NAME = 'backendBuckets'
 
     def __init__(self, client):
       super(ComputeBeta.BackendBucketsService, self).__init__(client)
@@ -634,15 +634,15 @@ class ComputeBeta(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     AddSignedUrlKey.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'compute.backendBuckets.addSignedUrlKey',
-        ordered_params=[u'project', u'backendBucket'],
-        path_params=[u'backendBucket', u'project'],
-        query_params=[u'requestId'],
-        relative_path=u'projects/{project}/global/backendBuckets/{backendBucket}/addSignedUrlKey',
-        request_field=u'signedUrlKey',
-        request_type_name=u'ComputeBackendBucketsAddSignedUrlKeyRequest',
-        response_type_name=u'Operation',
+        http_method='POST',
+        method_id='compute.backendBuckets.addSignedUrlKey',
+        ordered_params=['project', 'backendBucket'],
+        path_params=['backendBucket', 'project'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/global/backendBuckets/{backendBucket}/addSignedUrlKey',
+        request_field='signedUrlKey',
+        request_type_name='ComputeBackendBucketsAddSignedUrlKeyRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -660,15 +660,15 @@ class ComputeBeta(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Delete.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'DELETE',
-        method_id=u'compute.backendBuckets.delete',
-        ordered_params=[u'project', u'backendBucket'],
-        path_params=[u'backendBucket', u'project'],
-        query_params=[u'requestId'],
-        relative_path=u'projects/{project}/global/backendBuckets/{backendBucket}',
+        http_method='DELETE',
+        method_id='compute.backendBuckets.delete',
+        ordered_params=['project', 'backendBucket'],
+        path_params=['backendBucket', 'project'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/global/backendBuckets/{backendBucket}',
         request_field='',
-        request_type_name=u'ComputeBackendBucketsDeleteRequest',
-        response_type_name=u'Operation',
+        request_type_name='ComputeBackendBucketsDeleteRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -686,15 +686,15 @@ class ComputeBeta(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     DeleteSignedUrlKey.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'compute.backendBuckets.deleteSignedUrlKey',
-        ordered_params=[u'project', u'backendBucket', u'keyName'],
-        path_params=[u'backendBucket', u'project'],
-        query_params=[u'keyName', u'requestId'],
-        relative_path=u'projects/{project}/global/backendBuckets/{backendBucket}/deleteSignedUrlKey',
+        http_method='POST',
+        method_id='compute.backendBuckets.deleteSignedUrlKey',
+        ordered_params=['project', 'backendBucket', 'keyName'],
+        path_params=['backendBucket', 'project'],
+        query_params=['keyName', 'requestId'],
+        relative_path='projects/{project}/global/backendBuckets/{backendBucket}/deleteSignedUrlKey',
         request_field='',
-        request_type_name=u'ComputeBackendBucketsDeleteSignedUrlKeyRequest',
-        response_type_name=u'Operation',
+        request_type_name='ComputeBackendBucketsDeleteSignedUrlKeyRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -712,15 +712,15 @@ class ComputeBeta(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'compute.backendBuckets.get',
-        ordered_params=[u'project', u'backendBucket'],
-        path_params=[u'backendBucket', u'project'],
+        http_method='GET',
+        method_id='compute.backendBuckets.get',
+        ordered_params=['project', 'backendBucket'],
+        path_params=['backendBucket', 'project'],
         query_params=[],
-        relative_path=u'projects/{project}/global/backendBuckets/{backendBucket}',
+        relative_path='projects/{project}/global/backendBuckets/{backendBucket}',
         request_field='',
-        request_type_name=u'ComputeBackendBucketsGetRequest',
-        response_type_name=u'BackendBucket',
+        request_type_name='ComputeBackendBucketsGetRequest',
+        response_type_name='BackendBucket',
         supports_download=False,
     )
 
@@ -738,15 +738,15 @@ class ComputeBeta(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Insert.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'compute.backendBuckets.insert',
-        ordered_params=[u'project'],
-        path_params=[u'project'],
-        query_params=[u'requestId'],
-        relative_path=u'projects/{project}/global/backendBuckets',
-        request_field=u'backendBucket',
-        request_type_name=u'ComputeBackendBucketsInsertRequest',
-        response_type_name=u'Operation',
+        http_method='POST',
+        method_id='compute.backendBuckets.insert',
+        ordered_params=['project'],
+        path_params=['project'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/global/backendBuckets',
+        request_field='backendBucket',
+        request_type_name='ComputeBackendBucketsInsertRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -764,15 +764,15 @@ class ComputeBeta(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'compute.backendBuckets.list',
-        ordered_params=[u'project'],
-        path_params=[u'project'],
-        query_params=[u'filter', u'maxResults', u'orderBy', u'pageToken'],
-        relative_path=u'projects/{project}/global/backendBuckets',
+        http_method='GET',
+        method_id='compute.backendBuckets.list',
+        ordered_params=['project'],
+        path_params=['project'],
+        query_params=['filter', 'maxResults', 'orderBy', 'pageToken'],
+        relative_path='projects/{project}/global/backendBuckets',
         request_field='',
-        request_type_name=u'ComputeBackendBucketsListRequest',
-        response_type_name=u'BackendBucketList',
+        request_type_name='ComputeBackendBucketsListRequest',
+        response_type_name='BackendBucketList',
         supports_download=False,
     )
 
@@ -790,15 +790,15 @@ class ComputeBeta(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Patch.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'PATCH',
-        method_id=u'compute.backendBuckets.patch',
-        ordered_params=[u'project', u'backendBucket'],
-        path_params=[u'backendBucket', u'project'],
-        query_params=[u'requestId'],
-        relative_path=u'projects/{project}/global/backendBuckets/{backendBucket}',
-        request_field=u'backendBucketResource',
-        request_type_name=u'ComputeBackendBucketsPatchRequest',
-        response_type_name=u'Operation',
+        http_method='PATCH',
+        method_id='compute.backendBuckets.patch',
+        ordered_params=['project', 'backendBucket'],
+        path_params=['backendBucket', 'project'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/global/backendBuckets/{backendBucket}',
+        request_field='backendBucketResource',
+        request_type_name='ComputeBackendBucketsPatchRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -816,22 +816,22 @@ class ComputeBeta(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Update.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'PUT',
-        method_id=u'compute.backendBuckets.update',
-        ordered_params=[u'project', u'backendBucket'],
-        path_params=[u'backendBucket', u'project'],
-        query_params=[u'requestId'],
-        relative_path=u'projects/{project}/global/backendBuckets/{backendBucket}',
-        request_field=u'backendBucketResource',
-        request_type_name=u'ComputeBackendBucketsUpdateRequest',
-        response_type_name=u'Operation',
+        http_method='PUT',
+        method_id='compute.backendBuckets.update',
+        ordered_params=['project', 'backendBucket'],
+        path_params=['backendBucket', 'project'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/global/backendBuckets/{backendBucket}',
+        request_field='backendBucketResource',
+        request_type_name='ComputeBackendBucketsUpdateRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
   class BackendServicesService(base_api.BaseApiService):
     """Service class for the backendServices resource."""
 
-    _NAME = u'backendServices'
+    _NAME = 'backendServices'
 
     def __init__(self, client):
       super(ComputeBeta.BackendServicesService, self).__init__(client)
@@ -852,15 +852,15 @@ class ComputeBeta(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     AddSignedUrlKey.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'compute.backendServices.addSignedUrlKey',
-        ordered_params=[u'project', u'backendService'],
-        path_params=[u'backendService', u'project'],
-        query_params=[u'requestId'],
-        relative_path=u'projects/{project}/global/backendServices/{backendService}/addSignedUrlKey',
-        request_field=u'signedUrlKey',
-        request_type_name=u'ComputeBackendServicesAddSignedUrlKeyRequest',
-        response_type_name=u'Operation',
+        http_method='POST',
+        method_id='compute.backendServices.addSignedUrlKey',
+        ordered_params=['project', 'backendService'],
+        path_params=['backendService', 'project'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/global/backendServices/{backendService}/addSignedUrlKey',
+        request_field='signedUrlKey',
+        request_type_name='ComputeBackendServicesAddSignedUrlKeyRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -878,15 +878,15 @@ class ComputeBeta(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     AggregatedList.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'compute.backendServices.aggregatedList',
-        ordered_params=[u'project'],
-        path_params=[u'project'],
-        query_params=[u'filter', u'includeAllScopes', u'maxResults', u'orderBy', u'pageToken'],
-        relative_path=u'projects/{project}/aggregated/backendServices',
+        http_method='GET',
+        method_id='compute.backendServices.aggregatedList',
+        ordered_params=['project'],
+        path_params=['project'],
+        query_params=['filter', 'includeAllScopes', 'maxResults', 'orderBy', 'pageToken'],
+        relative_path='projects/{project}/aggregated/backendServices',
         request_field='',
-        request_type_name=u'ComputeBackendServicesAggregatedListRequest',
-        response_type_name=u'BackendServiceAggregatedList',
+        request_type_name='ComputeBackendServicesAggregatedListRequest',
+        response_type_name='BackendServiceAggregatedList',
         supports_download=False,
     )
 
@@ -904,15 +904,15 @@ class ComputeBeta(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Delete.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'DELETE',
-        method_id=u'compute.backendServices.delete',
-        ordered_params=[u'project', u'backendService'],
-        path_params=[u'backendService', u'project'],
-        query_params=[u'requestId'],
-        relative_path=u'projects/{project}/global/backendServices/{backendService}',
+        http_method='DELETE',
+        method_id='compute.backendServices.delete',
+        ordered_params=['project', 'backendService'],
+        path_params=['backendService', 'project'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/global/backendServices/{backendService}',
         request_field='',
-        request_type_name=u'ComputeBackendServicesDeleteRequest',
-        response_type_name=u'Operation',
+        request_type_name='ComputeBackendServicesDeleteRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -930,15 +930,15 @@ class ComputeBeta(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     DeleteSignedUrlKey.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'compute.backendServices.deleteSignedUrlKey',
-        ordered_params=[u'project', u'backendService', u'keyName'],
-        path_params=[u'backendService', u'project'],
-        query_params=[u'keyName', u'requestId'],
-        relative_path=u'projects/{project}/global/backendServices/{backendService}/deleteSignedUrlKey',
+        http_method='POST',
+        method_id='compute.backendServices.deleteSignedUrlKey',
+        ordered_params=['project', 'backendService', 'keyName'],
+        path_params=['backendService', 'project'],
+        query_params=['keyName', 'requestId'],
+        relative_path='projects/{project}/global/backendServices/{backendService}/deleteSignedUrlKey',
         request_field='',
-        request_type_name=u'ComputeBackendServicesDeleteSignedUrlKeyRequest',
-        response_type_name=u'Operation',
+        request_type_name='ComputeBackendServicesDeleteSignedUrlKeyRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -956,15 +956,15 @@ class ComputeBeta(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'compute.backendServices.get',
-        ordered_params=[u'project', u'backendService'],
-        path_params=[u'backendService', u'project'],
+        http_method='GET',
+        method_id='compute.backendServices.get',
+        ordered_params=['project', 'backendService'],
+        path_params=['backendService', 'project'],
         query_params=[],
-        relative_path=u'projects/{project}/global/backendServices/{backendService}',
+        relative_path='projects/{project}/global/backendServices/{backendService}',
         request_field='',
-        request_type_name=u'ComputeBackendServicesGetRequest',
-        response_type_name=u'BackendService',
+        request_type_name='ComputeBackendServicesGetRequest',
+        response_type_name='BackendService',
         supports_download=False,
     )
 
@@ -986,15 +986,15 @@ Example request body:
           config, request, global_params=global_params)
 
     GetHealth.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'compute.backendServices.getHealth',
-        ordered_params=[u'project', u'backendService'],
-        path_params=[u'backendService', u'project'],
+        http_method='POST',
+        method_id='compute.backendServices.getHealth',
+        ordered_params=['project', 'backendService'],
+        path_params=['backendService', 'project'],
         query_params=[],
-        relative_path=u'projects/{project}/global/backendServices/{backendService}/getHealth',
-        request_field=u'resourceGroupReference',
-        request_type_name=u'ComputeBackendServicesGetHealthRequest',
-        response_type_name=u'BackendServiceGroupHealth',
+        relative_path='projects/{project}/global/backendServices/{backendService}/getHealth',
+        request_field='resourceGroupReference',
+        request_type_name='ComputeBackendServicesGetHealthRequest',
+        response_type_name='BackendServiceGroupHealth',
         supports_download=False,
     )
 
@@ -1012,15 +1012,15 @@ Example request body:
           config, request, global_params=global_params)
 
     Insert.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'compute.backendServices.insert',
-        ordered_params=[u'project'],
-        path_params=[u'project'],
-        query_params=[u'requestId'],
-        relative_path=u'projects/{project}/global/backendServices',
-        request_field=u'backendService',
-        request_type_name=u'ComputeBackendServicesInsertRequest',
-        response_type_name=u'Operation',
+        http_method='POST',
+        method_id='compute.backendServices.insert',
+        ordered_params=['project'],
+        path_params=['project'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/global/backendServices',
+        request_field='backendService',
+        request_type_name='ComputeBackendServicesInsertRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -1038,15 +1038,15 @@ Example request body:
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'compute.backendServices.list',
-        ordered_params=[u'project'],
-        path_params=[u'project'],
-        query_params=[u'filter', u'maxResults', u'orderBy', u'pageToken'],
-        relative_path=u'projects/{project}/global/backendServices',
+        http_method='GET',
+        method_id='compute.backendServices.list',
+        ordered_params=['project'],
+        path_params=['project'],
+        query_params=['filter', 'maxResults', 'orderBy', 'pageToken'],
+        relative_path='projects/{project}/global/backendServices',
         request_field='',
-        request_type_name=u'ComputeBackendServicesListRequest',
-        response_type_name=u'BackendServiceList',
+        request_type_name='ComputeBackendServicesListRequest',
+        response_type_name='BackendServiceList',
         supports_download=False,
     )
 
@@ -1064,15 +1064,15 @@ Example request body:
           config, request, global_params=global_params)
 
     Patch.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'PATCH',
-        method_id=u'compute.backendServices.patch',
-        ordered_params=[u'project', u'backendService'],
-        path_params=[u'backendService', u'project'],
-        query_params=[u'requestId'],
-        relative_path=u'projects/{project}/global/backendServices/{backendService}',
-        request_field=u'backendServiceResource',
-        request_type_name=u'ComputeBackendServicesPatchRequest',
-        response_type_name=u'Operation',
+        http_method='PATCH',
+        method_id='compute.backendServices.patch',
+        ordered_params=['project', 'backendService'],
+        path_params=['backendService', 'project'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/global/backendServices/{backendService}',
+        request_field='backendServiceResource',
+        request_type_name='ComputeBackendServicesPatchRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -1090,15 +1090,15 @@ Example request body:
           config, request, global_params=global_params)
 
     SetSecurityPolicy.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'compute.backendServices.setSecurityPolicy',
-        ordered_params=[u'project', u'backendService'],
-        path_params=[u'backendService', u'project'],
-        query_params=[u'requestId'],
-        relative_path=u'projects/{project}/global/backendServices/{backendService}/setSecurityPolicy',
-        request_field=u'securityPolicyReference',
-        request_type_name=u'ComputeBackendServicesSetSecurityPolicyRequest',
-        response_type_name=u'Operation',
+        http_method='POST',
+        method_id='compute.backendServices.setSecurityPolicy',
+        ordered_params=['project', 'backendService'],
+        path_params=['backendService', 'project'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/global/backendServices/{backendService}/setSecurityPolicy',
+        request_field='securityPolicyReference',
+        request_type_name='ComputeBackendServicesSetSecurityPolicyRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -1116,15 +1116,15 @@ Example request body:
           config, request, global_params=global_params)
 
     TestIamPermissions.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'compute.backendServices.testIamPermissions',
-        ordered_params=[u'project', u'resource'],
-        path_params=[u'project', u'resource'],
+        http_method='POST',
+        method_id='compute.backendServices.testIamPermissions',
+        ordered_params=['project', 'resource'],
+        path_params=['project', 'resource'],
         query_params=[],
-        relative_path=u'projects/{project}/global/backendServices/{resource}/testIamPermissions',
-        request_field=u'testPermissionsRequest',
-        request_type_name=u'ComputeBackendServicesTestIamPermissionsRequest',
-        response_type_name=u'TestPermissionsResponse',
+        relative_path='projects/{project}/global/backendServices/{resource}/testIamPermissions',
+        request_field='testPermissionsRequest',
+        request_type_name='ComputeBackendServicesTestIamPermissionsRequest',
+        response_type_name='TestPermissionsResponse',
         supports_download=False,
     )
 
@@ -1142,22 +1142,22 @@ Example request body:
           config, request, global_params=global_params)
 
     Update.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'PUT',
-        method_id=u'compute.backendServices.update',
-        ordered_params=[u'project', u'backendService'],
-        path_params=[u'backendService', u'project'],
-        query_params=[u'requestId'],
-        relative_path=u'projects/{project}/global/backendServices/{backendService}',
-        request_field=u'backendServiceResource',
-        request_type_name=u'ComputeBackendServicesUpdateRequest',
-        response_type_name=u'Operation',
+        http_method='PUT',
+        method_id='compute.backendServices.update',
+        ordered_params=['project', 'backendService'],
+        path_params=['backendService', 'project'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/global/backendServices/{backendService}',
+        request_field='backendServiceResource',
+        request_type_name='ComputeBackendServicesUpdateRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
   class DiskTypesService(base_api.BaseApiService):
     """Service class for the diskTypes resource."""
 
-    _NAME = u'diskTypes'
+    _NAME = 'diskTypes'
 
     def __init__(self, client):
       super(ComputeBeta.DiskTypesService, self).__init__(client)
@@ -1178,15 +1178,15 @@ Example request body:
           config, request, global_params=global_params)
 
     AggregatedList.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'compute.diskTypes.aggregatedList',
-        ordered_params=[u'project'],
-        path_params=[u'project'],
-        query_params=[u'filter', u'includeAllScopes', u'maxResults', u'orderBy', u'pageToken'],
-        relative_path=u'projects/{project}/aggregated/diskTypes',
+        http_method='GET',
+        method_id='compute.diskTypes.aggregatedList',
+        ordered_params=['project'],
+        path_params=['project'],
+        query_params=['filter', 'includeAllScopes', 'maxResults', 'orderBy', 'pageToken'],
+        relative_path='projects/{project}/aggregated/diskTypes',
         request_field='',
-        request_type_name=u'ComputeDiskTypesAggregatedListRequest',
-        response_type_name=u'DiskTypeAggregatedList',
+        request_type_name='ComputeDiskTypesAggregatedListRequest',
+        response_type_name='DiskTypeAggregatedList',
         supports_download=False,
     )
 
@@ -1204,15 +1204,15 @@ Example request body:
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'compute.diskTypes.get',
-        ordered_params=[u'project', u'zone', u'diskType'],
-        path_params=[u'diskType', u'project', u'zone'],
+        http_method='GET',
+        method_id='compute.diskTypes.get',
+        ordered_params=['project', 'zone', 'diskType'],
+        path_params=['diskType', 'project', 'zone'],
         query_params=[],
-        relative_path=u'projects/{project}/zones/{zone}/diskTypes/{diskType}',
+        relative_path='projects/{project}/zones/{zone}/diskTypes/{diskType}',
         request_field='',
-        request_type_name=u'ComputeDiskTypesGetRequest',
-        response_type_name=u'DiskType',
+        request_type_name='ComputeDiskTypesGetRequest',
+        response_type_name='DiskType',
         supports_download=False,
     )
 
@@ -1230,22 +1230,22 @@ Example request body:
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'compute.diskTypes.list',
-        ordered_params=[u'project', u'zone'],
-        path_params=[u'project', u'zone'],
-        query_params=[u'filter', u'maxResults', u'orderBy', u'pageToken'],
-        relative_path=u'projects/{project}/zones/{zone}/diskTypes',
+        http_method='GET',
+        method_id='compute.diskTypes.list',
+        ordered_params=['project', 'zone'],
+        path_params=['project', 'zone'],
+        query_params=['filter', 'maxResults', 'orderBy', 'pageToken'],
+        relative_path='projects/{project}/zones/{zone}/diskTypes',
         request_field='',
-        request_type_name=u'ComputeDiskTypesListRequest',
-        response_type_name=u'DiskTypeList',
+        request_type_name='ComputeDiskTypesListRequest',
+        response_type_name='DiskTypeList',
         supports_download=False,
     )
 
   class DisksService(base_api.BaseApiService):
     """Service class for the disks resource."""
 
-    _NAME = u'disks'
+    _NAME = 'disks'
 
     def __init__(self, client):
       super(ComputeBeta.DisksService, self).__init__(client)
@@ -1266,15 +1266,15 @@ Example request body:
           config, request, global_params=global_params)
 
     AddResourcePolicies.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'compute.disks.addResourcePolicies',
-        ordered_params=[u'project', u'zone', u'disk'],
-        path_params=[u'disk', u'project', u'zone'],
-        query_params=[u'requestId'],
-        relative_path=u'projects/{project}/zones/{zone}/disks/{disk}/addResourcePolicies',
-        request_field=u'disksAddResourcePoliciesRequest',
-        request_type_name=u'ComputeDisksAddResourcePoliciesRequest',
-        response_type_name=u'Operation',
+        http_method='POST',
+        method_id='compute.disks.addResourcePolicies',
+        ordered_params=['project', 'zone', 'disk'],
+        path_params=['disk', 'project', 'zone'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/zones/{zone}/disks/{disk}/addResourcePolicies',
+        request_field='disksAddResourcePoliciesRequest',
+        request_type_name='ComputeDisksAddResourcePoliciesRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -1292,15 +1292,15 @@ Example request body:
           config, request, global_params=global_params)
 
     AggregatedList.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'compute.disks.aggregatedList',
-        ordered_params=[u'project'],
-        path_params=[u'project'],
-        query_params=[u'filter', u'includeAllScopes', u'maxResults', u'orderBy', u'pageToken'],
-        relative_path=u'projects/{project}/aggregated/disks',
+        http_method='GET',
+        method_id='compute.disks.aggregatedList',
+        ordered_params=['project'],
+        path_params=['project'],
+        query_params=['filter', 'includeAllScopes', 'maxResults', 'orderBy', 'pageToken'],
+        relative_path='projects/{project}/aggregated/disks',
         request_field='',
-        request_type_name=u'ComputeDisksAggregatedListRequest',
-        response_type_name=u'DiskAggregatedList',
+        request_type_name='ComputeDisksAggregatedListRequest',
+        response_type_name='DiskAggregatedList',
         supports_download=False,
     )
 
@@ -1318,15 +1318,15 @@ Example request body:
           config, request, global_params=global_params)
 
     CreateSnapshot.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'compute.disks.createSnapshot',
-        ordered_params=[u'project', u'zone', u'disk'],
-        path_params=[u'disk', u'project', u'zone'],
-        query_params=[u'guestFlush', u'requestId'],
-        relative_path=u'projects/{project}/zones/{zone}/disks/{disk}/createSnapshot',
-        request_field=u'snapshot',
-        request_type_name=u'ComputeDisksCreateSnapshotRequest',
-        response_type_name=u'Operation',
+        http_method='POST',
+        method_id='compute.disks.createSnapshot',
+        ordered_params=['project', 'zone', 'disk'],
+        path_params=['disk', 'project', 'zone'],
+        query_params=['guestFlush', 'requestId'],
+        relative_path='projects/{project}/zones/{zone}/disks/{disk}/createSnapshot',
+        request_field='snapshot',
+        request_type_name='ComputeDisksCreateSnapshotRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -1344,15 +1344,15 @@ Example request body:
           config, request, global_params=global_params)
 
     Delete.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'DELETE',
-        method_id=u'compute.disks.delete',
-        ordered_params=[u'project', u'zone', u'disk'],
-        path_params=[u'disk', u'project', u'zone'],
-        query_params=[u'requestId'],
-        relative_path=u'projects/{project}/zones/{zone}/disks/{disk}',
+        http_method='DELETE',
+        method_id='compute.disks.delete',
+        ordered_params=['project', 'zone', 'disk'],
+        path_params=['disk', 'project', 'zone'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/zones/{zone}/disks/{disk}',
         request_field='',
-        request_type_name=u'ComputeDisksDeleteRequest',
-        response_type_name=u'Operation',
+        request_type_name='ComputeDisksDeleteRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -1370,15 +1370,15 @@ Example request body:
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'compute.disks.get',
-        ordered_params=[u'project', u'zone', u'disk'],
-        path_params=[u'disk', u'project', u'zone'],
+        http_method='GET',
+        method_id='compute.disks.get',
+        ordered_params=['project', 'zone', 'disk'],
+        path_params=['disk', 'project', 'zone'],
         query_params=[],
-        relative_path=u'projects/{project}/zones/{zone}/disks/{disk}',
+        relative_path='projects/{project}/zones/{zone}/disks/{disk}',
         request_field='',
-        request_type_name=u'ComputeDisksGetRequest',
-        response_type_name=u'Disk',
+        request_type_name='ComputeDisksGetRequest',
+        response_type_name='Disk',
         supports_download=False,
     )
 
@@ -1396,15 +1396,15 @@ Example request body:
           config, request, global_params=global_params)
 
     GetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'compute.disks.getIamPolicy',
-        ordered_params=[u'project', u'zone', u'resource'],
-        path_params=[u'project', u'resource', u'zone'],
-        query_params=[u'optionsRequestedPolicyVersion'],
-        relative_path=u'projects/{project}/zones/{zone}/disks/{resource}/getIamPolicy',
+        http_method='GET',
+        method_id='compute.disks.getIamPolicy',
+        ordered_params=['project', 'zone', 'resource'],
+        path_params=['project', 'resource', 'zone'],
+        query_params=['optionsRequestedPolicyVersion'],
+        relative_path='projects/{project}/zones/{zone}/disks/{resource}/getIamPolicy',
         request_field='',
-        request_type_name=u'ComputeDisksGetIamPolicyRequest',
-        response_type_name=u'Policy',
+        request_type_name='ComputeDisksGetIamPolicyRequest',
+        response_type_name='Policy',
         supports_download=False,
     )
 
@@ -1422,15 +1422,15 @@ Example request body:
           config, request, global_params=global_params)
 
     Insert.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'compute.disks.insert',
-        ordered_params=[u'project', u'zone'],
-        path_params=[u'project', u'zone'],
-        query_params=[u'requestId', u'sourceImage'],
-        relative_path=u'projects/{project}/zones/{zone}/disks',
-        request_field=u'disk',
-        request_type_name=u'ComputeDisksInsertRequest',
-        response_type_name=u'Operation',
+        http_method='POST',
+        method_id='compute.disks.insert',
+        ordered_params=['project', 'zone'],
+        path_params=['project', 'zone'],
+        query_params=['requestId', 'sourceImage'],
+        relative_path='projects/{project}/zones/{zone}/disks',
+        request_field='disk',
+        request_type_name='ComputeDisksInsertRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -1448,15 +1448,15 @@ Example request body:
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'compute.disks.list',
-        ordered_params=[u'project', u'zone'],
-        path_params=[u'project', u'zone'],
-        query_params=[u'filter', u'maxResults', u'orderBy', u'pageToken'],
-        relative_path=u'projects/{project}/zones/{zone}/disks',
+        http_method='GET',
+        method_id='compute.disks.list',
+        ordered_params=['project', 'zone'],
+        path_params=['project', 'zone'],
+        query_params=['filter', 'maxResults', 'orderBy', 'pageToken'],
+        relative_path='projects/{project}/zones/{zone}/disks',
         request_field='',
-        request_type_name=u'ComputeDisksListRequest',
-        response_type_name=u'DiskList',
+        request_type_name='ComputeDisksListRequest',
+        response_type_name='DiskList',
         supports_download=False,
     )
 
@@ -1474,15 +1474,15 @@ Example request body:
           config, request, global_params=global_params)
 
     RemoveResourcePolicies.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'compute.disks.removeResourcePolicies',
-        ordered_params=[u'project', u'zone', u'disk'],
-        path_params=[u'disk', u'project', u'zone'],
-        query_params=[u'requestId'],
-        relative_path=u'projects/{project}/zones/{zone}/disks/{disk}/removeResourcePolicies',
-        request_field=u'disksRemoveResourcePoliciesRequest',
-        request_type_name=u'ComputeDisksRemoveResourcePoliciesRequest',
-        response_type_name=u'Operation',
+        http_method='POST',
+        method_id='compute.disks.removeResourcePolicies',
+        ordered_params=['project', 'zone', 'disk'],
+        path_params=['disk', 'project', 'zone'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/zones/{zone}/disks/{disk}/removeResourcePolicies',
+        request_field='disksRemoveResourcePoliciesRequest',
+        request_type_name='ComputeDisksRemoveResourcePoliciesRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -1500,15 +1500,15 @@ Example request body:
           config, request, global_params=global_params)
 
     Resize.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'compute.disks.resize',
-        ordered_params=[u'project', u'zone', u'disk'],
-        path_params=[u'disk', u'project', u'zone'],
-        query_params=[u'requestId'],
-        relative_path=u'projects/{project}/zones/{zone}/disks/{disk}/resize',
-        request_field=u'disksResizeRequest',
-        request_type_name=u'ComputeDisksResizeRequest',
-        response_type_name=u'Operation',
+        http_method='POST',
+        method_id='compute.disks.resize',
+        ordered_params=['project', 'zone', 'disk'],
+        path_params=['disk', 'project', 'zone'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/zones/{zone}/disks/{disk}/resize',
+        request_field='disksResizeRequest',
+        request_type_name='ComputeDisksResizeRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -1526,15 +1526,15 @@ Example request body:
           config, request, global_params=global_params)
 
     SetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'compute.disks.setIamPolicy',
-        ordered_params=[u'project', u'zone', u'resource'],
-        path_params=[u'project', u'resource', u'zone'],
+        http_method='POST',
+        method_id='compute.disks.setIamPolicy',
+        ordered_params=['project', 'zone', 'resource'],
+        path_params=['project', 'resource', 'zone'],
         query_params=[],
-        relative_path=u'projects/{project}/zones/{zone}/disks/{resource}/setIamPolicy',
-        request_field=u'zoneSetPolicyRequest',
-        request_type_name=u'ComputeDisksSetIamPolicyRequest',
-        response_type_name=u'Policy',
+        relative_path='projects/{project}/zones/{zone}/disks/{resource}/setIamPolicy',
+        request_field='zoneSetPolicyRequest',
+        request_type_name='ComputeDisksSetIamPolicyRequest',
+        response_type_name='Policy',
         supports_download=False,
     )
 
@@ -1552,15 +1552,15 @@ Example request body:
           config, request, global_params=global_params)
 
     SetLabels.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'compute.disks.setLabels',
-        ordered_params=[u'project', u'zone', u'resource'],
-        path_params=[u'project', u'resource', u'zone'],
-        query_params=[u'requestId'],
-        relative_path=u'projects/{project}/zones/{zone}/disks/{resource}/setLabels',
-        request_field=u'zoneSetLabelsRequest',
-        request_type_name=u'ComputeDisksSetLabelsRequest',
-        response_type_name=u'Operation',
+        http_method='POST',
+        method_id='compute.disks.setLabels',
+        ordered_params=['project', 'zone', 'resource'],
+        path_params=['project', 'resource', 'zone'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/zones/{zone}/disks/{resource}/setLabels',
+        request_field='zoneSetLabelsRequest',
+        request_type_name='ComputeDisksSetLabelsRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -1578,22 +1578,22 @@ Example request body:
           config, request, global_params=global_params)
 
     TestIamPermissions.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'compute.disks.testIamPermissions',
-        ordered_params=[u'project', u'zone', u'resource'],
-        path_params=[u'project', u'resource', u'zone'],
+        http_method='POST',
+        method_id='compute.disks.testIamPermissions',
+        ordered_params=['project', 'zone', 'resource'],
+        path_params=['project', 'resource', 'zone'],
         query_params=[],
-        relative_path=u'projects/{project}/zones/{zone}/disks/{resource}/testIamPermissions',
-        request_field=u'testPermissionsRequest',
-        request_type_name=u'ComputeDisksTestIamPermissionsRequest',
-        response_type_name=u'TestPermissionsResponse',
+        relative_path='projects/{project}/zones/{zone}/disks/{resource}/testIamPermissions',
+        request_field='testPermissionsRequest',
+        request_type_name='ComputeDisksTestIamPermissionsRequest',
+        response_type_name='TestPermissionsResponse',
         supports_download=False,
     )
 
   class ExternalVpnGatewaysService(base_api.BaseApiService):
     """Service class for the externalVpnGateways resource."""
 
-    _NAME = u'externalVpnGateways'
+    _NAME = 'externalVpnGateways'
 
     def __init__(self, client):
       super(ComputeBeta.ExternalVpnGatewaysService, self).__init__(client)
@@ -1614,15 +1614,15 @@ Example request body:
           config, request, global_params=global_params)
 
     Delete.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'DELETE',
-        method_id=u'compute.externalVpnGateways.delete',
-        ordered_params=[u'project', u'externalVpnGateway'],
-        path_params=[u'externalVpnGateway', u'project'],
-        query_params=[u'requestId'],
-        relative_path=u'projects/{project}/global/externalVpnGateways/{externalVpnGateway}',
+        http_method='DELETE',
+        method_id='compute.externalVpnGateways.delete',
+        ordered_params=['project', 'externalVpnGateway'],
+        path_params=['externalVpnGateway', 'project'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/global/externalVpnGateways/{externalVpnGateway}',
         request_field='',
-        request_type_name=u'ComputeExternalVpnGatewaysDeleteRequest',
-        response_type_name=u'Operation',
+        request_type_name='ComputeExternalVpnGatewaysDeleteRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -1640,15 +1640,15 @@ Example request body:
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'compute.externalVpnGateways.get',
-        ordered_params=[u'project', u'externalVpnGateway'],
-        path_params=[u'externalVpnGateway', u'project'],
+        http_method='GET',
+        method_id='compute.externalVpnGateways.get',
+        ordered_params=['project', 'externalVpnGateway'],
+        path_params=['externalVpnGateway', 'project'],
         query_params=[],
-        relative_path=u'projects/{project}/global/externalVpnGateways/{externalVpnGateway}',
+        relative_path='projects/{project}/global/externalVpnGateways/{externalVpnGateway}',
         request_field='',
-        request_type_name=u'ComputeExternalVpnGatewaysGetRequest',
-        response_type_name=u'ExternalVpnGateway',
+        request_type_name='ComputeExternalVpnGatewaysGetRequest',
+        response_type_name='ExternalVpnGateway',
         supports_download=False,
     )
 
@@ -1666,15 +1666,15 @@ Example request body:
           config, request, global_params=global_params)
 
     Insert.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'compute.externalVpnGateways.insert',
-        ordered_params=[u'project'],
-        path_params=[u'project'],
-        query_params=[u'requestId'],
-        relative_path=u'projects/{project}/global/externalVpnGateways',
-        request_field=u'externalVpnGateway',
-        request_type_name=u'ComputeExternalVpnGatewaysInsertRequest',
-        response_type_name=u'Operation',
+        http_method='POST',
+        method_id='compute.externalVpnGateways.insert',
+        ordered_params=['project'],
+        path_params=['project'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/global/externalVpnGateways',
+        request_field='externalVpnGateway',
+        request_type_name='ComputeExternalVpnGatewaysInsertRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -1692,15 +1692,15 @@ Example request body:
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'compute.externalVpnGateways.list',
-        ordered_params=[u'project'],
-        path_params=[u'project'],
-        query_params=[u'filter', u'maxResults', u'orderBy', u'pageToken'],
-        relative_path=u'projects/{project}/global/externalVpnGateways',
+        http_method='GET',
+        method_id='compute.externalVpnGateways.list',
+        ordered_params=['project'],
+        path_params=['project'],
+        query_params=['filter', 'maxResults', 'orderBy', 'pageToken'],
+        relative_path='projects/{project}/global/externalVpnGateways',
         request_field='',
-        request_type_name=u'ComputeExternalVpnGatewaysListRequest',
-        response_type_name=u'ExternalVpnGatewayList',
+        request_type_name='ComputeExternalVpnGatewaysListRequest',
+        response_type_name='ExternalVpnGatewayList',
         supports_download=False,
     )
 
@@ -1718,15 +1718,15 @@ Example request body:
           config, request, global_params=global_params)
 
     SetLabels.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'compute.externalVpnGateways.setLabels',
-        ordered_params=[u'project', u'resource'],
-        path_params=[u'project', u'resource'],
+        http_method='POST',
+        method_id='compute.externalVpnGateways.setLabels',
+        ordered_params=['project', 'resource'],
+        path_params=['project', 'resource'],
         query_params=[],
-        relative_path=u'projects/{project}/global/externalVpnGateways/{resource}/setLabels',
-        request_field=u'globalSetLabelsRequest',
-        request_type_name=u'ComputeExternalVpnGatewaysSetLabelsRequest',
-        response_type_name=u'Operation',
+        relative_path='projects/{project}/global/externalVpnGateways/{resource}/setLabels',
+        request_field='globalSetLabelsRequest',
+        request_type_name='ComputeExternalVpnGatewaysSetLabelsRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -1744,22 +1744,22 @@ Example request body:
           config, request, global_params=global_params)
 
     TestIamPermissions.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'compute.externalVpnGateways.testIamPermissions',
-        ordered_params=[u'project', u'resource'],
-        path_params=[u'project', u'resource'],
+        http_method='POST',
+        method_id='compute.externalVpnGateways.testIamPermissions',
+        ordered_params=['project', 'resource'],
+        path_params=['project', 'resource'],
         query_params=[],
-        relative_path=u'projects/{project}/global/externalVpnGateways/{resource}/testIamPermissions',
-        request_field=u'testPermissionsRequest',
-        request_type_name=u'ComputeExternalVpnGatewaysTestIamPermissionsRequest',
-        response_type_name=u'TestPermissionsResponse',
+        relative_path='projects/{project}/global/externalVpnGateways/{resource}/testIamPermissions',
+        request_field='testPermissionsRequest',
+        request_type_name='ComputeExternalVpnGatewaysTestIamPermissionsRequest',
+        response_type_name='TestPermissionsResponse',
         supports_download=False,
     )
 
   class FirewallsService(base_api.BaseApiService):
     """Service class for the firewalls resource."""
 
-    _NAME = u'firewalls'
+    _NAME = 'firewalls'
 
     def __init__(self, client):
       super(ComputeBeta.FirewallsService, self).__init__(client)
@@ -1780,15 +1780,15 @@ Example request body:
           config, request, global_params=global_params)
 
     Delete.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'DELETE',
-        method_id=u'compute.firewalls.delete',
-        ordered_params=[u'project', u'firewall'],
-        path_params=[u'firewall', u'project'],
-        query_params=[u'requestId'],
-        relative_path=u'projects/{project}/global/firewalls/{firewall}',
+        http_method='DELETE',
+        method_id='compute.firewalls.delete',
+        ordered_params=['project', 'firewall'],
+        path_params=['firewall', 'project'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/global/firewalls/{firewall}',
         request_field='',
-        request_type_name=u'ComputeFirewallsDeleteRequest',
-        response_type_name=u'Operation',
+        request_type_name='ComputeFirewallsDeleteRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -1806,15 +1806,15 @@ Example request body:
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'compute.firewalls.get',
-        ordered_params=[u'project', u'firewall'],
-        path_params=[u'firewall', u'project'],
+        http_method='GET',
+        method_id='compute.firewalls.get',
+        ordered_params=['project', 'firewall'],
+        path_params=['firewall', 'project'],
         query_params=[],
-        relative_path=u'projects/{project}/global/firewalls/{firewall}',
+        relative_path='projects/{project}/global/firewalls/{firewall}',
         request_field='',
-        request_type_name=u'ComputeFirewallsGetRequest',
-        response_type_name=u'Firewall',
+        request_type_name='ComputeFirewallsGetRequest',
+        response_type_name='Firewall',
         supports_download=False,
     )
 
@@ -1832,15 +1832,15 @@ Example request body:
           config, request, global_params=global_params)
 
     Insert.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'compute.firewalls.insert',
-        ordered_params=[u'project'],
-        path_params=[u'project'],
-        query_params=[u'requestId'],
-        relative_path=u'projects/{project}/global/firewalls',
-        request_field=u'firewall',
-        request_type_name=u'ComputeFirewallsInsertRequest',
-        response_type_name=u'Operation',
+        http_method='POST',
+        method_id='compute.firewalls.insert',
+        ordered_params=['project'],
+        path_params=['project'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/global/firewalls',
+        request_field='firewall',
+        request_type_name='ComputeFirewallsInsertRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -1858,15 +1858,15 @@ Example request body:
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'compute.firewalls.list',
-        ordered_params=[u'project'],
-        path_params=[u'project'],
-        query_params=[u'filter', u'maxResults', u'orderBy', u'pageToken'],
-        relative_path=u'projects/{project}/global/firewalls',
+        http_method='GET',
+        method_id='compute.firewalls.list',
+        ordered_params=['project'],
+        path_params=['project'],
+        query_params=['filter', 'maxResults', 'orderBy', 'pageToken'],
+        relative_path='projects/{project}/global/firewalls',
         request_field='',
-        request_type_name=u'ComputeFirewallsListRequest',
-        response_type_name=u'FirewallList',
+        request_type_name='ComputeFirewallsListRequest',
+        response_type_name='FirewallList',
         supports_download=False,
     )
 
@@ -1884,15 +1884,15 @@ Example request body:
           config, request, global_params=global_params)
 
     Patch.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'PATCH',
-        method_id=u'compute.firewalls.patch',
-        ordered_params=[u'project', u'firewall'],
-        path_params=[u'firewall', u'project'],
-        query_params=[u'requestId'],
-        relative_path=u'projects/{project}/global/firewalls/{firewall}',
-        request_field=u'firewallResource',
-        request_type_name=u'ComputeFirewallsPatchRequest',
-        response_type_name=u'Operation',
+        http_method='PATCH',
+        method_id='compute.firewalls.patch',
+        ordered_params=['project', 'firewall'],
+        path_params=['firewall', 'project'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/global/firewalls/{firewall}',
+        request_field='firewallResource',
+        request_type_name='ComputeFirewallsPatchRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -1910,15 +1910,15 @@ Example request body:
           config, request, global_params=global_params)
 
     TestIamPermissions.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'compute.firewalls.testIamPermissions',
-        ordered_params=[u'project', u'resource'],
-        path_params=[u'project', u'resource'],
+        http_method='POST',
+        method_id='compute.firewalls.testIamPermissions',
+        ordered_params=['project', 'resource'],
+        path_params=['project', 'resource'],
         query_params=[],
-        relative_path=u'projects/{project}/global/firewalls/{resource}/testIamPermissions',
-        request_field=u'testPermissionsRequest',
-        request_type_name=u'ComputeFirewallsTestIamPermissionsRequest',
-        response_type_name=u'TestPermissionsResponse',
+        relative_path='projects/{project}/global/firewalls/{resource}/testIamPermissions',
+        request_field='testPermissionsRequest',
+        request_type_name='ComputeFirewallsTestIamPermissionsRequest',
+        response_type_name='TestPermissionsResponse',
         supports_download=False,
     )
 
@@ -1936,22 +1936,22 @@ Example request body:
           config, request, global_params=global_params)
 
     Update.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'PUT',
-        method_id=u'compute.firewalls.update',
-        ordered_params=[u'project', u'firewall'],
-        path_params=[u'firewall', u'project'],
-        query_params=[u'requestId'],
-        relative_path=u'projects/{project}/global/firewalls/{firewall}',
-        request_field=u'firewallResource',
-        request_type_name=u'ComputeFirewallsUpdateRequest',
-        response_type_name=u'Operation',
+        http_method='PUT',
+        method_id='compute.firewalls.update',
+        ordered_params=['project', 'firewall'],
+        path_params=['firewall', 'project'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/global/firewalls/{firewall}',
+        request_field='firewallResource',
+        request_type_name='ComputeFirewallsUpdateRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
   class ForwardingRulesService(base_api.BaseApiService):
     """Service class for the forwardingRules resource."""
 
-    _NAME = u'forwardingRules'
+    _NAME = 'forwardingRules'
 
     def __init__(self, client):
       super(ComputeBeta.ForwardingRulesService, self).__init__(client)
@@ -1972,15 +1972,15 @@ Example request body:
           config, request, global_params=global_params)
 
     AggregatedList.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'compute.forwardingRules.aggregatedList',
-        ordered_params=[u'project'],
-        path_params=[u'project'],
-        query_params=[u'filter', u'includeAllScopes', u'maxResults', u'orderBy', u'pageToken'],
-        relative_path=u'projects/{project}/aggregated/forwardingRules',
+        http_method='GET',
+        method_id='compute.forwardingRules.aggregatedList',
+        ordered_params=['project'],
+        path_params=['project'],
+        query_params=['filter', 'includeAllScopes', 'maxResults', 'orderBy', 'pageToken'],
+        relative_path='projects/{project}/aggregated/forwardingRules',
         request_field='',
-        request_type_name=u'ComputeForwardingRulesAggregatedListRequest',
-        response_type_name=u'ForwardingRuleAggregatedList',
+        request_type_name='ComputeForwardingRulesAggregatedListRequest',
+        response_type_name='ForwardingRuleAggregatedList',
         supports_download=False,
     )
 
@@ -1998,15 +1998,15 @@ Example request body:
           config, request, global_params=global_params)
 
     Delete.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'DELETE',
-        method_id=u'compute.forwardingRules.delete',
-        ordered_params=[u'project', u'region', u'forwardingRule'],
-        path_params=[u'forwardingRule', u'project', u'region'],
-        query_params=[u'requestId'],
-        relative_path=u'projects/{project}/regions/{region}/forwardingRules/{forwardingRule}',
+        http_method='DELETE',
+        method_id='compute.forwardingRules.delete',
+        ordered_params=['project', 'region', 'forwardingRule'],
+        path_params=['forwardingRule', 'project', 'region'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/regions/{region}/forwardingRules/{forwardingRule}',
         request_field='',
-        request_type_name=u'ComputeForwardingRulesDeleteRequest',
-        response_type_name=u'Operation',
+        request_type_name='ComputeForwardingRulesDeleteRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -2024,15 +2024,15 @@ Example request body:
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'compute.forwardingRules.get',
-        ordered_params=[u'project', u'region', u'forwardingRule'],
-        path_params=[u'forwardingRule', u'project', u'region'],
+        http_method='GET',
+        method_id='compute.forwardingRules.get',
+        ordered_params=['project', 'region', 'forwardingRule'],
+        path_params=['forwardingRule', 'project', 'region'],
         query_params=[],
-        relative_path=u'projects/{project}/regions/{region}/forwardingRules/{forwardingRule}',
+        relative_path='projects/{project}/regions/{region}/forwardingRules/{forwardingRule}',
         request_field='',
-        request_type_name=u'ComputeForwardingRulesGetRequest',
-        response_type_name=u'ForwardingRule',
+        request_type_name='ComputeForwardingRulesGetRequest',
+        response_type_name='ForwardingRule',
         supports_download=False,
     )
 
@@ -2050,15 +2050,15 @@ Example request body:
           config, request, global_params=global_params)
 
     Insert.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'compute.forwardingRules.insert',
-        ordered_params=[u'project', u'region'],
-        path_params=[u'project', u'region'],
-        query_params=[u'requestId'],
-        relative_path=u'projects/{project}/regions/{region}/forwardingRules',
-        request_field=u'forwardingRule',
-        request_type_name=u'ComputeForwardingRulesInsertRequest',
-        response_type_name=u'Operation',
+        http_method='POST',
+        method_id='compute.forwardingRules.insert',
+        ordered_params=['project', 'region'],
+        path_params=['project', 'region'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/regions/{region}/forwardingRules',
+        request_field='forwardingRule',
+        request_type_name='ComputeForwardingRulesInsertRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -2076,15 +2076,15 @@ Example request body:
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'compute.forwardingRules.list',
-        ordered_params=[u'project', u'region'],
-        path_params=[u'project', u'region'],
-        query_params=[u'filter', u'maxResults', u'orderBy', u'pageToken'],
-        relative_path=u'projects/{project}/regions/{region}/forwardingRules',
+        http_method='GET',
+        method_id='compute.forwardingRules.list',
+        ordered_params=['project', 'region'],
+        path_params=['project', 'region'],
+        query_params=['filter', 'maxResults', 'orderBy', 'pageToken'],
+        relative_path='projects/{project}/regions/{region}/forwardingRules',
         request_field='',
-        request_type_name=u'ComputeForwardingRulesListRequest',
-        response_type_name=u'ForwardingRuleList',
+        request_type_name='ComputeForwardingRulesListRequest',
+        response_type_name='ForwardingRuleList',
         supports_download=False,
     )
 
@@ -2102,15 +2102,15 @@ Example request body:
           config, request, global_params=global_params)
 
     Patch.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'PATCH',
-        method_id=u'compute.forwardingRules.patch',
-        ordered_params=[u'project', u'region', u'forwardingRule'],
-        path_params=[u'forwardingRule', u'project', u'region'],
-        query_params=[u'requestId'],
-        relative_path=u'projects/{project}/regions/{region}/forwardingRules/{forwardingRule}',
-        request_field=u'forwardingRuleResource',
-        request_type_name=u'ComputeForwardingRulesPatchRequest',
-        response_type_name=u'Operation',
+        http_method='PATCH',
+        method_id='compute.forwardingRules.patch',
+        ordered_params=['project', 'region', 'forwardingRule'],
+        path_params=['forwardingRule', 'project', 'region'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/regions/{region}/forwardingRules/{forwardingRule}',
+        request_field='forwardingRuleResource',
+        request_type_name='ComputeForwardingRulesPatchRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -2128,15 +2128,15 @@ Example request body:
           config, request, global_params=global_params)
 
     SetLabels.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'compute.forwardingRules.setLabels',
-        ordered_params=[u'project', u'region', u'resource'],
-        path_params=[u'project', u'region', u'resource'],
-        query_params=[u'requestId'],
-        relative_path=u'projects/{project}/regions/{region}/forwardingRules/{resource}/setLabels',
-        request_field=u'regionSetLabelsRequest',
-        request_type_name=u'ComputeForwardingRulesSetLabelsRequest',
-        response_type_name=u'Operation',
+        http_method='POST',
+        method_id='compute.forwardingRules.setLabels',
+        ordered_params=['project', 'region', 'resource'],
+        path_params=['project', 'region', 'resource'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/regions/{region}/forwardingRules/{resource}/setLabels',
+        request_field='regionSetLabelsRequest',
+        request_type_name='ComputeForwardingRulesSetLabelsRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -2154,15 +2154,15 @@ Example request body:
           config, request, global_params=global_params)
 
     SetTarget.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'compute.forwardingRules.setTarget',
-        ordered_params=[u'project', u'region', u'forwardingRule'],
-        path_params=[u'forwardingRule', u'project', u'region'],
-        query_params=[u'requestId'],
-        relative_path=u'projects/{project}/regions/{region}/forwardingRules/{forwardingRule}/setTarget',
-        request_field=u'targetReference',
-        request_type_name=u'ComputeForwardingRulesSetTargetRequest',
-        response_type_name=u'Operation',
+        http_method='POST',
+        method_id='compute.forwardingRules.setTarget',
+        ordered_params=['project', 'region', 'forwardingRule'],
+        path_params=['forwardingRule', 'project', 'region'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/regions/{region}/forwardingRules/{forwardingRule}/setTarget',
+        request_field='targetReference',
+        request_type_name='ComputeForwardingRulesSetTargetRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -2180,22 +2180,22 @@ Example request body:
           config, request, global_params=global_params)
 
     TestIamPermissions.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'compute.forwardingRules.testIamPermissions',
-        ordered_params=[u'project', u'region', u'resource'],
-        path_params=[u'project', u'region', u'resource'],
+        http_method='POST',
+        method_id='compute.forwardingRules.testIamPermissions',
+        ordered_params=['project', 'region', 'resource'],
+        path_params=['project', 'region', 'resource'],
         query_params=[],
-        relative_path=u'projects/{project}/regions/{region}/forwardingRules/{resource}/testIamPermissions',
-        request_field=u'testPermissionsRequest',
-        request_type_name=u'ComputeForwardingRulesTestIamPermissionsRequest',
-        response_type_name=u'TestPermissionsResponse',
+        relative_path='projects/{project}/regions/{region}/forwardingRules/{resource}/testIamPermissions',
+        request_field='testPermissionsRequest',
+        request_type_name='ComputeForwardingRulesTestIamPermissionsRequest',
+        response_type_name='TestPermissionsResponse',
         supports_download=False,
     )
 
   class GlobalAddressesService(base_api.BaseApiService):
     """Service class for the globalAddresses resource."""
 
-    _NAME = u'globalAddresses'
+    _NAME = 'globalAddresses'
 
     def __init__(self, client):
       super(ComputeBeta.GlobalAddressesService, self).__init__(client)
@@ -2216,15 +2216,15 @@ Example request body:
           config, request, global_params=global_params)
 
     Delete.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'DELETE',
-        method_id=u'compute.globalAddresses.delete',
-        ordered_params=[u'project', u'address'],
-        path_params=[u'address', u'project'],
-        query_params=[u'requestId'],
-        relative_path=u'projects/{project}/global/addresses/{address}',
+        http_method='DELETE',
+        method_id='compute.globalAddresses.delete',
+        ordered_params=['project', 'address'],
+        path_params=['address', 'project'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/global/addresses/{address}',
         request_field='',
-        request_type_name=u'ComputeGlobalAddressesDeleteRequest',
-        response_type_name=u'Operation',
+        request_type_name='ComputeGlobalAddressesDeleteRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -2242,15 +2242,15 @@ Example request body:
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'compute.globalAddresses.get',
-        ordered_params=[u'project', u'address'],
-        path_params=[u'address', u'project'],
+        http_method='GET',
+        method_id='compute.globalAddresses.get',
+        ordered_params=['project', 'address'],
+        path_params=['address', 'project'],
         query_params=[],
-        relative_path=u'projects/{project}/global/addresses/{address}',
+        relative_path='projects/{project}/global/addresses/{address}',
         request_field='',
-        request_type_name=u'ComputeGlobalAddressesGetRequest',
-        response_type_name=u'Address',
+        request_type_name='ComputeGlobalAddressesGetRequest',
+        response_type_name='Address',
         supports_download=False,
     )
 
@@ -2268,15 +2268,15 @@ Example request body:
           config, request, global_params=global_params)
 
     Insert.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'compute.globalAddresses.insert',
-        ordered_params=[u'project'],
-        path_params=[u'project'],
-        query_params=[u'requestId'],
-        relative_path=u'projects/{project}/global/addresses',
-        request_field=u'address',
-        request_type_name=u'ComputeGlobalAddressesInsertRequest',
-        response_type_name=u'Operation',
+        http_method='POST',
+        method_id='compute.globalAddresses.insert',
+        ordered_params=['project'],
+        path_params=['project'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/global/addresses',
+        request_field='address',
+        request_type_name='ComputeGlobalAddressesInsertRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -2294,15 +2294,15 @@ Example request body:
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'compute.globalAddresses.list',
-        ordered_params=[u'project'],
-        path_params=[u'project'],
-        query_params=[u'filter', u'maxResults', u'orderBy', u'pageToken'],
-        relative_path=u'projects/{project}/global/addresses',
+        http_method='GET',
+        method_id='compute.globalAddresses.list',
+        ordered_params=['project'],
+        path_params=['project'],
+        query_params=['filter', 'maxResults', 'orderBy', 'pageToken'],
+        relative_path='projects/{project}/global/addresses',
         request_field='',
-        request_type_name=u'ComputeGlobalAddressesListRequest',
-        response_type_name=u'AddressList',
+        request_type_name='ComputeGlobalAddressesListRequest',
+        response_type_name='AddressList',
         supports_download=False,
     )
 
@@ -2320,15 +2320,15 @@ Example request body:
           config, request, global_params=global_params)
 
     SetLabels.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'compute.globalAddresses.setLabels',
-        ordered_params=[u'project', u'resource'],
-        path_params=[u'project', u'resource'],
+        http_method='POST',
+        method_id='compute.globalAddresses.setLabels',
+        ordered_params=['project', 'resource'],
+        path_params=['project', 'resource'],
         query_params=[],
-        relative_path=u'projects/{project}/global/addresses/{resource}/setLabels',
-        request_field=u'globalSetLabelsRequest',
-        request_type_name=u'ComputeGlobalAddressesSetLabelsRequest',
-        response_type_name=u'Operation',
+        relative_path='projects/{project}/global/addresses/{resource}/setLabels',
+        request_field='globalSetLabelsRequest',
+        request_type_name='ComputeGlobalAddressesSetLabelsRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -2346,22 +2346,22 @@ Example request body:
           config, request, global_params=global_params)
 
     TestIamPermissions.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'compute.globalAddresses.testIamPermissions',
-        ordered_params=[u'project', u'resource'],
-        path_params=[u'project', u'resource'],
+        http_method='POST',
+        method_id='compute.globalAddresses.testIamPermissions',
+        ordered_params=['project', 'resource'],
+        path_params=['project', 'resource'],
         query_params=[],
-        relative_path=u'projects/{project}/global/addresses/{resource}/testIamPermissions',
-        request_field=u'testPermissionsRequest',
-        request_type_name=u'ComputeGlobalAddressesTestIamPermissionsRequest',
-        response_type_name=u'TestPermissionsResponse',
+        relative_path='projects/{project}/global/addresses/{resource}/testIamPermissions',
+        request_field='testPermissionsRequest',
+        request_type_name='ComputeGlobalAddressesTestIamPermissionsRequest',
+        response_type_name='TestPermissionsResponse',
         supports_download=False,
     )
 
   class GlobalForwardingRulesService(base_api.BaseApiService):
     """Service class for the globalForwardingRules resource."""
 
-    _NAME = u'globalForwardingRules'
+    _NAME = 'globalForwardingRules'
 
     def __init__(self, client):
       super(ComputeBeta.GlobalForwardingRulesService, self).__init__(client)
@@ -2382,15 +2382,15 @@ Example request body:
           config, request, global_params=global_params)
 
     Delete.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'DELETE',
-        method_id=u'compute.globalForwardingRules.delete',
-        ordered_params=[u'project', u'forwardingRule'],
-        path_params=[u'forwardingRule', u'project'],
-        query_params=[u'requestId'],
-        relative_path=u'projects/{project}/global/forwardingRules/{forwardingRule}',
+        http_method='DELETE',
+        method_id='compute.globalForwardingRules.delete',
+        ordered_params=['project', 'forwardingRule'],
+        path_params=['forwardingRule', 'project'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/global/forwardingRules/{forwardingRule}',
         request_field='',
-        request_type_name=u'ComputeGlobalForwardingRulesDeleteRequest',
-        response_type_name=u'Operation',
+        request_type_name='ComputeGlobalForwardingRulesDeleteRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -2408,15 +2408,15 @@ Example request body:
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'compute.globalForwardingRules.get',
-        ordered_params=[u'project', u'forwardingRule'],
-        path_params=[u'forwardingRule', u'project'],
+        http_method='GET',
+        method_id='compute.globalForwardingRules.get',
+        ordered_params=['project', 'forwardingRule'],
+        path_params=['forwardingRule', 'project'],
         query_params=[],
-        relative_path=u'projects/{project}/global/forwardingRules/{forwardingRule}',
+        relative_path='projects/{project}/global/forwardingRules/{forwardingRule}',
         request_field='',
-        request_type_name=u'ComputeGlobalForwardingRulesGetRequest',
-        response_type_name=u'ForwardingRule',
+        request_type_name='ComputeGlobalForwardingRulesGetRequest',
+        response_type_name='ForwardingRule',
         supports_download=False,
     )
 
@@ -2434,15 +2434,15 @@ Example request body:
           config, request, global_params=global_params)
 
     Insert.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'compute.globalForwardingRules.insert',
-        ordered_params=[u'project'],
-        path_params=[u'project'],
-        query_params=[u'requestId'],
-        relative_path=u'projects/{project}/global/forwardingRules',
-        request_field=u'forwardingRule',
-        request_type_name=u'ComputeGlobalForwardingRulesInsertRequest',
-        response_type_name=u'Operation',
+        http_method='POST',
+        method_id='compute.globalForwardingRules.insert',
+        ordered_params=['project'],
+        path_params=['project'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/global/forwardingRules',
+        request_field='forwardingRule',
+        request_type_name='ComputeGlobalForwardingRulesInsertRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -2460,15 +2460,15 @@ Example request body:
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'compute.globalForwardingRules.list',
-        ordered_params=[u'project'],
-        path_params=[u'project'],
-        query_params=[u'filter', u'maxResults', u'orderBy', u'pageToken'],
-        relative_path=u'projects/{project}/global/forwardingRules',
+        http_method='GET',
+        method_id='compute.globalForwardingRules.list',
+        ordered_params=['project'],
+        path_params=['project'],
+        query_params=['filter', 'maxResults', 'orderBy', 'pageToken'],
+        relative_path='projects/{project}/global/forwardingRules',
         request_field='',
-        request_type_name=u'ComputeGlobalForwardingRulesListRequest',
-        response_type_name=u'ForwardingRuleList',
+        request_type_name='ComputeGlobalForwardingRulesListRequest',
+        response_type_name='ForwardingRuleList',
         supports_download=False,
     )
 
@@ -2486,15 +2486,15 @@ Example request body:
           config, request, global_params=global_params)
 
     Patch.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'PATCH',
-        method_id=u'compute.globalForwardingRules.patch',
-        ordered_params=[u'project', u'forwardingRule'],
-        path_params=[u'forwardingRule', u'project'],
-        query_params=[u'requestId'],
-        relative_path=u'projects/{project}/global/forwardingRules/{forwardingRule}',
-        request_field=u'forwardingRuleResource',
-        request_type_name=u'ComputeGlobalForwardingRulesPatchRequest',
-        response_type_name=u'Operation',
+        http_method='PATCH',
+        method_id='compute.globalForwardingRules.patch',
+        ordered_params=['project', 'forwardingRule'],
+        path_params=['forwardingRule', 'project'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/global/forwardingRules/{forwardingRule}',
+        request_field='forwardingRuleResource',
+        request_type_name='ComputeGlobalForwardingRulesPatchRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -2512,15 +2512,15 @@ Example request body:
           config, request, global_params=global_params)
 
     SetLabels.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'compute.globalForwardingRules.setLabels',
-        ordered_params=[u'project', u'resource'],
-        path_params=[u'project', u'resource'],
+        http_method='POST',
+        method_id='compute.globalForwardingRules.setLabels',
+        ordered_params=['project', 'resource'],
+        path_params=['project', 'resource'],
         query_params=[],
-        relative_path=u'projects/{project}/global/forwardingRules/{resource}/setLabels',
-        request_field=u'globalSetLabelsRequest',
-        request_type_name=u'ComputeGlobalForwardingRulesSetLabelsRequest',
-        response_type_name=u'Operation',
+        relative_path='projects/{project}/global/forwardingRules/{resource}/setLabels',
+        request_field='globalSetLabelsRequest',
+        request_type_name='ComputeGlobalForwardingRulesSetLabelsRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -2538,15 +2538,15 @@ Example request body:
           config, request, global_params=global_params)
 
     SetTarget.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'compute.globalForwardingRules.setTarget',
-        ordered_params=[u'project', u'forwardingRule'],
-        path_params=[u'forwardingRule', u'project'],
-        query_params=[u'requestId'],
-        relative_path=u'projects/{project}/global/forwardingRules/{forwardingRule}/setTarget',
-        request_field=u'targetReference',
-        request_type_name=u'ComputeGlobalForwardingRulesSetTargetRequest',
-        response_type_name=u'Operation',
+        http_method='POST',
+        method_id='compute.globalForwardingRules.setTarget',
+        ordered_params=['project', 'forwardingRule'],
+        path_params=['forwardingRule', 'project'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/global/forwardingRules/{forwardingRule}/setTarget',
+        request_field='targetReference',
+        request_type_name='ComputeGlobalForwardingRulesSetTargetRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -2564,22 +2564,22 @@ Example request body:
           config, request, global_params=global_params)
 
     TestIamPermissions.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'compute.globalForwardingRules.testIamPermissions',
-        ordered_params=[u'project', u'resource'],
-        path_params=[u'project', u'resource'],
+        http_method='POST',
+        method_id='compute.globalForwardingRules.testIamPermissions',
+        ordered_params=['project', 'resource'],
+        path_params=['project', 'resource'],
         query_params=[],
-        relative_path=u'projects/{project}/global/forwardingRules/{resource}/testIamPermissions',
-        request_field=u'testPermissionsRequest',
-        request_type_name=u'ComputeGlobalForwardingRulesTestIamPermissionsRequest',
-        response_type_name=u'TestPermissionsResponse',
+        relative_path='projects/{project}/global/forwardingRules/{resource}/testIamPermissions',
+        request_field='testPermissionsRequest',
+        request_type_name='ComputeGlobalForwardingRulesTestIamPermissionsRequest',
+        response_type_name='TestPermissionsResponse',
         supports_download=False,
     )
 
   class GlobalNetworkEndpointGroupsService(base_api.BaseApiService):
     """Service class for the globalNetworkEndpointGroups resource."""
 
-    _NAME = u'globalNetworkEndpointGroups'
+    _NAME = 'globalNetworkEndpointGroups'
 
     def __init__(self, client):
       super(ComputeBeta.GlobalNetworkEndpointGroupsService, self).__init__(client)
@@ -2600,15 +2600,15 @@ Example request body:
           config, request, global_params=global_params)
 
     AttachNetworkEndpoints.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'compute.globalNetworkEndpointGroups.attachNetworkEndpoints',
-        ordered_params=[u'project', u'networkEndpointGroup'],
-        path_params=[u'networkEndpointGroup', u'project'],
-        query_params=[u'requestId'],
-        relative_path=u'projects/{project}/global/networkEndpointGroups/{networkEndpointGroup}/attachNetworkEndpoints',
-        request_field=u'globalNetworkEndpointGroupsAttachEndpointsRequest',
-        request_type_name=u'ComputeGlobalNetworkEndpointGroupsAttachNetworkEndpointsRequest',
-        response_type_name=u'Operation',
+        http_method='POST',
+        method_id='compute.globalNetworkEndpointGroups.attachNetworkEndpoints',
+        ordered_params=['project', 'networkEndpointGroup'],
+        path_params=['networkEndpointGroup', 'project'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/global/networkEndpointGroups/{networkEndpointGroup}/attachNetworkEndpoints',
+        request_field='globalNetworkEndpointGroupsAttachEndpointsRequest',
+        request_type_name='ComputeGlobalNetworkEndpointGroupsAttachNetworkEndpointsRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -2626,15 +2626,15 @@ Example request body:
           config, request, global_params=global_params)
 
     Delete.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'DELETE',
-        method_id=u'compute.globalNetworkEndpointGroups.delete',
-        ordered_params=[u'project', u'networkEndpointGroup'],
-        path_params=[u'networkEndpointGroup', u'project'],
-        query_params=[u'requestId'],
-        relative_path=u'projects/{project}/global/networkEndpointGroups/{networkEndpointGroup}',
+        http_method='DELETE',
+        method_id='compute.globalNetworkEndpointGroups.delete',
+        ordered_params=['project', 'networkEndpointGroup'],
+        path_params=['networkEndpointGroup', 'project'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/global/networkEndpointGroups/{networkEndpointGroup}',
         request_field='',
-        request_type_name=u'ComputeGlobalNetworkEndpointGroupsDeleteRequest',
-        response_type_name=u'Operation',
+        request_type_name='ComputeGlobalNetworkEndpointGroupsDeleteRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -2652,15 +2652,15 @@ Example request body:
           config, request, global_params=global_params)
 
     DetachNetworkEndpoints.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'compute.globalNetworkEndpointGroups.detachNetworkEndpoints',
-        ordered_params=[u'project', u'networkEndpointGroup'],
-        path_params=[u'networkEndpointGroup', u'project'],
-        query_params=[u'requestId'],
-        relative_path=u'projects/{project}/global/networkEndpointGroups/{networkEndpointGroup}/detachNetworkEndpoints',
-        request_field=u'globalNetworkEndpointGroupsDetachEndpointsRequest',
-        request_type_name=u'ComputeGlobalNetworkEndpointGroupsDetachNetworkEndpointsRequest',
-        response_type_name=u'Operation',
+        http_method='POST',
+        method_id='compute.globalNetworkEndpointGroups.detachNetworkEndpoints',
+        ordered_params=['project', 'networkEndpointGroup'],
+        path_params=['networkEndpointGroup', 'project'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/global/networkEndpointGroups/{networkEndpointGroup}/detachNetworkEndpoints',
+        request_field='globalNetworkEndpointGroupsDetachEndpointsRequest',
+        request_type_name='ComputeGlobalNetworkEndpointGroupsDetachNetworkEndpointsRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -2678,15 +2678,15 @@ Example request body:
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'compute.globalNetworkEndpointGroups.get',
-        ordered_params=[u'project', u'networkEndpointGroup'],
-        path_params=[u'networkEndpointGroup', u'project'],
+        http_method='GET',
+        method_id='compute.globalNetworkEndpointGroups.get',
+        ordered_params=['project', 'networkEndpointGroup'],
+        path_params=['networkEndpointGroup', 'project'],
         query_params=[],
-        relative_path=u'projects/{project}/global/networkEndpointGroups/{networkEndpointGroup}',
+        relative_path='projects/{project}/global/networkEndpointGroups/{networkEndpointGroup}',
         request_field='',
-        request_type_name=u'ComputeGlobalNetworkEndpointGroupsGetRequest',
-        response_type_name=u'NetworkEndpointGroup',
+        request_type_name='ComputeGlobalNetworkEndpointGroupsGetRequest',
+        response_type_name='NetworkEndpointGroup',
         supports_download=False,
     )
 
@@ -2704,15 +2704,15 @@ Example request body:
           config, request, global_params=global_params)
 
     Insert.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'compute.globalNetworkEndpointGroups.insert',
-        ordered_params=[u'project'],
-        path_params=[u'project'],
-        query_params=[u'requestId'],
-        relative_path=u'projects/{project}/global/networkEndpointGroups',
-        request_field=u'networkEndpointGroup',
-        request_type_name=u'ComputeGlobalNetworkEndpointGroupsInsertRequest',
-        response_type_name=u'Operation',
+        http_method='POST',
+        method_id='compute.globalNetworkEndpointGroups.insert',
+        ordered_params=['project'],
+        path_params=['project'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/global/networkEndpointGroups',
+        request_field='networkEndpointGroup',
+        request_type_name='ComputeGlobalNetworkEndpointGroupsInsertRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -2730,15 +2730,15 @@ Example request body:
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'compute.globalNetworkEndpointGroups.list',
-        ordered_params=[u'project'],
-        path_params=[u'project'],
-        query_params=[u'filter', u'maxResults', u'orderBy', u'pageToken'],
-        relative_path=u'projects/{project}/global/networkEndpointGroups',
+        http_method='GET',
+        method_id='compute.globalNetworkEndpointGroups.list',
+        ordered_params=['project'],
+        path_params=['project'],
+        query_params=['filter', 'maxResults', 'orderBy', 'pageToken'],
+        relative_path='projects/{project}/global/networkEndpointGroups',
         request_field='',
-        request_type_name=u'ComputeGlobalNetworkEndpointGroupsListRequest',
-        response_type_name=u'NetworkEndpointGroupList',
+        request_type_name='ComputeGlobalNetworkEndpointGroupsListRequest',
+        response_type_name='NetworkEndpointGroupList',
         supports_download=False,
     )
 
@@ -2756,22 +2756,22 @@ Example request body:
           config, request, global_params=global_params)
 
     ListNetworkEndpoints.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'compute.globalNetworkEndpointGroups.listNetworkEndpoints',
-        ordered_params=[u'project', u'networkEndpointGroup'],
-        path_params=[u'networkEndpointGroup', u'project'],
-        query_params=[u'filter', u'maxResults', u'orderBy', u'pageToken'],
-        relative_path=u'projects/{project}/global/networkEndpointGroups/{networkEndpointGroup}/listNetworkEndpoints',
+        http_method='POST',
+        method_id='compute.globalNetworkEndpointGroups.listNetworkEndpoints',
+        ordered_params=['project', 'networkEndpointGroup'],
+        path_params=['networkEndpointGroup', 'project'],
+        query_params=['filter', 'maxResults', 'orderBy', 'pageToken'],
+        relative_path='projects/{project}/global/networkEndpointGroups/{networkEndpointGroup}/listNetworkEndpoints',
         request_field='',
-        request_type_name=u'ComputeGlobalNetworkEndpointGroupsListNetworkEndpointsRequest',
-        response_type_name=u'NetworkEndpointGroupsListNetworkEndpoints',
+        request_type_name='ComputeGlobalNetworkEndpointGroupsListNetworkEndpointsRequest',
+        response_type_name='NetworkEndpointGroupsListNetworkEndpoints',
         supports_download=False,
     )
 
   class GlobalOperationsService(base_api.BaseApiService):
     """Service class for the globalOperations resource."""
 
-    _NAME = u'globalOperations'
+    _NAME = 'globalOperations'
 
     def __init__(self, client):
       super(ComputeBeta.GlobalOperationsService, self).__init__(client)
@@ -2792,15 +2792,15 @@ Example request body:
           config, request, global_params=global_params)
 
     AggregatedList.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'compute.globalOperations.aggregatedList',
-        ordered_params=[u'project'],
-        path_params=[u'project'],
-        query_params=[u'filter', u'includeAllScopes', u'maxResults', u'orderBy', u'pageToken'],
-        relative_path=u'projects/{project}/aggregated/operations',
+        http_method='GET',
+        method_id='compute.globalOperations.aggregatedList',
+        ordered_params=['project'],
+        path_params=['project'],
+        query_params=['filter', 'includeAllScopes', 'maxResults', 'orderBy', 'pageToken'],
+        relative_path='projects/{project}/aggregated/operations',
         request_field='',
-        request_type_name=u'ComputeGlobalOperationsAggregatedListRequest',
-        response_type_name=u'OperationAggregatedList',
+        request_type_name='ComputeGlobalOperationsAggregatedListRequest',
+        response_type_name='OperationAggregatedList',
         supports_download=False,
     )
 
@@ -2818,15 +2818,15 @@ Example request body:
           config, request, global_params=global_params)
 
     Delete.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'DELETE',
-        method_id=u'compute.globalOperations.delete',
-        ordered_params=[u'project', u'operation'],
-        path_params=[u'operation', u'project'],
+        http_method='DELETE',
+        method_id='compute.globalOperations.delete',
+        ordered_params=['project', 'operation'],
+        path_params=['operation', 'project'],
         query_params=[],
-        relative_path=u'projects/{project}/global/operations/{operation}',
+        relative_path='projects/{project}/global/operations/{operation}',
         request_field='',
-        request_type_name=u'ComputeGlobalOperationsDeleteRequest',
-        response_type_name=u'ComputeGlobalOperationsDeleteResponse',
+        request_type_name='ComputeGlobalOperationsDeleteRequest',
+        response_type_name='ComputeGlobalOperationsDeleteResponse',
         supports_download=False,
     )
 
@@ -2844,15 +2844,15 @@ Example request body:
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'compute.globalOperations.get',
-        ordered_params=[u'project', u'operation'],
-        path_params=[u'operation', u'project'],
+        http_method='GET',
+        method_id='compute.globalOperations.get',
+        ordered_params=['project', 'operation'],
+        path_params=['operation', 'project'],
         query_params=[],
-        relative_path=u'projects/{project}/global/operations/{operation}',
+        relative_path='projects/{project}/global/operations/{operation}',
         request_field='',
-        request_type_name=u'ComputeGlobalOperationsGetRequest',
-        response_type_name=u'Operation',
+        request_type_name='ComputeGlobalOperationsGetRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -2870,15 +2870,15 @@ Example request body:
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'compute.globalOperations.list',
-        ordered_params=[u'project'],
-        path_params=[u'project'],
-        query_params=[u'filter', u'maxResults', u'orderBy', u'pageToken'],
-        relative_path=u'projects/{project}/global/operations',
+        http_method='GET',
+        method_id='compute.globalOperations.list',
+        ordered_params=['project'],
+        path_params=['project'],
+        query_params=['filter', 'maxResults', 'orderBy', 'pageToken'],
+        relative_path='projects/{project}/global/operations',
         request_field='',
-        request_type_name=u'ComputeGlobalOperationsListRequest',
-        response_type_name=u'OperationList',
+        request_type_name='ComputeGlobalOperationsListRequest',
+        response_type_name='OperationList',
         supports_download=False,
     )
 
@@ -2900,22 +2900,22 @@ This method is called on a best-effort basis. Specifically:
           config, request, global_params=global_params)
 
     Wait.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'compute.globalOperations.wait',
-        ordered_params=[u'project', u'operation'],
-        path_params=[u'operation', u'project'],
+        http_method='POST',
+        method_id='compute.globalOperations.wait',
+        ordered_params=['project', 'operation'],
+        path_params=['operation', 'project'],
         query_params=[],
-        relative_path=u'projects/{project}/global/operations/{operation}/wait',
+        relative_path='projects/{project}/global/operations/{operation}/wait',
         request_field='',
-        request_type_name=u'ComputeGlobalOperationsWaitRequest',
-        response_type_name=u'Operation',
+        request_type_name='ComputeGlobalOperationsWaitRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
   class GlobalOrganizationOperationsService(base_api.BaseApiService):
     """Service class for the globalOrganizationOperations resource."""
 
-    _NAME = u'globalOrganizationOperations'
+    _NAME = 'globalOrganizationOperations'
 
     def __init__(self, client):
       super(ComputeBeta.GlobalOrganizationOperationsService, self).__init__(client)
@@ -2936,15 +2936,15 @@ This method is called on a best-effort basis. Specifically:
           config, request, global_params=global_params)
 
     Delete.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'DELETE',
-        method_id=u'compute.globalOrganizationOperations.delete',
-        ordered_params=[u'operation'],
-        path_params=[u'operation'],
-        query_params=[u'parentId'],
-        relative_path=u'projects/locations/global/operations/{operation}',
+        http_method='DELETE',
+        method_id='compute.globalOrganizationOperations.delete',
+        ordered_params=['operation'],
+        path_params=['operation'],
+        query_params=['parentId'],
+        relative_path='projects/locations/global/operations/{operation}',
         request_field='',
-        request_type_name=u'ComputeGlobalOrganizationOperationsDeleteRequest',
-        response_type_name=u'ComputeGlobalOrganizationOperationsDeleteResponse',
+        request_type_name='ComputeGlobalOrganizationOperationsDeleteRequest',
+        response_type_name='ComputeGlobalOrganizationOperationsDeleteResponse',
         supports_download=False,
     )
 
@@ -2962,15 +2962,15 @@ This method is called on a best-effort basis. Specifically:
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'compute.globalOrganizationOperations.get',
-        ordered_params=[u'operation'],
-        path_params=[u'operation'],
-        query_params=[u'parentId'],
-        relative_path=u'projects/locations/global/operations/{operation}',
+        http_method='GET',
+        method_id='compute.globalOrganizationOperations.get',
+        ordered_params=['operation'],
+        path_params=['operation'],
+        query_params=['parentId'],
+        relative_path='projects/locations/global/operations/{operation}',
         request_field='',
-        request_type_name=u'ComputeGlobalOrganizationOperationsGetRequest',
-        response_type_name=u'Operation',
+        request_type_name='ComputeGlobalOrganizationOperationsGetRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -2988,22 +2988,22 @@ This method is called on a best-effort basis. Specifically:
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'compute.globalOrganizationOperations.list',
+        http_method='GET',
+        method_id='compute.globalOrganizationOperations.list',
         ordered_params=[],
         path_params=[],
-        query_params=[u'filter', u'maxResults', u'orderBy', u'pageToken', u'parentId'],
-        relative_path=u'projects/locations/global/operations',
+        query_params=['filter', 'maxResults', 'orderBy', 'pageToken', 'parentId'],
+        relative_path='projects/locations/global/operations',
         request_field='',
-        request_type_name=u'ComputeGlobalOrganizationOperationsListRequest',
-        response_type_name=u'OperationList',
+        request_type_name='ComputeGlobalOrganizationOperationsListRequest',
+        response_type_name='OperationList',
         supports_download=False,
     )
 
   class HealthChecksService(base_api.BaseApiService):
     """Service class for the healthChecks resource."""
 
-    _NAME = u'healthChecks'
+    _NAME = 'healthChecks'
 
     def __init__(self, client):
       super(ComputeBeta.HealthChecksService, self).__init__(client)
@@ -3024,15 +3024,15 @@ This method is called on a best-effort basis. Specifically:
           config, request, global_params=global_params)
 
     AggregatedList.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'compute.healthChecks.aggregatedList',
-        ordered_params=[u'project'],
-        path_params=[u'project'],
-        query_params=[u'filter', u'includeAllScopes', u'maxResults', u'orderBy', u'pageToken'],
-        relative_path=u'projects/{project}/aggregated/healthChecks',
+        http_method='GET',
+        method_id='compute.healthChecks.aggregatedList',
+        ordered_params=['project'],
+        path_params=['project'],
+        query_params=['filter', 'includeAllScopes', 'maxResults', 'orderBy', 'pageToken'],
+        relative_path='projects/{project}/aggregated/healthChecks',
         request_field='',
-        request_type_name=u'ComputeHealthChecksAggregatedListRequest',
-        response_type_name=u'HealthChecksAggregatedList',
+        request_type_name='ComputeHealthChecksAggregatedListRequest',
+        response_type_name='HealthChecksAggregatedList',
         supports_download=False,
     )
 
@@ -3050,15 +3050,15 @@ This method is called on a best-effort basis. Specifically:
           config, request, global_params=global_params)
 
     Delete.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'DELETE',
-        method_id=u'compute.healthChecks.delete',
-        ordered_params=[u'project', u'healthCheck'],
-        path_params=[u'healthCheck', u'project'],
-        query_params=[u'requestId'],
-        relative_path=u'projects/{project}/global/healthChecks/{healthCheck}',
+        http_method='DELETE',
+        method_id='compute.healthChecks.delete',
+        ordered_params=['project', 'healthCheck'],
+        path_params=['healthCheck', 'project'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/global/healthChecks/{healthCheck}',
         request_field='',
-        request_type_name=u'ComputeHealthChecksDeleteRequest',
-        response_type_name=u'Operation',
+        request_type_name='ComputeHealthChecksDeleteRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -3076,15 +3076,15 @@ This method is called on a best-effort basis. Specifically:
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'compute.healthChecks.get',
-        ordered_params=[u'project', u'healthCheck'],
-        path_params=[u'healthCheck', u'project'],
+        http_method='GET',
+        method_id='compute.healthChecks.get',
+        ordered_params=['project', 'healthCheck'],
+        path_params=['healthCheck', 'project'],
         query_params=[],
-        relative_path=u'projects/{project}/global/healthChecks/{healthCheck}',
+        relative_path='projects/{project}/global/healthChecks/{healthCheck}',
         request_field='',
-        request_type_name=u'ComputeHealthChecksGetRequest',
-        response_type_name=u'HealthCheck',
+        request_type_name='ComputeHealthChecksGetRequest',
+        response_type_name='HealthCheck',
         supports_download=False,
     )
 
@@ -3102,15 +3102,15 @@ This method is called on a best-effort basis. Specifically:
           config, request, global_params=global_params)
 
     Insert.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'compute.healthChecks.insert',
-        ordered_params=[u'project'],
-        path_params=[u'project'],
-        query_params=[u'requestId'],
-        relative_path=u'projects/{project}/global/healthChecks',
-        request_field=u'healthCheck',
-        request_type_name=u'ComputeHealthChecksInsertRequest',
-        response_type_name=u'Operation',
+        http_method='POST',
+        method_id='compute.healthChecks.insert',
+        ordered_params=['project'],
+        path_params=['project'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/global/healthChecks',
+        request_field='healthCheck',
+        request_type_name='ComputeHealthChecksInsertRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -3128,15 +3128,15 @@ This method is called on a best-effort basis. Specifically:
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'compute.healthChecks.list',
-        ordered_params=[u'project'],
-        path_params=[u'project'],
-        query_params=[u'filter', u'maxResults', u'orderBy', u'pageToken'],
-        relative_path=u'projects/{project}/global/healthChecks',
+        http_method='GET',
+        method_id='compute.healthChecks.list',
+        ordered_params=['project'],
+        path_params=['project'],
+        query_params=['filter', 'maxResults', 'orderBy', 'pageToken'],
+        relative_path='projects/{project}/global/healthChecks',
         request_field='',
-        request_type_name=u'ComputeHealthChecksListRequest',
-        response_type_name=u'HealthCheckList',
+        request_type_name='ComputeHealthChecksListRequest',
+        response_type_name='HealthCheckList',
         supports_download=False,
     )
 
@@ -3154,15 +3154,15 @@ This method is called on a best-effort basis. Specifically:
           config, request, global_params=global_params)
 
     Patch.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'PATCH',
-        method_id=u'compute.healthChecks.patch',
-        ordered_params=[u'project', u'healthCheck'],
-        path_params=[u'healthCheck', u'project'],
-        query_params=[u'requestId'],
-        relative_path=u'projects/{project}/global/healthChecks/{healthCheck}',
-        request_field=u'healthCheckResource',
-        request_type_name=u'ComputeHealthChecksPatchRequest',
-        response_type_name=u'Operation',
+        http_method='PATCH',
+        method_id='compute.healthChecks.patch',
+        ordered_params=['project', 'healthCheck'],
+        path_params=['healthCheck', 'project'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/global/healthChecks/{healthCheck}',
+        request_field='healthCheckResource',
+        request_type_name='ComputeHealthChecksPatchRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -3180,15 +3180,15 @@ This method is called on a best-effort basis. Specifically:
           config, request, global_params=global_params)
 
     TestIamPermissions.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'compute.healthChecks.testIamPermissions',
-        ordered_params=[u'project', u'resource'],
-        path_params=[u'project', u'resource'],
+        http_method='POST',
+        method_id='compute.healthChecks.testIamPermissions',
+        ordered_params=['project', 'resource'],
+        path_params=['project', 'resource'],
         query_params=[],
-        relative_path=u'projects/{project}/global/healthChecks/{resource}/testIamPermissions',
-        request_field=u'testPermissionsRequest',
-        request_type_name=u'ComputeHealthChecksTestIamPermissionsRequest',
-        response_type_name=u'TestPermissionsResponse',
+        relative_path='projects/{project}/global/healthChecks/{resource}/testIamPermissions',
+        request_field='testPermissionsRequest',
+        request_type_name='ComputeHealthChecksTestIamPermissionsRequest',
+        response_type_name='TestPermissionsResponse',
         supports_download=False,
     )
 
@@ -3206,22 +3206,22 @@ This method is called on a best-effort basis. Specifically:
           config, request, global_params=global_params)
 
     Update.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'PUT',
-        method_id=u'compute.healthChecks.update',
-        ordered_params=[u'project', u'healthCheck'],
-        path_params=[u'healthCheck', u'project'],
-        query_params=[u'requestId'],
-        relative_path=u'projects/{project}/global/healthChecks/{healthCheck}',
-        request_field=u'healthCheckResource',
-        request_type_name=u'ComputeHealthChecksUpdateRequest',
-        response_type_name=u'Operation',
+        http_method='PUT',
+        method_id='compute.healthChecks.update',
+        ordered_params=['project', 'healthCheck'],
+        path_params=['healthCheck', 'project'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/global/healthChecks/{healthCheck}',
+        request_field='healthCheckResource',
+        request_type_name='ComputeHealthChecksUpdateRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
   class HttpHealthChecksService(base_api.BaseApiService):
     """Service class for the httpHealthChecks resource."""
 
-    _NAME = u'httpHealthChecks'
+    _NAME = 'httpHealthChecks'
 
     def __init__(self, client):
       super(ComputeBeta.HttpHealthChecksService, self).__init__(client)
@@ -3242,15 +3242,15 @@ This method is called on a best-effort basis. Specifically:
           config, request, global_params=global_params)
 
     Delete.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'DELETE',
-        method_id=u'compute.httpHealthChecks.delete',
-        ordered_params=[u'project', u'httpHealthCheck'],
-        path_params=[u'httpHealthCheck', u'project'],
-        query_params=[u'requestId'],
-        relative_path=u'projects/{project}/global/httpHealthChecks/{httpHealthCheck}',
+        http_method='DELETE',
+        method_id='compute.httpHealthChecks.delete',
+        ordered_params=['project', 'httpHealthCheck'],
+        path_params=['httpHealthCheck', 'project'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/global/httpHealthChecks/{httpHealthCheck}',
         request_field='',
-        request_type_name=u'ComputeHttpHealthChecksDeleteRequest',
-        response_type_name=u'Operation',
+        request_type_name='ComputeHttpHealthChecksDeleteRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -3268,15 +3268,15 @@ This method is called on a best-effort basis. Specifically:
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'compute.httpHealthChecks.get',
-        ordered_params=[u'project', u'httpHealthCheck'],
-        path_params=[u'httpHealthCheck', u'project'],
+        http_method='GET',
+        method_id='compute.httpHealthChecks.get',
+        ordered_params=['project', 'httpHealthCheck'],
+        path_params=['httpHealthCheck', 'project'],
         query_params=[],
-        relative_path=u'projects/{project}/global/httpHealthChecks/{httpHealthCheck}',
+        relative_path='projects/{project}/global/httpHealthChecks/{httpHealthCheck}',
         request_field='',
-        request_type_name=u'ComputeHttpHealthChecksGetRequest',
-        response_type_name=u'HttpHealthCheck',
+        request_type_name='ComputeHttpHealthChecksGetRequest',
+        response_type_name='HttpHealthCheck',
         supports_download=False,
     )
 
@@ -3294,15 +3294,15 @@ This method is called on a best-effort basis. Specifically:
           config, request, global_params=global_params)
 
     Insert.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'compute.httpHealthChecks.insert',
-        ordered_params=[u'project'],
-        path_params=[u'project'],
-        query_params=[u'requestId'],
-        relative_path=u'projects/{project}/global/httpHealthChecks',
-        request_field=u'httpHealthCheck',
-        request_type_name=u'ComputeHttpHealthChecksInsertRequest',
-        response_type_name=u'Operation',
+        http_method='POST',
+        method_id='compute.httpHealthChecks.insert',
+        ordered_params=['project'],
+        path_params=['project'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/global/httpHealthChecks',
+        request_field='httpHealthCheck',
+        request_type_name='ComputeHttpHealthChecksInsertRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -3320,15 +3320,15 @@ This method is called on a best-effort basis. Specifically:
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'compute.httpHealthChecks.list',
-        ordered_params=[u'project'],
-        path_params=[u'project'],
-        query_params=[u'filter', u'maxResults', u'orderBy', u'pageToken'],
-        relative_path=u'projects/{project}/global/httpHealthChecks',
+        http_method='GET',
+        method_id='compute.httpHealthChecks.list',
+        ordered_params=['project'],
+        path_params=['project'],
+        query_params=['filter', 'maxResults', 'orderBy', 'pageToken'],
+        relative_path='projects/{project}/global/httpHealthChecks',
         request_field='',
-        request_type_name=u'ComputeHttpHealthChecksListRequest',
-        response_type_name=u'HttpHealthCheckList',
+        request_type_name='ComputeHttpHealthChecksListRequest',
+        response_type_name='HttpHealthCheckList',
         supports_download=False,
     )
 
@@ -3346,15 +3346,15 @@ This method is called on a best-effort basis. Specifically:
           config, request, global_params=global_params)
 
     Patch.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'PATCH',
-        method_id=u'compute.httpHealthChecks.patch',
-        ordered_params=[u'project', u'httpHealthCheck'],
-        path_params=[u'httpHealthCheck', u'project'],
-        query_params=[u'requestId'],
-        relative_path=u'projects/{project}/global/httpHealthChecks/{httpHealthCheck}',
-        request_field=u'httpHealthCheckResource',
-        request_type_name=u'ComputeHttpHealthChecksPatchRequest',
-        response_type_name=u'Operation',
+        http_method='PATCH',
+        method_id='compute.httpHealthChecks.patch',
+        ordered_params=['project', 'httpHealthCheck'],
+        path_params=['httpHealthCheck', 'project'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/global/httpHealthChecks/{httpHealthCheck}',
+        request_field='httpHealthCheckResource',
+        request_type_name='ComputeHttpHealthChecksPatchRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -3372,15 +3372,15 @@ This method is called on a best-effort basis. Specifically:
           config, request, global_params=global_params)
 
     TestIamPermissions.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'compute.httpHealthChecks.testIamPermissions',
-        ordered_params=[u'project', u'resource'],
-        path_params=[u'project', u'resource'],
+        http_method='POST',
+        method_id='compute.httpHealthChecks.testIamPermissions',
+        ordered_params=['project', 'resource'],
+        path_params=['project', 'resource'],
         query_params=[],
-        relative_path=u'projects/{project}/global/httpHealthChecks/{resource}/testIamPermissions',
-        request_field=u'testPermissionsRequest',
-        request_type_name=u'ComputeHttpHealthChecksTestIamPermissionsRequest',
-        response_type_name=u'TestPermissionsResponse',
+        relative_path='projects/{project}/global/httpHealthChecks/{resource}/testIamPermissions',
+        request_field='testPermissionsRequest',
+        request_type_name='ComputeHttpHealthChecksTestIamPermissionsRequest',
+        response_type_name='TestPermissionsResponse',
         supports_download=False,
     )
 
@@ -3398,22 +3398,22 @@ This method is called on a best-effort basis. Specifically:
           config, request, global_params=global_params)
 
     Update.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'PUT',
-        method_id=u'compute.httpHealthChecks.update',
-        ordered_params=[u'project', u'httpHealthCheck'],
-        path_params=[u'httpHealthCheck', u'project'],
-        query_params=[u'requestId'],
-        relative_path=u'projects/{project}/global/httpHealthChecks/{httpHealthCheck}',
-        request_field=u'httpHealthCheckResource',
-        request_type_name=u'ComputeHttpHealthChecksUpdateRequest',
-        response_type_name=u'Operation',
+        http_method='PUT',
+        method_id='compute.httpHealthChecks.update',
+        ordered_params=['project', 'httpHealthCheck'],
+        path_params=['httpHealthCheck', 'project'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/global/httpHealthChecks/{httpHealthCheck}',
+        request_field='httpHealthCheckResource',
+        request_type_name='ComputeHttpHealthChecksUpdateRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
   class HttpsHealthChecksService(base_api.BaseApiService):
     """Service class for the httpsHealthChecks resource."""
 
-    _NAME = u'httpsHealthChecks'
+    _NAME = 'httpsHealthChecks'
 
     def __init__(self, client):
       super(ComputeBeta.HttpsHealthChecksService, self).__init__(client)
@@ -3434,15 +3434,15 @@ This method is called on a best-effort basis. Specifically:
           config, request, global_params=global_params)
 
     Delete.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'DELETE',
-        method_id=u'compute.httpsHealthChecks.delete',
-        ordered_params=[u'project', u'httpsHealthCheck'],
-        path_params=[u'httpsHealthCheck', u'project'],
-        query_params=[u'requestId'],
-        relative_path=u'projects/{project}/global/httpsHealthChecks/{httpsHealthCheck}',
+        http_method='DELETE',
+        method_id='compute.httpsHealthChecks.delete',
+        ordered_params=['project', 'httpsHealthCheck'],
+        path_params=['httpsHealthCheck', 'project'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/global/httpsHealthChecks/{httpsHealthCheck}',
         request_field='',
-        request_type_name=u'ComputeHttpsHealthChecksDeleteRequest',
-        response_type_name=u'Operation',
+        request_type_name='ComputeHttpsHealthChecksDeleteRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -3460,15 +3460,15 @@ This method is called on a best-effort basis. Specifically:
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'compute.httpsHealthChecks.get',
-        ordered_params=[u'project', u'httpsHealthCheck'],
-        path_params=[u'httpsHealthCheck', u'project'],
+        http_method='GET',
+        method_id='compute.httpsHealthChecks.get',
+        ordered_params=['project', 'httpsHealthCheck'],
+        path_params=['httpsHealthCheck', 'project'],
         query_params=[],
-        relative_path=u'projects/{project}/global/httpsHealthChecks/{httpsHealthCheck}',
+        relative_path='projects/{project}/global/httpsHealthChecks/{httpsHealthCheck}',
         request_field='',
-        request_type_name=u'ComputeHttpsHealthChecksGetRequest',
-        response_type_name=u'HttpsHealthCheck',
+        request_type_name='ComputeHttpsHealthChecksGetRequest',
+        response_type_name='HttpsHealthCheck',
         supports_download=False,
     )
 
@@ -3486,15 +3486,15 @@ This method is called on a best-effort basis. Specifically:
           config, request, global_params=global_params)
 
     Insert.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'compute.httpsHealthChecks.insert',
-        ordered_params=[u'project'],
-        path_params=[u'project'],
-        query_params=[u'requestId'],
-        relative_path=u'projects/{project}/global/httpsHealthChecks',
-        request_field=u'httpsHealthCheck',
-        request_type_name=u'ComputeHttpsHealthChecksInsertRequest',
-        response_type_name=u'Operation',
+        http_method='POST',
+        method_id='compute.httpsHealthChecks.insert',
+        ordered_params=['project'],
+        path_params=['project'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/global/httpsHealthChecks',
+        request_field='httpsHealthCheck',
+        request_type_name='ComputeHttpsHealthChecksInsertRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -3512,15 +3512,15 @@ This method is called on a best-effort basis. Specifically:
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'compute.httpsHealthChecks.list',
-        ordered_params=[u'project'],
-        path_params=[u'project'],
-        query_params=[u'filter', u'maxResults', u'orderBy', u'pageToken'],
-        relative_path=u'projects/{project}/global/httpsHealthChecks',
+        http_method='GET',
+        method_id='compute.httpsHealthChecks.list',
+        ordered_params=['project'],
+        path_params=['project'],
+        query_params=['filter', 'maxResults', 'orderBy', 'pageToken'],
+        relative_path='projects/{project}/global/httpsHealthChecks',
         request_field='',
-        request_type_name=u'ComputeHttpsHealthChecksListRequest',
-        response_type_name=u'HttpsHealthCheckList',
+        request_type_name='ComputeHttpsHealthChecksListRequest',
+        response_type_name='HttpsHealthCheckList',
         supports_download=False,
     )
 
@@ -3538,15 +3538,15 @@ This method is called on a best-effort basis. Specifically:
           config, request, global_params=global_params)
 
     Patch.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'PATCH',
-        method_id=u'compute.httpsHealthChecks.patch',
-        ordered_params=[u'project', u'httpsHealthCheck'],
-        path_params=[u'httpsHealthCheck', u'project'],
-        query_params=[u'requestId'],
-        relative_path=u'projects/{project}/global/httpsHealthChecks/{httpsHealthCheck}',
-        request_field=u'httpsHealthCheckResource',
-        request_type_name=u'ComputeHttpsHealthChecksPatchRequest',
-        response_type_name=u'Operation',
+        http_method='PATCH',
+        method_id='compute.httpsHealthChecks.patch',
+        ordered_params=['project', 'httpsHealthCheck'],
+        path_params=['httpsHealthCheck', 'project'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/global/httpsHealthChecks/{httpsHealthCheck}',
+        request_field='httpsHealthCheckResource',
+        request_type_name='ComputeHttpsHealthChecksPatchRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -3564,15 +3564,15 @@ This method is called on a best-effort basis. Specifically:
           config, request, global_params=global_params)
 
     TestIamPermissions.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'compute.httpsHealthChecks.testIamPermissions',
-        ordered_params=[u'project', u'resource'],
-        path_params=[u'project', u'resource'],
+        http_method='POST',
+        method_id='compute.httpsHealthChecks.testIamPermissions',
+        ordered_params=['project', 'resource'],
+        path_params=['project', 'resource'],
         query_params=[],
-        relative_path=u'projects/{project}/global/httpsHealthChecks/{resource}/testIamPermissions',
-        request_field=u'testPermissionsRequest',
-        request_type_name=u'ComputeHttpsHealthChecksTestIamPermissionsRequest',
-        response_type_name=u'TestPermissionsResponse',
+        relative_path='projects/{project}/global/httpsHealthChecks/{resource}/testIamPermissions',
+        request_field='testPermissionsRequest',
+        request_type_name='ComputeHttpsHealthChecksTestIamPermissionsRequest',
+        response_type_name='TestPermissionsResponse',
         supports_download=False,
     )
 
@@ -3590,22 +3590,22 @@ This method is called on a best-effort basis. Specifically:
           config, request, global_params=global_params)
 
     Update.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'PUT',
-        method_id=u'compute.httpsHealthChecks.update',
-        ordered_params=[u'project', u'httpsHealthCheck'],
-        path_params=[u'httpsHealthCheck', u'project'],
-        query_params=[u'requestId'],
-        relative_path=u'projects/{project}/global/httpsHealthChecks/{httpsHealthCheck}',
-        request_field=u'httpsHealthCheckResource',
-        request_type_name=u'ComputeHttpsHealthChecksUpdateRequest',
-        response_type_name=u'Operation',
+        http_method='PUT',
+        method_id='compute.httpsHealthChecks.update',
+        ordered_params=['project', 'httpsHealthCheck'],
+        path_params=['httpsHealthCheck', 'project'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/global/httpsHealthChecks/{httpsHealthCheck}',
+        request_field='httpsHealthCheckResource',
+        request_type_name='ComputeHttpsHealthChecksUpdateRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
   class ImagesService(base_api.BaseApiService):
     """Service class for the images resource."""
 
-    _NAME = u'images'
+    _NAME = 'images'
 
     def __init__(self, client):
       super(ComputeBeta.ImagesService, self).__init__(client)
@@ -3626,15 +3626,15 @@ This method is called on a best-effort basis. Specifically:
           config, request, global_params=global_params)
 
     Delete.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'DELETE',
-        method_id=u'compute.images.delete',
-        ordered_params=[u'project', u'image'],
-        path_params=[u'image', u'project'],
-        query_params=[u'requestId'],
-        relative_path=u'projects/{project}/global/images/{image}',
+        http_method='DELETE',
+        method_id='compute.images.delete',
+        ordered_params=['project', 'image'],
+        path_params=['image', 'project'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/global/images/{image}',
         request_field='',
-        request_type_name=u'ComputeImagesDeleteRequest',
-        response_type_name=u'Operation',
+        request_type_name='ComputeImagesDeleteRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -3654,15 +3654,15 @@ If an empty request body is given, clears the deprecation status instead.
           config, request, global_params=global_params)
 
     Deprecate.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'compute.images.deprecate',
-        ordered_params=[u'project', u'image'],
-        path_params=[u'image', u'project'],
-        query_params=[u'requestId'],
-        relative_path=u'projects/{project}/global/images/{image}/deprecate',
-        request_field=u'deprecationStatus',
-        request_type_name=u'ComputeImagesDeprecateRequest',
-        response_type_name=u'Operation',
+        http_method='POST',
+        method_id='compute.images.deprecate',
+        ordered_params=['project', 'image'],
+        path_params=['image', 'project'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/global/images/{image}/deprecate',
+        request_field='deprecationStatus',
+        request_type_name='ComputeImagesDeprecateRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -3680,15 +3680,15 @@ If an empty request body is given, clears the deprecation status instead.
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'compute.images.get',
-        ordered_params=[u'project', u'image'],
-        path_params=[u'image', u'project'],
+        http_method='GET',
+        method_id='compute.images.get',
+        ordered_params=['project', 'image'],
+        path_params=['image', 'project'],
         query_params=[],
-        relative_path=u'projects/{project}/global/images/{image}',
+        relative_path='projects/{project}/global/images/{image}',
         request_field='',
-        request_type_name=u'ComputeImagesGetRequest',
-        response_type_name=u'Image',
+        request_type_name='ComputeImagesGetRequest',
+        response_type_name='Image',
         supports_download=False,
     )
 
@@ -3706,15 +3706,15 @@ If an empty request body is given, clears the deprecation status instead.
           config, request, global_params=global_params)
 
     GetFromFamily.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'compute.images.getFromFamily',
-        ordered_params=[u'project', u'family'],
-        path_params=[u'family', u'project'],
+        http_method='GET',
+        method_id='compute.images.getFromFamily',
+        ordered_params=['project', 'family'],
+        path_params=['family', 'project'],
         query_params=[],
-        relative_path=u'projects/{project}/global/images/family/{family}',
+        relative_path='projects/{project}/global/images/family/{family}',
         request_field='',
-        request_type_name=u'ComputeImagesGetFromFamilyRequest',
-        response_type_name=u'Image',
+        request_type_name='ComputeImagesGetFromFamilyRequest',
+        response_type_name='Image',
         supports_download=False,
     )
 
@@ -3732,15 +3732,15 @@ If an empty request body is given, clears the deprecation status instead.
           config, request, global_params=global_params)
 
     GetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'compute.images.getIamPolicy',
-        ordered_params=[u'project', u'resource'],
-        path_params=[u'project', u'resource'],
-        query_params=[u'optionsRequestedPolicyVersion'],
-        relative_path=u'projects/{project}/global/images/{resource}/getIamPolicy',
+        http_method='GET',
+        method_id='compute.images.getIamPolicy',
+        ordered_params=['project', 'resource'],
+        path_params=['project', 'resource'],
+        query_params=['optionsRequestedPolicyVersion'],
+        relative_path='projects/{project}/global/images/{resource}/getIamPolicy',
         request_field='',
-        request_type_name=u'ComputeImagesGetIamPolicyRequest',
-        response_type_name=u'Policy',
+        request_type_name='ComputeImagesGetIamPolicyRequest',
+        response_type_name='Policy',
         supports_download=False,
     )
 
@@ -3758,15 +3758,15 @@ If an empty request body is given, clears the deprecation status instead.
           config, request, global_params=global_params)
 
     Insert.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'compute.images.insert',
-        ordered_params=[u'project'],
-        path_params=[u'project'],
-        query_params=[u'forceCreate', u'requestId'],
-        relative_path=u'projects/{project}/global/images',
-        request_field=u'image',
-        request_type_name=u'ComputeImagesInsertRequest',
-        response_type_name=u'Operation',
+        http_method='POST',
+        method_id='compute.images.insert',
+        ordered_params=['project'],
+        path_params=['project'],
+        query_params=['forceCreate', 'requestId'],
+        relative_path='projects/{project}/global/images',
+        request_field='image',
+        request_type_name='ComputeImagesInsertRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -3784,15 +3784,15 @@ If an empty request body is given, clears the deprecation status instead.
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'compute.images.list',
-        ordered_params=[u'project'],
-        path_params=[u'project'],
-        query_params=[u'filter', u'maxResults', u'orderBy', u'pageToken'],
-        relative_path=u'projects/{project}/global/images',
+        http_method='GET',
+        method_id='compute.images.list',
+        ordered_params=['project'],
+        path_params=['project'],
+        query_params=['filter', 'maxResults', 'orderBy', 'pageToken'],
+        relative_path='projects/{project}/global/images',
         request_field='',
-        request_type_name=u'ComputeImagesListRequest',
-        response_type_name=u'ImageList',
+        request_type_name='ComputeImagesListRequest',
+        response_type_name='ImageList',
         supports_download=False,
     )
 
@@ -3810,15 +3810,15 @@ If an empty request body is given, clears the deprecation status instead.
           config, request, global_params=global_params)
 
     SetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'compute.images.setIamPolicy',
-        ordered_params=[u'project', u'resource'],
-        path_params=[u'project', u'resource'],
+        http_method='POST',
+        method_id='compute.images.setIamPolicy',
+        ordered_params=['project', 'resource'],
+        path_params=['project', 'resource'],
         query_params=[],
-        relative_path=u'projects/{project}/global/images/{resource}/setIamPolicy',
-        request_field=u'globalSetPolicyRequest',
-        request_type_name=u'ComputeImagesSetIamPolicyRequest',
-        response_type_name=u'Policy',
+        relative_path='projects/{project}/global/images/{resource}/setIamPolicy',
+        request_field='globalSetPolicyRequest',
+        request_type_name='ComputeImagesSetIamPolicyRequest',
+        response_type_name='Policy',
         supports_download=False,
     )
 
@@ -3836,15 +3836,15 @@ If an empty request body is given, clears the deprecation status instead.
           config, request, global_params=global_params)
 
     SetLabels.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'compute.images.setLabels',
-        ordered_params=[u'project', u'resource'],
-        path_params=[u'project', u'resource'],
+        http_method='POST',
+        method_id='compute.images.setLabels',
+        ordered_params=['project', 'resource'],
+        path_params=['project', 'resource'],
         query_params=[],
-        relative_path=u'projects/{project}/global/images/{resource}/setLabels',
-        request_field=u'globalSetLabelsRequest',
-        request_type_name=u'ComputeImagesSetLabelsRequest',
-        response_type_name=u'Operation',
+        relative_path='projects/{project}/global/images/{resource}/setLabels',
+        request_field='globalSetLabelsRequest',
+        request_type_name='ComputeImagesSetLabelsRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -3862,22 +3862,22 @@ If an empty request body is given, clears the deprecation status instead.
           config, request, global_params=global_params)
 
     TestIamPermissions.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'compute.images.testIamPermissions',
-        ordered_params=[u'project', u'resource'],
-        path_params=[u'project', u'resource'],
+        http_method='POST',
+        method_id='compute.images.testIamPermissions',
+        ordered_params=['project', 'resource'],
+        path_params=['project', 'resource'],
         query_params=[],
-        relative_path=u'projects/{project}/global/images/{resource}/testIamPermissions',
-        request_field=u'testPermissionsRequest',
-        request_type_name=u'ComputeImagesTestIamPermissionsRequest',
-        response_type_name=u'TestPermissionsResponse',
+        relative_path='projects/{project}/global/images/{resource}/testIamPermissions',
+        request_field='testPermissionsRequest',
+        request_type_name='ComputeImagesTestIamPermissionsRequest',
+        response_type_name='TestPermissionsResponse',
         supports_download=False,
     )
 
   class InstanceGroupManagersService(base_api.BaseApiService):
     """Service class for the instanceGroupManagers resource."""
 
-    _NAME = u'instanceGroupManagers'
+    _NAME = 'instanceGroupManagers'
 
     def __init__(self, client):
       super(ComputeBeta.InstanceGroupManagersService, self).__init__(client)
@@ -3902,15 +3902,15 @@ You can specify a maximum of 1000 instances with this method per request.
           config, request, global_params=global_params)
 
     AbandonInstances.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'compute.instanceGroupManagers.abandonInstances',
-        ordered_params=[u'project', u'zone', u'instanceGroupManager'],
-        path_params=[u'instanceGroupManager', u'project', u'zone'],
-        query_params=[u'requestId'],
-        relative_path=u'projects/{project}/zones/{zone}/instanceGroupManagers/{instanceGroupManager}/abandonInstances',
-        request_field=u'instanceGroupManagersAbandonInstancesRequest',
-        request_type_name=u'ComputeInstanceGroupManagersAbandonInstancesRequest',
-        response_type_name=u'Operation',
+        http_method='POST',
+        method_id='compute.instanceGroupManagers.abandonInstances',
+        ordered_params=['project', 'zone', 'instanceGroupManager'],
+        path_params=['instanceGroupManager', 'project', 'zone'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/zones/{zone}/instanceGroupManagers/{instanceGroupManager}/abandonInstances',
+        request_field='instanceGroupManagersAbandonInstancesRequest',
+        request_type_name='ComputeInstanceGroupManagersAbandonInstancesRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -3928,15 +3928,15 @@ You can specify a maximum of 1000 instances with this method per request.
           config, request, global_params=global_params)
 
     AggregatedList.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'compute.instanceGroupManagers.aggregatedList',
-        ordered_params=[u'project'],
-        path_params=[u'project'],
-        query_params=[u'filter', u'includeAllScopes', u'maxResults', u'orderBy', u'pageToken'],
-        relative_path=u'projects/{project}/aggregated/instanceGroupManagers',
+        http_method='GET',
+        method_id='compute.instanceGroupManagers.aggregatedList',
+        ordered_params=['project'],
+        path_params=['project'],
+        query_params=['filter', 'includeAllScopes', 'maxResults', 'orderBy', 'pageToken'],
+        relative_path='projects/{project}/aggregated/instanceGroupManagers',
         request_field='',
-        request_type_name=u'ComputeInstanceGroupManagersAggregatedListRequest',
-        response_type_name=u'InstanceGroupManagerAggregatedList',
+        request_type_name='ComputeInstanceGroupManagersAggregatedListRequest',
+        response_type_name='InstanceGroupManagerAggregatedList',
         supports_download=False,
     )
 
@@ -3954,15 +3954,15 @@ You can specify a maximum of 1000 instances with this method per request.
           config, request, global_params=global_params)
 
     ApplyUpdatesToInstances.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'compute.instanceGroupManagers.applyUpdatesToInstances',
-        ordered_params=[u'project', u'zone', u'instanceGroupManager'],
-        path_params=[u'instanceGroupManager', u'project', u'zone'],
+        http_method='POST',
+        method_id='compute.instanceGroupManagers.applyUpdatesToInstances',
+        ordered_params=['project', 'zone', 'instanceGroupManager'],
+        path_params=['instanceGroupManager', 'project', 'zone'],
         query_params=[],
-        relative_path=u'projects/{project}/zones/{zone}/instanceGroupManagers/{instanceGroupManager}/applyUpdatesToInstances',
-        request_field=u'instanceGroupManagersApplyUpdatesRequest',
-        request_type_name=u'ComputeInstanceGroupManagersApplyUpdatesToInstancesRequest',
-        response_type_name=u'Operation',
+        relative_path='projects/{project}/zones/{zone}/instanceGroupManagers/{instanceGroupManager}/applyUpdatesToInstances',
+        request_field='instanceGroupManagersApplyUpdatesRequest',
+        request_type_name='ComputeInstanceGroupManagersApplyUpdatesToInstancesRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -3980,15 +3980,15 @@ You can specify a maximum of 1000 instances with this method per request.
           config, request, global_params=global_params)
 
     CreateInstances.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'compute.instanceGroupManagers.createInstances',
-        ordered_params=[u'project', u'zone', u'instanceGroupManager'],
-        path_params=[u'instanceGroupManager', u'project', u'zone'],
-        query_params=[u'requestId'],
-        relative_path=u'projects/{project}/zones/{zone}/instanceGroupManagers/{instanceGroupManager}/createInstances',
-        request_field=u'instanceGroupManagersCreateInstancesRequest',
-        request_type_name=u'ComputeInstanceGroupManagersCreateInstancesRequest',
-        response_type_name=u'Operation',
+        http_method='POST',
+        method_id='compute.instanceGroupManagers.createInstances',
+        ordered_params=['project', 'zone', 'instanceGroupManager'],
+        path_params=['instanceGroupManager', 'project', 'zone'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/zones/{zone}/instanceGroupManagers/{instanceGroupManager}/createInstances',
+        request_field='instanceGroupManagersCreateInstancesRequest',
+        request_type_name='ComputeInstanceGroupManagersCreateInstancesRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -4006,15 +4006,15 @@ You can specify a maximum of 1000 instances with this method per request.
           config, request, global_params=global_params)
 
     Delete.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'DELETE',
-        method_id=u'compute.instanceGroupManagers.delete',
-        ordered_params=[u'project', u'zone', u'instanceGroupManager'],
-        path_params=[u'instanceGroupManager', u'project', u'zone'],
-        query_params=[u'requestId'],
-        relative_path=u'projects/{project}/zones/{zone}/instanceGroupManagers/{instanceGroupManager}',
+        http_method='DELETE',
+        method_id='compute.instanceGroupManagers.delete',
+        ordered_params=['project', 'zone', 'instanceGroupManager'],
+        path_params=['instanceGroupManager', 'project', 'zone'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/zones/{zone}/instanceGroupManagers/{instanceGroupManager}',
         request_field='',
-        request_type_name=u'ComputeInstanceGroupManagersDeleteRequest',
-        response_type_name=u'Operation',
+        request_type_name='ComputeInstanceGroupManagersDeleteRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -4036,15 +4036,15 @@ You can specify a maximum of 1000 instances with this method per request.
           config, request, global_params=global_params)
 
     DeleteInstances.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'compute.instanceGroupManagers.deleteInstances',
-        ordered_params=[u'project', u'zone', u'instanceGroupManager'],
-        path_params=[u'instanceGroupManager', u'project', u'zone'],
-        query_params=[u'requestId'],
-        relative_path=u'projects/{project}/zones/{zone}/instanceGroupManagers/{instanceGroupManager}/deleteInstances',
-        request_field=u'instanceGroupManagersDeleteInstancesRequest',
-        request_type_name=u'ComputeInstanceGroupManagersDeleteInstancesRequest',
-        response_type_name=u'Operation',
+        http_method='POST',
+        method_id='compute.instanceGroupManagers.deleteInstances',
+        ordered_params=['project', 'zone', 'instanceGroupManager'],
+        path_params=['instanceGroupManager', 'project', 'zone'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/zones/{zone}/instanceGroupManagers/{instanceGroupManager}/deleteInstances',
+        request_field='instanceGroupManagersDeleteInstancesRequest',
+        request_type_name='ComputeInstanceGroupManagersDeleteInstancesRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -4062,15 +4062,15 @@ You can specify a maximum of 1000 instances with this method per request.
           config, request, global_params=global_params)
 
     DeletePerInstanceConfigs.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'compute.instanceGroupManagers.deletePerInstanceConfigs',
-        ordered_params=[u'project', u'zone', u'instanceGroupManager'],
-        path_params=[u'instanceGroupManager', u'project', u'zone'],
+        http_method='POST',
+        method_id='compute.instanceGroupManagers.deletePerInstanceConfigs',
+        ordered_params=['project', 'zone', 'instanceGroupManager'],
+        path_params=['instanceGroupManager', 'project', 'zone'],
         query_params=[],
-        relative_path=u'projects/{project}/zones/{zone}/instanceGroupManagers/{instanceGroupManager}/deletePerInstanceConfigs',
-        request_field=u'instanceGroupManagersDeletePerInstanceConfigsReq',
-        request_type_name=u'ComputeInstanceGroupManagersDeletePerInstanceConfigsRequest',
-        response_type_name=u'Operation',
+        relative_path='projects/{project}/zones/{zone}/instanceGroupManagers/{instanceGroupManager}/deletePerInstanceConfigs',
+        request_field='instanceGroupManagersDeletePerInstanceConfigsReq',
+        request_type_name='ComputeInstanceGroupManagersDeletePerInstanceConfigsRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -4088,15 +4088,15 @@ You can specify a maximum of 1000 instances with this method per request.
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'compute.instanceGroupManagers.get',
-        ordered_params=[u'project', u'zone', u'instanceGroupManager'],
-        path_params=[u'instanceGroupManager', u'project', u'zone'],
+        http_method='GET',
+        method_id='compute.instanceGroupManagers.get',
+        ordered_params=['project', 'zone', 'instanceGroupManager'],
+        path_params=['instanceGroupManager', 'project', 'zone'],
         query_params=[],
-        relative_path=u'projects/{project}/zones/{zone}/instanceGroupManagers/{instanceGroupManager}',
+        relative_path='projects/{project}/zones/{zone}/instanceGroupManagers/{instanceGroupManager}',
         request_field='',
-        request_type_name=u'ComputeInstanceGroupManagersGetRequest',
-        response_type_name=u'InstanceGroupManager',
+        request_type_name='ComputeInstanceGroupManagersGetRequest',
+        response_type_name='InstanceGroupManager',
         supports_download=False,
     )
 
@@ -4116,15 +4116,15 @@ A managed instance group can have up to 1000 VM instances per group. Please cont
           config, request, global_params=global_params)
 
     Insert.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'compute.instanceGroupManagers.insert',
-        ordered_params=[u'project', u'zone'],
-        path_params=[u'project', u'zone'],
-        query_params=[u'requestId'],
-        relative_path=u'projects/{project}/zones/{zone}/instanceGroupManagers',
-        request_field=u'instanceGroupManager',
-        request_type_name=u'ComputeInstanceGroupManagersInsertRequest',
-        response_type_name=u'Operation',
+        http_method='POST',
+        method_id='compute.instanceGroupManagers.insert',
+        ordered_params=['project', 'zone'],
+        path_params=['project', 'zone'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/zones/{zone}/instanceGroupManagers',
+        request_field='instanceGroupManager',
+        request_type_name='ComputeInstanceGroupManagersInsertRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -4142,15 +4142,15 @@ A managed instance group can have up to 1000 VM instances per group. Please cont
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'compute.instanceGroupManagers.list',
-        ordered_params=[u'project', u'zone'],
-        path_params=[u'project', u'zone'],
-        query_params=[u'filter', u'maxResults', u'orderBy', u'pageToken'],
-        relative_path=u'projects/{project}/zones/{zone}/instanceGroupManagers',
+        http_method='GET',
+        method_id='compute.instanceGroupManagers.list',
+        ordered_params=['project', 'zone'],
+        path_params=['project', 'zone'],
+        query_params=['filter', 'maxResults', 'orderBy', 'pageToken'],
+        relative_path='projects/{project}/zones/{zone}/instanceGroupManagers',
         request_field='',
-        request_type_name=u'ComputeInstanceGroupManagersListRequest',
-        response_type_name=u'InstanceGroupManagerList',
+        request_type_name='ComputeInstanceGroupManagersListRequest',
+        response_type_name='InstanceGroupManagerList',
         supports_download=False,
     )
 
@@ -4168,15 +4168,15 @@ A managed instance group can have up to 1000 VM instances per group. Please cont
           config, request, global_params=global_params)
 
     ListErrors.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'compute.instanceGroupManagers.listErrors',
-        ordered_params=[u'project', u'zone', u'instanceGroupManager'],
-        path_params=[u'instanceGroupManager', u'project', u'zone'],
-        query_params=[u'filter', u'maxResults', u'orderBy', u'pageToken'],
-        relative_path=u'projects/{project}/zones/{zone}/instanceGroupManagers/{instanceGroupManager}/listErrors',
+        http_method='GET',
+        method_id='compute.instanceGroupManagers.listErrors',
+        ordered_params=['project', 'zone', 'instanceGroupManager'],
+        path_params=['instanceGroupManager', 'project', 'zone'],
+        query_params=['filter', 'maxResults', 'orderBy', 'pageToken'],
+        relative_path='projects/{project}/zones/{zone}/instanceGroupManagers/{instanceGroupManager}/listErrors',
         request_field='',
-        request_type_name=u'ComputeInstanceGroupManagersListErrorsRequest',
-        response_type_name=u'InstanceGroupManagersListErrorsResponse',
+        request_type_name='ComputeInstanceGroupManagersListErrorsRequest',
+        response_type_name='InstanceGroupManagersListErrorsResponse',
         supports_download=False,
     )
 
@@ -4194,15 +4194,15 @@ A managed instance group can have up to 1000 VM instances per group. Please cont
           config, request, global_params=global_params)
 
     ListManagedInstances.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'compute.instanceGroupManagers.listManagedInstances',
-        ordered_params=[u'project', u'zone', u'instanceGroupManager'],
-        path_params=[u'instanceGroupManager', u'project', u'zone'],
-        query_params=[u'filter', u'maxResults', u'orderBy', u'pageToken'],
-        relative_path=u'projects/{project}/zones/{zone}/instanceGroupManagers/{instanceGroupManager}/listManagedInstances',
+        http_method='POST',
+        method_id='compute.instanceGroupManagers.listManagedInstances',
+        ordered_params=['project', 'zone', 'instanceGroupManager'],
+        path_params=['instanceGroupManager', 'project', 'zone'],
+        query_params=['filter', 'maxResults', 'orderBy', 'pageToken'],
+        relative_path='projects/{project}/zones/{zone}/instanceGroupManagers/{instanceGroupManager}/listManagedInstances',
         request_field='',
-        request_type_name=u'ComputeInstanceGroupManagersListManagedInstancesRequest',
-        response_type_name=u'InstanceGroupManagersListManagedInstancesResponse',
+        request_type_name='ComputeInstanceGroupManagersListManagedInstancesRequest',
+        response_type_name='InstanceGroupManagersListManagedInstancesResponse',
         supports_download=False,
     )
 
@@ -4220,15 +4220,15 @@ A managed instance group can have up to 1000 VM instances per group. Please cont
           config, request, global_params=global_params)
 
     ListPerInstanceConfigs.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'compute.instanceGroupManagers.listPerInstanceConfigs',
-        ordered_params=[u'project', u'zone', u'instanceGroupManager'],
-        path_params=[u'instanceGroupManager', u'project', u'zone'],
-        query_params=[u'filter', u'maxResults', u'orderBy', u'pageToken'],
-        relative_path=u'projects/{project}/zones/{zone}/instanceGroupManagers/{instanceGroupManager}/listPerInstanceConfigs',
+        http_method='POST',
+        method_id='compute.instanceGroupManagers.listPerInstanceConfigs',
+        ordered_params=['project', 'zone', 'instanceGroupManager'],
+        path_params=['instanceGroupManager', 'project', 'zone'],
+        query_params=['filter', 'maxResults', 'orderBy', 'pageToken'],
+        relative_path='projects/{project}/zones/{zone}/instanceGroupManagers/{instanceGroupManager}/listPerInstanceConfigs',
         request_field='',
-        request_type_name=u'ComputeInstanceGroupManagersListPerInstanceConfigsRequest',
-        response_type_name=u'InstanceGroupManagersListPerInstanceConfigsResp',
+        request_type_name='ComputeInstanceGroupManagersListPerInstanceConfigsRequest',
+        response_type_name='InstanceGroupManagersListPerInstanceConfigsResp',
         supports_download=False,
     )
 
@@ -4246,15 +4246,15 @@ A managed instance group can have up to 1000 VM instances per group. Please cont
           config, request, global_params=global_params)
 
     Patch.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'PATCH',
-        method_id=u'compute.instanceGroupManagers.patch',
-        ordered_params=[u'project', u'zone', u'instanceGroupManager'],
-        path_params=[u'instanceGroupManager', u'project', u'zone'],
-        query_params=[u'requestId'],
-        relative_path=u'projects/{project}/zones/{zone}/instanceGroupManagers/{instanceGroupManager}',
-        request_field=u'instanceGroupManagerResource',
-        request_type_name=u'ComputeInstanceGroupManagersPatchRequest',
-        response_type_name=u'Operation',
+        http_method='PATCH',
+        method_id='compute.instanceGroupManagers.patch',
+        ordered_params=['project', 'zone', 'instanceGroupManager'],
+        path_params=['instanceGroupManager', 'project', 'zone'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/zones/{zone}/instanceGroupManagers/{instanceGroupManager}',
+        request_field='instanceGroupManagerResource',
+        request_type_name='ComputeInstanceGroupManagersPatchRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -4272,15 +4272,15 @@ A managed instance group can have up to 1000 VM instances per group. Please cont
           config, request, global_params=global_params)
 
     PatchPerInstanceConfigs.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'compute.instanceGroupManagers.patchPerInstanceConfigs',
-        ordered_params=[u'project', u'zone', u'instanceGroupManager'],
-        path_params=[u'instanceGroupManager', u'project', u'zone'],
-        query_params=[u'requestId'],
-        relative_path=u'projects/{project}/zones/{zone}/instanceGroupManagers/{instanceGroupManager}/patchPerInstanceConfigs',
-        request_field=u'instanceGroupManagersPatchPerInstanceConfigsReq',
-        request_type_name=u'ComputeInstanceGroupManagersPatchPerInstanceConfigsRequest',
-        response_type_name=u'Operation',
+        http_method='POST',
+        method_id='compute.instanceGroupManagers.patchPerInstanceConfigs',
+        ordered_params=['project', 'zone', 'instanceGroupManager'],
+        path_params=['instanceGroupManager', 'project', 'zone'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/zones/{zone}/instanceGroupManagers/{instanceGroupManager}/patchPerInstanceConfigs',
+        request_field='instanceGroupManagersPatchPerInstanceConfigsReq',
+        request_type_name='ComputeInstanceGroupManagersPatchPerInstanceConfigsRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -4302,15 +4302,15 @@ You can specify a maximum of 1000 instances with this method per request.
           config, request, global_params=global_params)
 
     RecreateInstances.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'compute.instanceGroupManagers.recreateInstances',
-        ordered_params=[u'project', u'zone', u'instanceGroupManager'],
-        path_params=[u'instanceGroupManager', u'project', u'zone'],
-        query_params=[u'requestId'],
-        relative_path=u'projects/{project}/zones/{zone}/instanceGroupManagers/{instanceGroupManager}/recreateInstances',
-        request_field=u'instanceGroupManagersRecreateInstancesRequest',
-        request_type_name=u'ComputeInstanceGroupManagersRecreateInstancesRequest',
-        response_type_name=u'Operation',
+        http_method='POST',
+        method_id='compute.instanceGroupManagers.recreateInstances',
+        ordered_params=['project', 'zone', 'instanceGroupManager'],
+        path_params=['instanceGroupManager', 'project', 'zone'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/zones/{zone}/instanceGroupManagers/{instanceGroupManager}/recreateInstances',
+        request_field='instanceGroupManagersRecreateInstancesRequest',
+        request_type_name='ComputeInstanceGroupManagersRecreateInstancesRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -4336,15 +4336,15 @@ If the group is part of a backend service that has enabled connection draining, 
           config, request, global_params=global_params)
 
     Resize.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'compute.instanceGroupManagers.resize',
-        ordered_params=[u'project', u'zone', u'instanceGroupManager', u'size'],
-        path_params=[u'instanceGroupManager', u'project', u'zone'],
-        query_params=[u'requestId', u'size'],
-        relative_path=u'projects/{project}/zones/{zone}/instanceGroupManagers/{instanceGroupManager}/resize',
+        http_method='POST',
+        method_id='compute.instanceGroupManagers.resize',
+        ordered_params=['project', 'zone', 'instanceGroupManager', 'size'],
+        path_params=['instanceGroupManager', 'project', 'zone'],
+        query_params=['requestId', 'size'],
+        relative_path='projects/{project}/zones/{zone}/instanceGroupManagers/{instanceGroupManager}/resize',
         request_field='',
-        request_type_name=u'ComputeInstanceGroupManagersResizeRequest',
-        response_type_name=u'Operation',
+        request_type_name='ComputeInstanceGroupManagersResizeRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -4366,15 +4366,15 @@ If the group is part of a backend service that has enabled connection draining, 
           config, request, global_params=global_params)
 
     ResizeAdvanced.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'compute.instanceGroupManagers.resizeAdvanced',
-        ordered_params=[u'project', u'zone', u'instanceGroupManager'],
-        path_params=[u'instanceGroupManager', u'project', u'zone'],
-        query_params=[u'requestId'],
-        relative_path=u'projects/{project}/zones/{zone}/instanceGroupManagers/{instanceGroupManager}/resizeAdvanced',
-        request_field=u'instanceGroupManagersResizeAdvancedRequest',
-        request_type_name=u'ComputeInstanceGroupManagersResizeAdvancedRequest',
-        response_type_name=u'Operation',
+        http_method='POST',
+        method_id='compute.instanceGroupManagers.resizeAdvanced',
+        ordered_params=['project', 'zone', 'instanceGroupManager'],
+        path_params=['instanceGroupManager', 'project', 'zone'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/zones/{zone}/instanceGroupManagers/{instanceGroupManager}/resizeAdvanced',
+        request_field='instanceGroupManagersResizeAdvancedRequest',
+        request_type_name='ComputeInstanceGroupManagersResizeAdvancedRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -4392,15 +4392,15 @@ If the group is part of a backend service that has enabled connection draining, 
           config, request, global_params=global_params)
 
     SetAutoHealingPolicies.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'compute.instanceGroupManagers.setAutoHealingPolicies',
-        ordered_params=[u'project', u'zone', u'instanceGroupManager'],
-        path_params=[u'instanceGroupManager', u'project', u'zone'],
-        query_params=[u'requestId'],
-        relative_path=u'projects/{project}/zones/{zone}/instanceGroupManagers/{instanceGroupManager}/setAutoHealingPolicies',
-        request_field=u'instanceGroupManagersSetAutoHealingRequest',
-        request_type_name=u'ComputeInstanceGroupManagersSetAutoHealingPoliciesRequest',
-        response_type_name=u'Operation',
+        http_method='POST',
+        method_id='compute.instanceGroupManagers.setAutoHealingPolicies',
+        ordered_params=['project', 'zone', 'instanceGroupManager'],
+        path_params=['instanceGroupManager', 'project', 'zone'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/zones/{zone}/instanceGroupManagers/{instanceGroupManager}/setAutoHealingPolicies',
+        request_field='instanceGroupManagersSetAutoHealingRequest',
+        request_type_name='ComputeInstanceGroupManagersSetAutoHealingPoliciesRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -4418,15 +4418,15 @@ If the group is part of a backend service that has enabled connection draining, 
           config, request, global_params=global_params)
 
     SetInstanceTemplate.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'compute.instanceGroupManagers.setInstanceTemplate',
-        ordered_params=[u'project', u'zone', u'instanceGroupManager'],
-        path_params=[u'instanceGroupManager', u'project', u'zone'],
-        query_params=[u'requestId'],
-        relative_path=u'projects/{project}/zones/{zone}/instanceGroupManagers/{instanceGroupManager}/setInstanceTemplate',
-        request_field=u'instanceGroupManagersSetInstanceTemplateRequest',
-        request_type_name=u'ComputeInstanceGroupManagersSetInstanceTemplateRequest',
-        response_type_name=u'Operation',
+        http_method='POST',
+        method_id='compute.instanceGroupManagers.setInstanceTemplate',
+        ordered_params=['project', 'zone', 'instanceGroupManager'],
+        path_params=['instanceGroupManager', 'project', 'zone'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/zones/{zone}/instanceGroupManagers/{instanceGroupManager}/setInstanceTemplate',
+        request_field='instanceGroupManagersSetInstanceTemplateRequest',
+        request_type_name='ComputeInstanceGroupManagersSetInstanceTemplateRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -4444,15 +4444,15 @@ If the group is part of a backend service that has enabled connection draining, 
           config, request, global_params=global_params)
 
     SetTargetPools.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'compute.instanceGroupManagers.setTargetPools',
-        ordered_params=[u'project', u'zone', u'instanceGroupManager'],
-        path_params=[u'instanceGroupManager', u'project', u'zone'],
-        query_params=[u'requestId'],
-        relative_path=u'projects/{project}/zones/{zone}/instanceGroupManagers/{instanceGroupManager}/setTargetPools',
-        request_field=u'instanceGroupManagersSetTargetPoolsRequest',
-        request_type_name=u'ComputeInstanceGroupManagersSetTargetPoolsRequest',
-        response_type_name=u'Operation',
+        http_method='POST',
+        method_id='compute.instanceGroupManagers.setTargetPools',
+        ordered_params=['project', 'zone', 'instanceGroupManager'],
+        path_params=['instanceGroupManager', 'project', 'zone'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/zones/{zone}/instanceGroupManagers/{instanceGroupManager}/setTargetPools',
+        request_field='instanceGroupManagersSetTargetPoolsRequest',
+        request_type_name='ComputeInstanceGroupManagersSetTargetPoolsRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -4470,15 +4470,15 @@ If the group is part of a backend service that has enabled connection draining, 
           config, request, global_params=global_params)
 
     TestIamPermissions.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'compute.instanceGroupManagers.testIamPermissions',
-        ordered_params=[u'project', u'zone', u'resource'],
-        path_params=[u'project', u'resource', u'zone'],
+        http_method='POST',
+        method_id='compute.instanceGroupManagers.testIamPermissions',
+        ordered_params=['project', 'zone', 'resource'],
+        path_params=['project', 'resource', 'zone'],
         query_params=[],
-        relative_path=u'projects/{project}/zones/{zone}/instanceGroupManagers/{resource}/testIamPermissions',
-        request_field=u'testPermissionsRequest',
-        request_type_name=u'ComputeInstanceGroupManagersTestIamPermissionsRequest',
-        response_type_name=u'TestPermissionsResponse',
+        relative_path='projects/{project}/zones/{zone}/instanceGroupManagers/{resource}/testIamPermissions',
+        request_field='testPermissionsRequest',
+        request_type_name='ComputeInstanceGroupManagersTestIamPermissionsRequest',
+        response_type_name='TestPermissionsResponse',
         supports_download=False,
     )
 
@@ -4496,15 +4496,15 @@ If the group is part of a backend service that has enabled connection draining, 
           config, request, global_params=global_params)
 
     Update.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'PUT',
-        method_id=u'compute.instanceGroupManagers.update',
-        ordered_params=[u'project', u'zone', u'instanceGroupManager'],
-        path_params=[u'instanceGroupManager', u'project', u'zone'],
-        query_params=[u'requestId'],
-        relative_path=u'projects/{project}/zones/{zone}/instanceGroupManagers/{instanceGroupManager}',
-        request_field=u'instanceGroupManagerResource',
-        request_type_name=u'ComputeInstanceGroupManagersUpdateRequest',
-        response_type_name=u'Operation',
+        http_method='PUT',
+        method_id='compute.instanceGroupManagers.update',
+        ordered_params=['project', 'zone', 'instanceGroupManager'],
+        path_params=['instanceGroupManager', 'project', 'zone'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/zones/{zone}/instanceGroupManagers/{instanceGroupManager}',
+        request_field='instanceGroupManagerResource',
+        request_type_name='ComputeInstanceGroupManagersUpdateRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -4522,22 +4522,22 @@ If the group is part of a backend service that has enabled connection draining, 
           config, request, global_params=global_params)
 
     UpdatePerInstanceConfigs.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'compute.instanceGroupManagers.updatePerInstanceConfigs',
-        ordered_params=[u'project', u'zone', u'instanceGroupManager'],
-        path_params=[u'instanceGroupManager', u'project', u'zone'],
-        query_params=[u'requestId'],
-        relative_path=u'projects/{project}/zones/{zone}/instanceGroupManagers/{instanceGroupManager}/updatePerInstanceConfigs',
-        request_field=u'instanceGroupManagersUpdatePerInstanceConfigsReq',
-        request_type_name=u'ComputeInstanceGroupManagersUpdatePerInstanceConfigsRequest',
-        response_type_name=u'Operation',
+        http_method='POST',
+        method_id='compute.instanceGroupManagers.updatePerInstanceConfigs',
+        ordered_params=['project', 'zone', 'instanceGroupManager'],
+        path_params=['instanceGroupManager', 'project', 'zone'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/zones/{zone}/instanceGroupManagers/{instanceGroupManager}/updatePerInstanceConfigs',
+        request_field='instanceGroupManagersUpdatePerInstanceConfigsReq',
+        request_type_name='ComputeInstanceGroupManagersUpdatePerInstanceConfigsRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
   class InstanceGroupsService(base_api.BaseApiService):
     """Service class for the instanceGroups resource."""
 
-    _NAME = u'instanceGroups'
+    _NAME = 'instanceGroups'
 
     def __init__(self, client):
       super(ComputeBeta.InstanceGroupsService, self).__init__(client)
@@ -4558,15 +4558,15 @@ If the group is part of a backend service that has enabled connection draining, 
           config, request, global_params=global_params)
 
     AddInstances.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'compute.instanceGroups.addInstances',
-        ordered_params=[u'project', u'zone', u'instanceGroup'],
-        path_params=[u'instanceGroup', u'project', u'zone'],
-        query_params=[u'requestId'],
-        relative_path=u'projects/{project}/zones/{zone}/instanceGroups/{instanceGroup}/addInstances',
-        request_field=u'instanceGroupsAddInstancesRequest',
-        request_type_name=u'ComputeInstanceGroupsAddInstancesRequest',
-        response_type_name=u'Operation',
+        http_method='POST',
+        method_id='compute.instanceGroups.addInstances',
+        ordered_params=['project', 'zone', 'instanceGroup'],
+        path_params=['instanceGroup', 'project', 'zone'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/zones/{zone}/instanceGroups/{instanceGroup}/addInstances',
+        request_field='instanceGroupsAddInstancesRequest',
+        request_type_name='ComputeInstanceGroupsAddInstancesRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -4584,15 +4584,15 @@ If the group is part of a backend service that has enabled connection draining, 
           config, request, global_params=global_params)
 
     AggregatedList.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'compute.instanceGroups.aggregatedList',
-        ordered_params=[u'project'],
-        path_params=[u'project'],
-        query_params=[u'filter', u'includeAllScopes', u'maxResults', u'orderBy', u'pageToken'],
-        relative_path=u'projects/{project}/aggregated/instanceGroups',
+        http_method='GET',
+        method_id='compute.instanceGroups.aggregatedList',
+        ordered_params=['project'],
+        path_params=['project'],
+        query_params=['filter', 'includeAllScopes', 'maxResults', 'orderBy', 'pageToken'],
+        relative_path='projects/{project}/aggregated/instanceGroups',
         request_field='',
-        request_type_name=u'ComputeInstanceGroupsAggregatedListRequest',
-        response_type_name=u'InstanceGroupAggregatedList',
+        request_type_name='ComputeInstanceGroupsAggregatedListRequest',
+        response_type_name='InstanceGroupAggregatedList',
         supports_download=False,
     )
 
@@ -4610,15 +4610,15 @@ If the group is part of a backend service that has enabled connection draining, 
           config, request, global_params=global_params)
 
     Delete.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'DELETE',
-        method_id=u'compute.instanceGroups.delete',
-        ordered_params=[u'project', u'zone', u'instanceGroup'],
-        path_params=[u'instanceGroup', u'project', u'zone'],
-        query_params=[u'requestId'],
-        relative_path=u'projects/{project}/zones/{zone}/instanceGroups/{instanceGroup}',
+        http_method='DELETE',
+        method_id='compute.instanceGroups.delete',
+        ordered_params=['project', 'zone', 'instanceGroup'],
+        path_params=['instanceGroup', 'project', 'zone'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/zones/{zone}/instanceGroups/{instanceGroup}',
         request_field='',
-        request_type_name=u'ComputeInstanceGroupsDeleteRequest',
-        response_type_name=u'Operation',
+        request_type_name='ComputeInstanceGroupsDeleteRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -4636,15 +4636,15 @@ If the group is part of a backend service that has enabled connection draining, 
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'compute.instanceGroups.get',
-        ordered_params=[u'project', u'zone', u'instanceGroup'],
-        path_params=[u'instanceGroup', u'project', u'zone'],
+        http_method='GET',
+        method_id='compute.instanceGroups.get',
+        ordered_params=['project', 'zone', 'instanceGroup'],
+        path_params=['instanceGroup', 'project', 'zone'],
         query_params=[],
-        relative_path=u'projects/{project}/zones/{zone}/instanceGroups/{instanceGroup}',
+        relative_path='projects/{project}/zones/{zone}/instanceGroups/{instanceGroup}',
         request_field='',
-        request_type_name=u'ComputeInstanceGroupsGetRequest',
-        response_type_name=u'InstanceGroup',
+        request_type_name='ComputeInstanceGroupsGetRequest',
+        response_type_name='InstanceGroup',
         supports_download=False,
     )
 
@@ -4662,15 +4662,15 @@ If the group is part of a backend service that has enabled connection draining, 
           config, request, global_params=global_params)
 
     Insert.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'compute.instanceGroups.insert',
-        ordered_params=[u'project', u'zone'],
-        path_params=[u'project', u'zone'],
-        query_params=[u'requestId'],
-        relative_path=u'projects/{project}/zones/{zone}/instanceGroups',
-        request_field=u'instanceGroup',
-        request_type_name=u'ComputeInstanceGroupsInsertRequest',
-        response_type_name=u'Operation',
+        http_method='POST',
+        method_id='compute.instanceGroups.insert',
+        ordered_params=['project', 'zone'],
+        path_params=['project', 'zone'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/zones/{zone}/instanceGroups',
+        request_field='instanceGroup',
+        request_type_name='ComputeInstanceGroupsInsertRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -4688,15 +4688,15 @@ If the group is part of a backend service that has enabled connection draining, 
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'compute.instanceGroups.list',
-        ordered_params=[u'project', u'zone'],
-        path_params=[u'project', u'zone'],
-        query_params=[u'filter', u'maxResults', u'orderBy', u'pageToken'],
-        relative_path=u'projects/{project}/zones/{zone}/instanceGroups',
+        http_method='GET',
+        method_id='compute.instanceGroups.list',
+        ordered_params=['project', 'zone'],
+        path_params=['project', 'zone'],
+        query_params=['filter', 'maxResults', 'orderBy', 'pageToken'],
+        relative_path='projects/{project}/zones/{zone}/instanceGroups',
         request_field='',
-        request_type_name=u'ComputeInstanceGroupsListRequest',
-        response_type_name=u'InstanceGroupList',
+        request_type_name='ComputeInstanceGroupsListRequest',
+        response_type_name='InstanceGroupList',
         supports_download=False,
     )
 
@@ -4714,15 +4714,15 @@ If the group is part of a backend service that has enabled connection draining, 
           config, request, global_params=global_params)
 
     ListInstances.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'compute.instanceGroups.listInstances',
-        ordered_params=[u'project', u'zone', u'instanceGroup'],
-        path_params=[u'instanceGroup', u'project', u'zone'],
-        query_params=[u'filter', u'maxResults', u'orderBy', u'pageToken'],
-        relative_path=u'projects/{project}/zones/{zone}/instanceGroups/{instanceGroup}/listInstances',
-        request_field=u'instanceGroupsListInstancesRequest',
-        request_type_name=u'ComputeInstanceGroupsListInstancesRequest',
-        response_type_name=u'InstanceGroupsListInstances',
+        http_method='POST',
+        method_id='compute.instanceGroups.listInstances',
+        ordered_params=['project', 'zone', 'instanceGroup'],
+        path_params=['instanceGroup', 'project', 'zone'],
+        query_params=['filter', 'maxResults', 'orderBy', 'pageToken'],
+        relative_path='projects/{project}/zones/{zone}/instanceGroups/{instanceGroup}/listInstances',
+        request_field='instanceGroupsListInstancesRequest',
+        request_type_name='ComputeInstanceGroupsListInstancesRequest',
+        response_type_name='InstanceGroupsListInstances',
         supports_download=False,
     )
 
@@ -4742,15 +4742,15 @@ If the group is part of a backend service that has enabled connection draining, 
           config, request, global_params=global_params)
 
     RemoveInstances.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'compute.instanceGroups.removeInstances',
-        ordered_params=[u'project', u'zone', u'instanceGroup'],
-        path_params=[u'instanceGroup', u'project', u'zone'],
-        query_params=[u'requestId'],
-        relative_path=u'projects/{project}/zones/{zone}/instanceGroups/{instanceGroup}/removeInstances',
-        request_field=u'instanceGroupsRemoveInstancesRequest',
-        request_type_name=u'ComputeInstanceGroupsRemoveInstancesRequest',
-        response_type_name=u'Operation',
+        http_method='POST',
+        method_id='compute.instanceGroups.removeInstances',
+        ordered_params=['project', 'zone', 'instanceGroup'],
+        path_params=['instanceGroup', 'project', 'zone'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/zones/{zone}/instanceGroups/{instanceGroup}/removeInstances',
+        request_field='instanceGroupsRemoveInstancesRequest',
+        request_type_name='ComputeInstanceGroupsRemoveInstancesRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -4768,15 +4768,15 @@ If the group is part of a backend service that has enabled connection draining, 
           config, request, global_params=global_params)
 
     SetNamedPorts.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'compute.instanceGroups.setNamedPorts',
-        ordered_params=[u'project', u'zone', u'instanceGroup'],
-        path_params=[u'instanceGroup', u'project', u'zone'],
-        query_params=[u'requestId'],
-        relative_path=u'projects/{project}/zones/{zone}/instanceGroups/{instanceGroup}/setNamedPorts',
-        request_field=u'instanceGroupsSetNamedPortsRequest',
-        request_type_name=u'ComputeInstanceGroupsSetNamedPortsRequest',
-        response_type_name=u'Operation',
+        http_method='POST',
+        method_id='compute.instanceGroups.setNamedPorts',
+        ordered_params=['project', 'zone', 'instanceGroup'],
+        path_params=['instanceGroup', 'project', 'zone'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/zones/{zone}/instanceGroups/{instanceGroup}/setNamedPorts',
+        request_field='instanceGroupsSetNamedPortsRequest',
+        request_type_name='ComputeInstanceGroupsSetNamedPortsRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -4794,22 +4794,22 @@ If the group is part of a backend service that has enabled connection draining, 
           config, request, global_params=global_params)
 
     TestIamPermissions.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'compute.instanceGroups.testIamPermissions',
-        ordered_params=[u'project', u'zone', u'resource'],
-        path_params=[u'project', u'resource', u'zone'],
+        http_method='POST',
+        method_id='compute.instanceGroups.testIamPermissions',
+        ordered_params=['project', 'zone', 'resource'],
+        path_params=['project', 'resource', 'zone'],
         query_params=[],
-        relative_path=u'projects/{project}/zones/{zone}/instanceGroups/{resource}/testIamPermissions',
-        request_field=u'testPermissionsRequest',
-        request_type_name=u'ComputeInstanceGroupsTestIamPermissionsRequest',
-        response_type_name=u'TestPermissionsResponse',
+        relative_path='projects/{project}/zones/{zone}/instanceGroups/{resource}/testIamPermissions',
+        request_field='testPermissionsRequest',
+        request_type_name='ComputeInstanceGroupsTestIamPermissionsRequest',
+        response_type_name='TestPermissionsResponse',
         supports_download=False,
     )
 
   class InstanceTemplatesService(base_api.BaseApiService):
     """Service class for the instanceTemplates resource."""
 
-    _NAME = u'instanceTemplates'
+    _NAME = 'instanceTemplates'
 
     def __init__(self, client):
       super(ComputeBeta.InstanceTemplatesService, self).__init__(client)
@@ -4830,15 +4830,15 @@ If the group is part of a backend service that has enabled connection draining, 
           config, request, global_params=global_params)
 
     Delete.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'DELETE',
-        method_id=u'compute.instanceTemplates.delete',
-        ordered_params=[u'project', u'instanceTemplate'],
-        path_params=[u'instanceTemplate', u'project'],
-        query_params=[u'requestId'],
-        relative_path=u'projects/{project}/global/instanceTemplates/{instanceTemplate}',
+        http_method='DELETE',
+        method_id='compute.instanceTemplates.delete',
+        ordered_params=['project', 'instanceTemplate'],
+        path_params=['instanceTemplate', 'project'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/global/instanceTemplates/{instanceTemplate}',
         request_field='',
-        request_type_name=u'ComputeInstanceTemplatesDeleteRequest',
-        response_type_name=u'Operation',
+        request_type_name='ComputeInstanceTemplatesDeleteRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -4856,15 +4856,15 @@ If the group is part of a backend service that has enabled connection draining, 
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'compute.instanceTemplates.get',
-        ordered_params=[u'project', u'instanceTemplate'],
-        path_params=[u'instanceTemplate', u'project'],
+        http_method='GET',
+        method_id='compute.instanceTemplates.get',
+        ordered_params=['project', 'instanceTemplate'],
+        path_params=['instanceTemplate', 'project'],
         query_params=[],
-        relative_path=u'projects/{project}/global/instanceTemplates/{instanceTemplate}',
+        relative_path='projects/{project}/global/instanceTemplates/{instanceTemplate}',
         request_field='',
-        request_type_name=u'ComputeInstanceTemplatesGetRequest',
-        response_type_name=u'InstanceTemplate',
+        request_type_name='ComputeInstanceTemplatesGetRequest',
+        response_type_name='InstanceTemplate',
         supports_download=False,
     )
 
@@ -4882,15 +4882,15 @@ If the group is part of a backend service that has enabled connection draining, 
           config, request, global_params=global_params)
 
     GetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'compute.instanceTemplates.getIamPolicy',
-        ordered_params=[u'project', u'resource'],
-        path_params=[u'project', u'resource'],
-        query_params=[u'optionsRequestedPolicyVersion'],
-        relative_path=u'projects/{project}/global/instanceTemplates/{resource}/getIamPolicy',
+        http_method='GET',
+        method_id='compute.instanceTemplates.getIamPolicy',
+        ordered_params=['project', 'resource'],
+        path_params=['project', 'resource'],
+        query_params=['optionsRequestedPolicyVersion'],
+        relative_path='projects/{project}/global/instanceTemplates/{resource}/getIamPolicy',
         request_field='',
-        request_type_name=u'ComputeInstanceTemplatesGetIamPolicyRequest',
-        response_type_name=u'Policy',
+        request_type_name='ComputeInstanceTemplatesGetIamPolicyRequest',
+        response_type_name='Policy',
         supports_download=False,
     )
 
@@ -4908,15 +4908,15 @@ If the group is part of a backend service that has enabled connection draining, 
           config, request, global_params=global_params)
 
     Insert.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'compute.instanceTemplates.insert',
-        ordered_params=[u'project'],
-        path_params=[u'project'],
-        query_params=[u'requestId'],
-        relative_path=u'projects/{project}/global/instanceTemplates',
-        request_field=u'instanceTemplate',
-        request_type_name=u'ComputeInstanceTemplatesInsertRequest',
-        response_type_name=u'Operation',
+        http_method='POST',
+        method_id='compute.instanceTemplates.insert',
+        ordered_params=['project'],
+        path_params=['project'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/global/instanceTemplates',
+        request_field='instanceTemplate',
+        request_type_name='ComputeInstanceTemplatesInsertRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -4934,15 +4934,15 @@ If the group is part of a backend service that has enabled connection draining, 
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'compute.instanceTemplates.list',
-        ordered_params=[u'project'],
-        path_params=[u'project'],
-        query_params=[u'filter', u'maxResults', u'orderBy', u'pageToken'],
-        relative_path=u'projects/{project}/global/instanceTemplates',
+        http_method='GET',
+        method_id='compute.instanceTemplates.list',
+        ordered_params=['project'],
+        path_params=['project'],
+        query_params=['filter', 'maxResults', 'orderBy', 'pageToken'],
+        relative_path='projects/{project}/global/instanceTemplates',
         request_field='',
-        request_type_name=u'ComputeInstanceTemplatesListRequest',
-        response_type_name=u'InstanceTemplateList',
+        request_type_name='ComputeInstanceTemplatesListRequest',
+        response_type_name='InstanceTemplateList',
         supports_download=False,
     )
 
@@ -4960,15 +4960,15 @@ If the group is part of a backend service that has enabled connection draining, 
           config, request, global_params=global_params)
 
     SetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'compute.instanceTemplates.setIamPolicy',
-        ordered_params=[u'project', u'resource'],
-        path_params=[u'project', u'resource'],
+        http_method='POST',
+        method_id='compute.instanceTemplates.setIamPolicy',
+        ordered_params=['project', 'resource'],
+        path_params=['project', 'resource'],
         query_params=[],
-        relative_path=u'projects/{project}/global/instanceTemplates/{resource}/setIamPolicy',
-        request_field=u'globalSetPolicyRequest',
-        request_type_name=u'ComputeInstanceTemplatesSetIamPolicyRequest',
-        response_type_name=u'Policy',
+        relative_path='projects/{project}/global/instanceTemplates/{resource}/setIamPolicy',
+        request_field='globalSetPolicyRequest',
+        request_type_name='ComputeInstanceTemplatesSetIamPolicyRequest',
+        response_type_name='Policy',
         supports_download=False,
     )
 
@@ -4986,22 +4986,22 @@ If the group is part of a backend service that has enabled connection draining, 
           config, request, global_params=global_params)
 
     TestIamPermissions.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'compute.instanceTemplates.testIamPermissions',
-        ordered_params=[u'project', u'resource'],
-        path_params=[u'project', u'resource'],
+        http_method='POST',
+        method_id='compute.instanceTemplates.testIamPermissions',
+        ordered_params=['project', 'resource'],
+        path_params=['project', 'resource'],
         query_params=[],
-        relative_path=u'projects/{project}/global/instanceTemplates/{resource}/testIamPermissions',
-        request_field=u'testPermissionsRequest',
-        request_type_name=u'ComputeInstanceTemplatesTestIamPermissionsRequest',
-        response_type_name=u'TestPermissionsResponse',
+        relative_path='projects/{project}/global/instanceTemplates/{resource}/testIamPermissions',
+        request_field='testPermissionsRequest',
+        request_type_name='ComputeInstanceTemplatesTestIamPermissionsRequest',
+        response_type_name='TestPermissionsResponse',
         supports_download=False,
     )
 
   class InstancesService(base_api.BaseApiService):
     """Service class for the instances resource."""
 
-    _NAME = u'instances'
+    _NAME = 'instances'
 
     def __init__(self, client):
       super(ComputeBeta.InstancesService, self).__init__(client)
@@ -5022,15 +5022,15 @@ If the group is part of a backend service that has enabled connection draining, 
           config, request, global_params=global_params)
 
     AddAccessConfig.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'compute.instances.addAccessConfig',
-        ordered_params=[u'project', u'zone', u'instance', u'networkInterface'],
-        path_params=[u'instance', u'project', u'zone'],
-        query_params=[u'networkInterface', u'requestId'],
-        relative_path=u'projects/{project}/zones/{zone}/instances/{instance}/addAccessConfig',
-        request_field=u'accessConfig',
-        request_type_name=u'ComputeInstancesAddAccessConfigRequest',
-        response_type_name=u'Operation',
+        http_method='POST',
+        method_id='compute.instances.addAccessConfig',
+        ordered_params=['project', 'zone', 'instance', 'networkInterface'],
+        path_params=['instance', 'project', 'zone'],
+        query_params=['networkInterface', 'requestId'],
+        relative_path='projects/{project}/zones/{zone}/instances/{instance}/addAccessConfig',
+        request_field='accessConfig',
+        request_type_name='ComputeInstancesAddAccessConfigRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -5048,15 +5048,15 @@ If the group is part of a backend service that has enabled connection draining, 
           config, request, global_params=global_params)
 
     AddResourcePolicies.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'compute.instances.addResourcePolicies',
-        ordered_params=[u'project', u'zone', u'instance'],
-        path_params=[u'instance', u'project', u'zone'],
-        query_params=[u'requestId'],
-        relative_path=u'projects/{project}/zones/{zone}/instances/{instance}/addResourcePolicies',
-        request_field=u'instancesAddResourcePoliciesRequest',
-        request_type_name=u'ComputeInstancesAddResourcePoliciesRequest',
-        response_type_name=u'Operation',
+        http_method='POST',
+        method_id='compute.instances.addResourcePolicies',
+        ordered_params=['project', 'zone', 'instance'],
+        path_params=['instance', 'project', 'zone'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/zones/{zone}/instances/{instance}/addResourcePolicies',
+        request_field='instancesAddResourcePoliciesRequest',
+        request_type_name='ComputeInstancesAddResourcePoliciesRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -5074,15 +5074,15 @@ If the group is part of a backend service that has enabled connection draining, 
           config, request, global_params=global_params)
 
     AggregatedList.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'compute.instances.aggregatedList',
-        ordered_params=[u'project'],
-        path_params=[u'project'],
-        query_params=[u'filter', u'includeAllScopes', u'maxResults', u'orderBy', u'pageToken'],
-        relative_path=u'projects/{project}/aggregated/instances',
+        http_method='GET',
+        method_id='compute.instances.aggregatedList',
+        ordered_params=['project'],
+        path_params=['project'],
+        query_params=['filter', 'includeAllScopes', 'maxResults', 'orderBy', 'pageToken'],
+        relative_path='projects/{project}/aggregated/instances',
         request_field='',
-        request_type_name=u'ComputeInstancesAggregatedListRequest',
-        response_type_name=u'InstanceAggregatedList',
+        request_type_name='ComputeInstancesAggregatedListRequest',
+        response_type_name='InstanceAggregatedList',
         supports_download=False,
     )
 
@@ -5100,15 +5100,15 @@ If the group is part of a backend service that has enabled connection draining, 
           config, request, global_params=global_params)
 
     AttachDisk.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'compute.instances.attachDisk',
-        ordered_params=[u'project', u'zone', u'instance'],
-        path_params=[u'instance', u'project', u'zone'],
-        query_params=[u'forceAttach', u'requestId'],
-        relative_path=u'projects/{project}/zones/{zone}/instances/{instance}/attachDisk',
-        request_field=u'attachedDisk',
-        request_type_name=u'ComputeInstancesAttachDiskRequest',
-        response_type_name=u'Operation',
+        http_method='POST',
+        method_id='compute.instances.attachDisk',
+        ordered_params=['project', 'zone', 'instance'],
+        path_params=['instance', 'project', 'zone'],
+        query_params=['forceAttach', 'requestId'],
+        relative_path='projects/{project}/zones/{zone}/instances/{instance}/attachDisk',
+        request_field='attachedDisk',
+        request_type_name='ComputeInstancesAttachDiskRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -5126,15 +5126,15 @@ If the group is part of a backend service that has enabled connection draining, 
           config, request, global_params=global_params)
 
     Delete.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'DELETE',
-        method_id=u'compute.instances.delete',
-        ordered_params=[u'project', u'zone', u'instance'],
-        path_params=[u'instance', u'project', u'zone'],
-        query_params=[u'requestId'],
-        relative_path=u'projects/{project}/zones/{zone}/instances/{instance}',
+        http_method='DELETE',
+        method_id='compute.instances.delete',
+        ordered_params=['project', 'zone', 'instance'],
+        path_params=['instance', 'project', 'zone'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/zones/{zone}/instances/{instance}',
         request_field='',
-        request_type_name=u'ComputeInstancesDeleteRequest',
-        response_type_name=u'Operation',
+        request_type_name='ComputeInstancesDeleteRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -5152,15 +5152,15 @@ If the group is part of a backend service that has enabled connection draining, 
           config, request, global_params=global_params)
 
     DeleteAccessConfig.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'compute.instances.deleteAccessConfig',
-        ordered_params=[u'project', u'zone', u'instance', u'accessConfig', u'networkInterface'],
-        path_params=[u'instance', u'project', u'zone'],
-        query_params=[u'accessConfig', u'networkInterface', u'requestId'],
-        relative_path=u'projects/{project}/zones/{zone}/instances/{instance}/deleteAccessConfig',
+        http_method='POST',
+        method_id='compute.instances.deleteAccessConfig',
+        ordered_params=['project', 'zone', 'instance', 'accessConfig', 'networkInterface'],
+        path_params=['instance', 'project', 'zone'],
+        query_params=['accessConfig', 'networkInterface', 'requestId'],
+        relative_path='projects/{project}/zones/{zone}/instances/{instance}/deleteAccessConfig',
         request_field='',
-        request_type_name=u'ComputeInstancesDeleteAccessConfigRequest',
-        response_type_name=u'Operation',
+        request_type_name='ComputeInstancesDeleteAccessConfigRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -5178,15 +5178,15 @@ If the group is part of a backend service that has enabled connection draining, 
           config, request, global_params=global_params)
 
     DetachDisk.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'compute.instances.detachDisk',
-        ordered_params=[u'project', u'zone', u'instance', u'deviceName'],
-        path_params=[u'instance', u'project', u'zone'],
-        query_params=[u'deviceName', u'requestId'],
-        relative_path=u'projects/{project}/zones/{zone}/instances/{instance}/detachDisk',
+        http_method='POST',
+        method_id='compute.instances.detachDisk',
+        ordered_params=['project', 'zone', 'instance', 'deviceName'],
+        path_params=['instance', 'project', 'zone'],
+        query_params=['deviceName', 'requestId'],
+        relative_path='projects/{project}/zones/{zone}/instances/{instance}/detachDisk',
         request_field='',
-        request_type_name=u'ComputeInstancesDetachDiskRequest',
-        response_type_name=u'Operation',
+        request_type_name='ComputeInstancesDetachDiskRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -5204,15 +5204,15 @@ If the group is part of a backend service that has enabled connection draining, 
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'compute.instances.get',
-        ordered_params=[u'project', u'zone', u'instance'],
-        path_params=[u'instance', u'project', u'zone'],
+        http_method='GET',
+        method_id='compute.instances.get',
+        ordered_params=['project', 'zone', 'instance'],
+        path_params=['instance', 'project', 'zone'],
         query_params=[],
-        relative_path=u'projects/{project}/zones/{zone}/instances/{instance}',
+        relative_path='projects/{project}/zones/{zone}/instances/{instance}',
         request_field='',
-        request_type_name=u'ComputeInstancesGetRequest',
-        response_type_name=u'Instance',
+        request_type_name='ComputeInstancesGetRequest',
+        response_type_name='Instance',
         supports_download=False,
     )
 
@@ -5230,15 +5230,15 @@ If the group is part of a backend service that has enabled connection draining, 
           config, request, global_params=global_params)
 
     GetEffectiveFirewalls.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'compute.instances.getEffectiveFirewalls',
-        ordered_params=[u'project', u'zone', u'instance', u'networkInterface'],
-        path_params=[u'instance', u'project', u'zone'],
-        query_params=[u'networkInterface'],
-        relative_path=u'projects/{project}/zones/{zone}/instances/{instance}/getEffectiveFirewalls',
+        http_method='GET',
+        method_id='compute.instances.getEffectiveFirewalls',
+        ordered_params=['project', 'zone', 'instance', 'networkInterface'],
+        path_params=['instance', 'project', 'zone'],
+        query_params=['networkInterface'],
+        relative_path='projects/{project}/zones/{zone}/instances/{instance}/getEffectiveFirewalls',
         request_field='',
-        request_type_name=u'ComputeInstancesGetEffectiveFirewallsRequest',
-        response_type_name=u'InstancesGetEffectiveFirewallsResponse',
+        request_type_name='ComputeInstancesGetEffectiveFirewallsRequest',
+        response_type_name='InstancesGetEffectiveFirewallsResponse',
         supports_download=False,
     )
 
@@ -5256,15 +5256,15 @@ If the group is part of a backend service that has enabled connection draining, 
           config, request, global_params=global_params)
 
     GetGuestAttributes.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'compute.instances.getGuestAttributes',
-        ordered_params=[u'project', u'zone', u'instance'],
-        path_params=[u'instance', u'project', u'zone'],
-        query_params=[u'queryPath', u'variableKey'],
-        relative_path=u'projects/{project}/zones/{zone}/instances/{instance}/getGuestAttributes',
+        http_method='GET',
+        method_id='compute.instances.getGuestAttributes',
+        ordered_params=['project', 'zone', 'instance'],
+        path_params=['instance', 'project', 'zone'],
+        query_params=['queryPath', 'variableKey'],
+        relative_path='projects/{project}/zones/{zone}/instances/{instance}/getGuestAttributes',
         request_field='',
-        request_type_name=u'ComputeInstancesGetGuestAttributesRequest',
-        response_type_name=u'GuestAttributes',
+        request_type_name='ComputeInstancesGetGuestAttributesRequest',
+        response_type_name='GuestAttributes',
         supports_download=False,
     )
 
@@ -5282,15 +5282,15 @@ If the group is part of a backend service that has enabled connection draining, 
           config, request, global_params=global_params)
 
     GetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'compute.instances.getIamPolicy',
-        ordered_params=[u'project', u'zone', u'resource'],
-        path_params=[u'project', u'resource', u'zone'],
-        query_params=[u'optionsRequestedPolicyVersion'],
-        relative_path=u'projects/{project}/zones/{zone}/instances/{resource}/getIamPolicy',
+        http_method='GET',
+        method_id='compute.instances.getIamPolicy',
+        ordered_params=['project', 'zone', 'resource'],
+        path_params=['project', 'resource', 'zone'],
+        query_params=['optionsRequestedPolicyVersion'],
+        relative_path='projects/{project}/zones/{zone}/instances/{resource}/getIamPolicy',
         request_field='',
-        request_type_name=u'ComputeInstancesGetIamPolicyRequest',
-        response_type_name=u'Policy',
+        request_type_name='ComputeInstancesGetIamPolicyRequest',
+        response_type_name='Policy',
         supports_download=False,
     )
 
@@ -5308,15 +5308,15 @@ If the group is part of a backend service that has enabled connection draining, 
           config, request, global_params=global_params)
 
     GetScreenshot.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'compute.instances.getScreenshot',
-        ordered_params=[u'project', u'zone', u'instance'],
-        path_params=[u'instance', u'project', u'zone'],
+        http_method='GET',
+        method_id='compute.instances.getScreenshot',
+        ordered_params=['project', 'zone', 'instance'],
+        path_params=['instance', 'project', 'zone'],
         query_params=[],
-        relative_path=u'projects/{project}/zones/{zone}/instances/{instance}/screenshot',
+        relative_path='projects/{project}/zones/{zone}/instances/{instance}/screenshot',
         request_field='',
-        request_type_name=u'ComputeInstancesGetScreenshotRequest',
-        response_type_name=u'Screenshot',
+        request_type_name='ComputeInstancesGetScreenshotRequest',
+        response_type_name='Screenshot',
         supports_download=False,
     )
 
@@ -5334,15 +5334,15 @@ If the group is part of a backend service that has enabled connection draining, 
           config, request, global_params=global_params)
 
     GetSerialPortOutput.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'compute.instances.getSerialPortOutput',
-        ordered_params=[u'project', u'zone', u'instance'],
-        path_params=[u'instance', u'project', u'zone'],
-        query_params=[u'port', u'start'],
-        relative_path=u'projects/{project}/zones/{zone}/instances/{instance}/serialPort',
+        http_method='GET',
+        method_id='compute.instances.getSerialPortOutput',
+        ordered_params=['project', 'zone', 'instance'],
+        path_params=['instance', 'project', 'zone'],
+        query_params=['port', 'start'],
+        relative_path='projects/{project}/zones/{zone}/instances/{instance}/serialPort',
         request_field='',
-        request_type_name=u'ComputeInstancesGetSerialPortOutputRequest',
-        response_type_name=u'SerialPortOutput',
+        request_type_name='ComputeInstancesGetSerialPortOutputRequest',
+        response_type_name='SerialPortOutput',
         supports_download=False,
     )
 
@@ -5360,15 +5360,15 @@ If the group is part of a backend service that has enabled connection draining, 
           config, request, global_params=global_params)
 
     GetShieldedInstanceIdentity.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'compute.instances.getShieldedInstanceIdentity',
-        ordered_params=[u'project', u'zone', u'instance'],
-        path_params=[u'instance', u'project', u'zone'],
+        http_method='GET',
+        method_id='compute.instances.getShieldedInstanceIdentity',
+        ordered_params=['project', 'zone', 'instance'],
+        path_params=['instance', 'project', 'zone'],
         query_params=[],
-        relative_path=u'projects/{project}/zones/{zone}/instances/{instance}/getShieldedInstanceIdentity',
+        relative_path='projects/{project}/zones/{zone}/instances/{instance}/getShieldedInstanceIdentity',
         request_field='',
-        request_type_name=u'ComputeInstancesGetShieldedInstanceIdentityRequest',
-        response_type_name=u'ShieldedInstanceIdentity',
+        request_type_name='ComputeInstancesGetShieldedInstanceIdentityRequest',
+        response_type_name='ShieldedInstanceIdentity',
         supports_download=False,
     )
 
@@ -5386,15 +5386,15 @@ If the group is part of a backend service that has enabled connection draining, 
           config, request, global_params=global_params)
 
     GetShieldedVmIdentity.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'compute.instances.getShieldedVmIdentity',
-        ordered_params=[u'project', u'zone', u'instance'],
-        path_params=[u'instance', u'project', u'zone'],
+        http_method='GET',
+        method_id='compute.instances.getShieldedVmIdentity',
+        ordered_params=['project', 'zone', 'instance'],
+        path_params=['instance', 'project', 'zone'],
         query_params=[],
-        relative_path=u'projects/{project}/zones/{zone}/instances/{instance}/getShieldedVmIdentity',
+        relative_path='projects/{project}/zones/{zone}/instances/{instance}/getShieldedVmIdentity',
         request_field='',
-        request_type_name=u'ComputeInstancesGetShieldedVmIdentityRequest',
-        response_type_name=u'ShieldedVmIdentity',
+        request_type_name='ComputeInstancesGetShieldedVmIdentityRequest',
+        response_type_name='ShieldedVmIdentity',
         supports_download=False,
     )
 
@@ -5412,15 +5412,15 @@ If the group is part of a backend service that has enabled connection draining, 
           config, request, global_params=global_params)
 
     Insert.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'compute.instances.insert',
-        ordered_params=[u'project', u'zone'],
-        path_params=[u'project', u'zone'],
-        query_params=[u'requestId', u'sourceInstanceTemplate', u'sourceMachineImage'],
-        relative_path=u'projects/{project}/zones/{zone}/instances',
-        request_field=u'instance',
-        request_type_name=u'ComputeInstancesInsertRequest',
-        response_type_name=u'Operation',
+        http_method='POST',
+        method_id='compute.instances.insert',
+        ordered_params=['project', 'zone'],
+        path_params=['project', 'zone'],
+        query_params=['requestId', 'sourceInstanceTemplate', 'sourceMachineImage'],
+        relative_path='projects/{project}/zones/{zone}/instances',
+        request_field='instance',
+        request_type_name='ComputeInstancesInsertRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -5438,15 +5438,15 @@ If the group is part of a backend service that has enabled connection draining, 
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'compute.instances.list',
-        ordered_params=[u'project', u'zone'],
-        path_params=[u'project', u'zone'],
-        query_params=[u'filter', u'maxResults', u'orderBy', u'pageToken'],
-        relative_path=u'projects/{project}/zones/{zone}/instances',
+        http_method='GET',
+        method_id='compute.instances.list',
+        ordered_params=['project', 'zone'],
+        path_params=['project', 'zone'],
+        query_params=['filter', 'maxResults', 'orderBy', 'pageToken'],
+        relative_path='projects/{project}/zones/{zone}/instances',
         request_field='',
-        request_type_name=u'ComputeInstancesListRequest',
-        response_type_name=u'InstanceList',
+        request_type_name='ComputeInstancesListRequest',
+        response_type_name='InstanceList',
         supports_download=False,
     )
 
@@ -5464,15 +5464,15 @@ If the group is part of a backend service that has enabled connection draining, 
           config, request, global_params=global_params)
 
     ListReferrers.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'compute.instances.listReferrers',
-        ordered_params=[u'project', u'zone', u'instance'],
-        path_params=[u'instance', u'project', u'zone'],
-        query_params=[u'filter', u'maxResults', u'orderBy', u'pageToken'],
-        relative_path=u'projects/{project}/zones/{zone}/instances/{instance}/referrers',
+        http_method='GET',
+        method_id='compute.instances.listReferrers',
+        ordered_params=['project', 'zone', 'instance'],
+        path_params=['instance', 'project', 'zone'],
+        query_params=['filter', 'maxResults', 'orderBy', 'pageToken'],
+        relative_path='projects/{project}/zones/{zone}/instances/{instance}/referrers',
         request_field='',
-        request_type_name=u'ComputeInstancesListReferrersRequest',
-        response_type_name=u'InstanceListReferrers',
+        request_type_name='ComputeInstancesListReferrersRequest',
+        response_type_name='InstanceListReferrers',
         supports_download=False,
     )
 
@@ -5490,15 +5490,15 @@ If the group is part of a backend service that has enabled connection draining, 
           config, request, global_params=global_params)
 
     RemoveResourcePolicies.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'compute.instances.removeResourcePolicies',
-        ordered_params=[u'project', u'zone', u'instance'],
-        path_params=[u'instance', u'project', u'zone'],
-        query_params=[u'requestId'],
-        relative_path=u'projects/{project}/zones/{zone}/instances/{instance}/removeResourcePolicies',
-        request_field=u'instancesRemoveResourcePoliciesRequest',
-        request_type_name=u'ComputeInstancesRemoveResourcePoliciesRequest',
-        response_type_name=u'Operation',
+        http_method='POST',
+        method_id='compute.instances.removeResourcePolicies',
+        ordered_params=['project', 'zone', 'instance'],
+        path_params=['instance', 'project', 'zone'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/zones/{zone}/instances/{instance}/removeResourcePolicies',
+        request_field='instancesRemoveResourcePoliciesRequest',
+        request_type_name='ComputeInstancesRemoveResourcePoliciesRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -5516,15 +5516,15 @@ If the group is part of a backend service that has enabled connection draining, 
           config, request, global_params=global_params)
 
     Reset.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'compute.instances.reset',
-        ordered_params=[u'project', u'zone', u'instance'],
-        path_params=[u'instance', u'project', u'zone'],
-        query_params=[u'requestId'],
-        relative_path=u'projects/{project}/zones/{zone}/instances/{instance}/reset',
+        http_method='POST',
+        method_id='compute.instances.reset',
+        ordered_params=['project', 'zone', 'instance'],
+        path_params=['instance', 'project', 'zone'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/zones/{zone}/instances/{instance}/reset',
         request_field='',
-        request_type_name=u'ComputeInstancesResetRequest',
-        response_type_name=u'Operation',
+        request_type_name='ComputeInstancesResetRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -5542,15 +5542,15 @@ If the group is part of a backend service that has enabled connection draining, 
           config, request, global_params=global_params)
 
     Resume.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'compute.instances.resume',
-        ordered_params=[u'project', u'zone', u'instance'],
-        path_params=[u'instance', u'project', u'zone'],
-        query_params=[u'requestId'],
-        relative_path=u'projects/{project}/zones/{zone}/instances/{instance}/resume',
-        request_field=u'instancesResumeRequest',
-        request_type_name=u'ComputeInstancesResumeRequest',
-        response_type_name=u'Operation',
+        http_method='POST',
+        method_id='compute.instances.resume',
+        ordered_params=['project', 'zone', 'instance'],
+        path_params=['instance', 'project', 'zone'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/zones/{zone}/instances/{instance}/resume',
+        request_field='instancesResumeRequest',
+        request_type_name='ComputeInstancesResumeRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -5568,15 +5568,15 @@ If the group is part of a backend service that has enabled connection draining, 
           config, request, global_params=global_params)
 
     SetDeletionProtection.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'compute.instances.setDeletionProtection',
-        ordered_params=[u'project', u'zone', u'resource'],
-        path_params=[u'project', u'resource', u'zone'],
-        query_params=[u'deletionProtection', u'requestId'],
-        relative_path=u'projects/{project}/zones/{zone}/instances/{resource}/setDeletionProtection',
+        http_method='POST',
+        method_id='compute.instances.setDeletionProtection',
+        ordered_params=['project', 'zone', 'resource'],
+        path_params=['project', 'resource', 'zone'],
+        query_params=['deletionProtection', 'requestId'],
+        relative_path='projects/{project}/zones/{zone}/instances/{resource}/setDeletionProtection',
         request_field='',
-        request_type_name=u'ComputeInstancesSetDeletionProtectionRequest',
-        response_type_name=u'Operation',
+        request_type_name='ComputeInstancesSetDeletionProtectionRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -5594,15 +5594,15 @@ If the group is part of a backend service that has enabled connection draining, 
           config, request, global_params=global_params)
 
     SetDiskAutoDelete.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'compute.instances.setDiskAutoDelete',
-        ordered_params=[u'project', u'zone', u'instance', u'autoDelete', u'deviceName'],
-        path_params=[u'instance', u'project', u'zone'],
-        query_params=[u'autoDelete', u'deviceName', u'requestId'],
-        relative_path=u'projects/{project}/zones/{zone}/instances/{instance}/setDiskAutoDelete',
+        http_method='POST',
+        method_id='compute.instances.setDiskAutoDelete',
+        ordered_params=['project', 'zone', 'instance', 'autoDelete', 'deviceName'],
+        path_params=['instance', 'project', 'zone'],
+        query_params=['autoDelete', 'deviceName', 'requestId'],
+        relative_path='projects/{project}/zones/{zone}/instances/{instance}/setDiskAutoDelete',
         request_field='',
-        request_type_name=u'ComputeInstancesSetDiskAutoDeleteRequest',
-        response_type_name=u'Operation',
+        request_type_name='ComputeInstancesSetDiskAutoDeleteRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -5620,15 +5620,15 @@ If the group is part of a backend service that has enabled connection draining, 
           config, request, global_params=global_params)
 
     SetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'compute.instances.setIamPolicy',
-        ordered_params=[u'project', u'zone', u'resource'],
-        path_params=[u'project', u'resource', u'zone'],
+        http_method='POST',
+        method_id='compute.instances.setIamPolicy',
+        ordered_params=['project', 'zone', 'resource'],
+        path_params=['project', 'resource', 'zone'],
         query_params=[],
-        relative_path=u'projects/{project}/zones/{zone}/instances/{resource}/setIamPolicy',
-        request_field=u'zoneSetPolicyRequest',
-        request_type_name=u'ComputeInstancesSetIamPolicyRequest',
-        response_type_name=u'Policy',
+        relative_path='projects/{project}/zones/{zone}/instances/{resource}/setIamPolicy',
+        request_field='zoneSetPolicyRequest',
+        request_type_name='ComputeInstancesSetIamPolicyRequest',
+        response_type_name='Policy',
         supports_download=False,
     )
 
@@ -5646,15 +5646,15 @@ If the group is part of a backend service that has enabled connection draining, 
           config, request, global_params=global_params)
 
     SetLabels.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'compute.instances.setLabels',
-        ordered_params=[u'project', u'zone', u'instance'],
-        path_params=[u'instance', u'project', u'zone'],
-        query_params=[u'requestId'],
-        relative_path=u'projects/{project}/zones/{zone}/instances/{instance}/setLabels',
-        request_field=u'instancesSetLabelsRequest',
-        request_type_name=u'ComputeInstancesSetLabelsRequest',
-        response_type_name=u'Operation',
+        http_method='POST',
+        method_id='compute.instances.setLabels',
+        ordered_params=['project', 'zone', 'instance'],
+        path_params=['instance', 'project', 'zone'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/zones/{zone}/instances/{instance}/setLabels',
+        request_field='instancesSetLabelsRequest',
+        request_type_name='ComputeInstancesSetLabelsRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -5672,15 +5672,15 @@ If the group is part of a backend service that has enabled connection draining, 
           config, request, global_params=global_params)
 
     SetMachineResources.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'compute.instances.setMachineResources',
-        ordered_params=[u'project', u'zone', u'instance'],
-        path_params=[u'instance', u'project', u'zone'],
-        query_params=[u'requestId'],
-        relative_path=u'projects/{project}/zones/{zone}/instances/{instance}/setMachineResources',
-        request_field=u'instancesSetMachineResourcesRequest',
-        request_type_name=u'ComputeInstancesSetMachineResourcesRequest',
-        response_type_name=u'Operation',
+        http_method='POST',
+        method_id='compute.instances.setMachineResources',
+        ordered_params=['project', 'zone', 'instance'],
+        path_params=['instance', 'project', 'zone'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/zones/{zone}/instances/{instance}/setMachineResources',
+        request_field='instancesSetMachineResourcesRequest',
+        request_type_name='ComputeInstancesSetMachineResourcesRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -5698,15 +5698,15 @@ If the group is part of a backend service that has enabled connection draining, 
           config, request, global_params=global_params)
 
     SetMachineType.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'compute.instances.setMachineType',
-        ordered_params=[u'project', u'zone', u'instance'],
-        path_params=[u'instance', u'project', u'zone'],
-        query_params=[u'requestId'],
-        relative_path=u'projects/{project}/zones/{zone}/instances/{instance}/setMachineType',
-        request_field=u'instancesSetMachineTypeRequest',
-        request_type_name=u'ComputeInstancesSetMachineTypeRequest',
-        response_type_name=u'Operation',
+        http_method='POST',
+        method_id='compute.instances.setMachineType',
+        ordered_params=['project', 'zone', 'instance'],
+        path_params=['instance', 'project', 'zone'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/zones/{zone}/instances/{instance}/setMachineType',
+        request_field='instancesSetMachineTypeRequest',
+        request_type_name='ComputeInstancesSetMachineTypeRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -5724,15 +5724,15 @@ If the group is part of a backend service that has enabled connection draining, 
           config, request, global_params=global_params)
 
     SetMetadata.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'compute.instances.setMetadata',
-        ordered_params=[u'project', u'zone', u'instance'],
-        path_params=[u'instance', u'project', u'zone'],
-        query_params=[u'requestId'],
-        relative_path=u'projects/{project}/zones/{zone}/instances/{instance}/setMetadata',
-        request_field=u'metadata',
-        request_type_name=u'ComputeInstancesSetMetadataRequest',
-        response_type_name=u'Operation',
+        http_method='POST',
+        method_id='compute.instances.setMetadata',
+        ordered_params=['project', 'zone', 'instance'],
+        path_params=['instance', 'project', 'zone'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/zones/{zone}/instances/{instance}/setMetadata',
+        request_field='metadata',
+        request_type_name='ComputeInstancesSetMetadataRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -5750,15 +5750,15 @@ If the group is part of a backend service that has enabled connection draining, 
           config, request, global_params=global_params)
 
     SetMinCpuPlatform.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'compute.instances.setMinCpuPlatform',
-        ordered_params=[u'project', u'zone', u'instance'],
-        path_params=[u'instance', u'project', u'zone'],
-        query_params=[u'requestId'],
-        relative_path=u'projects/{project}/zones/{zone}/instances/{instance}/setMinCpuPlatform',
-        request_field=u'instancesSetMinCpuPlatformRequest',
-        request_type_name=u'ComputeInstancesSetMinCpuPlatformRequest',
-        response_type_name=u'Operation',
+        http_method='POST',
+        method_id='compute.instances.setMinCpuPlatform',
+        ordered_params=['project', 'zone', 'instance'],
+        path_params=['instance', 'project', 'zone'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/zones/{zone}/instances/{instance}/setMinCpuPlatform',
+        request_field='instancesSetMinCpuPlatformRequest',
+        request_type_name='ComputeInstancesSetMinCpuPlatformRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -5776,15 +5776,15 @@ If the group is part of a backend service that has enabled connection draining, 
           config, request, global_params=global_params)
 
     SetScheduling.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'compute.instances.setScheduling',
-        ordered_params=[u'project', u'zone', u'instance'],
-        path_params=[u'instance', u'project', u'zone'],
-        query_params=[u'requestId'],
-        relative_path=u'projects/{project}/zones/{zone}/instances/{instance}/setScheduling',
-        request_field=u'scheduling',
-        request_type_name=u'ComputeInstancesSetSchedulingRequest',
-        response_type_name=u'Operation',
+        http_method='POST',
+        method_id='compute.instances.setScheduling',
+        ordered_params=['project', 'zone', 'instance'],
+        path_params=['instance', 'project', 'zone'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/zones/{zone}/instances/{instance}/setScheduling',
+        request_field='scheduling',
+        request_type_name='ComputeInstancesSetSchedulingRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -5802,15 +5802,15 @@ If the group is part of a backend service that has enabled connection draining, 
           config, request, global_params=global_params)
 
     SetServiceAccount.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'compute.instances.setServiceAccount',
-        ordered_params=[u'project', u'zone', u'instance'],
-        path_params=[u'instance', u'project', u'zone'],
-        query_params=[u'requestId'],
-        relative_path=u'projects/{project}/zones/{zone}/instances/{instance}/setServiceAccount',
-        request_field=u'instancesSetServiceAccountRequest',
-        request_type_name=u'ComputeInstancesSetServiceAccountRequest',
-        response_type_name=u'Operation',
+        http_method='POST',
+        method_id='compute.instances.setServiceAccount',
+        ordered_params=['project', 'zone', 'instance'],
+        path_params=['instance', 'project', 'zone'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/zones/{zone}/instances/{instance}/setServiceAccount',
+        request_field='instancesSetServiceAccountRequest',
+        request_type_name='ComputeInstancesSetServiceAccountRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -5828,15 +5828,15 @@ If the group is part of a backend service that has enabled connection draining, 
           config, request, global_params=global_params)
 
     SetShieldedInstanceIntegrityPolicy.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'PATCH',
-        method_id=u'compute.instances.setShieldedInstanceIntegrityPolicy',
-        ordered_params=[u'project', u'zone', u'instance'],
-        path_params=[u'instance', u'project', u'zone'],
-        query_params=[u'requestId'],
-        relative_path=u'projects/{project}/zones/{zone}/instances/{instance}/setShieldedInstanceIntegrityPolicy',
-        request_field=u'shieldedInstanceIntegrityPolicy',
-        request_type_name=u'ComputeInstancesSetShieldedInstanceIntegrityPolicyRequest',
-        response_type_name=u'Operation',
+        http_method='PATCH',
+        method_id='compute.instances.setShieldedInstanceIntegrityPolicy',
+        ordered_params=['project', 'zone', 'instance'],
+        path_params=['instance', 'project', 'zone'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/zones/{zone}/instances/{instance}/setShieldedInstanceIntegrityPolicy',
+        request_field='shieldedInstanceIntegrityPolicy',
+        request_type_name='ComputeInstancesSetShieldedInstanceIntegrityPolicyRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -5854,15 +5854,15 @@ If the group is part of a backend service that has enabled connection draining, 
           config, request, global_params=global_params)
 
     SetShieldedVmIntegrityPolicy.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'PATCH',
-        method_id=u'compute.instances.setShieldedVmIntegrityPolicy',
-        ordered_params=[u'project', u'zone', u'instance'],
-        path_params=[u'instance', u'project', u'zone'],
-        query_params=[u'requestId'],
-        relative_path=u'projects/{project}/zones/{zone}/instances/{instance}/setShieldedVmIntegrityPolicy',
-        request_field=u'shieldedVmIntegrityPolicy',
-        request_type_name=u'ComputeInstancesSetShieldedVmIntegrityPolicyRequest',
-        response_type_name=u'Operation',
+        http_method='PATCH',
+        method_id='compute.instances.setShieldedVmIntegrityPolicy',
+        ordered_params=['project', 'zone', 'instance'],
+        path_params=['instance', 'project', 'zone'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/zones/{zone}/instances/{instance}/setShieldedVmIntegrityPolicy',
+        request_field='shieldedVmIntegrityPolicy',
+        request_type_name='ComputeInstancesSetShieldedVmIntegrityPolicyRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -5880,15 +5880,15 @@ If the group is part of a backend service that has enabled connection draining, 
           config, request, global_params=global_params)
 
     SetTags.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'compute.instances.setTags',
-        ordered_params=[u'project', u'zone', u'instance'],
-        path_params=[u'instance', u'project', u'zone'],
-        query_params=[u'requestId'],
-        relative_path=u'projects/{project}/zones/{zone}/instances/{instance}/setTags',
-        request_field=u'tags',
-        request_type_name=u'ComputeInstancesSetTagsRequest',
-        response_type_name=u'Operation',
+        http_method='POST',
+        method_id='compute.instances.setTags',
+        ordered_params=['project', 'zone', 'instance'],
+        path_params=['instance', 'project', 'zone'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/zones/{zone}/instances/{instance}/setTags',
+        request_field='tags',
+        request_type_name='ComputeInstancesSetTagsRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -5906,15 +5906,15 @@ If the group is part of a backend service that has enabled connection draining, 
           config, request, global_params=global_params)
 
     SimulateMaintenanceEvent.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'compute.instances.simulateMaintenanceEvent',
-        ordered_params=[u'project', u'zone', u'instance'],
-        path_params=[u'instance', u'project', u'zone'],
+        http_method='POST',
+        method_id='compute.instances.simulateMaintenanceEvent',
+        ordered_params=['project', 'zone', 'instance'],
+        path_params=['instance', 'project', 'zone'],
         query_params=[],
-        relative_path=u'projects/{project}/zones/{zone}/instances/{instance}/simulateMaintenanceEvent',
+        relative_path='projects/{project}/zones/{zone}/instances/{instance}/simulateMaintenanceEvent',
         request_field='',
-        request_type_name=u'ComputeInstancesSimulateMaintenanceEventRequest',
-        response_type_name=u'Operation',
+        request_type_name='ComputeInstancesSimulateMaintenanceEventRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -5932,15 +5932,15 @@ If the group is part of a backend service that has enabled connection draining, 
           config, request, global_params=global_params)
 
     Start.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'compute.instances.start',
-        ordered_params=[u'project', u'zone', u'instance'],
-        path_params=[u'instance', u'project', u'zone'],
-        query_params=[u'requestId'],
-        relative_path=u'projects/{project}/zones/{zone}/instances/{instance}/start',
+        http_method='POST',
+        method_id='compute.instances.start',
+        ordered_params=['project', 'zone', 'instance'],
+        path_params=['instance', 'project', 'zone'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/zones/{zone}/instances/{instance}/start',
         request_field='',
-        request_type_name=u'ComputeInstancesStartRequest',
-        response_type_name=u'Operation',
+        request_type_name='ComputeInstancesStartRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -5958,15 +5958,15 @@ If the group is part of a backend service that has enabled connection draining, 
           config, request, global_params=global_params)
 
     StartWithEncryptionKey.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'compute.instances.startWithEncryptionKey',
-        ordered_params=[u'project', u'zone', u'instance'],
-        path_params=[u'instance', u'project', u'zone'],
-        query_params=[u'requestId'],
-        relative_path=u'projects/{project}/zones/{zone}/instances/{instance}/startWithEncryptionKey',
-        request_field=u'instancesStartWithEncryptionKeyRequest',
-        request_type_name=u'ComputeInstancesStartWithEncryptionKeyRequest',
-        response_type_name=u'Operation',
+        http_method='POST',
+        method_id='compute.instances.startWithEncryptionKey',
+        ordered_params=['project', 'zone', 'instance'],
+        path_params=['instance', 'project', 'zone'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/zones/{zone}/instances/{instance}/startWithEncryptionKey',
+        request_field='instancesStartWithEncryptionKeyRequest',
+        request_type_name='ComputeInstancesStartWithEncryptionKeyRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -5984,15 +5984,15 @@ If the group is part of a backend service that has enabled connection draining, 
           config, request, global_params=global_params)
 
     Stop.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'compute.instances.stop',
-        ordered_params=[u'project', u'zone', u'instance'],
-        path_params=[u'instance', u'project', u'zone'],
-        query_params=[u'requestId'],
-        relative_path=u'projects/{project}/zones/{zone}/instances/{instance}/stop',
+        http_method='POST',
+        method_id='compute.instances.stop',
+        ordered_params=['project', 'zone', 'instance'],
+        path_params=['instance', 'project', 'zone'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/zones/{zone}/instances/{instance}/stop',
         request_field='',
-        request_type_name=u'ComputeInstancesStopRequest',
-        response_type_name=u'Operation',
+        request_type_name='ComputeInstancesStopRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -6010,15 +6010,15 @@ If the group is part of a backend service that has enabled connection draining, 
           config, request, global_params=global_params)
 
     Suspend.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'compute.instances.suspend',
-        ordered_params=[u'project', u'zone', u'instance'],
-        path_params=[u'instance', u'project', u'zone'],
-        query_params=[u'discardLocalSsd', u'requestId'],
-        relative_path=u'projects/{project}/zones/{zone}/instances/{instance}/suspend',
+        http_method='POST',
+        method_id='compute.instances.suspend',
+        ordered_params=['project', 'zone', 'instance'],
+        path_params=['instance', 'project', 'zone'],
+        query_params=['discardLocalSsd', 'requestId'],
+        relative_path='projects/{project}/zones/{zone}/instances/{instance}/suspend',
         request_field='',
-        request_type_name=u'ComputeInstancesSuspendRequest',
-        response_type_name=u'Operation',
+        request_type_name='ComputeInstancesSuspendRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -6036,15 +6036,15 @@ If the group is part of a backend service that has enabled connection draining, 
           config, request, global_params=global_params)
 
     TestIamPermissions.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'compute.instances.testIamPermissions',
-        ordered_params=[u'project', u'zone', u'resource'],
-        path_params=[u'project', u'resource', u'zone'],
+        http_method='POST',
+        method_id='compute.instances.testIamPermissions',
+        ordered_params=['project', 'zone', 'resource'],
+        path_params=['project', 'resource', 'zone'],
         query_params=[],
-        relative_path=u'projects/{project}/zones/{zone}/instances/{resource}/testIamPermissions',
-        request_field=u'testPermissionsRequest',
-        request_type_name=u'ComputeInstancesTestIamPermissionsRequest',
-        response_type_name=u'TestPermissionsResponse',
+        relative_path='projects/{project}/zones/{zone}/instances/{resource}/testIamPermissions',
+        request_field='testPermissionsRequest',
+        request_type_name='ComputeInstancesTestIamPermissionsRequest',
+        response_type_name='TestPermissionsResponse',
         supports_download=False,
     )
 
@@ -6062,15 +6062,15 @@ If the group is part of a backend service that has enabled connection draining, 
           config, request, global_params=global_params)
 
     Update.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'PUT',
-        method_id=u'compute.instances.update',
-        ordered_params=[u'project', u'zone', u'instance'],
-        path_params=[u'instance', u'project', u'zone'],
-        query_params=[u'minimalAction', u'mostDisruptiveAllowedAction', u'requestId'],
-        relative_path=u'projects/{project}/zones/{zone}/instances/{instance}',
-        request_field=u'instanceResource',
-        request_type_name=u'ComputeInstancesUpdateRequest',
-        response_type_name=u'Operation',
+        http_method='PUT',
+        method_id='compute.instances.update',
+        ordered_params=['project', 'zone', 'instance'],
+        path_params=['instance', 'project', 'zone'],
+        query_params=['minimalAction', 'mostDisruptiveAllowedAction', 'requestId'],
+        relative_path='projects/{project}/zones/{zone}/instances/{instance}',
+        request_field='instanceResource',
+        request_type_name='ComputeInstancesUpdateRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -6088,15 +6088,15 @@ If the group is part of a backend service that has enabled connection draining, 
           config, request, global_params=global_params)
 
     UpdateAccessConfig.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'compute.instances.updateAccessConfig',
-        ordered_params=[u'project', u'zone', u'instance', u'networkInterface'],
-        path_params=[u'instance', u'project', u'zone'],
-        query_params=[u'networkInterface', u'requestId'],
-        relative_path=u'projects/{project}/zones/{zone}/instances/{instance}/updateAccessConfig',
-        request_field=u'accessConfig',
-        request_type_name=u'ComputeInstancesUpdateAccessConfigRequest',
-        response_type_name=u'Operation',
+        http_method='POST',
+        method_id='compute.instances.updateAccessConfig',
+        ordered_params=['project', 'zone', 'instance', 'networkInterface'],
+        path_params=['instance', 'project', 'zone'],
+        query_params=['networkInterface', 'requestId'],
+        relative_path='projects/{project}/zones/{zone}/instances/{instance}/updateAccessConfig',
+        request_field='accessConfig',
+        request_type_name='ComputeInstancesUpdateAccessConfigRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -6114,15 +6114,15 @@ If the group is part of a backend service that has enabled connection draining, 
           config, request, global_params=global_params)
 
     UpdateDisplayDevice.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'PATCH',
-        method_id=u'compute.instances.updateDisplayDevice',
-        ordered_params=[u'project', u'zone', u'instance'],
-        path_params=[u'instance', u'project', u'zone'],
-        query_params=[u'requestId'],
-        relative_path=u'projects/{project}/zones/{zone}/instances/{instance}/updateDisplayDevice',
-        request_field=u'displayDevice',
-        request_type_name=u'ComputeInstancesUpdateDisplayDeviceRequest',
-        response_type_name=u'Operation',
+        http_method='PATCH',
+        method_id='compute.instances.updateDisplayDevice',
+        ordered_params=['project', 'zone', 'instance'],
+        path_params=['instance', 'project', 'zone'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/zones/{zone}/instances/{instance}/updateDisplayDevice',
+        request_field='displayDevice',
+        request_type_name='ComputeInstancesUpdateDisplayDeviceRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -6140,15 +6140,15 @@ If the group is part of a backend service that has enabled connection draining, 
           config, request, global_params=global_params)
 
     UpdateNetworkInterface.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'PATCH',
-        method_id=u'compute.instances.updateNetworkInterface',
-        ordered_params=[u'project', u'zone', u'instance', u'networkInterface'],
-        path_params=[u'instance', u'project', u'zone'],
-        query_params=[u'networkInterface', u'requestId'],
-        relative_path=u'projects/{project}/zones/{zone}/instances/{instance}/updateNetworkInterface',
-        request_field=u'networkInterfaceResource',
-        request_type_name=u'ComputeInstancesUpdateNetworkInterfaceRequest',
-        response_type_name=u'Operation',
+        http_method='PATCH',
+        method_id='compute.instances.updateNetworkInterface',
+        ordered_params=['project', 'zone', 'instance', 'networkInterface'],
+        path_params=['instance', 'project', 'zone'],
+        query_params=['networkInterface', 'requestId'],
+        relative_path='projects/{project}/zones/{zone}/instances/{instance}/updateNetworkInterface',
+        request_field='networkInterfaceResource',
+        request_type_name='ComputeInstancesUpdateNetworkInterfaceRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -6166,15 +6166,15 @@ If the group is part of a backend service that has enabled connection draining, 
           config, request, global_params=global_params)
 
     UpdateShieldedInstanceConfig.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'PATCH',
-        method_id=u'compute.instances.updateShieldedInstanceConfig',
-        ordered_params=[u'project', u'zone', u'instance'],
-        path_params=[u'instance', u'project', u'zone'],
-        query_params=[u'requestId'],
-        relative_path=u'projects/{project}/zones/{zone}/instances/{instance}/updateShieldedInstanceConfig',
-        request_field=u'shieldedInstanceConfig',
-        request_type_name=u'ComputeInstancesUpdateShieldedInstanceConfigRequest',
-        response_type_name=u'Operation',
+        http_method='PATCH',
+        method_id='compute.instances.updateShieldedInstanceConfig',
+        ordered_params=['project', 'zone', 'instance'],
+        path_params=['instance', 'project', 'zone'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/zones/{zone}/instances/{instance}/updateShieldedInstanceConfig',
+        request_field='shieldedInstanceConfig',
+        request_type_name='ComputeInstancesUpdateShieldedInstanceConfigRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -6192,22 +6192,22 @@ If the group is part of a backend service that has enabled connection draining, 
           config, request, global_params=global_params)
 
     UpdateShieldedVmConfig.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'PATCH',
-        method_id=u'compute.instances.updateShieldedVmConfig',
-        ordered_params=[u'project', u'zone', u'instance'],
-        path_params=[u'instance', u'project', u'zone'],
-        query_params=[u'requestId'],
-        relative_path=u'projects/{project}/zones/{zone}/instances/{instance}/updateShieldedVmConfig',
-        request_field=u'shieldedVmConfig',
-        request_type_name=u'ComputeInstancesUpdateShieldedVmConfigRequest',
-        response_type_name=u'Operation',
+        http_method='PATCH',
+        method_id='compute.instances.updateShieldedVmConfig',
+        ordered_params=['project', 'zone', 'instance'],
+        path_params=['instance', 'project', 'zone'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/zones/{zone}/instances/{instance}/updateShieldedVmConfig',
+        request_field='shieldedVmConfig',
+        request_type_name='ComputeInstancesUpdateShieldedVmConfigRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
   class InterconnectAttachmentsService(base_api.BaseApiService):
     """Service class for the interconnectAttachments resource."""
 
-    _NAME = u'interconnectAttachments'
+    _NAME = 'interconnectAttachments'
 
     def __init__(self, client):
       super(ComputeBeta.InterconnectAttachmentsService, self).__init__(client)
@@ -6228,15 +6228,15 @@ If the group is part of a backend service that has enabled connection draining, 
           config, request, global_params=global_params)
 
     AggregatedList.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'compute.interconnectAttachments.aggregatedList',
-        ordered_params=[u'project'],
-        path_params=[u'project'],
-        query_params=[u'filter', u'includeAllScopes', u'maxResults', u'orderBy', u'pageToken'],
-        relative_path=u'projects/{project}/aggregated/interconnectAttachments',
+        http_method='GET',
+        method_id='compute.interconnectAttachments.aggregatedList',
+        ordered_params=['project'],
+        path_params=['project'],
+        query_params=['filter', 'includeAllScopes', 'maxResults', 'orderBy', 'pageToken'],
+        relative_path='projects/{project}/aggregated/interconnectAttachments',
         request_field='',
-        request_type_name=u'ComputeInterconnectAttachmentsAggregatedListRequest',
-        response_type_name=u'InterconnectAttachmentAggregatedList',
+        request_type_name='ComputeInterconnectAttachmentsAggregatedListRequest',
+        response_type_name='InterconnectAttachmentAggregatedList',
         supports_download=False,
     )
 
@@ -6254,15 +6254,15 @@ If the group is part of a backend service that has enabled connection draining, 
           config, request, global_params=global_params)
 
     Delete.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'DELETE',
-        method_id=u'compute.interconnectAttachments.delete',
-        ordered_params=[u'project', u'region', u'interconnectAttachment'],
-        path_params=[u'interconnectAttachment', u'project', u'region'],
-        query_params=[u'requestId'],
-        relative_path=u'projects/{project}/regions/{region}/interconnectAttachments/{interconnectAttachment}',
+        http_method='DELETE',
+        method_id='compute.interconnectAttachments.delete',
+        ordered_params=['project', 'region', 'interconnectAttachment'],
+        path_params=['interconnectAttachment', 'project', 'region'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/regions/{region}/interconnectAttachments/{interconnectAttachment}',
         request_field='',
-        request_type_name=u'ComputeInterconnectAttachmentsDeleteRequest',
-        response_type_name=u'Operation',
+        request_type_name='ComputeInterconnectAttachmentsDeleteRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -6280,15 +6280,15 @@ If the group is part of a backend service that has enabled connection draining, 
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'compute.interconnectAttachments.get',
-        ordered_params=[u'project', u'region', u'interconnectAttachment'],
-        path_params=[u'interconnectAttachment', u'project', u'region'],
+        http_method='GET',
+        method_id='compute.interconnectAttachments.get',
+        ordered_params=['project', 'region', 'interconnectAttachment'],
+        path_params=['interconnectAttachment', 'project', 'region'],
         query_params=[],
-        relative_path=u'projects/{project}/regions/{region}/interconnectAttachments/{interconnectAttachment}',
+        relative_path='projects/{project}/regions/{region}/interconnectAttachments/{interconnectAttachment}',
         request_field='',
-        request_type_name=u'ComputeInterconnectAttachmentsGetRequest',
-        response_type_name=u'InterconnectAttachment',
+        request_type_name='ComputeInterconnectAttachmentsGetRequest',
+        response_type_name='InterconnectAttachment',
         supports_download=False,
     )
 
@@ -6306,15 +6306,15 @@ If the group is part of a backend service that has enabled connection draining, 
           config, request, global_params=global_params)
 
     Insert.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'compute.interconnectAttachments.insert',
-        ordered_params=[u'project', u'region'],
-        path_params=[u'project', u'region'],
-        query_params=[u'requestId', u'validateOnly'],
-        relative_path=u'projects/{project}/regions/{region}/interconnectAttachments',
-        request_field=u'interconnectAttachment',
-        request_type_name=u'ComputeInterconnectAttachmentsInsertRequest',
-        response_type_name=u'Operation',
+        http_method='POST',
+        method_id='compute.interconnectAttachments.insert',
+        ordered_params=['project', 'region'],
+        path_params=['project', 'region'],
+        query_params=['requestId', 'validateOnly'],
+        relative_path='projects/{project}/regions/{region}/interconnectAttachments',
+        request_field='interconnectAttachment',
+        request_type_name='ComputeInterconnectAttachmentsInsertRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -6332,15 +6332,15 @@ If the group is part of a backend service that has enabled connection draining, 
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'compute.interconnectAttachments.list',
-        ordered_params=[u'project', u'region'],
-        path_params=[u'project', u'region'],
-        query_params=[u'filter', u'maxResults', u'orderBy', u'pageToken'],
-        relative_path=u'projects/{project}/regions/{region}/interconnectAttachments',
+        http_method='GET',
+        method_id='compute.interconnectAttachments.list',
+        ordered_params=['project', 'region'],
+        path_params=['project', 'region'],
+        query_params=['filter', 'maxResults', 'orderBy', 'pageToken'],
+        relative_path='projects/{project}/regions/{region}/interconnectAttachments',
         request_field='',
-        request_type_name=u'ComputeInterconnectAttachmentsListRequest',
-        response_type_name=u'InterconnectAttachmentList',
+        request_type_name='ComputeInterconnectAttachmentsListRequest',
+        response_type_name='InterconnectAttachmentList',
         supports_download=False,
     )
 
@@ -6358,15 +6358,15 @@ If the group is part of a backend service that has enabled connection draining, 
           config, request, global_params=global_params)
 
     Patch.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'PATCH',
-        method_id=u'compute.interconnectAttachments.patch',
-        ordered_params=[u'project', u'region', u'interconnectAttachment'],
-        path_params=[u'interconnectAttachment', u'project', u'region'],
-        query_params=[u'requestId'],
-        relative_path=u'projects/{project}/regions/{region}/interconnectAttachments/{interconnectAttachment}',
-        request_field=u'interconnectAttachmentResource',
-        request_type_name=u'ComputeInterconnectAttachmentsPatchRequest',
-        response_type_name=u'Operation',
+        http_method='PATCH',
+        method_id='compute.interconnectAttachments.patch',
+        ordered_params=['project', 'region', 'interconnectAttachment'],
+        path_params=['interconnectAttachment', 'project', 'region'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/regions/{region}/interconnectAttachments/{interconnectAttachment}',
+        request_field='interconnectAttachmentResource',
+        request_type_name='ComputeInterconnectAttachmentsPatchRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -6384,15 +6384,15 @@ If the group is part of a backend service that has enabled connection draining, 
           config, request, global_params=global_params)
 
     SetLabels.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'compute.interconnectAttachments.setLabels',
-        ordered_params=[u'project', u'region', u'resource'],
-        path_params=[u'project', u'region', u'resource'],
-        query_params=[u'requestId'],
-        relative_path=u'projects/{project}/regions/{region}/interconnectAttachments/{resource}/setLabels',
-        request_field=u'regionSetLabelsRequest',
-        request_type_name=u'ComputeInterconnectAttachmentsSetLabelsRequest',
-        response_type_name=u'Operation',
+        http_method='POST',
+        method_id='compute.interconnectAttachments.setLabels',
+        ordered_params=['project', 'region', 'resource'],
+        path_params=['project', 'region', 'resource'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/regions/{region}/interconnectAttachments/{resource}/setLabels',
+        request_field='regionSetLabelsRequest',
+        request_type_name='ComputeInterconnectAttachmentsSetLabelsRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -6410,22 +6410,22 @@ If the group is part of a backend service that has enabled connection draining, 
           config, request, global_params=global_params)
 
     TestIamPermissions.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'compute.interconnectAttachments.testIamPermissions',
-        ordered_params=[u'project', u'region', u'resource'],
-        path_params=[u'project', u'region', u'resource'],
+        http_method='POST',
+        method_id='compute.interconnectAttachments.testIamPermissions',
+        ordered_params=['project', 'region', 'resource'],
+        path_params=['project', 'region', 'resource'],
         query_params=[],
-        relative_path=u'projects/{project}/regions/{region}/interconnectAttachments/{resource}/testIamPermissions',
-        request_field=u'testPermissionsRequest',
-        request_type_name=u'ComputeInterconnectAttachmentsTestIamPermissionsRequest',
-        response_type_name=u'TestPermissionsResponse',
+        relative_path='projects/{project}/regions/{region}/interconnectAttachments/{resource}/testIamPermissions',
+        request_field='testPermissionsRequest',
+        request_type_name='ComputeInterconnectAttachmentsTestIamPermissionsRequest',
+        response_type_name='TestPermissionsResponse',
         supports_download=False,
     )
 
   class InterconnectLocationsService(base_api.BaseApiService):
     """Service class for the interconnectLocations resource."""
 
-    _NAME = u'interconnectLocations'
+    _NAME = 'interconnectLocations'
 
     def __init__(self, client):
       super(ComputeBeta.InterconnectLocationsService, self).__init__(client)
@@ -6446,15 +6446,15 @@ If the group is part of a backend service that has enabled connection draining, 
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'compute.interconnectLocations.get',
-        ordered_params=[u'project', u'interconnectLocation'],
-        path_params=[u'interconnectLocation', u'project'],
+        http_method='GET',
+        method_id='compute.interconnectLocations.get',
+        ordered_params=['project', 'interconnectLocation'],
+        path_params=['interconnectLocation', 'project'],
         query_params=[],
-        relative_path=u'projects/{project}/global/interconnectLocations/{interconnectLocation}',
+        relative_path='projects/{project}/global/interconnectLocations/{interconnectLocation}',
         request_field='',
-        request_type_name=u'ComputeInterconnectLocationsGetRequest',
-        response_type_name=u'InterconnectLocation',
+        request_type_name='ComputeInterconnectLocationsGetRequest',
+        response_type_name='InterconnectLocation',
         supports_download=False,
     )
 
@@ -6472,22 +6472,22 @@ If the group is part of a backend service that has enabled connection draining, 
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'compute.interconnectLocations.list',
-        ordered_params=[u'project'],
-        path_params=[u'project'],
-        query_params=[u'filter', u'maxResults', u'orderBy', u'pageToken'],
-        relative_path=u'projects/{project}/global/interconnectLocations',
+        http_method='GET',
+        method_id='compute.interconnectLocations.list',
+        ordered_params=['project'],
+        path_params=['project'],
+        query_params=['filter', 'maxResults', 'orderBy', 'pageToken'],
+        relative_path='projects/{project}/global/interconnectLocations',
         request_field='',
-        request_type_name=u'ComputeInterconnectLocationsListRequest',
-        response_type_name=u'InterconnectLocationList',
+        request_type_name='ComputeInterconnectLocationsListRequest',
+        response_type_name='InterconnectLocationList',
         supports_download=False,
     )
 
   class InterconnectsService(base_api.BaseApiService):
     """Service class for the interconnects resource."""
 
-    _NAME = u'interconnects'
+    _NAME = 'interconnects'
 
     def __init__(self, client):
       super(ComputeBeta.InterconnectsService, self).__init__(client)
@@ -6508,15 +6508,15 @@ If the group is part of a backend service that has enabled connection draining, 
           config, request, global_params=global_params)
 
     Delete.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'DELETE',
-        method_id=u'compute.interconnects.delete',
-        ordered_params=[u'project', u'interconnect'],
-        path_params=[u'interconnect', u'project'],
-        query_params=[u'requestId'],
-        relative_path=u'projects/{project}/global/interconnects/{interconnect}',
+        http_method='DELETE',
+        method_id='compute.interconnects.delete',
+        ordered_params=['project', 'interconnect'],
+        path_params=['interconnect', 'project'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/global/interconnects/{interconnect}',
         request_field='',
-        request_type_name=u'ComputeInterconnectsDeleteRequest',
-        response_type_name=u'Operation',
+        request_type_name='ComputeInterconnectsDeleteRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -6534,15 +6534,15 @@ If the group is part of a backend service that has enabled connection draining, 
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'compute.interconnects.get',
-        ordered_params=[u'project', u'interconnect'],
-        path_params=[u'interconnect', u'project'],
+        http_method='GET',
+        method_id='compute.interconnects.get',
+        ordered_params=['project', 'interconnect'],
+        path_params=['interconnect', 'project'],
         query_params=[],
-        relative_path=u'projects/{project}/global/interconnects/{interconnect}',
+        relative_path='projects/{project}/global/interconnects/{interconnect}',
         request_field='',
-        request_type_name=u'ComputeInterconnectsGetRequest',
-        response_type_name=u'Interconnect',
+        request_type_name='ComputeInterconnectsGetRequest',
+        response_type_name='Interconnect',
         supports_download=False,
     )
 
@@ -6560,15 +6560,15 @@ If the group is part of a backend service that has enabled connection draining, 
           config, request, global_params=global_params)
 
     GetDiagnostics.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'compute.interconnects.getDiagnostics',
-        ordered_params=[u'project', u'interconnect'],
-        path_params=[u'interconnect', u'project'],
+        http_method='GET',
+        method_id='compute.interconnects.getDiagnostics',
+        ordered_params=['project', 'interconnect'],
+        path_params=['interconnect', 'project'],
         query_params=[],
-        relative_path=u'projects/{project}/global/interconnects/{interconnect}/getDiagnostics',
+        relative_path='projects/{project}/global/interconnects/{interconnect}/getDiagnostics',
         request_field='',
-        request_type_name=u'ComputeInterconnectsGetDiagnosticsRequest',
-        response_type_name=u'InterconnectsGetDiagnosticsResponse',
+        request_type_name='ComputeInterconnectsGetDiagnosticsRequest',
+        response_type_name='InterconnectsGetDiagnosticsResponse',
         supports_download=False,
     )
 
@@ -6586,15 +6586,15 @@ If the group is part of a backend service that has enabled connection draining, 
           config, request, global_params=global_params)
 
     Insert.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'compute.interconnects.insert',
-        ordered_params=[u'project'],
-        path_params=[u'project'],
-        query_params=[u'requestId'],
-        relative_path=u'projects/{project}/global/interconnects',
-        request_field=u'interconnect',
-        request_type_name=u'ComputeInterconnectsInsertRequest',
-        response_type_name=u'Operation',
+        http_method='POST',
+        method_id='compute.interconnects.insert',
+        ordered_params=['project'],
+        path_params=['project'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/global/interconnects',
+        request_field='interconnect',
+        request_type_name='ComputeInterconnectsInsertRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -6612,15 +6612,15 @@ If the group is part of a backend service that has enabled connection draining, 
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'compute.interconnects.list',
-        ordered_params=[u'project'],
-        path_params=[u'project'],
-        query_params=[u'filter', u'maxResults', u'orderBy', u'pageToken'],
-        relative_path=u'projects/{project}/global/interconnects',
+        http_method='GET',
+        method_id='compute.interconnects.list',
+        ordered_params=['project'],
+        path_params=['project'],
+        query_params=['filter', 'maxResults', 'orderBy', 'pageToken'],
+        relative_path='projects/{project}/global/interconnects',
         request_field='',
-        request_type_name=u'ComputeInterconnectsListRequest',
-        response_type_name=u'InterconnectList',
+        request_type_name='ComputeInterconnectsListRequest',
+        response_type_name='InterconnectList',
         supports_download=False,
     )
 
@@ -6638,15 +6638,15 @@ If the group is part of a backend service that has enabled connection draining, 
           config, request, global_params=global_params)
 
     Patch.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'PATCH',
-        method_id=u'compute.interconnects.patch',
-        ordered_params=[u'project', u'interconnect'],
-        path_params=[u'interconnect', u'project'],
-        query_params=[u'requestId'],
-        relative_path=u'projects/{project}/global/interconnects/{interconnect}',
-        request_field=u'interconnectResource',
-        request_type_name=u'ComputeInterconnectsPatchRequest',
-        response_type_name=u'Operation',
+        http_method='PATCH',
+        method_id='compute.interconnects.patch',
+        ordered_params=['project', 'interconnect'],
+        path_params=['interconnect', 'project'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/global/interconnects/{interconnect}',
+        request_field='interconnectResource',
+        request_type_name='ComputeInterconnectsPatchRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -6664,15 +6664,15 @@ If the group is part of a backend service that has enabled connection draining, 
           config, request, global_params=global_params)
 
     SetLabels.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'compute.interconnects.setLabels',
-        ordered_params=[u'project', u'resource'],
-        path_params=[u'project', u'resource'],
+        http_method='POST',
+        method_id='compute.interconnects.setLabels',
+        ordered_params=['project', 'resource'],
+        path_params=['project', 'resource'],
         query_params=[],
-        relative_path=u'projects/{project}/global/interconnects/{resource}/setLabels',
-        request_field=u'globalSetLabelsRequest',
-        request_type_name=u'ComputeInterconnectsSetLabelsRequest',
-        response_type_name=u'Operation',
+        relative_path='projects/{project}/global/interconnects/{resource}/setLabels',
+        request_field='globalSetLabelsRequest',
+        request_type_name='ComputeInterconnectsSetLabelsRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -6690,22 +6690,22 @@ If the group is part of a backend service that has enabled connection draining, 
           config, request, global_params=global_params)
 
     TestIamPermissions.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'compute.interconnects.testIamPermissions',
-        ordered_params=[u'project', u'resource'],
-        path_params=[u'project', u'resource'],
+        http_method='POST',
+        method_id='compute.interconnects.testIamPermissions',
+        ordered_params=['project', 'resource'],
+        path_params=['project', 'resource'],
         query_params=[],
-        relative_path=u'projects/{project}/global/interconnects/{resource}/testIamPermissions',
-        request_field=u'testPermissionsRequest',
-        request_type_name=u'ComputeInterconnectsTestIamPermissionsRequest',
-        response_type_name=u'TestPermissionsResponse',
+        relative_path='projects/{project}/global/interconnects/{resource}/testIamPermissions',
+        request_field='testPermissionsRequest',
+        request_type_name='ComputeInterconnectsTestIamPermissionsRequest',
+        response_type_name='TestPermissionsResponse',
         supports_download=False,
     )
 
   class LicenseCodesService(base_api.BaseApiService):
     """Service class for the licenseCodes resource."""
 
-    _NAME = u'licenseCodes'
+    _NAME = 'licenseCodes'
 
     def __init__(self, client):
       super(ComputeBeta.LicenseCodesService, self).__init__(client)
@@ -6726,22 +6726,22 @@ If the group is part of a backend service that has enabled connection draining, 
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'compute.licenseCodes.get',
-        ordered_params=[u'project', u'licenseCode'],
-        path_params=[u'licenseCode', u'project'],
+        http_method='GET',
+        method_id='compute.licenseCodes.get',
+        ordered_params=['project', 'licenseCode'],
+        path_params=['licenseCode', 'project'],
         query_params=[],
-        relative_path=u'projects/{project}/global/licenseCodes/{licenseCode}',
+        relative_path='projects/{project}/global/licenseCodes/{licenseCode}',
         request_field='',
-        request_type_name=u'ComputeLicenseCodesGetRequest',
-        response_type_name=u'LicenseCode',
+        request_type_name='ComputeLicenseCodesGetRequest',
+        response_type_name='LicenseCode',
         supports_download=False,
     )
 
   class LicensesService(base_api.BaseApiService):
     """Service class for the licenses resource."""
 
-    _NAME = u'licenses'
+    _NAME = 'licenses'
 
     def __init__(self, client):
       super(ComputeBeta.LicensesService, self).__init__(client)
@@ -6762,15 +6762,15 @@ If the group is part of a backend service that has enabled connection draining, 
           config, request, global_params=global_params)
 
     Delete.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'DELETE',
-        method_id=u'compute.licenses.delete',
-        ordered_params=[u'project', u'license'],
-        path_params=[u'license', u'project'],
-        query_params=[u'requestId'],
-        relative_path=u'projects/{project}/global/licenses/{license}',
+        http_method='DELETE',
+        method_id='compute.licenses.delete',
+        ordered_params=['project', 'license'],
+        path_params=['license', 'project'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/global/licenses/{license}',
         request_field='',
-        request_type_name=u'ComputeLicensesDeleteRequest',
-        response_type_name=u'Operation',
+        request_type_name='ComputeLicensesDeleteRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -6788,15 +6788,15 @@ If the group is part of a backend service that has enabled connection draining, 
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'compute.licenses.get',
-        ordered_params=[u'project', u'license'],
-        path_params=[u'license', u'project'],
+        http_method='GET',
+        method_id='compute.licenses.get',
+        ordered_params=['project', 'license'],
+        path_params=['license', 'project'],
         query_params=[],
-        relative_path=u'projects/{project}/global/licenses/{license}',
+        relative_path='projects/{project}/global/licenses/{license}',
         request_field='',
-        request_type_name=u'ComputeLicensesGetRequest',
-        response_type_name=u'License',
+        request_type_name='ComputeLicensesGetRequest',
+        response_type_name='License',
         supports_download=False,
     )
 
@@ -6814,15 +6814,15 @@ If the group is part of a backend service that has enabled connection draining, 
           config, request, global_params=global_params)
 
     GetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'compute.licenses.getIamPolicy',
-        ordered_params=[u'project', u'resource'],
-        path_params=[u'project', u'resource'],
-        query_params=[u'optionsRequestedPolicyVersion'],
-        relative_path=u'projects/{project}/global/licenses/{resource}/getIamPolicy',
+        http_method='GET',
+        method_id='compute.licenses.getIamPolicy',
+        ordered_params=['project', 'resource'],
+        path_params=['project', 'resource'],
+        query_params=['optionsRequestedPolicyVersion'],
+        relative_path='projects/{project}/global/licenses/{resource}/getIamPolicy',
         request_field='',
-        request_type_name=u'ComputeLicensesGetIamPolicyRequest',
-        response_type_name=u'Policy',
+        request_type_name='ComputeLicensesGetIamPolicyRequest',
+        response_type_name='Policy',
         supports_download=False,
     )
 
@@ -6840,15 +6840,15 @@ If the group is part of a backend service that has enabled connection draining, 
           config, request, global_params=global_params)
 
     Insert.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'compute.licenses.insert',
-        ordered_params=[u'project'],
-        path_params=[u'project'],
-        query_params=[u'requestId'],
-        relative_path=u'projects/{project}/global/licenses',
-        request_field=u'license',
-        request_type_name=u'ComputeLicensesInsertRequest',
-        response_type_name=u'Operation',
+        http_method='POST',
+        method_id='compute.licenses.insert',
+        ordered_params=['project'],
+        path_params=['project'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/global/licenses',
+        request_field='license',
+        request_type_name='ComputeLicensesInsertRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -6866,15 +6866,15 @@ If the group is part of a backend service that has enabled connection draining, 
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'compute.licenses.list',
-        ordered_params=[u'project'],
-        path_params=[u'project'],
-        query_params=[u'filter', u'maxResults', u'orderBy', u'pageToken'],
-        relative_path=u'projects/{project}/global/licenses',
+        http_method='GET',
+        method_id='compute.licenses.list',
+        ordered_params=['project'],
+        path_params=['project'],
+        query_params=['filter', 'maxResults', 'orderBy', 'pageToken'],
+        relative_path='projects/{project}/global/licenses',
         request_field='',
-        request_type_name=u'ComputeLicensesListRequest',
-        response_type_name=u'LicensesListResponse',
+        request_type_name='ComputeLicensesListRequest',
+        response_type_name='LicensesListResponse',
         supports_download=False,
     )
 
@@ -6892,22 +6892,22 @@ If the group is part of a backend service that has enabled connection draining, 
           config, request, global_params=global_params)
 
     SetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'compute.licenses.setIamPolicy',
-        ordered_params=[u'project', u'resource'],
-        path_params=[u'project', u'resource'],
+        http_method='POST',
+        method_id='compute.licenses.setIamPolicy',
+        ordered_params=['project', 'resource'],
+        path_params=['project', 'resource'],
         query_params=[],
-        relative_path=u'projects/{project}/global/licenses/{resource}/setIamPolicy',
-        request_field=u'globalSetPolicyRequest',
-        request_type_name=u'ComputeLicensesSetIamPolicyRequest',
-        response_type_name=u'Policy',
+        relative_path='projects/{project}/global/licenses/{resource}/setIamPolicy',
+        request_field='globalSetPolicyRequest',
+        request_type_name='ComputeLicensesSetIamPolicyRequest',
+        response_type_name='Policy',
         supports_download=False,
     )
 
   class MachineImagesService(base_api.BaseApiService):
     """Service class for the machineImages resource."""
 
-    _NAME = u'machineImages'
+    _NAME = 'machineImages'
 
     def __init__(self, client):
       super(ComputeBeta.MachineImagesService, self).__init__(client)
@@ -6928,15 +6928,15 @@ If the group is part of a backend service that has enabled connection draining, 
           config, request, global_params=global_params)
 
     Delete.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'DELETE',
-        method_id=u'compute.machineImages.delete',
-        ordered_params=[u'project', u'machineImage'],
-        path_params=[u'machineImage', u'project'],
-        query_params=[u'requestId'],
-        relative_path=u'projects/{project}/global/machineImages/{machineImage}',
+        http_method='DELETE',
+        method_id='compute.machineImages.delete',
+        ordered_params=['project', 'machineImage'],
+        path_params=['machineImage', 'project'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/global/machineImages/{machineImage}',
         request_field='',
-        request_type_name=u'ComputeMachineImagesDeleteRequest',
-        response_type_name=u'Operation',
+        request_type_name='ComputeMachineImagesDeleteRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -6954,15 +6954,15 @@ If the group is part of a backend service that has enabled connection draining, 
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'compute.machineImages.get',
-        ordered_params=[u'project', u'machineImage'],
-        path_params=[u'machineImage', u'project'],
+        http_method='GET',
+        method_id='compute.machineImages.get',
+        ordered_params=['project', 'machineImage'],
+        path_params=['machineImage', 'project'],
         query_params=[],
-        relative_path=u'projects/{project}/global/machineImages/{machineImage}',
+        relative_path='projects/{project}/global/machineImages/{machineImage}',
         request_field='',
-        request_type_name=u'ComputeMachineImagesGetRequest',
-        response_type_name=u'MachineImage',
+        request_type_name='ComputeMachineImagesGetRequest',
+        response_type_name='MachineImage',
         supports_download=False,
     )
 
@@ -6980,15 +6980,15 @@ If the group is part of a backend service that has enabled connection draining, 
           config, request, global_params=global_params)
 
     GetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'compute.machineImages.getIamPolicy',
-        ordered_params=[u'project', u'resource'],
-        path_params=[u'project', u'resource'],
-        query_params=[u'optionsRequestedPolicyVersion'],
-        relative_path=u'projects/{project}/global/machineImages/{resource}/getIamPolicy',
+        http_method='GET',
+        method_id='compute.machineImages.getIamPolicy',
+        ordered_params=['project', 'resource'],
+        path_params=['project', 'resource'],
+        query_params=['optionsRequestedPolicyVersion'],
+        relative_path='projects/{project}/global/machineImages/{resource}/getIamPolicy',
         request_field='',
-        request_type_name=u'ComputeMachineImagesGetIamPolicyRequest',
-        response_type_name=u'Policy',
+        request_type_name='ComputeMachineImagesGetIamPolicyRequest',
+        response_type_name='Policy',
         supports_download=False,
     )
 
@@ -7006,15 +7006,15 @@ If the group is part of a backend service that has enabled connection draining, 
           config, request, global_params=global_params)
 
     Insert.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'compute.machineImages.insert',
-        ordered_params=[u'project'],
-        path_params=[u'project'],
-        query_params=[u'requestId', u'sourceInstance'],
-        relative_path=u'projects/{project}/global/machineImages',
-        request_field=u'machineImage',
-        request_type_name=u'ComputeMachineImagesInsertRequest',
-        response_type_name=u'Operation',
+        http_method='POST',
+        method_id='compute.machineImages.insert',
+        ordered_params=['project'],
+        path_params=['project'],
+        query_params=['requestId', 'sourceInstance'],
+        relative_path='projects/{project}/global/machineImages',
+        request_field='machineImage',
+        request_type_name='ComputeMachineImagesInsertRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -7032,15 +7032,15 @@ If the group is part of a backend service that has enabled connection draining, 
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'compute.machineImages.list',
-        ordered_params=[u'project'],
-        path_params=[u'project'],
-        query_params=[u'filter', u'maxResults', u'orderBy', u'pageToken'],
-        relative_path=u'projects/{project}/global/machineImages',
+        http_method='GET',
+        method_id='compute.machineImages.list',
+        ordered_params=['project'],
+        path_params=['project'],
+        query_params=['filter', 'maxResults', 'orderBy', 'pageToken'],
+        relative_path='projects/{project}/global/machineImages',
         request_field='',
-        request_type_name=u'ComputeMachineImagesListRequest',
-        response_type_name=u'MachineImageList',
+        request_type_name='ComputeMachineImagesListRequest',
+        response_type_name='MachineImageList',
         supports_download=False,
     )
 
@@ -7058,15 +7058,15 @@ If the group is part of a backend service that has enabled connection draining, 
           config, request, global_params=global_params)
 
     SetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'compute.machineImages.setIamPolicy',
-        ordered_params=[u'project', u'resource'],
-        path_params=[u'project', u'resource'],
+        http_method='POST',
+        method_id='compute.machineImages.setIamPolicy',
+        ordered_params=['project', 'resource'],
+        path_params=['project', 'resource'],
         query_params=[],
-        relative_path=u'projects/{project}/global/machineImages/{resource}/setIamPolicy',
-        request_field=u'globalSetPolicyRequest',
-        request_type_name=u'ComputeMachineImagesSetIamPolicyRequest',
-        response_type_name=u'Policy',
+        relative_path='projects/{project}/global/machineImages/{resource}/setIamPolicy',
+        request_field='globalSetPolicyRequest',
+        request_type_name='ComputeMachineImagesSetIamPolicyRequest',
+        response_type_name='Policy',
         supports_download=False,
     )
 
@@ -7084,22 +7084,22 @@ If the group is part of a backend service that has enabled connection draining, 
           config, request, global_params=global_params)
 
     TestIamPermissions.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'compute.machineImages.testIamPermissions',
-        ordered_params=[u'project', u'resource'],
-        path_params=[u'project', u'resource'],
+        http_method='POST',
+        method_id='compute.machineImages.testIamPermissions',
+        ordered_params=['project', 'resource'],
+        path_params=['project', 'resource'],
         query_params=[],
-        relative_path=u'projects/{project}/global/machineImages/{resource}/testIamPermissions',
-        request_field=u'testPermissionsRequest',
-        request_type_name=u'ComputeMachineImagesTestIamPermissionsRequest',
-        response_type_name=u'TestPermissionsResponse',
+        relative_path='projects/{project}/global/machineImages/{resource}/testIamPermissions',
+        request_field='testPermissionsRequest',
+        request_type_name='ComputeMachineImagesTestIamPermissionsRequest',
+        response_type_name='TestPermissionsResponse',
         supports_download=False,
     )
 
   class MachineTypesService(base_api.BaseApiService):
     """Service class for the machineTypes resource."""
 
-    _NAME = u'machineTypes'
+    _NAME = 'machineTypes'
 
     def __init__(self, client):
       super(ComputeBeta.MachineTypesService, self).__init__(client)
@@ -7120,15 +7120,15 @@ If the group is part of a backend service that has enabled connection draining, 
           config, request, global_params=global_params)
 
     AggregatedList.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'compute.machineTypes.aggregatedList',
-        ordered_params=[u'project'],
-        path_params=[u'project'],
-        query_params=[u'filter', u'includeAllScopes', u'maxResults', u'orderBy', u'pageToken'],
-        relative_path=u'projects/{project}/aggregated/machineTypes',
+        http_method='GET',
+        method_id='compute.machineTypes.aggregatedList',
+        ordered_params=['project'],
+        path_params=['project'],
+        query_params=['filter', 'includeAllScopes', 'maxResults', 'orderBy', 'pageToken'],
+        relative_path='projects/{project}/aggregated/machineTypes',
         request_field='',
-        request_type_name=u'ComputeMachineTypesAggregatedListRequest',
-        response_type_name=u'MachineTypeAggregatedList',
+        request_type_name='ComputeMachineTypesAggregatedListRequest',
+        response_type_name='MachineTypeAggregatedList',
         supports_download=False,
     )
 
@@ -7146,15 +7146,15 @@ If the group is part of a backend service that has enabled connection draining, 
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'compute.machineTypes.get',
-        ordered_params=[u'project', u'zone', u'machineType'],
-        path_params=[u'machineType', u'project', u'zone'],
+        http_method='GET',
+        method_id='compute.machineTypes.get',
+        ordered_params=['project', 'zone', 'machineType'],
+        path_params=['machineType', 'project', 'zone'],
         query_params=[],
-        relative_path=u'projects/{project}/zones/{zone}/machineTypes/{machineType}',
+        relative_path='projects/{project}/zones/{zone}/machineTypes/{machineType}',
         request_field='',
-        request_type_name=u'ComputeMachineTypesGetRequest',
-        response_type_name=u'MachineType',
+        request_type_name='ComputeMachineTypesGetRequest',
+        response_type_name='MachineType',
         supports_download=False,
     )
 
@@ -7172,22 +7172,22 @@ If the group is part of a backend service that has enabled connection draining, 
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'compute.machineTypes.list',
-        ordered_params=[u'project', u'zone'],
-        path_params=[u'project', u'zone'],
-        query_params=[u'filter', u'maxResults', u'orderBy', u'pageToken'],
-        relative_path=u'projects/{project}/zones/{zone}/machineTypes',
+        http_method='GET',
+        method_id='compute.machineTypes.list',
+        ordered_params=['project', 'zone'],
+        path_params=['project', 'zone'],
+        query_params=['filter', 'maxResults', 'orderBy', 'pageToken'],
+        relative_path='projects/{project}/zones/{zone}/machineTypes',
         request_field='',
-        request_type_name=u'ComputeMachineTypesListRequest',
-        response_type_name=u'MachineTypeList',
+        request_type_name='ComputeMachineTypesListRequest',
+        response_type_name='MachineTypeList',
         supports_download=False,
     )
 
   class NetworkEndpointGroupsService(base_api.BaseApiService):
     """Service class for the networkEndpointGroups resource."""
 
-    _NAME = u'networkEndpointGroups'
+    _NAME = 'networkEndpointGroups'
 
     def __init__(self, client):
       super(ComputeBeta.NetworkEndpointGroupsService, self).__init__(client)
@@ -7208,15 +7208,15 @@ If the group is part of a backend service that has enabled connection draining, 
           config, request, global_params=global_params)
 
     AggregatedList.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'compute.networkEndpointGroups.aggregatedList',
-        ordered_params=[u'project'],
-        path_params=[u'project'],
-        query_params=[u'filter', u'includeAllScopes', u'maxResults', u'orderBy', u'pageToken'],
-        relative_path=u'projects/{project}/aggregated/networkEndpointGroups',
+        http_method='GET',
+        method_id='compute.networkEndpointGroups.aggregatedList',
+        ordered_params=['project'],
+        path_params=['project'],
+        query_params=['filter', 'includeAllScopes', 'maxResults', 'orderBy', 'pageToken'],
+        relative_path='projects/{project}/aggregated/networkEndpointGroups',
         request_field='',
-        request_type_name=u'ComputeNetworkEndpointGroupsAggregatedListRequest',
-        response_type_name=u'NetworkEndpointGroupAggregatedList',
+        request_type_name='ComputeNetworkEndpointGroupsAggregatedListRequest',
+        response_type_name='NetworkEndpointGroupAggregatedList',
         supports_download=False,
     )
 
@@ -7234,15 +7234,15 @@ If the group is part of a backend service that has enabled connection draining, 
           config, request, global_params=global_params)
 
     AttachNetworkEndpoints.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'compute.networkEndpointGroups.attachNetworkEndpoints',
-        ordered_params=[u'project', u'zone', u'networkEndpointGroup'],
-        path_params=[u'networkEndpointGroup', u'project', u'zone'],
-        query_params=[u'requestId'],
-        relative_path=u'projects/{project}/zones/{zone}/networkEndpointGroups/{networkEndpointGroup}/attachNetworkEndpoints',
-        request_field=u'networkEndpointGroupsAttachEndpointsRequest',
-        request_type_name=u'ComputeNetworkEndpointGroupsAttachNetworkEndpointsRequest',
-        response_type_name=u'Operation',
+        http_method='POST',
+        method_id='compute.networkEndpointGroups.attachNetworkEndpoints',
+        ordered_params=['project', 'zone', 'networkEndpointGroup'],
+        path_params=['networkEndpointGroup', 'project', 'zone'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/zones/{zone}/networkEndpointGroups/{networkEndpointGroup}/attachNetworkEndpoints',
+        request_field='networkEndpointGroupsAttachEndpointsRequest',
+        request_type_name='ComputeNetworkEndpointGroupsAttachNetworkEndpointsRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -7260,15 +7260,15 @@ If the group is part of a backend service that has enabled connection draining, 
           config, request, global_params=global_params)
 
     Delete.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'DELETE',
-        method_id=u'compute.networkEndpointGroups.delete',
-        ordered_params=[u'project', u'zone', u'networkEndpointGroup'],
-        path_params=[u'networkEndpointGroup', u'project', u'zone'],
-        query_params=[u'requestId'],
-        relative_path=u'projects/{project}/zones/{zone}/networkEndpointGroups/{networkEndpointGroup}',
+        http_method='DELETE',
+        method_id='compute.networkEndpointGroups.delete',
+        ordered_params=['project', 'zone', 'networkEndpointGroup'],
+        path_params=['networkEndpointGroup', 'project', 'zone'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/zones/{zone}/networkEndpointGroups/{networkEndpointGroup}',
         request_field='',
-        request_type_name=u'ComputeNetworkEndpointGroupsDeleteRequest',
-        response_type_name=u'Operation',
+        request_type_name='ComputeNetworkEndpointGroupsDeleteRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -7286,15 +7286,15 @@ If the group is part of a backend service that has enabled connection draining, 
           config, request, global_params=global_params)
 
     DetachNetworkEndpoints.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'compute.networkEndpointGroups.detachNetworkEndpoints',
-        ordered_params=[u'project', u'zone', u'networkEndpointGroup'],
-        path_params=[u'networkEndpointGroup', u'project', u'zone'],
-        query_params=[u'requestId'],
-        relative_path=u'projects/{project}/zones/{zone}/networkEndpointGroups/{networkEndpointGroup}/detachNetworkEndpoints',
-        request_field=u'networkEndpointGroupsDetachEndpointsRequest',
-        request_type_name=u'ComputeNetworkEndpointGroupsDetachNetworkEndpointsRequest',
-        response_type_name=u'Operation',
+        http_method='POST',
+        method_id='compute.networkEndpointGroups.detachNetworkEndpoints',
+        ordered_params=['project', 'zone', 'networkEndpointGroup'],
+        path_params=['networkEndpointGroup', 'project', 'zone'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/zones/{zone}/networkEndpointGroups/{networkEndpointGroup}/detachNetworkEndpoints',
+        request_field='networkEndpointGroupsDetachEndpointsRequest',
+        request_type_name='ComputeNetworkEndpointGroupsDetachNetworkEndpointsRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -7312,15 +7312,15 @@ If the group is part of a backend service that has enabled connection draining, 
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'compute.networkEndpointGroups.get',
-        ordered_params=[u'project', u'zone', u'networkEndpointGroup'],
-        path_params=[u'networkEndpointGroup', u'project', u'zone'],
+        http_method='GET',
+        method_id='compute.networkEndpointGroups.get',
+        ordered_params=['project', 'zone', 'networkEndpointGroup'],
+        path_params=['networkEndpointGroup', 'project', 'zone'],
         query_params=[],
-        relative_path=u'projects/{project}/zones/{zone}/networkEndpointGroups/{networkEndpointGroup}',
+        relative_path='projects/{project}/zones/{zone}/networkEndpointGroups/{networkEndpointGroup}',
         request_field='',
-        request_type_name=u'ComputeNetworkEndpointGroupsGetRequest',
-        response_type_name=u'NetworkEndpointGroup',
+        request_type_name='ComputeNetworkEndpointGroupsGetRequest',
+        response_type_name='NetworkEndpointGroup',
         supports_download=False,
     )
 
@@ -7338,15 +7338,15 @@ If the group is part of a backend service that has enabled connection draining, 
           config, request, global_params=global_params)
 
     Insert.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'compute.networkEndpointGroups.insert',
-        ordered_params=[u'project', u'zone'],
-        path_params=[u'project', u'zone'],
-        query_params=[u'requestId'],
-        relative_path=u'projects/{project}/zones/{zone}/networkEndpointGroups',
-        request_field=u'networkEndpointGroup',
-        request_type_name=u'ComputeNetworkEndpointGroupsInsertRequest',
-        response_type_name=u'Operation',
+        http_method='POST',
+        method_id='compute.networkEndpointGroups.insert',
+        ordered_params=['project', 'zone'],
+        path_params=['project', 'zone'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/zones/{zone}/networkEndpointGroups',
+        request_field='networkEndpointGroup',
+        request_type_name='ComputeNetworkEndpointGroupsInsertRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -7364,15 +7364,15 @@ If the group is part of a backend service that has enabled connection draining, 
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'compute.networkEndpointGroups.list',
-        ordered_params=[u'project', u'zone'],
-        path_params=[u'project', u'zone'],
-        query_params=[u'filter', u'maxResults', u'orderBy', u'pageToken'],
-        relative_path=u'projects/{project}/zones/{zone}/networkEndpointGroups',
+        http_method='GET',
+        method_id='compute.networkEndpointGroups.list',
+        ordered_params=['project', 'zone'],
+        path_params=['project', 'zone'],
+        query_params=['filter', 'maxResults', 'orderBy', 'pageToken'],
+        relative_path='projects/{project}/zones/{zone}/networkEndpointGroups',
         request_field='',
-        request_type_name=u'ComputeNetworkEndpointGroupsListRequest',
-        response_type_name=u'NetworkEndpointGroupList',
+        request_type_name='ComputeNetworkEndpointGroupsListRequest',
+        response_type_name='NetworkEndpointGroupList',
         supports_download=False,
     )
 
@@ -7390,15 +7390,15 @@ If the group is part of a backend service that has enabled connection draining, 
           config, request, global_params=global_params)
 
     ListNetworkEndpoints.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'compute.networkEndpointGroups.listNetworkEndpoints',
-        ordered_params=[u'project', u'zone', u'networkEndpointGroup'],
-        path_params=[u'networkEndpointGroup', u'project', u'zone'],
-        query_params=[u'filter', u'maxResults', u'orderBy', u'pageToken'],
-        relative_path=u'projects/{project}/zones/{zone}/networkEndpointGroups/{networkEndpointGroup}/listNetworkEndpoints',
-        request_field=u'networkEndpointGroupsListEndpointsRequest',
-        request_type_name=u'ComputeNetworkEndpointGroupsListNetworkEndpointsRequest',
-        response_type_name=u'NetworkEndpointGroupsListNetworkEndpoints',
+        http_method='POST',
+        method_id='compute.networkEndpointGroups.listNetworkEndpoints',
+        ordered_params=['project', 'zone', 'networkEndpointGroup'],
+        path_params=['networkEndpointGroup', 'project', 'zone'],
+        query_params=['filter', 'maxResults', 'orderBy', 'pageToken'],
+        relative_path='projects/{project}/zones/{zone}/networkEndpointGroups/{networkEndpointGroup}/listNetworkEndpoints',
+        request_field='networkEndpointGroupsListEndpointsRequest',
+        request_type_name='ComputeNetworkEndpointGroupsListNetworkEndpointsRequest',
+        response_type_name='NetworkEndpointGroupsListNetworkEndpoints',
         supports_download=False,
     )
 
@@ -7416,22 +7416,22 @@ If the group is part of a backend service that has enabled connection draining, 
           config, request, global_params=global_params)
 
     TestIamPermissions.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'compute.networkEndpointGroups.testIamPermissions',
-        ordered_params=[u'project', u'zone', u'resource'],
-        path_params=[u'project', u'resource', u'zone'],
+        http_method='POST',
+        method_id='compute.networkEndpointGroups.testIamPermissions',
+        ordered_params=['project', 'zone', 'resource'],
+        path_params=['project', 'resource', 'zone'],
         query_params=[],
-        relative_path=u'projects/{project}/zones/{zone}/networkEndpointGroups/{resource}/testIamPermissions',
-        request_field=u'testPermissionsRequest',
-        request_type_name=u'ComputeNetworkEndpointGroupsTestIamPermissionsRequest',
-        response_type_name=u'TestPermissionsResponse',
+        relative_path='projects/{project}/zones/{zone}/networkEndpointGroups/{resource}/testIamPermissions',
+        request_field='testPermissionsRequest',
+        request_type_name='ComputeNetworkEndpointGroupsTestIamPermissionsRequest',
+        response_type_name='TestPermissionsResponse',
         supports_download=False,
     )
 
   class NetworksService(base_api.BaseApiService):
     """Service class for the networks resource."""
 
-    _NAME = u'networks'
+    _NAME = 'networks'
 
     def __init__(self, client):
       super(ComputeBeta.NetworksService, self).__init__(client)
@@ -7452,15 +7452,15 @@ If the group is part of a backend service that has enabled connection draining, 
           config, request, global_params=global_params)
 
     AddPeering.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'compute.networks.addPeering',
-        ordered_params=[u'project', u'network'],
-        path_params=[u'network', u'project'],
-        query_params=[u'requestId'],
-        relative_path=u'projects/{project}/global/networks/{network}/addPeering',
-        request_field=u'networksAddPeeringRequest',
-        request_type_name=u'ComputeNetworksAddPeeringRequest',
-        response_type_name=u'Operation',
+        http_method='POST',
+        method_id='compute.networks.addPeering',
+        ordered_params=['project', 'network'],
+        path_params=['network', 'project'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/global/networks/{network}/addPeering',
+        request_field='networksAddPeeringRequest',
+        request_type_name='ComputeNetworksAddPeeringRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -7478,15 +7478,15 @@ If the group is part of a backend service that has enabled connection draining, 
           config, request, global_params=global_params)
 
     Delete.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'DELETE',
-        method_id=u'compute.networks.delete',
-        ordered_params=[u'project', u'network'],
-        path_params=[u'network', u'project'],
-        query_params=[u'requestId'],
-        relative_path=u'projects/{project}/global/networks/{network}',
+        http_method='DELETE',
+        method_id='compute.networks.delete',
+        ordered_params=['project', 'network'],
+        path_params=['network', 'project'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/global/networks/{network}',
         request_field='',
-        request_type_name=u'ComputeNetworksDeleteRequest',
-        response_type_name=u'Operation',
+        request_type_name='ComputeNetworksDeleteRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -7504,15 +7504,15 @@ If the group is part of a backend service that has enabled connection draining, 
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'compute.networks.get',
-        ordered_params=[u'project', u'network'],
-        path_params=[u'network', u'project'],
+        http_method='GET',
+        method_id='compute.networks.get',
+        ordered_params=['project', 'network'],
+        path_params=['network', 'project'],
         query_params=[],
-        relative_path=u'projects/{project}/global/networks/{network}',
+        relative_path='projects/{project}/global/networks/{network}',
         request_field='',
-        request_type_name=u'ComputeNetworksGetRequest',
-        response_type_name=u'Network',
+        request_type_name='ComputeNetworksGetRequest',
+        response_type_name='Network',
         supports_download=False,
     )
 
@@ -7530,15 +7530,15 @@ If the group is part of a backend service that has enabled connection draining, 
           config, request, global_params=global_params)
 
     GetEffectiveFirewalls.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'compute.networks.getEffectiveFirewalls',
-        ordered_params=[u'project', u'network'],
-        path_params=[u'network', u'project'],
+        http_method='GET',
+        method_id='compute.networks.getEffectiveFirewalls',
+        ordered_params=['project', 'network'],
+        path_params=['network', 'project'],
         query_params=[],
-        relative_path=u'projects/{project}/global/networks/{network}/getEffectiveFirewalls',
+        relative_path='projects/{project}/global/networks/{network}/getEffectiveFirewalls',
         request_field='',
-        request_type_name=u'ComputeNetworksGetEffectiveFirewallsRequest',
-        response_type_name=u'NetworksGetEffectiveFirewallsResponse',
+        request_type_name='ComputeNetworksGetEffectiveFirewallsRequest',
+        response_type_name='NetworksGetEffectiveFirewallsResponse',
         supports_download=False,
     )
 
@@ -7556,15 +7556,15 @@ If the group is part of a backend service that has enabled connection draining, 
           config, request, global_params=global_params)
 
     Insert.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'compute.networks.insert',
-        ordered_params=[u'project'],
-        path_params=[u'project'],
-        query_params=[u'requestId'],
-        relative_path=u'projects/{project}/global/networks',
-        request_field=u'network',
-        request_type_name=u'ComputeNetworksInsertRequest',
-        response_type_name=u'Operation',
+        http_method='POST',
+        method_id='compute.networks.insert',
+        ordered_params=['project'],
+        path_params=['project'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/global/networks',
+        request_field='network',
+        request_type_name='ComputeNetworksInsertRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -7582,15 +7582,15 @@ If the group is part of a backend service that has enabled connection draining, 
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'compute.networks.list',
-        ordered_params=[u'project'],
-        path_params=[u'project'],
-        query_params=[u'filter', u'maxResults', u'orderBy', u'pageToken'],
-        relative_path=u'projects/{project}/global/networks',
+        http_method='GET',
+        method_id='compute.networks.list',
+        ordered_params=['project'],
+        path_params=['project'],
+        query_params=['filter', 'maxResults', 'orderBy', 'pageToken'],
+        relative_path='projects/{project}/global/networks',
         request_field='',
-        request_type_name=u'ComputeNetworksListRequest',
-        response_type_name=u'NetworkList',
+        request_type_name='ComputeNetworksListRequest',
+        response_type_name='NetworkList',
         supports_download=False,
     )
 
@@ -7608,15 +7608,15 @@ If the group is part of a backend service that has enabled connection draining, 
           config, request, global_params=global_params)
 
     ListPeeringRoutes.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'compute.networks.listPeeringRoutes',
-        ordered_params=[u'project', u'network'],
-        path_params=[u'network', u'project'],
-        query_params=[u'direction', u'filter', u'maxResults', u'orderBy', u'pageToken', u'peeringName', u'region'],
-        relative_path=u'projects/{project}/global/networks/{network}/listPeeringRoutes',
+        http_method='GET',
+        method_id='compute.networks.listPeeringRoutes',
+        ordered_params=['project', 'network'],
+        path_params=['network', 'project'],
+        query_params=['direction', 'filter', 'maxResults', 'orderBy', 'pageToken', 'peeringName', 'region'],
+        relative_path='projects/{project}/global/networks/{network}/listPeeringRoutes',
         request_field='',
-        request_type_name=u'ComputeNetworksListPeeringRoutesRequest',
-        response_type_name=u'ExchangedPeeringRoutesList',
+        request_type_name='ComputeNetworksListPeeringRoutesRequest',
+        response_type_name='ExchangedPeeringRoutesList',
         supports_download=False,
     )
 
@@ -7634,15 +7634,15 @@ If the group is part of a backend service that has enabled connection draining, 
           config, request, global_params=global_params)
 
     Patch.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'PATCH',
-        method_id=u'compute.networks.patch',
-        ordered_params=[u'project', u'network'],
-        path_params=[u'network', u'project'],
-        query_params=[u'requestId'],
-        relative_path=u'projects/{project}/global/networks/{network}',
-        request_field=u'networkResource',
-        request_type_name=u'ComputeNetworksPatchRequest',
-        response_type_name=u'Operation',
+        http_method='PATCH',
+        method_id='compute.networks.patch',
+        ordered_params=['project', 'network'],
+        path_params=['network', 'project'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/global/networks/{network}',
+        request_field='networkResource',
+        request_type_name='ComputeNetworksPatchRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -7660,15 +7660,15 @@ If the group is part of a backend service that has enabled connection draining, 
           config, request, global_params=global_params)
 
     RemovePeering.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'compute.networks.removePeering',
-        ordered_params=[u'project', u'network'],
-        path_params=[u'network', u'project'],
-        query_params=[u'requestId'],
-        relative_path=u'projects/{project}/global/networks/{network}/removePeering',
-        request_field=u'networksRemovePeeringRequest',
-        request_type_name=u'ComputeNetworksRemovePeeringRequest',
-        response_type_name=u'Operation',
+        http_method='POST',
+        method_id='compute.networks.removePeering',
+        ordered_params=['project', 'network'],
+        path_params=['network', 'project'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/global/networks/{network}/removePeering',
+        request_field='networksRemovePeeringRequest',
+        request_type_name='ComputeNetworksRemovePeeringRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -7686,15 +7686,15 @@ If the group is part of a backend service that has enabled connection draining, 
           config, request, global_params=global_params)
 
     SwitchToCustomMode.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'compute.networks.switchToCustomMode',
-        ordered_params=[u'project', u'network'],
-        path_params=[u'network', u'project'],
-        query_params=[u'requestId'],
-        relative_path=u'projects/{project}/global/networks/{network}/switchToCustomMode',
+        http_method='POST',
+        method_id='compute.networks.switchToCustomMode',
+        ordered_params=['project', 'network'],
+        path_params=['network', 'project'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/global/networks/{network}/switchToCustomMode',
         request_field='',
-        request_type_name=u'ComputeNetworksSwitchToCustomModeRequest',
-        response_type_name=u'Operation',
+        request_type_name='ComputeNetworksSwitchToCustomModeRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -7712,15 +7712,15 @@ If the group is part of a backend service that has enabled connection draining, 
           config, request, global_params=global_params)
 
     TestIamPermissions.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'compute.networks.testIamPermissions',
-        ordered_params=[u'project', u'resource'],
-        path_params=[u'project', u'resource'],
+        http_method='POST',
+        method_id='compute.networks.testIamPermissions',
+        ordered_params=['project', 'resource'],
+        path_params=['project', 'resource'],
         query_params=[],
-        relative_path=u'projects/{project}/global/networks/{resource}/testIamPermissions',
-        request_field=u'testPermissionsRequest',
-        request_type_name=u'ComputeNetworksTestIamPermissionsRequest',
-        response_type_name=u'TestPermissionsResponse',
+        relative_path='projects/{project}/global/networks/{resource}/testIamPermissions',
+        request_field='testPermissionsRequest',
+        request_type_name='ComputeNetworksTestIamPermissionsRequest',
+        response_type_name='TestPermissionsResponse',
         supports_download=False,
     )
 
@@ -7738,22 +7738,22 @@ If the group is part of a backend service that has enabled connection draining, 
           config, request, global_params=global_params)
 
     UpdatePeering.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'PATCH',
-        method_id=u'compute.networks.updatePeering',
-        ordered_params=[u'project', u'network'],
-        path_params=[u'network', u'project'],
-        query_params=[u'requestId'],
-        relative_path=u'projects/{project}/global/networks/{network}/updatePeering',
-        request_field=u'networksUpdatePeeringRequest',
-        request_type_name=u'ComputeNetworksUpdatePeeringRequest',
-        response_type_name=u'Operation',
+        http_method='PATCH',
+        method_id='compute.networks.updatePeering',
+        ordered_params=['project', 'network'],
+        path_params=['network', 'project'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/global/networks/{network}/updatePeering',
+        request_field='networksUpdatePeeringRequest',
+        request_type_name='ComputeNetworksUpdatePeeringRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
   class NodeGroupsService(base_api.BaseApiService):
     """Service class for the nodeGroups resource."""
 
-    _NAME = u'nodeGroups'
+    _NAME = 'nodeGroups'
 
     def __init__(self, client):
       super(ComputeBeta.NodeGroupsService, self).__init__(client)
@@ -7774,15 +7774,15 @@ If the group is part of a backend service that has enabled connection draining, 
           config, request, global_params=global_params)
 
     AddNodes.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'compute.nodeGroups.addNodes',
-        ordered_params=[u'project', u'zone', u'nodeGroup'],
-        path_params=[u'nodeGroup', u'project', u'zone'],
-        query_params=[u'requestId'],
-        relative_path=u'projects/{project}/zones/{zone}/nodeGroups/{nodeGroup}/addNodes',
-        request_field=u'nodeGroupsAddNodesRequest',
-        request_type_name=u'ComputeNodeGroupsAddNodesRequest',
-        response_type_name=u'Operation',
+        http_method='POST',
+        method_id='compute.nodeGroups.addNodes',
+        ordered_params=['project', 'zone', 'nodeGroup'],
+        path_params=['nodeGroup', 'project', 'zone'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/zones/{zone}/nodeGroups/{nodeGroup}/addNodes',
+        request_field='nodeGroupsAddNodesRequest',
+        request_type_name='ComputeNodeGroupsAddNodesRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -7800,15 +7800,15 @@ If the group is part of a backend service that has enabled connection draining, 
           config, request, global_params=global_params)
 
     AggregatedList.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'compute.nodeGroups.aggregatedList',
-        ordered_params=[u'project'],
-        path_params=[u'project'],
-        query_params=[u'filter', u'includeAllScopes', u'maxResults', u'orderBy', u'pageToken'],
-        relative_path=u'projects/{project}/aggregated/nodeGroups',
+        http_method='GET',
+        method_id='compute.nodeGroups.aggregatedList',
+        ordered_params=['project'],
+        path_params=['project'],
+        query_params=['filter', 'includeAllScopes', 'maxResults', 'orderBy', 'pageToken'],
+        relative_path='projects/{project}/aggregated/nodeGroups',
         request_field='',
-        request_type_name=u'ComputeNodeGroupsAggregatedListRequest',
-        response_type_name=u'NodeGroupAggregatedList',
+        request_type_name='ComputeNodeGroupsAggregatedListRequest',
+        response_type_name='NodeGroupAggregatedList',
         supports_download=False,
     )
 
@@ -7826,15 +7826,15 @@ If the group is part of a backend service that has enabled connection draining, 
           config, request, global_params=global_params)
 
     Delete.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'DELETE',
-        method_id=u'compute.nodeGroups.delete',
-        ordered_params=[u'project', u'zone', u'nodeGroup'],
-        path_params=[u'nodeGroup', u'project', u'zone'],
-        query_params=[u'requestId'],
-        relative_path=u'projects/{project}/zones/{zone}/nodeGroups/{nodeGroup}',
+        http_method='DELETE',
+        method_id='compute.nodeGroups.delete',
+        ordered_params=['project', 'zone', 'nodeGroup'],
+        path_params=['nodeGroup', 'project', 'zone'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/zones/{zone}/nodeGroups/{nodeGroup}',
         request_field='',
-        request_type_name=u'ComputeNodeGroupsDeleteRequest',
-        response_type_name=u'Operation',
+        request_type_name='ComputeNodeGroupsDeleteRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -7852,15 +7852,15 @@ If the group is part of a backend service that has enabled connection draining, 
           config, request, global_params=global_params)
 
     DeleteNodes.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'compute.nodeGroups.deleteNodes',
-        ordered_params=[u'project', u'zone', u'nodeGroup'],
-        path_params=[u'nodeGroup', u'project', u'zone'],
-        query_params=[u'requestId'],
-        relative_path=u'projects/{project}/zones/{zone}/nodeGroups/{nodeGroup}/deleteNodes',
-        request_field=u'nodeGroupsDeleteNodesRequest',
-        request_type_name=u'ComputeNodeGroupsDeleteNodesRequest',
-        response_type_name=u'Operation',
+        http_method='POST',
+        method_id='compute.nodeGroups.deleteNodes',
+        ordered_params=['project', 'zone', 'nodeGroup'],
+        path_params=['nodeGroup', 'project', 'zone'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/zones/{zone}/nodeGroups/{nodeGroup}/deleteNodes',
+        request_field='nodeGroupsDeleteNodesRequest',
+        request_type_name='ComputeNodeGroupsDeleteNodesRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -7878,15 +7878,15 @@ If the group is part of a backend service that has enabled connection draining, 
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'compute.nodeGroups.get',
-        ordered_params=[u'project', u'zone', u'nodeGroup'],
-        path_params=[u'nodeGroup', u'project', u'zone'],
+        http_method='GET',
+        method_id='compute.nodeGroups.get',
+        ordered_params=['project', 'zone', 'nodeGroup'],
+        path_params=['nodeGroup', 'project', 'zone'],
         query_params=[],
-        relative_path=u'projects/{project}/zones/{zone}/nodeGroups/{nodeGroup}',
+        relative_path='projects/{project}/zones/{zone}/nodeGroups/{nodeGroup}',
         request_field='',
-        request_type_name=u'ComputeNodeGroupsGetRequest',
-        response_type_name=u'NodeGroup',
+        request_type_name='ComputeNodeGroupsGetRequest',
+        response_type_name='NodeGroup',
         supports_download=False,
     )
 
@@ -7904,15 +7904,15 @@ If the group is part of a backend service that has enabled connection draining, 
           config, request, global_params=global_params)
 
     GetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'compute.nodeGroups.getIamPolicy',
-        ordered_params=[u'project', u'zone', u'resource'],
-        path_params=[u'project', u'resource', u'zone'],
-        query_params=[u'optionsRequestedPolicyVersion'],
-        relative_path=u'projects/{project}/zones/{zone}/nodeGroups/{resource}/getIamPolicy',
+        http_method='GET',
+        method_id='compute.nodeGroups.getIamPolicy',
+        ordered_params=['project', 'zone', 'resource'],
+        path_params=['project', 'resource', 'zone'],
+        query_params=['optionsRequestedPolicyVersion'],
+        relative_path='projects/{project}/zones/{zone}/nodeGroups/{resource}/getIamPolicy',
         request_field='',
-        request_type_name=u'ComputeNodeGroupsGetIamPolicyRequest',
-        response_type_name=u'Policy',
+        request_type_name='ComputeNodeGroupsGetIamPolicyRequest',
+        response_type_name='Policy',
         supports_download=False,
     )
 
@@ -7930,15 +7930,15 @@ If the group is part of a backend service that has enabled connection draining, 
           config, request, global_params=global_params)
 
     Insert.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'compute.nodeGroups.insert',
-        ordered_params=[u'project', u'zone', u'initialNodeCount'],
-        path_params=[u'project', u'zone'],
-        query_params=[u'initialNodeCount', u'requestId'],
-        relative_path=u'projects/{project}/zones/{zone}/nodeGroups',
-        request_field=u'nodeGroup',
-        request_type_name=u'ComputeNodeGroupsInsertRequest',
-        response_type_name=u'Operation',
+        http_method='POST',
+        method_id='compute.nodeGroups.insert',
+        ordered_params=['project', 'zone', 'initialNodeCount'],
+        path_params=['project', 'zone'],
+        query_params=['initialNodeCount', 'requestId'],
+        relative_path='projects/{project}/zones/{zone}/nodeGroups',
+        request_field='nodeGroup',
+        request_type_name='ComputeNodeGroupsInsertRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -7956,15 +7956,15 @@ If the group is part of a backend service that has enabled connection draining, 
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'compute.nodeGroups.list',
-        ordered_params=[u'project', u'zone'],
-        path_params=[u'project', u'zone'],
-        query_params=[u'filter', u'maxResults', u'orderBy', u'pageToken'],
-        relative_path=u'projects/{project}/zones/{zone}/nodeGroups',
+        http_method='GET',
+        method_id='compute.nodeGroups.list',
+        ordered_params=['project', 'zone'],
+        path_params=['project', 'zone'],
+        query_params=['filter', 'maxResults', 'orderBy', 'pageToken'],
+        relative_path='projects/{project}/zones/{zone}/nodeGroups',
         request_field='',
-        request_type_name=u'ComputeNodeGroupsListRequest',
-        response_type_name=u'NodeGroupList',
+        request_type_name='ComputeNodeGroupsListRequest',
+        response_type_name='NodeGroupList',
         supports_download=False,
     )
 
@@ -7982,15 +7982,15 @@ If the group is part of a backend service that has enabled connection draining, 
           config, request, global_params=global_params)
 
     ListNodes.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'compute.nodeGroups.listNodes',
-        ordered_params=[u'project', u'zone', u'nodeGroup'],
-        path_params=[u'nodeGroup', u'project', u'zone'],
-        query_params=[u'filter', u'maxResults', u'orderBy', u'pageToken'],
-        relative_path=u'projects/{project}/zones/{zone}/nodeGroups/{nodeGroup}/listNodes',
+        http_method='POST',
+        method_id='compute.nodeGroups.listNodes',
+        ordered_params=['project', 'zone', 'nodeGroup'],
+        path_params=['nodeGroup', 'project', 'zone'],
+        query_params=['filter', 'maxResults', 'orderBy', 'pageToken'],
+        relative_path='projects/{project}/zones/{zone}/nodeGroups/{nodeGroup}/listNodes',
         request_field='',
-        request_type_name=u'ComputeNodeGroupsListNodesRequest',
-        response_type_name=u'NodeGroupsListNodes',
+        request_type_name='ComputeNodeGroupsListNodesRequest',
+        response_type_name='NodeGroupsListNodes',
         supports_download=False,
     )
 
@@ -8008,15 +8008,15 @@ If the group is part of a backend service that has enabled connection draining, 
           config, request, global_params=global_params)
 
     Patch.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'PATCH',
-        method_id=u'compute.nodeGroups.patch',
-        ordered_params=[u'project', u'zone', u'nodeGroup'],
-        path_params=[u'nodeGroup', u'project', u'zone'],
-        query_params=[u'requestId'],
-        relative_path=u'projects/{project}/zones/{zone}/nodeGroups/{nodeGroup}',
-        request_field=u'nodeGroupResource',
-        request_type_name=u'ComputeNodeGroupsPatchRequest',
-        response_type_name=u'Operation',
+        http_method='PATCH',
+        method_id='compute.nodeGroups.patch',
+        ordered_params=['project', 'zone', 'nodeGroup'],
+        path_params=['nodeGroup', 'project', 'zone'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/zones/{zone}/nodeGroups/{nodeGroup}',
+        request_field='nodeGroupResource',
+        request_type_name='ComputeNodeGroupsPatchRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -8034,15 +8034,15 @@ If the group is part of a backend service that has enabled connection draining, 
           config, request, global_params=global_params)
 
     SetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'compute.nodeGroups.setIamPolicy',
-        ordered_params=[u'project', u'zone', u'resource'],
-        path_params=[u'project', u'resource', u'zone'],
+        http_method='POST',
+        method_id='compute.nodeGroups.setIamPolicy',
+        ordered_params=['project', 'zone', 'resource'],
+        path_params=['project', 'resource', 'zone'],
         query_params=[],
-        relative_path=u'projects/{project}/zones/{zone}/nodeGroups/{resource}/setIamPolicy',
-        request_field=u'zoneSetPolicyRequest',
-        request_type_name=u'ComputeNodeGroupsSetIamPolicyRequest',
-        response_type_name=u'Policy',
+        relative_path='projects/{project}/zones/{zone}/nodeGroups/{resource}/setIamPolicy',
+        request_field='zoneSetPolicyRequest',
+        request_type_name='ComputeNodeGroupsSetIamPolicyRequest',
+        response_type_name='Policy',
         supports_download=False,
     )
 
@@ -8060,15 +8060,15 @@ If the group is part of a backend service that has enabled connection draining, 
           config, request, global_params=global_params)
 
     SetNodeTemplate.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'compute.nodeGroups.setNodeTemplate',
-        ordered_params=[u'project', u'zone', u'nodeGroup'],
-        path_params=[u'nodeGroup', u'project', u'zone'],
-        query_params=[u'requestId'],
-        relative_path=u'projects/{project}/zones/{zone}/nodeGroups/{nodeGroup}/setNodeTemplate',
-        request_field=u'nodeGroupsSetNodeTemplateRequest',
-        request_type_name=u'ComputeNodeGroupsSetNodeTemplateRequest',
-        response_type_name=u'Operation',
+        http_method='POST',
+        method_id='compute.nodeGroups.setNodeTemplate',
+        ordered_params=['project', 'zone', 'nodeGroup'],
+        path_params=['nodeGroup', 'project', 'zone'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/zones/{zone}/nodeGroups/{nodeGroup}/setNodeTemplate',
+        request_field='nodeGroupsSetNodeTemplateRequest',
+        request_type_name='ComputeNodeGroupsSetNodeTemplateRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -8086,22 +8086,22 @@ If the group is part of a backend service that has enabled connection draining, 
           config, request, global_params=global_params)
 
     TestIamPermissions.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'compute.nodeGroups.testIamPermissions',
-        ordered_params=[u'project', u'zone', u'resource'],
-        path_params=[u'project', u'resource', u'zone'],
+        http_method='POST',
+        method_id='compute.nodeGroups.testIamPermissions',
+        ordered_params=['project', 'zone', 'resource'],
+        path_params=['project', 'resource', 'zone'],
         query_params=[],
-        relative_path=u'projects/{project}/zones/{zone}/nodeGroups/{resource}/testIamPermissions',
-        request_field=u'testPermissionsRequest',
-        request_type_name=u'ComputeNodeGroupsTestIamPermissionsRequest',
-        response_type_name=u'TestPermissionsResponse',
+        relative_path='projects/{project}/zones/{zone}/nodeGroups/{resource}/testIamPermissions',
+        request_field='testPermissionsRequest',
+        request_type_name='ComputeNodeGroupsTestIamPermissionsRequest',
+        response_type_name='TestPermissionsResponse',
         supports_download=False,
     )
 
   class NodeTemplatesService(base_api.BaseApiService):
     """Service class for the nodeTemplates resource."""
 
-    _NAME = u'nodeTemplates'
+    _NAME = 'nodeTemplates'
 
     def __init__(self, client):
       super(ComputeBeta.NodeTemplatesService, self).__init__(client)
@@ -8122,15 +8122,15 @@ If the group is part of a backend service that has enabled connection draining, 
           config, request, global_params=global_params)
 
     AggregatedList.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'compute.nodeTemplates.aggregatedList',
-        ordered_params=[u'project'],
-        path_params=[u'project'],
-        query_params=[u'filter', u'includeAllScopes', u'maxResults', u'orderBy', u'pageToken'],
-        relative_path=u'projects/{project}/aggregated/nodeTemplates',
+        http_method='GET',
+        method_id='compute.nodeTemplates.aggregatedList',
+        ordered_params=['project'],
+        path_params=['project'],
+        query_params=['filter', 'includeAllScopes', 'maxResults', 'orderBy', 'pageToken'],
+        relative_path='projects/{project}/aggregated/nodeTemplates',
         request_field='',
-        request_type_name=u'ComputeNodeTemplatesAggregatedListRequest',
-        response_type_name=u'NodeTemplateAggregatedList',
+        request_type_name='ComputeNodeTemplatesAggregatedListRequest',
+        response_type_name='NodeTemplateAggregatedList',
         supports_download=False,
     )
 
@@ -8148,15 +8148,15 @@ If the group is part of a backend service that has enabled connection draining, 
           config, request, global_params=global_params)
 
     Delete.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'DELETE',
-        method_id=u'compute.nodeTemplates.delete',
-        ordered_params=[u'project', u'region', u'nodeTemplate'],
-        path_params=[u'nodeTemplate', u'project', u'region'],
-        query_params=[u'requestId'],
-        relative_path=u'projects/{project}/regions/{region}/nodeTemplates/{nodeTemplate}',
+        http_method='DELETE',
+        method_id='compute.nodeTemplates.delete',
+        ordered_params=['project', 'region', 'nodeTemplate'],
+        path_params=['nodeTemplate', 'project', 'region'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/regions/{region}/nodeTemplates/{nodeTemplate}',
         request_field='',
-        request_type_name=u'ComputeNodeTemplatesDeleteRequest',
-        response_type_name=u'Operation',
+        request_type_name='ComputeNodeTemplatesDeleteRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -8174,15 +8174,15 @@ If the group is part of a backend service that has enabled connection draining, 
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'compute.nodeTemplates.get',
-        ordered_params=[u'project', u'region', u'nodeTemplate'],
-        path_params=[u'nodeTemplate', u'project', u'region'],
+        http_method='GET',
+        method_id='compute.nodeTemplates.get',
+        ordered_params=['project', 'region', 'nodeTemplate'],
+        path_params=['nodeTemplate', 'project', 'region'],
         query_params=[],
-        relative_path=u'projects/{project}/regions/{region}/nodeTemplates/{nodeTemplate}',
+        relative_path='projects/{project}/regions/{region}/nodeTemplates/{nodeTemplate}',
         request_field='',
-        request_type_name=u'ComputeNodeTemplatesGetRequest',
-        response_type_name=u'NodeTemplate',
+        request_type_name='ComputeNodeTemplatesGetRequest',
+        response_type_name='NodeTemplate',
         supports_download=False,
     )
 
@@ -8200,15 +8200,15 @@ If the group is part of a backend service that has enabled connection draining, 
           config, request, global_params=global_params)
 
     GetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'compute.nodeTemplates.getIamPolicy',
-        ordered_params=[u'project', u'region', u'resource'],
-        path_params=[u'project', u'region', u'resource'],
-        query_params=[u'optionsRequestedPolicyVersion'],
-        relative_path=u'projects/{project}/regions/{region}/nodeTemplates/{resource}/getIamPolicy',
+        http_method='GET',
+        method_id='compute.nodeTemplates.getIamPolicy',
+        ordered_params=['project', 'region', 'resource'],
+        path_params=['project', 'region', 'resource'],
+        query_params=['optionsRequestedPolicyVersion'],
+        relative_path='projects/{project}/regions/{region}/nodeTemplates/{resource}/getIamPolicy',
         request_field='',
-        request_type_name=u'ComputeNodeTemplatesGetIamPolicyRequest',
-        response_type_name=u'Policy',
+        request_type_name='ComputeNodeTemplatesGetIamPolicyRequest',
+        response_type_name='Policy',
         supports_download=False,
     )
 
@@ -8226,15 +8226,15 @@ If the group is part of a backend service that has enabled connection draining, 
           config, request, global_params=global_params)
 
     Insert.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'compute.nodeTemplates.insert',
-        ordered_params=[u'project', u'region'],
-        path_params=[u'project', u'region'],
-        query_params=[u'requestId'],
-        relative_path=u'projects/{project}/regions/{region}/nodeTemplates',
-        request_field=u'nodeTemplate',
-        request_type_name=u'ComputeNodeTemplatesInsertRequest',
-        response_type_name=u'Operation',
+        http_method='POST',
+        method_id='compute.nodeTemplates.insert',
+        ordered_params=['project', 'region'],
+        path_params=['project', 'region'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/regions/{region}/nodeTemplates',
+        request_field='nodeTemplate',
+        request_type_name='ComputeNodeTemplatesInsertRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -8252,15 +8252,15 @@ If the group is part of a backend service that has enabled connection draining, 
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'compute.nodeTemplates.list',
-        ordered_params=[u'project', u'region'],
-        path_params=[u'project', u'region'],
-        query_params=[u'filter', u'maxResults', u'orderBy', u'pageToken'],
-        relative_path=u'projects/{project}/regions/{region}/nodeTemplates',
+        http_method='GET',
+        method_id='compute.nodeTemplates.list',
+        ordered_params=['project', 'region'],
+        path_params=['project', 'region'],
+        query_params=['filter', 'maxResults', 'orderBy', 'pageToken'],
+        relative_path='projects/{project}/regions/{region}/nodeTemplates',
         request_field='',
-        request_type_name=u'ComputeNodeTemplatesListRequest',
-        response_type_name=u'NodeTemplateList',
+        request_type_name='ComputeNodeTemplatesListRequest',
+        response_type_name='NodeTemplateList',
         supports_download=False,
     )
 
@@ -8278,15 +8278,15 @@ If the group is part of a backend service that has enabled connection draining, 
           config, request, global_params=global_params)
 
     SetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'compute.nodeTemplates.setIamPolicy',
-        ordered_params=[u'project', u'region', u'resource'],
-        path_params=[u'project', u'region', u'resource'],
+        http_method='POST',
+        method_id='compute.nodeTemplates.setIamPolicy',
+        ordered_params=['project', 'region', 'resource'],
+        path_params=['project', 'region', 'resource'],
         query_params=[],
-        relative_path=u'projects/{project}/regions/{region}/nodeTemplates/{resource}/setIamPolicy',
-        request_field=u'regionSetPolicyRequest',
-        request_type_name=u'ComputeNodeTemplatesSetIamPolicyRequest',
-        response_type_name=u'Policy',
+        relative_path='projects/{project}/regions/{region}/nodeTemplates/{resource}/setIamPolicy',
+        request_field='regionSetPolicyRequest',
+        request_type_name='ComputeNodeTemplatesSetIamPolicyRequest',
+        response_type_name='Policy',
         supports_download=False,
     )
 
@@ -8304,22 +8304,22 @@ If the group is part of a backend service that has enabled connection draining, 
           config, request, global_params=global_params)
 
     TestIamPermissions.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'compute.nodeTemplates.testIamPermissions',
-        ordered_params=[u'project', u'region', u'resource'],
-        path_params=[u'project', u'region', u'resource'],
+        http_method='POST',
+        method_id='compute.nodeTemplates.testIamPermissions',
+        ordered_params=['project', 'region', 'resource'],
+        path_params=['project', 'region', 'resource'],
         query_params=[],
-        relative_path=u'projects/{project}/regions/{region}/nodeTemplates/{resource}/testIamPermissions',
-        request_field=u'testPermissionsRequest',
-        request_type_name=u'ComputeNodeTemplatesTestIamPermissionsRequest',
-        response_type_name=u'TestPermissionsResponse',
+        relative_path='projects/{project}/regions/{region}/nodeTemplates/{resource}/testIamPermissions',
+        request_field='testPermissionsRequest',
+        request_type_name='ComputeNodeTemplatesTestIamPermissionsRequest',
+        response_type_name='TestPermissionsResponse',
         supports_download=False,
     )
 
   class NodeTypesService(base_api.BaseApiService):
     """Service class for the nodeTypes resource."""
 
-    _NAME = u'nodeTypes'
+    _NAME = 'nodeTypes'
 
     def __init__(self, client):
       super(ComputeBeta.NodeTypesService, self).__init__(client)
@@ -8340,15 +8340,15 @@ If the group is part of a backend service that has enabled connection draining, 
           config, request, global_params=global_params)
 
     AggregatedList.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'compute.nodeTypes.aggregatedList',
-        ordered_params=[u'project'],
-        path_params=[u'project'],
-        query_params=[u'filter', u'includeAllScopes', u'maxResults', u'orderBy', u'pageToken'],
-        relative_path=u'projects/{project}/aggregated/nodeTypes',
+        http_method='GET',
+        method_id='compute.nodeTypes.aggregatedList',
+        ordered_params=['project'],
+        path_params=['project'],
+        query_params=['filter', 'includeAllScopes', 'maxResults', 'orderBy', 'pageToken'],
+        relative_path='projects/{project}/aggregated/nodeTypes',
         request_field='',
-        request_type_name=u'ComputeNodeTypesAggregatedListRequest',
-        response_type_name=u'NodeTypeAggregatedList',
+        request_type_name='ComputeNodeTypesAggregatedListRequest',
+        response_type_name='NodeTypeAggregatedList',
         supports_download=False,
     )
 
@@ -8366,15 +8366,15 @@ If the group is part of a backend service that has enabled connection draining, 
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'compute.nodeTypes.get',
-        ordered_params=[u'project', u'zone', u'nodeType'],
-        path_params=[u'nodeType', u'project', u'zone'],
+        http_method='GET',
+        method_id='compute.nodeTypes.get',
+        ordered_params=['project', 'zone', 'nodeType'],
+        path_params=['nodeType', 'project', 'zone'],
         query_params=[],
-        relative_path=u'projects/{project}/zones/{zone}/nodeTypes/{nodeType}',
+        relative_path='projects/{project}/zones/{zone}/nodeTypes/{nodeType}',
         request_field='',
-        request_type_name=u'ComputeNodeTypesGetRequest',
-        response_type_name=u'NodeType',
+        request_type_name='ComputeNodeTypesGetRequest',
+        response_type_name='NodeType',
         supports_download=False,
     )
 
@@ -8392,22 +8392,22 @@ If the group is part of a backend service that has enabled connection draining, 
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'compute.nodeTypes.list',
-        ordered_params=[u'project', u'zone'],
-        path_params=[u'project', u'zone'],
-        query_params=[u'filter', u'maxResults', u'orderBy', u'pageToken'],
-        relative_path=u'projects/{project}/zones/{zone}/nodeTypes',
+        http_method='GET',
+        method_id='compute.nodeTypes.list',
+        ordered_params=['project', 'zone'],
+        path_params=['project', 'zone'],
+        query_params=['filter', 'maxResults', 'orderBy', 'pageToken'],
+        relative_path='projects/{project}/zones/{zone}/nodeTypes',
         request_field='',
-        request_type_name=u'ComputeNodeTypesListRequest',
-        response_type_name=u'NodeTypeList',
+        request_type_name='ComputeNodeTypesListRequest',
+        response_type_name='NodeTypeList',
         supports_download=False,
     )
 
   class OrganizationSecurityPoliciesService(base_api.BaseApiService):
     """Service class for the organizationSecurityPolicies resource."""
 
-    _NAME = u'organizationSecurityPolicies'
+    _NAME = 'organizationSecurityPolicies'
 
     def __init__(self, client):
       super(ComputeBeta.OrganizationSecurityPoliciesService, self).__init__(client)
@@ -8428,15 +8428,15 @@ If the group is part of a backend service that has enabled connection draining, 
           config, request, global_params=global_params)
 
     AddAssociation.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'compute.organizationSecurityPolicies.addAssociation',
-        ordered_params=[u'securityPolicy'],
-        path_params=[u'securityPolicy'],
-        query_params=[u'replaceExistingAssociation', u'requestId'],
-        relative_path=u'projects/locations/global/securityPolicies/{securityPolicy}/addAssociation',
-        request_field=u'securityPolicyAssociation',
-        request_type_name=u'ComputeOrganizationSecurityPoliciesAddAssociationRequest',
-        response_type_name=u'Operation',
+        http_method='POST',
+        method_id='compute.organizationSecurityPolicies.addAssociation',
+        ordered_params=['securityPolicy'],
+        path_params=['securityPolicy'],
+        query_params=['replaceExistingAssociation', 'requestId'],
+        relative_path='projects/locations/global/securityPolicies/{securityPolicy}/addAssociation',
+        request_field='securityPolicyAssociation',
+        request_type_name='ComputeOrganizationSecurityPoliciesAddAssociationRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -8454,15 +8454,15 @@ If the group is part of a backend service that has enabled connection draining, 
           config, request, global_params=global_params)
 
     AddRule.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'compute.organizationSecurityPolicies.addRule',
-        ordered_params=[u'securityPolicy'],
-        path_params=[u'securityPolicy'],
-        query_params=[u'requestId'],
-        relative_path=u'projects/locations/global/securityPolicies/{securityPolicy}/addRule',
-        request_field=u'securityPolicyRule',
-        request_type_name=u'ComputeOrganizationSecurityPoliciesAddRuleRequest',
-        response_type_name=u'Operation',
+        http_method='POST',
+        method_id='compute.organizationSecurityPolicies.addRule',
+        ordered_params=['securityPolicy'],
+        path_params=['securityPolicy'],
+        query_params=['requestId'],
+        relative_path='projects/locations/global/securityPolicies/{securityPolicy}/addRule',
+        request_field='securityPolicyRule',
+        request_type_name='ComputeOrganizationSecurityPoliciesAddRuleRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -8480,15 +8480,15 @@ If the group is part of a backend service that has enabled connection draining, 
           config, request, global_params=global_params)
 
     CopyRules.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'compute.organizationSecurityPolicies.copyRules',
-        ordered_params=[u'securityPolicy'],
-        path_params=[u'securityPolicy'],
-        query_params=[u'requestId', u'sourceSecurityPolicy'],
-        relative_path=u'projects/locations/global/securityPolicies/{securityPolicy}/copyRules',
+        http_method='POST',
+        method_id='compute.organizationSecurityPolicies.copyRules',
+        ordered_params=['securityPolicy'],
+        path_params=['securityPolicy'],
+        query_params=['requestId', 'sourceSecurityPolicy'],
+        relative_path='projects/locations/global/securityPolicies/{securityPolicy}/copyRules',
         request_field='',
-        request_type_name=u'ComputeOrganizationSecurityPoliciesCopyRulesRequest',
-        response_type_name=u'Operation',
+        request_type_name='ComputeOrganizationSecurityPoliciesCopyRulesRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -8506,15 +8506,15 @@ If the group is part of a backend service that has enabled connection draining, 
           config, request, global_params=global_params)
 
     Delete.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'DELETE',
-        method_id=u'compute.organizationSecurityPolicies.delete',
-        ordered_params=[u'securityPolicy'],
-        path_params=[u'securityPolicy'],
-        query_params=[u'requestId'],
-        relative_path=u'projects/locations/global/securityPolicies/{securityPolicy}',
+        http_method='DELETE',
+        method_id='compute.organizationSecurityPolicies.delete',
+        ordered_params=['securityPolicy'],
+        path_params=['securityPolicy'],
+        query_params=['requestId'],
+        relative_path='projects/locations/global/securityPolicies/{securityPolicy}',
         request_field='',
-        request_type_name=u'ComputeOrganizationSecurityPoliciesDeleteRequest',
-        response_type_name=u'Operation',
+        request_type_name='ComputeOrganizationSecurityPoliciesDeleteRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -8532,15 +8532,15 @@ If the group is part of a backend service that has enabled connection draining, 
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'compute.organizationSecurityPolicies.get',
-        ordered_params=[u'securityPolicy'],
-        path_params=[u'securityPolicy'],
+        http_method='GET',
+        method_id='compute.organizationSecurityPolicies.get',
+        ordered_params=['securityPolicy'],
+        path_params=['securityPolicy'],
         query_params=[],
-        relative_path=u'projects/locations/global/securityPolicies/{securityPolicy}',
+        relative_path='projects/locations/global/securityPolicies/{securityPolicy}',
         request_field='',
-        request_type_name=u'ComputeOrganizationSecurityPoliciesGetRequest',
-        response_type_name=u'SecurityPolicy',
+        request_type_name='ComputeOrganizationSecurityPoliciesGetRequest',
+        response_type_name='SecurityPolicy',
         supports_download=False,
     )
 
@@ -8558,15 +8558,15 @@ If the group is part of a backend service that has enabled connection draining, 
           config, request, global_params=global_params)
 
     GetAssociation.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'compute.organizationSecurityPolicies.getAssociation',
-        ordered_params=[u'securityPolicy'],
-        path_params=[u'securityPolicy'],
-        query_params=[u'name'],
-        relative_path=u'projects/locations/global/securityPolicies/{securityPolicy}/getAssociation',
+        http_method='GET',
+        method_id='compute.organizationSecurityPolicies.getAssociation',
+        ordered_params=['securityPolicy'],
+        path_params=['securityPolicy'],
+        query_params=['name'],
+        relative_path='projects/locations/global/securityPolicies/{securityPolicy}/getAssociation',
         request_field='',
-        request_type_name=u'ComputeOrganizationSecurityPoliciesGetAssociationRequest',
-        response_type_name=u'SecurityPolicyAssociation',
+        request_type_name='ComputeOrganizationSecurityPoliciesGetAssociationRequest',
+        response_type_name='SecurityPolicyAssociation',
         supports_download=False,
     )
 
@@ -8584,15 +8584,15 @@ If the group is part of a backend service that has enabled connection draining, 
           config, request, global_params=global_params)
 
     GetRule.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'compute.organizationSecurityPolicies.getRule',
-        ordered_params=[u'securityPolicy'],
-        path_params=[u'securityPolicy'],
-        query_params=[u'priority'],
-        relative_path=u'projects/locations/global/securityPolicies/{securityPolicy}/getRule',
+        http_method='GET',
+        method_id='compute.organizationSecurityPolicies.getRule',
+        ordered_params=['securityPolicy'],
+        path_params=['securityPolicy'],
+        query_params=['priority'],
+        relative_path='projects/locations/global/securityPolicies/{securityPolicy}/getRule',
         request_field='',
-        request_type_name=u'ComputeOrganizationSecurityPoliciesGetRuleRequest',
-        response_type_name=u'SecurityPolicyRule',
+        request_type_name='ComputeOrganizationSecurityPoliciesGetRuleRequest',
+        response_type_name='SecurityPolicyRule',
         supports_download=False,
     )
 
@@ -8610,15 +8610,15 @@ If the group is part of a backend service that has enabled connection draining, 
           config, request, global_params=global_params)
 
     Insert.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'compute.organizationSecurityPolicies.insert',
+        http_method='POST',
+        method_id='compute.organizationSecurityPolicies.insert',
         ordered_params=[],
         path_params=[],
-        query_params=[u'parentId', u'requestId'],
-        relative_path=u'projects/locations/global/securityPolicies',
-        request_field=u'securityPolicy',
-        request_type_name=u'ComputeOrganizationSecurityPoliciesInsertRequest',
-        response_type_name=u'Operation',
+        query_params=['parentId', 'requestId'],
+        relative_path='projects/locations/global/securityPolicies',
+        request_field='securityPolicy',
+        request_type_name='ComputeOrganizationSecurityPoliciesInsertRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -8636,15 +8636,15 @@ If the group is part of a backend service that has enabled connection draining, 
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'compute.organizationSecurityPolicies.list',
+        http_method='GET',
+        method_id='compute.organizationSecurityPolicies.list',
         ordered_params=[],
         path_params=[],
-        query_params=[u'filter', u'maxResults', u'orderBy', u'pageToken', u'parentId'],
-        relative_path=u'projects/locations/global/securityPolicies',
+        query_params=['filter', 'maxResults', 'orderBy', 'pageToken', 'parentId'],
+        relative_path='projects/locations/global/securityPolicies',
         request_field='',
-        request_type_name=u'ComputeOrganizationSecurityPoliciesListRequest',
-        response_type_name=u'SecurityPolicyList',
+        request_type_name='ComputeOrganizationSecurityPoliciesListRequest',
+        response_type_name='SecurityPolicyList',
         supports_download=False,
     )
 
@@ -8662,15 +8662,15 @@ If the group is part of a backend service that has enabled connection draining, 
           config, request, global_params=global_params)
 
     ListAssociations.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'compute.organizationSecurityPolicies.listAssociations',
+        http_method='GET',
+        method_id='compute.organizationSecurityPolicies.listAssociations',
         ordered_params=[],
         path_params=[],
-        query_params=[u'targetResource'],
-        relative_path=u'projects/locations/global/securityPolicies/listAssociations',
+        query_params=['targetResource'],
+        relative_path='projects/locations/global/securityPolicies/listAssociations',
         request_field='',
-        request_type_name=u'ComputeOrganizationSecurityPoliciesListAssociationsRequest',
-        response_type_name=u'OrganizationSecurityPoliciesListAssociationsResponse',
+        request_type_name='ComputeOrganizationSecurityPoliciesListAssociationsRequest',
+        response_type_name='OrganizationSecurityPoliciesListAssociationsResponse',
         supports_download=False,
     )
 
@@ -8688,15 +8688,15 @@ If the group is part of a backend service that has enabled connection draining, 
           config, request, global_params=global_params)
 
     Move.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'compute.organizationSecurityPolicies.move',
-        ordered_params=[u'securityPolicy'],
-        path_params=[u'securityPolicy'],
-        query_params=[u'parentId', u'requestId'],
-        relative_path=u'projects/locations/global/securityPolicies/{securityPolicy}/move',
+        http_method='POST',
+        method_id='compute.organizationSecurityPolicies.move',
+        ordered_params=['securityPolicy'],
+        path_params=['securityPolicy'],
+        query_params=['parentId', 'requestId'],
+        relative_path='projects/locations/global/securityPolicies/{securityPolicy}/move',
         request_field='',
-        request_type_name=u'ComputeOrganizationSecurityPoliciesMoveRequest',
-        response_type_name=u'Operation',
+        request_type_name='ComputeOrganizationSecurityPoliciesMoveRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -8714,15 +8714,15 @@ If the group is part of a backend service that has enabled connection draining, 
           config, request, global_params=global_params)
 
     Patch.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'PATCH',
-        method_id=u'compute.organizationSecurityPolicies.patch',
-        ordered_params=[u'securityPolicy'],
-        path_params=[u'securityPolicy'],
-        query_params=[u'requestId'],
-        relative_path=u'projects/locations/global/securityPolicies/{securityPolicy}',
-        request_field=u'securityPolicyResource',
-        request_type_name=u'ComputeOrganizationSecurityPoliciesPatchRequest',
-        response_type_name=u'Operation',
+        http_method='PATCH',
+        method_id='compute.organizationSecurityPolicies.patch',
+        ordered_params=['securityPolicy'],
+        path_params=['securityPolicy'],
+        query_params=['requestId'],
+        relative_path='projects/locations/global/securityPolicies/{securityPolicy}',
+        request_field='securityPolicyResource',
+        request_type_name='ComputeOrganizationSecurityPoliciesPatchRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -8740,15 +8740,15 @@ If the group is part of a backend service that has enabled connection draining, 
           config, request, global_params=global_params)
 
     PatchRule.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'compute.organizationSecurityPolicies.patchRule',
-        ordered_params=[u'securityPolicy'],
-        path_params=[u'securityPolicy'],
-        query_params=[u'priority', u'requestId'],
-        relative_path=u'projects/locations/global/securityPolicies/{securityPolicy}/patchRule',
-        request_field=u'securityPolicyRule',
-        request_type_name=u'ComputeOrganizationSecurityPoliciesPatchRuleRequest',
-        response_type_name=u'Operation',
+        http_method='POST',
+        method_id='compute.organizationSecurityPolicies.patchRule',
+        ordered_params=['securityPolicy'],
+        path_params=['securityPolicy'],
+        query_params=['priority', 'requestId'],
+        relative_path='projects/locations/global/securityPolicies/{securityPolicy}/patchRule',
+        request_field='securityPolicyRule',
+        request_type_name='ComputeOrganizationSecurityPoliciesPatchRuleRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -8766,15 +8766,15 @@ If the group is part of a backend service that has enabled connection draining, 
           config, request, global_params=global_params)
 
     RemoveAssociation.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'compute.organizationSecurityPolicies.removeAssociation',
-        ordered_params=[u'securityPolicy'],
-        path_params=[u'securityPolicy'],
-        query_params=[u'name', u'requestId'],
-        relative_path=u'projects/locations/global/securityPolicies/{securityPolicy}/removeAssociation',
+        http_method='POST',
+        method_id='compute.organizationSecurityPolicies.removeAssociation',
+        ordered_params=['securityPolicy'],
+        path_params=['securityPolicy'],
+        query_params=['name', 'requestId'],
+        relative_path='projects/locations/global/securityPolicies/{securityPolicy}/removeAssociation',
         request_field='',
-        request_type_name=u'ComputeOrganizationSecurityPoliciesRemoveAssociationRequest',
-        response_type_name=u'Operation',
+        request_type_name='ComputeOrganizationSecurityPoliciesRemoveAssociationRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -8792,22 +8792,22 @@ If the group is part of a backend service that has enabled connection draining, 
           config, request, global_params=global_params)
 
     RemoveRule.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'compute.organizationSecurityPolicies.removeRule',
-        ordered_params=[u'securityPolicy'],
-        path_params=[u'securityPolicy'],
-        query_params=[u'priority', u'requestId'],
-        relative_path=u'projects/locations/global/securityPolicies/{securityPolicy}/removeRule',
+        http_method='POST',
+        method_id='compute.organizationSecurityPolicies.removeRule',
+        ordered_params=['securityPolicy'],
+        path_params=['securityPolicy'],
+        query_params=['priority', 'requestId'],
+        relative_path='projects/locations/global/securityPolicies/{securityPolicy}/removeRule',
         request_field='',
-        request_type_name=u'ComputeOrganizationSecurityPoliciesRemoveRuleRequest',
-        response_type_name=u'Operation',
+        request_type_name='ComputeOrganizationSecurityPoliciesRemoveRuleRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
   class PacketMirroringsService(base_api.BaseApiService):
     """Service class for the packetMirrorings resource."""
 
-    _NAME = u'packetMirrorings'
+    _NAME = 'packetMirrorings'
 
     def __init__(self, client):
       super(ComputeBeta.PacketMirroringsService, self).__init__(client)
@@ -8828,15 +8828,15 @@ If the group is part of a backend service that has enabled connection draining, 
           config, request, global_params=global_params)
 
     AggregatedList.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'compute.packetMirrorings.aggregatedList',
-        ordered_params=[u'project'],
-        path_params=[u'project'],
-        query_params=[u'filter', u'includeAllScopes', u'maxResults', u'orderBy', u'pageToken'],
-        relative_path=u'projects/{project}/aggregated/packetMirrorings',
+        http_method='GET',
+        method_id='compute.packetMirrorings.aggregatedList',
+        ordered_params=['project'],
+        path_params=['project'],
+        query_params=['filter', 'includeAllScopes', 'maxResults', 'orderBy', 'pageToken'],
+        relative_path='projects/{project}/aggregated/packetMirrorings',
         request_field='',
-        request_type_name=u'ComputePacketMirroringsAggregatedListRequest',
-        response_type_name=u'PacketMirroringAggregatedList',
+        request_type_name='ComputePacketMirroringsAggregatedListRequest',
+        response_type_name='PacketMirroringAggregatedList',
         supports_download=False,
     )
 
@@ -8854,15 +8854,15 @@ If the group is part of a backend service that has enabled connection draining, 
           config, request, global_params=global_params)
 
     Delete.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'DELETE',
-        method_id=u'compute.packetMirrorings.delete',
-        ordered_params=[u'project', u'region', u'packetMirroring'],
-        path_params=[u'packetMirroring', u'project', u'region'],
-        query_params=[u'requestId'],
-        relative_path=u'projects/{project}/regions/{region}/packetMirrorings/{packetMirroring}',
+        http_method='DELETE',
+        method_id='compute.packetMirrorings.delete',
+        ordered_params=['project', 'region', 'packetMirroring'],
+        path_params=['packetMirroring', 'project', 'region'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/regions/{region}/packetMirrorings/{packetMirroring}',
         request_field='',
-        request_type_name=u'ComputePacketMirroringsDeleteRequest',
-        response_type_name=u'Operation',
+        request_type_name='ComputePacketMirroringsDeleteRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -8880,15 +8880,15 @@ If the group is part of a backend service that has enabled connection draining, 
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'compute.packetMirrorings.get',
-        ordered_params=[u'project', u'region', u'packetMirroring'],
-        path_params=[u'packetMirroring', u'project', u'region'],
+        http_method='GET',
+        method_id='compute.packetMirrorings.get',
+        ordered_params=['project', 'region', 'packetMirroring'],
+        path_params=['packetMirroring', 'project', 'region'],
         query_params=[],
-        relative_path=u'projects/{project}/regions/{region}/packetMirrorings/{packetMirroring}',
+        relative_path='projects/{project}/regions/{region}/packetMirrorings/{packetMirroring}',
         request_field='',
-        request_type_name=u'ComputePacketMirroringsGetRequest',
-        response_type_name=u'PacketMirroring',
+        request_type_name='ComputePacketMirroringsGetRequest',
+        response_type_name='PacketMirroring',
         supports_download=False,
     )
 
@@ -8906,15 +8906,15 @@ If the group is part of a backend service that has enabled connection draining, 
           config, request, global_params=global_params)
 
     Insert.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'compute.packetMirrorings.insert',
-        ordered_params=[u'project', u'region'],
-        path_params=[u'project', u'region'],
-        query_params=[u'requestId'],
-        relative_path=u'projects/{project}/regions/{region}/packetMirrorings',
-        request_field=u'packetMirroring',
-        request_type_name=u'ComputePacketMirroringsInsertRequest',
-        response_type_name=u'Operation',
+        http_method='POST',
+        method_id='compute.packetMirrorings.insert',
+        ordered_params=['project', 'region'],
+        path_params=['project', 'region'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/regions/{region}/packetMirrorings',
+        request_field='packetMirroring',
+        request_type_name='ComputePacketMirroringsInsertRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -8932,15 +8932,15 @@ If the group is part of a backend service that has enabled connection draining, 
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'compute.packetMirrorings.list',
-        ordered_params=[u'project', u'region'],
-        path_params=[u'project', u'region'],
-        query_params=[u'filter', u'maxResults', u'orderBy', u'pageToken'],
-        relative_path=u'projects/{project}/regions/{region}/packetMirrorings',
+        http_method='GET',
+        method_id='compute.packetMirrorings.list',
+        ordered_params=['project', 'region'],
+        path_params=['project', 'region'],
+        query_params=['filter', 'maxResults', 'orderBy', 'pageToken'],
+        relative_path='projects/{project}/regions/{region}/packetMirrorings',
         request_field='',
-        request_type_name=u'ComputePacketMirroringsListRequest',
-        response_type_name=u'PacketMirroringList',
+        request_type_name='ComputePacketMirroringsListRequest',
+        response_type_name='PacketMirroringList',
         supports_download=False,
     )
 
@@ -8958,15 +8958,15 @@ If the group is part of a backend service that has enabled connection draining, 
           config, request, global_params=global_params)
 
     Patch.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'PATCH',
-        method_id=u'compute.packetMirrorings.patch',
-        ordered_params=[u'project', u'region', u'packetMirroring'],
-        path_params=[u'packetMirroring', u'project', u'region'],
-        query_params=[u'requestId'],
-        relative_path=u'projects/{project}/regions/{region}/packetMirrorings/{packetMirroring}',
-        request_field=u'packetMirroringResource',
-        request_type_name=u'ComputePacketMirroringsPatchRequest',
-        response_type_name=u'Operation',
+        http_method='PATCH',
+        method_id='compute.packetMirrorings.patch',
+        ordered_params=['project', 'region', 'packetMirroring'],
+        path_params=['packetMirroring', 'project', 'region'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/regions/{region}/packetMirrorings/{packetMirroring}',
+        request_field='packetMirroringResource',
+        request_type_name='ComputePacketMirroringsPatchRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -8984,22 +8984,22 @@ If the group is part of a backend service that has enabled connection draining, 
           config, request, global_params=global_params)
 
     TestIamPermissions.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'compute.packetMirrorings.testIamPermissions',
-        ordered_params=[u'project', u'region', u'resource'],
-        path_params=[u'project', u'region', u'resource'],
+        http_method='POST',
+        method_id='compute.packetMirrorings.testIamPermissions',
+        ordered_params=['project', 'region', 'resource'],
+        path_params=['project', 'region', 'resource'],
         query_params=[],
-        relative_path=u'projects/{project}/regions/{region}/packetMirrorings/{resource}/testIamPermissions',
-        request_field=u'testPermissionsRequest',
-        request_type_name=u'ComputePacketMirroringsTestIamPermissionsRequest',
-        response_type_name=u'TestPermissionsResponse',
+        relative_path='projects/{project}/regions/{region}/packetMirrorings/{resource}/testIamPermissions',
+        request_field='testPermissionsRequest',
+        request_type_name='ComputePacketMirroringsTestIamPermissionsRequest',
+        response_type_name='TestPermissionsResponse',
         supports_download=False,
     )
 
   class ProjectsService(base_api.BaseApiService):
     """Service class for the projects resource."""
 
-    _NAME = u'projects'
+    _NAME = 'projects'
 
     def __init__(self, client):
       super(ComputeBeta.ProjectsService, self).__init__(client)
@@ -9020,15 +9020,15 @@ If the group is part of a backend service that has enabled connection draining, 
           config, request, global_params=global_params)
 
     DisableXpnHost.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'compute.projects.disableXpnHost',
-        ordered_params=[u'project'],
-        path_params=[u'project'],
-        query_params=[u'requestId'],
-        relative_path=u'projects/{project}/disableXpnHost',
+        http_method='POST',
+        method_id='compute.projects.disableXpnHost',
+        ordered_params=['project'],
+        path_params=['project'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/disableXpnHost',
         request_field='',
-        request_type_name=u'ComputeProjectsDisableXpnHostRequest',
-        response_type_name=u'Operation',
+        request_type_name='ComputeProjectsDisableXpnHostRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -9046,15 +9046,15 @@ If the group is part of a backend service that has enabled connection draining, 
           config, request, global_params=global_params)
 
     DisableXpnResource.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'compute.projects.disableXpnResource',
-        ordered_params=[u'project'],
-        path_params=[u'project'],
-        query_params=[u'requestId'],
-        relative_path=u'projects/{project}/disableXpnResource',
-        request_field=u'projectsDisableXpnResourceRequest',
-        request_type_name=u'ComputeProjectsDisableXpnResourceRequest',
-        response_type_name=u'Operation',
+        http_method='POST',
+        method_id='compute.projects.disableXpnResource',
+        ordered_params=['project'],
+        path_params=['project'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/disableXpnResource',
+        request_field='projectsDisableXpnResourceRequest',
+        request_type_name='ComputeProjectsDisableXpnResourceRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -9072,15 +9072,15 @@ If the group is part of a backend service that has enabled connection draining, 
           config, request, global_params=global_params)
 
     EnableXpnHost.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'compute.projects.enableXpnHost',
-        ordered_params=[u'project'],
-        path_params=[u'project'],
-        query_params=[u'requestId'],
-        relative_path=u'projects/{project}/enableXpnHost',
+        http_method='POST',
+        method_id='compute.projects.enableXpnHost',
+        ordered_params=['project'],
+        path_params=['project'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/enableXpnHost',
         request_field='',
-        request_type_name=u'ComputeProjectsEnableXpnHostRequest',
-        response_type_name=u'Operation',
+        request_type_name='ComputeProjectsEnableXpnHostRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -9098,15 +9098,15 @@ If the group is part of a backend service that has enabled connection draining, 
           config, request, global_params=global_params)
 
     EnableXpnResource.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'compute.projects.enableXpnResource',
-        ordered_params=[u'project'],
-        path_params=[u'project'],
-        query_params=[u'requestId'],
-        relative_path=u'projects/{project}/enableXpnResource',
-        request_field=u'projectsEnableXpnResourceRequest',
-        request_type_name=u'ComputeProjectsEnableXpnResourceRequest',
-        response_type_name=u'Operation',
+        http_method='POST',
+        method_id='compute.projects.enableXpnResource',
+        ordered_params=['project'],
+        path_params=['project'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/enableXpnResource',
+        request_field='projectsEnableXpnResourceRequest',
+        request_type_name='ComputeProjectsEnableXpnResourceRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -9124,15 +9124,15 @@ If the group is part of a backend service that has enabled connection draining, 
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'compute.projects.get',
-        ordered_params=[u'project'],
-        path_params=[u'project'],
+        http_method='GET',
+        method_id='compute.projects.get',
+        ordered_params=['project'],
+        path_params=['project'],
         query_params=[],
-        relative_path=u'projects/{project}',
+        relative_path='projects/{project}',
         request_field='',
-        request_type_name=u'ComputeProjectsGetRequest',
-        response_type_name=u'Project',
+        request_type_name='ComputeProjectsGetRequest',
+        response_type_name='Project',
         supports_download=False,
     )
 
@@ -9150,15 +9150,15 @@ If the group is part of a backend service that has enabled connection draining, 
           config, request, global_params=global_params)
 
     GetXpnHost.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'compute.projects.getXpnHost',
-        ordered_params=[u'project'],
-        path_params=[u'project'],
+        http_method='GET',
+        method_id='compute.projects.getXpnHost',
+        ordered_params=['project'],
+        path_params=['project'],
         query_params=[],
-        relative_path=u'projects/{project}/getXpnHost',
+        relative_path='projects/{project}/getXpnHost',
         request_field='',
-        request_type_name=u'ComputeProjectsGetXpnHostRequest',
-        response_type_name=u'Project',
+        request_type_name='ComputeProjectsGetXpnHostRequest',
+        response_type_name='Project',
         supports_download=False,
     )
 
@@ -9176,15 +9176,15 @@ If the group is part of a backend service that has enabled connection draining, 
           config, request, global_params=global_params)
 
     GetXpnResources.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'compute.projects.getXpnResources',
-        ordered_params=[u'project'],
-        path_params=[u'project'],
-        query_params=[u'filter', u'maxResults', u'orderBy', u'pageToken'],
-        relative_path=u'projects/{project}/getXpnResources',
+        http_method='GET',
+        method_id='compute.projects.getXpnResources',
+        ordered_params=['project'],
+        path_params=['project'],
+        query_params=['filter', 'maxResults', 'orderBy', 'pageToken'],
+        relative_path='projects/{project}/getXpnResources',
         request_field='',
-        request_type_name=u'ComputeProjectsGetXpnResourcesRequest',
-        response_type_name=u'ProjectsGetXpnResources',
+        request_type_name='ComputeProjectsGetXpnResourcesRequest',
+        response_type_name='ProjectsGetXpnResources',
         supports_download=False,
     )
 
@@ -9202,15 +9202,15 @@ If the group is part of a backend service that has enabled connection draining, 
           config, request, global_params=global_params)
 
     ListXpnHosts.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'compute.projects.listXpnHosts',
-        ordered_params=[u'project'],
-        path_params=[u'project'],
-        query_params=[u'filter', u'maxResults', u'orderBy', u'pageToken'],
-        relative_path=u'projects/{project}/listXpnHosts',
-        request_field=u'projectsListXpnHostsRequest',
-        request_type_name=u'ComputeProjectsListXpnHostsRequest',
-        response_type_name=u'XpnHostList',
+        http_method='POST',
+        method_id='compute.projects.listXpnHosts',
+        ordered_params=['project'],
+        path_params=['project'],
+        query_params=['filter', 'maxResults', 'orderBy', 'pageToken'],
+        relative_path='projects/{project}/listXpnHosts',
+        request_field='projectsListXpnHostsRequest',
+        request_type_name='ComputeProjectsListXpnHostsRequest',
+        response_type_name='XpnHostList',
         supports_download=False,
     )
 
@@ -9228,15 +9228,15 @@ If the group is part of a backend service that has enabled connection draining, 
           config, request, global_params=global_params)
 
     MoveDisk.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'compute.projects.moveDisk',
-        ordered_params=[u'project'],
-        path_params=[u'project'],
-        query_params=[u'requestId'],
-        relative_path=u'projects/{project}/moveDisk',
-        request_field=u'diskMoveRequest',
-        request_type_name=u'ComputeProjectsMoveDiskRequest',
-        response_type_name=u'Operation',
+        http_method='POST',
+        method_id='compute.projects.moveDisk',
+        ordered_params=['project'],
+        path_params=['project'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/moveDisk',
+        request_field='diskMoveRequest',
+        request_type_name='ComputeProjectsMoveDiskRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -9254,15 +9254,15 @@ If the group is part of a backend service that has enabled connection draining, 
           config, request, global_params=global_params)
 
     MoveInstance.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'compute.projects.moveInstance',
-        ordered_params=[u'project'],
-        path_params=[u'project'],
-        query_params=[u'requestId'],
-        relative_path=u'projects/{project}/moveInstance',
-        request_field=u'instanceMoveRequest',
-        request_type_name=u'ComputeProjectsMoveInstanceRequest',
-        response_type_name=u'Operation',
+        http_method='POST',
+        method_id='compute.projects.moveInstance',
+        ordered_params=['project'],
+        path_params=['project'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/moveInstance',
+        request_field='instanceMoveRequest',
+        request_type_name='ComputeProjectsMoveInstanceRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -9280,15 +9280,15 @@ If the group is part of a backend service that has enabled connection draining, 
           config, request, global_params=global_params)
 
     SetCommonInstanceMetadata.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'compute.projects.setCommonInstanceMetadata',
-        ordered_params=[u'project'],
-        path_params=[u'project'],
-        query_params=[u'requestId'],
-        relative_path=u'projects/{project}/setCommonInstanceMetadata',
-        request_field=u'metadata',
-        request_type_name=u'ComputeProjectsSetCommonInstanceMetadataRequest',
-        response_type_name=u'Operation',
+        http_method='POST',
+        method_id='compute.projects.setCommonInstanceMetadata',
+        ordered_params=['project'],
+        path_params=['project'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/setCommonInstanceMetadata',
+        request_field='metadata',
+        request_type_name='ComputeProjectsSetCommonInstanceMetadataRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -9306,15 +9306,15 @@ If the group is part of a backend service that has enabled connection draining, 
           config, request, global_params=global_params)
 
     SetDefaultNetworkTier.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'compute.projects.setDefaultNetworkTier',
-        ordered_params=[u'project'],
-        path_params=[u'project'],
-        query_params=[u'requestId'],
-        relative_path=u'projects/{project}/setDefaultNetworkTier',
-        request_field=u'projectsSetDefaultNetworkTierRequest',
-        request_type_name=u'ComputeProjectsSetDefaultNetworkTierRequest',
-        response_type_name=u'Operation',
+        http_method='POST',
+        method_id='compute.projects.setDefaultNetworkTier',
+        ordered_params=['project'],
+        path_params=['project'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/setDefaultNetworkTier',
+        request_field='projectsSetDefaultNetworkTierRequest',
+        request_type_name='ComputeProjectsSetDefaultNetworkTierRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -9332,22 +9332,22 @@ If the group is part of a backend service that has enabled connection draining, 
           config, request, global_params=global_params)
 
     SetUsageExportBucket.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'compute.projects.setUsageExportBucket',
-        ordered_params=[u'project'],
-        path_params=[u'project'],
-        query_params=[u'requestId'],
-        relative_path=u'projects/{project}/setUsageExportBucket',
-        request_field=u'usageExportLocation',
-        request_type_name=u'ComputeProjectsSetUsageExportBucketRequest',
-        response_type_name=u'Operation',
+        http_method='POST',
+        method_id='compute.projects.setUsageExportBucket',
+        ordered_params=['project'],
+        path_params=['project'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/setUsageExportBucket',
+        request_field='usageExportLocation',
+        request_type_name='ComputeProjectsSetUsageExportBucketRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
   class RegionAutoscalersService(base_api.BaseApiService):
     """Service class for the regionAutoscalers resource."""
 
-    _NAME = u'regionAutoscalers'
+    _NAME = 'regionAutoscalers'
 
     def __init__(self, client):
       super(ComputeBeta.RegionAutoscalersService, self).__init__(client)
@@ -9368,15 +9368,15 @@ If the group is part of a backend service that has enabled connection draining, 
           config, request, global_params=global_params)
 
     Delete.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'DELETE',
-        method_id=u'compute.regionAutoscalers.delete',
-        ordered_params=[u'project', u'region', u'autoscaler'],
-        path_params=[u'autoscaler', u'project', u'region'],
-        query_params=[u'requestId'],
-        relative_path=u'projects/{project}/regions/{region}/autoscalers/{autoscaler}',
+        http_method='DELETE',
+        method_id='compute.regionAutoscalers.delete',
+        ordered_params=['project', 'region', 'autoscaler'],
+        path_params=['autoscaler', 'project', 'region'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/regions/{region}/autoscalers/{autoscaler}',
         request_field='',
-        request_type_name=u'ComputeRegionAutoscalersDeleteRequest',
-        response_type_name=u'Operation',
+        request_type_name='ComputeRegionAutoscalersDeleteRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -9394,15 +9394,15 @@ If the group is part of a backend service that has enabled connection draining, 
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'compute.regionAutoscalers.get',
-        ordered_params=[u'project', u'region', u'autoscaler'],
-        path_params=[u'autoscaler', u'project', u'region'],
+        http_method='GET',
+        method_id='compute.regionAutoscalers.get',
+        ordered_params=['project', 'region', 'autoscaler'],
+        path_params=['autoscaler', 'project', 'region'],
         query_params=[],
-        relative_path=u'projects/{project}/regions/{region}/autoscalers/{autoscaler}',
+        relative_path='projects/{project}/regions/{region}/autoscalers/{autoscaler}',
         request_field='',
-        request_type_name=u'ComputeRegionAutoscalersGetRequest',
-        response_type_name=u'Autoscaler',
+        request_type_name='ComputeRegionAutoscalersGetRequest',
+        response_type_name='Autoscaler',
         supports_download=False,
     )
 
@@ -9420,15 +9420,15 @@ If the group is part of a backend service that has enabled connection draining, 
           config, request, global_params=global_params)
 
     Insert.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'compute.regionAutoscalers.insert',
-        ordered_params=[u'project', u'region'],
-        path_params=[u'project', u'region'],
-        query_params=[u'requestId'],
-        relative_path=u'projects/{project}/regions/{region}/autoscalers',
-        request_field=u'autoscaler',
-        request_type_name=u'ComputeRegionAutoscalersInsertRequest',
-        response_type_name=u'Operation',
+        http_method='POST',
+        method_id='compute.regionAutoscalers.insert',
+        ordered_params=['project', 'region'],
+        path_params=['project', 'region'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/regions/{region}/autoscalers',
+        request_field='autoscaler',
+        request_type_name='ComputeRegionAutoscalersInsertRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -9446,15 +9446,15 @@ If the group is part of a backend service that has enabled connection draining, 
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'compute.regionAutoscalers.list',
-        ordered_params=[u'project', u'region'],
-        path_params=[u'project', u'region'],
-        query_params=[u'filter', u'maxResults', u'orderBy', u'pageToken'],
-        relative_path=u'projects/{project}/regions/{region}/autoscalers',
+        http_method='GET',
+        method_id='compute.regionAutoscalers.list',
+        ordered_params=['project', 'region'],
+        path_params=['project', 'region'],
+        query_params=['filter', 'maxResults', 'orderBy', 'pageToken'],
+        relative_path='projects/{project}/regions/{region}/autoscalers',
         request_field='',
-        request_type_name=u'ComputeRegionAutoscalersListRequest',
-        response_type_name=u'RegionAutoscalerList',
+        request_type_name='ComputeRegionAutoscalersListRequest',
+        response_type_name='RegionAutoscalerList',
         supports_download=False,
     )
 
@@ -9472,15 +9472,15 @@ If the group is part of a backend service that has enabled connection draining, 
           config, request, global_params=global_params)
 
     Patch.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'PATCH',
-        method_id=u'compute.regionAutoscalers.patch',
-        ordered_params=[u'project', u'region'],
-        path_params=[u'project', u'region'],
-        query_params=[u'autoscaler', u'requestId'],
-        relative_path=u'projects/{project}/regions/{region}/autoscalers',
-        request_field=u'autoscalerResource',
-        request_type_name=u'ComputeRegionAutoscalersPatchRequest',
-        response_type_name=u'Operation',
+        http_method='PATCH',
+        method_id='compute.regionAutoscalers.patch',
+        ordered_params=['project', 'region'],
+        path_params=['project', 'region'],
+        query_params=['autoscaler', 'requestId'],
+        relative_path='projects/{project}/regions/{region}/autoscalers',
+        request_field='autoscalerResource',
+        request_type_name='ComputeRegionAutoscalersPatchRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -9498,15 +9498,15 @@ If the group is part of a backend service that has enabled connection draining, 
           config, request, global_params=global_params)
 
     TestIamPermissions.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'compute.regionAutoscalers.testIamPermissions',
-        ordered_params=[u'project', u'region', u'resource'],
-        path_params=[u'project', u'region', u'resource'],
+        http_method='POST',
+        method_id='compute.regionAutoscalers.testIamPermissions',
+        ordered_params=['project', 'region', 'resource'],
+        path_params=['project', 'region', 'resource'],
         query_params=[],
-        relative_path=u'projects/{project}/regions/{region}/autoscalers/{resource}/testIamPermissions',
-        request_field=u'testPermissionsRequest',
-        request_type_name=u'ComputeRegionAutoscalersTestIamPermissionsRequest',
-        response_type_name=u'TestPermissionsResponse',
+        relative_path='projects/{project}/regions/{region}/autoscalers/{resource}/testIamPermissions',
+        request_field='testPermissionsRequest',
+        request_type_name='ComputeRegionAutoscalersTestIamPermissionsRequest',
+        response_type_name='TestPermissionsResponse',
         supports_download=False,
     )
 
@@ -9524,22 +9524,22 @@ If the group is part of a backend service that has enabled connection draining, 
           config, request, global_params=global_params)
 
     Update.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'PUT',
-        method_id=u'compute.regionAutoscalers.update',
-        ordered_params=[u'project', u'region'],
-        path_params=[u'project', u'region'],
-        query_params=[u'autoscaler', u'requestId'],
-        relative_path=u'projects/{project}/regions/{region}/autoscalers',
-        request_field=u'autoscalerResource',
-        request_type_name=u'ComputeRegionAutoscalersUpdateRequest',
-        response_type_name=u'Operation',
+        http_method='PUT',
+        method_id='compute.regionAutoscalers.update',
+        ordered_params=['project', 'region'],
+        path_params=['project', 'region'],
+        query_params=['autoscaler', 'requestId'],
+        relative_path='projects/{project}/regions/{region}/autoscalers',
+        request_field='autoscalerResource',
+        request_type_name='ComputeRegionAutoscalersUpdateRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
   class RegionBackendServicesService(base_api.BaseApiService):
     """Service class for the regionBackendServices resource."""
 
-    _NAME = u'regionBackendServices'
+    _NAME = 'regionBackendServices'
 
     def __init__(self, client):
       super(ComputeBeta.RegionBackendServicesService, self).__init__(client)
@@ -9560,15 +9560,15 @@ If the group is part of a backend service that has enabled connection draining, 
           config, request, global_params=global_params)
 
     Delete.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'DELETE',
-        method_id=u'compute.regionBackendServices.delete',
-        ordered_params=[u'project', u'region', u'backendService'],
-        path_params=[u'backendService', u'project', u'region'],
-        query_params=[u'requestId'],
-        relative_path=u'projects/{project}/regions/{region}/backendServices/{backendService}',
+        http_method='DELETE',
+        method_id='compute.regionBackendServices.delete',
+        ordered_params=['project', 'region', 'backendService'],
+        path_params=['backendService', 'project', 'region'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/regions/{region}/backendServices/{backendService}',
         request_field='',
-        request_type_name=u'ComputeRegionBackendServicesDeleteRequest',
-        response_type_name=u'Operation',
+        request_type_name='ComputeRegionBackendServicesDeleteRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -9586,15 +9586,15 @@ If the group is part of a backend service that has enabled connection draining, 
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'compute.regionBackendServices.get',
-        ordered_params=[u'project', u'region', u'backendService'],
-        path_params=[u'backendService', u'project', u'region'],
+        http_method='GET',
+        method_id='compute.regionBackendServices.get',
+        ordered_params=['project', 'region', 'backendService'],
+        path_params=['backendService', 'project', 'region'],
         query_params=[],
-        relative_path=u'projects/{project}/regions/{region}/backendServices/{backendService}',
+        relative_path='projects/{project}/regions/{region}/backendServices/{backendService}',
         request_field='',
-        request_type_name=u'ComputeRegionBackendServicesGetRequest',
-        response_type_name=u'BackendService',
+        request_type_name='ComputeRegionBackendServicesGetRequest',
+        response_type_name='BackendService',
         supports_download=False,
     )
 
@@ -9612,15 +9612,15 @@ If the group is part of a backend service that has enabled connection draining, 
           config, request, global_params=global_params)
 
     GetHealth.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'compute.regionBackendServices.getHealth',
-        ordered_params=[u'project', u'region', u'backendService'],
-        path_params=[u'backendService', u'project', u'region'],
+        http_method='POST',
+        method_id='compute.regionBackendServices.getHealth',
+        ordered_params=['project', 'region', 'backendService'],
+        path_params=['backendService', 'project', 'region'],
         query_params=[],
-        relative_path=u'projects/{project}/regions/{region}/backendServices/{backendService}/getHealth',
-        request_field=u'resourceGroupReference',
-        request_type_name=u'ComputeRegionBackendServicesGetHealthRequest',
-        response_type_name=u'BackendServiceGroupHealth',
+        relative_path='projects/{project}/regions/{region}/backendServices/{backendService}/getHealth',
+        request_field='resourceGroupReference',
+        request_type_name='ComputeRegionBackendServicesGetHealthRequest',
+        response_type_name='BackendServiceGroupHealth',
         supports_download=False,
     )
 
@@ -9638,15 +9638,15 @@ If the group is part of a backend service that has enabled connection draining, 
           config, request, global_params=global_params)
 
     Insert.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'compute.regionBackendServices.insert',
-        ordered_params=[u'project', u'region'],
-        path_params=[u'project', u'region'],
-        query_params=[u'requestId'],
-        relative_path=u'projects/{project}/regions/{region}/backendServices',
-        request_field=u'backendService',
-        request_type_name=u'ComputeRegionBackendServicesInsertRequest',
-        response_type_name=u'Operation',
+        http_method='POST',
+        method_id='compute.regionBackendServices.insert',
+        ordered_params=['project', 'region'],
+        path_params=['project', 'region'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/regions/{region}/backendServices',
+        request_field='backendService',
+        request_type_name='ComputeRegionBackendServicesInsertRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -9664,15 +9664,15 @@ If the group is part of a backend service that has enabled connection draining, 
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'compute.regionBackendServices.list',
-        ordered_params=[u'project', u'region'],
-        path_params=[u'project', u'region'],
-        query_params=[u'filter', u'maxResults', u'orderBy', u'pageToken'],
-        relative_path=u'projects/{project}/regions/{region}/backendServices',
+        http_method='GET',
+        method_id='compute.regionBackendServices.list',
+        ordered_params=['project', 'region'],
+        path_params=['project', 'region'],
+        query_params=['filter', 'maxResults', 'orderBy', 'pageToken'],
+        relative_path='projects/{project}/regions/{region}/backendServices',
         request_field='',
-        request_type_name=u'ComputeRegionBackendServicesListRequest',
-        response_type_name=u'BackendServiceList',
+        request_type_name='ComputeRegionBackendServicesListRequest',
+        response_type_name='BackendServiceList',
         supports_download=False,
     )
 
@@ -9690,15 +9690,15 @@ If the group is part of a backend service that has enabled connection draining, 
           config, request, global_params=global_params)
 
     Patch.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'PATCH',
-        method_id=u'compute.regionBackendServices.patch',
-        ordered_params=[u'project', u'region', u'backendService'],
-        path_params=[u'backendService', u'project', u'region'],
-        query_params=[u'requestId'],
-        relative_path=u'projects/{project}/regions/{region}/backendServices/{backendService}',
-        request_field=u'backendServiceResource',
-        request_type_name=u'ComputeRegionBackendServicesPatchRequest',
-        response_type_name=u'Operation',
+        http_method='PATCH',
+        method_id='compute.regionBackendServices.patch',
+        ordered_params=['project', 'region', 'backendService'],
+        path_params=['backendService', 'project', 'region'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/regions/{region}/backendServices/{backendService}',
+        request_field='backendServiceResource',
+        request_type_name='ComputeRegionBackendServicesPatchRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -9716,15 +9716,15 @@ If the group is part of a backend service that has enabled connection draining, 
           config, request, global_params=global_params)
 
     TestIamPermissions.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'compute.regionBackendServices.testIamPermissions',
-        ordered_params=[u'project', u'region', u'resource'],
-        path_params=[u'project', u'region', u'resource'],
+        http_method='POST',
+        method_id='compute.regionBackendServices.testIamPermissions',
+        ordered_params=['project', 'region', 'resource'],
+        path_params=['project', 'region', 'resource'],
         query_params=[],
-        relative_path=u'projects/{project}/regions/{region}/backendServices/{resource}/testIamPermissions',
-        request_field=u'testPermissionsRequest',
-        request_type_name=u'ComputeRegionBackendServicesTestIamPermissionsRequest',
-        response_type_name=u'TestPermissionsResponse',
+        relative_path='projects/{project}/regions/{region}/backendServices/{resource}/testIamPermissions',
+        request_field='testPermissionsRequest',
+        request_type_name='ComputeRegionBackendServicesTestIamPermissionsRequest',
+        response_type_name='TestPermissionsResponse',
         supports_download=False,
     )
 
@@ -9742,22 +9742,22 @@ If the group is part of a backend service that has enabled connection draining, 
           config, request, global_params=global_params)
 
     Update.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'PUT',
-        method_id=u'compute.regionBackendServices.update',
-        ordered_params=[u'project', u'region', u'backendService'],
-        path_params=[u'backendService', u'project', u'region'],
-        query_params=[u'requestId'],
-        relative_path=u'projects/{project}/regions/{region}/backendServices/{backendService}',
-        request_field=u'backendServiceResource',
-        request_type_name=u'ComputeRegionBackendServicesUpdateRequest',
-        response_type_name=u'Operation',
+        http_method='PUT',
+        method_id='compute.regionBackendServices.update',
+        ordered_params=['project', 'region', 'backendService'],
+        path_params=['backendService', 'project', 'region'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/regions/{region}/backendServices/{backendService}',
+        request_field='backendServiceResource',
+        request_type_name='ComputeRegionBackendServicesUpdateRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
   class RegionCommitmentsService(base_api.BaseApiService):
     """Service class for the regionCommitments resource."""
 
-    _NAME = u'regionCommitments'
+    _NAME = 'regionCommitments'
 
     def __init__(self, client):
       super(ComputeBeta.RegionCommitmentsService, self).__init__(client)
@@ -9778,15 +9778,15 @@ If the group is part of a backend service that has enabled connection draining, 
           config, request, global_params=global_params)
 
     AggregatedList.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'compute.regionCommitments.aggregatedList',
-        ordered_params=[u'project'],
-        path_params=[u'project'],
-        query_params=[u'filter', u'includeAllScopes', u'maxResults', u'orderBy', u'pageToken'],
-        relative_path=u'projects/{project}/aggregated/commitments',
+        http_method='GET',
+        method_id='compute.regionCommitments.aggregatedList',
+        ordered_params=['project'],
+        path_params=['project'],
+        query_params=['filter', 'includeAllScopes', 'maxResults', 'orderBy', 'pageToken'],
+        relative_path='projects/{project}/aggregated/commitments',
         request_field='',
-        request_type_name=u'ComputeRegionCommitmentsAggregatedListRequest',
-        response_type_name=u'CommitmentAggregatedList',
+        request_type_name='ComputeRegionCommitmentsAggregatedListRequest',
+        response_type_name='CommitmentAggregatedList',
         supports_download=False,
     )
 
@@ -9804,15 +9804,15 @@ If the group is part of a backend service that has enabled connection draining, 
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'compute.regionCommitments.get',
-        ordered_params=[u'project', u'region', u'commitment'],
-        path_params=[u'commitment', u'project', u'region'],
+        http_method='GET',
+        method_id='compute.regionCommitments.get',
+        ordered_params=['project', 'region', 'commitment'],
+        path_params=['commitment', 'project', 'region'],
         query_params=[],
-        relative_path=u'projects/{project}/regions/{region}/commitments/{commitment}',
+        relative_path='projects/{project}/regions/{region}/commitments/{commitment}',
         request_field='',
-        request_type_name=u'ComputeRegionCommitmentsGetRequest',
-        response_type_name=u'Commitment',
+        request_type_name='ComputeRegionCommitmentsGetRequest',
+        response_type_name='Commitment',
         supports_download=False,
     )
 
@@ -9830,15 +9830,15 @@ If the group is part of a backend service that has enabled connection draining, 
           config, request, global_params=global_params)
 
     Insert.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'compute.regionCommitments.insert',
-        ordered_params=[u'project', u'region'],
-        path_params=[u'project', u'region'],
-        query_params=[u'requestId'],
-        relative_path=u'projects/{project}/regions/{region}/commitments',
-        request_field=u'commitment',
-        request_type_name=u'ComputeRegionCommitmentsInsertRequest',
-        response_type_name=u'Operation',
+        http_method='POST',
+        method_id='compute.regionCommitments.insert',
+        ordered_params=['project', 'region'],
+        path_params=['project', 'region'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/regions/{region}/commitments',
+        request_field='commitment',
+        request_type_name='ComputeRegionCommitmentsInsertRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -9856,15 +9856,15 @@ If the group is part of a backend service that has enabled connection draining, 
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'compute.regionCommitments.list',
-        ordered_params=[u'project', u'region'],
-        path_params=[u'project', u'region'],
-        query_params=[u'filter', u'maxResults', u'orderBy', u'pageToken'],
-        relative_path=u'projects/{project}/regions/{region}/commitments',
+        http_method='GET',
+        method_id='compute.regionCommitments.list',
+        ordered_params=['project', 'region'],
+        path_params=['project', 'region'],
+        query_params=['filter', 'maxResults', 'orderBy', 'pageToken'],
+        relative_path='projects/{project}/regions/{region}/commitments',
         request_field='',
-        request_type_name=u'ComputeRegionCommitmentsListRequest',
-        response_type_name=u'CommitmentList',
+        request_type_name='ComputeRegionCommitmentsListRequest',
+        response_type_name='CommitmentList',
         supports_download=False,
     )
 
@@ -9882,22 +9882,22 @@ If the group is part of a backend service that has enabled connection draining, 
           config, request, global_params=global_params)
 
     UpdateReservations.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'compute.regionCommitments.updateReservations',
-        ordered_params=[u'project', u'region', u'commitment'],
-        path_params=[u'commitment', u'project', u'region'],
-        query_params=[u'requestId'],
-        relative_path=u'projects/{project}/regions/{region}/commitments/{commitment}/updateReservations',
-        request_field=u'regionCommitmentsUpdateReservationsRequest',
-        request_type_name=u'ComputeRegionCommitmentsUpdateReservationsRequest',
-        response_type_name=u'Operation',
+        http_method='POST',
+        method_id='compute.regionCommitments.updateReservations',
+        ordered_params=['project', 'region', 'commitment'],
+        path_params=['commitment', 'project', 'region'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/regions/{region}/commitments/{commitment}/updateReservations',
+        request_field='regionCommitmentsUpdateReservationsRequest',
+        request_type_name='ComputeRegionCommitmentsUpdateReservationsRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
   class RegionDiskTypesService(base_api.BaseApiService):
     """Service class for the regionDiskTypes resource."""
 
-    _NAME = u'regionDiskTypes'
+    _NAME = 'regionDiskTypes'
 
     def __init__(self, client):
       super(ComputeBeta.RegionDiskTypesService, self).__init__(client)
@@ -9918,15 +9918,15 @@ If the group is part of a backend service that has enabled connection draining, 
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'compute.regionDiskTypes.get',
-        ordered_params=[u'project', u'region', u'diskType'],
-        path_params=[u'diskType', u'project', u'region'],
+        http_method='GET',
+        method_id='compute.regionDiskTypes.get',
+        ordered_params=['project', 'region', 'diskType'],
+        path_params=['diskType', 'project', 'region'],
         query_params=[],
-        relative_path=u'projects/{project}/regions/{region}/diskTypes/{diskType}',
+        relative_path='projects/{project}/regions/{region}/diskTypes/{diskType}',
         request_field='',
-        request_type_name=u'ComputeRegionDiskTypesGetRequest',
-        response_type_name=u'DiskType',
+        request_type_name='ComputeRegionDiskTypesGetRequest',
+        response_type_name='DiskType',
         supports_download=False,
     )
 
@@ -9944,22 +9944,22 @@ If the group is part of a backend service that has enabled connection draining, 
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'compute.regionDiskTypes.list',
-        ordered_params=[u'project', u'region'],
-        path_params=[u'project', u'region'],
-        query_params=[u'filter', u'maxResults', u'orderBy', u'pageToken'],
-        relative_path=u'projects/{project}/regions/{region}/diskTypes',
+        http_method='GET',
+        method_id='compute.regionDiskTypes.list',
+        ordered_params=['project', 'region'],
+        path_params=['project', 'region'],
+        query_params=['filter', 'maxResults', 'orderBy', 'pageToken'],
+        relative_path='projects/{project}/regions/{region}/diskTypes',
         request_field='',
-        request_type_name=u'ComputeRegionDiskTypesListRequest',
-        response_type_name=u'RegionDiskTypeList',
+        request_type_name='ComputeRegionDiskTypesListRequest',
+        response_type_name='RegionDiskTypeList',
         supports_download=False,
     )
 
   class RegionDisksService(base_api.BaseApiService):
     """Service class for the regionDisks resource."""
 
-    _NAME = u'regionDisks'
+    _NAME = 'regionDisks'
 
     def __init__(self, client):
       super(ComputeBeta.RegionDisksService, self).__init__(client)
@@ -9980,15 +9980,15 @@ If the group is part of a backend service that has enabled connection draining, 
           config, request, global_params=global_params)
 
     AddResourcePolicies.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'compute.regionDisks.addResourcePolicies',
-        ordered_params=[u'project', u'region', u'disk'],
-        path_params=[u'disk', u'project', u'region'],
-        query_params=[u'requestId'],
-        relative_path=u'projects/{project}/regions/{region}/disks/{disk}/addResourcePolicies',
-        request_field=u'regionDisksAddResourcePoliciesRequest',
-        request_type_name=u'ComputeRegionDisksAddResourcePoliciesRequest',
-        response_type_name=u'Operation',
+        http_method='POST',
+        method_id='compute.regionDisks.addResourcePolicies',
+        ordered_params=['project', 'region', 'disk'],
+        path_params=['disk', 'project', 'region'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/regions/{region}/disks/{disk}/addResourcePolicies',
+        request_field='regionDisksAddResourcePoliciesRequest',
+        request_type_name='ComputeRegionDisksAddResourcePoliciesRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -10006,15 +10006,15 @@ If the group is part of a backend service that has enabled connection draining, 
           config, request, global_params=global_params)
 
     CreateSnapshot.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'compute.regionDisks.createSnapshot',
-        ordered_params=[u'project', u'region', u'disk'],
-        path_params=[u'disk', u'project', u'region'],
-        query_params=[u'requestId'],
-        relative_path=u'projects/{project}/regions/{region}/disks/{disk}/createSnapshot',
-        request_field=u'snapshot',
-        request_type_name=u'ComputeRegionDisksCreateSnapshotRequest',
-        response_type_name=u'Operation',
+        http_method='POST',
+        method_id='compute.regionDisks.createSnapshot',
+        ordered_params=['project', 'region', 'disk'],
+        path_params=['disk', 'project', 'region'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/regions/{region}/disks/{disk}/createSnapshot',
+        request_field='snapshot',
+        request_type_name='ComputeRegionDisksCreateSnapshotRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -10032,15 +10032,15 @@ If the group is part of a backend service that has enabled connection draining, 
           config, request, global_params=global_params)
 
     Delete.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'DELETE',
-        method_id=u'compute.regionDisks.delete',
-        ordered_params=[u'project', u'region', u'disk'],
-        path_params=[u'disk', u'project', u'region'],
-        query_params=[u'requestId'],
-        relative_path=u'projects/{project}/regions/{region}/disks/{disk}',
+        http_method='DELETE',
+        method_id='compute.regionDisks.delete',
+        ordered_params=['project', 'region', 'disk'],
+        path_params=['disk', 'project', 'region'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/regions/{region}/disks/{disk}',
         request_field='',
-        request_type_name=u'ComputeRegionDisksDeleteRequest',
-        response_type_name=u'Operation',
+        request_type_name='ComputeRegionDisksDeleteRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -10058,15 +10058,15 @@ If the group is part of a backend service that has enabled connection draining, 
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'compute.regionDisks.get',
-        ordered_params=[u'project', u'region', u'disk'],
-        path_params=[u'disk', u'project', u'region'],
+        http_method='GET',
+        method_id='compute.regionDisks.get',
+        ordered_params=['project', 'region', 'disk'],
+        path_params=['disk', 'project', 'region'],
         query_params=[],
-        relative_path=u'projects/{project}/regions/{region}/disks/{disk}',
+        relative_path='projects/{project}/regions/{region}/disks/{disk}',
         request_field='',
-        request_type_name=u'ComputeRegionDisksGetRequest',
-        response_type_name=u'Disk',
+        request_type_name='ComputeRegionDisksGetRequest',
+        response_type_name='Disk',
         supports_download=False,
     )
 
@@ -10084,15 +10084,15 @@ If the group is part of a backend service that has enabled connection draining, 
           config, request, global_params=global_params)
 
     GetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'compute.regionDisks.getIamPolicy',
-        ordered_params=[u'project', u'region', u'resource'],
-        path_params=[u'project', u'region', u'resource'],
-        query_params=[u'optionsRequestedPolicyVersion'],
-        relative_path=u'projects/{project}/regions/{region}/disks/{resource}/getIamPolicy',
+        http_method='GET',
+        method_id='compute.regionDisks.getIamPolicy',
+        ordered_params=['project', 'region', 'resource'],
+        path_params=['project', 'region', 'resource'],
+        query_params=['optionsRequestedPolicyVersion'],
+        relative_path='projects/{project}/regions/{region}/disks/{resource}/getIamPolicy',
         request_field='',
-        request_type_name=u'ComputeRegionDisksGetIamPolicyRequest',
-        response_type_name=u'Policy',
+        request_type_name='ComputeRegionDisksGetIamPolicyRequest',
+        response_type_name='Policy',
         supports_download=False,
     )
 
@@ -10110,15 +10110,15 @@ If the group is part of a backend service that has enabled connection draining, 
           config, request, global_params=global_params)
 
     Insert.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'compute.regionDisks.insert',
-        ordered_params=[u'project', u'region'],
-        path_params=[u'project', u'region'],
-        query_params=[u'requestId', u'sourceImage'],
-        relative_path=u'projects/{project}/regions/{region}/disks',
-        request_field=u'disk',
-        request_type_name=u'ComputeRegionDisksInsertRequest',
-        response_type_name=u'Operation',
+        http_method='POST',
+        method_id='compute.regionDisks.insert',
+        ordered_params=['project', 'region'],
+        path_params=['project', 'region'],
+        query_params=['requestId', 'sourceImage'],
+        relative_path='projects/{project}/regions/{region}/disks',
+        request_field='disk',
+        request_type_name='ComputeRegionDisksInsertRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -10136,15 +10136,15 @@ If the group is part of a backend service that has enabled connection draining, 
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'compute.regionDisks.list',
-        ordered_params=[u'project', u'region'],
-        path_params=[u'project', u'region'],
-        query_params=[u'filter', u'maxResults', u'orderBy', u'pageToken'],
-        relative_path=u'projects/{project}/regions/{region}/disks',
+        http_method='GET',
+        method_id='compute.regionDisks.list',
+        ordered_params=['project', 'region'],
+        path_params=['project', 'region'],
+        query_params=['filter', 'maxResults', 'orderBy', 'pageToken'],
+        relative_path='projects/{project}/regions/{region}/disks',
         request_field='',
-        request_type_name=u'ComputeRegionDisksListRequest',
-        response_type_name=u'DiskList',
+        request_type_name='ComputeRegionDisksListRequest',
+        response_type_name='DiskList',
         supports_download=False,
     )
 
@@ -10162,15 +10162,15 @@ If the group is part of a backend service that has enabled connection draining, 
           config, request, global_params=global_params)
 
     RemoveResourcePolicies.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'compute.regionDisks.removeResourcePolicies',
-        ordered_params=[u'project', u'region', u'disk'],
-        path_params=[u'disk', u'project', u'region'],
-        query_params=[u'requestId'],
-        relative_path=u'projects/{project}/regions/{region}/disks/{disk}/removeResourcePolicies',
-        request_field=u'regionDisksRemoveResourcePoliciesRequest',
-        request_type_name=u'ComputeRegionDisksRemoveResourcePoliciesRequest',
-        response_type_name=u'Operation',
+        http_method='POST',
+        method_id='compute.regionDisks.removeResourcePolicies',
+        ordered_params=['project', 'region', 'disk'],
+        path_params=['disk', 'project', 'region'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/regions/{region}/disks/{disk}/removeResourcePolicies',
+        request_field='regionDisksRemoveResourcePoliciesRequest',
+        request_type_name='ComputeRegionDisksRemoveResourcePoliciesRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -10188,15 +10188,15 @@ If the group is part of a backend service that has enabled connection draining, 
           config, request, global_params=global_params)
 
     Resize.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'compute.regionDisks.resize',
-        ordered_params=[u'project', u'region', u'disk'],
-        path_params=[u'disk', u'project', u'region'],
-        query_params=[u'requestId'],
-        relative_path=u'projects/{project}/regions/{region}/disks/{disk}/resize',
-        request_field=u'regionDisksResizeRequest',
-        request_type_name=u'ComputeRegionDisksResizeRequest',
-        response_type_name=u'Operation',
+        http_method='POST',
+        method_id='compute.regionDisks.resize',
+        ordered_params=['project', 'region', 'disk'],
+        path_params=['disk', 'project', 'region'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/regions/{region}/disks/{disk}/resize',
+        request_field='regionDisksResizeRequest',
+        request_type_name='ComputeRegionDisksResizeRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -10214,15 +10214,15 @@ If the group is part of a backend service that has enabled connection draining, 
           config, request, global_params=global_params)
 
     SetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'compute.regionDisks.setIamPolicy',
-        ordered_params=[u'project', u'region', u'resource'],
-        path_params=[u'project', u'region', u'resource'],
+        http_method='POST',
+        method_id='compute.regionDisks.setIamPolicy',
+        ordered_params=['project', 'region', 'resource'],
+        path_params=['project', 'region', 'resource'],
         query_params=[],
-        relative_path=u'projects/{project}/regions/{region}/disks/{resource}/setIamPolicy',
-        request_field=u'regionSetPolicyRequest',
-        request_type_name=u'ComputeRegionDisksSetIamPolicyRequest',
-        response_type_name=u'Policy',
+        relative_path='projects/{project}/regions/{region}/disks/{resource}/setIamPolicy',
+        request_field='regionSetPolicyRequest',
+        request_type_name='ComputeRegionDisksSetIamPolicyRequest',
+        response_type_name='Policy',
         supports_download=False,
     )
 
@@ -10240,15 +10240,15 @@ If the group is part of a backend service that has enabled connection draining, 
           config, request, global_params=global_params)
 
     SetLabels.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'compute.regionDisks.setLabels',
-        ordered_params=[u'project', u'region', u'resource'],
-        path_params=[u'project', u'region', u'resource'],
-        query_params=[u'requestId'],
-        relative_path=u'projects/{project}/regions/{region}/disks/{resource}/setLabels',
-        request_field=u'regionSetLabelsRequest',
-        request_type_name=u'ComputeRegionDisksSetLabelsRequest',
-        response_type_name=u'Operation',
+        http_method='POST',
+        method_id='compute.regionDisks.setLabels',
+        ordered_params=['project', 'region', 'resource'],
+        path_params=['project', 'region', 'resource'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/regions/{region}/disks/{resource}/setLabels',
+        request_field='regionSetLabelsRequest',
+        request_type_name='ComputeRegionDisksSetLabelsRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -10266,22 +10266,22 @@ If the group is part of a backend service that has enabled connection draining, 
           config, request, global_params=global_params)
 
     TestIamPermissions.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'compute.regionDisks.testIamPermissions',
-        ordered_params=[u'project', u'region', u'resource'],
-        path_params=[u'project', u'region', u'resource'],
+        http_method='POST',
+        method_id='compute.regionDisks.testIamPermissions',
+        ordered_params=['project', 'region', 'resource'],
+        path_params=['project', 'region', 'resource'],
         query_params=[],
-        relative_path=u'projects/{project}/regions/{region}/disks/{resource}/testIamPermissions',
-        request_field=u'testPermissionsRequest',
-        request_type_name=u'ComputeRegionDisksTestIamPermissionsRequest',
-        response_type_name=u'TestPermissionsResponse',
+        relative_path='projects/{project}/regions/{region}/disks/{resource}/testIamPermissions',
+        request_field='testPermissionsRequest',
+        request_type_name='ComputeRegionDisksTestIamPermissionsRequest',
+        response_type_name='TestPermissionsResponse',
         supports_download=False,
     )
 
   class RegionHealthCheckServicesService(base_api.BaseApiService):
     """Service class for the regionHealthCheckServices resource."""
 
-    _NAME = u'regionHealthCheckServices'
+    _NAME = 'regionHealthCheckServices'
 
     def __init__(self, client):
       super(ComputeBeta.RegionHealthCheckServicesService, self).__init__(client)
@@ -10302,15 +10302,15 @@ If the group is part of a backend service that has enabled connection draining, 
           config, request, global_params=global_params)
 
     Delete.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'DELETE',
-        method_id=u'compute.regionHealthCheckServices.delete',
-        ordered_params=[u'project', u'region', u'healthCheckService'],
-        path_params=[u'healthCheckService', u'project', u'region'],
-        query_params=[u'requestId'],
-        relative_path=u'projects/{project}/regions/{region}/healthCheckServices/{healthCheckService}',
+        http_method='DELETE',
+        method_id='compute.regionHealthCheckServices.delete',
+        ordered_params=['project', 'region', 'healthCheckService'],
+        path_params=['healthCheckService', 'project', 'region'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/regions/{region}/healthCheckServices/{healthCheckService}',
         request_field='',
-        request_type_name=u'ComputeRegionHealthCheckServicesDeleteRequest',
-        response_type_name=u'Operation',
+        request_type_name='ComputeRegionHealthCheckServicesDeleteRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -10328,15 +10328,15 @@ If the group is part of a backend service that has enabled connection draining, 
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'compute.regionHealthCheckServices.get',
-        ordered_params=[u'project', u'region', u'healthCheckService'],
-        path_params=[u'healthCheckService', u'project', u'region'],
+        http_method='GET',
+        method_id='compute.regionHealthCheckServices.get',
+        ordered_params=['project', 'region', 'healthCheckService'],
+        path_params=['healthCheckService', 'project', 'region'],
         query_params=[],
-        relative_path=u'projects/{project}/regions/{region}/healthCheckServices/{healthCheckService}',
+        relative_path='projects/{project}/regions/{region}/healthCheckServices/{healthCheckService}',
         request_field='',
-        request_type_name=u'ComputeRegionHealthCheckServicesGetRequest',
-        response_type_name=u'HealthCheckService',
+        request_type_name='ComputeRegionHealthCheckServicesGetRequest',
+        response_type_name='HealthCheckService',
         supports_download=False,
     )
 
@@ -10354,15 +10354,15 @@ If the group is part of a backend service that has enabled connection draining, 
           config, request, global_params=global_params)
 
     Insert.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'compute.regionHealthCheckServices.insert',
-        ordered_params=[u'project', u'region'],
-        path_params=[u'project', u'region'],
-        query_params=[u'requestId'],
-        relative_path=u'projects/{project}/regions/{region}/healthCheckServices',
-        request_field=u'healthCheckService',
-        request_type_name=u'ComputeRegionHealthCheckServicesInsertRequest',
-        response_type_name=u'Operation',
+        http_method='POST',
+        method_id='compute.regionHealthCheckServices.insert',
+        ordered_params=['project', 'region'],
+        path_params=['project', 'region'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/regions/{region}/healthCheckServices',
+        request_field='healthCheckService',
+        request_type_name='ComputeRegionHealthCheckServicesInsertRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -10380,15 +10380,15 @@ If the group is part of a backend service that has enabled connection draining, 
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'compute.regionHealthCheckServices.list',
-        ordered_params=[u'project', u'region'],
-        path_params=[u'project', u'region'],
-        query_params=[u'filter', u'maxResults', u'orderBy', u'pageToken'],
-        relative_path=u'projects/{project}/regions/{region}/healthCheckServices',
+        http_method='GET',
+        method_id='compute.regionHealthCheckServices.list',
+        ordered_params=['project', 'region'],
+        path_params=['project', 'region'],
+        query_params=['filter', 'maxResults', 'orderBy', 'pageToken'],
+        relative_path='projects/{project}/regions/{region}/healthCheckServices',
         request_field='',
-        request_type_name=u'ComputeRegionHealthCheckServicesListRequest',
-        response_type_name=u'HealthCheckServicesList',
+        request_type_name='ComputeRegionHealthCheckServicesListRequest',
+        response_type_name='HealthCheckServicesList',
         supports_download=False,
     )
 
@@ -10406,22 +10406,22 @@ If the group is part of a backend service that has enabled connection draining, 
           config, request, global_params=global_params)
 
     Patch.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'PATCH',
-        method_id=u'compute.regionHealthCheckServices.patch',
-        ordered_params=[u'project', u'region', u'healthCheckService'],
-        path_params=[u'healthCheckService', u'project', u'region'],
-        query_params=[u'requestId'],
-        relative_path=u'projects/{project}/regions/{region}/healthCheckServices/{healthCheckService}',
-        request_field=u'healthCheckServiceResource',
-        request_type_name=u'ComputeRegionHealthCheckServicesPatchRequest',
-        response_type_name=u'Operation',
+        http_method='PATCH',
+        method_id='compute.regionHealthCheckServices.patch',
+        ordered_params=['project', 'region', 'healthCheckService'],
+        path_params=['healthCheckService', 'project', 'region'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/regions/{region}/healthCheckServices/{healthCheckService}',
+        request_field='healthCheckServiceResource',
+        request_type_name='ComputeRegionHealthCheckServicesPatchRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
   class RegionHealthChecksService(base_api.BaseApiService):
     """Service class for the regionHealthChecks resource."""
 
-    _NAME = u'regionHealthChecks'
+    _NAME = 'regionHealthChecks'
 
     def __init__(self, client):
       super(ComputeBeta.RegionHealthChecksService, self).__init__(client)
@@ -10442,15 +10442,15 @@ If the group is part of a backend service that has enabled connection draining, 
           config, request, global_params=global_params)
 
     Delete.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'DELETE',
-        method_id=u'compute.regionHealthChecks.delete',
-        ordered_params=[u'project', u'region', u'healthCheck'],
-        path_params=[u'healthCheck', u'project', u'region'],
-        query_params=[u'requestId'],
-        relative_path=u'projects/{project}/regions/{region}/healthChecks/{healthCheck}',
+        http_method='DELETE',
+        method_id='compute.regionHealthChecks.delete',
+        ordered_params=['project', 'region', 'healthCheck'],
+        path_params=['healthCheck', 'project', 'region'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/regions/{region}/healthChecks/{healthCheck}',
         request_field='',
-        request_type_name=u'ComputeRegionHealthChecksDeleteRequest',
-        response_type_name=u'Operation',
+        request_type_name='ComputeRegionHealthChecksDeleteRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -10468,15 +10468,15 @@ If the group is part of a backend service that has enabled connection draining, 
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'compute.regionHealthChecks.get',
-        ordered_params=[u'project', u'region', u'healthCheck'],
-        path_params=[u'healthCheck', u'project', u'region'],
+        http_method='GET',
+        method_id='compute.regionHealthChecks.get',
+        ordered_params=['project', 'region', 'healthCheck'],
+        path_params=['healthCheck', 'project', 'region'],
         query_params=[],
-        relative_path=u'projects/{project}/regions/{region}/healthChecks/{healthCheck}',
+        relative_path='projects/{project}/regions/{region}/healthChecks/{healthCheck}',
         request_field='',
-        request_type_name=u'ComputeRegionHealthChecksGetRequest',
-        response_type_name=u'HealthCheck',
+        request_type_name='ComputeRegionHealthChecksGetRequest',
+        response_type_name='HealthCheck',
         supports_download=False,
     )
 
@@ -10494,15 +10494,15 @@ If the group is part of a backend service that has enabled connection draining, 
           config, request, global_params=global_params)
 
     Insert.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'compute.regionHealthChecks.insert',
-        ordered_params=[u'project', u'region'],
-        path_params=[u'project', u'region'],
-        query_params=[u'requestId'],
-        relative_path=u'projects/{project}/regions/{region}/healthChecks',
-        request_field=u'healthCheck',
-        request_type_name=u'ComputeRegionHealthChecksInsertRequest',
-        response_type_name=u'Operation',
+        http_method='POST',
+        method_id='compute.regionHealthChecks.insert',
+        ordered_params=['project', 'region'],
+        path_params=['project', 'region'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/regions/{region}/healthChecks',
+        request_field='healthCheck',
+        request_type_name='ComputeRegionHealthChecksInsertRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -10520,15 +10520,15 @@ If the group is part of a backend service that has enabled connection draining, 
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'compute.regionHealthChecks.list',
-        ordered_params=[u'project', u'region'],
-        path_params=[u'project', u'region'],
-        query_params=[u'filter', u'maxResults', u'orderBy', u'pageToken'],
-        relative_path=u'projects/{project}/regions/{region}/healthChecks',
+        http_method='GET',
+        method_id='compute.regionHealthChecks.list',
+        ordered_params=['project', 'region'],
+        path_params=['project', 'region'],
+        query_params=['filter', 'maxResults', 'orderBy', 'pageToken'],
+        relative_path='projects/{project}/regions/{region}/healthChecks',
         request_field='',
-        request_type_name=u'ComputeRegionHealthChecksListRequest',
-        response_type_name=u'HealthCheckList',
+        request_type_name='ComputeRegionHealthChecksListRequest',
+        response_type_name='HealthCheckList',
         supports_download=False,
     )
 
@@ -10546,15 +10546,15 @@ If the group is part of a backend service that has enabled connection draining, 
           config, request, global_params=global_params)
 
     Patch.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'PATCH',
-        method_id=u'compute.regionHealthChecks.patch',
-        ordered_params=[u'project', u'region', u'healthCheck'],
-        path_params=[u'healthCheck', u'project', u'region'],
-        query_params=[u'requestId'],
-        relative_path=u'projects/{project}/regions/{region}/healthChecks/{healthCheck}',
-        request_field=u'healthCheckResource',
-        request_type_name=u'ComputeRegionHealthChecksPatchRequest',
-        response_type_name=u'Operation',
+        http_method='PATCH',
+        method_id='compute.regionHealthChecks.patch',
+        ordered_params=['project', 'region', 'healthCheck'],
+        path_params=['healthCheck', 'project', 'region'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/regions/{region}/healthChecks/{healthCheck}',
+        request_field='healthCheckResource',
+        request_type_name='ComputeRegionHealthChecksPatchRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -10572,22 +10572,22 @@ If the group is part of a backend service that has enabled connection draining, 
           config, request, global_params=global_params)
 
     Update.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'PUT',
-        method_id=u'compute.regionHealthChecks.update',
-        ordered_params=[u'project', u'region', u'healthCheck'],
-        path_params=[u'healthCheck', u'project', u'region'],
-        query_params=[u'requestId'],
-        relative_path=u'projects/{project}/regions/{region}/healthChecks/{healthCheck}',
-        request_field=u'healthCheckResource',
-        request_type_name=u'ComputeRegionHealthChecksUpdateRequest',
-        response_type_name=u'Operation',
+        http_method='PUT',
+        method_id='compute.regionHealthChecks.update',
+        ordered_params=['project', 'region', 'healthCheck'],
+        path_params=['healthCheck', 'project', 'region'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/regions/{region}/healthChecks/{healthCheck}',
+        request_field='healthCheckResource',
+        request_type_name='ComputeRegionHealthChecksUpdateRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
   class RegionInstanceGroupManagersService(base_api.BaseApiService):
     """Service class for the regionInstanceGroupManagers resource."""
 
-    _NAME = u'regionInstanceGroupManagers'
+    _NAME = 'regionInstanceGroupManagers'
 
     def __init__(self, client):
       super(ComputeBeta.RegionInstanceGroupManagersService, self).__init__(client)
@@ -10612,15 +10612,15 @@ You can specify a maximum of 1000 instances with this method per request.
           config, request, global_params=global_params)
 
     AbandonInstances.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'compute.regionInstanceGroupManagers.abandonInstances',
-        ordered_params=[u'project', u'region', u'instanceGroupManager'],
-        path_params=[u'instanceGroupManager', u'project', u'region'],
-        query_params=[u'requestId'],
-        relative_path=u'projects/{project}/regions/{region}/instanceGroupManagers/{instanceGroupManager}/abandonInstances',
-        request_field=u'regionInstanceGroupManagersAbandonInstancesRequest',
-        request_type_name=u'ComputeRegionInstanceGroupManagersAbandonInstancesRequest',
-        response_type_name=u'Operation',
+        http_method='POST',
+        method_id='compute.regionInstanceGroupManagers.abandonInstances',
+        ordered_params=['project', 'region', 'instanceGroupManager'],
+        path_params=['instanceGroupManager', 'project', 'region'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/regions/{region}/instanceGroupManagers/{instanceGroupManager}/abandonInstances',
+        request_field='regionInstanceGroupManagersAbandonInstancesRequest',
+        request_type_name='ComputeRegionInstanceGroupManagersAbandonInstancesRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -10638,15 +10638,15 @@ You can specify a maximum of 1000 instances with this method per request.
           config, request, global_params=global_params)
 
     ApplyUpdatesToInstances.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'compute.regionInstanceGroupManagers.applyUpdatesToInstances',
-        ordered_params=[u'project', u'region', u'instanceGroupManager'],
-        path_params=[u'instanceGroupManager', u'project', u'region'],
+        http_method='POST',
+        method_id='compute.regionInstanceGroupManagers.applyUpdatesToInstances',
+        ordered_params=['project', 'region', 'instanceGroupManager'],
+        path_params=['instanceGroupManager', 'project', 'region'],
         query_params=[],
-        relative_path=u'projects/{project}/regions/{region}/instanceGroupManagers/{instanceGroupManager}/applyUpdatesToInstances',
-        request_field=u'regionInstanceGroupManagersApplyUpdatesRequest',
-        request_type_name=u'ComputeRegionInstanceGroupManagersApplyUpdatesToInstancesRequest',
-        response_type_name=u'Operation',
+        relative_path='projects/{project}/regions/{region}/instanceGroupManagers/{instanceGroupManager}/applyUpdatesToInstances',
+        request_field='regionInstanceGroupManagersApplyUpdatesRequest',
+        request_type_name='ComputeRegionInstanceGroupManagersApplyUpdatesToInstancesRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -10664,15 +10664,15 @@ You can specify a maximum of 1000 instances with this method per request.
           config, request, global_params=global_params)
 
     CreateInstances.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'compute.regionInstanceGroupManagers.createInstances',
-        ordered_params=[u'project', u'region', u'instanceGroupManager'],
-        path_params=[u'instanceGroupManager', u'project', u'region'],
-        query_params=[u'requestId'],
-        relative_path=u'projects/{project}/regions/{region}/instanceGroupManagers/{instanceGroupManager}/createInstances',
-        request_field=u'regionInstanceGroupManagersCreateInstancesRequest',
-        request_type_name=u'ComputeRegionInstanceGroupManagersCreateInstancesRequest',
-        response_type_name=u'Operation',
+        http_method='POST',
+        method_id='compute.regionInstanceGroupManagers.createInstances',
+        ordered_params=['project', 'region', 'instanceGroupManager'],
+        path_params=['instanceGroupManager', 'project', 'region'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/regions/{region}/instanceGroupManagers/{instanceGroupManager}/createInstances',
+        request_field='regionInstanceGroupManagersCreateInstancesRequest',
+        request_type_name='ComputeRegionInstanceGroupManagersCreateInstancesRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -10690,15 +10690,15 @@ You can specify a maximum of 1000 instances with this method per request.
           config, request, global_params=global_params)
 
     Delete.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'DELETE',
-        method_id=u'compute.regionInstanceGroupManagers.delete',
-        ordered_params=[u'project', u'region', u'instanceGroupManager'],
-        path_params=[u'instanceGroupManager', u'project', u'region'],
-        query_params=[u'requestId'],
-        relative_path=u'projects/{project}/regions/{region}/instanceGroupManagers/{instanceGroupManager}',
+        http_method='DELETE',
+        method_id='compute.regionInstanceGroupManagers.delete',
+        ordered_params=['project', 'region', 'instanceGroupManager'],
+        path_params=['instanceGroupManager', 'project', 'region'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/regions/{region}/instanceGroupManagers/{instanceGroupManager}',
         request_field='',
-        request_type_name=u'ComputeRegionInstanceGroupManagersDeleteRequest',
-        response_type_name=u'Operation',
+        request_type_name='ComputeRegionInstanceGroupManagersDeleteRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -10720,15 +10720,15 @@ You can specify a maximum of 1000 instances with this method per request.
           config, request, global_params=global_params)
 
     DeleteInstances.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'compute.regionInstanceGroupManagers.deleteInstances',
-        ordered_params=[u'project', u'region', u'instanceGroupManager'],
-        path_params=[u'instanceGroupManager', u'project', u'region'],
-        query_params=[u'requestId'],
-        relative_path=u'projects/{project}/regions/{region}/instanceGroupManagers/{instanceGroupManager}/deleteInstances',
-        request_field=u'regionInstanceGroupManagersDeleteInstancesRequest',
-        request_type_name=u'ComputeRegionInstanceGroupManagersDeleteInstancesRequest',
-        response_type_name=u'Operation',
+        http_method='POST',
+        method_id='compute.regionInstanceGroupManagers.deleteInstances',
+        ordered_params=['project', 'region', 'instanceGroupManager'],
+        path_params=['instanceGroupManager', 'project', 'region'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/regions/{region}/instanceGroupManagers/{instanceGroupManager}/deleteInstances',
+        request_field='regionInstanceGroupManagersDeleteInstancesRequest',
+        request_type_name='ComputeRegionInstanceGroupManagersDeleteInstancesRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -10746,15 +10746,15 @@ You can specify a maximum of 1000 instances with this method per request.
           config, request, global_params=global_params)
 
     DeletePerInstanceConfigs.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'compute.regionInstanceGroupManagers.deletePerInstanceConfigs',
-        ordered_params=[u'project', u'region', u'instanceGroupManager'],
-        path_params=[u'instanceGroupManager', u'project', u'region'],
+        http_method='POST',
+        method_id='compute.regionInstanceGroupManagers.deletePerInstanceConfigs',
+        ordered_params=['project', 'region', 'instanceGroupManager'],
+        path_params=['instanceGroupManager', 'project', 'region'],
         query_params=[],
-        relative_path=u'projects/{project}/regions/{region}/instanceGroupManagers/{instanceGroupManager}/deletePerInstanceConfigs',
-        request_field=u'regionInstanceGroupManagerDeleteInstanceConfigReq',
-        request_type_name=u'ComputeRegionInstanceGroupManagersDeletePerInstanceConfigsRequest',
-        response_type_name=u'Operation',
+        relative_path='projects/{project}/regions/{region}/instanceGroupManagers/{instanceGroupManager}/deletePerInstanceConfigs',
+        request_field='regionInstanceGroupManagerDeleteInstanceConfigReq',
+        request_type_name='ComputeRegionInstanceGroupManagersDeletePerInstanceConfigsRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -10772,15 +10772,15 @@ You can specify a maximum of 1000 instances with this method per request.
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'compute.regionInstanceGroupManagers.get',
-        ordered_params=[u'project', u'region', u'instanceGroupManager'],
-        path_params=[u'instanceGroupManager', u'project', u'region'],
+        http_method='GET',
+        method_id='compute.regionInstanceGroupManagers.get',
+        ordered_params=['project', 'region', 'instanceGroupManager'],
+        path_params=['instanceGroupManager', 'project', 'region'],
         query_params=[],
-        relative_path=u'projects/{project}/regions/{region}/instanceGroupManagers/{instanceGroupManager}',
+        relative_path='projects/{project}/regions/{region}/instanceGroupManagers/{instanceGroupManager}',
         request_field='',
-        request_type_name=u'ComputeRegionInstanceGroupManagersGetRequest',
-        response_type_name=u'InstanceGroupManager',
+        request_type_name='ComputeRegionInstanceGroupManagersGetRequest',
+        response_type_name='InstanceGroupManager',
         supports_download=False,
     )
 
@@ -10800,15 +10800,15 @@ A regional managed instance group can contain up to 2000 instances.
           config, request, global_params=global_params)
 
     Insert.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'compute.regionInstanceGroupManagers.insert',
-        ordered_params=[u'project', u'region'],
-        path_params=[u'project', u'region'],
-        query_params=[u'requestId'],
-        relative_path=u'projects/{project}/regions/{region}/instanceGroupManagers',
-        request_field=u'instanceGroupManager',
-        request_type_name=u'ComputeRegionInstanceGroupManagersInsertRequest',
-        response_type_name=u'Operation',
+        http_method='POST',
+        method_id='compute.regionInstanceGroupManagers.insert',
+        ordered_params=['project', 'region'],
+        path_params=['project', 'region'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/regions/{region}/instanceGroupManagers',
+        request_field='instanceGroupManager',
+        request_type_name='ComputeRegionInstanceGroupManagersInsertRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -10826,15 +10826,15 @@ A regional managed instance group can contain up to 2000 instances.
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'compute.regionInstanceGroupManagers.list',
-        ordered_params=[u'project', u'region'],
-        path_params=[u'project', u'region'],
-        query_params=[u'filter', u'maxResults', u'orderBy', u'pageToken'],
-        relative_path=u'projects/{project}/regions/{region}/instanceGroupManagers',
+        http_method='GET',
+        method_id='compute.regionInstanceGroupManagers.list',
+        ordered_params=['project', 'region'],
+        path_params=['project', 'region'],
+        query_params=['filter', 'maxResults', 'orderBy', 'pageToken'],
+        relative_path='projects/{project}/regions/{region}/instanceGroupManagers',
         request_field='',
-        request_type_name=u'ComputeRegionInstanceGroupManagersListRequest',
-        response_type_name=u'RegionInstanceGroupManagerList',
+        request_type_name='ComputeRegionInstanceGroupManagersListRequest',
+        response_type_name='RegionInstanceGroupManagerList',
         supports_download=False,
     )
 
@@ -10852,15 +10852,15 @@ A regional managed instance group can contain up to 2000 instances.
           config, request, global_params=global_params)
 
     ListErrors.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'compute.regionInstanceGroupManagers.listErrors',
-        ordered_params=[u'project', u'region', u'instanceGroupManager'],
-        path_params=[u'instanceGroupManager', u'project', u'region'],
-        query_params=[u'filter', u'maxResults', u'orderBy', u'pageToken'],
-        relative_path=u'projects/{project}/regions/{region}/instanceGroupManagers/{instanceGroupManager}/listErrors',
+        http_method='GET',
+        method_id='compute.regionInstanceGroupManagers.listErrors',
+        ordered_params=['project', 'region', 'instanceGroupManager'],
+        path_params=['instanceGroupManager', 'project', 'region'],
+        query_params=['filter', 'maxResults', 'orderBy', 'pageToken'],
+        relative_path='projects/{project}/regions/{region}/instanceGroupManagers/{instanceGroupManager}/listErrors',
         request_field='',
-        request_type_name=u'ComputeRegionInstanceGroupManagersListErrorsRequest',
-        response_type_name=u'RegionInstanceGroupManagersListErrorsResponse',
+        request_type_name='ComputeRegionInstanceGroupManagersListErrorsRequest',
+        response_type_name='RegionInstanceGroupManagersListErrorsResponse',
         supports_download=False,
     )
 
@@ -10878,15 +10878,15 @@ A regional managed instance group can contain up to 2000 instances.
           config, request, global_params=global_params)
 
     ListManagedInstances.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'compute.regionInstanceGroupManagers.listManagedInstances',
-        ordered_params=[u'project', u'region', u'instanceGroupManager'],
-        path_params=[u'instanceGroupManager', u'project', u'region'],
-        query_params=[u'filter', u'maxResults', u'orderBy', u'pageToken'],
-        relative_path=u'projects/{project}/regions/{region}/instanceGroupManagers/{instanceGroupManager}/listManagedInstances',
+        http_method='POST',
+        method_id='compute.regionInstanceGroupManagers.listManagedInstances',
+        ordered_params=['project', 'region', 'instanceGroupManager'],
+        path_params=['instanceGroupManager', 'project', 'region'],
+        query_params=['filter', 'maxResults', 'orderBy', 'pageToken'],
+        relative_path='projects/{project}/regions/{region}/instanceGroupManagers/{instanceGroupManager}/listManagedInstances',
         request_field='',
-        request_type_name=u'ComputeRegionInstanceGroupManagersListManagedInstancesRequest',
-        response_type_name=u'RegionInstanceGroupManagersListInstancesResponse',
+        request_type_name='ComputeRegionInstanceGroupManagersListManagedInstancesRequest',
+        response_type_name='RegionInstanceGroupManagersListInstancesResponse',
         supports_download=False,
     )
 
@@ -10904,15 +10904,15 @@ A regional managed instance group can contain up to 2000 instances.
           config, request, global_params=global_params)
 
     ListPerInstanceConfigs.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'compute.regionInstanceGroupManagers.listPerInstanceConfigs',
-        ordered_params=[u'project', u'region', u'instanceGroupManager'],
-        path_params=[u'instanceGroupManager', u'project', u'region'],
-        query_params=[u'filter', u'maxResults', u'orderBy', u'pageToken'],
-        relative_path=u'projects/{project}/regions/{region}/instanceGroupManagers/{instanceGroupManager}/listPerInstanceConfigs',
+        http_method='POST',
+        method_id='compute.regionInstanceGroupManagers.listPerInstanceConfigs',
+        ordered_params=['project', 'region', 'instanceGroupManager'],
+        path_params=['instanceGroupManager', 'project', 'region'],
+        query_params=['filter', 'maxResults', 'orderBy', 'pageToken'],
+        relative_path='projects/{project}/regions/{region}/instanceGroupManagers/{instanceGroupManager}/listPerInstanceConfigs',
         request_field='',
-        request_type_name=u'ComputeRegionInstanceGroupManagersListPerInstanceConfigsRequest',
-        response_type_name=u'RegionInstanceGroupManagersListInstanceConfigsResp',
+        request_type_name='ComputeRegionInstanceGroupManagersListPerInstanceConfigsRequest',
+        response_type_name='RegionInstanceGroupManagersListInstanceConfigsResp',
         supports_download=False,
     )
 
@@ -10930,15 +10930,15 @@ A regional managed instance group can contain up to 2000 instances.
           config, request, global_params=global_params)
 
     Patch.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'PATCH',
-        method_id=u'compute.regionInstanceGroupManagers.patch',
-        ordered_params=[u'project', u'region', u'instanceGroupManager'],
-        path_params=[u'instanceGroupManager', u'project', u'region'],
-        query_params=[u'requestId'],
-        relative_path=u'projects/{project}/regions/{region}/instanceGroupManagers/{instanceGroupManager}',
-        request_field=u'instanceGroupManagerResource',
-        request_type_name=u'ComputeRegionInstanceGroupManagersPatchRequest',
-        response_type_name=u'Operation',
+        http_method='PATCH',
+        method_id='compute.regionInstanceGroupManagers.patch',
+        ordered_params=['project', 'region', 'instanceGroupManager'],
+        path_params=['instanceGroupManager', 'project', 'region'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/regions/{region}/instanceGroupManagers/{instanceGroupManager}',
+        request_field='instanceGroupManagerResource',
+        request_type_name='ComputeRegionInstanceGroupManagersPatchRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -10956,15 +10956,15 @@ A regional managed instance group can contain up to 2000 instances.
           config, request, global_params=global_params)
 
     PatchPerInstanceConfigs.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'compute.regionInstanceGroupManagers.patchPerInstanceConfigs',
-        ordered_params=[u'project', u'region', u'instanceGroupManager'],
-        path_params=[u'instanceGroupManager', u'project', u'region'],
-        query_params=[u'requestId'],
-        relative_path=u'projects/{project}/regions/{region}/instanceGroupManagers/{instanceGroupManager}/patchPerInstanceConfigs',
-        request_field=u'regionInstanceGroupManagerPatchInstanceConfigReq',
-        request_type_name=u'ComputeRegionInstanceGroupManagersPatchPerInstanceConfigsRequest',
-        response_type_name=u'Operation',
+        http_method='POST',
+        method_id='compute.regionInstanceGroupManagers.patchPerInstanceConfigs',
+        ordered_params=['project', 'region', 'instanceGroupManager'],
+        path_params=['instanceGroupManager', 'project', 'region'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/regions/{region}/instanceGroupManagers/{instanceGroupManager}/patchPerInstanceConfigs',
+        request_field='regionInstanceGroupManagerPatchInstanceConfigReq',
+        request_type_name='ComputeRegionInstanceGroupManagersPatchPerInstanceConfigsRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -10986,15 +10986,15 @@ You can specify a maximum of 1000 instances with this method per request.
           config, request, global_params=global_params)
 
     RecreateInstances.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'compute.regionInstanceGroupManagers.recreateInstances',
-        ordered_params=[u'project', u'region', u'instanceGroupManager'],
-        path_params=[u'instanceGroupManager', u'project', u'region'],
-        query_params=[u'requestId'],
-        relative_path=u'projects/{project}/regions/{region}/instanceGroupManagers/{instanceGroupManager}/recreateInstances',
-        request_field=u'regionInstanceGroupManagersRecreateRequest',
-        request_type_name=u'ComputeRegionInstanceGroupManagersRecreateInstancesRequest',
-        response_type_name=u'Operation',
+        http_method='POST',
+        method_id='compute.regionInstanceGroupManagers.recreateInstances',
+        ordered_params=['project', 'region', 'instanceGroupManager'],
+        path_params=['instanceGroupManager', 'project', 'region'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/regions/{region}/instanceGroupManagers/{instanceGroupManager}/recreateInstances',
+        request_field='regionInstanceGroupManagersRecreateRequest',
+        request_type_name='ComputeRegionInstanceGroupManagersRecreateInstancesRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -11016,15 +11016,15 @@ If the group is part of a backend service that has enabled connection draining, 
           config, request, global_params=global_params)
 
     Resize.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'compute.regionInstanceGroupManagers.resize',
-        ordered_params=[u'project', u'region', u'instanceGroupManager', u'size'],
-        path_params=[u'instanceGroupManager', u'project', u'region'],
-        query_params=[u'requestId', u'size'],
-        relative_path=u'projects/{project}/regions/{region}/instanceGroupManagers/{instanceGroupManager}/resize',
+        http_method='POST',
+        method_id='compute.regionInstanceGroupManagers.resize',
+        ordered_params=['project', 'region', 'instanceGroupManager', 'size'],
+        path_params=['instanceGroupManager', 'project', 'region'],
+        query_params=['requestId', 'size'],
+        relative_path='projects/{project}/regions/{region}/instanceGroupManagers/{instanceGroupManager}/resize',
         request_field='',
-        request_type_name=u'ComputeRegionInstanceGroupManagersResizeRequest',
-        response_type_name=u'Operation',
+        request_type_name='ComputeRegionInstanceGroupManagersResizeRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -11042,15 +11042,15 @@ If the group is part of a backend service that has enabled connection draining, 
           config, request, global_params=global_params)
 
     SetAutoHealingPolicies.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'compute.regionInstanceGroupManagers.setAutoHealingPolicies',
-        ordered_params=[u'project', u'region', u'instanceGroupManager'],
-        path_params=[u'instanceGroupManager', u'project', u'region'],
-        query_params=[u'requestId'],
-        relative_path=u'projects/{project}/regions/{region}/instanceGroupManagers/{instanceGroupManager}/setAutoHealingPolicies',
-        request_field=u'regionInstanceGroupManagersSetAutoHealingRequest',
-        request_type_name=u'ComputeRegionInstanceGroupManagersSetAutoHealingPoliciesRequest',
-        response_type_name=u'Operation',
+        http_method='POST',
+        method_id='compute.regionInstanceGroupManagers.setAutoHealingPolicies',
+        ordered_params=['project', 'region', 'instanceGroupManager'],
+        path_params=['instanceGroupManager', 'project', 'region'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/regions/{region}/instanceGroupManagers/{instanceGroupManager}/setAutoHealingPolicies',
+        request_field='regionInstanceGroupManagersSetAutoHealingRequest',
+        request_type_name='ComputeRegionInstanceGroupManagersSetAutoHealingPoliciesRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -11068,15 +11068,15 @@ If the group is part of a backend service that has enabled connection draining, 
           config, request, global_params=global_params)
 
     SetInstanceTemplate.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'compute.regionInstanceGroupManagers.setInstanceTemplate',
-        ordered_params=[u'project', u'region', u'instanceGroupManager'],
-        path_params=[u'instanceGroupManager', u'project', u'region'],
-        query_params=[u'requestId'],
-        relative_path=u'projects/{project}/regions/{region}/instanceGroupManagers/{instanceGroupManager}/setInstanceTemplate',
-        request_field=u'regionInstanceGroupManagersSetTemplateRequest',
-        request_type_name=u'ComputeRegionInstanceGroupManagersSetInstanceTemplateRequest',
-        response_type_name=u'Operation',
+        http_method='POST',
+        method_id='compute.regionInstanceGroupManagers.setInstanceTemplate',
+        ordered_params=['project', 'region', 'instanceGroupManager'],
+        path_params=['instanceGroupManager', 'project', 'region'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/regions/{region}/instanceGroupManagers/{instanceGroupManager}/setInstanceTemplate',
+        request_field='regionInstanceGroupManagersSetTemplateRequest',
+        request_type_name='ComputeRegionInstanceGroupManagersSetInstanceTemplateRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -11094,15 +11094,15 @@ If the group is part of a backend service that has enabled connection draining, 
           config, request, global_params=global_params)
 
     SetTargetPools.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'compute.regionInstanceGroupManagers.setTargetPools',
-        ordered_params=[u'project', u'region', u'instanceGroupManager'],
-        path_params=[u'instanceGroupManager', u'project', u'region'],
-        query_params=[u'requestId'],
-        relative_path=u'projects/{project}/regions/{region}/instanceGroupManagers/{instanceGroupManager}/setTargetPools',
-        request_field=u'regionInstanceGroupManagersSetTargetPoolsRequest',
-        request_type_name=u'ComputeRegionInstanceGroupManagersSetTargetPoolsRequest',
-        response_type_name=u'Operation',
+        http_method='POST',
+        method_id='compute.regionInstanceGroupManagers.setTargetPools',
+        ordered_params=['project', 'region', 'instanceGroupManager'],
+        path_params=['instanceGroupManager', 'project', 'region'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/regions/{region}/instanceGroupManagers/{instanceGroupManager}/setTargetPools',
+        request_field='regionInstanceGroupManagersSetTargetPoolsRequest',
+        request_type_name='ComputeRegionInstanceGroupManagersSetTargetPoolsRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -11120,15 +11120,15 @@ If the group is part of a backend service that has enabled connection draining, 
           config, request, global_params=global_params)
 
     TestIamPermissions.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'compute.regionInstanceGroupManagers.testIamPermissions',
-        ordered_params=[u'project', u'region', u'resource'],
-        path_params=[u'project', u'region', u'resource'],
+        http_method='POST',
+        method_id='compute.regionInstanceGroupManagers.testIamPermissions',
+        ordered_params=['project', 'region', 'resource'],
+        path_params=['project', 'region', 'resource'],
         query_params=[],
-        relative_path=u'projects/{project}/regions/{region}/instanceGroupManagers/{resource}/testIamPermissions',
-        request_field=u'testPermissionsRequest',
-        request_type_name=u'ComputeRegionInstanceGroupManagersTestIamPermissionsRequest',
-        response_type_name=u'TestPermissionsResponse',
+        relative_path='projects/{project}/regions/{region}/instanceGroupManagers/{resource}/testIamPermissions',
+        request_field='testPermissionsRequest',
+        request_type_name='ComputeRegionInstanceGroupManagersTestIamPermissionsRequest',
+        response_type_name='TestPermissionsResponse',
         supports_download=False,
     )
 
@@ -11146,15 +11146,15 @@ If the group is part of a backend service that has enabled connection draining, 
           config, request, global_params=global_params)
 
     Update.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'PUT',
-        method_id=u'compute.regionInstanceGroupManagers.update',
-        ordered_params=[u'project', u'region', u'instanceGroupManager'],
-        path_params=[u'instanceGroupManager', u'project', u'region'],
-        query_params=[u'requestId'],
-        relative_path=u'projects/{project}/regions/{region}/instanceGroupManagers/{instanceGroupManager}',
-        request_field=u'instanceGroupManagerResource',
-        request_type_name=u'ComputeRegionInstanceGroupManagersUpdateRequest',
-        response_type_name=u'Operation',
+        http_method='PUT',
+        method_id='compute.regionInstanceGroupManagers.update',
+        ordered_params=['project', 'region', 'instanceGroupManager'],
+        path_params=['instanceGroupManager', 'project', 'region'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/regions/{region}/instanceGroupManagers/{instanceGroupManager}',
+        request_field='instanceGroupManagerResource',
+        request_type_name='ComputeRegionInstanceGroupManagersUpdateRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -11172,22 +11172,22 @@ If the group is part of a backend service that has enabled connection draining, 
           config, request, global_params=global_params)
 
     UpdatePerInstanceConfigs.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'compute.regionInstanceGroupManagers.updatePerInstanceConfigs',
-        ordered_params=[u'project', u'region', u'instanceGroupManager'],
-        path_params=[u'instanceGroupManager', u'project', u'region'],
-        query_params=[u'requestId'],
-        relative_path=u'projects/{project}/regions/{region}/instanceGroupManagers/{instanceGroupManager}/updatePerInstanceConfigs',
-        request_field=u'regionInstanceGroupManagerUpdateInstanceConfigReq',
-        request_type_name=u'ComputeRegionInstanceGroupManagersUpdatePerInstanceConfigsRequest',
-        response_type_name=u'Operation',
+        http_method='POST',
+        method_id='compute.regionInstanceGroupManagers.updatePerInstanceConfigs',
+        ordered_params=['project', 'region', 'instanceGroupManager'],
+        path_params=['instanceGroupManager', 'project', 'region'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/regions/{region}/instanceGroupManagers/{instanceGroupManager}/updatePerInstanceConfigs',
+        request_field='regionInstanceGroupManagerUpdateInstanceConfigReq',
+        request_type_name='ComputeRegionInstanceGroupManagersUpdatePerInstanceConfigsRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
   class RegionInstanceGroupsService(base_api.BaseApiService):
     """Service class for the regionInstanceGroups resource."""
 
-    _NAME = u'regionInstanceGroups'
+    _NAME = 'regionInstanceGroups'
 
     def __init__(self, client):
       super(ComputeBeta.RegionInstanceGroupsService, self).__init__(client)
@@ -11208,15 +11208,15 @@ If the group is part of a backend service that has enabled connection draining, 
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'compute.regionInstanceGroups.get',
-        ordered_params=[u'project', u'region', u'instanceGroup'],
-        path_params=[u'instanceGroup', u'project', u'region'],
+        http_method='GET',
+        method_id='compute.regionInstanceGroups.get',
+        ordered_params=['project', 'region', 'instanceGroup'],
+        path_params=['instanceGroup', 'project', 'region'],
         query_params=[],
-        relative_path=u'projects/{project}/regions/{region}/instanceGroups/{instanceGroup}',
+        relative_path='projects/{project}/regions/{region}/instanceGroups/{instanceGroup}',
         request_field='',
-        request_type_name=u'ComputeRegionInstanceGroupsGetRequest',
-        response_type_name=u'InstanceGroup',
+        request_type_name='ComputeRegionInstanceGroupsGetRequest',
+        response_type_name='InstanceGroup',
         supports_download=False,
     )
 
@@ -11234,15 +11234,15 @@ If the group is part of a backend service that has enabled connection draining, 
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'compute.regionInstanceGroups.list',
-        ordered_params=[u'project', u'region'],
-        path_params=[u'project', u'region'],
-        query_params=[u'filter', u'maxResults', u'orderBy', u'pageToken'],
-        relative_path=u'projects/{project}/regions/{region}/instanceGroups',
+        http_method='GET',
+        method_id='compute.regionInstanceGroups.list',
+        ordered_params=['project', 'region'],
+        path_params=['project', 'region'],
+        query_params=['filter', 'maxResults', 'orderBy', 'pageToken'],
+        relative_path='projects/{project}/regions/{region}/instanceGroups',
         request_field='',
-        request_type_name=u'ComputeRegionInstanceGroupsListRequest',
-        response_type_name=u'RegionInstanceGroupList',
+        request_type_name='ComputeRegionInstanceGroupsListRequest',
+        response_type_name='RegionInstanceGroupList',
         supports_download=False,
     )
 
@@ -11260,15 +11260,15 @@ If the group is part of a backend service that has enabled connection draining, 
           config, request, global_params=global_params)
 
     ListInstances.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'compute.regionInstanceGroups.listInstances',
-        ordered_params=[u'project', u'region', u'instanceGroup'],
-        path_params=[u'instanceGroup', u'project', u'region'],
-        query_params=[u'filter', u'maxResults', u'orderBy', u'pageToken'],
-        relative_path=u'projects/{project}/regions/{region}/instanceGroups/{instanceGroup}/listInstances',
-        request_field=u'regionInstanceGroupsListInstancesRequest',
-        request_type_name=u'ComputeRegionInstanceGroupsListInstancesRequest',
-        response_type_name=u'RegionInstanceGroupsListInstances',
+        http_method='POST',
+        method_id='compute.regionInstanceGroups.listInstances',
+        ordered_params=['project', 'region', 'instanceGroup'],
+        path_params=['instanceGroup', 'project', 'region'],
+        query_params=['filter', 'maxResults', 'orderBy', 'pageToken'],
+        relative_path='projects/{project}/regions/{region}/instanceGroups/{instanceGroup}/listInstances',
+        request_field='regionInstanceGroupsListInstancesRequest',
+        request_type_name='ComputeRegionInstanceGroupsListInstancesRequest',
+        response_type_name='RegionInstanceGroupsListInstances',
         supports_download=False,
     )
 
@@ -11286,15 +11286,15 @@ If the group is part of a backend service that has enabled connection draining, 
           config, request, global_params=global_params)
 
     SetNamedPorts.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'compute.regionInstanceGroups.setNamedPorts',
-        ordered_params=[u'project', u'region', u'instanceGroup'],
-        path_params=[u'instanceGroup', u'project', u'region'],
-        query_params=[u'requestId'],
-        relative_path=u'projects/{project}/regions/{region}/instanceGroups/{instanceGroup}/setNamedPorts',
-        request_field=u'regionInstanceGroupsSetNamedPortsRequest',
-        request_type_name=u'ComputeRegionInstanceGroupsSetNamedPortsRequest',
-        response_type_name=u'Operation',
+        http_method='POST',
+        method_id='compute.regionInstanceGroups.setNamedPorts',
+        ordered_params=['project', 'region', 'instanceGroup'],
+        path_params=['instanceGroup', 'project', 'region'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/regions/{region}/instanceGroups/{instanceGroup}/setNamedPorts',
+        request_field='regionInstanceGroupsSetNamedPortsRequest',
+        request_type_name='ComputeRegionInstanceGroupsSetNamedPortsRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -11312,22 +11312,22 @@ If the group is part of a backend service that has enabled connection draining, 
           config, request, global_params=global_params)
 
     TestIamPermissions.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'compute.regionInstanceGroups.testIamPermissions',
-        ordered_params=[u'project', u'region', u'resource'],
-        path_params=[u'project', u'region', u'resource'],
+        http_method='POST',
+        method_id='compute.regionInstanceGroups.testIamPermissions',
+        ordered_params=['project', 'region', 'resource'],
+        path_params=['project', 'region', 'resource'],
         query_params=[],
-        relative_path=u'projects/{project}/regions/{region}/instanceGroups/{resource}/testIamPermissions',
-        request_field=u'testPermissionsRequest',
-        request_type_name=u'ComputeRegionInstanceGroupsTestIamPermissionsRequest',
-        response_type_name=u'TestPermissionsResponse',
+        relative_path='projects/{project}/regions/{region}/instanceGroups/{resource}/testIamPermissions',
+        request_field='testPermissionsRequest',
+        request_type_name='ComputeRegionInstanceGroupsTestIamPermissionsRequest',
+        response_type_name='TestPermissionsResponse',
         supports_download=False,
     )
 
   class RegionNotificationEndpointsService(base_api.BaseApiService):
     """Service class for the regionNotificationEndpoints resource."""
 
-    _NAME = u'regionNotificationEndpoints'
+    _NAME = 'regionNotificationEndpoints'
 
     def __init__(self, client):
       super(ComputeBeta.RegionNotificationEndpointsService, self).__init__(client)
@@ -11348,15 +11348,15 @@ If the group is part of a backend service that has enabled connection draining, 
           config, request, global_params=global_params)
 
     Delete.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'DELETE',
-        method_id=u'compute.regionNotificationEndpoints.delete',
-        ordered_params=[u'project', u'region', u'notificationEndpoint'],
-        path_params=[u'notificationEndpoint', u'project', u'region'],
-        query_params=[u'requestId'],
-        relative_path=u'projects/{project}/regions/{region}/notificationEndpoints/{notificationEndpoint}',
+        http_method='DELETE',
+        method_id='compute.regionNotificationEndpoints.delete',
+        ordered_params=['project', 'region', 'notificationEndpoint'],
+        path_params=['notificationEndpoint', 'project', 'region'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/regions/{region}/notificationEndpoints/{notificationEndpoint}',
         request_field='',
-        request_type_name=u'ComputeRegionNotificationEndpointsDeleteRequest',
-        response_type_name=u'Operation',
+        request_type_name='ComputeRegionNotificationEndpointsDeleteRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -11374,15 +11374,15 @@ If the group is part of a backend service that has enabled connection draining, 
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'compute.regionNotificationEndpoints.get',
-        ordered_params=[u'project', u'region', u'notificationEndpoint'],
-        path_params=[u'notificationEndpoint', u'project', u'region'],
+        http_method='GET',
+        method_id='compute.regionNotificationEndpoints.get',
+        ordered_params=['project', 'region', 'notificationEndpoint'],
+        path_params=['notificationEndpoint', 'project', 'region'],
         query_params=[],
-        relative_path=u'projects/{project}/regions/{region}/notificationEndpoints/{notificationEndpoint}',
+        relative_path='projects/{project}/regions/{region}/notificationEndpoints/{notificationEndpoint}',
         request_field='',
-        request_type_name=u'ComputeRegionNotificationEndpointsGetRequest',
-        response_type_name=u'NotificationEndpoint',
+        request_type_name='ComputeRegionNotificationEndpointsGetRequest',
+        response_type_name='NotificationEndpoint',
         supports_download=False,
     )
 
@@ -11400,15 +11400,15 @@ If the group is part of a backend service that has enabled connection draining, 
           config, request, global_params=global_params)
 
     Insert.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'compute.regionNotificationEndpoints.insert',
-        ordered_params=[u'project', u'region'],
-        path_params=[u'project', u'region'],
-        query_params=[u'requestId'],
-        relative_path=u'projects/{project}/regions/{region}/notificationEndpoints',
-        request_field=u'notificationEndpoint',
-        request_type_name=u'ComputeRegionNotificationEndpointsInsertRequest',
-        response_type_name=u'Operation',
+        http_method='POST',
+        method_id='compute.regionNotificationEndpoints.insert',
+        ordered_params=['project', 'region'],
+        path_params=['project', 'region'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/regions/{region}/notificationEndpoints',
+        request_field='notificationEndpoint',
+        request_type_name='ComputeRegionNotificationEndpointsInsertRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -11426,22 +11426,22 @@ If the group is part of a backend service that has enabled connection draining, 
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'compute.regionNotificationEndpoints.list',
-        ordered_params=[u'project', u'region'],
-        path_params=[u'project', u'region'],
-        query_params=[u'filter', u'maxResults', u'orderBy', u'pageToken'],
-        relative_path=u'projects/{project}/regions/{region}/notificationEndpoints',
+        http_method='GET',
+        method_id='compute.regionNotificationEndpoints.list',
+        ordered_params=['project', 'region'],
+        path_params=['project', 'region'],
+        query_params=['filter', 'maxResults', 'orderBy', 'pageToken'],
+        relative_path='projects/{project}/regions/{region}/notificationEndpoints',
         request_field='',
-        request_type_name=u'ComputeRegionNotificationEndpointsListRequest',
-        response_type_name=u'NotificationEndpointList',
+        request_type_name='ComputeRegionNotificationEndpointsListRequest',
+        response_type_name='NotificationEndpointList',
         supports_download=False,
     )
 
   class RegionOperationsService(base_api.BaseApiService):
     """Service class for the regionOperations resource."""
 
-    _NAME = u'regionOperations'
+    _NAME = 'regionOperations'
 
     def __init__(self, client):
       super(ComputeBeta.RegionOperationsService, self).__init__(client)
@@ -11462,15 +11462,15 @@ If the group is part of a backend service that has enabled connection draining, 
           config, request, global_params=global_params)
 
     Delete.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'DELETE',
-        method_id=u'compute.regionOperations.delete',
-        ordered_params=[u'project', u'region', u'operation'],
-        path_params=[u'operation', u'project', u'region'],
+        http_method='DELETE',
+        method_id='compute.regionOperations.delete',
+        ordered_params=['project', 'region', 'operation'],
+        path_params=['operation', 'project', 'region'],
         query_params=[],
-        relative_path=u'projects/{project}/regions/{region}/operations/{operation}',
+        relative_path='projects/{project}/regions/{region}/operations/{operation}',
         request_field='',
-        request_type_name=u'ComputeRegionOperationsDeleteRequest',
-        response_type_name=u'ComputeRegionOperationsDeleteResponse',
+        request_type_name='ComputeRegionOperationsDeleteRequest',
+        response_type_name='ComputeRegionOperationsDeleteResponse',
         supports_download=False,
     )
 
@@ -11488,15 +11488,15 @@ If the group is part of a backend service that has enabled connection draining, 
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'compute.regionOperations.get',
-        ordered_params=[u'project', u'region', u'operation'],
-        path_params=[u'operation', u'project', u'region'],
+        http_method='GET',
+        method_id='compute.regionOperations.get',
+        ordered_params=['project', 'region', 'operation'],
+        path_params=['operation', 'project', 'region'],
         query_params=[],
-        relative_path=u'projects/{project}/regions/{region}/operations/{operation}',
+        relative_path='projects/{project}/regions/{region}/operations/{operation}',
         request_field='',
-        request_type_name=u'ComputeRegionOperationsGetRequest',
-        response_type_name=u'Operation',
+        request_type_name='ComputeRegionOperationsGetRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -11514,15 +11514,15 @@ If the group is part of a backend service that has enabled connection draining, 
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'compute.regionOperations.list',
-        ordered_params=[u'project', u'region'],
-        path_params=[u'project', u'region'],
-        query_params=[u'filter', u'maxResults', u'orderBy', u'pageToken'],
-        relative_path=u'projects/{project}/regions/{region}/operations',
+        http_method='GET',
+        method_id='compute.regionOperations.list',
+        ordered_params=['project', 'region'],
+        path_params=['project', 'region'],
+        query_params=['filter', 'maxResults', 'orderBy', 'pageToken'],
+        relative_path='projects/{project}/regions/{region}/operations',
         request_field='',
-        request_type_name=u'ComputeRegionOperationsListRequest',
-        response_type_name=u'OperationList',
+        request_type_name='ComputeRegionOperationsListRequest',
+        response_type_name='OperationList',
         supports_download=False,
     )
 
@@ -11544,22 +11544,22 @@ This method is called on a best-effort basis. Specifically:
           config, request, global_params=global_params)
 
     Wait.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'compute.regionOperations.wait',
-        ordered_params=[u'project', u'region', u'operation'],
-        path_params=[u'operation', u'project', u'region'],
+        http_method='POST',
+        method_id='compute.regionOperations.wait',
+        ordered_params=['project', 'region', 'operation'],
+        path_params=['operation', 'project', 'region'],
         query_params=[],
-        relative_path=u'projects/{project}/regions/{region}/operations/{operation}/wait',
+        relative_path='projects/{project}/regions/{region}/operations/{operation}/wait',
         request_field='',
-        request_type_name=u'ComputeRegionOperationsWaitRequest',
-        response_type_name=u'Operation',
+        request_type_name='ComputeRegionOperationsWaitRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
   class RegionSslCertificatesService(base_api.BaseApiService):
     """Service class for the regionSslCertificates resource."""
 
-    _NAME = u'regionSslCertificates'
+    _NAME = 'regionSslCertificates'
 
     def __init__(self, client):
       super(ComputeBeta.RegionSslCertificatesService, self).__init__(client)
@@ -11580,15 +11580,15 @@ This method is called on a best-effort basis. Specifically:
           config, request, global_params=global_params)
 
     Delete.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'DELETE',
-        method_id=u'compute.regionSslCertificates.delete',
-        ordered_params=[u'project', u'region', u'sslCertificate'],
-        path_params=[u'project', u'region', u'sslCertificate'],
-        query_params=[u'requestId'],
-        relative_path=u'projects/{project}/regions/{region}/sslCertificates/{sslCertificate}',
+        http_method='DELETE',
+        method_id='compute.regionSslCertificates.delete',
+        ordered_params=['project', 'region', 'sslCertificate'],
+        path_params=['project', 'region', 'sslCertificate'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/regions/{region}/sslCertificates/{sslCertificate}',
         request_field='',
-        request_type_name=u'ComputeRegionSslCertificatesDeleteRequest',
-        response_type_name=u'Operation',
+        request_type_name='ComputeRegionSslCertificatesDeleteRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -11606,15 +11606,15 @@ This method is called on a best-effort basis. Specifically:
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'compute.regionSslCertificates.get',
-        ordered_params=[u'project', u'region', u'sslCertificate'],
-        path_params=[u'project', u'region', u'sslCertificate'],
+        http_method='GET',
+        method_id='compute.regionSslCertificates.get',
+        ordered_params=['project', 'region', 'sslCertificate'],
+        path_params=['project', 'region', 'sslCertificate'],
         query_params=[],
-        relative_path=u'projects/{project}/regions/{region}/sslCertificates/{sslCertificate}',
+        relative_path='projects/{project}/regions/{region}/sslCertificates/{sslCertificate}',
         request_field='',
-        request_type_name=u'ComputeRegionSslCertificatesGetRequest',
-        response_type_name=u'SslCertificate',
+        request_type_name='ComputeRegionSslCertificatesGetRequest',
+        response_type_name='SslCertificate',
         supports_download=False,
     )
 
@@ -11632,15 +11632,15 @@ This method is called on a best-effort basis. Specifically:
           config, request, global_params=global_params)
 
     Insert.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'compute.regionSslCertificates.insert',
-        ordered_params=[u'project', u'region'],
-        path_params=[u'project', u'region'],
-        query_params=[u'requestId'],
-        relative_path=u'projects/{project}/regions/{region}/sslCertificates',
-        request_field=u'sslCertificate',
-        request_type_name=u'ComputeRegionSslCertificatesInsertRequest',
-        response_type_name=u'Operation',
+        http_method='POST',
+        method_id='compute.regionSslCertificates.insert',
+        ordered_params=['project', 'region'],
+        path_params=['project', 'region'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/regions/{region}/sslCertificates',
+        request_field='sslCertificate',
+        request_type_name='ComputeRegionSslCertificatesInsertRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -11658,22 +11658,22 @@ This method is called on a best-effort basis. Specifically:
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'compute.regionSslCertificates.list',
-        ordered_params=[u'project', u'region'],
-        path_params=[u'project', u'region'],
-        query_params=[u'filter', u'maxResults', u'orderBy', u'pageToken'],
-        relative_path=u'projects/{project}/regions/{region}/sslCertificates',
+        http_method='GET',
+        method_id='compute.regionSslCertificates.list',
+        ordered_params=['project', 'region'],
+        path_params=['project', 'region'],
+        query_params=['filter', 'maxResults', 'orderBy', 'pageToken'],
+        relative_path='projects/{project}/regions/{region}/sslCertificates',
         request_field='',
-        request_type_name=u'ComputeRegionSslCertificatesListRequest',
-        response_type_name=u'SslCertificateList',
+        request_type_name='ComputeRegionSslCertificatesListRequest',
+        response_type_name='SslCertificateList',
         supports_download=False,
     )
 
   class RegionTargetHttpProxiesService(base_api.BaseApiService):
     """Service class for the regionTargetHttpProxies resource."""
 
-    _NAME = u'regionTargetHttpProxies'
+    _NAME = 'regionTargetHttpProxies'
 
     def __init__(self, client):
       super(ComputeBeta.RegionTargetHttpProxiesService, self).__init__(client)
@@ -11694,15 +11694,15 @@ This method is called on a best-effort basis. Specifically:
           config, request, global_params=global_params)
 
     Delete.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'DELETE',
-        method_id=u'compute.regionTargetHttpProxies.delete',
-        ordered_params=[u'project', u'region', u'targetHttpProxy'],
-        path_params=[u'project', u'region', u'targetHttpProxy'],
-        query_params=[u'requestId'],
-        relative_path=u'projects/{project}/regions/{region}/targetHttpProxies/{targetHttpProxy}',
+        http_method='DELETE',
+        method_id='compute.regionTargetHttpProxies.delete',
+        ordered_params=['project', 'region', 'targetHttpProxy'],
+        path_params=['project', 'region', 'targetHttpProxy'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/regions/{region}/targetHttpProxies/{targetHttpProxy}',
         request_field='',
-        request_type_name=u'ComputeRegionTargetHttpProxiesDeleteRequest',
-        response_type_name=u'Operation',
+        request_type_name='ComputeRegionTargetHttpProxiesDeleteRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -11720,15 +11720,15 @@ This method is called on a best-effort basis. Specifically:
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'compute.regionTargetHttpProxies.get',
-        ordered_params=[u'project', u'region', u'targetHttpProxy'],
-        path_params=[u'project', u'region', u'targetHttpProxy'],
+        http_method='GET',
+        method_id='compute.regionTargetHttpProxies.get',
+        ordered_params=['project', 'region', 'targetHttpProxy'],
+        path_params=['project', 'region', 'targetHttpProxy'],
         query_params=[],
-        relative_path=u'projects/{project}/regions/{region}/targetHttpProxies/{targetHttpProxy}',
+        relative_path='projects/{project}/regions/{region}/targetHttpProxies/{targetHttpProxy}',
         request_field='',
-        request_type_name=u'ComputeRegionTargetHttpProxiesGetRequest',
-        response_type_name=u'TargetHttpProxy',
+        request_type_name='ComputeRegionTargetHttpProxiesGetRequest',
+        response_type_name='TargetHttpProxy',
         supports_download=False,
     )
 
@@ -11746,15 +11746,15 @@ This method is called on a best-effort basis. Specifically:
           config, request, global_params=global_params)
 
     Insert.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'compute.regionTargetHttpProxies.insert',
-        ordered_params=[u'project', u'region'],
-        path_params=[u'project', u'region'],
-        query_params=[u'requestId'],
-        relative_path=u'projects/{project}/regions/{region}/targetHttpProxies',
-        request_field=u'targetHttpProxy',
-        request_type_name=u'ComputeRegionTargetHttpProxiesInsertRequest',
-        response_type_name=u'Operation',
+        http_method='POST',
+        method_id='compute.regionTargetHttpProxies.insert',
+        ordered_params=['project', 'region'],
+        path_params=['project', 'region'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/regions/{region}/targetHttpProxies',
+        request_field='targetHttpProxy',
+        request_type_name='ComputeRegionTargetHttpProxiesInsertRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -11772,15 +11772,15 @@ This method is called on a best-effort basis. Specifically:
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'compute.regionTargetHttpProxies.list',
-        ordered_params=[u'project', u'region'],
-        path_params=[u'project', u'region'],
-        query_params=[u'filter', u'maxResults', u'orderBy', u'pageToken'],
-        relative_path=u'projects/{project}/regions/{region}/targetHttpProxies',
+        http_method='GET',
+        method_id='compute.regionTargetHttpProxies.list',
+        ordered_params=['project', 'region'],
+        path_params=['project', 'region'],
+        query_params=['filter', 'maxResults', 'orderBy', 'pageToken'],
+        relative_path='projects/{project}/regions/{region}/targetHttpProxies',
         request_field='',
-        request_type_name=u'ComputeRegionTargetHttpProxiesListRequest',
-        response_type_name=u'TargetHttpProxyList',
+        request_type_name='ComputeRegionTargetHttpProxiesListRequest',
+        response_type_name='TargetHttpProxyList',
         supports_download=False,
     )
 
@@ -11798,22 +11798,22 @@ This method is called on a best-effort basis. Specifically:
           config, request, global_params=global_params)
 
     SetUrlMap.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'compute.regionTargetHttpProxies.setUrlMap',
-        ordered_params=[u'project', u'region', u'targetHttpProxy'],
-        path_params=[u'project', u'region', u'targetHttpProxy'],
-        query_params=[u'requestId'],
-        relative_path=u'projects/{project}/regions/{region}/targetHttpProxies/{targetHttpProxy}/setUrlMap',
-        request_field=u'urlMapReference',
-        request_type_name=u'ComputeRegionTargetHttpProxiesSetUrlMapRequest',
-        response_type_name=u'Operation',
+        http_method='POST',
+        method_id='compute.regionTargetHttpProxies.setUrlMap',
+        ordered_params=['project', 'region', 'targetHttpProxy'],
+        path_params=['project', 'region', 'targetHttpProxy'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/regions/{region}/targetHttpProxies/{targetHttpProxy}/setUrlMap',
+        request_field='urlMapReference',
+        request_type_name='ComputeRegionTargetHttpProxiesSetUrlMapRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
   class RegionTargetHttpsProxiesService(base_api.BaseApiService):
     """Service class for the regionTargetHttpsProxies resource."""
 
-    _NAME = u'regionTargetHttpsProxies'
+    _NAME = 'regionTargetHttpsProxies'
 
     def __init__(self, client):
       super(ComputeBeta.RegionTargetHttpsProxiesService, self).__init__(client)
@@ -11834,15 +11834,15 @@ This method is called on a best-effort basis. Specifically:
           config, request, global_params=global_params)
 
     Delete.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'DELETE',
-        method_id=u'compute.regionTargetHttpsProxies.delete',
-        ordered_params=[u'project', u'region', u'targetHttpsProxy'],
-        path_params=[u'project', u'region', u'targetHttpsProxy'],
-        query_params=[u'requestId'],
-        relative_path=u'projects/{project}/regions/{region}/targetHttpsProxies/{targetHttpsProxy}',
+        http_method='DELETE',
+        method_id='compute.regionTargetHttpsProxies.delete',
+        ordered_params=['project', 'region', 'targetHttpsProxy'],
+        path_params=['project', 'region', 'targetHttpsProxy'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/regions/{region}/targetHttpsProxies/{targetHttpsProxy}',
         request_field='',
-        request_type_name=u'ComputeRegionTargetHttpsProxiesDeleteRequest',
-        response_type_name=u'Operation',
+        request_type_name='ComputeRegionTargetHttpsProxiesDeleteRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -11860,15 +11860,15 @@ This method is called on a best-effort basis. Specifically:
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'compute.regionTargetHttpsProxies.get',
-        ordered_params=[u'project', u'region', u'targetHttpsProxy'],
-        path_params=[u'project', u'region', u'targetHttpsProxy'],
+        http_method='GET',
+        method_id='compute.regionTargetHttpsProxies.get',
+        ordered_params=['project', 'region', 'targetHttpsProxy'],
+        path_params=['project', 'region', 'targetHttpsProxy'],
         query_params=[],
-        relative_path=u'projects/{project}/regions/{region}/targetHttpsProxies/{targetHttpsProxy}',
+        relative_path='projects/{project}/regions/{region}/targetHttpsProxies/{targetHttpsProxy}',
         request_field='',
-        request_type_name=u'ComputeRegionTargetHttpsProxiesGetRequest',
-        response_type_name=u'TargetHttpsProxy',
+        request_type_name='ComputeRegionTargetHttpsProxiesGetRequest',
+        response_type_name='TargetHttpsProxy',
         supports_download=False,
     )
 
@@ -11886,15 +11886,15 @@ This method is called on a best-effort basis. Specifically:
           config, request, global_params=global_params)
 
     Insert.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'compute.regionTargetHttpsProxies.insert',
-        ordered_params=[u'project', u'region'],
-        path_params=[u'project', u'region'],
-        query_params=[u'requestId'],
-        relative_path=u'projects/{project}/regions/{region}/targetHttpsProxies',
-        request_field=u'targetHttpsProxy',
-        request_type_name=u'ComputeRegionTargetHttpsProxiesInsertRequest',
-        response_type_name=u'Operation',
+        http_method='POST',
+        method_id='compute.regionTargetHttpsProxies.insert',
+        ordered_params=['project', 'region'],
+        path_params=['project', 'region'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/regions/{region}/targetHttpsProxies',
+        request_field='targetHttpsProxy',
+        request_type_name='ComputeRegionTargetHttpsProxiesInsertRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -11912,15 +11912,15 @@ This method is called on a best-effort basis. Specifically:
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'compute.regionTargetHttpsProxies.list',
-        ordered_params=[u'project', u'region'],
-        path_params=[u'project', u'region'],
-        query_params=[u'filter', u'maxResults', u'orderBy', u'pageToken'],
-        relative_path=u'projects/{project}/regions/{region}/targetHttpsProxies',
+        http_method='GET',
+        method_id='compute.regionTargetHttpsProxies.list',
+        ordered_params=['project', 'region'],
+        path_params=['project', 'region'],
+        query_params=['filter', 'maxResults', 'orderBy', 'pageToken'],
+        relative_path='projects/{project}/regions/{region}/targetHttpsProxies',
         request_field='',
-        request_type_name=u'ComputeRegionTargetHttpsProxiesListRequest',
-        response_type_name=u'TargetHttpsProxyList',
+        request_type_name='ComputeRegionTargetHttpsProxiesListRequest',
+        response_type_name='TargetHttpsProxyList',
         supports_download=False,
     )
 
@@ -11938,15 +11938,15 @@ This method is called on a best-effort basis. Specifically:
           config, request, global_params=global_params)
 
     SetSslCertificates.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'compute.regionTargetHttpsProxies.setSslCertificates',
-        ordered_params=[u'project', u'region', u'targetHttpsProxy'],
-        path_params=[u'project', u'region', u'targetHttpsProxy'],
-        query_params=[u'requestId'],
-        relative_path=u'projects/{project}/regions/{region}/targetHttpsProxies/{targetHttpsProxy}/setSslCertificates',
-        request_field=u'regionTargetHttpsProxiesSetSslCertificatesRequest',
-        request_type_name=u'ComputeRegionTargetHttpsProxiesSetSslCertificatesRequest',
-        response_type_name=u'Operation',
+        http_method='POST',
+        method_id='compute.regionTargetHttpsProxies.setSslCertificates',
+        ordered_params=['project', 'region', 'targetHttpsProxy'],
+        path_params=['project', 'region', 'targetHttpsProxy'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/regions/{region}/targetHttpsProxies/{targetHttpsProxy}/setSslCertificates',
+        request_field='regionTargetHttpsProxiesSetSslCertificatesRequest',
+        request_type_name='ComputeRegionTargetHttpsProxiesSetSslCertificatesRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -11964,22 +11964,22 @@ This method is called on a best-effort basis. Specifically:
           config, request, global_params=global_params)
 
     SetUrlMap.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'compute.regionTargetHttpsProxies.setUrlMap',
-        ordered_params=[u'project', u'region', u'targetHttpsProxy'],
-        path_params=[u'project', u'region', u'targetHttpsProxy'],
-        query_params=[u'requestId'],
-        relative_path=u'projects/{project}/regions/{region}/targetHttpsProxies/{targetHttpsProxy}/setUrlMap',
-        request_field=u'urlMapReference',
-        request_type_name=u'ComputeRegionTargetHttpsProxiesSetUrlMapRequest',
-        response_type_name=u'Operation',
+        http_method='POST',
+        method_id='compute.regionTargetHttpsProxies.setUrlMap',
+        ordered_params=['project', 'region', 'targetHttpsProxy'],
+        path_params=['project', 'region', 'targetHttpsProxy'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/regions/{region}/targetHttpsProxies/{targetHttpsProxy}/setUrlMap',
+        request_field='urlMapReference',
+        request_type_name='ComputeRegionTargetHttpsProxiesSetUrlMapRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
   class RegionUrlMapsService(base_api.BaseApiService):
     """Service class for the regionUrlMaps resource."""
 
-    _NAME = u'regionUrlMaps'
+    _NAME = 'regionUrlMaps'
 
     def __init__(self, client):
       super(ComputeBeta.RegionUrlMapsService, self).__init__(client)
@@ -12000,15 +12000,15 @@ This method is called on a best-effort basis. Specifically:
           config, request, global_params=global_params)
 
     Delete.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'DELETE',
-        method_id=u'compute.regionUrlMaps.delete',
-        ordered_params=[u'project', u'region', u'urlMap'],
-        path_params=[u'project', u'region', u'urlMap'],
-        query_params=[u'requestId'],
-        relative_path=u'projects/{project}/regions/{region}/urlMaps/{urlMap}',
+        http_method='DELETE',
+        method_id='compute.regionUrlMaps.delete',
+        ordered_params=['project', 'region', 'urlMap'],
+        path_params=['project', 'region', 'urlMap'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/regions/{region}/urlMaps/{urlMap}',
         request_field='',
-        request_type_name=u'ComputeRegionUrlMapsDeleteRequest',
-        response_type_name=u'Operation',
+        request_type_name='ComputeRegionUrlMapsDeleteRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -12026,15 +12026,15 @@ This method is called on a best-effort basis. Specifically:
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'compute.regionUrlMaps.get',
-        ordered_params=[u'project', u'region', u'urlMap'],
-        path_params=[u'project', u'region', u'urlMap'],
+        http_method='GET',
+        method_id='compute.regionUrlMaps.get',
+        ordered_params=['project', 'region', 'urlMap'],
+        path_params=['project', 'region', 'urlMap'],
         query_params=[],
-        relative_path=u'projects/{project}/regions/{region}/urlMaps/{urlMap}',
+        relative_path='projects/{project}/regions/{region}/urlMaps/{urlMap}',
         request_field='',
-        request_type_name=u'ComputeRegionUrlMapsGetRequest',
-        response_type_name=u'UrlMap',
+        request_type_name='ComputeRegionUrlMapsGetRequest',
+        response_type_name='UrlMap',
         supports_download=False,
     )
 
@@ -12052,15 +12052,15 @@ This method is called on a best-effort basis. Specifically:
           config, request, global_params=global_params)
 
     Insert.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'compute.regionUrlMaps.insert',
-        ordered_params=[u'project', u'region'],
-        path_params=[u'project', u'region'],
-        query_params=[u'requestId'],
-        relative_path=u'projects/{project}/regions/{region}/urlMaps',
-        request_field=u'urlMap',
-        request_type_name=u'ComputeRegionUrlMapsInsertRequest',
-        response_type_name=u'Operation',
+        http_method='POST',
+        method_id='compute.regionUrlMaps.insert',
+        ordered_params=['project', 'region'],
+        path_params=['project', 'region'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/regions/{region}/urlMaps',
+        request_field='urlMap',
+        request_type_name='ComputeRegionUrlMapsInsertRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -12078,15 +12078,15 @@ This method is called on a best-effort basis. Specifically:
           config, request, global_params=global_params)
 
     InvalidateCache.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'compute.regionUrlMaps.invalidateCache',
-        ordered_params=[u'project', u'region', u'urlMap'],
-        path_params=[u'project', u'region', u'urlMap'],
-        query_params=[u'requestId'],
-        relative_path=u'projects/{project}/regions/{region}/urlMaps/{urlMap}/invalidateCache',
-        request_field=u'cacheInvalidationRule',
-        request_type_name=u'ComputeRegionUrlMapsInvalidateCacheRequest',
-        response_type_name=u'Operation',
+        http_method='POST',
+        method_id='compute.regionUrlMaps.invalidateCache',
+        ordered_params=['project', 'region', 'urlMap'],
+        path_params=['project', 'region', 'urlMap'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/regions/{region}/urlMaps/{urlMap}/invalidateCache',
+        request_field='cacheInvalidationRule',
+        request_type_name='ComputeRegionUrlMapsInvalidateCacheRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -12104,15 +12104,15 @@ This method is called on a best-effort basis. Specifically:
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'compute.regionUrlMaps.list',
-        ordered_params=[u'project', u'region'],
-        path_params=[u'project', u'region'],
-        query_params=[u'filter', u'maxResults', u'orderBy', u'pageToken'],
-        relative_path=u'projects/{project}/regions/{region}/urlMaps',
+        http_method='GET',
+        method_id='compute.regionUrlMaps.list',
+        ordered_params=['project', 'region'],
+        path_params=['project', 'region'],
+        query_params=['filter', 'maxResults', 'orderBy', 'pageToken'],
+        relative_path='projects/{project}/regions/{region}/urlMaps',
         request_field='',
-        request_type_name=u'ComputeRegionUrlMapsListRequest',
-        response_type_name=u'UrlMapList',
+        request_type_name='ComputeRegionUrlMapsListRequest',
+        response_type_name='UrlMapList',
         supports_download=False,
     )
 
@@ -12130,15 +12130,15 @@ This method is called on a best-effort basis. Specifically:
           config, request, global_params=global_params)
 
     Patch.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'PATCH',
-        method_id=u'compute.regionUrlMaps.patch',
-        ordered_params=[u'project', u'region', u'urlMap'],
-        path_params=[u'project', u'region', u'urlMap'],
-        query_params=[u'requestId'],
-        relative_path=u'projects/{project}/regions/{region}/urlMaps/{urlMap}',
-        request_field=u'urlMapResource',
-        request_type_name=u'ComputeRegionUrlMapsPatchRequest',
-        response_type_name=u'Operation',
+        http_method='PATCH',
+        method_id='compute.regionUrlMaps.patch',
+        ordered_params=['project', 'region', 'urlMap'],
+        path_params=['project', 'region', 'urlMap'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/regions/{region}/urlMaps/{urlMap}',
+        request_field='urlMapResource',
+        request_type_name='ComputeRegionUrlMapsPatchRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -12156,15 +12156,15 @@ This method is called on a best-effort basis. Specifically:
           config, request, global_params=global_params)
 
     Update.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'PUT',
-        method_id=u'compute.regionUrlMaps.update',
-        ordered_params=[u'project', u'region', u'urlMap'],
-        path_params=[u'project', u'region', u'urlMap'],
-        query_params=[u'requestId'],
-        relative_path=u'projects/{project}/regions/{region}/urlMaps/{urlMap}',
-        request_field=u'urlMapResource',
-        request_type_name=u'ComputeRegionUrlMapsUpdateRequest',
-        response_type_name=u'Operation',
+        http_method='PUT',
+        method_id='compute.regionUrlMaps.update',
+        ordered_params=['project', 'region', 'urlMap'],
+        path_params=['project', 'region', 'urlMap'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/regions/{region}/urlMaps/{urlMap}',
+        request_field='urlMapResource',
+        request_type_name='ComputeRegionUrlMapsUpdateRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -12182,22 +12182,22 @@ This method is called on a best-effort basis. Specifically:
           config, request, global_params=global_params)
 
     Validate.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'compute.regionUrlMaps.validate',
-        ordered_params=[u'project', u'region', u'urlMap'],
-        path_params=[u'project', u'region', u'urlMap'],
+        http_method='POST',
+        method_id='compute.regionUrlMaps.validate',
+        ordered_params=['project', 'region', 'urlMap'],
+        path_params=['project', 'region', 'urlMap'],
         query_params=[],
-        relative_path=u'projects/{project}/regions/{region}/urlMaps/{urlMap}/validate',
-        request_field=u'regionUrlMapsValidateRequest',
-        request_type_name=u'ComputeRegionUrlMapsValidateRequest',
-        response_type_name=u'UrlMapsValidateResponse',
+        relative_path='projects/{project}/regions/{region}/urlMaps/{urlMap}/validate',
+        request_field='regionUrlMapsValidateRequest',
+        request_type_name='ComputeRegionUrlMapsValidateRequest',
+        response_type_name='UrlMapsValidateResponse',
         supports_download=False,
     )
 
   class RegionsService(base_api.BaseApiService):
     """Service class for the regions resource."""
 
-    _NAME = u'regions'
+    _NAME = 'regions'
 
     def __init__(self, client):
       super(ComputeBeta.RegionsService, self).__init__(client)
@@ -12218,15 +12218,15 @@ This method is called on a best-effort basis. Specifically:
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'compute.regions.get',
-        ordered_params=[u'project', u'region'],
-        path_params=[u'project', u'region'],
+        http_method='GET',
+        method_id='compute.regions.get',
+        ordered_params=['project', 'region'],
+        path_params=['project', 'region'],
         query_params=[],
-        relative_path=u'projects/{project}/regions/{region}',
+        relative_path='projects/{project}/regions/{region}',
         request_field='',
-        request_type_name=u'ComputeRegionsGetRequest',
-        response_type_name=u'Region',
+        request_type_name='ComputeRegionsGetRequest',
+        response_type_name='Region',
         supports_download=False,
     )
 
@@ -12244,22 +12244,22 @@ This method is called on a best-effort basis. Specifically:
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'compute.regions.list',
-        ordered_params=[u'project'],
-        path_params=[u'project'],
-        query_params=[u'filter', u'maxResults', u'orderBy', u'pageToken'],
-        relative_path=u'projects/{project}/regions',
+        http_method='GET',
+        method_id='compute.regions.list',
+        ordered_params=['project'],
+        path_params=['project'],
+        query_params=['filter', 'maxResults', 'orderBy', 'pageToken'],
+        relative_path='projects/{project}/regions',
         request_field='',
-        request_type_name=u'ComputeRegionsListRequest',
-        response_type_name=u'RegionList',
+        request_type_name='ComputeRegionsListRequest',
+        response_type_name='RegionList',
         supports_download=False,
     )
 
   class ReservationsService(base_api.BaseApiService):
     """Service class for the reservations resource."""
 
-    _NAME = u'reservations'
+    _NAME = 'reservations'
 
     def __init__(self, client):
       super(ComputeBeta.ReservationsService, self).__init__(client)
@@ -12280,15 +12280,15 @@ This method is called on a best-effort basis. Specifically:
           config, request, global_params=global_params)
 
     AggregatedList.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'compute.reservations.aggregatedList',
-        ordered_params=[u'project'],
-        path_params=[u'project'],
-        query_params=[u'filter', u'includeAllScopes', u'maxResults', u'orderBy', u'pageToken'],
-        relative_path=u'projects/{project}/aggregated/reservations',
+        http_method='GET',
+        method_id='compute.reservations.aggregatedList',
+        ordered_params=['project'],
+        path_params=['project'],
+        query_params=['filter', 'includeAllScopes', 'maxResults', 'orderBy', 'pageToken'],
+        relative_path='projects/{project}/aggregated/reservations',
         request_field='',
-        request_type_name=u'ComputeReservationsAggregatedListRequest',
-        response_type_name=u'ReservationAggregatedList',
+        request_type_name='ComputeReservationsAggregatedListRequest',
+        response_type_name='ReservationAggregatedList',
         supports_download=False,
     )
 
@@ -12306,15 +12306,15 @@ This method is called on a best-effort basis. Specifically:
           config, request, global_params=global_params)
 
     Delete.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'DELETE',
-        method_id=u'compute.reservations.delete',
-        ordered_params=[u'project', u'zone', u'reservation'],
-        path_params=[u'project', u'reservation', u'zone'],
-        query_params=[u'requestId'],
-        relative_path=u'projects/{project}/zones/{zone}/reservations/{reservation}',
+        http_method='DELETE',
+        method_id='compute.reservations.delete',
+        ordered_params=['project', 'zone', 'reservation'],
+        path_params=['project', 'reservation', 'zone'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/zones/{zone}/reservations/{reservation}',
         request_field='',
-        request_type_name=u'ComputeReservationsDeleteRequest',
-        response_type_name=u'Operation',
+        request_type_name='ComputeReservationsDeleteRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -12332,15 +12332,15 @@ This method is called on a best-effort basis. Specifically:
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'compute.reservations.get',
-        ordered_params=[u'project', u'zone', u'reservation'],
-        path_params=[u'project', u'reservation', u'zone'],
+        http_method='GET',
+        method_id='compute.reservations.get',
+        ordered_params=['project', 'zone', 'reservation'],
+        path_params=['project', 'reservation', 'zone'],
         query_params=[],
-        relative_path=u'projects/{project}/zones/{zone}/reservations/{reservation}',
+        relative_path='projects/{project}/zones/{zone}/reservations/{reservation}',
         request_field='',
-        request_type_name=u'ComputeReservationsGetRequest',
-        response_type_name=u'Reservation',
+        request_type_name='ComputeReservationsGetRequest',
+        response_type_name='Reservation',
         supports_download=False,
     )
 
@@ -12358,15 +12358,15 @@ This method is called on a best-effort basis. Specifically:
           config, request, global_params=global_params)
 
     GetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'compute.reservations.getIamPolicy',
-        ordered_params=[u'project', u'zone', u'resource'],
-        path_params=[u'project', u'resource', u'zone'],
-        query_params=[u'optionsRequestedPolicyVersion'],
-        relative_path=u'projects/{project}/zones/{zone}/reservations/{resource}/getIamPolicy',
+        http_method='GET',
+        method_id='compute.reservations.getIamPolicy',
+        ordered_params=['project', 'zone', 'resource'],
+        path_params=['project', 'resource', 'zone'],
+        query_params=['optionsRequestedPolicyVersion'],
+        relative_path='projects/{project}/zones/{zone}/reservations/{resource}/getIamPolicy',
         request_field='',
-        request_type_name=u'ComputeReservationsGetIamPolicyRequest',
-        response_type_name=u'Policy',
+        request_type_name='ComputeReservationsGetIamPolicyRequest',
+        response_type_name='Policy',
         supports_download=False,
     )
 
@@ -12384,15 +12384,15 @@ This method is called on a best-effort basis. Specifically:
           config, request, global_params=global_params)
 
     Insert.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'compute.reservations.insert',
-        ordered_params=[u'project', u'zone'],
-        path_params=[u'project', u'zone'],
-        query_params=[u'requestId'],
-        relative_path=u'projects/{project}/zones/{zone}/reservations',
-        request_field=u'reservation',
-        request_type_name=u'ComputeReservationsInsertRequest',
-        response_type_name=u'Operation',
+        http_method='POST',
+        method_id='compute.reservations.insert',
+        ordered_params=['project', 'zone'],
+        path_params=['project', 'zone'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/zones/{zone}/reservations',
+        request_field='reservation',
+        request_type_name='ComputeReservationsInsertRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -12410,15 +12410,15 @@ This method is called on a best-effort basis. Specifically:
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'compute.reservations.list',
-        ordered_params=[u'project', u'zone'],
-        path_params=[u'project', u'zone'],
-        query_params=[u'filter', u'maxResults', u'orderBy', u'pageToken'],
-        relative_path=u'projects/{project}/zones/{zone}/reservations',
+        http_method='GET',
+        method_id='compute.reservations.list',
+        ordered_params=['project', 'zone'],
+        path_params=['project', 'zone'],
+        query_params=['filter', 'maxResults', 'orderBy', 'pageToken'],
+        relative_path='projects/{project}/zones/{zone}/reservations',
         request_field='',
-        request_type_name=u'ComputeReservationsListRequest',
-        response_type_name=u'ReservationList',
+        request_type_name='ComputeReservationsListRequest',
+        response_type_name='ReservationList',
         supports_download=False,
     )
 
@@ -12436,15 +12436,15 @@ This method is called on a best-effort basis. Specifically:
           config, request, global_params=global_params)
 
     Resize.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'compute.reservations.resize',
-        ordered_params=[u'project', u'zone', u'reservation'],
-        path_params=[u'project', u'reservation', u'zone'],
-        query_params=[u'requestId'],
-        relative_path=u'projects/{project}/zones/{zone}/reservations/{reservation}/resize',
-        request_field=u'reservationsResizeRequest',
-        request_type_name=u'ComputeReservationsResizeRequest',
-        response_type_name=u'Operation',
+        http_method='POST',
+        method_id='compute.reservations.resize',
+        ordered_params=['project', 'zone', 'reservation'],
+        path_params=['project', 'reservation', 'zone'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/zones/{zone}/reservations/{reservation}/resize',
+        request_field='reservationsResizeRequest',
+        request_type_name='ComputeReservationsResizeRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -12462,15 +12462,15 @@ This method is called on a best-effort basis. Specifically:
           config, request, global_params=global_params)
 
     SetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'compute.reservations.setIamPolicy',
-        ordered_params=[u'project', u'zone', u'resource'],
-        path_params=[u'project', u'resource', u'zone'],
+        http_method='POST',
+        method_id='compute.reservations.setIamPolicy',
+        ordered_params=['project', 'zone', 'resource'],
+        path_params=['project', 'resource', 'zone'],
         query_params=[],
-        relative_path=u'projects/{project}/zones/{zone}/reservations/{resource}/setIamPolicy',
-        request_field=u'zoneSetPolicyRequest',
-        request_type_name=u'ComputeReservationsSetIamPolicyRequest',
-        response_type_name=u'Policy',
+        relative_path='projects/{project}/zones/{zone}/reservations/{resource}/setIamPolicy',
+        request_field='zoneSetPolicyRequest',
+        request_type_name='ComputeReservationsSetIamPolicyRequest',
+        response_type_name='Policy',
         supports_download=False,
     )
 
@@ -12488,22 +12488,22 @@ This method is called on a best-effort basis. Specifically:
           config, request, global_params=global_params)
 
     TestIamPermissions.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'compute.reservations.testIamPermissions',
-        ordered_params=[u'project', u'zone', u'resource'],
-        path_params=[u'project', u'resource', u'zone'],
+        http_method='POST',
+        method_id='compute.reservations.testIamPermissions',
+        ordered_params=['project', 'zone', 'resource'],
+        path_params=['project', 'resource', 'zone'],
         query_params=[],
-        relative_path=u'projects/{project}/zones/{zone}/reservations/{resource}/testIamPermissions',
-        request_field=u'testPermissionsRequest',
-        request_type_name=u'ComputeReservationsTestIamPermissionsRequest',
-        response_type_name=u'TestPermissionsResponse',
+        relative_path='projects/{project}/zones/{zone}/reservations/{resource}/testIamPermissions',
+        request_field='testPermissionsRequest',
+        request_type_name='ComputeReservationsTestIamPermissionsRequest',
+        response_type_name='TestPermissionsResponse',
         supports_download=False,
     )
 
   class ResourcePoliciesService(base_api.BaseApiService):
     """Service class for the resourcePolicies resource."""
 
-    _NAME = u'resourcePolicies'
+    _NAME = 'resourcePolicies'
 
     def __init__(self, client):
       super(ComputeBeta.ResourcePoliciesService, self).__init__(client)
@@ -12524,15 +12524,15 @@ This method is called on a best-effort basis. Specifically:
           config, request, global_params=global_params)
 
     AggregatedList.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'compute.resourcePolicies.aggregatedList',
-        ordered_params=[u'project'],
-        path_params=[u'project'],
-        query_params=[u'filter', u'includeAllScopes', u'maxResults', u'orderBy', u'pageToken'],
-        relative_path=u'projects/{project}/aggregated/resourcePolicies',
+        http_method='GET',
+        method_id='compute.resourcePolicies.aggregatedList',
+        ordered_params=['project'],
+        path_params=['project'],
+        query_params=['filter', 'includeAllScopes', 'maxResults', 'orderBy', 'pageToken'],
+        relative_path='projects/{project}/aggregated/resourcePolicies',
         request_field='',
-        request_type_name=u'ComputeResourcePoliciesAggregatedListRequest',
-        response_type_name=u'ResourcePolicyAggregatedList',
+        request_type_name='ComputeResourcePoliciesAggregatedListRequest',
+        response_type_name='ResourcePolicyAggregatedList',
         supports_download=False,
     )
 
@@ -12550,15 +12550,15 @@ This method is called on a best-effort basis. Specifically:
           config, request, global_params=global_params)
 
     Delete.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'DELETE',
-        method_id=u'compute.resourcePolicies.delete',
-        ordered_params=[u'project', u'region', u'resourcePolicy'],
-        path_params=[u'project', u'region', u'resourcePolicy'],
-        query_params=[u'requestId'],
-        relative_path=u'projects/{project}/regions/{region}/resourcePolicies/{resourcePolicy}',
+        http_method='DELETE',
+        method_id='compute.resourcePolicies.delete',
+        ordered_params=['project', 'region', 'resourcePolicy'],
+        path_params=['project', 'region', 'resourcePolicy'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/regions/{region}/resourcePolicies/{resourcePolicy}',
         request_field='',
-        request_type_name=u'ComputeResourcePoliciesDeleteRequest',
-        response_type_name=u'Operation',
+        request_type_name='ComputeResourcePoliciesDeleteRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -12576,15 +12576,15 @@ This method is called on a best-effort basis. Specifically:
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'compute.resourcePolicies.get',
-        ordered_params=[u'project', u'region', u'resourcePolicy'],
-        path_params=[u'project', u'region', u'resourcePolicy'],
+        http_method='GET',
+        method_id='compute.resourcePolicies.get',
+        ordered_params=['project', 'region', 'resourcePolicy'],
+        path_params=['project', 'region', 'resourcePolicy'],
         query_params=[],
-        relative_path=u'projects/{project}/regions/{region}/resourcePolicies/{resourcePolicy}',
+        relative_path='projects/{project}/regions/{region}/resourcePolicies/{resourcePolicy}',
         request_field='',
-        request_type_name=u'ComputeResourcePoliciesGetRequest',
-        response_type_name=u'ResourcePolicy',
+        request_type_name='ComputeResourcePoliciesGetRequest',
+        response_type_name='ResourcePolicy',
         supports_download=False,
     )
 
@@ -12602,15 +12602,15 @@ This method is called on a best-effort basis. Specifically:
           config, request, global_params=global_params)
 
     GetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'compute.resourcePolicies.getIamPolicy',
-        ordered_params=[u'project', u'region', u'resource'],
-        path_params=[u'project', u'region', u'resource'],
-        query_params=[u'optionsRequestedPolicyVersion'],
-        relative_path=u'projects/{project}/regions/{region}/resourcePolicies/{resource}/getIamPolicy',
+        http_method='GET',
+        method_id='compute.resourcePolicies.getIamPolicy',
+        ordered_params=['project', 'region', 'resource'],
+        path_params=['project', 'region', 'resource'],
+        query_params=['optionsRequestedPolicyVersion'],
+        relative_path='projects/{project}/regions/{region}/resourcePolicies/{resource}/getIamPolicy',
         request_field='',
-        request_type_name=u'ComputeResourcePoliciesGetIamPolicyRequest',
-        response_type_name=u'Policy',
+        request_type_name='ComputeResourcePoliciesGetIamPolicyRequest',
+        response_type_name='Policy',
         supports_download=False,
     )
 
@@ -12628,15 +12628,15 @@ This method is called on a best-effort basis. Specifically:
           config, request, global_params=global_params)
 
     Insert.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'compute.resourcePolicies.insert',
-        ordered_params=[u'project', u'region'],
-        path_params=[u'project', u'region'],
-        query_params=[u'requestId'],
-        relative_path=u'projects/{project}/regions/{region}/resourcePolicies',
-        request_field=u'resourcePolicy',
-        request_type_name=u'ComputeResourcePoliciesInsertRequest',
-        response_type_name=u'Operation',
+        http_method='POST',
+        method_id='compute.resourcePolicies.insert',
+        ordered_params=['project', 'region'],
+        path_params=['project', 'region'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/regions/{region}/resourcePolicies',
+        request_field='resourcePolicy',
+        request_type_name='ComputeResourcePoliciesInsertRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -12654,15 +12654,15 @@ This method is called on a best-effort basis. Specifically:
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'compute.resourcePolicies.list',
-        ordered_params=[u'project', u'region'],
-        path_params=[u'project', u'region'],
-        query_params=[u'filter', u'maxResults', u'orderBy', u'pageToken'],
-        relative_path=u'projects/{project}/regions/{region}/resourcePolicies',
+        http_method='GET',
+        method_id='compute.resourcePolicies.list',
+        ordered_params=['project', 'region'],
+        path_params=['project', 'region'],
+        query_params=['filter', 'maxResults', 'orderBy', 'pageToken'],
+        relative_path='projects/{project}/regions/{region}/resourcePolicies',
         request_field='',
-        request_type_name=u'ComputeResourcePoliciesListRequest',
-        response_type_name=u'ResourcePolicyList',
+        request_type_name='ComputeResourcePoliciesListRequest',
+        response_type_name='ResourcePolicyList',
         supports_download=False,
     )
 
@@ -12680,15 +12680,15 @@ This method is called on a best-effort basis. Specifically:
           config, request, global_params=global_params)
 
     SetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'compute.resourcePolicies.setIamPolicy',
-        ordered_params=[u'project', u'region', u'resource'],
-        path_params=[u'project', u'region', u'resource'],
+        http_method='POST',
+        method_id='compute.resourcePolicies.setIamPolicy',
+        ordered_params=['project', 'region', 'resource'],
+        path_params=['project', 'region', 'resource'],
         query_params=[],
-        relative_path=u'projects/{project}/regions/{region}/resourcePolicies/{resource}/setIamPolicy',
-        request_field=u'regionSetPolicyRequest',
-        request_type_name=u'ComputeResourcePoliciesSetIamPolicyRequest',
-        response_type_name=u'Policy',
+        relative_path='projects/{project}/regions/{region}/resourcePolicies/{resource}/setIamPolicy',
+        request_field='regionSetPolicyRequest',
+        request_type_name='ComputeResourcePoliciesSetIamPolicyRequest',
+        response_type_name='Policy',
         supports_download=False,
     )
 
@@ -12706,22 +12706,22 @@ This method is called on a best-effort basis. Specifically:
           config, request, global_params=global_params)
 
     TestIamPermissions.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'compute.resourcePolicies.testIamPermissions',
-        ordered_params=[u'project', u'region', u'resource'],
-        path_params=[u'project', u'region', u'resource'],
+        http_method='POST',
+        method_id='compute.resourcePolicies.testIamPermissions',
+        ordered_params=['project', 'region', 'resource'],
+        path_params=['project', 'region', 'resource'],
         query_params=[],
-        relative_path=u'projects/{project}/regions/{region}/resourcePolicies/{resource}/testIamPermissions',
-        request_field=u'testPermissionsRequest',
-        request_type_name=u'ComputeResourcePoliciesTestIamPermissionsRequest',
-        response_type_name=u'TestPermissionsResponse',
+        relative_path='projects/{project}/regions/{region}/resourcePolicies/{resource}/testIamPermissions',
+        request_field='testPermissionsRequest',
+        request_type_name='ComputeResourcePoliciesTestIamPermissionsRequest',
+        response_type_name='TestPermissionsResponse',
         supports_download=False,
     )
 
   class RoutersService(base_api.BaseApiService):
     """Service class for the routers resource."""
 
-    _NAME = u'routers'
+    _NAME = 'routers'
 
     def __init__(self, client):
       super(ComputeBeta.RoutersService, self).__init__(client)
@@ -12742,15 +12742,15 @@ This method is called on a best-effort basis. Specifically:
           config, request, global_params=global_params)
 
     AggregatedList.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'compute.routers.aggregatedList',
-        ordered_params=[u'project'],
-        path_params=[u'project'],
-        query_params=[u'filter', u'includeAllScopes', u'maxResults', u'orderBy', u'pageToken'],
-        relative_path=u'projects/{project}/aggregated/routers',
+        http_method='GET',
+        method_id='compute.routers.aggregatedList',
+        ordered_params=['project'],
+        path_params=['project'],
+        query_params=['filter', 'includeAllScopes', 'maxResults', 'orderBy', 'pageToken'],
+        relative_path='projects/{project}/aggregated/routers',
         request_field='',
-        request_type_name=u'ComputeRoutersAggregatedListRequest',
-        response_type_name=u'RouterAggregatedList',
+        request_type_name='ComputeRoutersAggregatedListRequest',
+        response_type_name='RouterAggregatedList',
         supports_download=False,
     )
 
@@ -12768,15 +12768,15 @@ This method is called on a best-effort basis. Specifically:
           config, request, global_params=global_params)
 
     Delete.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'DELETE',
-        method_id=u'compute.routers.delete',
-        ordered_params=[u'project', u'region', u'router'],
-        path_params=[u'project', u'region', u'router'],
-        query_params=[u'requestId'],
-        relative_path=u'projects/{project}/regions/{region}/routers/{router}',
+        http_method='DELETE',
+        method_id='compute.routers.delete',
+        ordered_params=['project', 'region', 'router'],
+        path_params=['project', 'region', 'router'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/regions/{region}/routers/{router}',
         request_field='',
-        request_type_name=u'ComputeRoutersDeleteRequest',
-        response_type_name=u'Operation',
+        request_type_name='ComputeRoutersDeleteRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -12794,15 +12794,15 @@ This method is called on a best-effort basis. Specifically:
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'compute.routers.get',
-        ordered_params=[u'project', u'region', u'router'],
-        path_params=[u'project', u'region', u'router'],
+        http_method='GET',
+        method_id='compute.routers.get',
+        ordered_params=['project', 'region', 'router'],
+        path_params=['project', 'region', 'router'],
         query_params=[],
-        relative_path=u'projects/{project}/regions/{region}/routers/{router}',
+        relative_path='projects/{project}/regions/{region}/routers/{router}',
         request_field='',
-        request_type_name=u'ComputeRoutersGetRequest',
-        response_type_name=u'Router',
+        request_type_name='ComputeRoutersGetRequest',
+        response_type_name='Router',
         supports_download=False,
     )
 
@@ -12820,15 +12820,15 @@ This method is called on a best-effort basis. Specifically:
           config, request, global_params=global_params)
 
     GetNatMappingInfo.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'compute.routers.getNatMappingInfo',
-        ordered_params=[u'project', u'region', u'router'],
-        path_params=[u'project', u'region', u'router'],
-        query_params=[u'filter', u'maxResults', u'natName', u'orderBy', u'pageToken'],
-        relative_path=u'projects/{project}/regions/{region}/routers/{router}/getNatMappingInfo',
+        http_method='GET',
+        method_id='compute.routers.getNatMappingInfo',
+        ordered_params=['project', 'region', 'router'],
+        path_params=['project', 'region', 'router'],
+        query_params=['filter', 'maxResults', 'natName', 'orderBy', 'pageToken'],
+        relative_path='projects/{project}/regions/{region}/routers/{router}/getNatMappingInfo',
         request_field='',
-        request_type_name=u'ComputeRoutersGetNatMappingInfoRequest',
-        response_type_name=u'VmEndpointNatMappingsList',
+        request_type_name='ComputeRoutersGetNatMappingInfoRequest',
+        response_type_name='VmEndpointNatMappingsList',
         supports_download=False,
     )
 
@@ -12846,15 +12846,15 @@ This method is called on a best-effort basis. Specifically:
           config, request, global_params=global_params)
 
     GetRouterStatus.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'compute.routers.getRouterStatus',
-        ordered_params=[u'project', u'region', u'router'],
-        path_params=[u'project', u'region', u'router'],
+        http_method='GET',
+        method_id='compute.routers.getRouterStatus',
+        ordered_params=['project', 'region', 'router'],
+        path_params=['project', 'region', 'router'],
         query_params=[],
-        relative_path=u'projects/{project}/regions/{region}/routers/{router}/getRouterStatus',
+        relative_path='projects/{project}/regions/{region}/routers/{router}/getRouterStatus',
         request_field='',
-        request_type_name=u'ComputeRoutersGetRouterStatusRequest',
-        response_type_name=u'RouterStatusResponse',
+        request_type_name='ComputeRoutersGetRouterStatusRequest',
+        response_type_name='RouterStatusResponse',
         supports_download=False,
     )
 
@@ -12872,15 +12872,15 @@ This method is called on a best-effort basis. Specifically:
           config, request, global_params=global_params)
 
     Insert.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'compute.routers.insert',
-        ordered_params=[u'project', u'region'],
-        path_params=[u'project', u'region'],
-        query_params=[u'requestId'],
-        relative_path=u'projects/{project}/regions/{region}/routers',
-        request_field=u'router',
-        request_type_name=u'ComputeRoutersInsertRequest',
-        response_type_name=u'Operation',
+        http_method='POST',
+        method_id='compute.routers.insert',
+        ordered_params=['project', 'region'],
+        path_params=['project', 'region'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/regions/{region}/routers',
+        request_field='router',
+        request_type_name='ComputeRoutersInsertRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -12898,15 +12898,15 @@ This method is called on a best-effort basis. Specifically:
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'compute.routers.list',
-        ordered_params=[u'project', u'region'],
-        path_params=[u'project', u'region'],
-        query_params=[u'filter', u'maxResults', u'orderBy', u'pageToken'],
-        relative_path=u'projects/{project}/regions/{region}/routers',
+        http_method='GET',
+        method_id='compute.routers.list',
+        ordered_params=['project', 'region'],
+        path_params=['project', 'region'],
+        query_params=['filter', 'maxResults', 'orderBy', 'pageToken'],
+        relative_path='projects/{project}/regions/{region}/routers',
         request_field='',
-        request_type_name=u'ComputeRoutersListRequest',
-        response_type_name=u'RouterList',
+        request_type_name='ComputeRoutersListRequest',
+        response_type_name='RouterList',
         supports_download=False,
     )
 
@@ -12924,15 +12924,15 @@ This method is called on a best-effort basis. Specifically:
           config, request, global_params=global_params)
 
     Patch.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'PATCH',
-        method_id=u'compute.routers.patch',
-        ordered_params=[u'project', u'region', u'router'],
-        path_params=[u'project', u'region', u'router'],
-        query_params=[u'requestId'],
-        relative_path=u'projects/{project}/regions/{region}/routers/{router}',
-        request_field=u'routerResource',
-        request_type_name=u'ComputeRoutersPatchRequest',
-        response_type_name=u'Operation',
+        http_method='PATCH',
+        method_id='compute.routers.patch',
+        ordered_params=['project', 'region', 'router'],
+        path_params=['project', 'region', 'router'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/regions/{region}/routers/{router}',
+        request_field='routerResource',
+        request_type_name='ComputeRoutersPatchRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -12950,15 +12950,15 @@ This method is called on a best-effort basis. Specifically:
           config, request, global_params=global_params)
 
     Preview.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'compute.routers.preview',
-        ordered_params=[u'project', u'region', u'router'],
-        path_params=[u'project', u'region', u'router'],
+        http_method='POST',
+        method_id='compute.routers.preview',
+        ordered_params=['project', 'region', 'router'],
+        path_params=['project', 'region', 'router'],
         query_params=[],
-        relative_path=u'projects/{project}/regions/{region}/routers/{router}/preview',
-        request_field=u'routerResource',
-        request_type_name=u'ComputeRoutersPreviewRequest',
-        response_type_name=u'RoutersPreviewResponse',
+        relative_path='projects/{project}/regions/{region}/routers/{router}/preview',
+        request_field='routerResource',
+        request_type_name='ComputeRoutersPreviewRequest',
+        response_type_name='RoutersPreviewResponse',
         supports_download=False,
     )
 
@@ -12976,15 +12976,15 @@ This method is called on a best-effort basis. Specifically:
           config, request, global_params=global_params)
 
     TestIamPermissions.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'compute.routers.testIamPermissions',
-        ordered_params=[u'project', u'region', u'resource'],
-        path_params=[u'project', u'region', u'resource'],
+        http_method='POST',
+        method_id='compute.routers.testIamPermissions',
+        ordered_params=['project', 'region', 'resource'],
+        path_params=['project', 'region', 'resource'],
         query_params=[],
-        relative_path=u'projects/{project}/regions/{region}/routers/{resource}/testIamPermissions',
-        request_field=u'testPermissionsRequest',
-        request_type_name=u'ComputeRoutersTestIamPermissionsRequest',
-        response_type_name=u'TestPermissionsResponse',
+        relative_path='projects/{project}/regions/{region}/routers/{resource}/testIamPermissions',
+        request_field='testPermissionsRequest',
+        request_type_name='ComputeRoutersTestIamPermissionsRequest',
+        response_type_name='TestPermissionsResponse',
         supports_download=False,
     )
 
@@ -13002,22 +13002,22 @@ This method is called on a best-effort basis. Specifically:
           config, request, global_params=global_params)
 
     Update.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'PUT',
-        method_id=u'compute.routers.update',
-        ordered_params=[u'project', u'region', u'router'],
-        path_params=[u'project', u'region', u'router'],
-        query_params=[u'requestId'],
-        relative_path=u'projects/{project}/regions/{region}/routers/{router}',
-        request_field=u'routerResource',
-        request_type_name=u'ComputeRoutersUpdateRequest',
-        response_type_name=u'Operation',
+        http_method='PUT',
+        method_id='compute.routers.update',
+        ordered_params=['project', 'region', 'router'],
+        path_params=['project', 'region', 'router'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/regions/{region}/routers/{router}',
+        request_field='routerResource',
+        request_type_name='ComputeRoutersUpdateRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
   class RoutesService(base_api.BaseApiService):
     """Service class for the routes resource."""
 
-    _NAME = u'routes'
+    _NAME = 'routes'
 
     def __init__(self, client):
       super(ComputeBeta.RoutesService, self).__init__(client)
@@ -13038,15 +13038,15 @@ This method is called on a best-effort basis. Specifically:
           config, request, global_params=global_params)
 
     Delete.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'DELETE',
-        method_id=u'compute.routes.delete',
-        ordered_params=[u'project', u'route'],
-        path_params=[u'project', u'route'],
-        query_params=[u'requestId'],
-        relative_path=u'projects/{project}/global/routes/{route}',
+        http_method='DELETE',
+        method_id='compute.routes.delete',
+        ordered_params=['project', 'route'],
+        path_params=['project', 'route'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/global/routes/{route}',
         request_field='',
-        request_type_name=u'ComputeRoutesDeleteRequest',
-        response_type_name=u'Operation',
+        request_type_name='ComputeRoutesDeleteRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -13064,15 +13064,15 @@ This method is called on a best-effort basis. Specifically:
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'compute.routes.get',
-        ordered_params=[u'project', u'route'],
-        path_params=[u'project', u'route'],
+        http_method='GET',
+        method_id='compute.routes.get',
+        ordered_params=['project', 'route'],
+        path_params=['project', 'route'],
         query_params=[],
-        relative_path=u'projects/{project}/global/routes/{route}',
+        relative_path='projects/{project}/global/routes/{route}',
         request_field='',
-        request_type_name=u'ComputeRoutesGetRequest',
-        response_type_name=u'Route',
+        request_type_name='ComputeRoutesGetRequest',
+        response_type_name='Route',
         supports_download=False,
     )
 
@@ -13090,15 +13090,15 @@ This method is called on a best-effort basis. Specifically:
           config, request, global_params=global_params)
 
     Insert.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'compute.routes.insert',
-        ordered_params=[u'project'],
-        path_params=[u'project'],
-        query_params=[u'requestId'],
-        relative_path=u'projects/{project}/global/routes',
-        request_field=u'route',
-        request_type_name=u'ComputeRoutesInsertRequest',
-        response_type_name=u'Operation',
+        http_method='POST',
+        method_id='compute.routes.insert',
+        ordered_params=['project'],
+        path_params=['project'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/global/routes',
+        request_field='route',
+        request_type_name='ComputeRoutesInsertRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -13116,15 +13116,15 @@ This method is called on a best-effort basis. Specifically:
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'compute.routes.list',
-        ordered_params=[u'project'],
-        path_params=[u'project'],
-        query_params=[u'filter', u'maxResults', u'orderBy', u'pageToken'],
-        relative_path=u'projects/{project}/global/routes',
+        http_method='GET',
+        method_id='compute.routes.list',
+        ordered_params=['project'],
+        path_params=['project'],
+        query_params=['filter', 'maxResults', 'orderBy', 'pageToken'],
+        relative_path='projects/{project}/global/routes',
         request_field='',
-        request_type_name=u'ComputeRoutesListRequest',
-        response_type_name=u'RouteList',
+        request_type_name='ComputeRoutesListRequest',
+        response_type_name='RouteList',
         supports_download=False,
     )
 
@@ -13142,22 +13142,22 @@ This method is called on a best-effort basis. Specifically:
           config, request, global_params=global_params)
 
     TestIamPermissions.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'compute.routes.testIamPermissions',
-        ordered_params=[u'project', u'resource'],
-        path_params=[u'project', u'resource'],
+        http_method='POST',
+        method_id='compute.routes.testIamPermissions',
+        ordered_params=['project', 'resource'],
+        path_params=['project', 'resource'],
         query_params=[],
-        relative_path=u'projects/{project}/global/routes/{resource}/testIamPermissions',
-        request_field=u'testPermissionsRequest',
-        request_type_name=u'ComputeRoutesTestIamPermissionsRequest',
-        response_type_name=u'TestPermissionsResponse',
+        relative_path='projects/{project}/global/routes/{resource}/testIamPermissions',
+        request_field='testPermissionsRequest',
+        request_type_name='ComputeRoutesTestIamPermissionsRequest',
+        response_type_name='TestPermissionsResponse',
         supports_download=False,
     )
 
   class SecurityPoliciesService(base_api.BaseApiService):
     """Service class for the securityPolicies resource."""
 
-    _NAME = u'securityPolicies'
+    _NAME = 'securityPolicies'
 
     def __init__(self, client):
       super(ComputeBeta.SecurityPoliciesService, self).__init__(client)
@@ -13178,15 +13178,15 @@ This method is called on a best-effort basis. Specifically:
           config, request, global_params=global_params)
 
     AddRule.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'compute.securityPolicies.addRule',
-        ordered_params=[u'project', u'securityPolicy'],
-        path_params=[u'project', u'securityPolicy'],
-        query_params=[u'validateOnly'],
-        relative_path=u'projects/{project}/global/securityPolicies/{securityPolicy}/addRule',
-        request_field=u'securityPolicyRule',
-        request_type_name=u'ComputeSecurityPoliciesAddRuleRequest',
-        response_type_name=u'Operation',
+        http_method='POST',
+        method_id='compute.securityPolicies.addRule',
+        ordered_params=['project', 'securityPolicy'],
+        path_params=['project', 'securityPolicy'],
+        query_params=['validateOnly'],
+        relative_path='projects/{project}/global/securityPolicies/{securityPolicy}/addRule',
+        request_field='securityPolicyRule',
+        request_type_name='ComputeSecurityPoliciesAddRuleRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -13204,15 +13204,15 @@ This method is called on a best-effort basis. Specifically:
           config, request, global_params=global_params)
 
     Delete.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'DELETE',
-        method_id=u'compute.securityPolicies.delete',
-        ordered_params=[u'project', u'securityPolicy'],
-        path_params=[u'project', u'securityPolicy'],
-        query_params=[u'requestId'],
-        relative_path=u'projects/{project}/global/securityPolicies/{securityPolicy}',
+        http_method='DELETE',
+        method_id='compute.securityPolicies.delete',
+        ordered_params=['project', 'securityPolicy'],
+        path_params=['project', 'securityPolicy'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/global/securityPolicies/{securityPolicy}',
         request_field='',
-        request_type_name=u'ComputeSecurityPoliciesDeleteRequest',
-        response_type_name=u'Operation',
+        request_type_name='ComputeSecurityPoliciesDeleteRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -13230,15 +13230,15 @@ This method is called on a best-effort basis. Specifically:
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'compute.securityPolicies.get',
-        ordered_params=[u'project', u'securityPolicy'],
-        path_params=[u'project', u'securityPolicy'],
+        http_method='GET',
+        method_id='compute.securityPolicies.get',
+        ordered_params=['project', 'securityPolicy'],
+        path_params=['project', 'securityPolicy'],
         query_params=[],
-        relative_path=u'projects/{project}/global/securityPolicies/{securityPolicy}',
+        relative_path='projects/{project}/global/securityPolicies/{securityPolicy}',
         request_field='',
-        request_type_name=u'ComputeSecurityPoliciesGetRequest',
-        response_type_name=u'SecurityPolicy',
+        request_type_name='ComputeSecurityPoliciesGetRequest',
+        response_type_name='SecurityPolicy',
         supports_download=False,
     )
 
@@ -13256,15 +13256,15 @@ This method is called on a best-effort basis. Specifically:
           config, request, global_params=global_params)
 
     GetRule.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'compute.securityPolicies.getRule',
-        ordered_params=[u'project', u'securityPolicy'],
-        path_params=[u'project', u'securityPolicy'],
-        query_params=[u'priority'],
-        relative_path=u'projects/{project}/global/securityPolicies/{securityPolicy}/getRule',
+        http_method='GET',
+        method_id='compute.securityPolicies.getRule',
+        ordered_params=['project', 'securityPolicy'],
+        path_params=['project', 'securityPolicy'],
+        query_params=['priority'],
+        relative_path='projects/{project}/global/securityPolicies/{securityPolicy}/getRule',
         request_field='',
-        request_type_name=u'ComputeSecurityPoliciesGetRuleRequest',
-        response_type_name=u'SecurityPolicyRule',
+        request_type_name='ComputeSecurityPoliciesGetRuleRequest',
+        response_type_name='SecurityPolicyRule',
         supports_download=False,
     )
 
@@ -13282,15 +13282,15 @@ This method is called on a best-effort basis. Specifically:
           config, request, global_params=global_params)
 
     Insert.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'compute.securityPolicies.insert',
-        ordered_params=[u'project'],
-        path_params=[u'project'],
-        query_params=[u'requestId', u'validateOnly'],
-        relative_path=u'projects/{project}/global/securityPolicies',
-        request_field=u'securityPolicy',
-        request_type_name=u'ComputeSecurityPoliciesInsertRequest',
-        response_type_name=u'Operation',
+        http_method='POST',
+        method_id='compute.securityPolicies.insert',
+        ordered_params=['project'],
+        path_params=['project'],
+        query_params=['requestId', 'validateOnly'],
+        relative_path='projects/{project}/global/securityPolicies',
+        request_field='securityPolicy',
+        request_type_name='ComputeSecurityPoliciesInsertRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -13308,15 +13308,15 @@ This method is called on a best-effort basis. Specifically:
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'compute.securityPolicies.list',
-        ordered_params=[u'project'],
-        path_params=[u'project'],
-        query_params=[u'filter', u'maxResults', u'orderBy', u'pageToken'],
-        relative_path=u'projects/{project}/global/securityPolicies',
+        http_method='GET',
+        method_id='compute.securityPolicies.list',
+        ordered_params=['project'],
+        path_params=['project'],
+        query_params=['filter', 'maxResults', 'orderBy', 'pageToken'],
+        relative_path='projects/{project}/global/securityPolicies',
         request_field='',
-        request_type_name=u'ComputeSecurityPoliciesListRequest',
-        response_type_name=u'SecurityPolicyList',
+        request_type_name='ComputeSecurityPoliciesListRequest',
+        response_type_name='SecurityPolicyList',
         supports_download=False,
     )
 
@@ -13334,15 +13334,15 @@ This method is called on a best-effort basis. Specifically:
           config, request, global_params=global_params)
 
     ListPreconfiguredExpressionSets.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'compute.securityPolicies.listPreconfiguredExpressionSets',
-        ordered_params=[u'project'],
-        path_params=[u'project'],
-        query_params=[u'filter', u'maxResults', u'orderBy', u'pageToken'],
-        relative_path=u'projects/{project}/global/securityPolicies/listPreconfiguredExpressionSets',
+        http_method='GET',
+        method_id='compute.securityPolicies.listPreconfiguredExpressionSets',
+        ordered_params=['project'],
+        path_params=['project'],
+        query_params=['filter', 'maxResults', 'orderBy', 'pageToken'],
+        relative_path='projects/{project}/global/securityPolicies/listPreconfiguredExpressionSets',
         request_field='',
-        request_type_name=u'ComputeSecurityPoliciesListPreconfiguredExpressionSetsRequest',
-        response_type_name=u'SecurityPoliciesListPreconfiguredExpressionSetsResponse',
+        request_type_name='ComputeSecurityPoliciesListPreconfiguredExpressionSetsRequest',
+        response_type_name='SecurityPoliciesListPreconfiguredExpressionSetsResponse',
         supports_download=False,
     )
 
@@ -13360,15 +13360,15 @@ This method is called on a best-effort basis. Specifically:
           config, request, global_params=global_params)
 
     Patch.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'PATCH',
-        method_id=u'compute.securityPolicies.patch',
-        ordered_params=[u'project', u'securityPolicy'],
-        path_params=[u'project', u'securityPolicy'],
-        query_params=[u'requestId'],
-        relative_path=u'projects/{project}/global/securityPolicies/{securityPolicy}',
-        request_field=u'securityPolicyResource',
-        request_type_name=u'ComputeSecurityPoliciesPatchRequest',
-        response_type_name=u'Operation',
+        http_method='PATCH',
+        method_id='compute.securityPolicies.patch',
+        ordered_params=['project', 'securityPolicy'],
+        path_params=['project', 'securityPolicy'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/global/securityPolicies/{securityPolicy}',
+        request_field='securityPolicyResource',
+        request_type_name='ComputeSecurityPoliciesPatchRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -13386,15 +13386,15 @@ This method is called on a best-effort basis. Specifically:
           config, request, global_params=global_params)
 
     PatchRule.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'compute.securityPolicies.patchRule',
-        ordered_params=[u'project', u'securityPolicy'],
-        path_params=[u'project', u'securityPolicy'],
-        query_params=[u'priority', u'validateOnly'],
-        relative_path=u'projects/{project}/global/securityPolicies/{securityPolicy}/patchRule',
-        request_field=u'securityPolicyRule',
-        request_type_name=u'ComputeSecurityPoliciesPatchRuleRequest',
-        response_type_name=u'Operation',
+        http_method='POST',
+        method_id='compute.securityPolicies.patchRule',
+        ordered_params=['project', 'securityPolicy'],
+        path_params=['project', 'securityPolicy'],
+        query_params=['priority', 'validateOnly'],
+        relative_path='projects/{project}/global/securityPolicies/{securityPolicy}/patchRule',
+        request_field='securityPolicyRule',
+        request_type_name='ComputeSecurityPoliciesPatchRuleRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -13412,15 +13412,15 @@ This method is called on a best-effort basis. Specifically:
           config, request, global_params=global_params)
 
     RemoveRule.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'compute.securityPolicies.removeRule',
-        ordered_params=[u'project', u'securityPolicy'],
-        path_params=[u'project', u'securityPolicy'],
-        query_params=[u'priority'],
-        relative_path=u'projects/{project}/global/securityPolicies/{securityPolicy}/removeRule',
+        http_method='POST',
+        method_id='compute.securityPolicies.removeRule',
+        ordered_params=['project', 'securityPolicy'],
+        path_params=['project', 'securityPolicy'],
+        query_params=['priority'],
+        relative_path='projects/{project}/global/securityPolicies/{securityPolicy}/removeRule',
         request_field='',
-        request_type_name=u'ComputeSecurityPoliciesRemoveRuleRequest',
-        response_type_name=u'Operation',
+        request_type_name='ComputeSecurityPoliciesRemoveRuleRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -13438,15 +13438,15 @@ This method is called on a best-effort basis. Specifically:
           config, request, global_params=global_params)
 
     SetLabels.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'compute.securityPolicies.setLabels',
-        ordered_params=[u'project', u'resource'],
-        path_params=[u'project', u'resource'],
+        http_method='POST',
+        method_id='compute.securityPolicies.setLabels',
+        ordered_params=['project', 'resource'],
+        path_params=['project', 'resource'],
         query_params=[],
-        relative_path=u'projects/{project}/global/securityPolicies/{resource}/setLabels',
-        request_field=u'globalSetLabelsRequest',
-        request_type_name=u'ComputeSecurityPoliciesSetLabelsRequest',
-        response_type_name=u'Operation',
+        relative_path='projects/{project}/global/securityPolicies/{resource}/setLabels',
+        request_field='globalSetLabelsRequest',
+        request_type_name='ComputeSecurityPoliciesSetLabelsRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -13464,22 +13464,22 @@ This method is called on a best-effort basis. Specifically:
           config, request, global_params=global_params)
 
     TestIamPermissions.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'compute.securityPolicies.testIamPermissions',
-        ordered_params=[u'project', u'resource'],
-        path_params=[u'project', u'resource'],
+        http_method='POST',
+        method_id='compute.securityPolicies.testIamPermissions',
+        ordered_params=['project', 'resource'],
+        path_params=['project', 'resource'],
         query_params=[],
-        relative_path=u'projects/{project}/global/securityPolicies/{resource}/testIamPermissions',
-        request_field=u'testPermissionsRequest',
-        request_type_name=u'ComputeSecurityPoliciesTestIamPermissionsRequest',
-        response_type_name=u'TestPermissionsResponse',
+        relative_path='projects/{project}/global/securityPolicies/{resource}/testIamPermissions',
+        request_field='testPermissionsRequest',
+        request_type_name='ComputeSecurityPoliciesTestIamPermissionsRequest',
+        response_type_name='TestPermissionsResponse',
         supports_download=False,
     )
 
   class SnapshotsService(base_api.BaseApiService):
     """Service class for the snapshots resource."""
 
-    _NAME = u'snapshots'
+    _NAME = 'snapshots'
 
     def __init__(self, client):
       super(ComputeBeta.SnapshotsService, self).__init__(client)
@@ -13502,15 +13502,15 @@ For more information, see Deleting snapshots.
           config, request, global_params=global_params)
 
     Delete.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'DELETE',
-        method_id=u'compute.snapshots.delete',
-        ordered_params=[u'project', u'snapshot'],
-        path_params=[u'project', u'snapshot'],
-        query_params=[u'requestId'],
-        relative_path=u'projects/{project}/global/snapshots/{snapshot}',
+        http_method='DELETE',
+        method_id='compute.snapshots.delete',
+        ordered_params=['project', 'snapshot'],
+        path_params=['project', 'snapshot'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/global/snapshots/{snapshot}',
         request_field='',
-        request_type_name=u'ComputeSnapshotsDeleteRequest',
-        response_type_name=u'Operation',
+        request_type_name='ComputeSnapshotsDeleteRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -13528,15 +13528,15 @@ For more information, see Deleting snapshots.
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'compute.snapshots.get',
-        ordered_params=[u'project', u'snapshot'],
-        path_params=[u'project', u'snapshot'],
+        http_method='GET',
+        method_id='compute.snapshots.get',
+        ordered_params=['project', 'snapshot'],
+        path_params=['project', 'snapshot'],
         query_params=[],
-        relative_path=u'projects/{project}/global/snapshots/{snapshot}',
+        relative_path='projects/{project}/global/snapshots/{snapshot}',
         request_field='',
-        request_type_name=u'ComputeSnapshotsGetRequest',
-        response_type_name=u'Snapshot',
+        request_type_name='ComputeSnapshotsGetRequest',
+        response_type_name='Snapshot',
         supports_download=False,
     )
 
@@ -13554,15 +13554,15 @@ For more information, see Deleting snapshots.
           config, request, global_params=global_params)
 
     GetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'compute.snapshots.getIamPolicy',
-        ordered_params=[u'project', u'resource'],
-        path_params=[u'project', u'resource'],
-        query_params=[u'optionsRequestedPolicyVersion'],
-        relative_path=u'projects/{project}/global/snapshots/{resource}/getIamPolicy',
+        http_method='GET',
+        method_id='compute.snapshots.getIamPolicy',
+        ordered_params=['project', 'resource'],
+        path_params=['project', 'resource'],
+        query_params=['optionsRequestedPolicyVersion'],
+        relative_path='projects/{project}/global/snapshots/{resource}/getIamPolicy',
         request_field='',
-        request_type_name=u'ComputeSnapshotsGetIamPolicyRequest',
-        response_type_name=u'Policy',
+        request_type_name='ComputeSnapshotsGetIamPolicyRequest',
+        response_type_name='Policy',
         supports_download=False,
     )
 
@@ -13580,15 +13580,15 @@ For more information, see Deleting snapshots.
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'compute.snapshots.list',
-        ordered_params=[u'project'],
-        path_params=[u'project'],
-        query_params=[u'filter', u'maxResults', u'orderBy', u'pageToken'],
-        relative_path=u'projects/{project}/global/snapshots',
+        http_method='GET',
+        method_id='compute.snapshots.list',
+        ordered_params=['project'],
+        path_params=['project'],
+        query_params=['filter', 'maxResults', 'orderBy', 'pageToken'],
+        relative_path='projects/{project}/global/snapshots',
         request_field='',
-        request_type_name=u'ComputeSnapshotsListRequest',
-        response_type_name=u'SnapshotList',
+        request_type_name='ComputeSnapshotsListRequest',
+        response_type_name='SnapshotList',
         supports_download=False,
     )
 
@@ -13606,15 +13606,15 @@ For more information, see Deleting snapshots.
           config, request, global_params=global_params)
 
     SetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'compute.snapshots.setIamPolicy',
-        ordered_params=[u'project', u'resource'],
-        path_params=[u'project', u'resource'],
+        http_method='POST',
+        method_id='compute.snapshots.setIamPolicy',
+        ordered_params=['project', 'resource'],
+        path_params=['project', 'resource'],
         query_params=[],
-        relative_path=u'projects/{project}/global/snapshots/{resource}/setIamPolicy',
-        request_field=u'globalSetPolicyRequest',
-        request_type_name=u'ComputeSnapshotsSetIamPolicyRequest',
-        response_type_name=u'Policy',
+        relative_path='projects/{project}/global/snapshots/{resource}/setIamPolicy',
+        request_field='globalSetPolicyRequest',
+        request_type_name='ComputeSnapshotsSetIamPolicyRequest',
+        response_type_name='Policy',
         supports_download=False,
     )
 
@@ -13632,15 +13632,15 @@ For more information, see Deleting snapshots.
           config, request, global_params=global_params)
 
     SetLabels.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'compute.snapshots.setLabels',
-        ordered_params=[u'project', u'resource'],
-        path_params=[u'project', u'resource'],
+        http_method='POST',
+        method_id='compute.snapshots.setLabels',
+        ordered_params=['project', 'resource'],
+        path_params=['project', 'resource'],
         query_params=[],
-        relative_path=u'projects/{project}/global/snapshots/{resource}/setLabels',
-        request_field=u'globalSetLabelsRequest',
-        request_type_name=u'ComputeSnapshotsSetLabelsRequest',
-        response_type_name=u'Operation',
+        relative_path='projects/{project}/global/snapshots/{resource}/setLabels',
+        request_field='globalSetLabelsRequest',
+        request_type_name='ComputeSnapshotsSetLabelsRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -13658,22 +13658,22 @@ For more information, see Deleting snapshots.
           config, request, global_params=global_params)
 
     TestIamPermissions.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'compute.snapshots.testIamPermissions',
-        ordered_params=[u'project', u'resource'],
-        path_params=[u'project', u'resource'],
+        http_method='POST',
+        method_id='compute.snapshots.testIamPermissions',
+        ordered_params=['project', 'resource'],
+        path_params=['project', 'resource'],
         query_params=[],
-        relative_path=u'projects/{project}/global/snapshots/{resource}/testIamPermissions',
-        request_field=u'testPermissionsRequest',
-        request_type_name=u'ComputeSnapshotsTestIamPermissionsRequest',
-        response_type_name=u'TestPermissionsResponse',
+        relative_path='projects/{project}/global/snapshots/{resource}/testIamPermissions',
+        request_field='testPermissionsRequest',
+        request_type_name='ComputeSnapshotsTestIamPermissionsRequest',
+        response_type_name='TestPermissionsResponse',
         supports_download=False,
     )
 
   class SslCertificatesService(base_api.BaseApiService):
     """Service class for the sslCertificates resource."""
 
-    _NAME = u'sslCertificates'
+    _NAME = 'sslCertificates'
 
     def __init__(self, client):
       super(ComputeBeta.SslCertificatesService, self).__init__(client)
@@ -13694,15 +13694,15 @@ For more information, see Deleting snapshots.
           config, request, global_params=global_params)
 
     AggregatedList.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'compute.sslCertificates.aggregatedList',
-        ordered_params=[u'project'],
-        path_params=[u'project'],
-        query_params=[u'filter', u'includeAllScopes', u'maxResults', u'orderBy', u'pageToken'],
-        relative_path=u'projects/{project}/aggregated/sslCertificates',
+        http_method='GET',
+        method_id='compute.sslCertificates.aggregatedList',
+        ordered_params=['project'],
+        path_params=['project'],
+        query_params=['filter', 'includeAllScopes', 'maxResults', 'orderBy', 'pageToken'],
+        relative_path='projects/{project}/aggregated/sslCertificates',
         request_field='',
-        request_type_name=u'ComputeSslCertificatesAggregatedListRequest',
-        response_type_name=u'SslCertificateAggregatedList',
+        request_type_name='ComputeSslCertificatesAggregatedListRequest',
+        response_type_name='SslCertificateAggregatedList',
         supports_download=False,
     )
 
@@ -13720,15 +13720,15 @@ For more information, see Deleting snapshots.
           config, request, global_params=global_params)
 
     Delete.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'DELETE',
-        method_id=u'compute.sslCertificates.delete',
-        ordered_params=[u'project', u'sslCertificate'],
-        path_params=[u'project', u'sslCertificate'],
-        query_params=[u'requestId'],
-        relative_path=u'projects/{project}/global/sslCertificates/{sslCertificate}',
+        http_method='DELETE',
+        method_id='compute.sslCertificates.delete',
+        ordered_params=['project', 'sslCertificate'],
+        path_params=['project', 'sslCertificate'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/global/sslCertificates/{sslCertificate}',
         request_field='',
-        request_type_name=u'ComputeSslCertificatesDeleteRequest',
-        response_type_name=u'Operation',
+        request_type_name='ComputeSslCertificatesDeleteRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -13746,15 +13746,15 @@ For more information, see Deleting snapshots.
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'compute.sslCertificates.get',
-        ordered_params=[u'project', u'sslCertificate'],
-        path_params=[u'project', u'sslCertificate'],
+        http_method='GET',
+        method_id='compute.sslCertificates.get',
+        ordered_params=['project', 'sslCertificate'],
+        path_params=['project', 'sslCertificate'],
         query_params=[],
-        relative_path=u'projects/{project}/global/sslCertificates/{sslCertificate}',
+        relative_path='projects/{project}/global/sslCertificates/{sslCertificate}',
         request_field='',
-        request_type_name=u'ComputeSslCertificatesGetRequest',
-        response_type_name=u'SslCertificate',
+        request_type_name='ComputeSslCertificatesGetRequest',
+        response_type_name='SslCertificate',
         supports_download=False,
     )
 
@@ -13772,15 +13772,15 @@ For more information, see Deleting snapshots.
           config, request, global_params=global_params)
 
     Insert.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'compute.sslCertificates.insert',
-        ordered_params=[u'project'],
-        path_params=[u'project'],
-        query_params=[u'requestId'],
-        relative_path=u'projects/{project}/global/sslCertificates',
-        request_field=u'sslCertificate',
-        request_type_name=u'ComputeSslCertificatesInsertRequest',
-        response_type_name=u'Operation',
+        http_method='POST',
+        method_id='compute.sslCertificates.insert',
+        ordered_params=['project'],
+        path_params=['project'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/global/sslCertificates',
+        request_field='sslCertificate',
+        request_type_name='ComputeSslCertificatesInsertRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -13798,15 +13798,15 @@ For more information, see Deleting snapshots.
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'compute.sslCertificates.list',
-        ordered_params=[u'project'],
-        path_params=[u'project'],
-        query_params=[u'filter', u'maxResults', u'orderBy', u'pageToken'],
-        relative_path=u'projects/{project}/global/sslCertificates',
+        http_method='GET',
+        method_id='compute.sslCertificates.list',
+        ordered_params=['project'],
+        path_params=['project'],
+        query_params=['filter', 'maxResults', 'orderBy', 'pageToken'],
+        relative_path='projects/{project}/global/sslCertificates',
         request_field='',
-        request_type_name=u'ComputeSslCertificatesListRequest',
-        response_type_name=u'SslCertificateList',
+        request_type_name='ComputeSslCertificatesListRequest',
+        response_type_name='SslCertificateList',
         supports_download=False,
     )
 
@@ -13824,22 +13824,22 @@ For more information, see Deleting snapshots.
           config, request, global_params=global_params)
 
     TestIamPermissions.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'compute.sslCertificates.testIamPermissions',
-        ordered_params=[u'project', u'resource'],
-        path_params=[u'project', u'resource'],
+        http_method='POST',
+        method_id='compute.sslCertificates.testIamPermissions',
+        ordered_params=['project', 'resource'],
+        path_params=['project', 'resource'],
         query_params=[],
-        relative_path=u'projects/{project}/global/sslCertificates/{resource}/testIamPermissions',
-        request_field=u'testPermissionsRequest',
-        request_type_name=u'ComputeSslCertificatesTestIamPermissionsRequest',
-        response_type_name=u'TestPermissionsResponse',
+        relative_path='projects/{project}/global/sslCertificates/{resource}/testIamPermissions',
+        request_field='testPermissionsRequest',
+        request_type_name='ComputeSslCertificatesTestIamPermissionsRequest',
+        response_type_name='TestPermissionsResponse',
         supports_download=False,
     )
 
   class SslPoliciesService(base_api.BaseApiService):
     """Service class for the sslPolicies resource."""
 
-    _NAME = u'sslPolicies'
+    _NAME = 'sslPolicies'
 
     def __init__(self, client):
       super(ComputeBeta.SslPoliciesService, self).__init__(client)
@@ -13860,15 +13860,15 @@ For more information, see Deleting snapshots.
           config, request, global_params=global_params)
 
     Delete.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'DELETE',
-        method_id=u'compute.sslPolicies.delete',
-        ordered_params=[u'project', u'sslPolicy'],
-        path_params=[u'project', u'sslPolicy'],
-        query_params=[u'requestId'],
-        relative_path=u'projects/{project}/global/sslPolicies/{sslPolicy}',
+        http_method='DELETE',
+        method_id='compute.sslPolicies.delete',
+        ordered_params=['project', 'sslPolicy'],
+        path_params=['project', 'sslPolicy'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/global/sslPolicies/{sslPolicy}',
         request_field='',
-        request_type_name=u'ComputeSslPoliciesDeleteRequest',
-        response_type_name=u'Operation',
+        request_type_name='ComputeSslPoliciesDeleteRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -13886,15 +13886,15 @@ For more information, see Deleting snapshots.
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'compute.sslPolicies.get',
-        ordered_params=[u'project', u'sslPolicy'],
-        path_params=[u'project', u'sslPolicy'],
+        http_method='GET',
+        method_id='compute.sslPolicies.get',
+        ordered_params=['project', 'sslPolicy'],
+        path_params=['project', 'sslPolicy'],
         query_params=[],
-        relative_path=u'projects/{project}/global/sslPolicies/{sslPolicy}',
+        relative_path='projects/{project}/global/sslPolicies/{sslPolicy}',
         request_field='',
-        request_type_name=u'ComputeSslPoliciesGetRequest',
-        response_type_name=u'SslPolicy',
+        request_type_name='ComputeSslPoliciesGetRequest',
+        response_type_name='SslPolicy',
         supports_download=False,
     )
 
@@ -13912,15 +13912,15 @@ For more information, see Deleting snapshots.
           config, request, global_params=global_params)
 
     Insert.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'compute.sslPolicies.insert',
-        ordered_params=[u'project'],
-        path_params=[u'project'],
-        query_params=[u'requestId'],
-        relative_path=u'projects/{project}/global/sslPolicies',
-        request_field=u'sslPolicy',
-        request_type_name=u'ComputeSslPoliciesInsertRequest',
-        response_type_name=u'Operation',
+        http_method='POST',
+        method_id='compute.sslPolicies.insert',
+        ordered_params=['project'],
+        path_params=['project'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/global/sslPolicies',
+        request_field='sslPolicy',
+        request_type_name='ComputeSslPoliciesInsertRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -13938,15 +13938,15 @@ For more information, see Deleting snapshots.
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'compute.sslPolicies.list',
-        ordered_params=[u'project'],
-        path_params=[u'project'],
-        query_params=[u'filter', u'maxResults', u'orderBy', u'pageToken'],
-        relative_path=u'projects/{project}/global/sslPolicies',
+        http_method='GET',
+        method_id='compute.sslPolicies.list',
+        ordered_params=['project'],
+        path_params=['project'],
+        query_params=['filter', 'maxResults', 'orderBy', 'pageToken'],
+        relative_path='projects/{project}/global/sslPolicies',
         request_field='',
-        request_type_name=u'ComputeSslPoliciesListRequest',
-        response_type_name=u'SslPoliciesList',
+        request_type_name='ComputeSslPoliciesListRequest',
+        response_type_name='SslPoliciesList',
         supports_download=False,
     )
 
@@ -13964,15 +13964,15 @@ For more information, see Deleting snapshots.
           config, request, global_params=global_params)
 
     ListAvailableFeatures.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'compute.sslPolicies.listAvailableFeatures',
-        ordered_params=[u'project'],
-        path_params=[u'project'],
-        query_params=[u'filter', u'maxResults', u'orderBy', u'pageToken'],
-        relative_path=u'projects/{project}/global/sslPolicies/listAvailableFeatures',
+        http_method='GET',
+        method_id='compute.sslPolicies.listAvailableFeatures',
+        ordered_params=['project'],
+        path_params=['project'],
+        query_params=['filter', 'maxResults', 'orderBy', 'pageToken'],
+        relative_path='projects/{project}/global/sslPolicies/listAvailableFeatures',
         request_field='',
-        request_type_name=u'ComputeSslPoliciesListAvailableFeaturesRequest',
-        response_type_name=u'SslPoliciesListAvailableFeaturesResponse',
+        request_type_name='ComputeSslPoliciesListAvailableFeaturesRequest',
+        response_type_name='SslPoliciesListAvailableFeaturesResponse',
         supports_download=False,
     )
 
@@ -13990,15 +13990,15 @@ For more information, see Deleting snapshots.
           config, request, global_params=global_params)
 
     Patch.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'PATCH',
-        method_id=u'compute.sslPolicies.patch',
-        ordered_params=[u'project', u'sslPolicy'],
-        path_params=[u'project', u'sslPolicy'],
-        query_params=[u'requestId'],
-        relative_path=u'projects/{project}/global/sslPolicies/{sslPolicy}',
-        request_field=u'sslPolicyResource',
-        request_type_name=u'ComputeSslPoliciesPatchRequest',
-        response_type_name=u'Operation',
+        http_method='PATCH',
+        method_id='compute.sslPolicies.patch',
+        ordered_params=['project', 'sslPolicy'],
+        path_params=['project', 'sslPolicy'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/global/sslPolicies/{sslPolicy}',
+        request_field='sslPolicyResource',
+        request_type_name='ComputeSslPoliciesPatchRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -14016,22 +14016,22 @@ For more information, see Deleting snapshots.
           config, request, global_params=global_params)
 
     TestIamPermissions.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'compute.sslPolicies.testIamPermissions',
-        ordered_params=[u'project', u'resource'],
-        path_params=[u'project', u'resource'],
+        http_method='POST',
+        method_id='compute.sslPolicies.testIamPermissions',
+        ordered_params=['project', 'resource'],
+        path_params=['project', 'resource'],
         query_params=[],
-        relative_path=u'projects/{project}/global/sslPolicies/{resource}/testIamPermissions',
-        request_field=u'testPermissionsRequest',
-        request_type_name=u'ComputeSslPoliciesTestIamPermissionsRequest',
-        response_type_name=u'TestPermissionsResponse',
+        relative_path='projects/{project}/global/sslPolicies/{resource}/testIamPermissions',
+        request_field='testPermissionsRequest',
+        request_type_name='ComputeSslPoliciesTestIamPermissionsRequest',
+        response_type_name='TestPermissionsResponse',
         supports_download=False,
     )
 
   class SubnetworksService(base_api.BaseApiService):
     """Service class for the subnetworks resource."""
 
-    _NAME = u'subnetworks'
+    _NAME = 'subnetworks'
 
     def __init__(self, client):
       super(ComputeBeta.SubnetworksService, self).__init__(client)
@@ -14052,15 +14052,15 @@ For more information, see Deleting snapshots.
           config, request, global_params=global_params)
 
     AggregatedList.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'compute.subnetworks.aggregatedList',
-        ordered_params=[u'project'],
-        path_params=[u'project'],
-        query_params=[u'filter', u'includeAllScopes', u'maxResults', u'orderBy', u'pageToken'],
-        relative_path=u'projects/{project}/aggregated/subnetworks',
+        http_method='GET',
+        method_id='compute.subnetworks.aggregatedList',
+        ordered_params=['project'],
+        path_params=['project'],
+        query_params=['filter', 'includeAllScopes', 'maxResults', 'orderBy', 'pageToken'],
+        relative_path='projects/{project}/aggregated/subnetworks',
         request_field='',
-        request_type_name=u'ComputeSubnetworksAggregatedListRequest',
-        response_type_name=u'SubnetworkAggregatedList',
+        request_type_name='ComputeSubnetworksAggregatedListRequest',
+        response_type_name='SubnetworkAggregatedList',
         supports_download=False,
     )
 
@@ -14078,15 +14078,15 @@ For more information, see Deleting snapshots.
           config, request, global_params=global_params)
 
     Delete.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'DELETE',
-        method_id=u'compute.subnetworks.delete',
-        ordered_params=[u'project', u'region', u'subnetwork'],
-        path_params=[u'project', u'region', u'subnetwork'],
-        query_params=[u'requestId'],
-        relative_path=u'projects/{project}/regions/{region}/subnetworks/{subnetwork}',
+        http_method='DELETE',
+        method_id='compute.subnetworks.delete',
+        ordered_params=['project', 'region', 'subnetwork'],
+        path_params=['project', 'region', 'subnetwork'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/regions/{region}/subnetworks/{subnetwork}',
         request_field='',
-        request_type_name=u'ComputeSubnetworksDeleteRequest',
-        response_type_name=u'Operation',
+        request_type_name='ComputeSubnetworksDeleteRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -14104,15 +14104,15 @@ For more information, see Deleting snapshots.
           config, request, global_params=global_params)
 
     ExpandIpCidrRange.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'compute.subnetworks.expandIpCidrRange',
-        ordered_params=[u'project', u'region', u'subnetwork'],
-        path_params=[u'project', u'region', u'subnetwork'],
-        query_params=[u'requestId'],
-        relative_path=u'projects/{project}/regions/{region}/subnetworks/{subnetwork}/expandIpCidrRange',
-        request_field=u'subnetworksExpandIpCidrRangeRequest',
-        request_type_name=u'ComputeSubnetworksExpandIpCidrRangeRequest',
-        response_type_name=u'Operation',
+        http_method='POST',
+        method_id='compute.subnetworks.expandIpCidrRange',
+        ordered_params=['project', 'region', 'subnetwork'],
+        path_params=['project', 'region', 'subnetwork'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/regions/{region}/subnetworks/{subnetwork}/expandIpCidrRange',
+        request_field='subnetworksExpandIpCidrRangeRequest',
+        request_type_name='ComputeSubnetworksExpandIpCidrRangeRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -14130,15 +14130,15 @@ For more information, see Deleting snapshots.
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'compute.subnetworks.get',
-        ordered_params=[u'project', u'region', u'subnetwork'],
-        path_params=[u'project', u'region', u'subnetwork'],
+        http_method='GET',
+        method_id='compute.subnetworks.get',
+        ordered_params=['project', 'region', 'subnetwork'],
+        path_params=['project', 'region', 'subnetwork'],
         query_params=[],
-        relative_path=u'projects/{project}/regions/{region}/subnetworks/{subnetwork}',
+        relative_path='projects/{project}/regions/{region}/subnetworks/{subnetwork}',
         request_field='',
-        request_type_name=u'ComputeSubnetworksGetRequest',
-        response_type_name=u'Subnetwork',
+        request_type_name='ComputeSubnetworksGetRequest',
+        response_type_name='Subnetwork',
         supports_download=False,
     )
 
@@ -14156,15 +14156,15 @@ For more information, see Deleting snapshots.
           config, request, global_params=global_params)
 
     GetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'compute.subnetworks.getIamPolicy',
-        ordered_params=[u'project', u'region', u'resource'],
-        path_params=[u'project', u'region', u'resource'],
-        query_params=[u'optionsRequestedPolicyVersion'],
-        relative_path=u'projects/{project}/regions/{region}/subnetworks/{resource}/getIamPolicy',
+        http_method='GET',
+        method_id='compute.subnetworks.getIamPolicy',
+        ordered_params=['project', 'region', 'resource'],
+        path_params=['project', 'region', 'resource'],
+        query_params=['optionsRequestedPolicyVersion'],
+        relative_path='projects/{project}/regions/{region}/subnetworks/{resource}/getIamPolicy',
         request_field='',
-        request_type_name=u'ComputeSubnetworksGetIamPolicyRequest',
-        response_type_name=u'Policy',
+        request_type_name='ComputeSubnetworksGetIamPolicyRequest',
+        response_type_name='Policy',
         supports_download=False,
     )
 
@@ -14182,15 +14182,15 @@ For more information, see Deleting snapshots.
           config, request, global_params=global_params)
 
     Insert.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'compute.subnetworks.insert',
-        ordered_params=[u'project', u'region'],
-        path_params=[u'project', u'region'],
-        query_params=[u'requestId'],
-        relative_path=u'projects/{project}/regions/{region}/subnetworks',
-        request_field=u'subnetwork',
-        request_type_name=u'ComputeSubnetworksInsertRequest',
-        response_type_name=u'Operation',
+        http_method='POST',
+        method_id='compute.subnetworks.insert',
+        ordered_params=['project', 'region'],
+        path_params=['project', 'region'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/regions/{region}/subnetworks',
+        request_field='subnetwork',
+        request_type_name='ComputeSubnetworksInsertRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -14208,15 +14208,15 @@ For more information, see Deleting snapshots.
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'compute.subnetworks.list',
-        ordered_params=[u'project', u'region'],
-        path_params=[u'project', u'region'],
-        query_params=[u'filter', u'maxResults', u'orderBy', u'pageToken'],
-        relative_path=u'projects/{project}/regions/{region}/subnetworks',
+        http_method='GET',
+        method_id='compute.subnetworks.list',
+        ordered_params=['project', 'region'],
+        path_params=['project', 'region'],
+        query_params=['filter', 'maxResults', 'orderBy', 'pageToken'],
+        relative_path='projects/{project}/regions/{region}/subnetworks',
         request_field='',
-        request_type_name=u'ComputeSubnetworksListRequest',
-        response_type_name=u'SubnetworkList',
+        request_type_name='ComputeSubnetworksListRequest',
+        response_type_name='SubnetworkList',
         supports_download=False,
     )
 
@@ -14234,15 +14234,15 @@ For more information, see Deleting snapshots.
           config, request, global_params=global_params)
 
     ListUsable.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'compute.subnetworks.listUsable',
-        ordered_params=[u'project'],
-        path_params=[u'project'],
-        query_params=[u'filter', u'maxResults', u'orderBy', u'pageToken'],
-        relative_path=u'projects/{project}/aggregated/subnetworks/listUsable',
+        http_method='GET',
+        method_id='compute.subnetworks.listUsable',
+        ordered_params=['project'],
+        path_params=['project'],
+        query_params=['filter', 'maxResults', 'orderBy', 'pageToken'],
+        relative_path='projects/{project}/aggregated/subnetworks/listUsable',
         request_field='',
-        request_type_name=u'ComputeSubnetworksListUsableRequest',
-        response_type_name=u'UsableSubnetworksAggregatedList',
+        request_type_name='ComputeSubnetworksListUsableRequest',
+        response_type_name='UsableSubnetworksAggregatedList',
         supports_download=False,
     )
 
@@ -14260,15 +14260,15 @@ For more information, see Deleting snapshots.
           config, request, global_params=global_params)
 
     Patch.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'PATCH',
-        method_id=u'compute.subnetworks.patch',
-        ordered_params=[u'project', u'region', u'subnetwork'],
-        path_params=[u'project', u'region', u'subnetwork'],
-        query_params=[u'drainTimeoutSeconds', u'requestId'],
-        relative_path=u'projects/{project}/regions/{region}/subnetworks/{subnetwork}',
-        request_field=u'subnetworkResource',
-        request_type_name=u'ComputeSubnetworksPatchRequest',
-        response_type_name=u'Operation',
+        http_method='PATCH',
+        method_id='compute.subnetworks.patch',
+        ordered_params=['project', 'region', 'subnetwork'],
+        path_params=['project', 'region', 'subnetwork'],
+        query_params=['drainTimeoutSeconds', 'requestId'],
+        relative_path='projects/{project}/regions/{region}/subnetworks/{subnetwork}',
+        request_field='subnetworkResource',
+        request_type_name='ComputeSubnetworksPatchRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -14286,15 +14286,15 @@ For more information, see Deleting snapshots.
           config, request, global_params=global_params)
 
     SetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'compute.subnetworks.setIamPolicy',
-        ordered_params=[u'project', u'region', u'resource'],
-        path_params=[u'project', u'region', u'resource'],
+        http_method='POST',
+        method_id='compute.subnetworks.setIamPolicy',
+        ordered_params=['project', 'region', 'resource'],
+        path_params=['project', 'region', 'resource'],
         query_params=[],
-        relative_path=u'projects/{project}/regions/{region}/subnetworks/{resource}/setIamPolicy',
-        request_field=u'regionSetPolicyRequest',
-        request_type_name=u'ComputeSubnetworksSetIamPolicyRequest',
-        response_type_name=u'Policy',
+        relative_path='projects/{project}/regions/{region}/subnetworks/{resource}/setIamPolicy',
+        request_field='regionSetPolicyRequest',
+        request_type_name='ComputeSubnetworksSetIamPolicyRequest',
+        response_type_name='Policy',
         supports_download=False,
     )
 
@@ -14312,15 +14312,15 @@ For more information, see Deleting snapshots.
           config, request, global_params=global_params)
 
     SetPrivateIpGoogleAccess.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'compute.subnetworks.setPrivateIpGoogleAccess',
-        ordered_params=[u'project', u'region', u'subnetwork'],
-        path_params=[u'project', u'region', u'subnetwork'],
-        query_params=[u'requestId'],
-        relative_path=u'projects/{project}/regions/{region}/subnetworks/{subnetwork}/setPrivateIpGoogleAccess',
-        request_field=u'subnetworksSetPrivateIpGoogleAccessRequest',
-        request_type_name=u'ComputeSubnetworksSetPrivateIpGoogleAccessRequest',
-        response_type_name=u'Operation',
+        http_method='POST',
+        method_id='compute.subnetworks.setPrivateIpGoogleAccess',
+        ordered_params=['project', 'region', 'subnetwork'],
+        path_params=['project', 'region', 'subnetwork'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/regions/{region}/subnetworks/{subnetwork}/setPrivateIpGoogleAccess',
+        request_field='subnetworksSetPrivateIpGoogleAccessRequest',
+        request_type_name='ComputeSubnetworksSetPrivateIpGoogleAccessRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -14338,22 +14338,22 @@ For more information, see Deleting snapshots.
           config, request, global_params=global_params)
 
     TestIamPermissions.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'compute.subnetworks.testIamPermissions',
-        ordered_params=[u'project', u'region', u'resource'],
-        path_params=[u'project', u'region', u'resource'],
+        http_method='POST',
+        method_id='compute.subnetworks.testIamPermissions',
+        ordered_params=['project', 'region', 'resource'],
+        path_params=['project', 'region', 'resource'],
         query_params=[],
-        relative_path=u'projects/{project}/regions/{region}/subnetworks/{resource}/testIamPermissions',
-        request_field=u'testPermissionsRequest',
-        request_type_name=u'ComputeSubnetworksTestIamPermissionsRequest',
-        response_type_name=u'TestPermissionsResponse',
+        relative_path='projects/{project}/regions/{region}/subnetworks/{resource}/testIamPermissions',
+        request_field='testPermissionsRequest',
+        request_type_name='ComputeSubnetworksTestIamPermissionsRequest',
+        response_type_name='TestPermissionsResponse',
         supports_download=False,
     )
 
   class TargetHttpProxiesService(base_api.BaseApiService):
     """Service class for the targetHttpProxies resource."""
 
-    _NAME = u'targetHttpProxies'
+    _NAME = 'targetHttpProxies'
 
     def __init__(self, client):
       super(ComputeBeta.TargetHttpProxiesService, self).__init__(client)
@@ -14374,15 +14374,15 @@ For more information, see Deleting snapshots.
           config, request, global_params=global_params)
 
     AggregatedList.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'compute.targetHttpProxies.aggregatedList',
-        ordered_params=[u'project'],
-        path_params=[u'project'],
-        query_params=[u'filter', u'includeAllScopes', u'maxResults', u'orderBy', u'pageToken'],
-        relative_path=u'projects/{project}/aggregated/targetHttpProxies',
+        http_method='GET',
+        method_id='compute.targetHttpProxies.aggregatedList',
+        ordered_params=['project'],
+        path_params=['project'],
+        query_params=['filter', 'includeAllScopes', 'maxResults', 'orderBy', 'pageToken'],
+        relative_path='projects/{project}/aggregated/targetHttpProxies',
         request_field='',
-        request_type_name=u'ComputeTargetHttpProxiesAggregatedListRequest',
-        response_type_name=u'TargetHttpProxyAggregatedList',
+        request_type_name='ComputeTargetHttpProxiesAggregatedListRequest',
+        response_type_name='TargetHttpProxyAggregatedList',
         supports_download=False,
     )
 
@@ -14400,15 +14400,15 @@ For more information, see Deleting snapshots.
           config, request, global_params=global_params)
 
     Delete.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'DELETE',
-        method_id=u'compute.targetHttpProxies.delete',
-        ordered_params=[u'project', u'targetHttpProxy'],
-        path_params=[u'project', u'targetHttpProxy'],
-        query_params=[u'requestId'],
-        relative_path=u'projects/{project}/global/targetHttpProxies/{targetHttpProxy}',
+        http_method='DELETE',
+        method_id='compute.targetHttpProxies.delete',
+        ordered_params=['project', 'targetHttpProxy'],
+        path_params=['project', 'targetHttpProxy'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/global/targetHttpProxies/{targetHttpProxy}',
         request_field='',
-        request_type_name=u'ComputeTargetHttpProxiesDeleteRequest',
-        response_type_name=u'Operation',
+        request_type_name='ComputeTargetHttpProxiesDeleteRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -14426,15 +14426,15 @@ For more information, see Deleting snapshots.
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'compute.targetHttpProxies.get',
-        ordered_params=[u'project', u'targetHttpProxy'],
-        path_params=[u'project', u'targetHttpProxy'],
+        http_method='GET',
+        method_id='compute.targetHttpProxies.get',
+        ordered_params=['project', 'targetHttpProxy'],
+        path_params=['project', 'targetHttpProxy'],
         query_params=[],
-        relative_path=u'projects/{project}/global/targetHttpProxies/{targetHttpProxy}',
+        relative_path='projects/{project}/global/targetHttpProxies/{targetHttpProxy}',
         request_field='',
-        request_type_name=u'ComputeTargetHttpProxiesGetRequest',
-        response_type_name=u'TargetHttpProxy',
+        request_type_name='ComputeTargetHttpProxiesGetRequest',
+        response_type_name='TargetHttpProxy',
         supports_download=False,
     )
 
@@ -14452,15 +14452,15 @@ For more information, see Deleting snapshots.
           config, request, global_params=global_params)
 
     Insert.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'compute.targetHttpProxies.insert',
-        ordered_params=[u'project'],
-        path_params=[u'project'],
-        query_params=[u'requestId'],
-        relative_path=u'projects/{project}/global/targetHttpProxies',
-        request_field=u'targetHttpProxy',
-        request_type_name=u'ComputeTargetHttpProxiesInsertRequest',
-        response_type_name=u'Operation',
+        http_method='POST',
+        method_id='compute.targetHttpProxies.insert',
+        ordered_params=['project'],
+        path_params=['project'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/global/targetHttpProxies',
+        request_field='targetHttpProxy',
+        request_type_name='ComputeTargetHttpProxiesInsertRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -14478,15 +14478,15 @@ For more information, see Deleting snapshots.
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'compute.targetHttpProxies.list',
-        ordered_params=[u'project'],
-        path_params=[u'project'],
-        query_params=[u'filter', u'maxResults', u'orderBy', u'pageToken'],
-        relative_path=u'projects/{project}/global/targetHttpProxies',
+        http_method='GET',
+        method_id='compute.targetHttpProxies.list',
+        ordered_params=['project'],
+        path_params=['project'],
+        query_params=['filter', 'maxResults', 'orderBy', 'pageToken'],
+        relative_path='projects/{project}/global/targetHttpProxies',
         request_field='',
-        request_type_name=u'ComputeTargetHttpProxiesListRequest',
-        response_type_name=u'TargetHttpProxyList',
+        request_type_name='ComputeTargetHttpProxiesListRequest',
+        response_type_name='TargetHttpProxyList',
         supports_download=False,
     )
 
@@ -14504,15 +14504,15 @@ For more information, see Deleting snapshots.
           config, request, global_params=global_params)
 
     SetUrlMap.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'compute.targetHttpProxies.setUrlMap',
-        ordered_params=[u'project', u'targetHttpProxy'],
-        path_params=[u'project', u'targetHttpProxy'],
-        query_params=[u'requestId'],
-        relative_path=u'projects/{project}/targetHttpProxies/{targetHttpProxy}/setUrlMap',
-        request_field=u'urlMapReference',
-        request_type_name=u'ComputeTargetHttpProxiesSetUrlMapRequest',
-        response_type_name=u'Operation',
+        http_method='POST',
+        method_id='compute.targetHttpProxies.setUrlMap',
+        ordered_params=['project', 'targetHttpProxy'],
+        path_params=['project', 'targetHttpProxy'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/targetHttpProxies/{targetHttpProxy}/setUrlMap',
+        request_field='urlMapReference',
+        request_type_name='ComputeTargetHttpProxiesSetUrlMapRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -14530,22 +14530,22 @@ For more information, see Deleting snapshots.
           config, request, global_params=global_params)
 
     TestIamPermissions.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'compute.targetHttpProxies.testIamPermissions',
-        ordered_params=[u'project', u'resource'],
-        path_params=[u'project', u'resource'],
+        http_method='POST',
+        method_id='compute.targetHttpProxies.testIamPermissions',
+        ordered_params=['project', 'resource'],
+        path_params=['project', 'resource'],
         query_params=[],
-        relative_path=u'projects/{project}/global/targetHttpProxies/{resource}/testIamPermissions',
-        request_field=u'testPermissionsRequest',
-        request_type_name=u'ComputeTargetHttpProxiesTestIamPermissionsRequest',
-        response_type_name=u'TestPermissionsResponse',
+        relative_path='projects/{project}/global/targetHttpProxies/{resource}/testIamPermissions',
+        request_field='testPermissionsRequest',
+        request_type_name='ComputeTargetHttpProxiesTestIamPermissionsRequest',
+        response_type_name='TestPermissionsResponse',
         supports_download=False,
     )
 
   class TargetHttpsProxiesService(base_api.BaseApiService):
     """Service class for the targetHttpsProxies resource."""
 
-    _NAME = u'targetHttpsProxies'
+    _NAME = 'targetHttpsProxies'
 
     def __init__(self, client):
       super(ComputeBeta.TargetHttpsProxiesService, self).__init__(client)
@@ -14566,15 +14566,15 @@ For more information, see Deleting snapshots.
           config, request, global_params=global_params)
 
     AggregatedList.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'compute.targetHttpsProxies.aggregatedList',
-        ordered_params=[u'project'],
-        path_params=[u'project'],
-        query_params=[u'filter', u'includeAllScopes', u'maxResults', u'orderBy', u'pageToken'],
-        relative_path=u'projects/{project}/aggregated/targetHttpsProxies',
+        http_method='GET',
+        method_id='compute.targetHttpsProxies.aggregatedList',
+        ordered_params=['project'],
+        path_params=['project'],
+        query_params=['filter', 'includeAllScopes', 'maxResults', 'orderBy', 'pageToken'],
+        relative_path='projects/{project}/aggregated/targetHttpsProxies',
         request_field='',
-        request_type_name=u'ComputeTargetHttpsProxiesAggregatedListRequest',
-        response_type_name=u'TargetHttpsProxyAggregatedList',
+        request_type_name='ComputeTargetHttpsProxiesAggregatedListRequest',
+        response_type_name='TargetHttpsProxyAggregatedList',
         supports_download=False,
     )
 
@@ -14592,15 +14592,15 @@ For more information, see Deleting snapshots.
           config, request, global_params=global_params)
 
     Delete.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'DELETE',
-        method_id=u'compute.targetHttpsProxies.delete',
-        ordered_params=[u'project', u'targetHttpsProxy'],
-        path_params=[u'project', u'targetHttpsProxy'],
-        query_params=[u'requestId'],
-        relative_path=u'projects/{project}/global/targetHttpsProxies/{targetHttpsProxy}',
+        http_method='DELETE',
+        method_id='compute.targetHttpsProxies.delete',
+        ordered_params=['project', 'targetHttpsProxy'],
+        path_params=['project', 'targetHttpsProxy'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/global/targetHttpsProxies/{targetHttpsProxy}',
         request_field='',
-        request_type_name=u'ComputeTargetHttpsProxiesDeleteRequest',
-        response_type_name=u'Operation',
+        request_type_name='ComputeTargetHttpsProxiesDeleteRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -14618,15 +14618,15 @@ For more information, see Deleting snapshots.
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'compute.targetHttpsProxies.get',
-        ordered_params=[u'project', u'targetHttpsProxy'],
-        path_params=[u'project', u'targetHttpsProxy'],
+        http_method='GET',
+        method_id='compute.targetHttpsProxies.get',
+        ordered_params=['project', 'targetHttpsProxy'],
+        path_params=['project', 'targetHttpsProxy'],
         query_params=[],
-        relative_path=u'projects/{project}/global/targetHttpsProxies/{targetHttpsProxy}',
+        relative_path='projects/{project}/global/targetHttpsProxies/{targetHttpsProxy}',
         request_field='',
-        request_type_name=u'ComputeTargetHttpsProxiesGetRequest',
-        response_type_name=u'TargetHttpsProxy',
+        request_type_name='ComputeTargetHttpsProxiesGetRequest',
+        response_type_name='TargetHttpsProxy',
         supports_download=False,
     )
 
@@ -14644,15 +14644,15 @@ For more information, see Deleting snapshots.
           config, request, global_params=global_params)
 
     Insert.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'compute.targetHttpsProxies.insert',
-        ordered_params=[u'project'],
-        path_params=[u'project'],
-        query_params=[u'requestId'],
-        relative_path=u'projects/{project}/global/targetHttpsProxies',
-        request_field=u'targetHttpsProxy',
-        request_type_name=u'ComputeTargetHttpsProxiesInsertRequest',
-        response_type_name=u'Operation',
+        http_method='POST',
+        method_id='compute.targetHttpsProxies.insert',
+        ordered_params=['project'],
+        path_params=['project'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/global/targetHttpsProxies',
+        request_field='targetHttpsProxy',
+        request_type_name='ComputeTargetHttpsProxiesInsertRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -14670,15 +14670,15 @@ For more information, see Deleting snapshots.
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'compute.targetHttpsProxies.list',
-        ordered_params=[u'project'],
-        path_params=[u'project'],
-        query_params=[u'filter', u'maxResults', u'orderBy', u'pageToken'],
-        relative_path=u'projects/{project}/global/targetHttpsProxies',
+        http_method='GET',
+        method_id='compute.targetHttpsProxies.list',
+        ordered_params=['project'],
+        path_params=['project'],
+        query_params=['filter', 'maxResults', 'orderBy', 'pageToken'],
+        relative_path='projects/{project}/global/targetHttpsProxies',
         request_field='',
-        request_type_name=u'ComputeTargetHttpsProxiesListRequest',
-        response_type_name=u'TargetHttpsProxyList',
+        request_type_name='ComputeTargetHttpsProxiesListRequest',
+        response_type_name='TargetHttpsProxyList',
         supports_download=False,
     )
 
@@ -14696,15 +14696,15 @@ For more information, see Deleting snapshots.
           config, request, global_params=global_params)
 
     SetQuicOverride.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'compute.targetHttpsProxies.setQuicOverride',
-        ordered_params=[u'project', u'targetHttpsProxy'],
-        path_params=[u'project', u'targetHttpsProxy'],
-        query_params=[u'requestId'],
-        relative_path=u'projects/{project}/global/targetHttpsProxies/{targetHttpsProxy}/setQuicOverride',
-        request_field=u'targetHttpsProxiesSetQuicOverrideRequest',
-        request_type_name=u'ComputeTargetHttpsProxiesSetQuicOverrideRequest',
-        response_type_name=u'Operation',
+        http_method='POST',
+        method_id='compute.targetHttpsProxies.setQuicOverride',
+        ordered_params=['project', 'targetHttpsProxy'],
+        path_params=['project', 'targetHttpsProxy'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/global/targetHttpsProxies/{targetHttpsProxy}/setQuicOverride',
+        request_field='targetHttpsProxiesSetQuicOverrideRequest',
+        request_type_name='ComputeTargetHttpsProxiesSetQuicOverrideRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -14722,15 +14722,15 @@ For more information, see Deleting snapshots.
           config, request, global_params=global_params)
 
     SetSslCertificates.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'compute.targetHttpsProxies.setSslCertificates',
-        ordered_params=[u'project', u'targetHttpsProxy'],
-        path_params=[u'project', u'targetHttpsProxy'],
-        query_params=[u'requestId'],
-        relative_path=u'projects/{project}/targetHttpsProxies/{targetHttpsProxy}/setSslCertificates',
-        request_field=u'targetHttpsProxiesSetSslCertificatesRequest',
-        request_type_name=u'ComputeTargetHttpsProxiesSetSslCertificatesRequest',
-        response_type_name=u'Operation',
+        http_method='POST',
+        method_id='compute.targetHttpsProxies.setSslCertificates',
+        ordered_params=['project', 'targetHttpsProxy'],
+        path_params=['project', 'targetHttpsProxy'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/targetHttpsProxies/{targetHttpsProxy}/setSslCertificates',
+        request_field='targetHttpsProxiesSetSslCertificatesRequest',
+        request_type_name='ComputeTargetHttpsProxiesSetSslCertificatesRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -14748,15 +14748,15 @@ For more information, see Deleting snapshots.
           config, request, global_params=global_params)
 
     SetSslPolicy.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'compute.targetHttpsProxies.setSslPolicy',
-        ordered_params=[u'project', u'targetHttpsProxy'],
-        path_params=[u'project', u'targetHttpsProxy'],
-        query_params=[u'requestId'],
-        relative_path=u'projects/{project}/global/targetHttpsProxies/{targetHttpsProxy}/setSslPolicy',
-        request_field=u'sslPolicyReference',
-        request_type_name=u'ComputeTargetHttpsProxiesSetSslPolicyRequest',
-        response_type_name=u'Operation',
+        http_method='POST',
+        method_id='compute.targetHttpsProxies.setSslPolicy',
+        ordered_params=['project', 'targetHttpsProxy'],
+        path_params=['project', 'targetHttpsProxy'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/global/targetHttpsProxies/{targetHttpsProxy}/setSslPolicy',
+        request_field='sslPolicyReference',
+        request_type_name='ComputeTargetHttpsProxiesSetSslPolicyRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -14774,15 +14774,15 @@ For more information, see Deleting snapshots.
           config, request, global_params=global_params)
 
     SetUrlMap.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'compute.targetHttpsProxies.setUrlMap',
-        ordered_params=[u'project', u'targetHttpsProxy'],
-        path_params=[u'project', u'targetHttpsProxy'],
-        query_params=[u'requestId'],
-        relative_path=u'projects/{project}/targetHttpsProxies/{targetHttpsProxy}/setUrlMap',
-        request_field=u'urlMapReference',
-        request_type_name=u'ComputeTargetHttpsProxiesSetUrlMapRequest',
-        response_type_name=u'Operation',
+        http_method='POST',
+        method_id='compute.targetHttpsProxies.setUrlMap',
+        ordered_params=['project', 'targetHttpsProxy'],
+        path_params=['project', 'targetHttpsProxy'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/targetHttpsProxies/{targetHttpsProxy}/setUrlMap',
+        request_field='urlMapReference',
+        request_type_name='ComputeTargetHttpsProxiesSetUrlMapRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -14800,22 +14800,22 @@ For more information, see Deleting snapshots.
           config, request, global_params=global_params)
 
     TestIamPermissions.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'compute.targetHttpsProxies.testIamPermissions',
-        ordered_params=[u'project', u'resource'],
-        path_params=[u'project', u'resource'],
+        http_method='POST',
+        method_id='compute.targetHttpsProxies.testIamPermissions',
+        ordered_params=['project', 'resource'],
+        path_params=['project', 'resource'],
         query_params=[],
-        relative_path=u'projects/{project}/global/targetHttpsProxies/{resource}/testIamPermissions',
-        request_field=u'testPermissionsRequest',
-        request_type_name=u'ComputeTargetHttpsProxiesTestIamPermissionsRequest',
-        response_type_name=u'TestPermissionsResponse',
+        relative_path='projects/{project}/global/targetHttpsProxies/{resource}/testIamPermissions',
+        request_field='testPermissionsRequest',
+        request_type_name='ComputeTargetHttpsProxiesTestIamPermissionsRequest',
+        response_type_name='TestPermissionsResponse',
         supports_download=False,
     )
 
   class TargetInstancesService(base_api.BaseApiService):
     """Service class for the targetInstances resource."""
 
-    _NAME = u'targetInstances'
+    _NAME = 'targetInstances'
 
     def __init__(self, client):
       super(ComputeBeta.TargetInstancesService, self).__init__(client)
@@ -14836,15 +14836,15 @@ For more information, see Deleting snapshots.
           config, request, global_params=global_params)
 
     AggregatedList.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'compute.targetInstances.aggregatedList',
-        ordered_params=[u'project'],
-        path_params=[u'project'],
-        query_params=[u'filter', u'includeAllScopes', u'maxResults', u'orderBy', u'pageToken'],
-        relative_path=u'projects/{project}/aggregated/targetInstances',
+        http_method='GET',
+        method_id='compute.targetInstances.aggregatedList',
+        ordered_params=['project'],
+        path_params=['project'],
+        query_params=['filter', 'includeAllScopes', 'maxResults', 'orderBy', 'pageToken'],
+        relative_path='projects/{project}/aggregated/targetInstances',
         request_field='',
-        request_type_name=u'ComputeTargetInstancesAggregatedListRequest',
-        response_type_name=u'TargetInstanceAggregatedList',
+        request_type_name='ComputeTargetInstancesAggregatedListRequest',
+        response_type_name='TargetInstanceAggregatedList',
         supports_download=False,
     )
 
@@ -14862,15 +14862,15 @@ For more information, see Deleting snapshots.
           config, request, global_params=global_params)
 
     Delete.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'DELETE',
-        method_id=u'compute.targetInstances.delete',
-        ordered_params=[u'project', u'zone', u'targetInstance'],
-        path_params=[u'project', u'targetInstance', u'zone'],
-        query_params=[u'requestId'],
-        relative_path=u'projects/{project}/zones/{zone}/targetInstances/{targetInstance}',
+        http_method='DELETE',
+        method_id='compute.targetInstances.delete',
+        ordered_params=['project', 'zone', 'targetInstance'],
+        path_params=['project', 'targetInstance', 'zone'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/zones/{zone}/targetInstances/{targetInstance}',
         request_field='',
-        request_type_name=u'ComputeTargetInstancesDeleteRequest',
-        response_type_name=u'Operation',
+        request_type_name='ComputeTargetInstancesDeleteRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -14888,15 +14888,15 @@ For more information, see Deleting snapshots.
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'compute.targetInstances.get',
-        ordered_params=[u'project', u'zone', u'targetInstance'],
-        path_params=[u'project', u'targetInstance', u'zone'],
+        http_method='GET',
+        method_id='compute.targetInstances.get',
+        ordered_params=['project', 'zone', 'targetInstance'],
+        path_params=['project', 'targetInstance', 'zone'],
         query_params=[],
-        relative_path=u'projects/{project}/zones/{zone}/targetInstances/{targetInstance}',
+        relative_path='projects/{project}/zones/{zone}/targetInstances/{targetInstance}',
         request_field='',
-        request_type_name=u'ComputeTargetInstancesGetRequest',
-        response_type_name=u'TargetInstance',
+        request_type_name='ComputeTargetInstancesGetRequest',
+        response_type_name='TargetInstance',
         supports_download=False,
     )
 
@@ -14914,15 +14914,15 @@ For more information, see Deleting snapshots.
           config, request, global_params=global_params)
 
     Insert.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'compute.targetInstances.insert',
-        ordered_params=[u'project', u'zone'],
-        path_params=[u'project', u'zone'],
-        query_params=[u'requestId'],
-        relative_path=u'projects/{project}/zones/{zone}/targetInstances',
-        request_field=u'targetInstance',
-        request_type_name=u'ComputeTargetInstancesInsertRequest',
-        response_type_name=u'Operation',
+        http_method='POST',
+        method_id='compute.targetInstances.insert',
+        ordered_params=['project', 'zone'],
+        path_params=['project', 'zone'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/zones/{zone}/targetInstances',
+        request_field='targetInstance',
+        request_type_name='ComputeTargetInstancesInsertRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -14940,15 +14940,15 @@ For more information, see Deleting snapshots.
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'compute.targetInstances.list',
-        ordered_params=[u'project', u'zone'],
-        path_params=[u'project', u'zone'],
-        query_params=[u'filter', u'maxResults', u'orderBy', u'pageToken'],
-        relative_path=u'projects/{project}/zones/{zone}/targetInstances',
+        http_method='GET',
+        method_id='compute.targetInstances.list',
+        ordered_params=['project', 'zone'],
+        path_params=['project', 'zone'],
+        query_params=['filter', 'maxResults', 'orderBy', 'pageToken'],
+        relative_path='projects/{project}/zones/{zone}/targetInstances',
         request_field='',
-        request_type_name=u'ComputeTargetInstancesListRequest',
-        response_type_name=u'TargetInstanceList',
+        request_type_name='ComputeTargetInstancesListRequest',
+        response_type_name='TargetInstanceList',
         supports_download=False,
     )
 
@@ -14966,22 +14966,22 @@ For more information, see Deleting snapshots.
           config, request, global_params=global_params)
 
     TestIamPermissions.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'compute.targetInstances.testIamPermissions',
-        ordered_params=[u'project', u'zone', u'resource'],
-        path_params=[u'project', u'resource', u'zone'],
+        http_method='POST',
+        method_id='compute.targetInstances.testIamPermissions',
+        ordered_params=['project', 'zone', 'resource'],
+        path_params=['project', 'resource', 'zone'],
         query_params=[],
-        relative_path=u'projects/{project}/zones/{zone}/targetInstances/{resource}/testIamPermissions',
-        request_field=u'testPermissionsRequest',
-        request_type_name=u'ComputeTargetInstancesTestIamPermissionsRequest',
-        response_type_name=u'TestPermissionsResponse',
+        relative_path='projects/{project}/zones/{zone}/targetInstances/{resource}/testIamPermissions',
+        request_field='testPermissionsRequest',
+        request_type_name='ComputeTargetInstancesTestIamPermissionsRequest',
+        response_type_name='TestPermissionsResponse',
         supports_download=False,
     )
 
   class TargetPoolsService(base_api.BaseApiService):
     """Service class for the targetPools resource."""
 
-    _NAME = u'targetPools'
+    _NAME = 'targetPools'
 
     def __init__(self, client):
       super(ComputeBeta.TargetPoolsService, self).__init__(client)
@@ -15002,15 +15002,15 @@ For more information, see Deleting snapshots.
           config, request, global_params=global_params)
 
     AddHealthCheck.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'compute.targetPools.addHealthCheck',
-        ordered_params=[u'project', u'region', u'targetPool'],
-        path_params=[u'project', u'region', u'targetPool'],
-        query_params=[u'requestId'],
-        relative_path=u'projects/{project}/regions/{region}/targetPools/{targetPool}/addHealthCheck',
-        request_field=u'targetPoolsAddHealthCheckRequest',
-        request_type_name=u'ComputeTargetPoolsAddHealthCheckRequest',
-        response_type_name=u'Operation',
+        http_method='POST',
+        method_id='compute.targetPools.addHealthCheck',
+        ordered_params=['project', 'region', 'targetPool'],
+        path_params=['project', 'region', 'targetPool'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/regions/{region}/targetPools/{targetPool}/addHealthCheck',
+        request_field='targetPoolsAddHealthCheckRequest',
+        request_type_name='ComputeTargetPoolsAddHealthCheckRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -15028,15 +15028,15 @@ For more information, see Deleting snapshots.
           config, request, global_params=global_params)
 
     AddInstance.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'compute.targetPools.addInstance',
-        ordered_params=[u'project', u'region', u'targetPool'],
-        path_params=[u'project', u'region', u'targetPool'],
-        query_params=[u'requestId'],
-        relative_path=u'projects/{project}/regions/{region}/targetPools/{targetPool}/addInstance',
-        request_field=u'targetPoolsAddInstanceRequest',
-        request_type_name=u'ComputeTargetPoolsAddInstanceRequest',
-        response_type_name=u'Operation',
+        http_method='POST',
+        method_id='compute.targetPools.addInstance',
+        ordered_params=['project', 'region', 'targetPool'],
+        path_params=['project', 'region', 'targetPool'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/regions/{region}/targetPools/{targetPool}/addInstance',
+        request_field='targetPoolsAddInstanceRequest',
+        request_type_name='ComputeTargetPoolsAddInstanceRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -15054,15 +15054,15 @@ For more information, see Deleting snapshots.
           config, request, global_params=global_params)
 
     AggregatedList.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'compute.targetPools.aggregatedList',
-        ordered_params=[u'project'],
-        path_params=[u'project'],
-        query_params=[u'filter', u'includeAllScopes', u'maxResults', u'orderBy', u'pageToken'],
-        relative_path=u'projects/{project}/aggregated/targetPools',
+        http_method='GET',
+        method_id='compute.targetPools.aggregatedList',
+        ordered_params=['project'],
+        path_params=['project'],
+        query_params=['filter', 'includeAllScopes', 'maxResults', 'orderBy', 'pageToken'],
+        relative_path='projects/{project}/aggregated/targetPools',
         request_field='',
-        request_type_name=u'ComputeTargetPoolsAggregatedListRequest',
-        response_type_name=u'TargetPoolAggregatedList',
+        request_type_name='ComputeTargetPoolsAggregatedListRequest',
+        response_type_name='TargetPoolAggregatedList',
         supports_download=False,
     )
 
@@ -15080,15 +15080,15 @@ For more information, see Deleting snapshots.
           config, request, global_params=global_params)
 
     Delete.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'DELETE',
-        method_id=u'compute.targetPools.delete',
-        ordered_params=[u'project', u'region', u'targetPool'],
-        path_params=[u'project', u'region', u'targetPool'],
-        query_params=[u'requestId'],
-        relative_path=u'projects/{project}/regions/{region}/targetPools/{targetPool}',
+        http_method='DELETE',
+        method_id='compute.targetPools.delete',
+        ordered_params=['project', 'region', 'targetPool'],
+        path_params=['project', 'region', 'targetPool'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/regions/{region}/targetPools/{targetPool}',
         request_field='',
-        request_type_name=u'ComputeTargetPoolsDeleteRequest',
-        response_type_name=u'Operation',
+        request_type_name='ComputeTargetPoolsDeleteRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -15106,15 +15106,15 @@ For more information, see Deleting snapshots.
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'compute.targetPools.get',
-        ordered_params=[u'project', u'region', u'targetPool'],
-        path_params=[u'project', u'region', u'targetPool'],
+        http_method='GET',
+        method_id='compute.targetPools.get',
+        ordered_params=['project', 'region', 'targetPool'],
+        path_params=['project', 'region', 'targetPool'],
         query_params=[],
-        relative_path=u'projects/{project}/regions/{region}/targetPools/{targetPool}',
+        relative_path='projects/{project}/regions/{region}/targetPools/{targetPool}',
         request_field='',
-        request_type_name=u'ComputeTargetPoolsGetRequest',
-        response_type_name=u'TargetPool',
+        request_type_name='ComputeTargetPoolsGetRequest',
+        response_type_name='TargetPool',
         supports_download=False,
     )
 
@@ -15132,15 +15132,15 @@ For more information, see Deleting snapshots.
           config, request, global_params=global_params)
 
     GetHealth.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'compute.targetPools.getHealth',
-        ordered_params=[u'project', u'region', u'targetPool'],
-        path_params=[u'project', u'region', u'targetPool'],
+        http_method='POST',
+        method_id='compute.targetPools.getHealth',
+        ordered_params=['project', 'region', 'targetPool'],
+        path_params=['project', 'region', 'targetPool'],
         query_params=[],
-        relative_path=u'projects/{project}/regions/{region}/targetPools/{targetPool}/getHealth',
-        request_field=u'instanceReference',
-        request_type_name=u'ComputeTargetPoolsGetHealthRequest',
-        response_type_name=u'TargetPoolInstanceHealth',
+        relative_path='projects/{project}/regions/{region}/targetPools/{targetPool}/getHealth',
+        request_field='instanceReference',
+        request_type_name='ComputeTargetPoolsGetHealthRequest',
+        response_type_name='TargetPoolInstanceHealth',
         supports_download=False,
     )
 
@@ -15158,15 +15158,15 @@ For more information, see Deleting snapshots.
           config, request, global_params=global_params)
 
     Insert.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'compute.targetPools.insert',
-        ordered_params=[u'project', u'region'],
-        path_params=[u'project', u'region'],
-        query_params=[u'requestId'],
-        relative_path=u'projects/{project}/regions/{region}/targetPools',
-        request_field=u'targetPool',
-        request_type_name=u'ComputeTargetPoolsInsertRequest',
-        response_type_name=u'Operation',
+        http_method='POST',
+        method_id='compute.targetPools.insert',
+        ordered_params=['project', 'region'],
+        path_params=['project', 'region'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/regions/{region}/targetPools',
+        request_field='targetPool',
+        request_type_name='ComputeTargetPoolsInsertRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -15184,15 +15184,15 @@ For more information, see Deleting snapshots.
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'compute.targetPools.list',
-        ordered_params=[u'project', u'region'],
-        path_params=[u'project', u'region'],
-        query_params=[u'filter', u'maxResults', u'orderBy', u'pageToken'],
-        relative_path=u'projects/{project}/regions/{region}/targetPools',
+        http_method='GET',
+        method_id='compute.targetPools.list',
+        ordered_params=['project', 'region'],
+        path_params=['project', 'region'],
+        query_params=['filter', 'maxResults', 'orderBy', 'pageToken'],
+        relative_path='projects/{project}/regions/{region}/targetPools',
         request_field='',
-        request_type_name=u'ComputeTargetPoolsListRequest',
-        response_type_name=u'TargetPoolList',
+        request_type_name='ComputeTargetPoolsListRequest',
+        response_type_name='TargetPoolList',
         supports_download=False,
     )
 
@@ -15210,15 +15210,15 @@ For more information, see Deleting snapshots.
           config, request, global_params=global_params)
 
     RemoveHealthCheck.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'compute.targetPools.removeHealthCheck',
-        ordered_params=[u'project', u'region', u'targetPool'],
-        path_params=[u'project', u'region', u'targetPool'],
-        query_params=[u'requestId'],
-        relative_path=u'projects/{project}/regions/{region}/targetPools/{targetPool}/removeHealthCheck',
-        request_field=u'targetPoolsRemoveHealthCheckRequest',
-        request_type_name=u'ComputeTargetPoolsRemoveHealthCheckRequest',
-        response_type_name=u'Operation',
+        http_method='POST',
+        method_id='compute.targetPools.removeHealthCheck',
+        ordered_params=['project', 'region', 'targetPool'],
+        path_params=['project', 'region', 'targetPool'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/regions/{region}/targetPools/{targetPool}/removeHealthCheck',
+        request_field='targetPoolsRemoveHealthCheckRequest',
+        request_type_name='ComputeTargetPoolsRemoveHealthCheckRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -15236,15 +15236,15 @@ For more information, see Deleting snapshots.
           config, request, global_params=global_params)
 
     RemoveInstance.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'compute.targetPools.removeInstance',
-        ordered_params=[u'project', u'region', u'targetPool'],
-        path_params=[u'project', u'region', u'targetPool'],
-        query_params=[u'requestId'],
-        relative_path=u'projects/{project}/regions/{region}/targetPools/{targetPool}/removeInstance',
-        request_field=u'targetPoolsRemoveInstanceRequest',
-        request_type_name=u'ComputeTargetPoolsRemoveInstanceRequest',
-        response_type_name=u'Operation',
+        http_method='POST',
+        method_id='compute.targetPools.removeInstance',
+        ordered_params=['project', 'region', 'targetPool'],
+        path_params=['project', 'region', 'targetPool'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/regions/{region}/targetPools/{targetPool}/removeInstance',
+        request_field='targetPoolsRemoveInstanceRequest',
+        request_type_name='ComputeTargetPoolsRemoveInstanceRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -15262,15 +15262,15 @@ For more information, see Deleting snapshots.
           config, request, global_params=global_params)
 
     SetBackup.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'compute.targetPools.setBackup',
-        ordered_params=[u'project', u'region', u'targetPool'],
-        path_params=[u'project', u'region', u'targetPool'],
-        query_params=[u'failoverRatio', u'requestId'],
-        relative_path=u'projects/{project}/regions/{region}/targetPools/{targetPool}/setBackup',
-        request_field=u'targetReference',
-        request_type_name=u'ComputeTargetPoolsSetBackupRequest',
-        response_type_name=u'Operation',
+        http_method='POST',
+        method_id='compute.targetPools.setBackup',
+        ordered_params=['project', 'region', 'targetPool'],
+        path_params=['project', 'region', 'targetPool'],
+        query_params=['failoverRatio', 'requestId'],
+        relative_path='projects/{project}/regions/{region}/targetPools/{targetPool}/setBackup',
+        request_field='targetReference',
+        request_type_name='ComputeTargetPoolsSetBackupRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -15288,22 +15288,22 @@ For more information, see Deleting snapshots.
           config, request, global_params=global_params)
 
     TestIamPermissions.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'compute.targetPools.testIamPermissions',
-        ordered_params=[u'project', u'region', u'resource'],
-        path_params=[u'project', u'region', u'resource'],
+        http_method='POST',
+        method_id='compute.targetPools.testIamPermissions',
+        ordered_params=['project', 'region', 'resource'],
+        path_params=['project', 'region', 'resource'],
         query_params=[],
-        relative_path=u'projects/{project}/regions/{region}/targetPools/{resource}/testIamPermissions',
-        request_field=u'testPermissionsRequest',
-        request_type_name=u'ComputeTargetPoolsTestIamPermissionsRequest',
-        response_type_name=u'TestPermissionsResponse',
+        relative_path='projects/{project}/regions/{region}/targetPools/{resource}/testIamPermissions',
+        request_field='testPermissionsRequest',
+        request_type_name='ComputeTargetPoolsTestIamPermissionsRequest',
+        response_type_name='TestPermissionsResponse',
         supports_download=False,
     )
 
   class TargetSslProxiesService(base_api.BaseApiService):
     """Service class for the targetSslProxies resource."""
 
-    _NAME = u'targetSslProxies'
+    _NAME = 'targetSslProxies'
 
     def __init__(self, client):
       super(ComputeBeta.TargetSslProxiesService, self).__init__(client)
@@ -15324,15 +15324,15 @@ For more information, see Deleting snapshots.
           config, request, global_params=global_params)
 
     Delete.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'DELETE',
-        method_id=u'compute.targetSslProxies.delete',
-        ordered_params=[u'project', u'targetSslProxy'],
-        path_params=[u'project', u'targetSslProxy'],
-        query_params=[u'requestId'],
-        relative_path=u'projects/{project}/global/targetSslProxies/{targetSslProxy}',
+        http_method='DELETE',
+        method_id='compute.targetSslProxies.delete',
+        ordered_params=['project', 'targetSslProxy'],
+        path_params=['project', 'targetSslProxy'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/global/targetSslProxies/{targetSslProxy}',
         request_field='',
-        request_type_name=u'ComputeTargetSslProxiesDeleteRequest',
-        response_type_name=u'Operation',
+        request_type_name='ComputeTargetSslProxiesDeleteRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -15350,15 +15350,15 @@ For more information, see Deleting snapshots.
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'compute.targetSslProxies.get',
-        ordered_params=[u'project', u'targetSslProxy'],
-        path_params=[u'project', u'targetSslProxy'],
+        http_method='GET',
+        method_id='compute.targetSslProxies.get',
+        ordered_params=['project', 'targetSslProxy'],
+        path_params=['project', 'targetSslProxy'],
         query_params=[],
-        relative_path=u'projects/{project}/global/targetSslProxies/{targetSslProxy}',
+        relative_path='projects/{project}/global/targetSslProxies/{targetSslProxy}',
         request_field='',
-        request_type_name=u'ComputeTargetSslProxiesGetRequest',
-        response_type_name=u'TargetSslProxy',
+        request_type_name='ComputeTargetSslProxiesGetRequest',
+        response_type_name='TargetSslProxy',
         supports_download=False,
     )
 
@@ -15376,15 +15376,15 @@ For more information, see Deleting snapshots.
           config, request, global_params=global_params)
 
     Insert.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'compute.targetSslProxies.insert',
-        ordered_params=[u'project'],
-        path_params=[u'project'],
-        query_params=[u'requestId'],
-        relative_path=u'projects/{project}/global/targetSslProxies',
-        request_field=u'targetSslProxy',
-        request_type_name=u'ComputeTargetSslProxiesInsertRequest',
-        response_type_name=u'Operation',
+        http_method='POST',
+        method_id='compute.targetSslProxies.insert',
+        ordered_params=['project'],
+        path_params=['project'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/global/targetSslProxies',
+        request_field='targetSslProxy',
+        request_type_name='ComputeTargetSslProxiesInsertRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -15402,15 +15402,15 @@ For more information, see Deleting snapshots.
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'compute.targetSslProxies.list',
-        ordered_params=[u'project'],
-        path_params=[u'project'],
-        query_params=[u'filter', u'maxResults', u'orderBy', u'pageToken'],
-        relative_path=u'projects/{project}/global/targetSslProxies',
+        http_method='GET',
+        method_id='compute.targetSslProxies.list',
+        ordered_params=['project'],
+        path_params=['project'],
+        query_params=['filter', 'maxResults', 'orderBy', 'pageToken'],
+        relative_path='projects/{project}/global/targetSslProxies',
         request_field='',
-        request_type_name=u'ComputeTargetSslProxiesListRequest',
-        response_type_name=u'TargetSslProxyList',
+        request_type_name='ComputeTargetSslProxiesListRequest',
+        response_type_name='TargetSslProxyList',
         supports_download=False,
     )
 
@@ -15428,15 +15428,15 @@ For more information, see Deleting snapshots.
           config, request, global_params=global_params)
 
     SetBackendService.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'compute.targetSslProxies.setBackendService',
-        ordered_params=[u'project', u'targetSslProxy'],
-        path_params=[u'project', u'targetSslProxy'],
-        query_params=[u'requestId'],
-        relative_path=u'projects/{project}/global/targetSslProxies/{targetSslProxy}/setBackendService',
-        request_field=u'targetSslProxiesSetBackendServiceRequest',
-        request_type_name=u'ComputeTargetSslProxiesSetBackendServiceRequest',
-        response_type_name=u'Operation',
+        http_method='POST',
+        method_id='compute.targetSslProxies.setBackendService',
+        ordered_params=['project', 'targetSslProxy'],
+        path_params=['project', 'targetSslProxy'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/global/targetSslProxies/{targetSslProxy}/setBackendService',
+        request_field='targetSslProxiesSetBackendServiceRequest',
+        request_type_name='ComputeTargetSslProxiesSetBackendServiceRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -15454,15 +15454,15 @@ For more information, see Deleting snapshots.
           config, request, global_params=global_params)
 
     SetProxyHeader.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'compute.targetSslProxies.setProxyHeader',
-        ordered_params=[u'project', u'targetSslProxy'],
-        path_params=[u'project', u'targetSslProxy'],
-        query_params=[u'requestId'],
-        relative_path=u'projects/{project}/global/targetSslProxies/{targetSslProxy}/setProxyHeader',
-        request_field=u'targetSslProxiesSetProxyHeaderRequest',
-        request_type_name=u'ComputeTargetSslProxiesSetProxyHeaderRequest',
-        response_type_name=u'Operation',
+        http_method='POST',
+        method_id='compute.targetSslProxies.setProxyHeader',
+        ordered_params=['project', 'targetSslProxy'],
+        path_params=['project', 'targetSslProxy'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/global/targetSslProxies/{targetSslProxy}/setProxyHeader',
+        request_field='targetSslProxiesSetProxyHeaderRequest',
+        request_type_name='ComputeTargetSslProxiesSetProxyHeaderRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -15480,15 +15480,15 @@ For more information, see Deleting snapshots.
           config, request, global_params=global_params)
 
     SetSslCertificates.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'compute.targetSslProxies.setSslCertificates',
-        ordered_params=[u'project', u'targetSslProxy'],
-        path_params=[u'project', u'targetSslProxy'],
-        query_params=[u'requestId'],
-        relative_path=u'projects/{project}/global/targetSslProxies/{targetSslProxy}/setSslCertificates',
-        request_field=u'targetSslProxiesSetSslCertificatesRequest',
-        request_type_name=u'ComputeTargetSslProxiesSetSslCertificatesRequest',
-        response_type_name=u'Operation',
+        http_method='POST',
+        method_id='compute.targetSslProxies.setSslCertificates',
+        ordered_params=['project', 'targetSslProxy'],
+        path_params=['project', 'targetSslProxy'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/global/targetSslProxies/{targetSslProxy}/setSslCertificates',
+        request_field='targetSslProxiesSetSslCertificatesRequest',
+        request_type_name='ComputeTargetSslProxiesSetSslCertificatesRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -15506,15 +15506,15 @@ For more information, see Deleting snapshots.
           config, request, global_params=global_params)
 
     SetSslPolicy.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'compute.targetSslProxies.setSslPolicy',
-        ordered_params=[u'project', u'targetSslProxy'],
-        path_params=[u'project', u'targetSslProxy'],
-        query_params=[u'requestId'],
-        relative_path=u'projects/{project}/global/targetSslProxies/{targetSslProxy}/setSslPolicy',
-        request_field=u'sslPolicyReference',
-        request_type_name=u'ComputeTargetSslProxiesSetSslPolicyRequest',
-        response_type_name=u'Operation',
+        http_method='POST',
+        method_id='compute.targetSslProxies.setSslPolicy',
+        ordered_params=['project', 'targetSslProxy'],
+        path_params=['project', 'targetSslProxy'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/global/targetSslProxies/{targetSslProxy}/setSslPolicy',
+        request_field='sslPolicyReference',
+        request_type_name='ComputeTargetSslProxiesSetSslPolicyRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -15532,22 +15532,22 @@ For more information, see Deleting snapshots.
           config, request, global_params=global_params)
 
     TestIamPermissions.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'compute.targetSslProxies.testIamPermissions',
-        ordered_params=[u'project', u'resource'],
-        path_params=[u'project', u'resource'],
+        http_method='POST',
+        method_id='compute.targetSslProxies.testIamPermissions',
+        ordered_params=['project', 'resource'],
+        path_params=['project', 'resource'],
         query_params=[],
-        relative_path=u'projects/{project}/global/targetSslProxies/{resource}/testIamPermissions',
-        request_field=u'testPermissionsRequest',
-        request_type_name=u'ComputeTargetSslProxiesTestIamPermissionsRequest',
-        response_type_name=u'TestPermissionsResponse',
+        relative_path='projects/{project}/global/targetSslProxies/{resource}/testIamPermissions',
+        request_field='testPermissionsRequest',
+        request_type_name='ComputeTargetSslProxiesTestIamPermissionsRequest',
+        response_type_name='TestPermissionsResponse',
         supports_download=False,
     )
 
   class TargetTcpProxiesService(base_api.BaseApiService):
     """Service class for the targetTcpProxies resource."""
 
-    _NAME = u'targetTcpProxies'
+    _NAME = 'targetTcpProxies'
 
     def __init__(self, client):
       super(ComputeBeta.TargetTcpProxiesService, self).__init__(client)
@@ -15568,15 +15568,15 @@ For more information, see Deleting snapshots.
           config, request, global_params=global_params)
 
     Delete.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'DELETE',
-        method_id=u'compute.targetTcpProxies.delete',
-        ordered_params=[u'project', u'targetTcpProxy'],
-        path_params=[u'project', u'targetTcpProxy'],
-        query_params=[u'requestId'],
-        relative_path=u'projects/{project}/global/targetTcpProxies/{targetTcpProxy}',
+        http_method='DELETE',
+        method_id='compute.targetTcpProxies.delete',
+        ordered_params=['project', 'targetTcpProxy'],
+        path_params=['project', 'targetTcpProxy'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/global/targetTcpProxies/{targetTcpProxy}',
         request_field='',
-        request_type_name=u'ComputeTargetTcpProxiesDeleteRequest',
-        response_type_name=u'Operation',
+        request_type_name='ComputeTargetTcpProxiesDeleteRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -15594,15 +15594,15 @@ For more information, see Deleting snapshots.
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'compute.targetTcpProxies.get',
-        ordered_params=[u'project', u'targetTcpProxy'],
-        path_params=[u'project', u'targetTcpProxy'],
+        http_method='GET',
+        method_id='compute.targetTcpProxies.get',
+        ordered_params=['project', 'targetTcpProxy'],
+        path_params=['project', 'targetTcpProxy'],
         query_params=[],
-        relative_path=u'projects/{project}/global/targetTcpProxies/{targetTcpProxy}',
+        relative_path='projects/{project}/global/targetTcpProxies/{targetTcpProxy}',
         request_field='',
-        request_type_name=u'ComputeTargetTcpProxiesGetRequest',
-        response_type_name=u'TargetTcpProxy',
+        request_type_name='ComputeTargetTcpProxiesGetRequest',
+        response_type_name='TargetTcpProxy',
         supports_download=False,
     )
 
@@ -15620,15 +15620,15 @@ For more information, see Deleting snapshots.
           config, request, global_params=global_params)
 
     Insert.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'compute.targetTcpProxies.insert',
-        ordered_params=[u'project'],
-        path_params=[u'project'],
-        query_params=[u'requestId'],
-        relative_path=u'projects/{project}/global/targetTcpProxies',
-        request_field=u'targetTcpProxy',
-        request_type_name=u'ComputeTargetTcpProxiesInsertRequest',
-        response_type_name=u'Operation',
+        http_method='POST',
+        method_id='compute.targetTcpProxies.insert',
+        ordered_params=['project'],
+        path_params=['project'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/global/targetTcpProxies',
+        request_field='targetTcpProxy',
+        request_type_name='ComputeTargetTcpProxiesInsertRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -15646,15 +15646,15 @@ For more information, see Deleting snapshots.
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'compute.targetTcpProxies.list',
-        ordered_params=[u'project'],
-        path_params=[u'project'],
-        query_params=[u'filter', u'maxResults', u'orderBy', u'pageToken'],
-        relative_path=u'projects/{project}/global/targetTcpProxies',
+        http_method='GET',
+        method_id='compute.targetTcpProxies.list',
+        ordered_params=['project'],
+        path_params=['project'],
+        query_params=['filter', 'maxResults', 'orderBy', 'pageToken'],
+        relative_path='projects/{project}/global/targetTcpProxies',
         request_field='',
-        request_type_name=u'ComputeTargetTcpProxiesListRequest',
-        response_type_name=u'TargetTcpProxyList',
+        request_type_name='ComputeTargetTcpProxiesListRequest',
+        response_type_name='TargetTcpProxyList',
         supports_download=False,
     )
 
@@ -15672,15 +15672,15 @@ For more information, see Deleting snapshots.
           config, request, global_params=global_params)
 
     SetBackendService.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'compute.targetTcpProxies.setBackendService',
-        ordered_params=[u'project', u'targetTcpProxy'],
-        path_params=[u'project', u'targetTcpProxy'],
-        query_params=[u'requestId'],
-        relative_path=u'projects/{project}/global/targetTcpProxies/{targetTcpProxy}/setBackendService',
-        request_field=u'targetTcpProxiesSetBackendServiceRequest',
-        request_type_name=u'ComputeTargetTcpProxiesSetBackendServiceRequest',
-        response_type_name=u'Operation',
+        http_method='POST',
+        method_id='compute.targetTcpProxies.setBackendService',
+        ordered_params=['project', 'targetTcpProxy'],
+        path_params=['project', 'targetTcpProxy'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/global/targetTcpProxies/{targetTcpProxy}/setBackendService',
+        request_field='targetTcpProxiesSetBackendServiceRequest',
+        request_type_name='ComputeTargetTcpProxiesSetBackendServiceRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -15698,22 +15698,22 @@ For more information, see Deleting snapshots.
           config, request, global_params=global_params)
 
     SetProxyHeader.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'compute.targetTcpProxies.setProxyHeader',
-        ordered_params=[u'project', u'targetTcpProxy'],
-        path_params=[u'project', u'targetTcpProxy'],
-        query_params=[u'requestId'],
-        relative_path=u'projects/{project}/global/targetTcpProxies/{targetTcpProxy}/setProxyHeader',
-        request_field=u'targetTcpProxiesSetProxyHeaderRequest',
-        request_type_name=u'ComputeTargetTcpProxiesSetProxyHeaderRequest',
-        response_type_name=u'Operation',
+        http_method='POST',
+        method_id='compute.targetTcpProxies.setProxyHeader',
+        ordered_params=['project', 'targetTcpProxy'],
+        path_params=['project', 'targetTcpProxy'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/global/targetTcpProxies/{targetTcpProxy}/setProxyHeader',
+        request_field='targetTcpProxiesSetProxyHeaderRequest',
+        request_type_name='ComputeTargetTcpProxiesSetProxyHeaderRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
   class TargetVpnGatewaysService(base_api.BaseApiService):
     """Service class for the targetVpnGateways resource."""
 
-    _NAME = u'targetVpnGateways'
+    _NAME = 'targetVpnGateways'
 
     def __init__(self, client):
       super(ComputeBeta.TargetVpnGatewaysService, self).__init__(client)
@@ -15734,15 +15734,15 @@ For more information, see Deleting snapshots.
           config, request, global_params=global_params)
 
     AggregatedList.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'compute.targetVpnGateways.aggregatedList',
-        ordered_params=[u'project'],
-        path_params=[u'project'],
-        query_params=[u'filter', u'includeAllScopes', u'maxResults', u'orderBy', u'pageToken'],
-        relative_path=u'projects/{project}/aggregated/targetVpnGateways',
+        http_method='GET',
+        method_id='compute.targetVpnGateways.aggregatedList',
+        ordered_params=['project'],
+        path_params=['project'],
+        query_params=['filter', 'includeAllScopes', 'maxResults', 'orderBy', 'pageToken'],
+        relative_path='projects/{project}/aggregated/targetVpnGateways',
         request_field='',
-        request_type_name=u'ComputeTargetVpnGatewaysAggregatedListRequest',
-        response_type_name=u'TargetVpnGatewayAggregatedList',
+        request_type_name='ComputeTargetVpnGatewaysAggregatedListRequest',
+        response_type_name='TargetVpnGatewayAggregatedList',
         supports_download=False,
     )
 
@@ -15760,15 +15760,15 @@ For more information, see Deleting snapshots.
           config, request, global_params=global_params)
 
     Delete.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'DELETE',
-        method_id=u'compute.targetVpnGateways.delete',
-        ordered_params=[u'project', u'region', u'targetVpnGateway'],
-        path_params=[u'project', u'region', u'targetVpnGateway'],
-        query_params=[u'requestId'],
-        relative_path=u'projects/{project}/regions/{region}/targetVpnGateways/{targetVpnGateway}',
+        http_method='DELETE',
+        method_id='compute.targetVpnGateways.delete',
+        ordered_params=['project', 'region', 'targetVpnGateway'],
+        path_params=['project', 'region', 'targetVpnGateway'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/regions/{region}/targetVpnGateways/{targetVpnGateway}',
         request_field='',
-        request_type_name=u'ComputeTargetVpnGatewaysDeleteRequest',
-        response_type_name=u'Operation',
+        request_type_name='ComputeTargetVpnGatewaysDeleteRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -15786,15 +15786,15 @@ For more information, see Deleting snapshots.
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'compute.targetVpnGateways.get',
-        ordered_params=[u'project', u'region', u'targetVpnGateway'],
-        path_params=[u'project', u'region', u'targetVpnGateway'],
+        http_method='GET',
+        method_id='compute.targetVpnGateways.get',
+        ordered_params=['project', 'region', 'targetVpnGateway'],
+        path_params=['project', 'region', 'targetVpnGateway'],
         query_params=[],
-        relative_path=u'projects/{project}/regions/{region}/targetVpnGateways/{targetVpnGateway}',
+        relative_path='projects/{project}/regions/{region}/targetVpnGateways/{targetVpnGateway}',
         request_field='',
-        request_type_name=u'ComputeTargetVpnGatewaysGetRequest',
-        response_type_name=u'TargetVpnGateway',
+        request_type_name='ComputeTargetVpnGatewaysGetRequest',
+        response_type_name='TargetVpnGateway',
         supports_download=False,
     )
 
@@ -15812,15 +15812,15 @@ For more information, see Deleting snapshots.
           config, request, global_params=global_params)
 
     Insert.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'compute.targetVpnGateways.insert',
-        ordered_params=[u'project', u'region'],
-        path_params=[u'project', u'region'],
-        query_params=[u'requestId'],
-        relative_path=u'projects/{project}/regions/{region}/targetVpnGateways',
-        request_field=u'targetVpnGateway',
-        request_type_name=u'ComputeTargetVpnGatewaysInsertRequest',
-        response_type_name=u'Operation',
+        http_method='POST',
+        method_id='compute.targetVpnGateways.insert',
+        ordered_params=['project', 'region'],
+        path_params=['project', 'region'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/regions/{region}/targetVpnGateways',
+        request_field='targetVpnGateway',
+        request_type_name='ComputeTargetVpnGatewaysInsertRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -15838,15 +15838,15 @@ For more information, see Deleting snapshots.
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'compute.targetVpnGateways.list',
-        ordered_params=[u'project', u'region'],
-        path_params=[u'project', u'region'],
-        query_params=[u'filter', u'maxResults', u'orderBy', u'pageToken'],
-        relative_path=u'projects/{project}/regions/{region}/targetVpnGateways',
+        http_method='GET',
+        method_id='compute.targetVpnGateways.list',
+        ordered_params=['project', 'region'],
+        path_params=['project', 'region'],
+        query_params=['filter', 'maxResults', 'orderBy', 'pageToken'],
+        relative_path='projects/{project}/regions/{region}/targetVpnGateways',
         request_field='',
-        request_type_name=u'ComputeTargetVpnGatewaysListRequest',
-        response_type_name=u'TargetVpnGatewayList',
+        request_type_name='ComputeTargetVpnGatewaysListRequest',
+        response_type_name='TargetVpnGatewayList',
         supports_download=False,
     )
 
@@ -15864,15 +15864,15 @@ For more information, see Deleting snapshots.
           config, request, global_params=global_params)
 
     SetLabels.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'compute.targetVpnGateways.setLabels',
-        ordered_params=[u'project', u'region', u'resource'],
-        path_params=[u'project', u'region', u'resource'],
-        query_params=[u'requestId'],
-        relative_path=u'projects/{project}/regions/{region}/targetVpnGateways/{resource}/setLabels',
-        request_field=u'regionSetLabelsRequest',
-        request_type_name=u'ComputeTargetVpnGatewaysSetLabelsRequest',
-        response_type_name=u'Operation',
+        http_method='POST',
+        method_id='compute.targetVpnGateways.setLabels',
+        ordered_params=['project', 'region', 'resource'],
+        path_params=['project', 'region', 'resource'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/regions/{region}/targetVpnGateways/{resource}/setLabels',
+        request_field='regionSetLabelsRequest',
+        request_type_name='ComputeTargetVpnGatewaysSetLabelsRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -15890,22 +15890,22 @@ For more information, see Deleting snapshots.
           config, request, global_params=global_params)
 
     TestIamPermissions.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'compute.targetVpnGateways.testIamPermissions',
-        ordered_params=[u'project', u'region', u'resource'],
-        path_params=[u'project', u'region', u'resource'],
+        http_method='POST',
+        method_id='compute.targetVpnGateways.testIamPermissions',
+        ordered_params=['project', 'region', 'resource'],
+        path_params=['project', 'region', 'resource'],
         query_params=[],
-        relative_path=u'projects/{project}/regions/{region}/targetVpnGateways/{resource}/testIamPermissions',
-        request_field=u'testPermissionsRequest',
-        request_type_name=u'ComputeTargetVpnGatewaysTestIamPermissionsRequest',
-        response_type_name=u'TestPermissionsResponse',
+        relative_path='projects/{project}/regions/{region}/targetVpnGateways/{resource}/testIamPermissions',
+        request_field='testPermissionsRequest',
+        request_type_name='ComputeTargetVpnGatewaysTestIamPermissionsRequest',
+        response_type_name='TestPermissionsResponse',
         supports_download=False,
     )
 
   class UrlMapsService(base_api.BaseApiService):
     """Service class for the urlMaps resource."""
 
-    _NAME = u'urlMaps'
+    _NAME = 'urlMaps'
 
     def __init__(self, client):
       super(ComputeBeta.UrlMapsService, self).__init__(client)
@@ -15926,15 +15926,15 @@ For more information, see Deleting snapshots.
           config, request, global_params=global_params)
 
     AggregatedList.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'compute.urlMaps.aggregatedList',
-        ordered_params=[u'project'],
-        path_params=[u'project'],
-        query_params=[u'filter', u'includeAllScopes', u'maxResults', u'orderBy', u'pageToken'],
-        relative_path=u'projects/{project}/aggregated/urlMaps',
+        http_method='GET',
+        method_id='compute.urlMaps.aggregatedList',
+        ordered_params=['project'],
+        path_params=['project'],
+        query_params=['filter', 'includeAllScopes', 'maxResults', 'orderBy', 'pageToken'],
+        relative_path='projects/{project}/aggregated/urlMaps',
         request_field='',
-        request_type_name=u'ComputeUrlMapsAggregatedListRequest',
-        response_type_name=u'UrlMapsAggregatedList',
+        request_type_name='ComputeUrlMapsAggregatedListRequest',
+        response_type_name='UrlMapsAggregatedList',
         supports_download=False,
     )
 
@@ -15952,15 +15952,15 @@ For more information, see Deleting snapshots.
           config, request, global_params=global_params)
 
     Delete.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'DELETE',
-        method_id=u'compute.urlMaps.delete',
-        ordered_params=[u'project', u'urlMap'],
-        path_params=[u'project', u'urlMap'],
-        query_params=[u'requestId'],
-        relative_path=u'projects/{project}/global/urlMaps/{urlMap}',
+        http_method='DELETE',
+        method_id='compute.urlMaps.delete',
+        ordered_params=['project', 'urlMap'],
+        path_params=['project', 'urlMap'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/global/urlMaps/{urlMap}',
         request_field='',
-        request_type_name=u'ComputeUrlMapsDeleteRequest',
-        response_type_name=u'Operation',
+        request_type_name='ComputeUrlMapsDeleteRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -15978,15 +15978,15 @@ For more information, see Deleting snapshots.
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'compute.urlMaps.get',
-        ordered_params=[u'project', u'urlMap'],
-        path_params=[u'project', u'urlMap'],
+        http_method='GET',
+        method_id='compute.urlMaps.get',
+        ordered_params=['project', 'urlMap'],
+        path_params=['project', 'urlMap'],
         query_params=[],
-        relative_path=u'projects/{project}/global/urlMaps/{urlMap}',
+        relative_path='projects/{project}/global/urlMaps/{urlMap}',
         request_field='',
-        request_type_name=u'ComputeUrlMapsGetRequest',
-        response_type_name=u'UrlMap',
+        request_type_name='ComputeUrlMapsGetRequest',
+        response_type_name='UrlMap',
         supports_download=False,
     )
 
@@ -16004,15 +16004,15 @@ For more information, see Deleting snapshots.
           config, request, global_params=global_params)
 
     Insert.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'compute.urlMaps.insert',
-        ordered_params=[u'project'],
-        path_params=[u'project'],
-        query_params=[u'requestId'],
-        relative_path=u'projects/{project}/global/urlMaps',
-        request_field=u'urlMap',
-        request_type_name=u'ComputeUrlMapsInsertRequest',
-        response_type_name=u'Operation',
+        http_method='POST',
+        method_id='compute.urlMaps.insert',
+        ordered_params=['project'],
+        path_params=['project'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/global/urlMaps',
+        request_field='urlMap',
+        request_type_name='ComputeUrlMapsInsertRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -16030,15 +16030,15 @@ For more information, see Deleting snapshots.
           config, request, global_params=global_params)
 
     InvalidateCache.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'compute.urlMaps.invalidateCache',
-        ordered_params=[u'project', u'urlMap'],
-        path_params=[u'project', u'urlMap'],
-        query_params=[u'requestId'],
-        relative_path=u'projects/{project}/global/urlMaps/{urlMap}/invalidateCache',
-        request_field=u'cacheInvalidationRule',
-        request_type_name=u'ComputeUrlMapsInvalidateCacheRequest',
-        response_type_name=u'Operation',
+        http_method='POST',
+        method_id='compute.urlMaps.invalidateCache',
+        ordered_params=['project', 'urlMap'],
+        path_params=['project', 'urlMap'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/global/urlMaps/{urlMap}/invalidateCache',
+        request_field='cacheInvalidationRule',
+        request_type_name='ComputeUrlMapsInvalidateCacheRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -16056,15 +16056,15 @@ For more information, see Deleting snapshots.
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'compute.urlMaps.list',
-        ordered_params=[u'project'],
-        path_params=[u'project'],
-        query_params=[u'filter', u'maxResults', u'orderBy', u'pageToken'],
-        relative_path=u'projects/{project}/global/urlMaps',
+        http_method='GET',
+        method_id='compute.urlMaps.list',
+        ordered_params=['project'],
+        path_params=['project'],
+        query_params=['filter', 'maxResults', 'orderBy', 'pageToken'],
+        relative_path='projects/{project}/global/urlMaps',
         request_field='',
-        request_type_name=u'ComputeUrlMapsListRequest',
-        response_type_name=u'UrlMapList',
+        request_type_name='ComputeUrlMapsListRequest',
+        response_type_name='UrlMapList',
         supports_download=False,
     )
 
@@ -16082,15 +16082,15 @@ For more information, see Deleting snapshots.
           config, request, global_params=global_params)
 
     Patch.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'PATCH',
-        method_id=u'compute.urlMaps.patch',
-        ordered_params=[u'project', u'urlMap'],
-        path_params=[u'project', u'urlMap'],
-        query_params=[u'requestId'],
-        relative_path=u'projects/{project}/global/urlMaps/{urlMap}',
-        request_field=u'urlMapResource',
-        request_type_name=u'ComputeUrlMapsPatchRequest',
-        response_type_name=u'Operation',
+        http_method='PATCH',
+        method_id='compute.urlMaps.patch',
+        ordered_params=['project', 'urlMap'],
+        path_params=['project', 'urlMap'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/global/urlMaps/{urlMap}',
+        request_field='urlMapResource',
+        request_type_name='ComputeUrlMapsPatchRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -16108,15 +16108,15 @@ For more information, see Deleting snapshots.
           config, request, global_params=global_params)
 
     TestIamPermissions.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'compute.urlMaps.testIamPermissions',
-        ordered_params=[u'project', u'resource'],
-        path_params=[u'project', u'resource'],
+        http_method='POST',
+        method_id='compute.urlMaps.testIamPermissions',
+        ordered_params=['project', 'resource'],
+        path_params=['project', 'resource'],
         query_params=[],
-        relative_path=u'projects/{project}/global/urlMaps/{resource}/testIamPermissions',
-        request_field=u'testPermissionsRequest',
-        request_type_name=u'ComputeUrlMapsTestIamPermissionsRequest',
-        response_type_name=u'TestPermissionsResponse',
+        relative_path='projects/{project}/global/urlMaps/{resource}/testIamPermissions',
+        request_field='testPermissionsRequest',
+        request_type_name='ComputeUrlMapsTestIamPermissionsRequest',
+        response_type_name='TestPermissionsResponse',
         supports_download=False,
     )
 
@@ -16134,15 +16134,15 @@ For more information, see Deleting snapshots.
           config, request, global_params=global_params)
 
     Update.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'PUT',
-        method_id=u'compute.urlMaps.update',
-        ordered_params=[u'project', u'urlMap'],
-        path_params=[u'project', u'urlMap'],
-        query_params=[u'requestId'],
-        relative_path=u'projects/{project}/global/urlMaps/{urlMap}',
-        request_field=u'urlMapResource',
-        request_type_name=u'ComputeUrlMapsUpdateRequest',
-        response_type_name=u'Operation',
+        http_method='PUT',
+        method_id='compute.urlMaps.update',
+        ordered_params=['project', 'urlMap'],
+        path_params=['project', 'urlMap'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/global/urlMaps/{urlMap}',
+        request_field='urlMapResource',
+        request_type_name='ComputeUrlMapsUpdateRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -16160,22 +16160,22 @@ For more information, see Deleting snapshots.
           config, request, global_params=global_params)
 
     Validate.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'compute.urlMaps.validate',
-        ordered_params=[u'project', u'urlMap'],
-        path_params=[u'project', u'urlMap'],
+        http_method='POST',
+        method_id='compute.urlMaps.validate',
+        ordered_params=['project', 'urlMap'],
+        path_params=['project', 'urlMap'],
         query_params=[],
-        relative_path=u'projects/{project}/global/urlMaps/{urlMap}/validate',
-        request_field=u'urlMapsValidateRequest',
-        request_type_name=u'ComputeUrlMapsValidateRequest',
-        response_type_name=u'UrlMapsValidateResponse',
+        relative_path='projects/{project}/global/urlMaps/{urlMap}/validate',
+        request_field='urlMapsValidateRequest',
+        request_type_name='ComputeUrlMapsValidateRequest',
+        response_type_name='UrlMapsValidateResponse',
         supports_download=False,
     )
 
   class VpnGatewaysService(base_api.BaseApiService):
     """Service class for the vpnGateways resource."""
 
-    _NAME = u'vpnGateways'
+    _NAME = 'vpnGateways'
 
     def __init__(self, client):
       super(ComputeBeta.VpnGatewaysService, self).__init__(client)
@@ -16196,15 +16196,15 @@ For more information, see Deleting snapshots.
           config, request, global_params=global_params)
 
     AggregatedList.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'compute.vpnGateways.aggregatedList',
-        ordered_params=[u'project'],
-        path_params=[u'project'],
-        query_params=[u'filter', u'includeAllScopes', u'maxResults', u'orderBy', u'pageToken'],
-        relative_path=u'projects/{project}/aggregated/vpnGateways',
+        http_method='GET',
+        method_id='compute.vpnGateways.aggregatedList',
+        ordered_params=['project'],
+        path_params=['project'],
+        query_params=['filter', 'includeAllScopes', 'maxResults', 'orderBy', 'pageToken'],
+        relative_path='projects/{project}/aggregated/vpnGateways',
         request_field='',
-        request_type_name=u'ComputeVpnGatewaysAggregatedListRequest',
-        response_type_name=u'VpnGatewayAggregatedList',
+        request_type_name='ComputeVpnGatewaysAggregatedListRequest',
+        response_type_name='VpnGatewayAggregatedList',
         supports_download=False,
     )
 
@@ -16222,15 +16222,15 @@ For more information, see Deleting snapshots.
           config, request, global_params=global_params)
 
     Delete.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'DELETE',
-        method_id=u'compute.vpnGateways.delete',
-        ordered_params=[u'project', u'region', u'vpnGateway'],
-        path_params=[u'project', u'region', u'vpnGateway'],
-        query_params=[u'requestId'],
-        relative_path=u'projects/{project}/regions/{region}/vpnGateways/{vpnGateway}',
+        http_method='DELETE',
+        method_id='compute.vpnGateways.delete',
+        ordered_params=['project', 'region', 'vpnGateway'],
+        path_params=['project', 'region', 'vpnGateway'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/regions/{region}/vpnGateways/{vpnGateway}',
         request_field='',
-        request_type_name=u'ComputeVpnGatewaysDeleteRequest',
-        response_type_name=u'Operation',
+        request_type_name='ComputeVpnGatewaysDeleteRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -16248,15 +16248,15 @@ For more information, see Deleting snapshots.
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'compute.vpnGateways.get',
-        ordered_params=[u'project', u'region', u'vpnGateway'],
-        path_params=[u'project', u'region', u'vpnGateway'],
+        http_method='GET',
+        method_id='compute.vpnGateways.get',
+        ordered_params=['project', 'region', 'vpnGateway'],
+        path_params=['project', 'region', 'vpnGateway'],
         query_params=[],
-        relative_path=u'projects/{project}/regions/{region}/vpnGateways/{vpnGateway}',
+        relative_path='projects/{project}/regions/{region}/vpnGateways/{vpnGateway}',
         request_field='',
-        request_type_name=u'ComputeVpnGatewaysGetRequest',
-        response_type_name=u'VpnGateway',
+        request_type_name='ComputeVpnGatewaysGetRequest',
+        response_type_name='VpnGateway',
         supports_download=False,
     )
 
@@ -16274,15 +16274,15 @@ For more information, see Deleting snapshots.
           config, request, global_params=global_params)
 
     GetStatus.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'compute.vpnGateways.getStatus',
-        ordered_params=[u'project', u'region', u'vpnGateway'],
-        path_params=[u'project', u'region', u'vpnGateway'],
+        http_method='GET',
+        method_id='compute.vpnGateways.getStatus',
+        ordered_params=['project', 'region', 'vpnGateway'],
+        path_params=['project', 'region', 'vpnGateway'],
         query_params=[],
-        relative_path=u'projects/{project}/regions/{region}/vpnGateways/{vpnGateway}/getStatus',
+        relative_path='projects/{project}/regions/{region}/vpnGateways/{vpnGateway}/getStatus',
         request_field='',
-        request_type_name=u'ComputeVpnGatewaysGetStatusRequest',
-        response_type_name=u'VpnGatewaysGetStatusResponse',
+        request_type_name='ComputeVpnGatewaysGetStatusRequest',
+        response_type_name='VpnGatewaysGetStatusResponse',
         supports_download=False,
     )
 
@@ -16300,15 +16300,15 @@ For more information, see Deleting snapshots.
           config, request, global_params=global_params)
 
     Insert.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'compute.vpnGateways.insert',
-        ordered_params=[u'project', u'region'],
-        path_params=[u'project', u'region'],
-        query_params=[u'requestId'],
-        relative_path=u'projects/{project}/regions/{region}/vpnGateways',
-        request_field=u'vpnGateway',
-        request_type_name=u'ComputeVpnGatewaysInsertRequest',
-        response_type_name=u'Operation',
+        http_method='POST',
+        method_id='compute.vpnGateways.insert',
+        ordered_params=['project', 'region'],
+        path_params=['project', 'region'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/regions/{region}/vpnGateways',
+        request_field='vpnGateway',
+        request_type_name='ComputeVpnGatewaysInsertRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -16326,15 +16326,15 @@ For more information, see Deleting snapshots.
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'compute.vpnGateways.list',
-        ordered_params=[u'project', u'region'],
-        path_params=[u'project', u'region'],
-        query_params=[u'filter', u'maxResults', u'orderBy', u'pageToken'],
-        relative_path=u'projects/{project}/regions/{region}/vpnGateways',
+        http_method='GET',
+        method_id='compute.vpnGateways.list',
+        ordered_params=['project', 'region'],
+        path_params=['project', 'region'],
+        query_params=['filter', 'maxResults', 'orderBy', 'pageToken'],
+        relative_path='projects/{project}/regions/{region}/vpnGateways',
         request_field='',
-        request_type_name=u'ComputeVpnGatewaysListRequest',
-        response_type_name=u'VpnGatewayList',
+        request_type_name='ComputeVpnGatewaysListRequest',
+        response_type_name='VpnGatewayList',
         supports_download=False,
     )
 
@@ -16352,22 +16352,22 @@ For more information, see Deleting snapshots.
           config, request, global_params=global_params)
 
     SetLabels.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'compute.vpnGateways.setLabels',
-        ordered_params=[u'project', u'region', u'resource'],
-        path_params=[u'project', u'region', u'resource'],
-        query_params=[u'requestId'],
-        relative_path=u'projects/{project}/regions/{region}/vpnGateways/{resource}/setLabels',
-        request_field=u'regionSetLabelsRequest',
-        request_type_name=u'ComputeVpnGatewaysSetLabelsRequest',
-        response_type_name=u'Operation',
+        http_method='POST',
+        method_id='compute.vpnGateways.setLabels',
+        ordered_params=['project', 'region', 'resource'],
+        path_params=['project', 'region', 'resource'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/regions/{region}/vpnGateways/{resource}/setLabels',
+        request_field='regionSetLabelsRequest',
+        request_type_name='ComputeVpnGatewaysSetLabelsRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
   class VpnTunnelsService(base_api.BaseApiService):
     """Service class for the vpnTunnels resource."""
 
-    _NAME = u'vpnTunnels'
+    _NAME = 'vpnTunnels'
 
     def __init__(self, client):
       super(ComputeBeta.VpnTunnelsService, self).__init__(client)
@@ -16388,15 +16388,15 @@ For more information, see Deleting snapshots.
           config, request, global_params=global_params)
 
     AggregatedList.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'compute.vpnTunnels.aggregatedList',
-        ordered_params=[u'project'],
-        path_params=[u'project'],
-        query_params=[u'filter', u'includeAllScopes', u'maxResults', u'orderBy', u'pageToken'],
-        relative_path=u'projects/{project}/aggregated/vpnTunnels',
+        http_method='GET',
+        method_id='compute.vpnTunnels.aggregatedList',
+        ordered_params=['project'],
+        path_params=['project'],
+        query_params=['filter', 'includeAllScopes', 'maxResults', 'orderBy', 'pageToken'],
+        relative_path='projects/{project}/aggregated/vpnTunnels',
         request_field='',
-        request_type_name=u'ComputeVpnTunnelsAggregatedListRequest',
-        response_type_name=u'VpnTunnelAggregatedList',
+        request_type_name='ComputeVpnTunnelsAggregatedListRequest',
+        response_type_name='VpnTunnelAggregatedList',
         supports_download=False,
     )
 
@@ -16414,15 +16414,15 @@ For more information, see Deleting snapshots.
           config, request, global_params=global_params)
 
     Delete.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'DELETE',
-        method_id=u'compute.vpnTunnels.delete',
-        ordered_params=[u'project', u'region', u'vpnTunnel'],
-        path_params=[u'project', u'region', u'vpnTunnel'],
-        query_params=[u'requestId'],
-        relative_path=u'projects/{project}/regions/{region}/vpnTunnels/{vpnTunnel}',
+        http_method='DELETE',
+        method_id='compute.vpnTunnels.delete',
+        ordered_params=['project', 'region', 'vpnTunnel'],
+        path_params=['project', 'region', 'vpnTunnel'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/regions/{region}/vpnTunnels/{vpnTunnel}',
         request_field='',
-        request_type_name=u'ComputeVpnTunnelsDeleteRequest',
-        response_type_name=u'Operation',
+        request_type_name='ComputeVpnTunnelsDeleteRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -16440,15 +16440,15 @@ For more information, see Deleting snapshots.
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'compute.vpnTunnels.get',
-        ordered_params=[u'project', u'region', u'vpnTunnel'],
-        path_params=[u'project', u'region', u'vpnTunnel'],
+        http_method='GET',
+        method_id='compute.vpnTunnels.get',
+        ordered_params=['project', 'region', 'vpnTunnel'],
+        path_params=['project', 'region', 'vpnTunnel'],
         query_params=[],
-        relative_path=u'projects/{project}/regions/{region}/vpnTunnels/{vpnTunnel}',
+        relative_path='projects/{project}/regions/{region}/vpnTunnels/{vpnTunnel}',
         request_field='',
-        request_type_name=u'ComputeVpnTunnelsGetRequest',
-        response_type_name=u'VpnTunnel',
+        request_type_name='ComputeVpnTunnelsGetRequest',
+        response_type_name='VpnTunnel',
         supports_download=False,
     )
 
@@ -16466,15 +16466,15 @@ For more information, see Deleting snapshots.
           config, request, global_params=global_params)
 
     Insert.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'compute.vpnTunnels.insert',
-        ordered_params=[u'project', u'region'],
-        path_params=[u'project', u'region'],
-        query_params=[u'requestId'],
-        relative_path=u'projects/{project}/regions/{region}/vpnTunnels',
-        request_field=u'vpnTunnel',
-        request_type_name=u'ComputeVpnTunnelsInsertRequest',
-        response_type_name=u'Operation',
+        http_method='POST',
+        method_id='compute.vpnTunnels.insert',
+        ordered_params=['project', 'region'],
+        path_params=['project', 'region'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/regions/{region}/vpnTunnels',
+        request_field='vpnTunnel',
+        request_type_name='ComputeVpnTunnelsInsertRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -16492,15 +16492,15 @@ For more information, see Deleting snapshots.
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'compute.vpnTunnels.list',
-        ordered_params=[u'project', u'region'],
-        path_params=[u'project', u'region'],
-        query_params=[u'filter', u'maxResults', u'orderBy', u'pageToken'],
-        relative_path=u'projects/{project}/regions/{region}/vpnTunnels',
+        http_method='GET',
+        method_id='compute.vpnTunnels.list',
+        ordered_params=['project', 'region'],
+        path_params=['project', 'region'],
+        query_params=['filter', 'maxResults', 'orderBy', 'pageToken'],
+        relative_path='projects/{project}/regions/{region}/vpnTunnels',
         request_field='',
-        request_type_name=u'ComputeVpnTunnelsListRequest',
-        response_type_name=u'VpnTunnelList',
+        request_type_name='ComputeVpnTunnelsListRequest',
+        response_type_name='VpnTunnelList',
         supports_download=False,
     )
 
@@ -16518,15 +16518,15 @@ For more information, see Deleting snapshots.
           config, request, global_params=global_params)
 
     SetLabels.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'compute.vpnTunnels.setLabels',
-        ordered_params=[u'project', u'region', u'resource'],
-        path_params=[u'project', u'region', u'resource'],
-        query_params=[u'requestId'],
-        relative_path=u'projects/{project}/regions/{region}/vpnTunnels/{resource}/setLabels',
-        request_field=u'regionSetLabelsRequest',
-        request_type_name=u'ComputeVpnTunnelsSetLabelsRequest',
-        response_type_name=u'Operation',
+        http_method='POST',
+        method_id='compute.vpnTunnels.setLabels',
+        ordered_params=['project', 'region', 'resource'],
+        path_params=['project', 'region', 'resource'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/regions/{region}/vpnTunnels/{resource}/setLabels',
+        request_field='regionSetLabelsRequest',
+        request_type_name='ComputeVpnTunnelsSetLabelsRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -16544,22 +16544,22 @@ For more information, see Deleting snapshots.
           config, request, global_params=global_params)
 
     TestIamPermissions.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'compute.vpnTunnels.testIamPermissions',
-        ordered_params=[u'project', u'region', u'resource'],
-        path_params=[u'project', u'region', u'resource'],
+        http_method='POST',
+        method_id='compute.vpnTunnels.testIamPermissions',
+        ordered_params=['project', 'region', 'resource'],
+        path_params=['project', 'region', 'resource'],
         query_params=[],
-        relative_path=u'projects/{project}/regions/{region}/vpnTunnels/{resource}/testIamPermissions',
-        request_field=u'testPermissionsRequest',
-        request_type_name=u'ComputeVpnTunnelsTestIamPermissionsRequest',
-        response_type_name=u'TestPermissionsResponse',
+        relative_path='projects/{project}/regions/{region}/vpnTunnels/{resource}/testIamPermissions',
+        request_field='testPermissionsRequest',
+        request_type_name='ComputeVpnTunnelsTestIamPermissionsRequest',
+        response_type_name='TestPermissionsResponse',
         supports_download=False,
     )
 
   class ZoneOperationsService(base_api.BaseApiService):
     """Service class for the zoneOperations resource."""
 
-    _NAME = u'zoneOperations'
+    _NAME = 'zoneOperations'
 
     def __init__(self, client):
       super(ComputeBeta.ZoneOperationsService, self).__init__(client)
@@ -16580,15 +16580,15 @@ For more information, see Deleting snapshots.
           config, request, global_params=global_params)
 
     Delete.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'DELETE',
-        method_id=u'compute.zoneOperations.delete',
-        ordered_params=[u'project', u'zone', u'operation'],
-        path_params=[u'operation', u'project', u'zone'],
+        http_method='DELETE',
+        method_id='compute.zoneOperations.delete',
+        ordered_params=['project', 'zone', 'operation'],
+        path_params=['operation', 'project', 'zone'],
         query_params=[],
-        relative_path=u'projects/{project}/zones/{zone}/operations/{operation}',
+        relative_path='projects/{project}/zones/{zone}/operations/{operation}',
         request_field='',
-        request_type_name=u'ComputeZoneOperationsDeleteRequest',
-        response_type_name=u'ComputeZoneOperationsDeleteResponse',
+        request_type_name='ComputeZoneOperationsDeleteRequest',
+        response_type_name='ComputeZoneOperationsDeleteResponse',
         supports_download=False,
     )
 
@@ -16606,15 +16606,15 @@ For more information, see Deleting snapshots.
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'compute.zoneOperations.get',
-        ordered_params=[u'project', u'zone', u'operation'],
-        path_params=[u'operation', u'project', u'zone'],
+        http_method='GET',
+        method_id='compute.zoneOperations.get',
+        ordered_params=['project', 'zone', 'operation'],
+        path_params=['operation', 'project', 'zone'],
         query_params=[],
-        relative_path=u'projects/{project}/zones/{zone}/operations/{operation}',
+        relative_path='projects/{project}/zones/{zone}/operations/{operation}',
         request_field='',
-        request_type_name=u'ComputeZoneOperationsGetRequest',
-        response_type_name=u'Operation',
+        request_type_name='ComputeZoneOperationsGetRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -16632,15 +16632,15 @@ For more information, see Deleting snapshots.
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'compute.zoneOperations.list',
-        ordered_params=[u'project', u'zone'],
-        path_params=[u'project', u'zone'],
-        query_params=[u'filter', u'maxResults', u'orderBy', u'pageToken'],
-        relative_path=u'projects/{project}/zones/{zone}/operations',
+        http_method='GET',
+        method_id='compute.zoneOperations.list',
+        ordered_params=['project', 'zone'],
+        path_params=['project', 'zone'],
+        query_params=['filter', 'maxResults', 'orderBy', 'pageToken'],
+        relative_path='projects/{project}/zones/{zone}/operations',
         request_field='',
-        request_type_name=u'ComputeZoneOperationsListRequest',
-        response_type_name=u'OperationList',
+        request_type_name='ComputeZoneOperationsListRequest',
+        response_type_name='OperationList',
         supports_download=False,
     )
 
@@ -16662,22 +16662,22 @@ This method is called on a best-effort basis. Specifically:
           config, request, global_params=global_params)
 
     Wait.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'compute.zoneOperations.wait',
-        ordered_params=[u'project', u'zone', u'operation'],
-        path_params=[u'operation', u'project', u'zone'],
+        http_method='POST',
+        method_id='compute.zoneOperations.wait',
+        ordered_params=['project', 'zone', 'operation'],
+        path_params=['operation', 'project', 'zone'],
         query_params=[],
-        relative_path=u'projects/{project}/zones/{zone}/operations/{operation}/wait',
+        relative_path='projects/{project}/zones/{zone}/operations/{operation}/wait',
         request_field='',
-        request_type_name=u'ComputeZoneOperationsWaitRequest',
-        response_type_name=u'Operation',
+        request_type_name='ComputeZoneOperationsWaitRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
   class ZonesService(base_api.BaseApiService):
     """Service class for the zones resource."""
 
-    _NAME = u'zones'
+    _NAME = 'zones'
 
     def __init__(self, client):
       super(ComputeBeta.ZonesService, self).__init__(client)
@@ -16698,15 +16698,15 @@ This method is called on a best-effort basis. Specifically:
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'compute.zones.get',
-        ordered_params=[u'project', u'zone'],
-        path_params=[u'project', u'zone'],
+        http_method='GET',
+        method_id='compute.zones.get',
+        ordered_params=['project', 'zone'],
+        path_params=['project', 'zone'],
         query_params=[],
-        relative_path=u'projects/{project}/zones/{zone}',
+        relative_path='projects/{project}/zones/{zone}',
         request_field='',
-        request_type_name=u'ComputeZonesGetRequest',
-        response_type_name=u'Zone',
+        request_type_name='ComputeZonesGetRequest',
+        response_type_name='Zone',
         supports_download=False,
     )
 
@@ -16724,14 +16724,14 @@ This method is called on a best-effort basis. Specifically:
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'compute.zones.list',
-        ordered_params=[u'project'],
-        path_params=[u'project'],
-        query_params=[u'filter', u'maxResults', u'orderBy', u'pageToken'],
-        relative_path=u'projects/{project}/zones',
+        http_method='GET',
+        method_id='compute.zones.list',
+        ordered_params=['project'],
+        path_params=['project'],
+        query_params=['filter', 'maxResults', 'orderBy', 'pageToken'],
+        relative_path='projects/{project}/zones',
         request_field='',
-        request_type_name=u'ComputeZonesListRequest',
-        response_type_name=u'ZoneList',
+        request_type_name='ComputeZonesListRequest',
+        response_type_name='ZoneList',
         supports_download=False,
     )

@@ -55,7 +55,7 @@ class Change(_messages.Message):
   deletions = _messages.MessageField('ResourceRecordSet', 2, repeated=True)
   id = _messages.StringField(3)
   isServing = _messages.BooleanField(4)
-  kind = _messages.StringField(5, default=u'dns#change')
+  kind = _messages.StringField(5, default='dns#change')
   startTime = _messages.StringField(6)
   status = _messages.EnumField('StatusValueValuesEnum', 7)
 
@@ -81,7 +81,7 @@ class ChangesListResponse(_messages.Message):
 
   changes = _messages.MessageField('Change', 1, repeated=True)
   header = _messages.MessageField('ResponseHeader', 2)
-  kind = _messages.StringField(3, default=u'dns#changesListResponse')
+  kind = _messages.StringField(3, default='dns#changesListResponse')
   nextPageToken = _messages.StringField(4)
 
 
@@ -209,7 +209,7 @@ class DnsChangesListRequest(_messages.Message):
   maxResults = _messages.IntegerField(2, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(3)
   project = _messages.StringField(4, required=True)
-  sortBy = _messages.EnumField('SortByValueValuesEnum', 5, default=u'changeSequence')
+  sortBy = _messages.EnumField('SortByValueValuesEnum', 5, default='changeSequence')
   sortOrder = _messages.StringField(6)
 
 
@@ -345,7 +345,7 @@ class DnsKey(_messages.Message):
   isActive = _messages.BooleanField(6)
   keyLength = _messages.IntegerField(7, variant=_messages.Variant.UINT32)
   keyTag = _messages.IntegerField(8, variant=_messages.Variant.INT32)
-  kind = _messages.StringField(9, default=u'dns#dnsKey')
+  kind = _messages.StringField(9, default='dns#dnsKey')
   publicKey = _messages.StringField(10)
   type = _messages.EnumField('TypeValueValuesEnum', 11)
 
@@ -437,7 +437,7 @@ class DnsKeySpec(_messages.Message):
   algorithm = _messages.EnumField('AlgorithmValueValuesEnum', 1)
   keyLength = _messages.IntegerField(2, variant=_messages.Variant.UINT32)
   keyType = _messages.EnumField('KeyTypeValueValuesEnum', 3)
-  kind = _messages.StringField(4, default=u'dns#dnsKeySpec')
+  kind = _messages.StringField(4, default='dns#dnsKeySpec')
 
 
 class DnsKeysListResponse(_messages.Message):
@@ -460,7 +460,7 @@ class DnsKeysListResponse(_messages.Message):
 
   dnsKeys = _messages.MessageField('DnsKey', 1, repeated=True)
   header = _messages.MessageField('ResponseHeader', 2)
-  kind = _messages.StringField(3, default=u'dns#dnsKeysListResponse')
+  kind = _messages.StringField(3, default='dns#dnsKeysListResponse')
   nextPageToken = _messages.StringField(4)
 
 
@@ -514,7 +514,7 @@ class DnsManagedZoneOperationsListRequest(_messages.Message):
   maxResults = _messages.IntegerField(2, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(3)
   project = _messages.StringField(4, required=True)
-  sortBy = _messages.EnumField('SortByValueValuesEnum', 5, default=u'startTime')
+  sortBy = _messages.EnumField('SortByValueValuesEnum', 5, default='startTime')
 
 
 class DnsManagedZonesCreateRequest(_messages.Message):
@@ -863,7 +863,7 @@ class ManagedZone(_messages.Message):
   dnssecConfig = _messages.MessageField('ManagedZoneDnsSecConfig', 4)
   forwardingConfig = _messages.MessageField('ManagedZoneForwardingConfig', 5)
   id = _messages.IntegerField(6, variant=_messages.Variant.UINT64)
-  kind = _messages.StringField(7, default=u'dns#managedZone')
+  kind = _messages.StringField(7, default='dns#managedZone')
   labels = _messages.MessageField('LabelsValue', 8)
   name = _messages.StringField(9)
   nameServerSet = _messages.StringField(10)
@@ -918,7 +918,7 @@ class ManagedZoneDnsSecConfig(_messages.Message):
     transfer = 2
 
   defaultKeySpecs = _messages.MessageField('DnsKeySpec', 1, repeated=True)
-  kind = _messages.StringField(2, default=u'dns#managedZoneDnsSecConfig')
+  kind = _messages.StringField(2, default='dns#managedZoneDnsSecConfig')
   nonExistence = _messages.EnumField('NonExistenceValueValuesEnum', 3)
   state = _messages.EnumField('StateValueValuesEnum', 4)
 
@@ -933,7 +933,7 @@ class ManagedZoneForwardingConfig(_messages.Message):
       given.
   """
 
-  kind = _messages.StringField(1, default=u'dns#managedZoneForwardingConfig')
+  kind = _messages.StringField(1, default='dns#managedZoneForwardingConfig')
   targetNameServers = _messages.MessageField('ManagedZoneForwardingConfigNameServerTarget', 2, repeated=True)
 
 
@@ -976,7 +976,7 @@ class ManagedZoneForwardingConfigNameServerTarget(_messages.Message):
 
   forwardingPath = _messages.EnumField('ForwardingPathValueValuesEnum', 1)
   ipv4Address = _messages.StringField(2)
-  kind = _messages.StringField(3, default=u'dns#managedZoneForwardingConfigNameServerTarget')
+  kind = _messages.StringField(3, default='dns#managedZoneForwardingConfigNameServerTarget')
 
 
 class ManagedZoneOperationsListResponse(_messages.Message):
@@ -998,7 +998,7 @@ class ManagedZoneOperationsListResponse(_messages.Message):
   """
 
   header = _messages.MessageField('ResponseHeader', 1)
-  kind = _messages.StringField(2, default=u'dns#managedZoneOperationsListResponse')
+  kind = _messages.StringField(2, default='dns#managedZoneOperationsListResponse')
   nextPageToken = _messages.StringField(3)
   operations = _messages.MessageField('Operation', 4, repeated=True)
 
@@ -1011,7 +1011,7 @@ class ManagedZonePeeringConfig(_messages.Message):
     targetNetwork: The network with which to peer.
   """
 
-  kind = _messages.StringField(1, default=u'dns#managedZonePeeringConfig')
+  kind = _messages.StringField(1, default='dns#managedZonePeeringConfig')
   targetNetwork = _messages.MessageField('ManagedZonePeeringConfigTargetNetwork', 2)
 
 
@@ -1031,7 +1031,7 @@ class ManagedZonePeeringConfigTargetNetwork(_messages.Message):
   """
 
   deactivateTime = _messages.StringField(1)
-  kind = _messages.StringField(2, default=u'dns#managedZonePeeringConfigTargetNetwork')
+  kind = _messages.StringField(2, default='dns#managedZonePeeringConfigTargetNetwork')
   networkUrl = _messages.StringField(3)
 
 
@@ -1043,7 +1043,7 @@ class ManagedZonePrivateVisibilityConfig(_messages.Message):
     networks: The list of VPC networks that can see this zone.
   """
 
-  kind = _messages.StringField(1, default=u'dns#managedZonePrivateVisibilityConfig')
+  kind = _messages.StringField(1, default='dns#managedZonePrivateVisibilityConfig')
   networks = _messages.MessageField('ManagedZonePrivateVisibilityConfigNetwork', 2, repeated=True)
 
 
@@ -1057,7 +1057,7 @@ class ManagedZonePrivateVisibilityConfigNetwork(_messages.Message):
       {project}/global/networks/{network}
   """
 
-  kind = _messages.StringField(1, default=u'dns#managedZonePrivateVisibilityConfigNetwork')
+  kind = _messages.StringField(1, default='dns#managedZonePrivateVisibilityConfigNetwork')
   networkUrl = _messages.StringField(2)
 
 
@@ -1068,7 +1068,7 @@ class ManagedZoneReverseLookupConfig(_messages.Message):
     kind: A string attribute.
   """
 
-  kind = _messages.StringField(1, default=u'dns#managedZoneReverseLookupConfig')
+  kind = _messages.StringField(1, default='dns#managedZoneReverseLookupConfig')
 
 
 class ManagedZoneServiceDirectoryConfig(_messages.Message):
@@ -1080,7 +1080,7 @@ class ManagedZoneServiceDirectoryConfig(_messages.Message):
       zone.
   """
 
-  kind = _messages.StringField(1, default=u'dns#managedZoneServiceDirectoryConfig')
+  kind = _messages.StringField(1, default='dns#managedZoneServiceDirectoryConfig')
   namespace = _messages.MessageField('ManagedZoneServiceDirectoryConfigNamespace', 2)
 
 
@@ -1098,7 +1098,7 @@ class ManagedZoneServiceDirectoryConfigNamespace(_messages.Message):
   """
 
   deletionTime = _messages.StringField(1)
-  kind = _messages.StringField(2, default=u'dns#managedZoneServiceDirectoryConfigNamespace')
+  kind = _messages.StringField(2, default='dns#managedZoneServiceDirectoryConfigNamespace')
   namespaceUrl = _messages.StringField(3)
 
 
@@ -1121,7 +1121,7 @@ class ManagedZonesListResponse(_messages.Message):
   """
 
   header = _messages.MessageField('ResponseHeader', 1)
-  kind = _messages.StringField(2, default=u'dns#managedZonesListResponse')
+  kind = _messages.StringField(2, default='dns#managedZonesListResponse')
   managedZones = _messages.MessageField('ManagedZone', 3, repeated=True)
   nextPageToken = _messages.StringField(4)
 
@@ -1176,7 +1176,7 @@ class Operation(_messages.Message):
 
   dnsKeyContext = _messages.MessageField('OperationDnsKeyContext', 1)
   id = _messages.StringField(2)
-  kind = _messages.StringField(3, default=u'dns#operation')
+  kind = _messages.StringField(3, default='dns#operation')
   startTime = _messages.StringField(4)
   status = _messages.EnumField('StatusValueValuesEnum', 5)
   type = _messages.StringField(6)
@@ -1242,7 +1242,7 @@ class PeeringZonesListResponse(_messages.Message):
   """
 
   header = _messages.MessageField('ResponseHeader', 1)
-  kind = _messages.StringField(2, default=u'dns#peeringZonesListResponse')
+  kind = _messages.StringField(2, default='dns#peeringZonesListResponse')
   nextPageToken = _messages.StringField(3)
   peeringZones = _messages.MessageField('ManagedZone', 4, repeated=True)
 
@@ -1270,7 +1270,7 @@ class PoliciesListResponse(_messages.Message):
   """
 
   header = _messages.MessageField('ResponseHeader', 1)
-  kind = _messages.StringField(2, default=u'dns#policiesListResponse')
+  kind = _messages.StringField(2, default='dns#policiesListResponse')
   nextPageToken = _messages.StringField(3)
   policies = _messages.MessageField('Policy', 4, repeated=True)
 
@@ -1330,7 +1330,7 @@ class Policy(_messages.Message):
   enableInboundForwarding = _messages.BooleanField(3)
   enableLogging = _messages.BooleanField(4)
   id = _messages.IntegerField(5, variant=_messages.Variant.UINT64)
-  kind = _messages.StringField(6, default=u'dns#policy')
+  kind = _messages.StringField(6, default='dns#policy')
   name = _messages.StringField(7)
   networks = _messages.MessageField('PolicyNetwork', 8, repeated=True)
 
@@ -1346,7 +1346,7 @@ class PolicyAlternativeNameServerConfig(_messages.Message):
       alternative name server is specified.
   """
 
-  kind = _messages.StringField(1, default=u'dns#policyAlternativeNameServerConfig')
+  kind = _messages.StringField(1, default='dns#policyAlternativeNameServerConfig')
   targetNameServers = _messages.MessageField('PolicyAlternativeNameServerConfigTargetNameServer', 2, repeated=True)
 
 
@@ -1389,7 +1389,7 @@ class PolicyAlternativeNameServerConfigTargetNameServer(_messages.Message):
 
   forwardingPath = _messages.EnumField('ForwardingPathValueValuesEnum', 1)
   ipv4Address = _messages.StringField(2)
-  kind = _messages.StringField(3, default=u'dns#policyAlternativeNameServerConfigTargetNameServer')
+  kind = _messages.StringField(3, default='dns#policyAlternativeNameServerConfigTargetNameServer')
 
 
 class PolicyNetwork(_messages.Message):
@@ -1402,7 +1402,7 @@ class PolicyNetwork(_messages.Message):
       {project}/global/networks/{network}
   """
 
-  kind = _messages.StringField(1, default=u'dns#policyNetwork')
+  kind = _messages.StringField(1, default='dns#policyNetwork')
   networkUrl = _messages.StringField(2)
 
 
@@ -1422,7 +1422,7 @@ class Project(_messages.Message):
   """
 
   id = _messages.StringField(1)
-  kind = _messages.StringField(2, default=u'dns#project')
+  kind = _messages.StringField(2, default='dns#project')
   number = _messages.IntegerField(3, variant=_messages.Variant.UINT64)
   quota = _messages.MessageField('Quota', 4)
   whitelistedFeatures = _messages.StringField(5, repeated=True)
@@ -1460,7 +1460,7 @@ class Quota(_messages.Message):
   """
 
   dnsKeysPerManagedZone = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  kind = _messages.StringField(2, default=u'dns#quota')
+  kind = _messages.StringField(2, default='dns#quota')
   managedZones = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   managedZonesPerNetwork = _messages.IntegerField(4, variant=_messages.Variant.INT32)
   networksPerManagedZone = _messages.IntegerField(5, variant=_messages.Variant.INT32)
@@ -1492,7 +1492,7 @@ class ResourceRecordSet(_messages.Message):
       record types</a>.
   """
 
-  kind = _messages.StringField(1, default=u'dns#resourceRecordSet')
+  kind = _messages.StringField(1, default='dns#resourceRecordSet')
   name = _messages.StringField(2)
   rrdatas = _messages.StringField(3, repeated=True)
   signatureRrdatas = _messages.StringField(4, repeated=True)
@@ -1519,7 +1519,7 @@ class ResourceRecordSetsListResponse(_messages.Message):
   """
 
   header = _messages.MessageField('ResponseHeader', 1)
-  kind = _messages.StringField(2, default=u'dns#resourceRecordSetsListResponse')
+  kind = _messages.StringField(2, default='dns#resourceRecordSetsListResponse')
   nextPageToken = _messages.StringField(3)
   rrsets = _messages.MessageField('ResourceRecordSet', 4, repeated=True)
 
@@ -1587,7 +1587,7 @@ class StandardQueryParameters(_messages.Message):
 
   f__xgafv = _messages.EnumField('FXgafvValueValuesEnum', 1)
   access_token = _messages.StringField(2)
-  alt = _messages.EnumField('AltValueValuesEnum', 3, default=u'json')
+  alt = _messages.EnumField('AltValueValuesEnum', 3, default='json')
   callback = _messages.StringField(4)
   fields = _messages.StringField(5)
   key = _messages.StringField(6)

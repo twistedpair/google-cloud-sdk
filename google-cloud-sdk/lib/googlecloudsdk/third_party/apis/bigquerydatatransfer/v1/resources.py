@@ -28,7 +28,7 @@ class Collections(enum.Enum):
       'projects',
       'projects/{projectsId}',
       {},
-      [u'projectsId'],
+      ['projectsId'],
       True
   )
   PROJECTS_DATASOURCES = (
@@ -38,7 +38,7 @@ class Collections(enum.Enum):
           '':
               'projects/{projectsId}/dataSources/{dataSourcesId}',
       },
-      [u'name'],
+      ['name'],
       True
   )
   PROJECTS_LOCATIONS = (
@@ -48,7 +48,7 @@ class Collections(enum.Enum):
           '':
               'projects/{projectsId}/locations/{locationsId}',
       },
-      [u'name'],
+      ['name'],
       True
   )
   PROJECTS_LOCATIONS_DATASOURCES = (
@@ -59,7 +59,7 @@ class Collections(enum.Enum):
               'projects/{projectsId}/locations/{locationsId}/dataSources/'
               '{dataSourcesId}',
       },
-      [u'name'],
+      ['name'],
       True
   )
   PROJECTS_LOCATIONS_TRANSFERCONFIGS = (
@@ -70,7 +70,7 @@ class Collections(enum.Enum):
               'projects/{projectsId}/locations/{locationsId}/transferConfigs/'
               '{transferConfigsId}',
       },
-      [u'name'],
+      ['name'],
       True
   )
   PROJECTS_LOCATIONS_TRANSFERCONFIGS_RUNS = (
@@ -81,7 +81,7 @@ class Collections(enum.Enum):
               'projects/{projectsId}/locations/{locationsId}/transferConfigs/'
               '{transferConfigsId}/runs/{runsId}',
       },
-      [u'name'],
+      ['name'],
       True
   )
   PROJECTS_TRANSFERCONFIGS = (
@@ -91,7 +91,7 @@ class Collections(enum.Enum):
           '':
               'projects/{projectsId}/transferConfigs/{transferConfigsId}',
       },
-      [u'name'],
+      ['name'],
       True
   )
   PROJECTS_TRANSFERCONFIGS_RUNS = (
@@ -102,7 +102,7 @@ class Collections(enum.Enum):
               'projects/{projectsId}/transferConfigs/{transferConfigsId}/'
               'runs/{runsId}',
       },
-      [u'name'],
+      ['name'],
       True
   )
 

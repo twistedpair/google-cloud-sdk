@@ -8,17 +8,17 @@ class BinaryauthorizationV1beta1(base_api.BaseApiClient):
   """Generated client library for service binaryauthorization version v1beta1."""
 
   MESSAGES_MODULE = messages
-  BASE_URL = u'https://binaryauthorization.googleapis.com/'
-  MTLS_BASE_URL = u'https://binaryauthorization.mtls.googleapis.com/'
+  BASE_URL = 'https://binaryauthorization.googleapis.com/'
+  MTLS_BASE_URL = 'https://binaryauthorization.mtls.googleapis.com/'
 
-  _PACKAGE = u'binaryauthorization'
-  _SCOPES = [u'https://www.googleapis.com/auth/cloud-platform']
-  _VERSION = u'v1beta1'
+  _PACKAGE = 'binaryauthorization'
+  _SCOPES = ['https://www.googleapis.com/auth/cloud-platform']
+  _VERSION = 'v1beta1'
   _CLIENT_ID = '1042881264118.apps.googleusercontent.com'
   _CLIENT_SECRET = 'x_Tw5K8nnjoRAqULM9PFAC2b'
-  _USER_AGENT = u'google-cloud-sdk'
-  _CLIENT_CLASS_NAME = u'BinaryauthorizationV1beta1'
-  _URL_VERSION = u'v1beta1'
+  _USER_AGENT = 'google-cloud-sdk'
+  _CLIENT_CLASS_NAME = 'BinaryauthorizationV1beta1'
+  _URL_VERSION = 'v1beta1'
   _API_KEY = None
 
   def __init__(self, url='', credentials=None,
@@ -43,7 +43,7 @@ class BinaryauthorizationV1beta1(base_api.BaseApiClient):
   class ProjectsAttestorsService(base_api.BaseApiService):
     """Service class for the projects_attestors resource."""
 
-    _NAME = u'projects_attestors'
+    _NAME = 'projects_attestors'
 
     def __init__(self, client):
       super(BinaryauthorizationV1beta1.ProjectsAttestorsService, self).__init__(client)
@@ -67,16 +67,16 @@ attestor already exists.
           config, request, global_params=global_params)
 
     Create.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/projects/{projectsId}/attestors',
-        http_method=u'POST',
-        method_id=u'binaryauthorization.projects.attestors.create',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'attestorId'],
-        relative_path=u'v1beta1/{+parent}/attestors',
-        request_field=u'attestor',
-        request_type_name=u'BinaryauthorizationProjectsAttestorsCreateRequest',
-        response_type_name=u'Attestor',
+        flat_path='v1beta1/projects/{projectsId}/attestors',
+        http_method='POST',
+        method_id='binaryauthorization.projects.attestors.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['attestorId'],
+        relative_path='v1beta1/{+parent}/attestors',
+        request_field='attestor',
+        request_type_name='BinaryauthorizationProjectsAttestorsCreateRequest',
+        response_type_name='Attestor',
         supports_download=False,
     )
 
@@ -95,16 +95,16 @@ attestor does not exist.
           config, request, global_params=global_params)
 
     Delete.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/projects/{projectsId}/attestors/{attestorsId}',
-        http_method=u'DELETE',
-        method_id=u'binaryauthorization.projects.attestors.delete',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1beta1/projects/{projectsId}/attestors/{attestorsId}',
+        http_method='DELETE',
+        method_id='binaryauthorization.projects.attestors.delete',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1beta1/{+name}',
+        relative_path='v1beta1/{+name}',
         request_field='',
-        request_type_name=u'BinaryauthorizationProjectsAttestorsDeleteRequest',
-        response_type_name=u'Empty',
+        request_type_name='BinaryauthorizationProjectsAttestorsDeleteRequest',
+        response_type_name='Empty',
         supports_download=False,
     )
 
@@ -123,16 +123,16 @@ Returns NOT_FOUND if the attestor does not exist.
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/projects/{projectsId}/attestors/{attestorsId}',
-        http_method=u'GET',
-        method_id=u'binaryauthorization.projects.attestors.get',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1beta1/projects/{projectsId}/attestors/{attestorsId}',
+        http_method='GET',
+        method_id='binaryauthorization.projects.attestors.get',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1beta1/{+name}',
+        relative_path='v1beta1/{+name}',
         request_field='',
-        request_type_name=u'BinaryauthorizationProjectsAttestorsGetRequest',
-        response_type_name=u'Attestor',
+        request_type_name='BinaryauthorizationProjectsAttestorsGetRequest',
+        response_type_name='Attestor',
         supports_download=False,
     )
 
@@ -152,16 +152,16 @@ set.
           config, request, global_params=global_params)
 
     GetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/projects/{projectsId}/attestors/{attestorsId}:getIamPolicy',
-        http_method=u'GET',
-        method_id=u'binaryauthorization.projects.attestors.getIamPolicy',
-        ordered_params=[u'resource'],
-        path_params=[u'resource'],
-        query_params=[u'options_requestedPolicyVersion'],
-        relative_path=u'v1beta1/{+resource}:getIamPolicy',
+        flat_path='v1beta1/projects/{projectsId}/attestors/{attestorsId}:getIamPolicy',
+        http_method='GET',
+        method_id='binaryauthorization.projects.attestors.getIamPolicy',
+        ordered_params=['resource'],
+        path_params=['resource'],
+        query_params=['options_requestedPolicyVersion'],
+        relative_path='v1beta1/{+resource}:getIamPolicy',
         request_field='',
-        request_type_name=u'BinaryauthorizationProjectsAttestorsGetIamPolicyRequest',
-        response_type_name=u'IamPolicy',
+        request_type_name='BinaryauthorizationProjectsAttestorsGetIamPolicyRequest',
+        response_type_name='IamPolicy',
         supports_download=False,
     )
 
@@ -180,16 +180,16 @@ Returns INVALID_ARGUMENT if the project does not exist.
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/projects/{projectsId}/attestors',
-        http_method=u'GET',
-        method_id=u'binaryauthorization.projects.attestors.list',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'pageSize', u'pageToken'],
-        relative_path=u'v1beta1/{+parent}/attestors',
+        flat_path='v1beta1/projects/{projectsId}/attestors',
+        http_method='GET',
+        method_id='binaryauthorization.projects.attestors.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v1beta1/{+parent}/attestors',
         request_field='',
-        request_type_name=u'BinaryauthorizationProjectsAttestorsListRequest',
-        response_type_name=u'ListAttestorsResponse',
+        request_type_name='BinaryauthorizationProjectsAttestorsListRequest',
+        response_type_name='ListAttestorsResponse',
         supports_download=False,
     )
 
@@ -210,16 +210,16 @@ Can return `NOT_FOUND`, `INVALID_ARGUMENT`, and `PERMISSION_DENIED` errors.
           config, request, global_params=global_params)
 
     SetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/projects/{projectsId}/attestors/{attestorsId}:setIamPolicy',
-        http_method=u'POST',
-        method_id=u'binaryauthorization.projects.attestors.setIamPolicy',
-        ordered_params=[u'resource'],
-        path_params=[u'resource'],
+        flat_path='v1beta1/projects/{projectsId}/attestors/{attestorsId}:setIamPolicy',
+        http_method='POST',
+        method_id='binaryauthorization.projects.attestors.setIamPolicy',
+        ordered_params=['resource'],
+        path_params=['resource'],
         query_params=[],
-        relative_path=u'v1beta1/{+resource}:setIamPolicy',
-        request_field=u'setIamPolicyRequest',
-        request_type_name=u'BinaryauthorizationProjectsAttestorsSetIamPolicyRequest',
-        response_type_name=u'IamPolicy',
+        relative_path='v1beta1/{+resource}:setIamPolicy',
+        request_field='setIamPolicyRequest',
+        request_type_name='BinaryauthorizationProjectsAttestorsSetIamPolicyRequest',
+        response_type_name='IamPolicy',
         supports_download=False,
     )
 
@@ -243,16 +243,16 @@ may "fail open" without warning.
           config, request, global_params=global_params)
 
     TestIamPermissions.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/projects/{projectsId}/attestors/{attestorsId}:testIamPermissions',
-        http_method=u'POST',
-        method_id=u'binaryauthorization.projects.attestors.testIamPermissions',
-        ordered_params=[u'resource'],
-        path_params=[u'resource'],
+        flat_path='v1beta1/projects/{projectsId}/attestors/{attestorsId}:testIamPermissions',
+        http_method='POST',
+        method_id='binaryauthorization.projects.attestors.testIamPermissions',
+        ordered_params=['resource'],
+        path_params=['resource'],
         query_params=[],
-        relative_path=u'v1beta1/{+resource}:testIamPermissions',
-        request_field=u'testIamPermissionsRequest',
-        request_type_name=u'BinaryauthorizationProjectsAttestorsTestIamPermissionsRequest',
-        response_type_name=u'TestIamPermissionsResponse',
+        relative_path='v1beta1/{+resource}:testIamPermissions',
+        request_field='testIamPermissionsRequest',
+        request_type_name='BinaryauthorizationProjectsAttestorsTestIamPermissionsRequest',
+        response_type_name='TestIamPermissionsResponse',
         supports_download=False,
     )
 
@@ -271,23 +271,23 @@ Returns NOT_FOUND if the attestor does not exist.
           config, request, global_params=global_params)
 
     Update.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/projects/{projectsId}/attestors/{attestorsId}',
-        http_method=u'PUT',
-        method_id=u'binaryauthorization.projects.attestors.update',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1beta1/projects/{projectsId}/attestors/{attestorsId}',
+        http_method='PUT',
+        method_id='binaryauthorization.projects.attestors.update',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1beta1/{+name}',
+        relative_path='v1beta1/{+name}',
         request_field='<request>',
-        request_type_name=u'Attestor',
-        response_type_name=u'Attestor',
+        request_type_name='Attestor',
+        response_type_name='Attestor',
         supports_download=False,
     )
 
   class ProjectsPolicyService(base_api.BaseApiService):
     """Service class for the projects_policy resource."""
 
-    _NAME = u'projects_policy'
+    _NAME = 'projects_policy'
 
     def __init__(self, client):
       super(BinaryauthorizationV1beta1.ProjectsPolicyService, self).__init__(client)
@@ -310,16 +310,16 @@ set.
           config, request, global_params=global_params)
 
     GetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/projects/{projectsId}/policy:getIamPolicy',
-        http_method=u'GET',
-        method_id=u'binaryauthorization.projects.policy.getIamPolicy',
-        ordered_params=[u'resource'],
-        path_params=[u'resource'],
-        query_params=[u'options_requestedPolicyVersion'],
-        relative_path=u'v1beta1/{+resource}:getIamPolicy',
+        flat_path='v1beta1/projects/{projectsId}/policy:getIamPolicy',
+        http_method='GET',
+        method_id='binaryauthorization.projects.policy.getIamPolicy',
+        ordered_params=['resource'],
+        path_params=['resource'],
+        query_params=['options_requestedPolicyVersion'],
+        relative_path='v1beta1/{+resource}:getIamPolicy',
         request_field='',
-        request_type_name=u'BinaryauthorizationProjectsPolicyGetIamPolicyRequest',
-        response_type_name=u'IamPolicy',
+        request_type_name='BinaryauthorizationProjectsPolicyGetIamPolicyRequest',
+        response_type_name='IamPolicy',
         supports_download=False,
     )
 
@@ -340,16 +340,16 @@ Can return `NOT_FOUND`, `INVALID_ARGUMENT`, and `PERMISSION_DENIED` errors.
           config, request, global_params=global_params)
 
     SetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/projects/{projectsId}/policy:setIamPolicy',
-        http_method=u'POST',
-        method_id=u'binaryauthorization.projects.policy.setIamPolicy',
-        ordered_params=[u'resource'],
-        path_params=[u'resource'],
+        flat_path='v1beta1/projects/{projectsId}/policy:setIamPolicy',
+        http_method='POST',
+        method_id='binaryauthorization.projects.policy.setIamPolicy',
+        ordered_params=['resource'],
+        path_params=['resource'],
         query_params=[],
-        relative_path=u'v1beta1/{+resource}:setIamPolicy',
-        request_field=u'setIamPolicyRequest',
-        request_type_name=u'BinaryauthorizationProjectsPolicySetIamPolicyRequest',
-        response_type_name=u'IamPolicy',
+        relative_path='v1beta1/{+resource}:setIamPolicy',
+        request_field='setIamPolicyRequest',
+        request_type_name='BinaryauthorizationProjectsPolicySetIamPolicyRequest',
+        response_type_name='IamPolicy',
         supports_download=False,
     )
 
@@ -373,23 +373,23 @@ may "fail open" without warning.
           config, request, global_params=global_params)
 
     TestIamPermissions.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/projects/{projectsId}/policy:testIamPermissions',
-        http_method=u'POST',
-        method_id=u'binaryauthorization.projects.policy.testIamPermissions',
-        ordered_params=[u'resource'],
-        path_params=[u'resource'],
+        flat_path='v1beta1/projects/{projectsId}/policy:testIamPermissions',
+        http_method='POST',
+        method_id='binaryauthorization.projects.policy.testIamPermissions',
+        ordered_params=['resource'],
+        path_params=['resource'],
         query_params=[],
-        relative_path=u'v1beta1/{+resource}:testIamPermissions',
-        request_field=u'testIamPermissionsRequest',
-        request_type_name=u'BinaryauthorizationProjectsPolicyTestIamPermissionsRequest',
-        response_type_name=u'TestIamPermissionsResponse',
+        relative_path='v1beta1/{+resource}:testIamPermissions',
+        request_field='testIamPermissionsRequest',
+        request_type_name='BinaryauthorizationProjectsPolicyTestIamPermissionsRequest',
+        response_type_name='TestIamPermissionsResponse',
         supports_download=False,
     )
 
   class ProjectsService(base_api.BaseApiService):
     """Service class for the projects resource."""
 
-    _NAME = u'projects'
+    _NAME = 'projects'
 
     def __init__(self, client):
       super(BinaryauthorizationV1beta1.ProjectsService, self).__init__(client)
@@ -416,16 +416,16 @@ policy if the project does not have one.
           config, request, global_params=global_params)
 
     GetPolicy.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/projects/{projectsId}/policy',
-        http_method=u'GET',
-        method_id=u'binaryauthorization.projects.getPolicy',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1beta1/projects/{projectsId}/policy',
+        http_method='GET',
+        method_id='binaryauthorization.projects.getPolicy',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1beta1/{+name}',
+        relative_path='v1beta1/{+name}',
         request_field='',
-        request_type_name=u'BinaryauthorizationProjectsGetPolicyRequest',
-        response_type_name=u'Policy',
+        request_type_name='BinaryauthorizationProjectsGetPolicyRequest',
+        response_type_name='Policy',
         supports_download=False,
     )
 
@@ -447,15 +447,15 @@ if the request is malformed.
           config, request, global_params=global_params)
 
     UpdatePolicy.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/projects/{projectsId}/policy',
-        http_method=u'PUT',
-        method_id=u'binaryauthorization.projects.updatePolicy',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1beta1/projects/{projectsId}/policy',
+        http_method='PUT',
+        method_id='binaryauthorization.projects.updatePolicy',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1beta1/{+name}',
+        relative_path='v1beta1/{+name}',
         request_field='<request>',
-        request_type_name=u'Policy',
-        response_type_name=u'Policy',
+        request_type_name='Policy',
+        response_type_name='Policy',
         supports_download=False,
     )

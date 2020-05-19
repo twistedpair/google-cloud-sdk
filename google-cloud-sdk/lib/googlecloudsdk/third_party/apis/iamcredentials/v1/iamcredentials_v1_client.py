@@ -8,17 +8,17 @@ class IamcredentialsV1(base_api.BaseApiClient):
   """Generated client library for service iamcredentials version v1."""
 
   MESSAGES_MODULE = messages
-  BASE_URL = u'https://iamcredentials.googleapis.com/'
-  MTLS_BASE_URL = u'https://iamcredentials.mtls.googleapis.com/'
+  BASE_URL = 'https://iamcredentials.googleapis.com/'
+  MTLS_BASE_URL = 'https://iamcredentials.mtls.googleapis.com/'
 
-  _PACKAGE = u'iamcredentials'
-  _SCOPES = [u'https://www.googleapis.com/auth/cloud-platform']
-  _VERSION = u'v1'
+  _PACKAGE = 'iamcredentials'
+  _SCOPES = ['https://www.googleapis.com/auth/cloud-platform']
+  _VERSION = 'v1'
   _CLIENT_ID = '1042881264118.apps.googleusercontent.com'
   _CLIENT_SECRET = 'x_Tw5K8nnjoRAqULM9PFAC2b'
-  _USER_AGENT = u'google-cloud-sdk'
-  _CLIENT_CLASS_NAME = u'IamcredentialsV1'
-  _URL_VERSION = u'v1'
+  _USER_AGENT = 'google-cloud-sdk'
+  _CLIENT_CLASS_NAME = 'IamcredentialsV1'
+  _URL_VERSION = 'v1'
   _API_KEY = None
 
   def __init__(self, url='', credentials=None,
@@ -42,7 +42,7 @@ class IamcredentialsV1(base_api.BaseApiClient):
   class ProjectsServiceAccountsService(base_api.BaseApiService):
     """Service class for the projects_serviceAccounts resource."""
 
-    _NAME = u'projects_serviceAccounts'
+    _NAME = 'projects_serviceAccounts'
 
     def __init__(self, client):
       super(IamcredentialsV1.ProjectsServiceAccountsService, self).__init__(client)
@@ -63,16 +63,16 @@ class IamcredentialsV1(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     GenerateAccessToken.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/serviceAccounts/{serviceAccountsId}:generateAccessToken',
-        http_method=u'POST',
-        method_id=u'iamcredentials.projects.serviceAccounts.generateAccessToken',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1/projects/{projectsId}/serviceAccounts/{serviceAccountsId}:generateAccessToken',
+        http_method='POST',
+        method_id='iamcredentials.projects.serviceAccounts.generateAccessToken',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1/{+name}:generateAccessToken',
-        request_field=u'generateAccessTokenRequest',
-        request_type_name=u'IamcredentialsProjectsServiceAccountsGenerateAccessTokenRequest',
-        response_type_name=u'GenerateAccessTokenResponse',
+        relative_path='v1/{+name}:generateAccessToken',
+        request_field='generateAccessTokenRequest',
+        request_type_name='IamcredentialsProjectsServiceAccountsGenerateAccessTokenRequest',
+        response_type_name='GenerateAccessTokenResponse',
         supports_download=False,
     )
 
@@ -90,16 +90,16 @@ class IamcredentialsV1(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     GenerateIdToken.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/serviceAccounts/{serviceAccountsId}:generateIdToken',
-        http_method=u'POST',
-        method_id=u'iamcredentials.projects.serviceAccounts.generateIdToken',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1/projects/{projectsId}/serviceAccounts/{serviceAccountsId}:generateIdToken',
+        http_method='POST',
+        method_id='iamcredentials.projects.serviceAccounts.generateIdToken',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1/{+name}:generateIdToken',
-        request_field=u'generateIdTokenRequest',
-        request_type_name=u'IamcredentialsProjectsServiceAccountsGenerateIdTokenRequest',
-        response_type_name=u'GenerateIdTokenResponse',
+        relative_path='v1/{+name}:generateIdToken',
+        request_field='generateIdTokenRequest',
+        request_type_name='IamcredentialsProjectsServiceAccountsGenerateIdTokenRequest',
+        response_type_name='GenerateIdTokenResponse',
         supports_download=False,
     )
 
@@ -117,16 +117,16 @@ class IamcredentialsV1(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     SignBlob.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/serviceAccounts/{serviceAccountsId}:signBlob',
-        http_method=u'POST',
-        method_id=u'iamcredentials.projects.serviceAccounts.signBlob',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1/projects/{projectsId}/serviceAccounts/{serviceAccountsId}:signBlob',
+        http_method='POST',
+        method_id='iamcredentials.projects.serviceAccounts.signBlob',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1/{+name}:signBlob',
-        request_field=u'signBlobRequest',
-        request_type_name=u'IamcredentialsProjectsServiceAccountsSignBlobRequest',
-        response_type_name=u'SignBlobResponse',
+        relative_path='v1/{+name}:signBlob',
+        request_field='signBlobRequest',
+        request_type_name='IamcredentialsProjectsServiceAccountsSignBlobRequest',
+        response_type_name='SignBlobResponse',
         supports_download=False,
     )
 
@@ -144,23 +144,23 @@ class IamcredentialsV1(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     SignJwt.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/serviceAccounts/{serviceAccountsId}:signJwt',
-        http_method=u'POST',
-        method_id=u'iamcredentials.projects.serviceAccounts.signJwt',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1/projects/{projectsId}/serviceAccounts/{serviceAccountsId}:signJwt',
+        http_method='POST',
+        method_id='iamcredentials.projects.serviceAccounts.signJwt',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1/{+name}:signJwt',
-        request_field=u'signJwtRequest',
-        request_type_name=u'IamcredentialsProjectsServiceAccountsSignJwtRequest',
-        response_type_name=u'SignJwtResponse',
+        relative_path='v1/{+name}:signJwt',
+        request_field='signJwtRequest',
+        request_type_name='IamcredentialsProjectsServiceAccountsSignJwtRequest',
+        response_type_name='SignJwtResponse',
         supports_download=False,
     )
 
   class ProjectsService(base_api.BaseApiService):
     """Service class for the projects resource."""
 
-    _NAME = u'projects'
+    _NAME = 'projects'
 
     def __init__(self, client):
       super(IamcredentialsV1.ProjectsService, self).__init__(client)

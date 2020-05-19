@@ -26,8 +26,8 @@ import time
 from googlecloudsdk.api_lib.compute import iap_tunnel_websocket_helper as helper
 from googlecloudsdk.api_lib.compute import iap_tunnel_websocket_utils as utils
 from googlecloudsdk.core import exceptions
-from googlecloudsdk.core import http
 from googlecloudsdk.core import log
+from googlecloudsdk.core import transport
 from googlecloudsdk.core.util import retry
 import six
 
@@ -224,7 +224,7 @@ class IapTunnelWebSocket(object):
 
   def _StartNewWebSocket(self):
     """Start a new WebSocket and thread to listen for incoming data."""
-    headers = ['User-Agent: ' + http.MakeUserAgentString()]
+    headers = ['User-Agent: ' + transport.MakeUserAgentString()]
     if self._get_access_token_callback:
       headers += ['Authorization: Bearer ' + self._get_access_token_callback()]
 

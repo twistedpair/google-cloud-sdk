@@ -52,8 +52,7 @@ _SOURCE_DISK_DETAILED_HELP = """\
       as large as the source disk size. Use *--size* to adjust the
       size of the disks.
 
-      The value for this option can be the name of a disk with the zone
-      specified via ``--source-disk-zone'' flag.
+      Source disk must be in the same zone/region as the disk to be created.
 """
 
 
@@ -134,8 +133,10 @@ SOURCE_DISK_ARG = compute_flags.ResourceArgument(
     resource_name='source disk',
     name='--source-disk',
     completer=compute_completers.DisksCompleter,
-    short_help='Source disk used to create the disks.',
+    short_help='Source disk used to create the disks. Source disk must be in'
+               ' the same zone/region as the disk to be created.',
     detailed_help=_SOURCE_DISK_DETAILED_HELP,
     zonal_collection='compute.disks',
-    zone_explanation=compute_flags.ZONE_PROPERTY_EXPLANATION,
-    required=False)
+    regional_collection='compute.regionDisks',
+    required=False,
+    use_existing_default_scope=True)

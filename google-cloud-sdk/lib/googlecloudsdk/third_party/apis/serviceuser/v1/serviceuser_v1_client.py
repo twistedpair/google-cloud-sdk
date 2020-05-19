@@ -8,17 +8,17 @@ class ServiceuserV1(base_api.BaseApiClient):
   """Generated client library for service serviceuser version v1."""
 
   MESSAGES_MODULE = messages
-  BASE_URL = u'https://serviceuser.googleapis.com/'
-  MTLS_BASE_URL = u'https://serviceuser.mtls.googleapis.com/'
+  BASE_URL = 'https://serviceuser.googleapis.com/'
+  MTLS_BASE_URL = 'https://serviceuser.mtls.googleapis.com/'
 
-  _PACKAGE = u'serviceuser'
-  _SCOPES = [u'https://www.googleapis.com/auth/cloud-platform', u'https://www.googleapis.com/auth/cloud-platform.read-only', u'https://www.googleapis.com/auth/service.management']
-  _VERSION = u'v1'
+  _PACKAGE = 'serviceuser'
+  _SCOPES = ['https://www.googleapis.com/auth/cloud-platform', 'https://www.googleapis.com/auth/cloud-platform.read-only', 'https://www.googleapis.com/auth/service.management']
+  _VERSION = 'v1'
   _CLIENT_ID = '1042881264118.apps.googleusercontent.com'
   _CLIENT_SECRET = 'x_Tw5K8nnjoRAqULM9PFAC2b'
-  _USER_AGENT = u'google-cloud-sdk'
-  _CLIENT_CLASS_NAME = u'ServiceuserV1'
-  _URL_VERSION = u'v1'
+  _USER_AGENT = 'google-cloud-sdk'
+  _CLIENT_CLASS_NAME = 'ServiceuserV1'
+  _URL_VERSION = 'v1'
   _API_KEY = None
 
   def __init__(self, url='', credentials=None,
@@ -43,7 +43,7 @@ class ServiceuserV1(base_api.BaseApiClient):
   class ProjectsServicesService(base_api.BaseApiService):
     """Service class for the projects_services resource."""
 
-    _NAME = u'projects_services'
+    _NAME = 'projects_services'
 
     def __init__(self, client):
       super(ServiceuserV1.ProjectsServicesService, self).__init__(client)
@@ -68,15 +68,15 @@ Operation<response: google.protobuf.Empty>
           config, request, global_params=global_params)
 
     Disable.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'serviceuser.projects.services.disable',
-        ordered_params=[u'projectsId', u'servicesId'],
-        path_params=[u'projectsId', u'servicesId'],
+        http_method='POST',
+        method_id='serviceuser.projects.services.disable',
+        ordered_params=['projectsId', 'servicesId'],
+        path_params=['projectsId', 'servicesId'],
         query_params=[],
-        relative_path=u'v1/projects/{projectsId}/services/{servicesId}:disable',
-        request_field=u'disableServiceRequest',
-        request_type_name=u'ServiceuserProjectsServicesDisableRequest',
-        response_type_name=u'Operation',
+        relative_path='v1/projects/{projectsId}/services/{servicesId}:disable',
+        request_field='disableServiceRequest',
+        request_type_name='ServiceuserProjectsServicesDisableRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -98,15 +98,15 @@ Operation<response: google.protobuf.Empty>
           config, request, global_params=global_params)
 
     Enable.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'serviceuser.projects.services.enable',
-        ordered_params=[u'projectsId', u'servicesId'],
-        path_params=[u'projectsId', u'servicesId'],
+        http_method='POST',
+        method_id='serviceuser.projects.services.enable',
+        ordered_params=['projectsId', 'servicesId'],
+        path_params=['projectsId', 'servicesId'],
         query_params=[],
-        relative_path=u'v1/projects/{projectsId}/services/{servicesId}:enable',
-        request_field=u'enableServiceRequest',
-        request_type_name=u'ServiceuserProjectsServicesEnableRequest',
-        response_type_name=u'Operation',
+        relative_path='v1/projects/{projectsId}/services/{servicesId}:enable',
+        request_field='enableServiceRequest',
+        request_type_name='ServiceuserProjectsServicesEnableRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -124,22 +124,22 @@ Operation<response: google.protobuf.Empty>
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'serviceuser.projects.services.list',
-        ordered_params=[u'projectsId'],
-        path_params=[u'projectsId'],
-        query_params=[u'pageSize', u'pageToken'],
-        relative_path=u'v1/projects/{projectsId}/services',
+        http_method='GET',
+        method_id='serviceuser.projects.services.list',
+        ordered_params=['projectsId'],
+        path_params=['projectsId'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v1/projects/{projectsId}/services',
         request_field='',
-        request_type_name=u'ServiceuserProjectsServicesListRequest',
-        response_type_name=u'ListEnabledServicesResponse',
+        request_type_name='ServiceuserProjectsServicesListRequest',
+        response_type_name='ListEnabledServicesResponse',
         supports_download=False,
     )
 
   class ProjectsService(base_api.BaseApiService):
     """Service class for the projects resource."""
 
-    _NAME = u'projects'
+    _NAME = 'projects'
 
     def __init__(self, client):
       super(ServiceuserV1.ProjectsService, self).__init__(client)
@@ -149,7 +149,7 @@ Operation<response: google.protobuf.Empty>
   class ServicesService(base_api.BaseApiService):
     """Service class for the services resource."""
 
-    _NAME = u'services'
+    _NAME = 'services'
 
     def __init__(self, client):
       super(ServiceuserV1.ServicesService, self).__init__(client)
@@ -174,14 +174,14 @@ authenticated users, also returns all services the calling user has
           config, request, global_params=global_params)
 
     Search.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'serviceuser.services.search',
+        http_method='GET',
+        method_id='serviceuser.services.search',
         ordered_params=[],
         path_params=[],
-        query_params=[u'pageSize', u'pageToken'],
-        relative_path=u'v1/services:search',
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v1/services:search',
         request_field='',
-        request_type_name=u'ServiceuserServicesSearchRequest',
-        response_type_name=u'SearchServicesResponse',
+        request_type_name='ServiceuserServicesSearchRequest',
+        response_type_name='SearchServicesResponse',
         supports_download=False,
     )

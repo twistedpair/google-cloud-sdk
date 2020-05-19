@@ -8,17 +8,17 @@ class DatastoreV1beta1(base_api.BaseApiClient):
   """Generated client library for service datastore version v1beta1."""
 
   MESSAGES_MODULE = messages
-  BASE_URL = u'https://datastore.googleapis.com/'
-  MTLS_BASE_URL = u'https://datastore.mtls.googleapis.com/'
+  BASE_URL = 'https://datastore.googleapis.com/'
+  MTLS_BASE_URL = 'https://datastore.mtls.googleapis.com/'
 
-  _PACKAGE = u'datastore'
-  _SCOPES = [u'https://www.googleapis.com/auth/cloud-platform', u'https://www.googleapis.com/auth/datastore']
-  _VERSION = u'v1beta1'
+  _PACKAGE = 'datastore'
+  _SCOPES = ['https://www.googleapis.com/auth/cloud-platform', 'https://www.googleapis.com/auth/datastore']
+  _VERSION = 'v1beta1'
   _CLIENT_ID = '1042881264118.apps.googleusercontent.com'
   _CLIENT_SECRET = 'x_Tw5K8nnjoRAqULM9PFAC2b'
-  _USER_AGENT = u'google-cloud-sdk'
-  _CLIENT_CLASS_NAME = u'DatastoreV1beta1'
-  _URL_VERSION = u'v1beta1'
+  _USER_AGENT = 'google-cloud-sdk'
+  _CLIENT_CLASS_NAME = 'DatastoreV1beta1'
+  _URL_VERSION = 'v1beta1'
   _API_KEY = None
 
   def __init__(self, url='', credentials=None,
@@ -41,7 +41,7 @@ class DatastoreV1beta1(base_api.BaseApiClient):
   class ProjectsService(base_api.BaseApiService):
     """Service class for the projects resource."""
 
-    _NAME = u'projects'
+    _NAME = 'projects'
 
     def __init__(self, client):
       super(DatastoreV1beta1.ProjectsService, self).__init__(client)
@@ -69,15 +69,15 @@ Cloud Storage.
           config, request, global_params=global_params)
 
     Export.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'datastore.projects.export',
-        ordered_params=[u'projectId'],
-        path_params=[u'projectId'],
+        http_method='POST',
+        method_id='datastore.projects.export',
+        ordered_params=['projectId'],
+        path_params=['projectId'],
         query_params=[],
-        relative_path=u'v1beta1/projects/{projectId}:export',
-        request_field=u'googleDatastoreAdminV1beta1ExportEntitiesRequest',
-        request_type_name=u'DatastoreProjectsExportRequest',
-        response_type_name=u'GoogleLongrunningOperation',
+        relative_path='v1beta1/projects/{projectId}:export',
+        request_field='googleDatastoreAdminV1beta1ExportEntitiesRequest',
+        request_type_name='DatastoreProjectsExportRequest',
+        response_type_name='GoogleLongrunningOperation',
         supports_download=False,
     )
 
@@ -99,14 +99,14 @@ that a subset of the data has already been imported to Cloud Datastore.
           config, request, global_params=global_params)
 
     Import.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'datastore.projects.import',
-        ordered_params=[u'projectId'],
-        path_params=[u'projectId'],
+        http_method='POST',
+        method_id='datastore.projects.import',
+        ordered_params=['projectId'],
+        path_params=['projectId'],
         query_params=[],
-        relative_path=u'v1beta1/projects/{projectId}:import',
-        request_field=u'googleDatastoreAdminV1beta1ImportEntitiesRequest',
-        request_type_name=u'DatastoreProjectsImportRequest',
-        response_type_name=u'GoogleLongrunningOperation',
+        relative_path='v1beta1/projects/{projectId}:import',
+        request_field='googleDatastoreAdminV1beta1ImportEntitiesRequest',
+        request_type_name='DatastoreProjectsImportRequest',
+        response_type_name='GoogleLongrunningOperation',
         supports_download=False,
     )

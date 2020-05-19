@@ -8,17 +8,17 @@ class DomainsV1alpha1(base_api.BaseApiClient):
   """Generated client library for service domains version v1alpha1."""
 
   MESSAGES_MODULE = messages
-  BASE_URL = u'https://domains.googleapis.com/'
-  MTLS_BASE_URL = u'https://domains.mtls.googleapis.com/'
+  BASE_URL = 'https://domains.googleapis.com/'
+  MTLS_BASE_URL = 'https://domains.mtls.googleapis.com/'
 
-  _PACKAGE = u'domains'
-  _SCOPES = [u'https://www.googleapis.com/auth/cloud-platform']
-  _VERSION = u'v1alpha1'
+  _PACKAGE = 'domains'
+  _SCOPES = ['https://www.googleapis.com/auth/cloud-platform']
+  _VERSION = 'v1alpha1'
   _CLIENT_ID = '1042881264118.apps.googleusercontent.com'
   _CLIENT_SECRET = 'x_Tw5K8nnjoRAqULM9PFAC2b'
-  _USER_AGENT = u'google-cloud-sdk'
-  _CLIENT_CLASS_NAME = u'DomainsV1alpha1'
-  _URL_VERSION = u'v1alpha1'
+  _USER_AGENT = 'google-cloud-sdk'
+  _CLIENT_CLASS_NAME = 'DomainsV1alpha1'
+  _URL_VERSION = 'v1alpha1'
   _API_KEY = None
 
   def __init__(self, url='', credentials=None,
@@ -45,7 +45,7 @@ class DomainsV1alpha1(base_api.BaseApiClient):
   class ProjectsLocationsOperationsService(base_api.BaseApiService):
     """Service class for the projects_locations_operations resource."""
 
-    _NAME = u'projects_locations_operations'
+    _NAME = 'projects_locations_operations'
 
     def __init__(self, client):
       super(DomainsV1alpha1.ProjectsLocationsOperationsService, self).__init__(client)
@@ -68,16 +68,16 @@ service.
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha1/projects/{projectsId}/locations/{locationsId}/operations/{operationsId}',
-        http_method=u'GET',
-        method_id=u'domains.projects.locations.operations.get',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/operations/{operationsId}',
+        http_method='GET',
+        method_id='domains.projects.locations.operations.get',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1alpha1/{+name}',
+        relative_path='v1alpha1/{+name}',
         request_field='',
-        request_type_name=u'DomainsProjectsLocationsOperationsGetRequest',
-        response_type_name=u'Operation',
+        request_type_name='DomainsProjectsLocationsOperationsGetRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -104,23 +104,23 @@ is the parent resource, without the operations collection id.
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha1/projects/{projectsId}/locations/{locationsId}/operations',
-        http_method=u'GET',
-        method_id=u'domains.projects.locations.operations.list',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[u'filter', u'pageSize', u'pageToken'],
-        relative_path=u'v1alpha1/{+name}/operations',
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/operations',
+        http_method='GET',
+        method_id='domains.projects.locations.operations.list',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['filter', 'pageSize', 'pageToken'],
+        relative_path='v1alpha1/{+name}/operations',
         request_field='',
-        request_type_name=u'DomainsProjectsLocationsOperationsListRequest',
-        response_type_name=u'ListOperationsResponse',
+        request_type_name='DomainsProjectsLocationsOperationsListRequest',
+        response_type_name='ListOperationsResponse',
         supports_download=False,
     )
 
   class ProjectsLocationsRegistrationsAuthorizationCodeService(base_api.BaseApiService):
     """Service class for the projects_locations_registrations_authorizationCode resource."""
 
-    _NAME = u'projects_locations_registrations_authorizationCode'
+    _NAME = 'projects_locations_registrations_authorizationCode'
 
     def __init__(self, client):
       super(DomainsV1alpha1.ProjectsLocationsRegistrationsAuthorizationCodeService, self).__init__(client)
@@ -142,23 +142,23 @@ Can only be called after 60 days have elapsed since initial registration.
           config, request, global_params=global_params)
 
     Reset.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha1/projects/{projectsId}/locations/{locationsId}/registrations/{registrationsId}/authorizationCode:reset',
-        http_method=u'POST',
-        method_id=u'domains.projects.locations.registrations.authorizationCode.reset',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/registrations/{registrationsId}/authorizationCode:reset',
+        http_method='POST',
+        method_id='domains.projects.locations.registrations.authorizationCode.reset',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1alpha1/{+name}/authorizationCode:reset',
-        request_field=u'resetAuthorizationCodeRequest',
-        request_type_name=u'DomainsProjectsLocationsRegistrationsAuthorizationCodeResetRequest',
-        response_type_name=u'AuthorizationCode',
+        relative_path='v1alpha1/{+name}/authorizationCode:reset',
+        request_field='resetAuthorizationCodeRequest',
+        request_type_name='DomainsProjectsLocationsRegistrationsAuthorizationCodeResetRequest',
+        response_type_name='AuthorizationCode',
         supports_download=False,
     )
 
   class ProjectsLocationsRegistrationsService(base_api.BaseApiService):
     """Service class for the projects_locations_registrations resource."""
 
-    _NAME = u'projects_locations_registrations'
+    _NAME = 'projects_locations_registrations'
 
     def __init__(self, client):
       super(DomainsV1alpha1.ProjectsLocationsRegistrationsService, self).__init__(client)
@@ -179,16 +179,16 @@ Can only be called after 60 days have elapsed since initial registration.
           config, request, global_params=global_params)
 
     CheckAvailability.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha1/projects/{projectsId}/locations/{locationsId}/registrations:checkAvailability',
-        http_method=u'GET',
-        method_id=u'domains.projects.locations.registrations.checkAvailability',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'domainName'],
-        relative_path=u'v1alpha1/{+parent}/registrations:checkAvailability',
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/registrations:checkAvailability',
+        http_method='GET',
+        method_id='domains.projects.locations.registrations.checkAvailability',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['domainName'],
+        relative_path='v1alpha1/{+parent}/registrations:checkAvailability',
         request_field='',
-        request_type_name=u'DomainsProjectsLocationsRegistrationsCheckAvailabilityRequest',
-        response_type_name=u'CheckDomainAvailabilityResponse',
+        request_type_name='DomainsProjectsLocationsRegistrationsCheckAvailabilityRequest',
+        response_type_name='CheckDomainAvailabilityResponse',
         supports_download=False,
     )
 
@@ -207,16 +207,16 @@ given project and location
           config, request, global_params=global_params)
 
     Create.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha1/projects/{projectsId}/locations/{locationsId}/registrations',
-        http_method=u'POST',
-        method_id=u'domains.projects.locations.registrations.create',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'validateOnly'],
-        relative_path=u'v1alpha1/{+parent}/registrations',
-        request_field=u'registration',
-        request_type_name=u'DomainsProjectsLocationsRegistrationsCreateRequest',
-        response_type_name=u'Operation',
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/registrations',
+        http_method='POST',
+        method_id='domains.projects.locations.registrations.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['validateOnly'],
+        relative_path='v1alpha1/{+parent}/registrations',
+        request_field='registration',
+        request_type_name='DomainsProjectsLocationsRegistrationsCreateRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -236,16 +236,16 @@ in the past.
           config, request, global_params=global_params)
 
     Delete.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha1/projects/{projectsId}/locations/{locationsId}/registrations/{registrationsId}',
-        http_method=u'DELETE',
-        method_id=u'domains.projects.locations.registrations.delete',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/registrations/{registrationsId}',
+        http_method='DELETE',
+        method_id='domains.projects.locations.registrations.delete',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1alpha1/{+name}',
+        relative_path='v1alpha1/{+name}',
         request_field='',
-        request_type_name=u'DomainsProjectsLocationsRegistrationsDeleteRequest',
-        response_type_name=u'Operation',
+        request_type_name='DomainsProjectsLocationsRegistrationsDeleteRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -264,16 +264,16 @@ at Google Domains registrar.
           config, request, global_params=global_params)
 
     Detach.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha1/projects/{projectsId}/locations/{locationsId}/registrations/{registrationsId}:detach',
-        http_method=u'POST',
-        method_id=u'domains.projects.locations.registrations.detach',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/registrations/{registrationsId}:detach',
+        http_method='POST',
+        method_id='domains.projects.locations.registrations.detach',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1alpha1/{+name}:detach',
-        request_field=u'detachRegistrationRequest',
-        request_type_name=u'DomainsProjectsLocationsRegistrationsDetachRequest',
-        response_type_name=u'Operation',
+        relative_path='v1alpha1/{+name}:detach',
+        request_field='detachRegistrationRequest',
+        request_type_name='DomainsProjectsLocationsRegistrationsDetachRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -291,16 +291,16 @@ at Google Domains registrar.
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha1/projects/{projectsId}/locations/{locationsId}/registrations/{registrationsId}',
-        http_method=u'GET',
-        method_id=u'domains.projects.locations.registrations.get',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/registrations/{registrationsId}',
+        http_method='GET',
+        method_id='domains.projects.locations.registrations.get',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1alpha1/{+name}',
+        relative_path='v1alpha1/{+name}',
         request_field='',
-        request_type_name=u'DomainsProjectsLocationsRegistrationsGetRequest',
-        response_type_name=u'Registration',
+        request_type_name='DomainsProjectsLocationsRegistrationsGetRequest',
+        response_type_name='Registration',
         supports_download=False,
     )
 
@@ -319,16 +319,16 @@ Can only be called after 60 days have elapsed since initial registration.
           config, request, global_params=global_params)
 
     GetAuthorizationCode.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha1/projects/{projectsId}/locations/{locationsId}/registrations/{registrationsId}/authorizationCode',
-        http_method=u'GET',
-        method_id=u'domains.projects.locations.registrations.getAuthorizationCode',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/registrations/{registrationsId}/authorizationCode',
+        http_method='GET',
+        method_id='domains.projects.locations.registrations.getAuthorizationCode',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1alpha1/{+name}/authorizationCode',
+        relative_path='v1alpha1/{+name}/authorizationCode',
         request_field='',
-        request_type_name=u'DomainsProjectsLocationsRegistrationsGetAuthorizationCodeRequest',
-        response_type_name=u'AuthorizationCode',
+        request_type_name='DomainsProjectsLocationsRegistrationsGetAuthorizationCodeRequest',
+        response_type_name='AuthorizationCode',
         supports_download=False,
     )
 
@@ -348,16 +348,16 @@ set.
           config, request, global_params=global_params)
 
     GetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha1/projects/{projectsId}/locations/{locationsId}/registrations/{registrationsId}:getIamPolicy',
-        http_method=u'GET',
-        method_id=u'domains.projects.locations.registrations.getIamPolicy',
-        ordered_params=[u'resource'],
-        path_params=[u'resource'],
-        query_params=[u'options_requestedPolicyVersion'],
-        relative_path=u'v1alpha1/{+resource}:getIamPolicy',
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/registrations/{registrationsId}:getIamPolicy',
+        http_method='GET',
+        method_id='domains.projects.locations.registrations.getIamPolicy',
+        ordered_params=['resource'],
+        path_params=['resource'],
+        query_params=['options_requestedPolicyVersion'],
+        relative_path='v1alpha1/{+resource}:getIamPolicy',
         request_field='',
-        request_type_name=u'DomainsProjectsLocationsRegistrationsGetIamPolicyRequest',
-        response_type_name=u'Policy',
+        request_type_name='DomainsProjectsLocationsRegistrationsGetIamPolicyRequest',
+        response_type_name='Policy',
         supports_download=False,
     )
 
@@ -375,16 +375,16 @@ set.
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha1/projects/{projectsId}/locations/{locationsId}/registrations',
-        http_method=u'GET',
-        method_id=u'domains.projects.locations.registrations.list',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'filter', u'pageSize', u'pageToken'],
-        relative_path=u'v1alpha1/{+parent}/registrations',
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/registrations',
+        http_method='GET',
+        method_id='domains.projects.locations.registrations.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'pageSize', 'pageToken'],
+        relative_path='v1alpha1/{+parent}/registrations',
         request_field='',
-        request_type_name=u'DomainsProjectsLocationsRegistrationsListRequest',
-        response_type_name=u'ListRegistrationsResponse',
+        request_type_name='DomainsProjectsLocationsRegistrationsListRequest',
+        response_type_name='ListRegistrationsResponse',
         supports_download=False,
     )
 
@@ -402,16 +402,16 @@ set.
           config, request, global_params=global_params)
 
     Patch.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha1/projects/{projectsId}/locations/{locationsId}/registrations/{registrationsId}',
-        http_method=u'PATCH',
-        method_id=u'domains.projects.locations.registrations.patch',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[u'updateMask', u'validateOnly'],
-        relative_path=u'v1alpha1/{+name}',
-        request_field=u'registration',
-        request_type_name=u'DomainsProjectsLocationsRegistrationsPatchRequest',
-        response_type_name=u'Operation',
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/registrations/{registrationsId}',
+        http_method='PATCH',
+        method_id='domains.projects.locations.registrations.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask', 'validateOnly'],
+        relative_path='v1alpha1/{+name}',
+        request_field='registration',
+        request_type_name='DomainsProjectsLocationsRegistrationsPatchRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -430,16 +430,16 @@ Returned domain availability allows some staleness.
           config, request, global_params=global_params)
 
     SearchAvailability.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha1/projects/{projectsId}/locations/{locationsId}/registrations:searchAvailability',
-        http_method=u'GET',
-        method_id=u'domains.projects.locations.registrations.searchAvailability',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'query'],
-        relative_path=u'v1alpha1/{+parent}/registrations:searchAvailability',
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/registrations:searchAvailability',
+        http_method='GET',
+        method_id='domains.projects.locations.registrations.searchAvailability',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['query'],
+        relative_path='v1alpha1/{+parent}/registrations:searchAvailability',
         request_field='',
-        request_type_name=u'DomainsProjectsLocationsRegistrationsSearchAvailabilityRequest',
-        response_type_name=u'SearchDomainAvailabilityResponse',
+        request_type_name='DomainsProjectsLocationsRegistrationsSearchAvailabilityRequest',
+        response_type_name='SearchDomainAvailabilityResponse',
         supports_download=False,
     )
 
@@ -460,16 +460,16 @@ Can return `NOT_FOUND`, `INVALID_ARGUMENT`, and `PERMISSION_DENIED` errors.
           config, request, global_params=global_params)
 
     SetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha1/projects/{projectsId}/locations/{locationsId}/registrations/{registrationsId}:setIamPolicy',
-        http_method=u'POST',
-        method_id=u'domains.projects.locations.registrations.setIamPolicy',
-        ordered_params=[u'resource'],
-        path_params=[u'resource'],
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/registrations/{registrationsId}:setIamPolicy',
+        http_method='POST',
+        method_id='domains.projects.locations.registrations.setIamPolicy',
+        ordered_params=['resource'],
+        path_params=['resource'],
         query_params=[],
-        relative_path=u'v1alpha1/{+resource}:setIamPolicy',
-        request_field=u'setIamPolicyRequest',
-        request_type_name=u'DomainsProjectsLocationsRegistrationsSetIamPolicyRequest',
-        response_type_name=u'Policy',
+        relative_path='v1alpha1/{+resource}:setIamPolicy',
+        request_field='setIamPolicyRequest',
+        request_type_name='DomainsProjectsLocationsRegistrationsSetIamPolicyRequest',
+        response_type_name='Policy',
         supports_download=False,
     )
 
@@ -493,23 +493,23 @@ may "fail open" without warning.
           config, request, global_params=global_params)
 
     TestIamPermissions.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha1/projects/{projectsId}/locations/{locationsId}/registrations/{registrationsId}:testIamPermissions',
-        http_method=u'POST',
-        method_id=u'domains.projects.locations.registrations.testIamPermissions',
-        ordered_params=[u'resource'],
-        path_params=[u'resource'],
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/registrations/{registrationsId}:testIamPermissions',
+        http_method='POST',
+        method_id='domains.projects.locations.registrations.testIamPermissions',
+        ordered_params=['resource'],
+        path_params=['resource'],
         query_params=[],
-        relative_path=u'v1alpha1/{+resource}:testIamPermissions',
-        request_field=u'testIamPermissionsRequest',
-        request_type_name=u'DomainsProjectsLocationsRegistrationsTestIamPermissionsRequest',
-        response_type_name=u'TestIamPermissionsResponse',
+        relative_path='v1alpha1/{+resource}:testIamPermissions',
+        request_field='testIamPermissionsRequest',
+        request_type_name='DomainsProjectsLocationsRegistrationsTestIamPermissionsRequest',
+        response_type_name='TestIamPermissionsResponse',
         supports_download=False,
     )
 
   class ProjectsLocationsService(base_api.BaseApiService):
     """Service class for the projects_locations resource."""
 
-    _NAME = u'projects_locations'
+    _NAME = 'projects_locations'
 
     def __init__(self, client):
       super(DomainsV1alpha1.ProjectsLocationsService, self).__init__(client)
@@ -530,16 +530,16 @@ may "fail open" without warning.
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha1/projects/{projectsId}/locations/{locationsId}',
-        http_method=u'GET',
-        method_id=u'domains.projects.locations.get',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}',
+        http_method='GET',
+        method_id='domains.projects.locations.get',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1alpha1/{+name}',
+        relative_path='v1alpha1/{+name}',
         request_field='',
-        request_type_name=u'DomainsProjectsLocationsGetRequest',
-        response_type_name=u'Location',
+        request_type_name='DomainsProjectsLocationsGetRequest',
+        response_type_name='Location',
         supports_download=False,
     )
 
@@ -557,23 +557,23 @@ may "fail open" without warning.
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha1/projects/{projectsId}/locations',
-        http_method=u'GET',
-        method_id=u'domains.projects.locations.list',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[u'filter', u'includeUnrevealedLocations', u'pageSize', u'pageToken'],
-        relative_path=u'v1alpha1/{+name}/locations',
+        flat_path='v1alpha1/projects/{projectsId}/locations',
+        http_method='GET',
+        method_id='domains.projects.locations.list',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['filter', 'includeUnrevealedLocations', 'pageSize', 'pageToken'],
+        relative_path='v1alpha1/{+name}/locations',
         request_field='',
-        request_type_name=u'DomainsProjectsLocationsListRequest',
-        response_type_name=u'ListLocationsResponse',
+        request_type_name='DomainsProjectsLocationsListRequest',
+        response_type_name='ListLocationsResponse',
         supports_download=False,
     )
 
   class ProjectsService(base_api.BaseApiService):
     """Service class for the projects resource."""
 
-    _NAME = u'projects'
+    _NAME = 'projects'
 
     def __init__(self, client):
       super(DomainsV1alpha1.ProjectsService, self).__init__(client)

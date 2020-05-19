@@ -8,17 +8,17 @@ class CloudresourcemanagerV1(base_api.BaseApiClient):
   """Generated client library for service cloudresourcemanager version v1."""
 
   MESSAGES_MODULE = messages
-  BASE_URL = u'https://cloudresourcemanager.googleapis.com/'
-  MTLS_BASE_URL = u'https://cloudresourcemanager.mtls.googleapis.com/'
+  BASE_URL = 'https://cloudresourcemanager.googleapis.com/'
+  MTLS_BASE_URL = 'https://cloudresourcemanager.mtls.googleapis.com/'
 
-  _PACKAGE = u'cloudresourcemanager'
-  _SCOPES = [u'https://www.googleapis.com/auth/cloud-platform', u'https://www.googleapis.com/auth/cloud-platform.read-only']
-  _VERSION = u'v1'
+  _PACKAGE = 'cloudresourcemanager'
+  _SCOPES = ['https://www.googleapis.com/auth/cloud-platform', 'https://www.googleapis.com/auth/cloud-platform.read-only']
+  _VERSION = 'v1'
   _CLIENT_ID = '1042881264118.apps.googleusercontent.com'
   _CLIENT_SECRET = 'x_Tw5K8nnjoRAqULM9PFAC2b'
-  _USER_AGENT = u'google-cloud-sdk'
-  _CLIENT_CLASS_NAME = u'CloudresourcemanagerV1'
-  _URL_VERSION = u'v1'
+  _USER_AGENT = 'google-cloud-sdk'
+  _CLIENT_CLASS_NAME = 'CloudresourcemanagerV1'
+  _URL_VERSION = 'v1'
   _API_KEY = None
 
   def __init__(self, url='', credentials=None,
@@ -45,7 +45,7 @@ class CloudresourcemanagerV1(base_api.BaseApiClient):
   class FoldersService(base_api.BaseApiService):
     """Service class for the folders resource."""
 
-    _NAME = u'folders'
+    _NAME = 'folders'
 
     def __init__(self, client):
       super(CloudresourcemanagerV1.FoldersService, self).__init__(client)
@@ -66,15 +66,15 @@ class CloudresourcemanagerV1(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     ClearOrgPolicy.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'cloudresourcemanager.folders.clearOrgPolicy',
-        ordered_params=[u'foldersId'],
-        path_params=[u'foldersId'],
+        http_method='POST',
+        method_id='cloudresourcemanager.folders.clearOrgPolicy',
+        ordered_params=['foldersId'],
+        path_params=['foldersId'],
         query_params=[],
-        relative_path=u'v1/folders/{foldersId}:clearOrgPolicy',
-        request_field=u'clearOrgPolicyRequest',
-        request_type_name=u'CloudresourcemanagerFoldersClearOrgPolicyRequest',
-        response_type_name=u'Empty',
+        relative_path='v1/folders/{foldersId}:clearOrgPolicy',
+        request_field='clearOrgPolicyRequest',
+        request_type_name='CloudresourcemanagerFoldersClearOrgPolicyRequest',
+        response_type_name='Empty',
         supports_download=False,
     )
 
@@ -96,15 +96,15 @@ not be expanded.
           config, request, global_params=global_params)
 
     GetEffectiveOrgPolicy.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'cloudresourcemanager.folders.getEffectiveOrgPolicy',
-        ordered_params=[u'foldersId'],
-        path_params=[u'foldersId'],
+        http_method='POST',
+        method_id='cloudresourcemanager.folders.getEffectiveOrgPolicy',
+        ordered_params=['foldersId'],
+        path_params=['foldersId'],
         query_params=[],
-        relative_path=u'v1/folders/{foldersId}:getEffectiveOrgPolicy',
-        request_field=u'getEffectiveOrgPolicyRequest',
-        request_type_name=u'CloudresourcemanagerFoldersGetEffectiveOrgPolicyRequest',
-        response_type_name=u'OrgPolicy',
+        relative_path='v1/folders/{foldersId}:getEffectiveOrgPolicy',
+        request_field='getEffectiveOrgPolicyRequest',
+        request_type_name='CloudresourcemanagerFoldersGetEffectiveOrgPolicyRequest',
+        response_type_name='OrgPolicy',
         supports_download=False,
     )
 
@@ -127,15 +127,15 @@ values including `POLICY_TYPE_NOT_SET` for the `policy_type oneof`. The
           config, request, global_params=global_params)
 
     GetOrgPolicy.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'cloudresourcemanager.folders.getOrgPolicy',
-        ordered_params=[u'foldersId'],
-        path_params=[u'foldersId'],
+        http_method='POST',
+        method_id='cloudresourcemanager.folders.getOrgPolicy',
+        ordered_params=['foldersId'],
+        path_params=['foldersId'],
         query_params=[],
-        relative_path=u'v1/folders/{foldersId}:getOrgPolicy',
-        request_field=u'getOrgPolicyRequest',
-        request_type_name=u'CloudresourcemanagerFoldersGetOrgPolicyRequest',
-        response_type_name=u'OrgPolicy',
+        relative_path='v1/folders/{foldersId}:getOrgPolicy',
+        request_field='getOrgPolicyRequest',
+        request_type_name='CloudresourcemanagerFoldersGetOrgPolicyRequest',
+        response_type_name='OrgPolicy',
         supports_download=False,
     )
 
@@ -153,15 +153,15 @@ values including `POLICY_TYPE_NOT_SET` for the `policy_type oneof`. The
           config, request, global_params=global_params)
 
     ListAvailableOrgPolicyConstraints.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'cloudresourcemanager.folders.listAvailableOrgPolicyConstraints',
-        ordered_params=[u'foldersId'],
-        path_params=[u'foldersId'],
+        http_method='POST',
+        method_id='cloudresourcemanager.folders.listAvailableOrgPolicyConstraints',
+        ordered_params=['foldersId'],
+        path_params=['foldersId'],
         query_params=[],
-        relative_path=u'v1/folders/{foldersId}:listAvailableOrgPolicyConstraints',
-        request_field=u'listAvailableOrgPolicyConstraintsRequest',
-        request_type_name=u'CloudresourcemanagerFoldersListAvailableOrgPolicyConstraintsRequest',
-        response_type_name=u'ListAvailableOrgPolicyConstraintsResponse',
+        relative_path='v1/folders/{foldersId}:listAvailableOrgPolicyConstraints',
+        request_field='listAvailableOrgPolicyConstraintsRequest',
+        request_type_name='CloudresourcemanagerFoldersListAvailableOrgPolicyConstraintsRequest',
+        response_type_name='ListAvailableOrgPolicyConstraintsResponse',
         supports_download=False,
     )
 
@@ -179,15 +179,15 @@ values including `POLICY_TYPE_NOT_SET` for the `policy_type oneof`. The
           config, request, global_params=global_params)
 
     ListOrgPolicies.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'cloudresourcemanager.folders.listOrgPolicies',
-        ordered_params=[u'foldersId'],
-        path_params=[u'foldersId'],
+        http_method='POST',
+        method_id='cloudresourcemanager.folders.listOrgPolicies',
+        ordered_params=['foldersId'],
+        path_params=['foldersId'],
         query_params=[],
-        relative_path=u'v1/folders/{foldersId}:listOrgPolicies',
-        request_field=u'listOrgPoliciesRequest',
-        request_type_name=u'CloudresourcemanagerFoldersListOrgPoliciesRequest',
-        response_type_name=u'ListOrgPoliciesResponse',
+        relative_path='v1/folders/{foldersId}:listOrgPolicies',
+        request_field='listOrgPoliciesRequest',
+        request_type_name='CloudresourcemanagerFoldersListOrgPoliciesRequest',
+        response_type_name='ListOrgPoliciesResponse',
         supports_download=False,
     )
 
@@ -209,22 +209,22 @@ write of the `Policy`.
           config, request, global_params=global_params)
 
     SetOrgPolicy.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'cloudresourcemanager.folders.setOrgPolicy',
-        ordered_params=[u'foldersId'],
-        path_params=[u'foldersId'],
+        http_method='POST',
+        method_id='cloudresourcemanager.folders.setOrgPolicy',
+        ordered_params=['foldersId'],
+        path_params=['foldersId'],
         query_params=[],
-        relative_path=u'v1/folders/{foldersId}:setOrgPolicy',
-        request_field=u'setOrgPolicyRequest',
-        request_type_name=u'CloudresourcemanagerFoldersSetOrgPolicyRequest',
-        response_type_name=u'OrgPolicy',
+        relative_path='v1/folders/{foldersId}:setOrgPolicy',
+        request_field='setOrgPolicyRequest',
+        request_type_name='CloudresourcemanagerFoldersSetOrgPolicyRequest',
+        response_type_name='OrgPolicy',
         supports_download=False,
     )
 
   class LiensService(base_api.BaseApiService):
     """Service class for the liens resource."""
 
-    _NAME = u'liens'
+    _NAME = 'liens'
 
     def __init__(self, client):
       super(CloudresourcemanagerV1.LiensService, self).__init__(client)
@@ -251,15 +251,15 @@ NOTE: Some resources may limit the number of Liens which may be applied.
           config, request, global_params=global_params)
 
     Create.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'cloudresourcemanager.liens.create',
+        http_method='POST',
+        method_id='cloudresourcemanager.liens.create',
         ordered_params=[],
         path_params=[],
         query_params=[],
-        relative_path=u'v1/liens',
+        relative_path='v1/liens',
         request_field='<request>',
-        request_type_name=u'Lien',
-        response_type_name=u'Lien',
+        request_type_name='Lien',
+        response_type_name='Lien',
         supports_download=False,
     )
 
@@ -281,15 +281,15 @@ For example, a Lien with a `parent` of `projects/1234` requires permission
           config, request, global_params=global_params)
 
     Delete.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'DELETE',
-        method_id=u'cloudresourcemanager.liens.delete',
-        ordered_params=[u'liensId'],
-        path_params=[u'liensId'],
+        http_method='DELETE',
+        method_id='cloudresourcemanager.liens.delete',
+        ordered_params=['liensId'],
+        path_params=['liensId'],
         query_params=[],
-        relative_path=u'v1/liens/{liensId}',
+        relative_path='v1/liens/{liensId}',
         request_field='',
-        request_type_name=u'CloudresourcemanagerLiensDeleteRequest',
-        response_type_name=u'Empty',
+        request_type_name='CloudresourcemanagerLiensDeleteRequest',
+        response_type_name='Empty',
         supports_download=False,
     )
 
@@ -312,15 +312,15 @@ requires permission `resourcemanager.projects.get` or
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'cloudresourcemanager.liens.get',
-        ordered_params=[u'liensId'],
-        path_params=[u'liensId'],
+        http_method='GET',
+        method_id='cloudresourcemanager.liens.get',
+        ordered_params=['liensId'],
+        path_params=['liensId'],
         query_params=[],
-        relative_path=u'v1/liens/{liensId}',
+        relative_path='v1/liens/{liensId}',
         request_field='',
-        request_type_name=u'CloudresourcemanagerLiensGetRequest',
-        response_type_name=u'Lien',
+        request_type_name='CloudresourcemanagerLiensGetRequest',
+        response_type_name='Lien',
         supports_download=False,
     )
 
@@ -342,22 +342,22 @@ For example, a Lien with a `parent` of `projects/1234` requires permission
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'cloudresourcemanager.liens.list',
+        http_method='GET',
+        method_id='cloudresourcemanager.liens.list',
         ordered_params=[],
         path_params=[],
-        query_params=[u'pageSize', u'pageToken', u'parent'],
-        relative_path=u'v1/liens',
+        query_params=['pageSize', 'pageToken', 'parent'],
+        relative_path='v1/liens',
         request_field='',
-        request_type_name=u'CloudresourcemanagerLiensListRequest',
-        response_type_name=u'ListLiensResponse',
+        request_type_name='CloudresourcemanagerLiensListRequest',
+        response_type_name='ListLiensResponse',
         supports_download=False,
     )
 
   class OperationsService(base_api.BaseApiService):
     """Service class for the operations resource."""
 
-    _NAME = u'operations'
+    _NAME = 'operations'
 
     def __init__(self, client):
       super(CloudresourcemanagerV1.OperationsService, self).__init__(client)
@@ -380,22 +380,22 @@ service.
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'cloudresourcemanager.operations.get',
-        ordered_params=[u'operationsId'],
-        path_params=[u'operationsId'],
+        http_method='GET',
+        method_id='cloudresourcemanager.operations.get',
+        ordered_params=['operationsId'],
+        path_params=['operationsId'],
         query_params=[],
-        relative_path=u'v1/operations/{operationsId}',
+        relative_path='v1/operations/{operationsId}',
         request_field='',
-        request_type_name=u'CloudresourcemanagerOperationsGetRequest',
-        response_type_name=u'Operation',
+        request_type_name='CloudresourcemanagerOperationsGetRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
   class OrganizationsService(base_api.BaseApiService):
     """Service class for the organizations resource."""
 
-    _NAME = u'organizations'
+    _NAME = 'organizations'
 
     def __init__(self, client):
       super(CloudresourcemanagerV1.OrganizationsService, self).__init__(client)
@@ -416,15 +416,15 @@ service.
           config, request, global_params=global_params)
 
     ClearOrgPolicy.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'cloudresourcemanager.organizations.clearOrgPolicy',
-        ordered_params=[u'organizationsId'],
-        path_params=[u'organizationsId'],
+        http_method='POST',
+        method_id='cloudresourcemanager.organizations.clearOrgPolicy',
+        ordered_params=['organizationsId'],
+        path_params=['organizationsId'],
         query_params=[],
-        relative_path=u'v1/organizations/{organizationsId}:clearOrgPolicy',
-        request_field=u'clearOrgPolicyRequest',
-        request_type_name=u'CloudresourcemanagerOrganizationsClearOrgPolicyRequest',
-        response_type_name=u'Empty',
+        relative_path='v1/organizations/{organizationsId}:clearOrgPolicy',
+        request_field='clearOrgPolicyRequest',
+        request_type_name='CloudresourcemanagerOrganizationsClearOrgPolicyRequest',
+        response_type_name='Empty',
         supports_download=False,
     )
 
@@ -442,15 +442,15 @@ service.
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'cloudresourcemanager.organizations.get',
-        ordered_params=[u'organizationsId'],
-        path_params=[u'organizationsId'],
+        http_method='GET',
+        method_id='cloudresourcemanager.organizations.get',
+        ordered_params=['organizationsId'],
+        path_params=['organizationsId'],
         query_params=[],
-        relative_path=u'v1/organizations/{organizationsId}',
+        relative_path='v1/organizations/{organizationsId}',
         request_field='',
-        request_type_name=u'CloudresourcemanagerOrganizationsGetRequest',
-        response_type_name=u'Organization',
+        request_type_name='CloudresourcemanagerOrganizationsGetRequest',
+        response_type_name='Organization',
         supports_download=False,
     )
 
@@ -472,15 +472,15 @@ not be expanded.
           config, request, global_params=global_params)
 
     GetEffectiveOrgPolicy.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'cloudresourcemanager.organizations.getEffectiveOrgPolicy',
-        ordered_params=[u'organizationsId'],
-        path_params=[u'organizationsId'],
+        http_method='POST',
+        method_id='cloudresourcemanager.organizations.getEffectiveOrgPolicy',
+        ordered_params=['organizationsId'],
+        path_params=['organizationsId'],
         query_params=[],
-        relative_path=u'v1/organizations/{organizationsId}:getEffectiveOrgPolicy',
-        request_field=u'getEffectiveOrgPolicyRequest',
-        request_type_name=u'CloudresourcemanagerOrganizationsGetEffectiveOrgPolicyRequest',
-        response_type_name=u'OrgPolicy',
+        relative_path='v1/organizations/{organizationsId}:getEffectiveOrgPolicy',
+        request_field='getEffectiveOrgPolicyRequest',
+        request_type_name='CloudresourcemanagerOrganizationsGetEffectiveOrgPolicyRequest',
+        response_type_name='OrgPolicy',
         supports_download=False,
     )
 
@@ -503,15 +503,15 @@ Authorization requires the Google IAM permission
           config, request, global_params=global_params)
 
     GetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'cloudresourcemanager.organizations.getIamPolicy',
-        ordered_params=[u'organizationsId'],
-        path_params=[u'organizationsId'],
+        http_method='POST',
+        method_id='cloudresourcemanager.organizations.getIamPolicy',
+        ordered_params=['organizationsId'],
+        path_params=['organizationsId'],
         query_params=[],
-        relative_path=u'v1/organizations/{organizationsId}:getIamPolicy',
-        request_field=u'getIamPolicyRequest',
-        request_type_name=u'CloudresourcemanagerOrganizationsGetIamPolicyRequest',
-        response_type_name=u'Policy',
+        relative_path='v1/organizations/{organizationsId}:getIamPolicy',
+        request_field='getIamPolicyRequest',
+        request_type_name='CloudresourcemanagerOrganizationsGetIamPolicyRequest',
+        response_type_name='Policy',
         supports_download=False,
     )
 
@@ -534,15 +534,15 @@ values including `POLICY_TYPE_NOT_SET` for the `policy_type oneof`. The
           config, request, global_params=global_params)
 
     GetOrgPolicy.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'cloudresourcemanager.organizations.getOrgPolicy',
-        ordered_params=[u'organizationsId'],
-        path_params=[u'organizationsId'],
+        http_method='POST',
+        method_id='cloudresourcemanager.organizations.getOrgPolicy',
+        ordered_params=['organizationsId'],
+        path_params=['organizationsId'],
         query_params=[],
-        relative_path=u'v1/organizations/{organizationsId}:getOrgPolicy',
-        request_field=u'getOrgPolicyRequest',
-        request_type_name=u'CloudresourcemanagerOrganizationsGetOrgPolicyRequest',
-        response_type_name=u'OrgPolicy',
+        relative_path='v1/organizations/{organizationsId}:getOrgPolicy',
+        request_field='getOrgPolicyRequest',
+        request_type_name='CloudresourcemanagerOrganizationsGetOrgPolicyRequest',
+        response_type_name='OrgPolicy',
         supports_download=False,
     )
 
@@ -560,15 +560,15 @@ values including `POLICY_TYPE_NOT_SET` for the `policy_type oneof`. The
           config, request, global_params=global_params)
 
     ListAvailableOrgPolicyConstraints.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'cloudresourcemanager.organizations.listAvailableOrgPolicyConstraints',
-        ordered_params=[u'organizationsId'],
-        path_params=[u'organizationsId'],
+        http_method='POST',
+        method_id='cloudresourcemanager.organizations.listAvailableOrgPolicyConstraints',
+        ordered_params=['organizationsId'],
+        path_params=['organizationsId'],
         query_params=[],
-        relative_path=u'v1/organizations/{organizationsId}:listAvailableOrgPolicyConstraints',
-        request_field=u'listAvailableOrgPolicyConstraintsRequest',
-        request_type_name=u'CloudresourcemanagerOrganizationsListAvailableOrgPolicyConstraintsRequest',
-        response_type_name=u'ListAvailableOrgPolicyConstraintsResponse',
+        relative_path='v1/organizations/{organizationsId}:listAvailableOrgPolicyConstraints',
+        request_field='listAvailableOrgPolicyConstraintsRequest',
+        request_type_name='CloudresourcemanagerOrganizationsListAvailableOrgPolicyConstraintsRequest',
+        response_type_name='ListAvailableOrgPolicyConstraintsResponse',
         supports_download=False,
     )
 
@@ -586,15 +586,15 @@ values including `POLICY_TYPE_NOT_SET` for the `policy_type oneof`. The
           config, request, global_params=global_params)
 
     ListOrgPolicies.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'cloudresourcemanager.organizations.listOrgPolicies',
-        ordered_params=[u'organizationsId'],
-        path_params=[u'organizationsId'],
+        http_method='POST',
+        method_id='cloudresourcemanager.organizations.listOrgPolicies',
+        ordered_params=['organizationsId'],
+        path_params=['organizationsId'],
         query_params=[],
-        relative_path=u'v1/organizations/{organizationsId}:listOrgPolicies',
-        request_field=u'listOrgPoliciesRequest',
-        request_type_name=u'CloudresourcemanagerOrganizationsListOrgPoliciesRequest',
-        response_type_name=u'ListOrgPoliciesResponse',
+        relative_path='v1/organizations/{organizationsId}:listOrgPolicies',
+        request_field='listOrgPoliciesRequest',
+        request_type_name='CloudresourcemanagerOrganizationsListOrgPoliciesRequest',
+        response_type_name='ListOrgPoliciesResponse',
         supports_download=False,
     )
 
@@ -618,15 +618,15 @@ Search will only return organizations on which the user has the permission
           config, request, global_params=global_params)
 
     Search.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'cloudresourcemanager.organizations.search',
+        http_method='POST',
+        method_id='cloudresourcemanager.organizations.search',
         ordered_params=[],
         path_params=[],
         query_params=[],
-        relative_path=u'v1/organizations:search',
+        relative_path='v1/organizations:search',
         request_field='<request>',
-        request_type_name=u'SearchOrganizationsRequest',
-        response_type_name=u'SearchOrganizationsResponse',
+        request_type_name='SearchOrganizationsRequest',
+        response_type_name='SearchOrganizationsResponse',
         supports_download=False,
     )
 
@@ -649,15 +649,15 @@ Authorization requires the Google IAM permission
           config, request, global_params=global_params)
 
     SetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'cloudresourcemanager.organizations.setIamPolicy',
-        ordered_params=[u'organizationsId'],
-        path_params=[u'organizationsId'],
+        http_method='POST',
+        method_id='cloudresourcemanager.organizations.setIamPolicy',
+        ordered_params=['organizationsId'],
+        path_params=['organizationsId'],
         query_params=[],
-        relative_path=u'v1/organizations/{organizationsId}:setIamPolicy',
-        request_field=u'setIamPolicyRequest',
-        request_type_name=u'CloudresourcemanagerOrganizationsSetIamPolicyRequest',
-        response_type_name=u'Policy',
+        relative_path='v1/organizations/{organizationsId}:setIamPolicy',
+        request_field='setIamPolicyRequest',
+        request_type_name='CloudresourcemanagerOrganizationsSetIamPolicyRequest',
+        response_type_name='Policy',
         supports_download=False,
     )
 
@@ -679,15 +679,15 @@ write of the `Policy`.
           config, request, global_params=global_params)
 
     SetOrgPolicy.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'cloudresourcemanager.organizations.setOrgPolicy',
-        ordered_params=[u'organizationsId'],
-        path_params=[u'organizationsId'],
+        http_method='POST',
+        method_id='cloudresourcemanager.organizations.setOrgPolicy',
+        ordered_params=['organizationsId'],
+        path_params=['organizationsId'],
         query_params=[],
-        relative_path=u'v1/organizations/{organizationsId}:setOrgPolicy',
-        request_field=u'setOrgPolicyRequest',
-        request_type_name=u'CloudresourcemanagerOrganizationsSetOrgPolicyRequest',
-        response_type_name=u'OrgPolicy',
+        relative_path='v1/organizations/{organizationsId}:setOrgPolicy',
+        request_field='setOrgPolicyRequest',
+        request_type_name='CloudresourcemanagerOrganizationsSetOrgPolicyRequest',
+        response_type_name='OrgPolicy',
         supports_download=False,
     )
 
@@ -709,22 +709,22 @@ There are no permissions required for making this API call.
           config, request, global_params=global_params)
 
     TestIamPermissions.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'cloudresourcemanager.organizations.testIamPermissions',
-        ordered_params=[u'organizationsId'],
-        path_params=[u'organizationsId'],
+        http_method='POST',
+        method_id='cloudresourcemanager.organizations.testIamPermissions',
+        ordered_params=['organizationsId'],
+        path_params=['organizationsId'],
         query_params=[],
-        relative_path=u'v1/organizations/{organizationsId}:testIamPermissions',
-        request_field=u'testIamPermissionsRequest',
-        request_type_name=u'CloudresourcemanagerOrganizationsTestIamPermissionsRequest',
-        response_type_name=u'TestIamPermissionsResponse',
+        relative_path='v1/organizations/{organizationsId}:testIamPermissions',
+        request_field='testIamPermissionsRequest',
+        request_type_name='CloudresourcemanagerOrganizationsTestIamPermissionsRequest',
+        response_type_name='TestIamPermissionsResponse',
         supports_download=False,
     )
 
   class ProjectsService(base_api.BaseApiService):
     """Service class for the projects resource."""
 
-    _NAME = u'projects'
+    _NAME = 'projects'
 
     def __init__(self, client):
       super(CloudresourcemanagerV1.ProjectsService, self).__init__(client)
@@ -745,15 +745,15 @@ There are no permissions required for making this API call.
           config, request, global_params=global_params)
 
     ClearOrgPolicy.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'cloudresourcemanager.projects.clearOrgPolicy',
-        ordered_params=[u'projectsId'],
-        path_params=[u'projectsId'],
+        http_method='POST',
+        method_id='cloudresourcemanager.projects.clearOrgPolicy',
+        ordered_params=['projectsId'],
+        path_params=['projectsId'],
         query_params=[],
-        relative_path=u'v1/projects/{projectsId}:clearOrgPolicy',
-        request_field=u'clearOrgPolicyRequest',
-        request_type_name=u'CloudresourcemanagerProjectsClearOrgPolicyRequest',
-        response_type_name=u'Empty',
+        relative_path='v1/projects/{projectsId}:clearOrgPolicy',
+        request_field='clearOrgPolicyRequest',
+        request_type_name='CloudresourcemanagerProjectsClearOrgPolicyRequest',
+        response_type_name='Empty',
         supports_download=False,
     )
 
@@ -785,15 +785,15 @@ the [`projects.updateBillingInfo`]
           config, request, global_params=global_params)
 
     Create.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'cloudresourcemanager.projects.create',
+        http_method='POST',
+        method_id='cloudresourcemanager.projects.create',
         ordered_params=[],
         path_params=[],
         query_params=[],
-        relative_path=u'v1/projects',
+        relative_path='v1/projects',
         request_field='<request>',
-        request_type_name=u'Project',
-        response_type_name=u'Operation',
+        request_type_name='Project',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -831,15 +831,15 @@ The caller must have modify permissions for this Project.
           config, request, global_params=global_params)
 
     Delete.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'DELETE',
-        method_id=u'cloudresourcemanager.projects.delete',
-        ordered_params=[u'projectId'],
-        path_params=[u'projectId'],
+        http_method='DELETE',
+        method_id='cloudresourcemanager.projects.delete',
+        ordered_params=['projectId'],
+        path_params=['projectId'],
         query_params=[],
-        relative_path=u'v1/projects/{projectId}',
+        relative_path='v1/projects/{projectId}',
         request_field='',
-        request_type_name=u'CloudresourcemanagerProjectsDeleteRequest',
-        response_type_name=u'Empty',
+        request_type_name='CloudresourcemanagerProjectsDeleteRequest',
+        response_type_name='Empty',
         supports_download=False,
     )
 
@@ -860,15 +860,15 @@ The caller must have read permissions for this Project.
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'cloudresourcemanager.projects.get',
-        ordered_params=[u'projectId'],
-        path_params=[u'projectId'],
+        http_method='GET',
+        method_id='cloudresourcemanager.projects.get',
+        ordered_params=['projectId'],
+        path_params=['projectId'],
         query_params=[],
-        relative_path=u'v1/projects/{projectId}',
+        relative_path='v1/projects/{projectId}',
         request_field='',
-        request_type_name=u'CloudresourcemanagerProjectsGetRequest',
-        response_type_name=u'Project',
+        request_type_name='CloudresourcemanagerProjectsGetRequest',
+        response_type_name='Project',
         supports_download=False,
     )
 
@@ -889,15 +889,15 @@ The caller must have read permissions for this Project.
           config, request, global_params=global_params)
 
     GetAncestry.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'cloudresourcemanager.projects.getAncestry',
-        ordered_params=[u'projectId'],
-        path_params=[u'projectId'],
+        http_method='POST',
+        method_id='cloudresourcemanager.projects.getAncestry',
+        ordered_params=['projectId'],
+        path_params=['projectId'],
         query_params=[],
-        relative_path=u'v1/projects/{projectId}:getAncestry',
-        request_field=u'getAncestryRequest',
-        request_type_name=u'CloudresourcemanagerProjectsGetAncestryRequest',
-        response_type_name=u'GetAncestryResponse',
+        relative_path='v1/projects/{projectId}:getAncestry',
+        request_field='getAncestryRequest',
+        request_type_name='CloudresourcemanagerProjectsGetAncestryRequest',
+        response_type_name='GetAncestryResponse',
         supports_download=False,
     )
 
@@ -919,15 +919,15 @@ not be expanded.
           config, request, global_params=global_params)
 
     GetEffectiveOrgPolicy.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'cloudresourcemanager.projects.getEffectiveOrgPolicy',
-        ordered_params=[u'projectsId'],
-        path_params=[u'projectsId'],
+        http_method='POST',
+        method_id='cloudresourcemanager.projects.getEffectiveOrgPolicy',
+        ordered_params=['projectsId'],
+        path_params=['projectsId'],
         query_params=[],
-        relative_path=u'v1/projects/{projectsId}:getEffectiveOrgPolicy',
-        request_field=u'getEffectiveOrgPolicyRequest',
-        request_type_name=u'CloudresourcemanagerProjectsGetEffectiveOrgPolicyRequest',
-        response_type_name=u'OrgPolicy',
+        relative_path='v1/projects/{projectsId}:getEffectiveOrgPolicy',
+        request_field='getEffectiveOrgPolicyRequest',
+        request_type_name='CloudresourcemanagerProjectsGetEffectiveOrgPolicyRequest',
+        response_type_name='OrgPolicy',
         supports_download=False,
     )
 
@@ -952,15 +952,15 @@ see [Resource Names](/apis/design/resource_names).
           config, request, global_params=global_params)
 
     GetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'cloudresourcemanager.projects.getIamPolicy',
-        ordered_params=[u'resource'],
-        path_params=[u'resource'],
+        http_method='POST',
+        method_id='cloudresourcemanager.projects.getIamPolicy',
+        ordered_params=['resource'],
+        path_params=['resource'],
         query_params=[],
-        relative_path=u'v1/projects/{resource}:getIamPolicy',
-        request_field=u'getIamPolicyRequest',
-        request_type_name=u'CloudresourcemanagerProjectsGetIamPolicyRequest',
-        response_type_name=u'Policy',
+        relative_path='v1/projects/{resource}:getIamPolicy',
+        request_field='getIamPolicyRequest',
+        request_type_name='CloudresourcemanagerProjectsGetIamPolicyRequest',
+        response_type_name='Policy',
         supports_download=False,
     )
 
@@ -983,15 +983,15 @@ values including `POLICY_TYPE_NOT_SET` for the `policy_type oneof`. The
           config, request, global_params=global_params)
 
     GetOrgPolicy.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'cloudresourcemanager.projects.getOrgPolicy',
-        ordered_params=[u'projectsId'],
-        path_params=[u'projectsId'],
+        http_method='POST',
+        method_id='cloudresourcemanager.projects.getOrgPolicy',
+        ordered_params=['projectsId'],
+        path_params=['projectsId'],
         query_params=[],
-        relative_path=u'v1/projects/{projectsId}:getOrgPolicy',
-        request_field=u'getOrgPolicyRequest',
-        request_type_name=u'CloudresourcemanagerProjectsGetOrgPolicyRequest',
-        response_type_name=u'OrgPolicy',
+        relative_path='v1/projects/{projectsId}:getOrgPolicy',
+        request_field='getOrgPolicyRequest',
+        request_type_name='CloudresourcemanagerProjectsGetOrgPolicyRequest',
+        response_type_name='OrgPolicy',
         supports_download=False,
     )
 
@@ -1024,15 +1024,15 @@ difference.
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'cloudresourcemanager.projects.list',
+        http_method='GET',
+        method_id='cloudresourcemanager.projects.list',
         ordered_params=[],
         path_params=[],
-        query_params=[u'filter', u'pageSize', u'pageToken'],
-        relative_path=u'v1/projects',
+        query_params=['filter', 'pageSize', 'pageToken'],
+        relative_path='v1/projects',
         request_field='',
-        request_type_name=u'CloudresourcemanagerProjectsListRequest',
-        response_type_name=u'ListProjectsResponse',
+        request_type_name='CloudresourcemanagerProjectsListRequest',
+        response_type_name='ListProjectsResponse',
         supports_download=False,
     )
 
@@ -1050,15 +1050,15 @@ difference.
           config, request, global_params=global_params)
 
     ListAvailableOrgPolicyConstraints.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'cloudresourcemanager.projects.listAvailableOrgPolicyConstraints',
-        ordered_params=[u'projectsId'],
-        path_params=[u'projectsId'],
+        http_method='POST',
+        method_id='cloudresourcemanager.projects.listAvailableOrgPolicyConstraints',
+        ordered_params=['projectsId'],
+        path_params=['projectsId'],
         query_params=[],
-        relative_path=u'v1/projects/{projectsId}:listAvailableOrgPolicyConstraints',
-        request_field=u'listAvailableOrgPolicyConstraintsRequest',
-        request_type_name=u'CloudresourcemanagerProjectsListAvailableOrgPolicyConstraintsRequest',
-        response_type_name=u'ListAvailableOrgPolicyConstraintsResponse',
+        relative_path='v1/projects/{projectsId}:listAvailableOrgPolicyConstraints',
+        request_field='listAvailableOrgPolicyConstraintsRequest',
+        request_type_name='CloudresourcemanagerProjectsListAvailableOrgPolicyConstraintsRequest',
+        response_type_name='ListAvailableOrgPolicyConstraintsResponse',
         supports_download=False,
     )
 
@@ -1076,15 +1076,15 @@ difference.
           config, request, global_params=global_params)
 
     ListOrgPolicies.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'cloudresourcemanager.projects.listOrgPolicies',
-        ordered_params=[u'projectsId'],
-        path_params=[u'projectsId'],
+        http_method='POST',
+        method_id='cloudresourcemanager.projects.listOrgPolicies',
+        ordered_params=['projectsId'],
+        path_params=['projectsId'],
         query_params=[],
-        relative_path=u'v1/projects/{projectsId}:listOrgPolicies',
-        request_field=u'listOrgPoliciesRequest',
-        request_type_name=u'CloudresourcemanagerProjectsListOrgPoliciesRequest',
-        response_type_name=u'ListOrgPoliciesResponse',
+        relative_path='v1/projects/{projectsId}:listOrgPolicies',
+        request_field='listOrgPoliciesRequest',
+        request_type_name='CloudresourcemanagerProjectsListOrgPoliciesRequest',
+        response_type_name='ListOrgPoliciesResponse',
         supports_download=False,
     )
 
@@ -1150,15 +1150,15 @@ Authorization requires the Google IAM permission
           config, request, global_params=global_params)
 
     SetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'cloudresourcemanager.projects.setIamPolicy',
-        ordered_params=[u'resource'],
-        path_params=[u'resource'],
+        http_method='POST',
+        method_id='cloudresourcemanager.projects.setIamPolicy',
+        ordered_params=['resource'],
+        path_params=['resource'],
         query_params=[],
-        relative_path=u'v1/projects/{resource}:setIamPolicy',
-        request_field=u'setIamPolicyRequest',
-        request_type_name=u'CloudresourcemanagerProjectsSetIamPolicyRequest',
-        response_type_name=u'Policy',
+        relative_path='v1/projects/{resource}:setIamPolicy',
+        request_field='setIamPolicyRequest',
+        request_type_name='CloudresourcemanagerProjectsSetIamPolicyRequest',
+        response_type_name='Policy',
         supports_download=False,
     )
 
@@ -1180,15 +1180,15 @@ write of the `Policy`.
           config, request, global_params=global_params)
 
     SetOrgPolicy.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'cloudresourcemanager.projects.setOrgPolicy',
-        ordered_params=[u'projectsId'],
-        path_params=[u'projectsId'],
+        http_method='POST',
+        method_id='cloudresourcemanager.projects.setOrgPolicy',
+        ordered_params=['projectsId'],
+        path_params=['projectsId'],
         query_params=[],
-        relative_path=u'v1/projects/{projectsId}:setOrgPolicy',
-        request_field=u'setOrgPolicyRequest',
-        request_type_name=u'CloudresourcemanagerProjectsSetOrgPolicyRequest',
-        response_type_name=u'OrgPolicy',
+        relative_path='v1/projects/{projectsId}:setOrgPolicy',
+        request_field='setOrgPolicyRequest',
+        request_type_name='CloudresourcemanagerProjectsSetOrgPolicyRequest',
+        response_type_name='OrgPolicy',
         supports_download=False,
     )
 
@@ -1208,15 +1208,15 @@ There are no permissions required for making this API call.
           config, request, global_params=global_params)
 
     TestIamPermissions.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'cloudresourcemanager.projects.testIamPermissions',
-        ordered_params=[u'resource'],
-        path_params=[u'resource'],
+        http_method='POST',
+        method_id='cloudresourcemanager.projects.testIamPermissions',
+        ordered_params=['resource'],
+        path_params=['resource'],
         query_params=[],
-        relative_path=u'v1/projects/{resource}:testIamPermissions',
-        request_field=u'testIamPermissionsRequest',
-        request_type_name=u'CloudresourcemanagerProjectsTestIamPermissionsRequest',
-        response_type_name=u'TestIamPermissionsResponse',
+        relative_path='v1/projects/{resource}:testIamPermissions',
+        request_field='testIamPermissionsRequest',
+        request_type_name='CloudresourcemanagerProjectsTestIamPermissionsRequest',
+        response_type_name='TestIamPermissionsResponse',
         supports_download=False,
     )
 
@@ -1240,15 +1240,15 @@ The caller must have modify permissions for this Project.
           config, request, global_params=global_params)
 
     Undelete.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'cloudresourcemanager.projects.undelete',
-        ordered_params=[u'projectId'],
-        path_params=[u'projectId'],
+        http_method='POST',
+        method_id='cloudresourcemanager.projects.undelete',
+        ordered_params=['projectId'],
+        path_params=['projectId'],
         query_params=[],
-        relative_path=u'v1/projects/{projectId}:undelete',
-        request_field=u'undeleteProjectRequest',
-        request_type_name=u'CloudresourcemanagerProjectsUndeleteRequest',
-        response_type_name=u'Empty',
+        relative_path='v1/projects/{projectId}:undelete',
+        request_field='undeleteProjectRequest',
+        request_type_name='CloudresourcemanagerProjectsUndeleteRequest',
+        response_type_name='Empty',
         supports_download=False,
     )
 
@@ -1269,14 +1269,14 @@ The caller must have modify permissions for this Project.
           config, request, global_params=global_params)
 
     Update.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'PUT',
-        method_id=u'cloudresourcemanager.projects.update',
-        ordered_params=[u'projectId'],
-        path_params=[u'projectId'],
+        http_method='PUT',
+        method_id='cloudresourcemanager.projects.update',
+        ordered_params=['projectId'],
+        path_params=['projectId'],
         query_params=[],
-        relative_path=u'v1/projects/{projectId}',
+        relative_path='v1/projects/{projectId}',
         request_field='<request>',
-        request_type_name=u'Project',
-        response_type_name=u'Project',
+        request_type_name='Project',
+        response_type_name='Project',
         supports_download=False,
     )

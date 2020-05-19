@@ -475,9 +475,6 @@ class CloudidentityDevicesDeviceUsersClientStatesListRequest(_messages.Message):
     filter: Optional. Additional restrictions when fetching list of client
       states.
     orderBy: Optional. Order specification for client states in the response.
-    pageSize: Optional. The maximum number of ClientStates to return. If
-      unspecified, at most 5 ClientStates will be returned. The maximum value
-      is 20; values above 20 will be coerced to 20.
     pageToken: Optional. A page token, received from a previous
       `ListClientStates` call. Provide this to retrieve the subsequent page.
       When paginating, all other parameters provided to `ListClientStates`
@@ -491,9 +488,8 @@ class CloudidentityDevicesDeviceUsersClientStatesListRequest(_messages.Message):
   customer = _messages.StringField(1)
   filter = _messages.StringField(2)
   orderBy = _messages.StringField(3)
-  pageSize = _messages.IntegerField(4, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(5)
-  parent = _messages.StringField(6, required=True)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
 
 
 class CloudidentityDevicesDeviceUsersClientStatesPatchRequest(_messages.Message):
@@ -682,8 +678,9 @@ class CloudidentityDevicesDeviceUsersLookupSelfRequest(_messages.Message):
       the user is enrolled into Google Endpoint Verification, this id will be
       saved as the 'device_resource_id' field in the following platform
       dependent files.  Mac: ~/.secureConnect/context_aware_config.json
-      Windows: C:\Users\%USERPROFILE%\.secureConnect\context_aware_config.json
-      Linux: ~/.secureConnect/context_aware_config.json
+      Windows:
+      C:\\Users\%USERPROFILE%\.secureConnect\context_aware_config.json Linux:
+      ~/.secureConnect/context_aware_config.json
   """
 
   androidId = _messages.StringField(1)
@@ -2035,6 +2032,20 @@ class GroupRelation(_messages.Message):
   roles = _messages.MessageField('TransitiveMembershipRole', 6, repeated=True)
 
 
+class ListClientStatesResponse(_messages.Message):
+  r"""Response message that is returned in LRO result of ListClientStates
+  Operation.
+
+  Fields:
+    clientStates: Client states meeting the list restrictions.
+    nextPageToken: Token to retrieve the next page of results. Empty if there
+      are no more results.
+  """
+
+  clientStates = _messages.MessageField('ClientState', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+
+
 class ListDeviceUsersResponse(_messages.Message):
   r"""Response message that is returned in LRO result of ListDeviceUsers
   Operation.
@@ -2600,7 +2611,7 @@ class StandardQueryParameters(_messages.Message):
 
   f__xgafv = _messages.EnumField('FXgafvValueValuesEnum', 1)
   access_token = _messages.StringField(2)
-  alt = _messages.EnumField('AltValueValuesEnum', 3, default=u'json')
+  alt = _messages.EnumField('AltValueValuesEnum', 3, default='json')
   callback = _messages.StringField(4)
   fields = _messages.StringField(5)
   key = _messages.StringField(6)

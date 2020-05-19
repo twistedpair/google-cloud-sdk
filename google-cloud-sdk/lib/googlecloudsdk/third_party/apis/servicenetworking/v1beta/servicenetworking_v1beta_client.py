@@ -8,17 +8,17 @@ class ServicenetworkingV1beta(base_api.BaseApiClient):
   """Generated client library for service servicenetworking version v1beta."""
 
   MESSAGES_MODULE = messages
-  BASE_URL = u'https://servicenetworking.googleapis.com/'
-  MTLS_BASE_URL = u''
+  BASE_URL = 'https://servicenetworking.googleapis.com/'
+  MTLS_BASE_URL = ''
 
-  _PACKAGE = u'servicenetworking'
-  _SCOPES = [u'https://www.googleapis.com/auth/cloud-platform', u'https://www.googleapis.com/auth/service.management']
-  _VERSION = u'v1beta'
+  _PACKAGE = 'servicenetworking'
+  _SCOPES = ['https://www.googleapis.com/auth/cloud-platform', 'https://www.googleapis.com/auth/service.management']
+  _VERSION = 'v1beta'
   _CLIENT_ID = '1042881264118.apps.googleusercontent.com'
   _CLIENT_SECRET = 'x_Tw5K8nnjoRAqULM9PFAC2b'
-  _USER_AGENT = u'google-cloud-sdk'
-  _CLIENT_CLASS_NAME = u'ServicenetworkingV1beta'
-  _URL_VERSION = u'v1beta'
+  _USER_AGENT = 'google-cloud-sdk'
+  _CLIENT_CLASS_NAME = 'ServicenetworkingV1beta'
+  _URL_VERSION = 'v1beta'
   _API_KEY = None
 
   def __init__(self, url='', credentials=None,
@@ -43,7 +43,7 @@ class ServicenetworkingV1beta(base_api.BaseApiClient):
   class OperationsService(base_api.BaseApiService):
     """Service class for the operations resource."""
 
-    _NAME = u'operations'
+    _NAME = 'operations'
 
     def __init__(self, client):
       super(ServicenetworkingV1beta.OperationsService, self).__init__(client)
@@ -66,23 +66,23 @@ service.
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta/operations/{operationsId}',
-        http_method=u'GET',
-        method_id=u'servicenetworking.operations.get',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1beta/operations/{operationsId}',
+        http_method='GET',
+        method_id='servicenetworking.operations.get',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1beta/{+name}',
+        relative_path='v1beta/{+name}',
         request_field='',
-        request_type_name=u'ServicenetworkingOperationsGetRequest',
-        response_type_name=u'Operation',
+        request_type_name='ServicenetworkingOperationsGetRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
   class ServicesConnectionsService(base_api.BaseApiService):
     """Service class for the services_connections resource."""
 
-    _NAME = u'services_connections'
+    _NAME = 'services_connections'
 
     def __init__(self, client):
       super(ServicenetworkingV1beta.ServicesConnectionsService, self).__init__(client)
@@ -111,16 +111,16 @@ Operation<response: Connection>.
           config, request, global_params=global_params)
 
     Create.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta/services/{servicesId}/connections',
-        http_method=u'POST',
-        method_id=u'servicenetworking.services.connections.create',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
+        flat_path='v1beta/services/{servicesId}/connections',
+        http_method='POST',
+        method_id='servicenetworking.services.connections.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
         query_params=[],
-        relative_path=u'v1beta/{+parent}/connections',
-        request_field=u'connection',
-        request_type_name=u'ServicenetworkingServicesConnectionsCreateRequest',
-        response_type_name=u'Operation',
+        relative_path='v1beta/{+parent}/connections',
+        request_field='connection',
+        request_type_name='ServicenetworkingServicesConnectionsCreateRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -139,23 +139,23 @@ the given service and consumer network.
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta/services/{servicesId}/connections',
-        http_method=u'GET',
-        method_id=u'servicenetworking.services.connections.list',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'network'],
-        relative_path=u'v1beta/{+parent}/connections',
+        flat_path='v1beta/services/{servicesId}/connections',
+        http_method='GET',
+        method_id='servicenetworking.services.connections.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['network'],
+        relative_path='v1beta/{+parent}/connections',
         request_field='',
-        request_type_name=u'ServicenetworkingServicesConnectionsListRequest',
-        response_type_name=u'ListConnectionsResponse',
+        request_type_name='ServicenetworkingServicesConnectionsListRequest',
+        response_type_name='ListConnectionsResponse',
         supports_download=False,
     )
 
   class ServicesService(base_api.BaseApiService):
     """Service class for the services resource."""
 
-    _NAME = u'services'
+    _NAME = 'services'
 
     def __init__(self, client):
       super(ServicenetworkingV1beta.ServicesService, self).__init__(client)
@@ -182,15 +182,15 @@ region. Operation<response: Subnetwork>
           config, request, global_params=global_params)
 
     AddSubnetwork.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta/services/{servicesId}/{servicesId1}/{servicesId2}:addSubnetwork',
-        http_method=u'POST',
-        method_id=u'servicenetworking.services.addSubnetwork',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
+        flat_path='v1beta/services/{servicesId}/{servicesId1}/{servicesId2}:addSubnetwork',
+        http_method='POST',
+        method_id='servicenetworking.services.addSubnetwork',
+        ordered_params=['parent'],
+        path_params=['parent'],
         query_params=[],
-        relative_path=u'v1beta/{+parent}:addSubnetwork',
-        request_field=u'addSubnetworkRequest',
-        request_type_name=u'ServicenetworkingServicesAddSubnetworkRequest',
-        response_type_name=u'Operation',
+        relative_path='v1beta/{+parent}:addSubnetwork',
+        request_field='addSubnetworkRequest',
+        request_type_name='ServicenetworkingServicesAddSubnetworkRequest',
+        response_type_name='Operation',
         supports_download=False,
     )

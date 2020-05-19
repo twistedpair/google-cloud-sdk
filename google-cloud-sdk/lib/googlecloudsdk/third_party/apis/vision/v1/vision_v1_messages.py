@@ -888,10 +888,10 @@ class GcsDestination(_messages.Message):
       URI prefix. This field can either represent a gcs file prefix or gcs
       directory. In either case, the uri should be unique because in order to
       get all of the output files, you will need to do a wildcard gcs search
-      on the uri prefix you provide.  Examples:  *    File Prefix: gs
-      ://bucket-name/here/filenameprefix   The output files will be created in
-      gs://bucket-name/here/ and the names of the output files will begin with
-      "filenameprefix".  *    Directory Prefix: gs://bucket-
+      on the uri prefix you provide.  Examples:  *    File Prefix:
+      gs://bucket-name/here/filenameprefix   The output files will be created
+      in gs://bucket-name/here/ and the names of the output files will begin
+      with "filenameprefix".  *    Directory Prefix: gs://bucket-
       name/some/location/   The output files will be created in gs://bucket-
       name/some/location/ and the names of the output files could be anything
       because there was no filename prefix specified.  If multiple outputs,
@@ -1452,10 +1452,10 @@ class GoogleCloudVisionV1p1beta1GcsDestination(_messages.Message):
       URI prefix. This field can either represent a gcs file prefix or gcs
       directory. In either case, the uri should be unique because in order to
       get all of the output files, you will need to do a wildcard gcs search
-      on the uri prefix you provide.  Examples:  *    File Prefix: gs
-      ://bucket-name/here/filenameprefix   The output files will be created in
-      gs://bucket-name/here/ and the names of the output files will begin with
-      "filenameprefix".  *    Directory Prefix: gs://bucket-
+      on the uri prefix you provide.  Examples:  *    File Prefix:
+      gs://bucket-name/here/filenameprefix   The output files will be created
+      in gs://bucket-name/here/ and the names of the output files will begin
+      with "filenameprefix".  *    Directory Prefix: gs://bucket-
       name/some/location/   The output files will be created in gs://bucket-
       name/some/location/ and the names of the output files could be anything
       because there was no filename prefix specified.  If multiple outputs,
@@ -2709,10 +2709,10 @@ class GoogleCloudVisionV1p2beta1GcsDestination(_messages.Message):
       URI prefix. This field can either represent a gcs file prefix or gcs
       directory. In either case, the uri should be unique because in order to
       get all of the output files, you will need to do a wildcard gcs search
-      on the uri prefix you provide.  Examples:  *    File Prefix: gs
-      ://bucket-name/here/filenameprefix   The output files will be created in
-      gs://bucket-name/here/ and the names of the output files will begin with
-      "filenameprefix".  *    Directory Prefix: gs://bucket-
+      on the uri prefix you provide.  Examples:  *    File Prefix:
+      gs://bucket-name/here/filenameprefix   The output files will be created
+      in gs://bucket-name/here/ and the names of the output files will begin
+      with "filenameprefix".  *    Directory Prefix: gs://bucket-
       name/some/location/   The output files will be created in gs://bucket-
       name/some/location/ and the names of the output files could be anything
       because there was no filename prefix specified.  If multiple outputs,
@@ -4006,10 +4006,10 @@ class GoogleCloudVisionV1p3beta1GcsDestination(_messages.Message):
       URI prefix. This field can either represent a gcs file prefix or gcs
       directory. In either case, the uri should be unique because in order to
       get all of the output files, you will need to do a wildcard gcs search
-      on the uri prefix you provide.  Examples:  *    File Prefix: gs
-      ://bucket-name/here/filenameprefix   The output files will be created in
-      gs://bucket-name/here/ and the names of the output files will begin with
-      "filenameprefix".  *    Directory Prefix: gs://bucket-
+      on the uri prefix you provide.  Examples:  *    File Prefix:
+      gs://bucket-name/here/filenameprefix   The output files will be created
+      in gs://bucket-name/here/ and the names of the output files will begin
+      with "filenameprefix".  *    Directory Prefix: gs://bucket-
       name/some/location/   The output files will be created in gs://bucket-
       name/some/location/ and the names of the output files could be anything
       because there was no filename prefix specified.  If multiple outputs,
@@ -5399,10 +5399,10 @@ class GoogleCloudVisionV1p4beta1GcsDestination(_messages.Message):
       URI prefix. This field can either represent a gcs file prefix or gcs
       directory. In either case, the uri should be unique because in order to
       get all of the output files, you will need to do a wildcard gcs search
-      on the uri prefix you provide.  Examples:  *    File Prefix: gs
-      ://bucket-name/here/filenameprefix   The output files will be created in
-      gs://bucket-name/here/ and the names of the output files will begin with
-      "filenameprefix".  *    Directory Prefix: gs://bucket-
+      on the uri prefix you provide.  Examples:  *    File Prefix:
+      gs://bucket-name/here/filenameprefix   The output files will be created
+      in gs://bucket-name/here/ and the names of the output files will begin
+      with "filenameprefix".  *    Directory Prefix: gs://bucket-
       name/some/location/   The output files will be created in gs://bucket-
       name/some/location/ and the names of the output files could be anything
       because there was no filename prefix specified.  If multiple outputs,
@@ -7251,7 +7251,7 @@ class StandardQueryParameters(_messages.Message):
 
   f__xgafv = _messages.EnumField('FXgafvValueValuesEnum', 1)
   access_token = _messages.StringField(2)
-  alt = _messages.EnumField('AltValueValuesEnum', 3, default=u'json')
+  alt = _messages.EnumField('AltValueValuesEnum', 3, default='json')
   callback = _messages.StringField(4)
   fields = _messages.StringField(5)
   key = _messages.StringField(6)

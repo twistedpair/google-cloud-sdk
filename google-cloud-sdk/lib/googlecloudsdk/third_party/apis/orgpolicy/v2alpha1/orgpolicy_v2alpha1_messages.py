@@ -247,10 +247,11 @@ class GoogleCloudOrgpolicyV2alpha1PolicySpecPolicyRuleStringValues(_messages.Mes
   prefix is used to denote specific values, and is required only if the value
   contains a ":". Values prefixed with "is:" are treated the same as values
   with no prefix. Ancestry subtrees must be in one of the following formats:
-  - "projects/<project-id>", e.g. "projects/tokyo-rain-123"     - "folders
-  /<folder-id>", e.g. "folders/1234"     - "organizations/<organization-id>",
-  e.g. "organizations/1234" The `supports_under` field of the associated
-  `Constraint`  defines whether ancestry prefixes can be used.
+  - "projects/<project-id>", e.g. "projects/tokyo-rain-123"     -
+  "folders/<folder-id>", e.g. "folders/1234"     -
+  "organizations/<organization-id>", e.g. "organizations/1234" The
+  `supports_under` field of the associated `Constraint`  defines whether
+  ancestry prefixes can be used.
 
   Fields:
     allowedValues: List of values allowed at this resource.
@@ -476,7 +477,7 @@ class StandardQueryParameters(_messages.Message):
 
   f__xgafv = _messages.EnumField('FXgafvValueValuesEnum', 1)
   access_token = _messages.StringField(2)
-  alt = _messages.EnumField('AltValueValuesEnum', 3, default=u'json')
+  alt = _messages.EnumField('AltValueValuesEnum', 3, default='json')
   callback = _messages.StringField(4)
   fields = _messages.StringField(5)
   key = _messages.StringField(6)

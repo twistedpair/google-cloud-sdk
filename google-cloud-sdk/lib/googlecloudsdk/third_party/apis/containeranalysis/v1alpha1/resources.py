@@ -28,7 +28,7 @@ class Collections(enum.Enum):
       'projects',
       'projects/{projectsId}',
       {},
-      [u'projectsId'],
+      ['projectsId'],
       True
   )
   PROJECTS_NOTES = (
@@ -38,7 +38,7 @@ class Collections(enum.Enum):
           '':
               'projects/{projectsId}/notes/{notesId}',
       },
-      [u'name'],
+      ['name'],
       True
   )
   PROJECTS_OCCURRENCES = (
@@ -48,7 +48,7 @@ class Collections(enum.Enum):
           '':
               'projects/{projectsId}/occurrences/{occurrencesId}',
       },
-      [u'name'],
+      ['name'],
       True
   )
   PROJECTS_SCANCONFIGS = (
@@ -58,14 +58,14 @@ class Collections(enum.Enum):
           '':
               'projects/{projectsId}/scanConfigs/{scanConfigsId}',
       },
-      [u'name'],
+      ['name'],
       True
   )
   PROVIDERS = (
       'providers',
       'providers/{providersId}',
       {},
-      [u'providersId'],
+      ['providersId'],
       True
   )
   PROVIDERS_NOTES = (
@@ -75,7 +75,7 @@ class Collections(enum.Enum):
           '':
               'providers/{providersId}/notes/{notesId}',
       },
-      [u'name'],
+      ['name'],
       True
   )
 

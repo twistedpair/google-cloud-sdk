@@ -31,7 +31,7 @@ class Collections(enum.Enum):
           '':
               'operations/{operationsId}',
       },
-      [u'name'],
+      ['name'],
       True
   )
   SERVICES = (
@@ -41,7 +41,7 @@ class Collections(enum.Enum):
           '':
               '{v1beta1Id}/{v1beta1Id1}/services/{servicesId}',
       },
-      [u'name'],
+      ['name'],
       True
   )
 

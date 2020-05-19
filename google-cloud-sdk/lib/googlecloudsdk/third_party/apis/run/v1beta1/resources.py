@@ -28,7 +28,7 @@ class Collections(enum.Enum):
       'namespaces',
       'namespaces/{namespacesId}',
       {},
-      [u'namespacesId'],
+      ['namespacesId'],
       True
   )
   NAMESPACES_CUSTOMRESOURCEDEFINITIONS = (
@@ -39,21 +39,21 @@ class Collections(enum.Enum):
               'namespaces/{namespacesId}/customresourcedefinitions/'
               '{customresourcedefinitionsId}',
       },
-      [u'name'],
+      ['name'],
       True
   )
   PROJECTS = (
       'projects',
       'projects/{projectsId}',
       {},
-      [u'projectsId'],
+      ['projectsId'],
       True
   )
   PROJECTS_LOCATIONS = (
       'projects.locations',
       'projects/{projectsId}/locations/{locationsId}',
       {},
-      [u'projectsId', u'locationsId'],
+      ['projectsId', 'locationsId'],
       True
   )
   PROJECTS_LOCATIONS_CUSTOMRESOURCEDEFINITIONS = (
@@ -64,7 +64,7 @@ class Collections(enum.Enum):
               'projects/{projectsId}/locations/{locationsId}/'
               'customresourcedefinitions/{customresourcedefinitionsId}',
       },
-      [u'name'],
+      ['name'],
       True
   )
 

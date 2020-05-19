@@ -41,12 +41,12 @@ class GoogleCloudVideointelligenceV1AnnotateVideoRequest(_messages.Message):
       Storage](https://cloud.google.com/storage/) URIs are supported. URIs
       must be specified in the following format: `gs://bucket-id/object-id`
       (other URI formats return google.rpc.Code.INVALID_ARGUMENT). For more
-      information, see [Request URIs](https://cloud.google.com/storage/docs
-      /request-endpoints). To identify multiple videos, a video URI may
-      include wildcards in the `object-id`. Supported wildcards: '*' to match
-      0 or more characters; '?' to match 1 character. If unset, the input
-      video should be embedded in the request as `input_content`. If set,
-      `input_content` must be unset.
+      information, see [Request
+      URIs](https://cloud.google.com/storage/docs/request-endpoints). To
+      identify multiple videos, a video URI may include wildcards in the
+      `object-id`. Supported wildcards: '*' to match 0 or more characters; '?'
+      to match 1 character. If unset, the input video should be embedded in
+      the request as `input_content`. If set, `input_content` must be unset.
     locationId: Optional. Cloud region where annotation should take place.
       Supported cloud regions are: `us-east1`, `us-west1`, `europe-west1`,
       `asia-east1`. If no region is specified, the region will be determined
@@ -56,8 +56,8 @@ class GoogleCloudVideointelligenceV1AnnotateVideoRequest(_messages.Message):
       Storage](https://cloud.google.com/storage/) URIs are supported. These
       must be specified in the following format: `gs://bucket-id/object-id`
       (other URI formats return google.rpc.Code.INVALID_ARGUMENT). For more
-      information, see [Request URIs](https://cloud.google.com/storage/docs
-      /request-endpoints).
+      information, see [Request
+      URIs](https://cloud.google.com/storage/docs/request-endpoints).
     videoContext: Additional video context and/or feature-specific parameters.
   """
 
@@ -3433,7 +3433,7 @@ class StandardQueryParameters(_messages.Message):
 
   f__xgafv = _messages.EnumField('FXgafvValueValuesEnum', 1)
   access_token = _messages.StringField(2)
-  alt = _messages.EnumField('AltValueValuesEnum', 3, default=u'json')
+  alt = _messages.EnumField('AltValueValuesEnum', 3, default='json')
   callback = _messages.StringField(4)
   fields = _messages.StringField(5)
   key = _messages.StringField(6)

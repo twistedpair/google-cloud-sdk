@@ -8,17 +8,17 @@ class ClouddebuggerV2(base_api.BaseApiClient):
   """Generated client library for service clouddebugger version v2."""
 
   MESSAGES_MODULE = messages
-  BASE_URL = u'https://clouddebugger.googleapis.com/'
-  MTLS_BASE_URL = u'https://clouddebugger.mtls.googleapis.com/'
+  BASE_URL = 'https://clouddebugger.googleapis.com/'
+  MTLS_BASE_URL = 'https://clouddebugger.mtls.googleapis.com/'
 
-  _PACKAGE = u'clouddebugger'
-  _SCOPES = [u'https://www.googleapis.com/auth/cloud-platform', u'https://www.googleapis.com/auth/cloud_debugger']
-  _VERSION = u'v2'
+  _PACKAGE = 'clouddebugger'
+  _SCOPES = ['https://www.googleapis.com/auth/cloud-platform', 'https://www.googleapis.com/auth/cloud_debugger']
+  _VERSION = 'v2'
   _CLIENT_ID = '1042881264118.apps.googleusercontent.com'
   _CLIENT_SECRET = 'x_Tw5K8nnjoRAqULM9PFAC2b'
-  _USER_AGENT = u'google-cloud-sdk'
-  _CLIENT_CLASS_NAME = u'ClouddebuggerV2'
-  _URL_VERSION = u'v2'
+  _USER_AGENT = 'google-cloud-sdk'
+  _CLIENT_CLASS_NAME = 'ClouddebuggerV2'
+  _URL_VERSION = 'v2'
   _API_KEY = None
 
   def __init__(self, url='', credentials=None,
@@ -46,7 +46,7 @@ class ClouddebuggerV2(base_api.BaseApiClient):
   class ControllerDebuggeesBreakpointsService(base_api.BaseApiService):
     """Service class for the controller_debuggees_breakpoints resource."""
 
-    _NAME = u'controller_debuggees_breakpoints'
+    _NAME = 'controller_debuggees_breakpoints'
 
     def __init__(self, client):
       super(ClouddebuggerV2.ControllerDebuggeesBreakpointsService, self).__init__(client)
@@ -79,15 +79,15 @@ setting those breakpoints again.
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'clouddebugger.controller.debuggees.breakpoints.list',
-        ordered_params=[u'debuggeeId'],
-        path_params=[u'debuggeeId'],
-        query_params=[u'agentId', u'successOnTimeout', u'waitToken'],
-        relative_path=u'v2/controller/debuggees/{debuggeeId}/breakpoints',
+        http_method='GET',
+        method_id='clouddebugger.controller.debuggees.breakpoints.list',
+        ordered_params=['debuggeeId'],
+        path_params=['debuggeeId'],
+        query_params=['agentId', 'successOnTimeout', 'waitToken'],
+        relative_path='v2/controller/debuggees/{debuggeeId}/breakpoints',
         request_field='',
-        request_type_name=u'ClouddebuggerControllerDebuggeesBreakpointsListRequest',
-        response_type_name=u'ListActiveBreakpointsResponse',
+        request_type_name='ClouddebuggerControllerDebuggeesBreakpointsListRequest',
+        response_type_name='ListActiveBreakpointsResponse',
         supports_download=False,
     )
 
@@ -112,22 +112,22 @@ or snapping the location to the correct line of code.
           config, request, global_params=global_params)
 
     Update.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'PUT',
-        method_id=u'clouddebugger.controller.debuggees.breakpoints.update',
-        ordered_params=[u'debuggeeId', u'id'],
-        path_params=[u'debuggeeId', u'id'],
+        http_method='PUT',
+        method_id='clouddebugger.controller.debuggees.breakpoints.update',
+        ordered_params=['debuggeeId', 'id'],
+        path_params=['debuggeeId', 'id'],
         query_params=[],
-        relative_path=u'v2/controller/debuggees/{debuggeeId}/breakpoints/{id}',
-        request_field=u'updateActiveBreakpointRequest',
-        request_type_name=u'ClouddebuggerControllerDebuggeesBreakpointsUpdateRequest',
-        response_type_name=u'UpdateActiveBreakpointResponse',
+        relative_path='v2/controller/debuggees/{debuggeeId}/breakpoints/{id}',
+        request_field='updateActiveBreakpointRequest',
+        request_type_name='ClouddebuggerControllerDebuggeesBreakpointsUpdateRequest',
+        response_type_name='UpdateActiveBreakpointResponse',
         supports_download=False,
     )
 
   class ControllerDebuggeesService(base_api.BaseApiService):
     """Service class for the controller_debuggees resource."""
 
-    _NAME = u'controller_debuggees'
+    _NAME = 'controller_debuggees'
 
     def __init__(self, client):
       super(ClouddebuggerV2.ControllerDebuggeesService, self).__init__(client)
@@ -157,22 +157,22 @@ from data loss, or change the `debuggee_id` format. Agents must handle
           config, request, global_params=global_params)
 
     Register.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'clouddebugger.controller.debuggees.register',
+        http_method='POST',
+        method_id='clouddebugger.controller.debuggees.register',
         ordered_params=[],
         path_params=[],
         query_params=[],
-        relative_path=u'v2/controller/debuggees/register',
+        relative_path='v2/controller/debuggees/register',
         request_field='<request>',
-        request_type_name=u'RegisterDebuggeeRequest',
-        response_type_name=u'RegisterDebuggeeResponse',
+        request_type_name='RegisterDebuggeeRequest',
+        response_type_name='RegisterDebuggeeResponse',
         supports_download=False,
     )
 
   class ControllerService(base_api.BaseApiService):
     """Service class for the controller resource."""
 
-    _NAME = u'controller'
+    _NAME = 'controller'
 
     def __init__(self, client):
       super(ClouddebuggerV2.ControllerService, self).__init__(client)
@@ -182,7 +182,7 @@ from data loss, or change the `debuggee_id` format. Agents must handle
   class DebuggerDebuggeesBreakpointsService(base_api.BaseApiService):
     """Service class for the debugger_debuggees_breakpoints resource."""
 
-    _NAME = u'debugger_debuggees_breakpoints'
+    _NAME = 'debugger_debuggees_breakpoints'
 
     def __init__(self, client):
       super(ClouddebuggerV2.DebuggerDebuggeesBreakpointsService, self).__init__(client)
@@ -203,15 +203,15 @@ from data loss, or change the `debuggee_id` format. Agents must handle
           config, request, global_params=global_params)
 
     Delete.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'DELETE',
-        method_id=u'clouddebugger.debugger.debuggees.breakpoints.delete',
-        ordered_params=[u'debuggeeId', u'breakpointId'],
-        path_params=[u'breakpointId', u'debuggeeId'],
-        query_params=[u'clientVersion'],
-        relative_path=u'v2/debugger/debuggees/{debuggeeId}/breakpoints/{breakpointId}',
+        http_method='DELETE',
+        method_id='clouddebugger.debugger.debuggees.breakpoints.delete',
+        ordered_params=['debuggeeId', 'breakpointId'],
+        path_params=['breakpointId', 'debuggeeId'],
+        query_params=['clientVersion'],
+        relative_path='v2/debugger/debuggees/{debuggeeId}/breakpoints/{breakpointId}',
         request_field='',
-        request_type_name=u'ClouddebuggerDebuggerDebuggeesBreakpointsDeleteRequest',
-        response_type_name=u'Empty',
+        request_type_name='ClouddebuggerDebuggerDebuggeesBreakpointsDeleteRequest',
+        response_type_name='Empty',
         supports_download=False,
     )
 
@@ -229,15 +229,15 @@ from data loss, or change the `debuggee_id` format. Agents must handle
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'clouddebugger.debugger.debuggees.breakpoints.get',
-        ordered_params=[u'debuggeeId', u'breakpointId'],
-        path_params=[u'breakpointId', u'debuggeeId'],
-        query_params=[u'clientVersion'],
-        relative_path=u'v2/debugger/debuggees/{debuggeeId}/breakpoints/{breakpointId}',
+        http_method='GET',
+        method_id='clouddebugger.debugger.debuggees.breakpoints.get',
+        ordered_params=['debuggeeId', 'breakpointId'],
+        path_params=['breakpointId', 'debuggeeId'],
+        query_params=['clientVersion'],
+        relative_path='v2/debugger/debuggees/{debuggeeId}/breakpoints/{breakpointId}',
         request_field='',
-        request_type_name=u'ClouddebuggerDebuggerDebuggeesBreakpointsGetRequest',
-        response_type_name=u'GetBreakpointResponse',
+        request_type_name='ClouddebuggerDebuggerDebuggeesBreakpointsGetRequest',
+        response_type_name='GetBreakpointResponse',
         supports_download=False,
     )
 
@@ -255,15 +255,15 @@ from data loss, or change the `debuggee_id` format. Agents must handle
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'clouddebugger.debugger.debuggees.breakpoints.list',
-        ordered_params=[u'debuggeeId'],
-        path_params=[u'debuggeeId'],
-        query_params=[u'action_value', u'clientVersion', u'includeAllUsers', u'includeInactive', u'stripResults', u'waitToken'],
-        relative_path=u'v2/debugger/debuggees/{debuggeeId}/breakpoints',
+        http_method='GET',
+        method_id='clouddebugger.debugger.debuggees.breakpoints.list',
+        ordered_params=['debuggeeId'],
+        path_params=['debuggeeId'],
+        query_params=['action_value', 'clientVersion', 'includeAllUsers', 'includeInactive', 'stripResults', 'waitToken'],
+        relative_path='v2/debugger/debuggees/{debuggeeId}/breakpoints',
         request_field='',
-        request_type_name=u'ClouddebuggerDebuggerDebuggeesBreakpointsListRequest',
-        response_type_name=u'ListBreakpointsResponse',
+        request_type_name='ClouddebuggerDebuggerDebuggeesBreakpointsListRequest',
+        response_type_name='ListBreakpointsResponse',
         supports_download=False,
     )
 
@@ -281,22 +281,22 @@ from data loss, or change the `debuggee_id` format. Agents must handle
           config, request, global_params=global_params)
 
     Set.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'clouddebugger.debugger.debuggees.breakpoints.set',
-        ordered_params=[u'debuggeeId'],
-        path_params=[u'debuggeeId'],
-        query_params=[u'canaryOption', u'clientVersion'],
-        relative_path=u'v2/debugger/debuggees/{debuggeeId}/breakpoints/set',
-        request_field=u'breakpoint',
-        request_type_name=u'ClouddebuggerDebuggerDebuggeesBreakpointsSetRequest',
-        response_type_name=u'SetBreakpointResponse',
+        http_method='POST',
+        method_id='clouddebugger.debugger.debuggees.breakpoints.set',
+        ordered_params=['debuggeeId'],
+        path_params=['debuggeeId'],
+        query_params=['canaryOption', 'clientVersion'],
+        relative_path='v2/debugger/debuggees/{debuggeeId}/breakpoints/set',
+        request_field='breakpoint',
+        request_type_name='ClouddebuggerDebuggerDebuggeesBreakpointsSetRequest',
+        response_type_name='SetBreakpointResponse',
         supports_download=False,
     )
 
   class DebuggerDebuggeesService(base_api.BaseApiService):
     """Service class for the debugger_debuggees resource."""
 
-    _NAME = u'debugger_debuggees'
+    _NAME = 'debugger_debuggees'
 
     def __init__(self, client):
       super(ClouddebuggerV2.DebuggerDebuggeesService, self).__init__(client)
@@ -317,22 +317,22 @@ from data loss, or change the `debuggee_id` format. Agents must handle
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'clouddebugger.debugger.debuggees.list',
+        http_method='GET',
+        method_id='clouddebugger.debugger.debuggees.list',
         ordered_params=[],
         path_params=[],
-        query_params=[u'clientVersion', u'includeInactive', u'project'],
-        relative_path=u'v2/debugger/debuggees',
+        query_params=['clientVersion', 'includeInactive', 'project'],
+        relative_path='v2/debugger/debuggees',
         request_field='',
-        request_type_name=u'ClouddebuggerDebuggerDebuggeesListRequest',
-        response_type_name=u'ListDebuggeesResponse',
+        request_type_name='ClouddebuggerDebuggerDebuggeesListRequest',
+        response_type_name='ListDebuggeesResponse',
         supports_download=False,
     )
 
   class DebuggerService(base_api.BaseApiService):
     """Service class for the debugger resource."""
 
-    _NAME = u'debugger'
+    _NAME = 'debugger'
 
     def __init__(self, client):
       super(ClouddebuggerV2.DebuggerService, self).__init__(client)

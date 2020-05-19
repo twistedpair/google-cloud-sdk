@@ -28,7 +28,7 @@ class Collections(enum.Enum):
       'projects',
       'projects/{projectsId}',
       {},
-      [u'projectsId'],
+      ['projectsId'],
       True
   )
   PROJECTS_INSTANCECONFIGS = (
@@ -38,7 +38,7 @@ class Collections(enum.Enum):
           '':
               'projects/{projectsId}/instanceConfigs/{instanceConfigsId}',
       },
-      [u'name'],
+      ['name'],
       True
   )
   PROJECTS_INSTANCES = (
@@ -48,7 +48,7 @@ class Collections(enum.Enum):
           '':
               'projects/{projectsId}/instances/{instancesId}',
       },
-      [u'name'],
+      ['name'],
       True
   )
   PROJECTS_INSTANCES_BACKUPS = (
@@ -59,7 +59,7 @@ class Collections(enum.Enum):
               'projects/{projectsId}/instances/{instancesId}/backups/'
               '{backupsId}',
       },
-      [u'name'],
+      ['name'],
       True
   )
   PROJECTS_INSTANCES_BACKUPS_OPERATIONS = (
@@ -70,7 +70,7 @@ class Collections(enum.Enum):
               'projects/{projectsId}/instances/{instancesId}/backups/'
               '{backupsId}/operations/{operationsId}',
       },
-      [u'name'],
+      ['name'],
       True
   )
   PROJECTS_INSTANCES_DATABASES = (
@@ -81,7 +81,7 @@ class Collections(enum.Enum):
               'projects/{projectsId}/instances/{instancesId}/databases/'
               '{databasesId}',
       },
-      [u'name'],
+      ['name'],
       True
   )
   PROJECTS_INSTANCES_DATABASES_OPERATIONS = (
@@ -92,7 +92,7 @@ class Collections(enum.Enum):
               'projects/{projectsId}/instances/{instancesId}/databases/'
               '{databasesId}/operations/{operationsId}',
       },
-      [u'name'],
+      ['name'],
       True
   )
   PROJECTS_INSTANCES_DATABASES_SESSIONS = (
@@ -103,7 +103,7 @@ class Collections(enum.Enum):
               'projects/{projectsId}/instances/{instancesId}/databases/'
               '{databasesId}/sessions/{sessionsId}',
       },
-      [u'name'],
+      ['name'],
       True
   )
   PROJECTS_INSTANCES_OPERATIONS = (
@@ -114,7 +114,7 @@ class Collections(enum.Enum):
               'projects/{projectsId}/instances/{instancesId}/operations/'
               '{operationsId}',
       },
-      [u'name'],
+      ['name'],
       True
   )
 

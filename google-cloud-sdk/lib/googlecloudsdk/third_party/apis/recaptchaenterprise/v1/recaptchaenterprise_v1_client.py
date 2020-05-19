@@ -8,17 +8,17 @@ class RecaptchaenterpriseV1(base_api.BaseApiClient):
   """Generated client library for service recaptchaenterprise version v1."""
 
   MESSAGES_MODULE = messages
-  BASE_URL = u'https://recaptchaenterprise.googleapis.com/'
-  MTLS_BASE_URL = u'https://recaptchaenterprise.mtls.googleapis.com/'
+  BASE_URL = 'https://recaptchaenterprise.googleapis.com/'
+  MTLS_BASE_URL = 'https://recaptchaenterprise.mtls.googleapis.com/'
 
-  _PACKAGE = u'recaptchaenterprise'
-  _SCOPES = [u'https://www.googleapis.com/auth/cloud-platform']
-  _VERSION = u'v1'
+  _PACKAGE = 'recaptchaenterprise'
+  _SCOPES = ['https://www.googleapis.com/auth/cloud-platform']
+  _VERSION = 'v1'
   _CLIENT_ID = '1042881264118.apps.googleusercontent.com'
   _CLIENT_SECRET = 'x_Tw5K8nnjoRAqULM9PFAC2b'
-  _USER_AGENT = u'google-cloud-sdk'
-  _CLIENT_CLASS_NAME = u'RecaptchaenterpriseV1'
-  _URL_VERSION = u'v1'
+  _USER_AGENT = 'google-cloud-sdk'
+  _CLIENT_CLASS_NAME = 'RecaptchaenterpriseV1'
+  _URL_VERSION = 'v1'
   _API_KEY = None
 
   def __init__(self, url='', credentials=None,
@@ -43,7 +43,7 @@ class RecaptchaenterpriseV1(base_api.BaseApiClient):
   class ProjectsAssessmentsService(base_api.BaseApiService):
     """Service class for the projects_assessments resource."""
 
-    _NAME = u'projects_assessments'
+    _NAME = 'projects_assessments'
 
     def __init__(self, client):
       super(RecaptchaenterpriseV1.ProjectsAssessmentsService, self).__init__(client)
@@ -65,16 +65,16 @@ on whether the event turned out to be authentic or fradulent.
           config, request, global_params=global_params)
 
     Annotate.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/assessments/{assessmentsId}:annotate',
-        http_method=u'POST',
-        method_id=u'recaptchaenterprise.projects.assessments.annotate',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1/projects/{projectsId}/assessments/{assessmentsId}:annotate',
+        http_method='POST',
+        method_id='recaptchaenterprise.projects.assessments.annotate',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1/{+name}:annotate',
-        request_field=u'googleCloudRecaptchaenterpriseV1AnnotateAssessmentRequest',
-        request_type_name=u'RecaptchaenterpriseProjectsAssessmentsAnnotateRequest',
-        response_type_name=u'GoogleCloudRecaptchaenterpriseV1AnnotateAssessmentResponse',
+        relative_path='v1/{+name}:annotate',
+        request_field='googleCloudRecaptchaenterpriseV1AnnotateAssessmentRequest',
+        request_type_name='RecaptchaenterpriseProjectsAssessmentsAnnotateRequest',
+        response_type_name='GoogleCloudRecaptchaenterpriseV1AnnotateAssessmentResponse',
         supports_download=False,
     )
 
@@ -92,23 +92,23 @@ on whether the event turned out to be authentic or fradulent.
           config, request, global_params=global_params)
 
     Create.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/assessments',
-        http_method=u'POST',
-        method_id=u'recaptchaenterprise.projects.assessments.create',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
+        flat_path='v1/projects/{projectsId}/assessments',
+        http_method='POST',
+        method_id='recaptchaenterprise.projects.assessments.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
         query_params=[],
-        relative_path=u'v1/{+parent}/assessments',
-        request_field=u'googleCloudRecaptchaenterpriseV1Assessment',
-        request_type_name=u'RecaptchaenterpriseProjectsAssessmentsCreateRequest',
-        response_type_name=u'GoogleCloudRecaptchaenterpriseV1Assessment',
+        relative_path='v1/{+parent}/assessments',
+        request_field='googleCloudRecaptchaenterpriseV1Assessment',
+        request_type_name='RecaptchaenterpriseProjectsAssessmentsCreateRequest',
+        response_type_name='GoogleCloudRecaptchaenterpriseV1Assessment',
         supports_download=False,
     )
 
   class ProjectsKeysService(base_api.BaseApiService):
     """Service class for the projects_keys resource."""
 
-    _NAME = u'projects_keys'
+    _NAME = 'projects_keys'
 
     def __init__(self, client):
       super(RecaptchaenterpriseV1.ProjectsKeysService, self).__init__(client)
@@ -129,16 +129,16 @@ on whether the event turned out to be authentic or fradulent.
           config, request, global_params=global_params)
 
     Create.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/keys',
-        http_method=u'POST',
-        method_id=u'recaptchaenterprise.projects.keys.create',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
+        flat_path='v1/projects/{projectsId}/keys',
+        http_method='POST',
+        method_id='recaptchaenterprise.projects.keys.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
         query_params=[],
-        relative_path=u'v1/{+parent}/keys',
-        request_field=u'googleCloudRecaptchaenterpriseV1Key',
-        request_type_name=u'RecaptchaenterpriseProjectsKeysCreateRequest',
-        response_type_name=u'GoogleCloudRecaptchaenterpriseV1Key',
+        relative_path='v1/{+parent}/keys',
+        request_field='googleCloudRecaptchaenterpriseV1Key',
+        request_type_name='RecaptchaenterpriseProjectsKeysCreateRequest',
+        response_type_name='GoogleCloudRecaptchaenterpriseV1Key',
         supports_download=False,
     )
 
@@ -156,16 +156,16 @@ on whether the event turned out to be authentic or fradulent.
           config, request, global_params=global_params)
 
     Delete.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/keys/{keysId}',
-        http_method=u'DELETE',
-        method_id=u'recaptchaenterprise.projects.keys.delete',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1/projects/{projectsId}/keys/{keysId}',
+        http_method='DELETE',
+        method_id='recaptchaenterprise.projects.keys.delete',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1/{+name}',
+        relative_path='v1/{+name}',
         request_field='',
-        request_type_name=u'RecaptchaenterpriseProjectsKeysDeleteRequest',
-        response_type_name=u'GoogleProtobufEmpty',
+        request_type_name='RecaptchaenterpriseProjectsKeysDeleteRequest',
+        response_type_name='GoogleProtobufEmpty',
         supports_download=False,
     )
 
@@ -183,16 +183,16 @@ on whether the event turned out to be authentic or fradulent.
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/keys/{keysId}',
-        http_method=u'GET',
-        method_id=u'recaptchaenterprise.projects.keys.get',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1/projects/{projectsId}/keys/{keysId}',
+        http_method='GET',
+        method_id='recaptchaenterprise.projects.keys.get',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1/{+name}',
+        relative_path='v1/{+name}',
         request_field='',
-        request_type_name=u'RecaptchaenterpriseProjectsKeysGetRequest',
-        response_type_name=u'GoogleCloudRecaptchaenterpriseV1Key',
+        request_type_name='RecaptchaenterpriseProjectsKeysGetRequest',
+        response_type_name='GoogleCloudRecaptchaenterpriseV1Key',
         supports_download=False,
     )
 
@@ -210,16 +210,16 @@ on whether the event turned out to be authentic or fradulent.
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/keys',
-        http_method=u'GET',
-        method_id=u'recaptchaenterprise.projects.keys.list',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'pageSize', u'pageToken'],
-        relative_path=u'v1/{+parent}/keys',
+        flat_path='v1/projects/{projectsId}/keys',
+        http_method='GET',
+        method_id='recaptchaenterprise.projects.keys.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v1/{+parent}/keys',
         request_field='',
-        request_type_name=u'RecaptchaenterpriseProjectsKeysListRequest',
-        response_type_name=u'GoogleCloudRecaptchaenterpriseV1ListKeysResponse',
+        request_type_name='RecaptchaenterpriseProjectsKeysListRequest',
+        response_type_name='GoogleCloudRecaptchaenterpriseV1ListKeysResponse',
         supports_download=False,
     )
 
@@ -237,23 +237,23 @@ on whether the event turned out to be authentic or fradulent.
           config, request, global_params=global_params)
 
     Patch.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/keys/{keysId}',
-        http_method=u'PATCH',
-        method_id=u'recaptchaenterprise.projects.keys.patch',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[u'updateMask'],
-        relative_path=u'v1/{+name}',
-        request_field=u'googleCloudRecaptchaenterpriseV1Key',
-        request_type_name=u'RecaptchaenterpriseProjectsKeysPatchRequest',
-        response_type_name=u'GoogleCloudRecaptchaenterpriseV1Key',
+        flat_path='v1/projects/{projectsId}/keys/{keysId}',
+        http_method='PATCH',
+        method_id='recaptchaenterprise.projects.keys.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v1/{+name}',
+        request_field='googleCloudRecaptchaenterpriseV1Key',
+        request_type_name='RecaptchaenterpriseProjectsKeysPatchRequest',
+        response_type_name='GoogleCloudRecaptchaenterpriseV1Key',
         supports_download=False,
     )
 
   class ProjectsService(base_api.BaseApiService):
     """Service class for the projects resource."""
 
-    _NAME = u'projects'
+    _NAME = 'projects'
 
     def __init__(self, client):
       super(RecaptchaenterpriseV1.ProjectsService, self).__init__(client)

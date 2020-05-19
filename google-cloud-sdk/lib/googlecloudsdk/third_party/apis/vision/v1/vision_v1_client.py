@@ -8,17 +8,17 @@ class VisionV1(base_api.BaseApiClient):
   """Generated client library for service vision version v1."""
 
   MESSAGES_MODULE = messages
-  BASE_URL = u'https://vision.googleapis.com/'
-  MTLS_BASE_URL = u'https://vision.mtls.googleapis.com/'
+  BASE_URL = 'https://vision.googleapis.com/'
+  MTLS_BASE_URL = 'https://vision.mtls.googleapis.com/'
 
-  _PACKAGE = u'vision'
-  _SCOPES = [u'https://www.googleapis.com/auth/cloud-platform', u'https://www.googleapis.com/auth/cloud-vision']
-  _VERSION = u'v1'
+  _PACKAGE = 'vision'
+  _SCOPES = ['https://www.googleapis.com/auth/cloud-platform', 'https://www.googleapis.com/auth/cloud-vision']
+  _VERSION = 'v1'
   _CLIENT_ID = '1042881264118.apps.googleusercontent.com'
   _CLIENT_SECRET = 'x_Tw5K8nnjoRAqULM9PFAC2b'
-  _USER_AGENT = u'google-cloud-sdk'
-  _CLIENT_CLASS_NAME = u'VisionV1'
-  _URL_VERSION = u'v1'
+  _USER_AGENT = 'google-cloud-sdk'
+  _CLIENT_CLASS_NAME = 'VisionV1'
+  _URL_VERSION = 'v1'
   _API_KEY = None
 
   def __init__(self, url='', credentials=None,
@@ -57,7 +57,7 @@ class VisionV1(base_api.BaseApiClient):
   class FilesService(base_api.BaseApiService):
     """Service class for the files resource."""
 
-    _NAME = u'files'
+    _NAME = 'files'
 
     def __init__(self, client):
       super(VisionV1.FilesService, self).__init__(client)
@@ -84,15 +84,15 @@ extracted.
           config, request, global_params=global_params)
 
     Annotate.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'vision.files.annotate',
+        http_method='POST',
+        method_id='vision.files.annotate',
         ordered_params=[],
         path_params=[],
         query_params=[],
-        relative_path=u'v1/files:annotate',
+        relative_path='v1/files:annotate',
         request_field='<request>',
-        request_type_name=u'BatchAnnotateFilesRequest',
-        response_type_name=u'BatchAnnotateFilesResponse',
+        request_type_name='BatchAnnotateFilesRequest',
+        response_type_name='BatchAnnotateFilesResponse',
         supports_download=False,
     )
 
@@ -115,22 +115,22 @@ images per page. Progress and results can be retrieved through the
           config, request, global_params=global_params)
 
     AsyncBatchAnnotate.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'vision.files.asyncBatchAnnotate',
+        http_method='POST',
+        method_id='vision.files.asyncBatchAnnotate',
         ordered_params=[],
         path_params=[],
         query_params=[],
-        relative_path=u'v1/files:asyncBatchAnnotate',
+        relative_path='v1/files:asyncBatchAnnotate',
         request_field='<request>',
-        request_type_name=u'AsyncBatchAnnotateFilesRequest',
-        response_type_name=u'Operation',
+        request_type_name='AsyncBatchAnnotateFilesRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
   class ImagesService(base_api.BaseApiService):
     """Service class for the images resource."""
 
-    _NAME = u'images'
+    _NAME = 'images'
 
     def __init__(self, client):
       super(VisionV1.ImagesService, self).__init__(client)
@@ -151,15 +151,15 @@ images per page. Progress and results can be retrieved through the
           config, request, global_params=global_params)
 
     Annotate.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'vision.images.annotate',
+        http_method='POST',
+        method_id='vision.images.annotate',
         ordered_params=[],
         path_params=[],
         query_params=[],
-        relative_path=u'v1/images:annotate',
+        relative_path='v1/images:annotate',
         request_field='<request>',
-        request_type_name=u'BatchAnnotateImagesRequest',
-        response_type_name=u'BatchAnnotateImagesResponse',
+        request_type_name='BatchAnnotateImagesRequest',
+        response_type_name='BatchAnnotateImagesResponse',
         supports_download=False,
     )
 
@@ -185,22 +185,22 @@ GCS bucket, each json file containing BatchAnnotateImagesResponse proto.
           config, request, global_params=global_params)
 
     AsyncBatchAnnotate.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'vision.images.asyncBatchAnnotate',
+        http_method='POST',
+        method_id='vision.images.asyncBatchAnnotate',
         ordered_params=[],
         path_params=[],
         query_params=[],
-        relative_path=u'v1/images:asyncBatchAnnotate',
+        relative_path='v1/images:asyncBatchAnnotate',
         request_field='<request>',
-        request_type_name=u'AsyncBatchAnnotateImagesRequest',
-        response_type_name=u'Operation',
+        request_type_name='AsyncBatchAnnotateImagesRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
   class LocationsOperationsService(base_api.BaseApiService):
     """Service class for the locations_operations resource."""
 
-    _NAME = u'locations_operations'
+    _NAME = 'locations_operations'
 
     def __init__(self, client):
       super(VisionV1.LocationsOperationsService, self).__init__(client)
@@ -223,23 +223,23 @@ service.
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/locations/{locationsId}/operations/{operationsId}',
-        http_method=u'GET',
-        method_id=u'vision.locations.operations.get',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1/locations/{locationsId}/operations/{operationsId}',
+        http_method='GET',
+        method_id='vision.locations.operations.get',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1/{+name}',
+        relative_path='v1/{+name}',
         request_field='',
-        request_type_name=u'VisionLocationsOperationsGetRequest',
-        response_type_name=u'Operation',
+        request_type_name='VisionLocationsOperationsGetRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
   class LocationsService(base_api.BaseApiService):
     """Service class for the locations resource."""
 
-    _NAME = u'locations'
+    _NAME = 'locations'
 
     def __init__(self, client):
       super(VisionV1.LocationsService, self).__init__(client)
@@ -249,7 +249,7 @@ service.
   class OperationsService(base_api.BaseApiService):
     """Service class for the operations resource."""
 
-    _NAME = u'operations'
+    _NAME = 'operations'
 
     def __init__(self, client):
       super(VisionV1.OperationsService, self).__init__(client)
@@ -279,16 +279,16 @@ corresponding to `Code.CANCELLED`.
           config, request, global_params=global_params)
 
     Cancel.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/operations/{operationsId}:cancel',
-        http_method=u'POST',
-        method_id=u'vision.operations.cancel',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1/operations/{operationsId}:cancel',
+        http_method='POST',
+        method_id='vision.operations.cancel',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1/{+name}:cancel',
-        request_field=u'cancelOperationRequest',
-        request_type_name=u'VisionOperationsCancelRequest',
-        response_type_name=u'Empty',
+        relative_path='v1/{+name}:cancel',
+        request_field='cancelOperationRequest',
+        request_type_name='VisionOperationsCancelRequest',
+        response_type_name='Empty',
         supports_download=False,
     )
 
@@ -309,16 +309,16 @@ operation. If the server doesn't support this method, it returns
           config, request, global_params=global_params)
 
     Delete.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/operations/{operationsId}',
-        http_method=u'DELETE',
-        method_id=u'vision.operations.delete',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1/operations/{operationsId}',
+        http_method='DELETE',
+        method_id='vision.operations.delete',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1/{+name}',
+        relative_path='v1/{+name}',
         request_field='',
-        request_type_name=u'VisionOperationsDeleteRequest',
-        response_type_name=u'Empty',
+        request_type_name='VisionOperationsDeleteRequest',
+        response_type_name='Empty',
         supports_download=False,
     )
 
@@ -338,16 +338,16 @@ service.
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/operations/{operationsId}',
-        http_method=u'GET',
-        method_id=u'vision.operations.get',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1/operations/{operationsId}',
+        http_method='GET',
+        method_id='vision.operations.get',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1/{+name}',
+        relative_path='v1/{+name}',
         request_field='',
-        request_type_name=u'VisionOperationsGetRequest',
-        response_type_name=u'Operation',
+        request_type_name='VisionOperationsGetRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -374,23 +374,23 @@ is the parent resource, without the operations collection id.
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/operations',
-        http_method=u'GET',
-        method_id=u'vision.operations.list',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[u'filter', u'pageSize', u'pageToken'],
-        relative_path=u'v1/{+name}',
+        flat_path='v1/operations',
+        http_method='GET',
+        method_id='vision.operations.list',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['filter', 'pageSize', 'pageToken'],
+        relative_path='v1/{+name}',
         request_field='',
-        request_type_name=u'VisionOperationsListRequest',
-        response_type_name=u'ListOperationsResponse',
+        request_type_name='VisionOperationsListRequest',
+        response_type_name='ListOperationsResponse',
         supports_download=False,
     )
 
   class ProjectsFilesService(base_api.BaseApiService):
     """Service class for the projects_files resource."""
 
-    _NAME = u'projects_files'
+    _NAME = 'projects_files'
 
     def __init__(self, client):
       super(VisionV1.ProjectsFilesService, self).__init__(client)
@@ -417,16 +417,16 @@ extracted.
           config, request, global_params=global_params)
 
     Annotate.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/files:annotate',
-        http_method=u'POST',
-        method_id=u'vision.projects.files.annotate',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
+        flat_path='v1/projects/{projectsId}/files:annotate',
+        http_method='POST',
+        method_id='vision.projects.files.annotate',
+        ordered_params=['parent'],
+        path_params=['parent'],
         query_params=[],
-        relative_path=u'v1/{+parent}/files:annotate',
+        relative_path='v1/{+parent}/files:annotate',
         request_field='<request>',
-        request_type_name=u'BatchAnnotateFilesRequest',
-        response_type_name=u'BatchAnnotateFilesResponse',
+        request_type_name='BatchAnnotateFilesRequest',
+        response_type_name='BatchAnnotateFilesResponse',
         supports_download=False,
     )
 
@@ -449,23 +449,23 @@ images per page. Progress and results can be retrieved through the
           config, request, global_params=global_params)
 
     AsyncBatchAnnotate.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/files:asyncBatchAnnotate',
-        http_method=u'POST',
-        method_id=u'vision.projects.files.asyncBatchAnnotate',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
+        flat_path='v1/projects/{projectsId}/files:asyncBatchAnnotate',
+        http_method='POST',
+        method_id='vision.projects.files.asyncBatchAnnotate',
+        ordered_params=['parent'],
+        path_params=['parent'],
         query_params=[],
-        relative_path=u'v1/{+parent}/files:asyncBatchAnnotate',
+        relative_path='v1/{+parent}/files:asyncBatchAnnotate',
         request_field='<request>',
-        request_type_name=u'AsyncBatchAnnotateFilesRequest',
-        response_type_name=u'Operation',
+        request_type_name='AsyncBatchAnnotateFilesRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
   class ProjectsImagesService(base_api.BaseApiService):
     """Service class for the projects_images resource."""
 
-    _NAME = u'projects_images'
+    _NAME = 'projects_images'
 
     def __init__(self, client):
       super(VisionV1.ProjectsImagesService, self).__init__(client)
@@ -486,16 +486,16 @@ images per page. Progress and results can be retrieved through the
           config, request, global_params=global_params)
 
     Annotate.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/images:annotate',
-        http_method=u'POST',
-        method_id=u'vision.projects.images.annotate',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
+        flat_path='v1/projects/{projectsId}/images:annotate',
+        http_method='POST',
+        method_id='vision.projects.images.annotate',
+        ordered_params=['parent'],
+        path_params=['parent'],
         query_params=[],
-        relative_path=u'v1/{+parent}/images:annotate',
+        relative_path='v1/{+parent}/images:annotate',
         request_field='<request>',
-        request_type_name=u'BatchAnnotateImagesRequest',
-        response_type_name=u'BatchAnnotateImagesResponse',
+        request_type_name='BatchAnnotateImagesRequest',
+        response_type_name='BatchAnnotateImagesResponse',
         supports_download=False,
     )
 
@@ -521,23 +521,23 @@ GCS bucket, each json file containing BatchAnnotateImagesResponse proto.
           config, request, global_params=global_params)
 
     AsyncBatchAnnotate.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/images:asyncBatchAnnotate',
-        http_method=u'POST',
-        method_id=u'vision.projects.images.asyncBatchAnnotate',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
+        flat_path='v1/projects/{projectsId}/images:asyncBatchAnnotate',
+        http_method='POST',
+        method_id='vision.projects.images.asyncBatchAnnotate',
+        ordered_params=['parent'],
+        path_params=['parent'],
         query_params=[],
-        relative_path=u'v1/{+parent}/images:asyncBatchAnnotate',
+        relative_path='v1/{+parent}/images:asyncBatchAnnotate',
         request_field='<request>',
-        request_type_name=u'AsyncBatchAnnotateImagesRequest',
-        response_type_name=u'Operation',
+        request_type_name='AsyncBatchAnnotateImagesRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
   class ProjectsLocationsFilesService(base_api.BaseApiService):
     """Service class for the projects_locations_files resource."""
 
-    _NAME = u'projects_locations_files'
+    _NAME = 'projects_locations_files'
 
     def __init__(self, client):
       super(VisionV1.ProjectsLocationsFilesService, self).__init__(client)
@@ -564,16 +564,16 @@ extracted.
           config, request, global_params=global_params)
 
     Annotate.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/locations/{locationsId}/files:annotate',
-        http_method=u'POST',
-        method_id=u'vision.projects.locations.files.annotate',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/files:annotate',
+        http_method='POST',
+        method_id='vision.projects.locations.files.annotate',
+        ordered_params=['parent'],
+        path_params=['parent'],
         query_params=[],
-        relative_path=u'v1/{+parent}/files:annotate',
+        relative_path='v1/{+parent}/files:annotate',
         request_field='<request>',
-        request_type_name=u'BatchAnnotateFilesRequest',
-        response_type_name=u'BatchAnnotateFilesResponse',
+        request_type_name='BatchAnnotateFilesRequest',
+        response_type_name='BatchAnnotateFilesResponse',
         supports_download=False,
     )
 
@@ -596,23 +596,23 @@ images per page. Progress and results can be retrieved through the
           config, request, global_params=global_params)
 
     AsyncBatchAnnotate.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/locations/{locationsId}/files:asyncBatchAnnotate',
-        http_method=u'POST',
-        method_id=u'vision.projects.locations.files.asyncBatchAnnotate',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/files:asyncBatchAnnotate',
+        http_method='POST',
+        method_id='vision.projects.locations.files.asyncBatchAnnotate',
+        ordered_params=['parent'],
+        path_params=['parent'],
         query_params=[],
-        relative_path=u'v1/{+parent}/files:asyncBatchAnnotate',
+        relative_path='v1/{+parent}/files:asyncBatchAnnotate',
         request_field='<request>',
-        request_type_name=u'AsyncBatchAnnotateFilesRequest',
-        response_type_name=u'Operation',
+        request_type_name='AsyncBatchAnnotateFilesRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
   class ProjectsLocationsImagesService(base_api.BaseApiService):
     """Service class for the projects_locations_images resource."""
 
-    _NAME = u'projects_locations_images'
+    _NAME = 'projects_locations_images'
 
     def __init__(self, client):
       super(VisionV1.ProjectsLocationsImagesService, self).__init__(client)
@@ -633,16 +633,16 @@ images per page. Progress and results can be retrieved through the
           config, request, global_params=global_params)
 
     Annotate.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/locations/{locationsId}/images:annotate',
-        http_method=u'POST',
-        method_id=u'vision.projects.locations.images.annotate',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/images:annotate',
+        http_method='POST',
+        method_id='vision.projects.locations.images.annotate',
+        ordered_params=['parent'],
+        path_params=['parent'],
         query_params=[],
-        relative_path=u'v1/{+parent}/images:annotate',
+        relative_path='v1/{+parent}/images:annotate',
         request_field='<request>',
-        request_type_name=u'BatchAnnotateImagesRequest',
-        response_type_name=u'BatchAnnotateImagesResponse',
+        request_type_name='BatchAnnotateImagesRequest',
+        response_type_name='BatchAnnotateImagesResponse',
         supports_download=False,
     )
 
@@ -668,23 +668,23 @@ GCS bucket, each json file containing BatchAnnotateImagesResponse proto.
           config, request, global_params=global_params)
 
     AsyncBatchAnnotate.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/locations/{locationsId}/images:asyncBatchAnnotate',
-        http_method=u'POST',
-        method_id=u'vision.projects.locations.images.asyncBatchAnnotate',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/images:asyncBatchAnnotate',
+        http_method='POST',
+        method_id='vision.projects.locations.images.asyncBatchAnnotate',
+        ordered_params=['parent'],
+        path_params=['parent'],
         query_params=[],
-        relative_path=u'v1/{+parent}/images:asyncBatchAnnotate',
+        relative_path='v1/{+parent}/images:asyncBatchAnnotate',
         request_field='<request>',
-        request_type_name=u'AsyncBatchAnnotateImagesRequest',
-        response_type_name=u'Operation',
+        request_type_name='AsyncBatchAnnotateImagesRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
   class ProjectsLocationsOperationsService(base_api.BaseApiService):
     """Service class for the projects_locations_operations resource."""
 
-    _NAME = u'projects_locations_operations'
+    _NAME = 'projects_locations_operations'
 
     def __init__(self, client):
       super(VisionV1.ProjectsLocationsOperationsService, self).__init__(client)
@@ -707,23 +707,23 @@ service.
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/locations/{locationsId}/operations/{operationsId}',
-        http_method=u'GET',
-        method_id=u'vision.projects.locations.operations.get',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/operations/{operationsId}',
+        http_method='GET',
+        method_id='vision.projects.locations.operations.get',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1/{+name}',
+        relative_path='v1/{+name}',
         request_field='',
-        request_type_name=u'VisionProjectsLocationsOperationsGetRequest',
-        response_type_name=u'Operation',
+        request_type_name='VisionProjectsLocationsOperationsGetRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
   class ProjectsLocationsProductSetsProductsService(base_api.BaseApiService):
     """Service class for the projects_locations_productSets_products resource."""
 
-    _NAME = u'projects_locations_productSets_products'
+    _NAME = 'projects_locations_productSets_products'
 
     def __init__(self, client):
       super(VisionV1.ProjectsLocationsProductSetsProductsService, self).__init__(client)
@@ -750,23 +750,23 @@ Possible errors:
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/locations/{locationsId}/productSets/{productSetsId}/products',
-        http_method=u'GET',
-        method_id=u'vision.projects.locations.productSets.products.list',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[u'pageSize', u'pageToken'],
-        relative_path=u'v1/{+name}/products',
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/productSets/{productSetsId}/products',
+        http_method='GET',
+        method_id='vision.projects.locations.productSets.products.list',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v1/{+name}/products',
         request_field='',
-        request_type_name=u'VisionProjectsLocationsProductSetsProductsListRequest',
-        response_type_name=u'ListProductsInProductSetResponse',
+        request_type_name='VisionProjectsLocationsProductSetsProductsListRequest',
+        response_type_name='ListProductsInProductSetResponse',
         supports_download=False,
     )
 
   class ProjectsLocationsProductSetsService(base_api.BaseApiService):
     """Service class for the projects_locations_productSets resource."""
 
-    _NAME = u'projects_locations_productSets'
+    _NAME = 'projects_locations_productSets'
 
     def __init__(self, client):
       super(VisionV1.ProjectsLocationsProductSetsService, self).__init__(client)
@@ -794,16 +794,16 @@ Possible errors:
           config, request, global_params=global_params)
 
     AddProduct.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/locations/{locationsId}/productSets/{productSetsId}:addProduct',
-        http_method=u'POST',
-        method_id=u'vision.projects.locations.productSets.addProduct',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/productSets/{productSetsId}:addProduct',
+        http_method='POST',
+        method_id='vision.projects.locations.productSets.addProduct',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1/{+name}:addProduct',
-        request_field=u'addProductToProductSetRequest',
-        request_type_name=u'VisionProjectsLocationsProductSetsAddProductRequest',
-        response_type_name=u'Empty',
+        relative_path='v1/{+name}:addProduct',
+        request_field='addProductToProductSetRequest',
+        request_type_name='VisionProjectsLocationsProductSetsAddProductRequest',
+        response_type_name='Empty',
         supports_download=False,
     )
 
@@ -826,16 +826,16 @@ Possible errors:
           config, request, global_params=global_params)
 
     Create.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/locations/{locationsId}/productSets',
-        http_method=u'POST',
-        method_id=u'vision.projects.locations.productSets.create',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'productSetId'],
-        relative_path=u'v1/{+parent}/productSets',
-        request_field=u'productSet',
-        request_type_name=u'VisionProjectsLocationsProductSetsCreateRequest',
-        response_type_name=u'ProductSet',
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/productSets',
+        http_method='POST',
+        method_id='vision.projects.locations.productSets.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['productSetId'],
+        relative_path='v1/{+parent}/productSets',
+        request_field='productSet',
+        request_type_name='VisionProjectsLocationsProductSetsCreateRequest',
+        response_type_name='ProductSet',
         supports_download=False,
     )
 
@@ -856,16 +856,16 @@ The actual image files are not deleted from Google Cloud Storage.
           config, request, global_params=global_params)
 
     Delete.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/locations/{locationsId}/productSets/{productSetsId}',
-        http_method=u'DELETE',
-        method_id=u'vision.projects.locations.productSets.delete',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/productSets/{productSetsId}',
+        http_method='DELETE',
+        method_id='vision.projects.locations.productSets.delete',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1/{+name}',
+        relative_path='v1/{+name}',
         request_field='',
-        request_type_name=u'VisionProjectsLocationsProductSetsDeleteRequest',
-        response_type_name=u'Empty',
+        request_type_name='VisionProjectsLocationsProductSetsDeleteRequest',
+        response_type_name='Empty',
         supports_download=False,
     )
 
@@ -887,16 +887,16 @@ Possible errors:
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/locations/{locationsId}/productSets/{productSetsId}',
-        http_method=u'GET',
-        method_id=u'vision.projects.locations.productSets.get',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/productSets/{productSetsId}',
+        http_method='GET',
+        method_id='vision.projects.locations.productSets.get',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1/{+name}',
+        relative_path='v1/{+name}',
         request_field='',
-        request_type_name=u'VisionProjectsLocationsProductSetsGetRequest',
-        response_type_name=u'ProductSet',
+        request_type_name='VisionProjectsLocationsProductSetsGetRequest',
+        response_type_name='ProductSet',
         supports_download=False,
     )
 
@@ -924,16 +924,16 @@ ImportProductSetsGcsSource.csv_file_uri.
           config, request, global_params=global_params)
 
     Import.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/locations/{locationsId}/productSets:import',
-        http_method=u'POST',
-        method_id=u'vision.projects.locations.productSets.import',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/productSets:import',
+        http_method='POST',
+        method_id='vision.projects.locations.productSets.import',
+        ordered_params=['parent'],
+        path_params=['parent'],
         query_params=[],
-        relative_path=u'v1/{+parent}/productSets:import',
-        request_field=u'importProductSetsRequest',
-        request_type_name=u'VisionProjectsLocationsProductSetsImportRequest',
-        response_type_name=u'Operation',
+        relative_path='v1/{+parent}/productSets:import',
+        request_field='importProductSetsRequest',
+        request_type_name='VisionProjectsLocationsProductSetsImportRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -956,16 +956,16 @@ Possible errors:
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/locations/{locationsId}/productSets',
-        http_method=u'GET',
-        method_id=u'vision.projects.locations.productSets.list',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'pageSize', u'pageToken'],
-        relative_path=u'v1/{+parent}/productSets',
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/productSets',
+        http_method='GET',
+        method_id='vision.projects.locations.productSets.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v1/{+parent}/productSets',
         request_field='',
-        request_type_name=u'VisionProjectsLocationsProductSetsListRequest',
-        response_type_name=u'ListProductSetsResponse',
+        request_type_name='VisionProjectsLocationsProductSetsListRequest',
+        response_type_name='ListProductSetsResponse',
         supports_download=False,
     )
 
@@ -990,16 +990,16 @@ Possible errors:
           config, request, global_params=global_params)
 
     Patch.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/locations/{locationsId}/productSets/{productSetsId}',
-        http_method=u'PATCH',
-        method_id=u'vision.projects.locations.productSets.patch',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[u'updateMask'],
-        relative_path=u'v1/{+name}',
-        request_field=u'productSet',
-        request_type_name=u'VisionProjectsLocationsProductSetsPatchRequest',
-        response_type_name=u'ProductSet',
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/productSets/{productSetsId}',
+        http_method='PATCH',
+        method_id='vision.projects.locations.productSets.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v1/{+name}',
+        request_field='productSet',
+        request_type_name='VisionProjectsLocationsProductSetsPatchRequest',
+        response_type_name='ProductSet',
         supports_download=False,
     )
 
@@ -1017,23 +1017,23 @@ Possible errors:
           config, request, global_params=global_params)
 
     RemoveProduct.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/locations/{locationsId}/productSets/{productSetsId}:removeProduct',
-        http_method=u'POST',
-        method_id=u'vision.projects.locations.productSets.removeProduct',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/productSets/{productSetsId}:removeProduct',
+        http_method='POST',
+        method_id='vision.projects.locations.productSets.removeProduct',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1/{+name}:removeProduct',
-        request_field=u'removeProductFromProductSetRequest',
-        request_type_name=u'VisionProjectsLocationsProductSetsRemoveProductRequest',
-        response_type_name=u'Empty',
+        relative_path='v1/{+name}:removeProduct',
+        request_field='removeProductFromProductSetRequest',
+        request_type_name='VisionProjectsLocationsProductSetsRemoveProductRequest',
+        response_type_name='Empty',
         supports_download=False,
     )
 
   class ProjectsLocationsProductsReferenceImagesService(base_api.BaseApiService):
     """Service class for the projects_locations_products_referenceImages resource."""
 
-    _NAME = u'projects_locations_products_referenceImages'
+    _NAME = 'projects_locations_products_referenceImages'
 
     def __init__(self, client):
       super(VisionV1.ProjectsLocationsProductsReferenceImagesService, self).__init__(client)
@@ -1072,16 +1072,16 @@ Possible errors:
           config, request, global_params=global_params)
 
     Create.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/locations/{locationsId}/products/{productsId}/referenceImages',
-        http_method=u'POST',
-        method_id=u'vision.projects.locations.products.referenceImages.create',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'referenceImageId'],
-        relative_path=u'v1/{+parent}/referenceImages',
-        request_field=u'referenceImage',
-        request_type_name=u'VisionProjectsLocationsProductsReferenceImagesCreateRequest',
-        response_type_name=u'ReferenceImage',
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/products/{productsId}/referenceImages',
+        http_method='POST',
+        method_id='vision.projects.locations.products.referenceImages.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['referenceImageId'],
+        relative_path='v1/{+parent}/referenceImages',
+        request_field='referenceImage',
+        request_type_name='VisionProjectsLocationsProductsReferenceImagesCreateRequest',
+        response_type_name='ReferenceImage',
         supports_download=False,
     )
 
@@ -1105,16 +1105,16 @@ The actual image files are not deleted from Google Cloud Storage.
           config, request, global_params=global_params)
 
     Delete.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/locations/{locationsId}/products/{productsId}/referenceImages/{referenceImagesId}',
-        http_method=u'DELETE',
-        method_id=u'vision.projects.locations.products.referenceImages.delete',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/products/{productsId}/referenceImages/{referenceImagesId}',
+        http_method='DELETE',
+        method_id='vision.projects.locations.products.referenceImages.delete',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1/{+name}',
+        relative_path='v1/{+name}',
         request_field='',
-        request_type_name=u'VisionProjectsLocationsProductsReferenceImagesDeleteRequest',
-        response_type_name=u'Empty',
+        request_type_name='VisionProjectsLocationsProductsReferenceImagesDeleteRequest',
+        response_type_name='Empty',
         supports_download=False,
     )
 
@@ -1136,16 +1136,16 @@ Possible errors:
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/locations/{locationsId}/products/{productsId}/referenceImages/{referenceImagesId}',
-        http_method=u'GET',
-        method_id=u'vision.projects.locations.products.referenceImages.get',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/products/{productsId}/referenceImages/{referenceImagesId}',
+        http_method='GET',
+        method_id='vision.projects.locations.products.referenceImages.get',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1/{+name}',
+        relative_path='v1/{+name}',
         request_field='',
-        request_type_name=u'VisionProjectsLocationsProductsReferenceImagesGetRequest',
-        response_type_name=u'ReferenceImage',
+        request_type_name='VisionProjectsLocationsProductsReferenceImagesGetRequest',
+        response_type_name='ReferenceImage',
         supports_download=False,
     )
 
@@ -1169,23 +1169,23 @@ Possible errors:
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/locations/{locationsId}/products/{productsId}/referenceImages',
-        http_method=u'GET',
-        method_id=u'vision.projects.locations.products.referenceImages.list',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'pageSize', u'pageToken'],
-        relative_path=u'v1/{+parent}/referenceImages',
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/products/{productsId}/referenceImages',
+        http_method='GET',
+        method_id='vision.projects.locations.products.referenceImages.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v1/{+parent}/referenceImages',
         request_field='',
-        request_type_name=u'VisionProjectsLocationsProductsReferenceImagesListRequest',
-        response_type_name=u'ListReferenceImagesResponse',
+        request_type_name='VisionProjectsLocationsProductsReferenceImagesListRequest',
+        response_type_name='ListReferenceImagesResponse',
         supports_download=False,
     )
 
   class ProjectsLocationsProductsService(base_api.BaseApiService):
     """Service class for the projects_locations_products resource."""
 
-    _NAME = u'projects_locations_products'
+    _NAME = 'projects_locations_products'
 
     def __init__(self, client):
       super(VisionV1.ProjectsLocationsProductsService, self).__init__(client)
@@ -1213,16 +1213,16 @@ Possible errors:
           config, request, global_params=global_params)
 
     Create.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/locations/{locationsId}/products',
-        http_method=u'POST',
-        method_id=u'vision.projects.locations.products.create',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'productId'],
-        relative_path=u'v1/{+parent}/products',
-        request_field=u'product',
-        request_type_name=u'VisionProjectsLocationsProductsCreateRequest',
-        response_type_name=u'Product',
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/products',
+        http_method='POST',
+        method_id='vision.projects.locations.products.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['productId'],
+        relative_path='v1/{+parent}/products',
+        request_field='product',
+        request_type_name='VisionProjectsLocationsProductsCreateRequest',
+        response_type_name='Product',
         supports_download=False,
     )
 
@@ -1244,16 +1244,16 @@ until all related caches are refreshed.
           config, request, global_params=global_params)
 
     Delete.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/locations/{locationsId}/products/{productsId}',
-        http_method=u'DELETE',
-        method_id=u'vision.projects.locations.products.delete',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/products/{productsId}',
+        http_method='DELETE',
+        method_id='vision.projects.locations.products.delete',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1/{+name}',
+        relative_path='v1/{+name}',
         request_field='',
-        request_type_name=u'VisionProjectsLocationsProductsDeleteRequest',
-        response_type_name=u'Empty',
+        request_type_name='VisionProjectsLocationsProductsDeleteRequest',
+        response_type_name='Empty',
         supports_download=False,
     )
 
@@ -1275,16 +1275,16 @@ Possible errors:
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/locations/{locationsId}/products/{productsId}',
-        http_method=u'GET',
-        method_id=u'vision.projects.locations.products.get',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/products/{productsId}',
+        http_method='GET',
+        method_id='vision.projects.locations.products.get',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1/{+name}',
+        relative_path='v1/{+name}',
         request_field='',
-        request_type_name=u'VisionProjectsLocationsProductsGetRequest',
-        response_type_name=u'Product',
+        request_type_name='VisionProjectsLocationsProductsGetRequest',
+        response_type_name='Product',
         supports_download=False,
     )
 
@@ -1306,16 +1306,16 @@ Possible errors:
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/locations/{locationsId}/products',
-        http_method=u'GET',
-        method_id=u'vision.projects.locations.products.list',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'pageSize', u'pageToken'],
-        relative_path=u'v1/{+parent}/products',
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/products',
+        http_method='GET',
+        method_id='vision.projects.locations.products.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v1/{+parent}/products',
         request_field='',
-        request_type_name=u'VisionProjectsLocationsProductsListRequest',
-        response_type_name=u'ListProductsResponse',
+        request_type_name='VisionProjectsLocationsProductsListRequest',
+        response_type_name='ListProductsResponse',
         supports_download=False,
     )
 
@@ -1347,16 +1347,16 @@ Possible errors:
           config, request, global_params=global_params)
 
     Patch.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/locations/{locationsId}/products/{productsId}',
-        http_method=u'PATCH',
-        method_id=u'vision.projects.locations.products.patch',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[u'updateMask'],
-        relative_path=u'v1/{+name}',
-        request_field=u'product',
-        request_type_name=u'VisionProjectsLocationsProductsPatchRequest',
-        response_type_name=u'Product',
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/products/{productsId}',
+        http_method='PATCH',
+        method_id='vision.projects.locations.products.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v1/{+name}',
+        request_field='product',
+        request_type_name='VisionProjectsLocationsProductsPatchRequest',
+        response_type_name='Product',
         supports_download=False,
     )
 
@@ -1397,23 +1397,23 @@ progress and results of the request.
           config, request, global_params=global_params)
 
     Purge.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/locations/{locationsId}/products:purge',
-        http_method=u'POST',
-        method_id=u'vision.projects.locations.products.purge',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/products:purge',
+        http_method='POST',
+        method_id='vision.projects.locations.products.purge',
+        ordered_params=['parent'],
+        path_params=['parent'],
         query_params=[],
-        relative_path=u'v1/{+parent}/products:purge',
-        request_field=u'purgeProductsRequest',
-        request_type_name=u'VisionProjectsLocationsProductsPurgeRequest',
-        response_type_name=u'Operation',
+        relative_path='v1/{+parent}/products:purge',
+        request_field='purgeProductsRequest',
+        request_type_name='VisionProjectsLocationsProductsPurgeRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
   class ProjectsLocationsService(base_api.BaseApiService):
     """Service class for the projects_locations resource."""
 
-    _NAME = u'projects_locations'
+    _NAME = 'projects_locations'
 
     def __init__(self, client):
       super(VisionV1.ProjectsLocationsService, self).__init__(client)
@@ -1423,7 +1423,7 @@ progress and results of the request.
   class ProjectsOperationsService(base_api.BaseApiService):
     """Service class for the projects_operations resource."""
 
-    _NAME = u'projects_operations'
+    _NAME = 'projects_operations'
 
     def __init__(self, client):
       super(VisionV1.ProjectsOperationsService, self).__init__(client)
@@ -1446,23 +1446,23 @@ service.
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/operations/{operationsId}',
-        http_method=u'GET',
-        method_id=u'vision.projects.operations.get',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1/projects/{projectsId}/operations/{operationsId}',
+        http_method='GET',
+        method_id='vision.projects.operations.get',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1/{+name}',
+        relative_path='v1/{+name}',
         request_field='',
-        request_type_name=u'VisionProjectsOperationsGetRequest',
-        response_type_name=u'Operation',
+        request_type_name='VisionProjectsOperationsGetRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
   class ProjectsService(base_api.BaseApiService):
     """Service class for the projects resource."""
 
-    _NAME = u'projects'
+    _NAME = 'projects'
 
     def __init__(self, client):
       super(VisionV1.ProjectsService, self).__init__(client)

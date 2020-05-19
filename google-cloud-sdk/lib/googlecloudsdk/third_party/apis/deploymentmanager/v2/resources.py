@@ -28,7 +28,7 @@ class Collections(enum.Enum):
       'deployments',
       'projects/{project}/global/deployments/{deployment}',
       {},
-      [u'project', u'deployment'],
+      ['project', 'deployment'],
       True
   )
   MANIFESTS = (
@@ -36,21 +36,21 @@ class Collections(enum.Enum):
       'projects/{project}/global/deployments/{deployment}/manifests/'
       '{manifest}',
       {},
-      [u'project', u'deployment', u'manifest'],
+      ['project', 'deployment', 'manifest'],
       True
   )
   OPERATIONS = (
       'operations',
       'projects/{project}/global/operations/{operation}',
       {},
-      [u'project', u'operation'],
+      ['project', 'operation'],
       True
   )
   PROJECTS = (
       'projects',
       'projects/{project}',
       {},
-      [u'project'],
+      ['project'],
       True
   )
   RESOURCES = (
@@ -58,7 +58,7 @@ class Collections(enum.Enum):
       'projects/{project}/global/deployments/{deployment}/resources/'
       '{resource}',
       {},
-      [u'project', u'deployment', u'resource'],
+      ['project', 'deployment', 'resource'],
       True
   )
 

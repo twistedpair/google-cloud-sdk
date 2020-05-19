@@ -31,7 +31,7 @@ class Collections(enum.Enum):
           '':
               'accessPolicies/{accessPoliciesId}',
       },
-      [u'name'],
+      ['name'],
       True
   )
   ACCESSPOLICIES_ACCESSLEVELS = (
@@ -42,7 +42,7 @@ class Collections(enum.Enum):
               'accessPolicies/{accessPoliciesId}/accessLevels/'
               '{accessLevelsId}',
       },
-      [u'name'],
+      ['name'],
       True
   )
   ACCESSPOLICIES_SERVICEPERIMETERS = (
@@ -53,7 +53,7 @@ class Collections(enum.Enum):
               'accessPolicies/{accessPoliciesId}/servicePerimeters/'
               '{servicePerimetersId}',
       },
-      [u'name'],
+      ['name'],
       True
   )
   OPERATIONS = (
@@ -63,14 +63,14 @@ class Collections(enum.Enum):
           '':
               'operations/{operationsId}',
       },
-      [u'name'],
+      ['name'],
       True
   )
   ORGANIZATIONS = (
       'organizations',
       'organizations/{organizationsId}',
       {},
-      [u'organizationsId'],
+      ['organizationsId'],
       True
   )
   ORGANIZATIONS_GCPUSERACCESSBINDINGS = (
@@ -81,7 +81,7 @@ class Collections(enum.Enum):
               'organizations/{organizationsId}/gcpUserAccessBindings/'
               '{gcpUserAccessBindingsId}',
       },
-      [u'name'],
+      ['name'],
       True
   )
 

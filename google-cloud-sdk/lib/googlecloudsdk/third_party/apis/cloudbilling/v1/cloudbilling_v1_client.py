@@ -8,17 +8,17 @@ class CloudbillingV1(base_api.BaseApiClient):
   """Generated client library for service cloudbilling version v1."""
 
   MESSAGES_MODULE = messages
-  BASE_URL = u'https://cloudbilling.googleapis.com/'
-  MTLS_BASE_URL = u'https://cloudbilling.mtls.googleapis.com/'
+  BASE_URL = 'https://cloudbilling.googleapis.com/'
+  MTLS_BASE_URL = 'https://cloudbilling.mtls.googleapis.com/'
 
-  _PACKAGE = u'cloudbilling'
-  _SCOPES = [u'https://www.googleapis.com/auth/cloud-platform']
-  _VERSION = u'v1'
+  _PACKAGE = 'cloudbilling'
+  _SCOPES = ['https://www.googleapis.com/auth/cloud-platform']
+  _VERSION = 'v1'
   _CLIENT_ID = '1042881264118.apps.googleusercontent.com'
   _CLIENT_SECRET = 'x_Tw5K8nnjoRAqULM9PFAC2b'
-  _USER_AGENT = u'google-cloud-sdk'
-  _CLIENT_CLASS_NAME = u'CloudbillingV1'
-  _URL_VERSION = u'v1'
+  _USER_AGENT = 'google-cloud-sdk'
+  _CLIENT_CLASS_NAME = 'CloudbillingV1'
+  _URL_VERSION = 'v1'
   _API_KEY = None
 
   def __init__(self, url='', credentials=None,
@@ -45,7 +45,7 @@ class CloudbillingV1(base_api.BaseApiClient):
   class BillingAccountsProjectsService(base_api.BaseApiService):
     """Service class for the billingAccounts_projects resource."""
 
-    _NAME = u'billingAccounts_projects'
+    _NAME = 'billingAccounts_projects'
 
     def __init__(self, client):
       super(CloudbillingV1.BillingAccountsProjectsService, self).__init__(client)
@@ -69,23 +69,23 @@ permission, which is often given to billing account
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/billingAccounts/{billingAccountsId}/projects',
-        http_method=u'GET',
-        method_id=u'cloudbilling.billingAccounts.projects.list',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[u'pageSize', u'pageToken'],
-        relative_path=u'v1/{+name}/projects',
+        flat_path='v1/billingAccounts/{billingAccountsId}/projects',
+        http_method='GET',
+        method_id='cloudbilling.billingAccounts.projects.list',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v1/{+name}/projects',
         request_field='',
-        request_type_name=u'CloudbillingBillingAccountsProjectsListRequest',
-        response_type_name=u'ListProjectBillingInfoResponse',
+        request_type_name='CloudbillingBillingAccountsProjectsListRequest',
+        response_type_name='ListProjectBillingInfoResponse',
         supports_download=False,
     )
 
   class BillingAccountsService(base_api.BaseApiService):
     """Service class for the billingAccounts resource."""
 
-    _NAME = u'billingAccounts'
+    _NAME = 'billingAccounts'
 
     def __init__(self, client):
       super(CloudbillingV1.BillingAccountsService, self).__init__(client)
@@ -115,15 +115,15 @@ provisioned as a reseller account.
           config, request, global_params=global_params)
 
     Create.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'cloudbilling.billingAccounts.create',
+        http_method='POST',
+        method_id='cloudbilling.billingAccounts.create',
         ordered_params=[],
         path_params=[],
         query_params=[],
-        relative_path=u'v1/billingAccounts',
+        relative_path='v1/billingAccounts',
         request_field='<request>',
-        request_type_name=u'BillingAccount',
-        response_type_name=u'BillingAccount',
+        request_type_name='BillingAccount',
+        response_type_name='BillingAccount',
         supports_download=False,
     )
 
@@ -143,16 +143,16 @@ account](https://cloud.google.com/billing/docs/how-to/billing-access).
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/billingAccounts/{billingAccountsId}',
-        http_method=u'GET',
-        method_id=u'cloudbilling.billingAccounts.get',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1/billingAccounts/{billingAccountsId}',
+        http_method='GET',
+        method_id='cloudbilling.billingAccounts.get',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1/{+name}',
+        relative_path='v1/{+name}',
         request_field='',
-        request_type_name=u'CloudbillingBillingAccountsGetRequest',
-        response_type_name=u'BillingAccount',
+        request_type_name='CloudbillingBillingAccountsGetRequest',
+        response_type_name='BillingAccount',
         supports_download=False,
     )
 
@@ -173,16 +173,16 @@ account, which is often given to billing account
           config, request, global_params=global_params)
 
     GetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/billingAccounts/{billingAccountsId}:getIamPolicy',
-        http_method=u'GET',
-        method_id=u'cloudbilling.billingAccounts.getIamPolicy',
-        ordered_params=[u'resource'],
-        path_params=[u'resource'],
-        query_params=[u'options_requestedPolicyVersion'],
-        relative_path=u'v1/{+resource}:getIamPolicy',
+        flat_path='v1/billingAccounts/{billingAccountsId}:getIamPolicy',
+        http_method='GET',
+        method_id='cloudbilling.billingAccounts.getIamPolicy',
+        ordered_params=['resource'],
+        path_params=['resource'],
+        query_params=['options_requestedPolicyVersion'],
+        relative_path='v1/{+resource}:getIamPolicy',
         request_field='',
-        request_type_name=u'CloudbillingBillingAccountsGetIamPolicyRequest',
-        response_type_name=u'Policy',
+        request_type_name='CloudbillingBillingAccountsGetIamPolicyRequest',
+        response_type_name='Policy',
         supports_download=False,
     )
 
@@ -202,15 +202,15 @@ permission to
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'cloudbilling.billingAccounts.list',
+        http_method='GET',
+        method_id='cloudbilling.billingAccounts.list',
         ordered_params=[],
         path_params=[],
-        query_params=[u'filter', u'pageSize', u'pageToken'],
-        relative_path=u'v1/billingAccounts',
+        query_params=['filter', 'pageSize', 'pageToken'],
+        relative_path='v1/billingAccounts',
         request_field='',
-        request_type_name=u'CloudbillingBillingAccountsListRequest',
-        response_type_name=u'ListBillingAccountsResponse',
+        request_type_name='CloudbillingBillingAccountsListRequest',
+        response_type_name='ListBillingAccountsResponse',
         supports_download=False,
     )
 
@@ -233,16 +233,16 @@ of the billing account.
           config, request, global_params=global_params)
 
     Patch.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/billingAccounts/{billingAccountsId}',
-        http_method=u'PATCH',
-        method_id=u'cloudbilling.billingAccounts.patch',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[u'updateMask'],
-        relative_path=u'v1/{+name}',
-        request_field=u'billingAccount',
-        request_type_name=u'CloudbillingBillingAccountsPatchRequest',
-        response_type_name=u'BillingAccount',
+        flat_path='v1/billingAccounts/{billingAccountsId}',
+        http_method='PATCH',
+        method_id='cloudbilling.billingAccounts.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v1/{+name}',
+        request_field='billingAccount',
+        request_type_name='CloudbillingBillingAccountsPatchRequest',
+        response_type_name='BillingAccount',
         supports_download=False,
     )
 
@@ -264,16 +264,16 @@ account, which is often given to billing account
           config, request, global_params=global_params)
 
     SetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/billingAccounts/{billingAccountsId}:setIamPolicy',
-        http_method=u'POST',
-        method_id=u'cloudbilling.billingAccounts.setIamPolicy',
-        ordered_params=[u'resource'],
-        path_params=[u'resource'],
+        flat_path='v1/billingAccounts/{billingAccountsId}:setIamPolicy',
+        http_method='POST',
+        method_id='cloudbilling.billingAccounts.setIamPolicy',
+        ordered_params=['resource'],
+        path_params=['resource'],
         query_params=[],
-        relative_path=u'v1/{+resource}:setIamPolicy',
-        request_field=u'setIamPolicyRequest',
-        request_type_name=u'CloudbillingBillingAccountsSetIamPolicyRequest',
-        response_type_name=u'Policy',
+        relative_path='v1/{+resource}:setIamPolicy',
+        request_field='setIamPolicyRequest',
+        request_type_name='CloudbillingBillingAccountsSetIamPolicyRequest',
+        response_type_name='Policy',
         supports_download=False,
     )
 
@@ -293,23 +293,23 @@ the input permissions that the caller is allowed for that resource.
           config, request, global_params=global_params)
 
     TestIamPermissions.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/billingAccounts/{billingAccountsId}:testIamPermissions',
-        http_method=u'POST',
-        method_id=u'cloudbilling.billingAccounts.testIamPermissions',
-        ordered_params=[u'resource'],
-        path_params=[u'resource'],
+        flat_path='v1/billingAccounts/{billingAccountsId}:testIamPermissions',
+        http_method='POST',
+        method_id='cloudbilling.billingAccounts.testIamPermissions',
+        ordered_params=['resource'],
+        path_params=['resource'],
         query_params=[],
-        relative_path=u'v1/{+resource}:testIamPermissions',
-        request_field=u'testIamPermissionsRequest',
-        request_type_name=u'CloudbillingBillingAccountsTestIamPermissionsRequest',
-        response_type_name=u'TestIamPermissionsResponse',
+        relative_path='v1/{+resource}:testIamPermissions',
+        request_field='testIamPermissionsRequest',
+        request_type_name='CloudbillingBillingAccountsTestIamPermissionsRequest',
+        response_type_name='TestIamPermissionsResponse',
         supports_download=False,
     )
 
   class ProjectsService(base_api.BaseApiService):
     """Service class for the projects resource."""
 
-    _NAME = u'projects'
+    _NAME = 'projects'
 
     def __init__(self, client):
       super(CloudbillingV1.ProjectsService, self).__init__(client)
@@ -333,16 +333,16 @@ project](https://cloud.google.com/docs/permissions-overview#h.bgs0oxofvnoo
           config, request, global_params=global_params)
 
     GetBillingInfo.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/billingInfo',
-        http_method=u'GET',
-        method_id=u'cloudbilling.projects.getBillingInfo',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1/projects/{projectsId}/billingInfo',
+        http_method='GET',
+        method_id='cloudbilling.projects.getBillingInfo',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1/{+name}/billingInfo',
+        relative_path='v1/{+name}/billingInfo',
         request_field='',
-        request_type_name=u'CloudbillingProjectsGetBillingInfoRequest',
-        response_type_name=u'ProjectBillingInfo',
+        request_type_name='CloudbillingProjectsGetBillingInfoRequest',
+        response_type_name='ProjectBillingInfo',
         supports_download=False,
     )
 
@@ -390,23 +390,23 @@ disable billing, you should always call this method with the name of an
           config, request, global_params=global_params)
 
     UpdateBillingInfo.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/billingInfo',
-        http_method=u'PUT',
-        method_id=u'cloudbilling.projects.updateBillingInfo',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1/projects/{projectsId}/billingInfo',
+        http_method='PUT',
+        method_id='cloudbilling.projects.updateBillingInfo',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1/{+name}/billingInfo',
-        request_field=u'projectBillingInfo',
-        request_type_name=u'CloudbillingProjectsUpdateBillingInfoRequest',
-        response_type_name=u'ProjectBillingInfo',
+        relative_path='v1/{+name}/billingInfo',
+        request_field='projectBillingInfo',
+        request_type_name='CloudbillingProjectsUpdateBillingInfoRequest',
+        response_type_name='ProjectBillingInfo',
         supports_download=False,
     )
 
   class ServicesSkusService(base_api.BaseApiService):
     """Service class for the services_skus resource."""
 
-    _NAME = u'services_skus'
+    _NAME = 'services_skus'
 
     def __init__(self, client):
       super(CloudbillingV1.ServicesSkusService, self).__init__(client)
@@ -427,23 +427,23 @@ disable billing, you should always call this method with the name of an
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/services/{servicesId}/skus',
-        http_method=u'GET',
-        method_id=u'cloudbilling.services.skus.list',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'currencyCode', u'endTime', u'pageSize', u'pageToken', u'startTime'],
-        relative_path=u'v1/{+parent}/skus',
+        flat_path='v1/services/{servicesId}/skus',
+        http_method='GET',
+        method_id='cloudbilling.services.skus.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['currencyCode', 'endTime', 'pageSize', 'pageToken', 'startTime'],
+        relative_path='v1/{+parent}/skus',
         request_field='',
-        request_type_name=u'CloudbillingServicesSkusListRequest',
-        response_type_name=u'ListSkusResponse',
+        request_type_name='CloudbillingServicesSkusListRequest',
+        response_type_name='ListSkusResponse',
         supports_download=False,
     )
 
   class ServicesService(base_api.BaseApiService):
     """Service class for the services resource."""
 
-    _NAME = u'services'
+    _NAME = 'services'
 
     def __init__(self, client):
       super(CloudbillingV1.ServicesService, self).__init__(client)
@@ -464,14 +464,14 @@ disable billing, you should always call this method with the name of an
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'cloudbilling.services.list',
+        http_method='GET',
+        method_id='cloudbilling.services.list',
         ordered_params=[],
         path_params=[],
-        query_params=[u'pageSize', u'pageToken'],
-        relative_path=u'v1/services',
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v1/services',
         request_field='',
-        request_type_name=u'CloudbillingServicesListRequest',
-        response_type_name=u'ListServicesResponse',
+        request_type_name='CloudbillingServicesListRequest',
+        response_type_name='ListServicesResponse',
         supports_download=False,
     )

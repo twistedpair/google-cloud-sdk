@@ -8,17 +8,17 @@ class AppengineV1alpha(base_api.BaseApiClient):
   """Generated client library for service appengine version v1alpha."""
 
   MESSAGES_MODULE = messages
-  BASE_URL = u'https://appengine.googleapis.com/'
-  MTLS_BASE_URL = u'https://appengine.mtls.googleapis.com/'
+  BASE_URL = 'https://appengine.googleapis.com/'
+  MTLS_BASE_URL = 'https://appengine.mtls.googleapis.com/'
 
-  _PACKAGE = u'appengine'
-  _SCOPES = [u'https://www.googleapis.com/auth/appengine.admin', u'https://www.googleapis.com/auth/cloud-platform', u'https://www.googleapis.com/auth/cloud-platform.read-only']
-  _VERSION = u'v1alpha'
+  _PACKAGE = 'appengine'
+  _SCOPES = ['https://www.googleapis.com/auth/appengine.admin', 'https://www.googleapis.com/auth/cloud-platform', 'https://www.googleapis.com/auth/cloud-platform.read-only']
+  _VERSION = 'v1alpha'
   _CLIENT_ID = '1042881264118.apps.googleusercontent.com'
   _CLIENT_SECRET = 'x_Tw5K8nnjoRAqULM9PFAC2b'
-  _USER_AGENT = u'google-cloud-sdk'
-  _CLIENT_CLASS_NAME = u'AppengineV1alpha'
-  _URL_VERSION = u'v1alpha'
+  _USER_AGENT = 'google-cloud-sdk'
+  _CLIENT_CLASS_NAME = 'AppengineV1alpha'
+  _URL_VERSION = 'v1alpha'
   _API_KEY = None
 
   def __init__(self, url='', credentials=None,
@@ -46,7 +46,7 @@ class AppengineV1alpha(base_api.BaseApiClient):
   class AppsAuthorizedCertificatesService(base_api.BaseApiService):
     """Service class for the apps_authorizedCertificates resource."""
 
-    _NAME = u'apps_authorizedCertificates'
+    _NAME = 'apps_authorizedCertificates'
 
     def __init__(self, client):
       super(AppengineV1alpha.AppsAuthorizedCertificatesService, self).__init__(client)
@@ -67,16 +67,16 @@ class AppengineV1alpha(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Create.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha/apps/{appsId}/authorizedCertificates',
-        http_method=u'POST',
-        method_id=u'appengine.apps.authorizedCertificates.create',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
+        flat_path='v1alpha/apps/{appsId}/authorizedCertificates',
+        http_method='POST',
+        method_id='appengine.apps.authorizedCertificates.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
         query_params=[],
-        relative_path=u'v1alpha/{+parent}/authorizedCertificates',
-        request_field=u'authorizedCertificate',
-        request_type_name=u'AppengineAppsAuthorizedCertificatesCreateRequest',
-        response_type_name=u'AuthorizedCertificate',
+        relative_path='v1alpha/{+parent}/authorizedCertificates',
+        request_field='authorizedCertificate',
+        request_type_name='AppengineAppsAuthorizedCertificatesCreateRequest',
+        response_type_name='AuthorizedCertificate',
         supports_download=False,
     )
 
@@ -94,16 +94,16 @@ class AppengineV1alpha(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Delete.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha/apps/{appsId}/authorizedCertificates/{authorizedCertificatesId}',
-        http_method=u'DELETE',
-        method_id=u'appengine.apps.authorizedCertificates.delete',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1alpha/apps/{appsId}/authorizedCertificates/{authorizedCertificatesId}',
+        http_method='DELETE',
+        method_id='appengine.apps.authorizedCertificates.delete',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1alpha/{+name}',
+        relative_path='v1alpha/{+name}',
         request_field='',
-        request_type_name=u'AppengineAppsAuthorizedCertificatesDeleteRequest',
-        response_type_name=u'Empty',
+        request_type_name='AppengineAppsAuthorizedCertificatesDeleteRequest',
+        response_type_name='Empty',
         supports_download=False,
     )
 
@@ -121,16 +121,16 @@ class AppengineV1alpha(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha/apps/{appsId}/authorizedCertificates/{authorizedCertificatesId}',
-        http_method=u'GET',
-        method_id=u'appengine.apps.authorizedCertificates.get',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[u'view'],
-        relative_path=u'v1alpha/{+name}',
+        flat_path='v1alpha/apps/{appsId}/authorizedCertificates/{authorizedCertificatesId}',
+        http_method='GET',
+        method_id='appengine.apps.authorizedCertificates.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['view'],
+        relative_path='v1alpha/{+name}',
         request_field='',
-        request_type_name=u'AppengineAppsAuthorizedCertificatesGetRequest',
-        response_type_name=u'AuthorizedCertificate',
+        request_type_name='AppengineAppsAuthorizedCertificatesGetRequest',
+        response_type_name='AuthorizedCertificate',
         supports_download=False,
     )
 
@@ -148,16 +148,16 @@ class AppengineV1alpha(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha/apps/{appsId}/authorizedCertificates',
-        http_method=u'GET',
-        method_id=u'appengine.apps.authorizedCertificates.list',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'pageSize', u'pageToken', u'view'],
-        relative_path=u'v1alpha/{+parent}/authorizedCertificates',
+        flat_path='v1alpha/apps/{appsId}/authorizedCertificates',
+        http_method='GET',
+        method_id='appengine.apps.authorizedCertificates.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken', 'view'],
+        relative_path='v1alpha/{+parent}/authorizedCertificates',
         request_field='',
-        request_type_name=u'AppengineAppsAuthorizedCertificatesListRequest',
-        response_type_name=u'ListAuthorizedCertificatesResponse',
+        request_type_name='AppengineAppsAuthorizedCertificatesListRequest',
+        response_type_name='ListAuthorizedCertificatesResponse',
         supports_download=False,
     )
 
@@ -175,23 +175,23 @@ class AppengineV1alpha(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Patch.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha/apps/{appsId}/authorizedCertificates/{authorizedCertificatesId}',
-        http_method=u'PATCH',
-        method_id=u'appengine.apps.authorizedCertificates.patch',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[u'updateMask'],
-        relative_path=u'v1alpha/{+name}',
-        request_field=u'authorizedCertificate',
-        request_type_name=u'AppengineAppsAuthorizedCertificatesPatchRequest',
-        response_type_name=u'AuthorizedCertificate',
+        flat_path='v1alpha/apps/{appsId}/authorizedCertificates/{authorizedCertificatesId}',
+        http_method='PATCH',
+        method_id='appengine.apps.authorizedCertificates.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v1alpha/{+name}',
+        request_field='authorizedCertificate',
+        request_type_name='AppengineAppsAuthorizedCertificatesPatchRequest',
+        response_type_name='AuthorizedCertificate',
         supports_download=False,
     )
 
   class AppsAuthorizedDomainsService(base_api.BaseApiService):
     """Service class for the apps_authorizedDomains resource."""
 
-    _NAME = u'apps_authorizedDomains'
+    _NAME = 'apps_authorizedDomains'
 
     def __init__(self, client):
       super(AppengineV1alpha.AppsAuthorizedDomainsService, self).__init__(client)
@@ -212,23 +212,23 @@ class AppengineV1alpha(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha/apps/{appsId}/authorizedDomains',
-        http_method=u'GET',
-        method_id=u'appengine.apps.authorizedDomains.list',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'pageSize', u'pageToken'],
-        relative_path=u'v1alpha/{+parent}/authorizedDomains',
+        flat_path='v1alpha/apps/{appsId}/authorizedDomains',
+        http_method='GET',
+        method_id='appengine.apps.authorizedDomains.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v1alpha/{+parent}/authorizedDomains',
         request_field='',
-        request_type_name=u'AppengineAppsAuthorizedDomainsListRequest',
-        response_type_name=u'ListAuthorizedDomainsResponse',
+        request_type_name='AppengineAppsAuthorizedDomainsListRequest',
+        response_type_name='ListAuthorizedDomainsResponse',
         supports_download=False,
     )
 
   class AppsDomainMappingsService(base_api.BaseApiService):
     """Service class for the apps_domainMappings resource."""
 
-    _NAME = u'apps_domainMappings'
+    _NAME = 'apps_domainMappings'
 
     def __init__(self, client):
       super(AppengineV1alpha.AppsDomainMappingsService, self).__init__(client)
@@ -249,16 +249,16 @@ class AppengineV1alpha(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Create.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha/apps/{appsId}/domainMappings',
-        http_method=u'POST',
-        method_id=u'appengine.apps.domainMappings.create',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'noManagedCertificate', u'overrideStrategy'],
-        relative_path=u'v1alpha/{+parent}/domainMappings',
-        request_field=u'domainMapping',
-        request_type_name=u'AppengineAppsDomainMappingsCreateRequest',
-        response_type_name=u'Operation',
+        flat_path='v1alpha/apps/{appsId}/domainMappings',
+        http_method='POST',
+        method_id='appengine.apps.domainMappings.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['noManagedCertificate', 'overrideStrategy'],
+        relative_path='v1alpha/{+parent}/domainMappings',
+        request_field='domainMapping',
+        request_type_name='AppengineAppsDomainMappingsCreateRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -276,16 +276,16 @@ class AppengineV1alpha(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Delete.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha/apps/{appsId}/domainMappings/{domainMappingsId}',
-        http_method=u'DELETE',
-        method_id=u'appengine.apps.domainMappings.delete',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1alpha/apps/{appsId}/domainMappings/{domainMappingsId}',
+        http_method='DELETE',
+        method_id='appengine.apps.domainMappings.delete',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1alpha/{+name}',
+        relative_path='v1alpha/{+name}',
         request_field='',
-        request_type_name=u'AppengineAppsDomainMappingsDeleteRequest',
-        response_type_name=u'Operation',
+        request_type_name='AppengineAppsDomainMappingsDeleteRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -303,16 +303,16 @@ class AppengineV1alpha(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha/apps/{appsId}/domainMappings/{domainMappingsId}',
-        http_method=u'GET',
-        method_id=u'appengine.apps.domainMappings.get',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1alpha/apps/{appsId}/domainMappings/{domainMappingsId}',
+        http_method='GET',
+        method_id='appengine.apps.domainMappings.get',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1alpha/{+name}',
+        relative_path='v1alpha/{+name}',
         request_field='',
-        request_type_name=u'AppengineAppsDomainMappingsGetRequest',
-        response_type_name=u'DomainMapping',
+        request_type_name='AppengineAppsDomainMappingsGetRequest',
+        response_type_name='DomainMapping',
         supports_download=False,
     )
 
@@ -330,16 +330,16 @@ class AppengineV1alpha(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha/apps/{appsId}/domainMappings',
-        http_method=u'GET',
-        method_id=u'appengine.apps.domainMappings.list',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'pageSize', u'pageToken'],
-        relative_path=u'v1alpha/{+parent}/domainMappings',
+        flat_path='v1alpha/apps/{appsId}/domainMappings',
+        http_method='GET',
+        method_id='appengine.apps.domainMappings.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v1alpha/{+parent}/domainMappings',
         request_field='',
-        request_type_name=u'AppengineAppsDomainMappingsListRequest',
-        response_type_name=u'ListDomainMappingsResponse',
+        request_type_name='AppengineAppsDomainMappingsListRequest',
+        response_type_name='ListDomainMappingsResponse',
         supports_download=False,
     )
 
@@ -357,23 +357,23 @@ class AppengineV1alpha(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Patch.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha/apps/{appsId}/domainMappings/{domainMappingsId}',
-        http_method=u'PATCH',
-        method_id=u'appengine.apps.domainMappings.patch',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[u'noManagedCertificate', u'updateMask'],
-        relative_path=u'v1alpha/{+name}',
-        request_field=u'domainMapping',
-        request_type_name=u'AppengineAppsDomainMappingsPatchRequest',
-        response_type_name=u'Operation',
+        flat_path='v1alpha/apps/{appsId}/domainMappings/{domainMappingsId}',
+        http_method='PATCH',
+        method_id='appengine.apps.domainMappings.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['noManagedCertificate', 'updateMask'],
+        relative_path='v1alpha/{+name}',
+        request_field='domainMapping',
+        request_type_name='AppengineAppsDomainMappingsPatchRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
   class AppsLocationsService(base_api.BaseApiService):
     """Service class for the apps_locations resource."""
 
-    _NAME = u'apps_locations'
+    _NAME = 'apps_locations'
 
     def __init__(self, client):
       super(AppengineV1alpha.AppsLocationsService, self).__init__(client)
@@ -394,16 +394,16 @@ class AppengineV1alpha(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha/apps/{appsId}/locations/{locationsId}',
-        http_method=u'GET',
-        method_id=u'appengine.apps.locations.get',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1alpha/apps/{appsId}/locations/{locationsId}',
+        http_method='GET',
+        method_id='appengine.apps.locations.get',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1alpha/{+name}',
+        relative_path='v1alpha/{+name}',
         request_field='',
-        request_type_name=u'AppengineAppsLocationsGetRequest',
-        response_type_name=u'Location',
+        request_type_name='AppengineAppsLocationsGetRequest',
+        response_type_name='Location',
         supports_download=False,
     )
 
@@ -421,23 +421,23 @@ class AppengineV1alpha(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha/apps/{appsId}/locations',
-        http_method=u'GET',
-        method_id=u'appengine.apps.locations.list',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[u'filter', u'pageSize', u'pageToken'],
-        relative_path=u'v1alpha/{+name}/locations',
+        flat_path='v1alpha/apps/{appsId}/locations',
+        http_method='GET',
+        method_id='appengine.apps.locations.list',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['filter', 'pageSize', 'pageToken'],
+        relative_path='v1alpha/{+name}/locations',
         request_field='',
-        request_type_name=u'AppengineAppsLocationsListRequest',
-        response_type_name=u'ListLocationsResponse',
+        request_type_name='AppengineAppsLocationsListRequest',
+        response_type_name='ListLocationsResponse',
         supports_download=False,
     )
 
   class AppsOperationsService(base_api.BaseApiService):
     """Service class for the apps_operations resource."""
 
-    _NAME = u'apps_operations'
+    _NAME = 'apps_operations'
 
     def __init__(self, client):
       super(AppengineV1alpha.AppsOperationsService, self).__init__(client)
@@ -458,16 +458,16 @@ class AppengineV1alpha(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha/apps/{appsId}/operations/{operationsId}',
-        http_method=u'GET',
-        method_id=u'appengine.apps.operations.get',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1alpha/apps/{appsId}/operations/{operationsId}',
+        http_method='GET',
+        method_id='appengine.apps.operations.get',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1alpha/{+name}',
+        relative_path='v1alpha/{+name}',
         request_field='',
-        request_type_name=u'AppengineAppsOperationsGetRequest',
-        response_type_name=u'Operation',
+        request_type_name='AppengineAppsOperationsGetRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -485,23 +485,23 @@ class AppengineV1alpha(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha/apps/{appsId}/operations',
-        http_method=u'GET',
-        method_id=u'appengine.apps.operations.list',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[u'filter', u'pageSize', u'pageToken'],
-        relative_path=u'v1alpha/{+name}/operations',
+        flat_path='v1alpha/apps/{appsId}/operations',
+        http_method='GET',
+        method_id='appengine.apps.operations.list',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['filter', 'pageSize', 'pageToken'],
+        relative_path='v1alpha/{+name}/operations',
         request_field='',
-        request_type_name=u'AppengineAppsOperationsListRequest',
-        response_type_name=u'ListOperationsResponse',
+        request_type_name='AppengineAppsOperationsListRequest',
+        response_type_name='ListOperationsResponse',
         supports_download=False,
     )
 
   class AppsService(base_api.BaseApiService):
     """Service class for the apps resource."""
 
-    _NAME = u'apps'
+    _NAME = 'apps'
 
     def __init__(self, client):
       super(AppengineV1alpha.AppsService, self).__init__(client)

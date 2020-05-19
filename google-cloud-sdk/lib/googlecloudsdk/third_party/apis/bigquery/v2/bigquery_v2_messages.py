@@ -696,7 +696,7 @@ class CsvOptions(_messages.Message):
   allowQuotedNewlines = _messages.BooleanField(2)
   encoding = _messages.StringField(3)
   fieldDelimiter = _messages.StringField(4)
-  quote = _messages.StringField(5, default=u'"')
+  quote = _messages.StringField(5, default='"')
   skipLeadingRows = _messages.IntegerField(6)
 
 
@@ -846,7 +846,7 @@ class Dataset(_messages.Message):
   etag = _messages.StringField(8)
   friendlyName = _messages.StringField(9)
   id = _messages.StringField(10)
-  kind = _messages.StringField(11, default=u'bigquery#dataset')
+  kind = _messages.StringField(11, default='bigquery#dataset')
   labels = _messages.MessageField('LabelsValue', 12)
   lastModifiedTime = _messages.IntegerField(13)
   location = _messages.StringField(14)
@@ -919,13 +919,13 @@ class DatasetList(_messages.Message):
     datasetReference = _messages.MessageField('DatasetReference', 1)
     friendlyName = _messages.StringField(2)
     id = _messages.StringField(3)
-    kind = _messages.StringField(4, default=u'bigquery#dataset')
+    kind = _messages.StringField(4, default='bigquery#dataset')
     labels = _messages.MessageField('LabelsValue', 5)
     location = _messages.StringField(6)
 
   datasets = _messages.MessageField('DatasetsValueListEntry', 1, repeated=True)
   etag = _messages.StringField(2)
-  kind = _messages.StringField(3, default=u'bigquery#datasetList')
+  kind = _messages.StringField(3, default='bigquery#datasetList')
   nextPageToken = _messages.StringField(4)
 
 
@@ -1223,7 +1223,7 @@ class GetQueryResultsResponse(_messages.Message):
   etag = _messages.StringField(3)
   jobComplete = _messages.BooleanField(4)
   jobReference = _messages.MessageField('JobReference', 5)
-  kind = _messages.StringField(6, default=u'bigquery#getQueryResultsResponse')
+  kind = _messages.StringField(6, default='bigquery#getQueryResultsResponse')
   numDmlAffectedRows = _messages.IntegerField(7)
   pageToken = _messages.StringField(8)
   rows = _messages.MessageField('TableRow', 9, repeated=True)
@@ -1241,7 +1241,7 @@ class GetServiceAccountResponse(_messages.Message):
   """
 
   email = _messages.StringField(1)
-  kind = _messages.StringField(2, default=u'bigquery#getServiceAccountResponse')
+  kind = _messages.StringField(2, default='bigquery#getServiceAccountResponse')
 
 
 class GoogleSheetsOptions(_messages.Message):
@@ -1318,7 +1318,7 @@ class Job(_messages.Message):
   etag = _messages.StringField(2)
   id = _messages.StringField(3)
   jobReference = _messages.MessageField('JobReference', 4)
-  kind = _messages.StringField(5, default=u'bigquery#job')
+  kind = _messages.StringField(5, default='bigquery#job')
   selfLink = _messages.StringField(6)
   statistics = _messages.MessageField('JobStatistics', 7)
   status = _messages.MessageField('JobStatus', 8)
@@ -1334,7 +1334,7 @@ class JobCancelResponse(_messages.Message):
   """
 
   job = _messages.MessageField('Job', 1)
-  kind = _messages.StringField(2, default=u'bigquery#jobCancelResponse')
+  kind = _messages.StringField(2, default='bigquery#jobCancelResponse')
 
 
 class JobConfiguration(_messages.Message):
@@ -1506,7 +1506,7 @@ class JobConfigurationLoad(_messages.Message):
       valid for CSV and JSON. The default value is 0, which requires that all
       records are valid.
     nullMarker: [Optional] Specifies a string that represents a null value in
-      a CSV file. For example, if you specify "\N", BigQuery interprets "\N"
+      a CSV file. For example, if you specify "\\N", BigQuery interprets "\\N"
       as a null value when loading a CSV file. The default value is the empty
       string. If you set this property to a custom value, BigQuery throws an
       error if an empty string is present for all data types except for STRING
@@ -1595,7 +1595,7 @@ class JobConfigurationLoad(_messages.Message):
   maxBadRecords = _messages.IntegerField(13, variant=_messages.Variant.INT32)
   nullMarker = _messages.StringField(14)
   projectionFields = _messages.StringField(15, repeated=True)
-  quote = _messages.StringField(16, default=u'"')
+  quote = _messages.StringField(16, default='"')
   rangePartitioning = _messages.MessageField('RangePartitioning', 17)
   schema = _messages.MessageField('TableSchema', 18)
   schemaInline = _messages.StringField(19)
@@ -1835,7 +1835,7 @@ class JobList(_messages.Message):
     errorResult = _messages.MessageField('ErrorProto', 2)
     id = _messages.StringField(3)
     jobReference = _messages.MessageField('JobReference', 4)
-    kind = _messages.StringField(5, default=u'bigquery#job')
+    kind = _messages.StringField(5, default='bigquery#job')
     state = _messages.StringField(6)
     statistics = _messages.MessageField('JobStatistics', 7)
     status = _messages.MessageField('JobStatus', 8)
@@ -1843,7 +1843,7 @@ class JobList(_messages.Message):
 
   etag = _messages.StringField(1)
   jobs = _messages.MessageField('JobsValueListEntry', 2, repeated=True)
-  kind = _messages.StringField(3, default=u'bigquery#jobList')
+  kind = _messages.StringField(3, default='bigquery#jobList')
   nextPageToken = _messages.StringField(4)
 
 
@@ -1979,8 +1979,9 @@ class JobStatistics2(_messages.Message):
       successful dry run of non-legacy SQL queries.
     statementType: The type of query statement, if valid. Possible values (new
       values might be added in the future): "SELECT": SELECT query. "INSERT":
-      INSERT query; see https://cloud.google.com/bigquery/docs/reference
-      /standard-sql/data-manipulation-language. "UPDATE": UPDATE query; see
+      INSERT query; see
+      https://cloud.google.com/bigquery/docs/reference/standard-sql/data-
+      manipulation-language. "UPDATE": UPDATE query; see
       https://cloud.google.com/bigquery/docs/reference/standard-sql/data-
       manipulation-language. "DELETE": DELETE query; see
       https://cloud.google.com/bigquery/docs/reference/standard-sql/data-
@@ -2240,12 +2241,12 @@ class ProjectList(_messages.Message):
 
     friendlyName = _messages.StringField(1)
     id = _messages.StringField(2)
-    kind = _messages.StringField(3, default=u'bigquery#project')
+    kind = _messages.StringField(3, default='bigquery#project')
     numericId = _messages.IntegerField(4, variant=_messages.Variant.UINT64)
     projectReference = _messages.MessageField('ProjectReference', 5)
 
   etag = _messages.StringField(1)
-  kind = _messages.StringField(2, default=u'bigquery#projectList')
+  kind = _messages.StringField(2, default='bigquery#projectList')
   nextPageToken = _messages.StringField(3)
   projects = _messages.MessageField('ProjectsValueListEntry', 4, repeated=True)
   totalItems = _messages.IntegerField(5, variant=_messages.Variant.INT32)
@@ -2406,7 +2407,7 @@ class QueryRequest(_messages.Message):
   connectionProperties = _messages.MessageField('ConnectionProperty', 1, repeated=True)
   defaultDataset = _messages.MessageField('DatasetReference', 2)
   dryRun = _messages.BooleanField(3)
-  kind = _messages.StringField(4, default=u'bigquery#queryRequest')
+  kind = _messages.StringField(4, default='bigquery#queryRequest')
   location = _messages.StringField(5)
   maxResults = _messages.IntegerField(6, variant=_messages.Variant.UINT32)
   parameterMode = _messages.StringField(7)
@@ -2457,7 +2458,7 @@ class QueryResponse(_messages.Message):
   errors = _messages.MessageField('ErrorProto', 2, repeated=True)
   jobComplete = _messages.BooleanField(3)
   jobReference = _messages.MessageField('JobReference', 4)
-  kind = _messages.StringField(5, default=u'bigquery#queryResponse')
+  kind = _messages.StringField(5, default='bigquery#queryResponse')
   numDmlAffectedRows = _messages.IntegerField(6)
   pageToken = _messages.StringField(7)
   rows = _messages.MessageField('TableRow', 8, repeated=True)
@@ -2633,7 +2634,7 @@ class StandardQueryParameters(_messages.Message):
     """
     json = 0
 
-  alt = _messages.EnumField('AltValueValuesEnum', 1, default=u'json')
+  alt = _messages.EnumField('AltValueValuesEnum', 1, default='json')
   fields = _messages.StringField(2)
   key = _messages.StringField(3)
   oauth_token = _messages.StringField(4)
@@ -2784,7 +2785,7 @@ class Table(_messages.Message):
   externalDataConfiguration = _messages.MessageField('ExternalDataConfiguration', 7)
   friendlyName = _messages.StringField(8)
   id = _messages.StringField(9)
-  kind = _messages.StringField(10, default=u'bigquery#table')
+  kind = _messages.StringField(10, default='bigquery#table')
   labels = _messages.MessageField('LabelsValue', 11)
   lastModifiedTime = _messages.IntegerField(12, variant=_messages.Variant.UINT64)
   location = _messages.StringField(13)
@@ -2853,7 +2854,7 @@ class TableDataInsertAllRequest(_messages.Message):
     json = _messages.MessageField('JsonObject', 2)
 
   ignoreUnknownValues = _messages.BooleanField(1)
-  kind = _messages.StringField(2, default=u'bigquery#tableDataInsertAllRequest')
+  kind = _messages.StringField(2, default='bigquery#tableDataInsertAllRequest')
   rows = _messages.MessageField('RowsValueListEntry', 3, repeated=True)
   skipInvalidRows = _messages.BooleanField(4)
   templateSuffix = _messages.StringField(5)
@@ -2882,7 +2883,7 @@ class TableDataInsertAllResponse(_messages.Message):
     index = _messages.IntegerField(2, variant=_messages.Variant.UINT32)
 
   insertErrors = _messages.MessageField('InsertErrorsValueListEntry', 1, repeated=True)
-  kind = _messages.StringField(2, default=u'bigquery#tableDataInsertAllResponse')
+  kind = _messages.StringField(2, default='bigquery#tableDataInsertAllResponse')
 
 
 class TableDataList(_messages.Message):
@@ -2899,7 +2900,7 @@ class TableDataList(_messages.Message):
   """
 
   etag = _messages.StringField(1)
-  kind = _messages.StringField(2, default=u'bigquery#tableDataList')
+  kind = _messages.StringField(2, default='bigquery#tableDataList')
   pageToken = _messages.StringField(3)
   rows = _messages.MessageField('TableRow', 4, repeated=True)
   totalRows = _messages.IntegerField(5)
@@ -3050,7 +3051,7 @@ class TableList(_messages.Message):
     expirationTime = _messages.IntegerField(3)
     friendlyName = _messages.StringField(4)
     id = _messages.StringField(5)
-    kind = _messages.StringField(6, default=u'bigquery#table')
+    kind = _messages.StringField(6, default='bigquery#table')
     labels = _messages.MessageField('LabelsValue', 7)
     rangePartitioning = _messages.MessageField('RangePartitioning', 8)
     tableReference = _messages.MessageField('TableReference', 9)
@@ -3059,7 +3060,7 @@ class TableList(_messages.Message):
     view = _messages.MessageField('ViewValue', 12)
 
   etag = _messages.StringField(1)
-  kind = _messages.StringField(2, default=u'bigquery#tableList')
+  kind = _messages.StringField(2, default='bigquery#tableList')
   nextPageToken = _messages.StringField(3)
   tables = _messages.MessageField('TablesValueListEntry', 4, repeated=True)
   totalItems = _messages.IntegerField(5, variant=_messages.Variant.INT32)

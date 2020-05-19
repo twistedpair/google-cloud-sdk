@@ -399,9 +399,10 @@ class GoogleDatastoreAdminV1beta1ExportEntitiesRequest(_messages.Message):
       name of the Cloud Storage bucket and `NAMESPACE_PATH` is an optional
       Cloud Storage namespace path (this is not a Cloud Datastore namespace).
       For more information about Cloud Storage namespace paths, see [Object
-      name considerations](https://cloud.google.com/storage/docs/naming
-      #object-considerations).  The resulting files will be nested deeper than
-      the specified URL prefix. The final output URL will be provided in the
+      name
+      considerations](https://cloud.google.com/storage/docs/naming#object-
+      considerations).  The resulting files will be nested deeper than the
+      specified URL prefix. The final output URL will be provided in the
       google.datastore.admin.v1beta1.ExportEntitiesResponse.output_url field.
       That value should be used for subsequent ImportEntities operations.  By
       nesting the data files deeper, the same Cloud Storage bucket can be used
@@ -701,7 +702,7 @@ class StandardQueryParameters(_messages.Message):
 
   f__xgafv = _messages.EnumField('FXgafvValueValuesEnum', 1)
   access_token = _messages.StringField(2)
-  alt = _messages.EnumField('AltValueValuesEnum', 3, default=u'json')
+  alt = _messages.EnumField('AltValueValuesEnum', 3, default='json')
   callback = _messages.StringField(4)
   fields = _messages.StringField(5)
   key = _messages.StringField(6)

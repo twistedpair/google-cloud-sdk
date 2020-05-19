@@ -28,7 +28,7 @@ class Collections(enum.Enum):
       'projects',
       'projects/{projectsId}',
       {},
-      [u'projectsId'],
+      ['projectsId'],
       True
   )
   PROJECTS_CRAWLERS = (
@@ -38,7 +38,7 @@ class Collections(enum.Enum):
           '':
               'projects/{projectsId}/crawlers/{crawlersId}',
       },
-      [u'name'],
+      ['name'],
       True
   )
   PROJECTS_CRAWLERS_CRAWLERRUNS = (
@@ -49,7 +49,7 @@ class Collections(enum.Enum):
               'projects/{projectsId}/crawlers/{crawlersId}/crawlerRuns/'
               '{crawlerRunsId}',
       },
-      [u'name'],
+      ['name'],
       True
   )
   PROJECTS_TAXONOMIES = (
@@ -59,7 +59,7 @@ class Collections(enum.Enum):
           '':
               'projects/{projectsId}/taxonomies/{taxonomiesId}',
       },
-      [u'name'],
+      ['name'],
       True
   )
   PROJECTS_TAXONOMIES_CATEGORIES = (
@@ -70,7 +70,7 @@ class Collections(enum.Enum):
               'projects/{projectsId}/taxonomies/{taxonomiesId}/categories/'
               '{categoriesId}',
       },
-      [u'name'],
+      ['name'],
       True
   )
 

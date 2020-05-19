@@ -8,17 +8,17 @@ class SourcerepoV1(base_api.BaseApiClient):
   """Generated client library for service sourcerepo version v1."""
 
   MESSAGES_MODULE = messages
-  BASE_URL = u'https://sourcerepo.googleapis.com/'
-  MTLS_BASE_URL = u'https://sourcerepo.mtls.googleapis.com/'
+  BASE_URL = 'https://sourcerepo.googleapis.com/'
+  MTLS_BASE_URL = 'https://sourcerepo.mtls.googleapis.com/'
 
-  _PACKAGE = u'sourcerepo'
-  _SCOPES = [u'https://www.googleapis.com/auth/cloud-platform', u'https://www.googleapis.com/auth/source.full_control', u'https://www.googleapis.com/auth/source.read_only', u'https://www.googleapis.com/auth/source.read_write']
-  _VERSION = u'v1'
+  _PACKAGE = 'sourcerepo'
+  _SCOPES = ['https://www.googleapis.com/auth/cloud-platform', 'https://www.googleapis.com/auth/source.full_control', 'https://www.googleapis.com/auth/source.read_only', 'https://www.googleapis.com/auth/source.read_write']
+  _VERSION = 'v1'
   _CLIENT_ID = '1042881264118.apps.googleusercontent.com'
   _CLIENT_SECRET = 'x_Tw5K8nnjoRAqULM9PFAC2b'
-  _USER_AGENT = u'google-cloud-sdk'
-  _CLIENT_CLASS_NAME = u'SourcerepoV1'
-  _URL_VERSION = u'v1'
+  _USER_AGENT = 'google-cloud-sdk'
+  _CLIENT_CLASS_NAME = 'SourcerepoV1'
+  _URL_VERSION = 'v1'
   _API_KEY = None
 
   def __init__(self, url='', credentials=None,
@@ -42,7 +42,7 @@ class SourcerepoV1(base_api.BaseApiClient):
   class ProjectsReposService(base_api.BaseApiService):
     """Service class for the projects_repos resource."""
 
-    _NAME = u'projects_repos'
+    _NAME = 'projects_repos'
 
     def __init__(self, client):
       super(SourcerepoV1.ProjectsReposService, self).__init__(client)
@@ -66,16 +66,16 @@ If the named repository already exists, `CreateRepo` returns
           config, request, global_params=global_params)
 
     Create.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/repos',
-        http_method=u'POST',
-        method_id=u'sourcerepo.projects.repos.create',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
+        flat_path='v1/projects/{projectsId}/repos',
+        http_method='POST',
+        method_id='sourcerepo.projects.repos.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
         query_params=[],
-        relative_path=u'v1/{+parent}/repos',
-        request_field=u'repo',
-        request_type_name=u'SourcerepoProjectsReposCreateRequest',
-        response_type_name=u'Repo',
+        relative_path='v1/{+parent}/repos',
+        request_field='repo',
+        request_type_name='SourcerepoProjectsReposCreateRequest',
+        response_type_name='Repo',
         supports_download=False,
     )
 
@@ -93,16 +93,16 @@ If the named repository already exists, `CreateRepo` returns
           config, request, global_params=global_params)
 
     Delete.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/repos/{reposId}',
-        http_method=u'DELETE',
-        method_id=u'sourcerepo.projects.repos.delete',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1/projects/{projectsId}/repos/{reposId}',
+        http_method='DELETE',
+        method_id='sourcerepo.projects.repos.delete',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1/{+name}',
+        relative_path='v1/{+name}',
         request_field='',
-        request_type_name=u'SourcerepoProjectsReposDeleteRequest',
-        response_type_name=u'Empty',
+        request_type_name='SourcerepoProjectsReposDeleteRequest',
+        response_type_name='Empty',
         supports_download=False,
     )
 
@@ -120,16 +120,16 @@ If the named repository already exists, `CreateRepo` returns
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/repos/{reposId}',
-        http_method=u'GET',
-        method_id=u'sourcerepo.projects.repos.get',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1/projects/{projectsId}/repos/{reposId}',
+        http_method='GET',
+        method_id='sourcerepo.projects.repos.get',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1/{+name}',
+        relative_path='v1/{+name}',
         request_field='',
-        request_type_name=u'SourcerepoProjectsReposGetRequest',
-        response_type_name=u'Repo',
+        request_type_name='SourcerepoProjectsReposGetRequest',
+        response_type_name='Repo',
         supports_download=False,
     )
 
@@ -149,16 +149,16 @@ set.
           config, request, global_params=global_params)
 
     GetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/repos/{reposId}:getIamPolicy',
-        http_method=u'GET',
-        method_id=u'sourcerepo.projects.repos.getIamPolicy',
-        ordered_params=[u'resource'],
-        path_params=[u'resource'],
-        query_params=[u'options_requestedPolicyVersion'],
-        relative_path=u'v1/{+resource}:getIamPolicy',
+        flat_path='v1/projects/{projectsId}/repos/{reposId}:getIamPolicy',
+        http_method='GET',
+        method_id='sourcerepo.projects.repos.getIamPolicy',
+        ordered_params=['resource'],
+        path_params=['resource'],
+        query_params=['options_requestedPolicyVersion'],
+        relative_path='v1/{+resource}:getIamPolicy',
         request_field='',
-        request_type_name=u'SourcerepoProjectsReposGetIamPolicyRequest',
-        response_type_name=u'Policy',
+        request_type_name='SourcerepoProjectsReposGetIamPolicyRequest',
+        response_type_name='Policy',
         supports_download=False,
     )
 
@@ -177,16 +177,16 @@ not set by ListRepos.  To get the size of a repo, use GetRepo.
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/repos',
-        http_method=u'GET',
-        method_id=u'sourcerepo.projects.repos.list',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[u'pageSize', u'pageToken'],
-        relative_path=u'v1/{+name}/repos',
+        flat_path='v1/projects/{projectsId}/repos',
+        http_method='GET',
+        method_id='sourcerepo.projects.repos.list',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v1/{+name}/repos',
         request_field='',
-        request_type_name=u'SourcerepoProjectsReposListRequest',
-        response_type_name=u'ListReposResponse',
+        request_type_name='SourcerepoProjectsReposListRequest',
+        response_type_name='ListReposResponse',
         supports_download=False,
     )
 
@@ -204,16 +204,16 @@ not set by ListRepos.  To get the size of a repo, use GetRepo.
           config, request, global_params=global_params)
 
     Patch.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/repos/{reposId}',
-        http_method=u'PATCH',
-        method_id=u'sourcerepo.projects.repos.patch',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1/projects/{projectsId}/repos/{reposId}',
+        http_method='PATCH',
+        method_id='sourcerepo.projects.repos.patch',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1/{+name}',
-        request_field=u'updateRepoRequest',
-        request_type_name=u'SourcerepoProjectsReposPatchRequest',
-        response_type_name=u'Repo',
+        relative_path='v1/{+name}',
+        request_field='updateRepoRequest',
+        request_type_name='SourcerepoProjectsReposPatchRequest',
+        response_type_name='Repo',
         supports_download=False,
     )
 
@@ -232,16 +232,16 @@ existing policy.
           config, request, global_params=global_params)
 
     SetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/repos/{reposId}:setIamPolicy',
-        http_method=u'POST',
-        method_id=u'sourcerepo.projects.repos.setIamPolicy',
-        ordered_params=[u'resource'],
-        path_params=[u'resource'],
+        flat_path='v1/projects/{projectsId}/repos/{reposId}:setIamPolicy',
+        http_method='POST',
+        method_id='sourcerepo.projects.repos.setIamPolicy',
+        ordered_params=['resource'],
+        path_params=['resource'],
         query_params=[],
-        relative_path=u'v1/{+resource}:setIamPolicy',
-        request_field=u'setIamPolicyRequest',
-        request_type_name=u'SourcerepoProjectsReposSetIamPolicyRequest',
-        response_type_name=u'Policy',
+        relative_path='v1/{+resource}:setIamPolicy',
+        request_field='setIamPolicyRequest',
+        request_type_name='SourcerepoProjectsReposSetIamPolicyRequest',
+        response_type_name='Policy',
         supports_download=False,
     )
 
@@ -261,16 +261,16 @@ The response contains SyncRepoMetadata in the metadata field.
           config, request, global_params=global_params)
 
     Sync.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/repos/{reposId}:sync',
-        http_method=u'POST',
-        method_id=u'sourcerepo.projects.repos.sync',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1/projects/{projectsId}/repos/{reposId}:sync',
+        http_method='POST',
+        method_id='sourcerepo.projects.repos.sync',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1/{+name}:sync',
-        request_field=u'syncRepoRequest',
-        request_type_name=u'SourcerepoProjectsReposSyncRequest',
-        response_type_name=u'Operation',
+        relative_path='v1/{+name}:sync',
+        request_field='syncRepoRequest',
+        request_type_name='SourcerepoProjectsReposSyncRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -290,23 +290,23 @@ permissions, not a NOT_FOUND error.
           config, request, global_params=global_params)
 
     TestIamPermissions.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/repos/{reposId}:testIamPermissions',
-        http_method=u'POST',
-        method_id=u'sourcerepo.projects.repos.testIamPermissions',
-        ordered_params=[u'resource'],
-        path_params=[u'resource'],
+        flat_path='v1/projects/{projectsId}/repos/{reposId}:testIamPermissions',
+        http_method='POST',
+        method_id='sourcerepo.projects.repos.testIamPermissions',
+        ordered_params=['resource'],
+        path_params=['resource'],
         query_params=[],
-        relative_path=u'v1/{+resource}:testIamPermissions',
-        request_field=u'testIamPermissionsRequest',
-        request_type_name=u'SourcerepoProjectsReposTestIamPermissionsRequest',
-        response_type_name=u'TestIamPermissionsResponse',
+        relative_path='v1/{+resource}:testIamPermissions',
+        request_field='testIamPermissionsRequest',
+        request_type_name='SourcerepoProjectsReposTestIamPermissionsRequest',
+        response_type_name='TestIamPermissionsResponse',
         supports_download=False,
     )
 
   class ProjectsService(base_api.BaseApiService):
     """Service class for the projects resource."""
 
-    _NAME = u'projects'
+    _NAME = 'projects'
 
     def __init__(self, client):
       super(SourcerepoV1.ProjectsService, self).__init__(client)
@@ -327,16 +327,16 @@ permissions, not a NOT_FOUND error.
           config, request, global_params=global_params)
 
     GetConfig.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/config',
-        http_method=u'GET',
-        method_id=u'sourcerepo.projects.getConfig',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1/projects/{projectsId}/config',
+        http_method='GET',
+        method_id='sourcerepo.projects.getConfig',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1/{+name}/config',
+        relative_path='v1/{+name}/config',
         request_field='',
-        request_type_name=u'SourcerepoProjectsGetConfigRequest',
-        response_type_name=u'ProjectConfig',
+        request_type_name='SourcerepoProjectsGetConfigRequest',
+        response_type_name='ProjectConfig',
         supports_download=False,
     )
 
@@ -354,15 +354,15 @@ permissions, not a NOT_FOUND error.
           config, request, global_params=global_params)
 
     UpdateConfig.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/config',
-        http_method=u'PATCH',
-        method_id=u'sourcerepo.projects.updateConfig',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1/projects/{projectsId}/config',
+        http_method='PATCH',
+        method_id='sourcerepo.projects.updateConfig',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1/{+name}/config',
-        request_field=u'updateProjectConfigRequest',
-        request_type_name=u'SourcerepoProjectsUpdateConfigRequest',
-        response_type_name=u'ProjectConfig',
+        relative_path='v1/{+name}/config',
+        request_field='updateProjectConfigRequest',
+        request_type_name='SourcerepoProjectsUpdateConfigRequest',
+        response_type_name='ProjectConfig',
         supports_download=False,
     )

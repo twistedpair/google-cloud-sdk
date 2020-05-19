@@ -8,17 +8,17 @@ class EventsV1beta1(base_api.BaseApiClient):
   """Generated client library for service events version v1beta1."""
 
   MESSAGES_MODULE = messages
-  BASE_URL = u'https://events.googleapis.com/'
-  MTLS_BASE_URL = u'https://events.mtls.googleapis.com/'
+  BASE_URL = 'https://events.googleapis.com/'
+  MTLS_BASE_URL = 'https://events.mtls.googleapis.com/'
 
-  _PACKAGE = u'events'
+  _PACKAGE = 'events'
   _SCOPES = ['https://www.googleapis.com/auth/userinfo.email']
-  _VERSION = u'v1beta1'
+  _VERSION = 'v1beta1'
   _CLIENT_ID = '1042881264118.apps.googleusercontent.com'
   _CLIENT_SECRET = 'x_Tw5K8nnjoRAqULM9PFAC2b'
-  _USER_AGENT = u'google-cloud-sdk'
-  _CLIENT_CLASS_NAME = u'EventsV1beta1'
-  _URL_VERSION = u'v1beta1'
+  _USER_AGENT = 'google-cloud-sdk'
+  _CLIENT_CLASS_NAME = 'EventsV1beta1'
+  _URL_VERSION = 'v1beta1'
   _API_KEY = None
 
   def __init__(self, url='', credentials=None,
@@ -48,7 +48,7 @@ class EventsV1beta1(base_api.BaseApiClient):
   class CustomresourcedefinitionsService(base_api.BaseApiService):
     """Service class for the customresourcedefinitions resource."""
 
-    _NAME = u'customresourcedefinitions'
+    _NAME = 'customresourcedefinitions'
 
     def __init__(self, client):
       super(EventsV1beta1.CustomresourcedefinitionsService, self).__init__(client)
@@ -69,22 +69,22 @@ class EventsV1beta1(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'events.customresourcedefinitions.list',
+        http_method='GET',
+        method_id='events.customresourcedefinitions.list',
         ordered_params=[],
         path_params=[],
-        query_params=[u'continue_', u'fieldSelector', u'includeUninitialized', u'labelSelector', u'limit', u'parent', u'resourceVersion', u'watch'],
-        relative_path=u'apis/apiextensions.k8s.io/v1beta1/customresourcedefinitions',
+        query_params=['continue_', 'fieldSelector', 'includeUninitialized', 'labelSelector', 'limit', 'parent', 'resourceVersion', 'watch'],
+        relative_path='apis/apiextensions.k8s.io/v1beta1/customresourcedefinitions',
         request_field='',
-        request_type_name=u'EventsCustomresourcedefinitionsListRequest',
-        response_type_name=u'ListCustomResourceDefinitionsResponse',
+        request_type_name='EventsCustomresourcedefinitionsListRequest',
+        response_type_name='ListCustomResourceDefinitionsResponse',
         supports_download=False,
     )
 
   class NamespacesCustomresourcedefinitionsService(base_api.BaseApiService):
     """Service class for the namespaces_customresourcedefinitions resource."""
 
-    _NAME = u'namespaces_customresourcedefinitions'
+    _NAME = 'namespaces_customresourcedefinitions'
 
     def __init__(self, client):
       super(EventsV1beta1.NamespacesCustomresourcedefinitionsService, self).__init__(client)
@@ -105,23 +105,23 @@ class EventsV1beta1(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'apis/apiextensions.k8s.io/v1beta1/namespaces/{namespacesId}/customresourcedefinitions/{customresourcedefinitionsId}',
-        http_method=u'GET',
-        method_id=u'events.namespaces.customresourcedefinitions.get',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='apis/apiextensions.k8s.io/v1beta1/namespaces/{namespacesId}/customresourcedefinitions/{customresourcedefinitionsId}',
+        http_method='GET',
+        method_id='events.namespaces.customresourcedefinitions.get',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'apis/apiextensions.k8s.io/v1beta1/{+name}',
+        relative_path='apis/apiextensions.k8s.io/v1beta1/{+name}',
         request_field='',
-        request_type_name=u'EventsNamespacesCustomresourcedefinitionsGetRequest',
-        response_type_name=u'CustomResourceDefinition',
+        request_type_name='EventsNamespacesCustomresourcedefinitionsGetRequest',
+        response_type_name='CustomResourceDefinition',
         supports_download=False,
     )
 
   class NamespacesTriggersService(base_api.BaseApiService):
     """Service class for the namespaces_triggers resource."""
 
-    _NAME = u'namespaces_triggers'
+    _NAME = 'namespaces_triggers'
 
     def __init__(self, client):
       super(EventsV1beta1.NamespacesTriggersService, self).__init__(client)
@@ -142,16 +142,16 @@ class EventsV1beta1(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Create.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'apis/eventing.knative.dev/v1beta1/namespaces/{namespacesId}/triggers',
-        http_method=u'POST',
-        method_id=u'events.namespaces.triggers.create',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
+        flat_path='apis/eventing.knative.dev/v1beta1/namespaces/{namespacesId}/triggers',
+        http_method='POST',
+        method_id='events.namespaces.triggers.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
         query_params=[],
-        relative_path=u'apis/eventing.knative.dev/v1beta1/{+parent}/triggers',
-        request_field=u'trigger',
-        request_type_name=u'EventsNamespacesTriggersCreateRequest',
-        response_type_name=u'Trigger',
+        relative_path='apis/eventing.knative.dev/v1beta1/{+parent}/triggers',
+        request_field='trigger',
+        request_type_name='EventsNamespacesTriggersCreateRequest',
+        response_type_name='Trigger',
         supports_download=False,
     )
 
@@ -169,16 +169,16 @@ class EventsV1beta1(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Delete.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'apis/eventing.knative.dev/v1beta1/namespaces/{namespacesId}/triggers/{triggersId}',
-        http_method=u'DELETE',
-        method_id=u'events.namespaces.triggers.delete',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[u'apiVersion', u'kind', u'propagationPolicy'],
-        relative_path=u'apis/eventing.knative.dev/v1beta1/{+name}',
+        flat_path='apis/eventing.knative.dev/v1beta1/namespaces/{namespacesId}/triggers/{triggersId}',
+        http_method='DELETE',
+        method_id='events.namespaces.triggers.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['apiVersion', 'kind', 'propagationPolicy'],
+        relative_path='apis/eventing.knative.dev/v1beta1/{+name}',
         request_field='',
-        request_type_name=u'EventsNamespacesTriggersDeleteRequest',
-        response_type_name=u'Empty',
+        request_type_name='EventsNamespacesTriggersDeleteRequest',
+        response_type_name='Empty',
         supports_download=False,
     )
 
@@ -196,16 +196,16 @@ class EventsV1beta1(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'apis/eventing.knative.dev/v1beta1/namespaces/{namespacesId}/triggers/{triggersId}',
-        http_method=u'GET',
-        method_id=u'events.namespaces.triggers.get',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='apis/eventing.knative.dev/v1beta1/namespaces/{namespacesId}/triggers/{triggersId}',
+        http_method='GET',
+        method_id='events.namespaces.triggers.get',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'apis/eventing.knative.dev/v1beta1/{+name}',
+        relative_path='apis/eventing.knative.dev/v1beta1/{+name}',
         request_field='',
-        request_type_name=u'EventsNamespacesTriggersGetRequest',
-        response_type_name=u'Trigger',
+        request_type_name='EventsNamespacesTriggersGetRequest',
+        response_type_name='Trigger',
         supports_download=False,
     )
 
@@ -223,16 +223,16 @@ class EventsV1beta1(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'apis/eventing.knative.dev/v1beta1/namespaces/{namespacesId}/triggers',
-        http_method=u'GET',
-        method_id=u'events.namespaces.triggers.list',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'continue_', u'fieldSelector', u'includeUninitialized', u'labelSelector', u'limit', u'resourceVersion', u'watch'],
-        relative_path=u'apis/eventing.knative.dev/v1beta1/{+parent}/triggers',
+        flat_path='apis/eventing.knative.dev/v1beta1/namespaces/{namespacesId}/triggers',
+        http_method='GET',
+        method_id='events.namespaces.triggers.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['continue_', 'fieldSelector', 'includeUninitialized', 'labelSelector', 'limit', 'resourceVersion', 'watch'],
+        relative_path='apis/eventing.knative.dev/v1beta1/{+parent}/triggers',
         request_field='',
-        request_type_name=u'EventsNamespacesTriggersListRequest',
-        response_type_name=u'ListTriggersResponse',
+        request_type_name='EventsNamespacesTriggersListRequest',
+        response_type_name='ListTriggersResponse',
         supports_download=False,
     )
 
@@ -257,23 +257,23 @@ optimistic concurrency control.
           config, request, global_params=global_params)
 
     ReplaceTrigger.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'apis/eventing.knative.dev/v1beta1/namespaces/{namespacesId}/triggers/{triggersId}',
-        http_method=u'PUT',
-        method_id=u'events.namespaces.triggers.replaceTrigger',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='apis/eventing.knative.dev/v1beta1/namespaces/{namespacesId}/triggers/{triggersId}',
+        http_method='PUT',
+        method_id='events.namespaces.triggers.replaceTrigger',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'apis/eventing.knative.dev/v1beta1/{+name}',
-        request_field=u'trigger',
-        request_type_name=u'EventsNamespacesTriggersReplaceTriggerRequest',
-        response_type_name=u'Trigger',
+        relative_path='apis/eventing.knative.dev/v1beta1/{+name}',
+        request_field='trigger',
+        request_type_name='EventsNamespacesTriggersReplaceTriggerRequest',
+        response_type_name='Trigger',
         supports_download=False,
     )
 
   class NamespacesService(base_api.BaseApiService):
     """Service class for the namespaces resource."""
 
-    _NAME = u'namespaces'
+    _NAME = 'namespaces'
 
     def __init__(self, client):
       super(EventsV1beta1.NamespacesService, self).__init__(client)
@@ -283,7 +283,7 @@ optimistic concurrency control.
   class ProjectsLocationsCustomresourcedefinitionsService(base_api.BaseApiService):
     """Service class for the projects_locations_customresourcedefinitions resource."""
 
-    _NAME = u'projects_locations_customresourcedefinitions'
+    _NAME = 'projects_locations_customresourcedefinitions'
 
     def __init__(self, client):
       super(EventsV1beta1.ProjectsLocationsCustomresourcedefinitionsService, self).__init__(client)
@@ -304,16 +304,16 @@ optimistic concurrency control.
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/projects/{projectsId}/locations/{locationsId}/customresourcedefinitions/{customresourcedefinitionsId}',
-        http_method=u'GET',
-        method_id=u'events.projects.locations.customresourcedefinitions.get',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/customresourcedefinitions/{customresourcedefinitionsId}',
+        http_method='GET',
+        method_id='events.projects.locations.customresourcedefinitions.get',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1beta1/{+name}',
+        relative_path='v1beta1/{+name}',
         request_field='',
-        request_type_name=u'EventsProjectsLocationsCustomresourcedefinitionsGetRequest',
-        response_type_name=u'CustomResourceDefinition',
+        request_type_name='EventsProjectsLocationsCustomresourcedefinitionsGetRequest',
+        response_type_name='CustomResourceDefinition',
         supports_download=False,
     )
 
@@ -331,23 +331,23 @@ optimistic concurrency control.
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/projects/{projectsId}/locations/{locationsId}/customresourcedefinitions',
-        http_method=u'GET',
-        method_id=u'events.projects.locations.customresourcedefinitions.list',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'continue_', u'fieldSelector', u'includeUninitialized', u'labelSelector', u'limit', u'resourceVersion', u'watch'],
-        relative_path=u'v1beta1/{+parent}/customresourcedefinitions',
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/customresourcedefinitions',
+        http_method='GET',
+        method_id='events.projects.locations.customresourcedefinitions.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['continue_', 'fieldSelector', 'includeUninitialized', 'labelSelector', 'limit', 'resourceVersion', 'watch'],
+        relative_path='v1beta1/{+parent}/customresourcedefinitions',
         request_field='',
-        request_type_name=u'EventsProjectsLocationsCustomresourcedefinitionsListRequest',
-        response_type_name=u'ListCustomResourceDefinitionsResponse',
+        request_type_name='EventsProjectsLocationsCustomresourcedefinitionsListRequest',
+        response_type_name='ListCustomResourceDefinitionsResponse',
         supports_download=False,
     )
 
   class ProjectsLocationsTriggersService(base_api.BaseApiService):
     """Service class for the projects_locations_triggers resource."""
 
-    _NAME = u'projects_locations_triggers'
+    _NAME = 'projects_locations_triggers'
 
     def __init__(self, client):
       super(EventsV1beta1.ProjectsLocationsTriggersService, self).__init__(client)
@@ -368,16 +368,16 @@ optimistic concurrency control.
           config, request, global_params=global_params)
 
     Create.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/projects/{projectsId}/locations/{locationsId}/triggers',
-        http_method=u'POST',
-        method_id=u'events.projects.locations.triggers.create',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/triggers',
+        http_method='POST',
+        method_id='events.projects.locations.triggers.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
         query_params=[],
-        relative_path=u'v1beta1/{+parent}/triggers',
-        request_field=u'trigger',
-        request_type_name=u'EventsProjectsLocationsTriggersCreateRequest',
-        response_type_name=u'Trigger',
+        relative_path='v1beta1/{+parent}/triggers',
+        request_field='trigger',
+        request_type_name='EventsProjectsLocationsTriggersCreateRequest',
+        response_type_name='Trigger',
         supports_download=False,
     )
 
@@ -395,16 +395,16 @@ optimistic concurrency control.
           config, request, global_params=global_params)
 
     Delete.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/projects/{projectsId}/locations/{locationsId}/triggers/{triggersId}',
-        http_method=u'DELETE',
-        method_id=u'events.projects.locations.triggers.delete',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[u'apiVersion', u'kind', u'propagationPolicy'],
-        relative_path=u'v1beta1/{+name}',
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/triggers/{triggersId}',
+        http_method='DELETE',
+        method_id='events.projects.locations.triggers.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['apiVersion', 'kind', 'propagationPolicy'],
+        relative_path='v1beta1/{+name}',
         request_field='',
-        request_type_name=u'EventsProjectsLocationsTriggersDeleteRequest',
-        response_type_name=u'Empty',
+        request_type_name='EventsProjectsLocationsTriggersDeleteRequest',
+        response_type_name='Empty',
         supports_download=False,
     )
 
@@ -422,16 +422,16 @@ optimistic concurrency control.
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/projects/{projectsId}/locations/{locationsId}/triggers/{triggersId}',
-        http_method=u'GET',
-        method_id=u'events.projects.locations.triggers.get',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/triggers/{triggersId}',
+        http_method='GET',
+        method_id='events.projects.locations.triggers.get',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1beta1/{+name}',
+        relative_path='v1beta1/{+name}',
         request_field='',
-        request_type_name=u'EventsProjectsLocationsTriggersGetRequest',
-        response_type_name=u'Trigger',
+        request_type_name='EventsProjectsLocationsTriggersGetRequest',
+        response_type_name='Trigger',
         supports_download=False,
     )
 
@@ -449,16 +449,16 @@ optimistic concurrency control.
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/projects/{projectsId}/locations/{locationsId}/triggers',
-        http_method=u'GET',
-        method_id=u'events.projects.locations.triggers.list',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'continue_', u'fieldSelector', u'includeUninitialized', u'labelSelector', u'limit', u'resourceVersion', u'watch'],
-        relative_path=u'v1beta1/{+parent}/triggers',
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/triggers',
+        http_method='GET',
+        method_id='events.projects.locations.triggers.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['continue_', 'fieldSelector', 'includeUninitialized', 'labelSelector', 'limit', 'resourceVersion', 'watch'],
+        relative_path='v1beta1/{+parent}/triggers',
         request_field='',
-        request_type_name=u'EventsProjectsLocationsTriggersListRequest',
-        response_type_name=u'ListTriggersResponse',
+        request_type_name='EventsProjectsLocationsTriggersListRequest',
+        response_type_name='ListTriggersResponse',
         supports_download=False,
     )
 
@@ -483,23 +483,23 @@ optimistic concurrency control.
           config, request, global_params=global_params)
 
     ReplaceTrigger.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/projects/{projectsId}/locations/{locationsId}/triggers/{triggersId}',
-        http_method=u'PUT',
-        method_id=u'events.projects.locations.triggers.replaceTrigger',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/triggers/{triggersId}',
+        http_method='PUT',
+        method_id='events.projects.locations.triggers.replaceTrigger',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1beta1/{+name}',
-        request_field=u'trigger',
-        request_type_name=u'EventsProjectsLocationsTriggersReplaceTriggerRequest',
-        response_type_name=u'Trigger',
+        relative_path='v1beta1/{+name}',
+        request_field='trigger',
+        request_type_name='EventsProjectsLocationsTriggersReplaceTriggerRequest',
+        response_type_name='Trigger',
         supports_download=False,
     )
 
   class ProjectsLocationsService(base_api.BaseApiService):
     """Service class for the projects_locations resource."""
 
-    _NAME = u'projects_locations'
+    _NAME = 'projects_locations'
 
     def __init__(self, client):
       super(EventsV1beta1.ProjectsLocationsService, self).__init__(client)
@@ -509,7 +509,7 @@ optimistic concurrency control.
   class ProjectsService(base_api.BaseApiService):
     """Service class for the projects resource."""
 
-    _NAME = u'projects'
+    _NAME = 'projects'
 
     def __init__(self, client):
       super(EventsV1beta1.ProjectsService, self).__init__(client)

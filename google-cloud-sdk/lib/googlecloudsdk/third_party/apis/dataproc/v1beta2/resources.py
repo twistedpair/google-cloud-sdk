@@ -28,14 +28,14 @@ class Collections(enum.Enum):
       'projects',
       'projects/{projectsId}',
       {},
-      [u'projectsId'],
+      ['projectsId'],
       True
   )
   PROJECTS_LOCATIONS = (
       'projects.locations',
       'projects/{projectsId}/locations/{locationsId}',
       {},
-      [u'projectsId', u'locationsId'],
+      ['projectsId', 'locationsId'],
       True
   )
   PROJECTS_LOCATIONS_AUTOSCALINGPOLICIES = (
@@ -46,7 +46,7 @@ class Collections(enum.Enum):
               'projects/{projectsId}/locations/{locationsId}/'
               'autoscalingPolicies/{autoscalingPoliciesId}',
       },
-      [u'name'],
+      ['name'],
       True
   )
   PROJECTS_LOCATIONS_WORKFLOWTEMPLATES = (
@@ -57,14 +57,14 @@ class Collections(enum.Enum):
               'projects/{projectsId}/locations/{locationsId}/'
               'workflowTemplates/{workflowTemplatesId}',
       },
-      [u'name'],
+      ['name'],
       True
   )
   PROJECTS_REGIONS = (
       'projects.regions',
       'projects/{projectId}/regions/{regionId}',
       {},
-      [u'projectId', u'regionId'],
+      ['projectId', 'regionId'],
       True
   )
   PROJECTS_REGIONS_AUTOSCALINGPOLICIES = (
@@ -75,21 +75,21 @@ class Collections(enum.Enum):
               'projects/{projectsId}/regions/{regionsId}/autoscalingPolicies/'
               '{autoscalingPoliciesId}',
       },
-      [u'name'],
+      ['name'],
       True
   )
   PROJECTS_REGIONS_CLUSTERS = (
       'projects.regions.clusters',
       'projects/{projectId}/regions/{region}/clusters/{clusterName}',
       {},
-      [u'projectId', u'region', u'clusterName'],
+      ['projectId', 'region', 'clusterName'],
       True
   )
   PROJECTS_REGIONS_JOBS = (
       'projects.regions.jobs',
       'projects/{projectId}/regions/{region}/jobs/{jobId}',
       {},
-      [u'projectId', u'region', u'jobId'],
+      ['projectId', 'region', 'jobId'],
       True
   )
   PROJECTS_REGIONS_OPERATIONS = (
@@ -100,14 +100,14 @@ class Collections(enum.Enum):
               'projects/{projectsId}/regions/{regionsId}/operations/'
               '{operationsId}',
       },
-      [u'name'],
+      ['name'],
       True
   )
   PROJECTS_REGIONS_OPERATIONS_LIST = (
       'projects.regions.operations_list',
       'projects/{projectId}/regions/{regionId}/operations',
       {},
-      [u'projectId', u'regionId'],
+      ['projectId', 'regionId'],
       True
   )
   PROJECTS_REGIONS_WORKFLOWTEMPLATES = (
@@ -118,7 +118,7 @@ class Collections(enum.Enum):
               'projects/{projectsId}/regions/{regionsId}/workflowTemplates/'
               '{workflowTemplatesId}',
       },
-      [u'name'],
+      ['name'],
       True
   )
 

@@ -8,17 +8,17 @@ class PubsubliteV1(base_api.BaseApiClient):
   """Generated client library for service pubsublite version v1."""
 
   MESSAGES_MODULE = messages
-  BASE_URL = u'https://pubsublite.googleapis.com/'
-  MTLS_BASE_URL = u'https://pubsublite.mtls.googleapis.com/'
+  BASE_URL = 'https://pubsublite.googleapis.com/'
+  MTLS_BASE_URL = 'https://pubsublite.mtls.googleapis.com/'
 
-  _PACKAGE = u'pubsublite'
-  _SCOPES = [u'https://www.googleapis.com/auth/cloud-platform']
-  _VERSION = u'v1'
+  _PACKAGE = 'pubsublite'
+  _SCOPES = ['https://www.googleapis.com/auth/cloud-platform']
+  _VERSION = 'v1'
   _CLIENT_ID = '1042881264118.apps.googleusercontent.com'
   _CLIENT_SECRET = 'x_Tw5K8nnjoRAqULM9PFAC2b'
-  _USER_AGENT = u'google-cloud-sdk'
-  _CLIENT_CLASS_NAME = u'PubsubliteV1'
-  _URL_VERSION = u'v1'
+  _USER_AGENT = 'google-cloud-sdk'
+  _CLIENT_CLASS_NAME = 'PubsubliteV1'
+  _URL_VERSION = 'v1'
   _API_KEY = None
 
   def __init__(self, url='', credentials=None,
@@ -51,7 +51,7 @@ class PubsubliteV1(base_api.BaseApiClient):
   class AdminProjectsLocationsSubscriptionsService(base_api.BaseApiService):
     """Service class for the admin_projects_locations_subscriptions resource."""
 
-    _NAME = u'admin_projects_locations_subscriptions'
+    _NAME = 'admin_projects_locations_subscriptions'
 
     def __init__(self, client):
       super(PubsubliteV1.AdminProjectsLocationsSubscriptionsService, self).__init__(client)
@@ -72,16 +72,16 @@ class PubsubliteV1(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Create.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/admin/projects/{projectsId}/locations/{locationsId}/subscriptions',
-        http_method=u'POST',
-        method_id=u'pubsublite.admin.projects.locations.subscriptions.create',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'subscriptionId'],
-        relative_path=u'v1/admin/{+parent}/subscriptions',
-        request_field=u'subscription',
-        request_type_name=u'PubsubliteAdminProjectsLocationsSubscriptionsCreateRequest',
-        response_type_name=u'Subscription',
+        flat_path='v1/admin/projects/{projectsId}/locations/{locationsId}/subscriptions',
+        http_method='POST',
+        method_id='pubsublite.admin.projects.locations.subscriptions.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['subscriptionId'],
+        relative_path='v1/admin/{+parent}/subscriptions',
+        request_field='subscription',
+        request_type_name='PubsubliteAdminProjectsLocationsSubscriptionsCreateRequest',
+        response_type_name='Subscription',
         supports_download=False,
     )
 
@@ -99,16 +99,16 @@ class PubsubliteV1(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Delete.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/admin/projects/{projectsId}/locations/{locationsId}/subscriptions/{subscriptionsId}',
-        http_method=u'DELETE',
-        method_id=u'pubsublite.admin.projects.locations.subscriptions.delete',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1/admin/projects/{projectsId}/locations/{locationsId}/subscriptions/{subscriptionsId}',
+        http_method='DELETE',
+        method_id='pubsublite.admin.projects.locations.subscriptions.delete',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1/admin/{+name}',
+        relative_path='v1/admin/{+name}',
         request_field='',
-        request_type_name=u'PubsubliteAdminProjectsLocationsSubscriptionsDeleteRequest',
-        response_type_name=u'Empty',
+        request_type_name='PubsubliteAdminProjectsLocationsSubscriptionsDeleteRequest',
+        response_type_name='Empty',
         supports_download=False,
     )
 
@@ -126,16 +126,16 @@ class PubsubliteV1(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/admin/projects/{projectsId}/locations/{locationsId}/subscriptions/{subscriptionsId}',
-        http_method=u'GET',
-        method_id=u'pubsublite.admin.projects.locations.subscriptions.get',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1/admin/projects/{projectsId}/locations/{locationsId}/subscriptions/{subscriptionsId}',
+        http_method='GET',
+        method_id='pubsublite.admin.projects.locations.subscriptions.get',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1/admin/{+name}',
+        relative_path='v1/admin/{+name}',
         request_field='',
-        request_type_name=u'PubsubliteAdminProjectsLocationsSubscriptionsGetRequest',
-        response_type_name=u'Subscription',
+        request_type_name='PubsubliteAdminProjectsLocationsSubscriptionsGetRequest',
+        response_type_name='Subscription',
         supports_download=False,
     )
 
@@ -153,16 +153,16 @@ class PubsubliteV1(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/admin/projects/{projectsId}/locations/{locationsId}/subscriptions',
-        http_method=u'GET',
-        method_id=u'pubsublite.admin.projects.locations.subscriptions.list',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'pageSize', u'pageToken'],
-        relative_path=u'v1/admin/{+parent}/subscriptions',
+        flat_path='v1/admin/projects/{projectsId}/locations/{locationsId}/subscriptions',
+        http_method='GET',
+        method_id='pubsublite.admin.projects.locations.subscriptions.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v1/admin/{+parent}/subscriptions',
         request_field='',
-        request_type_name=u'PubsubliteAdminProjectsLocationsSubscriptionsListRequest',
-        response_type_name=u'ListSubscriptionsResponse',
+        request_type_name='PubsubliteAdminProjectsLocationsSubscriptionsListRequest',
+        response_type_name='ListSubscriptionsResponse',
         supports_download=False,
     )
 
@@ -180,23 +180,23 @@ class PubsubliteV1(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Patch.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/admin/projects/{projectsId}/locations/{locationsId}/subscriptions/{subscriptionsId}',
-        http_method=u'PATCH',
-        method_id=u'pubsublite.admin.projects.locations.subscriptions.patch',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[u'updateMask'],
-        relative_path=u'v1/admin/{+name}',
-        request_field=u'subscription',
-        request_type_name=u'PubsubliteAdminProjectsLocationsSubscriptionsPatchRequest',
-        response_type_name=u'Subscription',
+        flat_path='v1/admin/projects/{projectsId}/locations/{locationsId}/subscriptions/{subscriptionsId}',
+        http_method='PATCH',
+        method_id='pubsublite.admin.projects.locations.subscriptions.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v1/admin/{+name}',
+        request_field='subscription',
+        request_type_name='PubsubliteAdminProjectsLocationsSubscriptionsPatchRequest',
+        response_type_name='Subscription',
         supports_download=False,
     )
 
   class AdminProjectsLocationsTopicsSubscriptionsService(base_api.BaseApiService):
     """Service class for the admin_projects_locations_topics_subscriptions resource."""
 
-    _NAME = u'admin_projects_locations_topics_subscriptions'
+    _NAME = 'admin_projects_locations_topics_subscriptions'
 
     def __init__(self, client):
       super(PubsubliteV1.AdminProjectsLocationsTopicsSubscriptionsService, self).__init__(client)
@@ -217,23 +217,23 @@ class PubsubliteV1(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/admin/projects/{projectsId}/locations/{locationsId}/topics/{topicsId}/subscriptions',
-        http_method=u'GET',
-        method_id=u'pubsublite.admin.projects.locations.topics.subscriptions.list',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[u'pageSize', u'pageToken'],
-        relative_path=u'v1/admin/{+name}/subscriptions',
+        flat_path='v1/admin/projects/{projectsId}/locations/{locationsId}/topics/{topicsId}/subscriptions',
+        http_method='GET',
+        method_id='pubsublite.admin.projects.locations.topics.subscriptions.list',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v1/admin/{+name}/subscriptions',
         request_field='',
-        request_type_name=u'PubsubliteAdminProjectsLocationsTopicsSubscriptionsListRequest',
-        response_type_name=u'ListTopicSubscriptionsResponse',
+        request_type_name='PubsubliteAdminProjectsLocationsTopicsSubscriptionsListRequest',
+        response_type_name='ListTopicSubscriptionsResponse',
         supports_download=False,
     )
 
   class AdminProjectsLocationsTopicsService(base_api.BaseApiService):
     """Service class for the admin_projects_locations_topics resource."""
 
-    _NAME = u'admin_projects_locations_topics'
+    _NAME = 'admin_projects_locations_topics'
 
     def __init__(self, client):
       super(PubsubliteV1.AdminProjectsLocationsTopicsService, self).__init__(client)
@@ -254,16 +254,16 @@ class PubsubliteV1(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Create.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/admin/projects/{projectsId}/locations/{locationsId}/topics',
-        http_method=u'POST',
-        method_id=u'pubsublite.admin.projects.locations.topics.create',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'topicId'],
-        relative_path=u'v1/admin/{+parent}/topics',
-        request_field=u'topic',
-        request_type_name=u'PubsubliteAdminProjectsLocationsTopicsCreateRequest',
-        response_type_name=u'Topic',
+        flat_path='v1/admin/projects/{projectsId}/locations/{locationsId}/topics',
+        http_method='POST',
+        method_id='pubsublite.admin.projects.locations.topics.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['topicId'],
+        relative_path='v1/admin/{+parent}/topics',
+        request_field='topic',
+        request_type_name='PubsubliteAdminProjectsLocationsTopicsCreateRequest',
+        response_type_name='Topic',
         supports_download=False,
     )
 
@@ -281,16 +281,16 @@ class PubsubliteV1(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Delete.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/admin/projects/{projectsId}/locations/{locationsId}/topics/{topicsId}',
-        http_method=u'DELETE',
-        method_id=u'pubsublite.admin.projects.locations.topics.delete',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1/admin/projects/{projectsId}/locations/{locationsId}/topics/{topicsId}',
+        http_method='DELETE',
+        method_id='pubsublite.admin.projects.locations.topics.delete',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1/admin/{+name}',
+        relative_path='v1/admin/{+name}',
         request_field='',
-        request_type_name=u'PubsubliteAdminProjectsLocationsTopicsDeleteRequest',
-        response_type_name=u'Empty',
+        request_type_name='PubsubliteAdminProjectsLocationsTopicsDeleteRequest',
+        response_type_name='Empty',
         supports_download=False,
     )
 
@@ -308,16 +308,16 @@ class PubsubliteV1(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/admin/projects/{projectsId}/locations/{locationsId}/topics/{topicsId}',
-        http_method=u'GET',
-        method_id=u'pubsublite.admin.projects.locations.topics.get',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1/admin/projects/{projectsId}/locations/{locationsId}/topics/{topicsId}',
+        http_method='GET',
+        method_id='pubsublite.admin.projects.locations.topics.get',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1/admin/{+name}',
+        relative_path='v1/admin/{+name}',
         request_field='',
-        request_type_name=u'PubsubliteAdminProjectsLocationsTopicsGetRequest',
-        response_type_name=u'Topic',
+        request_type_name='PubsubliteAdminProjectsLocationsTopicsGetRequest',
+        response_type_name='Topic',
         supports_download=False,
     )
 
@@ -335,16 +335,16 @@ class PubsubliteV1(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     GetPartitions.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/admin/projects/{projectsId}/locations/{locationsId}/topics/{topicsId}/partitions',
-        http_method=u'GET',
-        method_id=u'pubsublite.admin.projects.locations.topics.getPartitions',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1/admin/projects/{projectsId}/locations/{locationsId}/topics/{topicsId}/partitions',
+        http_method='GET',
+        method_id='pubsublite.admin.projects.locations.topics.getPartitions',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1/admin/{+name}/partitions',
+        relative_path='v1/admin/{+name}/partitions',
         request_field='',
-        request_type_name=u'PubsubliteAdminProjectsLocationsTopicsGetPartitionsRequest',
-        response_type_name=u'TopicPartitions',
+        request_type_name='PubsubliteAdminProjectsLocationsTopicsGetPartitionsRequest',
+        response_type_name='TopicPartitions',
         supports_download=False,
     )
 
@@ -362,16 +362,16 @@ class PubsubliteV1(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/admin/projects/{projectsId}/locations/{locationsId}/topics',
-        http_method=u'GET',
-        method_id=u'pubsublite.admin.projects.locations.topics.list',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'pageSize', u'pageToken'],
-        relative_path=u'v1/admin/{+parent}/topics',
+        flat_path='v1/admin/projects/{projectsId}/locations/{locationsId}/topics',
+        http_method='GET',
+        method_id='pubsublite.admin.projects.locations.topics.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v1/admin/{+parent}/topics',
         request_field='',
-        request_type_name=u'PubsubliteAdminProjectsLocationsTopicsListRequest',
-        response_type_name=u'ListTopicsResponse',
+        request_type_name='PubsubliteAdminProjectsLocationsTopicsListRequest',
+        response_type_name='ListTopicsResponse',
         supports_download=False,
     )
 
@@ -389,23 +389,23 @@ class PubsubliteV1(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Patch.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/admin/projects/{projectsId}/locations/{locationsId}/topics/{topicsId}',
-        http_method=u'PATCH',
-        method_id=u'pubsublite.admin.projects.locations.topics.patch',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[u'updateMask'],
-        relative_path=u'v1/admin/{+name}',
-        request_field=u'topic',
-        request_type_name=u'PubsubliteAdminProjectsLocationsTopicsPatchRequest',
-        response_type_name=u'Topic',
+        flat_path='v1/admin/projects/{projectsId}/locations/{locationsId}/topics/{topicsId}',
+        http_method='PATCH',
+        method_id='pubsublite.admin.projects.locations.topics.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v1/admin/{+name}',
+        request_field='topic',
+        request_type_name='PubsubliteAdminProjectsLocationsTopicsPatchRequest',
+        response_type_name='Topic',
         supports_download=False,
     )
 
   class AdminProjectsLocationsService(base_api.BaseApiService):
     """Service class for the admin_projects_locations resource."""
 
-    _NAME = u'admin_projects_locations'
+    _NAME = 'admin_projects_locations'
 
     def __init__(self, client):
       super(PubsubliteV1.AdminProjectsLocationsService, self).__init__(client)
@@ -415,7 +415,7 @@ class PubsubliteV1(base_api.BaseApiClient):
   class AdminProjectsService(base_api.BaseApiService):
     """Service class for the admin_projects resource."""
 
-    _NAME = u'admin_projects'
+    _NAME = 'admin_projects'
 
     def __init__(self, client):
       super(PubsubliteV1.AdminProjectsService, self).__init__(client)
@@ -425,7 +425,7 @@ class PubsubliteV1(base_api.BaseApiClient):
   class AdminService(base_api.BaseApiService):
     """Service class for the admin resource."""
 
-    _NAME = u'admin'
+    _NAME = 'admin'
 
     def __init__(self, client):
       super(PubsubliteV1.AdminService, self).__init__(client)
@@ -435,7 +435,7 @@ class PubsubliteV1(base_api.BaseApiClient):
   class CursorProjectsLocationsSubscriptionsCursorsService(base_api.BaseApiService):
     """Service class for the cursor_projects_locations_subscriptions_cursors resource."""
 
-    _NAME = u'cursor_projects_locations_subscriptions_cursors'
+    _NAME = 'cursor_projects_locations_subscriptions_cursors'
 
     def __init__(self, client):
       super(PubsubliteV1.CursorProjectsLocationsSubscriptionsCursorsService, self).__init__(client)
@@ -456,23 +456,23 @@ class PubsubliteV1(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/cursor/projects/{projectsId}/locations/{locationsId}/subscriptions/{subscriptionsId}/cursors',
-        http_method=u'GET',
-        method_id=u'pubsublite.cursor.projects.locations.subscriptions.cursors.list',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'pageSize', u'pageToken'],
-        relative_path=u'v1/cursor/{+parent}/cursors',
+        flat_path='v1/cursor/projects/{projectsId}/locations/{locationsId}/subscriptions/{subscriptionsId}/cursors',
+        http_method='GET',
+        method_id='pubsublite.cursor.projects.locations.subscriptions.cursors.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v1/cursor/{+parent}/cursors',
         request_field='',
-        request_type_name=u'PubsubliteCursorProjectsLocationsSubscriptionsCursorsListRequest',
-        response_type_name=u'ListPartitionCursorsResponse',
+        request_type_name='PubsubliteCursorProjectsLocationsSubscriptionsCursorsListRequest',
+        response_type_name='ListPartitionCursorsResponse',
         supports_download=False,
     )
 
   class CursorProjectsLocationsSubscriptionsService(base_api.BaseApiService):
     """Service class for the cursor_projects_locations_subscriptions resource."""
 
-    _NAME = u'cursor_projects_locations_subscriptions'
+    _NAME = 'cursor_projects_locations_subscriptions'
 
     def __init__(self, client):
       super(PubsubliteV1.CursorProjectsLocationsSubscriptionsService, self).__init__(client)
@@ -482,7 +482,7 @@ class PubsubliteV1(base_api.BaseApiClient):
   class CursorProjectsLocationsService(base_api.BaseApiService):
     """Service class for the cursor_projects_locations resource."""
 
-    _NAME = u'cursor_projects_locations'
+    _NAME = 'cursor_projects_locations'
 
     def __init__(self, client):
       super(PubsubliteV1.CursorProjectsLocationsService, self).__init__(client)
@@ -492,7 +492,7 @@ class PubsubliteV1(base_api.BaseApiClient):
   class CursorProjectsService(base_api.BaseApiService):
     """Service class for the cursor_projects resource."""
 
-    _NAME = u'cursor_projects'
+    _NAME = 'cursor_projects'
 
     def __init__(self, client):
       super(PubsubliteV1.CursorProjectsService, self).__init__(client)
@@ -502,7 +502,7 @@ class PubsubliteV1(base_api.BaseApiClient):
   class CursorService(base_api.BaseApiService):
     """Service class for the cursor resource."""
 
-    _NAME = u'cursor'
+    _NAME = 'cursor'
 
     def __init__(self, client):
       super(PubsubliteV1.CursorService, self).__init__(client)

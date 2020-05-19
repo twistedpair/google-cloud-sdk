@@ -28,14 +28,14 @@ class Collections(enum.Enum):
       'projects',
       'projects/{projectsId}',
       {},
-      [u'projectsId'],
+      ['projectsId'],
       True
   )
   PROJECTS_DATABASES = (
       'projects.databases',
       'projects/{projectsId}/databases/{databasesId}',
       {},
-      [u'projectsId', u'databasesId'],
+      ['projectsId', 'databasesId'],
       True
   )
   PROJECTS_DATABASES_COLLECTIONGROUPS = (
@@ -43,7 +43,7 @@ class Collections(enum.Enum):
       'projects/{projectsId}/databases/{databasesId}/collectionGroups/'
       '{collectionGroupsId}',
       {},
-      [u'projectsId', u'databasesId', u'collectionGroupsId'],
+      ['projectsId', 'databasesId', 'collectionGroupsId'],
       True
   )
   PROJECTS_DATABASES_COLLECTIONGROUPS_FIELDS = (
@@ -54,7 +54,7 @@ class Collections(enum.Enum):
               'projects/{projectsId}/databases/{databasesId}/'
               'collectionGroups/{collectionGroupsId}/fields/{fieldsId}',
       },
-      [u'name'],
+      ['name'],
       True
   )
   PROJECTS_DATABASES_COLLECTIONGROUPS_INDEXES = (
@@ -65,7 +65,7 @@ class Collections(enum.Enum):
               'projects/{projectsId}/databases/{databasesId}/'
               'collectionGroups/{collectionGroupsId}/indexes/{indexesId}',
       },
-      [u'name'],
+      ['name'],
       True
   )
   PROJECTS_DATABASES_DOCUMENTS = (
@@ -76,7 +76,7 @@ class Collections(enum.Enum):
               'projects/{projectsId}/databases/{databasesId}/documents/'
               '{documentsId}/{documentsId1}',
       },
-      [u'name'],
+      ['name'],
       True
   )
   PROJECTS_DATABASES_OPERATIONS = (
@@ -87,7 +87,7 @@ class Collections(enum.Enum):
               'projects/{projectsId}/databases/{databasesId}/operations/'
               '{operationsId}',
       },
-      [u'name'],
+      ['name'],
       True
   )
   PROJECTS_LOCATIONS = (
@@ -97,7 +97,7 @@ class Collections(enum.Enum):
           '':
               'projects/{projectsId}/locations/{locationsId}',
       },
-      [u'name'],
+      ['name'],
       True
   )
 

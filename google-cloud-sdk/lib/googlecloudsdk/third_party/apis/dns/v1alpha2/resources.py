@@ -28,42 +28,42 @@ class Collections(enum.Enum):
       'changes',
       'projects/{project}/managedZones/{managedZone}/changes/{changeId}',
       {},
-      [u'project', u'managedZone', u'changeId'],
+      ['project', 'managedZone', 'changeId'],
       True
   )
   DNSKEYS = (
       'dnsKeys',
       'projects/{project}/managedZones/{managedZone}/dnsKeys/{dnsKeyId}',
       {},
-      [u'project', u'managedZone', u'dnsKeyId'],
+      ['project', 'managedZone', 'dnsKeyId'],
       True
   )
   MANAGEDZONEOPERATIONS = (
       'managedZoneOperations',
       'projects/{project}/managedZones/{managedZone}/operations/{operation}',
       {},
-      [u'project', u'managedZone', u'operation'],
+      ['project', 'managedZone', 'operation'],
       True
   )
   MANAGEDZONES = (
       'managedZones',
       'projects/{project}/managedZones/{managedZone}',
       {},
-      [u'project', u'managedZone'],
+      ['project', 'managedZone'],
       True
   )
   POLICIES = (
       'policies',
       'projects/{project}/policies/{policy}',
       {},
-      [u'project', u'policy'],
+      ['project', 'policy'],
       True
   )
   PROJECTS = (
       'projects',
       'projects/{project}',
       {},
-      [u'project'],
+      ['project'],
       True
   )
 

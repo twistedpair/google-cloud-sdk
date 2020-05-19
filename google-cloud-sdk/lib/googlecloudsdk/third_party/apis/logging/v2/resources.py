@@ -28,7 +28,7 @@ class Collections(enum.Enum):
       'billingAccounts',
       'billingAccounts/{billingAccountsId}',
       {},
-      [u'billingAccountsId'],
+      ['billingAccountsId'],
       True
   )
   BILLINGACCOUNTS_BUCKETS = (
@@ -38,7 +38,7 @@ class Collections(enum.Enum):
           '':
               'billingAccounts/{billingAccountsId}/buckets/{bucketsId}',
       },
-      [u'name'],
+      ['name'],
       True
   )
   BILLINGACCOUNTS_BUCKETS_VIEWS = (
@@ -49,7 +49,7 @@ class Collections(enum.Enum):
               'billingAccounts/{billingAccountsId}/buckets/{bucketsId}/views/'
               '{viewsId}',
       },
-      [u'name'],
+      ['name'],
       True
   )
   BILLINGACCOUNTS_EXCLUSIONS = (
@@ -59,7 +59,7 @@ class Collections(enum.Enum):
           '':
               'billingAccounts/{billingAccountsId}/exclusions/{exclusionsId}',
       },
-      [u'name'],
+      ['name'],
       True
   )
   BILLINGACCOUNTS_SINKS = (
@@ -69,7 +69,7 @@ class Collections(enum.Enum):
           '':
               'billingAccounts/{billingAccountsId}/sinks/{sinksId}',
       },
-      [u'sinkName'],
+      ['sinkName'],
       True
   )
   EXCLUSIONS = (
@@ -79,14 +79,14 @@ class Collections(enum.Enum):
           '':
               '{v2Id}/{v2Id1}/exclusions/{exclusionsId}',
       },
-      [u'name'],
+      ['name'],
       True
   )
   FOLDERS = (
       'folders',
       'folders/{foldersId}',
       {},
-      [u'foldersId'],
+      ['foldersId'],
       True
   )
   FOLDERS_EXCLUSIONS = (
@@ -96,14 +96,14 @@ class Collections(enum.Enum):
           '':
               'folders/{foldersId}/exclusions/{exclusionsId}',
       },
-      [u'name'],
+      ['name'],
       True
   )
   FOLDERS_LOCATIONS = (
       'folders.locations',
       'folders/{foldersId}/locations/{locationsId}',
       {},
-      [u'foldersId', u'locationsId'],
+      ['foldersId', 'locationsId'],
       True
   )
   FOLDERS_LOCATIONS_BUCKETS = (
@@ -114,7 +114,7 @@ class Collections(enum.Enum):
               'folders/{foldersId}/locations/{locationsId}/buckets/'
               '{bucketsId}',
       },
-      [u'name'],
+      ['name'],
       True
   )
   FOLDERS_LOCATIONS_BUCKETS_VIEWS = (
@@ -125,7 +125,7 @@ class Collections(enum.Enum):
               'folders/{foldersId}/locations/{locationsId}/buckets/'
               '{bucketsId}/views/{viewsId}',
       },
-      [u'name'],
+      ['name'],
       True
   )
   FOLDERS_SINKS = (
@@ -135,14 +135,14 @@ class Collections(enum.Enum):
           '':
               'folders/{foldersId}/sinks/{sinksId}',
       },
-      [u'sinkName'],
+      ['sinkName'],
       True
   )
   LOCATIONS = (
       'locations',
       '{v2Id}/{v2Id1}/locations/{locationsId}',
       {},
-      [u'v2Id', u'v2Id1', u'locationsId'],
+      ['v2Id', 'v2Id1', 'locationsId'],
       True
   )
   LOCATIONS_BUCKETS = (
@@ -152,7 +152,7 @@ class Collections(enum.Enum):
           '':
               '{v2Id}/{v2Id1}/locations/{locationsId}/buckets/{bucketsId}',
       },
-      [u'name'],
+      ['name'],
       True
   )
   LOCATIONS_BUCKETS_VIEWS = (
@@ -163,14 +163,14 @@ class Collections(enum.Enum):
               '{v2Id}/{v2Id1}/locations/{locationsId}/buckets/{bucketsId}/'
               'views/{viewsId}',
       },
-      [u'name'],
+      ['name'],
       True
   )
   ORGANIZATIONS = (
       'organizations',
       'organizations/{organizationsId}',
       {},
-      [u'organizationsId'],
+      ['organizationsId'],
       True
   )
   ORGANIZATIONS_EXCLUSIONS = (
@@ -180,14 +180,14 @@ class Collections(enum.Enum):
           '':
               'organizations/{organizationsId}/exclusions/{exclusionsId}',
       },
-      [u'name'],
+      ['name'],
       True
   )
   ORGANIZATIONS_LOCATIONS = (
       'organizations.locations',
       'organizations/{organizationsId}/locations/{locationsId}',
       {},
-      [u'organizationsId', u'locationsId'],
+      ['organizationsId', 'locationsId'],
       True
   )
   ORGANIZATIONS_LOCATIONS_BUCKETS = (
@@ -198,7 +198,7 @@ class Collections(enum.Enum):
               'organizations/{organizationsId}/locations/{locationsId}/'
               'buckets/{bucketsId}',
       },
-      [u'name'],
+      ['name'],
       True
   )
   ORGANIZATIONS_LOCATIONS_BUCKETS_VIEWS = (
@@ -209,7 +209,7 @@ class Collections(enum.Enum):
               'organizations/{organizationsId}/locations/{locationsId}/'
               'buckets/{bucketsId}/views/{viewsId}',
       },
-      [u'name'],
+      ['name'],
       True
   )
   ORGANIZATIONS_SINKS = (
@@ -219,14 +219,14 @@ class Collections(enum.Enum):
           '':
               'organizations/{organizationsId}/sinks/{sinksId}',
       },
-      [u'sinkName'],
+      ['sinkName'],
       True
   )
   PROJECTS = (
       'projects',
       'projects/{projectsId}',
       {},
-      [u'projectsId'],
+      ['projectsId'],
       True
   )
   PROJECTS_EXCLUSIONS = (
@@ -236,14 +236,14 @@ class Collections(enum.Enum):
           '':
               'projects/{projectsId}/exclusions/{exclusionsId}',
       },
-      [u'name'],
+      ['name'],
       True
   )
   PROJECTS_LOCATIONS = (
       'projects.locations',
       'projects/{projectsId}/locations/{locationsId}',
       {},
-      [u'projectsId', u'locationsId'],
+      ['projectsId', 'locationsId'],
       True
   )
   PROJECTS_LOCATIONS_BUCKETS = (
@@ -254,7 +254,7 @@ class Collections(enum.Enum):
               'projects/{projectsId}/locations/{locationsId}/buckets/'
               '{bucketsId}',
       },
-      [u'name'],
+      ['name'],
       True
   )
   PROJECTS_LOCATIONS_BUCKETS_VIEWS = (
@@ -265,7 +265,7 @@ class Collections(enum.Enum):
               'projects/{projectsId}/locations/{locationsId}/buckets/'
               '{bucketsId}/views/{viewsId}',
       },
-      [u'name'],
+      ['name'],
       True
   )
   PROJECTS_METRICS = (
@@ -275,7 +275,7 @@ class Collections(enum.Enum):
           '':
               'projects/{projectsId}/metrics/{metricsId}',
       },
-      [u'metricName'],
+      ['metricName'],
       True
   )
   PROJECTS_SINKS = (
@@ -285,7 +285,7 @@ class Collections(enum.Enum):
           '':
               'projects/{projectsId}/sinks/{sinksId}',
       },
-      [u'sinkName'],
+      ['sinkName'],
       True
   )
   SINKS = (
@@ -295,7 +295,7 @@ class Collections(enum.Enum):
           '':
               '{v2Id}/{v2Id1}/sinks/{sinksId}',
       },
-      [u'sinkName'],
+      ['sinkName'],
       True
   )
 

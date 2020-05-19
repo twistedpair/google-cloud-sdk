@@ -21,7 +21,6 @@ from __future__ import unicode_literals
 
 import json
 
-from googlecloudsdk.core import exceptions as core_exceptions
 from googlecloudsdk.core import http
 from googlecloudsdk.core.util import retry
 
@@ -40,15 +39,11 @@ from google.oauth2 import credentials
 GOOGLE_REVOKE_URI = 'https://accounts.google.com/o/oauth2/revoke'
 
 
-class Error(core_exceptions.Error):
-  """Module base exception."""
-
-
-class ReauthRequiredError(Error):
+class ReauthRequiredError(google_auth_exceptions.RefreshError):
   """Exceptions when reauth is required."""
 
 
-class TokenRevokeError(Error):
+class TokenRevokeError(google_auth_exceptions.GoogleAuthError):
   """Exceptions when revoking google auth user credentials fails."""
 
 
@@ -100,7 +95,8 @@ class UserCredWithReauth(credentials.Credentials):
       self._rapt_token = reauth.GetRaptToken(http_request, self._client_id,
                                              self._client_secret,
                                              self._refresh_token,
-                                             self._token_uri, list(self.scopes))
+                                             self._token_uri,
+                                             list(self.scopes or []))
     return self._Refresh(request)
 
   def _Refresh(self, request):

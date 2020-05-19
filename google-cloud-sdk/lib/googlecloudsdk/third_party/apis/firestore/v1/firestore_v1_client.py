@@ -8,17 +8,17 @@ class FirestoreV1(base_api.BaseApiClient):
   """Generated client library for service firestore version v1."""
 
   MESSAGES_MODULE = messages
-  BASE_URL = u'https://firestore.googleapis.com/'
-  MTLS_BASE_URL = u'https://firestore.mtls.googleapis.com/'
+  BASE_URL = 'https://firestore.googleapis.com/'
+  MTLS_BASE_URL = 'https://firestore.mtls.googleapis.com/'
 
-  _PACKAGE = u'firestore'
-  _SCOPES = [u'https://www.googleapis.com/auth/cloud-platform', u'https://www.googleapis.com/auth/datastore']
-  _VERSION = u'v1'
+  _PACKAGE = 'firestore'
+  _SCOPES = ['https://www.googleapis.com/auth/cloud-platform', 'https://www.googleapis.com/auth/datastore']
+  _VERSION = 'v1'
   _CLIENT_ID = '1042881264118.apps.googleusercontent.com'
   _CLIENT_SECRET = 'x_Tw5K8nnjoRAqULM9PFAC2b'
-  _USER_AGENT = u'google-cloud-sdk'
-  _CLIENT_CLASS_NAME = u'FirestoreV1'
-  _URL_VERSION = u'v1'
+  _USER_AGENT = 'google-cloud-sdk'
+  _CLIENT_CLASS_NAME = 'FirestoreV1'
+  _URL_VERSION = 'v1'
   _API_KEY = None
 
   def __init__(self, url='', credentials=None,
@@ -48,7 +48,7 @@ class FirestoreV1(base_api.BaseApiClient):
   class ProjectsDatabasesCollectionGroupsFieldsService(base_api.BaseApiService):
     """Service class for the projects_databases_collectionGroups_fields resource."""
 
-    _NAME = u'projects_databases_collectionGroups_fields'
+    _NAME = 'projects_databases_collectionGroups_fields'
 
     def __init__(self, client):
       super(FirestoreV1.ProjectsDatabasesCollectionGroupsFieldsService, self).__init__(client)
@@ -69,16 +69,16 @@ class FirestoreV1(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/databases/{databasesId}/collectionGroups/{collectionGroupsId}/fields/{fieldsId}',
-        http_method=u'GET',
-        method_id=u'firestore.projects.databases.collectionGroups.fields.get',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1/projects/{projectsId}/databases/{databasesId}/collectionGroups/{collectionGroupsId}/fields/{fieldsId}',
+        http_method='GET',
+        method_id='firestore.projects.databases.collectionGroups.fields.get',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1/{+name}',
+        relative_path='v1/{+name}',
         request_field='',
-        request_type_name=u'FirestoreProjectsDatabasesCollectionGroupsFieldsGetRequest',
-        response_type_name=u'GoogleFirestoreAdminV1Field',
+        request_type_name='FirestoreProjectsDatabasesCollectionGroupsFieldsGetRequest',
+        response_type_name='GoogleFirestoreAdminV1Field',
         supports_download=False,
     )
 
@@ -101,16 +101,16 @@ FirestoreAdmin.ListFields with the filter set to
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/databases/{databasesId}/collectionGroups/{collectionGroupsId}/fields',
-        http_method=u'GET',
-        method_id=u'firestore.projects.databases.collectionGroups.fields.list',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'filter', u'pageSize', u'pageToken'],
-        relative_path=u'v1/{+parent}/fields',
+        flat_path='v1/projects/{projectsId}/databases/{databasesId}/collectionGroups/{collectionGroupsId}/fields',
+        http_method='GET',
+        method_id='firestore.projects.databases.collectionGroups.fields.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'pageSize', 'pageToken'],
+        relative_path='v1/{+parent}/fields',
         request_field='',
-        request_type_name=u'FirestoreProjectsDatabasesCollectionGroupsFieldsListRequest',
-        response_type_name=u'GoogleFirestoreAdminV1ListFieldsResponse',
+        request_type_name='FirestoreProjectsDatabasesCollectionGroupsFieldsListRequest',
+        response_type_name='GoogleFirestoreAdminV1ListFieldsResponse',
         supports_download=False,
     )
 
@@ -140,23 +140,23 @@ the special `Field` with resource name:
           config, request, global_params=global_params)
 
     Patch.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/databases/{databasesId}/collectionGroups/{collectionGroupsId}/fields/{fieldsId}',
-        http_method=u'PATCH',
-        method_id=u'firestore.projects.databases.collectionGroups.fields.patch',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[u'updateMask'],
-        relative_path=u'v1/{+name}',
-        request_field=u'googleFirestoreAdminV1Field',
-        request_type_name=u'FirestoreProjectsDatabasesCollectionGroupsFieldsPatchRequest',
-        response_type_name=u'GoogleLongrunningOperation',
+        flat_path='v1/projects/{projectsId}/databases/{databasesId}/collectionGroups/{collectionGroupsId}/fields/{fieldsId}',
+        http_method='PATCH',
+        method_id='firestore.projects.databases.collectionGroups.fields.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v1/{+name}',
+        request_field='googleFirestoreAdminV1Field',
+        request_type_name='FirestoreProjectsDatabasesCollectionGroupsFieldsPatchRequest',
+        response_type_name='GoogleLongrunningOperation',
         supports_download=False,
     )
 
   class ProjectsDatabasesCollectionGroupsIndexesService(base_api.BaseApiService):
     """Service class for the projects_databases_collectionGroups_indexes resource."""
 
-    _NAME = u'projects_databases_collectionGroups_indexes'
+    _NAME = 'projects_databases_collectionGroups_indexes'
 
     def __init__(self, client):
       super(FirestoreV1.ProjectsDatabasesCollectionGroupsIndexesService, self).__init__(client)
@@ -179,16 +179,16 @@ the operation will be the type IndexOperationMetadata.
           config, request, global_params=global_params)
 
     Create.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/databases/{databasesId}/collectionGroups/{collectionGroupsId}/indexes',
-        http_method=u'POST',
-        method_id=u'firestore.projects.databases.collectionGroups.indexes.create',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
+        flat_path='v1/projects/{projectsId}/databases/{databasesId}/collectionGroups/{collectionGroupsId}/indexes',
+        http_method='POST',
+        method_id='firestore.projects.databases.collectionGroups.indexes.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
         query_params=[],
-        relative_path=u'v1/{+parent}/indexes',
-        request_field=u'googleFirestoreAdminV1Index',
-        request_type_name=u'FirestoreProjectsDatabasesCollectionGroupsIndexesCreateRequest',
-        response_type_name=u'GoogleLongrunningOperation',
+        relative_path='v1/{+parent}/indexes',
+        request_field='googleFirestoreAdminV1Index',
+        request_type_name='FirestoreProjectsDatabasesCollectionGroupsIndexesCreateRequest',
+        response_type_name='GoogleLongrunningOperation',
         supports_download=False,
     )
 
@@ -206,16 +206,16 @@ the operation will be the type IndexOperationMetadata.
           config, request, global_params=global_params)
 
     Delete.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/databases/{databasesId}/collectionGroups/{collectionGroupsId}/indexes/{indexesId}',
-        http_method=u'DELETE',
-        method_id=u'firestore.projects.databases.collectionGroups.indexes.delete',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1/projects/{projectsId}/databases/{databasesId}/collectionGroups/{collectionGroupsId}/indexes/{indexesId}',
+        http_method='DELETE',
+        method_id='firestore.projects.databases.collectionGroups.indexes.delete',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1/{+name}',
+        relative_path='v1/{+name}',
         request_field='',
-        request_type_name=u'FirestoreProjectsDatabasesCollectionGroupsIndexesDeleteRequest',
-        response_type_name=u'Empty',
+        request_type_name='FirestoreProjectsDatabasesCollectionGroupsIndexesDeleteRequest',
+        response_type_name='Empty',
         supports_download=False,
     )
 
@@ -233,16 +233,16 @@ the operation will be the type IndexOperationMetadata.
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/databases/{databasesId}/collectionGroups/{collectionGroupsId}/indexes/{indexesId}',
-        http_method=u'GET',
-        method_id=u'firestore.projects.databases.collectionGroups.indexes.get',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1/projects/{projectsId}/databases/{databasesId}/collectionGroups/{collectionGroupsId}/indexes/{indexesId}',
+        http_method='GET',
+        method_id='firestore.projects.databases.collectionGroups.indexes.get',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1/{+name}',
+        relative_path='v1/{+name}',
         request_field='',
-        request_type_name=u'FirestoreProjectsDatabasesCollectionGroupsIndexesGetRequest',
-        response_type_name=u'GoogleFirestoreAdminV1Index',
+        request_type_name='FirestoreProjectsDatabasesCollectionGroupsIndexesGetRequest',
+        response_type_name='GoogleFirestoreAdminV1Index',
         supports_download=False,
     )
 
@@ -260,23 +260,23 @@ the operation will be the type IndexOperationMetadata.
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/databases/{databasesId}/collectionGroups/{collectionGroupsId}/indexes',
-        http_method=u'GET',
-        method_id=u'firestore.projects.databases.collectionGroups.indexes.list',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'filter', u'pageSize', u'pageToken'],
-        relative_path=u'v1/{+parent}/indexes',
+        flat_path='v1/projects/{projectsId}/databases/{databasesId}/collectionGroups/{collectionGroupsId}/indexes',
+        http_method='GET',
+        method_id='firestore.projects.databases.collectionGroups.indexes.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'pageSize', 'pageToken'],
+        relative_path='v1/{+parent}/indexes',
         request_field='',
-        request_type_name=u'FirestoreProjectsDatabasesCollectionGroupsIndexesListRequest',
-        response_type_name=u'GoogleFirestoreAdminV1ListIndexesResponse',
+        request_type_name='FirestoreProjectsDatabasesCollectionGroupsIndexesListRequest',
+        response_type_name='GoogleFirestoreAdminV1ListIndexesResponse',
         supports_download=False,
     )
 
   class ProjectsDatabasesCollectionGroupsService(base_api.BaseApiService):
     """Service class for the projects_databases_collectionGroups resource."""
 
-    _NAME = u'projects_databases_collectionGroups'
+    _NAME = 'projects_databases_collectionGroups'
 
     def __init__(self, client):
       super(FirestoreV1.ProjectsDatabasesCollectionGroupsService, self).__init__(client)
@@ -286,7 +286,7 @@ the operation will be the type IndexOperationMetadata.
   class ProjectsDatabasesDocumentsService(base_api.BaseApiService):
     """Service class for the projects_databases_documents resource."""
 
-    _NAME = u'projects_databases_documents'
+    _NAME = 'projects_databases_documents'
 
     def __init__(self, client):
       super(FirestoreV1.ProjectsDatabasesDocumentsService, self).__init__(client)
@@ -310,16 +310,16 @@ same order that they were requested.
           config, request, global_params=global_params)
 
     BatchGet.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/databases/{databasesId}/documents:batchGet',
-        http_method=u'POST',
-        method_id=u'firestore.projects.databases.documents.batchGet',
-        ordered_params=[u'database'],
-        path_params=[u'database'],
+        flat_path='v1/projects/{projectsId}/databases/{databasesId}/documents:batchGet',
+        http_method='POST',
+        method_id='firestore.projects.databases.documents.batchGet',
+        ordered_params=['database'],
+        path_params=['database'],
         query_params=[],
-        relative_path=u'v1/{+database}/documents:batchGet',
-        request_field=u'batchGetDocumentsRequest',
-        request_type_name=u'FirestoreProjectsDatabasesDocumentsBatchGetRequest',
-        response_type_name=u'BatchGetDocumentsResponse',
+        relative_path='v1/{+database}/documents:batchGet',
+        request_field='batchGetDocumentsRequest',
+        request_type_name='FirestoreProjectsDatabasesDocumentsBatchGetRequest',
+        response_type_name='BatchGetDocumentsResponse',
         supports_download=False,
     )
 
@@ -337,16 +337,16 @@ same order that they were requested.
           config, request, global_params=global_params)
 
     BeginTransaction.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/databases/{databasesId}/documents:beginTransaction',
-        http_method=u'POST',
-        method_id=u'firestore.projects.databases.documents.beginTransaction',
-        ordered_params=[u'database'],
-        path_params=[u'database'],
+        flat_path='v1/projects/{projectsId}/databases/{databasesId}/documents:beginTransaction',
+        http_method='POST',
+        method_id='firestore.projects.databases.documents.beginTransaction',
+        ordered_params=['database'],
+        path_params=['database'],
         query_params=[],
-        relative_path=u'v1/{+database}/documents:beginTransaction',
-        request_field=u'beginTransactionRequest',
-        request_type_name=u'FirestoreProjectsDatabasesDocumentsBeginTransactionRequest',
-        response_type_name=u'BeginTransactionResponse',
+        relative_path='v1/{+database}/documents:beginTransaction',
+        request_field='beginTransactionRequest',
+        request_type_name='FirestoreProjectsDatabasesDocumentsBeginTransactionRequest',
+        response_type_name='BeginTransactionResponse',
         supports_download=False,
     )
 
@@ -364,16 +364,16 @@ same order that they were requested.
           config, request, global_params=global_params)
 
     Commit.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/databases/{databasesId}/documents:commit',
-        http_method=u'POST',
-        method_id=u'firestore.projects.databases.documents.commit',
-        ordered_params=[u'database'],
-        path_params=[u'database'],
+        flat_path='v1/projects/{projectsId}/databases/{databasesId}/documents:commit',
+        http_method='POST',
+        method_id='firestore.projects.databases.documents.commit',
+        ordered_params=['database'],
+        path_params=['database'],
         query_params=[],
-        relative_path=u'v1/{+database}/documents:commit',
-        request_field=u'commitRequest',
-        request_type_name=u'FirestoreProjectsDatabasesDocumentsCommitRequest',
-        response_type_name=u'CommitResponse',
+        relative_path='v1/{+database}/documents:commit',
+        request_field='commitRequest',
+        request_type_name='FirestoreProjectsDatabasesDocumentsCommitRequest',
+        response_type_name='CommitResponse',
         supports_download=False,
     )
 
@@ -391,16 +391,16 @@ same order that they were requested.
           config, request, global_params=global_params)
 
     CreateDocument.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/databases/{databasesId}/documents/{documentsId}/{collectionId}',
-        http_method=u'POST',
-        method_id=u'firestore.projects.databases.documents.createDocument',
-        ordered_params=[u'parent', u'collectionId'],
-        path_params=[u'collectionId', u'parent'],
-        query_params=[u'documentId', u'mask_fieldPaths'],
-        relative_path=u'v1/{+parent}/{collectionId}',
-        request_field=u'document',
-        request_type_name=u'FirestoreProjectsDatabasesDocumentsCreateDocumentRequest',
-        response_type_name=u'Document',
+        flat_path='v1/projects/{projectsId}/databases/{databasesId}/documents/{documentsId}/{collectionId}',
+        http_method='POST',
+        method_id='firestore.projects.databases.documents.createDocument',
+        ordered_params=['parent', 'collectionId'],
+        path_params=['collectionId', 'parent'],
+        query_params=['documentId', 'mask_fieldPaths'],
+        relative_path='v1/{+parent}/{collectionId}',
+        request_field='document',
+        request_type_name='FirestoreProjectsDatabasesDocumentsCreateDocumentRequest',
+        response_type_name='Document',
         supports_download=False,
     )
 
@@ -418,16 +418,16 @@ same order that they were requested.
           config, request, global_params=global_params)
 
     Delete.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/databases/{databasesId}/documents/{documentsId}/{documentsId1}',
-        http_method=u'DELETE',
-        method_id=u'firestore.projects.databases.documents.delete',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[u'currentDocument_exists', u'currentDocument_updateTime'],
-        relative_path=u'v1/{+name}',
+        flat_path='v1/projects/{projectsId}/databases/{databasesId}/documents/{documentsId}/{documentsId1}',
+        http_method='DELETE',
+        method_id='firestore.projects.databases.documents.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['currentDocument_exists', 'currentDocument_updateTime'],
+        relative_path='v1/{+name}',
         request_field='',
-        request_type_name=u'FirestoreProjectsDatabasesDocumentsDeleteRequest',
-        response_type_name=u'Empty',
+        request_type_name='FirestoreProjectsDatabasesDocumentsDeleteRequest',
+        response_type_name='Empty',
         supports_download=False,
     )
 
@@ -445,16 +445,16 @@ same order that they were requested.
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/databases/{databasesId}/documents/{documentsId}/{documentsId1}',
-        http_method=u'GET',
-        method_id=u'firestore.projects.databases.documents.get',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[u'mask_fieldPaths', u'readTime', u'transaction'],
-        relative_path=u'v1/{+name}',
+        flat_path='v1/projects/{projectsId}/databases/{databasesId}/documents/{documentsId}/{documentsId1}',
+        http_method='GET',
+        method_id='firestore.projects.databases.documents.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['mask_fieldPaths', 'readTime', 'transaction'],
+        relative_path='v1/{+name}',
         request_field='',
-        request_type_name=u'FirestoreProjectsDatabasesDocumentsGetRequest',
-        response_type_name=u'Document',
+        request_type_name='FirestoreProjectsDatabasesDocumentsGetRequest',
+        response_type_name='Document',
         supports_download=False,
     )
 
@@ -472,16 +472,16 @@ same order that they were requested.
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/databases/{databasesId}/documents/{documentsId}/{documentsId1}/{collectionId}',
-        http_method=u'GET',
-        method_id=u'firestore.projects.databases.documents.list',
-        ordered_params=[u'parent', u'collectionId'],
-        path_params=[u'collectionId', u'parent'],
-        query_params=[u'mask_fieldPaths', u'orderBy', u'pageSize', u'pageToken', u'readTime', u'showMissing', u'transaction'],
-        relative_path=u'v1/{+parent}/{collectionId}',
+        flat_path='v1/projects/{projectsId}/databases/{databasesId}/documents/{documentsId}/{documentsId1}/{collectionId}',
+        http_method='GET',
+        method_id='firestore.projects.databases.documents.list',
+        ordered_params=['parent', 'collectionId'],
+        path_params=['collectionId', 'parent'],
+        query_params=['mask_fieldPaths', 'orderBy', 'pageSize', 'pageToken', 'readTime', 'showMissing', 'transaction'],
+        relative_path='v1/{+parent}/{collectionId}',
         request_field='',
-        request_type_name=u'FirestoreProjectsDatabasesDocumentsListRequest',
-        response_type_name=u'ListDocumentsResponse',
+        request_type_name='FirestoreProjectsDatabasesDocumentsListRequest',
+        response_type_name='ListDocumentsResponse',
         supports_download=False,
     )
 
@@ -499,16 +499,16 @@ same order that they were requested.
           config, request, global_params=global_params)
 
     ListCollectionIds.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/databases/{databasesId}/documents/{documentsId}/{documentsId1}:listCollectionIds',
-        http_method=u'POST',
-        method_id=u'firestore.projects.databases.documents.listCollectionIds',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
+        flat_path='v1/projects/{projectsId}/databases/{databasesId}/documents/{documentsId}/{documentsId1}:listCollectionIds',
+        http_method='POST',
+        method_id='firestore.projects.databases.documents.listCollectionIds',
+        ordered_params=['parent'],
+        path_params=['parent'],
         query_params=[],
-        relative_path=u'v1/{+parent}:listCollectionIds',
-        request_field=u'listCollectionIdsRequest',
-        request_type_name=u'FirestoreProjectsDatabasesDocumentsListCollectionIdsRequest',
-        response_type_name=u'ListCollectionIdsResponse',
+        relative_path='v1/{+parent}:listCollectionIds',
+        request_field='listCollectionIdsRequest',
+        request_type_name='FirestoreProjectsDatabasesDocumentsListCollectionIdsRequest',
+        response_type_name='ListCollectionIdsResponse',
         supports_download=False,
     )
 
@@ -526,16 +526,16 @@ same order that they were requested.
           config, request, global_params=global_params)
 
     Listen.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/databases/{databasesId}/documents:listen',
-        http_method=u'POST',
-        method_id=u'firestore.projects.databases.documents.listen',
-        ordered_params=[u'database'],
-        path_params=[u'database'],
+        flat_path='v1/projects/{projectsId}/databases/{databasesId}/documents:listen',
+        http_method='POST',
+        method_id='firestore.projects.databases.documents.listen',
+        ordered_params=['database'],
+        path_params=['database'],
         query_params=[],
-        relative_path=u'v1/{+database}/documents:listen',
-        request_field=u'listenRequest',
-        request_type_name=u'FirestoreProjectsDatabasesDocumentsListenRequest',
-        response_type_name=u'ListenResponse',
+        relative_path='v1/{+database}/documents:listen',
+        request_field='listenRequest',
+        request_type_name='FirestoreProjectsDatabasesDocumentsListenRequest',
+        response_type_name='ListenResponse',
         supports_download=False,
     )
 
@@ -553,16 +553,16 @@ same order that they were requested.
           config, request, global_params=global_params)
 
     Patch.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/databases/{databasesId}/documents/{documentsId}/{documentsId1}',
-        http_method=u'PATCH',
-        method_id=u'firestore.projects.databases.documents.patch',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[u'currentDocument_exists', u'currentDocument_updateTime', u'mask_fieldPaths', u'updateMask_fieldPaths'],
-        relative_path=u'v1/{+name}',
-        request_field=u'document',
-        request_type_name=u'FirestoreProjectsDatabasesDocumentsPatchRequest',
-        response_type_name=u'Document',
+        flat_path='v1/projects/{projectsId}/databases/{databasesId}/documents/{documentsId}/{documentsId1}',
+        http_method='PATCH',
+        method_id='firestore.projects.databases.documents.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['currentDocument_exists', 'currentDocument_updateTime', 'mask_fieldPaths', 'updateMask_fieldPaths'],
+        relative_path='v1/{+name}',
+        request_field='document',
+        request_type_name='FirestoreProjectsDatabasesDocumentsPatchRequest',
+        response_type_name='Document',
         supports_download=False,
     )
 
@@ -580,16 +580,16 @@ same order that they were requested.
           config, request, global_params=global_params)
 
     Rollback.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/databases/{databasesId}/documents:rollback',
-        http_method=u'POST',
-        method_id=u'firestore.projects.databases.documents.rollback',
-        ordered_params=[u'database'],
-        path_params=[u'database'],
+        flat_path='v1/projects/{projectsId}/databases/{databasesId}/documents:rollback',
+        http_method='POST',
+        method_id='firestore.projects.databases.documents.rollback',
+        ordered_params=['database'],
+        path_params=['database'],
         query_params=[],
-        relative_path=u'v1/{+database}/documents:rollback',
-        request_field=u'rollbackRequest',
-        request_type_name=u'FirestoreProjectsDatabasesDocumentsRollbackRequest',
-        response_type_name=u'Empty',
+        relative_path='v1/{+database}/documents:rollback',
+        request_field='rollbackRequest',
+        request_type_name='FirestoreProjectsDatabasesDocumentsRollbackRequest',
+        response_type_name='Empty',
         supports_download=False,
     )
 
@@ -607,16 +607,16 @@ same order that they were requested.
           config, request, global_params=global_params)
 
     RunQuery.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/databases/{databasesId}/documents/{documentsId}/{documentsId1}:runQuery',
-        http_method=u'POST',
-        method_id=u'firestore.projects.databases.documents.runQuery',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
+        flat_path='v1/projects/{projectsId}/databases/{databasesId}/documents/{documentsId}/{documentsId1}:runQuery',
+        http_method='POST',
+        method_id='firestore.projects.databases.documents.runQuery',
+        ordered_params=['parent'],
+        path_params=['parent'],
         query_params=[],
-        relative_path=u'v1/{+parent}:runQuery',
-        request_field=u'runQueryRequest',
-        request_type_name=u'FirestoreProjectsDatabasesDocumentsRunQueryRequest',
-        response_type_name=u'RunQueryResponse',
+        relative_path='v1/{+parent}:runQuery',
+        request_field='runQueryRequest',
+        request_type_name='FirestoreProjectsDatabasesDocumentsRunQueryRequest',
+        response_type_name='RunQueryResponse',
         supports_download=False,
     )
 
@@ -634,23 +634,23 @@ same order that they were requested.
           config, request, global_params=global_params)
 
     Write.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/databases/{databasesId}/documents:write',
-        http_method=u'POST',
-        method_id=u'firestore.projects.databases.documents.write',
-        ordered_params=[u'database'],
-        path_params=[u'database'],
+        flat_path='v1/projects/{projectsId}/databases/{databasesId}/documents:write',
+        http_method='POST',
+        method_id='firestore.projects.databases.documents.write',
+        ordered_params=['database'],
+        path_params=['database'],
         query_params=[],
-        relative_path=u'v1/{+database}/documents:write',
-        request_field=u'writeRequest',
-        request_type_name=u'FirestoreProjectsDatabasesDocumentsWriteRequest',
-        response_type_name=u'WriteResponse',
+        relative_path='v1/{+database}/documents:write',
+        request_field='writeRequest',
+        request_type_name='FirestoreProjectsDatabasesDocumentsWriteRequest',
+        response_type_name='WriteResponse',
         supports_download=False,
     )
 
   class ProjectsDatabasesOperationsService(base_api.BaseApiService):
     """Service class for the projects_databases_operations resource."""
 
-    _NAME = u'projects_databases_operations'
+    _NAME = 'projects_databases_operations'
 
     def __init__(self, client):
       super(FirestoreV1.ProjectsDatabasesOperationsService, self).__init__(client)
@@ -680,16 +680,16 @@ corresponding to `Code.CANCELLED`.
           config, request, global_params=global_params)
 
     Cancel.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/databases/{databasesId}/operations/{operationsId}:cancel',
-        http_method=u'POST',
-        method_id=u'firestore.projects.databases.operations.cancel',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1/projects/{projectsId}/databases/{databasesId}/operations/{operationsId}:cancel',
+        http_method='POST',
+        method_id='firestore.projects.databases.operations.cancel',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1/{+name}:cancel',
-        request_field=u'googleLongrunningCancelOperationRequest',
-        request_type_name=u'FirestoreProjectsDatabasesOperationsCancelRequest',
-        response_type_name=u'Empty',
+        relative_path='v1/{+name}:cancel',
+        request_field='googleLongrunningCancelOperationRequest',
+        request_type_name='FirestoreProjectsDatabasesOperationsCancelRequest',
+        response_type_name='Empty',
         supports_download=False,
     )
 
@@ -710,16 +710,16 @@ operation. If the server doesn't support this method, it returns
           config, request, global_params=global_params)
 
     Delete.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/databases/{databasesId}/operations/{operationsId}',
-        http_method=u'DELETE',
-        method_id=u'firestore.projects.databases.operations.delete',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1/projects/{projectsId}/databases/{databasesId}/operations/{operationsId}',
+        http_method='DELETE',
+        method_id='firestore.projects.databases.operations.delete',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1/{+name}',
+        relative_path='v1/{+name}',
         request_field='',
-        request_type_name=u'FirestoreProjectsDatabasesOperationsDeleteRequest',
-        response_type_name=u'Empty',
+        request_type_name='FirestoreProjectsDatabasesOperationsDeleteRequest',
+        response_type_name='Empty',
         supports_download=False,
     )
 
@@ -739,16 +739,16 @@ service.
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/databases/{databasesId}/operations/{operationsId}',
-        http_method=u'GET',
-        method_id=u'firestore.projects.databases.operations.get',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1/projects/{projectsId}/databases/{databasesId}/operations/{operationsId}',
+        http_method='GET',
+        method_id='firestore.projects.databases.operations.get',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1/{+name}',
+        relative_path='v1/{+name}',
         request_field='',
-        request_type_name=u'FirestoreProjectsDatabasesOperationsGetRequest',
-        response_type_name=u'GoogleLongrunningOperation',
+        request_type_name='FirestoreProjectsDatabasesOperationsGetRequest',
+        response_type_name='GoogleLongrunningOperation',
         supports_download=False,
     )
 
@@ -775,23 +775,23 @@ is the parent resource, without the operations collection id.
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/databases/{databasesId}/operations',
-        http_method=u'GET',
-        method_id=u'firestore.projects.databases.operations.list',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[u'filter', u'pageSize', u'pageToken'],
-        relative_path=u'v1/{+name}/operations',
+        flat_path='v1/projects/{projectsId}/databases/{databasesId}/operations',
+        http_method='GET',
+        method_id='firestore.projects.databases.operations.list',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['filter', 'pageSize', 'pageToken'],
+        relative_path='v1/{+name}/operations',
         request_field='',
-        request_type_name=u'FirestoreProjectsDatabasesOperationsListRequest',
-        response_type_name=u'GoogleLongrunningListOperationsResponse',
+        request_type_name='FirestoreProjectsDatabasesOperationsListRequest',
+        response_type_name='GoogleLongrunningListOperationsResponse',
         supports_download=False,
     )
 
   class ProjectsDatabasesService(base_api.BaseApiService):
     """Service class for the projects_databases resource."""
 
-    _NAME = u'projects_databases'
+    _NAME = 'projects_databases'
 
     def __init__(self, client):
       super(FirestoreV1.ProjectsDatabasesService, self).__init__(client)
@@ -819,16 +819,16 @@ Cloud Storage.
           config, request, global_params=global_params)
 
     ExportDocuments.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/databases/{databasesId}:exportDocuments',
-        http_method=u'POST',
-        method_id=u'firestore.projects.databases.exportDocuments',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1/projects/{projectsId}/databases/{databasesId}:exportDocuments',
+        http_method='POST',
+        method_id='firestore.projects.databases.exportDocuments',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1/{+name}:exportDocuments',
-        request_field=u'googleFirestoreAdminV1ExportDocumentsRequest',
-        request_type_name=u'FirestoreProjectsDatabasesExportDocumentsRequest',
-        response_type_name=u'GoogleLongrunningOperation',
+        relative_path='v1/{+name}:exportDocuments',
+        request_field='googleFirestoreAdminV1ExportDocumentsRequest',
+        request_type_name='FirestoreProjectsDatabasesExportDocumentsRequest',
+        response_type_name='GoogleLongrunningOperation',
         supports_download=False,
     )
 
@@ -850,23 +850,23 @@ that a subset of the data has already been imported to Cloud Firestore.
           config, request, global_params=global_params)
 
     ImportDocuments.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/databases/{databasesId}:importDocuments',
-        http_method=u'POST',
-        method_id=u'firestore.projects.databases.importDocuments',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1/projects/{projectsId}/databases/{databasesId}:importDocuments',
+        http_method='POST',
+        method_id='firestore.projects.databases.importDocuments',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1/{+name}:importDocuments',
-        request_field=u'googleFirestoreAdminV1ImportDocumentsRequest',
-        request_type_name=u'FirestoreProjectsDatabasesImportDocumentsRequest',
-        response_type_name=u'GoogleLongrunningOperation',
+        relative_path='v1/{+name}:importDocuments',
+        request_field='googleFirestoreAdminV1ImportDocumentsRequest',
+        request_type_name='FirestoreProjectsDatabasesImportDocumentsRequest',
+        response_type_name='GoogleLongrunningOperation',
         supports_download=False,
     )
 
   class ProjectsLocationsService(base_api.BaseApiService):
     """Service class for the projects_locations resource."""
 
-    _NAME = u'projects_locations'
+    _NAME = 'projects_locations'
 
     def __init__(self, client):
       super(FirestoreV1.ProjectsLocationsService, self).__init__(client)
@@ -887,16 +887,16 @@ that a subset of the data has already been imported to Cloud Firestore.
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/locations/{locationsId}',
-        http_method=u'GET',
-        method_id=u'firestore.projects.locations.get',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}',
+        http_method='GET',
+        method_id='firestore.projects.locations.get',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1/{+name}',
+        relative_path='v1/{+name}',
         request_field='',
-        request_type_name=u'FirestoreProjectsLocationsGetRequest',
-        response_type_name=u'Location',
+        request_type_name='FirestoreProjectsLocationsGetRequest',
+        response_type_name='Location',
         supports_download=False,
     )
 
@@ -914,23 +914,23 @@ that a subset of the data has already been imported to Cloud Firestore.
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/locations',
-        http_method=u'GET',
-        method_id=u'firestore.projects.locations.list',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[u'filter', u'pageSize', u'pageToken'],
-        relative_path=u'v1/{+name}/locations',
+        flat_path='v1/projects/{projectsId}/locations',
+        http_method='GET',
+        method_id='firestore.projects.locations.list',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['filter', 'pageSize', 'pageToken'],
+        relative_path='v1/{+name}/locations',
         request_field='',
-        request_type_name=u'FirestoreProjectsLocationsListRequest',
-        response_type_name=u'ListLocationsResponse',
+        request_type_name='FirestoreProjectsLocationsListRequest',
+        response_type_name='ListLocationsResponse',
         supports_download=False,
     )
 
   class ProjectsService(base_api.BaseApiService):
     """Service class for the projects resource."""
 
-    _NAME = u'projects'
+    _NAME = 'projects'
 
     def __init__(self, client):
       super(FirestoreV1.ProjectsService, self).__init__(client)

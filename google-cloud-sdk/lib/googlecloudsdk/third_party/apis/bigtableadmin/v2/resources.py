@@ -31,14 +31,14 @@ class Collections(enum.Enum):
           '':
               'operations/{operationsId}',
       },
-      [u'name'],
+      ['name'],
       True
   )
   PROJECTS = (
       'projects',
       'projects/{projectId}',
       {},
-      [u'projectId'],
+      ['projectId'],
       True
   )
   PROJECTS_INSTANCES = (
@@ -48,7 +48,7 @@ class Collections(enum.Enum):
           '':
               'projects/{projectsId}/instances/{instancesId}',
       },
-      [u'name'],
+      ['name'],
       True
   )
   PROJECTS_INSTANCES_APPPROFILES = (
@@ -59,7 +59,7 @@ class Collections(enum.Enum):
               'projects/{projectsId}/instances/{instancesId}/appProfiles/'
               '{appProfilesId}',
       },
-      [u'name'],
+      ['name'],
       True
   )
   PROJECTS_INSTANCES_CLUSTERS = (
@@ -70,7 +70,7 @@ class Collections(enum.Enum):
               'projects/{projectsId}/instances/{instancesId}/clusters/'
               '{clustersId}',
       },
-      [u'name'],
+      ['name'],
       True
   )
   PROJECTS_INSTANCES_CLUSTERS_BACKUPS = (
@@ -81,7 +81,7 @@ class Collections(enum.Enum):
               'projects/{projectsId}/instances/{instancesId}/clusters/'
               '{clustersId}/backups/{backupsId}',
       },
-      [u'name'],
+      ['name'],
       True
   )
   PROJECTS_INSTANCES_TABLES = (
@@ -92,7 +92,7 @@ class Collections(enum.Enum):
               'projects/{projectsId}/instances/{instancesId}/tables/'
               '{tablesId}',
       },
-      [u'name'],
+      ['name'],
       True
   )
   PROJECTS_LOCATIONS = (
@@ -102,7 +102,7 @@ class Collections(enum.Enum):
           '':
               'projects/{projectsId}/locations/{locationsId}',
       },
-      [u'name'],
+      ['name'],
       True
   )
 

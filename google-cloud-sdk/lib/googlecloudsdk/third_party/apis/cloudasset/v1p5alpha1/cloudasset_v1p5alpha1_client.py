@@ -8,17 +8,17 @@ class CloudassetV1p5alpha1(base_api.BaseApiClient):
   """Generated client library for service cloudasset version v1p5alpha1."""
 
   MESSAGES_MODULE = messages
-  BASE_URL = u'https://cloudasset.googleapis.com/'
-  MTLS_BASE_URL = u''
+  BASE_URL = 'https://cloudasset.googleapis.com/'
+  MTLS_BASE_URL = ''
 
-  _PACKAGE = u'cloudasset'
-  _SCOPES = [u'https://www.googleapis.com/auth/cloud-platform']
-  _VERSION = u'v1p5alpha1'
+  _PACKAGE = 'cloudasset'
+  _SCOPES = ['https://www.googleapis.com/auth/cloud-platform']
+  _VERSION = 'v1p5alpha1'
   _CLIENT_ID = '1042881264118.apps.googleusercontent.com'
   _CLIENT_SECRET = 'x_Tw5K8nnjoRAqULM9PFAC2b'
-  _USER_AGENT = u'google-cloud-sdk'
-  _CLIENT_CLASS_NAME = u'CloudassetV1p5alpha1'
-  _URL_VERSION = u'v1p5alpha1'
+  _USER_AGENT = 'google-cloud-sdk'
+  _CLIENT_CLASS_NAME = 'CloudassetV1p5alpha1'
+  _URL_VERSION = 'v1p5alpha1'
   _API_KEY = None
 
   def __init__(self, url='', credentials=None,
@@ -41,7 +41,7 @@ class CloudassetV1p5alpha1(base_api.BaseApiClient):
   class AssetsService(base_api.BaseApiService):
     """Service class for the assets resource."""
 
-    _NAME = u'assets'
+    _NAME = 'assets'
 
     def __init__(self, client):
       super(CloudassetV1p5alpha1.AssetsService, self).__init__(client)
@@ -63,15 +63,15 @@ response.
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1p5alpha1/{v1p5alpha1Id}/{v1p5alpha1Id1}/assets',
-        http_method=u'GET',
-        method_id=u'cloudasset.assets.list',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'assetTypes', u'contentType', u'pageSize', u'pageToken', u'readTime'],
-        relative_path=u'v1p5alpha1/{+parent}/assets',
+        flat_path='v1p5alpha1/{v1p5alpha1Id}/{v1p5alpha1Id1}/assets',
+        http_method='GET',
+        method_id='cloudasset.assets.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['assetTypes', 'contentType', 'pageSize', 'pageToken', 'readTime'],
+        relative_path='v1p5alpha1/{+parent}/assets',
         request_field='',
-        request_type_name=u'CloudassetAssetsListRequest',
-        response_type_name=u'ListAssetsResponse',
+        request_type_name='CloudassetAssetsListRequest',
+        response_type_name='ListAssetsResponse',
         supports_download=False,
     )

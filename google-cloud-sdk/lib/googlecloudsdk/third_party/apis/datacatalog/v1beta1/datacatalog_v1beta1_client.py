@@ -8,17 +8,17 @@ class DatacatalogV1beta1(base_api.BaseApiClient):
   """Generated client library for service datacatalog version v1beta1."""
 
   MESSAGES_MODULE = messages
-  BASE_URL = u'https://datacatalog.googleapis.com/'
-  MTLS_BASE_URL = u'https://datacatalog.mtls.googleapis.com/'
+  BASE_URL = 'https://datacatalog.googleapis.com/'
+  MTLS_BASE_URL = 'https://datacatalog.mtls.googleapis.com/'
 
-  _PACKAGE = u'datacatalog'
-  _SCOPES = [u'https://www.googleapis.com/auth/cloud-platform']
-  _VERSION = u'v1beta1'
+  _PACKAGE = 'datacatalog'
+  _SCOPES = ['https://www.googleapis.com/auth/cloud-platform']
+  _VERSION = 'v1beta1'
   _CLIENT_ID = '1042881264118.apps.googleusercontent.com'
   _CLIENT_SECRET = 'x_Tw5K8nnjoRAqULM9PFAC2b'
-  _USER_AGENT = u'google-cloud-sdk'
-  _CLIENT_CLASS_NAME = u'DatacatalogV1beta1'
-  _URL_VERSION = u'v1beta1'
+  _USER_AGENT = 'google-cloud-sdk'
+  _CLIENT_CLASS_NAME = 'DatacatalogV1beta1'
+  _URL_VERSION = 'v1beta1'
   _API_KEY = None
 
   def __init__(self, url='', credentials=None,
@@ -52,7 +52,7 @@ class DatacatalogV1beta1(base_api.BaseApiClient):
   class CatalogService(base_api.BaseApiService):
     """Service class for the catalog resource."""
 
-    _NAME = u'catalog'
+    _NAME = 'catalog'
 
     def __init__(self, client):
       super(DatacatalogV1beta1.CatalogService, self).__init__(client)
@@ -88,22 +88,22 @@ for more information.
           config, request, global_params=global_params)
 
     Search.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'datacatalog.catalog.search',
+        http_method='POST',
+        method_id='datacatalog.catalog.search',
         ordered_params=[],
         path_params=[],
         query_params=[],
-        relative_path=u'v1beta1/catalog:search',
+        relative_path='v1beta1/catalog:search',
         request_field='<request>',
-        request_type_name=u'GoogleCloudDatacatalogV1beta1SearchCatalogRequest',
-        response_type_name=u'GoogleCloudDatacatalogV1beta1SearchCatalogResponse',
+        request_type_name='GoogleCloudDatacatalogV1beta1SearchCatalogRequest',
+        response_type_name='GoogleCloudDatacatalogV1beta1SearchCatalogResponse',
         supports_download=False,
     )
 
   class EntriesService(base_api.BaseApiService):
     """Service class for the entries resource."""
 
-    _NAME = u'entries'
+    _NAME = 'entries'
 
     def __init__(self, client):
       super(DatacatalogV1beta1.EntriesService, self).__init__(client)
@@ -126,22 +126,22 @@ Data Catalog Entry.
           config, request, global_params=global_params)
 
     Lookup.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'datacatalog.entries.lookup',
+        http_method='GET',
+        method_id='datacatalog.entries.lookup',
         ordered_params=[],
         path_params=[],
-        query_params=[u'linkedResource', u'sqlResource'],
-        relative_path=u'v1beta1/entries:lookup',
+        query_params=['linkedResource', 'sqlResource'],
+        relative_path='v1beta1/entries:lookup',
         request_field='',
-        request_type_name=u'DatacatalogEntriesLookupRequest',
-        response_type_name=u'GoogleCloudDatacatalogV1beta1Entry',
+        request_type_name='DatacatalogEntriesLookupRequest',
+        response_type_name='GoogleCloudDatacatalogV1beta1Entry',
         supports_download=False,
     )
 
   class ProjectsLocationsEntryGroupsEntriesTagsService(base_api.BaseApiService):
     """Service class for the projects_locations_entryGroups_entries_tags resource."""
 
-    _NAME = u'projects_locations_entryGroups_entries_tags'
+    _NAME = 'projects_locations_entryGroups_entries_tags'
 
     def __init__(self, client):
       super(DatacatalogV1beta1.ProjectsLocationsEntryGroupsEntriesTagsService, self).__init__(client)
@@ -168,16 +168,16 @@ used to create the tag must be from the same organization.
           config, request, global_params=global_params)
 
     Create.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/projects/{projectsId}/locations/{locationsId}/entryGroups/{entryGroupsId}/entries/{entriesId}/tags',
-        http_method=u'POST',
-        method_id=u'datacatalog.projects.locations.entryGroups.entries.tags.create',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/entryGroups/{entryGroupsId}/entries/{entriesId}/tags',
+        http_method='POST',
+        method_id='datacatalog.projects.locations.entryGroups.entries.tags.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
         query_params=[],
-        relative_path=u'v1beta1/{+parent}/tags',
-        request_field=u'googleCloudDatacatalogV1beta1Tag',
-        request_type_name=u'DatacatalogProjectsLocationsEntryGroupsEntriesTagsCreateRequest',
-        response_type_name=u'GoogleCloudDatacatalogV1beta1Tag',
+        relative_path='v1beta1/{+parent}/tags',
+        request_field='googleCloudDatacatalogV1beta1Tag',
+        request_type_name='DatacatalogProjectsLocationsEntryGroupsEntriesTagsCreateRequest',
+        response_type_name='GoogleCloudDatacatalogV1beta1Tag',
         supports_download=False,
     )
 
@@ -195,16 +195,16 @@ used to create the tag must be from the same organization.
           config, request, global_params=global_params)
 
     Delete.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/projects/{projectsId}/locations/{locationsId}/entryGroups/{entryGroupsId}/entries/{entriesId}/tags/{tagsId}',
-        http_method=u'DELETE',
-        method_id=u'datacatalog.projects.locations.entryGroups.entries.tags.delete',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/entryGroups/{entryGroupsId}/entries/{entriesId}/tags/{tagsId}',
+        http_method='DELETE',
+        method_id='datacatalog.projects.locations.entryGroups.entries.tags.delete',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1beta1/{+name}',
+        relative_path='v1beta1/{+name}',
         request_field='',
-        request_type_name=u'DatacatalogProjectsLocationsEntryGroupsEntriesTagsDeleteRequest',
-        response_type_name=u'Empty',
+        request_type_name='DatacatalogProjectsLocationsEntryGroupsEntriesTagsDeleteRequest',
+        response_type_name='Empty',
         supports_download=False,
     )
 
@@ -222,16 +222,16 @@ used to create the tag must be from the same organization.
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/projects/{projectsId}/locations/{locationsId}/entryGroups/{entryGroupsId}/entries/{entriesId}/tags',
-        http_method=u'GET',
-        method_id=u'datacatalog.projects.locations.entryGroups.entries.tags.list',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'pageSize', u'pageToken'],
-        relative_path=u'v1beta1/{+parent}/tags',
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/entryGroups/{entryGroupsId}/entries/{entriesId}/tags',
+        http_method='GET',
+        method_id='datacatalog.projects.locations.entryGroups.entries.tags.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v1beta1/{+parent}/tags',
         request_field='',
-        request_type_name=u'DatacatalogProjectsLocationsEntryGroupsEntriesTagsListRequest',
-        response_type_name=u'GoogleCloudDatacatalogV1beta1ListTagsResponse',
+        request_type_name='DatacatalogProjectsLocationsEntryGroupsEntriesTagsListRequest',
+        response_type_name='GoogleCloudDatacatalogV1beta1ListTagsResponse',
         supports_download=False,
     )
 
@@ -249,23 +249,23 @@ used to create the tag must be from the same organization.
           config, request, global_params=global_params)
 
     Patch.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/projects/{projectsId}/locations/{locationsId}/entryGroups/{entryGroupsId}/entries/{entriesId}/tags/{tagsId}',
-        http_method=u'PATCH',
-        method_id=u'datacatalog.projects.locations.entryGroups.entries.tags.patch',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[u'updateMask'],
-        relative_path=u'v1beta1/{+name}',
-        request_field=u'googleCloudDatacatalogV1beta1Tag',
-        request_type_name=u'DatacatalogProjectsLocationsEntryGroupsEntriesTagsPatchRequest',
-        response_type_name=u'GoogleCloudDatacatalogV1beta1Tag',
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/entryGroups/{entryGroupsId}/entries/{entriesId}/tags/{tagsId}',
+        http_method='PATCH',
+        method_id='datacatalog.projects.locations.entryGroups.entries.tags.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v1beta1/{+name}',
+        request_field='googleCloudDatacatalogV1beta1Tag',
+        request_type_name='DatacatalogProjectsLocationsEntryGroupsEntriesTagsPatchRequest',
+        response_type_name='GoogleCloudDatacatalogV1beta1Tag',
         supports_download=False,
     )
 
   class ProjectsLocationsEntryGroupsEntriesService(base_api.BaseApiService):
     """Service class for the projects_locations_entryGroups_entries resource."""
 
-    _NAME = u'projects_locations_entryGroups_entries'
+    _NAME = 'projects_locations_entryGroups_entries'
 
     def __init__(self, client):
       super(DatacatalogV1beta1.ProjectsLocationsEntryGroupsEntriesService, self).__init__(client)
@@ -294,16 +294,16 @@ A maximum of 100,000 entries may be created per entry group.
           config, request, global_params=global_params)
 
     Create.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/projects/{projectsId}/locations/{locationsId}/entryGroups/{entryGroupsId}/entries',
-        http_method=u'POST',
-        method_id=u'datacatalog.projects.locations.entryGroups.entries.create',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'entryId'],
-        relative_path=u'v1beta1/{+parent}/entries',
-        request_field=u'googleCloudDatacatalogV1beta1Entry',
-        request_type_name=u'DatacatalogProjectsLocationsEntryGroupsEntriesCreateRequest',
-        response_type_name=u'GoogleCloudDatacatalogV1beta1Entry',
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/entryGroups/{entryGroupsId}/entries',
+        http_method='POST',
+        method_id='datacatalog.projects.locations.entryGroups.entries.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['entryId'],
+        relative_path='v1beta1/{+parent}/entries',
+        request_field='googleCloudDatacatalogV1beta1Entry',
+        request_type_name='DatacatalogProjectsLocationsEntryGroupsEntriesCreateRequest',
+        response_type_name='GoogleCloudDatacatalogV1beta1Entry',
         supports_download=False,
     )
 
@@ -327,16 +327,16 @@ more information).
           config, request, global_params=global_params)
 
     Delete.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/projects/{projectsId}/locations/{locationsId}/entryGroups/{entryGroupsId}/entries/{entriesId}',
-        http_method=u'DELETE',
-        method_id=u'datacatalog.projects.locations.entryGroups.entries.delete',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/entryGroups/{entryGroupsId}/entries/{entriesId}',
+        http_method='DELETE',
+        method_id='datacatalog.projects.locations.entryGroups.entries.delete',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1beta1/{+name}',
+        relative_path='v1beta1/{+name}',
         request_field='',
-        request_type_name=u'DatacatalogProjectsLocationsEntryGroupsEntriesDeleteRequest',
-        response_type_name=u'Empty',
+        request_type_name='DatacatalogProjectsLocationsEntryGroupsEntriesDeleteRequest',
+        response_type_name='Empty',
         supports_download=False,
     )
 
@@ -354,16 +354,16 @@ more information).
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/projects/{projectsId}/locations/{locationsId}/entryGroups/{entryGroupsId}/entries/{entriesId}',
-        http_method=u'GET',
-        method_id=u'datacatalog.projects.locations.entryGroups.entries.get',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/entryGroups/{entryGroupsId}/entries/{entriesId}',
+        http_method='GET',
+        method_id='datacatalog.projects.locations.entryGroups.entries.get',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1beta1/{+name}',
+        relative_path='v1beta1/{+name}',
         request_field='',
-        request_type_name=u'DatacatalogProjectsLocationsEntryGroupsEntriesGetRequest',
-        response_type_name=u'GoogleCloudDatacatalogV1beta1Entry',
+        request_type_name='DatacatalogProjectsLocationsEntryGroupsEntriesGetRequest',
+        response_type_name='GoogleCloudDatacatalogV1beta1Entry',
         supports_download=False,
     )
 
@@ -396,16 +396,16 @@ Callers must have following Google IAM permission
           config, request, global_params=global_params)
 
     GetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/projects/{projectsId}/locations/{locationsId}/entryGroups/{entryGroupsId}/entries/{entriesId}:getIamPolicy',
-        http_method=u'POST',
-        method_id=u'datacatalog.projects.locations.entryGroups.entries.getIamPolicy',
-        ordered_params=[u'resource'],
-        path_params=[u'resource'],
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/entryGroups/{entryGroupsId}/entries/{entriesId}:getIamPolicy',
+        http_method='POST',
+        method_id='datacatalog.projects.locations.entryGroups.entries.getIamPolicy',
+        ordered_params=['resource'],
+        path_params=['resource'],
         query_params=[],
-        relative_path=u'v1beta1/{+resource}:getIamPolicy',
-        request_field=u'getIamPolicyRequest',
-        request_type_name=u'DatacatalogProjectsLocationsEntryGroupsEntriesGetIamPolicyRequest',
-        response_type_name=u'Policy',
+        relative_path='v1beta1/{+resource}:getIamPolicy',
+        request_field='getIamPolicyRequest',
+        request_type_name='DatacatalogProjectsLocationsEntryGroupsEntriesGetIamPolicyRequest',
+        response_type_name='Policy',
         supports_download=False,
     )
 
@@ -423,16 +423,16 @@ Callers must have following Google IAM permission
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/projects/{projectsId}/locations/{locationsId}/entryGroups/{entryGroupsId}/entries',
-        http_method=u'GET',
-        method_id=u'datacatalog.projects.locations.entryGroups.entries.list',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'pageSize', u'pageToken', u'readMask'],
-        relative_path=u'v1beta1/{+parent}/entries',
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/entryGroups/{entryGroupsId}/entries',
+        http_method='GET',
+        method_id='datacatalog.projects.locations.entryGroups.entries.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken', 'readMask'],
+        relative_path='v1beta1/{+parent}/entries',
         request_field='',
-        request_type_name=u'DatacatalogProjectsLocationsEntryGroupsEntriesListRequest',
-        response_type_name=u'GoogleCloudDatacatalogV1beta1ListEntriesResponse',
+        request_type_name='DatacatalogProjectsLocationsEntryGroupsEntriesListRequest',
+        response_type_name='GoogleCloudDatacatalogV1beta1ListEntriesResponse',
         supports_download=False,
     )
 
@@ -454,16 +454,16 @@ more information).
           config, request, global_params=global_params)
 
     Patch.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/projects/{projectsId}/locations/{locationsId}/entryGroups/{entryGroupsId}/entries/{entriesId}',
-        http_method=u'PATCH',
-        method_id=u'datacatalog.projects.locations.entryGroups.entries.patch',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[u'updateMask'],
-        relative_path=u'v1beta1/{+name}',
-        request_field=u'googleCloudDatacatalogV1beta1Entry',
-        request_type_name=u'DatacatalogProjectsLocationsEntryGroupsEntriesPatchRequest',
-        response_type_name=u'GoogleCloudDatacatalogV1beta1Entry',
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/entryGroups/{entryGroupsId}/entries/{entriesId}',
+        http_method='PATCH',
+        method_id='datacatalog.projects.locations.entryGroups.entries.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v1beta1/{+name}',
+        request_field='googleCloudDatacatalogV1beta1Entry',
+        request_type_name='DatacatalogProjectsLocationsEntryGroupsEntriesPatchRequest',
+        response_type_name='GoogleCloudDatacatalogV1beta1Entry',
         supports_download=False,
     )
 
@@ -493,23 +493,23 @@ request.
           config, request, global_params=global_params)
 
     TestIamPermissions.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/projects/{projectsId}/locations/{locationsId}/entryGroups/{entryGroupsId}/entries/{entriesId}:testIamPermissions',
-        http_method=u'POST',
-        method_id=u'datacatalog.projects.locations.entryGroups.entries.testIamPermissions',
-        ordered_params=[u'resource'],
-        path_params=[u'resource'],
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/entryGroups/{entryGroupsId}/entries/{entriesId}:testIamPermissions',
+        http_method='POST',
+        method_id='datacatalog.projects.locations.entryGroups.entries.testIamPermissions',
+        ordered_params=['resource'],
+        path_params=['resource'],
         query_params=[],
-        relative_path=u'v1beta1/{+resource}:testIamPermissions',
-        request_field=u'testIamPermissionsRequest',
-        request_type_name=u'DatacatalogProjectsLocationsEntryGroupsEntriesTestIamPermissionsRequest',
-        response_type_name=u'TestIamPermissionsResponse',
+        relative_path='v1beta1/{+resource}:testIamPermissions',
+        request_field='testIamPermissionsRequest',
+        request_type_name='DatacatalogProjectsLocationsEntryGroupsEntriesTestIamPermissionsRequest',
+        response_type_name='TestIamPermissionsResponse',
         supports_download=False,
     )
 
   class ProjectsLocationsEntryGroupsTagsService(base_api.BaseApiService):
     """Service class for the projects_locations_entryGroups_tags resource."""
 
-    _NAME = u'projects_locations_entryGroups_tags'
+    _NAME = 'projects_locations_entryGroups_tags'
 
     def __init__(self, client):
       super(DatacatalogV1beta1.ProjectsLocationsEntryGroupsTagsService, self).__init__(client)
@@ -536,16 +536,16 @@ used to create the tag must be from the same organization.
           config, request, global_params=global_params)
 
     Create.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/projects/{projectsId}/locations/{locationsId}/entryGroups/{entryGroupsId}/tags',
-        http_method=u'POST',
-        method_id=u'datacatalog.projects.locations.entryGroups.tags.create',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/entryGroups/{entryGroupsId}/tags',
+        http_method='POST',
+        method_id='datacatalog.projects.locations.entryGroups.tags.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
         query_params=[],
-        relative_path=u'v1beta1/{+parent}/tags',
-        request_field=u'googleCloudDatacatalogV1beta1Tag',
-        request_type_name=u'DatacatalogProjectsLocationsEntryGroupsTagsCreateRequest',
-        response_type_name=u'GoogleCloudDatacatalogV1beta1Tag',
+        relative_path='v1beta1/{+parent}/tags',
+        request_field='googleCloudDatacatalogV1beta1Tag',
+        request_type_name='DatacatalogProjectsLocationsEntryGroupsTagsCreateRequest',
+        response_type_name='GoogleCloudDatacatalogV1beta1Tag',
         supports_download=False,
     )
 
@@ -563,16 +563,16 @@ used to create the tag must be from the same organization.
           config, request, global_params=global_params)
 
     Delete.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/projects/{projectsId}/locations/{locationsId}/entryGroups/{entryGroupsId}/tags/{tagsId}',
-        http_method=u'DELETE',
-        method_id=u'datacatalog.projects.locations.entryGroups.tags.delete',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/entryGroups/{entryGroupsId}/tags/{tagsId}',
+        http_method='DELETE',
+        method_id='datacatalog.projects.locations.entryGroups.tags.delete',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1beta1/{+name}',
+        relative_path='v1beta1/{+name}',
         request_field='',
-        request_type_name=u'DatacatalogProjectsLocationsEntryGroupsTagsDeleteRequest',
-        response_type_name=u'Empty',
+        request_type_name='DatacatalogProjectsLocationsEntryGroupsTagsDeleteRequest',
+        response_type_name='Empty',
         supports_download=False,
     )
 
@@ -590,16 +590,16 @@ used to create the tag must be from the same organization.
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/projects/{projectsId}/locations/{locationsId}/entryGroups/{entryGroupsId}/tags',
-        http_method=u'GET',
-        method_id=u'datacatalog.projects.locations.entryGroups.tags.list',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'pageSize', u'pageToken'],
-        relative_path=u'v1beta1/{+parent}/tags',
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/entryGroups/{entryGroupsId}/tags',
+        http_method='GET',
+        method_id='datacatalog.projects.locations.entryGroups.tags.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v1beta1/{+parent}/tags',
         request_field='',
-        request_type_name=u'DatacatalogProjectsLocationsEntryGroupsTagsListRequest',
-        response_type_name=u'GoogleCloudDatacatalogV1beta1ListTagsResponse',
+        request_type_name='DatacatalogProjectsLocationsEntryGroupsTagsListRequest',
+        response_type_name='GoogleCloudDatacatalogV1beta1ListTagsResponse',
         supports_download=False,
     )
 
@@ -617,23 +617,23 @@ used to create the tag must be from the same organization.
           config, request, global_params=global_params)
 
     Patch.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/projects/{projectsId}/locations/{locationsId}/entryGroups/{entryGroupsId}/tags/{tagsId}',
-        http_method=u'PATCH',
-        method_id=u'datacatalog.projects.locations.entryGroups.tags.patch',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[u'updateMask'],
-        relative_path=u'v1beta1/{+name}',
-        request_field=u'googleCloudDatacatalogV1beta1Tag',
-        request_type_name=u'DatacatalogProjectsLocationsEntryGroupsTagsPatchRequest',
-        response_type_name=u'GoogleCloudDatacatalogV1beta1Tag',
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/entryGroups/{entryGroupsId}/tags/{tagsId}',
+        http_method='PATCH',
+        method_id='datacatalog.projects.locations.entryGroups.tags.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v1beta1/{+name}',
+        request_field='googleCloudDatacatalogV1beta1Tag',
+        request_type_name='DatacatalogProjectsLocationsEntryGroupsTagsPatchRequest',
+        response_type_name='GoogleCloudDatacatalogV1beta1Tag',
         supports_download=False,
     )
 
   class ProjectsLocationsEntryGroupsService(base_api.BaseApiService):
     """Service class for the projects_locations_entryGroups resource."""
 
-    _NAME = u'projects_locations_entryGroups'
+    _NAME = 'projects_locations_entryGroups'
 
     def __init__(self, client):
       super(DatacatalogV1beta1.ProjectsLocationsEntryGroupsService, self).__init__(client)
@@ -660,16 +660,16 @@ more information).
           config, request, global_params=global_params)
 
     Create.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/projects/{projectsId}/locations/{locationsId}/entryGroups',
-        http_method=u'POST',
-        method_id=u'datacatalog.projects.locations.entryGroups.create',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'entryGroupId'],
-        relative_path=u'v1beta1/{+parent}/entryGroups',
-        request_field=u'googleCloudDatacatalogV1beta1EntryGroup',
-        request_type_name=u'DatacatalogProjectsLocationsEntryGroupsCreateRequest',
-        response_type_name=u'GoogleCloudDatacatalogV1beta1EntryGroup',
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/entryGroups',
+        http_method='POST',
+        method_id='datacatalog.projects.locations.entryGroups.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['entryGroupId'],
+        relative_path='v1beta1/{+parent}/entryGroups',
+        request_field='googleCloudDatacatalogV1beta1EntryGroup',
+        request_type_name='DatacatalogProjectsLocationsEntryGroupsCreateRequest',
+        response_type_name='GoogleCloudDatacatalogV1beta1EntryGroup',
         supports_download=False,
     )
 
@@ -691,16 +691,16 @@ more information).
           config, request, global_params=global_params)
 
     Delete.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/projects/{projectsId}/locations/{locationsId}/entryGroups/{entryGroupsId}',
-        http_method=u'DELETE',
-        method_id=u'datacatalog.projects.locations.entryGroups.delete',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[u'force'],
-        relative_path=u'v1beta1/{+name}',
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/entryGroups/{entryGroupsId}',
+        http_method='DELETE',
+        method_id='datacatalog.projects.locations.entryGroups.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['force'],
+        relative_path='v1beta1/{+name}',
         request_field='',
-        request_type_name=u'DatacatalogProjectsLocationsEntryGroupsDeleteRequest',
-        response_type_name=u'Empty',
+        request_type_name='DatacatalogProjectsLocationsEntryGroupsDeleteRequest',
+        response_type_name='Empty',
         supports_download=False,
     )
 
@@ -718,16 +718,16 @@ more information).
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/projects/{projectsId}/locations/{locationsId}/entryGroups/{entryGroupsId}',
-        http_method=u'GET',
-        method_id=u'datacatalog.projects.locations.entryGroups.get',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[u'readMask'],
-        relative_path=u'v1beta1/{+name}',
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/entryGroups/{entryGroupsId}',
+        http_method='GET',
+        method_id='datacatalog.projects.locations.entryGroups.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['readMask'],
+        relative_path='v1beta1/{+name}',
         request_field='',
-        request_type_name=u'DatacatalogProjectsLocationsEntryGroupsGetRequest',
-        response_type_name=u'GoogleCloudDatacatalogV1beta1EntryGroup',
+        request_type_name='DatacatalogProjectsLocationsEntryGroupsGetRequest',
+        response_type_name='GoogleCloudDatacatalogV1beta1EntryGroup',
         supports_download=False,
     )
 
@@ -760,16 +760,16 @@ Callers must have following Google IAM permission
           config, request, global_params=global_params)
 
     GetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/projects/{projectsId}/locations/{locationsId}/entryGroups/{entryGroupsId}:getIamPolicy',
-        http_method=u'POST',
-        method_id=u'datacatalog.projects.locations.entryGroups.getIamPolicy',
-        ordered_params=[u'resource'],
-        path_params=[u'resource'],
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/entryGroups/{entryGroupsId}:getIamPolicy',
+        http_method='POST',
+        method_id='datacatalog.projects.locations.entryGroups.getIamPolicy',
+        ordered_params=['resource'],
+        path_params=['resource'],
         query_params=[],
-        relative_path=u'v1beta1/{+resource}:getIamPolicy',
-        request_field=u'getIamPolicyRequest',
-        request_type_name=u'DatacatalogProjectsLocationsEntryGroupsGetIamPolicyRequest',
-        response_type_name=u'Policy',
+        relative_path='v1beta1/{+resource}:getIamPolicy',
+        request_field='getIamPolicyRequest',
+        request_type_name='DatacatalogProjectsLocationsEntryGroupsGetIamPolicyRequest',
+        response_type_name='Policy',
         supports_download=False,
     )
 
@@ -787,16 +787,16 @@ Callers must have following Google IAM permission
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/projects/{projectsId}/locations/{locationsId}/entryGroups',
-        http_method=u'GET',
-        method_id=u'datacatalog.projects.locations.entryGroups.list',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'pageSize', u'pageToken'],
-        relative_path=u'v1beta1/{+parent}/entryGroups',
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/entryGroups',
+        http_method='GET',
+        method_id='datacatalog.projects.locations.entryGroups.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v1beta1/{+parent}/entryGroups',
         request_field='',
-        request_type_name=u'DatacatalogProjectsLocationsEntryGroupsListRequest',
-        response_type_name=u'GoogleCloudDatacatalogV1beta1ListEntryGroupsResponse',
+        request_type_name='DatacatalogProjectsLocationsEntryGroupsListRequest',
+        response_type_name='GoogleCloudDatacatalogV1beta1ListEntryGroupsResponse',
         supports_download=False,
     )
 
@@ -818,16 +818,16 @@ more information).
           config, request, global_params=global_params)
 
     Patch.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/projects/{projectsId}/locations/{locationsId}/entryGroups/{entryGroupsId}',
-        http_method=u'PATCH',
-        method_id=u'datacatalog.projects.locations.entryGroups.patch',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[u'updateMask'],
-        relative_path=u'v1beta1/{+name}',
-        request_field=u'googleCloudDatacatalogV1beta1EntryGroup',
-        request_type_name=u'DatacatalogProjectsLocationsEntryGroupsPatchRequest',
-        response_type_name=u'GoogleCloudDatacatalogV1beta1EntryGroup',
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/entryGroups/{entryGroupsId}',
+        http_method='PATCH',
+        method_id='datacatalog.projects.locations.entryGroups.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v1beta1/{+name}',
+        request_field='googleCloudDatacatalogV1beta1EntryGroup',
+        request_type_name='DatacatalogProjectsLocationsEntryGroupsPatchRequest',
+        response_type_name='GoogleCloudDatacatalogV1beta1EntryGroup',
         supports_download=False,
     )
 
@@ -858,16 +858,16 @@ Callers must have following Google IAM permission
           config, request, global_params=global_params)
 
     SetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/projects/{projectsId}/locations/{locationsId}/entryGroups/{entryGroupsId}:setIamPolicy',
-        http_method=u'POST',
-        method_id=u'datacatalog.projects.locations.entryGroups.setIamPolicy',
-        ordered_params=[u'resource'],
-        path_params=[u'resource'],
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/entryGroups/{entryGroupsId}:setIamPolicy',
+        http_method='POST',
+        method_id='datacatalog.projects.locations.entryGroups.setIamPolicy',
+        ordered_params=['resource'],
+        path_params=['resource'],
         query_params=[],
-        relative_path=u'v1beta1/{+resource}:setIamPolicy',
-        request_field=u'setIamPolicyRequest',
-        request_type_name=u'DatacatalogProjectsLocationsEntryGroupsSetIamPolicyRequest',
-        response_type_name=u'Policy',
+        relative_path='v1beta1/{+resource}:setIamPolicy',
+        request_field='setIamPolicyRequest',
+        request_type_name='DatacatalogProjectsLocationsEntryGroupsSetIamPolicyRequest',
+        response_type_name='Policy',
         supports_download=False,
     )
 
@@ -897,23 +897,23 @@ request.
           config, request, global_params=global_params)
 
     TestIamPermissions.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/projects/{projectsId}/locations/{locationsId}/entryGroups/{entryGroupsId}:testIamPermissions',
-        http_method=u'POST',
-        method_id=u'datacatalog.projects.locations.entryGroups.testIamPermissions',
-        ordered_params=[u'resource'],
-        path_params=[u'resource'],
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/entryGroups/{entryGroupsId}:testIamPermissions',
+        http_method='POST',
+        method_id='datacatalog.projects.locations.entryGroups.testIamPermissions',
+        ordered_params=['resource'],
+        path_params=['resource'],
         query_params=[],
-        relative_path=u'v1beta1/{+resource}:testIamPermissions',
-        request_field=u'testIamPermissionsRequest',
-        request_type_name=u'DatacatalogProjectsLocationsEntryGroupsTestIamPermissionsRequest',
-        response_type_name=u'TestIamPermissionsResponse',
+        relative_path='v1beta1/{+resource}:testIamPermissions',
+        request_field='testIamPermissionsRequest',
+        request_type_name='DatacatalogProjectsLocationsEntryGroupsTestIamPermissionsRequest',
+        response_type_name='TestIamPermissionsResponse',
         supports_download=False,
     )
 
   class ProjectsLocationsTagTemplatesFieldsService(base_api.BaseApiService):
     """Service class for the projects_locations_tagTemplates_fields resource."""
 
-    _NAME = u'projects_locations_tagTemplates_fields'
+    _NAME = 'projects_locations_tagTemplates_fields'
 
     def __init__(self, client):
       super(DatacatalogV1beta1.ProjectsLocationsTagTemplatesFieldsService, self).__init__(client)
@@ -938,16 +938,16 @@ for more information).
           config, request, global_params=global_params)
 
     Create.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/projects/{projectsId}/locations/{locationsId}/tagTemplates/{tagTemplatesId}/fields',
-        http_method=u'POST',
-        method_id=u'datacatalog.projects.locations.tagTemplates.fields.create',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'tagTemplateFieldId'],
-        relative_path=u'v1beta1/{+parent}/fields',
-        request_field=u'googleCloudDatacatalogV1beta1TagTemplateField',
-        request_type_name=u'DatacatalogProjectsLocationsTagTemplatesFieldsCreateRequest',
-        response_type_name=u'GoogleCloudDatacatalogV1beta1TagTemplateField',
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/tagTemplates/{tagTemplatesId}/fields',
+        http_method='POST',
+        method_id='datacatalog.projects.locations.tagTemplates.fields.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['tagTemplateFieldId'],
+        relative_path='v1beta1/{+parent}/fields',
+        request_field='googleCloudDatacatalogV1beta1TagTemplateField',
+        request_type_name='DatacatalogProjectsLocationsTagTemplatesFieldsCreateRequest',
+        response_type_name='GoogleCloudDatacatalogV1beta1TagTemplateField',
         supports_download=False,
     )
 
@@ -969,16 +969,16 @@ more information).
           config, request, global_params=global_params)
 
     Delete.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/projects/{projectsId}/locations/{locationsId}/tagTemplates/{tagTemplatesId}/fields/{fieldsId}',
-        http_method=u'DELETE',
-        method_id=u'datacatalog.projects.locations.tagTemplates.fields.delete',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[u'force'],
-        relative_path=u'v1beta1/{+name}',
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/tagTemplates/{tagTemplatesId}/fields/{fieldsId}',
+        http_method='DELETE',
+        method_id='datacatalog.projects.locations.tagTemplates.fields.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['force'],
+        relative_path='v1beta1/{+name}',
         request_field='',
-        request_type_name=u'DatacatalogProjectsLocationsTagTemplatesFieldsDeleteRequest',
-        response_type_name=u'Empty',
+        request_type_name='DatacatalogProjectsLocationsTagTemplatesFieldsDeleteRequest',
+        response_type_name='Empty',
         supports_download=False,
     )
 
@@ -1000,16 +1000,16 @@ more information).
           config, request, global_params=global_params)
 
     Patch.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/projects/{projectsId}/locations/{locationsId}/tagTemplates/{tagTemplatesId}/fields/{fieldsId}',
-        http_method=u'PATCH',
-        method_id=u'datacatalog.projects.locations.tagTemplates.fields.patch',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[u'updateMask'],
-        relative_path=u'v1beta1/{+name}',
-        request_field=u'googleCloudDatacatalogV1beta1TagTemplateField',
-        request_type_name=u'DatacatalogProjectsLocationsTagTemplatesFieldsPatchRequest',
-        response_type_name=u'GoogleCloudDatacatalogV1beta1TagTemplateField',
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/tagTemplates/{tagTemplatesId}/fields/{fieldsId}',
+        http_method='PATCH',
+        method_id='datacatalog.projects.locations.tagTemplates.fields.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v1beta1/{+name}',
+        request_field='googleCloudDatacatalogV1beta1TagTemplateField',
+        request_type_name='DatacatalogProjectsLocationsTagTemplatesFieldsPatchRequest',
+        response_type_name='GoogleCloudDatacatalogV1beta1TagTemplateField',
         supports_download=False,
     )
 
@@ -1031,23 +1031,23 @@ for more information).
           config, request, global_params=global_params)
 
     Rename.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/projects/{projectsId}/locations/{locationsId}/tagTemplates/{tagTemplatesId}/fields/{fieldsId}:rename',
-        http_method=u'POST',
-        method_id=u'datacatalog.projects.locations.tagTemplates.fields.rename',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/tagTemplates/{tagTemplatesId}/fields/{fieldsId}:rename',
+        http_method='POST',
+        method_id='datacatalog.projects.locations.tagTemplates.fields.rename',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1beta1/{+name}:rename',
-        request_field=u'googleCloudDatacatalogV1beta1RenameTagTemplateFieldRequest',
-        request_type_name=u'DatacatalogProjectsLocationsTagTemplatesFieldsRenameRequest',
-        response_type_name=u'GoogleCloudDatacatalogV1beta1TagTemplateField',
+        relative_path='v1beta1/{+name}:rename',
+        request_field='googleCloudDatacatalogV1beta1RenameTagTemplateFieldRequest',
+        request_type_name='DatacatalogProjectsLocationsTagTemplatesFieldsRenameRequest',
+        response_type_name='GoogleCloudDatacatalogV1beta1TagTemplateField',
         supports_download=False,
     )
 
   class ProjectsLocationsTagTemplatesService(base_api.BaseApiService):
     """Service class for the projects_locations_tagTemplates resource."""
 
-    _NAME = u'projects_locations_tagTemplates'
+    _NAME = 'projects_locations_tagTemplates'
 
     def __init__(self, client):
       super(DatacatalogV1beta1.ProjectsLocationsTagTemplatesService, self).__init__(client)
@@ -1072,16 +1072,16 @@ for more information).
           config, request, global_params=global_params)
 
     Create.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/projects/{projectsId}/locations/{locationsId}/tagTemplates',
-        http_method=u'POST',
-        method_id=u'datacatalog.projects.locations.tagTemplates.create',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'tagTemplateId'],
-        relative_path=u'v1beta1/{+parent}/tagTemplates',
-        request_field=u'googleCloudDatacatalogV1beta1TagTemplate',
-        request_type_name=u'DatacatalogProjectsLocationsTagTemplatesCreateRequest',
-        response_type_name=u'GoogleCloudDatacatalogV1beta1TagTemplate',
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/tagTemplates',
+        http_method='POST',
+        method_id='datacatalog.projects.locations.tagTemplates.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['tagTemplateId'],
+        relative_path='v1beta1/{+parent}/tagTemplates',
+        request_field='googleCloudDatacatalogV1beta1TagTemplate',
+        request_type_name='DatacatalogProjectsLocationsTagTemplatesCreateRequest',
+        response_type_name='GoogleCloudDatacatalogV1beta1TagTemplate',
         supports_download=False,
     )
 
@@ -1103,16 +1103,16 @@ more information).
           config, request, global_params=global_params)
 
     Delete.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/projects/{projectsId}/locations/{locationsId}/tagTemplates/{tagTemplatesId}',
-        http_method=u'DELETE',
-        method_id=u'datacatalog.projects.locations.tagTemplates.delete',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[u'force'],
-        relative_path=u'v1beta1/{+name}',
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/tagTemplates/{tagTemplatesId}',
+        http_method='DELETE',
+        method_id='datacatalog.projects.locations.tagTemplates.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['force'],
+        relative_path='v1beta1/{+name}',
         request_field='',
-        request_type_name=u'DatacatalogProjectsLocationsTagTemplatesDeleteRequest',
-        response_type_name=u'Empty',
+        request_type_name='DatacatalogProjectsLocationsTagTemplatesDeleteRequest',
+        response_type_name='Empty',
         supports_download=False,
     )
 
@@ -1130,16 +1130,16 @@ more information).
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/projects/{projectsId}/locations/{locationsId}/tagTemplates/{tagTemplatesId}',
-        http_method=u'GET',
-        method_id=u'datacatalog.projects.locations.tagTemplates.get',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/tagTemplates/{tagTemplatesId}',
+        http_method='GET',
+        method_id='datacatalog.projects.locations.tagTemplates.get',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1beta1/{+name}',
+        relative_path='v1beta1/{+name}',
         request_field='',
-        request_type_name=u'DatacatalogProjectsLocationsTagTemplatesGetRequest',
-        response_type_name=u'GoogleCloudDatacatalogV1beta1TagTemplate',
+        request_type_name='DatacatalogProjectsLocationsTagTemplatesGetRequest',
+        response_type_name='GoogleCloudDatacatalogV1beta1TagTemplate',
         supports_download=False,
     )
 
@@ -1172,16 +1172,16 @@ Callers must have following Google IAM permission
           config, request, global_params=global_params)
 
     GetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/projects/{projectsId}/locations/{locationsId}/tagTemplates/{tagTemplatesId}:getIamPolicy',
-        http_method=u'POST',
-        method_id=u'datacatalog.projects.locations.tagTemplates.getIamPolicy',
-        ordered_params=[u'resource'],
-        path_params=[u'resource'],
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/tagTemplates/{tagTemplatesId}:getIamPolicy',
+        http_method='POST',
+        method_id='datacatalog.projects.locations.tagTemplates.getIamPolicy',
+        ordered_params=['resource'],
+        path_params=['resource'],
         query_params=[],
-        relative_path=u'v1beta1/{+resource}:getIamPolicy',
-        request_field=u'getIamPolicyRequest',
-        request_type_name=u'DatacatalogProjectsLocationsTagTemplatesGetIamPolicyRequest',
-        response_type_name=u'Policy',
+        relative_path='v1beta1/{+resource}:getIamPolicy',
+        request_field='getIamPolicyRequest',
+        request_type_name='DatacatalogProjectsLocationsTagTemplatesGetIamPolicyRequest',
+        response_type_name='Policy',
         supports_download=False,
     )
 
@@ -1205,16 +1205,16 @@ more information).
           config, request, global_params=global_params)
 
     Patch.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/projects/{projectsId}/locations/{locationsId}/tagTemplates/{tagTemplatesId}',
-        http_method=u'PATCH',
-        method_id=u'datacatalog.projects.locations.tagTemplates.patch',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[u'updateMask'],
-        relative_path=u'v1beta1/{+name}',
-        request_field=u'googleCloudDatacatalogV1beta1TagTemplate',
-        request_type_name=u'DatacatalogProjectsLocationsTagTemplatesPatchRequest',
-        response_type_name=u'GoogleCloudDatacatalogV1beta1TagTemplate',
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/tagTemplates/{tagTemplatesId}',
+        http_method='PATCH',
+        method_id='datacatalog.projects.locations.tagTemplates.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v1beta1/{+name}',
+        request_field='googleCloudDatacatalogV1beta1TagTemplate',
+        request_type_name='DatacatalogProjectsLocationsTagTemplatesPatchRequest',
+        response_type_name='GoogleCloudDatacatalogV1beta1TagTemplate',
         supports_download=False,
     )
 
@@ -1245,16 +1245,16 @@ Callers must have following Google IAM permission
           config, request, global_params=global_params)
 
     SetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/projects/{projectsId}/locations/{locationsId}/tagTemplates/{tagTemplatesId}:setIamPolicy',
-        http_method=u'POST',
-        method_id=u'datacatalog.projects.locations.tagTemplates.setIamPolicy',
-        ordered_params=[u'resource'],
-        path_params=[u'resource'],
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/tagTemplates/{tagTemplatesId}:setIamPolicy',
+        http_method='POST',
+        method_id='datacatalog.projects.locations.tagTemplates.setIamPolicy',
+        ordered_params=['resource'],
+        path_params=['resource'],
         query_params=[],
-        relative_path=u'v1beta1/{+resource}:setIamPolicy',
-        request_field=u'setIamPolicyRequest',
-        request_type_name=u'DatacatalogProjectsLocationsTagTemplatesSetIamPolicyRequest',
-        response_type_name=u'Policy',
+        relative_path='v1beta1/{+resource}:setIamPolicy',
+        request_field='setIamPolicyRequest',
+        request_type_name='DatacatalogProjectsLocationsTagTemplatesSetIamPolicyRequest',
+        response_type_name='Policy',
         supports_download=False,
     )
 
@@ -1284,23 +1284,23 @@ request.
           config, request, global_params=global_params)
 
     TestIamPermissions.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/projects/{projectsId}/locations/{locationsId}/tagTemplates/{tagTemplatesId}:testIamPermissions',
-        http_method=u'POST',
-        method_id=u'datacatalog.projects.locations.tagTemplates.testIamPermissions',
-        ordered_params=[u'resource'],
-        path_params=[u'resource'],
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/tagTemplates/{tagTemplatesId}:testIamPermissions',
+        http_method='POST',
+        method_id='datacatalog.projects.locations.tagTemplates.testIamPermissions',
+        ordered_params=['resource'],
+        path_params=['resource'],
         query_params=[],
-        relative_path=u'v1beta1/{+resource}:testIamPermissions',
-        request_field=u'testIamPermissionsRequest',
-        request_type_name=u'DatacatalogProjectsLocationsTagTemplatesTestIamPermissionsRequest',
-        response_type_name=u'TestIamPermissionsResponse',
+        relative_path='v1beta1/{+resource}:testIamPermissions',
+        request_field='testIamPermissionsRequest',
+        request_type_name='DatacatalogProjectsLocationsTagTemplatesTestIamPermissionsRequest',
+        response_type_name='TestIamPermissionsResponse',
         supports_download=False,
     )
 
   class ProjectsLocationsTaxonomiesPolicyTagsService(base_api.BaseApiService):
     """Service class for the projects_locations_taxonomies_policyTags resource."""
 
-    _NAME = u'projects_locations_taxonomies_policyTags'
+    _NAME = 'projects_locations_taxonomies_policyTags'
 
     def __init__(self, client):
       super(DatacatalogV1beta1.ProjectsLocationsTaxonomiesPolicyTagsService, self).__init__(client)
@@ -1321,16 +1321,16 @@ request.
           config, request, global_params=global_params)
 
     Create.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/projects/{projectsId}/locations/{locationsId}/taxonomies/{taxonomiesId}/policyTags',
-        http_method=u'POST',
-        method_id=u'datacatalog.projects.locations.taxonomies.policyTags.create',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/taxonomies/{taxonomiesId}/policyTags',
+        http_method='POST',
+        method_id='datacatalog.projects.locations.taxonomies.policyTags.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
         query_params=[],
-        relative_path=u'v1beta1/{+parent}/policyTags',
-        request_field=u'googleCloudDatacatalogV1beta1PolicyTag',
-        request_type_name=u'DatacatalogProjectsLocationsTaxonomiesPolicyTagsCreateRequest',
-        response_type_name=u'GoogleCloudDatacatalogV1beta1PolicyTag',
+        relative_path='v1beta1/{+parent}/policyTags',
+        request_field='googleCloudDatacatalogV1beta1PolicyTag',
+        request_type_name='DatacatalogProjectsLocationsTaxonomiesPolicyTagsCreateRequest',
+        response_type_name='GoogleCloudDatacatalogV1beta1PolicyTag',
         supports_download=False,
     )
 
@@ -1348,16 +1348,16 @@ request.
           config, request, global_params=global_params)
 
     Delete.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/projects/{projectsId}/locations/{locationsId}/taxonomies/{taxonomiesId}/policyTags/{policyTagsId}',
-        http_method=u'DELETE',
-        method_id=u'datacatalog.projects.locations.taxonomies.policyTags.delete',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/taxonomies/{taxonomiesId}/policyTags/{policyTagsId}',
+        http_method='DELETE',
+        method_id='datacatalog.projects.locations.taxonomies.policyTags.delete',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1beta1/{+name}',
+        relative_path='v1beta1/{+name}',
         request_field='',
-        request_type_name=u'DatacatalogProjectsLocationsTaxonomiesPolicyTagsDeleteRequest',
-        response_type_name=u'Empty',
+        request_type_name='DatacatalogProjectsLocationsTaxonomiesPolicyTagsDeleteRequest',
+        response_type_name='Empty',
         supports_download=False,
     )
 
@@ -1375,16 +1375,16 @@ request.
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/projects/{projectsId}/locations/{locationsId}/taxonomies/{taxonomiesId}/policyTags/{policyTagsId}',
-        http_method=u'GET',
-        method_id=u'datacatalog.projects.locations.taxonomies.policyTags.get',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/taxonomies/{taxonomiesId}/policyTags/{policyTagsId}',
+        http_method='GET',
+        method_id='datacatalog.projects.locations.taxonomies.policyTags.get',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1beta1/{+name}',
+        relative_path='v1beta1/{+name}',
         request_field='',
-        request_type_name=u'DatacatalogProjectsLocationsTaxonomiesPolicyTagsGetRequest',
-        response_type_name=u'GoogleCloudDatacatalogV1beta1PolicyTag',
+        request_type_name='DatacatalogProjectsLocationsTaxonomiesPolicyTagsGetRequest',
+        response_type_name='GoogleCloudDatacatalogV1beta1PolicyTag',
         supports_download=False,
     )
 
@@ -1402,16 +1402,16 @@ request.
           config, request, global_params=global_params)
 
     GetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/projects/{projectsId}/locations/{locationsId}/taxonomies/{taxonomiesId}/policyTags/{policyTagsId}:getIamPolicy',
-        http_method=u'POST',
-        method_id=u'datacatalog.projects.locations.taxonomies.policyTags.getIamPolicy',
-        ordered_params=[u'resource'],
-        path_params=[u'resource'],
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/taxonomies/{taxonomiesId}/policyTags/{policyTagsId}:getIamPolicy',
+        http_method='POST',
+        method_id='datacatalog.projects.locations.taxonomies.policyTags.getIamPolicy',
+        ordered_params=['resource'],
+        path_params=['resource'],
         query_params=[],
-        relative_path=u'v1beta1/{+resource}:getIamPolicy',
-        request_field=u'getIamPolicyRequest',
-        request_type_name=u'DatacatalogProjectsLocationsTaxonomiesPolicyTagsGetIamPolicyRequest',
-        response_type_name=u'Policy',
+        relative_path='v1beta1/{+resource}:getIamPolicy',
+        request_field='getIamPolicyRequest',
+        request_type_name='DatacatalogProjectsLocationsTaxonomiesPolicyTagsGetIamPolicyRequest',
+        response_type_name='Policy',
         supports_download=False,
     )
 
@@ -1429,16 +1429,16 @@ request.
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/projects/{projectsId}/locations/{locationsId}/taxonomies/{taxonomiesId}/policyTags',
-        http_method=u'GET',
-        method_id=u'datacatalog.projects.locations.taxonomies.policyTags.list',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'pageSize', u'pageToken'],
-        relative_path=u'v1beta1/{+parent}/policyTags',
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/taxonomies/{taxonomiesId}/policyTags',
+        http_method='GET',
+        method_id='datacatalog.projects.locations.taxonomies.policyTags.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v1beta1/{+parent}/policyTags',
         request_field='',
-        request_type_name=u'DatacatalogProjectsLocationsTaxonomiesPolicyTagsListRequest',
-        response_type_name=u'GoogleCloudDatacatalogV1beta1ListPolicyTagsResponse',
+        request_type_name='DatacatalogProjectsLocationsTaxonomiesPolicyTagsListRequest',
+        response_type_name='GoogleCloudDatacatalogV1beta1ListPolicyTagsResponse',
         supports_download=False,
     )
 
@@ -1456,16 +1456,16 @@ request.
           config, request, global_params=global_params)
 
     Patch.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/projects/{projectsId}/locations/{locationsId}/taxonomies/{taxonomiesId}/policyTags/{policyTagsId}',
-        http_method=u'PATCH',
-        method_id=u'datacatalog.projects.locations.taxonomies.policyTags.patch',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[u'updateMask'],
-        relative_path=u'v1beta1/{+name}',
-        request_field=u'googleCloudDatacatalogV1beta1PolicyTag',
-        request_type_name=u'DatacatalogProjectsLocationsTaxonomiesPolicyTagsPatchRequest',
-        response_type_name=u'GoogleCloudDatacatalogV1beta1PolicyTag',
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/taxonomies/{taxonomiesId}/policyTags/{policyTagsId}',
+        http_method='PATCH',
+        method_id='datacatalog.projects.locations.taxonomies.policyTags.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v1beta1/{+name}',
+        request_field='googleCloudDatacatalogV1beta1PolicyTag',
+        request_type_name='DatacatalogProjectsLocationsTaxonomiesPolicyTagsPatchRequest',
+        response_type_name='GoogleCloudDatacatalogV1beta1PolicyTag',
         supports_download=False,
     )
 
@@ -1483,16 +1483,16 @@ request.
           config, request, global_params=global_params)
 
     SetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/projects/{projectsId}/locations/{locationsId}/taxonomies/{taxonomiesId}/policyTags/{policyTagsId}:setIamPolicy',
-        http_method=u'POST',
-        method_id=u'datacatalog.projects.locations.taxonomies.policyTags.setIamPolicy',
-        ordered_params=[u'resource'],
-        path_params=[u'resource'],
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/taxonomies/{taxonomiesId}/policyTags/{policyTagsId}:setIamPolicy',
+        http_method='POST',
+        method_id='datacatalog.projects.locations.taxonomies.policyTags.setIamPolicy',
+        ordered_params=['resource'],
+        path_params=['resource'],
         query_params=[],
-        relative_path=u'v1beta1/{+resource}:setIamPolicy',
-        request_field=u'setIamPolicyRequest',
-        request_type_name=u'DatacatalogProjectsLocationsTaxonomiesPolicyTagsSetIamPolicyRequest',
-        response_type_name=u'Policy',
+        relative_path='v1beta1/{+resource}:setIamPolicy',
+        request_field='setIamPolicyRequest',
+        request_type_name='DatacatalogProjectsLocationsTaxonomiesPolicyTagsSetIamPolicyRequest',
+        response_type_name='Policy',
         supports_download=False,
     )
 
@@ -1511,23 +1511,23 @@ policy tag.
           config, request, global_params=global_params)
 
     TestIamPermissions.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/projects/{projectsId}/locations/{locationsId}/taxonomies/{taxonomiesId}/policyTags/{policyTagsId}:testIamPermissions',
-        http_method=u'POST',
-        method_id=u'datacatalog.projects.locations.taxonomies.policyTags.testIamPermissions',
-        ordered_params=[u'resource'],
-        path_params=[u'resource'],
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/taxonomies/{taxonomiesId}/policyTags/{policyTagsId}:testIamPermissions',
+        http_method='POST',
+        method_id='datacatalog.projects.locations.taxonomies.policyTags.testIamPermissions',
+        ordered_params=['resource'],
+        path_params=['resource'],
         query_params=[],
-        relative_path=u'v1beta1/{+resource}:testIamPermissions',
-        request_field=u'testIamPermissionsRequest',
-        request_type_name=u'DatacatalogProjectsLocationsTaxonomiesPolicyTagsTestIamPermissionsRequest',
-        response_type_name=u'TestIamPermissionsResponse',
+        relative_path='v1beta1/{+resource}:testIamPermissions',
+        request_field='testIamPermissionsRequest',
+        request_type_name='DatacatalogProjectsLocationsTaxonomiesPolicyTagsTestIamPermissionsRequest',
+        response_type_name='TestIamPermissionsResponse',
         supports_download=False,
     )
 
   class ProjectsLocationsTaxonomiesService(base_api.BaseApiService):
     """Service class for the projects_locations_taxonomies resource."""
 
-    _NAME = u'projects_locations_taxonomies'
+    _NAME = 'projects_locations_taxonomies'
 
     def __init__(self, client):
       super(DatacatalogV1beta1.ProjectsLocationsTaxonomiesService, self).__init__(client)
@@ -1548,16 +1548,16 @@ policy tag.
           config, request, global_params=global_params)
 
     Create.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/projects/{projectsId}/locations/{locationsId}/taxonomies',
-        http_method=u'POST',
-        method_id=u'datacatalog.projects.locations.taxonomies.create',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/taxonomies',
+        http_method='POST',
+        method_id='datacatalog.projects.locations.taxonomies.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
         query_params=[],
-        relative_path=u'v1beta1/{+parent}/taxonomies',
-        request_field=u'googleCloudDatacatalogV1beta1Taxonomy',
-        request_type_name=u'DatacatalogProjectsLocationsTaxonomiesCreateRequest',
-        response_type_name=u'GoogleCloudDatacatalogV1beta1Taxonomy',
+        relative_path='v1beta1/{+parent}/taxonomies',
+        request_field='googleCloudDatacatalogV1beta1Taxonomy',
+        request_type_name='DatacatalogProjectsLocationsTaxonomiesCreateRequest',
+        response_type_name='GoogleCloudDatacatalogV1beta1Taxonomy',
         supports_download=False,
     )
 
@@ -1576,16 +1576,16 @@ policy tags in this taxonomy along with their associated policies.
           config, request, global_params=global_params)
 
     Delete.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/projects/{projectsId}/locations/{locationsId}/taxonomies/{taxonomiesId}',
-        http_method=u'DELETE',
-        method_id=u'datacatalog.projects.locations.taxonomies.delete',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/taxonomies/{taxonomiesId}',
+        http_method='DELETE',
+        method_id='datacatalog.projects.locations.taxonomies.delete',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1beta1/{+name}',
+        relative_path='v1beta1/{+name}',
         request_field='',
-        request_type_name=u'DatacatalogProjectsLocationsTaxonomiesDeleteRequest',
-        response_type_name=u'Empty',
+        request_type_name='DatacatalogProjectsLocationsTaxonomiesDeleteRequest',
+        response_type_name='Empty',
         supports_download=False,
     )
 
@@ -1606,16 +1606,16 @@ that can be used as an input for future ImportTaxonomies calls.
           config, request, global_params=global_params)
 
     Export.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/projects/{projectsId}/locations/{locationsId}/taxonomies:export',
-        http_method=u'GET',
-        method_id=u'datacatalog.projects.locations.taxonomies.export',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'serializedTaxonomies', u'taxonomies'],
-        relative_path=u'v1beta1/{+parent}/taxonomies:export',
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/taxonomies:export',
+        http_method='GET',
+        method_id='datacatalog.projects.locations.taxonomies.export',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['serializedTaxonomies', 'taxonomies'],
+        relative_path='v1beta1/{+parent}/taxonomies:export',
         request_field='',
-        request_type_name=u'DatacatalogProjectsLocationsTaxonomiesExportRequest',
-        response_type_name=u'GoogleCloudDatacatalogV1beta1ExportTaxonomiesResponse',
+        request_type_name='DatacatalogProjectsLocationsTaxonomiesExportRequest',
+        response_type_name='GoogleCloudDatacatalogV1beta1ExportTaxonomiesResponse',
         supports_download=False,
     )
 
@@ -1633,16 +1633,16 @@ that can be used as an input for future ImportTaxonomies calls.
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/projects/{projectsId}/locations/{locationsId}/taxonomies/{taxonomiesId}',
-        http_method=u'GET',
-        method_id=u'datacatalog.projects.locations.taxonomies.get',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/taxonomies/{taxonomiesId}',
+        http_method='GET',
+        method_id='datacatalog.projects.locations.taxonomies.get',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1beta1/{+name}',
+        relative_path='v1beta1/{+name}',
         request_field='',
-        request_type_name=u'DatacatalogProjectsLocationsTaxonomiesGetRequest',
-        response_type_name=u'GoogleCloudDatacatalogV1beta1Taxonomy',
+        request_type_name='DatacatalogProjectsLocationsTaxonomiesGetRequest',
+        response_type_name='GoogleCloudDatacatalogV1beta1Taxonomy',
         supports_download=False,
     )
 
@@ -1660,16 +1660,16 @@ that can be used as an input for future ImportTaxonomies calls.
           config, request, global_params=global_params)
 
     GetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/projects/{projectsId}/locations/{locationsId}/taxonomies/{taxonomiesId}:getIamPolicy',
-        http_method=u'POST',
-        method_id=u'datacatalog.projects.locations.taxonomies.getIamPolicy',
-        ordered_params=[u'resource'],
-        path_params=[u'resource'],
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/taxonomies/{taxonomiesId}:getIamPolicy',
+        http_method='POST',
+        method_id='datacatalog.projects.locations.taxonomies.getIamPolicy',
+        ordered_params=['resource'],
+        path_params=['resource'],
         query_params=[],
-        relative_path=u'v1beta1/{+resource}:getIamPolicy',
-        request_field=u'getIamPolicyRequest',
-        request_type_name=u'DatacatalogProjectsLocationsTaxonomiesGetIamPolicyRequest',
-        response_type_name=u'Policy',
+        relative_path='v1beta1/{+resource}:getIamPolicy',
+        request_field='getIamPolicyRequest',
+        request_type_name='DatacatalogProjectsLocationsTaxonomiesGetIamPolicyRequest',
+        response_type_name='Policy',
         supports_download=False,
     )
 
@@ -1691,16 +1691,16 @@ proto structure.
           config, request, global_params=global_params)
 
     Import.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/projects/{projectsId}/locations/{locationsId}/taxonomies:import',
-        http_method=u'POST',
-        method_id=u'datacatalog.projects.locations.taxonomies.import',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/taxonomies:import',
+        http_method='POST',
+        method_id='datacatalog.projects.locations.taxonomies.import',
+        ordered_params=['parent'],
+        path_params=['parent'],
         query_params=[],
-        relative_path=u'v1beta1/{+parent}/taxonomies:import',
-        request_field=u'googleCloudDatacatalogV1beta1ImportTaxonomiesRequest',
-        request_type_name=u'DatacatalogProjectsLocationsTaxonomiesImportRequest',
-        response_type_name=u'GoogleCloudDatacatalogV1beta1ImportTaxonomiesResponse',
+        relative_path='v1beta1/{+parent}/taxonomies:import',
+        request_field='googleCloudDatacatalogV1beta1ImportTaxonomiesRequest',
+        request_type_name='DatacatalogProjectsLocationsTaxonomiesImportRequest',
+        response_type_name='GoogleCloudDatacatalogV1beta1ImportTaxonomiesResponse',
         supports_download=False,
     )
 
@@ -1719,16 +1719,16 @@ has permission to view.
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/projects/{projectsId}/locations/{locationsId}/taxonomies',
-        http_method=u'GET',
-        method_id=u'datacatalog.projects.locations.taxonomies.list',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'pageSize', u'pageToken'],
-        relative_path=u'v1beta1/{+parent}/taxonomies',
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/taxonomies',
+        http_method='GET',
+        method_id='datacatalog.projects.locations.taxonomies.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v1beta1/{+parent}/taxonomies',
         request_field='',
-        request_type_name=u'DatacatalogProjectsLocationsTaxonomiesListRequest',
-        response_type_name=u'GoogleCloudDatacatalogV1beta1ListTaxonomiesResponse',
+        request_type_name='DatacatalogProjectsLocationsTaxonomiesListRequest',
+        response_type_name='GoogleCloudDatacatalogV1beta1ListTaxonomiesResponse',
         supports_download=False,
     )
 
@@ -1746,16 +1746,16 @@ has permission to view.
           config, request, global_params=global_params)
 
     Patch.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/projects/{projectsId}/locations/{locationsId}/taxonomies/{taxonomiesId}',
-        http_method=u'PATCH',
-        method_id=u'datacatalog.projects.locations.taxonomies.patch',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[u'updateMask'],
-        relative_path=u'v1beta1/{+name}',
-        request_field=u'googleCloudDatacatalogV1beta1Taxonomy',
-        request_type_name=u'DatacatalogProjectsLocationsTaxonomiesPatchRequest',
-        response_type_name=u'GoogleCloudDatacatalogV1beta1Taxonomy',
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/taxonomies/{taxonomiesId}',
+        http_method='PATCH',
+        method_id='datacatalog.projects.locations.taxonomies.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v1beta1/{+name}',
+        request_field='googleCloudDatacatalogV1beta1Taxonomy',
+        request_type_name='DatacatalogProjectsLocationsTaxonomiesPatchRequest',
+        response_type_name='GoogleCloudDatacatalogV1beta1Taxonomy',
         supports_download=False,
     )
 
@@ -1773,16 +1773,16 @@ has permission to view.
           config, request, global_params=global_params)
 
     SetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/projects/{projectsId}/locations/{locationsId}/taxonomies/{taxonomiesId}:setIamPolicy',
-        http_method=u'POST',
-        method_id=u'datacatalog.projects.locations.taxonomies.setIamPolicy',
-        ordered_params=[u'resource'],
-        path_params=[u'resource'],
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/taxonomies/{taxonomiesId}:setIamPolicy',
+        http_method='POST',
+        method_id='datacatalog.projects.locations.taxonomies.setIamPolicy',
+        ordered_params=['resource'],
+        path_params=['resource'],
         query_params=[],
-        relative_path=u'v1beta1/{+resource}:setIamPolicy',
-        request_field=u'setIamPolicyRequest',
-        request_type_name=u'DatacatalogProjectsLocationsTaxonomiesSetIamPolicyRequest',
-        response_type_name=u'Policy',
+        relative_path='v1beta1/{+resource}:setIamPolicy',
+        request_field='setIamPolicyRequest',
+        request_type_name='DatacatalogProjectsLocationsTaxonomiesSetIamPolicyRequest',
+        response_type_name='Policy',
         supports_download=False,
     )
 
@@ -1801,23 +1801,23 @@ policy tag.
           config, request, global_params=global_params)
 
     TestIamPermissions.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/projects/{projectsId}/locations/{locationsId}/taxonomies/{taxonomiesId}:testIamPermissions',
-        http_method=u'POST',
-        method_id=u'datacatalog.projects.locations.taxonomies.testIamPermissions',
-        ordered_params=[u'resource'],
-        path_params=[u'resource'],
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/taxonomies/{taxonomiesId}:testIamPermissions',
+        http_method='POST',
+        method_id='datacatalog.projects.locations.taxonomies.testIamPermissions',
+        ordered_params=['resource'],
+        path_params=['resource'],
         query_params=[],
-        relative_path=u'v1beta1/{+resource}:testIamPermissions',
-        request_field=u'testIamPermissionsRequest',
-        request_type_name=u'DatacatalogProjectsLocationsTaxonomiesTestIamPermissionsRequest',
-        response_type_name=u'TestIamPermissionsResponse',
+        relative_path='v1beta1/{+resource}:testIamPermissions',
+        request_field='testIamPermissionsRequest',
+        request_type_name='DatacatalogProjectsLocationsTaxonomiesTestIamPermissionsRequest',
+        response_type_name='TestIamPermissionsResponse',
         supports_download=False,
     )
 
   class ProjectsLocationsService(base_api.BaseApiService):
     """Service class for the projects_locations resource."""
 
-    _NAME = u'projects_locations'
+    _NAME = 'projects_locations'
 
     def __init__(self, client):
       super(DatacatalogV1beta1.ProjectsLocationsService, self).__init__(client)
@@ -1827,7 +1827,7 @@ policy tag.
   class ProjectsService(base_api.BaseApiService):
     """Service class for the projects resource."""
 
-    _NAME = u'projects'
+    _NAME = 'projects'
 
     def __init__(self, client):
       super(DatacatalogV1beta1.ProjectsService, self).__init__(client)

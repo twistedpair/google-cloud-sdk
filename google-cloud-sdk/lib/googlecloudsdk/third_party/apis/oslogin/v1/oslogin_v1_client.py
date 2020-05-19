@@ -8,17 +8,17 @@ class OsloginV1(base_api.BaseApiClient):
   """Generated client library for service oslogin version v1."""
 
   MESSAGES_MODULE = messages
-  BASE_URL = u'https://oslogin.googleapis.com/'
-  MTLS_BASE_URL = u'https://oslogin.mtls.googleapis.com/'
+  BASE_URL = 'https://oslogin.googleapis.com/'
+  MTLS_BASE_URL = 'https://oslogin.mtls.googleapis.com/'
 
-  _PACKAGE = u'oslogin'
-  _SCOPES = [u'https://www.googleapis.com/auth/cloud-platform', u'https://www.googleapis.com/auth/compute']
-  _VERSION = u'v1'
+  _PACKAGE = 'oslogin'
+  _SCOPES = ['https://www.googleapis.com/auth/cloud-platform', 'https://www.googleapis.com/auth/compute']
+  _VERSION = 'v1'
   _CLIENT_ID = '1042881264118.apps.googleusercontent.com'
   _CLIENT_SECRET = 'x_Tw5K8nnjoRAqULM9PFAC2b'
-  _USER_AGENT = u'google-cloud-sdk'
-  _CLIENT_CLASS_NAME = u'OsloginV1'
-  _URL_VERSION = u'v1'
+  _USER_AGENT = 'google-cloud-sdk'
+  _CLIENT_CLASS_NAME = 'OsloginV1'
+  _URL_VERSION = 'v1'
   _API_KEY = None
 
   def __init__(self, url='', credentials=None,
@@ -43,7 +43,7 @@ class OsloginV1(base_api.BaseApiClient):
   class UsersProjectsService(base_api.BaseApiService):
     """Service class for the users_projects resource."""
 
-    _NAME = u'users_projects'
+    _NAME = 'users_projects'
 
     def __init__(self, client):
       super(OsloginV1.UsersProjectsService, self).__init__(client)
@@ -64,23 +64,23 @@ class OsloginV1(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Delete.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/users/{usersId}/projects/{projectsId}',
-        http_method=u'DELETE',
-        method_id=u'oslogin.users.projects.delete',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1/users/{usersId}/projects/{projectsId}',
+        http_method='DELETE',
+        method_id='oslogin.users.projects.delete',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1/{+name}',
+        relative_path='v1/{+name}',
         request_field='',
-        request_type_name=u'OsloginUsersProjectsDeleteRequest',
-        response_type_name=u'Empty',
+        request_type_name='OsloginUsersProjectsDeleteRequest',
+        response_type_name='Empty',
         supports_download=False,
     )
 
   class UsersSshPublicKeysService(base_api.BaseApiService):
     """Service class for the users_sshPublicKeys resource."""
 
-    _NAME = u'users_sshPublicKeys'
+    _NAME = 'users_sshPublicKeys'
 
     def __init__(self, client):
       super(OsloginV1.UsersSshPublicKeysService, self).__init__(client)
@@ -101,16 +101,16 @@ class OsloginV1(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Delete.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/users/{usersId}/sshPublicKeys/{sshPublicKeysId}',
-        http_method=u'DELETE',
-        method_id=u'oslogin.users.sshPublicKeys.delete',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1/users/{usersId}/sshPublicKeys/{sshPublicKeysId}',
+        http_method='DELETE',
+        method_id='oslogin.users.sshPublicKeys.delete',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1/{+name}',
+        relative_path='v1/{+name}',
         request_field='',
-        request_type_name=u'OsloginUsersSshPublicKeysDeleteRequest',
-        response_type_name=u'Empty',
+        request_type_name='OsloginUsersSshPublicKeysDeleteRequest',
+        response_type_name='Empty',
         supports_download=False,
     )
 
@@ -128,16 +128,16 @@ class OsloginV1(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/users/{usersId}/sshPublicKeys/{sshPublicKeysId}',
-        http_method=u'GET',
-        method_id=u'oslogin.users.sshPublicKeys.get',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1/users/{usersId}/sshPublicKeys/{sshPublicKeysId}',
+        http_method='GET',
+        method_id='oslogin.users.sshPublicKeys.get',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1/{+name}',
+        relative_path='v1/{+name}',
         request_field='',
-        request_type_name=u'OsloginUsersSshPublicKeysGetRequest',
-        response_type_name=u'SshPublicKey',
+        request_type_name='OsloginUsersSshPublicKeysGetRequest',
+        response_type_name='SshPublicKey',
         supports_download=False,
     )
 
@@ -156,23 +156,23 @@ supports patch semantics.
           config, request, global_params=global_params)
 
     Patch.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/users/{usersId}/sshPublicKeys/{sshPublicKeysId}',
-        http_method=u'PATCH',
-        method_id=u'oslogin.users.sshPublicKeys.patch',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[u'updateMask'],
-        relative_path=u'v1/{+name}',
-        request_field=u'sshPublicKey',
-        request_type_name=u'OsloginUsersSshPublicKeysPatchRequest',
-        response_type_name=u'SshPublicKey',
+        flat_path='v1/users/{usersId}/sshPublicKeys/{sshPublicKeysId}',
+        http_method='PATCH',
+        method_id='oslogin.users.sshPublicKeys.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v1/{+name}',
+        request_field='sshPublicKey',
+        request_type_name='OsloginUsersSshPublicKeysPatchRequest',
+        response_type_name='SshPublicKey',
         supports_download=False,
     )
 
   class UsersService(base_api.BaseApiService):
     """Service class for the users resource."""
 
-    _NAME = u'users'
+    _NAME = 'users'
 
     def __init__(self, client):
       super(OsloginV1.UsersService, self).__init__(client)
@@ -194,16 +194,16 @@ on Google Compute Engine.
           config, request, global_params=global_params)
 
     GetLoginProfile.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/users/{usersId}/loginProfile',
-        http_method=u'GET',
-        method_id=u'oslogin.users.getLoginProfile',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[u'projectId', u'systemId'],
-        relative_path=u'v1/{+name}/loginProfile',
+        flat_path='v1/users/{usersId}/loginProfile',
+        http_method='GET',
+        method_id='oslogin.users.getLoginProfile',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['projectId', 'systemId'],
+        relative_path='v1/{+name}/loginProfile',
         request_field='',
-        request_type_name=u'OsloginUsersGetLoginProfileRequest',
-        response_type_name=u'LoginProfile',
+        request_type_name='OsloginUsersGetLoginProfileRequest',
+        response_type_name='LoginProfile',
         supports_download=False,
     )
 
@@ -223,15 +223,15 @@ login profile.
           config, request, global_params=global_params)
 
     ImportSshPublicKey.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/users/{usersId}:importSshPublicKey',
-        http_method=u'POST',
-        method_id=u'oslogin.users.importSshPublicKey',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'projectId'],
-        relative_path=u'v1/{+parent}:importSshPublicKey',
-        request_field=u'sshPublicKey',
-        request_type_name=u'OsloginUsersImportSshPublicKeyRequest',
-        response_type_name=u'ImportSshPublicKeyResponse',
+        flat_path='v1/users/{usersId}:importSshPublicKey',
+        http_method='POST',
+        method_id='oslogin.users.importSshPublicKey',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['projectId'],
+        relative_path='v1/{+parent}:importSshPublicKey',
+        request_field='sshPublicKey',
+        request_type_name='OsloginUsersImportSshPublicKeyRequest',
+        response_type_name='ImportSshPublicKeyResponse',
         supports_download=False,
     )

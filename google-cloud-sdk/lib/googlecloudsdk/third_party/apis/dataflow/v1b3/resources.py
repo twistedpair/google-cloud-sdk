@@ -28,7 +28,7 @@ class Collections(enum.Enum):
       'projects',
       'projects/{projectId}',
       {},
-      [u'projectId'],
+      ['projectId'],
       True
   )
   PROJECTS_CATALOGTEMPLATES = (
@@ -38,56 +38,56 @@ class Collections(enum.Enum):
           '':
               'projects/{projectsId}/catalogTemplates/{catalogTemplatesId}',
       },
-      [u'name'],
+      ['name'],
       True
   )
   PROJECTS_JOBS = (
       'projects.jobs',
       'projects/{projectId}/jobs/{jobId}',
       {},
-      [u'projectId', u'jobId'],
+      ['projectId', 'jobId'],
       True
   )
   PROJECTS_LOCATIONS = (
       'projects.locations',
       'projects/{projectId}/locations/{location}',
       {},
-      [u'projectId', u'location'],
+      ['projectId', 'location'],
       True
   )
   PROJECTS_LOCATIONS_JOBS = (
       'projects.locations.jobs',
       'projects/{projectId}/locations/{location}/jobs/{jobId}',
       {},
-      [u'projectId', u'location', u'jobId'],
+      ['projectId', 'location', 'jobId'],
       True
   )
   PROJECTS_LOCATIONS_SNAPSHOTS = (
       'projects.locations.snapshots',
       'projects/{projectId}/locations/{location}/snapshots/{snapshotId}',
       {},
-      [u'projectId', u'location', u'snapshotId'],
+      ['projectId', 'location', 'snapshotId'],
       True
   )
   PROJECTS_LOCATIONS_TEMPLATES = (
       'projects.locations.templates',
       'projects/{projectId}/locations/{location}/templates:get',
       {},
-      [u'projectId', u'location'],
+      ['projectId', 'location'],
       True
   )
   PROJECTS_SNAPSHOTS = (
       'projects.snapshots',
       'projects/{projectId}/snapshots/{snapshotId}',
       {},
-      [u'projectId', u'snapshotId'],
+      ['projectId', 'snapshotId'],
       True
   )
   PROJECTS_TEMPLATES = (
       'projects.templates',
       'projects/{projectId}/templates:get',
       {},
-      [u'projectId'],
+      ['projectId'],
       True
   )
 

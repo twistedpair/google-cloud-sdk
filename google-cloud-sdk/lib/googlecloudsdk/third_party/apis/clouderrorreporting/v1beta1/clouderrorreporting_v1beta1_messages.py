@@ -427,10 +427,10 @@ class ReportedErrorEvent(_messages.Message):
       as returned by V8. * **Ruby**: Must contain frames returned by
       [`Exception.backtrace`](https://ruby-
       doc.org/core-2.2.0/Exception.html#method-i-backtrace). * **C#**: Must be
-      the return value of [`Exception.ToString()`](https://msdn.microsoft.com
-      /en-us/library/system.exception.tostring.aspx). * **PHP**: Must start
-      with `PHP (Notice|Parse error|Fatal error|Warning)` and contain the
-      result of
+      the return value of
+      [`Exception.ToString()`](https://msdn.microsoft.com/en-
+      us/library/system.exception.tostring.aspx). * **PHP**: Must start with
+      `PHP (Notice|Parse error|Fatal error|Warning)` and contain the result of
       [`(string)$exception`](http://php.net/manual/en/exception.tostring.php).
       * **Go**: Must be the return value of
       [`runtime.Stack()`](https://golang.org/pkg/runtime/debug/#Stack).
@@ -556,7 +556,7 @@ class StandardQueryParameters(_messages.Message):
 
   f__xgafv = _messages.EnumField('FXgafvValueValuesEnum', 1)
   access_token = _messages.StringField(2)
-  alt = _messages.EnumField('AltValueValuesEnum', 3, default=u'json')
+  alt = _messages.EnumField('AltValueValuesEnum', 3, default='json')
   callback = _messages.StringField(4)
   fields = _messages.StringField(5)
   key = _messages.StringField(6)

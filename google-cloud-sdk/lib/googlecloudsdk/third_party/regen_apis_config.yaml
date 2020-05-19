@@ -18,8 +18,8 @@
 # everytime some input discovery doc is added/updated or apitools generation
 # code has been changed.
 
-# To add new api simply add an entry with its api name and version
-# pointing to its discovery doc file which should be checked into root_dir.
+# To add a new API, simply add an entry with its api name and version
+# pointing to its discovery doc file, which should be checked into root_dir.
 
 # api version can have the following fields:
 # api_name:
@@ -671,6 +671,13 @@ apis:
   resourcesettings:
     v1alpha1:
       discovery_doc: resourcesettings_v1alpha1.json
+      unelidable_request_methods:
+      - resourcesettings.folders.settings.value.create
+      - resourcesettings.folders.settings.updateValue
+      - resourcesettings.organizations.settings.value.create
+      - resourcesettings.organizations.settings.updateValue
+      - resourcesettings.projects.settings.value.create
+      - resourcesettings.projects.settings.updateValue
   run:
     v1alpha1:
       discovery_doc: run_v1alpha1.json

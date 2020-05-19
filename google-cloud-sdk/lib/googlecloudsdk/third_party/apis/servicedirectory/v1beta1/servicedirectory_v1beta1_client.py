@@ -8,17 +8,17 @@ class ServicedirectoryV1beta1(base_api.BaseApiClient):
   """Generated client library for service servicedirectory version v1beta1."""
 
   MESSAGES_MODULE = messages
-  BASE_URL = u'https://servicedirectory.googleapis.com/'
-  MTLS_BASE_URL = u'https://servicedirectory.mtls.googleapis.com/'
+  BASE_URL = 'https://servicedirectory.googleapis.com/'
+  MTLS_BASE_URL = 'https://servicedirectory.mtls.googleapis.com/'
 
-  _PACKAGE = u'servicedirectory'
-  _SCOPES = [u'https://www.googleapis.com/auth/cloud-platform']
-  _VERSION = u'v1beta1'
+  _PACKAGE = 'servicedirectory'
+  _SCOPES = ['https://www.googleapis.com/auth/cloud-platform']
+  _VERSION = 'v1beta1'
   _CLIENT_ID = '1042881264118.apps.googleusercontent.com'
   _CLIENT_SECRET = 'x_Tw5K8nnjoRAqULM9PFAC2b'
-  _USER_AGENT = u'google-cloud-sdk'
-  _CLIENT_CLASS_NAME = u'ServicedirectoryV1beta1'
-  _URL_VERSION = u'v1beta1'
+  _USER_AGENT = 'google-cloud-sdk'
+  _CLIENT_CLASS_NAME = 'ServicedirectoryV1beta1'
+  _URL_VERSION = 'v1beta1'
   _API_KEY = None
 
   def __init__(self, url='', credentials=None,
@@ -45,7 +45,7 @@ class ServicedirectoryV1beta1(base_api.BaseApiClient):
   class ProjectsLocationsNamespacesServicesEndpointsService(base_api.BaseApiService):
     """Service class for the projects_locations_namespaces_services_endpoints resource."""
 
-    _NAME = u'projects_locations_namespaces_services_endpoints'
+    _NAME = 'projects_locations_namespaces_services_endpoints'
 
     def __init__(self, client):
       super(ServicedirectoryV1beta1.ProjectsLocationsNamespacesServicesEndpointsService, self).__init__(client)
@@ -66,16 +66,16 @@ class ServicedirectoryV1beta1(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Create.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/projects/{projectsId}/locations/{locationsId}/namespaces/{namespacesId}/services/{servicesId}/endpoints',
-        http_method=u'POST',
-        method_id=u'servicedirectory.projects.locations.namespaces.services.endpoints.create',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'endpointId'],
-        relative_path=u'v1beta1/{+parent}/endpoints',
-        request_field=u'endpoint',
-        request_type_name=u'ServicedirectoryProjectsLocationsNamespacesServicesEndpointsCreateRequest',
-        response_type_name=u'Endpoint',
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/namespaces/{namespacesId}/services/{servicesId}/endpoints',
+        http_method='POST',
+        method_id='servicedirectory.projects.locations.namespaces.services.endpoints.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['endpointId'],
+        relative_path='v1beta1/{+parent}/endpoints',
+        request_field='endpoint',
+        request_type_name='ServicedirectoryProjectsLocationsNamespacesServicesEndpointsCreateRequest',
+        response_type_name='Endpoint',
         supports_download=False,
     )
 
@@ -93,16 +93,16 @@ class ServicedirectoryV1beta1(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Delete.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/projects/{projectsId}/locations/{locationsId}/namespaces/{namespacesId}/services/{servicesId}/endpoints/{endpointsId}',
-        http_method=u'DELETE',
-        method_id=u'servicedirectory.projects.locations.namespaces.services.endpoints.delete',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/namespaces/{namespacesId}/services/{servicesId}/endpoints/{endpointsId}',
+        http_method='DELETE',
+        method_id='servicedirectory.projects.locations.namespaces.services.endpoints.delete',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1beta1/{+name}',
+        relative_path='v1beta1/{+name}',
         request_field='',
-        request_type_name=u'ServicedirectoryProjectsLocationsNamespacesServicesEndpointsDeleteRequest',
-        response_type_name=u'Empty',
+        request_type_name='ServicedirectoryProjectsLocationsNamespacesServicesEndpointsDeleteRequest',
+        response_type_name='Empty',
         supports_download=False,
     )
 
@@ -120,16 +120,16 @@ class ServicedirectoryV1beta1(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/projects/{projectsId}/locations/{locationsId}/namespaces/{namespacesId}/services/{servicesId}/endpoints/{endpointsId}',
-        http_method=u'GET',
-        method_id=u'servicedirectory.projects.locations.namespaces.services.endpoints.get',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/namespaces/{namespacesId}/services/{servicesId}/endpoints/{endpointsId}',
+        http_method='GET',
+        method_id='servicedirectory.projects.locations.namespaces.services.endpoints.get',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1beta1/{+name}',
+        relative_path='v1beta1/{+name}',
         request_field='',
-        request_type_name=u'ServicedirectoryProjectsLocationsNamespacesServicesEndpointsGetRequest',
-        response_type_name=u'Endpoint',
+        request_type_name='ServicedirectoryProjectsLocationsNamespacesServicesEndpointsGetRequest',
+        response_type_name='Endpoint',
         supports_download=False,
     )
 
@@ -147,16 +147,16 @@ class ServicedirectoryV1beta1(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/projects/{projectsId}/locations/{locationsId}/namespaces/{namespacesId}/services/{servicesId}/endpoints',
-        http_method=u'GET',
-        method_id=u'servicedirectory.projects.locations.namespaces.services.endpoints.list',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'filter', u'orderBy', u'pageSize', u'pageToken'],
-        relative_path=u'v1beta1/{+parent}/endpoints',
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/namespaces/{namespacesId}/services/{servicesId}/endpoints',
+        http_method='GET',
+        method_id='servicedirectory.projects.locations.namespaces.services.endpoints.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'orderBy', 'pageSize', 'pageToken'],
+        relative_path='v1beta1/{+parent}/endpoints',
         request_field='',
-        request_type_name=u'ServicedirectoryProjectsLocationsNamespacesServicesEndpointsListRequest',
-        response_type_name=u'ListEndpointsResponse',
+        request_type_name='ServicedirectoryProjectsLocationsNamespacesServicesEndpointsListRequest',
+        response_type_name='ListEndpointsResponse',
         supports_download=False,
     )
 
@@ -174,23 +174,23 @@ class ServicedirectoryV1beta1(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Patch.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/projects/{projectsId}/locations/{locationsId}/namespaces/{namespacesId}/services/{servicesId}/endpoints/{endpointsId}',
-        http_method=u'PATCH',
-        method_id=u'servicedirectory.projects.locations.namespaces.services.endpoints.patch',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[u'updateMask'],
-        relative_path=u'v1beta1/{+name}',
-        request_field=u'endpoint',
-        request_type_name=u'ServicedirectoryProjectsLocationsNamespacesServicesEndpointsPatchRequest',
-        response_type_name=u'Endpoint',
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/namespaces/{namespacesId}/services/{servicesId}/endpoints/{endpointsId}',
+        http_method='PATCH',
+        method_id='servicedirectory.projects.locations.namespaces.services.endpoints.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v1beta1/{+name}',
+        request_field='endpoint',
+        request_type_name='ServicedirectoryProjectsLocationsNamespacesServicesEndpointsPatchRequest',
+        response_type_name='Endpoint',
         supports_download=False,
     )
 
   class ProjectsLocationsNamespacesServicesService(base_api.BaseApiService):
     """Service class for the projects_locations_namespaces_services resource."""
 
-    _NAME = u'projects_locations_namespaces_services'
+    _NAME = 'projects_locations_namespaces_services'
 
     def __init__(self, client):
       super(ServicedirectoryV1beta1.ProjectsLocationsNamespacesServicesService, self).__init__(client)
@@ -211,16 +211,16 @@ class ServicedirectoryV1beta1(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Create.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/projects/{projectsId}/locations/{locationsId}/namespaces/{namespacesId}/services',
-        http_method=u'POST',
-        method_id=u'servicedirectory.projects.locations.namespaces.services.create',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'serviceId'],
-        relative_path=u'v1beta1/{+parent}/services',
-        request_field=u'service',
-        request_type_name=u'ServicedirectoryProjectsLocationsNamespacesServicesCreateRequest',
-        response_type_name=u'Service',
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/namespaces/{namespacesId}/services',
+        http_method='POST',
+        method_id='servicedirectory.projects.locations.namespaces.services.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['serviceId'],
+        relative_path='v1beta1/{+parent}/services',
+        request_field='service',
+        request_type_name='ServicedirectoryProjectsLocationsNamespacesServicesCreateRequest',
+        response_type_name='Service',
         supports_download=False,
     )
 
@@ -239,16 +239,16 @@ the service.
           config, request, global_params=global_params)
 
     Delete.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/projects/{projectsId}/locations/{locationsId}/namespaces/{namespacesId}/services/{servicesId}',
-        http_method=u'DELETE',
-        method_id=u'servicedirectory.projects.locations.namespaces.services.delete',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/namespaces/{namespacesId}/services/{servicesId}',
+        http_method='DELETE',
+        method_id='servicedirectory.projects.locations.namespaces.services.delete',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1beta1/{+name}',
+        relative_path='v1beta1/{+name}',
         request_field='',
-        request_type_name=u'ServicedirectoryProjectsLocationsNamespacesServicesDeleteRequest',
-        response_type_name=u'Empty',
+        request_type_name='ServicedirectoryProjectsLocationsNamespacesServicesDeleteRequest',
+        response_type_name='Empty',
         supports_download=False,
     )
 
@@ -266,16 +266,16 @@ the service.
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/projects/{projectsId}/locations/{locationsId}/namespaces/{namespacesId}/services/{servicesId}',
-        http_method=u'GET',
-        method_id=u'servicedirectory.projects.locations.namespaces.services.get',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/namespaces/{namespacesId}/services/{servicesId}',
+        http_method='GET',
+        method_id='servicedirectory.projects.locations.namespaces.services.get',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1beta1/{+name}',
+        relative_path='v1beta1/{+name}',
         request_field='',
-        request_type_name=u'ServicedirectoryProjectsLocationsNamespacesServicesGetRequest',
-        response_type_name=u'Service',
+        request_type_name='ServicedirectoryProjectsLocationsNamespacesServicesGetRequest',
+        response_type_name='Service',
         supports_download=False,
     )
 
@@ -293,16 +293,16 @@ the service.
           config, request, global_params=global_params)
 
     GetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/projects/{projectsId}/locations/{locationsId}/namespaces/{namespacesId}/services/{servicesId}:getIamPolicy',
-        http_method=u'POST',
-        method_id=u'servicedirectory.projects.locations.namespaces.services.getIamPolicy',
-        ordered_params=[u'resource'],
-        path_params=[u'resource'],
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/namespaces/{namespacesId}/services/{servicesId}:getIamPolicy',
+        http_method='POST',
+        method_id='servicedirectory.projects.locations.namespaces.services.getIamPolicy',
+        ordered_params=['resource'],
+        path_params=['resource'],
         query_params=[],
-        relative_path=u'v1beta1/{+resource}:getIamPolicy',
-        request_field=u'getIamPolicyRequest',
-        request_type_name=u'ServicedirectoryProjectsLocationsNamespacesServicesGetIamPolicyRequest',
-        response_type_name=u'Policy',
+        relative_path='v1beta1/{+resource}:getIamPolicy',
+        request_field='getIamPolicyRequest',
+        request_type_name='ServicedirectoryProjectsLocationsNamespacesServicesGetIamPolicyRequest',
+        response_type_name='Policy',
         supports_download=False,
     )
 
@@ -320,16 +320,16 @@ the service.
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/projects/{projectsId}/locations/{locationsId}/namespaces/{namespacesId}/services',
-        http_method=u'GET',
-        method_id=u'servicedirectory.projects.locations.namespaces.services.list',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'filter', u'orderBy', u'pageSize', u'pageToken'],
-        relative_path=u'v1beta1/{+parent}/services',
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/namespaces/{namespacesId}/services',
+        http_method='GET',
+        method_id='servicedirectory.projects.locations.namespaces.services.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'orderBy', 'pageSize', 'pageToken'],
+        relative_path='v1beta1/{+parent}/services',
         request_field='',
-        request_type_name=u'ServicedirectoryProjectsLocationsNamespacesServicesListRequest',
-        response_type_name=u'ListServicesResponse',
+        request_type_name='ServicedirectoryProjectsLocationsNamespacesServicesListRequest',
+        response_type_name='ListServicesResponse',
         supports_download=False,
     )
 
@@ -347,16 +347,16 @@ the service.
           config, request, global_params=global_params)
 
     Patch.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/projects/{projectsId}/locations/{locationsId}/namespaces/{namespacesId}/services/{servicesId}',
-        http_method=u'PATCH',
-        method_id=u'servicedirectory.projects.locations.namespaces.services.patch',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[u'updateMask'],
-        relative_path=u'v1beta1/{+name}',
-        request_field=u'service',
-        request_type_name=u'ServicedirectoryProjectsLocationsNamespacesServicesPatchRequest',
-        response_type_name=u'Service',
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/namespaces/{namespacesId}/services/{servicesId}',
+        http_method='PATCH',
+        method_id='servicedirectory.projects.locations.namespaces.services.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v1beta1/{+name}',
+        request_field='service',
+        request_type_name='ServicedirectoryProjectsLocationsNamespacesServicesPatchRequest',
+        response_type_name='Service',
         supports_download=False,
     )
 
@@ -376,16 +376,16 @@ Resolving a service is not considered an active developer method.
           config, request, global_params=global_params)
 
     Resolve.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/projects/{projectsId}/locations/{locationsId}/namespaces/{namespacesId}/services/{servicesId}:resolve',
-        http_method=u'POST',
-        method_id=u'servicedirectory.projects.locations.namespaces.services.resolve',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/namespaces/{namespacesId}/services/{servicesId}:resolve',
+        http_method='POST',
+        method_id='servicedirectory.projects.locations.namespaces.services.resolve',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1beta1/{+name}:resolve',
-        request_field=u'resolveServiceRequest',
-        request_type_name=u'ServicedirectoryProjectsLocationsNamespacesServicesResolveRequest',
-        response_type_name=u'ResolveServiceResponse',
+        relative_path='v1beta1/{+name}:resolve',
+        request_field='resolveServiceRequest',
+        request_type_name='ServicedirectoryProjectsLocationsNamespacesServicesResolveRequest',
+        response_type_name='ResolveServiceResponse',
         supports_download=False,
     )
 
@@ -403,16 +403,16 @@ Resolving a service is not considered an active developer method.
           config, request, global_params=global_params)
 
     SetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/projects/{projectsId}/locations/{locationsId}/namespaces/{namespacesId}/services/{servicesId}:setIamPolicy',
-        http_method=u'POST',
-        method_id=u'servicedirectory.projects.locations.namespaces.services.setIamPolicy',
-        ordered_params=[u'resource'],
-        path_params=[u'resource'],
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/namespaces/{namespacesId}/services/{servicesId}:setIamPolicy',
+        http_method='POST',
+        method_id='servicedirectory.projects.locations.namespaces.services.setIamPolicy',
+        ordered_params=['resource'],
+        path_params=['resource'],
         query_params=[],
-        relative_path=u'v1beta1/{+resource}:setIamPolicy',
-        request_field=u'setIamPolicyRequest',
-        request_type_name=u'ServicedirectoryProjectsLocationsNamespacesServicesSetIamPolicyRequest',
-        response_type_name=u'Policy',
+        relative_path='v1beta1/{+resource}:setIamPolicy',
+        request_field='setIamPolicyRequest',
+        request_type_name='ServicedirectoryProjectsLocationsNamespacesServicesSetIamPolicyRequest',
+        response_type_name='Policy',
         supports_download=False,
     )
 
@@ -430,23 +430,23 @@ Resolving a service is not considered an active developer method.
           config, request, global_params=global_params)
 
     TestIamPermissions.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/projects/{projectsId}/locations/{locationsId}/namespaces/{namespacesId}/services/{servicesId}:testIamPermissions',
-        http_method=u'POST',
-        method_id=u'servicedirectory.projects.locations.namespaces.services.testIamPermissions',
-        ordered_params=[u'resource'],
-        path_params=[u'resource'],
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/namespaces/{namespacesId}/services/{servicesId}:testIamPermissions',
+        http_method='POST',
+        method_id='servicedirectory.projects.locations.namespaces.services.testIamPermissions',
+        ordered_params=['resource'],
+        path_params=['resource'],
         query_params=[],
-        relative_path=u'v1beta1/{+resource}:testIamPermissions',
-        request_field=u'testIamPermissionsRequest',
-        request_type_name=u'ServicedirectoryProjectsLocationsNamespacesServicesTestIamPermissionsRequest',
-        response_type_name=u'TestIamPermissionsResponse',
+        relative_path='v1beta1/{+resource}:testIamPermissions',
+        request_field='testIamPermissionsRequest',
+        request_type_name='ServicedirectoryProjectsLocationsNamespacesServicesTestIamPermissionsRequest',
+        response_type_name='TestIamPermissionsResponse',
         supports_download=False,
     )
 
   class ProjectsLocationsNamespacesService(base_api.BaseApiService):
     """Service class for the projects_locations_namespaces resource."""
 
-    _NAME = u'projects_locations_namespaces'
+    _NAME = 'projects_locations_namespaces'
 
     def __init__(self, client):
       super(ServicedirectoryV1beta1.ProjectsLocationsNamespacesService, self).__init__(client)
@@ -467,16 +467,16 @@ Resolving a service is not considered an active developer method.
           config, request, global_params=global_params)
 
     Create.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/projects/{projectsId}/locations/{locationsId}/namespaces',
-        http_method=u'POST',
-        method_id=u'servicedirectory.projects.locations.namespaces.create',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'namespaceId'],
-        relative_path=u'v1beta1/{+parent}/namespaces',
-        request_field=u'namespace',
-        request_type_name=u'ServicedirectoryProjectsLocationsNamespacesCreateRequest',
-        response_type_name=u'Namespace',
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/namespaces',
+        http_method='POST',
+        method_id='servicedirectory.projects.locations.namespaces.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['namespaceId'],
+        relative_path='v1beta1/{+parent}/namespaces',
+        request_field='namespace',
+        request_type_name='ServicedirectoryProjectsLocationsNamespacesCreateRequest',
+        response_type_name='Namespace',
         supports_download=False,
     )
 
@@ -495,16 +495,16 @@ the namespace.
           config, request, global_params=global_params)
 
     Delete.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/projects/{projectsId}/locations/{locationsId}/namespaces/{namespacesId}',
-        http_method=u'DELETE',
-        method_id=u'servicedirectory.projects.locations.namespaces.delete',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/namespaces/{namespacesId}',
+        http_method='DELETE',
+        method_id='servicedirectory.projects.locations.namespaces.delete',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1beta1/{+name}',
+        relative_path='v1beta1/{+name}',
         request_field='',
-        request_type_name=u'ServicedirectoryProjectsLocationsNamespacesDeleteRequest',
-        response_type_name=u'Empty',
+        request_type_name='ServicedirectoryProjectsLocationsNamespacesDeleteRequest',
+        response_type_name='Empty',
         supports_download=False,
     )
 
@@ -522,16 +522,16 @@ the namespace.
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/projects/{projectsId}/locations/{locationsId}/namespaces/{namespacesId}',
-        http_method=u'GET',
-        method_id=u'servicedirectory.projects.locations.namespaces.get',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/namespaces/{namespacesId}',
+        http_method='GET',
+        method_id='servicedirectory.projects.locations.namespaces.get',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1beta1/{+name}',
+        relative_path='v1beta1/{+name}',
         request_field='',
-        request_type_name=u'ServicedirectoryProjectsLocationsNamespacesGetRequest',
-        response_type_name=u'Namespace',
+        request_type_name='ServicedirectoryProjectsLocationsNamespacesGetRequest',
+        response_type_name='Namespace',
         supports_download=False,
     )
 
@@ -549,16 +549,16 @@ the namespace.
           config, request, global_params=global_params)
 
     GetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/projects/{projectsId}/locations/{locationsId}/namespaces/{namespacesId}:getIamPolicy',
-        http_method=u'POST',
-        method_id=u'servicedirectory.projects.locations.namespaces.getIamPolicy',
-        ordered_params=[u'resource'],
-        path_params=[u'resource'],
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/namespaces/{namespacesId}:getIamPolicy',
+        http_method='POST',
+        method_id='servicedirectory.projects.locations.namespaces.getIamPolicy',
+        ordered_params=['resource'],
+        path_params=['resource'],
         query_params=[],
-        relative_path=u'v1beta1/{+resource}:getIamPolicy',
-        request_field=u'getIamPolicyRequest',
-        request_type_name=u'ServicedirectoryProjectsLocationsNamespacesGetIamPolicyRequest',
-        response_type_name=u'Policy',
+        relative_path='v1beta1/{+resource}:getIamPolicy',
+        request_field='getIamPolicyRequest',
+        request_type_name='ServicedirectoryProjectsLocationsNamespacesGetIamPolicyRequest',
+        response_type_name='Policy',
         supports_download=False,
     )
 
@@ -576,16 +576,16 @@ the namespace.
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/projects/{projectsId}/locations/{locationsId}/namespaces',
-        http_method=u'GET',
-        method_id=u'servicedirectory.projects.locations.namespaces.list',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'filter', u'orderBy', u'pageSize', u'pageToken'],
-        relative_path=u'v1beta1/{+parent}/namespaces',
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/namespaces',
+        http_method='GET',
+        method_id='servicedirectory.projects.locations.namespaces.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'orderBy', 'pageSize', 'pageToken'],
+        relative_path='v1beta1/{+parent}/namespaces',
         request_field='',
-        request_type_name=u'ServicedirectoryProjectsLocationsNamespacesListRequest',
-        response_type_name=u'ListNamespacesResponse',
+        request_type_name='ServicedirectoryProjectsLocationsNamespacesListRequest',
+        response_type_name='ListNamespacesResponse',
         supports_download=False,
     )
 
@@ -603,16 +603,16 @@ the namespace.
           config, request, global_params=global_params)
 
     Patch.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/projects/{projectsId}/locations/{locationsId}/namespaces/{namespacesId}',
-        http_method=u'PATCH',
-        method_id=u'servicedirectory.projects.locations.namespaces.patch',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[u'updateMask'],
-        relative_path=u'v1beta1/{+name}',
-        request_field=u'namespace',
-        request_type_name=u'ServicedirectoryProjectsLocationsNamespacesPatchRequest',
-        response_type_name=u'Namespace',
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/namespaces/{namespacesId}',
+        http_method='PATCH',
+        method_id='servicedirectory.projects.locations.namespaces.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v1beta1/{+name}',
+        request_field='namespace',
+        request_type_name='ServicedirectoryProjectsLocationsNamespacesPatchRequest',
+        response_type_name='Namespace',
         supports_download=False,
     )
 
@@ -630,16 +630,16 @@ the namespace.
           config, request, global_params=global_params)
 
     SetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/projects/{projectsId}/locations/{locationsId}/namespaces/{namespacesId}:setIamPolicy',
-        http_method=u'POST',
-        method_id=u'servicedirectory.projects.locations.namespaces.setIamPolicy',
-        ordered_params=[u'resource'],
-        path_params=[u'resource'],
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/namespaces/{namespacesId}:setIamPolicy',
+        http_method='POST',
+        method_id='servicedirectory.projects.locations.namespaces.setIamPolicy',
+        ordered_params=['resource'],
+        path_params=['resource'],
         query_params=[],
-        relative_path=u'v1beta1/{+resource}:setIamPolicy',
-        request_field=u'setIamPolicyRequest',
-        request_type_name=u'ServicedirectoryProjectsLocationsNamespacesSetIamPolicyRequest',
-        response_type_name=u'Policy',
+        relative_path='v1beta1/{+resource}:setIamPolicy',
+        request_field='setIamPolicyRequest',
+        request_type_name='ServicedirectoryProjectsLocationsNamespacesSetIamPolicyRequest',
+        response_type_name='Policy',
         supports_download=False,
     )
 
@@ -657,23 +657,23 @@ the namespace.
           config, request, global_params=global_params)
 
     TestIamPermissions.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/projects/{projectsId}/locations/{locationsId}/namespaces/{namespacesId}:testIamPermissions',
-        http_method=u'POST',
-        method_id=u'servicedirectory.projects.locations.namespaces.testIamPermissions',
-        ordered_params=[u'resource'],
-        path_params=[u'resource'],
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/namespaces/{namespacesId}:testIamPermissions',
+        http_method='POST',
+        method_id='servicedirectory.projects.locations.namespaces.testIamPermissions',
+        ordered_params=['resource'],
+        path_params=['resource'],
         query_params=[],
-        relative_path=u'v1beta1/{+resource}:testIamPermissions',
-        request_field=u'testIamPermissionsRequest',
-        request_type_name=u'ServicedirectoryProjectsLocationsNamespacesTestIamPermissionsRequest',
-        response_type_name=u'TestIamPermissionsResponse',
+        relative_path='v1beta1/{+resource}:testIamPermissions',
+        request_field='testIamPermissionsRequest',
+        request_type_name='ServicedirectoryProjectsLocationsNamespacesTestIamPermissionsRequest',
+        response_type_name='TestIamPermissionsResponse',
         supports_download=False,
     )
 
   class ProjectsLocationsService(base_api.BaseApiService):
     """Service class for the projects_locations resource."""
 
-    _NAME = u'projects_locations'
+    _NAME = 'projects_locations'
 
     def __init__(self, client):
       super(ServicedirectoryV1beta1.ProjectsLocationsService, self).__init__(client)
@@ -694,16 +694,16 @@ the namespace.
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/projects/{projectsId}/locations/{locationsId}',
-        http_method=u'GET',
-        method_id=u'servicedirectory.projects.locations.get',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}',
+        http_method='GET',
+        method_id='servicedirectory.projects.locations.get',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path=u'v1beta1/{+name}',
+        relative_path='v1beta1/{+name}',
         request_field='',
-        request_type_name=u'ServicedirectoryProjectsLocationsGetRequest',
-        response_type_name=u'Location',
+        request_type_name='ServicedirectoryProjectsLocationsGetRequest',
+        response_type_name='Location',
         supports_download=False,
     )
 
@@ -721,23 +721,23 @@ the namespace.
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/projects/{projectsId}/locations',
-        http_method=u'GET',
-        method_id=u'servicedirectory.projects.locations.list',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[u'filter', u'includeUnrevealedLocations', u'pageSize', u'pageToken'],
-        relative_path=u'v1beta1/{+name}/locations',
+        flat_path='v1beta1/projects/{projectsId}/locations',
+        http_method='GET',
+        method_id='servicedirectory.projects.locations.list',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['filter', 'includeUnrevealedLocations', 'pageSize', 'pageToken'],
+        relative_path='v1beta1/{+name}/locations',
         request_field='',
-        request_type_name=u'ServicedirectoryProjectsLocationsListRequest',
-        response_type_name=u'ListLocationsResponse',
+        request_type_name='ServicedirectoryProjectsLocationsListRequest',
+        response_type_name='ListLocationsResponse',
         supports_download=False,
     )
 
   class ProjectsService(base_api.BaseApiService):
     """Service class for the projects resource."""
 
-    _NAME = u'projects'
+    _NAME = 'projects'
 
     def __init__(self, client):
       super(ServicedirectoryV1beta1.ProjectsService, self).__init__(client)
