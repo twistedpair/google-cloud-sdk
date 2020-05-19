@@ -138,13 +138,23 @@ class Queues(BaseQueues):
 class BetaQueues(BaseQueues):
   """Client for queues service in the Cloud Tasks API."""
 
-  def Create(self, parent_ref, queue_ref, retry_config=None, rate_limits=None,
-             app_engine_http_queue=None, stackdriver_logging_config=None):
+  def Create(self,
+             parent_ref,
+             queue_ref,
+             retry_config=None,
+             rate_limits=None,
+             app_engine_http_queue=None,
+             stackdriver_logging_config=None,
+             queue_type=None):
     """Prepares and sends a Create request for creating a queue."""
+
     queue = self.messages.Queue(
-        name=queue_ref.RelativeName(), retryConfig=retry_config,
-        rateLimits=rate_limits, appEngineHttpQueue=app_engine_http_queue,
-        stackdriverLoggingConfig=stackdriver_logging_config)
+        name=queue_ref.RelativeName(),
+        retryConfig=retry_config,
+        rateLimits=rate_limits,
+        appEngineHttpQueue=app_engine_http_queue,
+        stackdriverLoggingConfig=stackdriver_logging_config,
+        type=queue_type)
     request = self.messages.CloudtasksProjectsLocationsQueuesCreateRequest(
         parent=parent_ref.RelativeName(), queue=queue)
     return self.queues_service.Create(request)

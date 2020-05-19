@@ -188,7 +188,7 @@ def GetApplyUpdatesToInstancesRequestsZonal(holder, igm_ref, instances):
       .MinimalActionValueValuesEnum.NONE,
       mostDisruptiveAllowedAction=messages
       .InstanceGroupManagersApplyUpdatesRequest
-      .MostDisruptiveAllowedActionValueValuesEnum.RESTART)
+      .MostDisruptiveAllowedActionValueValuesEnum.REPLACE)
   return messages.ComputeInstanceGroupManagersApplyUpdatesToInstancesRequest(
       instanceGroupManager=igm_ref.Name(),
       instanceGroupManagersApplyUpdatesRequest=request,
@@ -206,7 +206,7 @@ def GetApplyUpdatesToInstancesRequestsRegional(holder, igm_ref, instances):
       .MinimalActionValueValuesEnum.NONE,
       mostDisruptiveAllowedAction=messages
       .RegionInstanceGroupManagersApplyUpdatesRequest
-      .MostDisruptiveAllowedActionValueValuesEnum.RESTART)
+      .MostDisruptiveAllowedActionValueValuesEnum.REPLACE)
   return (
       messages.ComputeRegionInstanceGroupManagersApplyUpdatesToInstancesRequest
   )(

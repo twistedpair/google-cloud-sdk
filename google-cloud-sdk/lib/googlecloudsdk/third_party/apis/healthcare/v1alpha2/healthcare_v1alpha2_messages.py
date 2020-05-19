@@ -2123,7 +2123,8 @@ class HealthcareProjectsLocationsDatasetsConsentStoresUserDataMappingsListReques
   Fields:
     filter: Restricts the user data mappings returned to those matching a
       filter. Syntax: https://cloud.google.com/appengine/docs/standard/python/
-      search/query_strings
+      search/query_strings The fields available for filtering are:  - data_id
+      - user_id - archived - archive_time
     pageSize: Limit on the number of user data mappings to return in a single
       response. If zero the default page size of 100 is used.
     pageToken: Token to retrieve the next page of results or empty if there

@@ -443,6 +443,9 @@ class TrafficTargets(collections.MutableMapping):
           percent_targets.values(), key=SortKeyFromTarget)
       self._m[:] = sorted_percent_targets + tag_targets
 
+  def TagToKey(self):
+    return {target.tag: GetKey(target) for target in self._m if target.tag}
+
   def UpdateTags(self, to_update, to_remove, clear_others):
     """Update traffic tags.
 

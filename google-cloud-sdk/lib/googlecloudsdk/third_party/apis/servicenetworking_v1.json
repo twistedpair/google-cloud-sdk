@@ -463,6 +463,128 @@
         }
       }
     },
+    "AddDnsZoneRequest": {
+      "id": "AddDnsZoneRequest",
+      "description": "Request to add a private managed DNS zone in the shared producer host project\nand a matching DNS peering zone in the consumer project.",
+      "type": "object",
+      "properties": {
+        "consumerNetwork": {
+          "description": "Required. The network that the consumer is using to connect with services.\nMust be in the form of projects\/{project}\/global\/networks\/{network}\n{project} is the project number, as in '12345'\n{network} is the network name.",
+          "type": "string"
+        },
+        "name": {
+          "description": "Required. The name for both the private zone in the shared producer host project and\nthe peering zone in the consumer project. Must be unique within both\nprojects. The name must be 1-63 characters long, must begin with a letter,\nend with a letter or digit, and only contain lowercase letters, digits or\ndashes.",
+          "type": "string"
+        },
+        "dnsSuffix": {
+          "description": "Required. The DNS name suffix for the zones e.g. `example.com`.",
+          "type": "string"
+        }
+      }
+    },
+    "RemoveDnsZoneRequest": {
+      "id": "RemoveDnsZoneRequest",
+      "description": "Request to remove a private managed DNS zone in the shared producer host\nproject and a matching DNS peering zone in the consumer project.",
+      "type": "object",
+      "properties": {
+        "consumerNetwork": {
+          "description": "Required. The network that the consumer is using to connect with services.\nMust be in the form of projects\/{project}\/global\/networks\/{network}\n{project} is the project number, as in '12345'\n{network} is the network name.",
+          "type": "string"
+        },
+        "name": {
+          "description": "Required. The name for both the private zone in the shared producer host project and\nthe peering zone in the consumer project.",
+          "type": "string"
+        }
+      }
+    },
+    "AddDnsRecordSetRequest": {
+      "id": "AddDnsRecordSetRequest",
+      "description": "Request to add a record set to a private managed DNS zone in the shared\nproducer host project.",
+      "type": "object",
+      "properties": {
+        "consumerNetwork": {
+          "description": "Required. The network that the consumer is using to connect with services.\nMust be in the form of projects\/{project}\/global\/networks\/{network}\n{project} is the project number, as in '12345'\n{network} is the network name.",
+          "type": "string"
+        },
+        "zone": {
+          "description": "Required. The name of the private DNS zone in the shared producer host project to\nwhich the record set will be added.",
+          "type": "string"
+        },
+        "dnsRecordSet": {
+          "description": "Required. The DNS record set to add.",
+          "$ref": "DnsRecordSet"
+        }
+      }
+    },
+    "DnsRecordSet": {
+      "id": "DnsRecordSet",
+      "description": "Represents a DNS record set resource.",
+      "type": "object",
+      "properties": {
+        "domain": {
+          "description": "Required. The DNS or domain name of the record set, e.g. `test.example.com`.",
+          "type": "string"
+        },
+        "type": {
+          "description": "Required. The identifier of a supported record type.",
+          "type": "string"
+        },
+        "ttl": {
+          "description": "Required. The period of time for which this RecordSet can be cached by resolvers.",
+          "type": "string",
+          "format": "google-duration"
+        },
+        "data": {
+          "description": "Required. As defined in RFC 1035 (section 5) and RFC 1034 (section 3.6.1) for\nexamples see https:\/\/cloud.google.com\/dns\/records\/json-record.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "RemoveDnsRecordSetRequest": {
+      "id": "RemoveDnsRecordSetRequest",
+      "description": "Request to remove a record set from a private managed DNS zone in the shared\nproducer host project. The name, type, ttl, and data values must all exactly\nmatch an existing record set in the specified zone.",
+      "type": "object",
+      "properties": {
+        "consumerNetwork": {
+          "description": "Required. The network that the consumer is using to connect with services.\nMust be in the form of projects\/{project}\/global\/networks\/{network}\n{project} is the project number, as in '12345'\n{network} is the network name.",
+          "type": "string"
+        },
+        "zone": {
+          "description": "Required. The name of the private DNS zone in the shared producer host project from\nwhich the record set will be removed.",
+          "type": "string"
+        },
+        "dnsRecordSet": {
+          "description": "Required. The DNS record set to remove.",
+          "$ref": "DnsRecordSet"
+        }
+      }
+    },
+    "UpdateDnsRecordSetRequest": {
+      "id": "UpdateDnsRecordSetRequest",
+      "description": "Request to update a record set from a private managed DNS zone in the shared\nproducer host project. The name, type, ttl, and data values of the existing\nrecord set must all exactly match an existing record set in the specified\nzone.",
+      "type": "object",
+      "properties": {
+        "consumerNetwork": {
+          "description": "Required. The network that the consumer is using to connect with services.\nMust be in the form of projects\/{project}\/global\/networks\/{network}\n{project} is the project number, as in '12345'\n{network} is the network name.",
+          "type": "string"
+        },
+        "zone": {
+          "description": "Required. The name of the private DNS zone in the shared producer host project from\nwhich the record set will be removed.",
+          "type": "string"
+        },
+        "existingDnsRecordSet": {
+          "description": "Required. The existing DNS record set to update.",
+          "$ref": "DnsRecordSet"
+        },
+        "newDnsRecordSet": {
+          "description": "Required. The new values that the DNS record set should be updated to hold.",
+          "$ref": "DnsRecordSet"
+        }
+      }
+    },
     "Service": {
       "id": "Service",
       "description": "`Service` is the root object of Google service configuration schema. It\ndescribes basic information about a service, such as the name and the\ntitle, and delegates other aspects to sub-sections. Each sub-section is\neither a proto message or a repeated proto message that configures a\nspecific aspect, such as auth. See each proto message definition for details.\n\nExample:\n\n    type: google.api.Service\n    config_version: 3\n    name: calendar.googleapis.com\n    title: Google Calendar API\n    apis:\n    - name: google.calendar.v3.Calendar\n    authentication:\n      providers:\n      - id: google_calendar_auth\n        jwks_uri: https:\/\/www.googleapis.com\/oauth2\/v1\/certs\n        issuer: https:\/\/securetoken.google.com\n      rules:\n      - selector: \"*\"\n        requirements:\n          provider_id: google_calendar_auth",
@@ -1107,10 +1229,6 @@
         },
         "protocol": {
           "description": "The protocol used for sending a request to the backend.\nThe supported values are \"http\/1.1\" and \"h2\".\n\nThe default value is inferred from the scheme in the\naddress field:\n\n   SCHEME        PROTOCOL\n   http:\/\/       http\/1.1\n   https:\/\/      http\/1.1\n   grpc:\/\/       h2\n   grpcs:\/\/      h2\n\nFor secure HTTP backends (https:\/\/) that support HTTP\/2, set this field\nto \"h2\" for improved performance.\n\nConfiguring this field to non-default values is only supported for secure\nHTTP backends. This field will be ignored for all other backends.\n\nSee\nhttps:\/\/www.iana.org\/assignments\/tls-extensiontype-values\/tls-extensiontype-values.xhtml#alpn-protocol-ids\nfor more details on the supported values.",
-          "type": "string"
-        },
-        "renameTo": {
-          "description": "Unimplemented. Do not use.\n\nThe new name the selected proto elements should be renamed to.\n\nThe package, the service and the method can all be renamed.\nThe backend server should implement the renamed proto. However, clients\nshould call the original method, and ESF routes the traffic to the renamed\nmethod.\n\nHTTP clients should call the URL mapped to the original method.\ngRPC and Stubby clients should call the original method with package name.\n\nFor legacy reasons, ESF allows Stubby clients to call with the\nshort name (without the package name). However, for API Versioning(or\nmultiple methods mapped to the same short name), all Stubby clients must\ncall the method's full name with the package name, otherwise the first one\n(selector) wins.\n\nIf this `rename_to` is specified with a trailing `*`, the `selector` must\nbe specified with a trailing `*` as well. The all element short names\nmatched by the `*` in the selector will be kept in the `rename_to`.\n\nFor example,\n    rename_rules:\n    - selector: |-\n        google.example.library.v1.*\n      rename_to: google.example.library.*\n\nThe selector matches `google.example.library.v1.Library.CreateShelf` and\n`google.example.library.v1.Library.CreateBook`, they will be renamed to\n`google.example.library.Library.CreateShelf` and\n`google.example.library.Library.CreateBook`. It essentially renames the\nproto package name section of the matched proto service and methods.",
           "type": "string"
         }
       }
@@ -2162,6 +2280,85 @@
       "type": "object",
       "properties": {
       }
+    },
+    "AddDnsZoneResponse": {
+      "id": "AddDnsZoneResponse",
+      "description": "Represents managed DNS zones created in the shared producer host and consumer\nprojects.",
+      "type": "object",
+      "properties": {
+        "producerPrivateZone": {
+          "description": "The private DNS zone created in the shared producer host project.",
+          "$ref": "DnsZone"
+        },
+        "consumerPeeringZone": {
+          "description": "The DNS peering zone created in the consumer project.",
+          "$ref": "DnsZone"
+        }
+      }
+    },
+    "DnsZone": {
+      "id": "DnsZone",
+      "description": "Represents a DNS zone resource.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "User assigned name for this resource. Must be unique within the project.\nThe name must be 1-63 characters long, must begin with a letter, end with\na letter or digit, and only contain lowercase letters, digits or dashes.",
+          "type": "string"
+        },
+        "dnsSuffix": {
+          "description": "The DNS name suffix of this zone e.g. `example.com.`.",
+          "type": "string"
+        }
+      }
+    },
+    "AddDnsZoneMetadata": {
+      "id": "AddDnsZoneMetadata",
+      "description": "Metadata provided through GetOperation request for the LRO generated by\nAddDnsZone API",
+      "type": "object",
+      "properties": {
+      }
+    },
+    "RemoveDnsZoneResponse": {
+      "id": "RemoveDnsZoneResponse",
+      "description": "Blank message response type for RemoveDnsZone API",
+      "type": "object",
+      "properties": {
+      }
+    },
+    "RemoveDnsZoneMetadata": {
+      "id": "RemoveDnsZoneMetadata",
+      "description": "Metadata provided through GetOperation request for the LRO generated by\nRemoveDnsZone API",
+      "type": "object",
+      "properties": {
+      }
+    },
+    "AddDnsRecordSetMetadata": {
+      "id": "AddDnsRecordSetMetadata",
+      "description": "Metadata provided through GetOperation request for the LRO generated by\nAddDnsRecordSet API",
+      "type": "object",
+      "properties": {
+      }
+    },
+    "RemoveDnsRecordSetResponse": {
+      "id": "RemoveDnsRecordSetResponse",
+      "description": "Blank message response type for RemoveDnsRecordSet API",
+      "type": "object",
+      "properties": {
+      }
+    },
+    "RemoveDnsRecordSetMetadata": {
+      "id": "RemoveDnsRecordSetMetadata",
+      "description": "Metadata provided through GetOperation request for the LRO generated by\nRemoveDnsRecordSet API",
+      "type": "object",
+      "properties": {
+      }
+    },
+    "UpdateDnsRecordSetMetadata": {
+      "id": "UpdateDnsRecordSetMetadata",
+      "description": "Metadata provided through GetOperation request for the LRO generated by\nUpdateDnsRecordSet API",
+      "type": "object",
+      "properties": {
+      }
     }
   },
   "resources": {
@@ -2576,6 +2773,159 @@
                 "https://www.googleapis.com/auth/service.management"
               ],
               "description": "Service producers can use this method to add roles in the shared VPC host\nproject. Each role is bound to the provided member. Each role must be\nselected from within a whitelisted set of roles. Each role is applied at\nonly the granularity specified in the whitelist."
+            }
+          }
+        },
+        "dnsZones": {
+          "methods": {
+            "add": {
+              "id": "servicenetworking.services.dnsZones.add",
+              "path": "v1/{+parent}/dnsZones:add",
+              "flatPath": "v1/services/{servicesId}/dnsZones:add",
+              "httpMethod": "POST",
+              "parameters": {
+                "parent": {
+                  "description": "Required. The service that is managing peering connectivity for a service producer's\norganization. For Google services that support this functionality, this\nvalue is `services\/servicenetworking.googleapis.com`.",
+                  "location": "path",
+                  "required": true,
+                  "pattern": "^services\/[^\/]+$",
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "parent"
+              ],
+              "request": {
+                "$ref": "AddDnsZoneRequest"
+              },
+              "response": {
+                "$ref": "Operation"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform",
+                "https://www.googleapis.com/auth/service.management"
+              ],
+              "description": "Service producers can use this method to add private DNS zones in the\nshared producer host project and matching peering zones in the consumer\nproject."
+            },
+            "remove": {
+              "id": "servicenetworking.services.dnsZones.remove",
+              "path": "v1/{+parent}/dnsZones:remove",
+              "flatPath": "v1/services/{servicesId}/dnsZones:remove",
+              "httpMethod": "POST",
+              "parameters": {
+                "parent": {
+                  "description": "Required. The service that is managing peering connectivity for a service producer's\norganization. For Google services that support this functionality, this\nvalue is `services\/servicenetworking.googleapis.com`.",
+                  "location": "path",
+                  "required": true,
+                  "pattern": "^services\/[^\/]+$",
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "parent"
+              ],
+              "request": {
+                "$ref": "RemoveDnsZoneRequest"
+              },
+              "response": {
+                "$ref": "Operation"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform",
+                "https://www.googleapis.com/auth/service.management"
+              ],
+              "description": "Service producers can use this method to remove private DNS zones in the\nshared producer host project and matching peering zones in the consumer\nproject."
+            }
+          }
+        },
+        "dnsRecordSets": {
+          "methods": {
+            "add": {
+              "id": "servicenetworking.services.dnsRecordSets.add",
+              "path": "v1/{+parent}/dnsRecordSets:add",
+              "flatPath": "v1/services/{servicesId}/dnsRecordSets:add",
+              "httpMethod": "POST",
+              "parameters": {
+                "parent": {
+                  "description": "Required. The service that is managing peering connectivity for a service producer's\norganization. For Google services that support this functionality, this\nvalue is `services\/servicenetworking.googleapis.com`.",
+                  "location": "path",
+                  "required": true,
+                  "pattern": "^services\/[^\/]+$",
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "parent"
+              ],
+              "request": {
+                "$ref": "AddDnsRecordSetRequest"
+              },
+              "response": {
+                "$ref": "Operation"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform",
+                "https://www.googleapis.com/auth/service.management"
+              ],
+              "description": "Service producers can use this method to add DNS record sets to private DNS\nzones in the shared producer host project."
+            },
+            "remove": {
+              "id": "servicenetworking.services.dnsRecordSets.remove",
+              "path": "v1/{+parent}/dnsRecordSets:remove",
+              "flatPath": "v1/services/{servicesId}/dnsRecordSets:remove",
+              "httpMethod": "POST",
+              "parameters": {
+                "parent": {
+                  "description": "Required. The service that is managing peering connectivity for a service producer's\norganization. For Google services that support this functionality, this\nvalue is `services\/servicenetworking.googleapis.com`.",
+                  "location": "path",
+                  "required": true,
+                  "pattern": "^services\/[^\/]+$",
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "parent"
+              ],
+              "request": {
+                "$ref": "RemoveDnsRecordSetRequest"
+              },
+              "response": {
+                "$ref": "Operation"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform",
+                "https://www.googleapis.com/auth/service.management"
+              ],
+              "description": "Service producers can use this method to remove DNS record sets from\nprivate DNS zones in the shared producer host project."
+            },
+            "update": {
+              "id": "servicenetworking.services.dnsRecordSets.update",
+              "path": "v1/{+parent}/dnsRecordSets:update",
+              "flatPath": "v1/services/{servicesId}/dnsRecordSets:update",
+              "httpMethod": "POST",
+              "parameters": {
+                "parent": {
+                  "description": "Required. The service that is managing peering connectivity for a service producer's\norganization. For Google services that support this functionality, this\nvalue is `services\/servicenetworking.googleapis.com`.",
+                  "location": "path",
+                  "required": true,
+                  "pattern": "^services\/[^\/]+$",
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "parent"
+              ],
+              "request": {
+                "$ref": "UpdateDnsRecordSetRequest"
+              },
+              "response": {
+                "$ref": "Operation"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform",
+                "https://www.googleapis.com/auth/service.management"
+              ],
+              "description": "Service producers can use this method to update DNS record sets from\nprivate DNS zones in the shared producer host project."
             }
           }
         }

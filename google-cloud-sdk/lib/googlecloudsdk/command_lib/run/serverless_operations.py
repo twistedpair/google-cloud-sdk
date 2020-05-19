@@ -1187,6 +1187,11 @@ class ServerlessOperations(object):
       if ready and ready.get('message'):
         message = ready['message']
       if not mapping.records:
+        if (mapping.ready_condition['reason'] ==
+            domain_mapping.MAPPING_ALREADY_EXISTS_CONDITION_REASON):
+          raise serverless_exceptions.DomainMappingAlreadyExistsError(
+              'Domain mapping to [{}] is already in use elsewhere.'.format(
+                  domain_mapping_ref.Name()))
         raise serverless_exceptions.DomainMappingCreationError(
             message or 'Could not create domain mapping.')
       if message:

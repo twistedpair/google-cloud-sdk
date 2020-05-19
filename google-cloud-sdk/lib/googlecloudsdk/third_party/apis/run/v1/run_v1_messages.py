@@ -501,12 +501,16 @@ class DomainMappingStatus(_messages.Message):
     resourceRecords: The resource records required to configure this domain
       mapping. These records must be added to the domain's DNS configuration
       in order to serve the application via this domain mapping.
+    url: Cloud Run fully managed: not supported  Cloud Run on GKE: supported
+      Holds the URL that will serve the traffic of the DomainMapping.
+      +optional
   """
 
   conditions = _messages.MessageField('GoogleCloudRunV1Condition', 1, repeated=True)
   mappedRouteName = _messages.StringField(2)
   observedGeneration = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   resourceRecords = _messages.MessageField('ResourceRecord', 4, repeated=True)
+  url = _messages.StringField(5)
 
 
 class EnvFromSource(_messages.Message):

@@ -1220,7 +1220,12 @@ class AllocationSpecificSKUAllocationAllocatedInstancePropertiesReservedDisk(_me
 
 
 class AllocationSpecificSKUAllocationReservedInstanceProperties(_messages.Message):
-  r"""Properties of the SKU instances being reserved.
+  r"""Properties of the SKU instances being reserved. Next ID: 9
+
+  Enums:
+    MaintenanceIntervalValueValuesEnum: Specifies whether this VM may be a
+      stable fleet VM. Setting this to "Periodic" designates this VM as a
+      Stable Fleet VM.  See go/stable-fleet-ug for more details.
 
   Fields:
     guestAccelerators: Specifies accelerator type and count.
@@ -1230,13 +1235,29 @@ class AllocationSpecificSKUAllocationReservedInstanceProperties(_messages.Messag
       of vCPUs and fixed amount of memory. This also includes specifying
       custom machine type following custom-NUMBER_OF_CPUS-AMOUNT_OF_MEMORY
       pattern.
+    maintenanceInterval: Specifies whether this VM may be a stable fleet VM.
+      Setting this to "Periodic" designates this VM as a Stable Fleet VM.  See
+      go/stable-fleet-ug for more details.
     minCpuPlatform: Minimum cpu platform the reservation.
   """
+
+  class MaintenanceIntervalValueValuesEnum(_messages.Enum):
+    r"""Specifies whether this VM may be a stable fleet VM. Setting this to
+    "Periodic" designates this VM as a Stable Fleet VM.  See go/stable-fleet-
+    ug for more details.
+
+    Values:
+      AS_NEEDED: <no description>
+      PERIODIC: <no description>
+    """
+    AS_NEEDED = 0
+    PERIODIC = 1
 
   guestAccelerators = _messages.MessageField('AcceleratorConfig', 1, repeated=True)
   localSsds = _messages.MessageField('AllocationSpecificSKUAllocationAllocatedInstancePropertiesReservedDisk', 2, repeated=True)
   machineType = _messages.StringField(3)
-  minCpuPlatform = _messages.StringField(4)
+  maintenanceInterval = _messages.EnumField('MaintenanceIntervalValueValuesEnum', 4)
+  minCpuPlatform = _messages.StringField(5)
 
 
 class AllocationSpecificSKUReservation(_messages.Message):
@@ -21818,8 +21839,8 @@ class Disk(_messages.Message):
       cannot be a dash.
     options: Internal use only.
     physicalBlockSizeBytes: Physical block size of the persistent disk, in
-      bytes. If not present in a request, a default value is used. Currently
-      supported sizes are 4096 and 16384, other sizes may be added in the
+      bytes. If not present in a request, a default value is used. The
+      currently supported size is 4096, other sizes may be added in the
       future. If an unsupported value is requested, the error message will
       list the supported values for the caller's project.
     region: [Output Only] URL of the region where the disk resides. Only
@@ -27116,6 +27137,7 @@ class Instance(_messages.Message):
       matching destination or source IPs. This is required if you plan to use
       this instance to forward routes. For more information, see Enabling IP
       Forwarding.
+    confidentialInstanceConfig: A ConfidentialInstanceConfig attribute.
     cpuPlatform: [Output Only] The CPU platform used by this instance.
     creationTimestamp: [Output Only] Creation timestamp in RFC3339 text
       format.
@@ -27287,42 +27309,43 @@ class Instance(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   canIpForward = _messages.BooleanField(1)
-  cpuPlatform = _messages.StringField(2)
-  creationTimestamp = _messages.StringField(3)
-  deletionProtection = _messages.BooleanField(4)
-  description = _messages.StringField(5)
-  disks = _messages.MessageField('AttachedDisk', 6, repeated=True)
-  displayDevice = _messages.MessageField('DisplayDevice', 7)
-  eraseWindowsVssSignature = _messages.BooleanField(8)
-  fingerprint = _messages.BytesField(9)
-  guestAccelerators = _messages.MessageField('AcceleratorConfig', 10, repeated=True)
-  hostname = _messages.StringField(11)
-  id = _messages.IntegerField(12, variant=_messages.Variant.UINT64)
-  kind = _messages.StringField(13, default='compute#instance')
-  labelFingerprint = _messages.BytesField(14)
-  labels = _messages.MessageField('LabelsValue', 15)
-  machineType = _messages.StringField(16)
-  metadata = _messages.MessageField('Metadata', 17)
-  minCpuPlatform = _messages.StringField(18)
-  name = _messages.StringField(19)
-  networkInterfaces = _messages.MessageField('NetworkInterface', 20, repeated=True)
-  privateIpv6GoogleAccess = _messages.EnumField('PrivateIpv6GoogleAccessValueValuesEnum', 21)
-  reservationAffinity = _messages.MessageField('ReservationAffinity', 22)
-  resourcePolicies = _messages.StringField(23, repeated=True)
-  scheduling = _messages.MessageField('Scheduling', 24)
-  selfLink = _messages.StringField(25)
-  serviceAccounts = _messages.MessageField('ServiceAccount', 26, repeated=True)
-  shieldedInstanceConfig = _messages.MessageField('ShieldedInstanceConfig', 27)
-  shieldedInstanceIntegrityPolicy = _messages.MessageField('ShieldedInstanceIntegrityPolicy', 28)
-  shieldedVmConfig = _messages.MessageField('ShieldedVmConfig', 29)
-  shieldedVmIntegrityPolicy = _messages.MessageField('ShieldedVmIntegrityPolicy', 30)
-  sourceMachineImage = _messages.StringField(31)
-  sourceMachineImageEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 32)
-  startRestricted = _messages.BooleanField(33)
-  status = _messages.EnumField('StatusValueValuesEnum', 34)
-  statusMessage = _messages.StringField(35)
-  tags = _messages.MessageField('Tags', 36)
-  zone = _messages.StringField(37)
+  confidentialInstanceConfig = _messages.MessageField('ConfidentialInstanceConfig', 2)
+  cpuPlatform = _messages.StringField(3)
+  creationTimestamp = _messages.StringField(4)
+  deletionProtection = _messages.BooleanField(5)
+  description = _messages.StringField(6)
+  disks = _messages.MessageField('AttachedDisk', 7, repeated=True)
+  displayDevice = _messages.MessageField('DisplayDevice', 8)
+  eraseWindowsVssSignature = _messages.BooleanField(9)
+  fingerprint = _messages.BytesField(10)
+  guestAccelerators = _messages.MessageField('AcceleratorConfig', 11, repeated=True)
+  hostname = _messages.StringField(12)
+  id = _messages.IntegerField(13, variant=_messages.Variant.UINT64)
+  kind = _messages.StringField(14, default='compute#instance')
+  labelFingerprint = _messages.BytesField(15)
+  labels = _messages.MessageField('LabelsValue', 16)
+  machineType = _messages.StringField(17)
+  metadata = _messages.MessageField('Metadata', 18)
+  minCpuPlatform = _messages.StringField(19)
+  name = _messages.StringField(20)
+  networkInterfaces = _messages.MessageField('NetworkInterface', 21, repeated=True)
+  privateIpv6GoogleAccess = _messages.EnumField('PrivateIpv6GoogleAccessValueValuesEnum', 22)
+  reservationAffinity = _messages.MessageField('ReservationAffinity', 23)
+  resourcePolicies = _messages.StringField(24, repeated=True)
+  scheduling = _messages.MessageField('Scheduling', 25)
+  selfLink = _messages.StringField(26)
+  serviceAccounts = _messages.MessageField('ServiceAccount', 27, repeated=True)
+  shieldedInstanceConfig = _messages.MessageField('ShieldedInstanceConfig', 28)
+  shieldedInstanceIntegrityPolicy = _messages.MessageField('ShieldedInstanceIntegrityPolicy', 29)
+  shieldedVmConfig = _messages.MessageField('ShieldedVmConfig', 30)
+  shieldedVmIntegrityPolicy = _messages.MessageField('ShieldedVmIntegrityPolicy', 31)
+  sourceMachineImage = _messages.StringField(32)
+  sourceMachineImageEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 33)
+  startRestricted = _messages.BooleanField(34)
+  status = _messages.EnumField('StatusValueValuesEnum', 35)
+  statusMessage = _messages.StringField(36)
+  tags = _messages.MessageField('Tags', 37)
+  zone = _messages.StringField(38)
 
 
 class InstanceAggregatedList(_messages.Message):
@@ -32450,8 +32473,8 @@ class MachineImage(_messages.Message):
     sourceInstanceProperties: [Output Only] Properties of source instance.
     status: [Output Only] The status of the machine image. One of the
       following values: INVALID, CREATING, READY, DELETING, and UPLOADING.
-    storageLocations: GCS bucket storage location of the machine image
-      (regional or multi-regional).
+    storageLocations: The regional or multi-regional Cloud Storage bucket
+      location where the machine image is stored.
     totalStorageBytes: [Output Only] Total size of the storage used by the
       machine image.
   """
@@ -41057,6 +41080,7 @@ class ResourcePolicySnapshotSchedulePolicySnapshotProperties(_messages.Message):
       modified by the setLabels method. Label values may be empty.
 
   Fields:
+    chainName: Chain name that the snapshot is created in.
     guestFlush: Indication to perform a 'guest aware' snapshot.
     labels: Labels to apply to scheduled snapshots. These can be later
       modified by the setLabels method. Label values may be empty.
@@ -41089,9 +41113,10 @@ class ResourcePolicySnapshotSchedulePolicySnapshotProperties(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  guestFlush = _messages.BooleanField(1)
-  labels = _messages.MessageField('LabelsValue', 2)
-  storageLocations = _messages.StringField(3, repeated=True)
+  chainName = _messages.StringField(1)
+  guestFlush = _messages.BooleanField(2)
+  labels = _messages.MessageField('LabelsValue', 3)
+  storageLocations = _messages.StringField(4, repeated=True)
 
 
 class ResourcePolicyWeeklyCycle(_messages.Message):
@@ -41459,7 +41484,7 @@ class RouteList(_messages.Message):
 
 class Router(_messages.Message):
   r"""Represents a Cloud Router resource.  For more information about Cloud
-  Router, read the the Cloud Router overview.
+  Router, read the Cloud Router overview.
 
   Fields:
     bgp: BGP information specific to this router.
@@ -42781,7 +42806,7 @@ class SavedAttachedDisk(_messages.Message):
 
 
 class Scheduling(_messages.Message):
-  r"""Sets the scheduling options for an Instance. NextID: 11
+  r"""Sets the scheduling options for an Instance. NextID: 12
 
   Enums:
     OnHostMaintenanceValueValuesEnum: Defines the maintenance behavior for
@@ -43559,6 +43584,7 @@ class Snapshot(_messages.Message):
   Fields:
     autoCreated: [Output Only] Set to true if snapshots are automatically
       created by applying resource policy on the target disk.
+    chainName: Chain name should conform to RFC1035.
     creationTimestamp: [Output Only] Creation timestamp in RFC3339 text
       format.
     description: An optional description of this resource. Provide this
@@ -43679,26 +43705,27 @@ class Snapshot(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   autoCreated = _messages.BooleanField(1)
-  creationTimestamp = _messages.StringField(2)
-  description = _messages.StringField(3)
-  diskSizeGb = _messages.IntegerField(4)
-  downloadBytes = _messages.IntegerField(5)
-  id = _messages.IntegerField(6, variant=_messages.Variant.UINT64)
-  kind = _messages.StringField(7, default='compute#snapshot')
-  labelFingerprint = _messages.BytesField(8)
-  labels = _messages.MessageField('LabelsValue', 9)
-  licenseCodes = _messages.IntegerField(10, repeated=True)
-  licenses = _messages.StringField(11, repeated=True)
-  name = _messages.StringField(12)
-  selfLink = _messages.StringField(13)
-  snapshotEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 14)
-  sourceDisk = _messages.StringField(15)
-  sourceDiskEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 16)
-  sourceDiskId = _messages.StringField(17)
-  status = _messages.EnumField('StatusValueValuesEnum', 18)
-  storageBytes = _messages.IntegerField(19)
-  storageBytesStatus = _messages.EnumField('StorageBytesStatusValueValuesEnum', 20)
-  storageLocations = _messages.StringField(21, repeated=True)
+  chainName = _messages.StringField(2)
+  creationTimestamp = _messages.StringField(3)
+  description = _messages.StringField(4)
+  diskSizeGb = _messages.IntegerField(5)
+  downloadBytes = _messages.IntegerField(6)
+  id = _messages.IntegerField(7, variant=_messages.Variant.UINT64)
+  kind = _messages.StringField(8, default='compute#snapshot')
+  labelFingerprint = _messages.BytesField(9)
+  labels = _messages.MessageField('LabelsValue', 10)
+  licenseCodes = _messages.IntegerField(11, repeated=True)
+  licenses = _messages.StringField(12, repeated=True)
+  name = _messages.StringField(13)
+  selfLink = _messages.StringField(14)
+  snapshotEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 15)
+  sourceDisk = _messages.StringField(16)
+  sourceDiskEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 17)
+  sourceDiskId = _messages.StringField(18)
+  status = _messages.EnumField('StatusValueValuesEnum', 19)
+  storageBytes = _messages.IntegerField(20)
+  storageBytesStatus = _messages.EnumField('StorageBytesStatusValueValuesEnum', 21)
+  storageLocations = _messages.StringField(22, repeated=True)
 
 
 class SnapshotList(_messages.Message):

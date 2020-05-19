@@ -270,7 +270,8 @@ error.
 
     def ExportAssets(self, request, global_params=None):
       r"""Exports assets with time and resource types to a given Cloud Storage.
-location. The output format is newline-delimited JSON.
+location. The output format is newline-delimited JSON. Each line represents
+a google.cloud.asset.v1.Asset in the JSON format.
 This API implements the google.longrunning.Operation API allowing you
 to keep track of the export. We recommend intervals of at least 2 seconds
 with exponential retry to poll the export operation result. For

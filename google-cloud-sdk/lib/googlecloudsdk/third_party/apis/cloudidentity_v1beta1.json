@@ -687,7 +687,7 @@
           "$ref": "Device"
         },
         "customer": {
-          "description": "Required. [Resource name](https:\/\/cloud.google.com\/apis\/design\/resource_names) of\nthe customer. To find the customer ID for your organization, use the\ncommand:\n```\ngcloud alpha organizations list\n```\nThe customer ID you need to use appears under the heading\n`DIRECTORY_CUSTOMER_ID`. The value is the letter \"C\" followed by\nletters and numbers. Use the value after the letter \"C\". So if\nthe Directory Customer ID displayed is, say `C00zqsgyx`, then the\ncustomer ID value to use in the API is: `customers\/00zqsgyx`.\nIf you're using this API to manage another\norganization, use `customers\/{customer_id}`, where `customer_id` is the\ncustomer to whom the device belongs.",
+          "description": "Required. [Resource name](https:\/\/cloud.google.com\/apis\/design\/resource_names) of\nthe customer. You can use the 'customers\/my_customer' alias to represent\nyour account's customerId. To find the customer ID for your organization,\nuse the command:\n```\ngcloud alpha organizations list\n```\nThe customer ID you need to use appears under the heading\n`DIRECTORY_CUSTOMER_ID`. The value is the letter \"C\" followed by\nletters and numbers. Use the value after the letter \"C\". So if\nthe Directory Customer ID displayed is, say `C00zqsgyx`, then the\ncustomer ID value to use in the API is: `customers\/00zqsgyx`.\nIf you're using this API to manage another\norganization, use `customers\/{customer_id}`, where `customer_id` is the\ncustomer to whom the device belongs.",
           "type": "string"
         }
       }
@@ -1064,6 +1064,11 @@
             "PASSWORD_SET",
             "PASSWORD_NOT_SET"
           ]
+        },
+        "createTime": {
+          "description": "When the user first signed in to the device",
+          "type": "string",
+          "format": "google-datetime"
         }
       }
     },
@@ -2996,7 +3001,7 @@
                     "name"
                   ],
                   "response": {
-                    "$ref": "Operation"
+                    "$ref": "ClientState"
                   },
                   "description": "Get client state for a device user"
                 },

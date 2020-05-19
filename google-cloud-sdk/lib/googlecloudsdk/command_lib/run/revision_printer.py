@@ -122,6 +122,14 @@ class RevisionPrinter(k8s_object_printer.K8sObjectPrinter):
     return record.annotations.get(revision.VPC_ACCESS_ANNOTATION, '')
 
   @staticmethod
+  def GetMinInstances(record):
+    return record.annotations.get(revision.MIN_SCALE_ANNOTATION, '')
+
+  @staticmethod
+  def GetMaxInstances(record):
+    return record.annotations.get(revision.MAX_SCALE_ANNOTATION, '')
+
+  @staticmethod
   def TransformSpec(record):
     limits = RevisionPrinter.GetLimits(record)
     return cp.Labeled([
@@ -138,6 +146,8 @@ class RevisionPrinter(k8s_object_printer.K8sObjectPrinter):
         ('Secrets', RevisionPrinter.GetSecrets(record)),
         ('Config Maps', RevisionPrinter.GetConfigMaps(record)),
         ('Concurrency', record.concurrency),
+        ('Min Instances', RevisionPrinter.GetMinInstances(record)),
+        ('Max Instances', RevisionPrinter.GetMaxInstances(record)),
         ('SQL connections', RevisionPrinter.GetCloudSqlInstances(record)),
         ('Timeout', RevisionPrinter.GetTimeout(record)),
         ('VPC connector', RevisionPrinter.GetVpcConnector(record)),

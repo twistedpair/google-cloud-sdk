@@ -124,11 +124,24 @@ class Service(k8s_object.KubernetesObject):
 
   @property
   def domain(self):
-    return self._m.status.url or self._m.status.domain
+    if self._m.status.url:
+      return self._m.status.url
+    try:
+      return self._m.status.domain
+    except AttributeError:
+      # `domain` field only exists in v1alpha1 so this could be thrown if using
+      # another api version
+      return None
 
   @domain.setter
   def domain(self, domain):
-    self._m.status.url = self._m.status.domain = domain
+    self._m.status.url = domain
+    try:
+      self._m.status.domain = domain
+    except AttributeError:
+      # `domain` field only exists in v1alpha1 so this could be thrown if using
+      # another api version
+      return None
 
   def ReadySymbolAndColor(self):
     if (self.ready is False and  # pylint: disable=g-bool-id-comparison

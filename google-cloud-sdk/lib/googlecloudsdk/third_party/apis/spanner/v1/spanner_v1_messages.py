@@ -326,7 +326,7 @@ class CreateSessionRequest(_messages.Message):
   r"""The request for CreateSession.
 
   Fields:
-    session: The session to create.
+    session: Required. The session to create.
   """
 
   session = _messages.MessageField('Session', 1)
@@ -2111,8 +2111,8 @@ class Session(_messages.Message):
       expression `([a-z]([-a-z0-9]*[a-z0-9])?)?`.  * No more than 64 labels
       can be associated with a given session.  See https://goo.gl/xmQnxf for
       more information on and examples of labels.
-    name: The name of the session. This is always system-assigned; values
-      provided when creating a session are ignored.
+    name: Output only. The name of the session. This is always system-
+      assigned.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
@@ -2270,13 +2270,12 @@ class SpannerProjectsInstancesBackupOperationsListRequest(_messages.Message):
       `done:true` - The operation is complete.   * `metadata.database:prod` -
       The database the backup was taken from has      a name containing the
       string "prod".   * `(metadata.@type=type.googleapis.com/google.spanner.a
-      dmin.database.v1.CreateBackupMetadata) AND` <br/>
-      `(metadata.name:howl) AND` <br/>     `(metadata.progress.start_time <
-      \"2018-03-28T14:50:00Z\") AND` <br/>     `(error:*)` - Returns
-      operations where:     * The operation's metadata type is
-      CreateBackupMetadata.     * The backup name contains the string "howl".
-      * The operation started before 2018-03-28T14:50:00Z.     * The operation
-      resulted in an error.
+      dmin.database.v1.CreateBackupMetadata) AND` \     `(metadata.name:howl)
+      AND` \     `(metadata.progress.start_time < \"2018-03-28T14:50:00Z\")
+      AND` \     `(error:*)` - Returns operations where:     * The operation's
+      metadata type is CreateBackupMetadata.     * The backup name contains
+      the string "howl".     * The operation started before
+      2018-03-28T14:50:00Z.     * The operation resulted in an error.
     pageSize: Number of operations to be returned in the response. If 0 or
       less, defaults to the server's maximum allowed page size.
     pageToken: If non-empty, `page_token` should contain a next_page_token
@@ -2534,15 +2533,15 @@ class SpannerProjectsInstancesDatabaseOperationsListRequest(_messages.Message):
       specify AND, OR, and NOT logic explicitly.  Here are a few examples:
       * `done:true` - The operation is complete.   * `(metadata.@type=type.goo
       gleapis.com/google.spanner.admin.database.v1.RestoreDatabaseMetadata)
-      AND` <br/>     `(metadata.source_type:BACKUP) AND` <br/>
-      `(metadata.backup_info.backup:backup_howl) AND` <br/>
-      `(metadata.name:restored_howl) AND` <br/>
-      `(metadata.progress.start_time < \"2018-03-28T14:50:00Z\") AND` <br/>
-      `(error:*)` - Return operations where:     * The operation's metadata
-      type is RestoreDatabaseMetadata.     * The database is restored from a
-      backup.     * The backup name contains "backup_howl".     * The restored
-      database's name contains "restored_howl".     * The operation started
-      before 2018-03-28T14:50:00Z.     * The operation resulted in an error.
+      AND` \     `(metadata.source_type:BACKUP) AND` \
+      `(metadata.backup_info.backup:backup_howl) AND` \
+      `(metadata.name:restored_howl) AND` \     `(metadata.progress.start_time
+      < \"2018-03-28T14:50:00Z\") AND` \     `(error:*)` - Return operations
+      where:     * The operation's metadata type is RestoreDatabaseMetadata.
+      * The database is restored from a backup.     * The backup name contains
+      "backup_howl".     * The restored database's name contains
+      "restored_howl".     * The operation started before
+      2018-03-28T14:50:00Z.     * The operation resulted in an error.
     pageSize: Number of operations to be returned in the response. If 0 or
       less, defaults to the server's maximum allowed page size.
     pageToken: If non-empty, `page_token` should contain a next_page_token

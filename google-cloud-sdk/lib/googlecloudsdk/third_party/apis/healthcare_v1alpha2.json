@@ -4655,7 +4655,7 @@
                               "type": "string"
                             },
                             "filter": {
-                              "description": "Restricts the user data mappings returned to those matching a filter.\nSyntax:\nhttps:\/\/cloud.google.com\/appengine\/docs\/standard\/python\/search\/query_strings",
+                              "description": "Restricts the user data mappings returned to those matching a filter.\nSyntax:\nhttps:\/\/cloud.google.com\/appengine\/docs\/standard\/python\/search\/query_strings\nThe fields available for filtering are:\n\n- data_id\n- user_id\n- archived\n- archive_time",
                               "location": "query",
                               "type": "string"
                             }

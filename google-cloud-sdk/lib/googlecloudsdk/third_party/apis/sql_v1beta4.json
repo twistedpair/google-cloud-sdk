@@ -1246,6 +1246,10 @@
         "scheduledMaintenance": {
           "description": "The start time of any upcoming scheduled maintenance for this instance.",
           "$ref": "SqlScheduledMaintenance"
+        },
+        "sqlserverInstanceConfiguration": {
+          "description": "SQL Server specific configuration",
+          "$ref": "SqlServerInstanceConfiguration"
         }
       }
     },
@@ -1781,6 +1785,17 @@
         "canReschedule": {
           "description": "If the scheduled maintenance can be rescheduled.",
           "type": "boolean"
+        }
+      }
+    },
+    "SqlServerInstanceConfiguration": {
+      "id": "SqlServerInstanceConfiguration",
+      "description": "SQL Server specific configuration.",
+      "type": "object",
+      "properties": {
+        "collation": {
+          "description": "The name of Sqlserver Instance collation.",
+          "type": "string"
         }
       }
     },

@@ -2923,7 +2923,7 @@ The name of the reservation, required when `--reservation-affinity=specific`.
 """)
 
 
-def AddDatapathProviderFlag(parser):
+def AddDatapathProviderFlag(parser, hidden=False):
   """Adds --datapath-provider={legacy|advanced} flag."""
   help_text = """
 Select datapath provider for the cluster. Defaults to `legacy`.
@@ -2932,7 +2932,10 @@ $ {command} --datapath-provider=legacy
 $ {command} --datapath-provider=advanced
 """
   parser.add_argument(
-      '--datapath-provider', choices=_DATAPATH_PROVIDER, help=help_text)
+      '--datapath-provider',
+      choices=_DATAPATH_PROVIDER,
+      help=help_text,
+      hidden=hidden)
 
 
 def AddMasterGlobalAccessFlag(parser):
@@ -2958,5 +2961,4 @@ either a node-pool upgrade or node-pool creation.
       '--enable-gvnic',
       help=help_text,
       default=None,
-      hidden=True,
       action='store_true')

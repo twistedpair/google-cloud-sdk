@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*- #
-# Copyright 2019 Google LLC. All Rights Reserved.
+# Copyright 2020 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -18,19 +18,21 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
-from apitools.base.py import encoding
-from apitools.base.py import exceptions as apitools_exceptions
+import re
 
-from googlecloudsdk.api_lib.dns import util as dns_api_util
+from apitools.base.py import encoding
+
+from googlecloudsdk.api_lib.domains import operations
 from googlecloudsdk.api_lib.domains import registrations
-from googlecloudsdk.api_lib.util import apis
-from googlecloudsdk.calliope import exceptions as calliope_exceptions
 from googlecloudsdk.command_lib.domains import flags
 from googlecloudsdk.core import exceptions
+from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 from googlecloudsdk.core import resources
 from googlecloudsdk.core import yaml
 from googlecloudsdk.core.console import console_io
+
+import six
 
 LOCATIONS_COLLECTION = 'domains.projects.locations'
 OPERATIONS_COLLECTION = 'domains.projects.locations.operations'
@@ -42,120 +44,133 @@ def RegistrationsUriFunc(resource):
   return ParseRegistration(resource.name).SelfLink()
 
 
-# TODO(b/110077203): Add some validation.
-def ParseNameServers(name_servers, cloud_dns_zone, domain):
-  if name_servers is not None:
-    return name_servers
-  if cloud_dns_zone is not None:
-    return GetCloudDnsNameServers(cloud_dns_zone, domain)
-  return None
+def AssertRegistrationOperational(registration):
+  messages = registrations.GetMessagesModule()
 
-
-def GetCloudDnsNameServers(cloud_dns_zone, domain):
-  """Fetches list of name servers from provided Cloud DNS Managed Zone."""
-  # Get the managed-zone.
-  dns_api_version = 'v1'
-  dns = apis.GetClientInstance('dns', dns_api_version)
-  zone_ref = dns_api_util.GetRegistry(dns_api_version).Parse(
-      cloud_dns_zone,
-      params={
-          'project': properties.VALUES.core.project.GetOrFail,
-      },
-      collection='dns.managedZones')
-
-  try:
-    zone = dns.managedZones.Get(
-        dns.MESSAGES_MODULE.DnsManagedZonesGetRequest(
-            project=zone_ref.project, managedZone=zone_ref.managedZone))
-  except apitools_exceptions.HttpError as error:
-    raise calliope_exceptions.HttpException(error)
-  domain_with_dot = domain + '.'
-  if zone.dnsName != domain_with_dot:
+  if registration.state not in [
+      messages.Registration.StateValueValuesEnum.ACTIVE,
+      messages.Registration.StateValueValuesEnum.SUSPENDED
+  ]:
     raise exceptions.Error(
-        'The dnsName [{}] of specified Cloud DNS zone [{}] does not match the '
-        'registration domain [{}]'.format(zone.dnsName, cloud_dns_zone,
-                                          domain_with_dot))
-  return zone.nameServers
+        'The registration resource must be in state ACTIVE or SUSPENDED, '
+        'not \'{}\'.'.format(registration.state))
 
 
-def ParseWhoisContact(path):
+def ParseMessageFromYamlFile(path, message_type, error_message):
+  """Parse a Yaml file.
+
+  Args:
+    path: Yaml file path. If path is None returns None.
+    message_type: Message type to parse YAML into.
+    error_message: Error message to print in case of parsing error.
+
+  Returns:
+    parsed message of type message_type.
+  """
   if path is None:
     return None
-  raw_contact = yaml.load_path(path)
-  messages = registrations.GetMessagesModule()
-  parsed_contact = messages.WhoisContact(**raw_contact)
-  return parsed_contact
+  raw_message = yaml.load_path(path)
+  try:
+    parsed_message = encoding.PyValueToMessage(message_type, raw_message)
+  except Exception as e:
+    # This error may be slightly different in Py2 and Py3.
+    raise exceptions.Error('{}: {}'.format(error_message, e))
+
+  unknown_fields = []
+  for message in encoding.UnrecognizedFieldIter(parsed_message):
+    outer_message = ''.join([edge.field + '.' for edge in message[0]])
+    unknown_fields += [outer_message + field for field in message[1]]
+  unknown_fields.sort()
+  if unknown_fields:
+    raise exceptions.Error(
+        ('{}.\nProblematic fields: \'{}\'').format(error_message,
+                                                   ', '.join(unknown_fields)))
+
+  return parsed_message
 
 
-def PromptForWhoisContact():
-  """Interactively prompts for Whois Contact information."""
-  if not console_io.PromptContinue(
-      'Registrant contact information not provided',
-      prompt_string='Do you want to enter it interactively',
-      default=False):
-    return None
-  messages = registrations.GetMessagesModule()
-  whois_contact = messages.WhoisContact()
-  whois_contact.postalAddress = messages.PostalAddress()
-  # TODO(b/110077203): Improve interactive address info.
-  whois_contact.postalAddress.recipients.append(
-      console_io.PromptWithValidator(
-          validator=_ValidateNonEmpty,
-          error_message='Name must not be empty.',
-          prompt_string=' full name:  '))
-  whois_contact.postalAddress.organization = console_io.PromptResponse(
-      ' organization (if applicable):  ')
-  whois_contact.email = console_io.PromptWithDefault(
-      message=' email', default=properties.VALUES.core.account.Get())
-  whois_contact.phoneNumber = console_io.PromptWithValidator(
-      validator=_ValidateNonEmpty,
-      error_message='Phone number must not be empty.',
-      prompt_string=' phone number:  ',
-      message='Enter phone number with country code, e.g. "+1.1234567890".')
-  whois_contact.postalAddress.regionCode = console_io.PromptWithValidator(
-      validator=_ValidateRegionCode,
-      error_message=(
-          'Country code must be in ISO 3166-1 format, e.g. "US" or "PL".\n'
-          'See https://support.google.com/business/answer/6270107 for a list '
-          'of valid choices.'),
-      prompt_string=' country code:  ',
-      message='Enter two-letter country code, e.g. "US" or "PL".')
-  whois_contact.postalAddress.postalCode = console_io.PromptResponse(
-      ' postal code/zipcode:  ')
-  whois_contact.postalAddress.administrativeArea = console_io.PromptResponse(
-      ' state (if applicable):  ')
-  whois_contact.postalAddress.locality = console_io.PromptResponse(' city:  ')
-  whois_contact.postalAddress.addressLines.append(
-      console_io.PromptResponse(' street address (incl. building, apt):  '))
-  return whois_contact
+def NormalizeResourceName(domain):
+  """Normalizes domain name in resource name."""
+  parts = domain.split('/')
+  parts[-1] = NormalizeDomainName(parts[-1])
+  return '/'.join(parts)
 
 
-def _ValidateNonEmpty(s):
-  return bool(s)
+def NormalizeDomainName(domain):
+  """Normalizes domain name (including punycoding)."""
+  if not domain:
+    raise exceptions.Error('Empty domain name')
+  try:
+    normalized = domain.encode('idna').decode()  # To Punycode
+    normalized = normalized.lower().rstrip('.')
+  except UnicodeError as e:
+    raise exceptions.Error('Invalid domain name \'{}\': {}.'.format(domain, e))
+  return normalized
 
 
-def _ValidateRegionCode(rc):
+def ValidateDomainName(domain):
+  if not domain:
+    return False
+  # TODO(b/146630685): Find a library function for FQDN validation.
+  pattern = r'^[a-z0-9-]+(\.[a-z0-9-]+)+\.{0,1}$'
+  if not re.match(pattern, domain) or '..' in domain:
+    return False
+  return True
+
+
+def ValidateNonEmpty(s):
+  return s is not None and bool(s.strip())
+
+
+def ValidateRegionCode(rc):
   return rc is not None and len(rc) == 2 and rc.isalpha() and rc.isupper()
 
 
-def ParseWhoisPrivacy(whois_privacy):
-  if whois_privacy is None:
-    return None
-  return flags.WHOIS_PRIVACY_ENUM_MAPPER.GetEnumForChoice(whois_privacy)
+def ValidateEmail(email):
+  if not email:
+    return False
+  # TODO(b/146630685): Find a library function for email validation.
+  pattern = r'^[^@\s]+@[^@\s]+\.[^@\s]+$'
+  return bool(re.match(pattern, email))
 
 
-def PromptForWhoisPrivacy(choices):
-  index = console_io.PromptChoice(
-      options=choices,
-      default=0,
-      message='Specify WHOIS privacy setting')
-  return ParseWhoisPrivacy(
-      flags.WHOIS_PRIVACY_ENUM_MAPPER.GetChoiceForEnum(choices[index]))
+def PromptWithValidator(prompt_string,
+                        validator,
+                        error_message,
+                        message=None,
+                        default=None):
+  """Prompt for user input and validate output.
+
+  Args:
+    prompt_string: Message to print in the line with prompt.
+    validator: Validation function (str) -> bool.
+    error_message: Message to print if provided value is not correct.
+    message: Optional message to print before prompt.
+    default: Optional default value.
+
+  Returns:
+    Valid user provided value or default if not None and user chose it.
+  """
+  # TODO(b/124427180): Use console_io.PromptWithValidator.
+  if message:
+    log.status.Print(message)
+  while True:
+    if default is not None:
+      answer = console_io.PromptWithDefault(
+          message=prompt_string, default=default)
+      if not answer:
+        return default
+    else:
+      answer = console_io.PromptResponse(prompt_string)
+    if validator(answer):
+      return answer
+    else:
+      log.status.Print(error_message)
 
 
 def GetRegistry():
   registry = resources.REGISTRY.Clone()
-  registry.RegisterApiByName('domains', 'v1alpha1')
+  registry.RegisterApiByName('domains', 'v1alpha2')
   return registry
 
 
@@ -185,6 +200,29 @@ def DomainNamespace(domain):
   return domain[domain.find('.'):]
 
 
+def ParseTransferLockState(transfer_lock_state):
+  if transfer_lock_state is None:
+    return None
+  return flags.TRANSFER_LOCK_ENUM_MAPPER.GetEnumForChoice(transfer_lock_state)
+
+
+def PromptForTransferLockState(transfer_lock=None):
+  """Prompts the user for new transfer lock state."""
+  if transfer_lock is not None:
+    log.status.Print('Your current Transfer Lock state is: {}'.format(
+        six.text_type(transfer_lock)))
+
+  options = list(flags.TRANSFER_LOCK_ENUM_MAPPER.choices)
+  index = console_io.PromptChoice(
+      options=options,
+      cancel_option=True,
+      default=len(options),  # Additional 'cancel' option.
+      message='Specify new transfer lock state')
+  if index >= len(options):
+    return None
+  return ParseTransferLockState(options[index])
+
+
 def TransformMoneyType(r):
   if r is None:
     return None
@@ -193,3 +231,101 @@ def TransformMoneyType(r):
     dr = encoding.MessageToDict(r)
   return '{}.{:02d} {}'.format(dr['units'], int(dr.get('nanos', 0) / (10**7)),
                                dr.get('currencyCode', ''))
+
+
+def _ParseMoney(money):
+  """Parses money string as touple (units, cents, currency)."""
+  match = re.match(r'^(\d+|\d+\.\d{2})([A-Z]{3})$', money)
+  if match:
+    number, s = match.groups()
+  else:
+    raise ValueError('Value could not be parsed as number + string')
+  if '.' in number:
+    index = number.find('.')
+    return int(number[:index]), int(number[index + 1:]), s
+  else:
+    return int(number), 0, s
+
+
+def ParseYearlyPrice(price_string):
+  """Parses money string as type Money."""
+  if not price_string:
+    return None
+  try:
+    units, cents, currency = _ParseMoney(price_string)
+  except ValueError:
+    raise exceptions.Error(
+        'Yearly price \'{}\' is not valid.'.format(price_string))
+
+  if currency == '$':
+    currency = 'USD'
+
+  messages = registrations.GetMessagesModule()
+  return messages.Money(
+      units=int(units), nanos=cents * 10**7, currencyCode=currency)
+
+
+def EqualPrice(x, y):
+  if x.nanos is None:
+    x.nanos = 0
+  if y.nanos is None:
+    y.nanos = 0
+  return x == y
+
+
+def PromptForYearlyPriceAck(price):
+  """Asks the user to accept the yearly price."""
+  ack = console_io.PromptContinue(
+      'Yearly price: {}\n'.format(TransformMoneyType(price)),
+      prompt_string='Do you agree to pay this yearly price for your domain',
+      throw_if_unattended=True,
+      cancel_on_no=True,
+      default=False)
+  if ack:
+    return price
+  else:
+    return None
+
+
+def ParseRegisterNotices(notices):
+  """Parses registration notices.
+
+  Args:
+    notices: list of notices (lowercase-strings).
+
+  Returns:
+    Pair (public privacy ack: bool, hsts ack: bool).
+  """
+  if not notices:
+    return False, False
+  return 'public-contact-data-acknowledgement' in notices, 'hsts-preloaded' in notices
+
+
+def PromptForHSTSAck(domain):
+  ack = console_io.PromptContinue(
+      ('{} is a secure namespace. You may purchase {} now but it will '
+       'require an SSL certificate for website connection.').format(
+           DomainNamespace(domain), domain),
+      throw_if_unattended=True,
+      cancel_on_no=True,
+      default=False)
+  return ack
+
+
+def WaitForOperation(response, asynchronous):
+  """Handles waiting for the operation and printing information about it.
+
+  Args:
+    response: Response from the API call
+    asynchronous: If true, do not wait for the operation
+
+  Returns:
+    The last information about the operation.
+  """
+  if not asynchronous:
+    message = 'Waiting for \'{}\' to complete'
+    operations_client = operations.Client.FromApiVersion('v1alpha2')
+    operation_ref = ParseOperation(response.name)
+    response = operations_client.WaitForOperation(
+        operation_ref, message.format(operation_ref.Name()))
+  return response

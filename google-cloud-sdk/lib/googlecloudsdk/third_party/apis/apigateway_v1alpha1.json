@@ -230,7 +230,7 @@
     },
     "ApigatewayGateway": {
       "id": "ApigatewayGateway",
-      "description": "A Gateway is an API-aware HTTP proxy. It performs API-operation and\/or\nAPI-Consumer specific actions based on an API Config such as authentication,\npolicy enforcement, and backend selection.",
+      "description": "A Gateway is an API-aware HTTP proxy. It performs API-Method and\/or\nAPI-Consumer specific actions based on an API Config such as authentication,\npolicy enforcement, and backend selection.",
       "type": "object",
       "properties": {
         "name": {
@@ -259,7 +259,7 @@
           "type": "string"
         },
         "apiConfig": {
-          "description": "Required. Resource name of the API Config for this Gateway.\nFormat: projects\/{project}\/apis\/{api}\/configs\/{apiConfig}",
+          "description": "Required. Resource name of the API Config for this Gateway.\nFormat: projects\/{project}\/locations\/global\/apis\/{api}\/configs\/{apiConfig}",
           "type": "string"
         },
         "state": {
@@ -371,7 +371,7 @@
     },
     "ApigatewayApiApiController": {
       "id": "ApigatewayApiApiController",
-      "description": "An API Controller enforces global rules related to API methods and\nconsumers, such as API Key checking, quota enforcement, and collections of\nusage statistics.",
+      "description": "An API Controller enforces global rules related to API Methods and\nConsumers, such as API Key checking, quota enforcement, and collections of\nusage statistics.",
       "type": "object",
       "properties": {
         "managedService": {
@@ -462,6 +462,27 @@
             "DELETING",
             "UPDATING"
           ]
+        },
+        "openapiDocuments": {
+          "description": "Optional. OpenAPI specification documents. If specified, grpc_services and\nmanaged_service_config must not be included.",
+          "type": "array",
+          "items": {
+            "$ref": "ApigatewayApiConfigOpenApiDocument"
+          }
+        },
+        "grpcServices": {
+          "description": "Optional. gRPC service definition files. If specified, openapi_documents must\nnot be included.",
+          "type": "array",
+          "items": {
+            "$ref": "ApigatewayApiConfigGrpcServiceDefinition"
+          }
+        },
+        "managedServiceConfigs": {
+          "description": "Optional. Service Configuration files. At least one must be included when using gRPC\nservice definitions. See\n\nhttps:\n\/\/cloud.google.com\/endpoints\/docs\/grpc\/g\n\/\/ rpc-service-config#service_configuration_overview\nfor the expected file contents.\n\nIf multiple files are specified, the files are merged with the following\nrules:\n* All singular scalar fields are merged using \"last one wins\" semantics in\nthe order of the files uploaded.\n* Repeated fields are concatenated.\n* Singular embedded messages are merged using these rules for nested\nfields.",
+          "type": "array",
+          "items": {
+            "$ref": "ApigatewayApiConfigFile"
+          }
         }
       }
     },
@@ -471,7 +492,7 @@
       "type": "object",
       "properties": {
         "rolloutId": {
-          "description": "Required. The Rollout ID for the Managed Service. See\nhttps:\/\/cloud.google.com\/service-infrastructure\/docs\/rollout for more\ninfo.",
+          "description": "Optional. The Rollout ID for the Managed Service. See\nhttps:\/\/cloud.google.com\/service-infrastructure\/docs\/rollout for more\ninfo.",
           "type": "string"
         }
       }
@@ -495,6 +516,51 @@
         "googleServiceAccount": {
           "description": "Google Cloud IAM service account used to sign OIDC tokens for backends\nthat have authentication configured\n\n(https:\n\/\/cloud.google.com\/service-infrastructur\n\/\/ e\/docs\/service-management\/reference\/rest\/v1\/services.configs#backend).\nThis may either be the Service Account's email\n(i.e. \"{ACCOUNT_ID}@{PROJECT}.iam.gserviceaccount.com\") or its full\nresource name (i.e. \"projects\/{PROJECT}\/accounts\/{UNIQUE_ID}\"). This is\nmost often used when the backend is a GCP resource such as a Cloud Run\nService or an IAP-secured service. Note that this token is always sent as\nan authorization header bearer token. The audience of the OIDC token is\nconfigured in the associated Service Config in the BackendRule option\n\n(https:\n\/\/github.com\/googleapis\/googleapis\/blob\/\n\/\/ master\/google\/api\/backend.proto#L125).",
           "type": "string"
+        }
+      }
+    },
+    "ApigatewayApiConfigOpenApiDocument": {
+      "id": "ApigatewayApiConfigOpenApiDocument",
+      "description": "An OpenAPI Specification Document describing an API.",
+      "type": "object",
+      "properties": {
+        "document": {
+          "description": "The OpenAPI Specification document file.",
+          "$ref": "ApigatewayApiConfigFile"
+        }
+      }
+    },
+    "ApigatewayApiConfigFile": {
+      "id": "ApigatewayApiConfigFile",
+      "description": "A lightweight description of a file.",
+      "type": "object",
+      "properties": {
+        "path": {
+          "description": "The file path (full or relative path). This is typically the path of the\nfile when it is uploaded.",
+          "type": "string"
+        },
+        "contents": {
+          "description": "The bytes that constitute the file.",
+          "type": "string",
+          "format": "byte"
+        }
+      }
+    },
+    "ApigatewayApiConfigGrpcServiceDefinition": {
+      "id": "ApigatewayApiConfigGrpcServiceDefinition",
+      "description": "A gRPC service definition.",
+      "type": "object",
+      "properties": {
+        "fileDescriptorSet": {
+          "description": "Input only. File descriptor set, generated by protoc.\n\nTo generate, use protoc with imports and source info included.\nFor an example test.proto file, the following command would put the value\nin a new file named out.pb.\n\n$ protoc --include_imports --include_source_info test.proto -o out.pb",
+          "$ref": "ApigatewayApiConfigFile"
+        },
+        "source": {
+          "description": "Optional. Uncompiled proto files associated with the descriptor set, used for\ndisplay purposes (server-side compilation is not supported). These\nshould match the inputs to 'protoc' command used to generate\nfile_descriptor_set.",
+          "type": "array",
+          "items": {
+            "$ref": "ApigatewayApiConfigFile"
+          }
         }
       }
     },
@@ -751,6 +817,33 @@
         },
         "apiVersion": {
           "description": "Output only. API version used to start the operation.",
+          "type": "string"
+        },
+        "diagnostics": {
+          "description": "Output only. Diagnostics generated during processing of configuration source files.",
+          "type": "array",
+          "items": {
+            "$ref": "ApigatewayOperationMetadataFileDiagnostic"
+          }
+        }
+      }
+    },
+    "ApigatewayOperationMetadataFileDiagnostic": {
+      "id": "ApigatewayOperationMetadataFileDiagnostic",
+      "description": "Diagnostic information from source file processing.",
+      "type": "object",
+      "properties": {
+        "file": {
+          "description": "File path. This will match the file path sent by the client.",
+          "type": "string"
+        },
+        "line": {
+          "description": "Line number in the file.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "message": {
+          "description": "The diagnostic message.",
           "type": "string"
         }
       }
@@ -1522,6 +1615,16 @@
                           "required": true,
                           "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/apis\/[^\/]+\/configs\/[^\/]+$",
                           "type": "string"
+                        },
+                        "view": {
+                          "description": "Specifies which fields of the API Config are returned in the response.\nDefaults to `BASIC` view.",
+                          "location": "query",
+                          "type": "string",
+                          "enum": [
+                            "CONFIG_VIEW_UNSPECIFIED",
+                            "BASIC",
+                            "FULL"
+                          ]
                         }
                       },
                       "parameterOrder": [

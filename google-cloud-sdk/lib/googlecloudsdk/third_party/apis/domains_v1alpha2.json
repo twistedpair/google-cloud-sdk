@@ -7,14 +7,14 @@
   "version": "v1alpha2",
   "revision": "0",
   "title": "Cloud Domains API",
-  "description": "API to register and manage domains in Google Cloud Platform.",
+  "description": "Enables management and configuration of domain names.",
   "ownerDomain": "google.com",
   "ownerName": "Google",
   "icons": {
     "x16": "http://www.google.com/images/icons/product/search-16.gif",
     "x32": "http://www.google.com/images/icons/product/search-32.gif"
    },
-  "documentationLink": "https://cloud.google.com/domains/",
+  "documentationLink": "https://cloud.google.com/cloud-domains/",
   "protocol": "rest",
   "rootUrl": "https://domains.googleapis.com/",
   "mtlsRootUrl": "https://domains.mtls.googleapis.com/",
@@ -196,7 +196,7 @@
       "type": "object",
       "properties": {
         "registerParameters": {
-          "description": "Information about availability and other register parameters of domains\nwith names similar to the query.",
+          "description": "Results of the domain name search.",
           "type": "array",
           "items": {
             "$ref": "RegisterParameters"
@@ -206,21 +206,21 @@
     },
     "RegisterParameters": {
       "id": "RegisterParameters",
-      "description": "Provides information of domain availability and parameters required to\nregister a domain.",
+      "description": "Parameters required to register a new domain.",
       "type": "object",
       "properties": {
         "domainName": {
-          "description": "The domain name. Unicode domain names are converted to Punycode.",
+          "description": "The domain name. Unicode domain names are expressed in Punycode format.",
           "type": "string"
         },
         "availability": {
-          "description": "Availability of the domain.",
+          "description": "Indicates whether the domain is available for registration. This value is\naccurate when obtained by calling `RetrieveRegisterParameters`, but is\napproximate when obtained by calling `SearchDomains`.",
           "enumDescriptions": [
-            "The Availability is unspecified.",
-            "Domain is available for registration.",
-            "Domain is not available for registration, e.g. it is registered by\nsomeone else.",
-            "Domain is not supported by Cloud Domains, but may be available elsewhere.",
-            "The system might return UNKNOWN if something prevents the service from\nbeing able to determine domain availability (e.g. registry downtime)."
+            "The availability is unspecified.",
+            "The domain is available for registration.",
+            "The domain is not available for registration. Generally this means it is\nalready registered to another party.",
+            "The domain is not currently supported by Cloud Domains, but may\nbe available elsewhere.",
+            "Cloud Domains is unable to determine domain availability, generally\ndue to system maintenance at the domain name registry."
           ],
           "type": "string",
           "enum": [
@@ -232,12 +232,12 @@
           ]
         },
         "supportedPrivacy": {
-          "description": "Supported contact privacy settings.",
+          "description": "Contact privacy options that the domain supports.",
           "enumDescriptions": [
-            "The ContactPrivacy settings are undefined.",
-            "All the data from contact config is publicly available. When setting this,\nyou have to additionally send us PUBLIC_CONTACT_DATA_ACKNOWLEDGEMENT\nContactNotice in the request.",
-            "Your contact info won't be available to the public. To help protect your\ninfo and prevent spam, a third party provides alternate (proxy) contact\ninfo for your domain in the public directory at no extra cost. They will\nforward received messages to you.",
-            "Limited personal info will be available to the public. The actual\ninformation redacted depends on the domain."
+            "The contact privacy settings are undefined.",
+            "All the data from `ContactSettings` is publicly available. When setting\nthis option, you must also provide a\n`PUBLIC_CONTACT_DATA_ACKNOWLEDGEMENT` in the `contact_notices` field of the\nrequest.",
+            "None of the data from `ContactSettings` is publicly available. Instead,\nproxy contact data is published for your domain. Email sent to the proxy\nemail address is forwarded to the registrant's email address. Cloud Domains\nprovides this privacy proxy service at no additional cost.",
+            "Some data from `ContactSettings` is publicly available. The actual\ninformation redacted depends on the domain. For details, see [the\nregistration privacy\narticle](https:\/\/support.google.com\/domains\/answer\/3251242)."
           ],
           "type": "array",
           "items": {
@@ -251,10 +251,10 @@
           }
         },
         "domainNotices": {
-          "description": "Notices about special properties of certain domains.",
+          "description": "Notices about special properties of the domain.",
           "enumDescriptions": [
             "The notice is undefined.",
-            "HSTS_PRELOADED indicates that the domain is preloaded on the HTTP Strict\nTransport Security list in browsers.\nServing a website on such domain will require an SSL certificate.\nSee https:\/\/support.google.com\/domains\/answer\/7638036 for details."
+            "Indicates that the domain is preloaded on the HTTP Strict Transport\nSecurity list in browsers. Serving a website on such domain requires\nan SSL certificate. For details, see\n[how to get an SSL\ncertificate](https:\/\/support.google.com\/domains\/answer\/7638036)."
           ],
           "type": "array",
           "items": {
@@ -266,7 +266,7 @@
           }
         },
         "yearlyPrice": {
-          "description": "Yearly price to register or renew the domain.",
+          "description": "Price to register or renew the domain for one year.",
           "$ref": "Money"
         }
       }
@@ -298,7 +298,7 @@
       "type": "object",
       "properties": {
         "registerParameters": {
-          "description": "Parameters used for the RegisterDomain method.",
+          "description": "Parameters to use when calling the `RegisterDomain` method.",
           "$ref": "RegisterParameters"
         }
       }
@@ -309,14 +309,14 @@
       "type": "object",
       "properties": {
         "registration": {
-          "description": "Required. The Registration resource which should be created. You have to provide\nvalues for all applicable fields of the Registration.",
+          "description": "Required. The complete `Registration` resource to be created.",
           "$ref": "Registration"
         },
         "domainNotices": {
-          "description": "List of accepted DomainNotices about the domain.",
+          "description": "The list of domain notices that you acknowledge. Call\n`RetrieveRegisterParameters` to see the notices that need acknowledgement.",
           "enumDescriptions": [
             "The notice is undefined.",
-            "HSTS_PRELOADED indicates that the domain is preloaded on the HTTP Strict\nTransport Security list in browsers.\nServing a website on such domain will require an SSL certificate.\nSee https:\/\/support.google.com\/domains\/answer\/7638036 for details."
+            "Indicates that the domain is preloaded on the HTTP Strict Transport\nSecurity list in browsers. Serving a website on such domain requires\nan SSL certificate. For details, see\n[how to get an SSL\ncertificate](https:\/\/support.google.com\/domains\/answer\/7638036)."
           ],
           "type": "array",
           "items": {
@@ -328,10 +328,10 @@
           }
         },
         "contactNotices": {
-          "description": "List of accepted ContactNotices about the contacts.",
+          "description": "The list of contact notices that the caller acknowledges. The notices\nrequired here depend on the values specified in\n`registration.contact_settings`.",
           "enumDescriptions": [
             "The notice is undefined.",
-            "PUBLIC_CONTACT_DATA_ACKNOWLEDGEMENT is required when setting the contact\nprivacy to PUBLIC_CONTACT_DATA."
+            "Required when setting the `privacy` field of `ContactSettings` to\n`PUBLIC_CONTACT_DATA`, which exposes contact data publicly."
           ],
           "type": "array",
           "items": {
@@ -354,36 +354,36 @@
     },
     "Registration": {
       "id": "Registration",
-      "description": "Defines a domain registration.",
+      "description": "The `Registration` resource facilitates managing and configuring domain name\nregistrations.\n\n\nTo create a new `Registration` resource, find a suitable domain name by\ncalling the `SearchDomains` method with a query to see available domain name\noptions. After choosing a name, call `RetrieveRegisterParameters` to\nensure availability and obtain information like pricing, which is needed to\nbuild a call to `RegisterDomain`.\n",
       "type": "object",
       "properties": {
         "name": {
-          "description": "Output only. Name of the Registration resource. It matches pattern\n`projects\/*\/locations\/*\/registrations\/<domain_name>`.",
+          "description": "Output only. Name of the `Registration` resource, in the format\n`projects\/*\/locations\/*\/registrations\/<domain_name>`.",
           "type": "string"
         },
         "domainName": {
-          "description": "Required. Immutable. The domain name in ASCII-only format, without a dot at the end.\nUnicode domain names have to be converted to Punycode.",
+          "description": "Required. Immutable. The domain name. Unicode domain names must be expressed in Punycode format.",
           "type": "string"
         },
         "createTime": {
-          "description": "Output only. The creation timestamp of the Registration resource.",
+          "description": "Output only. The creation timestamp of the `Registration` resource.",
           "type": "string",
           "format": "google-datetime"
         },
         "expireTime": {
-          "description": "Output only. The expiration timestamp of the Registration. For\nregistrations in state EXPORTED this is the expiration timestamp at export\ntime.",
+          "description": "Output only. The expiration timestamp of the `Registration`.",
           "type": "string",
           "format": "google-datetime"
         },
         "state": {
-          "description": "Output only. The State of the Registration.",
+          "description": "Output only. The state of the `Registration`",
           "enumDescriptions": [
             "The state is undefined.",
-            "The registration operation is not yet completed.",
-            "The registration failed. You can remove this resource and try to register\nthe domain again.",
-            "The domain is registered and operational. Check the issues list to see if\nthere are any unresolved issues with the registration.",
-            "The registration is suspended and the domain is inaccessible.\nThis may mean e.g. that the registrant email has not been verified for\ntoo long. Check the issues list to learn the exact problem.\nCheck emails received from the registrar and follow the provided steps to\nresolve the problem.",
-            "The registration has been exported from Cloud and moved directly to\nGoogle Domains for individual management. The domain will remain valid\nuntil it expires but this API will show only minimal information about\nit. Visit https:\/\/domains.google.com\/m\/registrar\/[domain_name] to manage\nthe domain. In case of problems see\nhttps:\/\/support.google.com\/domains\/answer\/6339340."
+            "The domain is being registered.",
+            "The domain registration failed. You can delete resources in this state\nto allow registration to be retried.",
+            "The domain is registered and operational. The domain renews automatically\nas long as it remains in this state.",
+            "The domain is suspended and inoperative. For more details, see the\n`issues` field.",
+            "The domain has been exported from Cloud Domains to\n[Google Domains](https:\/\/domains.google\/). You can no longer update it\nwith this API, and information shown about it may be stale. Without further action, domains in this\nstate expire at their `expire_time`. You can delete the resource\nafter the `expire_time` has passed."
           ],
           "type": "string",
           "enum": [
@@ -396,11 +396,11 @@
           ]
         },
         "issues": {
-          "description": "Output only. The set of issues with the Registration.",
+          "description": "Output only. The set of issues with the `Registration` that require attention.",
           "enumDescriptions": [
             "The issue is undefined.",
-            "There is some other problem with the Registration. Check emails received\nfrom the registrar and follow the provided steps to resolve this problem.\nYou can also contact Google Domains support directly at\nhttp:\/\/domains.google.com\/contactus.",
-            "The registrant email has to be verified before 14 days have elapsed since\ndomain registration. Otherwise the domain becomes suspended\n(inaccessible). Check emails received from the registrar and follow the\nprovided steps to resolve this problem. You can resend verification email\nby calling the ConfigureContactSettings method and providing the current\nvalue of the email address. You can also do it at\nhttps:\/\/domains.google.com\/m\/registrar\/[domain_name]\/settings."
+            "Contact the Cloud Support team to resolve a problem with this domain.",
+            "[ICANN](https:\/\/icann.org\/) requires verification of the email address\nin the `Registration`'s `contact_settings.registrant_contact` field. To\nverify the email address, follow the\ninstructions in the email the `registrant_contact` receives following\nregistration. If you do not complete email verification within\n14 days of registration, the domain is suspended. To resend the\nverification email, call ConfigureContactSettings and provide the current\n`registrant_contact.email`."
           ],
           "type": "array",
           "items": {
@@ -413,35 +413,35 @@
           }
         },
         "labels": {
-          "description": "Set of labels associated with the Registration.",
+          "description": "Set of labels associated with the `Registration`.",
           "type": "object",
           "additionalProperties": {
             "type": "string"
           }
         },
         "managementSettings": {
-          "description": "Settings related to transfers, billing and renewals of the registration.\nCannot be changed in Update method. Use ConfigureManagementSettings\ninstead.",
+          "description": "Settings for management of the `Registration`, including renewal, billing,\nand transfer. You cannot update these with the `UpdateRegistration`\nmethod. To update these settings, use the `ConfigureManagementSettings`\nmethod.",
           "$ref": "ManagementSettings"
         },
         "dnsSettings": {
-          "description": "DNS settings of the Registration. Cannot be changed in Update method.\nUse ConfigureDnsSettings instead.",
+          "description": "Settings controlling the DNS configuration of the `Registration`. You\ncannot update these with the `UpdateRegistration` method. To update these\nsettings, use the `ConfigureDnsSettings` method.",
           "$ref": "DnsSettings"
         },
         "contactSettings": {
-          "description": "Required. Contact settings of the Registration. Cannot be changed in Update\nmethod. Use ConfigureContactSettings instead.",
+          "description": "Required. Settings for contact information linked to the `Registration`. You cannot\nupdate these with the `UpdateRegistration` method. To update these\nsettings, use the `ConfigureContactSettings` method.",
           "$ref": "ContactSettings"
         },
         "pendingContactSettings": {
-          "description": "Output only. After you update your contacts you may need to confirm the change using an\nemail sent to the registrant. In that case the new contact settings will be\npending until you confirm them. When you do, this field will be cleared and\nthe update will be applied to contact_settings.\nThe pending_contact_settings field is automatically cleared after the\nupdate is rejected or expired.",
+          "description": "Output only. Pending contact settings for the `Registration`. Updates to the\n`contact_settings` field that change its `registrant_contact` or `privacy`\nfields require email confirmation by the `registrant_contact`\nbefore taking effect. This field is set only if there are pending updates\nto the `contact_settings` that have not yet been confirmed. To confirm the\nchanges, the `registrant_contact` must follow the instructions in the\nemail they receive.",
           "$ref": "ContactSettings"
         },
         "supportedPrivacy": {
-          "description": "Output only. Supported contact privacy options.",
+          "description": "Output only. Set of options for the `contact_settings.privacy` field that this\n`Registration` supports.",
           "enumDescriptions": [
-            "The ContactPrivacy settings are undefined.",
-            "All the data from contact config is publicly available. When setting this,\nyou have to additionally send us PUBLIC_CONTACT_DATA_ACKNOWLEDGEMENT\nContactNotice in the request.",
-            "Your contact info won't be available to the public. To help protect your\ninfo and prevent spam, a third party provides alternate (proxy) contact\ninfo for your domain in the public directory at no extra cost. They will\nforward received messages to you.",
-            "Limited personal info will be available to the public. The actual\ninformation redacted depends on the domain."
+            "The contact privacy settings are undefined.",
+            "All the data from `ContactSettings` is publicly available. When setting\nthis option, you must also provide a\n`PUBLIC_CONTACT_DATA_ACKNOWLEDGEMENT` in the `contact_notices` field of the\nrequest.",
+            "None of the data from `ContactSettings` is publicly available. Instead,\nproxy contact data is published for your domain. Email sent to the proxy\nemail address is forwarded to the registrant's email address. Cloud Domains\nprovides this privacy proxy service at no additional cost.",
+            "Some data from `ContactSettings` is publicly available. The actual\ninformation redacted depends on the domain. For details, see [the\nregistration privacy\narticle](https:\/\/support.google.com\/domains\/answer\/3251242)."
           ],
           "type": "array",
           "items": {
@@ -458,15 +458,15 @@
     },
     "ManagementSettings": {
       "id": "ManagementSettings",
-      "description": "Defined management settings of the Registration.",
+      "description": "Defines renewal, billing, and transfer settings for a `Registration`.",
       "type": "object",
       "properties": {
         "renewalMethod": {
-          "description": "Output only. The renewal method for this Registration.",
+          "description": "Output only. The renewal method for this `Registration`.",
           "enumDescriptions": [
             "The renewal method is undefined.",
-            "Your domain will be automatically renewed each year, and will be billed\naccording to the billing method specified in the `billing_method` field.\nIf your billing method is `GOOGLE_CLOUD`, automatic renewal is\nthe only supported renewal method.",
-            "To keep your domain, you must explicitly renew it each year before its\nexpiration date (registration.expire_time). The manual renewal option is\nonly available when your Registration is billed through a separate\nservice such as Google Domains. Visit\nhttps:\/\/domains.google.com\/m\/registrar\/[domain_name] to manage the\ndomain's current billing & renewal settings."
+            "The domain is automatically renewed each year .\n\nTo disable automatic renewals, export the domain by calling\n`ExportRegistration` .",
+            "The domain must be explicitly renewed each year before its\n`expire_time`. This option is only available when the `Registration`\nis in state `EXPORTED`.\n\nTo manage the domain's current billing and\nrenewal settings, go to [Google Domains](https:\/\/domains.google\/)."
           ],
           "type": "string",
           "enum": [
@@ -476,11 +476,11 @@
           ]
         },
         "transferLockState": {
-          "description": "Transfer Lock of the Registration. It needs to be unlocked in order to\ntransfer the domain to another registrar. The default is LOCKED. Can only\nbe changed after Create operation is finished",
+          "description": "Controls whether the domain can be transferred to another registrar.",
           "enumDescriptions": [
-            "The TransferLockState is unspecified.",
-            "The transfer lock is unlocked.",
-            "The transfer lock is locked."
+            "The state is unspecified.",
+            "The domain is unlocked and can be transferred to another registrar.",
+            "The domain is locked and cannot be transferred to another registrar."
           ],
           "type": "string",
           "enum": [
@@ -493,7 +493,7 @@
     },
     "DnsSettings": {
       "id": "DnsSettings",
-      "description": "Defines DNS configuration of the Registration.",
+      "description": "Defines the DNS configuration of a `Registration`, including name servers,\nDNSSEC, and glue records.",
       "type": "object",
       "properties": {
         "customDns": {
@@ -501,11 +501,11 @@
           "$ref": "CustomDns"
         },
         "googleDomainsDns": {
-          "description": "The free DNS zone provided by Google Domains.",
+          "description": "The free DNS zone provided by\n[Google Domains](https:\/\/domains.google\/).",
           "$ref": "GoogleDomainsDns"
         },
         "glueRecords": {
-          "description": "The list of glue records defined for this registration.",
+          "description": "The list of glue records for this `Registration`. Commonly empty.",
           "type": "array",
           "items": {
             "$ref": "GlueRecord"
@@ -519,14 +519,14 @@
       "type": "object",
       "properties": {
         "nameServers": {
-          "description": "Required. The list of name servers that store the DNS zone for this domain.\nFormatted as a fully-qualified domain name in ASCII-only format, without\na trailing dot. Unicode domain names must be expressed in Punycode.",
+          "description": "Required. A list of name servers that store the DNS zone for this domain. Each name\nserver is a domain name, with Unicode domain names expressed in\nPunycode format.",
           "type": "array",
           "items": {
             "type": "string"
           }
         },
         "dsRecords": {
-          "description": "The list of DS records for this domain. Needed to enabled DNSSEC.",
+          "description": "The list of DS records for this domain, which are used to enable DNSSEC.\nThe domain's DNS provider can provide the values to set here. If this\nfield is empty, DNSSEC is disabled.",
           "type": "array",
           "items": {
             "$ref": "DsRecord"
@@ -536,23 +536,23 @@
     },
     "DsRecord": {
       "id": "DsRecord",
-      "description": "Defines a DsRecord. DsRecord contains the digital signature information\nfor a domain name's DNS and is used to identify the\nDNSSEC(Domain Name System Security Extensions) signing key\nof a delegated zone. This is needed to enable DNSSEC for a domain.",
+      "description": "Defines a Delegation Signer (DS) record, which is needed to enable DNSSEC\nfor a domain. It contains a digest (hash) of a DNSKEY record that must be\npresent in the domain's DNS zone.",
       "type": "object",
       "properties": {
         "keyTag": {
-          "description": "The key tag of the DS record. Must be set in range 0 -- 65535.",
+          "description": "The key tag of the record. Must be set in range 0 -- 65535.",
           "type": "integer",
           "format": "int32"
         },
         "algorithm": {
-          "description": "The algorithm used to generate the DNSKEY that this record references.",
+          "description": "The algorithm used to generate the referenced DNSKEY.",
           "enumDescriptions": [
-            "The Algorithm is unspecified.",
-            "DSA\/SHA1. This DNSSEC Algorithm is deprecated and shouldn't be used in\nnew deployments.",
-            "ECC. This DNSSEC Algorithm is deprecated and shouldn't be used in new\ndeployments.",
-            "RSA\/SHA-1.",
-            "DSA-NSEC3-SHA1. This DNSSEC Algorithm is deprecated and shouldn't be\nused in new deployments.",
-            "RSASHA1-NSEC3-SHA1.",
+            "The algorithm is unspecified.",
+            "DSA\/SHA1. Not recommended for new deployments.",
+            "ECC. Not recommended for new deployments.",
+            "RSA\/SHA-1. Not recommended for new deployments.",
+            "DSA-NSEC3-SHA1. Not recommended for new deployments.",
+            "RSA\/SHA1-NSEC3-SHA1. Not recommended for new deployments.",
             "RSA\/SHA-256.",
             "RSA\/SHA-512.",
             "GOST R 34.10-2001.",
@@ -579,10 +579,10 @@
           ]
         },
         "digestType": {
-          "description": "The hash function used to generate the digest.",
+          "description": "The hash function used to generate the digest of the referenced DNSKEY.",
           "enumDescriptions": [
             "The DigestType is unspecified.",
-            "SHA-1.",
+            "SHA-1. Not recommended for new deployments.",
             "SHA-256.",
             "GOST R 34.11-94.",
             "SHA-384."
@@ -597,29 +597,29 @@
           ]
         },
         "digest": {
-          "description": "The digest generated from the referenced DNSKEY record.",
+          "description": "The digest generated from the referenced DNSKEY.",
           "type": "string"
         }
       }
     },
     "GoogleDomainsDns": {
       "id": "GoogleDomainsDns",
-      "description": "Configuration for using the free DNS zone provided by Google Domains.",
+      "description": "Configuration for using the free DNS zone provided by Google Domains as a\n`Registration`'s `dns_provider`. You cannot configure the DNS zone itself\nusing the API. To configure the DNS zone, go to\n[Google Domains](https:\/\/domains.google\/).",
       "type": "object",
       "properties": {
         "nameServers": {
-          "description": "Output only. A list of name servers that store the DNS zone for this domain. Formatted\nas a fully-qualified domain name in ASCII-only format, without a trailing\ndot. This field is automatically populated with the name servers assigned\nto the Google Domains DNS zone.",
+          "description": "Output only. A list of name servers that store the DNS zone for this domain. Each name\nserver is a domain name, with Unicode domain names expressed in\nPunycode format. This field is automatically populated with the name\nservers assigned to the Google Domains DNS zone.",
           "type": "array",
           "items": {
             "type": "string"
           }
         },
         "dsState": {
-          "description": "Required. The state of DS records for this domain. To enable DNSSEC by setting DS\nrecords at the parent domain registry, set this to `DS_RECORDS_PUBLISHED`\nAppropriate DS records will be derived from this Registration's\nassociated DNS zone, which must already be DNSSEC-signed (the Google\nDomains zone is signed by default for new registrations). To remove DS\nrecords from the parent domain registry, set this to\n`DS_RECORDS_UNPUBLISHED`.",
+          "description": "Required. The state of DS records for this domain. Used to enable or disable\nautomatic DNSSEC.",
           "enumDescriptions": [
             "DS state is unspecified.",
-            "DNSSEC is disabled for this domain. The set of DS records present at the\nparent domain name registry is empty.",
-            "DNSSEC is enabled for this domain. The parent domain name registry has a\nset of DS records derived from the DNSSEC-enabled zone set as this\nRegistration's `dns_provider`."
+            "DNSSEC is disabled for this domain. No DS records for this domain are\npublished in the parent DNS zone.",
+            "DNSSEC is enabled for this domain. Appropriate DS records for this domain\nare published in the parent DNS zone. This option is valid only if the\nDNS zone referenced in the `Registration`'s `dns_provider` field is\nalready DNSSEC-signed."
           ],
           "type": "string",
           "enum": [
@@ -629,7 +629,7 @@
           ]
         },
         "dsRecords": {
-          "description": "Output only. The list of DS records for this domain. The list is automatically\npopulated when `ds_state` is `DS_RECORDS_PUBLISHED` and empty otherwise.",
+          "description": "Output only. The list of DS records published for this domain. The list is\nautomatically populated when `ds_state` is `DS_RECORDS_PUBLISHED`,\notherwise it remains empty.",
           "type": "array",
           "items": {
             "$ref": "DsRecord"
@@ -639,22 +639,22 @@
     },
     "GlueRecord": {
       "id": "GlueRecord",
-      "description": "Defines a GlueRecord. Glue Records or \"Registered Hosts\" are a way of\nmaking the IP address of the name server known when it is a subdomain of\nthe domain for which it serves. For example, If your domain is\nexample.com and your name servers are ns1.example.com, ns2.example.com,\nns3.example.com, and ns4.example.com, you would create four registered\nhost records linking each name server to its IP address. Use glue records\nwhen your name servers are subdomains of your domain.",
+      "description": "Defines a host on your domain that is a DNS name server for your domain\nand\/or other domains. Glue records are a way of making the IP address of a\nname server known, even when it serves DNS queries for its parent domain.\nFor example, when `ns.example.com` is a name server for `example.com`, the\nhost `ns.example.com` must have a glue record to break the circular DNS\nreference.",
       "type": "object",
       "properties": {
         "hostName": {
-          "description": "Required. Fully qualified host name, from least to most significant order, e.g.\n\"subdomain.domain.com\".",
+          "description": "Required. Domain name of the host in Punycode format.",
           "type": "string"
         },
         "ipv4Addresses": {
-          "description": "List of IPv4 addresses corresponding to this host in the standard decimal\nformat (e.g. 216.58.215.78). At least one of ipv4_address and\nipv6_address must be set.",
+          "description": "List of IPv4 addresses corresponding to this host in the standard decimal\nformat (e.g. `198.51.100.1`). At least one of `ipv4_address` and\n`ipv6_address` must be set.",
           "type": "array",
           "items": {
             "type": "string"
           }
         },
         "ipv6Addresses": {
-          "description": "List of IPv6 addresses corresponding to this host in the standard\nhexadecimal format (e.g. 2a00:1450:401b:807::200e). At least one of\nipv4_address and ipv6_address must be set.",
+          "description": "List of IPv6 addresses corresponding to this host in the standard\nhexadecimal format (e.g. `2001:db8::`). At least one of\n`ipv4_address` and `ipv6_address` must be set.",
           "type": "array",
           "items": {
             "type": "string"
@@ -664,16 +664,16 @@
     },
     "ContactSettings": {
       "id": "ContactSettings",
-      "description": "Defines contact information associated with the Registration.",
+      "description": "Defines the contact information associated with a `Registration`.\n\n[ICANN](https:\/\/icann.org\/) requires all domain names to have associated\ncontact information. The `registrant_contact` is considered the\ndomain's legal owner, and often the other contacts are identical.",
       "type": "object",
       "properties": {
         "privacy": {
-          "description": "Required. Privacy settings of the Registration.",
+          "description": "Required. Privacy setting for the contacts associated with the `Registration`.",
           "enumDescriptions": [
-            "The ContactPrivacy settings are undefined.",
-            "All the data from contact config is publicly available. When setting this,\nyou have to additionally send us PUBLIC_CONTACT_DATA_ACKNOWLEDGEMENT\nContactNotice in the request.",
-            "Your contact info won't be available to the public. To help protect your\ninfo and prevent spam, a third party provides alternate (proxy) contact\ninfo for your domain in the public directory at no extra cost. They will\nforward received messages to you.",
-            "Limited personal info will be available to the public. The actual\ninformation redacted depends on the domain."
+            "The contact privacy settings are undefined.",
+            "All the data from `ContactSettings` is publicly available. When setting\nthis option, you must also provide a\n`PUBLIC_CONTACT_DATA_ACKNOWLEDGEMENT` in the `contact_notices` field of the\nrequest.",
+            "None of the data from `ContactSettings` is publicly available. Instead,\nproxy contact data is published for your domain. Email sent to the proxy\nemail address is forwarded to the registrant's email address. Cloud Domains\nprovides this privacy proxy service at no additional cost.",
+            "Some data from `ContactSettings` is publicly available. The actual\ninformation redacted depends on the domain. For details, see [the\nregistration privacy\narticle](https:\/\/support.google.com\/domains\/answer\/3251242)."
           ],
           "type": "string",
           "enum": [
@@ -684,34 +684,34 @@
           ]
         },
         "registrantContact": {
-          "description": "Required. Registrant contact of the Registration.",
+          "description": "Required. The registrant contact for the `Registration`.\n\n*Caution: Anyone with access to this email address, phone number,\nand\/or postal address can take control of the domain.*\n\n*Warning: For new `Registration`s, the registrant will receive an email\nconfirmation that they must complete within 14 days to avoid domain\nsuspension.*",
           "$ref": "Contact"
         },
         "adminContact": {
-          "description": "Required. Admin contact of the Registration.",
+          "description": "Required. The administrative contact for the `Registration`.",
           "$ref": "Contact"
         },
         "technicalContact": {
-          "description": "Required. Technical contact of the Registration.",
+          "description": "Required. The technical contact for the `Registration`.",
           "$ref": "Contact"
         }
       }
     },
     "Contact": {
       "id": "Contact",
-      "description": "Defines contact details of the Registration.",
+      "description": "Details required for a contact associated with a `Registration`.",
       "type": "object",
       "properties": {
         "postalAddress": {
-          "description": "Postal address associated with the Registration.",
+          "description": "Postal address of the contact.",
           "$ref": "PostalAddress"
         },
         "email": {
-          "description": "Email address associated with the Registration.",
+          "description": "Email address of the contact.",
           "type": "string"
         },
         "phoneNumber": {
-          "description": "Phone number associated with the Registration.",
+          "description": "Phone number of the contact in international format. For example,\n`\"+1-800-555-0123\"`.",
           "type": "string"
         }
       }
@@ -780,14 +780,14 @@
       "type": "object",
       "properties": {
         "registrations": {
-          "description": "List of Registrations.",
+          "description": "A list of `Registration`s.",
           "type": "array",
           "items": {
             "$ref": "Registration"
           }
         },
         "nextPageToken": {
-          "description": "If there might be more results than those appearing in this response, then\n`next_page_token` is included. To get the next set of results, call this\nmethod again using the value of `next_page_token` as `page_token`.",
+          "description": "When present, there are more results to retrieve. Set `page_token` to this\nvalue on a subsequent call to get the next page of results.",
           "type": "string"
         }
       }
@@ -798,11 +798,11 @@
       "type": "object",
       "properties": {
         "managementSettings": {
-          "description": "The ManagementSettings which replaces the resource's value on the server.",
+          "description": "Fields of the `ManagementSettings` to update.",
           "$ref": "ManagementSettings"
         },
         "updateMask": {
-          "description": "Required. The update mask applies to the resource. For the `FieldMask`\ndefinition, see\nhttps:\/\/developers.google.com\/protocol-buffers\/docs\/reference\/google.protobuf#fieldmask",
+          "description": "Required. The field mask describing which fields to update as a comma-separated list.\nFor example, if only the transfer lock is being updated, the `update_mask`\nwould be `\"transfer_lock_state\"`.",
           "type": "string",
           "format": "google-fieldmask"
         }
@@ -814,16 +814,16 @@
       "type": "object",
       "properties": {
         "dnsSettings": {
-          "description": "The dns_settings which replaces the resource's value on the server.\nWARNING: Do not change name servers if ds_records is non-empty. Clear\nds_records first and wait 24 hours before you change name servers.\nOtherwise your domain may stop serving.",
+          "description": "Fields of the `DnsSettings` to update.",
           "$ref": "DnsSettings"
         },
         "updateMask": {
-          "description": "Required. The update mask applies to the resource. For the `FieldMask`\ndefinition, see\nhttps:\/\/developers.google.com\/protocol-buffers\/docs\/reference\/google.protobuf#fieldmask",
+          "description": "Required. The field mask describing which fields to update as a comma-separated list.\nFor example, if only the name servers are being updated for an existing\nCustom DNS configuration, the `update_mask` would be\n`\"custom_dns.name_servers\"`.\n\nWhen changing the DNS provider from one type to another (e.g. `CustomDns`\nto `CloudDns`), you must pass `\"dns_provider\"` as part of the field mask.",
           "type": "string",
           "format": "google-fieldmask"
         },
         "validateOnly": {
-          "description": "When true, only validation will be performed, without actually updating the\nDNS settings. Follows:\nhttps:\/\/cloud.google.com\/apis\/design\/design_patterns#request_validation",
+          "description": "Validate the request without actually updating the DNS settings.",
           "type": "boolean"
         }
       }
@@ -834,19 +834,19 @@
       "type": "object",
       "properties": {
         "contactSettings": {
-          "description": "The contact_settings which replaces the resource's value on the server.",
+          "description": "Fields of the `ContactSettings` to update.",
           "$ref": "ContactSettings"
         },
         "updateMask": {
-          "description": "Required. The update mask applies to the resource. For the `FieldMask`\ndefinition, see\nhttps:\/\/developers.google.com\/protocol-buffers\/docs\/reference\/google.protobuf#fieldmask",
+          "description": "Required. The field mask describing which fields to update as a comma-separated list.\nFor example, if only the registrant contact is being updated, the\n`update_mask` would be `\"registrant_contact\"`.",
           "type": "string",
           "format": "google-fieldmask"
         },
         "contactNotices": {
-          "description": "List of accepted ContactNotices about the contacts.",
+          "description": "The list of contact notices that the caller acknowledges. The notices\nrequired here depend on the values specified in `contact_settings`.",
           "enumDescriptions": [
             "The notice is undefined.",
-            "PUBLIC_CONTACT_DATA_ACKNOWLEDGEMENT is required when setting the contact\nprivacy to PUBLIC_CONTACT_DATA."
+            "Required when setting the `privacy` field of `ContactSettings` to\n`PUBLIC_CONTACT_DATA`, which exposes contact data publicly."
           ],
           "type": "array",
           "items": {
@@ -858,7 +858,7 @@
           }
         },
         "validateOnly": {
-          "description": "When true, only validation will be performed, without actually updating the\ncontact settings. Follows:\nhttps:\/\/cloud.google.com\/apis\/design\/design_patterns#request_validation",
+          "description": "Validate the request without actually updating the contact settings.",
           "type": "boolean"
         }
       }
@@ -876,7 +876,7 @@
       "type": "object",
       "properties": {
         "code": {
-          "description": "The Authorization Code in ASCII. It can be used to e.g. transfer the domain\nto or from another registrar.",
+          "description": "The Authorization Code in ASCII. It can be used to transfer the domain\nto or from another registrar.",
           "type": "string"
         }
       }
@@ -1594,7 +1594,7 @@
                       "type": "string"
                     },
                     "query": {
-                      "description": "Required. Nonempty string used to search for available domain names.",
+                      "description": "Required. String used to search for available domain names.",
                       "location": "query",
                       "type": "string"
                     }
@@ -1608,7 +1608,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Searches available domains similar to the given query.\nReturned domain availability allows some staleness."
+                  "description": "Searches for available domain names similar to the provided query.\n\nAvailability results from this method are approximate; call\n`RetrieveRegisterParameters` on a domain before registering to confirm\navailability."
                 },
                 "retrieveRegisterParameters": {
                   "id": "domains.projects.locations.registrations.retrieveRegisterParameters",
@@ -1624,7 +1624,7 @@
                       "type": "string"
                     },
                     "domainName": {
-                      "description": "Required. The fully qualified domain name in ASCII-only format, without a dot at the\nend. Unicode domain names have to be converted to Punycode.",
+                      "description": "Required. The domain name. Unicode domain names must be expressed in Punycode format.",
                       "location": "query",
                       "type": "string"
                     }
@@ -1638,7 +1638,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Gets parameters needed to register a domain name, including price and\navailability. Some of these values are needed to pass to RegisterDomain.\nThis method uses fresh information from the registry."
+                  "description": "Gets parameters needed to register a new domain name, including price and\nup-to-date availability. Use the returned values to call `RegisterDomain`."
                 },
                 "register": {
                   "id": "domains.projects.locations.registrations.register",
@@ -1647,7 +1647,7 @@
                   "httpMethod": "POST",
                   "parameters": {
                     "parent": {
-                      "description": "Required. The parent resource of the Registration. Must be in the\nformat `projects\/*\/locations\/*`.",
+                      "description": "Required. The parent resource of the `Registration`. Must be in the\nformat `projects\/*\/locations\/*`.",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
@@ -1666,7 +1666,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Registers a new domain name. Call RetrieveRegisterParameters first to check\navailability of the domain name and determine parameters like price."
+                  "description": "Registers a new domain name and creates a corresponding `Registration`\nresource.\n\nCall `RetrieveRegisterParameters` first to check availability of the domain\nname and determine parameters like price that are needed to build a call to\nthis method.\n\nA successful call creates a `Registration` resource in state\n`REGISTRATION_PENDING`, which resolves to `ACTIVE` within 1-2\nminutes, indicating that the domain was successfully registered. If the\nresource ends up in state `REGISTRATION_FAILED`, it indicates that the\ndomain was not registered successfully, and you can safely delete the\nresource and retry registration."
                 },
                 "list": {
                   "id": "domains.projects.locations.registrations.list",
@@ -1675,25 +1675,25 @@
                   "httpMethod": "GET",
                   "parameters": {
                     "parent": {
-                      "description": "Required. The project and location from which the Registrations should be\nlisted, specified in the format `projects\/*\/locations\/*`.",
+                      "description": "Required. The project and location from which to list `Registration`s, specified in\nthe format `projects\/*\/locations\/*`.",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "type": "string"
                     },
                     "pageSize": {
-                      "description": "Maximum number of Registrations to return per call.",
+                      "description": "Maximum number of results to return.",
                       "location": "query",
                       "type": "integer",
                       "format": "int32"
                     },
                     "pageToken": {
-                      "description": "The value returned by the last `ListRegistrationsResponse`.\nIndicates that this is a continuation of a prior `ListRegistrations` call,\nand that the system should return the next page of data.",
+                      "description": "When set to the `next_page_token` from a prior response, provides the next\npage of results.",
                       "location": "query",
                       "type": "string"
                     },
                     "filter": {
-                      "description": "Filter expression to restrict the Registrations returned. For details see\nhttps:\/\/cloud.google.com\/sdk\/gcloud\/reference\/topic\/filters.",
+                      "description": "[Filter\nexpression](https:\/\/cloud.google.com\/sdk\/gcloud\/reference\/topic\/filters) to\nrestrict the `Registration`s returned.",
                       "location": "query",
                       "type": "string"
                     }
@@ -1707,7 +1707,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Lists Registrations in a given project."
+                  "description": "Lists the `Registration` resources in a project."
                 },
                 "get": {
                   "id": "domains.projects.locations.registrations.get",
@@ -1716,7 +1716,7 @@
                   "httpMethod": "GET",
                   "parameters": {
                     "name": {
-                      "description": "Required. A name of the Registration to get. Must be in the format\n`projects\/*\/locations\/*\/registrations\/*`.",
+                      "description": "Required. The name of the `Registration` to get, in the format\n`projects\/*\/locations\/*\/registrations\/*`.",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/registrations\/[^\/]+$",
@@ -1732,7 +1732,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Gets details of a single Registration."
+                  "description": "Gets the details of a `Registration` resource."
                 },
                 "patch": {
                   "id": "domains.projects.locations.registrations.patch",
@@ -1741,14 +1741,14 @@
                   "httpMethod": "PATCH",
                   "parameters": {
                     "name": {
-                      "description": "Output only. Name of the Registration resource. It matches pattern\n`projects\/*\/locations\/*\/registrations\/<domain_name>`.",
+                      "description": "Output only. Name of the `Registration` resource, in the format\n`projects\/*\/locations\/*\/registrations\/<domain_name>`.",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/registrations\/[^\/]+$",
                       "type": "string"
                     },
                     "updateMask": {
-                      "description": "Required. The update mask applies to the resource. For the `FieldMask`\ndefinition, see\nhttps:\/\/developers.google.com\/protocol-buffers\/docs\/reference\/google.protobuf#fieldmask",
+                      "description": "Required. The field mask describing which fields to update as a comma-separated list.\nFor example, if only the labels are being updated, the `update_mask` would\nbe `\"labels\"`.",
                       "location": "query",
                       "type": "string",
                       "format": "google-fieldmask"
@@ -1766,7 +1766,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Updates the Registration. Currently used for updating Labels only. Use\ncustom configure methods to change management, DNS or contact settings."
+                  "description": "Updates select fields of a `Registration` resource, notably `labels`. To\nupdate other fields, use the appropriate custom update method:\n\n* To update management settings, see `ConfigureManagementSettings`\n* To update DNS configuration, see `ConfigureDnsSettings`\n* To update contact information, see `ConfigureContactSettings`"
                 },
                 "configureManagementSettings": {
                   "id": "domains.projects.locations.registrations.configureManagementSettings",
@@ -1775,7 +1775,7 @@
                   "httpMethod": "POST",
                   "parameters": {
                     "registration": {
-                      "description": "Required. A name of the Registration to update ManagementSettings for. Must be in the\nformat `projects\/*\/locations\/*\/registrations\/*`.",
+                      "description": "Required. The name of the `Registration` whose management settings are being updated,\nin the format `projects\/*\/locations\/*\/registrations\/*`.",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/registrations\/[^\/]+$",
@@ -1794,7 +1794,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Updates Registration's management settings."
+                  "description": "Updates a `Registration`'s management settings."
                 },
                 "configureDnsSettings": {
                   "id": "domains.projects.locations.registrations.configureDnsSettings",
@@ -1803,7 +1803,7 @@
                   "httpMethod": "POST",
                   "parameters": {
                     "registration": {
-                      "description": "Required. A name of the Registration to update DnsSettings for. Must be in the format\n`projects\/*\/locations\/*\/registrations\/*`.",
+                      "description": "Required. The name of the `Registration` whose DNS settings are being updated,\nin the format `projects\/*\/locations\/*\/registrations\/*`.",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/registrations\/[^\/]+$",
@@ -1822,7 +1822,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Updates Registration's DNS settings."
+                  "description": "Updates a `Registration`'s DNS settings."
                 },
                 "configureContactSettings": {
                   "id": "domains.projects.locations.registrations.configureContactSettings",
@@ -1831,7 +1831,7 @@
                   "httpMethod": "POST",
                   "parameters": {
                     "registration": {
-                      "description": "Required. A name of the Registration to update ContactSettings for. Must be in the\nformat `projects\/*\/locations\/*\/registrations\/*`.",
+                      "description": "Required. The name of the `Registration` whose contact settings are being updated,\nin the format `projects\/*\/locations\/*\/registrations\/*`.",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/registrations\/[^\/]+$",
@@ -1850,7 +1850,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Updates Registration's contact settings. In some cases this change will\nhave to be confirmed using an email sent to the registrant. In order to\nresend the email, call this method again."
+                  "description": "Updates a `Registration`'s contact settings. Some changes require\nconfirmation by the domain's registrant contact ."
                 },
                 "export": {
                   "id": "domains.projects.locations.registrations.export",
@@ -1859,7 +1859,7 @@
                   "httpMethod": "POST",
                   "parameters": {
                     "name": {
-                      "description": "Required. A name of the Registration to export. Must be in\nthe format `projects\/*\/locations\/*\/registrations\/*`.",
+                      "description": "Required. The name of the `Registration` to export,\nin the format `projects\/*\/locations\/*\/registrations\/*`.",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/registrations\/[^\/]+$",
@@ -1878,7 +1878,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Export a Registration to Google Domains direct management. After calling\nthis method, the resource will be in state EXPORTED. Permissions to the\ndomain will be managed in Google Domains instead of Cloud IAM and the\ncalling user will become the sole owner. Also the automatic renewal will\nturn off."
+                  "description": "Exports a `Registration` that you no longer want to use with\nCloud Domains. You can continue to use the domain in\n[Google Domains](https:\/\/domains.google\/) until it expires.\n\nIf the export is successful:\n\n* The resource's `state` becomes `EXPORTED`, meaning that it is no longer\nmanaged by Cloud Domains\n* Because individual users can own domains in Google Domains, the calling\nuser becomes the domain's sole owner. Permissions for the domain are\nsubsequently managed in Google Domains.\n* Without further action, the domain does not renew automatically.\nThe new owner can set up billing in Google Domains to renew the domain\nif needed."
                 },
                 "delete": {
                   "id": "domains.projects.locations.registrations.delete",
@@ -1887,7 +1887,7 @@
                   "httpMethod": "DELETE",
                   "parameters": {
                     "name": {
-                      "description": "Required. A name of the Registration to delete. Must be in the format\n`projects\/*\/locations\/*\/registrations\/*`.",
+                      "description": "Required. The name of the `Registration` to delete,\nin the format `projects\/*\/locations\/*\/registrations\/*`.",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/registrations\/[^\/]+$",
@@ -1903,7 +1903,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Deletes a single Registration.\nCan only be called on Registrations in state EXPORTED with expire_time\nin the past. It also works for Registrations in state REGISTRATION_FAILED."
+                  "description": "Deletes a `Registration` resource.\n\nThis method only works on resources in one of the following states:\n\n* `state` is `EXPORTED` with `expire_time` in the past\n* `state` is `REGISTRATION_FAILED`"
                 },
                 "retrieveAuthorizationCode": {
                   "id": "domains.projects.locations.registrations.retrieveAuthorizationCode",
@@ -1912,7 +1912,7 @@
                   "httpMethod": "GET",
                   "parameters": {
                     "registration": {
-                      "description": "Required. A name of the Registration to get Authorization Code for. Must be\nin the format `projects\/*\/locations\/*\/registrations\/*`.",
+                      "description": "Required. The name of the `Registration` whose authorization code is being retrieved,\nin the format `projects\/*\/locations\/*\/registrations\/*`.",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/registrations\/[^\/]+$",
@@ -1928,7 +1928,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Gets Authorization Code of the Registration.\nCan only be called after 60 days have elapsed since initial registration."
+                  "description": "Gets the authorization code of the `Registration` for the purpose of\ntransferring the domain to another registrar.\n\nYou can call this method only after 60 days have elapsed since the initial\ndomain registration."
                 },
                 "resetAuthorizationCode": {
                   "id": "domains.projects.locations.registrations.resetAuthorizationCode",
@@ -1937,7 +1937,7 @@
                   "httpMethod": "POST",
                   "parameters": {
                     "registration": {
-                      "description": "Required. A name of the Registration to reset Authorization Code for. Must\nbe in the format `projects\/*\/locations\/*\/registrations\/*`.",
+                      "description": "Required. The name of the `Registration` whose authorization code is being reset,\nin the format `projects\/*\/locations\/*\/registrations\/*`.",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/registrations\/[^\/]+$",
@@ -1956,7 +1956,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Resets the Authorization Code of the registration.\nCan only be called after 60 days have elapsed since initial registration."
+                  "description": "Resets the authorization code of the `Registration` to a new random string.\n\nYou can call this method only after 60 days have elapsed since the initial\ndomain registration."
                 },
                 "setIamPolicy": {
                   "id": "domains.projects.locations.registrations.setIamPolicy",

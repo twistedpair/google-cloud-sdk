@@ -209,10 +209,10 @@ class GkeCluster(_messages.Message):
   r"""GkeCluster represents a k8s cluster on GKE.
 
   Fields:
-    resourceLink: Self-link of the GCP resource for the GKE cluster. For
-      example: //container.googleapis.com/v1/projects/my-project/zones/us-
-      west1-a/clusters/my-cluster It can be at the most 1000 characters in
-      length.
+    resourceLink: Immutable. Self-link of the GCP resource for the GKE
+      cluster. For example: //container.googleapis.com/v1/projects/my-
+      project/zones/us-west1-a/clusters/my-cluster It can be at the most 1000
+      characters in length.
   """
 
   resourceLink = _messages.StringField(1)

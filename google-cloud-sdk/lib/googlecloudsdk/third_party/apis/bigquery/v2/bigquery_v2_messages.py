@@ -1132,6 +1132,8 @@ class ExternalDataConfiguration(_messages.Message):
       values include GZIP and NONE. The default value is NONE. This setting is
       ignored for Google Cloud Bigtable, Google Cloud Datastore backups and
       Avro formats.
+    connectionId: [Optional, Trusted Tester] Connection for external data
+      source.
     csvOptions: Additional properties to set if sourceFormat is set to CSV.
     googleSheetsOptions: [Optional] Additional options if sourceFormat is set
       to GOOGLE_SHEETS.
@@ -1173,14 +1175,15 @@ class ExternalDataConfiguration(_messages.Message):
   autodetect = _messages.BooleanField(1)
   bigtableOptions = _messages.MessageField('BigtableOptions', 2)
   compression = _messages.StringField(3)
-  csvOptions = _messages.MessageField('CsvOptions', 4)
-  googleSheetsOptions = _messages.MessageField('GoogleSheetsOptions', 5)
-  hivePartitioningOptions = _messages.MessageField('HivePartitioningOptions', 6)
-  ignoreUnknownValues = _messages.BooleanField(7)
-  maxBadRecords = _messages.IntegerField(8, variant=_messages.Variant.INT32)
-  schema = _messages.MessageField('TableSchema', 9)
-  sourceFormat = _messages.StringField(10)
-  sourceUris = _messages.StringField(11, repeated=True)
+  connectionId = _messages.StringField(4)
+  csvOptions = _messages.MessageField('CsvOptions', 5)
+  googleSheetsOptions = _messages.MessageField('GoogleSheetsOptions', 6)
+  hivePartitioningOptions = _messages.MessageField('HivePartitioningOptions', 7)
+  ignoreUnknownValues = _messages.BooleanField(8)
+  maxBadRecords = _messages.IntegerField(9, variant=_messages.Variant.INT32)
+  schema = _messages.MessageField('TableSchema', 10)
+  sourceFormat = _messages.StringField(11)
+  sourceUris = _messages.StringField(12, repeated=True)
 
 
 class GetQueryResultsResponse(_messages.Message):
@@ -3127,7 +3130,12 @@ class TimePartitioning(_messages.Message):
 
 
 class UserDefinedFunctionResource(_messages.Message):
-  r"""A UserDefinedFunctionResource object.
+  r"""This is used for defining User Defined Function (UDF) resources only
+  when using legacy SQL. Users of Standard SQL should leverage either DDL
+  (e.g. CREATE [TEMPORARY] FUNCTION ... ) or the Routines API to define UDF
+  resources. For additional information on migrating, see:
+  https://cloud.google.com/bigquery/docs/reference/standard-sql/migrating-
+  from-legacy-sql#differences_in_user-defined_javascript_functions
 
   Fields:
     inlineCode: [Pick one] An inline resource that contains code for a user-

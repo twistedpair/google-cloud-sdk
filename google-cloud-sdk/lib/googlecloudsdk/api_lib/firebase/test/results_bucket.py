@@ -150,12 +150,15 @@ class ResultsBucketOps(object):
                .format(b=bucket_name, e=util.GetError(err)))
       raise exceptions.BadFileException(msg)
 
-  def UploadFileToGcs(self, path, destination_object=None):
+  def UploadFileToGcs(self, path, mimetype=None, destination_object=None):
     """Upload a file to the GCS results bucket using the storage API.
 
     Args:
       path: str, the absolute or relative path of the file to upload. File may
         be in located in GCS or the local filesystem.
+      mimetype: str, the MIME type (aka Content-Type) that should be applied to
+        files being copied from a non-GCS source to GCS. MIME types for GCS->GCS
+        file uploads are not modified.
       destination_object: str, the destination object path in GCS to upload to,
         if it's different than the base name of the path argument.
 
@@ -183,9 +186,7 @@ class ResultsBucketOps(object):
           raise exceptions.BadFileException('[{0}] not found or not accessible'
                                             .format(path))
         src_obj = self._storage_messages.Object(size=file_size)
-        upload = transfer.Upload.FromFile(
-            path,
-            mime_type='application/vnd.android.package-archive')
+        upload = transfer.Upload.FromFile(path, mime_type=mimetype)
         insert_req = self._storage_messages.StorageObjectsInsertRequest(
             bucket=self._results_bucket,
             name='{obj}/{name}'.format(

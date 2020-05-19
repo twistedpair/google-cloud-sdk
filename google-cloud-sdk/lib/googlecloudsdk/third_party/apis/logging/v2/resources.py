@@ -62,6 +62,16 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  BILLINGACCOUNTS_LOCATIONS = (
+      'billingAccounts.locations',
+      '{+name}',
+      {
+          '':
+              'billingAccounts/{billingAccountsId}/locations/{locationsId}',
+      },
+      ['name'],
+      True
+  )
   BILLINGACCOUNTS_SINKS = (
       'billingAccounts.sinks',
       '{+sinkName}',
@@ -101,9 +111,12 @@ class Collections(enum.Enum):
   )
   FOLDERS_LOCATIONS = (
       'folders.locations',
-      'folders/{foldersId}/locations/{locationsId}',
-      {},
-      ['foldersId', 'locationsId'],
+      '{+name}',
+      {
+          '':
+              'folders/{foldersId}/locations/{locationsId}',
+      },
+      ['name'],
       True
   )
   FOLDERS_LOCATIONS_BUCKETS = (
@@ -140,9 +153,12 @@ class Collections(enum.Enum):
   )
   LOCATIONS = (
       'locations',
-      '{v2Id}/{v2Id1}/locations/{locationsId}',
-      {},
-      ['v2Id', 'v2Id1', 'locationsId'],
+      '{+name}',
+      {
+          '':
+              '{v2Id}/{v2Id1}/locations/{locationsId}',
+      },
+      ['name'],
       True
   )
   LOCATIONS_BUCKETS = (
@@ -185,9 +201,12 @@ class Collections(enum.Enum):
   )
   ORGANIZATIONS_LOCATIONS = (
       'organizations.locations',
-      'organizations/{organizationsId}/locations/{locationsId}',
-      {},
-      ['organizationsId', 'locationsId'],
+      '{+name}',
+      {
+          '':
+              'organizations/{organizationsId}/locations/{locationsId}',
+      },
+      ['name'],
       True
   )
   ORGANIZATIONS_LOCATIONS_BUCKETS = (
@@ -241,9 +260,12 @@ class Collections(enum.Enum):
   )
   PROJECTS_LOCATIONS = (
       'projects.locations',
-      'projects/{projectsId}/locations/{locationsId}',
-      {},
-      ['projectsId', 'locationsId'],
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}',
+      },
+      ['name'],
       True
   )
   PROJECTS_LOCATIONS_BUCKETS = (

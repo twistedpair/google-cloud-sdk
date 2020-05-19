@@ -434,9 +434,9 @@
           "description": "Enable the cluster to be AutoGKE",
           "type": "boolean"
         },
-        "masterSignalsConfig": {
-          "description": "Configuration used to enable sending selected master logs and metrics to\ncustomer project.",
-          "$ref": "MasterSignalsConfig"
+        "master": {
+          "description": "Configuration for master components.",
+          "$ref": "Master"
         }
       }
     },
@@ -1567,14 +1567,14 @@
       "type": "object",
       "properties": {
         "oauthScopes": {
-          "description": "Scopes that are used by NAP when creating node pools. If oauth_scopes are\nspecified, service_account should be empty.",
+          "description": "Scopes that are used by NAP when creating node pools.",
           "type": "array",
           "items": {
             "type": "string"
           }
         },
         "serviceAccount": {
-          "description": "The Google Cloud Platform Service Account to be used by the node VMs. If\nservice_account is specified, scopes should be empty.",
+          "description": "The Google Cloud Platform Service Account to be used by the node VMs.",
           "type": "string"
         },
         "upgradeSettings": {
@@ -1930,6 +1930,17 @@
         }
       }
     },
+    "Master": {
+      "id": "Master",
+      "description": "Master is the configuration for components on master.",
+      "type": "object",
+      "properties": {
+        "signalsConfig": {
+          "description": "Configuration used to enable sending selected master logs and metrics to\ncustomer project.",
+          "$ref": "MasterSignalsConfig"
+        }
+      }
+    },
     "MasterSignalsConfig": {
       "id": "MasterSignalsConfig",
       "description": "MasterSignalsConfig is the configuration for exposing selected master\nlogs and metrics to customer",
@@ -1942,7 +1953,7 @@
         "logEnabledComponents": {
           "description": "Select components to expose logs",
           "enumDescriptions": [
-            "Not set, will be ignored.",
+            "Didn't specify any components. Used to avoid overriding existing list.",
             "kube-apiserver",
             "kube-scheduler",
             "kube-controller-manager",
@@ -2320,6 +2331,20 @@
           "description": "The desired L4 Internal Load Balancer Subsetting configuration.",
           "$ref": "ILBSubsettingConfig"
         },
+        "desiredDatapathProvider": {
+          "description": "The desired datapath provider for the cluster.",
+          "enumDescriptions": [
+            "Default value.",
+            "Use the IPTables implementation based on kube-proxy.",
+            "Use the eBPF based data plane with additional visibility features."
+          ],
+          "type": "string",
+          "enum": [
+            "DATAPATH_PROVIDER_UNSPECIFIED",
+            "LEGACY_DATAPATH",
+            "ADVANCED_DATAPATH"
+          ]
+        },
         "desiredPrivateIpv6GoogleAccess": {
           "description": "The desired state of IPv6 connectivity to Google Services.",
           "enumDescriptions": [
@@ -2371,6 +2396,10 @@
         "desiredCostManagementConfig": {
           "description": "The desired configuration for the fine-grained cost management feature.",
           "$ref": "CostManagementConfig"
+        },
+        "desiredMaster": {
+          "description": "Configuration for master components.",
+          "$ref": "Master"
         }
       }
     },

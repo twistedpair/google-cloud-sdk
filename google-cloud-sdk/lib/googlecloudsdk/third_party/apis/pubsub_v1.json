@@ -358,7 +358,7 @@
       "type": "object",
       "properties": {
         "subscriptions": {
-          "description": "The names of the subscriptions that match the request.",
+          "description": "The names of subscriptions attached to the topic specified in the request.",
           "type": "array",
           "items": {
             "type": "string"
@@ -452,6 +452,10 @@
         "retryPolicy": {
           "description": "A policy that specifies how Cloud Pub\/Sub retries message delivery for this\nsubscription.\n\nIf not set, the default retry policy is applied. This generally implies\nthat messages will be retried as soon as possible for healthy subscribers.\nRetryPolicy will be triggered on NACKs or acknowledgement deadline\nexceeded events for a given message.\n<b>EXPERIMENTAL:<\/b> This API might be changed in backward-incompatible\nways and is not recommended for production use. It is not subject to any\nSLA or deprecation policy.",
           "$ref": "RetryPolicy"
+        },
+        "detached": {
+          "description": "\nIndicates whether the subscription is detached from its topic. Detached\nsubscriptions don\u2019t receive messages from their topic and don\u2019t retain any\nbacklog. `Pull` and `StreamingPull` requests will return\nFAILED_PRECONDITION. If the subscription is a push subscription, pushes to\nthe endpoint will not be made.",
+          "type": "boolean"
         }
       }
     },
@@ -1079,7 +1083,7 @@
                     "https://www.googleapis.com/auth/cloud-platform",
                     "https://www.googleapis.com/auth/pubsub"
                   ],
-                  "description": "Lists the names of the subscriptions on this topic."
+                  "description": "Lists the names of the attached subscriptions on this topic."
                 }
               }
             },

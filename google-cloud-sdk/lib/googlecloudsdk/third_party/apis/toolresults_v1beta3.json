@@ -5,7 +5,7 @@
  "name": "toolresults",
  "canonicalName": "Tool Results",
  "version": "v1beta3",
- "revision": "20200508",
+ "revision": "20200519",
  "title": "Cloud Tool Results API",
  "description": "Reads and publishes results from Firebase Test Lab.",
  "ownerDomain": "google.com",
@@ -620,6 +620,20 @@
     "name": {
      "type": "string",
      "description": "A name to uniquely identify a history within a project. Maximum of 200 characters.\n\n- In response always set - In create request: always set"
+    },
+    "testPlatform": {
+     "type": "string",
+     "description": "The platform of the test history.\n\n- In response: always set. Returns the platform of the last execution if unknown.",
+     "enum": [
+      "android",
+      "ios",
+      "unknownPlatform"
+     ],
+     "enumDescriptions": [
+      "",
+      "",
+      ""
+     ]
     }
    }
   },
@@ -703,6 +717,70 @@
     },
     "stepId": {
      "type": "string"
+    }
+   }
+  },
+  "IosAppInfo": {
+   "id": "IosAppInfo",
+   "type": "object",
+   "description": "iOS app information",
+   "externalTypeName": "google.devtools.toolresults.v1.IosAppInfo",
+   "properties": {
+    "name": {
+     "type": "string",
+     "description": "The name of the app. Required"
+    }
+   }
+  },
+  "IosTest": {
+   "id": "IosTest",
+   "type": "object",
+   "description": "A iOS mobile test specification",
+   "externalTypeName": "google.devtools.toolresults.v1.IosTest",
+   "properties": {
+    "iosAppInfo": {
+     "$ref": "IosAppInfo",
+     "description": "Information about the application under test."
+    },
+    "iosTestLoop": {
+     "$ref": "IosTestLoop",
+     "description": "An iOS test loop."
+    },
+    "iosXcTest": {
+     "$ref": "IosXcTest",
+     "description": "An iOS XCTest."
+    },
+    "testTimeout": {
+     "$ref": "Duration",
+     "description": "Max time a test is allowed to run before it is automatically cancelled."
+    }
+   }
+  },
+  "IosTestLoop": {
+   "id": "IosTestLoop",
+   "type": "object",
+   "description": "A game loop test of an iOS application.",
+   "externalTypeName": "google.devtools.toolresults.v1.IosTestLoop",
+   "properties": {
+    "bundleId": {
+     "type": "string",
+     "description": "Bundle ID of the app."
+    }
+   }
+  },
+  "IosXcTest": {
+   "id": "IosXcTest",
+   "type": "object",
+   "description": "A test of an iOS application that uses the XCTest framework.",
+   "externalTypeName": "google.devtools.toolresults.v1.IosXcTest",
+   "properties": {
+    "bundleId": {
+     "type": "string",
+     "description": "Bundle ID of the app."
+    },
+    "xcodeVersion": {
+     "type": "string",
+     "description": "Xcode version that the test was run with."
     }
    }
   },
@@ -1344,6 +1422,10 @@
     "androidTest": {
      "$ref": "AndroidTest",
      "description": "An Android mobile test execution specification."
+    },
+    "iosTest": {
+     "$ref": "IosTest",
+     "description": "An iOS mobile test execution specification."
     }
    }
   },

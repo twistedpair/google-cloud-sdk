@@ -28,7 +28,9 @@ def RemoveAcceleratorConfig(ref, args, request):
   del ref
   if args.IsSpecified('clear_accelerator_config'):
     request.googleDevtoolsRemotebuildexecutionAdminV1alphaUpdateWorkerPoolRequest.workerPool.workerConfig.accelerator = None
-    request.googleDevtoolsRemotebuildexecutionAdminV1alphaUpdateWorkerPoolRequest.updateMask = u'workerConfig.accelerator.acceleratorCount,workerConfig.accelerator.acceleratorType'
+    req = request.googleDevtoolsRemotebuildexecutionAdminV1alphaUpdateWorkerPoolRequest
+    AddFieldToMask('workerConfig.accelerator.acceleratorCount', req)
+    AddFieldToMask('workerConfig.accelerator.acceleratorType', req)
   return request
 
 

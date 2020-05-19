@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*- #
-# Copyright 2019 Google LLC. All Rights Reserved.
+# Copyright 2020 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -20,15 +20,10 @@ from __future__ import unicode_literals
 
 from apitools.base.py import list_pager
 from googlecloudsdk.api_lib.util import apis
-from googlecloudsdk.core import exceptions
-
-
-class NoFieldsSpecifiedError(exceptions.Error):
-  """Error when no fields were specified for a Patch operation."""
 
 
 def GetClientInstance():
-  return apis.GetClientInstance('domains', 'v1alpha1')
+  return apis.GetClientInstance('domains', 'v1alpha2')
 
 
 def GetMessagesModule(client=None):
@@ -44,75 +39,67 @@ class RegistrationsClient(object):
     self.messages = messages or GetMessagesModule(client)
     self._service = self.client.projects_locations_registrations
 
-  @property
-  def notices_enum(self):
-    return self.messages.DomainAvailability.NoticesValueListEntryValuesEnum
-
-  @property
-  def availability_enum(self):
-    return self.messages.DomainAvailability.AvailableValueValuesEnum
-
-  def Create(self,
-             parent_ref,
-             domain,
-             name_servers,
-             registrant_contact,
-             whois_privacy,
-             yearly_price,
-             hsts_notice_accepted=False,
-             labels=None,
-             validate_only=False):
+  def Register(self,
+               parent_ref,
+               domain,
+               dns_settings,
+               contact_settings,
+               yearly_price,
+               labels=None,
+               hsts_notice_accepted=False,
+               public_privacy_accepted=False,
+               validate_only=False):
     """Creates a Registration.
 
     Args:
       parent_ref: a Resource reference to a domains.projects.locations resource
         for the parent of this registration.
       domain: str, the name of the domain to register. Used as resource name.
-      name_servers: List of authoritative name servers (DNS).
-      registrant_contact: WhoisContact that specifies registrant contact
-        information.
-      whois_privacy: WhoisPrivacyEnum that specifies Whois privacy setting.
+      dns_settings: DnsSettings to be used.
+      contact_settings: ContactSettings to be used.
       yearly_price: price for the domain registration and its cost for the
-      following years.
-      hsts_notice_accepted: bool, Whether HSTS notice was presented & accepted.
+        following years.
       labels: Unified GCP Labels for the resource.
+      hsts_notice_accepted: bool, Whether HSTS notice was presented & accepted.
+      public_privacy_accepted: bool, Whether public privacy notice was presented
+        & accepted.
       validate_only: If set to true, performs only validation, without creating.
 
     Returns:
-      Operation: the long running operation to create registration.
+      Operation: the long running operation to regsiter a domain.
     """
-    if name_servers:
-      dns_config = self.messages.DnsConfig(nameServers=name_servers)
-    else:
-      dns_config = None
-
-    whois_config = self.messages.WhoisConfig(
-        privacy=whois_privacy, registrantContact=registrant_contact)
-
-    notices = []
+    domain_notices = []
     if hsts_notice_accepted:
-      notices = [
-          self.messages.Registration.NoticesValueListEntryValuesEnum
-          .HSTS_PRELOADED
+      domain_notices = [
+          self.messages.RegisterDomainRequest
+          .DomainNoticesValueListEntryValuesEnum.HSTS_PRELOADED
       ]
-    # pylint: disable=line-too-long
-    create_req = self.messages.DomainsProjectsLocationsRegistrationsCreateRequest(
+    contact_notices = []
+    if public_privacy_accepted:
+      contact_notices = [
+          self.messages.RegisterDomainRequest
+          .ContactNoticesValueListEntryValuesEnum
+          .PUBLIC_CONTACT_DATA_ACKNOWLEDGEMENT
+      ]
+    req = self.messages.DomainsProjectsLocationsRegistrationsRegisterRequest(
         parent=parent_ref.RelativeName(),
-        validateOnly=validate_only,
-        registration=self.messages.Registration(
-            domainName=domain,
-            dnsConfig=dns_config,
-            whoisConfig=whois_config,
+        registerDomainRequest=self.messages.RegisterDomainRequest(
+            registration=self.messages.Registration(
+                domainName=domain,
+                dnsSettings=dns_settings,
+                contactSettings=contact_settings,
+                labels=labels),
+            domainNotices=domain_notices,
+            contactNotices=contact_notices,
             yearlyPrice=yearly_price,
-            notices=notices,
-            labels=labels))
+            validateOnly=validate_only))
 
-    return self._service.Create(create_req)
+    return self._service.Register(req)
 
-  def Detach(self, registration_ref):
-    req = self.messages.DomainsProjectsLocationsRegistrationsDetachRequest(
+  def Export(self, registration_ref):
+    req = self.messages.DomainsProjectsLocationsRegistrationsExportRequest(
         name=registration_ref.RelativeName())
-    return self._service.Detach(req)
+    return self._service.Export(req)
 
   def Delete(self, registration_ref):
     req = self.messages.DomainsProjectsLocationsRegistrationsDeleteRequest(
@@ -123,6 +110,18 @@ class RegistrationsClient(object):
     get_req = self.messages.DomainsProjectsLocationsRegistrationsGetRequest(
         name=registration_ref.RelativeName())
     return self._service.Get(get_req)
+
+  def RetrieveAuthorizationCode(self, registration_ref):
+    # pylint: disable=line-too-long
+    req = self.messages.DomainsProjectsLocationsRegistrationsRetrieveAuthorizationCodeRequest(
+        registration=registration_ref.RelativeName())
+    return self._service.RetrieveAuthorizationCode(req)
+
+  def ResetAuthorizationCode(self, registration_ref):
+    # pylint: disable=line-too-long
+    req = self.messages.DomainsProjectsLocationsRegistrationsResetAuthorizationCodeRequest(
+        registration=registration_ref.RelativeName())
+    return self._service.ResetAuthorizationCode(req)
 
   def List(self, parent_ref, limit=None, page_size=None, list_filter=None):
     """List the domain registrations in a given project.
@@ -138,8 +137,7 @@ class RegistrationsClient(object):
       A generator of the domain registrations in the project.
     """
     list_req = self.messages.DomainsProjectsLocationsRegistrationsListRequest(
-        parent=parent_ref.RelativeName(),
-        filter=list_filter)
+        parent=parent_ref.RelativeName(), filter=list_filter)
     return list_pager.YieldFromList(
         self._service,
         list_req,
@@ -148,71 +146,181 @@ class RegistrationsClient(object):
         field='registrations',
         batch_size_attribute='pageSize')
 
-  def Patch(self,
-            registration_ref,
-            name_servers=None,
-            registrant_contact=None,
-            whois_privacy=None,
-            labels=None,
-            validate_only=False):
+  def Patch(self, registration_ref, labels=None):
     """Updates a Registration.
 
-    Any fields not specified will not be updated; at least one field must be
-    specified.
+    Used for updating labels.
 
     Args:
       registration_ref: a Resource reference to a
         domains.projects.locations.registrations resource.
-      name_servers: List of authoritative name servers (DNS) or None.
-      registrant_contact: WhoisContact or None, specifies registrant contact
-        information.
-      whois_privacy: WhoisPrivacyEnum or None, specifies Whois privacy setting.
       labels: Unified GCP Labels for the resource.
-      validate_only: If set to true, performs only validation, without creating.
 
     Returns:
       Operation: the long running operation to patch registration.
-
-    Raises:
-      NoFieldsSpecifiedError: if no fields were specified.
     """
     registration = self.messages.Registration()
-    update_mask = []
+    registration.labels = labels
+    update_mask = 'labels'
 
-    if name_servers:
-      registration.dnsConfig = self.messages.DnsConfig(nameServers=name_servers)
-      update_mask.append('dns_config')
-
-    if registrant_contact or whois_privacy:
-      registration.whoisConfig = self.messages.WhoisConfig(
-          privacy=whois_privacy, registrantContact=registrant_contact)
-      if registrant_contact:
-        update_mask.append('whois_config.registrant_contact')
-      if whois_privacy:
-        update_mask.append('whois_config.privacy')
-
-    if labels is not None:
-      registration.labels = labels
-      update_mask.append('labels')
-
-    if not update_mask:
-      raise NoFieldsSpecifiedError('Must specify at least one field to update.')
     patch_req = self.messages.DomainsProjectsLocationsRegistrationsPatchRequest(
         registration=registration,
         name=registration_ref.RelativeName(),
-        updateMask=','.join(update_mask),
-        validateOnly=validate_only)
+        updateMask=update_mask)
 
     return self._service.Patch(patch_req)
 
-  def CheckAvailability(self, parent_ref, domain):
-    # pylint: disable=line-too-long
-    request = self.messages.DomainsProjectsLocationsRegistrationsCheckAvailabilityRequest(
-        parent=parent_ref.RelativeName(), domainName=domain)
-    return self._service.CheckAvailability(request)
+  def ConfigureManagement(self, registration_ref, transfer_lock):
+    """Updates management settings.
 
-  def SearchAvailability(self, parent_ref, query):
+    Args:
+      registration_ref: a Resource reference to a
+        domains.projects.locations.registrations resource.
+      transfer_lock: The transfer lock state.
+
+    Returns:
+      Operation: the long running operation to configure management
+        registration.
+    """
+    management_settings = self.messages.ManagementSettings(
+        transferLockState=transfer_lock)
+
     # pylint: disable=line-too-long
-    request = self.messages.DomainsProjectsLocationsRegistrationsSearchAvailabilityRequest(
-        parent=parent_ref.RelativeName(), query=query)
-    return self._service.SearchAvailability(request).availability
+    req = self.messages.DomainsProjectsLocationsRegistrationsConfigureManagementSettingsRequest(
+        registration=registration_ref.RelativeName(),
+        configureManagementSettingsRequest=self.messages
+        .ConfigureManagementSettingsRequest(
+            managementSettings=management_settings,
+            updateMask='transfer_lock_state'))
+
+    return self._service.ConfigureManagementSettings(req)
+
+  def ConfigureDNS(self, registration_ref, dns_settings, updated,
+                   validate_only):
+    """Calls ConfigureDNSSettings method.
+
+    Args:
+      registration_ref: Registration resource reference.
+      dns_settings: New DNS Settings.
+      updated: dns_util.DnsUpdateMask object representing an update mask.
+      validate_only: validate_only flag.
+
+    Returns:
+      Long Running Operation reference.
+    """
+
+    updated_list = []
+    if updated.dns_provider:
+      updated_list += ['dns_provider']
+    if updated.glue_records:
+      updated_list += ['glue_records']
+    if updated.google_domains_dnssec:
+      updated_list += ['google_domains_dns.ds_state']
+    if updated.custom_dnssec:
+      updated_list += ['custom_dns.ds_records']
+    update_mask = ','.join(updated_list)
+
+    # pylint: disable=line-too-long
+    req = self.messages.DomainsProjectsLocationsRegistrationsConfigureDnsSettingsRequest(
+        registration=registration_ref.RelativeName(),
+        configureDnsSettingsRequest=self.messages.ConfigureDnsSettingsRequest(
+            dnsSettings=dns_settings,
+            updateMask=update_mask,
+            validateOnly=validate_only))
+
+    return self._service.ConfigureDnsSettings(req)
+
+  def ConfigureContacts(self, registration_ref, contacts, contact_privacy,
+                        public_contacts_ack, validate_only):
+    """Calls ConfigureContactSettings method.
+
+    Args:
+      registration_ref: Registration resource reference.
+      contacts: New Contacts.
+      contact_privacy: New Contact privacy.
+      public_contacts_ack: Whether the user accepted public privacy.
+      validate_only: validate_only flag.
+
+    Returns:
+      Long Running Operation reference.
+    """
+    updated_list = []
+    if contact_privacy:
+      updated_list += ['privacy']
+
+    if contacts is None:
+      contact_settings = self.messages.ContactSettings(privacy=contact_privacy)
+    else:
+      contact_settings = self.messages.ContactSettings(
+          privacy=contact_privacy,
+          registrantContact=contacts.registrantContact,
+          adminContact=contacts.adminContact,
+          technicalContact=contacts.technicalContact)
+
+      if contacts.registrantContact:
+        updated_list += ['registrant_contact']
+      if contacts.adminContact:
+        updated_list += ['admin_contact']
+      if contacts.technicalContact:
+        updated_list += ['technical_contact']
+
+    update_mask = ','.join(updated_list)
+
+    notices = []
+    if public_contacts_ack:
+      notices = [
+          self.messages.ConfigureContactSettingsRequest
+          .ContactNoticesValueListEntryValuesEnum
+          .PUBLIC_CONTACT_DATA_ACKNOWLEDGEMENT
+      ]
+
+    # pylint: disable=line-too-long
+    req = self.messages.DomainsProjectsLocationsRegistrationsConfigureContactSettingsRequest(
+        registration=registration_ref.RelativeName(),
+        configureContactSettingsRequest=self.messages
+        .ConfigureContactSettingsRequest(
+            contactSettings=contact_settings,
+            updateMask=update_mask,
+            contactNotices=notices,
+            validateOnly=validate_only))
+
+    return self._service.ConfigureContactSettings(req)
+
+  def ConfigureRegistrantEmail(self, registration_ref, registrant_email):
+    """Sets a registrant contact.
+
+    This resends registrant email confirmation.
+    It's done by updating registrant email to the current value.
+
+    Args:
+      registration_ref: a Resource reference to a
+        domains.projects.locations.registrations resource.
+      registrant_email: The registrant email.
+
+    Returns:
+      Operation: the long running operation to configure contacts registration.
+    """
+    contact_settings = self.messages.ContactSettings(
+        registrantContact=self.messages.Contact(email=registrant_email))
+
+    # pylint: disable=line-too-long
+    req = self.messages.DomainsProjectsLocationsRegistrationsConfigureContactSettingsRequest(
+        registration=registration_ref.RelativeName(),
+        configureContactSettingsRequest=self.messages
+        .ConfigureContactSettingsRequest(
+            contactSettings=contact_settings,
+            updateMask='registrant_contact.email'))
+
+    return self._service.ConfigureContactSettings(req)
+
+  def RetrieveRegisterParameters(self, parent_ref, domain):
+    # pylint: disable=line-too-long
+    request = self.messages.DomainsProjectsLocationsRegistrationsRetrieveRegisterParametersRequest(
+        location=parent_ref.RelativeName(), domainName=domain)
+    return self._service.RetrieveRegisterParameters(request).registerParameters
+
+  def SearchDomains(self, parent_ref, query):
+    # pylint: disable=line-too-long
+    request = self.messages.DomainsProjectsLocationsRegistrationsSearchDomainsRequest(
+        location=parent_ref.RelativeName(), query=query)
+    return self._service.SearchDomains(request).registerParameters

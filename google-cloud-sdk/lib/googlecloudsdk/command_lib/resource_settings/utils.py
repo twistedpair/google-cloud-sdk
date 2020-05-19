@@ -18,7 +18,37 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+import json
+
+from apitools.base.py import encoding
+from googlecloudsdk.command_lib.resource_settings import exceptions
+from googlecloudsdk.core import yaml
+from googlecloudsdk.core.util import files
+
 SETTINGS_PREFIX = 'settings/'
+
+
+def GetMessageFromFile(filepath, message):
+  """Returns a message populated from the JSON or YAML file.
+
+  Args:
+    filepath: str, A local path to an object specification in JSON or YAML
+      format.
+    message: messages.Message, The message class to populate from the file.
+  """
+  file_contents = files.ReadFileContents(filepath)
+
+  try:
+    yaml_obj = yaml.load(file_contents)
+    json_str = json.dumps(yaml_obj)
+  except yaml.YAMLParseError:
+    json_str = file_contents
+
+  try:
+    return encoding.JsonToMessage(message, json_str)
+  except Exception as e:
+    raise exceptions.InvalidInputError('Unable to parse file [{}]: {}.'.format(
+        filepath, e))
 
 
 def GetSettingFromArgs(args):

@@ -399,6 +399,7 @@ class DatabaseInstance(_messages.Message):
       the instance. This property is applicable only to Second Generation
       instances.
     settings: The user settings.
+    sqlserverInstanceConfiguration: SQL Server specific configuration
     state: The current serving state of the Cloud SQL instance. This can be
       one of the following. <br><b>RUNNABLE</b>: The instance is running, or
       is ready to run when accessed. <br><b>SUSPENDED</b>: The instance is not
@@ -580,8 +581,9 @@ class DatabaseInstance(_messages.Message):
   serverCaCert = _messages.MessageField('SslCert', 25)
   serviceAccountEmailAddress = _messages.StringField(26)
   settings = _messages.MessageField('Settings', 27)
-  state = _messages.EnumField('StateValueValuesEnum', 28)
-  suspensionReason = _messages.EnumField('SuspensionReasonValueListEntryValuesEnum', 29, repeated=True)
+  sqlserverInstanceConfiguration = _messages.MessageField('SqlServerInstanceConfiguration', 28)
+  state = _messages.EnumField('StateValueValuesEnum', 29)
+  suspensionReason = _messages.EnumField('SuspensionReasonValueListEntryValuesEnum', 30, repeated=True)
 
 
 class DatabasesListResponse(_messages.Message):
@@ -2523,6 +2525,16 @@ class SqlServerDatabaseDetails(_messages.Message):
 
   compatibilityLevel = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   recoveryModel = _messages.StringField(2)
+
+
+class SqlServerInstanceConfiguration(_messages.Message):
+  r"""SQL Server specific configuration.
+
+  Fields:
+    collation: The name of Sqlserver Instance collation.
+  """
+
+  collation = _messages.StringField(1)
 
 
 class SqlServerUserDetails(_messages.Message):

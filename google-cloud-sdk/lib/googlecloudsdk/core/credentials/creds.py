@@ -955,17 +955,9 @@ def MaybeConvertToGoogleAuthCredentials(credentials, use_google_auth):
       credentials) == CredentialType.P12_SERVICE_ACCOUNT:
     return credentials
 
-  # pylint: disable=g-import-not-at-top
-  # To work around the circular dependency between this the util and the creds
-  # modules.
-  from googlecloudsdk.api_lib.iamcredentials import util
-
   if isinstance(credentials, c_devshell.DevshellCredentials):
     target_creds_type = c_devshell.DevShellCredentialsGoogleAuth
     return target_creds_type.from_devshell_credentials(credentials)
-  if isinstance(credentials, util.ImpersonationCredentials):
-    target_creds_type = util.ImpersonationCredentialsGoogleAuth
-    return target_creds_type.from_impersonation_credentials(credentials)
 
   target_creds = oauth2client_helper.convert(credentials)
   # token expiry is lost in the conversion.

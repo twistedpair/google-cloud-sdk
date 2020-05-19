@@ -4,7 +4,7 @@
  "id": "bigquery:v2",
  "name": "bigquery",
  "version": "v2",
- "revision": "20200508",
+ "revision": "20200519",
  "title": "BigQuery API",
  "description": "A data platform for customers to create, manage, share and query data.",
  "ownerDomain": "google.com",
@@ -774,6 +774,10 @@
     "compression": {
      "type": "string",
      "description": "[Optional] The compression type of the data source. Possible values include GZIP and NONE. The default value is NONE. This setting is ignored for Google Cloud Bigtable, Google Cloud Datastore backups and Avro formats."
+    },
+    "connectionId": {
+     "type": "string",
+     "description": "[Optional, Trusted Tester] Connection for external data source."
     },
     "csvOptions": {
      "$ref": "CsvOptions",
@@ -2768,6 +2772,7 @@
   "UserDefinedFunctionResource": {
    "id": "UserDefinedFunctionResource",
    "type": "object",
+   "description": "This is used for defining User Defined Function (UDF) resources only when using legacy SQL. Users of Standard SQL should leverage either DDL (e.g. CREATE [TEMPORARY] FUNCTION ... ) or the Routines API to define UDF resources. For additional information on migrating, see: https://cloud.google.com/bigquery/docs/reference/standard-sql/migrating-from-legacy-sql#differences_in_user-defined_javascript_functions",
    "properties": {
     "inlineCode": {
      "type": "string",

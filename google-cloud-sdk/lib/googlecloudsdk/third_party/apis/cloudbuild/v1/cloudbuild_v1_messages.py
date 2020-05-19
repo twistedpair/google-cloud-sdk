@@ -133,8 +133,8 @@ class Build(_messages.Message):
     tags: Tags for annotation of a `Build`. These are not docker tags.
     timeout: Amount of time that this build should be allowed to run, to
       second granularity. If this amount of time elapses, work on the build
-      will cease and the build status will be `TIMEOUT`.  Default time is ten
-      minutes.
+      will cease and the build status will be `TIMEOUT`.  `timeout` starts
+      ticking from `startTime`.  Default time is ten minutes.
     timing: Output only. Stores timing information for phases of the build.
       Valid keys are:  * BUILD: time to execute all build steps * PUSH: time
       to push all specified images. * FETCHSOURCE: time to fetch source.  If
@@ -723,6 +723,45 @@ class CloudbuildProjectsBuildsRetryRequest(_messages.Message):
   id = _messages.StringField(1, required=True)
   projectId = _messages.StringField(2, required=True)
   retryBuildRequest = _messages.MessageField('RetryBuildRequest', 3)
+
+
+class CloudbuildProjectsLocationsOperationsCancelRequest(_messages.Message):
+  r"""A CloudbuildProjectsLocationsOperationsCancelRequest object.
+
+  Fields:
+    cancelOperationRequest: A CancelOperationRequest resource to be passed as
+      the request body.
+    name: The name of the operation resource to be cancelled.
+  """
+
+  cancelOperationRequest = _messages.MessageField('CancelOperationRequest', 1)
+  name = _messages.StringField(2, required=True)
+
+
+class CloudbuildProjectsLocationsOperationsGetRequest(_messages.Message):
+  r"""A CloudbuildProjectsLocationsOperationsGetRequest object.
+
+  Fields:
+    name: The name of the operation resource.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class CloudbuildProjectsLocationsOperationsListRequest(_messages.Message):
+  r"""A CloudbuildProjectsLocationsOperationsListRequest object.
+
+  Fields:
+    filter: The standard list filter.
+    name: The name of the operation's parent resource.
+    pageSize: The standard list page size.
+    pageToken: The standard list page token.
+  """
+
+  filter = _messages.StringField(1)
+  name = _messages.StringField(2, required=True)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
 
 
 class CloudbuildProjectsTriggersCreateRequest(_messages.Message):

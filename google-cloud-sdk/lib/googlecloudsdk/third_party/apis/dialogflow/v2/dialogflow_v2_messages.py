@@ -1554,7 +1554,10 @@ class GoogleCloudDialogflowV2DetectIntentResponse(_messages.Message):
       platform text responses found in the `query_result.fulfillment_messages`
       field. If multiple default text responses exist, they will be
       concatenated when generating audio. If no default platform text
-      responses exist, the generated audio content will be empty.
+      responses exist, the generated audio content will be empty.  In some
+      scenarios, multiple output audio fields may be present in the response
+      structure. In these cases, only the top-most-level audio output has
+      content.
     outputAudioConfig: The config used by the speech synthesizer to generate
       the output audio.
     queryResult: The selected results of the conversational query or event
@@ -2789,7 +2792,7 @@ class GoogleCloudDialogflowV2IntentParameter(_messages.Message):
     name: The unique identifier of this parameter.
     prompts: Optional. The collection of prompts that the agent can present to
       the user in order to collect a value for the parameter.
-    value: Optional. The definition of the parameter value. It can be: - a
+    value: Optional. The definition of the parameter value. It can be:  - a
       constant string, - a parameter value defined as `$parameter_name`, - an
       original parameter value defined as `$parameter_name.original`, - a
       parameter value from some context defined as
@@ -4816,9 +4819,10 @@ class GoogleCloudDialogflowV2beta1IntentMessageRbmCarouselCard(_messages.Message
   r"""Carousel Rich Business Messaging (RBM) rich card.  Rich cards allow you
   to respond to users with more vivid content, e.g. with media and
   suggestions.  For more details about RBM rich cards, please see:
-  https://developers.google.com/rcs-business-messaging/rbm/guides/build/send-
-  messages#rich-cards. If you want to show a single card with more control
-  over the layout, please use RbmStandaloneCard instead.
+  https://developers.google.com/business-communications/rcs-business-
+  messaging/guides/build/messages/send#rich-cards If you want to show a single
+  card with more control over the layout, please use RbmStandaloneCard
+  instead.
 
   Enums:
     CardWidthValueValuesEnum: Required. The width of the cards in the
@@ -4850,10 +4854,10 @@ class GoogleCloudDialogflowV2beta1IntentMessageRbmStandaloneCard(_messages.Messa
   r"""Standalone Rich Business Messaging (RBM) rich card.  Rich cards allow
   you to respond to users with more vivid content, e.g. with media and
   suggestions.  For more details about RBM rich cards, please see:
-  https://developers.google.com/rcs-business-messaging/rbm/guides/build/send-
-  messages#rich-cards. You can group multiple rich cards into one using
-  RbmCarouselCard but carousel cards will give you less control over the card
-  layout.
+  https://developers.google.com/business-communications/rcs-business-
+  messaging/guides/build/messages/send#rich-cards You can group multiple rich
+  cards into one using RbmCarouselCard but carousel cards will give you less
+  control over the card layout.
 
   Enums:
     CardOrientationValueValuesEnum: Required. Orientation of the card.
@@ -5178,7 +5182,7 @@ class GoogleCloudDialogflowV2beta1IntentParameter(_messages.Message):
     name: The unique identifier of this parameter.
     prompts: Optional. The collection of prompts that the agent can present to
       the user in order to collect a value for the parameter.
-    value: Optional. The definition of the parameter value. It can be: - a
+    value: Optional. The definition of the parameter value. It can be:  - a
       constant string, - a parameter value defined as `$parameter_name`, - an
       original parameter value defined as `$parameter_name.original`, - a
       parameter value from some context defined as

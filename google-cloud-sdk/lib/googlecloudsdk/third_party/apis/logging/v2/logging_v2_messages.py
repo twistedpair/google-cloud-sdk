@@ -318,6 +318,19 @@ class ListExclusionsResponse(_messages.Message):
   nextPageToken = _messages.StringField(2)
 
 
+class ListLocationsResponse(_messages.Message):
+  r"""The response message for Locations.ListLocations.
+
+  Fields:
+    locations: A list of locations that matches the specified filter in the
+      request.
+    nextPageToken: The standard List next-page token.
+  """
+
+  locations = _messages.MessageField('Location', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+
+
 class ListLogEntriesRequest(_messages.Message):
   r"""The parameters to ListLogEntries.
 
@@ -463,6 +476,86 @@ class ListViewsResponse(_messages.Message):
 
   nextPageToken = _messages.StringField(1)
   views = _messages.MessageField('LogView', 2, repeated=True)
+
+
+class Location(_messages.Message):
+  r"""A resource that represents Google Cloud Platform location.
+
+  Messages:
+    LabelsValue: Cross-service attributes for the location. For example
+      {"cloud.googleapis.com/region": "us-east1"}
+    MetadataValue: Service-specific metadata. For example the available
+      capacity at the given location.
+
+  Fields:
+    displayName: The friendly name for this location, typically a nearby city
+      name. For example, "Tokyo".
+    labels: Cross-service attributes for the location. For example
+      {"cloud.googleapis.com/region": "us-east1"}
+    locationId: The canonical id for this location. For example: "us-east1".
+    metadata: Service-specific metadata. For example the available capacity at
+      the given location.
+    name: Resource name for the location, which may vary between
+      implementations. For example: "projects/example-project/locations/us-
+      east1"
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Cross-service attributes for the location. For example
+    {"cloud.googleapis.com/region": "us-east1"}
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class MetadataValue(_messages.Message):
+    r"""Service-specific metadata. For example the available capacity at the
+    given location.
+
+    Messages:
+      AdditionalProperty: An additional property for a MetadataValue object.
+
+    Fields:
+      additionalProperties: Properties of the object. Contains field @type
+        with type URL.
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a MetadataValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A extra_types.JsonValue attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('extra_types.JsonValue', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  displayName = _messages.StringField(1)
+  labels = _messages.MessageField('LabelsValue', 2)
+  locationId = _messages.StringField(3)
+  metadata = _messages.MessageField('MetadataValue', 4)
+  name = _messages.StringField(5)
 
 
 class LogBucket(_messages.Message):
@@ -1469,6 +1562,32 @@ class LoggingBillingAccountsLocationsBucketsViewsPatchRequest(_messages.Message)
   updateMask = _messages.StringField(3)
 
 
+class LoggingBillingAccountsLocationsGetRequest(_messages.Message):
+  r"""A LoggingBillingAccountsLocationsGetRequest object.
+
+  Fields:
+    name: Resource name for the location.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class LoggingBillingAccountsLocationsListRequest(_messages.Message):
+  r"""A LoggingBillingAccountsLocationsListRequest object.
+
+  Fields:
+    filter: The standard list filter.
+    name: The resource that owns the locations collection, if applicable.
+    pageSize: The standard list page size.
+    pageToken: The standard list page token.
+  """
+
+  filter = _messages.StringField(1)
+  name = _messages.StringField(2, required=True)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+
+
 class LoggingBillingAccountsLogsDeleteRequest(_messages.Message):
   r"""A LoggingBillingAccountsLogsDeleteRequest object.
 
@@ -2068,6 +2187,32 @@ class LoggingFoldersLocationsBucketsViewsPatchRequest(_messages.Message):
   updateMask = _messages.StringField(3)
 
 
+class LoggingFoldersLocationsGetRequest(_messages.Message):
+  r"""A LoggingFoldersLocationsGetRequest object.
+
+  Fields:
+    name: Resource name for the location.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class LoggingFoldersLocationsListRequest(_messages.Message):
+  r"""A LoggingFoldersLocationsListRequest object.
+
+  Fields:
+    filter: The standard list filter.
+    name: The resource that owns the locations collection, if applicable.
+    pageSize: The standard list page size.
+    pageToken: The standard list page token.
+  """
+
+  filter = _messages.StringField(1)
+  name = _messages.StringField(2, required=True)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+
+
 class LoggingFoldersLogsDeleteRequest(_messages.Message):
   r"""A LoggingFoldersLogsDeleteRequest object.
 
@@ -2504,6 +2649,32 @@ class LoggingLocationsBucketsViewsPatchRequest(_messages.Message):
   updateMask = _messages.StringField(3)
 
 
+class LoggingLocationsGetRequest(_messages.Message):
+  r"""A LoggingLocationsGetRequest object.
+
+  Fields:
+    name: Resource name for the location.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class LoggingLocationsListRequest(_messages.Message):
+  r"""A LoggingLocationsListRequest object.
+
+  Fields:
+    filter: The standard list filter.
+    name: The resource that owns the locations collection, if applicable.
+    pageSize: The standard list page size.
+    pageToken: The standard list page token.
+  """
+
+  filter = _messages.StringField(1)
+  name = _messages.StringField(2, required=True)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+
+
 class LoggingLogsDeleteRequest(_messages.Message):
   r"""A LoggingLogsDeleteRequest object.
 
@@ -2889,6 +3060,32 @@ class LoggingOrganizationsLocationsBucketsViewsPatchRequest(_messages.Message):
   logView = _messages.MessageField('LogView', 1)
   name = _messages.StringField(2, required=True)
   updateMask = _messages.StringField(3)
+
+
+class LoggingOrganizationsLocationsGetRequest(_messages.Message):
+  r"""A LoggingOrganizationsLocationsGetRequest object.
+
+  Fields:
+    name: Resource name for the location.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class LoggingOrganizationsLocationsListRequest(_messages.Message):
+  r"""A LoggingOrganizationsLocationsListRequest object.
+
+  Fields:
+    filter: The standard list filter.
+    name: The resource that owns the locations collection, if applicable.
+    pageSize: The standard list page size.
+    pageToken: The standard list page token.
+  """
+
+  filter = _messages.StringField(1)
+  name = _messages.StringField(2, required=True)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
 
 
 class LoggingOrganizationsLogsDeleteRequest(_messages.Message):
@@ -3422,6 +3619,32 @@ class LoggingProjectsLocationsBucketsViewsPatchRequest(_messages.Message):
   logView = _messages.MessageField('LogView', 1)
   name = _messages.StringField(2, required=True)
   updateMask = _messages.StringField(3)
+
+
+class LoggingProjectsLocationsGetRequest(_messages.Message):
+  r"""A LoggingProjectsLocationsGetRequest object.
+
+  Fields:
+    name: Resource name for the location.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class LoggingProjectsLocationsListRequest(_messages.Message):
+  r"""A LoggingProjectsLocationsListRequest object.
+
+  Fields:
+    filter: The standard list filter.
+    name: The resource that owns the locations collection, if applicable.
+    pageSize: The standard list page size.
+    pageToken: The standard list page token.
+  """
+
+  filter = _messages.StringField(1)
+  name = _messages.StringField(2, required=True)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
 
 
 class LoggingProjectsLogsDeleteRequest(_messages.Message):

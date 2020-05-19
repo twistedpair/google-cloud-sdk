@@ -4,7 +4,7 @@
  "id": "compute:v1",
  "name": "compute",
  "version": "v1",
- "revision": "20200508",
+ "revision": "20200519",
  "title": "Compute Engine API",
  "description": "Creates and runs virtual machines on Google Cloud Platform.",
  "ownerDomain": "google.com",
@@ -1018,7 +1018,7 @@
   "AllocationSpecificSKUAllocationReservedInstanceProperties": {
    "id": "AllocationSpecificSKUAllocationReservedInstanceProperties",
    "type": "object",
-   "description": "Properties of the SKU instances being reserved.",
+   "description": "Properties of the SKU instances being reserved. Next ID: 9",
    "properties": {
     "guestAccelerators": {
      "type": "array",
@@ -1037,6 +1037,18 @@
     "machineType": {
      "type": "string",
      "description": "Specifies type of machine (name only) which has fixed number of vCPUs and fixed amount of memory. This also includes specifying custom machine type following custom-NUMBER_OF_CPUS-AMOUNT_OF_MEMORY pattern."
+    },
+    "maintenanceInterval": {
+     "type": "string",
+     "description": "Specifies whether this VM may be a stable fleet VM. Setting this to \"Periodic\" designates this VM as a Stable Fleet VM.\n\nSee go/stable-fleet-ug for more details.",
+     "enum": [
+      "AS_NEEDED",
+      "PERIODIC"
+     ],
+     "enumDescriptions": [
+      "",
+      ""
+     ]
     },
     "minCpuPlatform": {
      "type": "string",
@@ -3614,7 +3626,7 @@
     },
     "physicalBlockSizeBytes": {
      "type": "string",
-     "description": "Physical block size of the persistent disk, in bytes. If not present in a request, a default value is used. Currently supported sizes are 4096 and 16384, other sizes may be added in the future. If an unsupported value is requested, the error message will list the supported values for the caller's project.",
+     "description": "Physical block size of the persistent disk, in bytes. If not present in a request, a default value is used. The currently supported size is 4096, other sizes may be added in the future. If an unsupported value is requested, the error message will list the supported values for the caller's project.",
      "format": "int64"
     },
     "region": {
@@ -18848,7 +18860,7 @@
   "Router": {
    "id": "Router",
    "type": "object",
-   "description": "Represents a Cloud Router resource.\n\nFor more information about Cloud Router, read the the Cloud Router overview.",
+   "description": "Represents a Cloud Router resource.\n\nFor more information about Cloud Router, read the Cloud Router overview.",
    "properties": {
     "bgp": {
      "$ref": "RouterBgp",
@@ -19869,7 +19881,7 @@
   "Scheduling": {
    "id": "Scheduling",
    "type": "object",
-   "description": "Sets the scheduling options for an Instance. NextID: 11",
+   "description": "Sets the scheduling options for an Instance. NextID: 12",
    "properties": {
     "automaticRestart": {
      "type": "boolean",

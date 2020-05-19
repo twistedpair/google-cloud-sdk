@@ -91,30 +91,12 @@ def AddSecret(parser, purpose, positional=False, **kwargs):
       **kwargs).AddToParser(parser)
 
 
-def AddBetaSecret(parser, purpose, positional=False, **kwargs):
-  concept_parsers.ConceptParser.ForResource(
-      name=_ArgOrFlag('secret', positional),
-      resource_spec=GetBetaSecretResourceSpec(),
-      group_help='The secret {}.'.format(purpose),
-      **kwargs).AddToParser(parser)
-
-
 def AddVersion(parser, purpose, positional=False, **kwargs):
   concept_parsers.ConceptParser.ForResource(
       name=_ArgOrFlag('version', positional),
       resource_spec=GetVersionResourceSpec(),
       group_help=('Numeric secret version {} or `latest` to use the latest '
                   'version.').format(purpose),
-      **kwargs).AddToParser(parser)
-
-
-def AddBetaVersion(parser, purpose, positional=False, **kwargs):
-  # Adds a SecretVersion parser using the beta Secrets completer
-  concept_parsers.ConceptParser.ForResource(
-      name=_ArgOrFlag('version', positional),
-      resource_spec=GetBetaVersionResourceSpec(),
-      group_help=('Numeric secret version {} or `latest` to use the '
-                  'latest version.').format(purpose),
       **kwargs).AddToParser(parser)
 
 
@@ -153,13 +135,6 @@ def GetSecretAttributeConfig():
       name='secret',
       help_text='The secret of the {resource}.',
       completer=secrets_completers.SecretsCompleter)
-
-
-def GetBetaSecretAttributeConfig():
-  return concepts.ResourceParameterAttributeConfig(
-      name='secret',
-      help_text='The secret of the {resource}.',
-      completer=secrets_completers.BetaSecretsCompleter)
 
 
 def GetVersionAttributeConfig():
@@ -201,16 +176,6 @@ def GetSecretResourceSpec():
       projectsId=GetProjectAttributeConfig())
 
 
-def GetBetaSecretResourceSpec():
-  return concepts.ResourceSpec(
-      resource_collection='secretmanager.projects.secrets',
-      resource_name='secret',
-      plural_name='secrets',
-      disable_auto_completers=False,
-      secretsId=GetBetaSecretAttributeConfig(),
-      projectsId=GetProjectAttributeConfig())
-
-
 def GetVersionResourceSpec():
   return concepts.ResourceSpec(
       'secretmanager.projects.secrets.versions',
@@ -222,35 +187,24 @@ def GetVersionResourceSpec():
       projectsId=GetProjectAttributeConfig())
 
 
-def GetBetaVersionResourceSpec():
-  return concepts.ResourceSpec(
-      'secretmanager.projects.secrets.versions',
-      resource_name='version',
-      plural_name='version',
-      disable_auto_completers=False,
-      versionsId=GetVersionAttributeConfig(),
-      secretsId=GetBetaSecretAttributeConfig(),
-      projectsId=GetProjectAttributeConfig())
-
-
 # Resource parsers
 
 
-def ParseProjectRef(ref, version=None, **kwargs):
+def ParseProjectRef(ref, **kwargs):
   kwargs['collection'] = 'secretmanager.projects'
-  return resources.REGISTRY.Parse(ref, api_version=version, **kwargs)
+  return resources.REGISTRY.Parse(ref, **kwargs)
 
 
-def ParseLocationRef(ref, version=None, **kwargs):
+def ParseLocationRef(ref, **kwargs):
   kwargs['collection'] = 'secretmanager.projects.locations'
-  return resources.REGISTRY.Parse(ref, api_version=version, **kwargs)
+  return resources.REGISTRY.Parse(ref, **kwargs)
 
 
-def ParseSecretRef(ref, version=None, **kwargs):
+def ParseSecretRef(ref, **kwargs):
   kwargs['collection'] = 'secretmanager.projects.secrets'
-  return resources.REGISTRY.Parse(ref, api_version=version, **kwargs)
+  return resources.REGISTRY.Parse(ref, **kwargs)
 
 
-def ParseVersionRef(ref, version=None, **kwargs):
+def ParseVersionRef(ref, **kwargs):
   kwargs['collection'] = 'secretmanager.projects.secrets.versions'
-  return resources.REGISTRY.Parse(ref, api_version=version, **kwargs)
+  return resources.REGISTRY.Parse(ref, **kwargs)

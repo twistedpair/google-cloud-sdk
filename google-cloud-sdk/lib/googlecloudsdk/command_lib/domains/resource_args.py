@@ -72,7 +72,7 @@ def GetOperationResourceSpec():
       disable_auto_completers=False)
 
 
-def AddRegistrationResourceArg(parser, verb, positional=True):
+def AddRegistrationResourceArg(parser, verb, noun=None, positional=True):
   """Add a resource argument for a Cloud Domains registration.
 
   NOTE: Must be used only if it's the only resource arg in the command.
@@ -80,13 +80,15 @@ def AddRegistrationResourceArg(parser, verb, positional=True):
   Args:
     parser: the parser for the command.
     verb: str, the verb to describe the resource, such as 'to update'.
+    noun: str, the resource; default: 'The domain registration'.
     positional: bool, if True, means that the registration ID is a positional
       arg rather than a flag.
   """
+  noun = noun or 'The domain registration'
   concept_parsers.ConceptParser.ForResource(
       'registration' if positional else '--registration',
       GetRegistrationResourceSpec(),
-      'The domain registration {}.'.format(verb),
+      '{} {}.'.format(noun, verb),
       required=True,
       flag_name_overrides={
           'location': ''  # location is always global so don't create a flag.

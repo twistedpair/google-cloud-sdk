@@ -252,6 +252,13 @@ class Collections(enum.Enum):
       ['project', 'zone', 'networkEndpointGroup'],
       True
   )
+  NETWORKFIREWALLPOLICIES = (
+      'networkFirewallPolicies',
+      'projects/{project}/global/firewallPolicies/{firewallPolicy}',
+      {},
+      ['project', 'firewallPolicy'],
+      True
+  )
   NETWORKS = (
       'networks',
       'projects/{project}/global/networks/{network}',

@@ -109,7 +109,7 @@ caller's credentials, as well as the properties provided in the request.
         request: (CloudidentityDevicesDeviceUsersClientStatesGetRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
-        (Operation) The response message.
+        (ClientState) The response message.
       """
       config = self.GetMethodConfig('Get')
       return self._RunMethod(
@@ -125,7 +125,7 @@ caller's credentials, as well as the properties provided in the request.
         relative_path='v1beta1/{+name}',
         request_field='',
         request_type_name='CloudidentityDevicesDeviceUsersClientStatesGetRequest',
-        response_type_name='Operation',
+        response_type_name='ClientState',
         supports_download=False,
     )
 

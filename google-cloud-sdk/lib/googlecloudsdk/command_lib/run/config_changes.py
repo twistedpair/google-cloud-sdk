@@ -646,9 +646,14 @@ class NoTrafficChange(ConfigChanger):
 class TrafficChanges(ConfigChanger):
   """Represents the user intent to change a service's traffic assignments."""
 
-  def __init__(self, new_percentages, tags_to_update=None, tags_to_remove=None,
+  def __init__(self,
+               new_percentages,
+               by_tag=False,
+               tags_to_update=None,
+               tags_to_remove=None,
                clear_other_tags=False):
     self._new_percentages = new_percentages
+    self._by_tag = by_tag
     self._tags_to_update = tags_to_update or {}
     self._tags_to_remove = tags_to_remove or []
     self._clear_other_tags = clear_other_tags
@@ -660,7 +665,19 @@ class TrafficChanges(ConfigChanger):
                                        self._tags_to_remove,
                                        self._clear_other_tags)
     if self._new_percentages:
-      resource.spec_traffic.UpdateTraffic(self._new_percentages)
+      if self._by_tag:
+        tag_to_key = resource.spec_traffic.TagToKey()
+        percentages = {}
+        for tag in self._new_percentages:
+          try:
+            percentages[tag_to_key[tag]] = self._new_percentages[tag]
+          except KeyError:
+            raise exceptions.ConfigurationError(
+                'There is no revision tagged with [{}] in the traffic allocation for [{}].'
+                .format(tag, resource.name))
+      else:
+        percentages = self._new_percentages
+      resource.spec_traffic.UpdateTraffic(percentages)
     return resource
 
 

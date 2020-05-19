@@ -4,6 +4,56 @@ Copyright 2014-2020 Google Inc. All rights reserved.
 
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 
+Note: Cloud SDK introduced support for Python 3 in release 274.0.0 and users are strongly encouraged to migrate to Python 3. Support for Python 2 will be deprecated on July 31, 2020. See also [Python 2 Sunset](https://cloud.google.com/python/docs/python2-sunset/) and [Using Python 3](https://cloud.google.com/sdk/gcloud/reference/topic/startup).
+
+## 294.0.0 (2020-05-19)
+
+### Breaking Changes
+
+*   **(Secret Manager)** Modified `gcloud secrets` beta command group to use the Secret Manager v1 API.
+  The `--uri` flag now formats output to begin with
+  `https://secretmanager.googleapis.com/v1/` instead of
+  `https://secretmanager.googleapis.com/v1beta1/` when used with the following
+  commands:
+  * `gcloud beta secrets list`
+  * `gcloud beta locations list`
+  * `gcloud beta secrets versions list`
+*   **(Secret Manager)** 
+
+
+### AI Platform
+
+* Added `--kms-key` to `gcloud <alpha|beta> ai-platform jobs submit training`
+  to allow specifying a customer-managed encryption key for a training job.
+
+### Cloud Pub/Sub
+
+*   Promoted configurable retry-related flags in `gcloud pubsub subscriptions
+    create` and `gcloud pubsub subscriptions update` to GA.
+
+### Cloud Run
+
+* Change `gcloud run services get-iam-policy`, `gcloud run services set-iam-policy`,
+  `gcloud run services add-iam-policy-binding`, and `gcloud run services remove-iam-policy-binding`
+  to use the v1 api.
+
+### Cloud Storage
+
+* 
+* Updated gsutil component to 4.51.
+
+### Cloud Tasks
+
+* Promoted `gcloud tasks queues create-pull-queue` to beta.
+
+### Compute Engine
+
+* Changed default action from `RESTART` to `REPLACE` for `--update-instance` flag of `gcloud compute instance-groups managed instance-configs create|update`.
+* Promoted `--maintenance-policy` of `gcloud compute sole-tenancy node-groups create` to GA.
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
 
 ## 293.0.0 (2020-05-19)
 

@@ -112,7 +112,7 @@
   "schemas": {
     "ExecutePatchJobRequest": {
       "id": "ExecutePatchJobRequest",
-      "description": "A request message to initiate patching across GCE instances.",
+      "description": "A request message to initiate patching across Compute Engine instances.",
       "type": "object",
       "properties": {
         "description": {
@@ -143,6 +143,10 @@
         "displayName": {
           "description": "Display name for this patch job. This does not have to be unique.",
           "type": "string"
+        },
+        "rollout": {
+          "description": "Optional. Rollout strategy of the patch job.",
+          "$ref": "PatchRollout"
         }
       }
     },
@@ -191,7 +195,7 @@
       "type": "object",
       "properties": {
         "labels": {
-          "description": "GCE instance labels that must be present for an instance to be targeted\nby this filter.",
+          "description": "Compute Engine instance labels that must be present for an instance to be\ntargeted by this filter.",
           "type": "object",
           "additionalProperties": {
             "type": "string"
@@ -503,9 +507,51 @@
         }
       }
     },
+    "PatchRollout": {
+      "id": "PatchRollout",
+      "description": "Patch rollout configuration specifications. Contains details on the\nconcurrency control when applying patch(es) to all targeted VMs.",
+      "type": "object",
+      "properties": {
+        "mode": {
+          "description": "Mode of the patch rollout.",
+          "enumDescriptions": [
+            "Mode must be specified.",
+            "Patches are applied one zone at a time. The patch job begins in the\nregion with the lowest number of targeted VMs. Within the region,\npatching begins in the zone with the lowest number of targeted VMs. If\nmultiple regions (or zones within a region) have the same number of\ntargeted VMs, a tie-breaker is achieved by sorting the regions or zones\nin alphabetical order.",
+            "Patches are applied to VMs in all zones at the same time."
+          ],
+          "type": "string",
+          "enum": [
+            "MODE_UNSPECIFIED",
+            "ZONE_BY_ZONE",
+            "CONCURRENT_ZONES"
+          ]
+        },
+        "disruptionBudget": {
+          "description": "The maximum number (or percentage) of VMs per zone to disrupt at any given\nmoment. The number of VMs calculated from multiplying the percentage by the\ntotal number of VMs in a zone is rounded up.\n\nDuring patching, a VM is considered disrupted from the time the agent is\nnotified to begin until patching has completed. This disruption time\nincludes the time to complete reboot and any post-patch steps.\n\nA VM contributes to the disruption budget if its patching operation fails\neither when applying the patches, running pre or post patch steps, or if it\nfails to respond with a success notification before timing out. VMs that\nare not running or do not have an active agent do not count toward this\ndisruption budget.\n\nFor zone-by-zone rollouts, if the disruption budget in a zone is exceeded,\nthe patch job stops, because continuing to the next zone requires\ncompletion of the patch process in the previous zone.\n\nFor example, if the disruption budget has a fixed value of `10`, and 8 VMs\nfail to patch in the current zone, the patch job continues to patch 2 VMs\nat a time until the zone is completed. When that zone is completed\nsuccessfully, patching begins with 10 VMs at a time in the next zone. If 10\nVMs in the next zone fail to patch, the patch job stops.",
+          "$ref": "FixedOrPercent"
+        }
+      }
+    },
+    "FixedOrPercent": {
+      "id": "FixedOrPercent",
+      "description": "Message encapsulating a value that can be either absolute (\"fixed\") or\nrelative (\"percent\") to a value.",
+      "type": "object",
+      "properties": {
+        "fixed": {
+          "description": "Specifies a fixed value.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "percent": {
+          "description": "Specifies the relative value defined as a percentage, which will be\nmultiplied by a reference value.",
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
     "PatchJob": {
       "id": "PatchJob",
-      "description": "A high level representation of a patch job that is either in progress\nor has completed.\n\nInstances' details are not included in the job. To paginate through instance\ndetails, use ListPatchJobInstanceDetails.",
+      "description": "A high level representation of a patch job that is either in progress\nor has completed.\n\nInstance details are not included in the job. To paginate through instance\ndetails, use `ListPatchJobInstanceDetails`.",
       "type": "object",
       "properties": {
         "name": {
@@ -591,12 +637,16 @@
         "patchDeployment": {
           "description": "Output only. Name of the patch deployment that created this patch job.",
           "type": "string"
+        },
+        "rollout": {
+          "description": "Optional. Rollout strategy being applied.",
+          "$ref": "PatchRollout"
         }
       }
     },
     "PatchJobInstanceDetailsSummary": {
       "id": "PatchJobInstanceDetailsSummary",
-      "description": "A summary of the current patch state across all instances this patch job\naffects. Contains counts of instances in different states. These states map\nto InstancePatchState. List patch job instance details to see the specific\nstates of each instance.",
+      "description": "A summary of the current patch state across all instances this patch job\naffects. Contains counts of instances in different states. These states map\nto `InstancePatchState`. List patch job instance details to see the\nspecific states of each instance.",
       "type": "object",
       "properties": {
         "instancesPending": {
@@ -707,7 +757,7 @@
       "type": "object",
       "properties": {
         "instanceSystemId": {
-          "description": "Required. The unique, system-generated identifier for the instance.\n\nThis is the auto-generated ID assigned to the instance upon\ncreation. This is needed here because GCE instance names are not\ntombstoned; it is possible to delete an instance and create a new one with\nthe same name; this provides a mechanism for this API to identify distinct\ninstances in this case.",
+          "description": "Required. The unique, system-generated identifier for the instance.\n\nThis is the auto-generated ID assigned to the instance upon\ncreation. This is needed here because Compute Engine instance names are not\ntombstoned; it is possible to delete an instance and create a new one with\nthe same name; this provides a mechanism for this API to identify distinct\ninstances in this case.",
           "type": "string"
         },
         "patchJob": {
@@ -764,14 +814,14 @@
           "format": "int64"
         },
         "instanceIdToken": {
-          "description": "This is the GCE instance identity token described in\nhttps:\/\/cloud.google.com\/compute\/docs\/instances\/verifying-instance-identity\nwhere the audience is 'osconfig.googleapis.com' and the format is 'full'.",
+          "description": "This is the Compute Engine\n[instance identity\ntoken](\/compute\/docs\/instances\/verifying-instance-identity). The audience\nfor this token is `osconfig.googleapis.com` and the format is `full`.",
           "type": "string"
         }
       }
     },
     "ReportPatchJobInstanceDetailsResponse": {
       "id": "ReportPatchJobInstanceDetailsResponse",
-      "description": "Deprecated.  Use AgentEndpointProto.ReportTaskExecutionResponse instead.",
+      "description": "(Deprecated) Use `AgentEndpointProto.ReportTaskExecutionResponse` instead.",
       "type": "object",
       "properties": {
         "patchJob": {
@@ -786,7 +836,7 @@
           "description": "State of the overall patch. If the patch is no longer active, the\nagent should not begin a new patch step.",
           "enumDescriptions": [
             "Unspecified is invalid.",
-            "The patch job is running. Instances will continue to run patch\njob steps.",
+            "The patch job is running. Instances continue to run patch job steps.",
             "The patch job is complete."
           ],
           "type": "string",
@@ -797,7 +847,7 @@
           ]
         },
         "dryRun": {
-          "description": "If this patch job is a dry run, the agent will report its status as it goes\nthrough the motions but won't actually run any updates or perform any\nreboots.",
+          "description": "If this patch job is a dry run, the agent reports its status as it goes\nthrough the motions but won't actually run any updates or perform any\nreboots.",
           "type": "boolean"
         }
       }
@@ -932,6 +982,10 @@
           "description": "Output only. The last execution time of a patch job triggered by this deployment.",
           "type": "string",
           "format": "google-datetime"
+        },
+        "rollout": {
+          "description": "Optional. Rollout strategy of the patch job.",
+          "$ref": "PatchRollout"
         }
       }
     },

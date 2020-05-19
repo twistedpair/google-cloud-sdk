@@ -354,6 +354,8 @@ class GoogleCloudSaasacceleratorManagementProvidersV1Instance(_messages.Message)
       refer to go/cloud-saas-mw-ug.
     maintenanceSchedules: The MaintenanceSchedule contains the scheduling
       information of published maintenance schedule.
+    maintenanceSettings: Optional. The MaintenanceSettings associated with
+      instance.
     name: Unique name of the resource. It uses the form:
       `projects/{project_id}/locations/{location_id}/instances/{instance_id}`
     producerMetadata: Output only. Custom string attributes used primarily to
@@ -544,15 +546,16 @@ class GoogleCloudSaasacceleratorManagementProvidersV1Instance(_messages.Message)
   labels = _messages.MessageField('LabelsValue', 3)
   maintenancePolicyNames = _messages.MessageField('MaintenancePolicyNamesValue', 4)
   maintenanceSchedules = _messages.MessageField('MaintenanceSchedulesValue', 5)
-  name = _messages.StringField(6)
-  producerMetadata = _messages.MessageField('ProducerMetadataValue', 7)
-  provisionedResources = _messages.MessageField('GoogleCloudSaasacceleratorManagementProvidersV1ProvisionedResource', 8, repeated=True)
-  slmInstanceTemplate = _messages.StringField(9)
-  sloMetadata = _messages.MessageField('GoogleCloudSaasacceleratorManagementProvidersV1SloMetadata', 10)
-  softwareVersions = _messages.MessageField('SoftwareVersionsValue', 11)
-  state = _messages.EnumField('StateValueValuesEnum', 12)
-  tenantProjectId = _messages.StringField(13)
-  updateTime = _messages.StringField(14)
+  maintenanceSettings = _messages.MessageField('GoogleCloudSaasacceleratorManagementProvidersV1MaintenanceSettings', 6)
+  name = _messages.StringField(7)
+  producerMetadata = _messages.MessageField('ProducerMetadataValue', 8)
+  provisionedResources = _messages.MessageField('GoogleCloudSaasacceleratorManagementProvidersV1ProvisionedResource', 9, repeated=True)
+  slmInstanceTemplate = _messages.StringField(10)
+  sloMetadata = _messages.MessageField('GoogleCloudSaasacceleratorManagementProvidersV1SloMetadata', 11)
+  softwareVersions = _messages.MessageField('SoftwareVersionsValue', 12)
+  state = _messages.EnumField('StateValueValuesEnum', 13)
+  tenantProjectId = _messages.StringField(14)
+  updateTime = _messages.StringField(15)
 
 
 class GoogleCloudSaasacceleratorManagementProvidersV1MaintenanceSchedule(_messages.Message):
@@ -574,6 +577,19 @@ class GoogleCloudSaasacceleratorManagementProvidersV1MaintenanceSchedule(_messag
   endTime = _messages.StringField(2)
   rolloutManagementPolicy = _messages.StringField(3)
   startTime = _messages.StringField(4)
+
+
+class GoogleCloudSaasacceleratorManagementProvidersV1MaintenanceSettings(_messages.Message):
+  r"""Maintenance settings associated with instance. Allows service producers
+  and end users to assign settings that controls maintenance on this instance.
+
+  Fields:
+    exclude: Optional. Exclude instance from maintenance. When true, rollout
+      service will not attempt maintenance on the instance. Rollout service
+      will include the instance in reported rollout progress as not attempted.
+  """
+
+  exclude = _messages.BooleanField(1)
 
 
 class GoogleCloudSaasacceleratorManagementProvidersV1NodeSloMetadata(_messages.Message):

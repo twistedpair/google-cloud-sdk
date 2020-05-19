@@ -254,6 +254,10 @@
           "description": "The deadline for job attempts. If the request handler does not respond by\nthis deadline then the request is cancelled and the attempt is marked as a\n`DEADLINE_EXCEEDED` failure. The failed attempt can be viewed in\nexecution logs. Cloud Scheduler will retry the job according\nto the RetryConfig.\n\nThe allowed duration for this deadline is:\n\n* For HTTP targets, between 15 seconds and 30 minutes.\n* For App Engine HTTP targets, between 15\n  seconds and 24 hours.\n* For PubSub targets, this field is ignored.",
           "type": "string",
           "format": "google-duration"
+        },
+        "legacyAppEngineCron": {
+          "description": "Immutable. This field is used to manage the legacy App Engine Cron jobs using the\nCloud Scheduler API. If the field is set to true, the job will be\nconsidered to be a legacy job. Note that App Engine Cron jobs have fewer\nfeatures than Cloud Scheduler jobs, e.g., are only limited to App Engine\ntargets.",
+          "type": "boolean"
         }
       }
     },

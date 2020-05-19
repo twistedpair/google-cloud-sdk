@@ -127,9 +127,8 @@ is the parent resource, without the operations collection id.
           }
 
     def ConfigureContactSettings(self, request, global_params=None):
-      r"""Updates Registration's contact settings. In some cases this change will.
-have to be confirmed using an email sent to the registrant. In order to
-resend the email, call this method again.
+      r"""Updates a `Registration`'s contact settings. Some changes require.
+confirmation by the domain's registrant contact .
 
       Args:
         request: (DomainsProjectsLocationsRegistrationsConfigureContactSettingsRequest) input message
@@ -156,7 +155,7 @@ resend the email, call this method again.
     )
 
     def ConfigureDnsSettings(self, request, global_params=None):
-      r"""Updates Registration's DNS settings.
+      r"""Updates a `Registration`'s DNS settings.
 
       Args:
         request: (DomainsProjectsLocationsRegistrationsConfigureDnsSettingsRequest) input message
@@ -183,7 +182,7 @@ resend the email, call this method again.
     )
 
     def ConfigureManagementSettings(self, request, global_params=None):
-      r"""Updates Registration's management settings.
+      r"""Updates a `Registration`'s management settings.
 
       Args:
         request: (DomainsProjectsLocationsRegistrationsConfigureManagementSettingsRequest) input message
@@ -210,9 +209,12 @@ resend the email, call this method again.
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes a single Registration.
-Can only be called on Registrations in state EXPORTED with expire_time
-in the past. It also works for Registrations in state REGISTRATION_FAILED.
+      r"""Deletes a `Registration` resource.
+
+This method only works on resources in one of the following states:
+
+* `state` is `EXPORTED` with `expire_time` in the past
+* `state` is `REGISTRATION_FAILED`
 
       Args:
         request: (DomainsProjectsLocationsRegistrationsDeleteRequest) input message
@@ -239,11 +241,20 @@ in the past. It also works for Registrations in state REGISTRATION_FAILED.
     )
 
     def Export(self, request, global_params=None):
-      r"""Export a Registration to Google Domains direct management. After calling.
-this method, the resource will be in state EXPORTED. Permissions to the
-domain will be managed in Google Domains instead of Cloud IAM and the
-calling user will become the sole owner. Also the automatic renewal will
-turn off.
+      r"""Exports a `Registration` that you no longer want to use with.
+Cloud Domains. You can continue to use the domain in
+[Google Domains](https://domains.google/) until it expires.
+
+If the export is successful:
+
+* The resource's `state` becomes `EXPORTED`, meaning that it is no longer
+managed by Cloud Domains
+* Because individual users can own domains in Google Domains, the calling
+user becomes the domain's sole owner. Permissions for the domain are
+subsequently managed in Google Domains.
+* Without further action, the domain does not renew automatically.
+The new owner can set up billing in Google Domains to renew the domain
+if needed.
 
       Args:
         request: (DomainsProjectsLocationsRegistrationsExportRequest) input message
@@ -270,7 +281,7 @@ turn off.
     )
 
     def Get(self, request, global_params=None):
-      r"""Gets details of a single Registration.
+      r"""Gets the details of a `Registration` resource.
 
       Args:
         request: (DomainsProjectsLocationsRegistrationsGetRequest) input message
@@ -326,7 +337,7 @@ set.
     )
 
     def List(self, request, global_params=None):
-      r"""Lists Registrations in a given project.
+      r"""Lists the `Registration` resources in a project.
 
       Args:
         request: (DomainsProjectsLocationsRegistrationsListRequest) input message
@@ -353,8 +364,12 @@ set.
     )
 
     def Patch(self, request, global_params=None):
-      r"""Updates the Registration. Currently used for updating Labels only. Use.
-custom configure methods to change management, DNS or contact settings.
+      r"""Updates select fields of a `Registration` resource, notably `labels`. To.
+update other fields, use the appropriate custom update method:
+
+* To update management settings, see `ConfigureManagementSettings`
+* To update DNS configuration, see `ConfigureDnsSettings`
+* To update contact information, see `ConfigureContactSettings`
 
       Args:
         request: (DomainsProjectsLocationsRegistrationsPatchRequest) input message
@@ -381,8 +396,19 @@ custom configure methods to change management, DNS or contact settings.
     )
 
     def Register(self, request, global_params=None):
-      r"""Registers a new domain name. Call RetrieveRegisterParameters first to check.
-availability of the domain name and determine parameters like price.
+      r"""Registers a new domain name and creates a corresponding `Registration`.
+resource.
+
+Call `RetrieveRegisterParameters` first to check availability of the domain
+name and determine parameters like price that are needed to build a call to
+this method.
+
+A successful call creates a `Registration` resource in state
+`REGISTRATION_PENDING`, which resolves to `ACTIVE` within 1-2
+minutes, indicating that the domain was successfully registered. If the
+resource ends up in state `REGISTRATION_FAILED`, it indicates that the
+domain was not registered successfully, and you can safely delete the
+resource and retry registration.
 
       Args:
         request: (DomainsProjectsLocationsRegistrationsRegisterRequest) input message
@@ -409,8 +435,10 @@ availability of the domain name and determine parameters like price.
     )
 
     def ResetAuthorizationCode(self, request, global_params=None):
-      r"""Resets the Authorization Code of the registration.
-Can only be called after 60 days have elapsed since initial registration.
+      r"""Resets the authorization code of the `Registration` to a new random string.
+
+You can call this method only after 60 days have elapsed since the initial
+domain registration.
 
       Args:
         request: (DomainsProjectsLocationsRegistrationsResetAuthorizationCodeRequest) input message
@@ -437,8 +465,11 @@ Can only be called after 60 days have elapsed since initial registration.
     )
 
     def RetrieveAuthorizationCode(self, request, global_params=None):
-      r"""Gets Authorization Code of the Registration.
-Can only be called after 60 days have elapsed since initial registration.
+      r"""Gets the authorization code of the `Registration` for the purpose of.
+transferring the domain to another registrar.
+
+You can call this method only after 60 days have elapsed since the initial
+domain registration.
 
       Args:
         request: (DomainsProjectsLocationsRegistrationsRetrieveAuthorizationCodeRequest) input message
@@ -465,9 +496,8 @@ Can only be called after 60 days have elapsed since initial registration.
     )
 
     def RetrieveRegisterParameters(self, request, global_params=None):
-      r"""Gets parameters needed to register a domain name, including price and.
-availability. Some of these values are needed to pass to RegisterDomain.
-This method uses fresh information from the registry.
+      r"""Gets parameters needed to register a new domain name, including price and.
+up-to-date availability. Use the returned values to call `RegisterDomain`.
 
       Args:
         request: (DomainsProjectsLocationsRegistrationsRetrieveRegisterParametersRequest) input message
@@ -494,8 +524,11 @@ This method uses fresh information from the registry.
     )
 
     def SearchDomains(self, request, global_params=None):
-      r"""Searches available domains similar to the given query.
-Returned domain availability allows some staleness.
+      r"""Searches for available domain names similar to the provided query.
+
+Availability results from this method are approximate; call
+`RetrieveRegisterParameters` on a domain before registering to confirm
+availability.
 
       Args:
         request: (DomainsProjectsLocationsRegistrationsSearchDomainsRequest) input message

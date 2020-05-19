@@ -31,6 +31,14 @@ def GetProjectFlag(verb):
       help='ID for the project you want to {0}.'.format(verb))
 
 
+def GetProjectIDNumberFlag(verb):
+  return base.Argument(
+      'id',
+      metavar='PROJECT_ID_OR_NUMBER',
+      completer=completers.ProjectCompleter,
+      help='ID or number for the project you want to {0}.'.format(verb))
+
+
 SHUT_DOWN_PROJECTS_URL = 'https://cloud.google.com/resource-manager/docs/creating-managing-projects'
 
 CREATE_DELETE_IN_CONSOLE_SEE_ALSO = (

@@ -7,14 +7,14 @@
   "version": "v1alpha1",
   "revision": "0",
   "title": "Cloud Domains API",
-  "description": "API to register and manage domains in Google Cloud Platform.",
+  "description": "Enables management and configuration of domain names.",
   "ownerDomain": "google.com",
   "ownerName": "Google",
   "icons": {
     "x16": "http://www.google.com/images/icons/product/search-16.gif",
     "x32": "http://www.google.com/images/icons/product/search-32.gif"
    },
-  "documentationLink": "https://cloud.google.com/domains/",
+  "documentationLink": "https://cloud.google.com/cloud-domains/",
   "protocol": "rest",
   "rootUrl": "https://domains.googleapis.com/",
   "mtlsRootUrl": "https://domains.mtls.googleapis.com/",

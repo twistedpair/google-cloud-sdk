@@ -1174,7 +1174,12 @@ class AllocationSpecificSKUAllocationAllocatedInstancePropertiesReservedDisk(_me
 
 
 class AllocationSpecificSKUAllocationReservedInstanceProperties(_messages.Message):
-  r"""Properties of the SKU instances being reserved.
+  r"""Properties of the SKU instances being reserved. Next ID: 9
+
+  Enums:
+    MaintenanceIntervalValueValuesEnum: Specifies whether this VM may be a
+      stable fleet VM. Setting this to "Periodic" designates this VM as a
+      Stable Fleet VM.  See go/stable-fleet-ug for more details.
 
   Fields:
     guestAccelerators: Specifies accelerator type and count.
@@ -1184,13 +1189,29 @@ class AllocationSpecificSKUAllocationReservedInstanceProperties(_messages.Messag
       of vCPUs and fixed amount of memory. This also includes specifying
       custom machine type following custom-NUMBER_OF_CPUS-AMOUNT_OF_MEMORY
       pattern.
+    maintenanceInterval: Specifies whether this VM may be a stable fleet VM.
+      Setting this to "Periodic" designates this VM as a Stable Fleet VM.  See
+      go/stable-fleet-ug for more details.
     minCpuPlatform: Minimum cpu platform the reservation.
   """
+
+  class MaintenanceIntervalValueValuesEnum(_messages.Enum):
+    r"""Specifies whether this VM may be a stable fleet VM. Setting this to
+    "Periodic" designates this VM as a Stable Fleet VM.  See go/stable-fleet-
+    ug for more details.
+
+    Values:
+      AS_NEEDED: <no description>
+      PERIODIC: <no description>
+    """
+    AS_NEEDED = 0
+    PERIODIC = 1
 
   guestAccelerators = _messages.MessageField('AcceleratorConfig', 1, repeated=True)
   localSsds = _messages.MessageField('AllocationSpecificSKUAllocationAllocatedInstancePropertiesReservedDisk', 2, repeated=True)
   machineType = _messages.StringField(3)
-  minCpuPlatform = _messages.StringField(4)
+  maintenanceInterval = _messages.EnumField('MaintenanceIntervalValueValuesEnum', 4)
+  minCpuPlatform = _messages.StringField(5)
 
 
 class AllocationSpecificSKUReservation(_messages.Message):
@@ -19198,8 +19219,8 @@ class Disk(_messages.Message):
       cannot be a dash.
     options: Internal use only.
     physicalBlockSizeBytes: Physical block size of the persistent disk, in
-      bytes. If not present in a request, a default value is used. Currently
-      supported sizes are 4096 and 16384, other sizes may be added in the
+      bytes. If not present in a request, a default value is used. The
+      currently supported size is 4096, other sizes may be added in the
       future. If an unsupported value is requested, the error message will
       list the supported values for the caller's project.
     region: [Output Only] URL of the region where the disk resides. Only
@@ -37051,7 +37072,7 @@ class RouteList(_messages.Message):
 
 class Router(_messages.Message):
   r"""Represents a Cloud Router resource.  For more information about Cloud
-  Router, read the the Cloud Router overview.
+  Router, read the Cloud Router overview.
 
   Fields:
     bgp: BGP information specific to this router.
@@ -38160,7 +38181,7 @@ class SSLHealthCheck(_messages.Message):
 
 
 class Scheduling(_messages.Message):
-  r"""Sets the scheduling options for an Instance. NextID: 11
+  r"""Sets the scheduling options for an Instance. NextID: 12
 
   Enums:
     OnHostMaintenanceValueValuesEnum: Defines the maintenance behavior for

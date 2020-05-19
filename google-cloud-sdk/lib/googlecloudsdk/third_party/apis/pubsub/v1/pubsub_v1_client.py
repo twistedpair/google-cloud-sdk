@@ -786,7 +786,7 @@ captured by a snapshot.
           }
 
     def List(self, request, global_params=None):
-      r"""Lists the names of the subscriptions on this topic.
+      r"""Lists the names of the attached subscriptions on this topic.
 
       Args:
         request: (PubsubProjectsTopicsSubscriptionsListRequest) input message

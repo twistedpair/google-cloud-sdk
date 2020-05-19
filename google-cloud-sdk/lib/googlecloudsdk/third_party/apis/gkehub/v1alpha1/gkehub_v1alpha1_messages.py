@@ -1805,7 +1805,10 @@ class SyncState(_messages.Message):
       will be truncated after 100 errors, although it is unlikely for that
       many errors to simultaneously exist.
     importToken: Token indicating the state of the importer.
-    lastSync: Timestamp of when ACM last successfully synced the repo
+    lastSync: Timestamp of when ACM last successfully synced the repo The time
+      format is specified in https://golang.org/pkg/time/#Time.String This
+      field is being deprecated. Use last_sync_time instead. (b/154053616)
+    lastSyncTime: Timestamp type of when ACM last successfully synced the repo
     sourceToken: Token indicating the state of the repo.
     syncToken: Token indicating the state of the syncer.
   """
@@ -1837,8 +1840,9 @@ class SyncState(_messages.Message):
   errors = _messages.MessageField('SyncError', 2, repeated=True)
   importToken = _messages.StringField(3)
   lastSync = _messages.StringField(4)
-  sourceToken = _messages.StringField(5)
-  syncToken = _messages.StringField(6)
+  lastSyncTime = _messages.StringField(5)
+  sourceToken = _messages.StringField(6)
+  syncToken = _messages.StringField(7)
 
 
 class TestIamPermissionsRequest(_messages.Message):

@@ -311,6 +311,8 @@ class GoogleCloudSaasacceleratorManagementProvidersV1Instance(_messages.Message)
       refer to go/cloud-saas-mw-ug.
     maintenanceSchedules: The MaintenanceSchedule contains the scheduling
       information of published maintenance schedule.
+    maintenanceSettings: Optional. The MaintenanceSettings associated with
+      instance.
     name: Unique name of the resource. It uses the form:
       `projects/{project_id}/locations/{location_id}/instances/{instance_id}`
     producerMetadata: Output only. Custom string attributes used primarily to
@@ -501,15 +503,16 @@ class GoogleCloudSaasacceleratorManagementProvidersV1Instance(_messages.Message)
   labels = _messages.MessageField('LabelsValue', 3)
   maintenancePolicyNames = _messages.MessageField('MaintenancePolicyNamesValue', 4)
   maintenanceSchedules = _messages.MessageField('MaintenanceSchedulesValue', 5)
-  name = _messages.StringField(6)
-  producerMetadata = _messages.MessageField('ProducerMetadataValue', 7)
-  provisionedResources = _messages.MessageField('GoogleCloudSaasacceleratorManagementProvidersV1ProvisionedResource', 8, repeated=True)
-  slmInstanceTemplate = _messages.StringField(9)
-  sloMetadata = _messages.MessageField('GoogleCloudSaasacceleratorManagementProvidersV1SloMetadata', 10)
-  softwareVersions = _messages.MessageField('SoftwareVersionsValue', 11)
-  state = _messages.EnumField('StateValueValuesEnum', 12)
-  tenantProjectId = _messages.StringField(13)
-  updateTime = _messages.StringField(14)
+  maintenanceSettings = _messages.MessageField('GoogleCloudSaasacceleratorManagementProvidersV1MaintenanceSettings', 6)
+  name = _messages.StringField(7)
+  producerMetadata = _messages.MessageField('ProducerMetadataValue', 8)
+  provisionedResources = _messages.MessageField('GoogleCloudSaasacceleratorManagementProvidersV1ProvisionedResource', 9, repeated=True)
+  slmInstanceTemplate = _messages.StringField(10)
+  sloMetadata = _messages.MessageField('GoogleCloudSaasacceleratorManagementProvidersV1SloMetadata', 11)
+  softwareVersions = _messages.MessageField('SoftwareVersionsValue', 12)
+  state = _messages.EnumField('StateValueValuesEnum', 13)
+  tenantProjectId = _messages.StringField(14)
+  updateTime = _messages.StringField(15)
 
 
 class GoogleCloudSaasacceleratorManagementProvidersV1MaintenanceSchedule(_messages.Message):
@@ -531,6 +534,19 @@ class GoogleCloudSaasacceleratorManagementProvidersV1MaintenanceSchedule(_messag
   endTime = _messages.StringField(2)
   rolloutManagementPolicy = _messages.StringField(3)
   startTime = _messages.StringField(4)
+
+
+class GoogleCloudSaasacceleratorManagementProvidersV1MaintenanceSettings(_messages.Message):
+  r"""Maintenance settings associated with instance. Allows service producers
+  and end users to assign settings that controls maintenance on this instance.
+
+  Fields:
+    exclude: Optional. Exclude instance from maintenance. When true, rollout
+      service will not attempt maintenance on the instance. Rollout service
+      will include the instance in reported rollout progress as not attempted.
+  """
+
+  exclude = _messages.BooleanField(1)
 
 
 class GoogleCloudSaasacceleratorManagementProvidersV1NodeSloMetadata(_messages.Message):
@@ -653,31 +669,31 @@ class Instance(_messages.Message):
   r"""A Instance object.
 
   Enums:
-    MemcacheVersionValueValuesEnum: Optional. The major version of Memcached
-      software. If not provided, latest supported version will be used.
-      Currently the latest supported major version is MEMCACHE_1_5. The minor
-      version will be automatically determined by our system based on the
-      latest supported minor version.
+    MemcacheVersionValueValuesEnum: The major version of Memcached software.
+      If not provided, latest supported version will be used. Currently the
+      latest supported major version is MEMCACHE_1_5. The minor version will
+      be automatically determined by our system based on the latest supported
+      minor version.
     StateValueValuesEnum: Output only. The state of this Memcached instance.
 
   Messages:
-    LabelsValue: Optional. Resource labels to represent user-provided
-      metadata. Refer to cloud documentation on labels for more details.
+    LabelsValue: Resource labels to represent user-provided metadata. Refer to
+      cloud documentation on labels for more details.
       https://cloud.google.com/compute/docs/labeling-resources
 
   Fields:
-    authorizedNetwork: Optional. The full name of the Google Compute Engine
+    authorizedNetwork: The full name of the Google Compute Engine
       [network](/compute/docs/networks-and-firewalls#networks) to which the
       instance is connected. If left unspecified, the `default` network will
       be used.
     createTime: Output only. The time the instance was created.
     discoveryEndpoint: Output only. Endpoint for Discovery API
-    displayName: Optional. User provided name for the instance only used for
-      display purposes. Cannot be more than 80 characters.
+    displayName: User provided name for the instance only used for display
+      purposes. Cannot be more than 80 characters.
     instanceMessages: List of messages that describe current statuses of
       memcached instance.
-    labels: Optional. Resource labels to represent user-provided metadata.
-      Refer to cloud documentation on labels for more details.
+    labels: Resource labels to represent user-provided metadata. Refer to
+      cloud documentation on labels for more details.
       https://cloud.google.com/compute/docs/labeling-resources
     memcacheFullVersion: Output only. The full version of memcached server
       running on this instance. System automatically determines the full
@@ -685,11 +701,10 @@ class Instance(_messages.Message):
       The full version format will be "memcached-1.5.16".
     memcacheNodes: Output only. List of Memcached nodes. Refer to [Node]
       message for more details.
-    memcacheVersion: Optional. The major version of Memcached software. If not
-      provided, latest supported version will be used. Currently the latest
-      supported major version is MEMCACHE_1_5. The minor version will be
-      automatically determined by our system based on the latest supported
-      minor version.
+    memcacheVersion: The major version of Memcached software. If not provided,
+      latest supported version will be used. Currently the latest supported
+      major version is MEMCACHE_1_5. The minor version will be automatically
+      determined by our system based on the latest supported minor version.
     name: Required. Unique name of the resource in this scope including
       project and location using the form:
       `projects/{project_id}/locations/{location_id}/instances/{instance_id}`
@@ -703,16 +718,16 @@ class Instance(_messages.Message):
       process on each node.
     state: Output only. The state of this Memcached instance.
     updateTime: Output only. The time the instance was updated.
-    zones: Optional. Zones where Memcached nodes should be provisioned in.
-      Memcached nodes will be equally distributed across these zones. If not
-      provided, the service will by default create nodes in all zones in the
-      region for the instance.
+    zones: Zones where Memcached nodes should be provisioned in. Memcached
+      nodes will be equally distributed across these zones. If not provided,
+      the service will by default create nodes in all zones in the region for
+      the instance.
   """
 
   class MemcacheVersionValueValuesEnum(_messages.Enum):
-    r"""Optional. The major version of Memcached software. If not provided,
-    latest supported version will be used. Currently the latest supported
-    major version is MEMCACHE_1_5. The minor version will be automatically
+    r"""The major version of Memcached software. If not provided, latest
+    supported version will be used. Currently the latest supported major
+    version is MEMCACHE_1_5. The minor version will be automatically
     determined by our system based on the latest supported minor version.
 
     Values:
@@ -741,8 +756,8 @@ class Instance(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
-    r"""Optional. Resource labels to represent user-provided metadata. Refer
-    to cloud documentation on labels for more details.
+    r"""Resource labels to represent user-provided metadata. Refer to cloud
+    documentation on labels for more details.
     https://cloud.google.com/compute/docs/labeling-resources
 
     Messages:

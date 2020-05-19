@@ -227,7 +227,7 @@
           "$ref": "StackdriverLoggingConfig"
         },
         "type": {
-          "description": "Immutable. Immutable Field. The type of a queue (push or pull).\n\n`Queue.type` is an immutable property of the queue that is set at the queue\ncreation time. When left unspecified, the default value of `PUSH` is\nselected.",
+          "description": "Immutable. The type of a queue (push or pull).\n\n`Queue.type` is an immutable property of the queue that is set at the queue\ncreation time. When left unspecified, the default value of `PUSH` is\nselected.",
           "enumDescriptions": [
             "Default value.",
             "A pull queue.",

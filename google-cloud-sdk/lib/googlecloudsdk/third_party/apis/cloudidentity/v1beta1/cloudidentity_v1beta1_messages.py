@@ -1418,15 +1418,16 @@ class CreateDeviceRequest(_messages.Message):
   Fields:
     customer: Required. [Resource
       name](https://cloud.google.com/apis/design/resource_names) of the
-      customer. To find the customer ID for your organization, use the
-      command: ``` gcloud alpha organizations list ``` The customer ID you
-      need to use appears under the heading `DIRECTORY_CUSTOMER_ID`. The value
-      is the letter "C" followed by letters and numbers. Use the value after
-      the letter "C". So if the Directory Customer ID displayed is, say
-      `C00zqsgyx`, then the customer ID value to use in the API is:
-      `customers/00zqsgyx`. If you're using this API to manage another
-      organization, use `customers/{customer_id}`, where `customer_id` is the
-      customer to whom the device belongs.
+      customer. You can use the 'customers/my_customer' alias to represent
+      your account's customerId. To find the customer ID for your
+      organization, use the command: ``` gcloud alpha organizations list ```
+      The customer ID you need to use appears under the heading
+      `DIRECTORY_CUSTOMER_ID`. The value is the letter "C" followed by letters
+      and numbers. Use the value after the letter "C". So if the Directory
+      Customer ID displayed is, say `C00zqsgyx`, then the customer ID value to
+      use in the API is: `customers/00zqsgyx`. If you're using this API to
+      manage another organization, use `customers/{customer_id}`, where
+      `customer_id` is the customer to whom the device belongs.
     device: Required. The device to be created. The name field within this
       device is ignored in the create method. A new name is created by the
       method, and returned within the response. Only the fields `device_type`,
@@ -1636,6 +1637,7 @@ class DeviceUser(_messages.Message):
 
   Fields:
     compromisedState: Compromised State of the DeviceUser object
+    createTime: When the user first signed in to the device
     firstSyncTime: Output only. Most recent time when user registered with
       this service.
     languageCode: Output only. Default locale used on device, in IETF BCP-47
@@ -1698,14 +1700,15 @@ class DeviceUser(_messages.Message):
     PASSWORD_NOT_SET = 2
 
   compromisedState = _messages.EnumField('CompromisedStateValueValuesEnum', 1)
-  firstSyncTime = _messages.StringField(2)
-  languageCode = _messages.StringField(3)
-  lastSyncTime = _messages.StringField(4)
-  managementState = _messages.EnumField('ManagementStateValueValuesEnum', 5)
-  name = _messages.StringField(6)
-  passwordState = _messages.EnumField('PasswordStateValueValuesEnum', 7)
-  userAgent = _messages.StringField(8)
-  userEmail = _messages.StringField(9)
+  createTime = _messages.StringField(2)
+  firstSyncTime = _messages.StringField(3)
+  languageCode = _messages.StringField(4)
+  lastSyncTime = _messages.StringField(5)
+  managementState = _messages.EnumField('ManagementStateValueValuesEnum', 6)
+  name = _messages.StringField(7)
+  passwordState = _messages.EnumField('PasswordStateValueValuesEnum', 8)
+  userAgent = _messages.StringField(9)
+  userEmail = _messages.StringField(10)
 
 
 class DynamicGroupMetadata(_messages.Message):

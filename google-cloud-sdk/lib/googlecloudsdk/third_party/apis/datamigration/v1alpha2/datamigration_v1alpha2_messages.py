@@ -1117,8 +1117,10 @@ class MigrationJobVerificationError(_messages.Message):
 
   Fields:
     errorCode: An instance of ErrorCode specifying the error that occurred.
+    errorDetailMessage: Optional. A specific detailed error message, if
+      supplied by the engine.
     errorMessage: A formatted message with further details about the error and
-      a CTA,
+      a CTA.
   """
 
   class ErrorCodeValueValuesEnum(_messages.Enum):
@@ -1136,6 +1138,22 @@ class MigrationJobVerificationError(_messages.Message):
         are incompatible.
       CONNECTION_PROFILE_TYPES_INCOMPATIBILITY: The types of the source and
         the destination are incompatible.
+      NO_PGLOGICAL_INSTALLED: No pglogical extension installed on databases,
+        applicable for postgres.
+      PGLOGICAL_NODE_ALREADY_EXISTS: pglogical node already exists on
+        databases, applicable for postgres.
+      INVALID_WAL_LEVEL: The value of parameter wal_level is not set to
+        logical.
+      INVALID_SHARED_PRELOAD_LIBRARY: The value of parameter
+        shared_preload_libraries does not include pglogical.
+      INSUFFICIENT_MAX_REPLICATION_SLOTS: The value of parameter
+        max_replication_slots is not sufficient.
+      INSUFFICIENT_MAX_WAL_SENDERS: The value of parameter max_wal_senders is
+        not sufficient.
+      INSUFFICIENT_MAX_WORKER_PROCESSES: The value of parameter
+        max_worker_processes is not sufficient.
+      UNSUPPORTED_EXTENSIONS: Extensions installed are either not supported or
+        having unsupported versions
     """
     ERROR_CODE_UNSPECIFIED = 0
     CONNECTION_FAILURE = 1
@@ -1143,9 +1161,18 @@ class MigrationJobVerificationError(_messages.Message):
     INVALID_CONNECTION_PROFILE_CONFIG = 3
     VERSION_INCOMPATIBILITY = 4
     CONNECTION_PROFILE_TYPES_INCOMPATIBILITY = 5
+    NO_PGLOGICAL_INSTALLED = 6
+    PGLOGICAL_NODE_ALREADY_EXISTS = 7
+    INVALID_WAL_LEVEL = 8
+    INVALID_SHARED_PRELOAD_LIBRARY = 9
+    INSUFFICIENT_MAX_REPLICATION_SLOTS = 10
+    INSUFFICIENT_MAX_WAL_SENDERS = 11
+    INSUFFICIENT_MAX_WORKER_PROCESSES = 12
+    UNSUPPORTED_EXTENSIONS = 13
 
   errorCode = _messages.EnumField('ErrorCodeValueValuesEnum', 1)
-  errorMessage = _messages.StringField(2)
+  errorDetailMessage = _messages.StringField(2)
+  errorMessage = _messages.StringField(3)
 
 
 class MySqlConnectionProfile(_messages.Message):

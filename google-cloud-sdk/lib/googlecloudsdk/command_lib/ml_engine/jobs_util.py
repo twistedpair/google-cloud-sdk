@@ -349,11 +349,22 @@ def ParseCreateLabels(jobs_client, args):
   return labels_util.ParseCreateArgs(args, jobs_client.job_class.LabelsValue)
 
 
-def SubmitTraining(jobs_client, job, job_dir=None, staging_bucket=None,
-                   packages=None, package_path=None, scale_tier=None,
-                   config=None, module_name=None, runtime_version=None,
-                   python_version=None, stream_logs=None, user_args=None,
-                   labels=None, custom_train_server_config=None):
+def SubmitTraining(jobs_client,
+                   job,
+                   job_dir=None,
+                   staging_bucket=None,
+                   packages=None,
+                   package_path=None,
+                   scale_tier=None,
+                   config=None,
+                   module_name=None,
+                   runtime_version=None,
+                   python_version=None,
+                   stream_logs=None,
+                   user_args=None,
+                   labels=None,
+                   kms_key=None,
+                   custom_train_server_config=None):
   """Submit a training job."""
   region = properties.VALUES.compute.region.Get(required=True)
   staging_location = jobs_prep.GetStagingLocation(
@@ -386,6 +397,7 @@ def SubmitTraining(jobs_client, job, job_dir=None, staging_bucket=None,
         runtime_version=runtime_version,
         python_version=python_version,
         labels=labels,
+        kms_key=kms_key,
         custom_train_server_config=custom_train_server_config)
   except jobs_prep.NoStagingLocationError:
     raise flags.ArgumentError(

@@ -38,6 +38,8 @@ class ServicenetworkingV1(base_api.BaseApiClient):
         response_encoding=response_encoding)
     self.operations = self.OperationsService(self)
     self.services_connections = self.ServicesConnectionsService(self)
+    self.services_dnsRecordSets = self.ServicesDnsRecordSetsService(self)
+    self.services_dnsZones = self.ServicesDnsZonesService(self)
     self.services_roles = self.ServicesRolesService(self)
     self.services = self.ServicesService(self)
 
@@ -276,6 +278,168 @@ VPC network.
         relative_path='v1/{+name}',
         request_field='connection',
         request_type_name='ServicenetworkingServicesConnectionsPatchRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+  class ServicesDnsRecordSetsService(base_api.BaseApiService):
+    """Service class for the services_dnsRecordSets resource."""
+
+    _NAME = 'services_dnsRecordSets'
+
+    def __init__(self, client):
+      super(ServicenetworkingV1.ServicesDnsRecordSetsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Add(self, request, global_params=None):
+      r"""Service producers can use this method to add DNS record sets to private DNS.
+zones in the shared producer host project.
+
+      Args:
+        request: (ServicenetworkingServicesDnsRecordSetsAddRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Add')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Add.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/services/{servicesId}/dnsRecordSets:add',
+        http_method='POST',
+        method_id='servicenetworking.services.dnsRecordSets.add',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=[],
+        relative_path='v1/{+parent}/dnsRecordSets:add',
+        request_field='addDnsRecordSetRequest',
+        request_type_name='ServicenetworkingServicesDnsRecordSetsAddRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Remove(self, request, global_params=None):
+      r"""Service producers can use this method to remove DNS record sets from.
+private DNS zones in the shared producer host project.
+
+      Args:
+        request: (ServicenetworkingServicesDnsRecordSetsRemoveRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Remove')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Remove.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/services/{servicesId}/dnsRecordSets:remove',
+        http_method='POST',
+        method_id='servicenetworking.services.dnsRecordSets.remove',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=[],
+        relative_path='v1/{+parent}/dnsRecordSets:remove',
+        request_field='removeDnsRecordSetRequest',
+        request_type_name='ServicenetworkingServicesDnsRecordSetsRemoveRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Update(self, request, global_params=None):
+      r"""Service producers can use this method to update DNS record sets from.
+private DNS zones in the shared producer host project.
+
+      Args:
+        request: (ServicenetworkingServicesDnsRecordSetsUpdateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Update')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Update.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/services/{servicesId}/dnsRecordSets:update',
+        http_method='POST',
+        method_id='servicenetworking.services.dnsRecordSets.update',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=[],
+        relative_path='v1/{+parent}/dnsRecordSets:update',
+        request_field='updateDnsRecordSetRequest',
+        request_type_name='ServicenetworkingServicesDnsRecordSetsUpdateRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+  class ServicesDnsZonesService(base_api.BaseApiService):
+    """Service class for the services_dnsZones resource."""
+
+    _NAME = 'services_dnsZones'
+
+    def __init__(self, client):
+      super(ServicenetworkingV1.ServicesDnsZonesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Add(self, request, global_params=None):
+      r"""Service producers can use this method to add private DNS zones in the.
+shared producer host project and matching peering zones in the consumer
+project.
+
+      Args:
+        request: (ServicenetworkingServicesDnsZonesAddRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Add')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Add.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/services/{servicesId}/dnsZones:add',
+        http_method='POST',
+        method_id='servicenetworking.services.dnsZones.add',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=[],
+        relative_path='v1/{+parent}/dnsZones:add',
+        request_field='addDnsZoneRequest',
+        request_type_name='ServicenetworkingServicesDnsZonesAddRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Remove(self, request, global_params=None):
+      r"""Service producers can use this method to remove private DNS zones in the.
+shared producer host project and matching peering zones in the consumer
+project.
+
+      Args:
+        request: (ServicenetworkingServicesDnsZonesRemoveRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Remove')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Remove.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/services/{servicesId}/dnsZones:remove',
+        http_method='POST',
+        method_id='servicenetworking.services.dnsZones.remove',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=[],
+        relative_path='v1/{+parent}/dnsZones:remove',
+        request_field='removeDnsZoneRequest',
+        request_type_name='ServicenetworkingServicesDnsZonesRemoveRequest',
         response_type_name='Operation',
         supports_download=False,
     )

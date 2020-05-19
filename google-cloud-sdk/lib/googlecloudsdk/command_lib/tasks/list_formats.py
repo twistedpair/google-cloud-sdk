@@ -18,6 +18,7 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+from googlecloudsdk.calliope import base
 from googlecloudsdk.command_lib.tasks import constants
 from googlecloudsdk.command_lib.tasks import parsers
 
@@ -31,6 +32,14 @@ _ALPHA_QUEUE_LIST_FORMAT = '''table(
     rateLimits.maxTasksDispatchedPerSecond.yesno(no="unlimited"):label="MAX_RATE (/sec)",
     retryConfig.maxAttempts.yesno(no="unlimited"):label="MAX_ATTEMPTS")'''
 
+
+_BETA_QUEUE_LIST_FORMAT = '''table(
+    name.basename():label="QUEUE_NAME",
+    queuetype():label=TYPE,
+    state,
+    rateLimits.maxConcurrentDispatches.yesno(no="unlimited").format("{0}").sub("-1", "unlimited"):label="MAX_NUM_OF_TASKS",
+    rateLimits.maxDispatchesPerSecond.yesno(no="unlimited"):label="MAX_RATE (/sec)",
+    retryConfig.maxAttempts.yesno(no="unlimited").format("{0}").sub("-1", "unlimited"):label="MAX_ATTEMPTS")'''
 
 _QUEUE_LIST_FORMAT = '''table(
     name.basename():label="QUEUE_NAME",
@@ -68,11 +77,15 @@ _LOCATION_LIST_FORMAT = '''table(
 # pylint: enable=line-too-long
 
 
-def AddListQueuesFormats(parser, is_alpha=False):
-  if is_alpha:
+def AddListQueuesFormats(parser, version=base.ReleaseTrack.GA):
+  is_alpha = version == base.ReleaseTrack.ALPHA
+  is_beta = version == base.ReleaseTrack.BETA
+  if is_alpha or is_beta:
     parser.display_info.AddTransforms({'queuetype': _TransformQueueType})
+
   parser.display_info.AddFormat(
-      _ALPHA_QUEUE_LIST_FORMAT if is_alpha else _QUEUE_LIST_FORMAT)
+      _ALPHA_QUEUE_LIST_FORMAT if is_alpha else
+      _BETA_QUEUE_LIST_FORMAT if is_beta else _QUEUE_LIST_FORMAT)
   parser.display_info.AddUriFunc(parsers.QueuesUriFunc)
 
 
@@ -89,14 +102,15 @@ def AddListLocationsFormats(parser):
 
 
 def _IsPullQueue(r):
-  return 'pullTarget' in r
+  return 'pullTarget' in r or ('type' in r and r['type'] == 'PULL')
 
 
 def _IsPushQueue(r):
   # appEngineHttpTarget is used in the v2beta2 version of the API but will be
   # deprecated soon.
-  return ('appEngineHttpTarget' in r or 'appEngineHttpQueue' in r
-          or 'appEngineRoutingOverride' in r)
+  return ('appEngineHttpTarget' in r or 'appEngineHttpQueue' in r or
+          'appEngineRoutingOverride' in r or
+          ('type' in r and r['type'] == 'PUSH'))
 
 
 def _IsPullTask(r):

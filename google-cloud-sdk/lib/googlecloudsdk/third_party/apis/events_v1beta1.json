@@ -3,6 +3,7 @@
   "discoveryVersion": "v1",
   "id": "events:v1beta1",
   "name": "events",
+  "canonicalName": "Events for Cloud Run",
   "version": "v1beta1",
   "revision": "0",
   "title": "Events for Cloud Run API",
@@ -21,6 +22,7 @@
   "baseUrl": "https://events.googleapis.com/",
   "batchPath": "batch",
   "version_module": true,
+  "fullyEncodeReservedExpansion": true,
   "parameters": {
     "access_token": {
       "type": "string",
@@ -96,6 +98,15 @@
         "v2 error format"
       ],
       "location": "query"
+    }
+  },
+  "auth": {
+    "oauth2": {
+      "scopes": {
+        "https://www.googleapis.com/auth/cloud-platform": {
+          "description": "View and manage your data across Google Cloud Platform services"
+        }
+      }
     }
   },
   "schemas": {
@@ -931,6 +942,9 @@
                   "response": {
                     "$ref": "Trigger"
                   },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
                   "description": "Creates a new trigger."
                 },
                 "list": {
@@ -989,6 +1003,9 @@
                   "response": {
                     "$ref": "ListTriggersResponse"
                   },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
                   "description": "Rpc to list triggers."
                 },
                 "get": {
@@ -1011,6 +1028,9 @@
                   "response": {
                     "$ref": "Trigger"
                   },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
                   "description": "Rpc to get information about a trigger."
                 },
                 "replaceTrigger": {
@@ -1036,6 +1056,9 @@
                   "response": {
                     "$ref": "Trigger"
                   },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
                   "description": "Rpc to replace a trigger.\n\nOnly the spec and metadata labels and annotations are modifiable. After\nthe Update request, Events for Cloud Run will work to make the 'status'\nmatch the requested 'spec'.\n\nMay provide metadata.resourceVersion to enforce update from last read for\noptimistic concurrency control."
                 },
                 "delete": {
@@ -1073,6 +1096,9 @@
                   "response": {
                     "$ref": "Empty"
                   },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
                   "description": "Rpc to delete a trigger."
                 }
               }
@@ -1191,6 +1217,9 @@
               "response": {
                 "$ref": "Trigger"
               },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ],
               "description": "Creates a new trigger."
             },
             "list": {
@@ -1249,6 +1278,9 @@
               "response": {
                 "$ref": "ListTriggersResponse"
               },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ],
               "description": "Rpc to list triggers."
             },
             "get": {
@@ -1271,6 +1303,9 @@
               "response": {
                 "$ref": "Trigger"
               },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ],
               "description": "Rpc to get information about a trigger."
             },
             "replaceTrigger": {
@@ -1296,6 +1331,9 @@
               "response": {
                 "$ref": "Trigger"
               },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ],
               "description": "Rpc to replace a trigger.\n\nOnly the spec and metadata labels and annotations are modifiable. After\nthe Update request, Events for Cloud Run will work to make the 'status'\nmatch the requested 'spec'.\n\nMay provide metadata.resourceVersion to enforce update from last read for\noptimistic concurrency control."
             },
             "delete": {
@@ -1333,6 +1371,9 @@
               "response": {
                 "$ref": "Empty"
               },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ],
               "description": "Rpc to delete a trigger."
             }
           }

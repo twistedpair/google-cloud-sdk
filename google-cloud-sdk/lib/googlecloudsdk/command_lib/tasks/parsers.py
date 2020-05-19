@@ -250,13 +250,14 @@ def ParseCreateOrUpdateQueueArgs(args,
             args, queue_type, messages, is_update))
   elif release_track == base.ReleaseTrack.BETA:
     return messages.Queue(
-        retryConfig=_ParseRetryConfigArgs(args, queue_type, messages,
-                                          is_update, is_alpha=False),
+        retryConfig=_ParseRetryConfigArgs(
+            args, queue_type, messages, is_update, is_alpha=False),
         rateLimits=_ParseRateLimitsArgs(args, queue_type, messages, is_update),
         stackdriverLoggingConfig=_ParseStackdriverLoggingConfigArgs(
             args, queue_type, messages, is_update),
         appEngineHttpQueue=_ParseAppEngineHttpQueueArgs(args, queue_type,
-                                                        messages, is_update))
+                                                        messages, is_update),
+        type=_ParseQueueType(args, queue_type, messages, is_update))
   else:
     return messages.Queue(
         retryConfig=_ParseRetryConfigArgs(
@@ -395,6 +396,13 @@ def _ParsePullTargetArgs(unused_args, queue_type, messages, is_update):
   """Parses the attributes of 'args' for Queue.pullTarget."""
   if queue_type == constants.PULL_QUEUE and not is_update:
     return messages.PullTarget()
+
+
+def _ParseQueueType(unused_args, queue_type, messages, is_update):
+  """Parses the attributes of 'args' for Queue.type."""
+  if queue_type == constants.PULL_QUEUE and not is_update:
+    return messages.Queue.TypeValueValuesEnum.PULL
+  return messages.Queue.TypeValueValuesEnum.PUSH
 
 
 def _ParseAppEngineHttpTargetArgs(args, queue_type, messages, is_update):

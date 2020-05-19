@@ -498,8 +498,9 @@ class GkeCluster(_messages.Message):
   r"""GkeCluster represents a k8s cluster on GKE.
 
   Fields:
-    resourceLink: Self-link of the GCP resource for the GKE cluster. For
-      example: //container.googleapis.com/v1/projects/my-project/zones/us-
+    resourceLink: Immutable. Self-link of the GCP resource for the GKE
+      cluster. For example:
+      //container.googleapis.com/v1/projects/12345/zones/us-
       west1-a/clusters/my-cluster It can be at the most 1000 characters in
       length.
   """
@@ -549,7 +550,7 @@ class GkehubProjectsLocationsMembershipsCreateRequest(_messages.Message):
       `[a-z0-9]([-a-z0-9]*[a-z0-9])?` with at most 63 characters.
     parent: Required. The parent in whose context the membership is created.
       The parent value is in the format:
-      `projects/[project_id]/locations/global`.
+      `projects/[project_number]/locations/global`.
   """
 
   membership = _messages.MessageField('Membership', 1)
@@ -562,7 +563,7 @@ class GkehubProjectsLocationsMembershipsDeleteRequest(_messages.Message):
 
   Fields:
     name: Required. The membership resource name in the format:
-      `projects/[project_id]/locations/global/memberships/[membership_id]`
+      `projects/[project_number]/locations/global/memberships/[membership_id]`
   """
 
   name = _messages.StringField(1, required=True)
@@ -579,8 +580,8 @@ class GkehubProjectsLocationsMembershipsGenerateConnectManifestRequest(_messages
       Some resources (e.g. secrets) generated for installation will be
       excluded.
     name: Required. The membership resource the connect agent is associated
-      with.
-      `projects/[project_id]/locations/global/memberships/[membership_id]`.
+      with. `projects/[project_number]/locations/global/memberships/[membershi
+      p_id]`.
     namespace: Optional. Namespace for GKE Connect agent resources. If empty,
       uses 'gke-connect'.
     proxy: Optional. URI of a proxy if connectivity from the agent to
@@ -632,7 +633,7 @@ class GkehubProjectsLocationsMembershipsGetRequest(_messages.Message):
 
   Fields:
     name: Required. The Membership resource name in the format:
-      `projects/[project_id]/locations/global/memberships/[membership_id]`
+      `projects/[project_number]/locations/global/memberships/[membership_id]`
     view: Optional. View for partial response.
   """
 
@@ -665,7 +666,7 @@ class GkehubProjectsLocationsMembershipsListRequest(_messages.Message):
       represents a HAS operator which is roughly synonymous with equality).
       `{field}` can refer to a proto or JSON field, or a synthetic field.
       Field names can be camelCase or snake_case.  Examples: - Filter by name:
-      name = "projects/foo-proj/locations/global/membership/bar  - Filter by
+      name = "projects/12345/locations/global/membership/bar  - Filter by
       labels:   - Resources that have a key called `foo`     labels.foo:*   -
       Resources that have a key called `foo` whose value is `bar`
       labels.foo = bar   - Filter by state:    - Members in CREATING state.
@@ -679,7 +680,7 @@ class GkehubProjectsLocationsMembershipsListRequest(_messages.Message):
       the resources.
     parent: Required. The parent in whose context the memberships are listed.
       The parent value is in the format:
-      `projects/[project_id]/locations/global`.
+      `projects/[project_number]/locations/global`.
   """
 
   filter = _messages.StringField(1)
@@ -695,7 +696,7 @@ class GkehubProjectsLocationsMembershipsPatchRequest(_messages.Message):
   Fields:
     membership: A Membership resource to be passed as the request body.
     name: Required. The membership resource name in the format:
-      `projects/[project_id]/locations/global/memberships/[membership_id]`
+      `projects/[project_number]/locations/global/memberships/[membership_id]`
     updateMask: Required. Mask of fields to update. At least one field path
       must be specified in this mask.
   """
@@ -1057,8 +1058,8 @@ class Membership(_messages.Message):
       not use GKE Connect, or that have never connected successfully, this
       field will be unset.
     name: Output only. The unique name of this domain resource in the format:
-      `projects/[project_id]/locations/global/memberships/[membership_id]`.
-      `membership_id` can only be set at creation time using the
+      `projects/[project_number]/locations/global/memberships/[membership_id]`
+      . `membership_id` can only be set at creation time using the
       `membership_id` field in the creation request. `membership_id` must be a
       valid RFC 1123 compliant DNS label. In particular, it must be:   1. At
       most 63 characters in length   2. It must consist of lower case

@@ -90,25 +90,25 @@ _SECRET_TRANSFORMS = {
 }
 
 
-def UseLocationTable(parser, api_version):
+def UseLocationTable(parser):
   parser.display_info.AddFormat(_LOCATION_TABLE)
   parser.display_info.AddUriFunc(
-      lambda r: secrets_args.ParseLocationRef(r.name, api_version).SelfLink())
+      lambda r: secrets_args.ParseLocationRef(r.name).SelfLink())
 
 
-def UseSecretTable(parser, api_version):
+def UseSecretTable(parser):
   parser.display_info.AddFormat(_SECRET_TABLE)
   parser.display_info.AddTransforms(_SECRET_TRANSFORMS)
   parser.display_info.AddUriFunc(
-      lambda r: secrets_args.ParseSecretRef(r.name, api_version).SelfLink())
+      lambda r: secrets_args.ParseSecretRef(r.name).SelfLink())
 
 
 def UseSecretData(parser):
   parser.display_info.AddFormat(_SECRET_DATA)
 
 
-def UseVersionTable(parser, api_version):
+def UseVersionTable(parser):
   parser.display_info.AddFormat(_VERSION_TABLE)
   parser.display_info.AddTransforms(_VERSION_STATE_TRANSFORMS)
   parser.display_info.AddUriFunc(
-      lambda r: secrets_args.ParseVersionRef(r.name, api_version).SelfLink())
+      lambda r: secrets_args.ParseVersionRef(r.name).SelfLink())

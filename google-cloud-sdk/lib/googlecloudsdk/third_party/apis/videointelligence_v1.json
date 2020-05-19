@@ -4095,7 +4095,7 @@
           "$ref": "GoogleCloudVideointelligenceV1p3beta1_StreamingVideoAnnotationResults"
         },
         "annotationResultsUri": {
-          "description": "Google Cloud Storage(GCS) URI that stores annotation results of one\nstreaming session in JSON format.\nIt is the annotation_result_storage_directory\nfrom the request followed by '\/cloud_project_number-session_id'.",
+          "description": "Google Cloud Storage URI that stores annotation results of one\nstreaming session in JSON format.\nIt is the annotation_result_storage_directory\nfrom the request followed by '\/cloud_project_number-session_id'.",
           "type": "string"
         }
       }

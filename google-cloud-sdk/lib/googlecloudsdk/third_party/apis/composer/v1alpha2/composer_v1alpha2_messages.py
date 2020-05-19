@@ -197,6 +197,8 @@ class ComposerProjectsLocationsImageVersionsListRequest(_messages.Message):
   r"""A ComposerProjectsLocationsImageVersionsListRequest object.
 
   Fields:
+    includePastReleases: Whether or not image versions from old releases
+      should be included.
     pageSize: The maximum number of image_versions to return.
     pageToken: The next_page_token value returned from a previous List
       request, if any.
@@ -204,9 +206,10 @@ class ComposerProjectsLocationsImageVersionsListRequest(_messages.Message):
       "projects/{projectId}/locations/{locationId}"
   """
 
-  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(2)
-  parent = _messages.StringField(3, required=True)
+  includePastReleases = _messages.BooleanField(1)
+  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(3)
+  parent = _messages.StringField(4, required=True)
 
 
 class ComposerProjectsLocationsOperationsCancelRequest(_messages.Message):
@@ -268,6 +271,31 @@ class DatabaseConfig(_messages.Message):
   """
 
   machineType = _messages.StringField(1)
+
+
+class Date(_messages.Message):
+  r"""Represents a whole or partial calendar date, e.g. a birthday. The time
+  of day and time zone are either specified elsewhere or are not significant.
+  The date is relative to the Proleptic Gregorian Calendar. This can
+  represent:  * A full date, with non-zero year, month and day values * A
+  month and day value, with a zero year, e.g. an anniversary * A year on its
+  own, with zero month and day values * A year and month value, with a zero
+  day, e.g. a credit card expiration date  Related types are
+  google.type.TimeOfDay and `google.protobuf.Timestamp`.
+
+  Fields:
+    day: Day of month. Must be from 1 to 31 and valid for the year and month,
+      or 0 if specifying a year by itself or a year and month where the day is
+      not significant.
+    month: Month of year. Must be from 1 to 12, or 0 if specifying a year
+      without a month and day.
+    year: Year of date. Must be from 1 to 9999, or 0 if specifying a date
+      without a year.
+  """
+
+  day = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  month = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  year = _messages.IntegerField(3, variant=_messages.Variant.INT32)
 
 
 class Empty(_messages.Message):
@@ -466,12 +494,14 @@ class ImageVersion(_messages.Message):
       "composer-x.y.z-airflow-a.b(.c)"
     isDefault: Whether this is the default ImageVersion used by Composer
       during environment creation if no input ImageVersion is specified.
+    releaseDate: The date of the version release.
     supportedPythonVersions: supported python versions
   """
 
   imageVersionId = _messages.StringField(1)
   isDefault = _messages.BooleanField(2)
-  supportedPythonVersions = _messages.StringField(3, repeated=True)
+  releaseDate = _messages.MessageField('Date', 3)
+  supportedPythonVersions = _messages.StringField(4, repeated=True)
 
 
 class ListEnvironmentsResponse(_messages.Message):

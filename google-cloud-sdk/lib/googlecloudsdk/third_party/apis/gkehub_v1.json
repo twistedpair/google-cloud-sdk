@@ -304,7 +304,7 @@
       "type": "object",
       "properties": {
         "resourceLink": {
-          "description": "Self-link of the GCP resource for the GKE cluster.\nFor example:\n\/\/container.googleapis.com\/v1\/projects\/my-project\/zones\/us-west1-a\/clusters\/my-cluster\nIt can be at the most 1000 characters in length.",
+          "description": "Immutable. Self-link of the GCP resource for the GKE cluster.\nFor example:\n\/\/container.googleapis.com\/v1\/projects\/my-project\/zones\/us-west1-a\/clusters\/my-cluster\nIt can be at the most 1000 characters in length.",
           "type": "string"
         }
       }

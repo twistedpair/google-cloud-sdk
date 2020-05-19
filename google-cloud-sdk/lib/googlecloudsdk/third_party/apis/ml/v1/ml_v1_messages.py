@@ -152,6 +152,8 @@ class GoogleCloudMlV1AutoScaling(_messages.Message):
   r"""Options for automatically scaling a model.
 
   Fields:
+    maxNodes: Optional. The maximum number of nodes to scale this model under
+      load. The actual value will depend on resource quota and availability.
     minNodes: Optional. The minimum number of nodes to allocate for this
       model. These nodes are always up, starting from the time the model is
       deployed. Therefore, the cost of operating this model will be at least
@@ -182,7 +184,8 @@ class GoogleCloudMlV1AutoScaling(_messages.Message):
       inNodes -d @./update_body.json </pre>
   """
 
-  minNodes = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  maxNodes = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  minNodes = _messages.IntegerField(2, variant=_messages.Variant.INT32)
 
 
 class GoogleCloudMlV1AutomatedStoppingConfig(_messages.Message):
@@ -481,13 +484,13 @@ class GoogleCloudMlV1ExplanationConfig(_messages.Message):
   attributions.](/ai-platform/prediction/docs/ai-explanations/overview)
 
   Fields:
-    ablationAttribution: TensorFlow framework explanation methods. Attributes
-      credit to model inputs by ablating features (ie. setting them to their
-      default/missing values) and computing corresponding model score delta
-      per feature. The term "ablation" is in reference to running an "ablation
-      study" to analyze input effects on the outcome of interest, which in
-      this case is the model's output. This attribution method is supported
-      for TensorFlow and XGBoost models.
+    ablationAttribution: TensorFlow framework explanation methods. Deprecated.
+      Attributes credit to model inputs by ablating features (ie. setting them
+      to their default/missing values) and computing corresponding model score
+      delta per feature. The term "ablation" is in reference to running an
+      "ablation study" to analyze input effects on the outcome of interest,
+      which in this case is the model's output. This attribution method is
+      supported for TensorFlow and XGBoost models.
     integratedGradientsAttribution: Attributes credit by computing the Aumann-
       Shapley value taking advantage of the model's fully differentiable
       structure. Refer to this paper for more details:

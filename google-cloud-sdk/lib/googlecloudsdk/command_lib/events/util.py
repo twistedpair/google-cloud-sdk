@@ -22,6 +22,7 @@ from __future__ import unicode_literals
 from googlecloudsdk.api_lib.events import trigger
 from googlecloudsdk.api_lib.util import waiter
 from googlecloudsdk.command_lib.events import exceptions
+from googlecloudsdk.command_lib.events import resource_args
 from googlecloudsdk.core import resources
 from googlecloudsdk.core.console import console_io
 from googlecloudsdk.core.util import retry
@@ -92,7 +93,8 @@ def GetSourceRef(name, namespace, source_crd):
   return resources.REGISTRY.Parse(
       name,
       {'namespacesId': namespace},
-      SOURCE_COLLECTION_NAME.format(plural_kind=source_crd.source_kind_plural))
+      SOURCE_COLLECTION_NAME.format(plural_kind=source_crd.source_kind_plural),
+      api_version=resource_args.EVENTS_ALPHA_API_VERSION)
 
 
 def GetSourceRefAndCrdForTrigger(trigger_obj, source_crds):

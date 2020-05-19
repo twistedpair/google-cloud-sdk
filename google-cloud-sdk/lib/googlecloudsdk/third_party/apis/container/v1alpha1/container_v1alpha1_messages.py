@@ -122,10 +122,9 @@ class AutoprovisioningNodePoolDefaults(_messages.Message):
       platform](https://cloud.google.com/compute/docs/instances/specify-min-
       cpu-platform) To unset the min cpu platform field pass "automatic" as
       field value.
-    oauthScopes: Scopes that are used by NAP when creating node pools. If
-      oauth_scopes are specified, service_account should be empty.
+    oauthScopes: Scopes that are used by NAP when creating node pools.
     serviceAccount: The Google Cloud Platform Service Account to be used by
-      the node VMs. If service_account is specified, scopes should be empty.
+      the node VMs.
     upgradeSettings: Specifies the upgrade settings for NAP created node pools
   """
 
@@ -359,6 +358,7 @@ class Cluster(_messages.Message):
       will be used for GKE 1.14+ or `logging.googleapis.com` for earlier
       versions.
     maintenancePolicy: Configure the maintenance policy for this cluster.
+    master: Configuration for master components.
     masterAuth: The authentication information for accessing the master
       endpoint. If unspecified, the defaults are used: For clusters before
       v1.12, if master_auth is unspecified, `username` will be set to "admin",
@@ -371,8 +371,6 @@ class Cluster(_messages.Message):
       addresses to the master or set of masters, as well as the ILB VIP. This
       field is deprecated, use private_cluster_config.master_ipv4_cidr_block
       instead.
-    masterSignalsConfig: Configuration used to enable sending selected master
-      logs and metrics to customer project.
     monitoringService: The monitoring service the cluster should use to write
       metrics. Currently available options:  *
       "monitoring.googleapis.com/kubernetes" - The Cloud Monitoring service
@@ -549,10 +547,10 @@ class Cluster(_messages.Message):
   locations = _messages.StringField(30, repeated=True)
   loggingService = _messages.StringField(31)
   maintenancePolicy = _messages.MessageField('MaintenancePolicy', 32)
-  masterAuth = _messages.MessageField('MasterAuth', 33)
-  masterAuthorizedNetworksConfig = _messages.MessageField('MasterAuthorizedNetworksConfig', 34)
-  masterIpv4CidrBlock = _messages.StringField(35)
-  masterSignalsConfig = _messages.MessageField('MasterSignalsConfig', 36)
+  master = _messages.MessageField('Master', 33)
+  masterAuth = _messages.MessageField('MasterAuth', 34)
+  masterAuthorizedNetworksConfig = _messages.MessageField('MasterAuthorizedNetworksConfig', 35)
+  masterIpv4CidrBlock = _messages.StringField(36)
   monitoringService = _messages.StringField(37)
   name = _messages.StringField(38)
   network = _messages.StringField(39)
@@ -656,6 +654,8 @@ class ClusterUpdate(_messages.Message):
   provided.
 
   Enums:
+    DesiredDatapathProviderValueValuesEnum: The desired datapath provider for
+      the cluster.
     DesiredPrivateIpv6GoogleAccessValueValuesEnum: The desired state of IPv6
       connectivity to Google Services.
 
@@ -678,6 +678,7 @@ class ClusterUpdate(_messages.Message):
     desiredCostManagementConfig: The desired configuration for the fine-
       grained cost management feature.
     desiredDatabaseEncryption: Configuration of etcd encryption.
+    desiredDatapathProvider: The desired datapath provider for the cluster.
     desiredDefaultSnatStatus: The desired status of whether to disable default
       sNAT for this cluster.
     desiredEnableAutogke: Enable or disable AutoGKE for the cluster.
@@ -707,6 +708,7 @@ class ClusterUpdate(_messages.Message):
       no logs will be exported from the cluster.  If left as an empty
       string,`logging.googleapis.com/kubernetes` will be used for GKE 1.14+ or
       `logging.googleapis.com` for earlier versions.
+    desiredMaster: Configuration for master components.
     desiredMasterAuthorizedNetworksConfig: The desired configuration options
       for master authorized networks feature.
     desiredMasterVersion: The Kubernetes version to change the master to.
@@ -759,6 +761,19 @@ class ClusterUpdate(_messages.Message):
     securityProfile: User may change security profile during update
   """
 
+  class DesiredDatapathProviderValueValuesEnum(_messages.Enum):
+    r"""The desired datapath provider for the cluster.
+
+    Values:
+      DATAPATH_PROVIDER_UNSPECIFIED: Default value.
+      LEGACY_DATAPATH: Use the IPTables implementation based on kube-proxy.
+      ADVANCED_DATAPATH: Use the eBPF based data plane with additional
+        visibility features.
+    """
+    DATAPATH_PROVIDER_UNSPECIFIED = 0
+    LEGACY_DATAPATH = 1
+    ADVANCED_DATAPATH = 2
+
   class DesiredPrivateIpv6GoogleAccessValueValuesEnum(_messages.Enum):
     r"""The desired state of IPv6 connectivity to Google Services.
 
@@ -784,34 +799,36 @@ class ClusterUpdate(_messages.Message):
   desiredClusterTelemetry = _messages.MessageField('ClusterTelemetry', 6)
   desiredCostManagementConfig = _messages.MessageField('CostManagementConfig', 7)
   desiredDatabaseEncryption = _messages.MessageField('DatabaseEncryption', 8)
-  desiredDefaultSnatStatus = _messages.MessageField('DefaultSnatStatus', 9)
-  desiredEnableAutogke = _messages.BooleanField(10)
-  desiredEnableGvnic = _messages.BooleanField(11)
-  desiredImage = _messages.StringField(12)
-  desiredImageProject = _messages.StringField(13)
-  desiredImageType = _messages.StringField(14)
-  desiredIntraNodeVisibilityConfig = _messages.MessageField('IntraNodeVisibilityConfig', 15)
-  desiredL4ilbSubsettingConfig = _messages.MessageField('ILBSubsettingConfig', 16)
-  desiredLocations = _messages.StringField(17, repeated=True)
-  desiredLoggingService = _messages.StringField(18)
-  desiredMasterAuthorizedNetworksConfig = _messages.MessageField('MasterAuthorizedNetworksConfig', 19)
-  desiredMasterVersion = _messages.StringField(20)
-  desiredMonitoringService = _messages.StringField(21)
-  desiredNodePoolAutoscaling = _messages.MessageField('NodePoolAutoscaling', 22)
-  desiredNodePoolId = _messages.StringField(23)
-  desiredNodeVersion = _messages.StringField(24)
-  desiredPodSecurityPolicyConfig = _messages.MessageField('PodSecurityPolicyConfig', 25)
-  desiredPrivateClusterConfig = _messages.MessageField('PrivateClusterConfig', 26)
-  desiredPrivateIpv6Access = _messages.MessageField('PrivateIPv6Status', 27)
-  desiredPrivateIpv6GoogleAccess = _messages.EnumField('DesiredPrivateIpv6GoogleAccessValueValuesEnum', 28)
-  desiredReleaseChannel = _messages.MessageField('ReleaseChannel', 29)
-  desiredResourceUsageExportConfig = _messages.MessageField('ResourceUsageExportConfig', 30)
-  desiredShieldedNodes = _messages.MessageField('ShieldedNodes', 31)
-  desiredTpuConfig = _messages.MessageField('TpuConfig', 32)
-  desiredVerticalPodAutoscaling = _messages.MessageField('VerticalPodAutoscaling', 33)
-  desiredWorkloadIdentityConfig = _messages.MessageField('WorkloadIdentityConfig', 34)
-  privateClusterConfig = _messages.MessageField('PrivateClusterConfig', 35)
-  securityProfile = _messages.MessageField('SecurityProfile', 36)
+  desiredDatapathProvider = _messages.EnumField('DesiredDatapathProviderValueValuesEnum', 9)
+  desiredDefaultSnatStatus = _messages.MessageField('DefaultSnatStatus', 10)
+  desiredEnableAutogke = _messages.BooleanField(11)
+  desiredEnableGvnic = _messages.BooleanField(12)
+  desiredImage = _messages.StringField(13)
+  desiredImageProject = _messages.StringField(14)
+  desiredImageType = _messages.StringField(15)
+  desiredIntraNodeVisibilityConfig = _messages.MessageField('IntraNodeVisibilityConfig', 16)
+  desiredL4ilbSubsettingConfig = _messages.MessageField('ILBSubsettingConfig', 17)
+  desiredLocations = _messages.StringField(18, repeated=True)
+  desiredLoggingService = _messages.StringField(19)
+  desiredMaster = _messages.MessageField('Master', 20)
+  desiredMasterAuthorizedNetworksConfig = _messages.MessageField('MasterAuthorizedNetworksConfig', 21)
+  desiredMasterVersion = _messages.StringField(22)
+  desiredMonitoringService = _messages.StringField(23)
+  desiredNodePoolAutoscaling = _messages.MessageField('NodePoolAutoscaling', 24)
+  desiredNodePoolId = _messages.StringField(25)
+  desiredNodeVersion = _messages.StringField(26)
+  desiredPodSecurityPolicyConfig = _messages.MessageField('PodSecurityPolicyConfig', 27)
+  desiredPrivateClusterConfig = _messages.MessageField('PrivateClusterConfig', 28)
+  desiredPrivateIpv6Access = _messages.MessageField('PrivateIPv6Status', 29)
+  desiredPrivateIpv6GoogleAccess = _messages.EnumField('DesiredPrivateIpv6GoogleAccessValueValuesEnum', 30)
+  desiredReleaseChannel = _messages.MessageField('ReleaseChannel', 31)
+  desiredResourceUsageExportConfig = _messages.MessageField('ResourceUsageExportConfig', 32)
+  desiredShieldedNodes = _messages.MessageField('ShieldedNodes', 33)
+  desiredTpuConfig = _messages.MessageField('TpuConfig', 34)
+  desiredVerticalPodAutoscaling = _messages.MessageField('VerticalPodAutoscaling', 35)
+  desiredWorkloadIdentityConfig = _messages.MessageField('WorkloadIdentityConfig', 36)
+  privateClusterConfig = _messages.MessageField('PrivateClusterConfig', 37)
+  securityProfile = _messages.MessageField('SecurityProfile', 38)
 
 
 class CompleteIPRotationRequest(_messages.Message):
@@ -2080,6 +2097,17 @@ class MaintenanceWindow(_messages.Message):
   dailyMaintenanceWindow = _messages.MessageField('DailyMaintenanceWindow', 1)
   maintenanceExclusions = _messages.MessageField('MaintenanceExclusionsValue', 2)
   recurringWindow = _messages.MessageField('RecurringTimeWindow', 3)
+
+
+class Master(_messages.Message):
+  r"""Master is the configuration for components on master.
+
+  Fields:
+    signalsConfig: Configuration used to enable sending selected master logs
+      and metrics to customer project.
+  """
+
+  signalsConfig = _messages.MessageField('MasterSignalsConfig', 1)
 
 
 class MasterAuth(_messages.Message):

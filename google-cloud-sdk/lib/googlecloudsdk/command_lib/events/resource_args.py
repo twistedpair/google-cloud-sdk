@@ -23,18 +23,31 @@ from googlecloudsdk.calliope.concepts import concepts
 from googlecloudsdk.command_lib.run import resource_args as run_resource_args
 
 
+EVENTS_ALPHA_API_VERSION = 'v1alpha1'
+
+
 def TriggerAttributeConfig():
   return concepts.ResourceParameterAttributeConfig(
       name='trigger',
       help_text='Name of the trigger.')
 
 
-def GetTriggerResourceSpec():
+def GetTriggerResourceSpec(api_version=EVENTS_ALPHA_API_VERSION):
   return concepts.ResourceSpec(
       'run.namespaces.triggers',
       namespacesId=run_resource_args.NamespaceAttributeConfig(),
       triggersId=TriggerAttributeConfig(),
-      resource_name='Trigger')
+      resource_name='Trigger',
+      api_version=api_version)
+
+
+def GetNamespaceResourceSpec(api_version=EVENTS_ALPHA_API_VERSION):
+  """Returns a resource spec for the namespace."""
+  return concepts.ResourceSpec(
+      'run.namespaces',
+      namespacesId=run_resource_args.NamespaceAttributeConfig(),
+      resource_name='namespace',
+      api_version=api_version)
 
 
 def GetCoreNamespaceResourceSpec():

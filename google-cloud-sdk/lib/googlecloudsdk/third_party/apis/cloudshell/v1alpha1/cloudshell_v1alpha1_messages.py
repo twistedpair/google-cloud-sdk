@@ -204,11 +204,13 @@ class Environment(_messages.Message):
       RUNNING: The environment is running and ready to accept connections. It
         will automatically transition back to DISABLED after a period of
         inactivity or if another environment is started.
+      DELETING: The environment is being deleted and can't be connected to.
     """
     STATE_UNSPECIFIED = 0
     DISABLED = 1
     STARTING = 2
     RUNNING = 3
+    DELETING = 4
 
   dockerImage = _messages.StringField(1)
   id = _messages.StringField(2)

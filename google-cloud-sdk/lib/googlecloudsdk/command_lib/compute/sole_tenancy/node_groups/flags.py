@@ -65,6 +65,12 @@ def AddCreateArgsToParser(parser):
       required=True,
       type=int,
       help='The target initial number of nodes in the node group.')
+  parser.add_argument(
+      '--maintenance-policy',
+      choices=_MAINTENANCE_POLICY_CHOICES,
+      type=lambda policy: policy.lower(),
+      help=('Determines the maintenance behavior during host maintenance '
+            'events.'))
 
 
 def AddUpdateArgsToParser(parser):
@@ -80,16 +86,6 @@ def AddUpdateArgsToParser(parser):
       type=arg_parsers.ArgList(),
       help='The names of the nodes to remove from the group.')
   AddNoteTemplateFlagToParser(parser, required=False)
-
-
-def AddMaintenancePolicyArgToParser(parser):
-  """Add flag for adding maintenance policy to node group."""
-  parser.add_argument(
-      '--maintenance-policy',
-      choices=_MAINTENANCE_POLICY_CHOICES,
-      type=lambda policy: policy.lower(),
-      help=('Determines the maintenance behavior during host maintenance '
-            'events.'))
 
 
 def AddMaintenanceWindowArgToParser(parser):

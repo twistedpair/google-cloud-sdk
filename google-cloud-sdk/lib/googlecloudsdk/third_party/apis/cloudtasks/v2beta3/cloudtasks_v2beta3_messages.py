@@ -1268,10 +1268,10 @@ class Queue(_messages.Message):
       only be changed by called PauseQueue, ResumeQueue, or uploading [queue.y
       aml/xml](https://cloud.google.com/appengine/docs/python/config/queueref)
       . UpdateQueue cannot be used to change `state`.
-    TypeValueValuesEnum: Immutable. Immutable Field. The type of a queue (push
-      or pull).  `Queue.type` is an immutable property of the queue that is
-      set at the queue creation time. When left unspecified, the default value
-      of `PUSH` is selected.
+    TypeValueValuesEnum: Immutable. The type of a queue (push or pull).
+      `Queue.type` is an immutable property of the queue that is set at the
+      queue creation time. When left unspecified, the default value of `PUSH`
+      is selected.
 
   Fields:
     appEngineHttpQueue: AppEngineHttpQueue settings apply only to App Engine
@@ -1324,10 +1324,9 @@ class Queue(_messages.Message):
       by called PauseQueue, ResumeQueue, or uploading [queue.yaml/xml](https:/
       /cloud.google.com/appengine/docs/python/config/queueref). UpdateQueue
       cannot be used to change `state`.
-    type: Immutable. Immutable Field. The type of a queue (push or pull).
-      `Queue.type` is an immutable property of the queue that is set at the
-      queue creation time. When left unspecified, the default value of `PUSH`
-      is selected.
+    type: Immutable. The type of a queue (push or pull).  `Queue.type` is an
+      immutable property of the queue that is set at the queue creation time.
+      When left unspecified, the default value of `PUSH` is selected.
   """
 
   class StateValueValuesEnum(_messages.Enum):
@@ -1361,10 +1360,9 @@ class Queue(_messages.Message):
     DISABLED = 3
 
   class TypeValueValuesEnum(_messages.Enum):
-    r"""Immutable. Immutable Field. The type of a queue (push or pull).
-    `Queue.type` is an immutable property of the queue that is set at the
-    queue creation time. When left unspecified, the default value of `PUSH` is
-    selected.
+    r"""Immutable. The type of a queue (push or pull).  `Queue.type` is an
+    immutable property of the queue that is set at the queue creation time.
+    When left unspecified, the default value of `PUSH` is selected.
 
     Values:
       TYPE_UNSPECIFIED: Default value.

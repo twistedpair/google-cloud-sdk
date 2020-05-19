@@ -45,15 +45,18 @@ class SparkBase(job_base.JobBase):
         type=arg_parsers.ArgList(),
         metavar='FILE',
         default=[],
-        help='Comma separated list of files to be provided to the job.')
+        help=('Comma separated list of files to be placed in the working '
+              'directory of each executor.'))
     parser.add_argument(
         '--archives',
         type=arg_parsers.ArgList(),
         metavar='ARCHIVE',
         default=[],
-        help=('Comma separated list of archives to be provided to the job. '
-              'must be one of the following file formats: .zip, .tar, .tar.gz, '
-              'or .tgz.'))
+        help=(
+            'Comma separated list of archives to be extracted into the working '
+            'directory of each executor. '
+            'Must be one of the following file formats: .zip, .tar, .tar.gz, '
+            'or .tgz.'))
     parser.add_argument(
         'job_args',
         nargs=argparse.REMAINDER,

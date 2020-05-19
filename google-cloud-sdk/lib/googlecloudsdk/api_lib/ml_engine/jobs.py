@@ -129,6 +129,7 @@ class JobsClient(object):
                        runtime_version=None,
                        python_version=None,
                        labels=None,
+                       kms_key=None,
                        custom_train_server_config=None):
     """Builds a Cloud ML Engine Job from a config file and/or flag values.
 
@@ -150,6 +151,7 @@ class JobsClient(object):
         python_version: the Python version in which to run the job (overrides
           yaml file)
         labels: Job.LabelsValue, the Cloud labels for the job
+        kms_key: A customer-managed encryption key to use for the job.
         custom_train_server_config: jobs_util.CustomTrainingInputServerConfig,
           configuration object for custom server parameters.
     Raises:
@@ -187,6 +189,11 @@ class JobsClient(object):
     for field_name, value in additional_fields.items():
       if value is not None:
         setattr(job.trainingInput, field_name, value)
+
+    if kms_key:
+      arg_utils.SetFieldInMessage(job,
+                                  'trainingInput.encryptionConfig.kmsKeyName',
+                                  kms_key)
 
     if custom_train_server_config:
       for field_name, value in custom_train_server_config.GetFieldMap().items():

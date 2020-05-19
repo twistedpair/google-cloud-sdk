@@ -778,8 +778,13 @@
           "type": "string"
         },
         "lastSync": {
-          "description": "Timestamp of when ACM last successfully synced the repo",
+          "description": "Timestamp of when ACM last successfully synced the repo\nThe time format is specified in https:\/\/golang.org\/pkg\/time\/#Time.String\nThis field is being deprecated. Use last_sync_time instead. (b\/154053616)",
           "type": "string"
+        },
+        "lastSyncTime": {
+          "description": "Timestamp type of when ACM last successfully synced the repo",
+          "type": "string",
+          "format": "google-datetime"
         },
         "code": {
           "description": "Sync status code",

@@ -34,6 +34,7 @@ from googlecloudsdk.api_lib.run import secret
 from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.api_lib.util import apis_internal
 from googlecloudsdk.command_lib.events import exceptions
+from googlecloudsdk.command_lib.events import resource_args
 from googlecloudsdk.command_lib.events import stages
 from googlecloudsdk.command_lib.events import util
 from googlecloudsdk.command_lib.run import serverless_operations
@@ -337,7 +338,9 @@ class EventflowOperations(object):
     """
     return registry.GetMethod(
         util.SOURCE_COLLECTION_NAME.format(
-            plural_kind=source_crd.source_kind_plural), method_name)
+            plural_kind=source_crd.source_kind_plural),
+        method_name,
+        api_version=resource_args.EVENTS_ALPHA_API_VERSION)
 
   def SourceGetMethod(self, source_crd):
     """Returns the request method for a Get request of this source."""
@@ -437,7 +440,9 @@ class EventflowOperations(object):
     # Passing the parent field is only needed for hosted, but shouldn't hurt
     # against an actual cluster
     namespace_ref = resources.REGISTRY.Parse(
-        properties.VALUES.core.project.Get(), collection='run.namespaces')
+        properties.VALUES.core.project.Get(),
+        collection='run.namespaces',
+        api_version=resource_args.EVENTS_ALPHA_API_VERSION)
 
     messages = self._crd_client.MESSAGES_MODULE
     request = messages.RunCustomresourcedefinitionsListRequest(

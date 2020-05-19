@@ -22,40 +22,6 @@ from googlecloudsdk.command_lib.util import completers
 from googlecloudsdk.core import resources
 
 
-class BetaSecretsCompleter(completers.ListCommandCompleter):
-  """A secrets completer for a resource argument.
-
-  The Complete() method override bypasses the completion cache.
-  """
-
-  def __init__(self, **kwargs):
-    super(BetaSecretsCompleter, self).__init__(
-        collection='secretmanager.projects.secrets',
-        list_command='beta secrets list --uri',
-        **kwargs)
-
-  def Complete(self, prefix, parameter_info):
-    """Bypasses the cache and returns completions matching prefix."""
-    # TODO(b/148274973): use built in completers once the cache stops
-    # differentiating between project IDs and project numbers
-    command = self.GetListCommand(parameter_info)
-    items = self.GetAllItems(command, parameter_info)
-
-    if not items:
-      return
-
-    # We only want to get the secret name from the response, which returns
-    # projects/PROJECT_NUMBER/secrets/SECRET_NAME
-    def _parse(item):
-      return resources.REGISTRY.Parse(
-          item, collection='secretmanager.projects.secrets').Name()
-
-    return [
-        x for x in (_parse(item) for item in items)
-        if x and x.startswith(prefix)
-    ]
-
-
 class SecretsCompleter(completers.ListCommandCompleter):
   """A secrets completer for a resource argument.
 

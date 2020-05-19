@@ -69,6 +69,9 @@ class HTMLRenderer(renderer.Renderer):
   li {
     margin-top: 1ex; margin-bottom: 1ex;
   }
+  .flag {
+    white-space: nowrap;
+  }
   .hangingindent {
     padding-left: 1.5em;
     text-indent: -1.5em;
@@ -440,6 +443,10 @@ class HTMLRenderer(renderer.Renderer):
                   r'\1<a href="#\2">\2</a>\3',
                   line)
 
+    line = re.sub(r'(<code><a href="#[-a-z0-9]+">\S+)',
+                  r'<span class="flag">\1</span>',
+                  line)
+
     # Add self.command[0].upper() WIDE FLAGS local link.
 
     root = self.command[0].upper()
@@ -455,14 +462,14 @@ class HTMLRenderer(renderer.Renderer):
       if c in '[(':
         nest += 1
         if nest == 1:
-          c = '<nobr>' + c
+          c = '<span>' + c
       elif c in ')]':
         nest -= 1
         if not nest:
-          c += '</nobr>'
+          c += '</span>'
       elif nest == 1 and c == ' ' and chars and chars[0] == '|':
         # A top level group has nest == 1. 4 &nbsp; is aesthetically pleasing.
-        c = '</nobr> <nobr>&nbsp;&nbsp;&nbsp;&nbsp;' + chars.popleft()
+        c = '</span> <span>&nbsp;&nbsp;&nbsp;&nbsp;' + chars.popleft()
       self._out.write(c)
     self._out.write('\n</span></dt></dl>\n')
 

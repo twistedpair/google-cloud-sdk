@@ -191,6 +191,23 @@
           "items": {
             "type": "string"
           }
+        },
+        "subaccounts": {
+          "description": "Optional. A set of subaccounts of the form `billingAccounts\/{account_id}`, specifying\nthat usage from only this set of subaccounts should be included in the\nbudget. If a subaccount is set to the name of the master account, usage\nfrom the master account will be included. If omitted, the report will\ninclude usage from the master account and all subaccounts, if they exist.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "labels": {
+          "description": "Optional. A single label and value pair specifying that usage from only this set of\nlabeled resources should be included in the budget. Multiple entries or\nmultiple values per entry are not allowed. If omitted, the report will\ninclude all labeled and unlabeled usage.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "array",
+            "items": {
+              "type": "any"
+            }
+          }
         }
       }
     },

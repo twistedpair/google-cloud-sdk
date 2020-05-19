@@ -99,6 +99,16 @@ class DomainMappingCreationError(exceptions.Error):
   """An error was encountered during the creation of a domain mapping."""
 
 
+class DomainMappingAlreadyExistsError(DomainMappingCreationError):
+  """Domain mapping already exists in another project, GCP service, or region.
+
+  This indicates a succesfully created DomainMapping resource but with the
+  domain it intends to map being unavailable because it's already in use.
+  Not to be confused with a 409 error indicating a DomainMapping resource with
+  this same name (the domain name) already exists in this region.
+  """
+
+
 class PlatformError(exceptions.Error):
   """Command not supported for the platform."""
 

@@ -556,6 +556,11 @@ class History(_messages.Message):
   one-dimension. If a repository has multiple branches, it means that multiple
   histories will need to be used in order to order Executions per branch.
 
+  Enums:
+    TestPlatformValueValuesEnum: The platform of the test history.  - In
+      response: always set. Returns the platform of the last execution if
+      unknown.
+
   Fields:
     displayName: A short human-readable (plain text) name to display in the
       UI. Maximum of 100 characters.  - In response: present if set during
@@ -566,11 +571,27 @@ class History(_messages.Message):
     name: A name to uniquely identify a history within a project. Maximum of
       200 characters.  - In response always set - In create request: always
       set
+    testPlatform: The platform of the test history.  - In response: always
+      set. Returns the platform of the last execution if unknown.
   """
+
+  class TestPlatformValueValuesEnum(_messages.Enum):
+    r"""The platform of the test history.  - In response: always set. Returns
+    the platform of the last execution if unknown.
+
+    Values:
+      android: <no description>
+      ios: <no description>
+      unknownPlatform: <no description>
+    """
+    android = 0
+    ios = 1
+    unknownPlatform = 2
 
   displayName = _messages.StringField(1)
   historyId = _messages.StringField(2)
   name = _messages.StringField(3)
+  testPlatform = _messages.EnumField('TestPlatformValueValuesEnum', 4)
 
 
 class Image(_messages.Message):
@@ -649,6 +670,55 @@ class IndividualOutcome(_messages.Message):
   outcomeSummary = _messages.EnumField('OutcomeSummaryValueValuesEnum', 2)
   runDuration = _messages.MessageField('Duration', 3)
   stepId = _messages.StringField(4)
+
+
+class IosAppInfo(_messages.Message):
+  r"""iOS app information
+
+  Fields:
+    name: The name of the app. Required
+  """
+
+  name = _messages.StringField(1)
+
+
+class IosTest(_messages.Message):
+  r"""A iOS mobile test specification
+
+  Fields:
+    iosAppInfo: Information about the application under test.
+    iosTestLoop: An iOS test loop.
+    iosXcTest: An iOS XCTest.
+    testTimeout: Max time a test is allowed to run before it is automatically
+      cancelled.
+  """
+
+  iosAppInfo = _messages.MessageField('IosAppInfo', 1)
+  iosTestLoop = _messages.MessageField('IosTestLoop', 2)
+  iosXcTest = _messages.MessageField('IosXcTest', 3)
+  testTimeout = _messages.MessageField('Duration', 4)
+
+
+class IosTestLoop(_messages.Message):
+  r"""A game loop test of an iOS application.
+
+  Fields:
+    bundleId: Bundle ID of the app.
+  """
+
+  bundleId = _messages.StringField(1)
+
+
+class IosXcTest(_messages.Message):
+  r"""A test of an iOS application that uses the XCTest framework.
+
+  Fields:
+    bundleId: Bundle ID of the app.
+    xcodeVersion: Xcode version that the test was run with.
+  """
+
+  bundleId = _messages.StringField(1)
+  xcodeVersion = _messages.StringField(2)
 
 
 class ListEnvironmentsResponse(_messages.Message):
@@ -1187,9 +1257,11 @@ class Specification(_messages.Message):
 
   Fields:
     androidTest: An Android mobile test execution specification.
+    iosTest: An iOS mobile test execution specification.
   """
 
   androidTest = _messages.MessageField('AndroidTest', 1)
+  iosTest = _messages.MessageField('IosTest', 2)
 
 
 class StackTrace(_messages.Message):

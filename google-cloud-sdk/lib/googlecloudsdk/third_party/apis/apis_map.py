@@ -134,6 +134,16 @@ MAP = {
                 enable_mtls=False,
                 mtls_endpoint_override=''),
     },
+    'apigee': {
+        'v1':
+            APIDef(
+                class_path='googlecloudsdk.third_party.apis.apigee.v1',
+                client_classpath='apigee_v1_client.ApigeeV1',
+                messages_modulepath='apigee_v1_messages',
+                default_version=True,
+                enable_mtls=False,
+                mtls_endpoint_override=''),
+    },
     'apikeys': {
         'v2alpha1':
             APIDef(
@@ -251,6 +261,16 @@ MAP = {
                 client_classpath='binaryauthorization_v1beta1_client.BinaryauthorizationV1beta1',
                 messages_modulepath='binaryauthorization_v1beta1_messages',
                 default_version=False,
+                enable_mtls=False,
+                mtls_endpoint_override=''),
+    },
+    'certificatemanager': {
+        'v1alpha1':
+            APIDef(
+                class_path='googlecloudsdk.third_party.apis.certificatemanager.v1alpha1',
+                client_classpath='certificatemanager_v1alpha1_client.CertificatemanagerV1alpha1',
+                messages_modulepath='certificatemanager_v1alpha1_messages',
+                default_version=True,
                 enable_mtls=False,
                 mtls_endpoint_override=''),
     },
@@ -1458,7 +1478,7 @@ MAP = {
                 class_path='googlecloudsdk.third_party.apis.run.v1',
                 client_classpath='run_v1_client.RunV1',
                 messages_modulepath='run_v1_messages',
-                default_version=False,
+                default_version=True,
                 enable_mtls=False,
                 mtls_endpoint_override=''),
         'v1alpha1':
@@ -1466,7 +1486,7 @@ MAP = {
                 class_path='googlecloudsdk.third_party.apis.run.v1alpha1',
                 client_classpath='run_v1alpha1_client.RunV1alpha1',
                 messages_modulepath='run_v1alpha1_messages',
-                default_version=True,
+                default_version=False,
                 enable_mtls=False,
                 mtls_endpoint_override=''),
         'v1beta1':

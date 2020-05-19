@@ -683,7 +683,7 @@
           "type": "string"
         },
         "value": {
-          "description": "Optional. The definition of the parameter value. It can be:\n- a constant string,\n- a parameter value defined as `$parameter_name`,\n- an original parameter value defined as `$parameter_name.original`,\n- a parameter value from some context defined as\n  `#context_name.parameter_name`.",
+          "description": "Optional. The definition of the parameter value. It can be:\n\n- a constant string,\n- a parameter value defined as `$parameter_name`,\n- an original parameter value defined as `$parameter_name.original`,\n- a parameter value from some context defined as\n  `#context_name.parameter_name`.",
           "type": "string"
         },
         "defaultValue": {
@@ -2055,7 +2055,7 @@
           "$ref": "GoogleRpcStatus"
         },
         "outputAudio": {
-          "description": "The audio data bytes encoded as specified in the request.\nNote: The output audio is generated based on the values of default platform\ntext responses found in the `query_result.fulfillment_messages` field. If\nmultiple default text responses exist, they will be concatenated when\ngenerating audio. If no default platform text responses exist, the\ngenerated audio content will be empty.",
+          "description": "The audio data bytes encoded as specified in the request.\nNote: The output audio is generated based on the values of default platform\ntext responses found in the `query_result.fulfillment_messages` field. If\nmultiple default text responses exist, they will be concatenated when\ngenerating audio. If no default platform text responses exist, the\ngenerated audio content will be empty.\n\nIn some scenarios, multiple output audio fields may be present in the\nresponse structure. In these cases, only the top-most-level audio output\nhas content.",
           "type": "string",
           "format": "byte"
         },
@@ -2925,7 +2925,7 @@
           "type": "string"
         },
         "value": {
-          "description": "Optional. The definition of the parameter value. It can be:\n- a constant string,\n- a parameter value defined as `$parameter_name`,\n- an original parameter value defined as `$parameter_name.original`,\n- a parameter value from some context defined as\n  `#context_name.parameter_name`.",
+          "description": "Optional. The definition of the parameter value. It can be:\n\n- a constant string,\n- a parameter value defined as `$parameter_name`,\n- an original parameter value defined as `$parameter_name.original`,\n- a parameter value from some context defined as\n  `#context_name.parameter_name`.",
           "type": "string"
         },
         "defaultValue": {
@@ -3534,7 +3534,7 @@
     },
     "GoogleCloudDialogflowV2beta1IntentMessageRbmStandaloneCard": {
       "id": "GoogleCloudDialogflowV2beta1IntentMessageRbmStandaloneCard",
-      "description": "Standalone Rich Business Messaging (RBM) rich card.\n\nRich cards allow you to respond to users with more vivid content, e.g.\nwith media and suggestions.\n\nFor more details about RBM rich cards, please see:\nhttps:\/\/developers.google.com\/rcs-business-messaging\/rbm\/guides\/build\/send-messages#rich-cards.\nYou can group multiple rich cards into one using RbmCarouselCard but\ncarousel cards will give you less control over the card layout.",
+      "description": "Standalone Rich Business Messaging (RBM) rich card.\n\nRich cards allow you to respond to users with more vivid content, e.g.\nwith media and suggestions.\n\nFor more details about RBM rich cards, please see:\nhttps:\/\/developers.google.com\/business-communications\/rcs-business-messaging\/guides\/build\/messages\/send#rich-cards\nYou can group multiple rich cards into one using RbmCarouselCard but\ncarousel cards will give you less control over the card layout.",
       "type": "object",
       "properties": {
         "cardOrientation": {
@@ -3630,7 +3630,7 @@
     },
     "GoogleCloudDialogflowV2beta1IntentMessageRbmCarouselCard": {
       "id": "GoogleCloudDialogflowV2beta1IntentMessageRbmCarouselCard",
-      "description": "Carousel Rich Business Messaging (RBM) rich card.\n\nRich cards allow you to respond to users with more vivid content, e.g.\nwith media and suggestions.\n\nFor more details about RBM rich cards, please see:\nhttps:\/\/developers.google.com\/rcs-business-messaging\/rbm\/guides\/build\/send-messages#rich-cards.\nIf you want to show a single card with more control over the layout,\nplease use RbmStandaloneCard instead.",
+      "description": "Carousel Rich Business Messaging (RBM) rich card.\n\nRich cards allow you to respond to users with more vivid content, e.g.\nwith media and suggestions.\n\nFor more details about RBM rich cards, please see:\nhttps:\/\/developers.google.com\/business-communications\/rcs-business-messaging\/guides\/build\/messages\/send#rich-cards\nIf you want to show a single card with more control over the layout,\nplease use RbmStandaloneCard instead.",
       "type": "object",
       "properties": {
         "cardWidth": {

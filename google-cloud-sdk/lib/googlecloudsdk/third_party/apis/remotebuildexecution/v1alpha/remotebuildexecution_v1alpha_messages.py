@@ -883,6 +883,8 @@ class GoogleDevtoolsRemotebuildbotCommandStatus(_messages.Message):
         runtime because of file not found.
       DOCKER_CREATE_RUNTIME_PERMISSION_DENIED: Docker failed to create OCI
         runtime because of permission denied.
+      DOCKER_CREATE_PROCESS_FILE_NOT_FOUND: Docker failed to create process
+        because of file not found.
     """
     OK = 0
     INVALID_ARGUMENT = 1
@@ -919,6 +921,7 @@ class GoogleDevtoolsRemotebuildbotCommandStatus(_messages.Message):
     DOCKER_INCOMPATIBLE_OS_ERROR = 32
     DOCKER_CREATE_RUNTIME_FILE_NOT_FOUND = 33
     DOCKER_CREATE_RUNTIME_PERMISSION_DENIED = 34
+    DOCKER_CREATE_PROCESS_FILE_NOT_FOUND = 35
 
   code = _messages.EnumField('CodeValueValuesEnum', 1)
   message = _messages.StringField(2)

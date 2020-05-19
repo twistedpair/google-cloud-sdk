@@ -31,6 +31,7 @@ from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import base
 from googlecloudsdk.calliope.concepts import concepts
 from googlecloudsdk.command_lib.iam import completers as iam_completers
+from googlecloudsdk.command_lib.kms import resource_args as kms_resource_args
 from googlecloudsdk.command_lib.ml_engine import models_util
 from googlecloudsdk.command_lib.util.apis import arg_utils
 from googlecloudsdk.command_lib.util.concepts import concept_parsers
@@ -206,11 +207,11 @@ JOB_NAME = base.Argument('job', help='Name of the job.')
 PACKAGE_PATH = base.Argument(
     '--package-path',
     help="""\
-Path to a Python package to build. This should point to a directory containing
-the Python source for the job. It will be built using *setuptools* (which must be
-installed) using its *parent* directory as context. If the parent directory
-contains a `setup.py` file, the build will use that; otherwise, it will use a
-simple built-in one.
+Path to a Python package to build. This should point to a *local* directory
+containing the Python source for the job. It will be built using *setuptools*
+(which must be installed) using its *parent* directory as context. If the parent
+directory contains a `setup.py` file, the build will use that; otherwise,
+it will use a simple built-in one.
 """)
 PACKAGES = base.Argument(
     '--packages',
@@ -277,9 +278,10 @@ def GetJobDirFlag(upload_help=True, allow_local=False):
 {dir_type} in which to store training outputs and other data
 needed for training.
 
-This path will be passed to your TensorFlow program as the `--job_dir` command-line
+This path will be passed to your TensorFlow program as the `--job-dir` command-line
 arg. The benefit of specifying this field is that AI Platform will validate
-the path for use in training.
+the path for use in training. However, note that your training program will need
+to parse the provided `--job-dir` argument.
 """.format(
     dir_type=('Google Cloud Storage path' +
               (' or local_directory' if allow_local else '')))
@@ -355,6 +357,14 @@ FRAMEWORK_MAPPER = arg_utils.ChoiceEnumMapper(
     custom_mappings=_FRAMEWORK_CHOICES,
     help_str=('The ML framework used to train this version of the model. '
               'If not specified, defaults to \'tensorflow\''))
+
+
+def AddKmsKeyFlag(parser, resource):
+  permission_info = '{} must hold permission {}'.format(
+      "The 'AI Platform Service Agent' service account",
+      "'Cloud KMS CryptoKey Encrypter/Decrypter'")
+  kms_resource_args.AddKmsKeyResourceArg(
+      parser, resource, permission_info=permission_info)
 
 
 def AddPythonVersionFlag(parser, context):

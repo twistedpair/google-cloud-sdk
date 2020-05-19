@@ -883,6 +883,11 @@
             "PASSWORD_SET",
             "PASSWORD_NOT_SET"
           ]
+        },
+        "createTime": {
+          "description": "When the user first signed in to the device",
+          "type": "string",
+          "format": "google-datetime"
         }
       }
     },

@@ -265,7 +265,8 @@ class ListTopicSubscriptionsResponse(_messages.Message):
     nextPageToken: If not empty, indicates that there may be more
       subscriptions that match the request; this value should be passed in a
       new `ListTopicSubscriptionsRequest` to get more subscriptions.
-    subscriptions: The names of the subscriptions that match the request.
+    subscriptions: The names of subscriptions attached to the topic specified
+      in the request.
   """
 
   nextPageToken = _messages.StringField(1)
@@ -1340,6 +1341,11 @@ class Subscription(_messages.Message):
       associated with this subscriptions's parent project (i.e.,
       service-{project_number}@gcp-sa-pubsub.iam.gserviceaccount.com) must
       have permission to Acknowledge() messages on this subscription.
+    detached:  Indicates whether the subscription is detached from its topic.
+      Detached subscriptions don't receive messages from their topic and don't
+      retain any backlog. `Pull` and `StreamingPull` requests will return
+      FAILED_PRECONDITION. If the subscription is a push subscription, pushes
+      to the endpoint will not be made.
     enableMessageOrdering: If true, messages published with the same
       `ordering_key` in `PubsubMessage` will be delivered to the subscribers
       in the order in which they are received by the Pub/Sub system.
@@ -1425,16 +1431,17 @@ class Subscription(_messages.Message):
 
   ackDeadlineSeconds = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   deadLetterPolicy = _messages.MessageField('DeadLetterPolicy', 2)
-  enableMessageOrdering = _messages.BooleanField(3)
-  expirationPolicy = _messages.MessageField('ExpirationPolicy', 4)
-  filter = _messages.StringField(5)
-  labels = _messages.MessageField('LabelsValue', 6)
-  messageRetentionDuration = _messages.StringField(7)
-  name = _messages.StringField(8)
-  pushConfig = _messages.MessageField('PushConfig', 9)
-  retainAckedMessages = _messages.BooleanField(10)
-  retryPolicy = _messages.MessageField('RetryPolicy', 11)
-  topic = _messages.StringField(12)
+  detached = _messages.BooleanField(3)
+  enableMessageOrdering = _messages.BooleanField(4)
+  expirationPolicy = _messages.MessageField('ExpirationPolicy', 5)
+  filter = _messages.StringField(6)
+  labels = _messages.MessageField('LabelsValue', 7)
+  messageRetentionDuration = _messages.StringField(8)
+  name = _messages.StringField(9)
+  pushConfig = _messages.MessageField('PushConfig', 10)
+  retainAckedMessages = _messages.BooleanField(11)
+  retryPolicy = _messages.MessageField('RetryPolicy', 12)
+  topic = _messages.StringField(13)
 
 
 class TestIamPermissionsRequest(_messages.Message):

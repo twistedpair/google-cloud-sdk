@@ -159,7 +159,7 @@ def GetAuthToken(account, operation, impersonated=False):
   return json.dumps(output, sort_keys=True)
 
 
-class AnthosAuthWrapper(binary_operations.BinaryBackedOperation):
+class AnthosAuthWrapper(binary_operations.StreamingBinaryBackedOperation):
   """Binary operation wrapper for anthoscli commands."""
 
   def __init__(self, **kwargs):

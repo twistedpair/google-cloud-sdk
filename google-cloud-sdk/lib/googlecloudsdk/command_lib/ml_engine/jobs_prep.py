@@ -88,7 +88,8 @@ class MissingInitError(UploadFailureError):
   def __init__(self, package_dir):
     super(MissingInitError, self).__init__(textwrap.dedent("""\
         [{}] is not a valid Python package because it does not contain an \
-        `__init__.py` file. Please create one and try again.
+        `__init__.py` file. Please create one and try again. Also, please \
+        ensure that --package-path refers to a local directory.
         """).format(package_dir))
 
 

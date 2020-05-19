@@ -21,6 +21,9 @@ from __future__ import unicode_literals
 from googlecloudsdk.api_lib.run import k8s_object
 
 
+MAPPING_ALREADY_EXISTS_CONDITION_REASON = 'MappingAlreadyExists'
+
+
 class DomainMapping(k8s_object.KubernetesObject):
   """Wraps a Cloud Run DomainMapping message.
 

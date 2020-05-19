@@ -94,7 +94,7 @@ learn more.
         method_id='dlp.infoTypes.list',
         ordered_params=[],
         path_params=[],
-        query_params=['filter', 'languageCode', 'locationId'],
+        query_params=['filter', 'languageCode', 'locationId', 'parent'],
         relative_path='v2/infoTypes',
         request_field='',
         request_type_name='DlpInfoTypesListRequest',
@@ -128,12 +128,13 @@ learn more.
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/locations/{locationsId}/infoTypes',
         http_method='GET',
         method_id='dlp.locations.infoTypes.list',
-        ordered_params=['locationId'],
-        path_params=['locationId'],
-        query_params=['filter', 'languageCode'],
-        relative_path='v2/locations/{locationId}/infoTypes',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'languageCode', 'locationId'],
+        relative_path='v2/{+parent}/infoTypes',
         request_field='',
         request_type_name='DlpLocationsInfoTypesListRequest',
         response_type_name='GooglePrivacyDlpV2ListInfoTypesResponse',
@@ -484,13 +485,13 @@ more.
           config, request, global_params=global_params)
 
     Create.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v2/organizations/{organizationsId}/locations/{locationId}/deidentifyTemplates',
+        flat_path='v2/organizations/{organizationsId}/locations/{locationsId}/deidentifyTemplates',
         http_method='POST',
         method_id='dlp.organizations.locations.deidentifyTemplates.create',
-        ordered_params=['parent', 'locationId'],
-        path_params=['locationId', 'parent'],
+        ordered_params=['parent'],
+        path_params=['parent'],
         query_params=[],
-        relative_path='v2/{+parent}/locations/{locationId}/deidentifyTemplates',
+        relative_path='v2/{+parent}/deidentifyTemplates',
         request_field='googlePrivacyDlpV2CreateDeidentifyTemplateRequest',
         request_type_name='DlpOrganizationsLocationsDeidentifyTemplatesCreateRequest',
         response_type_name='GooglePrivacyDlpV2DeidentifyTemplate',
@@ -571,13 +572,13 @@ more.
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v2/organizations/{organizationsId}/locations/{locationId}/deidentifyTemplates',
+        flat_path='v2/organizations/{organizationsId}/locations/{locationsId}/deidentifyTemplates',
         http_method='GET',
         method_id='dlp.organizations.locations.deidentifyTemplates.list',
-        ordered_params=['parent', 'locationId'],
-        path_params=['locationId', 'parent'],
-        query_params=['orderBy', 'pageSize', 'pageToken'],
-        relative_path='v2/{+parent}/locations/{locationId}/deidentifyTemplates',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['locationId', 'orderBy', 'pageSize', 'pageToken'],
+        relative_path='v2/{+parent}/deidentifyTemplates',
         request_field='',
         request_type_name='DlpOrganizationsLocationsDeidentifyTemplatesListRequest',
         response_type_name='GooglePrivacyDlpV2ListDeidentifyTemplatesResponse',
@@ -639,13 +640,13 @@ See https://cloud.google.com/dlp/docs/creating-templates to learn more.
           config, request, global_params=global_params)
 
     Create.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v2/organizations/{organizationsId}/locations/{locationId}/inspectTemplates',
+        flat_path='v2/organizations/{organizationsId}/locations/{locationsId}/inspectTemplates',
         http_method='POST',
         method_id='dlp.organizations.locations.inspectTemplates.create',
-        ordered_params=['parent', 'locationId'],
-        path_params=['locationId', 'parent'],
+        ordered_params=['parent'],
+        path_params=['parent'],
         query_params=[],
-        relative_path='v2/{+parent}/locations/{locationId}/inspectTemplates',
+        relative_path='v2/{+parent}/inspectTemplates',
         request_field='googlePrivacyDlpV2CreateInspectTemplateRequest',
         request_type_name='DlpOrganizationsLocationsInspectTemplatesCreateRequest',
         response_type_name='GooglePrivacyDlpV2InspectTemplate',
@@ -723,13 +724,13 @@ See https://cloud.google.com/dlp/docs/creating-templates to learn more.
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v2/organizations/{organizationsId}/locations/{locationId}/inspectTemplates',
+        flat_path='v2/organizations/{organizationsId}/locations/{locationsId}/inspectTemplates',
         http_method='GET',
         method_id='dlp.organizations.locations.inspectTemplates.list',
-        ordered_params=['parent', 'locationId'],
-        path_params=['locationId', 'parent'],
-        query_params=['orderBy', 'pageSize', 'pageToken'],
-        relative_path='v2/{+parent}/locations/{locationId}/inspectTemplates',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['locationId', 'orderBy', 'pageSize', 'pageToken'],
+        relative_path='v2/{+parent}/inspectTemplates',
         request_field='',
         request_type_name='DlpOrganizationsLocationsInspectTemplatesListRequest',
         response_type_name='GooglePrivacyDlpV2ListInspectTemplatesResponse',
@@ -790,13 +791,13 @@ learn more.
           config, request, global_params=global_params)
 
     Create.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v2/organizations/{organizationsId}/locations/{locationId}/storedInfoTypes',
+        flat_path='v2/organizations/{organizationsId}/locations/{locationsId}/storedInfoTypes',
         http_method='POST',
         method_id='dlp.organizations.locations.storedInfoTypes.create',
-        ordered_params=['parent', 'locationId'],
-        path_params=['locationId', 'parent'],
+        ordered_params=['parent'],
+        path_params=['parent'],
         query_params=[],
-        relative_path='v2/{+parent}/locations/{locationId}/storedInfoTypes',
+        relative_path='v2/{+parent}/storedInfoTypes',
         request_field='googlePrivacyDlpV2CreateStoredInfoTypeRequest',
         request_type_name='DlpOrganizationsLocationsStoredInfoTypesCreateRequest',
         response_type_name='GooglePrivacyDlpV2StoredInfoType',
@@ -877,13 +878,13 @@ learn more.
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v2/organizations/{organizationsId}/locations/{locationId}/storedInfoTypes',
+        flat_path='v2/organizations/{organizationsId}/locations/{locationsId}/storedInfoTypes',
         http_method='GET',
         method_id='dlp.organizations.locations.storedInfoTypes.list',
-        ordered_params=['parent', 'locationId'],
-        path_params=['locationId', 'parent'],
-        query_params=['orderBy', 'pageSize', 'pageToken'],
-        relative_path='v2/{+parent}/locations/{locationId}/storedInfoTypes',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['locationId', 'orderBy', 'pageSize', 'pageToken'],
+        relative_path='v2/{+parent}/storedInfoTypes',
         request_field='',
         request_type_name='DlpOrganizationsLocationsStoredInfoTypesListRequest',
         response_type_name='GooglePrivacyDlpV2ListStoredInfoTypesResponse',
@@ -1929,13 +1930,13 @@ be all types, but may change over time as detectors are updated.
           config, request, global_params=global_params)
 
     Deidentify.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v2/projects/{projectsId}/locations/{locationId}/content:deidentify',
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/content:deidentify',
         http_method='POST',
         method_id='dlp.projects.locations.content.deidentify',
-        ordered_params=['parent', 'locationId'],
-        path_params=['locationId', 'parent'],
+        ordered_params=['parent'],
+        path_params=['parent'],
         query_params=[],
-        relative_path='v2/{+parent}/locations/{locationId}/content:deidentify',
+        relative_path='v2/{+parent}/content:deidentify',
         request_field='googlePrivacyDlpV2DeidentifyContentRequest',
         request_type_name='DlpProjectsLocationsContentDeidentifyRequest',
         response_type_name='GooglePrivacyDlpV2DeidentifyContentResponse',
@@ -1964,13 +1965,13 @@ and https://cloud.google.com/dlp/docs/inspecting-text,
           config, request, global_params=global_params)
 
     Inspect.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v2/projects/{projectsId}/locations/{locationId}/content:inspect',
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/content:inspect',
         http_method='POST',
         method_id='dlp.projects.locations.content.inspect',
-        ordered_params=['parent', 'locationId'],
-        path_params=['locationId', 'parent'],
+        ordered_params=['parent'],
+        path_params=['parent'],
         query_params=[],
-        relative_path='v2/{+parent}/locations/{locationId}/content:inspect',
+        relative_path='v2/{+parent}/content:inspect',
         request_field='googlePrivacyDlpV2InspectContentRequest',
         request_type_name='DlpProjectsLocationsContentInspectRequest',
         response_type_name='GooglePrivacyDlpV2InspectContentResponse',
@@ -1994,13 +1995,13 @@ to learn more.
           config, request, global_params=global_params)
 
     Reidentify.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v2/projects/{projectsId}/locations/{locationId}/content:reidentify',
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/content:reidentify',
         http_method='POST',
         method_id='dlp.projects.locations.content.reidentify',
-        ordered_params=['parent', 'locationId'],
-        path_params=['locationId', 'parent'],
+        ordered_params=['parent'],
+        path_params=['parent'],
         query_params=[],
-        relative_path='v2/{+parent}/locations/{locationId}/content:reidentify',
+        relative_path='v2/{+parent}/content:reidentify',
         request_field='googlePrivacyDlpV2ReidentifyContentRequest',
         request_type_name='DlpProjectsLocationsContentReidentifyRequest',
         response_type_name='GooglePrivacyDlpV2ReidentifyContentResponse',
@@ -2034,13 +2035,13 @@ more.
           config, request, global_params=global_params)
 
     Create.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v2/projects/{projectsId}/locations/{locationId}/deidentifyTemplates',
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/deidentifyTemplates',
         http_method='POST',
         method_id='dlp.projects.locations.deidentifyTemplates.create',
-        ordered_params=['parent', 'locationId'],
-        path_params=['locationId', 'parent'],
+        ordered_params=['parent'],
+        path_params=['parent'],
         query_params=[],
-        relative_path='v2/{+parent}/locations/{locationId}/deidentifyTemplates',
+        relative_path='v2/{+parent}/deidentifyTemplates',
         request_field='googlePrivacyDlpV2CreateDeidentifyTemplateRequest',
         request_type_name='DlpProjectsLocationsDeidentifyTemplatesCreateRequest',
         response_type_name='GooglePrivacyDlpV2DeidentifyTemplate',
@@ -2121,13 +2122,13 @@ more.
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v2/projects/{projectsId}/locations/{locationId}/deidentifyTemplates',
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/deidentifyTemplates',
         http_method='GET',
         method_id='dlp.projects.locations.deidentifyTemplates.list',
-        ordered_params=['parent', 'locationId'],
-        path_params=['locationId', 'parent'],
-        query_params=['orderBy', 'pageSize', 'pageToken'],
-        relative_path='v2/{+parent}/locations/{locationId}/deidentifyTemplates',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['locationId', 'orderBy', 'pageSize', 'pageToken'],
+        relative_path='v2/{+parent}/deidentifyTemplates',
         request_field='',
         request_type_name='DlpProjectsLocationsDeidentifyTemplatesListRequest',
         response_type_name='GooglePrivacyDlpV2ListDeidentifyTemplatesResponse',
@@ -2224,13 +2225,13 @@ be all types, but may change over time as detectors are updated.
           config, request, global_params=global_params)
 
     Create.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v2/projects/{projectsId}/locations/{locationId}/dlpJobs',
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/dlpJobs',
         http_method='POST',
         method_id='dlp.projects.locations.dlpJobs.create',
-        ordered_params=['parent', 'locationId'],
-        path_params=['locationId', 'parent'],
+        ordered_params=['parent'],
+        path_params=['parent'],
         query_params=[],
-        relative_path='v2/{+parent}/locations/{locationId}/dlpJobs',
+        relative_path='v2/{+parent}/dlpJobs',
         request_field='googlePrivacyDlpV2CreateDlpJobRequest',
         request_type_name='DlpProjectsLocationsDlpJobsCreateRequest',
         response_type_name='GooglePrivacyDlpV2DlpJob',
@@ -2376,13 +2377,13 @@ https://cloud.google.com/dlp/docs/compute-risk-analysis to learn more.
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v2/projects/{projectsId}/locations/{locationId}/dlpJobs',
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/dlpJobs',
         http_method='GET',
         method_id='dlp.projects.locations.dlpJobs.list',
-        ordered_params=['parent', 'locationId'],
-        path_params=['locationId', 'parent'],
-        query_params=['filter', 'orderBy', 'pageSize', 'pageToken', 'type'],
-        relative_path='v2/{+parent}/locations/{locationId}/dlpJobs',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'locationId', 'orderBy', 'pageSize', 'pageToken', 'type'],
+        relative_path='v2/{+parent}/dlpJobs',
         request_field='',
         request_type_name='DlpProjectsLocationsDlpJobsListRequest',
         response_type_name='GooglePrivacyDlpV2ListDlpJobsResponse',
@@ -2420,13 +2421,13 @@ be all types, but may change over time as detectors are updated.
           config, request, global_params=global_params)
 
     Redact.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v2/projects/{projectsId}/locations/{locationId}/image:redact',
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/image:redact',
         http_method='POST',
         method_id='dlp.projects.locations.image.redact',
-        ordered_params=['parent', 'locationId'],
-        path_params=['locationId', 'parent'],
+        ordered_params=['parent'],
+        path_params=['parent'],
         query_params=[],
-        relative_path='v2/{+parent}/locations/{locationId}/image:redact',
+        relative_path='v2/{+parent}/image:redact',
         request_field='googlePrivacyDlpV2RedactImageRequest',
         request_type_name='DlpProjectsLocationsImageRedactRequest',
         response_type_name='GooglePrivacyDlpV2RedactImageResponse',
@@ -2459,13 +2460,13 @@ See https://cloud.google.com/dlp/docs/creating-templates to learn more.
           config, request, global_params=global_params)
 
     Create.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v2/projects/{projectsId}/locations/{locationId}/inspectTemplates',
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/inspectTemplates',
         http_method='POST',
         method_id='dlp.projects.locations.inspectTemplates.create',
-        ordered_params=['parent', 'locationId'],
-        path_params=['locationId', 'parent'],
+        ordered_params=['parent'],
+        path_params=['parent'],
         query_params=[],
-        relative_path='v2/{+parent}/locations/{locationId}/inspectTemplates',
+        relative_path='v2/{+parent}/inspectTemplates',
         request_field='googlePrivacyDlpV2CreateInspectTemplateRequest',
         request_type_name='DlpProjectsLocationsInspectTemplatesCreateRequest',
         response_type_name='GooglePrivacyDlpV2InspectTemplate',
@@ -2543,13 +2544,13 @@ See https://cloud.google.com/dlp/docs/creating-templates to learn more.
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v2/projects/{projectsId}/locations/{locationId}/inspectTemplates',
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/inspectTemplates',
         http_method='GET',
         method_id='dlp.projects.locations.inspectTemplates.list',
-        ordered_params=['parent', 'locationId'],
-        path_params=['locationId', 'parent'],
-        query_params=['orderBy', 'pageSize', 'pageToken'],
-        relative_path='v2/{+parent}/locations/{locationId}/inspectTemplates',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['locationId', 'orderBy', 'pageSize', 'pageToken'],
+        relative_path='v2/{+parent}/inspectTemplates',
         request_field='',
         request_type_name='DlpProjectsLocationsInspectTemplatesListRequest',
         response_type_name='GooglePrivacyDlpV2ListInspectTemplatesResponse',
@@ -2638,13 +2639,13 @@ See https://cloud.google.com/dlp/docs/creating-job-triggers to learn more.
           config, request, global_params=global_params)
 
     Create.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v2/projects/{projectsId}/locations/{locationId}/jobTriggers',
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/jobTriggers',
         http_method='POST',
         method_id='dlp.projects.locations.jobTriggers.create',
-        ordered_params=['parent', 'locationId'],
-        path_params=['locationId', 'parent'],
+        ordered_params=['parent'],
+        path_params=['parent'],
         query_params=[],
-        relative_path='v2/{+parent}/locations/{locationId}/jobTriggers',
+        relative_path='v2/{+parent}/jobTriggers',
         request_field='googlePrivacyDlpV2CreateJobTriggerRequest',
         request_type_name='DlpProjectsLocationsJobTriggersCreateRequest',
         response_type_name='GooglePrivacyDlpV2JobTrigger',
@@ -2754,13 +2755,13 @@ See https://cloud.google.com/dlp/docs/creating-job-triggers to learn more.
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v2/projects/{projectsId}/locations/{locationId}/jobTriggers',
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/jobTriggers',
         http_method='GET',
         method_id='dlp.projects.locations.jobTriggers.list',
-        ordered_params=['parent', 'locationId'],
-        path_params=['locationId', 'parent'],
-        query_params=['filter', 'orderBy', 'pageSize', 'pageToken'],
-        relative_path='v2/{+parent}/locations/{locationId}/jobTriggers',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'locationId', 'orderBy', 'pageSize', 'pageToken'],
+        relative_path='v2/{+parent}/jobTriggers',
         request_field='',
         request_type_name='DlpProjectsLocationsJobTriggersListRequest',
         response_type_name='GooglePrivacyDlpV2ListJobTriggersResponse',
@@ -2821,13 +2822,13 @@ learn more.
           config, request, global_params=global_params)
 
     Create.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v2/projects/{projectsId}/locations/{locationId}/storedInfoTypes',
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/storedInfoTypes',
         http_method='POST',
         method_id='dlp.projects.locations.storedInfoTypes.create',
-        ordered_params=['parent', 'locationId'],
-        path_params=['locationId', 'parent'],
+        ordered_params=['parent'],
+        path_params=['parent'],
         query_params=[],
-        relative_path='v2/{+parent}/locations/{locationId}/storedInfoTypes',
+        relative_path='v2/{+parent}/storedInfoTypes',
         request_field='googlePrivacyDlpV2CreateStoredInfoTypeRequest',
         request_type_name='DlpProjectsLocationsStoredInfoTypesCreateRequest',
         response_type_name='GooglePrivacyDlpV2StoredInfoType',
@@ -2908,13 +2909,13 @@ learn more.
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v2/projects/{projectsId}/locations/{locationId}/storedInfoTypes',
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/storedInfoTypes',
         http_method='GET',
         method_id='dlp.projects.locations.storedInfoTypes.list',
-        ordered_params=['parent', 'locationId'],
-        path_params=['locationId', 'parent'],
-        query_params=['orderBy', 'pageSize', 'pageToken'],
-        relative_path='v2/{+parent}/locations/{locationId}/storedInfoTypes',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['locationId', 'orderBy', 'pageSize', 'pageToken'],
+        relative_path='v2/{+parent}/storedInfoTypes',
         request_field='',
         request_type_name='DlpProjectsLocationsStoredInfoTypesListRequest',
         response_type_name='GooglePrivacyDlpV2ListStoredInfoTypesResponse',

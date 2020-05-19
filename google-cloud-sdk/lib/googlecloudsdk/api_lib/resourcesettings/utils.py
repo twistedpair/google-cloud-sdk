@@ -21,6 +21,31 @@ from __future__ import unicode_literals
 from googlecloudsdk.api_lib.resourcesettings import service as settings_service
 
 
+def GetCreateRequestFromArgs(args, setting_value):
+  """Returns the get_request from the user-specified arguments.
+
+  Args:
+    args: argparse.Namespace, An object that contains the values for the
+      arguments specified in the Args method.
+    setting_value: setting value object contains name, value and (optional) etag
+  """
+
+  messages = settings_service.ResourceSettingsMessages()
+
+  if args.organization:
+    message_type = messages.ResourcesettingsOrganizationsSettingsValueCreateRequest
+  elif args.folder:
+    message_type = messages.ResourcesettingsFoldersSettingsValueCreateRequest
+  else:
+    message_type = messages.ResourcesettingsProjectsSettingsValueCreateRequest
+
+  get_request = message_type(name=setting_value.name,
+                             googleCloudResourcesettingsV1alpha1SettingValue
+                             =setting_value)
+
+  return get_request
+
+
 def GetGetValueRequestFromArgs(args, setting_name):
   """Returns the get_request from the user-specified arguments.
 
@@ -64,6 +89,30 @@ def GetListRequestFromArgs(args, parent_resource):
         parent=parent_resource)
   else:
     get_request = messages.ResourcesettingsProjectsSettingsListRequest(
+        parent=parent_resource)
+
+  return get_request
+
+
+def GetSearchRequestFromArgs(args, parent_resource):
+  """Returns the get_request from the user-specified arguments.
+
+  Args:
+    args: argparse.Namespace, An object that contains the values for the
+      arguments specified in the Args method.
+    parent_resource: resource location such as `organizations/123`
+  """
+
+  messages = settings_service.ResourceSettingsMessages()
+
+  if args.organization:
+    get_request = messages.ResourcesettingsOrganizationsSettingsSearchRequest(
+        parent=parent_resource)
+  elif args.folder:
+    get_request = messages.ResourcesettingsFoldersSettingsSearchRequest(
+        parent=parent_resource)
+  else:
+    get_request = messages.ResourcesettingsProjectsSettingsSearchRequest(
         parent=parent_resource)
 
   return get_request

@@ -235,7 +235,7 @@
       "type": "object",
       "properties": {
         "name": {
-          "description": "Output only. The unique name of this domain resource in the format:\n`projects\/[project_id]\/locations\/global\/memberships\/[membership_id]`.\n`membership_id` can only be set at creation time using the `membership_id`\nfield in the creation request. `membership_id` must be a valid RFC 1123\ncompliant DNS label. In particular, it must be:\n  1. At most 63 characters in length\n  2. It must consist of lower case alphanumeric characters or `-`\n  3. It must start and end with an alphanumeric character\nI.e. `membership_id` must match the regex: `[a-z0-9]([-a-z0-9]*[a-z0-9])?`\nwith at most 63 characters.",
+          "description": "Output only. The unique name of this domain resource in the format:\n`projects\/[project_number]\/locations\/global\/memberships\/[membership_id]`.\n`membership_id` can only be set at creation time using the `membership_id`\nfield in the creation request. `membership_id` must be a valid RFC 1123\ncompliant DNS label. In particular, it must be:\n  1. At most 63 characters in length\n  2. It must consist of lower case alphanumeric characters or `-`\n  3. It must start and end with an alphanumeric character\nI.e. `membership_id` must match the regex: `[a-z0-9]([-a-z0-9]*[a-z0-9])?`\nwith at most 63 characters.",
           "type": "string"
         },
         "labels": {
@@ -316,7 +316,7 @@
       "type": "object",
       "properties": {
         "resourceLink": {
-          "description": "Self-link of the GCP resource for the GKE cluster.\nFor example:\n\/\/container.googleapis.com\/v1\/projects\/my-project\/zones\/us-west1-a\/clusters\/my-cluster\nIt can be at the most 1000 characters in length.",
+          "description": "Immutable. Self-link of the GCP resource for the GKE cluster.\nFor example:\n\/\/container.googleapis.com\/v1\/projects\/12345\/zones\/us-west1-a\/clusters\/my-cluster\nIt can be at the most 1000 characters in length.",
           "type": "string"
         }
       }
@@ -1208,7 +1208,7 @@
                   "httpMethod": "GET",
                   "parameters": {
                     "parent": {
-                      "description": "Required. The parent in whose context the memberships are listed. The parent value\nis in the format: `projects\/[project_id]\/locations\/global`.",
+                      "description": "Required. The parent in whose context the memberships are listed. The parent value\nis in the format: `projects\/[project_number]\/locations\/global`.",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
@@ -1226,7 +1226,7 @@
                       "type": "string"
                     },
                     "filter": {
-                      "description": "Optional. Lists the Memberships that match the filter expression. A filter expression\nfilters the resources listed in the response. The expression must be of\nthe form `{field} {operator} {value}` where operators:\n`<`, `>`, `<=`,`>=`, `!=`, `=`, `:`\nare supported (colon `:` represents a HAS operator which is roughly\nsynonymous with equality). `{field}` can refer to a proto or JSON field,\nor a synthetic field. Field names can be camelCase or snake_case.\n\nExamples:\n- Filter by name:\n  name = \"projects\/foo-proj\/locations\/global\/membership\/bar\n\n- Filter by labels:\n  - Resources that have a key called `foo`\n    labels.foo:*\n  - Resources that have a key called `foo` whose value is `bar`\n    labels.foo = bar\n\n - Filter by state:\n   - Members in CREATING state.\n     state = CREATING",
+                      "description": "Optional. Lists the Memberships that match the filter expression. A filter expression\nfilters the resources listed in the response. The expression must be of\nthe form `{field} {operator} {value}` where operators:\n`<`, `>`, `<=`,`>=`, `!=`, `=`, `:`\nare supported (colon `:` represents a HAS operator which is roughly\nsynonymous with equality). `{field}` can refer to a proto or JSON field,\nor a synthetic field. Field names can be camelCase or snake_case.\n\nExamples:\n- Filter by name:\n  name = \"projects\/12345\/locations\/global\/membership\/bar\n\n- Filter by labels:\n  - Resources that have a key called `foo`\n    labels.foo:*\n  - Resources that have a key called `foo` whose value is `bar`\n    labels.foo = bar\n\n - Filter by state:\n   - Members in CREATING state.\n     state = CREATING",
                       "location": "query",
                       "type": "string"
                     },
@@ -1254,7 +1254,7 @@
                   "httpMethod": "GET",
                   "parameters": {
                     "name": {
-                      "description": "Required. The Membership resource name in the format:\n`projects\/[project_id]\/locations\/global\/memberships\/[membership_id]`",
+                      "description": "Required. The Membership resource name in the format:\n`projects\/[project_number]\/locations\/global\/memberships\/[membership_id]`",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/memberships\/[^\/]+$",
@@ -1290,7 +1290,7 @@
                   "httpMethod": "POST",
                   "parameters": {
                     "parent": {
-                      "description": "Required. The parent in whose context the membership is created. The parent value is\nin the format: `projects\/[project_id]\/locations\/global`.",
+                      "description": "Required. The parent in whose context the membership is created. The parent value is\nin the format: `projects\/[project_number]\/locations\/global`.",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
@@ -1323,7 +1323,7 @@
                   "httpMethod": "DELETE",
                   "parameters": {
                     "name": {
-                      "description": "Required. The membership resource name in the format:\n`projects\/[project_id]\/locations\/global\/memberships\/[membership_id]`",
+                      "description": "Required. The membership resource name in the format:\n`projects\/[project_number]\/locations\/global\/memberships\/[membership_id]`",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/memberships\/[^\/]+$",
@@ -1348,7 +1348,7 @@
                   "httpMethod": "PATCH",
                   "parameters": {
                     "name": {
-                      "description": "Required. The membership resource name in the format:\n`projects\/[project_id]\/locations\/global\/memberships\/[membership_id]`",
+                      "description": "Required. The membership resource name in the format:\n`projects\/[project_number]\/locations\/global\/memberships\/[membership_id]`",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/memberships\/[^\/]+$",
@@ -1382,7 +1382,7 @@
                   "httpMethod": "GET",
                   "parameters": {
                     "name": {
-                      "description": "Required. The membership resource the connect agent is associated with.\n`projects\/[project_id]\/locations\/global\/memberships\/[membership_id]`.",
+                      "description": "Required. The membership resource the connect agent is associated with.\n`projects\/[project_number]\/locations\/global\/memberships\/[membership_id]`.",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/memberships\/[^\/]+$",

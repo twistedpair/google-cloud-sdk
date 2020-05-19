@@ -64,6 +64,9 @@ apis:
     v1alpha1:
       discovery_doc: apigateway_v1alpha1.json
       default: true
+  apigee:
+    v1:
+      discovery_doc: apigee_v1.json
   appengine:
     v1alpha:
       discovery_doc: appengine_v1alpha.json
@@ -112,6 +115,10 @@ apis:
     v1beta1:
       discovery_doc: billingbudgets_v1beta1.json
       default: true
+  certificatemanager:
+    v1alpha1:
+      discovery_doc: certificatemanager_v1alpha1.json
+      default: true
   cloudasset:
     v1beta1:
       default: true
@@ -150,6 +157,9 @@ apis:
     v1:
       discovery_doc: cloudbuild_v1.json
       default: true
+      resources:
+        projects:
+          path: projects/{projectId}
       # The following stanza is a workaround for b/24867445. It prevents elision
       # of a request containing (project_id + xyz) into just an Xyz object.
       unelidable_request_methods:
@@ -681,11 +691,11 @@ apis:
   run:
     v1alpha1:
       discovery_doc: run_v1alpha1.json
-      default: true
     v1beta1:
       discovery_doc: run_v1beta1.json
     v1:
       discovery_doc: run_v1.json
+      default: true
   runtimeconfig:
     v1beta1:
       discovery_doc: runtimeconfig_v1beta1.json

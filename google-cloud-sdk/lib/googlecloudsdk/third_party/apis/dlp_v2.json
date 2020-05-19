@@ -128,7 +128,7 @@
           "type": "string"
         },
         "locationId": {
-          "description": "The geographic location to process content inspection. Reserved for future\nextensions.\nWhen inspecting images location is restricted to 'global', 'us', 'asia',\nand 'europe'.",
+          "description": "Deprecated. This field has no effect.",
           "type": "string"
         }
       }
@@ -1317,7 +1317,7 @@
       "type": "object",
       "properties": {
         "locationId": {
-          "description": "The geographic location to process the request. Reserved for future\nextensions.\nLocation is restricted to 'global', 'us', 'asia', and 'europe'.",
+          "description": "Deprecated. This field has no effect.",
           "type": "string"
         },
         "inspectConfig": {
@@ -1428,7 +1428,7 @@
           "type": "string"
         },
         "locationId": {
-          "description": "The geographic location to process de-identification. Reserved for future\nextensions.",
+          "description": "Deprecated. This field has no effect.",
           "type": "string"
         }
       }
@@ -2165,7 +2165,7 @@
           "type": "string"
         },
         "locationId": {
-          "description": "The geographic location to process content reidentification.  Reserved for\nfuture extensions.",
+          "description": "Deprecated. This field has no effect.",
           "type": "string"
         }
       }
@@ -2249,7 +2249,7 @@
           "type": "string"
         },
         "locationId": {
-          "description": "The geographic location to store the inspection template. Reserved for\nfuture extensions.",
+          "description": "Deprecated. This field has no effect.",
           "type": "string"
         }
       }
@@ -2342,7 +2342,7 @@
           "type": "string"
         },
         "locationId": {
-          "description": "The geographic location to store the deidentification template. Reserved\nfor future extensions.",
+          "description": "Deprecated. This field has no effect.",
           "type": "string"
         }
       }
@@ -2428,7 +2428,7 @@
           "type": "string"
         },
         "locationId": {
-          "description": "The geographic location to store the job trigger. Reserved for\nfuture extensions.",
+          "description": "Deprecated. This field has no effect.",
           "type": "string"
         }
       }
@@ -3967,7 +3967,7 @@
           "type": "string"
         },
         "locationId": {
-          "description": "The geographic location to store and process the job. Reserved for\nfuture extensions.",
+          "description": "Deprecated. This field has no effect.",
           "type": "string"
         }
       }
@@ -4033,7 +4033,7 @@
           "type": "string"
         },
         "locationId": {
-          "description": "The geographic location to store the stored infoType. Reserved for\nfuture extensions.",
+          "description": "Deprecated. This field has no effect.",
           "type": "string"
         }
       }
@@ -4350,27 +4350,20 @@
               "methods": {
                 "inspect": {
                   "id": "dlp.projects.locations.content.inspect",
-                  "path": "v2/{+parent}/locations/{locationId}/content:inspect",
-                  "flatPath": "v2/projects/{projectsId}/locations/{locationId}/content:inspect",
+                  "path": "v2/{+parent}/content:inspect",
+                  "flatPath": "v2/projects/{projectsId}/locations/{locationsId}/content:inspect",
                   "httpMethod": "POST",
                   "parameters": {
                     "parent": {
                       "description": "The parent resource name, for example projects\/my-project-id.",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+$",
-                      "type": "string"
-                    },
-                    "locationId": {
-                      "description": "The geographic location to process content inspection. Reserved for future\nextensions.\nWhen inspecting images location is restricted to 'global', 'us', 'asia',\nand 'europe'.",
-                      "location": "path",
-                      "required": true,
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "type": "string"
                     }
                   },
                   "parameterOrder": [
-                    "parent",
-                    "locationId"
+                    "parent"
                   ],
                   "request": {
                     "$ref": "GooglePrivacyDlpV2InspectContentRequest"
@@ -4385,27 +4378,20 @@
                 },
                 "deidentify": {
                   "id": "dlp.projects.locations.content.deidentify",
-                  "path": "v2/{+parent}/locations/{locationId}/content:deidentify",
-                  "flatPath": "v2/projects/{projectsId}/locations/{locationId}/content:deidentify",
+                  "path": "v2/{+parent}/content:deidentify",
+                  "flatPath": "v2/projects/{projectsId}/locations/{locationsId}/content:deidentify",
                   "httpMethod": "POST",
                   "parameters": {
                     "parent": {
                       "description": "The parent resource name, for example projects\/my-project-id.",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+$",
-                      "type": "string"
-                    },
-                    "locationId": {
-                      "description": "The geographic location to process de-identification. Reserved for future\nextensions.",
-                      "location": "path",
-                      "required": true,
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "type": "string"
                     }
                   },
                   "parameterOrder": [
-                    "parent",
-                    "locationId"
+                    "parent"
                   ],
                   "request": {
                     "$ref": "GooglePrivacyDlpV2DeidentifyContentRequest"
@@ -4420,27 +4406,20 @@
                 },
                 "reidentify": {
                   "id": "dlp.projects.locations.content.reidentify",
-                  "path": "v2/{+parent}/locations/{locationId}/content:reidentify",
-                  "flatPath": "v2/projects/{projectsId}/locations/{locationId}/content:reidentify",
+                  "path": "v2/{+parent}/content:reidentify",
+                  "flatPath": "v2/projects/{projectsId}/locations/{locationsId}/content:reidentify",
                   "httpMethod": "POST",
                   "parameters": {
                     "parent": {
                       "description": "Required. The parent resource name.",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+$",
-                      "type": "string"
-                    },
-                    "locationId": {
-                      "description": "The geographic location to process content reidentification.  Reserved for\nfuture extensions.",
-                      "location": "path",
-                      "required": true,
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "type": "string"
                     }
                   },
                   "parameterOrder": [
-                    "parent",
-                    "locationId"
+                    "parent"
                   ],
                   "request": {
                     "$ref": "GooglePrivacyDlpV2ReidentifyContentRequest"
@@ -4459,27 +4438,20 @@
               "methods": {
                 "redact": {
                   "id": "dlp.projects.locations.image.redact",
-                  "path": "v2/{+parent}/locations/{locationId}/image:redact",
-                  "flatPath": "v2/projects/{projectsId}/locations/{locationId}/image:redact",
+                  "path": "v2/{+parent}/image:redact",
+                  "flatPath": "v2/projects/{projectsId}/locations/{locationsId}/image:redact",
                   "httpMethod": "POST",
                   "parameters": {
                     "parent": {
                       "description": "The parent resource name, for example projects\/my-project-id.",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+$",
-                      "type": "string"
-                    },
-                    "locationId": {
-                      "description": "The geographic location to process the request. Reserved for future\nextensions.\nLocation is restricted to 'global', 'us', 'asia', and 'europe'.",
-                      "location": "path",
-                      "required": true,
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "type": "string"
                     }
                   },
                   "parameterOrder": [
-                    "parent",
-                    "locationId"
+                    "parent"
                   ],
                   "request": {
                     "$ref": "GooglePrivacyDlpV2RedactImageRequest"
@@ -4498,27 +4470,20 @@
               "methods": {
                 "create": {
                   "id": "dlp.projects.locations.inspectTemplates.create",
-                  "path": "v2/{+parent}/locations/{locationId}/inspectTemplates",
-                  "flatPath": "v2/projects/{projectsId}/locations/{locationId}/inspectTemplates",
+                  "path": "v2/{+parent}/inspectTemplates",
+                  "flatPath": "v2/projects/{projectsId}/locations/{locationsId}/inspectTemplates",
                   "httpMethod": "POST",
                   "parameters": {
                     "parent": {
                       "description": "Required. The parent resource name, for example projects\/my-project-id or\norganizations\/my-org-id.",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+$",
-                      "type": "string"
-                    },
-                    "locationId": {
-                      "description": "The geographic location to store the inspection template. Reserved for\nfuture extensions.",
-                      "location": "path",
-                      "required": true,
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "type": "string"
                     }
                   },
                   "parameterOrder": [
-                    "parent",
-                    "locationId"
+                    "parent"
                   ],
                   "request": {
                     "$ref": "GooglePrivacyDlpV2CreateInspectTemplateRequest"
@@ -4586,21 +4551,15 @@
                 },
                 "list": {
                   "id": "dlp.projects.locations.inspectTemplates.list",
-                  "path": "v2/{+parent}/locations/{locationId}/inspectTemplates",
-                  "flatPath": "v2/projects/{projectsId}/locations/{locationId}/inspectTemplates",
+                  "path": "v2/{+parent}/inspectTemplates",
+                  "flatPath": "v2/projects/{projectsId}/locations/{locationsId}/inspectTemplates",
                   "httpMethod": "GET",
                   "parameters": {
                     "parent": {
                       "description": "Required. The parent resource name, for example projects\/my-project-id or\norganizations\/my-org-id.",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+$",
-                      "type": "string"
-                    },
-                    "locationId": {
-                      "description": "The geographic location where inspection templates will be retrieved from.\nUse `-` for all locations. Reserved for future extensions.",
-                      "location": "path",
-                      "required": true,
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "type": "string"
                     },
                     "pageToken": {
@@ -4618,11 +4577,15 @@
                       "description": "Comma separated list of fields to order by,\nfollowed by `asc` or `desc` postfix. This list is case-insensitive,\ndefault sorting order is ascending, redundant space characters are\ninsignificant.\n\nExample: `name asc,update_time, create_time desc`\n\nSupported fields are:\n\n- `create_time`: corresponds to time the template was created.\n- `update_time`: corresponds to time the template was last updated.\n- `name`: corresponds to template's name.\n- `display_name`: corresponds to template's display name.",
                       "location": "query",
                       "type": "string"
+                    },
+                    "locationId": {
+                      "description": "Deprecated. This field has no effect.",
+                      "location": "query",
+                      "type": "string"
                     }
                   },
                   "parameterOrder": [
-                    "parent",
-                    "locationId"
+                    "parent"
                   ],
                   "response": {
                     "$ref": "GooglePrivacyDlpV2ListInspectTemplatesResponse"
@@ -4663,27 +4626,20 @@
               "methods": {
                 "create": {
                   "id": "dlp.projects.locations.deidentifyTemplates.create",
-                  "path": "v2/{+parent}/locations/{locationId}/deidentifyTemplates",
-                  "flatPath": "v2/projects/{projectsId}/locations/{locationId}/deidentifyTemplates",
+                  "path": "v2/{+parent}/deidentifyTemplates",
+                  "flatPath": "v2/projects/{projectsId}/locations/{locationsId}/deidentifyTemplates",
                   "httpMethod": "POST",
                   "parameters": {
                     "parent": {
                       "description": "Required. The parent resource name, for example projects\/my-project-id or\norganizations\/my-org-id.",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+$",
-                      "type": "string"
-                    },
-                    "locationId": {
-                      "description": "The geographic location to store the deidentification template. Reserved\nfor future extensions.",
-                      "location": "path",
-                      "required": true,
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "type": "string"
                     }
                   },
                   "parameterOrder": [
-                    "parent",
-                    "locationId"
+                    "parent"
                   ],
                   "request": {
                     "$ref": "GooglePrivacyDlpV2CreateDeidentifyTemplateRequest"
@@ -4751,21 +4707,15 @@
                 },
                 "list": {
                   "id": "dlp.projects.locations.deidentifyTemplates.list",
-                  "path": "v2/{+parent}/locations/{locationId}/deidentifyTemplates",
-                  "flatPath": "v2/projects/{projectsId}/locations/{locationId}/deidentifyTemplates",
+                  "path": "v2/{+parent}/deidentifyTemplates",
+                  "flatPath": "v2/projects/{projectsId}/locations/{locationsId}/deidentifyTemplates",
                   "httpMethod": "GET",
                   "parameters": {
                     "parent": {
                       "description": "Required. The parent resource name, for example projects\/my-project-id or\norganizations\/my-org-id.",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+$",
-                      "type": "string"
-                    },
-                    "locationId": {
-                      "description": "The geographic location where deidentifications templates will be retrieved\nfrom. Use `-` for all locations. Reserved for future extensions.",
-                      "location": "path",
-                      "required": true,
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "type": "string"
                     },
                     "pageToken": {
@@ -4783,11 +4733,15 @@
                       "description": "Comma separated list of fields to order by,\nfollowed by `asc` or `desc` postfix. This list is case-insensitive,\ndefault sorting order is ascending, redundant space characters are\ninsignificant.\n\nExample: `name asc,update_time, create_time desc`\n\nSupported fields are:\n\n- `create_time`: corresponds to time the template was created.\n- `update_time`: corresponds to time the template was last updated.\n- `name`: corresponds to template's name.\n- `display_name`: corresponds to template's display name.",
                       "location": "query",
                       "type": "string"
+                    },
+                    "locationId": {
+                      "description": "Deprecated. This field has no effect.",
+                      "location": "query",
+                      "type": "string"
                     }
                   },
                   "parameterOrder": [
-                    "parent",
-                    "locationId"
+                    "parent"
                   ],
                   "response": {
                     "$ref": "GooglePrivacyDlpV2ListDeidentifyTemplatesResponse"
@@ -4828,27 +4782,20 @@
               "methods": {
                 "create": {
                   "id": "dlp.projects.locations.jobTriggers.create",
-                  "path": "v2/{+parent}/locations/{locationId}/jobTriggers",
-                  "flatPath": "v2/projects/{projectsId}/locations/{locationId}/jobTriggers",
+                  "path": "v2/{+parent}/jobTriggers",
+                  "flatPath": "v2/projects/{projectsId}/locations/{locationsId}/jobTriggers",
                   "httpMethod": "POST",
                   "parameters": {
                     "parent": {
                       "description": "Required. The parent resource name, for example projects\/my-project-id.",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+$",
-                      "type": "string"
-                    },
-                    "locationId": {
-                      "description": "The geographic location to store the job trigger. Reserved for\nfuture extensions.",
-                      "location": "path",
-                      "required": true,
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "type": "string"
                     }
                   },
                   "parameterOrder": [
-                    "parent",
-                    "locationId"
+                    "parent"
                   ],
                   "request": {
                     "$ref": "GooglePrivacyDlpV2CreateJobTriggerRequest"
@@ -4944,21 +4891,15 @@
                 },
                 "list": {
                   "id": "dlp.projects.locations.jobTriggers.list",
-                  "path": "v2/{+parent}/locations/{locationId}/jobTriggers",
-                  "flatPath": "v2/projects/{projectsId}/locations/{locationId}/jobTriggers",
+                  "path": "v2/{+parent}/jobTriggers",
+                  "flatPath": "v2/projects/{projectsId}/locations/{locationsId}/jobTriggers",
                   "httpMethod": "GET",
                   "parameters": {
                     "parent": {
                       "description": "Required. The parent resource name, for example `projects\/my-project-id`.",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+$",
-                      "type": "string"
-                    },
-                    "locationId": {
-                      "description": "The geographic location where job triggers will be retrieved from.\nUse `-` for all locations. Reserved for future extensions.",
-                      "location": "path",
-                      "required": true,
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "type": "string"
                     },
                     "pageToken": {
@@ -4981,11 +4922,15 @@
                       "description": "Allows filtering.\n\nSupported syntax:\n\n* Filter expressions are made up of one or more restrictions.\n* Restrictions can be combined by `AND` or `OR` logical operators. A\nsequence of restrictions implicitly uses `AND`.\n* A restriction has the form of `{field} {operator} {value}`.\n* Supported fields\/values for inspect jobs:\n    - `status` - HEALTHY|PAUSED|CANCELLED\n    - `inspected_storage` - DATASTORE|CLOUD_STORAGE|BIGQUERY\n    - 'last_run_time` - RFC 3339 formatted timestamp, surrounded by\n    quotation marks. Nanoseconds are ignored.\n    - 'error_count' - Number of errors that have occurred while running.\n* The operator must be `=` or `!=` for status and inspected_storage.\n\nExamples:\n\n* inspected_storage = cloud_storage AND status = HEALTHY\n* inspected_storage = cloud_storage OR inspected_storage = bigquery\n* inspected_storage = cloud_storage AND (state = PAUSED OR state = HEALTHY)\n* last_run_time > \\\"2017-12-12T00:00:00+00:00\\\"\n\nThe length of this field should be no more than 500 characters.",
                       "location": "query",
                       "type": "string"
+                    },
+                    "locationId": {
+                      "description": "Deprecated. This field has no effect.",
+                      "location": "query",
+                      "type": "string"
                     }
                   },
                   "parameterOrder": [
-                    "parent",
-                    "locationId"
+                    "parent"
                   ],
                   "response": {
                     "$ref": "GooglePrivacyDlpV2ListJobTriggersResponse"
@@ -5054,27 +4999,20 @@
               "methods": {
                 "create": {
                   "id": "dlp.projects.locations.dlpJobs.create",
-                  "path": "v2/{+parent}/locations/{locationId}/dlpJobs",
-                  "flatPath": "v2/projects/{projectsId}/locations/{locationId}/dlpJobs",
+                  "path": "v2/{+parent}/dlpJobs",
+                  "flatPath": "v2/projects/{projectsId}/locations/{locationsId}/dlpJobs",
                   "httpMethod": "POST",
                   "parameters": {
                     "parent": {
                       "description": "Required. The parent resource name, for example projects\/my-project-id.",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+$",
-                      "type": "string"
-                    },
-                    "locationId": {
-                      "description": "The geographic location to store and process the job. Reserved for\nfuture extensions.",
-                      "location": "path",
-                      "required": true,
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "type": "string"
                     }
                   },
                   "parameterOrder": [
-                    "parent",
-                    "locationId"
+                    "parent"
                   ],
                   "request": {
                     "$ref": "GooglePrivacyDlpV2CreateDlpJobRequest"
@@ -5089,21 +5027,15 @@
                 },
                 "list": {
                   "id": "dlp.projects.locations.dlpJobs.list",
-                  "path": "v2/{+parent}/locations/{locationId}/dlpJobs",
-                  "flatPath": "v2/projects/{projectsId}/locations/{locationId}/dlpJobs",
+                  "path": "v2/{+parent}/dlpJobs",
+                  "flatPath": "v2/projects/{projectsId}/locations/{locationsId}/dlpJobs",
                   "httpMethod": "GET",
                   "parameters": {
                     "parent": {
                       "description": "Required. The parent resource name, for example projects\/my-project-id.",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+$",
-                      "type": "string"
-                    },
-                    "locationId": {
-                      "description": "The geographic location where jobs will be retrieved from.\nUse `-` for all locations. Reserved for future extensions.",
-                      "location": "path",
-                      "required": true,
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "type": "string"
                     },
                     "filter": {
@@ -5136,11 +5068,15 @@
                       "description": "Comma separated list of fields to order by,\nfollowed by `asc` or `desc` postfix. This list is case-insensitive,\ndefault sorting order is ascending, redundant space characters are\ninsignificant.\n\nExample: `name asc, end_time asc, create_time desc`\n\nSupported fields are:\n\n- `create_time`: corresponds to time the job was created.\n- `end_time`: corresponds to time the job ended.\n- `name`: corresponds to job's name.\n- `state`: corresponds to `state`",
                       "location": "query",
                       "type": "string"
+                    },
+                    "locationId": {
+                      "description": "Deprecated. This field has no effect.",
+                      "location": "query",
+                      "type": "string"
                     }
                   },
                   "parameterOrder": [
-                    "parent",
-                    "locationId"
+                    "parent"
                   ],
                   "response": {
                     "$ref": "GooglePrivacyDlpV2ListDlpJobsResponse"
@@ -5290,27 +5226,20 @@
               "methods": {
                 "create": {
                   "id": "dlp.projects.locations.storedInfoTypes.create",
-                  "path": "v2/{+parent}/locations/{locationId}/storedInfoTypes",
-                  "flatPath": "v2/projects/{projectsId}/locations/{locationId}/storedInfoTypes",
+                  "path": "v2/{+parent}/storedInfoTypes",
+                  "flatPath": "v2/projects/{projectsId}/locations/{locationsId}/storedInfoTypes",
                   "httpMethod": "POST",
                   "parameters": {
                     "parent": {
                       "description": "Required. The parent resource name, for example projects\/my-project-id or\norganizations\/my-org-id.",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+$",
-                      "type": "string"
-                    },
-                    "locationId": {
-                      "description": "The geographic location to store the stored infoType. Reserved for\nfuture extensions.",
-                      "location": "path",
-                      "required": true,
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "type": "string"
                     }
                   },
                   "parameterOrder": [
-                    "parent",
-                    "locationId"
+                    "parent"
                   ],
                   "request": {
                     "$ref": "GooglePrivacyDlpV2CreateStoredInfoTypeRequest"
@@ -5378,21 +5307,15 @@
                 },
                 "list": {
                   "id": "dlp.projects.locations.storedInfoTypes.list",
-                  "path": "v2/{+parent}/locations/{locationId}/storedInfoTypes",
-                  "flatPath": "v2/projects/{projectsId}/locations/{locationId}/storedInfoTypes",
+                  "path": "v2/{+parent}/storedInfoTypes",
+                  "flatPath": "v2/projects/{projectsId}/locations/{locationsId}/storedInfoTypes",
                   "httpMethod": "GET",
                   "parameters": {
                     "parent": {
                       "description": "Required. The parent resource name, for example projects\/my-project-id or\norganizations\/my-org-id.",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+$",
-                      "type": "string"
-                    },
-                    "locationId": {
-                      "description": "The geographic location where stored infoTypes will be retrieved from.\nUse `-` for all locations. Reserved for future extensions.",
-                      "location": "path",
-                      "required": true,
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "type": "string"
                     },
                     "pageToken": {
@@ -5410,11 +5333,15 @@
                       "description": "Comma separated list of fields to order by,\nfollowed by `asc` or `desc` postfix. This list is case-insensitive,\ndefault sorting order is ascending, redundant space characters are\ninsignificant.\n\nExample: `name asc, display_name, create_time desc`\n\nSupported fields are:\n\n- `create_time`: corresponds to time the most recent version of the\nresource was created.\n- `state`: corresponds to the state of the resource.\n- `name`: corresponds to resource name.\n- `display_name`: corresponds to info type's display name.",
                       "location": "query",
                       "type": "string"
+                    },
+                    "locationId": {
+                      "description": "Deprecated. This field has no effect.",
+                      "location": "query",
+                      "type": "string"
                     }
                   },
                   "parameterOrder": [
-                    "parent",
-                    "locationId"
+                    "parent"
                   ],
                   "response": {
                     "$ref": "GooglePrivacyDlpV2ListStoredInfoTypesResponse"
@@ -5598,7 +5525,7 @@
                   "type": "string"
                 },
                 "locationId": {
-                  "description": "The geographic location where inspection templates will be retrieved from.\nUse `-` for all locations. Reserved for future extensions.",
+                  "description": "Deprecated. This field has no effect.",
                   "location": "query",
                   "type": "string"
                 }
@@ -5754,7 +5681,7 @@
                   "type": "string"
                 },
                 "locationId": {
-                  "description": "The geographic location where deidentifications templates will be retrieved\nfrom. Use `-` for all locations. Reserved for future extensions.",
+                  "description": "Deprecated. This field has no effect.",
                   "location": "query",
                   "type": "string"
                 }
@@ -5915,7 +5842,7 @@
                   "type": "string"
                 },
                 "locationId": {
-                  "description": "The geographic location where job triggers will be retrieved from.\nUse `-` for all locations. Reserved for future extensions.",
+                  "description": "Deprecated. This field has no effect.",
                   "location": "query",
                   "type": "string"
                 }
@@ -6061,7 +5988,7 @@
                   "type": "string"
                 },
                 "locationId": {
-                  "description": "The geographic location where jobs will be retrieved from.\nUse `-` for all locations. Reserved for future extensions.",
+                  "description": "Deprecated. This field has no effect.",
                   "location": "query",
                   "type": "string"
                 }
@@ -6270,7 +6197,7 @@
                   "type": "string"
                 },
                 "locationId": {
-                  "description": "The geographic location where stored infoTypes will be retrieved from.\nUse `-` for all locations. Reserved for future extensions.",
+                  "description": "Deprecated. This field has no effect.",
                   "location": "query",
                   "type": "string"
                 }
@@ -6323,6 +6250,11 @@
           "flatPath": "v2/infoTypes",
           "httpMethod": "GET",
           "parameters": {
+            "parent": {
+              "description": "The parent resource name, for example locations\/{location_id}.",
+              "location": "query",
+              "type": "string"
+            },
             "languageCode": {
               "description": "BCP-47 language code for localized infoType friendly\nnames. If omitted, or if localized strings are not available,\nen-US strings will be returned.",
               "location": "query",
@@ -6334,7 +6266,7 @@
               "type": "string"
             },
             "locationId": {
-              "description": "The geographic location to list info types. Reserved for future\nextensions.",
+              "description": "Deprecated. This field has no effect.",
               "location": "query",
               "type": "string"
             }
@@ -6357,14 +6289,15 @@
           "methods": {
             "list": {
               "id": "dlp.locations.infoTypes.list",
-              "path": "v2/locations/{locationId}/infoTypes",
-              "flatPath": "v2/locations/{locationId}/infoTypes",
+              "path": "v2/{+parent}/infoTypes",
+              "flatPath": "v2/locations/{locationsId}/infoTypes",
               "httpMethod": "GET",
               "parameters": {
-                "locationId": {
-                  "description": "The geographic location to list info types. Reserved for future\nextensions.",
+                "parent": {
+                  "description": "The parent resource name, for example locations\/{location_id}.",
                   "location": "path",
                   "required": true,
+                  "pattern": "^locations\/[^\/]+$",
                   "type": "string"
                 },
                 "languageCode": {
@@ -6376,10 +6309,15 @@
                   "description": "filter to only return infoTypes supported by certain parts of the\nAPI. Defaults to supported_by=INSPECT.",
                   "location": "query",
                   "type": "string"
+                },
+                "locationId": {
+                  "description": "Deprecated. This field has no effect.",
+                  "location": "query",
+                  "type": "string"
                 }
               },
               "parameterOrder": [
-                "locationId"
+                "parent"
               ],
               "response": {
                 "$ref": "GooglePrivacyDlpV2ListInfoTypesResponse"
@@ -6508,7 +6446,7 @@
                   "type": "string"
                 },
                 "locationId": {
-                  "description": "The geographic location where inspection templates will be retrieved from.\nUse `-` for all locations. Reserved for future extensions.",
+                  "description": "Deprecated. This field has no effect.",
                   "location": "query",
                   "type": "string"
                 }
@@ -6557,27 +6495,20 @@
               "methods": {
                 "create": {
                   "id": "dlp.organizations.locations.inspectTemplates.create",
-                  "path": "v2/{+parent}/locations/{locationId}/inspectTemplates",
-                  "flatPath": "v2/organizations/{organizationsId}/locations/{locationId}/inspectTemplates",
+                  "path": "v2/{+parent}/inspectTemplates",
+                  "flatPath": "v2/organizations/{organizationsId}/locations/{locationsId}/inspectTemplates",
                   "httpMethod": "POST",
                   "parameters": {
                     "parent": {
                       "description": "Required. The parent resource name, for example projects\/my-project-id or\norganizations\/my-org-id.",
                       "location": "path",
                       "required": true,
-                      "pattern": "^organizations\/[^\/]+$",
-                      "type": "string"
-                    },
-                    "locationId": {
-                      "description": "The geographic location to store the inspection template. Reserved for\nfuture extensions.",
-                      "location": "path",
-                      "required": true,
+                      "pattern": "^organizations\/[^\/]+\/locations\/[^\/]+$",
                       "type": "string"
                     }
                   },
                   "parameterOrder": [
-                    "parent",
-                    "locationId"
+                    "parent"
                   ],
                   "request": {
                     "$ref": "GooglePrivacyDlpV2CreateInspectTemplateRequest"
@@ -6645,21 +6576,15 @@
                 },
                 "list": {
                   "id": "dlp.organizations.locations.inspectTemplates.list",
-                  "path": "v2/{+parent}/locations/{locationId}/inspectTemplates",
-                  "flatPath": "v2/organizations/{organizationsId}/locations/{locationId}/inspectTemplates",
+                  "path": "v2/{+parent}/inspectTemplates",
+                  "flatPath": "v2/organizations/{organizationsId}/locations/{locationsId}/inspectTemplates",
                   "httpMethod": "GET",
                   "parameters": {
                     "parent": {
                       "description": "Required. The parent resource name, for example projects\/my-project-id or\norganizations\/my-org-id.",
                       "location": "path",
                       "required": true,
-                      "pattern": "^organizations\/[^\/]+$",
-                      "type": "string"
-                    },
-                    "locationId": {
-                      "description": "The geographic location where inspection templates will be retrieved from.\nUse `-` for all locations. Reserved for future extensions.",
-                      "location": "path",
-                      "required": true,
+                      "pattern": "^organizations\/[^\/]+\/locations\/[^\/]+$",
                       "type": "string"
                     },
                     "pageToken": {
@@ -6677,11 +6602,15 @@
                       "description": "Comma separated list of fields to order by,\nfollowed by `asc` or `desc` postfix. This list is case-insensitive,\ndefault sorting order is ascending, redundant space characters are\ninsignificant.\n\nExample: `name asc,update_time, create_time desc`\n\nSupported fields are:\n\n- `create_time`: corresponds to time the template was created.\n- `update_time`: corresponds to time the template was last updated.\n- `name`: corresponds to template's name.\n- `display_name`: corresponds to template's display name.",
                       "location": "query",
                       "type": "string"
+                    },
+                    "locationId": {
+                      "description": "Deprecated. This field has no effect.",
+                      "location": "query",
+                      "type": "string"
                     }
                   },
                   "parameterOrder": [
-                    "parent",
-                    "locationId"
+                    "parent"
                   ],
                   "response": {
                     "$ref": "GooglePrivacyDlpV2ListInspectTemplatesResponse"
@@ -6722,27 +6651,20 @@
               "methods": {
                 "create": {
                   "id": "dlp.organizations.locations.deidentifyTemplates.create",
-                  "path": "v2/{+parent}/locations/{locationId}/deidentifyTemplates",
-                  "flatPath": "v2/organizations/{organizationsId}/locations/{locationId}/deidentifyTemplates",
+                  "path": "v2/{+parent}/deidentifyTemplates",
+                  "flatPath": "v2/organizations/{organizationsId}/locations/{locationsId}/deidentifyTemplates",
                   "httpMethod": "POST",
                   "parameters": {
                     "parent": {
                       "description": "Required. The parent resource name, for example projects\/my-project-id or\norganizations\/my-org-id.",
                       "location": "path",
                       "required": true,
-                      "pattern": "^organizations\/[^\/]+$",
-                      "type": "string"
-                    },
-                    "locationId": {
-                      "description": "The geographic location to store the deidentification template. Reserved\nfor future extensions.",
-                      "location": "path",
-                      "required": true,
+                      "pattern": "^organizations\/[^\/]+\/locations\/[^\/]+$",
                       "type": "string"
                     }
                   },
                   "parameterOrder": [
-                    "parent",
-                    "locationId"
+                    "parent"
                   ],
                   "request": {
                     "$ref": "GooglePrivacyDlpV2CreateDeidentifyTemplateRequest"
@@ -6810,21 +6732,15 @@
                 },
                 "list": {
                   "id": "dlp.organizations.locations.deidentifyTemplates.list",
-                  "path": "v2/{+parent}/locations/{locationId}/deidentifyTemplates",
-                  "flatPath": "v2/organizations/{organizationsId}/locations/{locationId}/deidentifyTemplates",
+                  "path": "v2/{+parent}/deidentifyTemplates",
+                  "flatPath": "v2/organizations/{organizationsId}/locations/{locationsId}/deidentifyTemplates",
                   "httpMethod": "GET",
                   "parameters": {
                     "parent": {
                       "description": "Required. The parent resource name, for example projects\/my-project-id or\norganizations\/my-org-id.",
                       "location": "path",
                       "required": true,
-                      "pattern": "^organizations\/[^\/]+$",
-                      "type": "string"
-                    },
-                    "locationId": {
-                      "description": "The geographic location where deidentifications templates will be retrieved\nfrom. Use `-` for all locations. Reserved for future extensions.",
-                      "location": "path",
-                      "required": true,
+                      "pattern": "^organizations\/[^\/]+\/locations\/[^\/]+$",
                       "type": "string"
                     },
                     "pageToken": {
@@ -6842,11 +6758,15 @@
                       "description": "Comma separated list of fields to order by,\nfollowed by `asc` or `desc` postfix. This list is case-insensitive,\ndefault sorting order is ascending, redundant space characters are\ninsignificant.\n\nExample: `name asc,update_time, create_time desc`\n\nSupported fields are:\n\n- `create_time`: corresponds to time the template was created.\n- `update_time`: corresponds to time the template was last updated.\n- `name`: corresponds to template's name.\n- `display_name`: corresponds to template's display name.",
                       "location": "query",
                       "type": "string"
+                    },
+                    "locationId": {
+                      "description": "Deprecated. This field has no effect.",
+                      "location": "query",
+                      "type": "string"
                     }
                   },
                   "parameterOrder": [
-                    "parent",
-                    "locationId"
+                    "parent"
                   ],
                   "response": {
                     "$ref": "GooglePrivacyDlpV2ListDeidentifyTemplatesResponse"
@@ -6887,27 +6807,20 @@
               "methods": {
                 "create": {
                   "id": "dlp.organizations.locations.storedInfoTypes.create",
-                  "path": "v2/{+parent}/locations/{locationId}/storedInfoTypes",
-                  "flatPath": "v2/organizations/{organizationsId}/locations/{locationId}/storedInfoTypes",
+                  "path": "v2/{+parent}/storedInfoTypes",
+                  "flatPath": "v2/organizations/{organizationsId}/locations/{locationsId}/storedInfoTypes",
                   "httpMethod": "POST",
                   "parameters": {
                     "parent": {
                       "description": "Required. The parent resource name, for example projects\/my-project-id or\norganizations\/my-org-id.",
                       "location": "path",
                       "required": true,
-                      "pattern": "^organizations\/[^\/]+$",
-                      "type": "string"
-                    },
-                    "locationId": {
-                      "description": "The geographic location to store the stored infoType. Reserved for\nfuture extensions.",
-                      "location": "path",
-                      "required": true,
+                      "pattern": "^organizations\/[^\/]+\/locations\/[^\/]+$",
                       "type": "string"
                     }
                   },
                   "parameterOrder": [
-                    "parent",
-                    "locationId"
+                    "parent"
                   ],
                   "request": {
                     "$ref": "GooglePrivacyDlpV2CreateStoredInfoTypeRequest"
@@ -6975,21 +6888,15 @@
                 },
                 "list": {
                   "id": "dlp.organizations.locations.storedInfoTypes.list",
-                  "path": "v2/{+parent}/locations/{locationId}/storedInfoTypes",
-                  "flatPath": "v2/organizations/{organizationsId}/locations/{locationId}/storedInfoTypes",
+                  "path": "v2/{+parent}/storedInfoTypes",
+                  "flatPath": "v2/organizations/{organizationsId}/locations/{locationsId}/storedInfoTypes",
                   "httpMethod": "GET",
                   "parameters": {
                     "parent": {
                       "description": "Required. The parent resource name, for example projects\/my-project-id or\norganizations\/my-org-id.",
                       "location": "path",
                       "required": true,
-                      "pattern": "^organizations\/[^\/]+$",
-                      "type": "string"
-                    },
-                    "locationId": {
-                      "description": "The geographic location where stored infoTypes will be retrieved from.\nUse `-` for all locations. Reserved for future extensions.",
-                      "location": "path",
-                      "required": true,
+                      "pattern": "^organizations\/[^\/]+\/locations\/[^\/]+$",
                       "type": "string"
                     },
                     "pageToken": {
@@ -7007,11 +6914,15 @@
                       "description": "Comma separated list of fields to order by,\nfollowed by `asc` or `desc` postfix. This list is case-insensitive,\ndefault sorting order is ascending, redundant space characters are\ninsignificant.\n\nExample: `name asc, display_name, create_time desc`\n\nSupported fields are:\n\n- `create_time`: corresponds to time the most recent version of the\nresource was created.\n- `state`: corresponds to the state of the resource.\n- `name`: corresponds to resource name.\n- `display_name`: corresponds to info type's display name.",
                       "location": "query",
                       "type": "string"
+                    },
+                    "locationId": {
+                      "description": "Deprecated. This field has no effect.",
+                      "location": "query",
+                      "type": "string"
                     }
                   },
                   "parameterOrder": [
-                    "parent",
-                    "locationId"
+                    "parent"
                   ],
                   "response": {
                     "$ref": "GooglePrivacyDlpV2ListStoredInfoTypesResponse"
@@ -7163,7 +7074,7 @@
                   "type": "string"
                 },
                 "locationId": {
-                  "description": "The geographic location where deidentifications templates will be retrieved\nfrom. Use `-` for all locations. Reserved for future extensions.",
+                  "description": "Deprecated. This field has no effect.",
                   "location": "query",
                   "type": "string"
                 }
@@ -7319,7 +7230,7 @@
                   "type": "string"
                 },
                 "locationId": {
-                  "description": "The geographic location where stored infoTypes will be retrieved from.\nUse `-` for all locations. Reserved for future extensions.",
+                  "description": "Deprecated. This field has no effect.",
                   "location": "query",
                   "type": "string"
                 }

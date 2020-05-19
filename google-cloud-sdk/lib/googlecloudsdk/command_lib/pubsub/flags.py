@@ -226,8 +226,7 @@ def ParseExpirationPeriodWithNeverSentinel(value):
 def AddSubscriptionSettingsFlags(parser,
                                  is_update=False,
                                  support_message_ordering=False,
-                                 support_filtering=False,
-                                 support_retry_policy=False):
+                                 support_filtering=False):
   """Adds the flags for creating or updating a subscription.
 
   Args:
@@ -235,7 +234,6 @@ def AddSubscriptionSettingsFlags(parser,
     is_update: Whether or not this is for the update operation (vs. create).
     support_message_ordering: Whether or not flags for ordering should be added.
     support_filtering: Whether or not flags for filtering should be added.
-    support_retry_policy: Whether or not flags for retry policy should be added.
   """
   AddAckDeadlineFlag(parser)
   AddPushConfigFlags(parser)
@@ -296,41 +294,38 @@ def AddSubscriptionSettingsFlags(parser,
           assumed. This flag additionally accepts the special value "never" to
           indicate that the subscription will never expire.""")
 
-  if support_retry_policy:
-    current_group = parser
-    if is_update:
-      mutual_exclusive_group = current_group.add_mutually_exclusive_group()
-      mutual_exclusive_group.add_argument(
-          '--clear-retry-policy',
-          action='store_true',
-          default=None,
-          help="""If set, clear the retry policy from the subscription.""")
-      current_group = mutual_exclusive_group
+  current_group = parser
+  if is_update:
+    mutual_exclusive_group = current_group.add_mutually_exclusive_group()
+    mutual_exclusive_group.add_argument(
+        '--clear-retry-policy',
+        action='store_true',
+        default=None,
+        help="""If set, clear the retry policy from the subscription.""")
+    current_group = mutual_exclusive_group
 
-    set_retry_policy_group = current_group.add_argument_group(
-        help="""Retry Policy Options. Retry policy specifies how Cloud Pub/Sub
-                retries message delivery for this subscription. This feature is
-                currently experimental and not recommended for production
-                use.""")
+  set_retry_policy_group = current_group.add_argument_group(
+      help="""Retry Policy Options. Retry policy specifies how Cloud Pub/Sub
+              retries message delivery for this subscription.""")
 
-    set_retry_policy_group.add_argument(
-        '--min-retry-delay',
-        type=arg_parsers.Duration(lower_bound='0s', upper_bound='600s'),
-        help="""The minimum delay between consecutive deliveries of a given
-            message. Value should be between 0 and 600 seconds. Defaults to 10
-            seconds. Valid values are strings of the form INTEGER[UNIT], where
-            UNIT is one of "s", "m", "h", and "d" for seconds, minutes, hours,
-            and days, respectively. If the unit is omitted, seconds is
-            assumed.""")
-    set_retry_policy_group.add_argument(
-        '--max-retry-delay',
-        type=arg_parsers.Duration(lower_bound='0s', upper_bound='600s'),
-        help="""The maximum delay between consecutive deliveries of a given
-            message. Value should be between 0 and 600 seconds. Defaults to 10
-            seconds. Valid values are strings of the form INTEGER[UNIT], where
-            UNIT is one of "s", "m", "h", and "d" for seconds, minutes, hours,
-            and days, respectively. If the unit is omitted, seconds is
-            assumed.""")
+  set_retry_policy_group.add_argument(
+      '--min-retry-delay',
+      type=arg_parsers.Duration(lower_bound='0s', upper_bound='600s'),
+      help="""The minimum delay between consecutive deliveries of a given
+          message. Value should be between 0 and 600 seconds. Defaults to 10
+          seconds. Valid values are strings of the form INTEGER[UNIT], where
+          UNIT is one of "s", "m", "h", and "d" for seconds, minutes, hours,
+          and days, respectively. If the unit is omitted, seconds is
+          assumed.""")
+  set_retry_policy_group.add_argument(
+      '--max-retry-delay',
+      type=arg_parsers.Duration(lower_bound='0s', upper_bound='600s'),
+      help="""The maximum delay between consecutive deliveries of a given
+          message. Value should be between 0 and 600 seconds. Defaults to 10
+          seconds. Valid values are strings of the form INTEGER[UNIT], where
+          UNIT is one of "s", "m", "h", and "d" for seconds, minutes, hours,
+          and days, respectively. If the unit is omitted, seconds is
+          assumed.""")
 
 
 def AddPublishMessageFlags(parser,

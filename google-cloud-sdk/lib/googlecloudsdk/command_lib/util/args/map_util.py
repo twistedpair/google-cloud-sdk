@@ -22,20 +22,26 @@ from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.core import yaml
 
 
-def AddMapUpdateFlag(group, flag_name, long_name, key_type, value_type):
+def AddMapUpdateFlag(group,
+                     flag_name,
+                     long_name,
+                     key_type,
+                     value_type,
+                     key_metavar='KEY',
+                     value_metavar='VALUE'):
   group.add_argument(
       '--update-{}'.format(flag_name),
-      metavar='KEY=VALUE',
+      metavar='{}={}'.format(key_metavar, value_metavar),
       action=arg_parsers.UpdateAction,
       type=arg_parsers.ArgDict(key_type=key_type, value_type=value_type),
       help='List of key-value pairs to set as {}.'.format(long_name)
   )
 
 
-def AddMapRemoveFlag(group, flag_name, long_name, key_type):
+def AddMapRemoveFlag(group, flag_name, long_name, key_type, key_metavar='KEY'):
   group.add_argument(
       '--remove-{}'.format(flag_name),
-      metavar='KEY',
+      metavar=key_metavar,
       action=arg_parsers.UpdateAction,
       type=arg_parsers.ArgList(element_type=key_type),
       help='List of {} to be removed.'.format(long_name)
@@ -50,10 +56,16 @@ def AddMapClearFlag(group, flag_name, long_name):
   )
 
 
-def AddMapSetFlag(group, flag_name, long_name, key_type, value_type):
+def AddMapSetFlag(group,
+                  flag_name,
+                  long_name,
+                  key_type,
+                  value_type,
+                  key_metavar='KEY',
+                  value_metavar='VALUE'):
   group.add_argument(
       '--set-{}'.format(flag_name),
-      metavar='KEY=VALUE',
+      metavar='{}={}'.format(key_metavar, value_metavar),
       action=arg_parsers.UpdateAction,
       type=arg_parsers.ArgDict(key_type=key_type, value_type=value_type),
       help=('List of key-value pairs to set as {0}. All existing {0} will be '

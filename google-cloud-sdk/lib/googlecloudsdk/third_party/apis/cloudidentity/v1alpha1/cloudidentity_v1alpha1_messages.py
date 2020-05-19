@@ -746,6 +746,7 @@ class DeviceUser(_messages.Message):
 
   Fields:
     compromisedState: Compromised State of the DeviceUser object
+    createTime: When the user first signed in to the device
     firstSyncTime: Output only. Most recent time when user registered with
       this service.
     languageCode: Output only. Default locale used on device, in IETF BCP-47
@@ -808,14 +809,15 @@ class DeviceUser(_messages.Message):
     PASSWORD_NOT_SET = 2
 
   compromisedState = _messages.EnumField('CompromisedStateValueValuesEnum', 1)
-  firstSyncTime = _messages.StringField(2)
-  languageCode = _messages.StringField(3)
-  lastSyncTime = _messages.StringField(4)
-  managementState = _messages.EnumField('ManagementStateValueValuesEnum', 5)
-  name = _messages.StringField(6)
-  passwordState = _messages.EnumField('PasswordStateValueValuesEnum', 7)
-  userAgent = _messages.StringField(8)
-  userEmail = _messages.StringField(9)
+  createTime = _messages.StringField(2)
+  firstSyncTime = _messages.StringField(3)
+  languageCode = _messages.StringField(4)
+  lastSyncTime = _messages.StringField(5)
+  managementState = _messages.EnumField('ManagementStateValueValuesEnum', 6)
+  name = _messages.StringField(7)
+  passwordState = _messages.EnumField('PasswordStateValueValuesEnum', 8)
+  userAgent = _messages.StringField(9)
+  userEmail = _messages.StringField(10)
 
 
 class DynamicGroupMetadata(_messages.Message):

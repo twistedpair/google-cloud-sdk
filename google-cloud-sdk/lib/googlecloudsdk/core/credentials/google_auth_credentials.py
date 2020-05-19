@@ -72,6 +72,10 @@ class UserCredWithReauth(credentials.Credentials):
                          client_id, client_secret, scopes, quota_project_id)
     self._rapt_token = rapt_token
 
+  def __setstate__(self, d):
+    super(UserCredWithReauth, self).__setstate__(d)
+    self._rapt_token = d.get('_rapt_token')
+
   @property
   def rapt_token(self):
     """Reauth proof token."""

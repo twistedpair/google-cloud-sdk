@@ -183,7 +183,7 @@
           "format": "google-datetime"
         },
         "assetTypes": {
-          "description": "A list of asset types of which to take a snapshot for. For example:\n\"compute.googleapis.com\/Disk\". If specified, only matching assets will be\nreturned. See [Introduction to Cloud Asset\nInventory](https:\/\/cloud.google.com\/asset-inventory\/docs\/overview)\nfor all supported asset types.",
+          "description": "A list of asset types of which to take a snapshot for. Example:\n\"compute.googleapis.com\/Disk\". If specified, only matching assets will be\nreturned. See [Introduction to Cloud Asset\nInventory](https:\/\/cloud.google.com\/asset-inventory\/docs\/overview)\nfor all supported asset types.",
           "type": "array",
           "items": {
             "type": "string"
@@ -234,11 +234,11 @@
       "type": "object",
       "properties": {
         "uri": {
-          "description": "The uri of the Cloud Storage object. It's the same uri that is used by\ngsutil. For example: \"gs:\/\/bucket_name\/object_name\". See [Viewing and\nEditing Object\nMetadata](https:\/\/cloud.google.com\/storage\/docs\/viewing-editing-metadata)\nfor more information.",
+          "description": "The uri of the Cloud Storage object. It's the same uri that is used by\ngsutil. Example: \"gs:\/\/bucket_name\/object_name\". See [Viewing and\nEditing Object\nMetadata](https:\/\/cloud.google.com\/storage\/docs\/viewing-editing-metadata)\nfor more information.",
           "type": "string"
         },
         "uriPrefix": {
-          "description": "The uri prefix of all generated Cloud Storage objects. For example:\n\"gs:\/\/bucket_name\/object_name_prefix\". Each object uri is in format:\n\"gs:\/\/bucket_name\/object_name_prefix\/<asset type>\/<shard number> and only\ncontains assets for that type. <shard number> starts from 0. For example:\n\"gs:\/\/bucket_name\/object_name_prefix\/compute.googleapis.com\/Disk\/0\" is\nthe first shard of output objects containing all\ncompute.googleapis.com\/Disk assets. An INVALID_ARGUMENT error will be\nreturned if file with the same name \"gs:\/\/bucket_name\/object_name_prefix\"\nalready exists.",
+          "description": "The uri prefix of all generated Cloud Storage objects. Example:\n\"gs:\/\/bucket_name\/object_name_prefix\". Each object uri is in format:\n\"gs:\/\/bucket_name\/object_name_prefix\/<asset type>\/<shard number> and only\ncontains assets for that type. <shard number> starts from 0. Example:\n\"gs:\/\/bucket_name\/object_name_prefix\/compute.googleapis.com\/Disk\/0\" is\nthe first shard of output objects containing all\ncompute.googleapis.com\/Disk assets. An INVALID_ARGUMENT error will be\nreturned if file with the same name \"gs:\/\/bucket_name\/object_name_prefix\"\nalready exists.",
           "type": "string"
         }
       }
@@ -317,17 +317,12 @@
       "description": "An asset in Google Cloud. An asset can be any resource in the Google Cloud\n[resource\nhierarchy](https:\/\/cloud.google.com\/resource-manager\/docs\/cloud-platform-resource-hierarchy),\na resource outside the Google Cloud resource hierarchy (such as Google\nKubernetes Engine clusters and objects), or a Cloud IAM policy.",
       "type": "object",
       "properties": {
-        "updateTime": {
-          "description": "The last update timestamp of an asset. update_time is updated when\ncreate\/update\/delete operation is performed.",
-          "type": "string",
-          "format": "google-datetime"
-        },
         "name": {
-          "description": "The full name of the asset. For example:\n\"\/\/compute.googleapis.com\/projects\/my_project_123\/zones\/zone1\/instances\/instance1\"\n\nSee [Resource\nnames](https:\/\/cloud.google.com\/apis\/design\/resource_names#full_resource_name)\nfor more information.",
+          "description": "The full name of the asset. Example:\n\"\/\/compute.googleapis.com\/projects\/my_project_123\/zones\/zone1\/instances\/instance1\"\n\nSee [Resource\nnames](https:\/\/cloud.google.com\/apis\/design\/resource_names#full_resource_name)\nfor more information.",
           "type": "string"
         },
         "assetType": {
-          "description": "The type of the asset. For example: \"compute.googleapis.com\/Disk\"\n\nSee [Supported asset\ntypes](https:\/\/cloud.google.com\/asset-inventory\/docs\/supported-asset-types)\nfor more information.",
+          "description": "The type of the asset. Example: \"compute.googleapis.com\/Disk\"\n\nSee [Supported asset\ntypes](https:\/\/cloud.google.com\/asset-inventory\/docs\/supported-asset-types)\nfor more information.",
           "type": "string"
         },
         "resource": {
@@ -355,7 +350,7 @@
           "$ref": "GoogleIdentityAccesscontextmanagerV1ServicePerimeter"
         },
         "ancestors": {
-          "description": "The ancestry path of an asset in Google Cloud [resource\nhierarchy](https:\/\/cloud.google.com\/resource-manager\/docs\/cloud-platform-resource-hierarchy),\nrepresented as a list of relative resource names. An ancestry path starts\nwith the closest ancestor in the hierarchy and ends at root. If the asset\nis a project, folder, or organization, the ancestry path starts from the\nasset itself.\n\nFor example: `[\"projects\/123456789\", \"folders\/5432\", \"organizations\/1234\"]`",
+          "description": "The ancestry path of an asset in Google Cloud [resource\nhierarchy](https:\/\/cloud.google.com\/resource-manager\/docs\/cloud-platform-resource-hierarchy),\nrepresented as a list of relative resource names. An ancestry path starts\nwith the closest ancestor in the hierarchy and ends at root. If the asset\nis a project, folder, or organization, the ancestry path starts from the\nasset itself.\n\nExample: `[\"projects\/123456789\", \"folders\/5432\", \"organizations\/1234\"]`",
           "type": "array",
           "items": {
             "type": "string"
@@ -369,23 +364,23 @@
       "type": "object",
       "properties": {
         "version": {
-          "description": "The API version. For example: \"v1\"",
+          "description": "The API version. Example: \"v1\"",
           "type": "string"
         },
         "discoveryDocumentUri": {
-          "description": "The URL of the discovery document containing the resource's JSON schema.\nFor example:\n\"https:\/\/www.googleapis.com\/discovery\/v1\/apis\/compute\/v1\/rest\"\n\nThis value is unspecified for resources that do not have an API based on a\ndiscovery document, such as Cloud Bigtable.",
+          "description": "The URL of the discovery document containing the resource's JSON schema.\nExample:\n\"https:\/\/www.googleapis.com\/discovery\/v1\/apis\/compute\/v1\/rest\"\n\nThis value is unspecified for resources that do not have an API based on a\ndiscovery document, such as Cloud Bigtable.",
           "type": "string"
         },
         "discoveryName": {
-          "description": "The JSON schema name listed in the discovery document. For example:\n\"Project\"\n\nThis value is unspecified for resources that do not have an API based on a\ndiscovery document, such as Cloud Bigtable.",
+          "description": "The JSON schema name listed in the discovery document. Example:\n\"Project\"\n\nThis value is unspecified for resources that do not have an API based on a\ndiscovery document, such as Cloud Bigtable.",
           "type": "string"
         },
         "resourceUrl": {
-          "description": "The REST URL for accessing the resource. An HTTP `GET` request using this\nURL returns the resource itself. For example:\n\"https:\/\/cloudresourcemanager.googleapis.com\/v1\/projects\/my-project-123\"\n\nThis value is unspecified for resources without a REST API.",
+          "description": "The REST URL for accessing the resource. An HTTP `GET` request using this\nURL returns the resource itself. Example:\n\"https:\/\/cloudresourcemanager.googleapis.com\/v1\/projects\/my-project-123\"\n\nThis value is unspecified for resources without a REST API.",
           "type": "string"
         },
         "parent": {
-          "description": "The full name of the immediate parent of this resource. See\n[Resource\nNames](https:\/\/cloud.google.com\/apis\/design\/resource_names#full_resource_name)\nfor more information.\n\nFor Google Cloud assets, this value is the parent resource defined in the\n[Cloud IAM policy\nhierarchy](https:\/\/cloud.google.com\/iam\/docs\/overview#policy_hierarchy).\nFor example:\n\"\/\/cloudresourcemanager.googleapis.com\/projects\/my_project_123\"\n\nFor third-party assets, this field may be set differently.",
+          "description": "The full name of the immediate parent of this resource. See\n[Resource\nNames](https:\/\/cloud.google.com\/apis\/design\/resource_names#full_resource_name)\nfor more information.\n\nFor Google Cloud assets, this value is the parent resource defined in the\n[Cloud IAM policy\nhierarchy](https:\/\/cloud.google.com\/iam\/docs\/overview#policy_hierarchy).\nExample:\n\"\/\/cloudresourcemanager.googleapis.com\/projects\/my_project_123\"\n\nFor third-party assets, this field may be set differently.",
           "type": "string"
         },
         "data": {
@@ -974,14 +969,14 @@
           "type": "string"
         },
         "assetNames": {
-          "description": "A list of the full names of the assets to receive updates. You must specify\neither or both of asset_names and asset_types. Only asset updates matching\nspecified asset_names or asset_types are exported to the feed. For\nexample:\n`\/\/compute.googleapis.com\/projects\/my_project_123\/zones\/zone1\/instances\/instance1`.\nSee [Resource\nNames](https:\/\/cloud.google.com\/apis\/design\/resource_names#full_resource_name)\nfor more info.",
+          "description": "A list of the full names of the assets to receive updates. You must specify\neither or both of asset_names and asset_types. Only asset updates matching\nspecified asset_names or asset_types are exported to the feed.\nExample:\n`\/\/compute.googleapis.com\/projects\/my_project_123\/zones\/zone1\/instances\/instance1`.\nSee [Resource\nNames](https:\/\/cloud.google.com\/apis\/design\/resource_names#full_resource_name)\nfor more info.",
           "type": "array",
           "items": {
             "type": "string"
           }
         },
         "assetTypes": {
-          "description": "A list of types of the assets to receive updates. You must specify either\nor both of asset_names and asset_types. Only asset updates matching\nspecified asset_names or asset_types are exported to the feed.\nFor example: `\"compute.googleapis.com\/Disk\"`\n\nSee [this\ntopic](https:\/\/cloud.google.com\/asset-inventory\/docs\/supported-asset-types)\nfor a list of all supported asset types.",
+          "description": "A list of types of the assets to receive updates. You must specify either\nor both of asset_names and asset_types. Only asset updates matching\nspecified asset_names or asset_types are exported to the feed.\nExample: `\"compute.googleapis.com\/Disk\"`\n\nSee [this\ntopic](https:\/\/cloud.google.com\/asset-inventory\/docs\/supported-asset-types)\nfor a list of all supported asset types.",
           "type": "array",
           "items": {
             "type": "string"
@@ -1028,7 +1023,7 @@
       "type": "object",
       "properties": {
         "topic": {
-          "description": "The name of the Pub\/Sub topic to publish to.\nFor example: `projects\/PROJECT_ID\/topics\/TOPIC_ID`.",
+          "description": "The name of the Pub\/Sub topic to publish to.\nExample: `projects\/PROJECT_ID\/topics\/TOPIC_ID`.",
           "type": "string"
         }
       }
@@ -1093,45 +1088,45 @@
       "type": "object",
       "properties": {
         "name": {
-          "description": "The full resource name of this resource. For example:\n`\/\/compute.googleapis.com\/projects\/my_project_123\/zones\/zone1\/instances\/instance1`.\nSee [Cloud Asset Inventory Resource Name\nFormat](https:\/\/cloud.google.com\/asset-inventory\/docs\/resource-name-format)\nfor more information.",
+          "description": "The full resource name of this resource. Example:\n\"\/\/compute.googleapis.com\/projects\/my_project_123\/zones\/zone1\/instances\/instance1\".\nSee [Cloud Asset Inventory Resource Name\nFormat](https:\/\/cloud.google.com\/asset-inventory\/docs\/resource-name-format)\nfor more information.\n\nTo search against the `name`:\n\n* use a field query. Example: `name : \"instance1\"`\n* use a free text query. Example: `\"instance1\"`",
           "type": "string"
         },
         "assetType": {
-          "description": "The type of this resource.\nFor example: \"compute.googleapis.com\/Disk\".",
+          "description": "The type of this resource. Example: \"compute.googleapis.com\/Disk\".\n\nTo search against the `asset_type`:\n\n* specify the `asset_type` field in your search request.",
           "type": "string"
         },
         "project": {
-          "description": "The project that this resource belongs to, in the form of\n`projects\/{project_number}`.",
+          "description": "The project that this resource belongs to, in the form of\nprojects\/{PROJECT_NUMBER}.\n\nTo search against the `project`:\n\n* specify the `scope` field as this project in your search request.",
           "type": "string"
         },
         "displayName": {
-          "description": "The display name of this resource.",
+          "description": "The display name of this resource.\n\nTo search against the `display_name`:\n\n* use a field query. Example: `displayName : \"My Instance\"`\n* use a free text query. Example: `\"My Instance\"`",
           "type": "string"
         },
         "description": {
-          "description": "One or more paragraphs of text description of this resource. Maximum length\ncould be up to 1M bytes.",
+          "description": "One or more paragraphs of text description of this resource. Maximum length\ncould be up to 1M bytes.\n\nTo search against the `description`:\n\n* use a field query. Example: `description : \"*important instance*\"`\n* use a free text query. Example: `\"*important instance*\"`",
           "type": "string"
         },
         "location": {
-          "description": "Location can be \"global\", regional like \"us-east1\", or zonal like\n\"us-west1-b\".",
+          "description": "Location can be \"global\", regional like \"us-east1\", or zonal like\n\"us-west1-b\".\n\nTo search against the `location`:\n\n* use a field query. Example: `location : \"us-west*\"`\n* use a free text query. Example: `\"us-west*\"`",
           "type": "string"
         },
         "labels": {
-          "description": "Labels associated with this resource. See [Labelling and grouping GCP\nresources](https:\/\/cloud.google.com\/blog\/products\/gcp\/labelling-and-grouping-your-google-cloud-platform-resources)\nfor more information.",
+          "description": "Labels associated with this resource. See [Labelling and grouping GCP\nresources](https:\/\/cloud.google.com\/blog\/products\/gcp\/labelling-and-grouping-your-google-cloud-platform-resources)\nfor more information.\n\nTo search against the `labels`:\n\n* use a field query, as following:\n    - query on any label's key or value. Example: `labels : \"prod\"`\n    - query by a given label. Example: `labels.env : \"prod\"`\n    - query by a given label'sexistence. Example: `labels.env : *`\n* use a free text query. Example: `\"prod\"`",
           "type": "object",
           "additionalProperties": {
             "type": "string"
           }
         },
         "networkTags": {
-          "description": "Network tags associated with this resource. Like labels, network tags are a\ntype of annotations used to group GCP resources. See [Labelling GCP\nresources](https:\/\/cloud.google.com\/blog\/products\/gcp\/labelling-and-grouping-your-google-cloud-platform-resources)\nfor more information.",
+          "description": "Network tags associated with this resource. Like labels, network tags are a\ntype of annotations used to group GCP resources. See [Labelling GCP\nresources](https:\/\/cloud.google.com\/blog\/products\/gcp\/labelling-and-grouping-your-google-cloud-platform-resources)\nfor more information.\n\nTo search against the `network_tags`:\n\n* use a field query. Example: `networkTags : \"internal\"`\n* use a free text query. Example: `\"internal\"`",
           "type": "array",
           "items": {
             "type": "string"
           }
         },
         "additionalAttributes": {
-          "description": "The additional attributes of this resource. The attributes may vary from\none resource type to another. For example: \"projectId\" for Project,\n\"dnsName\" for DNS ManagedZone. You can search these attributes by their\nvalues. For example, for additional_attributes = {dnsName: \"foobar\"}, you\ncan search against it with query \"foobar\" or \"*foo*\".",
+          "description": "The additional attributes of this resource. The attributes may vary from\none resource type to another. Examples: \"projectId\" for Project,\n\"dnsName\" for DNS ManagedZone.\n\nTo search against the `additional_attributes`:\n\n* use a free text query to match the attributes values. Example: to search\n  additional_attributes = { dnsName: \"foobar\" }, you can issue a query\n  `\"foobar\"`.",
           "type": "object",
           "additionalProperties": {
             "type": "any",
@@ -1164,15 +1159,15 @@
       "type": "object",
       "properties": {
         "resource": {
-          "description": "The full resource name of the resource associated with this IAM policy. For\nexample:\n`\/\/compute.googleapis.com\/projects\/my_project_123\/zones\/zone1\/instances\/instance1`.\nSee [Cloud Asset Inventory Resource Name\nFormat](https:\/\/cloud.google.com\/asset-inventory\/docs\/resource-name-format)\nfor more information.",
+          "description": "The full resource name of the resource associated with this IAM policy.\nExample:\n\"\/\/compute.googleapis.com\/projects\/my_project_123\/zones\/zone1\/instances\/instance1\".\nSee [Cloud Asset Inventory Resource Name\nFormat](https:\/\/cloud.google.com\/asset-inventory\/docs\/resource-name-format)\nfor more information.\n\nTo search against the `resource`:\n\n* use a field query. Example: `resource : \"organizations\/123\"`",
           "type": "string"
         },
         "project": {
-          "description": "The project that the associated GCP resource belongs to, in the form of\n`projects\/{project_number}`. If an IAM policy is set on a resource (like VM\ninstance, Cloud Storage bucket), the project field will indicate the\nproject that contains the resource. If an IAM policy is set on a folder or\norgnization, the project field will be empty.",
+          "description": "The project that the associated GCP resource belongs to, in the form of\nprojects\/{PROJECT_NUMBER}. If an IAM policy is set on a resource (like VM\ninstance, Cloud Storage bucket), the project field will indicate the\nproject that contains the resource. If an IAM policy is set on a folder or\norgnization, the project field will be empty.\n\nTo search against the `project`:\n\n* specify the `scope` field as this project in your search request.",
           "type": "string"
         },
         "policy": {
-          "description": "The IAM policy directly set on the given resource. Note that the original\nIAM policy can contain multiple bindings. This only contains the bindings\nthat match the given query. For queries that don't contain a constrain on\npolicies (e.g., an empty query), this contains all the bindings.",
+          "description": "The IAM policy directly set on the given resource. Note that the original\nIAM policy can contain multiple bindings. This only contains the bindings\nthat match the given query. For queries that don't contain a constrain on\npolicies (e.g., an empty query), this contains all the bindings.\n\nTo search against the `policy` bindings:\n\n* use a field query, as following:\n    - query by the policy contained members. Example:\n      `policy : \"amy@gmail.com\"`\n    - query by the policy contained roles. Example:\n      `policy : \"roles\/compute.admin\"`\n    - query by the policy contained roles' implied permissions. Example:\n      `policy.role.permissions : \"compute.instances.create\"`",
           "$ref": "Policy"
         },
         "explanation": {
@@ -1187,7 +1182,7 @@
       "type": "object",
       "properties": {
         "matchedPermissions": {
-          "description": "The map from roles to their included permissions that match the\npermission query (i.e., a query containing `policy.role.permissions:`).\nFor example, if query `policy.role.permissions : \"compute.disk.get\"`\nmatches a policy binding that contains owner role, the\nmatched_permissions will be {\"roles\/owner\": [\"compute.disk.get\"]}. The\nroles can also be found in the returned `policy` bindings. Note that the\nmap is populated only for requests with permission queries.",
+          "description": "The map from roles to their included permissions that match the\npermission query (i.e., a query containing `policy.role.permissions:`).\nExample: if query `policy.role.permissions : \"compute.disk.get\"`\nmatches a policy binding that contains owner role, the\nmatched_permissions will be {\"roles\/owner\": [\"compute.disk.get\"]}. The\nroles can also be found in the returned `policy` bindings. Note that the\nmap is populated only for requests with permission queries.",
           "type": "object",
           "additionalProperties": {
             "$ref": "Permissions"
@@ -1268,7 +1263,7 @@
           "scopes": [
             "https://www.googleapis.com/auth/cloud-platform"
           ],
-          "description": "Exports assets with time and resource types to a given Cloud Storage\nlocation. The output format is newline-delimited JSON.\nThis API implements the google.longrunning.Operation API allowing you\nto keep track of the export. We recommend intervals of at least 2 seconds\nwith exponential retry to poll the export operation result. For\nregular-size resource parent, the export operation usually finishes within\n5 minutes."
+          "description": "Exports assets with time and resource types to a given Cloud Storage\nlocation. The output format is newline-delimited JSON. Each line represents\na google.cloud.asset.v1.Asset in the JSON format.\nThis API implements the google.longrunning.Operation API allowing you\nto keep track of the export. We recommend intervals of at least 2 seconds\nwith exponential retry to poll the export operation result. For\nregular-size resource parent, the export operation usually finishes within\n5 minutes."
         },
         "batchGetAssetsHistory": {
           "id": "cloudasset.batchGetAssetsHistory",
@@ -1332,19 +1327,19 @@
           "httpMethod": "GET",
           "parameters": {
             "scope": {
-              "description": "Required. A scope can be a project, a folder or an organization. The search is\nlimited to the resources within the `scope`.\n\nThe allowed values are:\n\n* projects\/<project_id> (e.g., projects\/foo)\n* projects\/<project_number> (e.g., projects\/12345)\n* folders\/<folder_number> (e.g., folders\/1234)\n* organizations\/<organization_number> (e.g., organizations\/123)",
+              "description": "Required. A scope can be a project, a folder or an organization. The search is\nlimited to the resources within the `scope`.\n\nThe allowed values are:\n\n* projects\/{PROJECT_ID}\n* projects\/{PROJECT_NUMBER}\n* folders\/{FOLDER_NUMBER}\n* organizations\/{ORGANIZATION_NUMBER}",
               "location": "path",
               "required": true,
               "pattern": "^[^\/]+\/[^\/]+$",
               "type": "string"
             },
             "query": {
-              "description": "Optional. The query statement. An empty query can be specified to search all the\nresources of certain `asset_types` within the given `scope`.\n\nExamples:\n\n* `\"name : Important\"`: to find Cloud resources whose name contains\n  \"Important\" as a word.\n* `\"displayName : Impor*\"`: to find Cloud resources whose display name\n  contains \"Impor\" as a word prefix.\n* `\"description : *por*\"`: to find Cloud resources whose description\n  contains \"por\" as a sub string of a word.\n* `\"Important\"`: to find Cloud resources which contain \"Important\" as a\n  word in any of the searchable fields.\n\nSee [how to construct a\nquery](https:\/\/cloud.google.com\/asset-inventory\/docs\/searching-resources#how_to_construct_a_query)\nfor more details.",
+              "description": "Optional. The query statement. An empty query can be specified to search all the\nresources of certain `asset_types` within the given `scope`.\n\nExamples:\n\n* `name : \"Important\"` to find Cloud resources whose name contains\n  \"Important\" as a word.\n* `displayName : \"Impor*\"` to find Cloud resources whose display name\n  contains \"Impor\" as a word prefix.\n* `description : \"*por*\"` to find Cloud resources whose description\n  contains \"por\" as a substring.\n* `location : \"us-west*\"` to find Cloud resources whose location is\n  prefixed with \"us-west\".\n* `labels : \"prod\"` to find Cloud resources whose labels contain \"prod\" as\n  a key or value.\n* `labels.env : \"prod\"` to find Cloud resources which have a label \"env\"\n  and its value is \"prod\".\n* `labels.env : *` to find Cloud resources which have a label \"env\".\n* `\"Important\"` to find Cloud resources which contain \"Important\" as a word\n  in any of the searchable fields.\n* `\"Impor*\"` to find Cloud resources which contain \"Impor\" as a word prefix\n  in any of the searchable fields.\n* `\"*por*\"` to find Cloud resources which contain \"por\" as a substring in\n  any of the searchable fields.\n* `(\"Important\" AND location : (\"us-west1\" OR \"global\"))` to find Cloud\n  resources which contain \"Important\" as a word in any of the searchable\n  fields and are also located in the \"us-west1\" region or the \"global\"\n  location.\n\nSee [how to construct a\nquery](https:\/\/cloud.google.com\/asset-inventory\/docs\/searching-resources#how_to_construct_a_query)\nfor more details.",
               "location": "query",
               "type": "string"
             },
             "assetTypes": {
-              "description": "Optional. A list of asset types that this request searches for. If empty, it will\nsearch all the [supported asset\ntypes](https:\/\/cloud.google.com\/asset-inventory\/docs\/supported-asset-types).",
+              "description": "Optional. A list of asset types that this request searches for. If empty, it will\nsearch all the [searchable asset\ntypes](https:\/\/cloud.google.com\/asset-inventory\/docs\/supported-asset-types#searchable_asset_types).",
               "location": "query",
               "repeated": true,
               "type": "string"
@@ -1361,7 +1356,7 @@
               "type": "string"
             },
             "orderBy": {
-              "description": "Optional. A comma separated list of fields specifying the sorting order of the\nresults. The default order is ascending. Add \" desc\" after the field name\nto indicate descending order. Redundant space characters are ignored. For\nexample, \"location, name desc\". See [supported resource metadata\nfields](https:\/\/cloud.google.com\/asset-inventory\/docs\/searching-resources#query_on_resource_metadata_fields)\nfor more details.",
+              "description": "Optional. A comma separated list of fields specifying the sorting order of the\nresults. The default order is ascending. Add \" DESC\" after the field name\nto indicate descending order. Redundant space characters are ignored.\nExample: \"location DESC, name\". See [supported resource metadata\nfields](https:\/\/cloud.google.com\/asset-inventory\/docs\/searching-resources#query_on_resource_metadata_fields)\nfor more details.",
               "location": "query",
               "type": "string"
             }
@@ -1384,14 +1379,14 @@
           "httpMethod": "GET",
           "parameters": {
             "scope": {
-              "description": "Required. A scope can be a project, a folder or an organization. The search is\nlimited to the IAM policies within the `scope`.\n\nThe allowed values are:\n\n* projects\/<project_id> (e.g., projects\/foo)\n* projects\/<project_number> (e.g., projects\/12345)\n* folders\/<folder_number> (e.g., folders\/1234)\n* organizations\/<organization_number> (e.g., organizations\/123)",
+              "description": "Required. A scope can be a project, a folder or an organization. The search is\nlimited to the IAM policies within the `scope`.\n\nThe allowed values are:\n\n* projects\/{PROJECT_ID}\n* projects\/{PROJECT_NUMBER}\n* folders\/{FOLDER_NUMBER}\n* organizations\/{ORGANIZATION_NUMBER}",
               "location": "path",
               "required": true,
               "pattern": "^[^\/]+\/[^\/]+$",
               "type": "string"
             },
             "query": {
-              "description": "Optional. The query statement. An empty query can be specified to search all the IAM\npolicies within the given `scope`.\n\nExamples:\n\n* `\"policy : amy@gmail.com\"`: to find Cloud IAM policy bindings that\n  specify user \"amy@gmail.com\".\n* `\"policy : roles\/compute.admin\"`: to find Cloud IAM policy bindings that\n  specify the Compute Admin role.\n* `\"policy.role.permissions : storage.buckets.update\"` : to find Cloud IAM\n  policy bindings that cover \"storage.buckets.update\" permission.\n* `\"resource : organizations\/123\"`: to find Cloud IAM policy bindings that\n  are set on \"organizations\/123\".\n\nSee [how to construct a\nquery](https:\/\/cloud.google.com\/asset-inventory\/docs\/searching-iam-policies#how_to_construct_a_query)\nfor more details.",
+              "description": "Optional. The query statement. An empty query can be specified to search all the IAM\npolicies within the given `scope`.\n\nExamples:\n\n* `policy : \"amy@gmail.com\"` to find Cloud IAM policy bindings that\n  specify user \"amy@gmail.com\".\n* `policy : \"roles\/compute.admin\"` to find Cloud IAM policy bindings that\n  specify the Compute Admin role.\n* `policy.role.permissions : \"storage.buckets.update\"` to find Cloud IAM\n  policy bindings that specify a role containing \"storage.buckets.update\"\n  permission.\n* `resource : \"organizations\/123\"` to find Cloud IAM policy bindings that\n  are set on \"organizations\/123\".\n* `(resource : (\"organizations\/123\" OR \"folders\/1234\") AND policy : \"amy\")`\n  to find Cloud IAM policy bindings that are set on \"organizations\/123\" or\n  \"folders\/1234\", and also specify user \"amy\".\n\nSee [how to construct a\nquery](https:\/\/cloud.google.com\/asset-inventory\/docs\/searching-iam-policies#how_to_construct_a_query)\nfor more details.",
               "location": "query",
               "type": "string"
             },

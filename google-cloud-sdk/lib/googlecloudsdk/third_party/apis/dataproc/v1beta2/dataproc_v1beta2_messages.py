@@ -106,24 +106,26 @@ class BasicYarnAutoscalingConfig(_messages.Message):
       jobs to complete before forcefully removing workers (and potentially
       interrupting jobs). Only applicable to downscaling operations.Bounds:
       0s, 1d.
-    scaleDownFactor: Required. Fraction of average pending memory in the last
-      cooldown period for which to remove workers. A scale-down factor of 1
-      will result in scaling down so that there is no available memory
+    scaleDownFactor: Required. Fraction of average YARN pending memory in the
+      last cooldown period for which to remove workers. A scale-down factor of
+      1 will result in scaling down so that there is no available memory
       remaining after the update (more aggressive scaling). A scale-down
       factor of 0 disables removing workers, which can be beneficial for
-      autoscaling a single job.Bounds: 0.0, 1.0.
+      autoscaling a single job. See How autoscaling works for more
+      information.Bounds: 0.0, 1.0.
     scaleDownMinWorkerFraction: Optional. Minimum scale-down threshold as a
       fraction of total cluster size before scaling occurs. For example, in a
       20-worker cluster, a threshold of 0.1 means the autoscaler must
       recommend at least a 2 worker scale-down for the cluster to scale. A
       threshold of 0 means the autoscaler will scale down on any recommended
       change.Bounds: 0.0, 1.0. Default: 0.0.
-    scaleUpFactor: Required. Fraction of average pending memory in the last
-      cooldown period for which to add workers. A scale-up factor of 1.0 will
-      result in scaling up so that there is no pending memory remaining after
-      the update (more aggressive scaling). A scale-up factor closer to 0 will
-      result in a smaller magnitude of scaling up (less aggressive
-      scaling).Bounds: 0.0, 1.0.
+    scaleUpFactor: Required. Fraction of average YARN pending memory in the
+      last cooldown period for which to add workers. A scale-up factor of 1.0
+      will result in scaling up so that there is no pending memory remaining
+      after the update (more aggressive scaling). A scale-up factor closer to
+      0 will result in a smaller magnitude of scaling up (less aggressive
+      scaling). See How autoscaling works for more information.Bounds: 0.0,
+      1.0.
     scaleUpMinWorkerFraction: Optional. Minimum scale-up threshold as a
       fraction of total cluster size before scaling occurs. For example, in a
       20-worker cluster, a threshold of 0.1 means the autoscaler must
@@ -3484,14 +3486,14 @@ class PySparkJob(_messages.Message):
       /etc/spark/conf/spark-defaults.conf and classes in user code.
 
   Fields:
-    archiveUris: Optional. HCFS URIs of archives to be extracted in the
-      working directory of .jar, .tar, .tar.gz, .tgz, and .zip.
+    archiveUris: Optional. HCFS URIs of archives to be extracted into the
+      working directory of each executor. Supported file types: .jar, .tar,
+      .tar.gz, .tgz, and .zip.
     args: Optional. The arguments to pass to the driver. Do not include
       arguments, such as --conf, that can be set as job properties, since a
       collision may occur that causes an incorrect job submission.
-    fileUris: Optional. HCFS URIs of files to be copied to the working
-      directory of Python drivers and distributed tasks. Useful for naively
-      parallel tasks.
+    fileUris: Optional. HCFS URIs of files to be placed in the working
+      directory of each executor. Useful for naively parallel tasks.
     jarFileUris: Optional. HCFS URIs of jar files to add to the CLASSPATHs of
       the Python driver and tasks.
     loggingConfig: Optional. The runtime log config for job execution.
@@ -3747,15 +3749,14 @@ class SparkJob(_messages.Message):
       /etc/spark/conf/spark-defaults.conf and classes in user code.
 
   Fields:
-    archiveUris: Optional. HCFS URIs of archives to be extracted in the
-      working directory of Spark drivers and tasks. Supported file types:
-      .jar, .tar, .tar.gz, .tgz, and .zip.
+    archiveUris: Optional. HCFS URIs of archives to be extracted into the
+      working directory of each executor. Supported file types: .jar, .tar,
+      .tar.gz, .tgz, and .zip.
     args: Optional. The arguments to pass to the driver. Do not include
       arguments, such as --conf, that can be set as job properties, since a
       collision may occur that causes an incorrect job submission.
-    fileUris: Optional. HCFS URIs of files to be copied to the working
-      directory of Spark drivers and distributed tasks. Useful for naively
-      parallel tasks.
+    fileUris: Optional. HCFS URIs of files to be placed in the working
+      directory of each executor. Useful for naively parallel tasks.
     jarFileUris: Optional. HCFS URIs of jar files to add to the CLASSPATHs of
       the Spark driver and tasks.
     loggingConfig: Optional. The runtime log config for job execution.
@@ -3817,15 +3818,14 @@ class SparkRJob(_messages.Message):
       /etc/spark/conf/spark-defaults.conf and classes in user code.
 
   Fields:
-    archiveUris: Optional. HCFS URIs of archives to be extracted in the
-      working directory of Spark drivers and tasks. Supported file types:
-      .jar, .tar, .tar.gz, .tgz, and .zip.
+    archiveUris: Optional. HCFS URIs of archives to be extracted into the
+      working directory of each executor. Supported file types: .jar, .tar,
+      .tar.gz, .tgz, and .zip.
     args: Optional. The arguments to pass to the driver. Do not include
       arguments, such as --conf, that can be set as job properties, since a
       collision may occur that causes an incorrect job submission.
-    fileUris: Optional. HCFS URIs of files to be copied to the working
-      directory of R drivers and distributed tasks. Useful for naively
-      parallel tasks.
+    fileUris: Optional. HCFS URIs of files to be placed in the working
+      directory of each executor. Useful for naively parallel tasks.
     loggingConfig: Optional. The runtime log config for job execution.
     mainRFileUri: Required. The HCFS URI of the main R file to use as the
       driver. Must be a .R file.
@@ -4235,6 +4235,7 @@ class WorkflowMetadata(_messages.Message):
     clusterName: Output only. The name of the target cluster.
     clusterUuid: Output only. The UUID of target cluster.
     createCluster: Output only. The create cluster operation metadata.
+    dagTimeout: Output only. The timeout duration for the DAG of jobs.
     deleteCluster: Output only. The delete cluster operation metadata.
     endTime: Output only. Workflow end time.
     graph: Output only. The workflow graph.
@@ -4296,14 +4297,15 @@ class WorkflowMetadata(_messages.Message):
   clusterName = _messages.StringField(1)
   clusterUuid = _messages.StringField(2)
   createCluster = _messages.MessageField('ClusterOperation', 3)
-  deleteCluster = _messages.MessageField('ClusterOperation', 4)
-  endTime = _messages.StringField(5)
-  graph = _messages.MessageField('WorkflowGraph', 6)
-  parameters = _messages.MessageField('ParametersValue', 7)
-  startTime = _messages.StringField(8)
-  state = _messages.EnumField('StateValueValuesEnum', 9)
-  template = _messages.StringField(10)
-  version = _messages.IntegerField(11, variant=_messages.Variant.INT32)
+  dagTimeout = _messages.StringField(4)
+  deleteCluster = _messages.MessageField('ClusterOperation', 5)
+  endTime = _messages.StringField(6)
+  graph = _messages.MessageField('WorkflowGraph', 7)
+  parameters = _messages.MessageField('ParametersValue', 8)
+  startTime = _messages.StringField(9)
+  state = _messages.EnumField('StateValueValuesEnum', 10)
+  template = _messages.StringField(11)
+  version = _messages.IntegerField(12, variant=_messages.Variant.INT32)
 
 
 class WorkflowNode(_messages.Message):
@@ -4348,7 +4350,7 @@ class WorkflowNode(_messages.Message):
 
 
 class WorkflowTemplate(_messages.Message):
-  r"""A Dataproc workflow template resource.
+  r"""A Dataproc workflow template resource. Next ID: 11
 
   Messages:
     LabelsValue: Optional. The labels to associate with this template. These
@@ -4361,6 +4363,8 @@ class WorkflowTemplate(_messages.Message):
 
   Fields:
     createTime: Output only. The time template was created.
+    dagTimeout: Optional. Timeout for DAG of jobs. The timer begins when the
+      first job is submitted. Minimum duration of 10 minutes, max of 24 hours.
     id: Required. The template id.The id must contain only letters (a-z, A-Z),
       numbers (0-9), underscores (_), and hyphens (-). Cannot begin or end
       with underscore or hyphen. Must consist of between 3 and 50 characters..
@@ -4426,14 +4430,15 @@ class WorkflowTemplate(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   createTime = _messages.StringField(1)
-  id = _messages.StringField(2)
-  jobs = _messages.MessageField('OrderedJob', 3, repeated=True)
-  labels = _messages.MessageField('LabelsValue', 4)
-  name = _messages.StringField(5)
-  parameters = _messages.MessageField('TemplateParameter', 6, repeated=True)
-  placement = _messages.MessageField('WorkflowTemplatePlacement', 7)
-  updateTime = _messages.StringField(8)
-  version = _messages.IntegerField(9, variant=_messages.Variant.INT32)
+  dagTimeout = _messages.StringField(2)
+  id = _messages.StringField(3)
+  jobs = _messages.MessageField('OrderedJob', 4, repeated=True)
+  labels = _messages.MessageField('LabelsValue', 5)
+  name = _messages.StringField(6)
+  parameters = _messages.MessageField('TemplateParameter', 7, repeated=True)
+  placement = _messages.MessageField('WorkflowTemplatePlacement', 8)
+  updateTime = _messages.StringField(9)
+  version = _messages.IntegerField(10, variant=_messages.Variant.INT32)
 
 
 class WorkflowTemplatePlacement(_messages.Message):

@@ -12,7 +12,7 @@ class EventsV1beta1(base_api.BaseApiClient):
   MTLS_BASE_URL = 'https://events.mtls.googleapis.com/'
 
   _PACKAGE = 'events'
-  _SCOPES = ['https://www.googleapis.com/auth/userinfo.email']
+  _SCOPES = ['https://www.googleapis.com/auth/cloud-platform']
   _VERSION = 'v1beta1'
   _CLIENT_ID = '1042881264118.apps.googleusercontent.com'
   _CLIENT_SECRET = 'x_Tw5K8nnjoRAqULM9PFAC2b'

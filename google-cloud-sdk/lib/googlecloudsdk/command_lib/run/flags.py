@@ -27,6 +27,7 @@ import enum
 
 from googlecloudsdk.api_lib.container import kubeconfig
 from googlecloudsdk.api_lib.run import global_methods
+from googlecloudsdk.api_lib.run import revision
 from googlecloudsdk.api_lib.run import traffic
 from googlecloudsdk.api_lib.services import enable_api
 from googlecloudsdk.api_lib.services import exceptions as services_exceptions
@@ -257,10 +258,12 @@ def AddTrafficTagsFlags(parser):
                   'one or more of --to-latest and --to-revisions in the same '
                   'command, the tags change occurs first then the traffic '
                   'percentage change occurs.'),
-      flag_name='tags')
+      flag_name='tags',
+      key_metavar='TAG',
+      value_metavar='REVISION')
 
 
-def AddUpdateTrafficFlags(parser):
+def AddUpdateTrafficFlags(parser, release_track):
   """Add flags for updating traffic assignments for a service."""
 
   @staticmethod
@@ -309,6 +312,31 @@ def AddUpdateTrafficFlags(parser):
       'You can use "LATEST" as a special revision name to always put the given '
       'percentage of traffic on the latest ready revision.')
 
+  if release_track and base.ReleaseTrack.ALPHA == release_track:
+    group.add_argument(
+        '--to-tags',
+        metavar='TAG=PERCENTAGE',
+        action=arg_parsers.UpdateAction,
+        type=arg_parsers.ArgDict(
+            key_type=TrafficTargetKey.__func__,
+            value_type=TrafficPercentageValue.__func__),
+        help='Comma separated list of traffic assignments in the form '
+        'TAG=PERCENTAGE. TAG must match a traffic tag on a revision of the '
+        'service. It may match a previously-set tag, or one assigned using'
+        ' the `--set-tags` or `--update-tags` flags on this command. '
+        'PERCENTAGE must be an integer percentage between '
+        '0 and 100 inclusive. '
+        'Up to 100 percent of traffic may be assigned. If 100 percent '
+        'of traffic is assigned, the service traffic is updated as '
+        'specified. If under 100 percent of traffic is assigned, the '
+        'service traffic is updated as specified to the given tags, and other '
+        'traffic is scaled up or down proportionally. For example, assume '
+        'the revision tagged `next` is serving 40 percent of traffic and the '
+        'revision tagged `current` is serving 60 percent. If '
+        '`next` is assigned 45 percent of traffic and no assignment is '
+        'made for `current`, the service is updated with `next` assigned '
+        '45 percent of traffic and `current` scaled down to 55 percent. ')
+
   group.add_argument(
       '--to-latest',
       default=False,
@@ -340,7 +368,9 @@ def AddMapFlagsNoFile(parser,
                       group_help='',
                       long_name=None,
                       key_type=None,
-                      value_type=None):
+                      value_type=None,
+                      key_metavar='KEY',
+                      value_metavar='VALUE'):
   """Add flags like map_util.AddUpdateMapFlags but without the file one.
 
   Args:
@@ -350,6 +380,8 @@ def AddMapFlagsNoFile(parser,
     long_name: The name for the property to be used in help text
     key_type: A function to apply to map keys.
     value_type: A function to apply to map values.
+    key_metavar: Metavariable to list for the key.
+    value_metavar: Metavariable to list for the value.
   """
   if not long_name:
     long_name = flag_name
@@ -364,12 +396,24 @@ def AddMapFlagsNoFile(parser,
       flag_name,
       long_name,
       key_type=key_type,
-      value_type=value_type)
+      value_type=value_type,
+      key_metavar=key_metavar,
+      value_metavar=value_metavar)
   map_util.AddMapRemoveFlag(
-      update_remove_group, flag_name, long_name, key_type=key_type)
+      update_remove_group,
+      flag_name,
+      long_name,
+      key_type=key_type,
+      key_metavar=key_metavar)
   map_util.AddMapClearFlag(group, flag_name, long_name)
   map_util.AddMapSetFlag(
-      group, flag_name, long_name, key_type=key_type, value_type=value_type)
+      group,
+      flag_name,
+      long_name,
+      key_type=key_type,
+      value_type=value_type,
+      key_metavar=key_metavar,
+      value_metavar=value_metavar)
 
 
 def AddMutexEnvVarsFlags(parser):
@@ -702,7 +746,7 @@ def _HasTrafficTagsChanges(args):
 
 def _HasTrafficChanges(args):
   """True iff any of the traffic flags are set."""
-  traffic_flags = ['to_revisions', 'to_latest']
+  traffic_flags = ['to_revisions', 'to_tags', 'to_latest']
   return _HasChanges(args, traffic_flags) or _HasTrafficTagsChanges(args)
 
 
@@ -732,22 +776,22 @@ def _GetScalingChanges(args):
     if scale_value.restore_default or scale_value.instance_count == 0:
       result.append(
           config_changes.DeleteTemplateAnnotationChange(
-              'autoscaling.knative.dev/minScale'))
+              revision.MIN_SCALE_ANNOTATION))
     else:
       result.append(
           config_changes.SetTemplateAnnotationChange(
-              'autoscaling.knative.dev/minScale',
+              revision.MIN_SCALE_ANNOTATION,
               str(scale_value.instance_count)))
   if 'max_instances' in args and args.max_instances is not None:
     scale_value = args.max_instances
     if scale_value.restore_default:
       result.append(
           config_changes.DeleteTemplateAnnotationChange(
-              'autoscaling.knative.dev/maxScale'))
+              revision.MAX_SCALE_ANNOTATION))
     else:
       result.append(
           config_changes.SetTemplateAnnotationChange(
-              'autoscaling.knative.dev/maxScale',
+              revision.MAX_SCALE_ANNOTATION,
               str(scale_value.instance_count)))
   return result
 
@@ -880,12 +924,19 @@ def _GetTrafficChanges(args):
     update_tags = None
     remove_tags = None
     clear_other_tags = False
+  by_tag = False
   if args.to_latest:
-    # Mutually exlcusive flag with to-revisions
+    # Mutually exlcusive flag with to-revisions, to-tags
     new_percentages = {traffic.LATEST_REVISION_KEY: 100}
+  elif args.to_revisions:
+    new_percentages = args.to_revisions
+  elif FlagIsExplicitlySet(args, 'to_tags'):
+    new_percentages = args.to_tags
+    by_tag = True
   else:
-    new_percentages = args.to_revisions if args.to_revisions else {}
-  return config_changes.TrafficChanges(new_percentages, update_tags,
+    new_percentages = {}
+
+  return config_changes.TrafficChanges(new_percentages, by_tag, update_tags,
                                        remove_tags, clear_other_tags)
 
 

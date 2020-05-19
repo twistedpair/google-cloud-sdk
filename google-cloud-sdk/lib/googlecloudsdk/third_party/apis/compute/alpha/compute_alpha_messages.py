@@ -1257,7 +1257,12 @@ class AllocationSpecificSKUAllocationAllocatedInstancePropertiesReservedDisk(_me
 
 
 class AllocationSpecificSKUAllocationReservedInstanceProperties(_messages.Message):
-  r"""Properties of the SKU instances being reserved.
+  r"""Properties of the SKU instances being reserved. Next ID: 9
+
+  Enums:
+    MaintenanceIntervalValueValuesEnum: Specifies whether this VM may be a
+      stable fleet VM. Setting this to "Periodic" designates this VM as a
+      Stable Fleet VM.  See go/stable-fleet-ug for more details.
 
   Fields:
     guestAccelerators: Specifies accelerator type and count.
@@ -1281,8 +1286,23 @@ class AllocationSpecificSKUAllocationReservedInstanceProperties(_messages.Messag
     maintenanceFreezeDurationHours: Specifies the number of hours after
       reservation creation where instances using the reservation won't be
       scheduled for maintenance.
+    maintenanceInterval: Specifies whether this VM may be a stable fleet VM.
+      Setting this to "Periodic" designates this VM as a Stable Fleet VM.  See
+      go/stable-fleet-ug for more details.
     minCpuPlatform: Minimum cpu platform the reservation.
   """
+
+  class MaintenanceIntervalValueValuesEnum(_messages.Enum):
+    r"""Specifies whether this VM may be a stable fleet VM. Setting this to
+    "Periodic" designates this VM as a Stable Fleet VM.  See go/stable-fleet-
+    ug for more details.
+
+    Values:
+      AS_NEEDED: <no description>
+      PERIODIC: <no description>
+    """
+    AS_NEEDED = 0
+    PERIODIC = 1
 
   guestAccelerators = _messages.MessageField('AcceleratorConfig', 1, repeated=True)
   localSsds = _messages.MessageField('AllocationSpecificSKUAllocationAllocatedInstancePropertiesReservedDisk', 2, repeated=True)
@@ -1290,7 +1310,8 @@ class AllocationSpecificSKUAllocationReservedInstanceProperties(_messages.Messag
   longTermRelease = _messages.BooleanField(4)
   machineType = _messages.StringField(5)
   maintenanceFreezeDurationHours = _messages.IntegerField(6, variant=_messages.Variant.INT32)
-  minCpuPlatform = _messages.StringField(7)
+  maintenanceInterval = _messages.EnumField('MaintenanceIntervalValueValuesEnum', 7)
+  minCpuPlatform = _messages.StringField(8)
 
 
 class AllocationSpecificSKUReservation(_messages.Message):
@@ -13141,6 +13162,343 @@ class ComputeNetworkEndpointGroupsTestIamPermissionsRequest(_messages.Message):
   zone = _messages.StringField(4, required=True)
 
 
+class ComputeNetworkFirewallPoliciesAddAssociationRequest(_messages.Message):
+  r"""A ComputeNetworkFirewallPoliciesAddAssociationRequest object.
+
+  Fields:
+    firewallPolicy: Name of the firewall policy to update.
+    firewallPolicyAssociation: A FirewallPolicyAssociation resource to be
+      passed as the request body.
+    project: Project ID for this request.
+    replaceExistingAssociation: Indicates whether or not to replace it if an
+      association of the attachment already exists. This is false by default,
+      in which case an error will be returned if an association already
+      exists.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
+  """
+
+  firewallPolicy = _messages.StringField(1, required=True)
+  firewallPolicyAssociation = _messages.MessageField('FirewallPolicyAssociation', 2)
+  project = _messages.StringField(3, required=True)
+  replaceExistingAssociation = _messages.BooleanField(4)
+  requestId = _messages.StringField(5)
+
+
+class ComputeNetworkFirewallPoliciesAddRuleRequest(_messages.Message):
+  r"""A ComputeNetworkFirewallPoliciesAddRuleRequest object.
+
+  Fields:
+    firewallPolicy: Name of the firewall policy to update.
+    firewallPolicyRule: A FirewallPolicyRule resource to be passed as the
+      request body.
+    project: Project ID for this request.
+  """
+
+  firewallPolicy = _messages.StringField(1, required=True)
+  firewallPolicyRule = _messages.MessageField('FirewallPolicyRule', 2)
+  project = _messages.StringField(3, required=True)
+
+
+class ComputeNetworkFirewallPoliciesCloneRulesRequest(_messages.Message):
+  r"""A ComputeNetworkFirewallPoliciesCloneRulesRequest object.
+
+  Fields:
+    firewallPolicy: Name of the firewall policy to update.
+    project: Project ID for this request.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
+    sourceFirewallPolicy: The firewall policy from which to copy rules.
+  """
+
+  firewallPolicy = _messages.StringField(1, required=True)
+  project = _messages.StringField(2, required=True)
+  requestId = _messages.StringField(3)
+  sourceFirewallPolicy = _messages.StringField(4)
+
+
+class ComputeNetworkFirewallPoliciesDeleteRequest(_messages.Message):
+  r"""A ComputeNetworkFirewallPoliciesDeleteRequest object.
+
+  Fields:
+    firewallPolicy: Name of the firewall policy to delete.
+    project: Project ID for this request.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
+  """
+
+  firewallPolicy = _messages.StringField(1, required=True)
+  project = _messages.StringField(2, required=True)
+  requestId = _messages.StringField(3)
+
+
+class ComputeNetworkFirewallPoliciesGetAssociationRequest(_messages.Message):
+  r"""A ComputeNetworkFirewallPoliciesGetAssociationRequest object.
+
+  Fields:
+    firewallPolicy: Name of the firewall policy to which the queried rule
+      belongs.
+    name: The name of the association to get from the firewall policy.
+    project: Project ID for this request.
+  """
+
+  firewallPolicy = _messages.StringField(1, required=True)
+  name = _messages.StringField(2)
+  project = _messages.StringField(3, required=True)
+
+
+class ComputeNetworkFirewallPoliciesGetIamPolicyRequest(_messages.Message):
+  r"""A ComputeNetworkFirewallPoliciesGetIamPolicyRequest object.
+
+  Fields:
+    optionsRequestedPolicyVersion: Requested IAM Policy version.
+    project: Project ID for this request.
+    resource: Name or id of the resource for this request.
+  """
+
+  optionsRequestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  project = _messages.StringField(2, required=True)
+  resource = _messages.StringField(3, required=True)
+
+
+class ComputeNetworkFirewallPoliciesGetRequest(_messages.Message):
+  r"""A ComputeNetworkFirewallPoliciesGetRequest object.
+
+  Fields:
+    firewallPolicy: Name of the firewall policy to get.
+    project: Project ID for this request.
+  """
+
+  firewallPolicy = _messages.StringField(1, required=True)
+  project = _messages.StringField(2, required=True)
+
+
+class ComputeNetworkFirewallPoliciesGetRuleRequest(_messages.Message):
+  r"""A ComputeNetworkFirewallPoliciesGetRuleRequest object.
+
+  Fields:
+    firewallPolicy: Name of the firewall policy to which the queried rule
+      belongs.
+    priority: The priority of the rule to get from the firewall policy.
+    project: Project ID for this request.
+  """
+
+  firewallPolicy = _messages.StringField(1, required=True)
+  priority = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  project = _messages.StringField(3, required=True)
+
+
+class ComputeNetworkFirewallPoliciesInsertRequest(_messages.Message):
+  r"""A ComputeNetworkFirewallPoliciesInsertRequest object.
+
+  Fields:
+    firewallPolicy: A FirewallPolicy resource to be passed as the request
+      body.
+    project: Project ID for this request.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
+  """
+
+  firewallPolicy = _messages.MessageField('FirewallPolicy', 1)
+  project = _messages.StringField(2, required=True)
+  requestId = _messages.StringField(3)
+
+
+class ComputeNetworkFirewallPoliciesListRequest(_messages.Message):
+  r"""A ComputeNetworkFirewallPoliciesListRequest object.
+
+  Fields:
+    filter: A filter expression that filters resources listed in the response.
+      The expression must specify the field name, a comparison operator, and
+      the value that you want to use for filtering. The value must be a
+      string, a number, or a boolean. The comparison operator must be either
+      `=`, `!=`, `>`, or `<`.  For example, if you are filtering Compute
+      Engine instances, you can exclude instances named `example-instance` by
+      specifying `name != example-instance`.  You can also filter nested
+      fields. For example, you could specify `scheduling.automaticRestart =
+      false` to include instances only if they are not scheduled for automatic
+      restarts. You can use filtering on nested fields to filter based on
+      resource labels.  To filter on multiple expressions, provide each
+      separate expression within parentheses. For example: ```
+      (scheduling.automaticRestart = true) (cpuPlatform = "Intel Skylake") ```
+      By default, each expression is an `AND` expression. However, you can
+      include `AND` and `OR` expressions explicitly. For example: ```
+      (cpuPlatform = "Intel Skylake") OR (cpuPlatform = "Intel Broadwell") AND
+      (scheduling.automaticRestart = true) ```
+    maxResults: The maximum number of results per page that should be
+      returned. If the number of available results is larger than
+      `maxResults`, Compute Engine returns a `nextPageToken` that can be used
+      to get the next page of results in subsequent list requests. Acceptable
+      values are `0` to `500`, inclusive. (Default: `500`)
+    orderBy: Sorts list results by a certain order. By default, results are
+      returned in alphanumerical order based on the resource name.  You can
+      also sort results in descending order based on the creation timestamp
+      using `orderBy="creationTimestamp desc"`. This sorts results based on
+      the `creationTimestamp` field in reverse chronological order (newest
+      result first). Use this to sort resources like operations so that the
+      newest operation is returned first.  Currently, only sorting by `name`
+      or `creationTimestamp desc` is supported.
+    pageToken: Specifies a page token to use. Set `pageToken` to the
+      `nextPageToken` returned by a previous list request to get the next page
+      of results.
+    project: Project ID for this request.
+    returnPartialSuccess: Opt-in for partial success behavior which provides
+      partial results in case of failure. The default value is false and the
+      logic is the same as today.
+  """
+
+  filter = _messages.StringField(1)
+  maxResults = _messages.IntegerField(2, variant=_messages.Variant.UINT32, default=500)
+  orderBy = _messages.StringField(3)
+  pageToken = _messages.StringField(4)
+  project = _messages.StringField(5, required=True)
+  returnPartialSuccess = _messages.BooleanField(6)
+
+
+class ComputeNetworkFirewallPoliciesPatchRequest(_messages.Message):
+  r"""A ComputeNetworkFirewallPoliciesPatchRequest object.
+
+  Fields:
+    firewallPolicy: Name of the firewall policy to update.
+    firewallPolicyResource: A FirewallPolicy resource to be passed as the
+      request body.
+    project: Project ID for this request.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
+  """
+
+  firewallPolicy = _messages.StringField(1, required=True)
+  firewallPolicyResource = _messages.MessageField('FirewallPolicy', 2)
+  project = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(4)
+
+
+class ComputeNetworkFirewallPoliciesPatchRuleRequest(_messages.Message):
+  r"""A ComputeNetworkFirewallPoliciesPatchRuleRequest object.
+
+  Fields:
+    firewallPolicy: Name of the firewall policy to update.
+    firewallPolicyRule: A FirewallPolicyRule resource to be passed as the
+      request body.
+    priority: The priority of the rule to patch.
+    project: Project ID for this request.
+  """
+
+  firewallPolicy = _messages.StringField(1, required=True)
+  firewallPolicyRule = _messages.MessageField('FirewallPolicyRule', 2)
+  priority = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  project = _messages.StringField(4, required=True)
+
+
+class ComputeNetworkFirewallPoliciesRemoveAssociationRequest(_messages.Message):
+  r"""A ComputeNetworkFirewallPoliciesRemoveAssociationRequest object.
+
+  Fields:
+    firewallPolicy: Name of the firewall policy to update.
+    name: Name for the attachment that will be removed.
+    project: Project ID for this request.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
+  """
+
+  firewallPolicy = _messages.StringField(1, required=True)
+  name = _messages.StringField(2)
+  project = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(4)
+
+
+class ComputeNetworkFirewallPoliciesRemoveRuleRequest(_messages.Message):
+  r"""A ComputeNetworkFirewallPoliciesRemoveRuleRequest object.
+
+  Fields:
+    firewallPolicy: Name of the firewall policy to update.
+    priority: The priority of the rule to remove from the firewall policy.
+    project: Project ID for this request.
+  """
+
+  firewallPolicy = _messages.StringField(1, required=True)
+  priority = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  project = _messages.StringField(3, required=True)
+
+
+class ComputeNetworkFirewallPoliciesSetIamPolicyRequest(_messages.Message):
+  r"""A ComputeNetworkFirewallPoliciesSetIamPolicyRequest object.
+
+  Fields:
+    globalSetPolicyRequest: A GlobalSetPolicyRequest resource to be passed as
+      the request body.
+    project: Project ID for this request.
+    resource: Name or id of the resource for this request.
+  """
+
+  globalSetPolicyRequest = _messages.MessageField('GlobalSetPolicyRequest', 1)
+  project = _messages.StringField(2, required=True)
+  resource = _messages.StringField(3, required=True)
+
+
+class ComputeNetworkFirewallPoliciesTestIamPermissionsRequest(_messages.Message):
+  r"""A ComputeNetworkFirewallPoliciesTestIamPermissionsRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    resource: Name or id of the resource for this request.
+    testPermissionsRequest: A TestPermissionsRequest resource to be passed as
+      the request body.
+  """
+
+  project = _messages.StringField(1, required=True)
+  resource = _messages.StringField(2, required=True)
+  testPermissionsRequest = _messages.MessageField('TestPermissionsRequest', 3)
+
+
 class ComputeNetworksAddPeeringRequest(_messages.Message):
   r"""A ComputeNetworksAddPeeringRequest object.
 
@@ -24787,8 +25145,8 @@ class Disk(_messages.Message):
       cannot be a dash.
     options: Internal use only.
     physicalBlockSizeBytes: Physical block size of the persistent disk, in
-      bytes. If not present in a request, a default value is used. Currently
-      supported sizes are 4096 and 16384, other sizes may be added in the
+      bytes. If not present in a request, a default value is used. The
+      currently supported size is 4096, other sizes may be added in the
       future. If an unsupported value is requested, the error message will
       list the supported values for the caller's project.
     region: [Output Only] URL of the region where the disk resides. Only
@@ -26885,6 +27243,303 @@ class FirewallLogConfig(_messages.Message):
 
   enable = _messages.BooleanField(1)
   metadata = _messages.EnumField('MetadataValueValuesEnum', 2)
+
+
+class FirewallPolicy(_messages.Message):
+  r"""Represents a Firewall Policy resource. (== resource_for
+  {$api_version}.firewallPolicies ==)
+
+  Fields:
+    associations: A list of associations that belong to this firewall policy.
+    creationTimestamp: [Output Only] Creation timestamp in RFC3339 text
+      format.
+    description: An optional description of this resource. Provide this
+      property when you create the resource.
+    displayName: User-provided name of the Organization firewall plicy. The
+      name should be unique in the organization in which the firewall policy
+      is created. The name must be 1-63 characters long, and comply with
+      RFC1035. Specifically, the name must be 1-63 characters long and match
+      the regular expression `[a-z]([-a-z0-9]*[a-z0-9])?` which means the
+      first character must be a lowercase letter, and all following characters
+      must be a dash, lowercase letter, or digit, except the last character,
+      which cannot be a dash.
+    fingerprint: Specifies a fingerprint for this resource, which is
+      essentially a hash of the metadata's contents and used for optimistic
+      locking. The fingerprint is initially generated by Compute Engine and
+      changes after every request to modify or update metadata. You must
+      always provide an up-to-date fingerprint hash in order to update or
+      change metadata, otherwise the request will fail with error 412
+      conditionNotMet.  To see the latest fingerprint, make get() request to
+      the firewall policy.
+    id: [Output Only] The unique identifier for the resource. This identifier
+      is defined by the server.
+    kind: [Output only] Type of the resource. Always compute#firewallPolicyfor
+      firewall policies
+    name: [Output Only] Name of the resource. It is a numeric ID allocated by
+      GCP which uniquely identifies the Firewall Policy.
+    parent: [Output Only] The parent of the firewall policy.
+    ruleTupleCount: [Output Only] Total count of all firewall policy rule
+      tuples. A firewall policy can not exceed a set number of tuples.
+    rules: A list of rules that belong to this policy. There must always be a
+      default rule (rule with priority 2147483647 and match "*"). If no rules
+      are provided when creating a firewall policy, a default rule with action
+      "allow" will be added.
+    selfLink: [Output Only] Server-defined URL for the resource.
+    selfLinkWithId: [Output Only] Server-defined URL for this resource with
+      the resource id.
+  """
+
+  associations = _messages.MessageField('FirewallPolicyAssociation', 1, repeated=True)
+  creationTimestamp = _messages.StringField(2)
+  description = _messages.StringField(3)
+  displayName = _messages.StringField(4)
+  fingerprint = _messages.BytesField(5)
+  id = _messages.IntegerField(6, variant=_messages.Variant.UINT64)
+  kind = _messages.StringField(7, default='compute#firewallPolicy')
+  name = _messages.StringField(8)
+  parent = _messages.StringField(9)
+  ruleTupleCount = _messages.IntegerField(10, variant=_messages.Variant.INT32)
+  rules = _messages.MessageField('FirewallPolicyRule', 11, repeated=True)
+  selfLink = _messages.StringField(12)
+  selfLinkWithId = _messages.StringField(13)
+
+
+class FirewallPolicyAssociation(_messages.Message):
+  r"""A FirewallPolicyAssociation object.
+
+  Fields:
+    attachmentTarget: The target that the firewall policy is attached to.
+    displayName: [Output Only] The display name of the firewall policy of the
+      association.
+    firewallPolicyId: [Output Only] The firewall policy ID of the association.
+    name: The name for an association.
+  """
+
+  attachmentTarget = _messages.StringField(1)
+  displayName = _messages.StringField(2)
+  firewallPolicyId = _messages.StringField(3)
+  name = _messages.StringField(4)
+
+
+class FirewallPolicyList(_messages.Message):
+  r"""A FirewallPolicyList object.
+
+  Messages:
+    WarningValue: [Output Only] Informational warning message.
+
+  Fields:
+    id: [Output Only] Unique identifier for the resource; defined by the
+      server.
+    items: A list of FirewallPolicy resources.
+    kind: [Output Only] Type of resource. Always compute#firewallPolicyList
+      for listsof FirewallPolicies
+    nextPageToken: [Output Only] This token allows you to get the next page of
+      results for list requests. If the number of results is larger than
+      maxResults, use the nextPageToken as a value for the query parameter
+      pageToken in the next list request. Subsequent list requests will have
+      their own nextPageToken to continue paging through the results.
+    warning: [Output Only] Informational warning message.
+  """
+
+  class WarningValue(_messages.Message):
+    r"""[Output Only] Informational warning message.
+
+    Enums:
+      CodeValueValuesEnum: [Output Only] A warning code, if applicable. For
+        example, Compute Engine returns NO_RESULTS_ON_PAGE if there are no
+        results in the response.
+
+    Messages:
+      DataValueListEntry: A DataValueListEntry object.
+
+    Fields:
+      code: [Output Only] A warning code, if applicable. For example, Compute
+        Engine returns NO_RESULTS_ON_PAGE if there are no results in the
+        response.
+      data: [Output Only] Metadata about this warning in key: value format.
+        For example: "data": [ { "key": "scope", "value": "zones/us-east1-d" }
+      message: [Output Only] A human-readable description of the warning code.
+    """
+
+    class CodeValueValuesEnum(_messages.Enum):
+      r"""[Output Only] A warning code, if applicable. For example, Compute
+      Engine returns NO_RESULTS_ON_PAGE if there are no results in the
+      response.
+
+      Values:
+        CLEANUP_FAILED: <no description>
+        DEPRECATED_RESOURCE_USED: <no description>
+        DEPRECATED_TYPE_USED: <no description>
+        DISK_SIZE_LARGER_THAN_IMAGE_SIZE: <no description>
+        EXPERIMENTAL_TYPE_USED: <no description>
+        EXTERNAL_API_WARNING: <no description>
+        FIELD_VALUE_OVERRIDEN: <no description>
+        INJECTED_KERNELS_DEPRECATED: <no description>
+        MISSING_TYPE_DEPENDENCY: <no description>
+        NEXT_HOP_ADDRESS_NOT_ASSIGNED: <no description>
+        NEXT_HOP_CANNOT_IP_FORWARD: <no description>
+        NEXT_HOP_INSTANCE_NOT_FOUND: <no description>
+        NEXT_HOP_INSTANCE_NOT_ON_NETWORK: <no description>
+        NEXT_HOP_NOT_RUNNING: <no description>
+        NOT_CRITICAL_ERROR: <no description>
+        NO_RESULTS_ON_PAGE: <no description>
+        PARTIAL_SUCCESS: <no description>
+        REQUIRED_TOS_AGREEMENT: <no description>
+        RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: <no description>
+        RESOURCE_NOT_DELETED: <no description>
+        SCHEMA_VALIDATION_IGNORED: <no description>
+        SINGLE_INSTANCE_PROPERTY_TEMPLATE: <no description>
+        UNDECLARED_PROPERTIES: <no description>
+        UNREACHABLE: <no description>
+      """
+      CLEANUP_FAILED = 0
+      DEPRECATED_RESOURCE_USED = 1
+      DEPRECATED_TYPE_USED = 2
+      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 3
+      EXPERIMENTAL_TYPE_USED = 4
+      EXTERNAL_API_WARNING = 5
+      FIELD_VALUE_OVERRIDEN = 6
+      INJECTED_KERNELS_DEPRECATED = 7
+      MISSING_TYPE_DEPENDENCY = 8
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 9
+      NEXT_HOP_CANNOT_IP_FORWARD = 10
+      NEXT_HOP_INSTANCE_NOT_FOUND = 11
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 12
+      NEXT_HOP_NOT_RUNNING = 13
+      NOT_CRITICAL_ERROR = 14
+      NO_RESULTS_ON_PAGE = 15
+      PARTIAL_SUCCESS = 16
+      REQUIRED_TOS_AGREEMENT = 17
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 18
+      RESOURCE_NOT_DELETED = 19
+      SCHEMA_VALIDATION_IGNORED = 20
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 21
+      UNDECLARED_PROPERTIES = 22
+      UNREACHABLE = 23
+
+    class DataValueListEntry(_messages.Message):
+      r"""A DataValueListEntry object.
+
+      Fields:
+        key: [Output Only] A key that provides more detail on the warning
+          being returned. For example, for warnings where there are no results
+          in a list request for a particular zone, this key might be scope and
+          the key value might be the zone name. Other examples might be a key
+          indicating a deprecated resource and a suggested replacement, or a
+          warning about invalid network settings (for example, if an instance
+          attempts to perform IP forwarding but is not enabled for IP
+          forwarding).
+        value: [Output Only] A warning data value corresponding to the key.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    code = _messages.EnumField('CodeValueValuesEnum', 1)
+    data = _messages.MessageField('DataValueListEntry', 2, repeated=True)
+    message = _messages.StringField(3)
+
+  id = _messages.StringField(1)
+  items = _messages.MessageField('FirewallPolicy', 2, repeated=True)
+  kind = _messages.StringField(3, default='compute#firewallPolicyList')
+  nextPageToken = _messages.StringField(4)
+  warning = _messages.MessageField('WarningValue', 5)
+
+
+class FirewallPolicyRule(_messages.Message):
+  r"""Represents a rule that describes one or more match conditions along with
+  the action to be taken when traffic matches this condition (allow or deny).
+
+  Enums:
+    DirectionValueValuesEnum: The direction in which this rule applies.
+
+  Fields:
+    action: The Action to perform when the client connection triggers the
+      rule. Can currently be either "allow" or "deny()" where valid values for
+      status are 403, 404, and 502.
+    description: An optional description of this resource. Provide this
+      property when you create the resource.
+    direction: The direction in which this rule applies.
+    enableLogging: Denotes whether to enable logging for a particular rule. If
+      logging is enabled, logs will be exported to the configured export
+      destination in Stackdriver. Logs may be exported to BigQuery or Pub/Sub.
+      Note: you cannot enable logging on "goto_next" rules.
+    kind: [Output only] Type of the resource. Always
+      compute#firewallPolicyRule for firewall policy rules
+    match: A match condition that incoming traffic is evaluated against. If it
+      evaluates to true, the corresponding ?action? is enforced.
+    preview: If set to true, the specified action is not enforced.
+    priority: An integer indicating the priority of a rule in the list. The
+      priority must be a positive value between 0 and 2147483647. Rules are
+      evaluated from highest to lowest priority where 0 is the highest
+      priority and 2147483647 is the lowest prority.
+    ruleTupleCount: [Output Only] Calculation of the complexity of a single
+      firewall policy rule.
+    targetResources: A list of network resource URLs to which this rule
+      applies. This field allows you to control which network?s VMs get this
+      rule. If this field is left blank, all VMs within the organization will
+      receive the rule.
+    targetServiceAccounts: A list of service accounts indicating the sets of
+      instances that are applied with this rule.
+  """
+
+  class DirectionValueValuesEnum(_messages.Enum):
+    r"""The direction in which this rule applies.
+
+    Values:
+      DIRECTION_UNSPECIFIED: <no description>
+      EGRESS: <no description>
+      INGRESS: <no description>
+    """
+    DIRECTION_UNSPECIFIED = 0
+    EGRESS = 1
+    INGRESS = 2
+
+  action = _messages.StringField(1)
+  description = _messages.StringField(2)
+  direction = _messages.EnumField('DirectionValueValuesEnum', 3)
+  enableLogging = _messages.BooleanField(4)
+  kind = _messages.StringField(5, default='compute#firewallPolicyRule')
+  match = _messages.MessageField('FirewallPolicyRuleMatcher', 6)
+  preview = _messages.BooleanField(7)
+  priority = _messages.IntegerField(8, variant=_messages.Variant.INT32)
+  ruleTupleCount = _messages.IntegerField(9, variant=_messages.Variant.INT32)
+  targetResources = _messages.StringField(10, repeated=True)
+  targetServiceAccounts = _messages.StringField(11, repeated=True)
+
+
+class FirewallPolicyRuleMatcher(_messages.Message):
+  r"""Represents a match condition that incoming traffic is evaluated against.
+  Exactly one field must be specified.
+
+  Fields:
+    destIpRanges: CIDR IP address range.
+    layer4Configs: Pairs of IP protocols and ports that the rule should match.
+    srcIpRanges: CIDR IP address range.
+  """
+
+  destIpRanges = _messages.StringField(1, repeated=True)
+  layer4Configs = _messages.MessageField('FirewallPolicyRuleMatcherLayer4Config', 2, repeated=True)
+  srcIpRanges = _messages.StringField(3, repeated=True)
+
+
+class FirewallPolicyRuleMatcherLayer4Config(_messages.Message):
+  r"""A FirewallPolicyRuleMatcherLayer4Config object.
+
+  Fields:
+    ipProtocol: The IP protocol to which this rule applies. The protocol type
+      is required when creating a firewall rule. This value can either be one
+      of the following well known protocol strings (tcp, udp, icmp, esp, ah,
+      ipip, sctp), or the IP protocol number.
+    ports: An optional list of ports to which this rule applies. This field is
+      only applicable for UDP or TCP protocol. Each entry must be either an
+      integer or a range. If not specified, this rule applies to connections
+      through any port.  Example inputs include: ["22"], ["80","443"], and
+      ["12345-12349"].
+  """
+
+  ipProtocol = _messages.StringField(1)
+  ports = _messages.StringField(2, repeated=True)
 
 
 class FixedOrPercent(_messages.Message):
@@ -32149,6 +32804,9 @@ class InstanceGroupManagersApplyUpdatesRequest(_messages.Message):
       fail.
 
   Fields:
+    allInstances: Flag to update all instances instead of specified list of
+      ?instances?. If the flag is set to true then the instances may not be
+      specified in the request.
     instances: The list of URLs of one or more instances for which you want to
       apply updates. Each URL can be a full URL or a partial URL, such as
       zones/[ZONE]/instances/[INSTANCE_NAME].
@@ -32227,10 +32885,11 @@ class InstanceGroupManagersApplyUpdatesRequest(_messages.Message):
     REPLACE = 2
     RESTART = 3
 
-  instances = _messages.StringField(1, repeated=True)
-  maximalAction = _messages.EnumField('MaximalActionValueValuesEnum', 2)
-  minimalAction = _messages.EnumField('MinimalActionValueValuesEnum', 3)
-  mostDisruptiveAllowedAction = _messages.EnumField('MostDisruptiveAllowedActionValueValuesEnum', 4)
+  allInstances = _messages.BooleanField(1)
+  instances = _messages.StringField(2, repeated=True)
+  maximalAction = _messages.EnumField('MaximalActionValueValuesEnum', 3)
+  minimalAction = _messages.EnumField('MinimalActionValueValuesEnum', 4)
+  mostDisruptiveAllowedAction = _messages.EnumField('MostDisruptiveAllowedActionValueValuesEnum', 5)
 
 
 class InstanceGroupManagersCreateInstancesRequest(_messages.Message):
@@ -36527,8 +37186,8 @@ class MachineImage(_messages.Message):
     sourceInstanceProperties: [Output Only] Properties of source instance.
     status: [Output Only] The status of the machine image. One of the
       following values: INVALID, CREATING, READY, DELETING, and UPLOADING.
-    storageLocations: GCS bucket storage location of the machine image
-      (regional or multi-regional).
+    storageLocations: The regional or multi-regional Cloud Storage bucket
+      location where the machine image is stored.
     totalStorageBytes: [Output Only] Total size of the storage used by the
       machine image.
   """
@@ -37622,6 +38281,8 @@ class Network(_messages.Message):
       format.
     description: An optional description of this resource. Provide this field
       when you create the resource.
+    firewallPolicy: [Output Only] URL of the firewall policy the network is
+      associated with.
     gatewayIPv4: [Output Only] The gateway address for default routing out of
       the network, selected by GCP.
     id: [Output Only] The unique identifier for the resource. This identifier
@@ -37652,16 +38313,17 @@ class Network(_messages.Message):
   autoCreateSubnetworks = _messages.BooleanField(2)
   creationTimestamp = _messages.StringField(3)
   description = _messages.StringField(4)
-  gatewayIPv4 = _messages.StringField(5)
-  id = _messages.IntegerField(6, variant=_messages.Variant.UINT64)
-  kind = _messages.StringField(7, default='compute#network')
-  mtu = _messages.IntegerField(8, variant=_messages.Variant.INT32)
-  name = _messages.StringField(9)
-  peerings = _messages.MessageField('NetworkPeering', 10, repeated=True)
-  routingConfig = _messages.MessageField('NetworkRoutingConfig', 11)
-  selfLink = _messages.StringField(12)
-  selfLinkWithId = _messages.StringField(13)
-  subnetworks = _messages.StringField(14, repeated=True)
+  firewallPolicy = _messages.StringField(5)
+  gatewayIPv4 = _messages.StringField(6)
+  id = _messages.IntegerField(7, variant=_messages.Variant.UINT64)
+  kind = _messages.StringField(8, default='compute#network')
+  mtu = _messages.IntegerField(9, variant=_messages.Variant.INT32)
+  name = _messages.StringField(10)
+  peerings = _messages.MessageField('NetworkPeering', 11, repeated=True)
+  routingConfig = _messages.MessageField('NetworkRoutingConfig', 12)
+  selfLink = _messages.StringField(13)
+  selfLinkWithId = _messages.StringField(14)
+  subnetworks = _messages.StringField(15, repeated=True)
 
 
 class NetworkEndpoint(_messages.Message):
@@ -44563,6 +45225,9 @@ class RegionInstanceGroupManagersApplyUpdatesRequest(_messages.Message):
       fail.
 
   Fields:
+    allInstances: Flag to update all instances instead of specified list of
+      ?instances?. If the flag is set to true then the instances may not be
+      specified in the request.
     instances: The list of URLs of one or more instances for which you want to
       apply updates. Each URL can be a full URL or a partial URL, such as
       zones/[ZONE]/instances/[INSTANCE_NAME].
@@ -44641,10 +45306,11 @@ class RegionInstanceGroupManagersApplyUpdatesRequest(_messages.Message):
     REPLACE = 2
     RESTART = 3
 
-  instances = _messages.StringField(1, repeated=True)
-  maximalAction = _messages.EnumField('MaximalActionValueValuesEnum', 2)
-  minimalAction = _messages.EnumField('MinimalActionValueValuesEnum', 3)
-  mostDisruptiveAllowedAction = _messages.EnumField('MostDisruptiveAllowedActionValueValuesEnum', 4)
+  allInstances = _messages.BooleanField(1)
+  instances = _messages.StringField(2, repeated=True)
+  maximalAction = _messages.EnumField('MaximalActionValueValuesEnum', 3)
+  minimalAction = _messages.EnumField('MinimalActionValueValuesEnum', 4)
+  mostDisruptiveAllowedAction = _messages.EnumField('MostDisruptiveAllowedActionValueValuesEnum', 5)
 
 
 class RegionInstanceGroupManagersCreateInstancesRequest(_messages.Message):
@@ -45976,6 +46642,8 @@ class ResourcePolicy(_messages.Message):
       configuration.
     id: [Output Only] The unique identifier for the resource. This identifier
       is defined by the server.
+    instanceSchedulePolicy: Resource policy for scheduling instance
+      operations.
     kind: [Output Only] Type of the resource. Always compute#resource_policies
       for resource policies.
     name: The name of the resource, provided by the client when initially
@@ -46015,14 +46683,15 @@ class ResourcePolicy(_messages.Message):
   description = _messages.StringField(2)
   groupPlacementPolicy = _messages.MessageField('ResourcePolicyGroupPlacementPolicy', 3)
   id = _messages.IntegerField(4, variant=_messages.Variant.UINT64)
-  kind = _messages.StringField(5, default='compute#resourcePolicy')
-  name = _messages.StringField(6)
-  region = _messages.StringField(7)
-  selfLink = _messages.StringField(8)
-  selfLinkWithId = _messages.StringField(9)
-  snapshotSchedulePolicy = _messages.MessageField('ResourcePolicySnapshotSchedulePolicy', 10)
-  status = _messages.EnumField('StatusValueValuesEnum', 11)
-  vmMaintenancePolicy = _messages.MessageField('ResourcePolicyVmMaintenancePolicy', 12)
+  instanceSchedulePolicy = _messages.MessageField('ResourcePolicyInstanceSchedulePolicy', 5)
+  kind = _messages.StringField(6, default='compute#resourcePolicy')
+  name = _messages.StringField(7)
+  region = _messages.StringField(8)
+  selfLink = _messages.StringField(9)
+  selfLinkWithId = _messages.StringField(10)
+  snapshotSchedulePolicy = _messages.MessageField('ResourcePolicySnapshotSchedulePolicy', 11)
+  status = _messages.EnumField('StatusValueValuesEnum', 12)
+  vmMaintenancePolicy = _messages.MessageField('ResourcePolicyVmMaintenancePolicy', 13)
 
 
 class ResourcePolicyAggregatedList(_messages.Message):
@@ -46276,6 +46945,34 @@ class ResourcePolicyHourlyCycle(_messages.Message):
   startTime = _messages.StringField(3)
 
 
+class ResourcePolicyInstanceSchedulePolicy(_messages.Message):
+  r"""An InstanceSchedulePolicy specifies when and how frequent certain
+  operations are performed on the instance.
+
+  Fields:
+    vmStartSchedule: Specifies the schedule for starting instance.
+    vmStopSchedule: Specifies the schedule for stopping instance.
+  """
+
+  vmStartSchedule = _messages.MessageField('ResourcePolicyInstanceSchedulePolicySchedule', 1)
+  vmStopSchedule = _messages.MessageField('ResourcePolicyInstanceSchedulePolicySchedule', 2)
+
+
+class ResourcePolicyInstanceSchedulePolicySchedule(_messages.Message):
+  r"""Schedule for the instance operation.
+
+  Fields:
+    schedule: Specifies the frequency for the operation, using the unix-cron
+      format.
+    timeZone: Specifies the time zone to be used in interpreting
+      Schedule.schedule. The value of this field must be a time zone name from
+      the tz database: http://en.wikipedia.org/wiki/Tz_database.
+  """
+
+  schedule = _messages.StringField(1)
+  timeZone = _messages.StringField(2)
+
+
 class ResourcePolicyList(_messages.Message):
   r"""A ResourcePolicyList object.
 
@@ -46496,6 +47193,7 @@ class ResourcePolicySnapshotSchedulePolicySnapshotProperties(_messages.Message):
       modified by the setLabels method. Label values may be empty.
 
   Fields:
+    chainName: Chain name that the snapshot is created in.
     guestFlush: Indication to perform a 'guest aware' snapshot.
     labels: Labels to apply to scheduled snapshots. These can be later
       modified by the setLabels method. Label values may be empty.
@@ -46528,9 +47226,10 @@ class ResourcePolicySnapshotSchedulePolicySnapshotProperties(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  guestFlush = _messages.BooleanField(1)
-  labels = _messages.MessageField('LabelsValue', 2)
-  storageLocations = _messages.StringField(3, repeated=True)
+  chainName = _messages.StringField(1)
+  guestFlush = _messages.BooleanField(2)
+  labels = _messages.MessageField('LabelsValue', 3)
+  storageLocations = _messages.StringField(4, repeated=True)
 
 
 class ResourcePolicyVmMaintenancePolicy(_messages.Message):
@@ -46944,7 +47643,7 @@ class RouteList(_messages.Message):
 
 class Router(_messages.Message):
   r"""Represents a Cloud Router resource.  For more information about Cloud
-  Router, read the the Cloud Router overview.
+  Router, read the Cloud Router overview.
 
   Fields:
     bgp: BGP information specific to this router.
@@ -48405,7 +49104,7 @@ class SavedAttachedDisk(_messages.Message):
 
 
 class Scheduling(_messages.Message):
-  r"""Sets the scheduling options for an Instance. NextID: 11
+  r"""Sets the scheduling options for an Instance. NextID: 12
 
   Enums:
     OnHostMaintenanceValueValuesEnum: Defines the maintenance behavior for
@@ -49579,6 +50278,7 @@ class Snapshot(_messages.Message):
   Fields:
     autoCreated: [Output Only] Set to true if snapshots are automatically
       created by applying resource policy on the target disk.
+    chainName: Chain name should conform to RFC1035.
     creationTimestamp: [Output Only] Creation timestamp in RFC3339 text
       format.
     description: An optional description of this resource. Provide this
@@ -49704,28 +50404,29 @@ class Snapshot(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   autoCreated = _messages.BooleanField(1)
-  creationTimestamp = _messages.StringField(2)
-  description = _messages.StringField(3)
-  diskSizeGb = _messages.IntegerField(4)
-  downloadBytes = _messages.IntegerField(5)
-  guestOsFeatures = _messages.MessageField('GuestOsFeature', 6, repeated=True)
-  id = _messages.IntegerField(7, variant=_messages.Variant.UINT64)
-  kind = _messages.StringField(8, default='compute#snapshot')
-  labelFingerprint = _messages.BytesField(9)
-  labels = _messages.MessageField('LabelsValue', 10)
-  licenseCodes = _messages.IntegerField(11, repeated=True)
-  licenses = _messages.StringField(12, repeated=True)
-  name = _messages.StringField(13)
-  selfLink = _messages.StringField(14)
-  selfLinkWithId = _messages.StringField(15)
-  snapshotEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 16)
-  sourceDisk = _messages.StringField(17)
-  sourceDiskEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 18)
-  sourceDiskId = _messages.StringField(19)
-  status = _messages.EnumField('StatusValueValuesEnum', 20)
-  storageBytes = _messages.IntegerField(21)
-  storageBytesStatus = _messages.EnumField('StorageBytesStatusValueValuesEnum', 22)
-  storageLocations = _messages.StringField(23, repeated=True)
+  chainName = _messages.StringField(2)
+  creationTimestamp = _messages.StringField(3)
+  description = _messages.StringField(4)
+  diskSizeGb = _messages.IntegerField(5)
+  downloadBytes = _messages.IntegerField(6)
+  guestOsFeatures = _messages.MessageField('GuestOsFeature', 7, repeated=True)
+  id = _messages.IntegerField(8, variant=_messages.Variant.UINT64)
+  kind = _messages.StringField(9, default='compute#snapshot')
+  labelFingerprint = _messages.BytesField(10)
+  labels = _messages.MessageField('LabelsValue', 11)
+  licenseCodes = _messages.IntegerField(12, repeated=True)
+  licenses = _messages.StringField(13, repeated=True)
+  name = _messages.StringField(14)
+  selfLink = _messages.StringField(15)
+  selfLinkWithId = _messages.StringField(16)
+  snapshotEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 17)
+  sourceDisk = _messages.StringField(18)
+  sourceDiskEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 19)
+  sourceDiskId = _messages.StringField(20)
+  status = _messages.EnumField('StatusValueValuesEnum', 21)
+  storageBytes = _messages.IntegerField(22)
+  storageBytesStatus = _messages.EnumField('StorageBytesStatusValueValuesEnum', 23)
+  storageLocations = _messages.StringField(24, repeated=True)
 
 
 class SnapshotList(_messages.Message):

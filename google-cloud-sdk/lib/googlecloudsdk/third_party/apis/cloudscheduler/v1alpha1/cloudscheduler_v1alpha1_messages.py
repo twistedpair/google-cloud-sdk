@@ -518,6 +518,11 @@ class Job(_messages.Message):
       more than 500 characters.
     httpTarget: Http target.
     lastAttemptTime: Output only. The time the last job attempt started.
+    legacyAppEngineCron: Immutable. This field is used to manage the legacy
+      App Engine Cron jobs using the Cloud Scheduler API. If the field is set
+      to true, the job will be considered to be a legacy job. Note that App
+      Engine Cron jobs have fewer features than Cloud Scheduler jobs, e.g.,
+      are only limited to App Engine targets.
     name: Optionally caller-specified in CreateJob, after which it becomes
       output only.  The job name. For example:
       `projects/PROJECT_ID/locations/LOCATION_ID/jobs/JOB_ID`.  The maximum
@@ -568,14 +573,15 @@ class Job(_messages.Message):
   description = _messages.StringField(3)
   httpTarget = _messages.MessageField('HttpTarget', 4)
   lastAttemptTime = _messages.StringField(5)
-  name = _messages.StringField(6)
-  nextScheduleTime = _messages.StringField(7)
-  pubsubTarget = _messages.MessageField('PubsubTarget', 8)
-  retryConfig = _messages.MessageField('RetryConfig', 9)
-  schedule = _messages.MessageField('Schedule', 10)
-  state = _messages.EnumField('StateValueValuesEnum', 11)
-  status = _messages.MessageField('Status', 12)
-  userUpdateTime = _messages.StringField(13)
+  legacyAppEngineCron = _messages.BooleanField(6)
+  name = _messages.StringField(7)
+  nextScheduleTime = _messages.StringField(8)
+  pubsubTarget = _messages.MessageField('PubsubTarget', 9)
+  retryConfig = _messages.MessageField('RetryConfig', 10)
+  schedule = _messages.MessageField('Schedule', 11)
+  state = _messages.EnumField('StateValueValuesEnum', 12)
+  status = _messages.MessageField('Status', 13)
+  userUpdateTime = _messages.StringField(14)
 
 
 class ListJobsResponse(_messages.Message):
