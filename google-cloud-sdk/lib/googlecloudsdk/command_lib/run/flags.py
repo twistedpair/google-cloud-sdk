@@ -235,6 +235,13 @@ def AddNoTrafficFlag(parser):
       'traffic on future deployments.')
 
 
+def AddDeployTagFlag(parser):
+  """Add flag to specify a tag for the new revision."""
+  parser.add_argument(
+      '--tag',
+      help='Traffic tag to assign to the newly created revision.')
+
+
 def AddTrafficTagsFlags(parser):
   """Add flags for updating traffic tags for a service."""
   AddMapFlagsNoFile(
@@ -1012,6 +1019,9 @@ def GetConfigurationChanges(args):
     changes.append(config_changes.ContainerPortChange(port=args.port))
   if FlagIsExplicitlySet(args, 'use_http2'):
     changes.append(config_changes.ContainerPortChange(use_http2=args.use_http2))
+  if FlagIsExplicitlySet(args, 'tag'):
+    # MUST be after 'revision_suffix' change
+    changes.append(config_changes.TagOnDeployChange(args.tag))
   return changes
 
 

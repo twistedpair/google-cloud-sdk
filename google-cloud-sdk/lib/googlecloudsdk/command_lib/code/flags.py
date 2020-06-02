@@ -25,10 +25,16 @@ import six
 
 def CommonFlags(parser):
   """Add common flags for local developement environments."""
-  parser.add_argument(
+  builder_group = parser.add_mutually_exclusive_group(required=False)
+  builder_group.add_argument(
       '--dockerfile',
       default='Dockerfile',
       help='Dockerfile for the service image.')
+
+  builder_group.add_argument(
+      '--builder',
+      help='Build with a given Cloud Native Computing Foundation Buildpack '
+      'builder.')
 
   parser.add_argument(
       '--service-name', required=False, help='Name of the service.')
@@ -41,11 +47,6 @@ def CommonFlags(parser):
       help='If set, use this as the context directory when building the '
       'container image. Otherwise, the directory of the Dockerfile will be '
       'used.')
-
-  parser.add_argument(
-      '--builder',
-      help='Build with a given Cloud Native Computing Foundation Buildpack '
-      'builder.')
 
   credential_group = parser.add_mutually_exclusive_group(required=False)
   credential_group.add_argument(

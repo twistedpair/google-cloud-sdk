@@ -20,8 +20,10 @@ from __future__ import unicode_literals
 
 import datetime
 import os
+import re
 import sys
 
+from apitools.base.py import list_pager
 from googlecloudsdk.api_lib.compute import base_classes
 from googlecloudsdk.api_lib.compute.operations import poller
 from googlecloudsdk.api_lib.util import apis
@@ -89,6 +91,58 @@ class TPUNode(object):
         self.client.projects_locations_operations)
     return waiter.WaitFor(operation_poller, operation_ref, message)
 
+  def WaitForOperationNoResources(self, operation_ref, message):
+    operation_poller = waiter.CloudOperationPollerNoResources(
+        self.client.projects_locations_operations)
+    return waiter.WaitFor(operation_poller, operation_ref, message)
+
+  def Delete(self, name, zone):
+    """Deletes the TPU node with the given name."""
+    project = properties.VALUES.core.project.Get(required=True)
+    node = 'projects/{}/locations/{}/nodes/{}'.format(project, zone, name)
+    request = self.messages.TpuProjectsLocationsNodesDeleteRequest(name=node)
+    operation = self.client.projects_locations_nodes.Delete(request)
+    return self._GetTpuOperationRef(operation)
+
+  def List(self, zone):
+    """Retrieves all TPU Nodes."""
+    project = properties.VALUES.core.project.Get(required=True)
+    parent_path = 'projects/{}/locations/{}'.format(project, zone)
+
+    request = self.messages.TpuProjectsLocationsNodesListRequest(
+        parent=parent_path)
+    return list_pager.YieldFromList(
+        service=self.client.projects_locations_nodes,
+        request=request,
+        method='List',
+        batch_size_attribute='pageSize',
+        field='nodes'
+        )
+
+  def IsRunning(self, node):
+    return node.state == self.messages.Node.StateValueValuesEnum.READY or (
+        node.state == self.messages.Node.StateValueValuesEnum.CREATING and
+        node.ipAddress)
+
+  def NodeName(self, node):
+    pattern = 'projects/(.*)/locations/(.*)/nodes/(.*)'
+    match = re.search(pattern, node.name, re.IGNORECASE)
+    if match:
+      return match.group(3)
+    return ''
+
+
+class ComputePollerNoResources(poller.Poller):
+  """Compute operations poller that does not create a resource."""
+
+  def __init__(self, resource_service, target_ref=None):
+    super(ComputePollerNoResources, self).__init__(
+        resource_service=resource_service, target_ref=target_ref)
+
+  def GetResult(self, operation):
+    """Overrides."""
+    return None
+
 
 class Instance(object):
   """Helper to create the GCE VM required to work with the TPU Node."""
@@ -98,8 +152,8 @@ class Instance(object):
     self.client = holder.client.apitools_client
     self.messages = holder.client.messages
 
-  def _BuildInstanceSpec(
-      self, name, zone, machine_type, disk_size, preemptible):
+  def _BuildInstanceSpec(self, name, zone, machine_type, disk_size,
+                         preemptible):
     """Builds an instance spec to be used for Instance creation."""
 
     disk = self.messages.AttachedDisk(
@@ -162,6 +216,48 @@ class Instance(object):
     """Wait for Instance operation to complete."""
     operation_poller = poller.Poller(self.client.instances)
     return waiter.WaitFor(operation_poller, operation_ref, message)
+
+  def WaitForOperationNoResources(self, operation_ref, message):
+    operation_poller = ComputePollerNoResources(self.client.instances)
+    return waiter.WaitFor(operation_poller, operation_ref, message)
+
+  def List(self, zone):
+    """Retrieves all Instances created by Execution Group."""
+    project = properties.VALUES.core.project.Get(required=True)
+    request = self.messages.ComputeInstancesListRequest(
+        zone=zone, project=project)
+    instances = list_pager.YieldFromList(
+        service=self.client.instances,
+        request=request,
+        method='List',
+        field='items')
+
+    result_set = []
+    for instance in instances:
+      if self._VMCreatedByExecGroup(instance):
+        result_set.append(instance)
+
+    return result_set
+
+  def _VMCreatedByExecGroup(self, instance):
+    if instance and instance.labels:
+      for label in instance.labels.additionalProperties:
+        if label.key == 'ctpu':
+          return True
+    return False
+
+  def IsRunning(self, instance):
+    return instance.status == self.messages.Instance.StatusValueValuesEnum.RUNNING
+
+  def Delete(self, name, zone):
+    """Deletes the specified instance in the given zone and project."""
+    request = self.messages.ComputeInstancesDeleteRequest(
+        project=properties.VALUES.core.project.Get(required=True),
+        zone=zone,
+        instance=name
+        )
+    operation = self.client.instances.Delete(request)
+    return self._GetComputeZoneOperationRef(operation)
 
 
 class SSH(object):

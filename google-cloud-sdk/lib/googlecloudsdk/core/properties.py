@@ -1764,6 +1764,7 @@ class _SectionApiEndpointOverrides(_Section):
     self.accessapproval = self._Add('accessapproval')
     self.accesscontextmanager = self._Add('accesscontextmanager')
     self.apigateway = self._Add('apigateway')
+    self.apigee = self._Add('apigee')
     self.appengine = self._Add('appengine')
     self.bigtableadmin = self._Add('bigtableadmin')
     self.binaryauthorization = self._Add('binaryauthorization')

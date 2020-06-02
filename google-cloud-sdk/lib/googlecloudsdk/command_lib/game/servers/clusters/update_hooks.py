@@ -194,6 +194,8 @@ def SetUpdateMask(ref, args, request):
   del ref
   update_mask = []
 
+  if args.IsSpecified('description'):
+    update_mask.append('description')
   if (args.IsSpecified('update_labels') or
       args.IsSpecified('remove_labels') or
       args.IsSpecified('clear_labels')):

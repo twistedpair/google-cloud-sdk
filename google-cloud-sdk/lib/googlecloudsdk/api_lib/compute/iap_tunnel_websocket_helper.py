@@ -197,6 +197,7 @@ class IapTunnelWebSocketHelper(object):
     # Do not call Close() from here as it may generate callbacks in some error
     # conditions that can create a feedback loop with this function.
     if not self._is_closed:
+      log.debug('Error during WebSocket processing.', exc_info=True)
       log.info('Error during WebSocket processing:\n' +
                ''.join(traceback.format_exception_only(type(exception_obj),
                                                        exception_obj)))

@@ -442,7 +442,7 @@ def _GetDiskDeviceNameHelp(container_mount_enabled=False):
 
 
 def AddDiskArgs(parser, enable_regional_disks=False, enable_kms=False,
-                container_mount_enabled=False):
+                container_mount_enabled=False, enable_pd_interface=False):
   """Adds arguments related to disks for instances and instance-templates."""
 
   disk_device_name_help = _GetDiskDeviceNameHelp(
@@ -499,6 +499,9 @@ def AddDiskArgs(parser, enable_regional_disks=False, enable_kms=False,
   if enable_regional_disks:
     disk_arg_spec['scope'] = str
 
+  if enable_pd_interface:
+    disk_arg_spec['interface'] = str
+
   disk_help = """
       Attaches persistent disks to the instances. The disks
       specified must already exist.
@@ -530,6 +533,12 @@ def AddDiskArgs(parser, enable_regional_disks=False, enable_kms=False,
       interpreted as a zonal disk in the same zone as the instance (default).
       If ``regional'', the disk is interpreted as a regional disk in the same
       region as the instance. The default value for this is ``zonal''.
+      """
+
+  if enable_pd_interface:
+    disk_help += """
+      *interface*::: Specifies the disk interface to use for attaching this
+      disk. Valid values are `SCSI` and `NVME`. The default is `SCSI`.
       """
 
   parser.add_argument(

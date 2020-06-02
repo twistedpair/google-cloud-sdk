@@ -697,6 +697,10 @@
         "cloudRunConfig": {
           "description": "Configuration for the Cloud Run addon, which allows the user to use a\nmanaged Knative service.",
           "$ref": "CloudRunConfig"
+        },
+        "dnsCacheConfig": {
+          "description": "Configuration for NodeLocalDNS, a dns cache running on cluster nodes",
+          "$ref": "DnsCacheConfig"
         }
       }
     },
@@ -751,6 +755,17 @@
       "properties": {
         "disabled": {
           "description": "Whether Cloud Run addon is enabled for this cluster.",
+          "type": "boolean"
+        }
+      }
+    },
+    "DnsCacheConfig": {
+      "id": "DnsCacheConfig",
+      "description": "Configuration for NodeLocal DNSCache",
+      "type": "object",
+      "properties": {
+        "enabled": {
+          "description": "Whether NodeLocal DNSCache is enabled for this cluster.",
           "type": "boolean"
         }
       }

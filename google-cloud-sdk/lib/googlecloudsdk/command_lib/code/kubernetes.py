@@ -18,12 +18,7 @@ from __future__ import division
 from __future__ import print_function
 from __future__ import unicode_literals
 
-import json
-
-import subprocess
 from googlecloudsdk.command_lib.code import run_subprocess
-import six
-
 
 DEFAULT_CLUSTER_NAME = 'gcloud-local-dev'
 
@@ -112,7 +107,7 @@ def _StartKindCluster(cluster_name):
   if not _IsKindClusterUp(cluster_name):
     cmd = [_FindKind(), 'create', 'cluster', '--name', cluster_name]
     print("Creating local development environment '%s' ..." % cluster_name)
-    subprocess.check_call(cmd)
+    run_subprocess.Run(cmd, show_output=True)
     print('Development environment created.')
 
 
@@ -126,10 +121,9 @@ def _IsKindClusterUp(cluster_name):
     True if a cluster with the given name is running.
   """
   cmd = [_FindKind(), 'get', 'clusters']
-  p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-  stdout, _ = p.communicate()
-  lines = six.ensure_text(stdout).strip().splitlines()
-  return cluster_name in lines
+  clusters = run_subprocess.GetOutputLines(
+      cmd, show_stderr=False, strip_output=True)
+  return cluster_name in clusters
 
 
 def _DeleteKindCluster(cluster_name):
@@ -140,7 +134,7 @@ def _DeleteKindCluster(cluster_name):
   """
   cmd = [_FindKind(), 'delete', 'cluster', '--name', cluster_name]
   print("Deleting development environment '%s' ..." % cluster_name)
-  run_subprocess.RunWithoutOutput(cmd)
+  run_subprocess.Run(cmd, show_output=False)
   print('Development environment deleted.')
 
 
@@ -204,28 +198,22 @@ def _StartMinikubeCluster(cluster_name, vm_driver):
         cmd.append('--container-runtime=docker')
 
     print("Starting development environment '%s' ..." % cluster_name)
-    run_subprocess.RunWithoutOutput(cmd)
+    run_subprocess.Run(cmd, show_output=False)
     print('Development environment created.')
 
 
 def _GetMinikubeDockerEnvs(cluster_name):
   """Get the docker environment settings for a given cluster."""
   cmd = [_FindMinikube(), 'docker-env', '-p', cluster_name, '--shell=none']
-  p = subprocess.Popen(cmd, stdout=subprocess.PIPE)
-  stdout, _ = p.communicate()
-  return dict(
-      line.split('=', 1)
-      for line in six.ensure_text(stdout).splitlines()
-      if line)
+  lines = run_subprocess.GetOutputLines(cmd)
+  return dict(line.split('=', 1) for line in lines if line)
 
 
 def _IsMinikubeClusterUp(cluster_name):
   """Checks if a minikube cluster is running."""
   cmd = [_FindMinikube(), 'status', '-p', cluster_name, '-o', 'json']
-  p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-  stdout, _ = p.communicate()
   try:
-    status = json.loads(six.ensure_text(stdout).strip())
+    status = run_subprocess.GetOutputJson(cmd, show_stderr=False)
     return 'Host' in status and status['Host'].strip() == 'Running'
   except ValueError:
     return False
@@ -235,7 +223,7 @@ def _StopMinikube(cluster_name):
   """Stop a minikube cluster."""
   cmd = [_FindMinikube(), 'stop', '-p', cluster_name]
   print("Stopping development environment '%s' ..." % cluster_name)
-  run_subprocess.RunWithoutOutput(cmd)
+  run_subprocess.Run(cmd, show_output=False)
   print('Development environment stopped.')
 
 
@@ -243,7 +231,7 @@ def DeleteMinikube(cluster_name):
   """Delete a minikube cluster."""
   cmd = [_FindMinikube(), 'delete', '-p', cluster_name, '--purge']
   print("Deleting development environment '%s' ..." % cluster_name)
-  run_subprocess.RunWithoutOutput(cmd)
+  run_subprocess.Run(cmd, show_output=False)
   print('Development environment stopped.')
 
 
@@ -288,11 +276,8 @@ def _NamespaceExists(namespace, context_name=None):
   if context_name:
     cmd += ['--context', context_name]
   cmd += ['get', 'namespaces', '-o', 'name']
-
-  process = subprocess.Popen(
-      cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-  out, _ = process.communicate()
-  return 'namespace/' + namespace in six.ensure_text(out).splitlines()
+  namespaces = run_subprocess.GetOutputLines(cmd, show_stderr=False)
+  return 'namespace/' + namespace in namespaces
 
 
 def _CreateNamespace(namespace, context_name=None):
@@ -300,7 +285,7 @@ def _CreateNamespace(namespace, context_name=None):
   if context_name:
     cmd += ['--context', context_name]
   cmd += ['create', 'namespace', namespace]
-  run_subprocess.RunWithoutOutput(cmd)
+  run_subprocess.Run(cmd, show_output=False)
 
 
 def _DeleteNamespace(namespace, context_name=None):
@@ -308,7 +293,7 @@ def _DeleteNamespace(namespace, context_name=None):
   if context_name:
     cmd += ['--context', context_name]
   cmd += ['delete', 'namespace', namespace]
-  run_subprocess.RunWithoutOutput(cmd)
+  run_subprocess.Run(cmd, show_output=False)
 
 
 class KubeNamespace(object):
@@ -333,4 +318,3 @@ class KubeNamespace(object):
   def __exit__(self, exc_type, exc_value, tb):
     if self._delete_namespace:
       _DeleteNamespace(self._namespace, self._context_name)
-

@@ -27,6 +27,7 @@ from googlecloudsdk.api_lib.compute import kms_utils
 from googlecloudsdk.api_lib.compute import utils
 from googlecloudsdk.command_lib.compute import scope as compute_scopes
 from googlecloudsdk.command_lib.compute.instances import flags as instances_flags
+from googlecloudsdk.command_lib.util.apis import arg_utils
 from googlecloudsdk.core import log
 import ipaddress
 import six
@@ -210,6 +211,11 @@ def CreatePersistentAttachedDiskMessages(resources,
         source=disk_ref.SelfLink(),
         type=messages.AttachedDisk.TypeValueValuesEnum.PERSISTENT,
         **kwargs)
+
+    interface = disk.get('interface')
+    if interface:
+      attached_disk.interface = arg_utils.ChoiceToEnum(
+          interface, messages.AttachedDisk.InterfaceValueValuesEnum)
 
     # The boot disk must end up at index 0.
     if boot:

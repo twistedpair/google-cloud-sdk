@@ -92,7 +92,7 @@ def IsValidLabelKey(key):
 _KEY_FORMAT_ERROR = (
     'Only hyphens (-), underscores (_), lowercase characters, and numbers are '
     'allowed. Keys must start with a lowercase character. International '
-    'characters are allowed.')
+    'characters are allowed. Key length must not exceed 63 characters.')
 _KEY_FORMAT_HELP = (
     'Keys must start with a lowercase character and contain only hyphens '
     '(`-`), underscores (```_```), lowercase characters, and numbers.')

@@ -35,9 +35,11 @@ class APIsClient(base.BaseClient):
   _entity_path = ["organization", "api"]
 
   @classmethod
-  def Deploy(cls, identifiers, override=False):
+  def Deploy(cls, identifiers, override=False, basepath=None):
     deployment_path = ["organization", "environment", "api", "revision"]
     query_params = {"override": "true"} if override else {}
+    if basepath:
+      query_params["basepath"] = basepath
     try:
       return request.ResponseToApiRequest(
           identifiers,

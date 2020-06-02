@@ -249,11 +249,11 @@ def AddSubscriptionSettingsFlags(parser,
             Pub/Sub.""")
   if support_filtering and not is_update:
     parser.add_argument(
-        '--filter',
+        '--message-filter',
         type=str,
-        help="""A non-empty string written in the Cloud Pub/Sub filter
-            language. This feature is part of an invitation-only alpha
-            release.""")
+        help="""Expression to filter messages. If set, Pub/Sub only delivers the
+        messages that match the filter. The expression must be a non-empty
+        string in the Pub/Sub filtering language.""")
   current_group = parser
   if is_update:
     mutual_exclusive_group = current_group.add_mutually_exclusive_group()
@@ -406,11 +406,11 @@ def ValidateFilterString(args):
   Raises:
     InvalidArgumentException: if filter string is empty.
   """
-  if args.filter is not None and not args.filter:
+  if args.message_filter is not None and not args.message_filter:
     raise exceptions.InvalidArgumentException(
-        '--filter',
+        '--message-filter',
         'Filter string must be non-empty. If you do not want a filter, ' +
-        'do not set the --filter argument.')
+        'do not set the --message-filter argument.')
 
 
 def ValidateDeadLetterPolicy(args):

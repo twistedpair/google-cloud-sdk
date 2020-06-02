@@ -91,21 +91,19 @@ class LocalRuntimeFiles(object):
     Returns:
       Text of the skaffold yaml file.
     """
-    skaffold_yaml_text = _SKAFFOLD_TEMPLATE.format(
-        image_name=self._settings.image_name,
-        context_path=self._settings.build_context_directory or
-        os.path.dirname(self._settings.dockerfile) or '.')
-    skaffold_yaml = yaml.load(skaffold_yaml_text)
+    skaffold_yaml = yaml.load(_SKAFFOLD_TEMPLATE)
     manifests = yaml_helper.GetOrCreate(
         skaffold_yaml, ('deploy', 'kubectl', 'manifests'), constructor=list)
     manifests.append(kubernetes_file_path)
     artifact = {'image': self._settings.image_name}
     if self._settings.builder:
       artifact['buildpack'] = {'builder': self._settings.builder}
-    else:
-      artifact['context'] = (
-          self._settings.build_context_directory or
-          os.path.dirname(self._settings.dockerfile) or '.')
+    elif self._settings.dockerfile:
+      artifact['docker'] = {'dockerfile': self._settings.dockerfile}
+
+    artifact['context'] = (
+        self._settings.build_context_directory or
+        os.path.dirname(self._settings.dockerfile) or '.')
     artifacts = yaml_helper.GetOrCreate(
         skaffold_yaml, ('build', 'artifacts'), constructor=list)
     artifacts.append(artifact)

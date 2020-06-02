@@ -20,6 +20,8 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+import textwrap
+
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.command_lib.compute import flags
 from googlecloudsdk.core import log
@@ -75,7 +77,7 @@ def _GetBalancingModes():
   utilization_extra_help = (
       'This is incompatible with --network-endpoint-group.')
   balancing_modes = {
-      'CONNECTION': """\
+      'CONNECTION': textwrap.dedent("""
           Available if the backend service's load balancing scheme is either
           `INTERNAL` or `EXTERNAL`.
           Available if the backend service's protocol is one of `SSL`, `TCP`,
@@ -91,8 +93,8 @@ def _GetBalancingModes():
 
           For backend services where `--load-balancing-scheme` is `INTERNAL`,
           you must omit all of these parameters.
-          """.format(per_rate_flags),
-      'RATE': """\
+          """).format(per_rate_flags),
+      'RATE': textwrap.dedent("""
           Available if the backend service's load balancing scheme is
           `INTERNAL_MANAGED`, `INTERNAL_SELF_MANAGED`, or `EXTERNAL`. Available
           if the backend service's protocol is one of HTTP, HTTPS, or HTTP/2.
@@ -102,8 +104,8 @@ def _GetBalancingModes():
 
           You must specify exactly one of these additional parameters:
           `--max-rate`, `--max-rate-per-instance`, or `--max-rate-per-endpoint`.
-          """.format(utilization_extra_help),
-      'UTILIZATION': """\
+          """).format(utilization_extra_help),
+      'UTILIZATION': textwrap.dedent("""
           Available if the backend service's load balancing scheme is
           `INTERNAL_MANAGED`, `INTERNAL_SELF_MANAGED`, or `EXTERNAL`. Available only
           for managed or unmanaged instance group backends.
@@ -115,7 +117,7 @@ def _GetBalancingModes():
           `--max-utilization`, `--max-rate`, `--max-rate-per-instance`,
           `--max-connections`, `--max-connections-per-instance`.
           For valid combinations, see `--max-utilization`.
-          """.format(per_connection_flags),
+          """).format(per_connection_flags),
   }
   return balancing_modes
 

@@ -22,17 +22,15 @@ from __future__ import unicode_literals
 import abc
 import base64
 import copy
+import enum
 import json
 import os
-
-import enum
 
 from googlecloudsdk.core import config
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 from googlecloudsdk.core.credentials import devshell as c_devshell
-from googlecloudsdk.core.credentials import google_auth_credentials as c_google_auth
 from googlecloudsdk.core.util import files
 
 from oauth2client import client
@@ -43,7 +41,6 @@ import sqlite3
 from google.auth import _oauth2client as oauth2client_helper
 from google.auth import compute_engine as google_auth_compute_engine
 from google.auth import credentials as google_auth_creds
-from google.oauth2 import service_account as google_auth_service_account
 
 ADC_QUOTA_PROJECT_FIELD_NAME = 'quota_project_id'
 
@@ -620,6 +617,11 @@ class CredentialTypeGoogleAuth(enum.Enum):
       return CredentialTypeGoogleAuth.DEVSHELL
     if isinstance(creds, google_auth_compute_engine.Credentials):
       return CredentialTypeGoogleAuth.GCE
+    # Import only when necessary to decrease the startup time. Move it to
+    # global once google-auth is ready to replace oauth2client.
+    # pylint: disable=g-import-not-at-top
+    from google.oauth2 import service_account as google_auth_service_account
+    # pylint: enable=g-import-not-at-top
     if isinstance(creds, google_auth_service_account.Credentials):
       return CredentialTypeGoogleAuth.SERVICE_ACCOUNT
     if getattr(creds, 'refresh_token', None) is not None:
@@ -764,6 +766,11 @@ def FromJsonGoogleAuth(json_value):
     # internally if it is not provided.
     if not json_key.get('token_uri'):
       json_key['token_uri'] = _TOKEN_URI
+    # Import only when necessary to decrease the startup time. Move it to
+    # global once google-auth is ready to replace oauth2client.
+    # pylint: disable=g-import-not-at-top
+    from google.oauth2 import service_account as google_auth_service_account
+    # pylint: enable=g-import-not-at-top
     service_account_credentials = (
         google_auth_service_account.Credentials.from_service_account_info)
     cred = service_account_credentials(json_key, scopes=config.CLOUDSDK_SCOPES)
@@ -775,6 +782,11 @@ def FromJsonGoogleAuth(json_value):
     cred.client_id = json_key.get('client_id')
     return cred
   if cred_type == CredentialTypeGoogleAuth.USER_ACCOUNT:
+    # Import only when necessary to decrease the startup time. Move it to
+    # global once google-auth is ready to replace oauth2client.
+    # pylint: disable=g-import-not-at-top
+    from googlecloudsdk.core.credentials import google_auth_credentials as c_google_auth
+    # pylint: enable=g-import-not-at-top
     return c_google_auth.UserCredWithReauth.from_authorized_user_info(
         json_key, scopes=json_key.get('scopes'))
   raise UnknownCredentialsType(
@@ -962,6 +974,11 @@ def MaybeConvertToGoogleAuthCredentials(credentials, use_google_auth):
   target_creds = oauth2client_helper.convert(credentials)
   # token expiry is lost in the conversion.
   target_creds.expiry = getattr(credentials, 'token_expiry', None)
+  # Import only when necessary to decrease the startup time. Move it to
+  # global once google-auth is ready to replace oauth2client.
+  # pylint: disable=g-import-not-at-top
+  from google.oauth2 import service_account as google_auth_service_account
+  # pylint: enable=g-import-not-at-top
   if (isinstance(target_creds, google_auth_service_account.Credentials) or
       isinstance(target_creds, google_auth_compute_engine.Credentials)):
     # Access token and scopes are lost in the conversions of service acccount

@@ -187,12 +187,18 @@ def PromptForContactPrivacy(choices, current_privacy=None):
   choices.sort(key=flags.PrivacyChoiceStrength, reverse=True)
 
   if current_privacy:
-    update = console_io.PromptContinue(
-        'Your current contact privacy is {}.'.format(current_privacy),
-        'Do you want to change it',
-        default=False)
-    if not update:
+    if len(choices) == 1:
+      log.status.Print(
+          'Your current contact privacy is {}. It cannot be changed.'.format(
+              current_privacy))
       return None
+    else:
+      update = console_io.PromptContinue(
+          'Your current contact privacy is {}.'.format(current_privacy),
+          'Do you want to change it',
+          default=False)
+      if not update:
+        return None
 
     current_choice = 0
     for ix, privacy in enumerate(choices):
@@ -203,7 +209,7 @@ def PromptForContactPrivacy(choices, current_privacy=None):
     current_choice = 0  # The strongest available privacy
   if len(choices) == 1:
     ack = console_io.PromptContinue(
-        'The only supported contant privacy is {}.'.format(choices[0]),
+        'The only supported contact privacy is {}.'.format(choices[0]),
         default=True)
     if not ack:
       return None

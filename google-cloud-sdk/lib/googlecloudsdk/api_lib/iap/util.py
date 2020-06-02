@@ -460,7 +460,7 @@ class IapSettingsResource(object):
           iap_settings_message_type, iap_settings_to_parse)
     except (AttributeError) as e:
       raise calliope_exceptions.BadFileException(
-          'Iap settings file {0} does not contain properly formated JSON {1}'
+          'Iap settings file {0} does not contain properly formatted JSON {1}'
           .format(iap_settings_file_path, six.text_type(e)))
     return iap_settings_message
 

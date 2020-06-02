@@ -33,6 +33,8 @@ class AddonsConfig(_messages.Message):
   Fields:
     cloudRunConfig: Configuration for the Cloud Run addon, which allows the
       user to use a managed Knative service.
+    dnsCacheConfig: Configuration for NodeLocalDNS, a dns cache running on
+      cluster nodes
     horizontalPodAutoscaling: Configuration for the horizontal pod autoscaling
       feature, which increases or decreases the number of replica pods a
       replication controller has based on the resource usage of the existing
@@ -51,10 +53,11 @@ class AddonsConfig(_messages.Message):
   """
 
   cloudRunConfig = _messages.MessageField('CloudRunConfig', 1)
-  horizontalPodAutoscaling = _messages.MessageField('HorizontalPodAutoscaling', 2)
-  httpLoadBalancing = _messages.MessageField('HttpLoadBalancing', 3)
-  kubernetesDashboard = _messages.MessageField('KubernetesDashboard', 4)
-  networkPolicyConfig = _messages.MessageField('NetworkPolicyConfig', 5)
+  dnsCacheConfig = _messages.MessageField('DnsCacheConfig', 2)
+  horizontalPodAutoscaling = _messages.MessageField('HorizontalPodAutoscaling', 3)
+  httpLoadBalancing = _messages.MessageField('HttpLoadBalancing', 4)
+  kubernetesDashboard = _messages.MessageField('KubernetesDashboard', 5)
+  networkPolicyConfig = _messages.MessageField('NetworkPolicyConfig', 6)
 
 
 class AuthenticatorGroupsConfig(_messages.Message):
@@ -1197,6 +1200,16 @@ class DatabaseEncryption(_messages.Message):
 
   keyName = _messages.StringField(1)
   state = _messages.EnumField('StateValueValuesEnum', 2)
+
+
+class DnsCacheConfig(_messages.Message):
+  r"""Configuration for NodeLocal DNSCache
+
+  Fields:
+    enabled: Whether NodeLocal DNSCache is enabled for this cluster.
+  """
+
+  enabled = _messages.BooleanField(1)
 
 
 class Empty(_messages.Message):

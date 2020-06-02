@@ -88,7 +88,7 @@ def AddPreemptibleFlag(parser):
 
 def AddTpuNameArg(parser):
   return parser.add_argument(
-      'name',
+      'execution_group_name',
       help="""\
       Override the name to use for VMs and TPUs (defaults to your username). """
       )

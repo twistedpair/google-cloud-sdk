@@ -33,6 +33,7 @@ from googlecloudsdk.command_lib.compute import scope as compute_scopes
 from googlecloudsdk.command_lib.compute.instances import flags
 from googlecloudsdk.command_lib.compute.sole_tenancy import util as sole_tenancy_util
 from googlecloudsdk.core import log
+from googlecloudsdk.core import resources as cloud_resources
 import six
 
 EMAIL_REGEX = re.compile(r'(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$)')
@@ -296,7 +297,26 @@ def CreateConfidentialInstanceMessage(messages, enable_confidential_compute):
 
 
 def ParseDiskResource(resources, name, project, zone, type_):
-  """Parses the regional disk resources."""
+  """Parses disk resources.
+
+  Project and zone are ignored if a fully-qualified resource name is given, i.e.
+    - https://compute.googleapis.com/compute/v1/projects/my-project
+          /zones/us-central1-a/disks/disk-1
+    - projects/my-project/zones/us-central1-a/disks/disk-1
+
+  If project and zone cannot be parsed, we will use the given project and zone
+  as fallbacks.
+
+  Args:
+    resources: resources.Registry, The resource registry
+    name: str, name of the disk.
+    project: str, project of the disk.
+    zone: str, zone of the disk.
+    type_: ScopeEnum, type of the disk.
+
+  Returns:
+    A disk resource.
+  """
   if type_ == compute_scopes.ScopeEnum.REGION:
     return resources.Parse(
         name,
@@ -313,6 +333,45 @@ def ParseDiskResource(resources, name, project, zone, type_):
             'project': project,
             'zone': zone
         })
+
+
+def ParseDiskResourceFromAttachedDisk(resources, attached_disk):
+  """Parses the source disk resource of an AttachedDisk.
+
+  The source of an AttachedDisk is either a partial or fully specified URL
+  referencing either a regional or zonal disk.
+
+  Args:
+    resources: resources.Registry, The resource registry
+    attached_disk: AttachedDisk
+
+  Returns:
+    A disk resource.
+
+  Raises:
+    InvalidResourceException: If the attached disk source cannot be parsed as a
+        regional or zonal disk.
+  """
+  try:
+    disk = resources.Parse(attached_disk.source,
+                           collection='compute.regionDisks')
+    if disk:
+      return disk
+  except (cloud_resources.WrongResourceCollectionException,
+          cloud_resources.RequiredFieldOmittedException):
+    pass
+
+  try:
+    disk = resources.Parse(attached_disk.source,
+                           collection='compute.disks')
+    if disk:
+      return disk
+  except (cloud_resources.WrongResourceCollectionException,
+          cloud_resources.RequiredFieldOmittedException):
+    pass
+
+  raise cloud_resources.InvalidResourceException('Unable to parse [{}]'.format(
+      attached_disk.source))
 
 
 def GetDiskDeviceName(disk, name, container_mount_disk):

@@ -39,7 +39,6 @@ from googlecloudsdk.core.configurations import named_configs
 from googlecloudsdk.core.credentials import creds as c_creds
 from googlecloudsdk.core.credentials import devshell as c_devshell
 from googlecloudsdk.core.credentials import gce as c_gce
-from googlecloudsdk.core.credentials import google_auth_credentials as c_google_auth
 from googlecloudsdk.core.util import files
 from googlecloudsdk.core.util import times
 
@@ -54,8 +53,6 @@ import six
 from six.moves import urllib
 from google.auth import exceptions as google_auth_exceptions
 import google.auth.compute_engine as google_auth_gce
-import google.auth.impersonated_credentials as google_auth_impersonated_creds
-from google.oauth2 import service_account as google_auth_service_account
 
 
 GOOGLE_OAUTH2_PROVIDER_AUTHORIZATION_URI = (
@@ -695,6 +692,11 @@ def _Refresh(credentials,
 @contextlib.contextmanager
 def HandleGoogleAuthCredentialsRefreshError():
   """Handles exceptions during refreshing google auth credentials."""
+  # Import only when necessary to decrease the startup time. Move it to
+  # global once google-auth is ready to replace oauth2client.
+  # pylint: disable=g-import-not-at-top
+  from googlecloudsdk.core.credentials import google_auth_credentials as c_google_auth
+  # pylint: enable=g-import-not-at-top
   try:
     yield
   except reauth_errors.ReauthSamlLoginRequiredError:
@@ -737,6 +739,11 @@ def _RefreshGoogleAuth(credentials,
       gcloud, or if the provided credentials is not google auth impersonation
       credentials.
   """
+  # Import only when necessary to decrease the startup time. Move it to
+  # global once google-auth is ready to replace oauth2client.
+  # pylint: disable=g-import-not-at-top
+  from google.oauth2 import service_account as google_auth_service_account
+  # pylint: enable=g-import-not-at-top
   request_client = http.GoogleAuthRequest(http_client)
   with HandleGoogleAuthCredentialsRefreshError():
     credentials.refresh(request_client)
@@ -747,6 +754,12 @@ def _RefreshGoogleAuth(credentials,
         raise AccountImpersonationError(
             'gcloud is configured to impersonate a service account but '
             'impersonation support is not available.')
+
+      # Import only when necessary to decrease the startup time. Move it to
+      # global once google-auth is ready to replace oauth2client.
+      # pylint: disable=g-import-not-at-top
+      import google.auth.impersonated_credentials as google_auth_impersonated_creds
+      # pylint: enable=g-import-not-at-top
       if not isinstance(credentials,
                         google_auth_impersonated_creds.Credentials):
         raise AccountImpersonationError(
@@ -859,6 +872,11 @@ def _RefreshServiceAccountIdTokenGoogleAuth(cred, request_client):
   Returns:
     str, The id_token if refresh was successful. Otherwise None.
   """
+  # Import only when necessary to decrease the startup time. Move it to
+  # global once google-auth is ready to replace oauth2client.
+  # pylint: disable=g-import-not-at-top
+  from google.oauth2 import service_account as google_auth_service_account
+  # pylint: enable=g-import-not-at-top
   cred_dict = {
       'client_email': cred.service_account_email,
       'token_uri': cred._token_uri,  # pylint: disable=protected-access
@@ -962,6 +980,11 @@ def Revoke(account=None, use_google_auth=False):
         known credentials.
     RevokeError: If there was a more general problem revoking the account.
   """
+  # Import only when necessary to decrease the startup time. Move it to
+  # global once google-auth is ready to replace oauth2client.
+  # pylint: disable=g-import-not-at-top
+  from googlecloudsdk.core.credentials import google_auth_credentials as c_google_auth
+  # pylint: enable=g-import-not-at-top
   if not account:
     account = properties.VALUES.core.account.Get()
   if not account:

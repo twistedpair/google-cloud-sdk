@@ -1351,6 +1351,14 @@ MAP = {
                 default_version=False,
                 enable_mtls=False,
                 mtls_endpoint_override=''),
+        'v2alpha1':
+            APIDef(
+                class_path='googlecloudsdk.third_party.apis.policytroubleshooter.v2alpha1',
+                client_classpath='policytroubleshooter_v2alpha1_client.PolicytroubleshooterV2alpha1',
+                messages_modulepath='policytroubleshooter_v2alpha1_messages',
+                default_version=False,
+                enable_mtls=False,
+                mtls_endpoint_override=''),
     },
     'privateca': {
         'v1alpha1':

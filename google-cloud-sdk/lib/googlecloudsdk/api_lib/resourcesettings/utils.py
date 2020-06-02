@@ -46,6 +46,30 @@ def GetCreateRequestFromArgs(args, setting_value):
   return get_request
 
 
+def GetDeleteValueRequestFromArgs(args, setting_name):
+  """Returns the get_request from the user-specified arguments.
+
+  Args:
+    args: argparse.Namespace, An object that contains the values for the
+      arguments specified in the Args method.
+    setting_name: setting name such as `settings/iam-projectCreatorRoles`
+  """
+
+  messages = settings_service.ResourceSettingsMessages()
+
+  if args.organization:
+    get_request = messages.ResourcesettingsOrganizationsSettingsDeleteValueRequest(
+        name=setting_name)
+  elif args.folder:
+    get_request = messages.ResourcesettingsFoldersSettingsDeleteValueRequest(
+        name=setting_name)
+  else:
+    get_request = messages.ResourcesettingsProjectsSettingsDeleteValueRequest(
+        name=setting_name)
+
+  return get_request
+
+
 def GetGetValueRequestFromArgs(args, setting_name):
   """Returns the get_request from the user-specified arguments.
 
@@ -66,6 +90,30 @@ def GetGetValueRequestFromArgs(args, setting_name):
   else:
     get_request = messages.ResourcesettingsProjectsSettingsGetValueRequest(
         name=setting_name)
+
+  return get_request
+
+
+def GetLookupEffectiveValueRequestFromArgs(args, parent_resource):
+  """Returns the get_request from the user-specified arguments.
+
+  Args:
+    args: argparse.Namespace, An object that contains the values for the
+      arguments specified in the Args method.
+    parent_resource: resource location such as `organizations/123`
+  """
+
+  messages = settings_service.ResourceSettingsMessages()
+
+  if args.organization:
+    get_request = messages.ResourcesettingsOrganizationsSettingsLookupEffectiveValueRequest(
+        parent=parent_resource)
+  elif args.folder:
+    get_request = messages.ResourcesettingsFoldersSettingsLookupEffectiveValueRequest(
+        parent=parent_resource)
+  else:
+    get_request = messages.ResourcesettingsProjectsSettingsLookupEffectiveValueRequest(
+        parent=parent_resource)
 
   return get_request
 
@@ -134,6 +182,31 @@ def GetServiceFromArgs(args):
     service = settings_service.ProjectsSettingsService()
 
   return service
+
+
+def GetUpdateValueRequestFromArgs(args, setting_value):
+  """Returns the get_request from the user-specified arguments.
+
+  Args:
+    args: argparse.Namespace, An object that contains the values for the
+      arguments specified in the Args method.
+    setting_value: setting value object contains name, value
+  """
+
+  messages = settings_service.ResourceSettingsMessages()
+
+  if args.organization:
+    message_type = messages.ResourcesettingsOrganizationsSettingsUpdateValueRequest
+  elif args.folder:
+    message_type = messages.ResourcesettingsFoldersSettingsUpdateValueRequest
+  else:
+    message_type = messages.ResourcesettingsProjectsSettingsUpdateValueRequest
+
+  get_request = message_type(name=setting_value.name,
+                             googleCloudResourcesettingsV1alpha1SettingValue
+                             =setting_value)
+
+  return get_request
 
 
 def GetValueServiceFromArgs(args):

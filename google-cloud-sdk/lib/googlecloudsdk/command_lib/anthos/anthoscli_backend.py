@@ -21,9 +21,12 @@ import copy
 import json
 import os
 
+from googlecloudsdk.command_lib.anthos.common import file_parsers
 from googlecloudsdk.command_lib.anthos.common import messages
 from googlecloudsdk.command_lib.util.anthos import binary_operations
 from googlecloudsdk.core import exceptions as c_except
+from googlecloudsdk.core import log
+from googlecloudsdk.core.console import console_io
 from googlecloudsdk.core.credentials import store as c_store
 
 import six
@@ -128,6 +131,18 @@ class AnthosCliWrapper(binary_operations.StreamingBinaryBackedOperation):
 
     return exec_args
 
+  def _ParseExportArgs(self, cluster, project, location, output_dir, **kwargs):
+    del kwargs  # Not Used here
+
+    exec_args = ['export', '-c', cluster, '--project', project]
+    if location:
+      exec_args.extend(['--location', location])
+
+    if output_dir:
+      exec_args.extend(['--output-directory', output_dir])
+
+    return exec_args
+
   def _ParseArgsForCommand(self, command, **kwargs):
     if command == 'get':
       return self._ParseGetArgs(**kwargs)
@@ -139,6 +154,8 @@ class AnthosCliWrapper(binary_operations.StreamingBinaryBackedOperation):
       return self._ParseInitArgs(**kwargs)
     if command == 'apply':
       return self._ParseApplyArgs(**kwargs)
+    if command == 'export':
+      return self._ParseExportArgs(**kwargs)
 
     raise binary_operations.InvalidOperationForBinary(
         'Invalid Operation [{}] for anthoscli'.format(command))
@@ -204,3 +221,47 @@ class AnthosAuthWrapper(binary_operations.StreamingBinaryBackedOperation):
 
     raise binary_operations.InvalidOperationForBinary(
         'Invalid Operation [{}] for kubectl-anthos'.format(command))
+
+
+def _GetClusterConfig(all_configs, cluster):
+  found_clusters = all_configs.FindMatchingItem(
+      file_parsers.LoginConfigObject.CLUSTER_NAME_KEY, cluster)
+  if len(found_clusters) != 1:
+    raise AnthosAuthException(
+        'Cluster [{}] not found for config path [{}]'.format(
+            cluster, all_configs.file_path))
+  return found_clusters.pop()
+
+
+def GetPreferredAuthForCluster(cluster, config_file, force_update=False):
+  """Get preferredAuthentication value for cluster."""
+  configs = file_parsers.YamlConfigFile(config_file,
+                                        file_parsers.LoginConfigObject)
+  cluster_config = _GetClusterConfig(configs, cluster)
+  try:
+    auth_method = cluster_config.GetPreferredAuth()
+  except KeyError:
+    auth_method = None
+  except file_parsers.YamlConfigObjectFieldError:
+    # gracefully quit for config versions older than v2alpha1 that
+    # do not support 'preferredAuthentication' field.
+    return None
+
+  if not auth_method or force_update:
+    prompt_message = ('Please select your preferred authentication option for '
+                      'cluster [{}]'.format(cluster))
+    override_warning = ('. Note: This will overwrite current preferred auth '
+                        'method [{}] in config file.')
+    if auth_method and force_update:
+      prompt_message = prompt_message + override_warning.format(auth_method)
+    # do the prompting
+    providers = cluster_config.GetAuthProviders()
+    index = console_io.PromptChoice(providers,
+                                    message=prompt_message,
+                                    cancel_option=True)
+    auth_method = providers[index]
+    log.status.Print(
+        'Setting Preferred Authentication option to [{}]'.format(auth_method))
+    cluster_config.SetPreferredAuth(auth_method)
+    configs.WriteToDisk()
+  return auth_method

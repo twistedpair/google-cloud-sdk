@@ -54,6 +54,7 @@ class LabelChanges(ConfigChanger):
   """Represents the user intent to modify metadata labels."""
 
   def __init__(self, diff, copy_to_revision=True):
+    super(LabelChanges, self).__init__()
     self._diff = diff
     self._copy_to_revision = copy_to_revision
 
@@ -81,6 +82,7 @@ class ReplaceServiceChange(ConfigChanger):
   """Represents the user intent to replace the service."""
 
   def __init__(self, new_service):
+    super(ReplaceServiceChange, self).__init__()
     self._service = new_service
 
   def Adjust(self, resource):
@@ -128,6 +130,7 @@ class SetTemplateAnnotationChange(ConfigChanger):
   """Represents the user intent to set a template annotation."""
 
   def __init__(self, key, value):
+    super(SetTemplateAnnotationChange, self).__init__()
     self._key = key
     self._value = value
 
@@ -142,6 +145,7 @@ class DeleteTemplateAnnotationChange(ConfigChanger):
   """Represents the user intent to delete a template annotation."""
 
   def __init__(self, key):
+    super(DeleteTemplateAnnotationChange, self).__init__()
     self._key = key
 
   def Adjust(self, resource):
@@ -156,6 +160,7 @@ class VpcConnectorChange(ConfigChanger):
   """Sets a VPC connector annotation on the service."""
 
   def __init__(self, connector_name):
+    super(VpcConnectorChange, self).__init__()
     self._connector_name = connector_name
 
   def Adjust(self, resource):
@@ -174,6 +179,8 @@ class ClearVpcConnectorChange(ConfigChanger):
                                                      resource.template.metadata)
     if revision.VPC_ACCESS_ANNOTATION in annotations:
       del annotations[revision.VPC_ACCESS_ANNOTATION]
+    if revision.EGRESS_SETTINGS_ANNOTATION in annotations:
+      del annotations[revision.EGRESS_SETTINGS_ANNOTATION]
     return resource
 
 
@@ -183,6 +190,7 @@ class ImageChange(ConfigChanger):
   deployment_type = 'container'
 
   def __init__(self, image):
+    super(ImageChange, self).__init__()
     self.image = image
 
   def Adjust(self, resource):
@@ -206,6 +214,7 @@ class EnvVarLiteralChanges(ConfigChanger):
       env_vars_to_remove: [str], List of env vars to remove.
       clear_others: bool, If true, clear all non-updated env vars.
     """
+    super(EnvVarLiteralChanges, self).__init__()
     self._to_update = None
     self._to_remove = None
     self._clear_others = clear_others
@@ -262,6 +271,7 @@ class EnvVarSourceChanges(ConfigChanger):
     Raises:
       ConfigurationError if a key hasn't been provided for a source.
     """
+    super(EnvVarSourceChanges, self).__init__()
     self._to_update = None
     self._to_remove = None
     self._clear_others = clear_others
@@ -355,6 +365,7 @@ class ResourceChanges(ConfigChanger):
   """Represents the user intent to update resource limits."""
 
   def __init__(self, memory=None, cpu=None):
+    super(ResourceChanges, self).__init__()
     self._memory = memory
     self._cpu = cpu
 
@@ -378,6 +389,7 @@ class CloudSQLChanges(ConfigChanger):
       region: Region to use as the default region for Cloud SQL instances
       args: Args to the command.
     """
+    super(CloudSQLChanges, self).__init__()
     self._project = project
     self._region = region
     self._args = args
@@ -447,6 +459,7 @@ class ConcurrencyChanges(ConfigChanger):
   """Represents the user intent to update concurrency preference."""
 
   def __init__(self, concurrency):
+    super(ConcurrencyChanges, self).__init__()
     self._concurrency = None if concurrency == 'default' else int(concurrency)
 
   def Adjust(self, resource):
@@ -459,6 +472,7 @@ class TimeoutChanges(ConfigChanger):
   """Represents the user intent to update request duration."""
 
   def __init__(self, timeout):
+    super(TimeoutChanges, self).__init__()
     self._timeout = timeout
 
   def Adjust(self, resource):
@@ -471,6 +485,7 @@ class ServiceAccountChanges(ConfigChanger):
   """Represents the user intent to change service account for the revision."""
 
   def __init__(self, service_account):
+    super(ServiceAccountChanges, self).__init__()
     self._service_account = service_account
 
   def Adjust(self, resource):
@@ -483,6 +498,7 @@ class RevisionNameChanges(ConfigChanger):
   """Represents the user intent to change revision name."""
 
   def __init__(self, revision_suffix):
+    super(RevisionNameChanges, self).__init__()
     self._revision_suffix = revision_suffix
 
   def Adjust(self, resource):
@@ -512,6 +528,7 @@ class VolumeChanges(ConfigChanger):
       clear_others: bool, If true, clear all non-updated volumes and mounts of
         the given [volume_type].
     """
+    super(VolumeChanges, self).__init__()
     self._to_update = None
     self._to_remove = None
     self._clear_others = clear_others
@@ -652,6 +669,7 @@ class TrafficChanges(ConfigChanger):
                tags_to_update=None,
                tags_to_remove=None,
                clear_other_tags=False):
+    super(TrafficChanges, self).__init__()
     self._new_percentages = new_percentages
     self._by_tag = by_tag
     self._tags_to_update = tags_to_update or {}
@@ -681,10 +699,25 @@ class TrafficChanges(ConfigChanger):
     return resource
 
 
+class TagOnDeployChange(ConfigChanger):
+  """The intent to provide a tag for the revision you're currently deploying."""
+
+  def __init__(self, tag):
+    super(TagOnDeployChange, self).__init__()
+    self._tag = tag
+
+  def Adjust(self, resource):
+    """Gives the revision that's being created the given tag."""
+    tags_to_update = {self._tag: resource.template.name}
+    resource.spec_traffic.UpdateTags(tags_to_update, [], False)
+    return resource
+
+
 class ContainerCommandChange(ConfigChanger):
   """Represents the user intent to change the 'command' for the container."""
 
   def __init__(self, command):
+    super(ContainerCommandChange, self).__init__()
     self._commands = command
 
   def Adjust(self, resource):
@@ -696,6 +729,7 @@ class ContainerArgsChange(ConfigChanger):
   """Represents the user intent to change the 'args' for the container."""
 
   def __init__(self, args):
+    super(ContainerArgsChange, self).__init__()
     self._args = args
 
   def Adjust(self, resource):
@@ -719,6 +753,7 @@ class ContainerPortChange(ConfigChanger):
       use_http2: bool, True to set the port name for http/2, False to unset it,
         or None to not modify the port name.
     """
+    super(ContainerPortChange, self).__init__()
     self._port = port
     self._http2 = use_http2
 

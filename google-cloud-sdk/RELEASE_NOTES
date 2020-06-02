@@ -6,7 +6,53 @@ Subscribe to these release notes at [https://groups.google.com/forum/#!forum/goo
 
 Note: Cloud SDK introduced support for Python 3 in release 274.0.0 and users are strongly encouraged to migrate to Python 3. Support for Python 2 will be deprecated on July 31, 2020. See also [Python 2 Sunset](https://cloud.google.com/python/docs/python2-sunset/) and [Using Python 3](https://cloud.google.com/sdk/gcloud/reference/topic/startup).
 
-## 294.0.0 (2020-05-19)
+## 295.0.0 (2020-06-02)
+
+### Anthos
+
+* Added `gcloud  anthos apply` command to beta. This command declaratively
+  applies Config Connector resource configurations.
+* Added `gcloud anthos export` command to beta. This command exports Config
+  Connector resource configurations of existing Google Kubernetes Engine
+  clusters.
+
+### Cloud Memorystore
+
+*   Enabled support for Redis version 5.0. Added `redis_5_0` as a new option for `--redis_version` flag of `gcloud redis instances create`.
+*   Added `gcloud redis instances upgrade` to upgrade a Memorystore Redis instance to a specified Redis version.
+
+### Cloud Pub/Sub
+
+*  Rename `--filter` flag of `gcloud pubsub subscriptions create` to
+  `--message-filter`. This is done to avoid confusion with `--filter` flag
+   of <https://cloud.google.com/sdk/gcloud/reference/topic/filters>.
+* Promoted `--message-filter` flag of `gcloud pubsub subscriptions create` to
+  beta. This feature allows users to specify a filter expression on a Cloud
+  Pub/Sub subscription which will automatically drop messages.
+
+### Compute Engine
+
+* Promoted `gcloud compute instance-groups managed describe-instance` to beta.
+* Added `--accelerator` flag to `gcloud beta compute instances create-with-container`.
+* Promoted `--private-ipv6-google-access-type` flag of `gcloud compute instances <create|create-with-container>` to GA.
+* Promoted `--private-ipv6-google-access-type` flag of `gcloud compute instance-templates <create|create-with-container>` to GA.
+* Promoted `--private-ipv6-google-access-type` flag of `gcloud compute networks subnets <create|update>` to GA.
+* Added `--interface` flag to `gcloud beta compute disks create`.
+* Added `--interface` flag to `gcloud beta compute instances attach-disk`.
+* Added `interface` key to `--disk` key of `gcloud beta compute instances create`.
+
+### Game Servers
+
+* Added `--description` to `gcloud <alpha|beta> game servers
+  <clusters/realms/deployments> update` to allow updating description for
+  resources.
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+Note: Cloud SDK introduced support for Python 3 in release 274.0.0 and users are strongly encouraged to migrate to Python 3. Support for Python 2 will be deprecated on July 31, 2020. See also [Python 2 Sunset](https://cloud.google.com/python/docs/python2-sunset/) and [Using Python 3](https://cloud.google.com/sdk/gcloud/reference/topic/startup).
+
+## 294.0.0 (2020-05-27)
 
 ### Breaking Changes
 
@@ -18,7 +64,6 @@ Note: Cloud SDK introduced support for Python 3 in release 274.0.0 and users are
   * `gcloud beta secrets list`
   * `gcloud beta locations list`
   * `gcloud beta secrets versions list`
-*   **(Secret Manager)** 
 
 
 ### AI Platform
@@ -39,7 +84,6 @@ Note: Cloud SDK introduced support for Python 3 in release 274.0.0 and users are
 
 ### Cloud Storage
 
-* 
 * Updated gsutil component to 4.51.
 
 ### Cloud Tasks
@@ -79,7 +123,6 @@ Subscribe to these release notes at [https://groups.google.com/forum/#!forum/goo
 
 ### Kubernetes Engine
 
-* 
 * Promoted `--disable-default-snat` flag of `gcloud container clusters
   <create|update>` to beta.
 

@@ -22,11 +22,13 @@ from __future__ import division
 from __future__ import print_function
 from __future__ import unicode_literals
 
+import json
 import os.path
 import subprocess
 from googlecloudsdk.core import config
 from googlecloudsdk.core.updater import update_manager
 from googlecloudsdk.core.util import files as file_utils
+import six
 
 
 def _FindOrInstallComponent(component_name):
@@ -62,7 +64,51 @@ def GetGcloudPreferredExecutable(exe):
   return path
 
 
-def RunWithoutOutput(cmd):
-  """Run command and send the output to /dev/null or nul."""
-  with file_utils.FileWriter(os.devnull) as devnull:
-    subprocess.check_call(cmd, stdout=devnull, stderr=devnull)
+def Run(cmd, show_output=True):
+  """Run command and optionally send the output to /dev/null or nul."""
+  if show_output:
+    subprocess.check_call(cmd)
+  else:
+    with file_utils.FileWriter(os.devnull) as devnull:
+      subprocess.check_call(cmd, stdout=devnull, stderr=devnull)
+
+
+def GetOutputLines(cmd, show_stderr=True, strip_output=False):
+  """Run command and get its stdout as a list of lines.
+
+  Args:
+    cmd: List of executable and arg strings.
+    show_stderr: False to suppress stderr from the command.
+    strip_output: Strip head/tail whitespace before splitting into lines.
+
+  Returns:
+    List of lines (without newlines).
+  """
+  p = subprocess.Popen(
+      cmd,
+      stdout=subprocess.PIPE,
+      stderr=None if show_stderr else subprocess.PIPE)
+  stdout, _ = p.communicate()
+  text = six.ensure_text(stdout)
+  if strip_output:
+    text = text.strip()
+  lines = text.splitlines()
+  return lines
+
+
+def GetOutputJson(cmd, show_stderr=True):
+  """Run command and get its JSON stdout as a parsed dict.
+
+  Args:
+    cmd: List of executable and arg strings.
+    show_stderr: False to suppress stderr from the command.
+
+  Returns:
+    Parsed JSON.
+  """
+  p = subprocess.Popen(
+      cmd,
+      stdout=subprocess.PIPE,
+      stderr=None if show_stderr else subprocess.PIPE)
+  stdout, _ = p.communicate()
+  return json.loads(six.ensure_text(stdout).strip())

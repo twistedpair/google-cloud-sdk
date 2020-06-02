@@ -108,6 +108,10 @@ def NormalizeDomainName(domain):
   return normalized
 
 
+def PunycodeToUnicode(domain):
+  return domain.encode('utf-8').decode('idna')
+
+
 def ValidateDomainName(domain):
   if not domain:
     return False

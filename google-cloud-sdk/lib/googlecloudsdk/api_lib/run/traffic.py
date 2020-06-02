@@ -461,6 +461,11 @@ class TrafficTargets(collections.MutableMapping):
         to_update.
     """
     new_targets = []
+    # No traffic section yet. In this situation we can't specify a tag but
+    # expect the server to default us up to LATEST=100, so we need to add that
+    # LATEST section ourselves.
+    if not self._m:
+      self._m[:] = [NewTrafficTarget(self._messages, LATEST_REVISION_KEY, 100)]
     for target in self._m:
       if clear_others or target.tag in to_remove or target.tag in to_update:
         target.tag = None

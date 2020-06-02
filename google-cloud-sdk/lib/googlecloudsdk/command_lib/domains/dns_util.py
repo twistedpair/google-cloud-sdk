@@ -56,7 +56,7 @@ def ParseDNSSettings(name_servers,
                      domain,
                      enable_dnssec=True,
                      dns_settings=None):
-  """Parse DNS settings from a flag.
+  """Parses DNS settings from a flag.
 
   At most one of the arguments (except domain) should be non-empty.
 
@@ -91,13 +91,18 @@ def ParseDNSSettings(name_servers,
 
 
 def _CustomNameServers(name_servers, ds_records=None):
+  """Validates name servers and returns (dns_settings, update_mask)."""
   if not ds_records:
     ds_records = []
+  normalized_name_servers = list(map(util.NormalizeDomainName, name_servers))
+  for ns, normalized in zip(name_servers, normalized_name_servers):
+    if not util.ValidateDomainName(normalized):
+      raise exceptions.Error('Invalid name server: \'{}\'.'.format(ns))
   messages = registrations.GetMessagesModule()
   update_mask = DnsUpdateMask(dns_provider=True)
   dns_settings = messages.DnsSettings(
       customDns=messages.CustomDns(
-          nameServers=name_servers, dsRecords=ds_records))
+          nameServers=normalized_name_servers, dsRecords=ds_records))
   return dns_settings, update_mask
 
 
@@ -114,7 +119,7 @@ def _GoogleDomainsNameServers(enable_dnssec):
 
 
 def _ParseDnsSettingsFromFile(path):
-  """Parse dns_settings from a yaml file.
+  """Parses dns_settings from a yaml file.
 
   Args:
     path: YAML file path.
@@ -206,7 +211,7 @@ def _GetCloudDnsDetails(cloud_dns_zone, domain, enable_dnssec):
 
 
 def _ConvertDnsKeys(dns_messages, dns_keys):
-  """Convert DnsKeys to DsRecords."""
+  """Converts DnsKeys to DsRecords."""
   messages = registrations.GetMessagesModule()
   ds_records = []
   for key in dns_keys:
@@ -255,7 +260,7 @@ def PromptForNameServers(domain,
                          enable_dnssec=None,
                          dns_settings=None,
                          print_format='default'):
-  """Ask the user to provide DNS settings interactively.
+  """Asks the user to provide DNS settings interactively.
 
   Args:
     domain: Domain name corresponding to the DNS settings.
@@ -325,12 +330,17 @@ def PromptForNameServers(domain,
 
 
 def NameServersEquivalent(prev_dns_settings, new_dns_settings):
+  """Checks if dns settings have equivalent name servers."""
   if prev_dns_settings.googleDomainsDns:
     return bool(new_dns_settings.googleDomainsDns)
   if prev_dns_settings.customDns:
     if not new_dns_settings.customDns:
       return False
-    return prev_dns_settings.customDns.nameServers == new_dns_settings.customDns.nameServers
+    prev_ns = sorted(
+        map(util.NormalizeDomainName, prev_dns_settings.customDns.nameServers))
+    new_ns = sorted(
+        map(util.NormalizeDomainName, new_dns_settings.customDns.nameServers))
+    return prev_ns == new_ns
 
   return False
 

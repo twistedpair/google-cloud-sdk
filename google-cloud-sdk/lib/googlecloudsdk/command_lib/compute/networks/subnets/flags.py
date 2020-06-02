@@ -63,7 +63,8 @@ def SubnetworkResolver():
 def AddUpdateArgs(parser, include_alpha_logging,
                   include_l7_internal_load_balancing,
                   include_private_ipv6_access_alpha,
-                  include_private_ipv6_access_beta):
+                  include_private_ipv6_access_beta,
+                  include_private_ipv6_access_v1):
   """Add args to the parser for subnet update.
 
   Args:
@@ -72,6 +73,7 @@ def AddUpdateArgs(parser, include_alpha_logging,
     include_l7_internal_load_balancing: Include Internal HTTP(S) LB args.
     include_private_ipv6_access_alpha: Include alpha Private Ipv6 Access args.
     include_private_ipv6_access_beta: Include beta Private Ipv6 Access args.
+    include_private_ipv6_access_v1: Include v1 Private Ipv6 Access args.
   """
   messages = apis.GetMessagesModule('compute',
                                     compute_api.COMPUTE_GA_API_VERSION)
@@ -222,8 +224,14 @@ def AddUpdateArgs(parser, include_alpha_logging,
     messages = apis.GetMessagesModule('compute',
                                       compute_api.COMPUTE_BETA_API_VERSION)
     update_private_ipv6_access_field = updated_field.add_argument_group()
-    GetPrivateIpv6GoogleAccessTypeFlagMapperBeta(
-        messages).choice_arg.AddToParser(update_private_ipv6_access_field)
+    GetPrivateIpv6GoogleAccessTypeFlagMapper(messages).choice_arg.AddToParser(
+        update_private_ipv6_access_field)
+  elif include_private_ipv6_access_v1:
+    messages = apis.GetMessagesModule('compute',
+                                      compute_api.COMPUTE_GA_API_VERSION)
+    update_private_ipv6_access_field = updated_field.add_argument_group()
+    GetPrivateIpv6GoogleAccessTypeFlagMapper(messages).choice_arg.AddToParser(
+        update_private_ipv6_access_field)
 
 
 def GetPrivateIpv6GoogleAccessTypeFlagMapperAlpha(messages):
@@ -244,7 +252,7 @@ def GetPrivateIpv6GoogleAccessTypeFlagMapperAlpha(messages):
   )
 
 
-def GetPrivateIpv6GoogleAccessTypeFlagMapperBeta(messages):
+def GetPrivateIpv6GoogleAccessTypeFlagMapper(messages):
   return arg_utils.ChoiceEnumMapper(
       '--private-ipv6-google-access-type',
       messages.Subnetwork.PrivateIpv6GoogleAccessValueValuesEnum,

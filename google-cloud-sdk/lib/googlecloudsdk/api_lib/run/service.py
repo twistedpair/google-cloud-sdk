@@ -112,15 +112,23 @@ class Service(k8s_object.KubernetesObject):
     is_latest_by_name = (
         self.status.latestReadyRevisionName and
         target.revisionName == self.status.latestReadyRevisionName)
-    return target.percent and (target.latestRevision or is_latest_by_name)
+    return target.latestRevision or is_latest_by_name
 
   @property
   def latest_percent_traffic(self):
     """The percent of traffic the latest ready revision is serving."""
     return sum(
-        target.percent
+        target.percent or 0
         for target in self.status.traffic
         if self._ShouldIncludeInLatestPercent(target))
+
+  @property
+  def latest_url(self):
+    """A url at which we can reach the latest ready revision."""
+    for target in self.status.traffic:
+      if self._ShouldIncludeInLatestPercent(target) and target.url:
+        return target.url
+    return None
 
   @property
   def domain(self):

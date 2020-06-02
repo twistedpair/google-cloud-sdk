@@ -30,9 +30,10 @@ import json
 from googlecloudsdk.command_lib.apigee import errors
 from googlecloudsdk.command_lib.apigee import resource_args
 from googlecloudsdk.core import credentials
+from googlecloudsdk.core import properties
 from six.moves import urllib
 
-# TODO(b/157082171): control with an api_endpoint_overrides property
+
 APIGEE_HOST = "apigee.googleapis.com"
 
 
@@ -108,8 +109,16 @@ def ResponseToApiRequest(identifiers,
 
   query_string = urllib.parse.urlencode(query_params) if query_params else ""
 
+  endpoint_override = properties.VALUES.api_endpoint_overrides.apigee.Get()
+  if endpoint_override:
+    endpoint = urllib.parse.urlparse(endpoint_override)
+    scheme = endpoint.scheme
+    host = endpoint.netloc
+  else:
+    scheme = "https"
+    host = APIGEE_HOST
   url = urllib.parse.urlunparse(
-      ("https", APIGEE_HOST, "/".join(url_path_elements), "", query_string, ""))
+      (scheme, host, "/".join(url_path_elements), "", query_string, ""))
 
   response, body = connection.request(url, method, body=body, headers=headers)
 
