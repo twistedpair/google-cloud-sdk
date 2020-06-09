@@ -19,9 +19,9 @@ from __future__ import division
 from __future__ import unicode_literals
 
 import collections
+from distutils import version as distutils_version
 import json
 
-from distutils import version as distutils_version
 
 from googlecloudsdk.core.docker import client_lib as client_utils
 from googlecloudsdk.core.docker import constants

@@ -38,7 +38,14 @@ DEPRECATION_FORMAT_STR = (
 
 
 def AddAckIdFlag(parser, action, add_deprecated=False):
-  help_text = 'One or more ACK_ID to {}'.format(action)
+  """Adds parsing and help text for ack_id flag."""
+
+  help_text = (
+      'One or more ACK_ID to {} An ACK_ID is a [string that is returned to '
+      'subscribers](https://cloud.google.com/pubsub/docs/reference/rpc/google.pubsub.v1#google.pubsub.v1.ReceivedMessage).'
+      ' along with the message. The ACK_ID is different from the [message '
+      'ID](https://cloud.google.com/pubsub/docs/reference/rpc/google.pubsub.v1#google.pubsub.v1.PubsubMessage).'
+  ).format(action)
   if add_deprecated:
     parser.add_argument(
         'ack_id', nargs='*', help=help_text,

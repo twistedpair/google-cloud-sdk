@@ -4,7 +4,7 @@
  "id": "bigquery:v2",
  "name": "bigquery",
  "version": "v2",
- "revision": "20200519",
+ "revision": "20200529",
  "title": "BigQuery API",
  "description": "A data platform for customers to create, manage, share and query data.",
  "ownerDomain": "google.com",
@@ -2005,6 +2005,13 @@
      "description": "The resource type of the request.",
      "default": "bigquery#queryRequest"
     },
+    "labels": {
+     "type": "object",
+     "description": "The labels associated with this job. You can use these to organize and group your jobs. Label keys and values can be no longer than 63 characters, can only contain lowercase letters, numeric characters, underscores and dashes. International characters are allowed. Label values are optional. Label keys must start with a letter and each label in the list must have a different key.",
+     "additionalProperties": {
+      "type": "string"
+     }
+    },
     "location": {
      "type": "string",
      "description": "The geographic location where the job should run. See details at https://cloud.google.com/bigquery/docs/locations#specifying_your_location."
@@ -2013,6 +2020,11 @@
      "type": "integer",
      "description": "[Optional] The maximum number of rows of data to return per page of results. Setting this flag to a small value such as 1000 and then paging through results might improve reliability when the query result set is large. In addition to this limit, responses are also limited to 10 MB. By default, there is no maximum row count, and only the byte limit applies.",
      "format": "uint32"
+    },
+    "maximumBytesBilled": {
+     "type": "string",
+     "description": "[Optional] Limits the bytes billed for this job. Queries that will have bytes billed beyond this limit will fail (without incurring a charge). If unspecified, this will be set to your project default.",
+     "format": "int64"
     },
     "parameterMode": {
      "type": "string",
@@ -2037,6 +2049,10 @@
      "items": {
       "$ref": "QueryParameter"
      }
+    },
+    "requestId": {
+     "type": "string",
+     "description": "A unique user provided identifier to ensure idempotent behavior for queries. Note that this is different from the job_id. It has the following properties: 1. It is case-sensitive, limited to up to 36 ASCII characters. A UUID is recommended. 2. Read only queries can ignore this token since they are nullipotent by definition. 3. When a duplicate mutating query request is detected (i.e. having the same request_id as an earlier query), it returns: a. the results of the mutation if it completes successfully within the timeout. b. the running operation if it is still in progress at the end of the timeout. 4. Its lifetime is limited to 15 minutes. In other words, if two requests are sent with the same request_id, but more than 15 minutes apart, idempotency is not guaranteed."
     },
     "timeoutMs": {
      "type": "integer",

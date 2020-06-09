@@ -91,6 +91,14 @@ class AttestationOccurrence(_messages.Message):
   sign.
 
   Fields:
+    jwts: One or more JWTs encoding a self-contained attestation. Each JWT
+      encodes the payload that it verifies within the JWT itself. Verifier
+      implementation SHOULD ignore the `serialized_payload` field when
+      verifying these JWTs. If only JWTs are present on this
+      AttestationOccurrence, then the `serialized_payload` SHOULD be left
+      empty. Each JWT SHOULD encode a claim specific to the `resource_uri` of
+      this Occurrence, but this is not validated by Grafeas metadata API
+      implementations.  The JWT itself is opaque to Grafeas.
     serializedPayload: Required. The serialized payload that is verified by
       one or more `signatures`.
     signatures: One or more signatures over `serialized_payload`.  Verifier
@@ -99,8 +107,9 @@ class AttestationOccurrence(_messages.Message):
       common.proto for more details on signature structure and verification.
   """
 
-  serializedPayload = _messages.BytesField(1)
-  signatures = _messages.MessageField('Signature', 2, repeated=True)
+  jwts = _messages.MessageField('Jwt', 1, repeated=True)
+  serializedPayload = _messages.BytesField(2)
+  signatures = _messages.MessageField('Signature', 3, repeated=True)
 
 
 class BatchCreateNotesRequest(_messages.Message):
@@ -1345,6 +1354,18 @@ class ImageOccurrence(_messages.Message):
   layerInfo = _messages.MessageField('Layer', 4, repeated=True)
 
 
+class Jwt(_messages.Message):
+  r"""A Jwt object.
+
+  Fields:
+    compactJwt: The compact encoding of a JWS, which is always three base64
+      encoded strings joined by periods. For details, see:
+      https://tools.ietf.org/html/rfc7515.html#section-3.1
+  """
+
+  compactJwt = _messages.StringField(1)
+
+
 class KnowledgeBase(_messages.Message):
   r"""A KnowledgeBase object.
 
@@ -1914,7 +1935,7 @@ class Signature(_messages.Message):
   Fields:
     publicKeyId: The identifier for the public key that verifies this
       signature.   * The `public_key_id` is required.   * The `public_key_id`
-      MUST be an RFC3986 conformant URI.   * When possible, the
+      SHOULD be an RFC3986 conformant URI.   * When possible, the
       `public_key_id` SHOULD be an immutable reference,     such as a
       cryptographic digest.  Examples of valid `public_key_id`s:  OpenPGP V4
       public key fingerprint:   *

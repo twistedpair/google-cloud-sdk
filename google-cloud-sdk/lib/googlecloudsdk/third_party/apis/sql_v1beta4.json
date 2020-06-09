@@ -1049,7 +1049,7 @@
           ]
         },
         "databaseVersion": {
-          "description": "The database engine type and version. The <b>databaseVersion<\/b>\nfield can not be changed after instance creation.\n<br>MySQL Second Generation\ninstances: <b>MYSQL_5_7<\/b> (default) or <b>MYSQL_5_6<\/b>.\n<br>PostgreSQL instances: <b>POSTGRES_9_6<\/b> (default) or\n<b>POSTGRES_11 Beta<\/b>\n<br>MySQL First Generation\ninstances: <b>MYSQL_5_6<\/b> (default) or <b>MYSQL_5_5<\/b>",
+          "description": "The database engine type and version. The <b>databaseVersion<\/b>\nfield cannot be changed after instance creation.\n<br>MySQL instances: <b>MYSQL_5_7<\/b> (default), or <b>MYSQL_5_6<\/b>.\n<br>PostgreSQL instances: <b>POSTGRES_9_6<\/b> (default), or\n<b>POSTGRES_10<\/b>, or <b>POSTGRES_11 Beta<\/b>, or <b>POSTGRES_12<\/b>.\n<br>SQL Server instances: <b>SQLSERVER_2017_STANDARD<\/b> (default),\n<b>SQLSERVER_2017_ENTERPRISE<\/b>, <b>SQLSERVER_2017_EXPRESS<\/b>, or\n<b>SQLSERVER_2017_WEB<\/b>.",
           "enumDescriptions": [
             "This is an unknown database version.",
             "The database version is MySQL 5.1.",
@@ -1159,7 +1159,7 @@
           "type": "string"
         },
         "ipv6Address": {
-          "description": "The IPv6 address assigned to the instance. This property is applicable only\nto First Generation instances.",
+          "description": "The IPv6 address assigned to the instance.\n(Deprecated) This property was applicable only\nto First Generation instances.",
           "type": "string"
         },
         "serviceAccountEmailAddress": {
@@ -1175,7 +1175,7 @@
           "$ref": "ReplicaConfiguration"
         },
         "backendType": {
-          "description": "<br><b>FIRST_GEN<\/b>: First Generation instance. MySQL only.\n<br><b>SECOND_GEN<\/b>: Second Generation instance or PostgreSQL\ninstance.\n<br><b>EXTERNAL<\/b>: A database server that is not\nmanaged by Google. <br>This property is read-only; use the\n<b>tier<\/b> property in the <b>settings<\/b> object to determine\nthe database type and Second or First Generation.",
+          "description": "<br><b>SECOND_GEN<\/b>: Cloud SQL database instance.\n<br><b>EXTERNAL<\/b>: A database server that is not\nmanaged by Google. <br>This property is read-only; use the\n<b>tier<\/b> property in the <b>settings<\/b> object to determine\nthe database type.",
           "enumDescriptions": [
             "This is an unknown backend type for instance.",
             "V1 speckle instance.",
@@ -1224,7 +1224,7 @@
           "type": "string"
         },
         "region": {
-          "description": "The geographical region. Can be\n<br><b>us-central<\/b> (<b>FIRST_GEN<\/b> instances only)\n<br><b>us-central1<\/b> (<b>SECOND_GEN<\/b> instances only)\n<br><b>asia-east1<\/b> or <b>europe-west1<\/b>.\n<br>Defaults to <b>us-central<\/b> or\n<b>us-central1<\/b> depending on the instance type (First Generation\nor Second Generation). The region can not be changed after instance\ncreation.",
+          "description": "The geographical region. Can be\n<br><b>us-central<\/b> (<b>FIRST_GEN<\/b> instances only)\n<br><b>us-central1<\/b> (<b>SECOND_GEN<\/b> instances only)\n<br><b>asia-east1<\/b> or <b>europe-west1<\/b>.\n<br>Defaults to <b>us-central<\/b> or\n<b>us-central1<\/b> depending on the instance type.\nThe region cannot be changed after instance creation.",
           "type": "string"
         },
         "gceZone": {
@@ -1264,14 +1264,14 @@
           "format": "int64"
         },
         "authorizedGaeApplications": {
-          "description": "The App Engine app IDs that can access this instance. First Generation\ninstances only.",
+          "description": "The App Engine app IDs that can access this instance.\n(Deprecated) Applied to First Generation instances only.",
           "type": "array",
           "items": {
             "type": "string"
           }
         },
         "tier": {
-          "description": "The tier (or machine type) for this instance, for example\n<b>db-n1-standard-1<\/b> (MySQL instances) or\n<b>db-custom-1-3840<\/b> (PostgreSQL instances). For MySQL instances,\nthis property determines whether the instance is First or Second\nGeneration. For more information, see <a\nhref=\"\/sql\/docs\/db_path\/instance-settings\">Instance Settings<\/a>.",
+          "description": "The tier (or machine type) for this instance, for example\n<b>db-n1-standard-1<\/b> (MySQL instances) or\n<b>db-custom-1-3840<\/b> (PostgreSQL instances).",
           "type": "string"
         },
         "kind": {
@@ -1314,7 +1314,7 @@
           ]
         },
         "replicationType": {
-          "description": "The type of replication this instance uses. This can be either\n<b>ASYNCHRONOUS<\/b> or <b>SYNCHRONOUS<\/b>. This property is\nonly applicable to First Generation instances.",
+          "description": "The type of replication this instance uses. This can be either\n<b>ASYNCHRONOUS<\/b> or <b>SYNCHRONOUS<\/b>.\n(Deprecated_ This property was only applicable to\nFirst Generation instances.",
           "enumDescriptions": [
             "This is an unknown replication type for a Cloud SQL instance.",
             "The synchronous replication mode for First Generation instances. It is the\ndefault value.",
@@ -1328,12 +1328,12 @@
           ]
         },
         "storageAutoResizeLimit": {
-          "description": "The maximum size to which storage capacity can be automatically increased.\nThe default value is 0, which specifies that there is no limit. Not used\nfor First Generation instances.",
+          "description": "The maximum size to which storage capacity can be automatically increased.\nThe default value is 0, which specifies that there is no limit.",
           "type": "string",
           "format": "int64"
         },
         "activationPolicy": {
-          "description": "The activation policy specifies when the instance is activated; it is\napplicable only when the instance state is RUNNABLE. Valid values:\n  <br><b>ALWAYS<\/b>: The instance is on, and remains so even in\nthe absence of connection requests.\n  <br><b>NEVER<\/b>: The instance is off; it is not activated, even if a\n  connection\nrequest arrives.\n  <br><b>ON_DEMAND<\/b>: First Generation instances only. The instance\nresponds to incoming requests, and turns itself off when not in use.\nInstances with <b>PER_USE<\/b> pricing turn off after 15 minutes of\ninactivity. Instances with <b>PER_PACKAGE<\/b> pricing turn off after\n12 hours o inactivity.",
+          "description": "The activation policy specifies when the instance is activated; it is\napplicable only when the instance state is RUNNABLE. Valid values:\n  <br><b>ALWAYS<\/b>: The instance is on, and remains so even in\nthe absence of connection requests.\n  <br><b>NEVER<\/b>: The instance is off; it is not activated, even if a\n  connection request arrives.",
           "enumDescriptions": [
             "Unknown activation plan.",
             "The instance is always up and running.",
@@ -1353,11 +1353,11 @@
           "$ref": "IpConfiguration"
         },
         "storageAutoResize": {
-          "description": "Configuration to increase storage size automatically. The default value is\ntrue. Not used for First Generation instances.",
+          "description": "Configuration to increase storage size automatically. The default value is\ntrue.",
           "type": "boolean"
         },
         "locationPreference": {
-          "description": "The location preference settings. This allows the instance to be located as\nnear as possible to either an App Engine app or Compute Engine zone for\nbetter performance. App Engine co-location is only applicable to First\nGeneration instances.",
+          "description": "The location preference settings. This allows the instance to be located as\nnear as possible to either an App Engine app or Compute Engine zone for\nbetter performance. App Engine co-location was only applicable to First\nGeneration instances.",
           "$ref": "LocationPreference"
         },
         "databaseFlags": {
@@ -1384,7 +1384,7 @@
           ]
         },
         "maintenanceWindow": {
-          "description": "The maintenance window for this instance. This specifies when the instance\ncan be restarted for maintenance purposes. Not used for First Generation\ninstances.",
+          "description": "The maintenance window for this instance. This specifies when the instance\ncan be restarted for maintenance purposes.",
           "$ref": "MaintenanceWindow"
         },
         "backupConfiguration": {
@@ -1396,11 +1396,11 @@
           "type": "boolean"
         },
         "crashSafeReplicationEnabled": {
-          "description": "Configuration specific to read replica instances. Indicates whether\ndatabase flags for crash-safe replication are enabled. This property is\nonly applicable to First Generation instances.",
+          "description": "Configuration specific to read replica instances. Indicates whether\ndatabase flags for crash-safe replication are enabled. This property was\nonly applicable to First Generation instances.",
           "type": "boolean"
         },
         "dataDiskSizeGb": {
-          "description": "The size of data disk, in GB. The data disk size minimum is 10GB. Not used\nfor First Generation instances.",
+          "description": "The size of data disk, in GB. The data disk size minimum is 10GB.",
           "type": "string",
           "format": "int64"
         },
@@ -2141,7 +2141,7 @@
           "$ref": "SslCert"
         },
         "clientCert": {
-          "description": "The new client certificate and private key.  For First Generation\ninstances, the new certificate does not take effect until the instance is\nrestarted.",
+          "description": "The new client certificate and private key.",
           "$ref": "SslCertDetail"
         }
       }

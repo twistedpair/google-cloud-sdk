@@ -81,6 +81,7 @@ class CloudSqlSettings(_messages.Message):
     ipConfig: The settings for IP Management. This allows to enable or disable
       the instance IP and manage which external networks can connect to the
       instance. The IPv4 address cannot be disabled.
+    rootPassword: Initial root password.
     sourceId: The Database Migration Service source connection profile ID, in
       the format: `projects/my_project_name/locations/us-
       central1/connectionProfiles/connection_profile_ID`
@@ -136,12 +137,14 @@ class CloudSqlSettings(_messages.Message):
       MYSQL_5_7: MySQL 5.7.
       POSTGRES_9_6: PostgreSQL 9.6.
       POSTGRES_11: PostgreSQL 11.
+      POSTGRES_10: PostgreSQL 10.
     """
     SQL_DATABASE_VERSION_UNSPECIFIED = 0
     MYSQL_5_6 = 1
     MYSQL_5_7 = 2
     POSTGRES_9_6 = 3
     POSTGRES_11 = 4
+    POSTGRES_10 = 5
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class DatabaseFlagsValue(_messages.Message):
@@ -204,11 +207,12 @@ class CloudSqlSettings(_messages.Message):
   databaseFlags = _messages.MessageField('DatabaseFlagsValue', 5)
   databaseVersion = _messages.EnumField('DatabaseVersionValueValuesEnum', 6)
   ipConfig = _messages.MessageField('SqlIpConfig', 7)
-  sourceId = _messages.StringField(8)
-  storageAutoResizeLimit = _messages.IntegerField(9)
-  tier = _messages.StringField(10)
-  userLabels = _messages.MessageField('UserLabelsValue', 11)
-  zone = _messages.StringField(12)
+  rootPassword = _messages.StringField(8)
+  sourceId = _messages.StringField(9)
+  storageAutoResizeLimit = _messages.IntegerField(10)
+  tier = _messages.StringField(11)
+  userLabels = _messages.MessageField('UserLabelsValue', 12)
+  zone = _messages.StringField(13)
 
 
 class ConnectionProfile(_messages.Message):

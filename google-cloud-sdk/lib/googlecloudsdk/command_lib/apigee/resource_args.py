@@ -20,29 +20,42 @@ from __future__ import print_function
 from __future__ import unicode_literals
 
 import collections
+
+from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope.concepts import concepts
 from googlecloudsdk.command_lib.util.concepts import concept_parsers
 
 _EntityNames = collections.namedtuple(
-    "EntityNames", "singular plural docs_name secondary_description")
+    "EntityNames",
+    "singular plural docs_name valid_pattern secondary_description")
+
 _ENTITY_TUPLES = [
     _EntityNames("organization", "organizations", "organization",
+                 r"^[a-z][-a-z0-9]{0,30}[a-z0-9]$",
                  "The organization for the {resource}."),
-    _EntityNames("api", "apis", "API proxy",
+    _EntityNames("api", "apis", "API proxy", r"^[\s\w.-]{1,255}$",
                  "The API proxy for the {resource}."),
     _EntityNames("environment", "environments", "environment",
+                 r"^[a-z][-a-z0-9]{0,30}[a-z0-9]$",
                  "The deployment environment of the {resource}."),
-    _EntityNames("revision", "revisions", "revision",
+    _EntityNames("revision", "revisions", "revision", None,
                  "The appropriate revision of the {resource}."),
-    _EntityNames("deployment", "deployments", "deployment",
+    _EntityNames("deployment", "deployments", "deployment", None,
                  "The relevant deployment of the {resource}."),
-    _EntityNames("operation", "operations", "operation",
+    _EntityNames("operation", "operations", "operation", None,
                  "The operation operating on the {resource}."),
+    _EntityNames("product", "apiproducts", "API product",
+                 r"^[A-Za-z0-9._$ %-]+$",
+                 "The relevant product for the {resource}."),
+    _EntityNames("developer", "developers", "developer", None,
+                 "The developer of the {resource}."),
+    _EntityNames("app", "apps", "application", None,
+                 "The relevant application for the {resource}."),
 ]
 ENTITIES = {item.singular: item for item in _ENTITY_TUPLES}
 
 
-def AttributeConfig(name, fallthroughs=None, help_text=None):
+def AttributeConfig(name, fallthroughs=None, help_text=None, validate=False):
   """Returns a ResourceParameterAttributeConfig for the attribute named `name`.
 
   Args:
@@ -51,15 +64,24 @@ def AttributeConfig(name, fallthroughs=None, help_text=None):
       used to get this attribute's value if the user doesn't specify one.
     help_text: help text to use for this resource parameter instead of the
       default help text for the attribute.
+    validate: whether to check that user-provided value for this attribute
+      matches the expected pattern.
   """
+  validator = None
+  if ENTITIES[name].valid_pattern and validate:
+    validator = arg_parsers.RegexpValidator(
+        ENTITIES[name].valid_pattern,
+        "Must match the format of a valid {2} ({3})".format(*ENTITIES[name]))
+
   return concepts.ResourceParameterAttributeConfig(
       name=name,
       parameter_name=ENTITIES[name].plural,
+      value_type=validator,
       help_text=help_text or ENTITIES[name].secondary_description,
       fallthroughs=fallthroughs)
 
 
-def ResourceSpec(path, fallthroughs=tuple(), help_texts=None):
+def ResourceSpec(path, fallthroughs=tuple(), help_texts=None, validate=False):
   """Returns a ResourceSpec for the resource path `path`.
 
   Args:
@@ -68,6 +90,8 @@ def ResourceSpec(path, fallthroughs=tuple(), help_texts=None):
       objects which will provide default values for the attributes in `path`.
     help_texts: a mapping of attribute names to help text strings, to use
       instead of their default help text.
+    validate: whether to check that the user-provided resource matches the
+      expected naming conventions of the resource path.
   """
   help_texts = collections.defaultdict(lambda: None, help_texts or {})
   entities = [ENTITIES[name] for name in path]
@@ -78,7 +102,7 @@ def ResourceSpec(path, fallthroughs=tuple(), help_texts=None):
         if entity.singular in fallthrough
     ]
     config = AttributeConfig(entity.singular, relevant_fallthroughs,
-                             help_texts[entity.singular])
+                             help_texts[entity.singular], validate=validate)
     ids[entity.plural + "Id"] = config
 
   return concepts.ResourceSpec(
@@ -95,6 +119,7 @@ def AddSingleResourceArgument(parser,
                               argument_name=None,
                               required=None,
                               prefixes=False,
+                              validate=False,
                               help_texts=None):
   """Creates a concept parser for `resource_path` and adds it to `parser`.
 
@@ -111,6 +136,8 @@ def AddSingleResourceArgument(parser,
     required: whether the user is required to provide this resource. Defaults to
       True for positional arguments, False otherwise.
     prefixes: whether to append prefixes to the non-leaf arguments.
+    validate: whether to check that the user-provided resource matches the
+      expected naming conventions of the resource path.
     help_texts: custom help text for generated arguments. Defaults to each
       entity using a generic help text.
   """
@@ -127,7 +154,7 @@ def AddSingleResourceArgument(parser,
 
   concept_parsers.ConceptParser.ForResource(
       argument_name,
-      ResourceSpec(split_path, fallthroughs, help_texts),
+      ResourceSpec(split_path, fallthroughs, help_texts, validate=validate),
       help_text,
       required=required,
       prefixes=prefixes).AddToParser(parser)

@@ -598,7 +598,7 @@ def _Load(account, scopes, prevent_refresh, use_google_auth=False):
       raise NoCredentialsForAccountException(account)
 
   if not prevent_refresh:
-    _RefreshIfAlmostExpire(cred)
+    RefreshIfAlmostExpire(cred)
 
   return cred
 
@@ -785,29 +785,27 @@ def _RefreshGoogleAuth(credentials,
       credentials.id_tokenb64 = id_token
 
 
-def _RefreshIfAlmostExpire(credentials):
-  """Refreshes credentials if they are expired or will expire soon.
-
-  For oauth2client credentials, refreshes if they expire within the expiry
-  window. oauth2client credentials may be converted to google-auth credentials
-  later in the call stack. The latter do not currently support reauth. So it is
-  essential to ensure oauth2client credentials will remain valid during
-  a command.
-
-  For google-auth credentials, refreshes if they are expired.
+def RefreshIfExpireWithinWindow(credentials, window):
+  """Refreshes credentials if they will expire within a time window.
 
   Args:
     credentials: google.auth.credentials.Credentials or
       client.OAuth2Credentials, the credentials to refresh.
+    window: string, The threshold of the remaining lifetime of the token which
+      can trigger the refresh.
   """
   if c_creds.IsOauth2ClientCredentials(credentials):
-    almost_expire = not credentials.token_expiry or _TokenExpiresWithinWindow(
-        _CREDENTIALS_EXPIRY_WINDOW, credentials.token_expiry)
+    expiry = credentials.token_expiry
   else:
-    almost_expire = not credentials.valid
+    expiry = credentials.expiry
+  almost_expire = (not expiry) or _TokenExpiresWithinWindow(window, expiry)
 
   if almost_expire:
     Refresh(credentials)
+
+
+def RefreshIfAlmostExpire(credentials):
+  RefreshIfExpireWithinWindow(credentials, window=_CREDENTIALS_EXPIRY_WINDOW)
 
 
 def _RefreshImpersonatedAccountIdToken(cred, include_email):

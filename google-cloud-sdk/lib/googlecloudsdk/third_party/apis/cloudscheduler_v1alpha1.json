@@ -781,6 +781,11 @@
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/jobs\/[^\/]+$",
                       "type": "string"
+                    },
+                    "legacyAppEngineCron": {
+                      "description": "This field is used to manage the legacy App Engine Cron jobs using the\nCloud Scheduler API. If the field is set to true, the job in the __cron\nqueue with the corresponding name will be deleted instead.",
+                      "location": "query",
+                      "type": "boolean"
                     }
                   },
                   "parameterOrder": [

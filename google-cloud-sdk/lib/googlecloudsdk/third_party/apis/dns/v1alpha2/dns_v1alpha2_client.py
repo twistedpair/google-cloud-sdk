@@ -557,7 +557,7 @@ referenced by a network.
         request: (DnsPoliciesDeleteRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
-        (PoliciesDeleteResponse) The response message.
+        (DnsPoliciesDeleteResponse) The response message.
       """
       config = self.GetMethodConfig('Delete')
       return self._RunMethod(
@@ -572,7 +572,7 @@ referenced by a network.
         relative_path='dns/v1alpha2/projects/{project}/policies/{policy}',
         request_field='',
         request_type_name='DnsPoliciesDeleteRequest',
-        response_type_name='PoliciesDeleteResponse',
+        response_type_name='DnsPoliciesDeleteResponse',
         supports_download=False,
     )
 

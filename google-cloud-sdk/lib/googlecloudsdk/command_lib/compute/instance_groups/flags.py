@@ -29,6 +29,7 @@ from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.command_lib.compute import completers as compute_completers
 from googlecloudsdk.command_lib.compute import flags
 from googlecloudsdk.command_lib.compute import scope as compute_scope
+from googlecloudsdk.command_lib.compute.instance_groups.managed import flags as mig_flags
 from googlecloudsdk.command_lib.util import completers
 import six
 
@@ -657,6 +658,7 @@ def AddCreateInstancesFlags(parser, add_stateful_args=True):
 
 
 def AddMigStatefulUpdateInstanceFlag(parser):
+  """Add flags for applying updates on PIC change."""
   parser.add_argument(
       '--update-instance',
       default=True,
@@ -673,6 +675,13 @@ def AddMigStatefulUpdateInstanceFlag(parser):
           for the disk. Similarly if you have attached a new disk or changed its
           definition, with this flag the MIG immediately refreshes the instance
           with the new config.""")
+  parser.add_argument(
+      '--instance-update-minimal-action',
+      choices=mig_flags.INSTANCE_ACTION_CHOICES,
+      default='none',
+      help="""
+          Perform at least this action on the instance while updating, if
+          `--update-instance` is set to `true`.""")
 
 
 def ValidateMigStatefulFlagsForInstanceConfigs(args,

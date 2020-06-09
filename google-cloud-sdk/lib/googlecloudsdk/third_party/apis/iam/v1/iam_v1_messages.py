@@ -1156,13 +1156,17 @@ class IamProjectsServiceAccountsPatchRequest(_messages.Message):
   r"""A IamProjectsServiceAccountsPatchRequest object.
 
   Fields:
-    name: The resource name of the service account in the following format:
-      `projects/{PROJECT_ID}/serviceAccounts/{ACCOUNT}`.  Requests using `-`
-      as a wildcard for the `PROJECT_ID` will infer the project from the
-      `account` and the `ACCOUNT` value can be the `email` address or the
-      `unique_id` of the service account.  In responses the resource name will
-      always be in the format
-      `projects/{PROJECT_ID}/serviceAccounts/{ACCOUNT}`.
+    name: The resource name of the service account.  Use one of the following
+      formats:  * `projects/{PROJECT_ID}/serviceAccounts/{EMAIL_ADDRESS}` *
+      `projects/{PROJECT_ID}/serviceAccounts/{UNIQUE_ID}`  As an alternative,
+      you can use the `-` wildcard character instead of the project ID:  *
+      `projects/-/serviceAccounts/{EMAIL_ADDRESS}` *
+      `projects/-/serviceAccounts/{UNIQUE_ID}`  When possible, avoid using the
+      `-` wildcard character, because it can cause response messages to
+      contain misleading error codes. For example, if you try to get the
+      service account `projects/-/serviceAccounts/fake@example.com`, which
+      does not exist, the response contains an HTTP `403 Forbidden` error
+      instead of a `404 Not Found` error.
     patchServiceAccountRequest: A PatchServiceAccountRequest resource to be
       passed as the request body.
   """
@@ -1495,7 +1499,11 @@ class ListServiceAccountsResponse(_messages.Message):
 
 
 class PatchServiceAccountRequest(_messages.Message):
-  r"""The patch service account request.
+  r"""The request for PatchServiceAccount.  You can patch only the
+  `display_name` and `description` fields. You must use the `update_mask`
+  field to specify which of these fields you want to patch.  Only the fields
+  specified in the request are guaranteed to be returned in the response.
+  Other fields may be empty in the response.
 
   Fields:
     serviceAccount: A ServiceAccount attribute.
@@ -1829,41 +1837,43 @@ class Role(_messages.Message):
 
 
 class ServiceAccount(_messages.Message):
-  r"""A service account in the Identity and Access Management API.  To create
-  a service account, specify the `project_id` and the `account_id` for the
-  account.  The `account_id` is unique within the project, and is used to
-  generate the service account email address and a stable `unique_id`.  If the
-  account already exists, the account's resource name is returned in the
-  format of projects/{PROJECT_ID}/serviceAccounts/{ACCOUNT}. The caller can
-  use the name in other methods to access the account.  All other methods can
-  identify the service account using the format
-  `projects/{PROJECT_ID}/serviceAccounts/{ACCOUNT}`. Using `-` as a wildcard
-  for the `PROJECT_ID` will infer the project from the account. The `ACCOUNT`
-  value can be the `email` address or the `unique_id` of the service account.
+  r"""An IAM service account.  A service account is an account for an
+  application or a virtual machine (VM) instance, not a person. You can use a
+  service account to call Google APIs. To learn more, read the [overview of
+  service accounts](https://cloud.google.com/iam/help/service-
+  accounts/overview).  When you create a service account, you specify the
+  project ID that owns the service account, as well as a name that must be
+  unique within the project. IAM uses these values to create an email address
+  that identifies the service account.
 
   Fields:
-    description: Optional. A user-specified opaque description of the service
-      account. Must be less than or equal to 256 UTF-8 bytes.
-    disabled: @OutputOnly A bool indicate if the service account is disabled.
-      The field is currently in alpha phase.
-    displayName: Optional. A user-specified name for the service account. Must
-      be less than or equal to 100 UTF-8 bytes.
-    email: @OutputOnly The email address of the service account.
-    etag: Optional. Note: `etag` is an inoperable legacy field that is only
-      returned for backwards compatibility.
-    name: The resource name of the service account in the following format:
-      `projects/{PROJECT_ID}/serviceAccounts/{ACCOUNT}`.  Requests using `-`
-      as a wildcard for the `PROJECT_ID` will infer the project from the
-      `account` and the `ACCOUNT` value can be the `email` address or the
-      `unique_id` of the service account.  In responses the resource name will
-      always be in the format
-      `projects/{PROJECT_ID}/serviceAccounts/{ACCOUNT}`.
-    oauth2ClientId: @OutputOnly The OAuth2 client id for the service account.
-      This is used in conjunction with the OAuth2 clientconfig API to make
-      three legged OAuth2 (3LO) flows to access the data of Google users.
-    projectId: @OutputOnly The id of the project that owns the service
+    description: Optional. A user-specified, human-readable description of the
+      service account. The maximum length is 256 UTF-8 bytes.
+    disabled: Output only. Whether the service account is disabled.
+    displayName: Optional. A user-specified, human-readable name for the
+      service account. The maximum length is 100 UTF-8 bytes.
+    email: Output only. The email address of the service account.
+    etag: Deprecated. Do not use.
+    name: The resource name of the service account.  Use one of the following
+      formats:  * `projects/{PROJECT_ID}/serviceAccounts/{EMAIL_ADDRESS}` *
+      `projects/{PROJECT_ID}/serviceAccounts/{UNIQUE_ID}`  As an alternative,
+      you can use the `-` wildcard character instead of the project ID:  *
+      `projects/-/serviceAccounts/{EMAIL_ADDRESS}` *
+      `projects/-/serviceAccounts/{UNIQUE_ID}`  When possible, avoid using the
+      `-` wildcard character, because it can cause response messages to
+      contain misleading error codes. For example, if you try to get the
+      service account `projects/-/serviceAccounts/fake@example.com`, which
+      does not exist, the response contains an HTTP `403 Forbidden` error
+      instead of a `404 Not Found` error.
+    oauth2ClientId: Output only. The OAuth 2.0 client ID for the service
       account.
-    uniqueId: @OutputOnly The unique and stable id of the service account.
+    projectId: Output only. The ID of the project that owns the service
+      account.
+    uniqueId: Output only. The unique, stable numeric ID for the service
+      account.  Each service account retains its unique ID even if you delete
+      the service account. For example, if you delete a service account, then
+      create a new service account with the same name, the new service account
+      has a different unique ID than the deleted service account.
   """
 
   description = _messages.StringField(1)

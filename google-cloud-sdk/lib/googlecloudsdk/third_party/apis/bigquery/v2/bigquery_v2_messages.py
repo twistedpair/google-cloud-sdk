@@ -2361,6 +2361,14 @@ class QueryParameterValue(_messages.Message):
 class QueryRequest(_messages.Message):
   r"""A QueryRequest object.
 
+  Messages:
+    LabelsValue: The labels associated with this job. You can use these to
+      organize and group your jobs. Label keys and values can be no longer
+      than 63 characters, can only contain lowercase letters, numeric
+      characters, underscores and dashes. International characters are
+      allowed. Label values are optional. Label keys must start with a letter
+      and each label in the list must have a different key.
+
   Fields:
     connectionProperties: Connection properties.
     defaultDataset: [Optional] Specifies the default datasetId and projectId
@@ -2372,6 +2380,12 @@ class QueryRequest(_messages.Message):
       how many bytes would be processed. If the query is invalid, an error
       returns. The default value is false.
     kind: The resource type of the request.
+    labels: The labels associated with this job. You can use these to organize
+      and group your jobs. Label keys and values can be no longer than 63
+      characters, can only contain lowercase letters, numeric characters,
+      underscores and dashes. International characters are allowed. Label
+      values are optional. Label keys must start with a letter and each label
+      in the list must have a different key.
     location: The geographic location where the job should run. See details at
       https://cloud.google.com/bigquery/docs/locations#specifying_your_locatio
       n.
@@ -2381,6 +2395,10 @@ class QueryRequest(_messages.Message):
       result set is large. In addition to this limit, responses are also
       limited to 10 MB. By default, there is no maximum row count, and only
       the byte limit applies.
+    maximumBytesBilled: [Optional] Limits the bytes billed for this job.
+      Queries that will have bytes billed beyond this limit will fail (without
+      incurring a charge). If unspecified, this will be set to your project
+      default.
     parameterMode: Standard SQL only. Set to POSITIONAL to use positional (?)
       query parameters or to NAMED to use named (@myparam) query parameters in
       this query.
@@ -2389,6 +2407,18 @@ class QueryRequest(_messages.Message):
       the query to execute. Example: "SELECT count(f1) FROM
       [myProjectId:myDatasetId.myTableId]".
     queryParameters: Query parameters for Standard SQL queries.
+    requestId: A unique user provided identifier to ensure idempotent behavior
+      for queries. Note that this is different from the job_id. It has the
+      following properties: 1. It is case-sensitive, limited to up to 36 ASCII
+      characters. A UUID is recommended. 2. Read only queries can ignore this
+      token since they are nullipotent by definition. 3. When a duplicate
+      mutating query request is detected (i.e. having the same request_id as
+      an earlier query), it returns: a. the results of the mutation if it
+      completes successfully within the timeout. b. the running operation if
+      it is still in progress at the end of the timeout. 4. Its lifetime is
+      limited to 15 minutes. In other words, if two requests are sent with the
+      same request_id, but more than 15 minutes apart, idempotency is not
+      guaranteed.
     timeoutMs: [Optional] How long to wait for the query to complete, in
       milliseconds, before the request times out and returns. Note that this
       is only a timeout for the request, not the query. If the query takes
@@ -2407,19 +2437,51 @@ class QueryRequest(_messages.Message):
       whenever tables in the query are modified. The default value is true.
   """
 
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""The labels associated with this job. You can use these to organize and
+    group your jobs. Label keys and values can be no longer than 63
+    characters, can only contain lowercase letters, numeric characters,
+    underscores and dashes. International characters are allowed. Label values
+    are optional. Label keys must start with a letter and each label in the
+    list must have a different key.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
   connectionProperties = _messages.MessageField('ConnectionProperty', 1, repeated=True)
   defaultDataset = _messages.MessageField('DatasetReference', 2)
   dryRun = _messages.BooleanField(3)
   kind = _messages.StringField(4, default='bigquery#queryRequest')
-  location = _messages.StringField(5)
-  maxResults = _messages.IntegerField(6, variant=_messages.Variant.UINT32)
-  parameterMode = _messages.StringField(7)
-  preserveNulls = _messages.BooleanField(8)
-  query = _messages.StringField(9)
-  queryParameters = _messages.MessageField('QueryParameter', 10, repeated=True)
-  timeoutMs = _messages.IntegerField(11, variant=_messages.Variant.UINT32)
-  useLegacySql = _messages.BooleanField(12, default=True)
-  useQueryCache = _messages.BooleanField(13, default=True)
+  labels = _messages.MessageField('LabelsValue', 5)
+  location = _messages.StringField(6)
+  maxResults = _messages.IntegerField(7, variant=_messages.Variant.UINT32)
+  maximumBytesBilled = _messages.IntegerField(8)
+  parameterMode = _messages.StringField(9)
+  preserveNulls = _messages.BooleanField(10)
+  query = _messages.StringField(11)
+  queryParameters = _messages.MessageField('QueryParameter', 12, repeated=True)
+  requestId = _messages.StringField(13)
+  timeoutMs = _messages.IntegerField(14, variant=_messages.Variant.UINT32)
+  useLegacySql = _messages.BooleanField(15, default=True)
+  useQueryCache = _messages.BooleanField(16, default=True)
 
 
 class QueryResponse(_messages.Message):

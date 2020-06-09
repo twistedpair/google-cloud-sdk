@@ -266,7 +266,9 @@ class BuildOptions(_messages.Message):
     RequestedVerifyOptionValueValuesEnum: Requested verifiability options.
     SourceProvenanceHashValueListEntryValuesEnum:
     SubstitutionOptionValueValuesEnum: Option to specify behavior when there
-      is an error in the substitution checks.
+      is an error in the substitution checks.  NOTE: this is always set to
+      ALLOW_LOOSE for triggered builds and cannot be overridden in the build
+      configuration file.
 
   Fields:
     diskSizeGb: Requested disk size for the VM that runs the build. Note that
@@ -276,6 +278,10 @@ class BuildOptions(_messages.Message):
       a larger disk than requested. At present, the maximum disk size is
       1000GB; builds that request more than the maximum are rejected with an
       error.
+    dynamicSubstitutions: Option to specify whether or not to apply bash style
+      string operations to the substitutions.  NOTE: this is always enabled
+      for triggered builds and cannot be overridden in the build configuration
+      file.
     env: A list of global environment variable definitions that will exist for
       all build steps in this build. If a variable is defined in both globally
       and in a build step, the variable will use the build step value.  The
@@ -293,7 +299,9 @@ class BuildOptions(_messages.Message):
       all build steps in this build.
     sourceProvenanceHash: Requested hash for SourceProvenance.
     substitutionOption: Option to specify behavior when there is an error in
-      the substitution checks.
+      the substitution checks.  NOTE: this is always set to ALLOW_LOOSE for
+      triggered builds and cannot be overridden in the build configuration
+      file.
     volumes: Global list of volumes to mount for ALL build steps  Each volume
       is created as an empty volume prior to starting the build process. Upon
       completion of the build, volumes and their contents are discarded.
@@ -370,7 +378,8 @@ class BuildOptions(_messages.Message):
 
   class SubstitutionOptionValueValuesEnum(_messages.Enum):
     r"""Option to specify behavior when there is an error in the substitution
-    checks.
+    checks.  NOTE: this is always set to ALLOW_LOOSE for triggered builds and
+    cannot be overridden in the build configuration file.
 
     Values:
       MUST_MATCH: Fails the build if error in substitutions checks, like
@@ -381,16 +390,17 @@ class BuildOptions(_messages.Message):
     ALLOW_LOOSE = 1
 
   diskSizeGb = _messages.IntegerField(1)
-  env = _messages.StringField(2, repeated=True)
-  logStreamingOption = _messages.EnumField('LogStreamingOptionValueValuesEnum', 3)
-  logging = _messages.EnumField('LoggingValueValuesEnum', 4)
-  machineType = _messages.EnumField('MachineTypeValueValuesEnum', 5)
-  requestedVerifyOption = _messages.EnumField('RequestedVerifyOptionValueValuesEnum', 6)
-  secretEnv = _messages.StringField(7, repeated=True)
-  sourceProvenanceHash = _messages.EnumField('SourceProvenanceHashValueListEntryValuesEnum', 8, repeated=True)
-  substitutionOption = _messages.EnumField('SubstitutionOptionValueValuesEnum', 9)
-  volumes = _messages.MessageField('Volume', 10, repeated=True)
-  workerPool = _messages.StringField(11)
+  dynamicSubstitutions = _messages.BooleanField(2)
+  env = _messages.StringField(3, repeated=True)
+  logStreamingOption = _messages.EnumField('LogStreamingOptionValueValuesEnum', 4)
+  logging = _messages.EnumField('LoggingValueValuesEnum', 5)
+  machineType = _messages.EnumField('MachineTypeValueValuesEnum', 6)
+  requestedVerifyOption = _messages.EnumField('RequestedVerifyOptionValueValuesEnum', 7)
+  secretEnv = _messages.StringField(8, repeated=True)
+  sourceProvenanceHash = _messages.EnumField('SourceProvenanceHashValueListEntryValuesEnum', 9, repeated=True)
+  substitutionOption = _messages.EnumField('SubstitutionOptionValueValuesEnum', 10)
+  volumes = _messages.MessageField('Volume', 11, repeated=True)
+  workerPool = _messages.StringField(12)
 
 
 class BuildStep(_messages.Message):
@@ -844,6 +854,19 @@ class CloudbuildProjectsTriggersRunRequest(_messages.Message):
   triggerId = _messages.StringField(3, required=True)
 
 
+class CloudbuildVbeta1ProjectsLocationsOperationsCancelRequest(_messages.Message):
+  r"""A CloudbuildVbeta1ProjectsLocationsOperationsCancelRequest object.
+
+  Fields:
+    cancelOperationRequest: A CancelOperationRequest resource to be passed as
+      the request body.
+    name: The name of the operation resource to be cancelled.
+  """
+
+  cancelOperationRequest = _messages.MessageField('CancelOperationRequest', 1)
+  name = _messages.StringField(2, required=True)
+
+
 class Empty(_messages.Message):
   r"""A generic empty message that you can re-use to avoid defining duplicated
   empty messages in your APIs. A typical example is to use it as the request
@@ -1066,22 +1089,22 @@ class PullRequestFilter(_messages.Message):
   Requests.
 
   Enums:
-    CommentControlValueValuesEnum: Configure builds to run only when a
-      repository owner or collaborator comments `/gcbrun`.
+    CommentControlValueValuesEnum: Configure builds to run whether a
+      repository owner or collaborator need to comment `/gcbrun`.
 
   Fields:
     branch: Regex of branches to match.  The syntax of the regular expressions
       accepted is the syntax accepted by RE2 and described at
       https://github.com/google/re2/wiki/Syntax
-    commentControl: Configure builds to run only when a repository owner or
-      collaborator comments `/gcbrun`.
+    commentControl: Configure builds to run whether a repository owner or
+      collaborator need to comment `/gcbrun`.
     invertRegex: If true, branches that do NOT match the git_ref will trigger
       a build.
   """
 
   class CommentControlValueValuesEnum(_messages.Enum):
-    r"""Configure builds to run only when a repository owner or collaborator
-    comments `/gcbrun`.
+    r"""Configure builds to run whether a repository owner or collaborator
+    need to comment `/gcbrun`.
 
     Values:
       COMMENTS_DISABLED: Do not require comments on Pull Requests before

@@ -81,6 +81,41 @@ same order that they were requested.
         supports_download=False,
     )
 
+    def BatchWrite(self, request, global_params=None):
+      r"""Applies a batch of write operations.
+
+The BatchWrite method does not apply the write operations atomically
+and can apply them out of order. Method does not allow more than one write
+per document. Each write succeeds or fails independently. See the
+BatchWriteResponse for the success status of each write.
+
+If you require an atomically applied set of writes, use
+Commit instead.
+
+      Args:
+        request: (FirestoreProjectsDatabasesDocumentsBatchWriteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (BatchWriteResponse) The response message.
+      """
+      config = self.GetMethodConfig('BatchWrite')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    BatchWrite.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/projects/{projectsId}/databases/{databasesId}/documents:batchWrite',
+        http_method='POST',
+        method_id='firestore.projects.databases.documents.batchWrite',
+        ordered_params=['database'],
+        path_params=['database'],
+        query_params=[],
+        relative_path='v1beta1/{+database}/documents:batchWrite',
+        request_field='batchWriteRequest',
+        request_type_name='FirestoreProjectsDatabasesDocumentsBatchWriteRequest',
+        response_type_name='BatchWriteResponse',
+        supports_download=False,
+    )
+
     def BeginTransaction(self, request, global_params=None):
       r"""Starts a new transaction.
 
@@ -294,6 +329,35 @@ same order that they were requested.
         request_field='listenRequest',
         request_type_name='FirestoreProjectsDatabasesDocumentsListenRequest',
         response_type_name='ListenResponse',
+        supports_download=False,
+    )
+
+    def PartitionQuery(self, request, global_params=None):
+      r"""Partitions a query by returning partition cursors that can be used to run.
+the query in parallel. The returned partition cursors are split points that
+can be used by RunQuery as starting/end points for the query results.
+
+      Args:
+        request: (FirestoreProjectsDatabasesDocumentsPartitionQueryRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (PartitionQueryResponse) The response message.
+      """
+      config = self.GetMethodConfig('PartitionQuery')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    PartitionQuery.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/projects/{projectsId}/databases/{databasesId}/documents/{documentsId}/{documentsId1}:partitionQuery',
+        http_method='POST',
+        method_id='firestore.projects.databases.documents.partitionQuery',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=[],
+        relative_path='v1beta1/{+parent}:partitionQuery',
+        request_field='partitionQueryRequest',
+        request_type_name='FirestoreProjectsDatabasesDocumentsPartitionQueryRequest',
+        response_type_name='PartitionQueryResponse',
         supports_download=False,
     )
 

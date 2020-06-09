@@ -189,6 +189,17 @@ def AddCertificateAuthorityIssuancePolicyFlag(parser):
   ).AddToParser(parser)
 
 
+def AddBucketFlag(parser):
+  base.Argument(
+      '--bucket',
+      help='The name of an existing storage bucket to use for storing the CA '
+           'certificate and CRLs. If omitted, a new bucket with an '
+           'auto-generated name will be created in the same project and '
+           'location as the CA.',
+      required=False
+  ).AddToParser(parser)
+
+
 def AddInlineReusableConfigFlags(parser, is_ca):
   """Adds flags for providing inline reusable config values.
 

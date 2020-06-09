@@ -112,7 +112,7 @@
   "schemas": {
     "ExecutePatchJobRequest": {
       "id": "ExecutePatchJobRequest",
-      "description": "A request message to initiate patching across Google Compute Engine\ninstances.",
+      "description": "A request message to initiate patching across Compute Engine instances.",
       "type": "object",
       "properties": {
         "description": {
@@ -187,7 +187,7 @@
       "type": "object",
       "properties": {
         "labels": {
-          "description": "Google Compute Engine instance labels that must be present for a VM\ninstance to be targeted by this filter.",
+          "description": "Compute Engine instance labels that must be present for a VM instance to\nbe targeted by this filter.",
           "type": "object",
           "additionalProperties": {
             "type": "string"
@@ -486,7 +486,7 @@
     },
     "PatchJob": {
       "id": "PatchJob",
-      "description": "A high level representation of a patch job that is either in progress\nor has completed.\n\nInstances details are not included in the job. To paginate through instance\ndetails, use ListPatchJobInstanceDetails.\n\nFor more information about patch jobs, see\n[Creating patch\njobs](https:\/\/cloud.google.com\/compute\/docs\/os-patch-management\/create-patch-job).",
+      "description": "A high level representation of a patch job that is either in progress\nor has completed.\n\nInstance details are not included in the job. To paginate through instance\ndetails, use `ListPatchJobInstanceDetails`.\n\nFor more information about patch jobs, see\n[Creating patch\njobs](https:\/\/cloud.google.com\/compute\/docs\/os-patch-management\/create-patch-job).",
       "type": "object",
       "properties": {
         "name": {
@@ -512,7 +512,7 @@
           "format": "google-datetime"
         },
         "state": {
-          "description": "The current state of the PatchJob .",
+          "description": "The current state of the PatchJob.",
           "enumDescriptions": [
             "State must be specified.",
             "The patch job was successfully initiated.",

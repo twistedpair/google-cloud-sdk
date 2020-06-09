@@ -40,7 +40,7 @@ def ProjectArgument(help_text_to_prepend=None, help_text_to_overwrite=None):
     help_text = help_text_to_overwrite
   else:
     help_text = """\
-The Google Cloud Platform project name to use for this invocation. If
+The Google Cloud Platform project ID to use for this invocation. If
 omitted, then the current project is assumed; the current project can
 be listed using `gcloud config list --format='text(core.project)'`
 and can be set using `gcloud config set project PROJECTID`.

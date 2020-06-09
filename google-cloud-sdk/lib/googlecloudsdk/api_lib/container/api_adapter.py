@@ -265,6 +265,17 @@ BETA_ADDONS_OPTIONS = ADDONS_OPTIONS + [
 ]
 ALPHA_ADDONS_OPTIONS = BETA_ADDONS_OPTIONS + [CLOUDBUILD]
 
+APISERVER = 'APISERVER'
+SCHEDULER = 'SCHEDULER'
+CONTROLLER_MANAGER = 'CONTROLLER_MANAGER'
+ADDON_MANAGER = 'ADDON_MANAGER'
+MASTER_LOGS_OPTIONS = [
+    APISERVER,
+    SCHEDULER,
+    CONTROLLER_MANAGER,
+    ADDON_MANAGER,
+]
+
 
 def CheckResponse(response):
   """Wrap http_wrapper.CheckResponse to skip retry on 503."""
@@ -497,6 +508,8 @@ class CreateClusterOptions(object):
       autoprovisioning_min_cpu_platform=None,
       enable_master_global_access=None,
       enable_gvnic=None,
+      enable_master_metrics=None,
+      master_logs=None,
   ):
     self.node_machine_type = node_machine_type
     self.node_source_image = node_source_image
@@ -614,6 +627,8 @@ class CreateClusterOptions(object):
     self.autoprovisioning_min_cpu_platform = autoprovisioning_min_cpu_platform
     self.enable_master_global_access = enable_master_global_access
     self.enable_gvnic = enable_gvnic
+    self.enable_master_metrics = enable_master_metrics
+    self.master_logs = master_logs
 
 
 class UpdateClusterOptions(object):
@@ -628,6 +643,9 @@ class UpdateClusterOptions(object):
                logging_service=None,
                enable_stackdriver_kubernetes=None,
                enable_logging_monitoring_system_only=None,
+               master_logs=None,
+               no_master_logs=None,
+               enable_master_metrics=None,
                disable_addons=None,
                istio_config=None,
                enable_autoscaling=None,
@@ -689,6 +707,9 @@ class UpdateClusterOptions(object):
     self.logging_service = logging_service
     self.enable_stackdriver_kubernetes = enable_stackdriver_kubernetes
     self.enable_logging_monitoring_system_only = enable_logging_monitoring_system_only
+    self.no_master_logs = no_master_logs
+    self.master_logs = master_logs
+    self.enable_master_metrics = enable_master_metrics
     self.disable_addons = disable_addons
     self.istio_config = istio_config
     self.enable_autoscaling = enable_autoscaling
@@ -2910,6 +2931,8 @@ class V1Beta1Adapter(V1Adapter):
       else:
         cluster.ipAllocationPolicy.useRoutes = True
 
+    cluster.master = _GetMasterForClusterCreate(options, self.messages)
+
     req = self.messages.CreateClusterRequest(
         parent=ProjectLocation(cluster_ref.projectId, cluster_ref.zone),
         cluster=cluster)
@@ -2950,6 +2973,10 @@ class V1Beta1Adapter(V1Adapter):
       update = self.messages.ClusterUpdate(
           desiredClusterTelemetry=self.messages.ClusterTelemetry(
               type=self.messages.ClusterTelemetry.TypeValueValuesEnum.DISABLED))
+
+    master = _GetMasterForClusterUpdate(options, self.messages)
+    if master is not None:
+      update = self.messages.ClusterUpdate(desiredMaster=master)
 
     if not update:
       # if reached here, it's possible:
@@ -3284,6 +3311,8 @@ class V1Alpha1Adapter(V1Beta1Adapter):
       else:
         cluster.ipAllocationPolicy.useRoutes = True
 
+    cluster.master = _GetMasterForClusterCreate(options, self.messages)
+
     req = self.messages.CreateClusterRequest(
         parent=ProjectLocation(cluster_ref.projectId, cluster_ref.zone),
         cluster=cluster)
@@ -3335,6 +3364,10 @@ class V1Alpha1Adapter(V1Beta1Adapter):
       update = self.messages.ClusterUpdate(
           desiredClusterTelemetry=self.messages.ClusterTelemetry(
               type=self.messages.ClusterTelemetry.TypeValueValuesEnum.DISABLED))
+
+    master = _GetMasterForClusterUpdate(options, self.messages)
+    if master is not None:
+      update = self.messages.ClusterUpdate(desiredMaster=master)
 
     if not update:
       # if reached here, it's possible:
@@ -3700,6 +3733,67 @@ def _GetTpuConfigForClusterUpdate(options, messages):
         ipv4CidrBlock=options.tpu_ipv4_cidr,
         useServiceNetworking=options.enable_tpu_service_networking,
     )
+
+
+def _GetMasterForClusterCreate(options, messages):
+  """Gets the Master from create options."""
+  if options.master_logs is not None or options.enable_master_metrics is not None:
+    config = messages.MasterSignalsConfig()
+
+    if options.master_logs is not None:
+      if APISERVER in options.master_logs:
+        config.logEnabledComponents.append(
+            messages.MasterSignalsConfig
+            .LogEnabledComponentsValueListEntryValuesEnum.APISERVER)
+      if SCHEDULER in options.master_logs:
+        config.logEnabledComponents.append(
+            messages.MasterSignalsConfig
+            .LogEnabledComponentsValueListEntryValuesEnum.SCHEDULER)
+      if CONTROLLER_MANAGER in options.master_logs:
+        config.logEnabledComponents.append(
+            messages.MasterSignalsConfig
+            .LogEnabledComponentsValueListEntryValuesEnum.CONTROLLER_MANAGER)
+      if ADDON_MANAGER in options.master_logs:
+        config.logEnabledComponents.append(
+            messages.MasterSignalsConfig
+            .LogEnabledComponentsValueListEntryValuesEnum.ADDON_MANAGER)
+    if options.enable_master_metrics is not None:
+      config.enableMetrics = options.enable_master_metrics
+    return messages.Master(signalsConfig=config)
+
+
+def _GetMasterForClusterUpdate(options, messages):
+  """Gets the Master from update options."""
+  if options.no_master_logs:
+    options.master_logs = []
+  if options.master_logs is not None:
+    config = messages.MasterSignalsConfig()
+    if APISERVER in options.master_logs:
+      config.logEnabledComponents.append(
+          messages.MasterSignalsConfig
+          .LogEnabledComponentsValueListEntryValuesEnum.APISERVER)
+    if SCHEDULER in options.master_logs:
+      config.logEnabledComponents.append(
+          messages.MasterSignalsConfig
+          .LogEnabledComponentsValueListEntryValuesEnum.SCHEDULER)
+    if CONTROLLER_MANAGER in options.master_logs:
+      config.logEnabledComponents.append(
+          messages.MasterSignalsConfig
+          .LogEnabledComponentsValueListEntryValuesEnum.CONTROLLER_MANAGER)
+    if ADDON_MANAGER in options.master_logs:
+      config.logEnabledComponents.append(
+          messages.MasterSignalsConfig
+          .LogEnabledComponentsValueListEntryValuesEnum.ADDON_MANAGER)
+    return messages.Master(signalsConfig=config)
+
+  if options.enable_master_metrics is not None:
+    config = messages.MasterSignalsConfig(
+        enableMetrics=options.enable_master_metrics,
+        logEnabledComponents=[
+            messages.MasterSignalsConfig
+            .LogEnabledComponentsValueListEntryValuesEnum.COMPONENT_UNSPECIFIED
+        ])
+    return messages.Master(signalsConfig=config)
 
 
 def ProjectLocation(project, location):

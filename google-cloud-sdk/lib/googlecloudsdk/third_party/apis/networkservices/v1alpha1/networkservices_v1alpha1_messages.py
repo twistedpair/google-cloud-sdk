@@ -160,26 +160,20 @@ class EndpointConfigSelector(_messages.Message):
       EndpointConfigSelector resource.
 
   Fields:
-    authentication: Optional. This field specifies the URL of authentication
-      resource to apply authentication config to inbound traffic for the
-      matched endpoints(Backends). More specifically, terminationTls of
-      transportAuthentication is used to determine the authentication config
-      to applied to terminate the inbound traffic at the identified backends.
-      Refer to Authentication.transportAuthentication.terminationTls. If the
-      authentication is applied to a proxy that is fronting the endpoint to
-      terminate the traffic on behalf of the endpoint, OriginationTls can be
-      set to specify the authentication for traffic from the proxy to the
-      actual endpoints. More specifically, the OriginationTls of
-      transportAuthentication is applied to the outgoing traffic from the
-      proxy to the endpoint. This is typically used for sidecar model where
-      the proxy identifies itself as endpoint to the control plane, with the
-      connection between sidecar and endpoint requiring authentication. Refer
-      to Authentication.transportAuthentication.OriginationTls. If this field
-      is not specified, authentication is disabled(open) for this endpoint.
+    authentication: Optional.
     authorization: Optional. This field specifies the URL of Authorization
       resource that applies authorization policies to the inbound traffic at
       the matched endpoints. Refer to Authorization. If this field is not
       specified, authorization is disabled(no authz checks) for this endpoint.
+    clientTlsPolicy: Optional. A URL referring to a ClientTlsPolicy resource.
+      ClientTlsPolicy can be set to specify the authentication for traffic
+      from the proxy to the actual endpoints. More specifically, it is applied
+      to the outgoing traffic from the proxy to the endpoint. This is
+      typically used for sidecar model where the proxy identifies itself as
+      endpoint to the control plane, with the connection between sidecar and
+      endpoint requiring authentication. If this field is not set,
+      authentication is disabled(open). Applicable only when
+      EndpointConfigSelectorType is SIDECAR_PROXY.
     createTime: Output only. The timestamp when the resource was created.
     description: Optional. A free-text description of the resource. Max length
       1024 characters.
@@ -191,6 +185,11 @@ class EndpointConfigSelector(_messages.Message):
     name: Required. Name of the EndpointConfigSelector resource. It matches
       pattern `projects/*/locations/global/endpointConfigSelectors/<endpoint_c
       onfig_selector>`.
+    serverTlsPolicy: Optional. A URL referring to ServerTlsPolicy resource.
+      ServerTlsPolicy is used to determine the authentication policy to be
+      applied to terminate the inbound traffic at the identified backends. If
+      this field is not set, authentication is disabled(open) for this
+      endpoint.
     trafficPortSelector: Optional. Port selector for the (matched) endpoints.
       If no port selector is provided, the matched config is applied to all
       ports.
@@ -237,15 +236,17 @@ class EndpointConfigSelector(_messages.Message):
 
   authentication = _messages.StringField(1)
   authorization = _messages.StringField(2)
-  createTime = _messages.StringField(3)
-  description = _messages.StringField(4)
-  endpointMatcher = _messages.MessageField('EndpointMatcher', 5)
-  httpFilters = _messages.MessageField('HttpFilters', 6)
-  labels = _messages.MessageField('LabelsValue', 7)
-  name = _messages.StringField(8)
-  trafficPortSelector = _messages.MessageField('TrafficPortSelector', 9)
-  type = _messages.EnumField('TypeValueValuesEnum', 10)
-  updateTime = _messages.StringField(11)
+  clientTlsPolicy = _messages.StringField(3)
+  createTime = _messages.StringField(4)
+  description = _messages.StringField(5)
+  endpointMatcher = _messages.MessageField('EndpointMatcher', 6)
+  httpFilters = _messages.MessageField('HttpFilters', 7)
+  labels = _messages.MessageField('LabelsValue', 8)
+  name = _messages.StringField(9)
+  serverTlsPolicy = _messages.StringField(10)
+  trafficPortSelector = _messages.MessageField('TrafficPortSelector', 11)
+  type = _messages.EnumField('TypeValueValuesEnum', 12)
+  updateTime = _messages.StringField(13)
 
 
 class EndpointMatcher(_messages.Message):

@@ -869,8 +869,17 @@
           "description": "The name of the environment config. Must be of the form\n'organizations\/{org}\/environments\/{env}\/configs\/{config_id}",
           "type": "string"
         },
+        "uid": {
+          "description": "A unique id for the environment config that will only change if the\nenvironment is deleted and recreated.",
+          "type": "string"
+        },
+        "revisionId": {
+          "description": "Revision id that defines the ordering on the environment config.\nThe higher the revision, the more recently the configuration\nwas deployed.",
+          "type": "string",
+          "format": "int64"
+        },
         "sequenceNumber": {
-          "description": "A sequence number that defines an ordering on environment configs. No two\nconfigs under an environment will ever have the same sequence number.\nA higher sequence number means that the config was deployed more\nrecently than one with a lower sequence number.",
+          "description": "DEPRECATED: use revision_id",
           "type": "string",
           "format": "int64"
         },
@@ -1059,6 +1068,14 @@
       "properties": {
         "name": {
           "description": "The name of the API or shared flow revision to be deployed. Must be of the\nform 'organizations\/{org}\/apis\/{api}\/revisions\/{rev}' or\n'organizations\/{org}\/sharedflows\/{sf}\/revisions\/{rev}'.",
+          "type": "string"
+        },
+        "uid": {
+          "description": "A unique id that will only change if the deployment is deleted and\nrecreated.",
+          "type": "string"
+        },
+        "proxyUid": {
+          "description": "The uid of the proxy revision.",
           "type": "string"
         },
         "location": {

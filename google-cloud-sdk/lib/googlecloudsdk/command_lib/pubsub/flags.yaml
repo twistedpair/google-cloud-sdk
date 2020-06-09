@@ -4,7 +4,7 @@ topic-name:
   required: true
   is_positional: true
   help_text: |
-    Topic name.
+    Topic ID.
 
 subscription-name:
   api_field: subscriptionId
@@ -12,14 +12,14 @@ subscription-name:
   is_positional: true
   required: true
   help_text: |
-    Subscription name.
+    Subscription ID.
 
 subscription-topic-name:
   api_field: subscription.topic
   arg_name: topic
   required: true
   help_text: |
-    Topic name associated with the subscription.
+    Topic ID associated with the subscription.
 
 partitions:
   api_field: topic.partitionConfig.count

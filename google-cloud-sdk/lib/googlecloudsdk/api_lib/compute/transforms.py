@@ -172,12 +172,14 @@ def TransformMachineType(r, undefined=''):
   """
   if not isinstance(r, six.string_types):
     return undefined
-  custom_cpu, custom_ram = instance_utils.GetCpuRamFromCustomName(r)
-  if not custom_cpu or not custom_ram:
+  custom_family, custom_cpu, custom_ram = \
+    instance_utils.GetCpuRamVmFamilyFromCustomName(r)
+  if not custom_family or not custom_cpu or not custom_ram:
     return r
   # Restricting output to 2 decimal places
   custom_ram_gb = '{0:.2f}'.format(float(custom_ram) / (2**10))
-  return 'custom ({0} vCPU, {1} GiB)'.format(custom_cpu, custom_ram_gb)
+  return 'custom ({0}, {1} vCPU, {2} GiB)'.format(custom_family, custom_cpu,
+                                                  custom_ram_gb)
 
 
 def TransformNextMaintenance(r, undefined=''):

@@ -1294,6 +1294,11 @@ class VirtualMachine(_messages.Message):
       https://cloud.google.com/compute/docs/instances/specify-min-cpu-
       platform.
     disks: The list of disks to create and attach to the VM.
+    dockerCacheImages: The Compute Engine Disk Images to use as a Docker
+      cache. The disks will be mounted into the Docker folder in a way that
+      the images present in the cache will not need to be pulled. The digests
+      of the cached images must match those of the tags used or the latest
+      version will still be pulled. Only a single image is supported.
     enableStackdriverMonitoring: Whether Stackdriver monitoring should be
       enabled on the VM.
     labels: Optional set of labels to apply to the VM and any attached disk
@@ -1357,13 +1362,14 @@ class VirtualMachine(_messages.Message):
   bootImage = _messages.StringField(3)
   cpuPlatform = _messages.StringField(4)
   disks = _messages.MessageField('Disk', 5, repeated=True)
-  enableStackdriverMonitoring = _messages.BooleanField(6)
-  labels = _messages.MessageField('LabelsValue', 7)
-  machineType = _messages.StringField(8)
-  network = _messages.MessageField('Network', 9)
-  nvidiaDriverVersion = _messages.StringField(10)
-  preemptible = _messages.BooleanField(11)
-  serviceAccount = _messages.MessageField('ServiceAccount', 12)
+  dockerCacheImages = _messages.StringField(6, repeated=True)
+  enableStackdriverMonitoring = _messages.BooleanField(7)
+  labels = _messages.MessageField('LabelsValue', 8)
+  machineType = _messages.StringField(9)
+  network = _messages.MessageField('Network', 10)
+  nvidiaDriverVersion = _messages.StringField(11)
+  preemptible = _messages.BooleanField(12)
+  serviceAccount = _messages.MessageField('ServiceAccount', 13)
 
 
 class WorkerAssignedEvent(_messages.Message):

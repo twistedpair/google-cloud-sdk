@@ -823,24 +823,19 @@
           "description": "Output only. Diagnostics generated during processing of configuration source files.",
           "type": "array",
           "items": {
-            "$ref": "ApigatewayOperationMetadataFileDiagnostic"
+            "$ref": "ApigatewayOperationMetadataDiagnostic"
           }
         }
       }
     },
-    "ApigatewayOperationMetadataFileDiagnostic": {
-      "id": "ApigatewayOperationMetadataFileDiagnostic",
-      "description": "Diagnostic information from source file processing.",
+    "ApigatewayOperationMetadataDiagnostic": {
+      "id": "ApigatewayOperationMetadataDiagnostic",
+      "description": "Diagnostic information from configuration processing.",
       "type": "object",
       "properties": {
-        "file": {
-          "description": "File path. This will match the file path sent by the client.",
+        "location": {
+          "description": "Location of the diagnostic.",
           "type": "string"
-        },
-        "line": {
-          "description": "Line number in the file.",
-          "type": "integer",
-          "format": "int32"
         },
         "message": {
           "description": "The diagnostic message.",

@@ -127,7 +127,7 @@ SOURCE_IN_PLACE_SNAPSHOT_ARG = compute_flags.ResourceArgument(
     required=False,
     short_help='Source in place snapshot used to create the disks.',
     detailed_help=_DETAILED_SOURCE_IN_PLACE_SNAPSHOT_HELP,
-)
+    use_existing_default_scope=True)
 
 SOURCE_DISK_ARG = compute_flags.ResourceArgument(
     resource_name='source disk',

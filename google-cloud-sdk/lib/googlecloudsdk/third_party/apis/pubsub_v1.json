@@ -247,6 +247,7 @@
     },
     "MessageStoragePolicy": {
       "id": "MessageStoragePolicy",
+      "description": "A policy constraining the storage of messages published to the topic.",
       "type": "object",
       "properties": {
         "allowedPersistenceRegions": {
@@ -395,6 +396,13 @@
       "properties": {
       }
     },
+    "DetachSubscriptionResponse": {
+      "id": "DetachSubscriptionResponse",
+      "description": "Response for the DetachSubscription method.\nReserved for future use.",
+      "type": "object",
+      "properties": {
+      }
+    },
     "Subscription": {
       "id": "Subscription",
       "description": "A subscription resource.",
@@ -442,7 +450,7 @@
           "$ref": "ExpirationPolicy"
         },
         "filter": {
-          "description": "An expression written in the Cloud Pub\/Sub filter language. If non-empty,\nthen only `PubsubMessage`s whose `attributes` field matches the filter are\ndelivered on this subscription. If empty, then no messages are filtered\nout.\n<b>EXPERIMENTAL:<\/b> This feature is part of a closed alpha release. This\nAPI might be changed in backward-incompatible ways and is not recommended\nfor production use. It is not subject to any SLA or deprecation policy.",
+          "description": "An expression written in the Cloud Pub\/Sub filter language. If non-empty,\nthen only `PubsubMessage`s whose `attributes` field matches the filter are\ndelivered on this subscription. If empty, then no messages are filtered\nout.",
           "type": "string"
         },
         "deadLetterPolicy": {
@@ -450,7 +458,7 @@
           "$ref": "DeadLetterPolicy"
         },
         "retryPolicy": {
-          "description": "A policy that specifies how Cloud Pub\/Sub retries message delivery for this\nsubscription.\n\nIf not set, the default retry policy is applied. This generally implies\nthat messages will be retried as soon as possible for healthy subscribers.\nRetryPolicy will be triggered on NACKs or acknowledgement deadline\nexceeded events for a given message.\n<b>EXPERIMENTAL:<\/b> This API might be changed in backward-incompatible\nways and is not recommended for production use. It is not subject to any\nSLA or deprecation policy.",
+          "description": "A policy that specifies how Pub\/Sub retries message delivery for this\nsubscription.\n\nIf not set, the default retry policy is applied. This generally implies\nthat messages will be retried as soon as possible for healthy subscribers.\nRetryPolicy will be triggered on NACKs or acknowledgement deadline\nexceeded events for a given message.",
           "$ref": "RetryPolicy"
         },
         "detached": {
@@ -1221,6 +1229,32 @@
                 "https://www.googleapis.com/auth/pubsub"
               ],
               "description": "Returns permissions that a caller has on the specified resource.\nIf the resource does not exist, this will return an empty set of\npermissions, not a `NOT_FOUND` error.\n\nNote: This operation is designed to be used for building permission-aware\nUIs and command-line tools, not for authorization checking. This operation\nmay \"fail open\" without warning."
+            },
+            "detach": {
+              "id": "pubsub.projects.subscriptions.detach",
+              "path": "v1/{+subscription}:detach",
+              "flatPath": "v1/projects/{projectsId}/subscriptions/{subscriptionsId}:detach",
+              "httpMethod": "POST",
+              "parameters": {
+                "subscription": {
+                  "description": "Required. The subscription to detach.\nFormat is `projects\/{project}\/subscriptions\/{subscription}`.",
+                  "location": "path",
+                  "required": true,
+                  "pattern": "^projects\/[^\/]+\/subscriptions\/[^\/]+$",
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "subscription"
+              ],
+              "response": {
+                "$ref": "DetachSubscriptionResponse"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform",
+                "https://www.googleapis.com/auth/pubsub"
+              ],
+              "description": "Detaches a subscription from this topic. All messages retained in the\nsubscription are dropped. Subsequent `Pull` and `StreamingPull` requests\nwill return FAILED_PRECONDITION. If the subscription is a push\nsubscription, pushes to the endpoint will stop."
             },
             "create": {
               "id": "pubsub.projects.subscriptions.create",

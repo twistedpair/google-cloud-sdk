@@ -25,10 +25,22 @@ import six
 BYTES_IN_ONE_MB = 2 ** 20
 BYTES_IN_ONE_GB = 2 ** 30
 
-DEFAULT_STANDARD_DISK_SIZE_GB = 500
-DEFAULT_SSD_DISK_SIZE_GB = 100
 STANDARD_DISK_PERFORMANCE_WARNING_GB = 200
 SSD_DISK_PERFORMANCE_WARNING_GB = 10
+
+# Disk types
+DISK_TYPE_PD_STANDARD = 'pd-standard'
+DISK_TYPE_PD_BALANCED = 'pd-balanced'
+DISK_TYPE_PD_SSD = 'pd-ssd'
+DISK_TYPE_PD_EXTREME = 'pd-extreme'
+
+# Default size for each disk type
+DEFAULT_DISK_SIZE_GB_MAP = {
+    DISK_TYPE_PD_STANDARD: 500,
+    DISK_TYPE_PD_BALANCED: 100,
+    DISK_TYPE_PD_SSD: 100,
+    DISK_TYPE_PD_EXTREME: 1000,
+}
 
 # The maximum number of results that can be returned in a single list
 # response.
@@ -60,10 +72,6 @@ IMAGE_ALIASES = {
         project='google-containers',
         name_prefix='container-vm',
         family='container-vm'),
-    'coreos': ImageAlias(
-        project='coreos-cloud',
-        name_prefix='coreos-stable',
-        family='coreos-stable'),
     'cos': ImageAlias(
         project='cos-cloud',
         name_prefix='cos',
@@ -72,6 +80,10 @@ IMAGE_ALIASES = {
         project='debian-cloud',
         name_prefix='debian-8-jessie',
         family='debian-8'),
+    'fedora-coreos-stable': ImageAlias(
+        project='fedora-coreos-cloud',
+        name_prefix='fedora-coreos',
+        family='fedora-coreos-stable'),
     'rhel-6': ImageAlias(
         project='rhel-cloud',
         name_prefix='rhel-6',
@@ -128,9 +140,9 @@ WINDOWS_IMAGE_PROJECTS = [
 ]
 PUBLIC_IMAGE_PROJECTS = [
     'centos-cloud',
-    'coreos-cloud',
-    'debian-cloud',
     'cos-cloud',
+    'debian-cloud',
+    'fedora-coreos-cloud',
     'rhel-cloud',
     'rhel-sap-cloud',
     'suse-cloud',

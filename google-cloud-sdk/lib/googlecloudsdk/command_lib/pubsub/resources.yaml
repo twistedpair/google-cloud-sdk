@@ -19,16 +19,12 @@ topic:
 location:
   name: location
   collection: pubsublite.admin.projects.locations
-  disable_auto_completers: false
   attributes:
   - &location
     parameter_name: locationsId
     attribute_name: zone
     help: |
       ID of the location of the Pub/Sub Lite resource.
-
-      If not specified, will use `default` pubsub/lite_zone property.
-    property: pubsub/lite_zone
 
 lite-topic:
   name: topic

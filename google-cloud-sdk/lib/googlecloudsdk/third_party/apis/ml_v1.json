@@ -577,12 +577,14 @@
           "description": "Optional. The multi-trial Neural Architecture Search (NAS) algorithm\ntype. Defaults to `NAS_MULTI_TRIAL_ALGORITHM_REINFORCEMENT_LEARNING`.",
           "enumDescriptions": [
             "",
-            "The Reinforcement Learning Algorithm for Multi-trial Neural\nArchitecture Search (NAS)."
+            "The Reinforcement Learning Algorithm for Multi-trial Neural\nArchitecture Search (NAS).",
+            "The Grid Search Algorithm for Multi-trial Neural\nArchitecture Search (NAS)."
           ],
           "type": "string",
           "enum": [
             "MULTI_TRIAL_ALGORITHM_UNSPECIFIED",
-            "REINFORCEMENT_LEARNING"
+            "REINFORCEMENT_LEARNING",
+            "GRID_SEARCH"
           ]
         },
         "nasTargetRewardMetric": {
@@ -1705,6 +1707,39 @@
         },
         "maxNodes": {
           "description": "Optional. The maximum number of nodes to scale this model under load. The actual\nvalue will depend on resource quota and availability.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "metrics": {
+          "description": "Optional. MetricSpec contains the specifications to use to calculate the desired\nnodes count.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudMlV1__MetricSpec"
+          }
+        }
+      }
+    },
+    "GoogleCloudMlV1__MetricSpec": {
+      "id": "GoogleCloudMlV1__MetricSpec",
+      "description": "MetricSpec contains the specifications to use to calculate the desired\nnodes count when autoscaling is enabled.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "metric name.",
+          "enumDescriptions": [
+            "Unspecified MetricName.",
+            "CPU usage.",
+            "GPU duty cycle."
+          ],
+          "type": "string",
+          "enum": [
+            "METRIC_NAME_UNSPECIFIED",
+            "CPU_USAGE",
+            "GPU_DUTY_CYCLE"
+          ]
+        },
+        "target": {
+          "description": "Target specifies the target value for the given metric; once real metric\ndeviates from the threshold by a certain percentage, the node count\nchanges.",
           "type": "integer",
           "format": "int32"
         }

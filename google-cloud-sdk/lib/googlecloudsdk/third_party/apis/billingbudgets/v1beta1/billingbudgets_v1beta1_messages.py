@@ -178,16 +178,18 @@ class GoogleCloudBillingBudgetsV1beta1Filter(_messages.Message):
   Messages:
     LabelsValue: Optional. A single label and value pair specifying that usage
       from only this set of labeled resources should be included in the
-      budget. Multiple entries or multiple values per entry are not allowed.
-      If omitted, the report will include all labeled and unlabeled usage.
+      budget. Currently, multiple entries or multiple values per entry are not
+      allowed. If omitted, the report will include all labeled and unlabeled
+      usage.
 
   Fields:
     creditTypesTreatment: Optional. If not set, default behavior is
       `INCLUDE_ALL_CREDITS`.
     labels: Optional. A single label and value pair specifying that usage from
       only this set of labeled resources should be included in the budget.
-      Multiple entries or multiple values per entry are not allowed. If
-      omitted, the report will include all labeled and unlabeled usage.
+      Currently, multiple entries or multiple values per entry are not
+      allowed. If omitted, the report will include all labeled and unlabeled
+      usage.
     projects: Optional. A set of projects of the form `projects/{project}`,
       specifying that usage from only this set of projects should be included
       in the budget. If omitted, the report will include all usage for the
@@ -224,8 +226,8 @@ class GoogleCloudBillingBudgetsV1beta1Filter(_messages.Message):
   class LabelsValue(_messages.Message):
     r"""Optional. A single label and value pair specifying that usage from
     only this set of labeled resources should be included in the budget.
-    Multiple entries or multiple values per entry are not allowed. If omitted,
-    the report will include all labeled and unlabeled usage.
+    Currently, multiple entries or multiple values per entry are not allowed.
+    If omitted, the report will include all labeled and unlabeled usage.
 
     Messages:
       AdditionalProperty: An additional property for a LabelsValue object.

@@ -963,6 +963,34 @@ def DeleteGeneratedLabels(cluster, dataproc):
           labels, dataproc.messages.Cluster.LabelsValue)
 
 
+def DeleteGeneratedProperties(cluster, dataproc):
+  """Filter out Dataproc-generated cluster properties.
+
+  Args:
+    cluster: Cluster to filter
+    dataproc: Dataproc object that contains client, messages, and resources
+  """
+  if (not cluster.config or not cluster.config.softwareConfig or
+      not cluster.config.softwareConfig.properties):
+    return
+  # Filter out Dataproc-generated properties.
+  props = encoding.MessageToPyValue(cluster.config.softwareConfig.properties)
+  # We don't currently have a nice way to tell which properties are
+  # Dataproc-generated, so for now, delete a few properties that we know contain
+  # cluster-specific info.
+  props_to_delete = [
+      'hdfs:dfs.namenode.lifeline.rpc-address',
+      'hdfs:dfs.namenode.servicerpc-address'
+  ]
+  for prop in props_to_delete:
+    del props[prop]
+  if not props:
+    cluster.config.softwareConfig.properties = None
+  else:
+    cluster.config.softwareConfig.properties = encoding.DictToAdditionalPropertyMessage(
+        props, dataproc.messages.SoftwareConfig.PropertiesValue)
+
+
 def AddReservationAffinityGroup(parser, group_text, affinity_text):
   """Adds the argument group to handle reservation affinity configurations."""
   group = parser.add_group(help=group_text)

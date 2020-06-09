@@ -305,6 +305,29 @@ class StorageClient(object):
     data.seek(0)
     return data
 
+  def GetBucket(self, bucket, projection=None):
+    """Gets a bucket from GCS, if it exists.
+
+    Args:
+      bucket: str, The bucket name.
+      projection: int, The fields to get as part of this request. This is
+        optional and defaults to whatever the server provides.
+
+    Returns:
+      Bucket: a StorageV1 Bucket message with details about the bucket.
+
+    Raises:
+      BucketNotFoundError if the given bucket does not exist.
+    """
+    try:
+      return self.client.buckets.Get(self.messages.StorageBucketsGetRequest(
+          bucket=bucket,
+          projection=projection
+      ))
+    except api_exceptions.HttpNotFoundError:
+      # Bucket doesn't exist, we'll try to create it.
+      raise BucketNotFoundError('Bucket [{}] does not exist.'.format(bucket))
+
   def CreateBucketIfNotExists(self, bucket, project=None, location=None):
     """Create a bucket if it does not already exist.
 

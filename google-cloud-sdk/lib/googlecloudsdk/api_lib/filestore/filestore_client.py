@@ -19,7 +19,6 @@ from __future__ import division
 from __future__ import unicode_literals
 
 from apitools.base.py import list_pager
-
 from googlecloudsdk.api_lib.compute import utils
 from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.api_lib.util import waiter
@@ -192,8 +191,7 @@ class FilestoreClient(object):
     return self.WaitForOperation(operation_ref)
 
   def GetLocation(self, location_ref):
-    request = self.messages.FileProjectsLocationsGetRequest(
-        name=location_ref)
+    request = self.messages.FileProjectsLocationsGetRequest(name=location_ref)
     return self.client.projects_locations.Get(request)
 
   def ListLocations(self, project_ref, limit=None):
@@ -231,7 +229,8 @@ class FilestoreClient(object):
     gb_in_one_tb = 1 << 10
     minimum_values = {
         self.messages.Instance.TierValueValuesEnum.STANDARD: gb_in_one_tb,
-        self.messages.Instance.TierValueValuesEnum.PREMIUM: 2.5 * gb_in_one_tb}
+        self.messages.Instance.TierValueValuesEnum.PREMIUM: 2.5 * gb_in_one_tb
+    }
     minimum = minimum_values.get(instance_tier, 0)
     if capacity_gb < minimum:
       raise InvalidCapacityError(
@@ -244,8 +243,14 @@ class FilestoreClient(object):
       if file_share.capacityGb:
         self._ValidateFileShare(instance.tier, file_share.capacityGb)
 
-  def ParseFilestoreConfig(self, tier=None, description=None, file_share=None,
-                           network=None, labels=None, zone=None):
+  def ParseFilestoreConfig(self,
+                           tier=None,
+                           description=None,
+                           file_share=None,
+                           network=None,
+                           labels=None,
+                           zone=None,
+                           nfs_export_options=None):
     """Parses the command line arguments for Create into a config.
 
     Args:
@@ -255,6 +260,7 @@ class FilestoreClient(object):
       network: The network for the instance.
       labels: The parsed labels value.
       zone: The parsed zone of the instance.
+      nfs_export_options: the nfs export options for the file share.
 
     Returns:
       the configuration that will be used as the request body for creating a
@@ -267,6 +273,8 @@ class FilestoreClient(object):
 
     if description:
       instance.description = description
+    if nfs_export_options:
+      file_share['nfs_export_options'] = nfs_export_options
 
     self._adapter.ParseFileShareIntoInstance(instance, file_share, zone)
 
@@ -279,8 +287,11 @@ class FilestoreClient(object):
       instance.networks.append(network_config)
     return instance
 
-  def ParseUpdatedInstanceConfig(self, instance_config, description=None,
-                                 labels=None, file_share=None):
+  def ParseUpdatedInstanceConfig(self,
+                                 instance_config,
+                                 description=None,
+                                 labels=None,
+                                 file_share=None):
     """Parses updates into an instance config.
 
     Args:
@@ -297,7 +308,9 @@ class FilestoreClient(object):
       The instance message.
     """
     instance = self._adapter.ParseUpdatedInstanceConfig(
-        instance_config, description=description, labels=labels,
+        instance_config,
+        description=description,
+        labels=labels,
         file_share=file_share)
     return instance
 
@@ -313,13 +326,55 @@ class FilestoreClient(object):
     Returns:
       an Operation or Instance message.
     """
-    update_op = self._adapter.UpdateInstance(
-        instance_ref, instance_config, update_mask)
+    update_op = self._adapter.UpdateInstance(instance_ref, instance_config,
+                                             update_mask)
     if async_:
       return update_op
     operation_ref = resources.REGISTRY.ParseRelativeName(
         update_op.name, collection=OPERATIONS_COLLECTION)
     return self.WaitForOperation(operation_ref)
+
+  @staticmethod
+  def MakeNFSExportOptionsMsg(messages, nfs_export_options):
+    """Creates an NfsExportOptions message.
+
+    Args:
+      messages: The messages module.
+      nfs_export_options: list, containing NfsExportOptions dictionary.
+
+    Returns:
+      File share message populated with values, filled with defaults.
+      In case no nfs export options are provided we rely on the API to apply a
+      default.
+    """
+    read_write = 'READ_WRITE'
+    root_squash = 'ROOT_SQUASH'
+    no_root_squash = 'NO_ROOT_SQUASH'
+    anonimous_uid = 65534
+    anonimous_gid = 65534
+    nfs_export_configs = []
+
+    if nfs_export_options is None:
+      return []
+    for nfs_export_option in nfs_export_options:
+      access_mode = messages.NfsExportOptions.AccessModeValueValuesEnum.lookup_by_name(
+          nfs_export_option.get('access-mode', read_write))
+      squash_mode = messages.NfsExportOptions.SquashModeValueValuesEnum.lookup_by_name(
+          nfs_export_option.get('squash-mode', no_root_squash))
+      if nfs_export_option.get('squash-mode', None) == root_squash:
+        anon_uid = nfs_export_option.get('anon_uid', anonimous_uid)
+        anon_gid = nfs_export_option.get('anon_gid', anonimous_gid)
+      else:
+        anon_gid = None
+        anon_uid = None
+      nfs_export_config = messages.NfsExportOptions(
+          ipRanges=nfs_export_option.get('ip-ranges'),
+          anonUid=anon_uid,
+          anonGid=anon_gid,
+          accessMode=access_mode,
+          squashMode=squash_mode)
+      nfs_export_configs.append(nfs_export_config)
+    return nfs_export_configs
 
 
 class AlphaFilestoreAdapter(object):
@@ -329,26 +384,32 @@ class AlphaFilestoreAdapter(object):
     self.client = GetClient(version=ALPHA_API_VERSION)
     self.messages = GetMessages(version=ALPHA_API_VERSION)
 
-  def ParseFileShareIntoInstance(self, instance, file_share,
+  def ParseFileShareIntoInstance(self,
+                                 instance,
+                                 file_share,
                                  instance_zone=None):
     """Parse specified file share configs into an instance message.
 
     Args:
-      instance: the instance message.
-      file_share: the file share config.
-      instance_zone: the instance zone.
+      instance: The Filestore instance object.
+      file_share: File share configuration.
+      instance_zone: The instance zone.
 
     Raises:
       InvalidArgumentError: If file_share argument constraints are violated.
+
     """
     if instance.fileShares is None:
       instance.fileShares = []
-
     if file_share:
       source_snapshot = None
       source_backup = None
       location = None
 
+      # Deduplicate file shares with the same name.
+      instance.fileShares = [
+          fs for fs in instance.fileShares if fs.name != file_share.get('name')
+      ]
       if 'source-snapshot' in file_share:
         project = properties.VALUES.core.project.Get(required=True)
         location = (file_share.get('source-snapshot-region') or instance_zone)
@@ -369,34 +430,113 @@ class AlphaFilestoreAdapter(object):
             "If 'source-backup' is specified, 'source-backup-region' must also be specified."
         )
 
+      nfs_export_options = FilestoreClient.MakeNFSExportOptionsMsg(
+          self.messages, file_share.get('nfs-export-options', []))
       file_share_config = self.messages.FileShareConfig(
           name=file_share.get('name'),
           capacityGb=utils.BytesToGb(file_share.get('capacity')),
           sourceSnapshot=source_snapshot,
-          sourceBackup=source_backup)
-
+          sourceBackup=source_backup,
+          nfsExportOptions=nfs_export_options)
       instance.fileShares.append(file_share_config)
 
   def FileSharesFromInstance(self, instance):
     """Get file share configs from instance message."""
     return instance.fileShares
 
+  def ParseUpdatedInstanceConfig(self,
+                                 instance_config,
+                                 description=None,
+                                 labels=None,
+                                 file_share=None):
+    """Parse update information into an updated Instance message."""
+    if description:
+      instance_config.description = description
+    if labels:
+      instance_config.labels = labels
+    if file_share:
+      self.ValidateFileShareForUpdate(instance_config, file_share)
+      self.ParseFileShareIntoInstance(instance_config, file_share)
+    return instance_config
+
+  def ValidateFileShareForUpdate(self, instance_config, file_share):
+    """Validate the updated file share configuration.
+
+    The new config must have the same name as the existing config and a larger
+    size than the existing capacity.
+
+    Args:
+      instance_config: Instance message for existing instance.
+      file_share: dict with keys 'name' and 'capacity'.
+
+    Raises:
+      InvalidNameError: If the names don't match.
+      ValueError: If the instance doesn't have an existing file share.
+    """
+    existing = self.FileSharesFromInstance(instance_config)
+    if not existing:
+      # This should never happen because all instances have one file share.
+      raise ValueError('Existing instance does not have file shares configured')
+    existing_file_share = existing[0]
+    if existing_file_share.name != file_share.get('name'):
+      raise InvalidNameError(
+          'Must update an existing file share. Existing file share is named '
+          '[{}]. Requested update had name [{}].'.format(
+              existing_file_share.name, file_share.get('name')))
+
   def UpdateInstance(self, instance_ref, instance_config, update_mask):
-    # Not supported by alpha API.
-    raise NotImplementedError
+    """Send a Patch request for the Cloud Filestore instance."""
+    update_request = self.messages.FileProjectsLocationsInstancesPatchRequest(
+        instance=instance_config,
+        name=instance_ref.RelativeName(),
+        updateMask=update_mask)
+    update_op = self.client.projects_locations_instances.Patch(update_request)
+    return update_op
 
-  def ParseUpdatedInstanceConfig(self, instance_config, description=None,
-                                 labels=None, file_shares=None):
-    # Not supported by alpha API.
-    raise NotImplementedError
 
-
-class BetaFilestoreAdapter(object):
+class BetaFilestoreAdapter(AlphaFilestoreAdapter):
   """Adapter for the beta filestore API."""
 
   def __init__(self):
+    super(BetaFilestoreAdapter, self).__init__()
     self.client = GetClient(version=BETA_API_VERSION)
     self.messages = GetMessages(version=BETA_API_VERSION)
+
+  def ParseFileShareIntoInstance(self,
+                                 instance,
+                                 file_share,
+                                 instance_zone=None):
+    """Parse specified file share configs into an instance message."""
+    del instance_zone  # Unused.
+    if instance.fileShares is None:
+      instance.fileShares = []
+    if not file_share:
+      raise ValueError('Existing instance does not have file shares configured')
+
+    # Deduplicate file shares with the same name.
+    instance.fileShares = [
+        fs for fs in instance.fileShares if fs.name != file_share.get('name')
+    ]
+    nfs_export_options = FilestoreClient.MakeNFSExportOptionsMsg(
+        self.messages, file_share.get('nfs-export-options', []))
+    file_share_config = self.messages.FileShareConfig(
+        name=file_share.get('name'),
+        capacityGb=utils.BytesToGb(file_share.get('capacity')),
+        nfsExportOptions=nfs_export_options)
+    instance.fileShares.append(file_share_config)
+
+  def FileSharesFromInstance(self, instance):
+    """Get fileshare configs from instance message."""
+    return instance.fileShares
+
+
+class FilestoreAdapter(BetaFilestoreAdapter):
+  """Adapter for the filestore v1 API."""
+
+  def __init__(self):
+    super(FilestoreAdapter, self).__init__()
+    self.client = GetClient(version=V1_API_VERSION)
+    self.messages = GetMessages(version=V1_API_VERSION)
 
   def ParseFileShareIntoInstance(self, instance, file_share,
                                  instance_zone=None):
@@ -412,31 +552,6 @@ class BetaFilestoreAdapter(object):
           name=file_share.get('name'),
           capacityGb=utils.BytesToGb(file_share.get('capacity')))
       instance.fileShares.append(file_share_config)
-
-  def FileSharesFromInstance(self, instance):
-    """Get fileshare configs from instance message."""
-    return instance.fileShares
-
-  def UpdateInstance(self, instance_ref, instance_config, update_mask):
-    """Send a Patch request for the Cloud Filestore instance."""
-    update_request = self.messages.FileProjectsLocationsInstancesPatchRequest(
-        instance=instance_config,
-        name=instance_ref.RelativeName(),
-        updateMask=update_mask)
-    update_op = self.client.projects_locations_instances.Patch(update_request)
-    return update_op
-
-  def ParseUpdatedInstanceConfig(self, instance_config, description=None,
-                                 labels=None, file_share=None):
-    """Parse update information into an updated Instance message."""
-    if description:
-      instance_config.description = description
-    if labels:
-      instance_config.labels = labels
-    if file_share:
-      self.ValidateFileShareForUpdate(instance_config, file_share)
-      self.ParseFileShareIntoInstance(instance_config, file_share)
-    return instance_config
 
   def ValidateFileShareForUpdate(self, instance_config, file_share):
     """Validate the updated file share configuration.
@@ -460,24 +575,15 @@ class BetaFilestoreAdapter(object):
     existing_file_share = existing[0]
     if existing_file_share.name != file_share.get('name'):
       raise InvalidNameError(
-          'Must resize an existing file share. Existing file share is named '
+          'Must update an existing file share. Existing file share is named '
           '[{}]. Requested update had name [{}].'.format(
               existing_file_share.name, file_share.get('name')))
     new_capacity = utils.BytesToGb(file_share.get('capacity'))
     if not existing_file_share.capacityGb < new_capacity:
       raise InvalidCapacityError(
-          'Must resize the file share to a larger capacity. Existing capacity: '
+          'Must update the file share to a larger capacity. Existing capacity: '
           '[{}]. New capacity requested: [{}].'.format(
               existing_file_share.capacityGb, new_capacity))
-
-
-class FilestoreAdapter(BetaFilestoreAdapter):
-  """Adapter for the filestore v1 API."""
-
-  def __init__(self):
-    super(FilestoreAdapter, self).__init__()
-    self.client = GetClient(version=V1_API_VERSION)
-    self.messages = GetMessages(version=V1_API_VERSION)
 
 
 def GetFilestoreRegistry(api_version=V1_API_VERSION):

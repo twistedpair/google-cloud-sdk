@@ -970,6 +970,13 @@
           "items": {
             "$ref": "Signature"
           }
+        },
+        "jwts": {
+          "description": "One or more JWTs encoding a self-contained attestation.\nEach JWT encodes the payload that it verifies within the JWT itself.\nVerifier implementation SHOULD ignore the `serialized_payload` field\nwhen verifying these JWTs.\nIf only JWTs are present on this AttestationOccurrence, then the\n`serialized_payload` SHOULD be left empty.\nEach JWT SHOULD encode a claim specific to the `resource_uri` of this\nOccurrence, but this is not validated by Grafeas metadata API\nimplementations.  The JWT itself is opaque to Grafeas.",
+          "type": "array",
+          "items": {
+            "$ref": "Jwt"
+          }
         }
       }
     },
@@ -984,7 +991,17 @@
           "format": "byte"
         },
         "publicKeyId": {
-          "description": "The identifier for the public key that verifies this signature.\n  * The `public_key_id` is required.\n  * The `public_key_id` MUST be an RFC3986 conformant URI.\n  * When possible, the `public_key_id` SHOULD be an immutable reference,\n    such as a cryptographic digest.\n\nExamples of valid `public_key_id`s:\n\nOpenPGP V4 public key fingerprint:\n  * \"openpgp4fpr:74FAF3B861BDA0870C7B6DEF607E48D2A663AEEA\"\nSee https:\/\/www.iana.org\/assignments\/uri-schemes\/prov\/openpgp4fpr for more\ndetails on this scheme.\n\nRFC6920 digest-named SubjectPublicKeyInfo (digest of the DER\nserialization):\n  * \"ni:\/\/\/sha-256;cD9o9Cq6LG3jD0iKXqEi_vdjJGecm_iXkbqVoScViaU\"\n  * \"nih:\/\/\/sha-256;703f68f42aba2c6de30f488a5ea122fef76324679c9bf89791ba95a1271589a5\"",
+          "description": "The identifier for the public key that verifies this signature.\n  * The `public_key_id` is required.\n  * The `public_key_id` SHOULD be an RFC3986 conformant URI.\n  * When possible, the `public_key_id` SHOULD be an immutable reference,\n    such as a cryptographic digest.\n\nExamples of valid `public_key_id`s:\n\nOpenPGP V4 public key fingerprint:\n  * \"openpgp4fpr:74FAF3B861BDA0870C7B6DEF607E48D2A663AEEA\"\nSee https:\/\/www.iana.org\/assignments\/uri-schemes\/prov\/openpgp4fpr for more\ndetails on this scheme.\n\nRFC6920 digest-named SubjectPublicKeyInfo (digest of the DER\nserialization):\n  * \"ni:\/\/\/sha-256;cD9o9Cq6LG3jD0iKXqEi_vdjJGecm_iXkbqVoScViaU\"\n  * \"nih:\/\/\/sha-256;703f68f42aba2c6de30f488a5ea122fef76324679c9bf89791ba95a1271589a5\"",
+          "type": "string"
+        }
+      }
+    },
+    "Jwt": {
+      "id": "Jwt",
+      "type": "object",
+      "properties": {
+        "compactJwt": {
+          "description": "The compact encoding of a JWS, which is always three base64 encoded strings\njoined by periods. For details, see:\nhttps:\/\/tools.ietf.org\/html\/rfc7515.html#section-3.1",
           "type": "string"
         }
       }

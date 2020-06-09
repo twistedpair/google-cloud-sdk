@@ -4,7 +4,7 @@
  "id": "compute:alpha",
  "name": "compute",
  "version": "alpha",
- "revision": "20200519",
+ "revision": "20200529",
  "title": "Compute Engine API",
  "description": "Creates and runs virtual machines on Google Cloud Platform.",
  "ownerDomain": "google.com",
@@ -1836,6 +1836,7 @@
       "MISSING_CUSTOM_METRIC_DATA_POINTS",
       "MISSING_LOAD_BALANCING_DATA_POINTS",
       "MODE_OFF",
+      "MODE_ONLY_SCALE_OUT",
       "MODE_ONLY_UP",
       "MORE_THAN_ONE_BACKEND_SERVICE",
       "NOT_ENOUGH_QUOTA_AVAILABLE",
@@ -1846,6 +1847,7 @@
       "ZONE_RESOURCE_STOCKOUT"
      ],
      "enumDescriptions": [
+      "",
       "",
       "",
       "",
@@ -2390,7 +2392,7 @@
   "BackendService": {
    "id": "BackendService",
    "type": "object",
-   "description": "Represents a Backend Service resource.\n\nA backend service contains configuration values for Google Cloud Platform load balancing services.\n\nBackend services in Google Compute Engine can be either regionally or globally scoped.\n\n* [Global](/compute/docs/reference/rest/{$api_version}/backendServices) * [Regional](/compute/docs/reference/rest/{$api_version}/regionBackendServices)\n\nFor more information, read Backend Services.\n\n(== resource_for {$api_version}.backendService ==)",
+   "description": "Represents a Backend Service resource.\n\nA backend service defines how Google Cloud load balancers distribute traffic. The backend service configuration contains a set of values, such as the protocol used to connect to backends, various distribution and session settings, health checks, and timeouts. These settings provide fine-grained control over how your load balancer behaves. Most of the settings have default values that allow for easy configuration if you need to get started quickly.\n\nBackend services in Google Compute Engine can be either regionally or globally scoped.\n\n* [Global](/compute/docs/reference/rest/{$api_version}/backendServices) * [Regional](/compute/docs/reference/rest/{$api_version}/regionBackendServices)\n\nFor more information, read Backend Services.\n\n(== resource_for {$api_version}.backendService ==)",
    "properties": {
     "affinityCookieTtlSec": {
      "type": "integer",
@@ -8600,7 +8602,7 @@
     },
     "urlRewrite": {
      "$ref": "UrlRewrite",
-     "description": "The spec to modify the URL of the request, prior to forwarding the request to the matched service."
+     "description": "The spec to modify the URL of the request, prior to forwarding the request to the matched service.\nurlRewrite is the only action supported in UrlMaps for external HTTP(S) load balancers."
     },
     "weightedBackendServices": {
      "type": "array",
@@ -10649,6 +10651,20 @@
     "isStateful": {
      "type": "boolean",
      "description": "[Output Only] A bit indicating whether the managed instance group has stateful configuration, that is, if you have configured any items in a stateful policy or in per-instance configs. The group might report that it has no stateful config even when there is still some preserved state on a managed instance, for example, if you have deleted all PICs but not yet applied those deletions. This field is deprecated in favor of has_stateful_config."
+    },
+    "perInstanceConfigs": {
+     "$ref": "InstanceGroupManagerStatusStatefulPerInstanceConfigs",
+     "description": "[Output Only] Status of per-instance configs on the instance."
+    }
+   }
+  },
+  "InstanceGroupManagerStatusStatefulPerInstanceConfigs": {
+   "id": "InstanceGroupManagerStatusStatefulPerInstanceConfigs",
+   "type": "object",
+   "properties": {
+    "allEffective": {
+     "type": "boolean",
+     "description": "A bit indicating if all of the group's per-instance configs (listed in the output of a listPerInstanceConfigs API call) have status EFFECTIVE or there are no per-instance-configs."
     }
    }
   },
@@ -15651,6 +15667,7 @@
      "type": "string",
      "description": "Type of network endpoints in this network endpoint group.",
      "enum": [
+      "GCE_VM_IP",
       "GCE_VM_IP_PORT",
       "GCE_VM_PRIMARY_IP",
       "INTERNET_FQDN_PORT",
@@ -15659,6 +15676,7 @@
       "SERVERLESS"
      ],
      "enumDescriptions": [
+      "",
       "",
       "",
       "",
@@ -19592,7 +19610,7 @@
    "properties": {
     "defaultRouteAction": {
      "$ref": "HttpRouteAction",
-     "description": "defaultRouteAction takes effect when none of the  pathRules or routeRules match. The load balancer performs advanced routing actions like URL rewrites, header transformations, etc. prior to forwarding the request to the selected backend. If defaultRouteAction specifies any weightedBackendServices, defaultService must not be set. Conversely if defaultService is set, defaultRouteAction cannot contain any  weightedBackendServices.\nOnly one of defaultRouteAction or defaultUrlRedirect must be set."
+     "description": "defaultRouteAction takes effect when none of the  pathRules or routeRules match. The load balancer performs advanced routing actions like URL rewrites, header transformations, etc. prior to forwarding the request to the selected backend. If defaultRouteAction specifies any weightedBackendServices, defaultService must not be set. Conversely if defaultService is set, defaultRouteAction cannot contain any  weightedBackendServices.\nOnly one of defaultRouteAction or defaultUrlRedirect must be set.\nUrlMaps for external HTTP(S) load balancers support only the urlRewrite action within a pathMatcher's defaultRouteAction."
     },
     "defaultService": {
      "type": "string",
@@ -19644,7 +19662,7 @@
     },
     "routeAction": {
      "$ref": "HttpRouteAction",
-     "description": "In response to a matching path, the load balancer performs advanced routing actions like URL rewrites, header transformations, etc. prior to forwarding the request to the selected backend. If routeAction specifies any  weightedBackendServices, service must not be set. Conversely if service is set, routeAction cannot contain any  weightedBackendServices.\nOnly one of routeAction or urlRedirect must be set."
+     "description": "In response to a matching path, the load balancer performs advanced routing actions like URL rewrites, header transformations, etc. prior to forwarding the request to the selected backend. If routeAction specifies any  weightedBackendServices, service must not be set. Conversely if service is set, routeAction cannot contain any  weightedBackendServices.\nOnly one of routeAction or urlRedirect must be set.\nUrlMaps for external HTTP(S) load balancers support only the urlRewrite action within a pathRule's routeAction."
     },
     "service": {
      "type": "string",
@@ -19683,6 +19701,26 @@
     "preservedState": {
      "$ref": "PreservedState",
      "description": "The intended preserved state for the given instance. Does not contain preserved state generated from a stateful policy."
+    },
+    "status": {
+     "type": "string",
+     "description": "The status of applying this per-instance config on the corresponding managed instance.",
+     "enum": [
+      "APPLYING",
+      "DELETING",
+      "EFFECTIVE",
+      "NONE",
+      "UNAPPLIED",
+      "UNAPPLIED_DELETION"
+     ],
+     "enumDescriptions": [
+      "",
+      "",
+      "",
+      "",
+      "",
+      ""
+     ]
     }
    }
   },
@@ -20812,6 +20850,7 @@
      "type": "string",
      "description": "[Output Only] Name of the quota metric.",
      "enum": [
+      "A2_CPUS",
       "AFFINITY_GROUPS",
       "ALIASES_PER_NETWORK_GLOBAL",
       "AMD_S9300_GPUS",
@@ -20820,6 +20859,7 @@
       "BACKEND_SERVICES",
       "C2_CPUS",
       "COMMITMENTS",
+      "COMMITTED_A2_CPUS",
       "COMMITTED_C2_CPUS",
       "COMMITTED_CPUS",
       "COMMITTED_LICENSES",
@@ -20922,6 +20962,8 @@
       "XPN_SERVICE_PROJECTS"
      ],
      "enumDescriptions": [
+      "",
+      "",
       "",
       "",
       "",
@@ -25246,7 +25288,7 @@
     },
     "preemptible": {
      "type": "boolean",
-     "description": "Defines whether the instance is preemptible. This can only be set during instance creation, it cannot be set or changed after the instance has been created."
+     "description": "Defines whether the instance is preemptible. This can only be set during instance creation or while the instance is stopped and therefore, in a `TERMINATED` state. See Instance Life Cycle for more information on the possible instance states."
     }
    }
   },
@@ -25786,7 +25828,7 @@
    "properties": {
     "authentication": {
      "type": "string",
-     "description": "A URL referring to a networksecurity.Authentication resource that describes how clients should authenticate with this service's backends. If left blank, communications between services are not encrypted (i.e., the TLS policy is set to OPEN). When sending traffic to this service's backends, the OriginationTls setting of Authentication.TransportAuthentication is applied. Refer to the Authentication and Authentication.TransportAuthentication.OriginationTls resources for additional details. authentication only applies to a global BackendService with the loadBalancingScheme set to INTERNAL_SELF_MANAGED."
+     "description": "[Deprecated] Use clientTlsPolicy instead."
     },
     "authenticationPolicy": {
      "$ref": "AuthenticationPolicy",
@@ -25796,13 +25838,17 @@
      "$ref": "AuthorizationConfig",
      "description": "[Deprecated] Authorization config defines the Role Based Access Control (RBAC) config. Authorization config defines the Role Based Access Control (RBAC) config."
     },
+    "clientTlsPolicy": {
+     "type": "string",
+     "description": "Optional. A URL referring to a networksecurity.ClientTlsPolicy resource that describes how clients should authenticate with this service's backends.\nclientTlsPolicy only applies to a global BackendService with the loadBalancingScheme set to INTERNAL_SELF_MANAGED.\nIf left blank, communications are not encrypted."
+    },
     "clientTlsSettings": {
      "$ref": "ClientTlsSettings",
      "description": "[Deprecated] TLS Settings for the backend service."
     },
     "subjectAltNames": {
      "type": "array",
-     "description": "Optional. A list of subject alternate names to verify the subject identity (SAN) in the certificate presented by the server, to authorize the SAN list as identities to run the service represented by this BackendService. If specified, the client will verify that the server certificate's subject alt name matches one of the specified values. Only applies to a global BackendService with the loadBalancingScheme set to INTERNAL_SELF_MANAGED.",
+     "description": "Optional. A list of Subject Alternative Names (SANs) that the client verifies during a mutual TLS handshake with an server/endpoint for this BackendService. When the server presents its X.509 certificate to the client, the client inspects the certificate's subjectAltName field. If the field contains one of the specified values, the communication continues. Otherwise, it fails. This additional check enables the client to verify that the server is authorized to run the requested service.\nNote that the contents of the server certificate's subjectAltName field are configured by the Public Key Infrastructure which provisions server identities.\nOnly applies to a global BackendService with loadBalancingScheme set to INTERNAL_SELF_MANAGED. Only applies when BackendService has an attached clientTlsPolicy with clientCertificate (mTLS mode).",
      "items": {
       "type": "string"
      }
@@ -26633,7 +26679,7 @@
   "SslCertificate": {
    "id": "SslCertificate",
    "type": "object",
-   "description": "Represents an SSL Certificate resource.\n\nGoogle Compute Engine has two SSL Certificate resources:\n\n* [Global](/compute/docs/reference/rest/{$api_version}/sslCertificates) * [Regional](/compute/docs/reference/rest/{$api_version}/regionSslCertificates)\n\n\n\nThe sslCertificates are used by:  \n- external HTTPS load balancers \n- SSL proxy load balancers  \n\nThe regionSslCertificates are used by internal HTTPS load balancers.\n\nOptionally, certificate file contents that you upload can contain a set of up to five PEM-encoded certificates. The API call creates an object (sslCertificate) that holds this data. You can use SSL keys and certificates to secure connections to a load balancer. For more information, read  Creating and using SSL certificates and SSL certificates quotas and limits. (== resource_for {$api_version}.sslCertificates ==) (== resource_for {$api_version}.regionSslCertificates ==)",
+   "description": "Represents an SSL Certificate resource.\n\nGoogle Compute Engine has two SSL Certificate resources:\n\n* [Global](/compute/docs/reference/rest/{$api_version}/sslCertificates) * [Regional](/compute/docs/reference/rest/{$api_version}/regionSslCertificates)\n\n\n\nThe sslCertificates are used by:  \n- external HTTPS load balancers \n- SSL proxy load balancers  \n\nThe regionSslCertificates are used by internal HTTPS load balancers.\n\nOptionally, certificate file contents that you upload can contain a set of up to five PEM-encoded certificates. The API call creates an object (sslCertificate) that holds this data. You can use SSL keys and certificates to secure connections to a load balancer. For more information, read  Creating and using SSL certificates, SSL certificates quotas and limits, and  Troubleshooting SSL certificates. (== resource_for {$api_version}.sslCertificates ==) (== resource_for {$api_version}.regionSslCertificates ==)",
    "properties": {
     "certificate": {
      "type": "string",
@@ -28858,11 +28904,15 @@
    "properties": {
     "authentication": {
      "type": "string",
-     "description": "A URL referring to a networksecurity.Authentication resource that describes how the proxy should authenticate inbound traffic. If left blank, communications between services are not encrypted (i.e., the TLS policy is set to OPEN). When terminating inbound traffic to this proxy, the TerminationTls setting of Authentication.TransportAuthentication is applied.\nRefer to the Authentication and Authentication.TransportAuthentication.TerminationTls resources for additional details.\nauthentication only applies to a global TargetHttpsProxy attached to globalForwardingRules with the loadBalancingScheme set to INTERNAL_SELF_MANAGED."
+     "description": "[Deprecated] Use serverTlsPolicy instead."
     },
     "authorization": {
      "type": "string",
-     "description": "A URL referring to a networksecurity.Authorization resource that describes how the proxy should authorize inbound traffic. If left blank, access will not be restricted by an authorization policy.\nRefer to the Authorization resource for additional details.\nauthorization only applies to a global TargetHttpsProxy attached to globalForwardingRules with the loadBalancingScheme set to INTERNAL_SELF_MANAGED."
+     "description": "[Deprecated] Use authorizationPolicy instead."
+    },
+    "authorizationPolicy": {
+     "type": "string",
+     "description": "Optional. A URL referring to a networksecurity.AuthorizationPolicy resource that describes how the proxy should authorize inbound traffic. If left blank, access will not be restricted by an authorization policy.\nRefer to the AuthorizationPolicy resource for additional details.\nauthorizationPolicy only applies to a global TargetHttpsProxy attached to globalForwardingRules with the loadBalancingScheme set to INTERNAL_SELF_MANAGED."
     },
     "certificateMap": {
      "type": "string",
@@ -28920,6 +28970,10 @@
     "selfLinkWithId": {
      "type": "string",
      "description": "[Output Only] Server-defined URL for this resource with the resource id."
+    },
+    "serverTlsPolicy": {
+     "type": "string",
+     "description": "Optional. A URL referring to a networksecurity.ServerTlsPolicy resource that describes how the proxy should authenticate inbound traffic.\nserverTlsPolicy only applies to a global TargetHttpsProxy attached to globalForwardingRules with the loadBalancingScheme set to INTERNAL_SELF_MANAGED.\nIf left blank, communications are not encrypted."
     },
     "sslCertificates": {
      "type": "array",
@@ -31104,7 +31158,7 @@
     },
     "defaultRouteAction": {
      "$ref": "HttpRouteAction",
-     "description": "defaultRouteAction takes effect when none of the  hostRules match. The load balancer performs advanced routing actions like URL rewrites, header transformations, etc. prior to forwarding the request to the selected backend. If defaultRouteAction specifies any weightedBackendServices, defaultService must not be set. Conversely if defaultService is set, defaultRouteAction cannot contain any  weightedBackendServices.\nOnly one of defaultRouteAction or defaultUrlRedirect must be set."
+     "description": "defaultRouteAction takes effect when none of the  hostRules match. The load balancer performs advanced routing actions like URL rewrites, header transformations, etc. prior to forwarding the request to the selected backend. If defaultRouteAction specifies any weightedBackendServices, defaultService must not be set. Conversely if defaultService is set, defaultRouteAction cannot contain any  weightedBackendServices.\nOnly one of defaultRouteAction or defaultUrlRedirect must be set.\nUrlMaps for external HTTP(S) load balancers support only the urlRewrite action within defaultRouteAction."
     },
     "defaultService": {
      "type": "string",
@@ -40317,6 +40371,11 @@
        "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))",
        "location": "path"
       },
+      "returnPartialSuccess": {
+       "type": "boolean",
+       "description": "Opt-in for partial success behavior which provides partial results in case of failure. The default value is false and the logic is the same as today.",
+       "location": "query"
+      },
       "zone": {
        "type": "string",
        "description": "The name of the zone where the managed instance group is located.",
@@ -42620,7 +42679,7 @@
      "id": "compute.instances.listReferrers",
      "path": "{project}/zones/{zone}/instances/{instance}/referrers",
      "httpMethod": "GET",
-     "description": "Retrieves the list of referrers to instances contained within the specified zone. For more information, read Viewing Referrers to VM Instances.",
+     "description": "Retrieves a list of resources that refer to the VM instance specified in the request. For example, if the VM instance is part of a managed instance group, the referrers list includes the managed instance group. For more information, read Viewing Referrers to VM Instances.",
      "parameters": {
       "filter": {
        "type": "string",
@@ -43285,7 +43344,7 @@
      "id": "compute.instances.setScheduling",
      "path": "{project}/zones/{zone}/instances/{instance}/setScheduling",
      "httpMethod": "POST",
-     "description": "Sets an instance's scheduling options.",
+     "description": "Sets an instance's scheduling options. You can only call this method on a stopped instance, that is, a VM instance that is in a `TERMINATED` state. See Instance Life Cycle for more information on the possible instance states.",
      "parameters": {
       "instance": {
        "type": "string",
@@ -50110,6 +50169,11 @@
        "required": true,
        "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))",
        "location": "path"
+      },
+      "returnPartialSuccess": {
+       "type": "boolean",
+       "description": "Opt-in for partial success behavior which provides partial results in case of failure. The default value is false and the logic is the same as today.",
+       "location": "query"
       }
      },
      "parameterOrder": [
@@ -50158,6 +50222,11 @@
        "required": true,
        "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))",
        "location": "path"
+      },
+      "returnPartialSuccess": {
+       "type": "boolean",
+       "description": "Opt-in for partial success behavior which provides partial results in case of failure. The default value is false and the logic is the same as today.",
+       "location": "query"
       }
      },
      "parameterOrder": [
@@ -54128,6 +54197,11 @@
        "description": "Name of the region scoping this request.",
        "required": true,
        "location": "path"
+      },
+      "returnPartialSuccess": {
+       "type": "boolean",
+       "description": "Opt-in for partial success behavior which provides partial results in case of failure. The default value is false and the logic is the same as today.",
+       "location": "query"
       }
      },
      "parameterOrder": [

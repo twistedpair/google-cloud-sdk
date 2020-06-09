@@ -94,7 +94,7 @@ _SHELL_RCFILES = [
     'gcfilesys.zsh.inc'
 ]
 
-BUNDLED_PYTHON_COMPONENT = 'bundled-python'
+BUNDLED_PYTHON_COMPONENT = 'bundled-python3'
 BUNDLED_PYTHON_REMOVAL_WARNING = (
     'This command is running using a bundled installation of Python. '
     'If you remove it, you may have no way to run this command.\n'
@@ -914,10 +914,10 @@ version [{1}].  To clear your fixed version setting, run:
     # Ensure we have the rights to update the SDK now that we know an update is
     # necessary.
     config.EnsureSDKWriteAccess(self.__sdk_root)
-    self._RestartIfUsingBundledPython(args=restart_args)
 
     if self.IsPythonBundled() and BUNDLED_PYTHON_COMPONENT in to_remove:
       log.warning(BUNDLED_PYTHON_REMOVAL_WARNING)
+    self._RestartIfUsingBundledPython(args=restart_args)
 
     # If explicitly listing components, you are probably installing and not
     # doing a full update, change the message to be more clear.
@@ -1198,10 +1198,10 @@ To revert your SDK to the previously installed version, you may run:
     # Ensure we have the rights to update the SDK now that we know an update is
     # necessary.
     config.EnsureSDKWriteAccess(self.__sdk_root)
-    self._RestartIfUsingBundledPython()
 
     if self.IsPythonBundled() and BUNDLED_PYTHON_COMPONENT in to_remove:
       log.warning(BUNDLED_PYTHON_REMOVAL_WARNING)
+    self._RestartIfUsingBundledPython()
 
     message = self._GetDontCancelMessage(disable_backup)
     if not console_io.PromptContinue(message):
@@ -1245,13 +1245,13 @@ To revert your SDK to the previously installed version, you may run:
     # Ensure we have the rights to update the SDK now that we know an update is
     # necessary.
     config.EnsureSDKWriteAccess(self.__sdk_root)
-    self._RestartIfUsingBundledPython()
 
     backup_has_bundled_python = (
         BUNDLED_PYTHON_COMPONENT in
         install_state.BackupInstallationState().InstalledComponents())
     if self.IsPythonBundled() and not backup_has_bundled_python:
       log.warning(BUNDLED_PYTHON_REMOVAL_WARNING)
+    self._RestartIfUsingBundledPython()
 
     if not console_io.PromptContinue(
         message='Your Cloud SDK installation will be restored to its previous '

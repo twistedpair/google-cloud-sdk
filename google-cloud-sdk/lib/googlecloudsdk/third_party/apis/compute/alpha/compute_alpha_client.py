@@ -4478,7 +4478,7 @@ A managed instance group can have up to 1000 VM instances per group. Please cont
         method_id='compute.instanceGroupManagers.listManagedInstances',
         ordered_params=['project', 'zone', 'instanceGroupManager'],
         path_params=['instanceGroupManager', 'project', 'zone'],
-        query_params=['filter', 'maxResults', 'orderBy', 'pageToken'],
+        query_params=['filter', 'maxResults', 'orderBy', 'pageToken', 'returnPartialSuccess'],
         relative_path='projects/{project}/zones/{zone}/instanceGroupManagers/{instanceGroupManager}/listManagedInstances',
         request_field='',
         request_type_name='ComputeInstanceGroupManagersListManagedInstancesRequest',
@@ -5757,7 +5757,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def ListReferrers(self, request, global_params=None):
-      r"""Retrieves the list of referrers to instances contained within the specified zone. For more information, read Viewing Referrers to VM Instances.
+      r"""Retrieves a list of resources that refer to the VM instance specified in the request. For example, if the VM instance is part of a managed instance group, the referrers list includes the managed instance group. For more information, read Viewing Referrers to VM Instances.
 
       Args:
         request: (ComputeInstancesListReferrersRequest) input message
@@ -6095,7 +6095,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def SetScheduling(self, request, global_params=None):
-      r"""Sets an instance's scheduling options.
+      r"""Sets an instance's scheduling options. You can only call this method on a stopped instance, that is, a VM instance that is in a `TERMINATED` state. See Instance Life Cycle for more information on the possible instance states.
 
       Args:
         request: (ComputeInstancesSetSchedulingRequest) input message
@@ -10224,7 +10224,7 @@ If the group is part of a backend service that has enabled connection draining, 
         method_id='compute.projects.getXpnResources',
         ordered_params=['project'],
         path_params=['project'],
-        query_params=['filter', 'maxResults', 'orderBy', 'pageToken'],
+        query_params=['filter', 'maxResults', 'orderBy', 'pageToken', 'returnPartialSuccess'],
         relative_path='projects/{project}/getXpnResources',
         request_field='',
         request_type_name='ComputeProjectsGetXpnResourcesRequest',
@@ -10250,7 +10250,7 @@ If the group is part of a backend service that has enabled connection draining, 
         method_id='compute.projects.listXpnHosts',
         ordered_params=['project'],
         path_params=['project'],
-        query_params=['filter', 'maxResults', 'orderBy', 'pageToken'],
+        query_params=['filter', 'maxResults', 'orderBy', 'pageToken', 'returnPartialSuccess'],
         relative_path='projects/{project}/listXpnHosts',
         request_field='projectsListXpnHostsRequest',
         request_type_name='ComputeProjectsListXpnHostsRequest',
@@ -12556,7 +12556,7 @@ A regional managed instance group can contain up to 2000 instances.
         method_id='compute.regionInstanceGroupManagers.listManagedInstances',
         ordered_params=['project', 'region', 'instanceGroupManager'],
         path_params=['instanceGroupManager', 'project', 'region'],
-        query_params=['filter', 'maxResults', 'orderBy', 'pageToken'],
+        query_params=['filter', 'maxResults', 'orderBy', 'pageToken', 'returnPartialSuccess'],
         relative_path='projects/{project}/regions/{region}/instanceGroupManagers/{instanceGroupManager}/listManagedInstances',
         request_field='',
         request_type_name='ComputeRegionInstanceGroupManagersListManagedInstancesRequest',

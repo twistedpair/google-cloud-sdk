@@ -71,6 +71,61 @@ class BatchGetDocumentsResponse(_messages.Message):
   transaction = _messages.BytesField(4)
 
 
+class BatchWriteRequest(_messages.Message):
+  r"""The request for Firestore.BatchWrite.
+
+  Messages:
+    LabelsValue: Labels associated with this batch write.
+
+  Fields:
+    labels: Labels associated with this batch write.
+    writes: The writes to apply.  Method does not apply writes atomically and
+      does not guarantee ordering. Each write succeeds or fails independently.
+      You cannot write to the same document more than once per request.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Labels associated with this batch write.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  labels = _messages.MessageField('LabelsValue', 1)
+  writes = _messages.MessageField('Write', 2, repeated=True)
+
+
+class BatchWriteResponse(_messages.Message):
+  r"""The response from Firestore.BatchWrite.
+
+  Fields:
+    status: The status of applying the writes.  This i-th write status
+      corresponds to the i-th write in the request.
+    writeResults: The result of applying the writes.  This i-th write result
+      corresponds to the i-th write in the request.
+  """
+
+  status = _messages.MessageField('Status', 1, repeated=True)
+  writeResults = _messages.MessageField('WriteResult', 2, repeated=True)
+
+
 class BeginTransactionRequest(_messages.Message):
   r"""The request for Firestore.BeginTransaction.
 
@@ -409,19 +464,24 @@ class FieldFilter(_messages.Message):
 
     Values:
       OPERATOR_UNSPECIFIED: Unspecified. This value must not be used.
-      LESS_THAN: Less than. Requires that the field come first in `order_by`.
-      LESS_THAN_OR_EQUAL: Less than or equal. Requires that the field come
-        first in `order_by`.
-      GREATER_THAN: Greater than. Requires that the field come first in
-        `order_by`.
-      GREATER_THAN_OR_EQUAL: Greater than or equal. Requires that the field
-        come first in `order_by`.
-      EQUAL: Equal.
-      ARRAY_CONTAINS: Contains. Requires that the field is an array.
-      IN: In. Requires that `value` is a non-empty ArrayValue with at most 10
-        values.
-      ARRAY_CONTAINS_ANY: Contains any. Requires that the field is an array
-        and `value` is a non-empty ArrayValue with at most 10 values.
+      LESS_THAN: The given `field` is less than the given `value`.  Requires:
+        * That `field` come first in `order_by`.
+      LESS_THAN_OR_EQUAL: The given `field` is less than or equal to the given
+        `value`.  Requires:  * That `field` come first in `order_by`.
+      GREATER_THAN: The given `field` is greater than the given `value`.
+        Requires:  * That `field` come first in `order_by`.
+      GREATER_THAN_OR_EQUAL: The given `field` is greater than or equal to the
+        given `value`.  Requires:  * That `field` come first in `order_by`.
+      EQUAL: The given `field` is equal to the given `value`.
+      ARRAY_CONTAINS: The given `field` is an array that contains the given
+        `value`.
+      IN: The given `field` is equal to at least one value in the given array.
+        Requires:  * That `value` is a non-empty `ArrayValue` with at most 10
+        values. * No other `IN`, `ARRAY_CONTAINS_ANY`, or `NOT_IN`.
+      ARRAY_CONTAINS_ANY: The given `field` is an array that contains any of
+        the values in the given array.  Requires:  * That `value` is a non-
+        empty `ArrayValue` with at most 10 values. * No other `IN`,
+        `ARRAY_CONTAINS_ANY`, or `NOT_IN`.
     """
     OPERATOR_UNSPECIFIED = 0
     LESS_THAN = 1
@@ -548,6 +608,20 @@ class FirestoreProjectsDatabasesDocumentsBatchGetRequest(_messages.Message):
   """
 
   batchGetDocumentsRequest = _messages.MessageField('BatchGetDocumentsRequest', 1)
+  database = _messages.StringField(2, required=True)
+
+
+class FirestoreProjectsDatabasesDocumentsBatchWriteRequest(_messages.Message):
+  r"""A FirestoreProjectsDatabasesDocumentsBatchWriteRequest object.
+
+  Fields:
+    batchWriteRequest: A BatchWriteRequest resource to be passed as the
+      request body.
+    database: Required. The database name. In the format:
+      `projects/{project_id}/databases/{database_id}`.
+  """
+
+  batchWriteRequest = _messages.MessageField('BatchWriteRequest', 1)
   database = _messages.StringField(2, required=True)
 
 
@@ -705,6 +779,22 @@ class FirestoreProjectsDatabasesDocumentsListenRequest(_messages.Message):
 
   database = _messages.StringField(1, required=True)
   listenRequest = _messages.MessageField('ListenRequest', 2)
+
+
+class FirestoreProjectsDatabasesDocumentsPartitionQueryRequest(_messages.Message):
+  r"""A FirestoreProjectsDatabasesDocumentsPartitionQueryRequest object.
+
+  Fields:
+    parent: Required. The parent resource name. In the format:
+      `projects/{project_id}/databases/{database_id}/documents`. Document
+      resource names are not supported; only database resource names can be
+      specified.
+    partitionQueryRequest: A PartitionQueryRequest resource to be passed as
+      the request body.
+  """
+
+  parent = _messages.StringField(1, required=True)
+  partitionQueryRequest = _messages.MessageField('PartitionQueryRequest', 2)
 
 
 class FirestoreProjectsDatabasesDocumentsPatchRequest(_messages.Message):
@@ -1453,6 +1543,63 @@ class Order(_messages.Message):
   field = _messages.MessageField('FieldReference', 2)
 
 
+class PartitionQueryRequest(_messages.Message):
+  r"""The request for Firestore.PartitionQuery.
+
+  Fields:
+    pageSize: The maximum number of partitions to return in this call, subject
+      to `partition_count`.  For example, if `partition_count` = 10 and
+      `page_size` = 8, the first call to PartitionQuery will return up to 8
+      partitions and a `next_page_token` if more results exist. A second call
+      to PartitionQuery will return up to 2 partitions, to complete the total
+      of 10 specified in `partition_count`.
+    pageToken: The `next_page_token` value returned from a previous call to
+      PartitionQuery that may be used to get an additional set of results.
+      There are no ordering guarantees between sets of results. Thus, using
+      multiple sets of results will require merging the different result sets.
+      For example, two subsequent calls using a page_token may return:   *
+      cursor B, cursor M, cursor Q  * cursor A, cursor U, cursor W  To obtain
+      a complete result set ordered with respect to the results of the query
+      supplied to PartitionQuery, the results sets should be merged: cursor A,
+      cursor B, cursor M, cursor Q, cursor U, cursor W
+    partitionCount: The desired maximum number of partition points. The
+      partitions may be returned across multiple pages of results. The number
+      must be strictly positive. The actual number of partitions returned may
+      be fewer.  For example, this may be set to one fewer than the number of
+      parallel queries to be run, or in running a data pipeline job, one fewer
+      than the number of workers or compute instances available.
+    structuredQuery: A structured query. Filters, order bys, limits, offsets,
+      and start/end cursors are not supported.
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  partitionCount = _messages.IntegerField(3)
+  structuredQuery = _messages.MessageField('StructuredQuery', 4)
+
+
+class PartitionQueryResponse(_messages.Message):
+  r"""The response for Firestore.PartitionQuery.
+
+  Fields:
+    nextPageToken: A page token that may be used to request an additional set
+      of results, up to the number specified by `partition_count` in the
+      PartitionQuery request. If blank, there are no more results.
+    partitions: Partition results. Each partition is a split point that can be
+      used by RunQuery as a starting or end point for the query results. The
+      RunQuery requests must be made with the same query supplied to this
+      PartitionQuery request. The partition cursors will be ordered according
+      to same ordering as the results of the query supplied to PartitionQuery.
+      For example, if a PartitionQuery request returns partition cursors A and
+      B, running the following three queries will return the entire result set
+      of the original query:   * query, end_at A  * query, start_at A, end_at
+      B  * query, start_at B
+  """
+
+  nextPageToken = _messages.StringField(1)
+  partitions = _messages.MessageField('Cursor', 2, repeated=True)
+
+
 class Precondition(_messages.Message):
   r"""A precondition on a document, used for conditional operations.
 
@@ -1827,8 +1974,8 @@ class UnaryFilter(_messages.Message):
 
     Values:
       OPERATOR_UNSPECIFIED: Unspecified. This value must not be used.
-      IS_NAN: Test if a field is equal to NaN.
-      IS_NULL: Test if an expression evaluates to Null.
+      IS_NAN: The given `field` is equal to `NaN`.
+      IS_NULL: The given `field` is equal to `NULL`.
     """
     OPERATOR_UNSPECIFIED = 0
     IS_NAN = 1

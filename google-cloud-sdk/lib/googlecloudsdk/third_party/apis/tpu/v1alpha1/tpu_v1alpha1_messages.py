@@ -514,10 +514,10 @@ class ReimageNodeRequest(_messages.Message):
 
 
 class SchedulingConfig(_messages.Message):
-  r"""A SchedulingConfig object.
+  r"""Sets the scheduling options for this node.
 
   Fields:
-    preemptible: A boolean attribute.
+    preemptible: Defines whether the node is preemptible.
     reserved: Whether the node is created under a reservation.
   """
 

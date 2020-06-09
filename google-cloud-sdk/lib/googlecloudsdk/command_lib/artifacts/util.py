@@ -102,7 +102,8 @@ def AppendRepoDataToRequest(repo_ref, repo_args, request):
       repo_args.repository_format.upper())
   if repo_format in [
       messages.Repository.FormatValueValuesEnum.MAVEN,
-      messages.Repository.FormatValueValuesEnum.NPM
+      messages.Repository.FormatValueValuesEnum.NPM,
+      messages.Repository.FormatValueValuesEnum.APT
   ]:
     log.status.Print("Note: Language package support is in Alpha.\n")
   repo = messages.Repository(

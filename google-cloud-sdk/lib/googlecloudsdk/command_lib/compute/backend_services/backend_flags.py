@@ -110,7 +110,7 @@ def _GetBalancingModes():
           `INTERNAL_MANAGED`, `INTERNAL_SELF_MANAGED`, or `EXTERNAL`. Available only
           for managed or unmanaged instance group backends.
 
-          Spreads load based on the CPU utilization of instances in a backend
+          Spreads load based on the backend utilization of instances in a backend
           instance group.
 
           The following additional parameters may be specified:
@@ -127,7 +127,9 @@ def AddBalancingMode(parser,
                      support_region_neg=False):
   """Adds balancing mode argument to the argparse."""
   help_text = """\
-  Defines the strategy for balancing load.
+  Defines how to measure whether a backend can handle additional traffic or is
+  fully loaded. For more information, see
+  https://cloud.google.com/load-balancing/docs/backend-service#balancing-mode.
   """
   incompatible_types = []
   if support_global_neg:

@@ -1798,6 +1798,7 @@ class TestIssue(_messages.Message):
       performedMonkeyActions: <no description>
       startActivityNotFound: <no description>
       uiElementsTooDeep: <no description>
+      unityException: <no description>
       unspecifiedType: <no description>
       unusedRoboDirective: <no description>
       usedRoboDirective: <no description>
@@ -1827,10 +1828,11 @@ class TestIssue(_messages.Message):
     performedMonkeyActions = 21
     startActivityNotFound = 22
     uiElementsTooDeep = 23
-    unspecifiedType = 24
-    unusedRoboDirective = 25
-    usedRoboDirective = 26
-    usedRoboIgnoreDirective = 27
+    unityException = 24
+    unspecifiedType = 25
+    unusedRoboDirective = 26
+    usedRoboDirective = 27
+    usedRoboIgnoreDirective = 28
 
   category = _messages.EnumField('CategoryValueValuesEnum', 1)
   errorMessage = _messages.StringField(2)

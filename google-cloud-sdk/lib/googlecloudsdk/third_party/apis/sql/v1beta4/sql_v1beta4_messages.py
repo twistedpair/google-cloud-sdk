@@ -299,18 +299,18 @@ class DatabaseInstance(_messages.Message):
   r"""A Cloud SQL instance resource.
 
   Enums:
-    BackendTypeValueValuesEnum: <br><b>FIRST_GEN</b>: First Generation
-      instance. MySQL only. <br><b>SECOND_GEN</b>: Second Generation instance
-      or PostgreSQL instance. <br><b>EXTERNAL</b>: A database server that is
-      not managed by Google. <br>This property is read-only; use the
-      <b>tier</b> property in the <b>settings</b> object to determine the
-      database type and Second or First Generation.
+    BackendTypeValueValuesEnum: <br><b>SECOND_GEN</b>: Cloud SQL database
+      instance. <br><b>EXTERNAL</b>: A database server that is not managed by
+      Google. <br>This property is read-only; use the <b>tier</b> property in
+      the <b>settings</b> object to determine the database type.
     DatabaseVersionValueValuesEnum: The database engine type and version. The
-      <b>databaseVersion</b> field can not be changed after instance creation.
-      <br>MySQL Second Generation instances: <b>MYSQL_5_7</b> (default) or
-      <b>MYSQL_5_6</b>. <br>PostgreSQL instances: <b>POSTGRES_9_6</b>
-      (default) or <b>POSTGRES_11 Beta</b> <br>MySQL First Generation
-      instances: <b>MYSQL_5_6</b> (default) or <b>MYSQL_5_5</b>
+      <b>databaseVersion</b> field cannot be changed after instance creation.
+      <br>MySQL instances: <b>MYSQL_5_7</b> (default), or <b>MYSQL_5_6</b>.
+      <br>PostgreSQL instances: <b>POSTGRES_9_6</b> (default), or
+      <b>POSTGRES_10</b>, or <b>POSTGRES_11 Beta</b>, or <b>POSTGRES_12</b>.
+      <br>SQL Server instances: <b>SQLSERVER_2017_STANDARD</b> (default),
+      <b>SQLSERVER_2017_ENTERPRISE</b>, <b>SQLSERVER_2017_EXPRESS</b>, or
+      <b>SQLSERVER_2017_WEB</b>.
     InstanceTypeValueValuesEnum: The instance type. This can be one of the
       following. <br><b>CLOUD_SQL_INSTANCE</b>: A Cloud SQL instance that is
       not replicating from a master. <br><b>ON_PREMISES_INSTANCE</b>: An
@@ -332,12 +332,10 @@ class DatabaseInstance(_messages.Message):
       property is applicable only to Second Generation instances.
 
   Fields:
-    backendType: <br><b>FIRST_GEN</b>: First Generation instance. MySQL only.
-      <br><b>SECOND_GEN</b>: Second Generation instance or PostgreSQL
-      instance. <br><b>EXTERNAL</b>: A database server that is not managed by
-      Google. <br>This property is read-only; use the <b>tier</b> property in
-      the <b>settings</b> object to determine the database type and Second or
-      First Generation.
+    backendType: <br><b>SECOND_GEN</b>: Cloud SQL database instance.
+      <br><b>EXTERNAL</b>: A database server that is not managed by Google.
+      <br>This property is read-only; use the <b>tier</b> property in the
+      <b>settings</b> object to determine the database type.
     connectionName: Connection name of the Cloud SQL instance used in
       connection strings.
     currentDiskSize: The current disk usage of the instance in bytes. This
@@ -347,11 +345,13 @@ class DatabaseInstance(_messages.Message):
       href="https://groups.google.com/d/msg/google-cloud-sql-
       announce/I_7-F9EBhT0/BtvFtdFeAgAJ">this announcement</a> for details.
     databaseVersion: The database engine type and version. The
-      <b>databaseVersion</b> field can not be changed after instance creation.
-      <br>MySQL Second Generation instances: <b>MYSQL_5_7</b> (default) or
-      <b>MYSQL_5_6</b>. <br>PostgreSQL instances: <b>POSTGRES_9_6</b>
-      (default) or <b>POSTGRES_11 Beta</b> <br>MySQL First Generation
-      instances: <b>MYSQL_5_6</b> (default) or <b>MYSQL_5_5</b>
+      <b>databaseVersion</b> field cannot be changed after instance creation.
+      <br>MySQL instances: <b>MYSQL_5_7</b> (default), or <b>MYSQL_5_6</b>.
+      <br>PostgreSQL instances: <b>POSTGRES_9_6</b> (default), or
+      <b>POSTGRES_10</b>, or <b>POSTGRES_11 Beta</b>, or <b>POSTGRES_12</b>.
+      <br>SQL Server instances: <b>SQLSERVER_2017_STANDARD</b> (default),
+      <b>SQLSERVER_2017_ENTERPRISE</b>, <b>SQLSERVER_2017_EXPRESS</b>, or
+      <b>SQLSERVER_2017_WEB</b>.
     diskEncryptionConfiguration: Disk encryption configuration specific to an
       instance. Applies only to Second Generation instances.
     diskEncryptionStatus: Disk encryption status specific to an instance.
@@ -370,8 +370,8 @@ class DatabaseInstance(_messages.Message):
       running on the customer's premises. <br><b>READ_REPLICA_INSTANCE</b>: A
       Cloud SQL instance configured as a read-replica.
     ipAddresses: The assigned IP addresses for the instance.
-    ipv6Address: The IPv6 address assigned to the instance. This property is
-      applicable only to First Generation instances.
+    ipv6Address: The IPv6 address assigned to the instance. (Deprecated) This
+      property was applicable only to First Generation instances.
     kind: This is always <b>sql#instance</b>.
     masterInstanceName: The name of the instance which will act as master in
       the replication setup.
@@ -385,8 +385,8 @@ class DatabaseInstance(_messages.Message):
       (<b>FIRST_GEN</b> instances only) <br><b>us-central1</b>
       (<b>SECOND_GEN</b> instances only) <br><b>asia-east1</b> or <b>europe-
       west1</b>. <br>Defaults to <b>us-central</b> or <b>us-central1</b>
-      depending on the instance type (First Generation or Second Generation).
-      The region can not be changed after instance creation.
+      depending on the instance type. The region cannot be changed after
+      instance creation.
     replicaConfiguration: Configuration specific to failover replicas and read
       replicas.
     replicaNames: The replicas of the instance.
@@ -413,12 +413,10 @@ class DatabaseInstance(_messages.Message):
   """
 
   class BackendTypeValueValuesEnum(_messages.Enum):
-    r"""<br><b>FIRST_GEN</b>: First Generation instance. MySQL only.
-    <br><b>SECOND_GEN</b>: Second Generation instance or PostgreSQL instance.
+    r"""<br><b>SECOND_GEN</b>: Cloud SQL database instance.
     <br><b>EXTERNAL</b>: A database server that is not managed by Google.
     <br>This property is read-only; use the <b>tier</b> property in the
-    <b>settings</b> object to determine the database type and Second or First
-    Generation.
+    <b>settings</b> object to determine the database type.
 
     Values:
       SQL_BACKEND_TYPE_UNSPECIFIED: This is an unknown backend type for
@@ -434,11 +432,13 @@ class DatabaseInstance(_messages.Message):
 
   class DatabaseVersionValueValuesEnum(_messages.Enum):
     r"""The database engine type and version. The <b>databaseVersion</b> field
-    can not be changed after instance creation. <br>MySQL Second Generation
-    instances: <b>MYSQL_5_7</b> (default) or <b>MYSQL_5_6</b>. <br>PostgreSQL
-    instances: <b>POSTGRES_9_6</b> (default) or <b>POSTGRES_11 Beta</b>
-    <br>MySQL First Generation instances: <b>MYSQL_5_6</b> (default) or
-    <b>MYSQL_5_5</b>
+    cannot be changed after instance creation. <br>MySQL instances:
+    <b>MYSQL_5_7</b> (default), or <b>MYSQL_5_6</b>. <br>PostgreSQL instances:
+    <b>POSTGRES_9_6</b> (default), or <b>POSTGRES_10</b>, or <b>POSTGRES_11
+    Beta</b>, or <b>POSTGRES_12</b>. <br>SQL Server instances:
+    <b>SQLSERVER_2017_STANDARD</b> (default),
+    <b>SQLSERVER_2017_ENTERPRISE</b>, <b>SQLSERVER_2017_EXPRESS</b>, or
+    <b>SQLSERVER_2017_WEB</b>.
 
     Values:
       SQL_DATABASE_VERSION_UNSPECIFIED: This is an unknown database version.
@@ -1636,11 +1636,7 @@ class Settings(_messages.Message):
       RUNNABLE. Valid values:   <br><b>ALWAYS</b>: The instance is on, and
       remains so even in the absence of connection requests.
       <br><b>NEVER</b>: The instance is off; it is not activated, even if a
-      connection request arrives.   <br><b>ON_DEMAND</b>: First Generation
-      instances only. The instance responds to incoming requests, and turns
-      itself off when not in use. Instances with <b>PER_USE</b> pricing turn
-      off after 15 minutes of inactivity. Instances with <b>PER_PACKAGE</b>
-      pricing turn off after 12 hours o inactivity.
+      connection request arrives.
     AvailabilityTypeValueValuesEnum: Availability type. Potential values:
       <br><b>ZONAL</b>: The instance serves data from only one zone. Outages
       in that zone affect data accessibility.   <br><b>REGIONAL</b>: The
@@ -1654,8 +1650,9 @@ class Settings(_messages.Message):
       be either <b>PER_USE</b> or <b>PACKAGE</b>. Only <b>PER_USE</b> is
       supported for Second Generation instances.
     ReplicationTypeValueValuesEnum: The type of replication this instance
-      uses. This can be either <b>ASYNCHRONOUS</b> or <b>SYNCHRONOUS</b>. This
-      property is only applicable to First Generation instances.
+      uses. This can be either <b>ASYNCHRONOUS</b> or <b>SYNCHRONOUS</b>.
+      (Deprecated_ This property was only applicable to First Generation
+      instances.
 
   Messages:
     UserLabelsValue: User-provided labels, represented as a dictionary where
@@ -1667,15 +1664,11 @@ class Settings(_messages.Message):
       Valid values:   <br><b>ALWAYS</b>: The instance is on, and remains so
       even in the absence of connection requests.   <br><b>NEVER</b>: The
       instance is off; it is not activated, even if a   connection request
-      arrives.   <br><b>ON_DEMAND</b>: First Generation instances only. The
-      instance responds to incoming requests, and turns itself off when not in
-      use. Instances with <b>PER_USE</b> pricing turn off after 15 minutes of
-      inactivity. Instances with <b>PER_PACKAGE</b> pricing turn off after 12
-      hours o inactivity.
+      arrives.
     activeDirectoryConfig: Active Directory configuration, for now relevant
       only for SQL Server
     authorizedGaeApplications: The App Engine app IDs that can access this
-      instance. First Generation instances only.
+      instance. (Deprecated) Applied to First Generation instances only.
     availabilityType: Availability type. Potential values:   <br><b>ZONAL</b>:
       The instance serves data from only one zone. Outages in that zone affect
       data accessibility.   <br><b>REGIONAL</b>: The instance can serve data
@@ -1685,10 +1678,10 @@ class Settings(_messages.Message):
     backupConfiguration: The daily backup configuration for the instance.
     crashSafeReplicationEnabled: Configuration specific to read replica
       instances. Indicates whether database flags for crash-safe replication
-      are enabled. This property is only applicable to First Generation
+      are enabled. This property was only applicable to First Generation
       instances.
     dataDiskSizeGb: The size of data disk, in GB. The data disk size minimum
-      is 10GB. Not used for First Generation instances.
+      is 10GB.
     dataDiskType: The type of data disk: PD_SSD (default) or PD_HDD. Not used
       for First Generation instances.
     databaseFlags: The database flags passed to the instance at startup.
@@ -1701,32 +1694,28 @@ class Settings(_messages.Message):
     kind: This is always <b>sql#settings</b>.
     locationPreference: The location preference settings. This allows the
       instance to be located as near as possible to either an App Engine app
-      or Compute Engine zone for better performance. App Engine co-location is
-      only applicable to First Generation instances.
+      or Compute Engine zone for better performance. App Engine co-location
+      was only applicable to First Generation instances.
     maintenanceWindow: The maintenance window for this instance. This
       specifies when the instance can be restarted for maintenance purposes.
-      Not used for First Generation instances.
     pricingPlan: The pricing plan for this instance. This can be either
       <b>PER_USE</b> or <b>PACKAGE</b>. Only <b>PER_USE</b> is supported for
       Second Generation instances.
     replicationType: The type of replication this instance uses. This can be
-      either <b>ASYNCHRONOUS</b> or <b>SYNCHRONOUS</b>. This property is only
-      applicable to First Generation instances.
+      either <b>ASYNCHRONOUS</b> or <b>SYNCHRONOUS</b>. (Deprecated_ This
+      property was only applicable to First Generation instances.
     settingsVersion: The version of instance settings. This is a required
       field for update method to make sure concurrent updates are handled
       properly. During update, use the most recent settingsVersion value for
       this instance and do not try to update this value.
     storageAutoResize: Configuration to increase storage size automatically.
-      The default value is true. Not used for First Generation instances.
+      The default value is true.
     storageAutoResizeLimit: The maximum size to which storage capacity can be
       automatically increased. The default value is 0, which specifies that
-      there is no limit. Not used for First Generation instances.
+      there is no limit.
     tier: The tier (or machine type) for this instance, for example
       <b>db-n1-standard-1</b> (MySQL instances) or <b>db-custom-1-3840</b>
-      (PostgreSQL instances). For MySQL instances, this property determines
-      whether the instance is First or Second Generation. For more
-      information, see <a href="/sql/docs/db_path/instance-settings">Instance
-      Settings</a>.
+      (PostgreSQL instances).
     userLabels: User-provided labels, represented as a dictionary where each
       label is a single key value pair.
   """
@@ -1736,11 +1725,7 @@ class Settings(_messages.Message):
     applicable only when the instance state is RUNNABLE. Valid values:
     <br><b>ALWAYS</b>: The instance is on, and remains so even in the absence
     of connection requests.   <br><b>NEVER</b>: The instance is off; it is not
-    activated, even if a   connection request arrives.   <br><b>ON_DEMAND</b>:
-    First Generation instances only. The instance responds to incoming
-    requests, and turns itself off when not in use. Instances with
-    <b>PER_USE</b> pricing turn off after 15 minutes of inactivity. Instances
-    with <b>PER_PACKAGE</b> pricing turn off after 12 hours o inactivity.
+    activated, even if a   connection request arrives.
 
     Values:
       SQL_ACTIVATION_POLICY_UNSPECIFIED: Unknown activation plan.
@@ -1803,8 +1788,8 @@ class Settings(_messages.Message):
 
   class ReplicationTypeValueValuesEnum(_messages.Enum):
     r"""The type of replication this instance uses. This can be either
-    <b>ASYNCHRONOUS</b> or <b>SYNCHRONOUS</b>. This property is only
-    applicable to First Generation instances.
+    <b>ASYNCHRONOUS</b> or <b>SYNCHRONOUS</b>. (Deprecated_ This property was
+    only applicable to First Generation instances.
 
     Values:
       SQL_REPLICATION_TYPE_UNSPECIFIED: This is an unknown replication type
@@ -2743,9 +2728,7 @@ class SslCertsInsertResponse(_messages.Message):
   r"""SslCert insert response.
 
   Fields:
-    clientCert: The new client certificate and private key.  For First
-      Generation instances, the new certificate does not take effect until the
-      instance is restarted.
+    clientCert: The new client certificate and private key.
     kind: This is always <b>sql#sslCertsInsert</b>.
     operation: The operation to track the ssl certs insert request.
     serverCaCert: The server Certificate Authority's certificate.  If this is

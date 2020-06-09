@@ -24,10 +24,16 @@ import datetime
 from apitools.base.py import exceptions as apitools_exceptions
 from googlecloudsdk.api_lib.util import apis_internal
 from googlecloudsdk.api_lib.util import exceptions
+from googlecloudsdk.core import exceptions as core_exceptions
 from googlecloudsdk.core import resources
 from googlecloudsdk.core.credentials import http as http_creds
 import googlecloudsdk.core.http as http_core
 from oauth2client import client
+from google.auth import exceptions as google_auth_exceptions
+
+
+class ImpersonatedCredGoogleAuthRefreshError(core_exceptions.Error):
+  """Exception for google auth impersonated credentials refresh error."""
 
 
 def GenerateAccessToken(service_account_id, scopes):
@@ -124,7 +130,14 @@ class ImpersonationAccessTokenProvider(object):
     cred = google_auth_impersonated_creds.Credentials(source_credentials,
                                                       service_account_id,
                                                       scopes)
-    cred.refresh(request_client)
+    try:
+      cred.refresh(request_client)
+    except google_auth_exceptions.RefreshError:
+      raise ImpersonatedCredGoogleAuthRefreshError(
+          'Failed to impersonate [{service_acc}]. Make sure the '
+          'account that\'s trying to impersonate it has access to the service '
+          'account itself and the "roles/iam.serviceAccountTokenCreator" '
+          'role.'.format(service_acc=service_account_id))
     return cred
 
   def GetElevationIdTokenGoogleAuth(self, google_auth_impersonation_credentials,

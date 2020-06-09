@@ -81,6 +81,8 @@ apis:
         projects:
           path: projects/{projectId}
   artifactregistry:
+    v1alpha1:
+      discovery_doc: artifactregistry_v1alpha1.json
     v1beta1:
       discovery_doc: artifactregistry_v1beta1.json
       default: true
@@ -705,8 +707,6 @@ apis:
     v1beta1:
       discovery_doc: runtimeconfig_v1beta1.json
   secretmanager:
-    v1beta1:
-      discovery_doc: secretmanager_v1beta1.json
     v1:
       discovery_doc: secretmanager_v1.json
       default: true

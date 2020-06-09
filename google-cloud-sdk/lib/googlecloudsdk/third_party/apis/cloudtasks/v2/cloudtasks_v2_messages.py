@@ -30,8 +30,8 @@ class AppEngineHttpRequest(_messages.Message):
   The request to the handler, however, will appear to have used the HTTP
   protocol.  The AppEngineRouting used to construct the URL that the task is
   delivered to can be set at the queue-level or task-level:  * If
-  app_engine_routing_override is set on the   queue, this value is used for
-  all   tasks in the queue, no matter what the setting is for the task-level
+  app_engine_routing_override is set on the   queue, this value   is used for
+  all tasks in the queue, no matter what the setting is for the   task-level
   app_engine_routing.   The `url` that the task will be sent to is:  * `url =`
   host `+`   relative_uri  Tasks can be dispatched to secure app handlers,
   unsecure app handlers, and URIs restricted with [`login: admin`](https://clo
@@ -92,8 +92,8 @@ class AppEngineHttpRequest(_messages.Message):
 
   Fields:
     appEngineRouting: Task-level setting for App Engine routing.  * If
-      app_engine_routing_override is set on the   queue, this value is used
-      for all   tasks in the queue, no matter what the setting is for the
+      app_engine_routing_override is set on the   queue, this   value is used
+      for all tasks in the queue, no matter what the setting is   for the
       task-level   app_engine_routing.
     body: HTTP request body.  A request body is allowed only if the HTTP
       method is POST or PUT. It is an error to set a body on a task with an

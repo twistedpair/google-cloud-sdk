@@ -12,7 +12,7 @@ class CloudidentityV1beta1(base_api.BaseApiClient):
   MTLS_BASE_URL = 'https://cloudidentity.mtls.googleapis.com/'
 
   _PACKAGE = 'cloudidentity'
-  _SCOPES = ['https://www.googleapis.com/auth/cloud-identity.groups', 'https://www.googleapis.com/auth/cloud-identity.groups.readonly', 'https://www.googleapis.com/auth/cloud-platform', 'https://www.googleapis.com/auth/userinfo.profile']
+  _SCOPES = ['https://www.googleapis.com/auth/cloud-identity.devices.lookup', 'https://www.googleapis.com/auth/cloud-identity.groups', 'https://www.googleapis.com/auth/cloud-identity.groups.readonly', 'https://www.googleapis.com/auth/cloud-platform', 'https://www.googleapis.com/auth/userinfo.profile']
   _VERSION = 'v1beta1'
   _CLIENT_ID = '1042881264118.apps.googleusercontent.com'
   _CLIENT_SECRET = 'x_Tw5K8nnjoRAqULM9PFAC2b'
@@ -109,7 +109,7 @@ caller's credentials, as well as the properties provided in the request.
         request: (CloudidentityDevicesDeviceUsersClientStatesGetRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
-        (ClientState) The response message.
+        (Operation) The response message.
       """
       config = self.GetMethodConfig('Get')
       return self._RunMethod(
@@ -125,7 +125,7 @@ caller's credentials, as well as the properties provided in the request.
         relative_path='v1beta1/{+name}',
         request_field='',
         request_type_name='CloudidentityDevicesDeviceUsersClientStatesGetRequest',
-        response_type_name='ClientState',
+        response_type_name='Operation',
         supports_download=False,
     )
 

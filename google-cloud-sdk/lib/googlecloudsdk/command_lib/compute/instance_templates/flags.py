@@ -22,7 +22,7 @@ from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.command_lib.compute import completers
 from googlecloudsdk.command_lib.compute import flags
-from googlecloudsdk.command_lib.compute.instance_templates import mesh_mode_aux_data
+from googlecloudsdk.command_lib.compute.instance_templates import service_proxy_aux_data
 
 DEFAULT_LIST_FORMAT = """\
     table(
@@ -55,69 +55,94 @@ def MakeSourceInstanceArg():
   )
 
 
-def AddMeshModeConfigArgs(parser):
-  """Adds mesh mode configuration arguments for instance templates."""
-  mesh_group = parser.add_group()
-  mesh_group.add_argument(
-      '--mesh',
+def AddServiceProxyConfigArgs(parser):
+  """Adds service proxy configuration arguments for instance templates."""
+  service_proxy_group = parser.add_group()
+  service_proxy_group.add_argument(
+      '--service-proxy',
       type=arg_parsers.ArgDict(
           spec={
-              'mode': mesh_mode_aux_data.MeshModes,
-              'workload-ports': str,
+              'enabled': None,
+              'serving-ports': str,
+              'proxy-port': int,
+              'tracing': service_proxy_aux_data.TracingState,
+              'access-log': str,
+              'network': str
           },
-          required_keys=['mode']),
+          allow_key_only=True,
+          required_keys=['enabled']),
       help="""\
-      Enables mesh and specifies mesh-level configuration. "cloud-platform" scope will be enabled to allow connection to Traffic Director API.
+      Controls whether the service proxy and agent are installed and configured on the VM.
+      "cloud-platform" scope will be enabled to allow connection to Traffic Director API.
       Therefore --no-scopes flag should not be present.
 
-      *mode*::: If ON, the mesh software will be installed on the instance when created.
-      It will be configured to work with TrafficDirector. Allowed values of the flags are:
-      ON and OFF for Alpha.
+      *enabled*::: If specified, the service-proxy software will be installed on the instance when created.
+      It will be configured to work with TrafficDirector.
 
-      *workload-ports*::: List of the ports inside quotes ("), separated by ';', on which the customer's workload is running.
-      Used to intercept the incoming traffic to the workload. If not provided, no
-      incoming traffic is intercepted.
+      *serving-ports*::: List of the ports inside quotes ("), separated by ';', on which the customer's application/workload is serving.
+      The service proxy will intercept inbound traffic, then forward it to the specified serving port(s) on localhost.
+      If not provided, no incoming traffic is intercepted.
+
+      *proxy-port*::: The port on which the service proxy listens.
+      The VM intercepts traffic and redirects it to this port to be handled by the service proxy.
+      If you omit this flag, defaults to '15001'.
+
+      *tracing*::: Enables the service proxy to generate distributed tracing information.
+      If set to ON, the service proxy's control plane generates configuration which enables request ID-based tracing.
+      For more information, refer to generate_request_id documentation of the Envoy proxy. Allowed values of the flags are:
+      ON and OFF.
+
+      *access-log*::: The filepath for access logs sent to the service proxy by the control plane.
+      All incoming and outgoing requests are recorded in this file.
+      For more information, refer to File access log documentation of the Envoy proxy.
+
+      *network*::: The name of a valid VPC network. The Google Cloud Platform VPC network used by the service proxy's control plane
+      to generate dynamic configuration for the service proxy.
       """)
-  mesh_group.add_argument(
-      '--mesh-labels',
+  service_proxy_group.add_argument(
+      '--service-proxy-labels',
       metavar='KEY=VALUE, ...',
       type=arg_parsers.ArgDict(),
       help="""\
-      Specifies the mesh-level labels as key-value pairs.
-      """)
-  mesh_group.add_argument(
-      '--mesh-proxy-config',
-      metavar='KEY=VALUE, ...',
-      type=arg_parsers.ArgDict(),
-      help="""\
-      Specifies per-proxy configuration as key-value pairs.
-      See all options at
-      http://cloud/traffic-director/docs/traffic-director-per-proxy-config
+      Labels that you can apply to your service proxy. These will be reflected in your Envoy proxy's bootstrap metadata.
+      These can be any `key=value` pairs that you want to set as proxy metadata (for example, for use with config filtering).
+      You might use these flags for application and version labels: `app=review` and/or `version=canary`.
       """)
 
 
-def ValidateMeshModeFlags(args):
-  """Validates the values of all mesh-mode related flags."""
+def ValidateServiceProxyFlags(args):
+  """Validates the values of all --service-proxy related flags."""
 
-  if getattr(args, 'mesh', False):
-    if args.no_scopes and args.mesh[
-        'mode'] == mesh_mode_aux_data.MeshModes.ON:
+  if getattr(args, 'service_proxy', False):
+    if args.no_scopes:
       # --no-scopes flag needs to be removed for adding cloud-platform scope.
       # This is required for TrafficDirector to work properly.
-      raise exceptions.ConflictingArgumentsException(
-          '--mesh',
-          '--no-scopes'
-          )
+      raise exceptions.ConflictingArgumentsException('--service-proxy',
+                                                     '--no-scopes')
 
-    if 'workload-ports' in args.mesh:
+    if 'serving-ports' in args.service_proxy:
       try:
-        workload_ports = list(map(int, args.mesh['workload-ports'].split(';')))
-        for port in workload_ports:
+        serving_ports = list(
+            map(int, args.service_proxy['serving-ports'].split(';')))
+        for port in serving_ports:
           if port < 1 or port > 65535:
             # valid port range is 1 - 65535
             raise ValueError
       except ValueError:
         # an invalid port is present in the list of workload ports.
         raise exceptions.InvalidArgumentException(
-            'workload-ports',
+            'serving-ports',
             'List of ports can only contain numbers between 1 and 65535.')
+
+    if 'proxy-port' in args.service_proxy:
+      try:
+        proxy_port = args.service_proxy['proxy-port']
+        if proxy_port < 1025 or proxy_port > 65535:
+          # valid range for proxy-port is 1025 - 65535
+          raise ValueError
+      except ValueError:
+        raise exceptions.InvalidArgumentException(
+            'proxy-port',
+            'Port value can only be between 1025 and 65535.')
+
+

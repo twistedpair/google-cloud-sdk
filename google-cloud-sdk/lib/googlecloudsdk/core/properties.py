@@ -1529,14 +1529,6 @@ class _SectionPubsub(_Section):
         help_text=('Use the legacy output for beta pubsub commands. The legacy '
                    'output from beta is being deprecated. This property will '
                    'eventually be removed.'))
-    self.zone = self._Add(
-        'lite_zone',
-        # TODO(b/152969311): Create a Completer for the active zones.
-        # TODO(b/149560300): Add this to
-        # https://cloud.google.com/sdk/docs/properties.
-        help_text='Default zone to use when working with zonal Pub/Sub Lite '
-        'resources. When a `--zone` flag is required but not provided, '
-        'the command will fall back to this value, if set.')
 
 
 class _SectionComposer(_Section):

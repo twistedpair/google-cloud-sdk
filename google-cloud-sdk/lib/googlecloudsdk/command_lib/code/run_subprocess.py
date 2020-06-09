@@ -67,10 +67,25 @@ def GetGcloudPreferredExecutable(exe):
 def Run(cmd, show_output=True):
   """Run command and optionally send the output to /dev/null or nul."""
   if show_output:
-    subprocess.check_call(cmd)
+    p = subprocess.Popen(cmd)
+    p.wait()
   else:
     with file_utils.FileWriter(os.devnull) as devnull:
-      subprocess.check_call(cmd, stdout=devnull, stderr=devnull)
+      p = subprocess.Popen(cmd, stdout=devnull, stderr=devnull)
+      p.wait()
+  if p.returncode != 0:
+    raise subprocess.CalledProcessError(p.returncode, cmd)
+
+
+def _GetStdout(cmd, show_stderr=True):
+  p = subprocess.Popen(
+      cmd,
+      stdout=subprocess.PIPE,
+      stderr=None if show_stderr else subprocess.PIPE)
+  stdout, _ = p.communicate()
+  if p.returncode != 0:
+    raise subprocess.CalledProcessError(p.returncode, cmd)
+  return six.ensure_text(stdout)
 
 
 def GetOutputLines(cmd, show_stderr=True, strip_output=False):
@@ -84,15 +99,10 @@ def GetOutputLines(cmd, show_stderr=True, strip_output=False):
   Returns:
     List of lines (without newlines).
   """
-  p = subprocess.Popen(
-      cmd,
-      stdout=subprocess.PIPE,
-      stderr=None if show_stderr else subprocess.PIPE)
-  stdout, _ = p.communicate()
-  text = six.ensure_text(stdout)
+  stdout = _GetStdout(cmd, show_stderr=show_stderr)
   if strip_output:
-    text = text.strip()
-  lines = text.splitlines()
+    stdout = stdout.strip()
+  lines = stdout.splitlines()
   return lines
 
 

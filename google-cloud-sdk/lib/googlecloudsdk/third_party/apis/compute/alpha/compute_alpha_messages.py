@@ -2312,6 +2312,7 @@ class AutoscalerStatusDetails(_messages.Message):
       MISSING_CUSTOM_METRIC_DATA_POINTS: <no description>
       MISSING_LOAD_BALANCING_DATA_POINTS: <no description>
       MODE_OFF: <no description>
+      MODE_ONLY_SCALE_OUT: <no description>
       MODE_ONLY_UP: <no description>
       MORE_THAN_ONE_BACKEND_SERVICE: <no description>
       NOT_ENOUGH_QUOTA_AVAILABLE: <no description>
@@ -2330,14 +2331,15 @@ class AutoscalerStatusDetails(_messages.Message):
     MISSING_CUSTOM_METRIC_DATA_POINTS = 6
     MISSING_LOAD_BALANCING_DATA_POINTS = 7
     MODE_OFF = 8
-    MODE_ONLY_UP = 9
-    MORE_THAN_ONE_BACKEND_SERVICE = 10
-    NOT_ENOUGH_QUOTA_AVAILABLE = 11
-    REGION_RESOURCE_STOCKOUT = 12
-    SCALING_TARGET_DOES_NOT_EXIST = 13
-    UNKNOWN = 14
-    UNSUPPORTED_MAX_RATE_LOAD_BALANCING_CONFIGURATION = 15
-    ZONE_RESOURCE_STOCKOUT = 16
+    MODE_ONLY_SCALE_OUT = 9
+    MODE_ONLY_UP = 10
+    MORE_THAN_ONE_BACKEND_SERVICE = 11
+    NOT_ENOUGH_QUOTA_AVAILABLE = 12
+    REGION_RESOURCE_STOCKOUT = 13
+    SCALING_TARGET_DOES_NOT_EXIST = 14
+    UNKNOWN = 15
+    UNSUPPORTED_MAX_RATE_LOAD_BALANCING_CONFIGURATION = 16
+    ZONE_RESOURCE_STOCKOUT = 17
 
   message = _messages.StringField(1)
   type = _messages.EnumField('TypeValueValuesEnum', 2)
@@ -3087,10 +3089,14 @@ class BackendBucketList(_messages.Message):
 
 
 class BackendService(_messages.Message):
-  r"""Represents a Backend Service resource.  A backend service contains
-  configuration values for Google Cloud Platform load balancing services.
-  Backend services in Google Compute Engine can be either regionally or
-  globally scoped.  *
+  r"""Represents a Backend Service resource.  A backend service defines how
+  Google Cloud load balancers distribute traffic. The backend service
+  configuration contains a set of values, such as the protocol used to connect
+  to backends, various distribution and session settings, health checks, and
+  timeouts. These settings provide fine-grained control over how your load
+  balancer behaves. Most of the settings have default values that allow for
+  easy configuration if you need to get started quickly.  Backend services in
+  Google Compute Engine can be either regionally or globally scoped.  *
   [Global](/compute/docs/reference/rest/{$api_version}/backendServices) * [Reg
   ional](/compute/docs/reference/rest/{$api_version}/regionBackendServices)
   For more information, read Backend Services.  (== resource_for
@@ -9486,6 +9492,9 @@ class ComputeInstanceGroupManagersListManagedInstancesRequest(_messages.Message)
       `nextPageToken` returned by a previous list request to get the next page
       of results.
     project: Project ID for this request.
+    returnPartialSuccess: Opt-in for partial success behavior which provides
+      partial results in case of failure. The default value is false and the
+      logic is the same as today.
     zone: The name of the zone where the managed instance group is located.
   """
 
@@ -9495,7 +9504,8 @@ class ComputeInstanceGroupManagersListManagedInstancesRequest(_messages.Message)
   orderBy = _messages.StringField(4)
   pageToken = _messages.StringField(5)
   project = _messages.StringField(6, required=True)
-  zone = _messages.StringField(7, required=True)
+  returnPartialSuccess = _messages.BooleanField(7)
+  zone = _messages.StringField(8, required=True)
 
 
 class ComputeInstanceGroupManagersListPerInstanceConfigsRequest(_messages.Message):
@@ -15411,6 +15421,9 @@ class ComputeProjectsGetXpnResourcesRequest(_messages.Message):
       `nextPageToken` returned by a previous list request to get the next page
       of results.
     project: Project ID for this request.
+    returnPartialSuccess: Opt-in for partial success behavior which provides
+      partial results in case of failure. The default value is false and the
+      logic is the same as today.
   """
 
   filter = _messages.StringField(1)
@@ -15418,6 +15431,7 @@ class ComputeProjectsGetXpnResourcesRequest(_messages.Message):
   orderBy = _messages.StringField(3)
   pageToken = _messages.StringField(4)
   project = _messages.StringField(5, required=True)
+  returnPartialSuccess = _messages.BooleanField(6)
 
 
 class ComputeProjectsListXpnHostsRequest(_messages.Message):
@@ -15460,6 +15474,9 @@ class ComputeProjectsListXpnHostsRequest(_messages.Message):
     project: Project ID for this request.
     projectsListXpnHostsRequest: A ProjectsListXpnHostsRequest resource to be
       passed as the request body.
+    returnPartialSuccess: Opt-in for partial success behavior which provides
+      partial results in case of failure. The default value is false and the
+      logic is the same as today.
   """
 
   filter = _messages.StringField(1)
@@ -15468,6 +15485,7 @@ class ComputeProjectsListXpnHostsRequest(_messages.Message):
   pageToken = _messages.StringField(4)
   project = _messages.StringField(5, required=True)
   projectsListXpnHostsRequest = _messages.MessageField('ProjectsListXpnHostsRequest', 6)
+  returnPartialSuccess = _messages.BooleanField(7)
 
 
 class ComputeProjectsMoveDiskRequest(_messages.Message):
@@ -17787,6 +17805,9 @@ class ComputeRegionInstanceGroupManagersListManagedInstancesRequest(_messages.Me
       of results.
     project: Project ID for this request.
     region: Name of the region scoping this request.
+    returnPartialSuccess: Opt-in for partial success behavior which provides
+      partial results in case of failure. The default value is false and the
+      logic is the same as today.
   """
 
   filter = _messages.StringField(1)
@@ -17796,6 +17817,7 @@ class ComputeRegionInstanceGroupManagersListManagedInstancesRequest(_messages.Me
   pageToken = _messages.StringField(5)
   project = _messages.StringField(6, required=True)
   region = _messages.StringField(7, required=True)
+  returnPartialSuccess = _messages.BooleanField(8)
 
 
 class ComputeRegionInstanceGroupManagersListPerInstanceConfigsRequest(_messages.Message):
@@ -30288,7 +30310,8 @@ class HttpRouteAction(_messages.Message):
       all retries. If not specified, will use the largest timeout among all
       backend services associated with the route.
     urlRewrite: The spec to modify the URL of the request, prior to forwarding
-      the request to the matched service.
+      the request to the matched service. urlRewrite is the only action
+      supported in UrlMaps for external HTTP(S) load balancers.
     weightedBackendServices: A list of weighted backend services to send
       traffic to when a route match occurs. The weights determine the fraction
       of traffic that flows to their corresponding backend service. If all
@@ -32586,10 +32609,25 @@ class InstanceGroupManagerStatusStateful(_messages.Message):
       preserved state on a managed instance, for example, if you have deleted
       all PICs but not yet applied those deletions. This field is deprecated
       in favor of has_stateful_config.
+    perInstanceConfigs: [Output Only] Status of per-instance configs on the
+      instance.
   """
 
   hasStatefulConfig = _messages.BooleanField(1)
   isStateful = _messages.BooleanField(2)
+  perInstanceConfigs = _messages.MessageField('InstanceGroupManagerStatusStatefulPerInstanceConfigs', 3)
+
+
+class InstanceGroupManagerStatusStatefulPerInstanceConfigs(_messages.Message):
+  r"""A InstanceGroupManagerStatusStatefulPerInstanceConfigs object.
+
+  Fields:
+    allEffective: A bit indicating if all of the group's per-instance configs
+      (listed in the output of a listPerInstanceConfigs API call) have status
+      EFFECTIVE or there are no per-instance-configs.
+  """
+
+  allEffective = _messages.BooleanField(1)
 
 
 class InstanceGroupManagerStatusVersionTarget(_messages.Message):
@@ -38452,6 +38490,7 @@ class NetworkEndpointGroup(_messages.Message):
     r"""Type of network endpoints in this network endpoint group.
 
     Values:
+      GCE_VM_IP: <no description>
       GCE_VM_IP_PORT: <no description>
       GCE_VM_PRIMARY_IP: <no description>
       INTERNET_FQDN_PORT: <no description>
@@ -38459,12 +38498,13 @@ class NetworkEndpointGroup(_messages.Message):
       NON_GCP_PRIVATE_IP_PORT: <no description>
       SERVERLESS: <no description>
     """
-    GCE_VM_IP_PORT = 0
-    GCE_VM_PRIMARY_IP = 1
-    INTERNET_FQDN_PORT = 2
-    INTERNET_IP_PORT = 3
-    NON_GCP_PRIVATE_IP_PORT = 4
-    SERVERLESS = 5
+    GCE_VM_IP = 0
+    GCE_VM_IP_PORT = 1
+    GCE_VM_PRIMARY_IP = 2
+    INTERNET_FQDN_PORT = 3
+    INTERNET_IP_PORT = 4
+    NON_GCP_PRIVATE_IP_PORT = 5
+    SERVERLESS = 6
 
   class TypeValueValuesEnum(_messages.Enum):
     r"""Specify the type of this network endpoint group. Only LOAD_BALANCING
@@ -42924,7 +42964,9 @@ class PathMatcher(_messages.Message):
       specifies any weightedBackendServices, defaultService must not be set.
       Conversely if defaultService is set, defaultRouteAction cannot contain
       any  weightedBackendServices. Only one of defaultRouteAction or
-      defaultUrlRedirect must be set.
+      defaultUrlRedirect must be set. UrlMaps for external HTTP(S) load
+      balancers support only the urlRewrite action within a pathMatcher's
+      defaultRouteAction.
     defaultService: The full or partial URL to the BackendService resource.
       This will be used if none of the pathRules or routeRules defined by this
       PathMatcher are matched. For example, the following are all valid URLs
@@ -42992,7 +43034,8 @@ class PathRule(_messages.Message):
       specifies any  weightedBackendServices, service must not be set.
       Conversely if service is set, routeAction cannot contain any
       weightedBackendServices. Only one of routeAction or urlRedirect must be
-      set.
+      set. UrlMaps for external HTTP(S) load balancers support only the
+      urlRewrite action within a pathRule's routeAction.
     service: The full or partial URL of the backend service resource to which
       traffic is directed if this rule is matched. If routeAction is
       additionally specified, advanced routing actions like URL Rewrites, etc.
@@ -43026,6 +43069,10 @@ class PeerAuthenticationMethod(_messages.Message):
 class PerInstanceConfig(_messages.Message):
   r"""A PerInstanceConfig object.
 
+  Enums:
+    StatusValueValuesEnum: The status of applying this per-instance config on
+      the corresponding managed instance.
+
   Fields:
     fingerprint: Fingerprint of this per-instance config. This field can be
       used in optimistic locking. It is ignored when inserting a per-instance
@@ -43040,11 +43087,33 @@ class PerInstanceConfig(_messages.Message):
       result in an error.
     preservedState: The intended preserved state for the given instance. Does
       not contain preserved state generated from a stateful policy.
+    status: The status of applying this per-instance config on the
+      corresponding managed instance.
   """
+
+  class StatusValueValuesEnum(_messages.Enum):
+    r"""The status of applying this per-instance config on the corresponding
+    managed instance.
+
+    Values:
+      APPLYING: <no description>
+      DELETING: <no description>
+      EFFECTIVE: <no description>
+      NONE: <no description>
+      UNAPPLIED: <no description>
+      UNAPPLIED_DELETION: <no description>
+    """
+    APPLYING = 0
+    DELETING = 1
+    EFFECTIVE = 2
+    NONE = 3
+    UNAPPLIED = 4
+    UNAPPLIED_DELETION = 5
 
   fingerprint = _messages.BytesField(1)
   name = _messages.StringField(2)
   preservedState = _messages.MessageField('PreservedState', 3)
+  status = _messages.EnumField('StatusValueValuesEnum', 4)
 
 
 class Permission(_messages.Message):
@@ -44296,6 +44365,7 @@ class Quota(_messages.Message):
     r"""[Output Only] Name of the quota metric.
 
     Values:
+      A2_CPUS: <no description>
       AFFINITY_GROUPS: <no description>
       ALIASES_PER_NETWORK_GLOBAL: <no description>
       AMD_S9300_GPUS: <no description>
@@ -44304,6 +44374,7 @@ class Quota(_messages.Message):
       BACKEND_SERVICES: <no description>
       C2_CPUS: <no description>
       COMMITMENTS: <no description>
+      COMMITTED_A2_CPUS: <no description>
       COMMITTED_C2_CPUS: <no description>
       COMMITTED_CPUS: <no description>
       COMMITTED_LICENSES: <no description>
@@ -44408,114 +44479,116 @@ class Quota(_messages.Message):
       VPN_TUNNELS: <no description>
       XPN_SERVICE_PROJECTS: <no description>
     """
-    AFFINITY_GROUPS = 0
-    ALIASES_PER_NETWORK_GLOBAL = 1
-    AMD_S9300_GPUS = 2
-    AUTOSCALERS = 3
-    BACKEND_BUCKETS = 4
-    BACKEND_SERVICES = 5
-    C2_CPUS = 6
-    COMMITMENTS = 7
-    COMMITTED_C2_CPUS = 8
-    COMMITTED_CPUS = 9
-    COMMITTED_LICENSES = 10
-    COMMITTED_LOCAL_SSD_TOTAL_GB = 11
-    COMMITTED_N2D_CPUS = 12
-    COMMITTED_N2_CPUS = 13
-    COMMITTED_NVIDIA_K80_GPUS = 14
-    COMMITTED_NVIDIA_P100_GPUS = 15
-    COMMITTED_NVIDIA_P4_GPUS = 16
-    COMMITTED_NVIDIA_T4_GPUS = 17
-    COMMITTED_NVIDIA_V100_GPUS = 18
-    CPUS = 19
-    CPUS_ALL_REGIONS = 20
-    DISKS_TOTAL_GB = 21
-    EXTERNAL_VPN_GATEWAYS = 22
-    FIREWALLS = 23
-    FORWARDING_RULES = 24
-    GLOBAL_INTERNAL_ADDRESSES = 25
-    GPUS_ALL_REGIONS = 26
-    HEALTH_CHECKS = 27
-    IMAGES = 28
-    INSTANCES = 29
-    INSTANCES_PER_NETWORK_GLOBAL = 30
-    INSTANCE_GROUPS = 31
-    INSTANCE_GROUP_MANAGERS = 32
-    INSTANCE_TEMPLATES = 33
-    INTERCONNECTS = 34
-    INTERCONNECT_ATTACHMENTS_PER_REGION = 35
-    INTERCONNECT_ATTACHMENTS_TOTAL_MBPS = 36
-    INTERCONNECT_TOTAL_GBPS = 37
-    INTERNAL_ADDRESSES = 38
-    INTERNAL_FORWARDING_RULES_PER_NETWORK = 39
-    INTERNAL_FORWARDING_RULES_WITH_GLOBAL_ACCESS_PER_NETWORK = 40
-    INTERNAL_FORWARDING_RULES_WITH_TARGET_INSTANCE_PER_NETWORK = 41
-    INTERNAL_TARGET_INSTANCE_WITH_GLOBAL_ACCESS_PER_NETWORK = 42
-    IN_PLACE_SNAPSHOTS = 43
-    IN_USE_ADDRESSES = 44
-    IN_USE_BACKUP_SCHEDULES = 45
-    IN_USE_MAINTENANCE_WINDOWS = 46
-    IN_USE_SNAPSHOT_SCHEDULES = 47
-    LOCAL_SSD_TOTAL_GB = 48
-    M1_CPUS = 49
-    M2_CPUS = 50
-    MACHINE_IMAGES = 51
-    N2D_CPUS = 52
-    N2_CPUS = 53
-    NETWORKS = 54
-    NETWORK_ENDPOINT_GROUPS = 55
-    NODE_GROUPS = 56
-    NODE_TEMPLATES = 57
-    NVIDIA_K80_GPUS = 58
-    NVIDIA_P100_GPUS = 59
-    NVIDIA_P100_VWS_GPUS = 60
-    NVIDIA_P4_GPUS = 61
-    NVIDIA_P4_VWS_GPUS = 62
-    NVIDIA_T4_GPUS = 63
-    NVIDIA_T4_VWS_GPUS = 64
-    NVIDIA_V100_GPUS = 65
-    PACKET_MIRRORINGS = 66
-    PREEMPTIBLE_CPUS = 67
-    PREEMPTIBLE_LOCAL_SSD_GB = 68
-    PREEMPTIBLE_NVIDIA_K80_GPUS = 69
-    PREEMPTIBLE_NVIDIA_P100_GPUS = 70
-    PREEMPTIBLE_NVIDIA_P100_VWS_GPUS = 71
-    PREEMPTIBLE_NVIDIA_P4_GPUS = 72
-    PREEMPTIBLE_NVIDIA_P4_VWS_GPUS = 73
-    PREEMPTIBLE_NVIDIA_T4_GPUS = 74
-    PREEMPTIBLE_NVIDIA_T4_VWS_GPUS = 75
-    PREEMPTIBLE_NVIDIA_V100_GPUS = 76
-    PRIVATE_V6_ACCESS_SUBNETWORKS = 77
-    PSC_GOOGLE_APIS_FORWARDING_RULES_PER_NETWORK = 78
-    PUBLIC_ADVERTISED_PREFIXES = 79
-    PUBLIC_DELEGATED_PREFIXES = 80
-    REGIONAL_AUTOSCALERS = 81
-    REGIONAL_INSTANCE_GROUP_MANAGERS = 82
-    RESERVATIONS = 83
-    RESOURCE_POLICIES = 84
-    ROUTERS = 85
-    ROUTES = 86
-    SECURITY_POLICIES = 87
-    SECURITY_POLICY_CEVAL_RULES = 88
-    SECURITY_POLICY_RULES = 89
-    SNAPSHOTS = 90
-    SSD_TOTAL_GB = 91
-    SSL_CERTIFICATES = 92
-    STATIC_ADDRESSES = 93
-    STATIC_BYOIP_ADDRESSES = 94
-    SUBNETWORKS = 95
-    SUBNET_RANGES_PER_NETWORK = 96
-    TARGET_HTTPS_PROXIES = 97
-    TARGET_HTTP_PROXIES = 98
-    TARGET_INSTANCES = 99
-    TARGET_POOLS = 100
-    TARGET_SSL_PROXIES = 101
-    TARGET_TCP_PROXIES = 102
-    TARGET_VPN_GATEWAYS = 103
-    URL_MAPS = 104
-    VPN_GATEWAYS = 105
-    VPN_TUNNELS = 106
-    XPN_SERVICE_PROJECTS = 107
+    A2_CPUS = 0
+    AFFINITY_GROUPS = 1
+    ALIASES_PER_NETWORK_GLOBAL = 2
+    AMD_S9300_GPUS = 3
+    AUTOSCALERS = 4
+    BACKEND_BUCKETS = 5
+    BACKEND_SERVICES = 6
+    C2_CPUS = 7
+    COMMITMENTS = 8
+    COMMITTED_A2_CPUS = 9
+    COMMITTED_C2_CPUS = 10
+    COMMITTED_CPUS = 11
+    COMMITTED_LICENSES = 12
+    COMMITTED_LOCAL_SSD_TOTAL_GB = 13
+    COMMITTED_N2D_CPUS = 14
+    COMMITTED_N2_CPUS = 15
+    COMMITTED_NVIDIA_K80_GPUS = 16
+    COMMITTED_NVIDIA_P100_GPUS = 17
+    COMMITTED_NVIDIA_P4_GPUS = 18
+    COMMITTED_NVIDIA_T4_GPUS = 19
+    COMMITTED_NVIDIA_V100_GPUS = 20
+    CPUS = 21
+    CPUS_ALL_REGIONS = 22
+    DISKS_TOTAL_GB = 23
+    EXTERNAL_VPN_GATEWAYS = 24
+    FIREWALLS = 25
+    FORWARDING_RULES = 26
+    GLOBAL_INTERNAL_ADDRESSES = 27
+    GPUS_ALL_REGIONS = 28
+    HEALTH_CHECKS = 29
+    IMAGES = 30
+    INSTANCES = 31
+    INSTANCES_PER_NETWORK_GLOBAL = 32
+    INSTANCE_GROUPS = 33
+    INSTANCE_GROUP_MANAGERS = 34
+    INSTANCE_TEMPLATES = 35
+    INTERCONNECTS = 36
+    INTERCONNECT_ATTACHMENTS_PER_REGION = 37
+    INTERCONNECT_ATTACHMENTS_TOTAL_MBPS = 38
+    INTERCONNECT_TOTAL_GBPS = 39
+    INTERNAL_ADDRESSES = 40
+    INTERNAL_FORWARDING_RULES_PER_NETWORK = 41
+    INTERNAL_FORWARDING_RULES_WITH_GLOBAL_ACCESS_PER_NETWORK = 42
+    INTERNAL_FORWARDING_RULES_WITH_TARGET_INSTANCE_PER_NETWORK = 43
+    INTERNAL_TARGET_INSTANCE_WITH_GLOBAL_ACCESS_PER_NETWORK = 44
+    IN_PLACE_SNAPSHOTS = 45
+    IN_USE_ADDRESSES = 46
+    IN_USE_BACKUP_SCHEDULES = 47
+    IN_USE_MAINTENANCE_WINDOWS = 48
+    IN_USE_SNAPSHOT_SCHEDULES = 49
+    LOCAL_SSD_TOTAL_GB = 50
+    M1_CPUS = 51
+    M2_CPUS = 52
+    MACHINE_IMAGES = 53
+    N2D_CPUS = 54
+    N2_CPUS = 55
+    NETWORKS = 56
+    NETWORK_ENDPOINT_GROUPS = 57
+    NODE_GROUPS = 58
+    NODE_TEMPLATES = 59
+    NVIDIA_K80_GPUS = 60
+    NVIDIA_P100_GPUS = 61
+    NVIDIA_P100_VWS_GPUS = 62
+    NVIDIA_P4_GPUS = 63
+    NVIDIA_P4_VWS_GPUS = 64
+    NVIDIA_T4_GPUS = 65
+    NVIDIA_T4_VWS_GPUS = 66
+    NVIDIA_V100_GPUS = 67
+    PACKET_MIRRORINGS = 68
+    PREEMPTIBLE_CPUS = 69
+    PREEMPTIBLE_LOCAL_SSD_GB = 70
+    PREEMPTIBLE_NVIDIA_K80_GPUS = 71
+    PREEMPTIBLE_NVIDIA_P100_GPUS = 72
+    PREEMPTIBLE_NVIDIA_P100_VWS_GPUS = 73
+    PREEMPTIBLE_NVIDIA_P4_GPUS = 74
+    PREEMPTIBLE_NVIDIA_P4_VWS_GPUS = 75
+    PREEMPTIBLE_NVIDIA_T4_GPUS = 76
+    PREEMPTIBLE_NVIDIA_T4_VWS_GPUS = 77
+    PREEMPTIBLE_NVIDIA_V100_GPUS = 78
+    PRIVATE_V6_ACCESS_SUBNETWORKS = 79
+    PSC_GOOGLE_APIS_FORWARDING_RULES_PER_NETWORK = 80
+    PUBLIC_ADVERTISED_PREFIXES = 81
+    PUBLIC_DELEGATED_PREFIXES = 82
+    REGIONAL_AUTOSCALERS = 83
+    REGIONAL_INSTANCE_GROUP_MANAGERS = 84
+    RESERVATIONS = 85
+    RESOURCE_POLICIES = 86
+    ROUTERS = 87
+    ROUTES = 88
+    SECURITY_POLICIES = 89
+    SECURITY_POLICY_CEVAL_RULES = 90
+    SECURITY_POLICY_RULES = 91
+    SNAPSHOTS = 92
+    SSD_TOTAL_GB = 93
+    SSL_CERTIFICATES = 94
+    STATIC_ADDRESSES = 95
+    STATIC_BYOIP_ADDRESSES = 96
+    SUBNETWORKS = 97
+    SUBNET_RANGES_PER_NETWORK = 98
+    TARGET_HTTPS_PROXIES = 99
+    TARGET_HTTP_PROXIES = 100
+    TARGET_INSTANCES = 101
+    TARGET_POOLS = 102
+    TARGET_SSL_PROXIES = 103
+    TARGET_TCP_PROXIES = 104
+    TARGET_VPN_GATEWAYS = 105
+    URL_MAPS = 106
+    VPN_GATEWAYS = 107
+    VPN_TUNNELS = 108
+    XPN_SERVICE_PROJECTS = 109
 
   limit = _messages.FloatField(1)
   metric = _messages.EnumField('MetricValueValuesEnum', 2)
@@ -49147,8 +49220,9 @@ class Scheduling(_messages.Message):
       instances, the default and only possible behavior is TERMINATE. For more
       information, see Setting Instance Scheduling Options.
     preemptible: Defines whether the instance is preemptible. This can only be
-      set during instance creation, it cannot be set or changed after the
-      instance has been created.
+      set during instance creation or while the instance is stopped and
+      therefore, in a `TERMINATED` state. See Instance Life Cycle for more
+      information on the possible instance states.
   """
 
   class OnHostMaintenanceValueValuesEnum(_messages.Enum):
@@ -49767,16 +49841,7 @@ class SecuritySettings(_messages.Message):
   r"""The authentication and authorization settings for a BackendService.
 
   Fields:
-    authentication: A URL referring to a networksecurity.Authentication
-      resource that describes how clients should authenticate with this
-      service's backends. If left blank, communications between services are
-      not encrypted (i.e., the TLS policy is set to OPEN). When sending
-      traffic to this service's backends, the OriginationTls setting of
-      Authentication.TransportAuthentication is applied. Refer to the
-      Authentication and Authentication.TransportAuthentication.OriginationTls
-      resources for additional details. authentication only applies to a
-      global BackendService with the loadBalancingScheme set to
-      INTERNAL_SELF_MANAGED.
+    authentication: [Deprecated] Use clientTlsPolicy instead.
     authenticationPolicy: [Deprecated] Authentication policy defines what
       authentication methods can be accepted on backends, and if
       authenticated, which method/certificate will set the request principal.
@@ -49784,21 +49849,33 @@ class SecuritySettings(_messages.Message):
     authorizationConfig: [Deprecated] Authorization config defines the Role
       Based Access Control (RBAC) config. Authorization config defines the
       Role Based Access Control (RBAC) config.
+    clientTlsPolicy: Optional. A URL referring to a
+      networksecurity.ClientTlsPolicy resource that describes how clients
+      should authenticate with this service's backends. clientTlsPolicy only
+      applies to a global BackendService with the loadBalancingScheme set to
+      INTERNAL_SELF_MANAGED. If left blank, communications are not encrypted.
     clientTlsSettings: [Deprecated] TLS Settings for the backend service.
-    subjectAltNames: Optional. A list of subject alternate names to verify the
-      subject identity (SAN) in the certificate presented by the server, to
-      authorize the SAN list as identities to run the service represented by
-      this BackendService. If specified, the client will verify that the
-      server certificate's subject alt name matches one of the specified
-      values. Only applies to a global BackendService with the
-      loadBalancingScheme set to INTERNAL_SELF_MANAGED.
+    subjectAltNames: Optional. A list of Subject Alternative Names (SANs) that
+      the client verifies during a mutual TLS handshake with an
+      server/endpoint for this BackendService. When the server presents its
+      X.509 certificate to the client, the client inspects the certificate's
+      subjectAltName field. If the field contains one of the specified values,
+      the communication continues. Otherwise, it fails. This additional check
+      enables the client to verify that the server is authorized to run the
+      requested service. Note that the contents of the server certificate's
+      subjectAltName field are configured by the Public Key Infrastructure
+      which provisions server identities. Only applies to a global
+      BackendService with loadBalancingScheme set to INTERNAL_SELF_MANAGED.
+      Only applies when BackendService has an attached clientTlsPolicy with
+      clientCertificate (mTLS mode).
   """
 
   authentication = _messages.StringField(1)
   authenticationPolicy = _messages.MessageField('AuthenticationPolicy', 2)
   authorizationConfig = _messages.MessageField('AuthorizationConfig', 3)
-  clientTlsSettings = _messages.MessageField('ClientTlsSettings', 4)
-  subjectAltNames = _messages.StringField(5, repeated=True)
+  clientTlsPolicy = _messages.StringField(4)
+  clientTlsSettings = _messages.MessageField('ClientTlsSettings', 5)
+  subjectAltNames = _messages.StringField(6, repeated=True)
 
 
 class SerialPortOutput(_messages.Message):
@@ -50687,8 +50764,9 @@ class SslCertificate(_messages.Message):
   contain a set of up to five PEM-encoded certificates. The API call creates
   an object (sslCertificate) that holds this data. You can use SSL keys and
   certificates to secure connections to a load balancer. For more information,
-  read  Creating and using SSL certificates and SSL certificates quotas and
-  limits. (== resource_for {$api_version}.sslCertificates ==) (== resource_for
+  read  Creating and using SSL certificates, SSL certificates quotas and
+  limits, and  Troubleshooting SSL certificates. (== resource_for
+  {$api_version}.sslCertificates ==) (== resource_for
   {$api_version}.regionSslCertificates ==)
 
   Enums:
@@ -53499,22 +53577,16 @@ class TargetHttpsProxy(_messages.Message):
       flag is not specified, NONE is implied. -
 
   Fields:
-    authentication: A URL referring to a networksecurity.Authentication
-      resource that describes how the proxy should authenticate inbound
-      traffic. If left blank, communications between services are not
-      encrypted (i.e., the TLS policy is set to OPEN). When terminating
-      inbound traffic to this proxy, the TerminationTls setting of
-      Authentication.TransportAuthentication is applied. Refer to the
-      Authentication and Authentication.TransportAuthentication.TerminationTls
-      resources for additional details. authentication only applies to a
-      global TargetHttpsProxy attached to globalForwardingRules with the
-      loadBalancingScheme set to INTERNAL_SELF_MANAGED.
-    authorization: A URL referring to a networksecurity.Authorization resource
-      that describes how the proxy should authorize inbound traffic. If left
-      blank, access will not be restricted by an authorization policy. Refer
-      to the Authorization resource for additional details. authorization only
-      applies to a global TargetHttpsProxy attached to globalForwardingRules
-      with the loadBalancingScheme set to INTERNAL_SELF_MANAGED.
+    authentication: [Deprecated] Use serverTlsPolicy instead.
+    authorization: [Deprecated] Use authorizationPolicy instead.
+    authorizationPolicy: Optional. A URL referring to a
+      networksecurity.AuthorizationPolicy resource that describes how the
+      proxy should authorize inbound traffic. If left blank, access will not
+      be restricted by an authorization policy. Refer to the
+      AuthorizationPolicy resource for additional details. authorizationPolicy
+      only applies to a global TargetHttpsProxy attached to
+      globalForwardingRules with the loadBalancingScheme set to
+      INTERNAL_SELF_MANAGED.
     certificateMap: URL of a certificate map that identifies a certificate map
       associated with the given target proxy. This field can only be set for
       global target proxies. If set, sslCertificates will be ignored.
@@ -53550,6 +53622,12 @@ class TargetHttpsProxy(_messages.Message):
     selfLink: [Output Only] Server-defined URL for the resource.
     selfLinkWithId: [Output Only] Server-defined URL for this resource with
       the resource id.
+    serverTlsPolicy: Optional. A URL referring to a
+      networksecurity.ServerTlsPolicy resource that describes how the proxy
+      should authenticate inbound traffic. serverTlsPolicy only applies to a
+      global TargetHttpsProxy attached to globalForwardingRules with the
+      loadBalancingScheme set to INTERNAL_SELF_MANAGED. If left blank,
+      communications are not encrypted.
     sslCertificates: URLs to SslCertificate resources that are used to
       authenticate connections between users and the load balancer. At least
       one SSL certificate must be specified. Currently, you may specify up to
@@ -53584,20 +53662,22 @@ class TargetHttpsProxy(_messages.Message):
 
   authentication = _messages.StringField(1)
   authorization = _messages.StringField(2)
-  certificateMap = _messages.StringField(3)
-  creationTimestamp = _messages.StringField(4)
-  description = _messages.StringField(5)
-  id = _messages.IntegerField(6, variant=_messages.Variant.UINT64)
-  kind = _messages.StringField(7, default='compute#targetHttpsProxy')
-  name = _messages.StringField(8)
-  proxyBind = _messages.BooleanField(9)
-  quicOverride = _messages.EnumField('QuicOverrideValueValuesEnum', 10)
-  region = _messages.StringField(11)
-  selfLink = _messages.StringField(12)
-  selfLinkWithId = _messages.StringField(13)
-  sslCertificates = _messages.StringField(14, repeated=True)
-  sslPolicy = _messages.StringField(15)
-  urlMap = _messages.StringField(16)
+  authorizationPolicy = _messages.StringField(3)
+  certificateMap = _messages.StringField(4)
+  creationTimestamp = _messages.StringField(5)
+  description = _messages.StringField(6)
+  id = _messages.IntegerField(7, variant=_messages.Variant.UINT64)
+  kind = _messages.StringField(8, default='compute#targetHttpsProxy')
+  name = _messages.StringField(9)
+  proxyBind = _messages.BooleanField(10)
+  quicOverride = _messages.EnumField('QuicOverrideValueValuesEnum', 11)
+  region = _messages.StringField(12)
+  selfLink = _messages.StringField(13)
+  selfLinkWithId = _messages.StringField(14)
+  serverTlsPolicy = _messages.StringField(15)
+  sslCertificates = _messages.StringField(16, repeated=True)
+  sslPolicy = _messages.StringField(17)
+  urlMap = _messages.StringField(18)
 
 
 class TargetHttpsProxyAggregatedList(_messages.Message):
@@ -56132,7 +56212,8 @@ class UrlMap(_messages.Message):
       weightedBackendServices, defaultService must not be set. Conversely if
       defaultService is set, defaultRouteAction cannot contain any
       weightedBackendServices. Only one of defaultRouteAction or
-      defaultUrlRedirect must be set.
+      defaultUrlRedirect must be set. UrlMaps for external HTTP(S) load
+      balancers support only the urlRewrite action within defaultRouteAction.
     defaultService: The full or partial URL of the defaultService resource to
       which traffic is directed if none of the hostRules match. If
       defaultRouteAction is additionally specified, advanced routing actions

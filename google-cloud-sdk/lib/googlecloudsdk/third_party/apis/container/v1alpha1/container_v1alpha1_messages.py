@@ -90,6 +90,16 @@ class AuthenticatorGroupsConfig(_messages.Message):
   securityGroup = _messages.StringField(2)
 
 
+class AutoGKE(_messages.Message):
+  r"""AutoGKE is the configuration for AutoGKE settings on the cluster.
+
+  Fields:
+    enabled: Enable AutoGKE
+  """
+
+  enabled = _messages.BooleanField(1)
+
+
 class AutoUpgradeOptions(_messages.Message):
   r"""AutoUpgradeOptions defines the set of options for the user to control
   how the Auto Upgrades will proceed.
@@ -271,6 +281,7 @@ class Cluster(_messages.Message):
       the cluster.
     authenticatorGroupsConfig: Configuration controlling RBAC group membership
       information.
+    autogke: AutoGKE configuration for the cluster.
     autoscaling: Cluster-level autoscaling configuration.
     binaryAuthorization: Configuration for Binary Authorization.
     clusterIpv4Cidr: The IP address range of the container pods in this
@@ -302,7 +313,6 @@ class Cluster(_messages.Message):
       pods that can be run simultaneously on a node in the node pool of this
       cluster. Only honored if cluster created with IP Alias support.
     description: An optional description of this cluster.
-    enableAutogke: Enable the cluster to be AutoGKE
     enableGvnic: Enable or disable gvnic on this cluster. This field is not
       yet used.
     enableKubernetesAlpha: Kubernetes alpha features are enabled on this
@@ -517,21 +527,21 @@ class Cluster(_messages.Message):
 
   addonsConfig = _messages.MessageField('AddonsConfig', 1)
   authenticatorGroupsConfig = _messages.MessageField('AuthenticatorGroupsConfig', 2)
-  autoscaling = _messages.MessageField('ClusterAutoscaling', 3)
-  binaryAuthorization = _messages.MessageField('BinaryAuthorization', 4)
-  clusterIpv4Cidr = _messages.StringField(5)
-  clusterTelemetry = _messages.MessageField('ClusterTelemetry', 6)
-  conditions = _messages.MessageField('StatusCondition', 7, repeated=True)
-  costManagementConfig = _messages.MessageField('CostManagementConfig', 8)
-  createTime = _messages.StringField(9)
-  currentMasterVersion = _messages.StringField(10)
-  currentNodeCount = _messages.IntegerField(11, variant=_messages.Variant.INT32)
-  currentNodeVersion = _messages.StringField(12)
-  databaseEncryption = _messages.MessageField('DatabaseEncryption', 13)
-  databaseEncryptionKeyId = _messages.StringField(14)
-  defaultMaxPodsConstraint = _messages.MessageField('MaxPodsConstraint', 15)
-  description = _messages.StringField(16)
-  enableAutogke = _messages.BooleanField(17)
+  autogke = _messages.MessageField('AutoGKE', 3)
+  autoscaling = _messages.MessageField('ClusterAutoscaling', 4)
+  binaryAuthorization = _messages.MessageField('BinaryAuthorization', 5)
+  clusterIpv4Cidr = _messages.StringField(6)
+  clusterTelemetry = _messages.MessageField('ClusterTelemetry', 7)
+  conditions = _messages.MessageField('StatusCondition', 8, repeated=True)
+  costManagementConfig = _messages.MessageField('CostManagementConfig', 9)
+  createTime = _messages.StringField(10)
+  currentMasterVersion = _messages.StringField(11)
+  currentNodeCount = _messages.IntegerField(12, variant=_messages.Variant.INT32)
+  currentNodeVersion = _messages.StringField(13)
+  databaseEncryption = _messages.MessageField('DatabaseEncryption', 14)
+  databaseEncryptionKeyId = _messages.StringField(15)
+  defaultMaxPodsConstraint = _messages.MessageField('MaxPodsConstraint', 16)
+  description = _messages.StringField(17)
   enableGvnic = _messages.BooleanField(18)
   enableKubernetesAlpha = _messages.BooleanField(19)
   enableTpu = _messages.BooleanField(20)
@@ -681,7 +691,6 @@ class ClusterUpdate(_messages.Message):
     desiredDatapathProvider: The desired datapath provider for the cluster.
     desiredDefaultSnatStatus: The desired status of whether to disable default
       sNAT for this cluster.
-    desiredEnableAutogke: Enable or disable AutoGKE for the cluster.
     desiredEnableGvnic: Enable or disable gvnic on this cluster. This field is
       not yet used.
     desiredImage: The desired name of the image to use for this node. This is
@@ -801,34 +810,33 @@ class ClusterUpdate(_messages.Message):
   desiredDatabaseEncryption = _messages.MessageField('DatabaseEncryption', 8)
   desiredDatapathProvider = _messages.EnumField('DesiredDatapathProviderValueValuesEnum', 9)
   desiredDefaultSnatStatus = _messages.MessageField('DefaultSnatStatus', 10)
-  desiredEnableAutogke = _messages.BooleanField(11)
-  desiredEnableGvnic = _messages.BooleanField(12)
-  desiredImage = _messages.StringField(13)
-  desiredImageProject = _messages.StringField(14)
-  desiredImageType = _messages.StringField(15)
-  desiredIntraNodeVisibilityConfig = _messages.MessageField('IntraNodeVisibilityConfig', 16)
-  desiredL4ilbSubsettingConfig = _messages.MessageField('ILBSubsettingConfig', 17)
-  desiredLocations = _messages.StringField(18, repeated=True)
-  desiredLoggingService = _messages.StringField(19)
-  desiredMaster = _messages.MessageField('Master', 20)
-  desiredMasterAuthorizedNetworksConfig = _messages.MessageField('MasterAuthorizedNetworksConfig', 21)
-  desiredMasterVersion = _messages.StringField(22)
-  desiredMonitoringService = _messages.StringField(23)
-  desiredNodePoolAutoscaling = _messages.MessageField('NodePoolAutoscaling', 24)
-  desiredNodePoolId = _messages.StringField(25)
-  desiredNodeVersion = _messages.StringField(26)
-  desiredPodSecurityPolicyConfig = _messages.MessageField('PodSecurityPolicyConfig', 27)
-  desiredPrivateClusterConfig = _messages.MessageField('PrivateClusterConfig', 28)
-  desiredPrivateIpv6Access = _messages.MessageField('PrivateIPv6Status', 29)
-  desiredPrivateIpv6GoogleAccess = _messages.EnumField('DesiredPrivateIpv6GoogleAccessValueValuesEnum', 30)
-  desiredReleaseChannel = _messages.MessageField('ReleaseChannel', 31)
-  desiredResourceUsageExportConfig = _messages.MessageField('ResourceUsageExportConfig', 32)
-  desiredShieldedNodes = _messages.MessageField('ShieldedNodes', 33)
-  desiredTpuConfig = _messages.MessageField('TpuConfig', 34)
-  desiredVerticalPodAutoscaling = _messages.MessageField('VerticalPodAutoscaling', 35)
-  desiredWorkloadIdentityConfig = _messages.MessageField('WorkloadIdentityConfig', 36)
-  privateClusterConfig = _messages.MessageField('PrivateClusterConfig', 37)
-  securityProfile = _messages.MessageField('SecurityProfile', 38)
+  desiredEnableGvnic = _messages.BooleanField(11)
+  desiredImage = _messages.StringField(12)
+  desiredImageProject = _messages.StringField(13)
+  desiredImageType = _messages.StringField(14)
+  desiredIntraNodeVisibilityConfig = _messages.MessageField('IntraNodeVisibilityConfig', 15)
+  desiredL4ilbSubsettingConfig = _messages.MessageField('ILBSubsettingConfig', 16)
+  desiredLocations = _messages.StringField(17, repeated=True)
+  desiredLoggingService = _messages.StringField(18)
+  desiredMaster = _messages.MessageField('Master', 19)
+  desiredMasterAuthorizedNetworksConfig = _messages.MessageField('MasterAuthorizedNetworksConfig', 20)
+  desiredMasterVersion = _messages.StringField(21)
+  desiredMonitoringService = _messages.StringField(22)
+  desiredNodePoolAutoscaling = _messages.MessageField('NodePoolAutoscaling', 23)
+  desiredNodePoolId = _messages.StringField(24)
+  desiredNodeVersion = _messages.StringField(25)
+  desiredPodSecurityPolicyConfig = _messages.MessageField('PodSecurityPolicyConfig', 26)
+  desiredPrivateClusterConfig = _messages.MessageField('PrivateClusterConfig', 27)
+  desiredPrivateIpv6Access = _messages.MessageField('PrivateIPv6Status', 28)
+  desiredPrivateIpv6GoogleAccess = _messages.EnumField('DesiredPrivateIpv6GoogleAccessValueValuesEnum', 29)
+  desiredReleaseChannel = _messages.MessageField('ReleaseChannel', 30)
+  desiredResourceUsageExportConfig = _messages.MessageField('ResourceUsageExportConfig', 31)
+  desiredShieldedNodes = _messages.MessageField('ShieldedNodes', 32)
+  desiredTpuConfig = _messages.MessageField('TpuConfig', 33)
+  desiredVerticalPodAutoscaling = _messages.MessageField('VerticalPodAutoscaling', 34)
+  desiredWorkloadIdentityConfig = _messages.MessageField('WorkloadIdentityConfig', 35)
+  privateClusterConfig = _messages.MessageField('PrivateClusterConfig', 36)
+  securityProfile = _messages.MessageField('SecurityProfile', 37)
 
 
 class CompleteIPRotationRequest(_messages.Message):

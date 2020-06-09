@@ -72,6 +72,12 @@ class RevisionsClient(base.BaseClient):
   _entity_path = ["organization", "api", "revision"]
 
 
+class DevelopersClient(base.PagedListClient):
+  _entity_path = ["organization", "developer"]
+  _list_container = "developer"
+  _page_field = "email"
+
+
 class DeploymentsClient(object):
 
   @classmethod
@@ -123,3 +129,33 @@ class DeploymentsClient(object):
     if not response:
       return []
     return response
+
+
+ProductsInfo = collections.namedtuple("ProductsInfo", [
+    "name", "displayName", "approvalType", "attributes", "description",
+    "apiResources", "environments", "proxies", "quota", "quotaInterval",
+    "quotaTimeUnit", "scopes"
+])
+
+
+class ProductsClient(base.PagedListClient):
+  """REST client for Apigee API products."""
+  _entity_path = ["organization", "product"]
+  _list_container = "apiProduct"
+  _page_field = "name"
+
+  @classmethod
+  def Create(cls, identifiers, product_info):
+    product_dict = product_info._asdict()
+    # Don't send fields unless there's a value for them.
+    product_dict = {
+        key: product_dict[key]
+        for key in product_dict
+        if product_dict[key] is not None
+    }
+
+    return request.ResponseToApiRequest(
+        identifiers, ["organization"],
+        "product",
+        method="POST",
+        body=json.dumps(product_dict))

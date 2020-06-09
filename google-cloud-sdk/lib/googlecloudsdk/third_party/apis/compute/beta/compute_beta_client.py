@@ -5451,7 +5451,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def ListReferrers(self, request, global_params=None):
-      r"""Retrieves the list of referrers to instances contained within the specified zone. For more information, read Viewing Referrers to VM Instances.
+      r"""Retrieves a list of resources that refer to the VM instance specified in the request. For example, if the VM instance is part of a managed instance group, the referrers list includes the managed instance group. For more information, read Viewing Referrers to VM Instances.
 
       Args:
         request: (ComputeInstancesListReferrersRequest) input message
@@ -5763,7 +5763,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def SetScheduling(self, request, global_params=None):
-      r"""Sets an instance's scheduling options.
+      r"""Sets an instance's scheduling options. You can only call this method on a stopped instance, that is, a VM instance that is in a `TERMINATED` state. See Instance Life Cycle for more information on the possible instance states.
 
       Args:
         request: (ComputeInstancesSetSchedulingRequest) input message

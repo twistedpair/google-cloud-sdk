@@ -18,7 +18,7 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
-from collections import OrderedDict
+import collections
 import contextlib
 import io
 import os
@@ -93,6 +93,8 @@ DEFAULT_NAMESPACE = 'default'
 NAMESPACE_ARG_NAME = '--namespace'
 NAMESPACE_ARG_ALIAS = '-n'
 NAMESPACE_STATUS_ACTIVE = 'active'
+
+GkePodStatus = collections.namedtuple('GkePodStatus', 'name phase isReady')
 
 
 class Error(core_exceptions.Error):
@@ -243,7 +245,10 @@ def GetGkePod(pod_substr=None, kubectl_namespace=None):
   If pod_substr is not None, the name of an arbitrary running pod
   whose name contains pod_substr is returned; if no pod's name contains
   pod_substr, an Error is raised. If pod_substr is None, an arbitrary running
-  pod is reeturned.
+  pod is returned.
+
+  Pods with 'Ready: true' condition state are preferred. If there are no such
+  pods, any running pod will be returned.
 
   Args:
     pod_substr: string, a filter to apply to pods. The returned pod name must
@@ -256,7 +261,8 @@ def GetGkePod(pod_substr=None, kubectl_namespace=None):
   pod_out = io.StringIO()
   args = [
       'get', 'pods', '--output',
-      r'jsonpath={range .items[*]}{.metadata.name}{"\t"}{.status.phase}{"\n"}'
+      r'jsonpath={range .items[*]}{.metadata.name}{"\t"}{.status.phase}'\
+          r'{"\t"}{.status.conditions[?(.type=="Ready")].status}{"\n"}'
   ]
 
   try:
@@ -268,10 +274,21 @@ def GetGkePod(pod_substr=None, kubectl_namespace=None):
   except KubectlError as e:
     raise Error('Error retrieving GKE pods: %s' % e)
 
-  running_pods = [
-      pod_status.split('\t')[0]
+  cluster_pods = [
+      GkePodStatus(*pod_status.split('\t'))
       for pod_status in pod_out.getvalue().split('\n')
-      if pod_status.lower().endswith('\trunning')
+      if pod_status
+  ]
+
+  # 'isReady: true' values should be at the beginning of a list.
+  # It means that sorting key should be False for such values, because
+  # ascending order of bools is (False, True).
+  cluster_pods.sort(key=lambda x: x.isReady.lower() != 'true')
+
+  running_pods = [
+      pod_status.name
+      for pod_status in cluster_pods
+      if pod_status.phase.lower() == 'running'
   ]
 
   if not running_pods:
@@ -524,7 +541,7 @@ def BuildPartialUpdate(clear, remove_keys, set_entries, field_mask_prefix,
   remove_keys = set(k.strip() for k in remove_keys or [])
   # set_entries is sorted by key to make it easier for tests to set the
   # expected patch object.
-  set_entries = OrderedDict(
+  set_entries = collections.OrderedDict(
       (k.strip(), v) for k, v in sorted(six.iteritems(set_entries or {})))
   if clear:
     entries = [
@@ -578,11 +595,11 @@ def BuildFullMapUpdate(clear, remove_keys, set_entries, initial_entries,
     Environment, a patch environment produced by env_builder.
   """
   # Transform initial entries list to dictionary for easy processing
-  entries_dict = OrderedDict(
+  entries_dict = collections.OrderedDict(
       (entry.key, entry.value) for entry in initial_entries)
   # Remove values that are no longer desired
   if clear:
-    entries_dict = OrderedDict()
+    entries_dict = collections.OrderedDict()
   remove_keys = set(k.strip() for k in remove_keys or [])
   for key in remove_keys:
     if key in entries_dict:
@@ -590,7 +607,7 @@ def BuildFullMapUpdate(clear, remove_keys, set_entries, initial_entries,
   # Update dictionary with new values
   # set_entries is sorted by key to make it easier for tests to set the
   # expected patch object.
-  set_entries = OrderedDict(
+  set_entries = collections.OrderedDict(
       (k.strip(), v) for k, v in sorted(six.iteritems(set_entries or {})))
   entries_dict.update(set_entries)
   # Transform dictionary back into list of entry_cls

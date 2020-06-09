@@ -154,6 +154,8 @@ class GoogleCloudMlV1AutoScaling(_messages.Message):
   Fields:
     maxNodes: Optional. The maximum number of nodes to scale this model under
       load. The actual value will depend on resource quota and availability.
+    metrics: Optional. MetricSpec contains the specifications to use to
+      calculate the desired nodes count.
     minNodes: Optional. The minimum number of nodes to allocate for this
       model. These nodes are always up, starting from the time the model is
       deployed. Therefore, the cost of operating this model will be at least
@@ -185,7 +187,8 @@ class GoogleCloudMlV1AutoScaling(_messages.Message):
   """
 
   maxNodes = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  minNodes = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  metrics = _messages.MessageField('GoogleCloudMlV1MetricSpec', 2, repeated=True)
+  minNodes = _messages.IntegerField(3, variant=_messages.Variant.INT32)
 
 
 class GoogleCloudMlV1AutomatedStoppingConfig(_messages.Message):
@@ -1133,6 +1136,36 @@ class GoogleCloudMlV1MeasurementMetric(_messages.Message):
   value = _messages.FloatField(2)
 
 
+class GoogleCloudMlV1MetricSpec(_messages.Message):
+  r"""MetricSpec contains the specifications to use to calculate the desired
+  nodes count when autoscaling is enabled.
+
+  Enums:
+    NameValueValuesEnum: metric name.
+
+  Fields:
+    name: metric name.
+    target: Target specifies the target value for the given metric; once real
+      metric deviates from the threshold by a certain percentage, the node
+      count changes.
+  """
+
+  class NameValueValuesEnum(_messages.Enum):
+    r"""metric name.
+
+    Values:
+      METRIC_NAME_UNSPECIFIED: Unspecified MetricName.
+      CPU_USAGE: CPU usage.
+      GPU_DUTY_CYCLE: GPU duty cycle.
+    """
+    METRIC_NAME_UNSPECIFIED = 0
+    CPU_USAGE = 1
+    GPU_DUTY_CYCLE = 2
+
+  name = _messages.EnumField('NameValueValuesEnum', 1)
+  target = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+
+
 class GoogleCloudMlV1Model(_messages.Message):
   r"""Represents a machine learning solution.  A model can have multiple
   versions, each of which is a deployed, trained model ready to receive
@@ -1364,9 +1397,12 @@ class GoogleCloudMlV1NasSpecMultiTrialAlgorithmSpec(_messages.Message):
       MULTI_TRIAL_ALGORITHM_UNSPECIFIED: <no description>
       REINFORCEMENT_LEARNING: The Reinforcement Learning Algorithm for Multi-
         trial Neural Architecture Search (NAS).
+      GRID_SEARCH: The Grid Search Algorithm for Multi-trial Neural
+        Architecture Search (NAS).
     """
     MULTI_TRIAL_ALGORITHM_UNSPECIFIED = 0
     REINFORCEMENT_LEARNING = 1
+    GRID_SEARCH = 2
 
   maxFailedNasTrials = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   maxNasTrials = _messages.IntegerField(2, variant=_messages.Variant.INT32)

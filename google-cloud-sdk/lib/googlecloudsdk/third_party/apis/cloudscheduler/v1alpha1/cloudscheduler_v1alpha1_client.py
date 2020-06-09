@@ -96,7 +96,7 @@ class CloudschedulerV1alpha1(base_api.BaseApiClient):
         method_id='cloudscheduler.projects.locations.jobs.delete',
         ordered_params=['name'],
         path_params=['name'],
-        query_params=[],
+        query_params=['legacyAppEngineCron'],
         relative_path='v1alpha1/{+name}',
         request_field='',
         request_type_name='CloudschedulerProjectsLocationsJobsDeleteRequest',

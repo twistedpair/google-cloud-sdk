@@ -4235,6 +4235,10 @@ class WorkflowMetadata(_messages.Message):
     clusterName: Output only. The name of the target cluster.
     clusterUuid: Output only. The UUID of target cluster.
     createCluster: Output only. The create cluster operation metadata.
+    dagEndTime: Output only. DAG end time, only set for workflows with
+      dag_timeout when DAG ends.
+    dagStartTime: Output only. DAG start time, only set for workflows with
+      dag_timeout when DAG begins.
     dagTimeout: Output only. The timeout duration for the DAG of jobs.
     deleteCluster: Output only. The delete cluster operation metadata.
     endTime: Output only. Workflow end time.
@@ -4297,15 +4301,17 @@ class WorkflowMetadata(_messages.Message):
   clusterName = _messages.StringField(1)
   clusterUuid = _messages.StringField(2)
   createCluster = _messages.MessageField('ClusterOperation', 3)
-  dagTimeout = _messages.StringField(4)
-  deleteCluster = _messages.MessageField('ClusterOperation', 5)
-  endTime = _messages.StringField(6)
-  graph = _messages.MessageField('WorkflowGraph', 7)
-  parameters = _messages.MessageField('ParametersValue', 8)
-  startTime = _messages.StringField(9)
-  state = _messages.EnumField('StateValueValuesEnum', 10)
-  template = _messages.StringField(11)
-  version = _messages.IntegerField(12, variant=_messages.Variant.INT32)
+  dagEndTime = _messages.StringField(4)
+  dagStartTime = _messages.StringField(5)
+  dagTimeout = _messages.StringField(6)
+  deleteCluster = _messages.MessageField('ClusterOperation', 7)
+  endTime = _messages.StringField(8)
+  graph = _messages.MessageField('WorkflowGraph', 9)
+  parameters = _messages.MessageField('ParametersValue', 10)
+  startTime = _messages.StringField(11)
+  state = _messages.EnumField('StateValueValuesEnum', 12)
+  template = _messages.StringField(13)
+  version = _messages.IntegerField(14, variant=_messages.Variant.INT32)
 
 
 class WorkflowNode(_messages.Message):

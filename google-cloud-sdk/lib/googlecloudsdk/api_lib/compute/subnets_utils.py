@@ -37,9 +37,8 @@ def MakeSubnetworkUpdateRequest(
     metadata_fields=None,
     set_role_active=None,
     drain_timeout_seconds=None,
-    enable_private_ipv6_access=None,
     private_ipv6_google_access_type=None,
-    private_ipv6_google_access_service_accounts=None):
+):
   """Make the appropriate update request for the args.
 
   Args:
@@ -60,13 +59,8 @@ def MakeSubnetworkUpdateRequest(
     set_role_active: Updates the role of a BACKUP subnet to ACTIVE.
     drain_timeout_seconds: The maximum amount of time to drain connections from
       the active subnet to the backup subnet with set_role_active=True.
-    enable_private_ipv6_access: Enable/disable private IPv6 access for the
-      subnet.
     private_ipv6_google_access_type: The private IPv6 google access type for the
       VMs in this subnet.
-    private_ipv6_google_access_service_accounts: The service accounts can be
-      used to selectively turn on Private IPv6 Google Access only on the VMs
-      primary service account matching the value.
 
   Returns:
     response, result of sending the update request for the subnetwork
@@ -153,35 +147,16 @@ def MakeSubnetworkUpdateRequest(
 
     return client.MakeRequests(
         [CreateSubnetworkPatchRequest(client, subnet_ref, subnetwork)])
-  elif (private_ipv6_google_access_type is not None or
-        private_ipv6_google_access_service_accounts is not None):
+  elif private_ipv6_google_access_type is not None:
     subnetwork = client.MakeRequests([
         (client.apitools_client.subnetworks, 'Get',
          client.messages.ComputeSubnetworksGetRequest(**subnet_ref.AsDict()))
     ])[0]
 
-    cleared_fields = []
-    if private_ipv6_google_access_type is not None:
-      subnetwork.privateIpv6GoogleAccess = (
-          client.messages.Subnetwork.PrivateIpv6GoogleAccessValueValuesEnum(
-              ConvertPrivateIpv6GoogleAccess(
-                  convert_to_enum(private_ipv6_google_access_type))))
-    if private_ipv6_google_access_service_accounts is not None:
-      subnetwork.privateIpv6GoogleAccessServiceAccounts = (
-          private_ipv6_google_access_service_accounts)
-      if not private_ipv6_google_access_service_accounts:
-        cleared_fields.append('privateIpv6GoogleAccessServiceAccounts')
-    with client.apitools_client.IncludeFields(cleared_fields):
-      return client.MakeRequests(
-          [CreateSubnetworkPatchRequest(client, subnet_ref, subnetwork)])
-  elif enable_private_ipv6_access is not None:
-    subnetwork = client.MakeRequests([
-        (client.apitools_client.subnetworks, 'Get',
-         client.messages.ComputeSubnetworksGetRequest(**subnet_ref.AsDict()))
-    ])[0]
-
-    subnetwork.enablePrivateV6Access = enable_private_ipv6_access
-    subnetwork.privateIpv6GoogleAccess = None
+    subnetwork.privateIpv6GoogleAccess = (
+        client.messages.Subnetwork.PrivateIpv6GoogleAccessValueValuesEnum(
+            ConvertPrivateIpv6GoogleAccess(
+                convert_to_enum(private_ipv6_google_access_type))))
     return client.MakeRequests(
         [CreateSubnetworkPatchRequest(client, subnet_ref, subnetwork)])
   elif set_role_active is not None:
@@ -225,7 +200,5 @@ def ConvertPrivateIpv6GoogleAccess(choice):
           'ENABLE_BIDIRECTIONAL_ACCESS_TO_GOOGLE',
       'ENABLE_OUTBOUND_VM_ACCESS':
           'ENABLE_OUTBOUND_VM_ACCESS_TO_GOOGLE',
-      'ENABLE_OUTBOUND_VM_ACCESS_FOR_SERVICE_ACCOUNTS':
-          'ENABLE_OUTBOUND_VM_ACCESS_TO_GOOGLE_FOR_SERVICE_ACCOUNTS'
   }
   return choices_to_enum.get(choice)

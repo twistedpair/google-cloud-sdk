@@ -117,6 +117,8 @@ class DevSiteRenderer(html_renderer.HTMLRenderer):
     target_parts = target.split('/')
     if target_parts[-1] == 'help':
       target_parts.pop()
+    if len(target_parts) > 1 and target_parts[1] == 'meta':
+      return target + ' --help'
     return '<a href="/sdk/{head}/{tail}">{text}</a>'.format(
         head=target_parts[0], tail='/'.join(['reference'] + target_parts[1:]),
         text=text or target)

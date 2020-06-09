@@ -375,7 +375,7 @@
           ]
         },
         "authentication": {
-          "description": "Optional. This field specifies the URL of authentication resource to\napply authentication config to inbound traffic for the matched\nendpoints(Backends). More specifically, terminationTls of\ntransportAuthentication is used to determine the authentication\nconfig to applied to terminate the inbound traffic at the\nidentified backends. Refer to\nAuthentication.transportAuthentication.terminationTls. If the\nauthentication is applied to a proxy that is fronting the\nendpoint to terminate the traffic on behalf of the endpoint,\nOriginationTls can be set to specify the authentication for\ntraffic from the proxy to the actual endpoints. More\nspecifically, the OriginationTls of transportAuthentication is\napplied to the outgoing traffic from the proxy to the\nendpoint. This is typically used for sidecar model where the\nproxy identifies itself as endpoint to the control plane, with\nthe connection between sidecar and endpoint requiring\nauthentication. Refer to\nAuthentication.transportAuthentication.OriginationTls. If this\nfield is not specified, authentication is disabled(open) for\nthis endpoint.",
+          "description": "Optional. ",
           "type": "string"
         },
         "authorization": {
@@ -396,6 +396,14 @@
         },
         "description": {
           "description": "Optional. A free-text description of the resource. Max length 1024 characters.",
+          "type": "string"
+        },
+        "serverTlsPolicy": {
+          "description": "Optional. A URL referring to ServerTlsPolicy resource. ServerTlsPolicy is used to\ndetermine the authentication policy to be applied to terminate the inbound\ntraffic at the identified backends. If this field is not set,\nauthentication is disabled(open) for this endpoint.",
+          "type": "string"
+        },
+        "clientTlsPolicy": {
+          "description": "Optional. A URL referring to a ClientTlsPolicy resource. ClientTlsPolicy can be set\nto specify the authentication for traffic from the proxy to the actual\nendpoints. More specifically, it is applied to the outgoing traffic from\nthe proxy to the endpoint. This is typically used for sidecar model where\nthe proxy identifies itself as endpoint to the control plane, with the\nconnection between sidecar and endpoint requiring authentication. If this\nfield is not set, authentication is disabled(open). Applicable only when\nEndpointConfigSelectorType is SIDECAR_PROXY.",
           "type": "string"
         }
       }

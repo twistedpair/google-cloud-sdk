@@ -819,7 +819,7 @@ class ApigatewayOperationMetadata(_messages.Message):
 
   apiVersion = _messages.StringField(1)
   createTime = _messages.StringField(2)
-  diagnostics = _messages.MessageField('ApigatewayOperationMetadataFileDiagnostic', 3, repeated=True)
+  diagnostics = _messages.MessageField('ApigatewayOperationMetadataDiagnostic', 3, repeated=True)
   endTime = _messages.StringField(4)
   requestedCancellation = _messages.BooleanField(5)
   statusMessage = _messages.StringField(6)
@@ -827,18 +827,16 @@ class ApigatewayOperationMetadata(_messages.Message):
   verb = _messages.StringField(8)
 
 
-class ApigatewayOperationMetadataFileDiagnostic(_messages.Message):
-  r"""Diagnostic information from source file processing.
+class ApigatewayOperationMetadataDiagnostic(_messages.Message):
+  r"""Diagnostic information from configuration processing.
 
   Fields:
-    file: File path. This will match the file path sent by the client.
-    line: Line number in the file.
+    location: Location of the diagnostic.
     message: The diagnostic message.
   """
 
-  file = _messages.StringField(1)
-  line = _messages.IntegerField(2, variant=_messages.Variant.INT32)
-  message = _messages.StringField(3)
+  location = _messages.StringField(1)
+  message = _messages.StringField(2)
 
 
 class ApigatewayPolicy(_messages.Message):

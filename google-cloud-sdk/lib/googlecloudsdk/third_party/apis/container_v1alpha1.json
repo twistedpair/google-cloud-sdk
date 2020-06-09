@@ -430,13 +430,13 @@
           "description": "Enable or disable gvnic on this cluster. This field is not yet used.",
           "type": "boolean"
         },
-        "enableAutogke": {
-          "description": "Enable the cluster to be AutoGKE",
-          "type": "boolean"
-        },
         "master": {
           "description": "Configuration for master components.",
           "$ref": "Master"
+        },
+        "autogke": {
+          "description": "AutoGKE configuration for the cluster.",
+          "$ref": "AutoGKE"
         }
       }
     },
@@ -1973,6 +1973,17 @@
         }
       }
     },
+    "AutoGKE": {
+      "id": "AutoGKE",
+      "description": "AutoGKE is the configuration for AutoGKE settings on the cluster.",
+      "type": "object",
+      "properties": {
+        "enabled": {
+          "description": "Enable AutoGKE",
+          "type": "boolean"
+        }
+      }
+    },
     "CreateClusterRequest": {
       "id": "CreateClusterRequest",
       "description": "CreateClusterRequest creates a cluster.",
@@ -2363,10 +2374,6 @@
         },
         "desiredEnableGvnic": {
           "description": "Enable or disable gvnic on this cluster. This field is not yet used.",
-          "type": "boolean"
-        },
-        "desiredEnableAutogke": {
-          "description": "Enable or disable AutoGKE for the cluster.",
           "type": "boolean"
         },
         "desiredMasterVersion": {

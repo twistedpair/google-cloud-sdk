@@ -403,6 +403,10 @@
         "master": {
           "description": "Configuration for master components.",
           "$ref": "Master"
+        },
+        "autogke": {
+          "description": "AutoGKE configuration for the cluster.",
+          "$ref": "AutoGKE"
         }
       }
     },
@@ -1817,6 +1821,17 @@
               "ADDON_MANAGER"
             ]
           }
+        }
+      }
+    },
+    "AutoGKE": {
+      "id": "AutoGKE",
+      "description": "AutoGKE is the configuration for AutoGKE settings on the cluster.",
+      "type": "object",
+      "properties": {
+        "enabled": {
+          "description": "Enable AutoGKE",
+          "type": "boolean"
         }
       }
     },

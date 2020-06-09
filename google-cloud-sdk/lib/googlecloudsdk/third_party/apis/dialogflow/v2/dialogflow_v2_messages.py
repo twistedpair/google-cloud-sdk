@@ -1090,8 +1090,580 @@ class DialogflowProjectsSetAgentRequest(_messages.Message):
   updateMask = _messages.StringField(3)
 
 
+class GoogleCloudDialogflowCxV3beta1ExportAgentResponse(_messages.Message):
+  r"""The response message for Agents.ExportAgent.
+
+  Fields:
+    agentContent: Uncompressed raw byte content for agent.
+    agentUri: The URI to a file containing the exported agent. This field is
+      populated only if `agent_uri` is specified in ExportAgentRequest.
+  """
+
+  agentContent = _messages.BytesField(1)
+  agentUri = _messages.StringField(2)
+
+
+class GoogleCloudDialogflowCxV3beta1PageInfo(_messages.Message):
+  r"""Represents page information communicated to and from the webhook.
+
+  Fields:
+    currentPage: Always present for WebhookRequest. Ignored for
+      WebhookResponse. The unique identifier of the current page. Format:
+      `projects/<Project ID>/locations/<Location ID>/agents/<Agent
+      ID>/flows/<Flow ID>/pages/<Page ID>`.
+    formInfo: Optional for both WebhookRequest and WebhookResponse.
+      Information about the form.
+    nextPage: Deprecated. Please use WebhookResponse.target_page or
+      WebhookResponse.target_flow instead.  Optional for WebhookResponse. The
+      unique identifier of the next page. This field can be set by the webhook
+      to immediately transition to a page different from `current_page`.
+      Format: `projects/<Project ID>/locations/<Location ID>/agents/<Agent
+      ID>/flows/<Flow ID>/pages/<Page ID>`.
+  """
+
+  currentPage = _messages.StringField(1)
+  formInfo = _messages.MessageField('GoogleCloudDialogflowCxV3beta1PageInfoFormInfo', 2)
+  nextPage = _messages.StringField(3)
+
+
+class GoogleCloudDialogflowCxV3beta1PageInfoFormInfo(_messages.Message):
+  r"""Represents form information.
+
+  Enums:
+    StateValueValuesEnum: Always present for WebhookRequest. Ignored for
+      WebhookResponse. The current state of the form.
+
+  Fields:
+    parameterInfo: Optional for both WebhookRequest and WebhookResponse. The
+      parameters contained in the form. Note that the webhook cannot add or
+      remove any form parameter.
+    state: Always present for WebhookRequest. Ignored for WebhookResponse. The
+      current state of the form.
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Always present for WebhookRequest. Ignored for WebhookResponse. The
+    current state of the form.
+
+    Values:
+      FORM_STATE_UNSPECIFIED: Not specified. This value should be never used.
+      INITIALIZING: The server is initializing the form. The webhook can
+        process the form before parameter collection begins.
+      COLLECTING: The server is collecting form parameters from the user. The
+        webhook can modify form parameters that have been collected or are to
+        be collected.
+      FINALIZED: The server has collected all required form parameters from
+        the user. The webhook can modify collected form parameters. If any
+        required parameter is invalidated by the webhook, the form will return
+        to the parameter collection state; otherwise, parameter collection
+        will conclude.
+    """
+    FORM_STATE_UNSPECIFIED = 0
+    INITIALIZING = 1
+    COLLECTING = 2
+    FINALIZED = 3
+
+  parameterInfo = _messages.MessageField('GoogleCloudDialogflowCxV3beta1PageInfoFormInfoParameterInfo', 1, repeated=True)
+  state = _messages.EnumField('StateValueValuesEnum', 2)
+
+
+class GoogleCloudDialogflowCxV3beta1PageInfoFormInfoParameterInfo(_messages.Message):
+  r"""Represents parameter information.
+
+  Enums:
+    StateValueValuesEnum: Always present for WebhookRequest. Required for
+      WebhookResponse. The state of the parameter. This field can be set to
+      INVALID by the webhook to invalidate the parameter; other values set by
+      the webhook will be ignored.
+
+  Fields:
+    displayName: Always present for WebhookRequest. Required for
+      WebhookResponse. The human-readable name of the parameter, unique within
+      the form. This field cannot be modified by the webhook.
+    justCollected: Optional for WebhookRequest. Ignored for WebhookResponse.
+      Indicates if the parameter value was just collected on the last
+      conversation turn.
+    prompt: Not set for WebhookRequest. Optional for WebhookResponse. The
+      prompt to send to the user to fill a required form parameter. This field
+      can be set by the webhook. If set, this field overrides the prompt
+      defined for the form parameter.
+    required: Optional for both WebhookRequest and WebhookResponse. Indicates
+      whether the parameter is required. Optional parameters will not trigger
+      prompts; however, they are filled if the user specifies them. Required
+      parameters must be filled before form filling concludes.
+    state: Always present for WebhookRequest. Required for WebhookResponse.
+      The state of the parameter. This field can be set to INVALID by the
+      webhook to invalidate the parameter; other values set by the webhook
+      will be ignored.
+    value: Optional for both WebhookRequest and WebhookResponse. The value of
+      the parameter. This field can be set by the webhook to change the
+      parameter value.
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Always present for WebhookRequest. Required for WebhookResponse. The
+    state of the parameter. This field can be set to INVALID by the webhook to
+    invalidate the parameter; other values set by the webhook will be ignored.
+
+    Values:
+      PARAMETER_STATE_UNSPECIFIED: Not specified. This value should be never
+        used.
+      EMPTY: Indicates that the parameter does not have a value.
+      INVALID: Indicates that the parameter value is invalid. This field can
+        be used by the webhook to invalidate the parameter and ask the server
+        to collect it from the user again.
+      FILLED: Indicates that the parameter has a value.
+    """
+    PARAMETER_STATE_UNSPECIFIED = 0
+    EMPTY = 1
+    INVALID = 2
+    FILLED = 3
+
+  displayName = _messages.StringField(1)
+  justCollected = _messages.BooleanField(2)
+  prompt = _messages.MessageField('GoogleCloudDialogflowCxV3beta1ResponseMessage', 3, repeated=True)
+  required = _messages.BooleanField(4)
+  state = _messages.EnumField('StateValueValuesEnum', 5)
+  value = _messages.MessageField('extra_types.JsonValue', 6)
+
+
+class GoogleCloudDialogflowCxV3beta1ResponseMessage(_messages.Message):
+  r"""Represents a response message that can be returned by a conversational
+  agent.  Response messages are also used for output audio synthesis. The
+  approach is as follows:  * If at least one OutputAudioText response is
+  present, then all   OutputAudioText responses are linearly concatenated, and
+  the result is used   for output audio synthesis. * If the OutputAudioText
+  responses are a mixture of text and SSML, then the   concatenated result is
+  treated as SSML; otherwise, the result is treated as   either text or SSML
+  as appropriate. The agent designer should ideally use   either text or SSML
+  consistently throughout the bot design. * Otherwise, all Text responses are
+  linearly concatenated, and the result is   used for output audio synthesis.
+  This approach allows for more sophisticated user experience scenarios, where
+  the text displayed to the user may differ from what is heard.
+
+  Messages:
+    PayloadValue: Returns a response containing a custom, platform-specific
+      payload.
+
+  Fields:
+    conversationSuccess: Indicates that the conversation succeeded.
+    humanAgentHandoff: Hands off conversation to a human agent.
+    payload: Returns a response containing a custom, platform-specific
+      payload.
+    text: Returns a text response.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class PayloadValue(_messages.Message):
+    r"""Returns a response containing a custom, platform-specific payload.
+
+    Messages:
+      AdditionalProperty: An additional property for a PayloadValue object.
+
+    Fields:
+      additionalProperties: Properties of the object.
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a PayloadValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A extra_types.JsonValue attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('extra_types.JsonValue', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  conversationSuccess = _messages.MessageField('GoogleCloudDialogflowCxV3beta1ResponseMessageConversationSuccess', 1)
+  humanAgentHandoff = _messages.MessageField('GoogleCloudDialogflowCxV3beta1ResponseMessageHumanAgentHandoff', 2)
+  payload = _messages.MessageField('PayloadValue', 3)
+  text = _messages.MessageField('GoogleCloudDialogflowCxV3beta1ResponseMessageText', 4)
+
+
+class GoogleCloudDialogflowCxV3beta1ResponseMessageConversationSuccess(_messages.Message):
+  r"""Indicates that the conversation succeeded, i.e., the bot handled the
+  issue that the customer talked to it about.  Dialogflow only uses this to
+  determine which conversations should be counted as successful and doesn't
+  process the metadata in this message in any way. Note that Dialogflow also
+  considers conversations that get to the conversation end page as successful
+  even if they don't return ConversationSuccess.  You may set this, for
+  example: * In the entry_fulfillment of a Page if   entering the page
+  indicates that the conversation succeeded. * In a webhook response when you
+  determine that you handled the customer   issue.
+
+  Messages:
+    MetadataValue: Custom metadata. Dialogflow doesn't impose any structure on
+      this.
+
+  Fields:
+    metadata: Custom metadata. Dialogflow doesn't impose any structure on
+      this.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class MetadataValue(_messages.Message):
+    r"""Custom metadata. Dialogflow doesn't impose any structure on this.
+
+    Messages:
+      AdditionalProperty: An additional property for a MetadataValue object.
+
+    Fields:
+      additionalProperties: Properties of the object.
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a MetadataValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A extra_types.JsonValue attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('extra_types.JsonValue', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  metadata = _messages.MessageField('MetadataValue', 1)
+
+
+class GoogleCloudDialogflowCxV3beta1ResponseMessageHumanAgentHandoff(_messages.Message):
+  r"""Indicates that the conversation should be handed off to a human agent.
+  Dialogflow only uses this to determine which conversations were handed off
+  to a human agent for measurement purposes. What else to do with this signal
+  is up to you and your handoff procedures.  You may set this, for example: *
+  In the entry_fulfillment of a Page if   entering the page indicates
+  something went extremely wrong in the   conversation. * In a webhook
+  response when you determine that the customer issue can only   be handled by
+  a human.
+
+  Messages:
+    MetadataValue: Custom metadata for your handoff procedure. Dialogflow
+      doesn't impose any structure on this.
+
+  Fields:
+    metadata: Custom metadata for your handoff procedure. Dialogflow doesn't
+      impose any structure on this.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class MetadataValue(_messages.Message):
+    r"""Custom metadata for your handoff procedure. Dialogflow doesn't impose
+    any structure on this.
+
+    Messages:
+      AdditionalProperty: An additional property for a MetadataValue object.
+
+    Fields:
+      additionalProperties: Properties of the object.
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a MetadataValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A extra_types.JsonValue attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('extra_types.JsonValue', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  metadata = _messages.MessageField('MetadataValue', 1)
+
+
+class GoogleCloudDialogflowCxV3beta1ResponseMessageText(_messages.Message):
+  r"""The text response message.
+
+  Fields:
+    text: A collection of text responses.
+  """
+
+  text = _messages.StringField(1, repeated=True)
+
+
+class GoogleCloudDialogflowCxV3beta1SessionInfo(_messages.Message):
+  r"""Represents session information communicated to and from the webhook.
+
+  Messages:
+    ParametersValue: Optional for WebhookRequest. Optional for
+      WebhookResponse. All parameters collected from forms and intents during
+      the session. Parameters can be created, updated, or removed by the
+      webhook. To remove a parameter from the session, the webhook should
+      explicitly set the parameter value to null in WebhookResponse. The map
+      is keyed by parameters' display names.
+
+  Fields:
+    parameters: Optional for WebhookRequest. Optional for WebhookResponse. All
+      parameters collected from forms and intents during the session.
+      Parameters can be created, updated, or removed by the webhook. To remove
+      a parameter from the session, the webhook should explicitly set the
+      parameter value to null in WebhookResponse. The map is keyed by
+      parameters' display names.
+    session: Always present for WebhookRequest. Ignored for WebhookResponse.
+      The unique identifier of the session. This field can be used by the
+      webhook to identify a user. Format: `projects/<Project
+      ID>/locations/<Location ID>/agents/<Agent ID>/sessions/<Session ID>`.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class ParametersValue(_messages.Message):
+    r"""Optional for WebhookRequest. Optional for WebhookResponse. All
+    parameters collected from forms and intents during the session. Parameters
+    can be created, updated, or removed by the webhook. To remove a parameter
+    from the session, the webhook should explicitly set the parameter value to
+    null in WebhookResponse. The map is keyed by parameters' display names.
+
+    Messages:
+      AdditionalProperty: An additional property for a ParametersValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type ParametersValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a ParametersValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A extra_types.JsonValue attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('extra_types.JsonValue', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  parameters = _messages.MessageField('ParametersValue', 1)
+  session = _messages.StringField(2)
+
+
+class GoogleCloudDialogflowCxV3beta1WebhookRequest(_messages.Message):
+  r"""The request message for a webhook call.
+
+  Messages:
+    PayloadValue: Custom data set in QueryParameters.payload.
+
+  Fields:
+    detectIntentResponseId: Always present. The unique identifier of the
+      DetectIntentResponse that will be returned to the API caller.
+    fulfillmentInfo: Always present. Information about the fulfillment that
+      triggered this webhook call.
+    intentInfo: Information about the last matched intent.
+    messages: The list of rich message responses to present to the user.
+      Webhook can choose to append or replace this list in
+      WebhookResponse.fulfillment_response;
+    pageInfo: Information about page status.
+    payload: Custom data set in QueryParameters.payload.
+    sessionInfo: Information about session status.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class PayloadValue(_messages.Message):
+    r"""Custom data set in QueryParameters.payload.
+
+    Messages:
+      AdditionalProperty: An additional property for a PayloadValue object.
+
+    Fields:
+      additionalProperties: Properties of the object.
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a PayloadValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A extra_types.JsonValue attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('extra_types.JsonValue', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  detectIntentResponseId = _messages.StringField(1)
+  fulfillmentInfo = _messages.MessageField('GoogleCloudDialogflowCxV3beta1WebhookRequestFulfillmentInfo', 2)
+  intentInfo = _messages.MessageField('GoogleCloudDialogflowCxV3beta1WebhookRequestIntentInfo', 3)
+  messages = _messages.MessageField('GoogleCloudDialogflowCxV3beta1ResponseMessage', 4, repeated=True)
+  pageInfo = _messages.MessageField('GoogleCloudDialogflowCxV3beta1PageInfo', 5)
+  payload = _messages.MessageField('PayloadValue', 6)
+  sessionInfo = _messages.MessageField('GoogleCloudDialogflowCxV3beta1SessionInfo', 7)
+
+
+class GoogleCloudDialogflowCxV3beta1WebhookRequestFulfillmentInfo(_messages.Message):
+  r"""Represents fulfillment information communicated to the webhook.
+
+  Fields:
+    tag: Always present. The tag used to identify which fulfillment is being
+      called.
+  """
+
+  tag = _messages.StringField(1)
+
+
+class GoogleCloudDialogflowCxV3beta1WebhookRequestIntentInfo(_messages.Message):
+  r"""Represents intent information communicated to the webhook.
+
+  Messages:
+    ParametersValue: Parameters identified as a result of intent matching.
+      This is a map of the name of the identified parameter to the value of
+      the parameter identified from the user's utterance. All parameters
+      defined in the matched intent that are identified will be surfaced here.
+
+  Fields:
+    lastMatchedIntent: Always present. The unique identifier of the last
+      matched intent. Format: `projects/<Project ID>/locations/<Location
+      ID>/agents/<Agent ID>/intents/<Intent ID>`.
+    parameters: Parameters identified as a result of intent matching. This is
+      a map of the name of the identified parameter to the value of the
+      parameter identified from the user's utterance. All parameters defined
+      in the matched intent that are identified will be surfaced here.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class ParametersValue(_messages.Message):
+    r"""Parameters identified as a result of intent matching. This is a map of
+    the name of the identified parameter to the value of the parameter
+    identified from the user's utterance. All parameters defined in the
+    matched intent that are identified will be surfaced here.
+
+    Messages:
+      AdditionalProperty: An additional property for a ParametersValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type ParametersValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a ParametersValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A GoogleCloudDialogflowCxV3beta1WebhookRequestIntentInfoIntentP
+          arameterValue attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('GoogleCloudDialogflowCxV3beta1WebhookRequestIntentInfoIntentParameterValue', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  lastMatchedIntent = _messages.StringField(1)
+  parameters = _messages.MessageField('ParametersValue', 2)
+
+
+class GoogleCloudDialogflowCxV3beta1WebhookRequestIntentInfoIntentParameterValue(_messages.Message):
+  r"""Represents a value for an intent parameter.
+
+  Fields:
+    originalValue: Always present. Original text value extracted from user
+      utterance.
+    resolvedValue: Always present. Structured value for the parameter
+      extracted from user utterance.
+  """
+
+  originalValue = _messages.StringField(1)
+  resolvedValue = _messages.MessageField('extra_types.JsonValue', 2)
+
+
+class GoogleCloudDialogflowCxV3beta1WebhookResponse(_messages.Message):
+  r"""The response message for a webhook call.
+
+  Messages:
+    PayloadValue: Value to append directly to QueryResult.webhook_payloads.
+
+  Fields:
+    fulfillmentResponse: The fulfillment response to send to the user. This
+      field can be omitted by the webhook if it does not intend to send any
+      response to the user.
+    pageInfo: Information about page status. This field can be omitted by the
+      webhook if it does not intend to modify page status.
+    payload: Value to append directly to QueryResult.webhook_payloads.
+    sessionInfo: Information about session status. This field can be omitted
+      by the webhook if it does not intend to modify session status.
+    targetFlow: The target flow to transition to. Format: `projects/<Project
+      ID>/locations/<Location ID>/agents/<Agent ID>/flows/<Flow ID>`.
+    targetPage: The target page to transition to. Format: `projects/<Project
+      ID>/locations/<Location ID>/agents/<Agent ID>/flows/<Flow
+      ID>/pages/<Page ID>`.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class PayloadValue(_messages.Message):
+    r"""Value to append directly to QueryResult.webhook_payloads.
+
+    Messages:
+      AdditionalProperty: An additional property for a PayloadValue object.
+
+    Fields:
+      additionalProperties: Properties of the object.
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a PayloadValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A extra_types.JsonValue attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('extra_types.JsonValue', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  fulfillmentResponse = _messages.MessageField('GoogleCloudDialogflowCxV3beta1WebhookResponseFulfillmentResponse', 1)
+  pageInfo = _messages.MessageField('GoogleCloudDialogflowCxV3beta1PageInfo', 2)
+  payload = _messages.MessageField('PayloadValue', 3)
+  sessionInfo = _messages.MessageField('GoogleCloudDialogflowCxV3beta1SessionInfo', 4)
+  targetFlow = _messages.StringField(5)
+  targetPage = _messages.StringField(6)
+
+
+class GoogleCloudDialogflowCxV3beta1WebhookResponseFulfillmentResponse(_messages.Message):
+  r"""Represents a fulfillment response to the user.
+
+  Enums:
+    MergeBehaviorValueValuesEnum: Merge behavior for `messages`.
+
+  Fields:
+    mergeBehavior: Merge behavior for `messages`.
+    messages: The list of rich message responses to present to the user.
+  """
+
+  class MergeBehaviorValueValuesEnum(_messages.Enum):
+    r"""Merge behavior for `messages`.
+
+    Values:
+      MERGE_BEHAVIOR_UNSPECIFIED: Not specified. `APPEND` will be used.
+      APPEND: `messages` will be appended to the list of messages waiting to
+        be sent to the user.
+      REPLACE: `messages` will replace the list of messages waiting to be sent
+        to the user.
+    """
+    MERGE_BEHAVIOR_UNSPECIFIED = 0
+    APPEND = 1
+    REPLACE = 2
+
+  mergeBehavior = _messages.EnumField('MergeBehaviorValueValuesEnum', 1)
+  messages = _messages.MessageField('GoogleCloudDialogflowCxV3beta1ResponseMessage', 2, repeated=True)
+
+
 class GoogleCloudDialogflowV2Agent(_messages.Message):
-  r"""Represents a conversational agent.
+  r"""A Dialogflow agent is a virtual agent that handles conversations with
+  your end-users. It is a natural language understanding module that
+  understands the nuances of human language. Dialogflow translates end-user
+  text or audio during a conversation to structured data that your apps and
+  services can understand. You design and build a Dialogflow agent to handle
+  the types of conversations required for your system.  For more information
+  about agents, see the [Agents
+  documentation](https://cloud.google.com/dialogflow/docs/agents-overview).
 
   Enums:
     ApiVersionValueValuesEnum: Optional. API version displayed in Dialogflow

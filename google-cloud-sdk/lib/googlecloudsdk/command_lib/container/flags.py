@@ -730,6 +730,43 @@ def AddEnableLoggingMonitoringSystemOnlyFlag(parser):
       help=help_text)
 
 
+def AddEnableMasterSignalsFlags(parser, for_create=False):
+  """Adds --master-logs and --enable-master-metrics flags to parser."""
+
+  help_text = """\
+Set which master components logs should be sent to Cloud Operations.
+
+Example:
+
+  $ {command} --master-logs APISERVER,SCHEDULER
+"""
+  if for_create:
+    group = parser.add_group()
+  else:
+    group = parser.add_mutually_exclusive_group()
+
+  group.add_argument(
+      '--master-logs',
+      type=arg_parsers.ArgList(choices=api_adapter.MASTER_LOGS_OPTIONS),
+      help=help_text, metavar='COMPONENT')
+
+  if not for_create:
+    help_text = """\
+Disable sending logs from master components to Cloud Operations.
+"""
+    group.add_argument(
+        '--no-master-logs', action='store_true', default=False, help=help_text)
+
+  help_text = """\
+Enable sending metrics from master components to Cloud Operations.
+"""
+  group.add_argument(
+      '--enable-master-metrics',
+      action='store_true',
+      default=None,
+      help=help_text)
+
+
 def AddNodeLabelsFlag(parser, for_node_pool=False):
   """Adds a --node-labels flag to the given parser."""
   if for_node_pool:
@@ -2845,36 +2882,16 @@ cpuCFSQuotaPeriod | interval (e.g., '100ms')
 List of supported sysctls in 'linuxConfig'.
 
 KEY                                        | VALUE
------------------------------------------- | ----------------------------------
-kernel.pid_max                             | Must be [32768, 4194304]
-fs.inotify.max_queued_events               | Must be [16384, 4194304]
-fs.inotify.max_user_instances              | Must be [128, 4194304]
-fs.inotify.max_user_watches                | Must be [12288, 4194304]
-net.core.netdev_budget                     | Any positive integer
-net.core.netdev_budget_usecs               | Any positive integer
-net.core.netdev_max_backlog                | Any positive integer
-net.core.rmem_default                      | Any positive integer
-net.core.rmem_max                          | Any positive integer
-net.core.wmem_default                      | Any positive integer
-net.core.wmem_max                          | Any positive integer
-net.core.optmem_max                        | Any positive integer
-net.core.somaxconn                         | Must be [128, 4194304]
-net.ipv4.tcp_rmem                          | Any positive integer
+------------------------------------------ | ------------------------------------------
+net.core.netdev_max_backlog                | Any positive integer, less than 2147483647
+net.core.rmem_max                          | Any positive integer, less than 2147483647
+net.core.wmem_default                      | Any positive integer, less than 2147483647
+net.core.wmem_max                          | Any positive integer, less than 2147483647
+net.core.optmem_max                        | Any positive integer, less than 2147483647
+net.core.somaxconn                         | Must be [128, 2147483647]
+net.ipv4.tcp_rmem                          | Any positive integer tuple
 net.ipv4.tcp_wmem                          | Any positive integer tuple
-net.ipv4.tcp_mem                           | Any positive integer
-net.ipv4.tcp_fin_timeout                   | Any positive integer
-net.ipv4.tcp_keepalive_intvl               | Any positive integer
-net.ipv4.tcp_keepalive_probes              | Any positive integer
-net.ipv4.tcp_keepalive_time                | Any positive integer
-net.ipv4.tcp_max_orphans                   | Any positive integer
-net.ipv4.tcp_max_syn_backlog               | Any positive integer
-net.ipv4.tcp_max_tw_buckets                | Any positive integer
-net.ipv4.tcp_syn_retries                   | Any positive integer
 net.ipv4.tcp_tw_reuse                      | Must be {0, 1}
-net.ipv4.udp_mem                           | Any positive integer tuple
-net.ipv4.udp_rmem_min                      | Any positive integer
-net.ipv4.udp_wmem_min                      | Any positive integer
-net.netfilter.nf_conntrack_generic_timeout | Any positive integer
 """)
 
 

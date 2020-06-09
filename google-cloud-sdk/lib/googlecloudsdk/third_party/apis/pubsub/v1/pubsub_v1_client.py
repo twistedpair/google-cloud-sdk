@@ -433,6 +433,36 @@ subscription or its topic unless the same topic is specified.
         supports_download=False,
     )
 
+    def Detach(self, request, global_params=None):
+      r"""Detaches a subscription from this topic. All messages retained in the.
+subscription are dropped. Subsequent `Pull` and `StreamingPull` requests
+will return FAILED_PRECONDITION. If the subscription is a push
+subscription, pushes to the endpoint will stop.
+
+      Args:
+        request: (PubsubProjectsSubscriptionsDetachRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (DetachSubscriptionResponse) The response message.
+      """
+      config = self.GetMethodConfig('Detach')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Detach.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/subscriptions/{subscriptionsId}:detach',
+        http_method='POST',
+        method_id='pubsub.projects.subscriptions.detach',
+        ordered_params=['subscription'],
+        path_params=['subscription'],
+        query_params=[],
+        relative_path='v1/{+subscription}:detach',
+        request_field='',
+        request_type_name='PubsubProjectsSubscriptionsDetachRequest',
+        response_type_name='DetachSubscriptionResponse',
+        supports_download=False,
+    )
+
     def Get(self, request, global_params=None):
       r"""Gets the configuration details of a subscription.
 

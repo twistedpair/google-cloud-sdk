@@ -430,7 +430,7 @@
       "type": "object",
       "properties": {
         "name": {
-          "description": "Output only. Resource name of the Annotation store, of the form\n`projects\/{project_id}\/locations\/{location_id}\/datasets\/{dataset_id}\/annotationStores\/{annotation_store_id}`.",
+          "description": "Resource name of the Annotation store, of the form\n`projects\/{project_id}\/locations\/{location_id}\/datasets\/{dataset_id}\/annotationStores\/{annotation_store_id}`.",
           "type": "string"
         },
         "labels": {
@@ -555,11 +555,11 @@
       "type": "object",
       "properties": {
         "name": {
-          "description": "Output only. Resource name of the Consent store, of the form\n`projects\/{project_id}\/locations\/{location_id}\/datasets\/{dataset_id}\/consentStores\/{consent_store_id}`.",
+          "description": "Resource name of the Consent store, of the form\n`projects\/{project_id}\/locations\/{location_id}\/datasets\/{dataset_id}\/consentStores\/{consent_store_id}`.",
           "type": "string"
         },
         "labels": {
-          "description": "Optional. User-supplied key-value pairs used to organize Consent stores.\n\nLabel keys must be between 1 and 63 characters long, have a UTF-8 encoding\nof maximum 128 bytes, and must conform to the\nfollowing PCRE regular expression:\n\\p{Ll}\\p{Lo}{0,62}\n\nLabel values must be between 1 and 63 characters long, have\na UTF-8 encoding of maximum 128 bytes, and must conform to the\nfollowing PCRE regular expression: [\\p{Ll}\\p{Lo}\\p{N}_-]{0,63}\n\nNo more than 64 labels can be associated with a given store.",
+          "description": "User-supplied key-value pairs used to organize Consent stores.\n\nLabel keys must be between 1 and 63 characters long, have a UTF-8 encoding\nof maximum 128 bytes, and must conform to the\nfollowing PCRE regular expression:\n\\p{Ll}\\p{Lo}{0,62}\n\nLabel values must be between 1 and 63 characters long, have\na UTF-8 encoding of maximum 128 bytes, and must conform to the\nfollowing PCRE regular expression: [\\p{Ll}\\p{Lo}\\p{N}_-]{0,63}\n\nNo more than 64 labels can be associated with a given store.",
           "type": "object",
           "additionalProperties": {
             "type": "string"
@@ -591,11 +591,11 @@
       "type": "object",
       "properties": {
         "name": {
-          "description": "Output only. Resource name of the attribute definition, of the form\n`projects\/{project_id}\/locations\/{location_id}\/datasets\/{dataset_id}\/consentStores\/{consent_store_id}\/attributeDefinitions\/{attribute_definition_id}`.",
+          "description": "Resource name of the attribute definition, of the form\n`projects\/{project_id}\/locations\/{location_id}\/datasets\/{dataset_id}\/consentStores\/{consent_store_id}\/attributeDefinitions\/{attribute_definition_id}`.",
           "type": "string"
         },
         "description": {
-          "description": "Optional. A description of the attribute.",
+          "description": "A description of the attribute.",
           "type": "string"
         },
         "category": {
@@ -656,7 +656,7 @@
       "type": "object",
       "properties": {
         "name": {
-          "description": "Output only. Resource name of the Consent artifact, of the form\n`projects\/{project_id}\/locations\/{location_id}\/datasets\/{dataset_id}\/consentStores\/{consent_store_id}\/consentArtifacts\/{consent_artifact_id}`.",
+          "description": "Resource name of the Consent artifact, of the form\n`projects\/{project_id}\/locations\/{location_id}\/datasets\/{dataset_id}\/consentStores\/{consent_store_id}\/consentArtifacts\/{consent_artifact_id}`.",
           "type": "string"
         },
         "userId": {
@@ -668,26 +668,26 @@
           "$ref": "Signature"
         },
         "guardianSignature": {
-          "description": "Optional. A signature from guardian.",
+          "description": "A signature from guardian.",
           "$ref": "Signature"
         },
         "witnessSignature": {
-          "description": "Optional. A signature from a witness.",
+          "description": "A signature from a witness.",
           "$ref": "Signature"
         },
         "consentContentScreenshots": {
-          "description": "Optional. Screenshots of the consent content.",
+          "description": "Screenshots of the consent content.",
           "type": "array",
           "items": {
             "$ref": "Image"
           }
         },
         "consentContentVersion": {
-          "description": "Optional. An string indicating the version of the consent content.",
+          "description": "An string indicating the version of the consent content.",
           "type": "string"
         },
         "metadata": {
-          "description": "Optional. Metadata associated with the consent artifact. For example, the\nconsent locale or user agent version.",
+          "description": "Metadata associated with the consent artifact. For example, the\nconsent locale or user agent version.",
           "type": "object",
           "additionalProperties": {
             "type": "string"
@@ -705,18 +705,18 @@
           "type": "string"
         },
         "image": {
-          "description": "Optional. An image of the user's signature.",
+          "description": "An image of the user's signature.",
           "$ref": "Image"
         },
         "metadata": {
-          "description": "Optional. Metadata associated with the user's signature. For example, the\nuser's name or the user's title.",
+          "description": "Metadata associated with the user's signature. For example, the\nuser's name or the user's title.",
           "type": "object",
           "additionalProperties": {
             "type": "string"
           }
         },
         "signatureTime": {
-          "description": "Optional. Timestamp of the signature.",
+          "description": "Timestamp of the signature.",
           "type": "string",
           "format": "google-datetime"
         }
@@ -762,7 +762,7 @@
       "type": "object",
       "properties": {
         "name": {
-          "description": "Output only. Resource name of the Consent, of the form\n`projects\/{project_id}\/locations\/{location_id}\/datasets\/{dataset_id}\/consentStores\/{consent_store_id}\/consents\/{consent_id}`.",
+          "description": "Resource name of the Consent, of the form\n`projects\/{project_id}\/locations\/{location_id}\/datasets\/{dataset_id}\/consentStores\/{consent_store_id}\/consents\/{consent_id}`.",
           "type": "string"
         },
         "userId": {
@@ -901,7 +901,7 @@
       "type": "object",
       "properties": {
         "name": {
-          "description": "Output only. Resource name of the User data mapping, of the form\n`projects\/{project_id}\/locations\/{location_id}\/datasets\/{dataset_id}\/consentStores\/{consent_store_id}\/userDataMappings\/{user_data_mapping_id}`.",
+          "description": "Resource name of the User data mapping, of the form\n`projects\/{project_id}\/locations\/{location_id}\/datasets\/{dataset_id}\/consentStores\/{consent_store_id}\/userDataMappings\/{user_data_mapping_id}`.",
           "type": "string"
         },
         "dataId": {
@@ -1026,12 +1026,39 @@
       "type": "object",
       "properties": {
         "name": {
-          "description": "Output only. Resource name of the dataset, of the form\n`projects\/{project_id}\/locations\/{location_id}\/datasets\/{dataset_id}`.",
+          "description": "Resource name of the dataset, of the form\n`projects\/{project_id}\/locations\/{location_id}\/datasets\/{dataset_id}`.",
           "type": "string"
         },
         "timeZone": {
           "description": "The default timezone used by this dataset. Must be a either a valid IANA\ntime zone name such as \"America\/New_York\" or empty, which defaults to UTC.\nThis is used for parsing times in resources, such as HL7v2 messages, where\nno explicit timezone is specified.",
           "type": "string"
+        },
+        "storageOptions": {
+          "description": "StorageOptions defines the options for storing datasets.",
+          "$ref": "StorageOptions"
+        }
+      }
+    },
+    "StorageOptions": {
+      "id": "StorageOptions",
+      "description": "StorageOptions defines the options for storing datasets.",
+      "type": "object",
+      "properties": {
+        "defaultBlobStorageClass": {
+          "description": "The default storage class for Blobs stored in this dataset.\nApplies to DICOM objects only. If you change the storage class after\ncreation, new DICOM objects are in the new storage class. The storage\nclass of existing objects in the dataset is unchanged.",
+          "enumDescriptions": [
+            "If unspecified in CreateDataset, the StorageClass defaults to STANDARD.\nIf unspecified in UpdateDataset and the StorageClass is set in the field\nmask, an InvalidRequest error is thrown.",
+            "Stores the Object in Blob Standard Storage:\nhttps:\/\/cloud.google.com\/storage\/docs\/storage-classes#standard",
+            "Stores the Object in Blob Nearline Storage:\nhttps:\/\/cloud.google.com\/storage\/docs\/storage-classes#nearline",
+            "Stores the Object in Blob Coldline Storage:\nhttps:\/\/cloud.google.com\/storage\/docs\/storage-classes#coldline"
+          ],
+          "type": "string",
+          "enum": [
+            "BLOB_STORAGE_CLASS_UNSPECIFIED",
+            "STANDARD",
+            "NEARLINE",
+            "COLDLINE"
+          ]
         }
       }
     },
@@ -1308,7 +1335,7 @@
       "type": "object",
       "properties": {
         "name": {
-          "description": "Output only. Resource name of the DICOM store, of the form\n`projects\/{project_id}\/locations\/{location_id}\/datasets\/{dataset_id}\/dicomStores\/{dicom_store_id}`.",
+          "description": "Resource name of the DICOM store, of the form\n`projects\/{project_id}\/locations\/{location_id}\/datasets\/{dataset_id}\/dicomStores\/{dicom_store_id}`.",
           "type": "string"
         },
         "notificationConfig": {
@@ -1426,7 +1453,7 @@
       "type": "object",
       "properties": {
         "name": {
-          "description": "Output only. Resource name of the HL7v2 store, of the form\n`projects\/{project_id}\/datasets\/{dataset_id}\/hl7V2Stores\/{hl7v2_store_id}`.",
+          "description": "Resource name of the HL7v2 store, of the form\n`projects\/{project_id}\/datasets\/{dataset_id}\/hl7V2Stores\/{hl7v2_store_id}`.",
           "type": "string"
         },
         "notificationConfig": {
@@ -1656,10 +1683,6 @@
           "items": {
             "$ref": "StreamConfig"
           }
-        },
-        "validationConfig": {
-          "description": "Configuration for how to validate incoming FHIR resources against\nconfigured profiles.",
-          "$ref": "ValidationConfig"
         }
       }
     },
@@ -1678,24 +1701,6 @@
         "bigqueryDestination": {
           "description": "The destination BigQuery structure that contains both the dataset\nlocation and corresponding schema config.\n\nThe output is organized in one table per resource type. The server\nreuses the existing tables (if any) that are named after the resource\ntypes, e.g. \"Patient\", \"Observation\". When there is no existing table\nfor a given resource type, the server attempts to create one.\n\nWhen a table schema doesn't align with the schema config, either\nbecause of existing incompatible schema or out of band incompatible\nmodification, the server does not stream in new data.\n\nOne resolution in this case is to delete the incompatible\ntable and let the server recreate one, though the newly created table\nonly contains data after the table recreation.\n\nBigQuery imposes a 1 MB limit on streaming insert row size, therefore\nany resource mutation that generates more than 1 MB of BigQuery data\nwill not be streamed.\n\nResults are appended to the corresponding BigQuery tables. Different\nversions of the same resource are distinguishable by the meta.versionId\nand meta.lastUpdated columns. The operation (CREATE\/UPDATE\/DELETE) that\nresults in the new version is recorded in the meta.tag.\n\nThe tables contain all historical resource versions since streaming was\nenabled. For query convenience, the server also creates one view per\ntable of the same name containing only the current resource version.\n\nThe streamed data in the BigQuery dataset is not guaranteed to be\ncompletely unique. The combination of the id and meta.versionId columns\nshould ideally identify a single unique row. But in rare cases,\nduplicates may exist. At query time, users may use the SQL select\nstatement to keep only one of the duplicate rows given an id and\nmeta.versionId pair. Alternatively, the server created view mentioned\nabove also filters out duplicates.\n\nBefore adding this configuration, you must add the\n[`bigquery.dataEditor`](https:\/\/cloud.google.com\/bigquery\/docs\/access-control#bigquery.dataEditor)\nrole to your project's **Cloud Healthcare Service Agent**\n[service account](https:\/\/cloud.google.com\/iam\/docs\/service-accounts).\n\nIf a resource mutation cannot be streamed to BigQuery, errors will be\nlogged to Cloud Logging\n (see [Viewing logs](\/healthcare\/docs\/how-tos\/logging)).",
           "$ref": "GoogleCloudHealthcareV1alpha2FhirBigQueryDestination"
-        }
-      }
-    },
-    "ValidationConfig": {
-      "id": "ValidationConfig",
-      "description": "Contains the configuration for FHIR profiles and validation.",
-      "type": "object",
-      "properties": {
-        "disableProfileValidation": {
-          "description": "Whether to disable profile validation for this FHIR store. Set\nthis to true to disable checking incoming resources for conformance\nagainst StructureDefinitions in this FHIR store.",
-          "type": "boolean"
-        },
-        "enabledImplementationGuides": {
-          "description": "A list of ImplementationGuide URLs in this FHIR store that are used to\nconfigure which profiles are used for validation. For example, if you\nwere using the US Core profiles to your FHIR store you would set\n`enabled_implementation_guides` to\n`[\"http:\/\/hl7.org\/fhir\/us\/core\/ImplementationGuide\/ig\"]`. If\n`enabled_implementation_guides` is empty or omitted, then incoming\nresources are only required to conform to the base FHIR profiles.\nOtherwise, a resource must conform to at least one profile listed in the\n`global` property of one of the enabled ImplementationGuides.\n\nThe Cloud Healthcare API does not currently enforce all of the rules in a\nStructureDefinition. The following rules are supported:\n    - min\/max\n    - minValue\/maxValue\n    - maxLength\n    - type\n    - fixed[x]\n    - pattern[x] on simple types\n    - slicing, when using \"value\" as the discriminator type\nWhen a URL cannot be resolved (for example, in a type assertion), the\nserver does not return an error.",
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
         }
       }
     },
@@ -2323,7 +2328,7 @@
                   "httpMethod": "PATCH",
                   "parameters": {
                     "name": {
-                      "description": "Output only. Resource name of the dataset, of the form\n`projects\/{project_id}\/locations\/{location_id}\/datasets\/{dataset_id}`.",
+                      "description": "Resource name of the dataset, of the form\n`projects\/{project_id}\/locations\/{location_id}\/datasets\/{dataset_id}`.",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/datasets\/[^\/]+$",
@@ -2651,7 +2656,7 @@
                       "httpMethod": "PATCH",
                       "parameters": {
                         "name": {
-                          "description": "Output only. Resource name of the DICOM store, of the form\n`projects\/{project_id}\/locations\/{location_id}\/datasets\/{dataset_id}\/dicomStores\/{dicom_store_id}`.",
+                          "description": "Resource name of the DICOM store, of the form\n`projects\/{project_id}\/locations\/{location_id}\/datasets\/{dataset_id}\/dicomStores\/{dicom_store_id}`.",
                           "location": "path",
                           "required": true,
                           "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/datasets\/[^\/]+\/dicomStores\/[^\/]+$",
@@ -2997,7 +3002,7 @@
                       "httpMethod": "PATCH",
                       "parameters": {
                         "name": {
-                          "description": "Output only. Resource name of the HL7v2 store, of the form\n`projects\/{project_id}\/datasets\/{dataset_id}\/hl7V2Stores\/{hl7v2_store_id}`.",
+                          "description": "Resource name of the HL7v2 store, of the form\n`projects\/{project_id}\/datasets\/{dataset_id}\/hl7V2Stores\/{hl7v2_store_id}`.",
                           "location": "path",
                           "required": true,
                           "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/datasets\/[^\/]+\/hl7V2Stores\/[^\/]+$",
@@ -3510,7 +3515,7 @@
                       "httpMethod": "PATCH",
                       "parameters": {
                         "name": {
-                          "description": "Output only. Resource name of the Annotation store, of the form\n`projects\/{project_id}\/locations\/{location_id}\/datasets\/{dataset_id}\/annotationStores\/{annotation_store_id}`.",
+                          "description": "Resource name of the Annotation store, of the form\n`projects\/{project_id}\/locations\/{location_id}\/datasets\/{dataset_id}\/annotationStores\/{annotation_store_id}`.",
                           "location": "path",
                           "required": true,
                           "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/datasets\/[^\/]+\/annotationStores\/[^\/]+$",
@@ -3843,7 +3848,7 @@
                       "httpMethod": "PATCH",
                       "parameters": {
                         "name": {
-                          "description": "Output only. Resource name of the Consent store, of the form\n`projects\/{project_id}\/locations\/{location_id}\/datasets\/{dataset_id}\/consentStores\/{consent_store_id}`.",
+                          "description": "Resource name of the Consent store, of the form\n`projects\/{project_id}\/locations\/{location_id}\/datasets\/{dataset_id}\/consentStores\/{consent_store_id}`.",
                           "location": "path",
                           "required": true,
                           "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/datasets\/[^\/]+\/consentStores\/[^\/]+$",
@@ -4062,7 +4067,7 @@
                           "httpMethod": "PATCH",
                           "parameters": {
                             "name": {
-                              "description": "Output only. Resource name of the attribute definition, of the form\n`projects\/{project_id}\/locations\/{location_id}\/datasets\/{dataset_id}\/consentStores\/{consent_store_id}\/attributeDefinitions\/{attribute_definition_id}`.",
+                              "description": "Resource name of the attribute definition, of the form\n`projects\/{project_id}\/locations\/{location_id}\/datasets\/{dataset_id}\/consentStores\/{consent_store_id}\/attributeDefinitions\/{attribute_definition_id}`.",
                               "location": "path",
                               "required": true,
                               "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/datasets\/[^\/]+\/consentStores\/[^\/]+\/attributeDefinitions\/[^\/]+$",
@@ -4342,7 +4347,7 @@
                           "httpMethod": "PATCH",
                           "parameters": {
                             "name": {
-                              "description": "Output only. Resource name of the Consent, of the form\n`projects\/{project_id}\/locations\/{location_id}\/datasets\/{dataset_id}\/consentStores\/{consent_store_id}\/consents\/{consent_id}`.",
+                              "description": "Resource name of the Consent, of the form\n`projects\/{project_id}\/locations\/{location_id}\/datasets\/{dataset_id}\/consentStores\/{consent_store_id}\/consents\/{consent_id}`.",
                               "location": "path",
                               "required": true,
                               "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/datasets\/[^\/]+\/consentStores\/[^\/]+\/consents\/[^\/]+$",
@@ -4603,7 +4608,7 @@
                           "httpMethod": "PATCH",
                           "parameters": {
                             "name": {
-                              "description": "Output only. Resource name of the User data mapping, of the form\n`projects\/{project_id}\/locations\/{location_id}\/datasets\/{dataset_id}\/consentStores\/{consent_store_id}\/userDataMappings\/{user_data_mapping_id}`.",
+                              "description": "Resource name of the User data mapping, of the form\n`projects\/{project_id}\/locations\/{location_id}\/datasets\/{dataset_id}\/consentStores\/{consent_store_id}\/userDataMappings\/{user_data_mapping_id}`.",
                               "location": "path",
                               "required": true,
                               "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/datasets\/[^\/]+\/consentStores\/[^\/]+\/userDataMappings\/[^\/]+$",

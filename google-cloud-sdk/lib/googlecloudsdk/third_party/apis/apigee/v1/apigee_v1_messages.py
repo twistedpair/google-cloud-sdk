@@ -2843,6 +2843,9 @@ class GoogleCloudApigeeV1DeploymentConfig(_messages.Message):
     name: The name of the API or shared flow revision to be deployed. Must be
       of the form 'organizations/{org}/apis/{api}/revisions/{rev}' or
       'organizations/{org}/sharedflows/{sf}/revisions/{rev}'.
+    proxyUid: The uid of the proxy revision.
+    uid: A unique id that will only change if the deployment is deleted and
+      recreated.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
@@ -2873,6 +2876,8 @@ class GoogleCloudApigeeV1DeploymentConfig(_messages.Message):
   basePath = _messages.StringField(2)
   location = _messages.StringField(3)
   name = _messages.StringField(4)
+  proxyUid = _messages.StringField(5)
+  uid = _messages.StringField(6)
 
 
 class GoogleCloudApigeeV1Developer(_messages.Message):
@@ -3068,12 +3073,14 @@ class GoogleCloudApigeeV1EnvironmentConfig(_messages.Message):
     pubsubTopic: Name of the pubsub topic for this environment.
     resourceReferences: A list of resource references in the environment.
     resources: A list of resource versions in the environment.
-    sequenceNumber: A sequence number that defines an ordering on environment
-      configs. No two configs under an environment will ever have the same
-      sequence number. A higher sequence number means that the config was
-      deployed more recently than one with a lower sequence number.
+    revisionId: Revision id that defines the ordering on the environment
+      config. The higher the revision, the more recently the configuration was
+      deployed.
+    sequenceNumber: DEPRECATED: use revision_id
     targets: A list of target servers in the environment. Disabled target
       servers are not included.
+    uid: A unique id for the environment config that will only change if the
+      environment is deleted and recreated.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
@@ -3112,8 +3119,10 @@ class GoogleCloudApigeeV1EnvironmentConfig(_messages.Message):
   pubsubTopic = _messages.StringField(9)
   resourceReferences = _messages.MessageField('GoogleCloudApigeeV1ReferenceConfig', 10, repeated=True)
   resources = _messages.MessageField('GoogleCloudApigeeV1ResourceConfig', 11, repeated=True)
-  sequenceNumber = _messages.IntegerField(12)
-  targets = _messages.MessageField('GoogleCloudApigeeV1TargetServerConfig', 13, repeated=True)
+  revisionId = _messages.IntegerField(12)
+  sequenceNumber = _messages.IntegerField(13)
+  targets = _messages.MessageField('GoogleCloudApigeeV1TargetServerConfig', 14, repeated=True)
+  uid = _messages.StringField(15)
 
 
 class GoogleCloudApigeeV1FlowHook(_messages.Message):

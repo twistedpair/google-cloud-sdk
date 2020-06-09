@@ -44,6 +44,16 @@ def GetRepoResourceSpec():
       repositoriesId=RepoAttributeConfig())
 
 
+def GetBetaRepoResourceSpec():
+  return concepts.ResourceSpec(
+      'artifactregistry.projects.locations.repositories',
+      resource_name='repository',
+      api_version='v1beta1',
+      projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
+      locationsId=LocationAttributeConfig(),
+      repositoriesId=RepoAttributeConfig())
+
+
 def GetLocationResourceSpec():
   return concepts.ResourceSpec(
       'artifactregistry.projects.locations',
@@ -126,6 +136,15 @@ def GetLocationFlag():
       GetLocationResourceSpec(),
       ('The Artifact Registry repository location. If not specified, '
        'the current artifacts/location is used.'),
+      required=True)
+
+
+def GetRepoArgFromBeta():
+  return concept_parsers.ConceptParser.ForResource(
+      'repository',
+      GetBetaRepoResourceSpec(),
+      ('The Artifact Registry repository. If not specified, '
+       'the current artifacts/repository is used.'),
       required=True)
 
 

@@ -154,6 +154,11 @@ class DeadLetterPolicy(_messages.Message):
   maxDeliveryAttempts = _messages.IntegerField(2, variant=_messages.Variant.INT32)
 
 
+class DetachSubscriptionResponse(_messages.Message):
+  r"""Response for the DetachSubscription method.
+Reserved for future use."""
+
+
 class Empty(_messages.Message):
   r"""A generic empty message that you can re-use to avoid defining duplicated
   empty messages in your APIs. A typical example is to use it as the request
@@ -288,7 +293,7 @@ class ListTopicsResponse(_messages.Message):
 
 
 class MessageStoragePolicy(_messages.Message):
-  r"""A MessageStoragePolicy object.
+  r"""A policy constraining the storage of messages published to the topic.
 
   Fields:
     allowedPersistenceRegions: A list of IDs of GCP regions where messages
@@ -668,6 +673,17 @@ class PubsubProjectsSubscriptionsDeleteRequest(_messages.Message):
   Fields:
     subscription: Required. The subscription to delete. Format is
       `projects/{project}/subscriptions/{sub}`.
+  """
+
+  subscription = _messages.StringField(1, required=True)
+
+
+class PubsubProjectsSubscriptionsDetachRequest(_messages.Message):
+  r"""A PubsubProjectsSubscriptionsDetachRequest object.
+
+  Fields:
+    subscription: Required. The subscription to detach. Format is
+      `projects/{project}/subscriptions/{subscription}`.
   """
 
   subscription = _messages.StringField(1, required=True)
@@ -1363,10 +1379,7 @@ class Subscription(_messages.Message):
     filter: An expression written in the Cloud Pub/Sub filter language. If
       non-empty, then only `PubsubMessage`s whose `attributes` field matches
       the filter are delivered on this subscription. If empty, then no
-      messages are filtered out. <b>EXPERIMENTAL:</b> This feature is part of
-      a closed alpha release. This API might be changed in backward-
-      incompatible ways and is not recommended for production use. It is not
-      subject to any SLA or deprecation policy.
+      messages are filtered out.
     labels: See <a href="https://cloud.google.com/pubsub/docs/labels">
       Creating and managing labels</a>.
     messageRetentionDuration: How long to retain unacknowledged messages in
@@ -1390,14 +1403,11 @@ class Subscription(_messages.Message):
       `message_retention_duration` window. This must be true if you would like
       to <a href="https://cloud.google.com/pubsub/docs/replay-
       overview#seek_to_a_time"> Seek to a timestamp</a>.
-    retryPolicy: A policy that specifies how Cloud Pub/Sub retries message
-      delivery for this subscription.  If not set, the default retry policy is
-      applied. This generally implies that messages will be retried as soon as
-      possible for healthy subscribers. RetryPolicy will be triggered on NACKs
-      or acknowledgement deadline exceeded events for a given message.
-      <b>EXPERIMENTAL:</b> This API might be changed in backward-incompatible
-      ways and is not recommended for production use. It is not subject to any
-      SLA or deprecation policy.
+    retryPolicy: A policy that specifies how Pub/Sub retries message delivery
+      for this subscription.  If not set, the default retry policy is applied.
+      This generally implies that messages will be retried as soon as possible
+      for healthy subscribers. RetryPolicy will be triggered on NACKs or
+      acknowledgement deadline exceeded events for a given message.
     topic: Required. The name of the topic from which this subscription is
       receiving messages. Format is `projects/{project}/topics/{topic}`. The
       value of this field will be `_deleted-topic_` if the topic has been

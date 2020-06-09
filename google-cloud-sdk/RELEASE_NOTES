@@ -6,6 +6,62 @@ Subscribe to these release notes at [https://groups.google.com/forum/#!forum/goo
 
 Note: Cloud SDK introduced support for Python 3 in release 274.0.0 and users are strongly encouraged to migrate to Python 3. Support for Python 2 will be deprecated on July 31, 2020. See also [Python 2 Sunset](https://cloud.google.com/python/docs/python2-sunset/) and [Using Python 3](https://cloud.google.com/sdk/gcloud/reference/topic/startup).
 
+## 296.0.0 (2020-06-09)
+
+### Cloud SDK
+
+* Updated bundled Python executable to 3.7.5.
+
+### Cloud Composer
+
+* Fixed a bug that causes `backfill` subcommand of `gcloud composer environments run`
+to be stuck indefinitely.
+* Updated `gcloud composer environments run` command to prefer GKE pods with 'Ready: true' condition state.
+
+### Cloud Filestore
+
+* Updated `gcloud beta filestore instances create`
+and `gcloud beta filestore instances update` to include:
+    *   Added HIGH_SCALE_SSD, BASIC_HDD and BASIC_SSD tiers.
+    *   Added `nfs-export-options` to `--file-share` flag.
+    *   Support for NfsExportOptions.
+    Run `gcloud filestore --help`
+    or visit <https://cloud.google.com/filestore/docs/> to learn more.
+
+### Cloud Firestore Emulator
+
+* Release Cloud Firestore emulator v1.11.4
+  * Fixes bug for evaluating rules in query listening.
+  * Fixes support for `?show_missing` in listing collection.
+
+### Cloud Resource Manager
+
+* Promoted `gcloud projects create` to beta.
+
+### Cloud Run
+
+* Modified `--vpc-connector` and `--clear-vpc-connector` flags to be applicable for `--platform=managed` only.
+* Added `--format export` option to `gcloud run services describe` and `gcloud run revisions describe`, to output resources without deployment-specific metadata or status information.
+
+### Compute Engine
+
+* Replaced coreos-cloud with fedora-coreos-cloud in the list of
+  public image projects for `--standard-images` flag of
+  `gcloud compute images list`.
+* Promoted `gcloud compute commitments create-license` to beta.
+* Added flag `--instance-update-minimal-action` flag to `gcloud beta compute instance-groups managed instance-configs <create|update|delete>`.
+
+### Kubernetes Engine
+
+*   Added `--master-logs` and '--enable-master-metrics' flags to
+    `gcloud beta container clusters` to enable sending master logs and metrics
+    to Cloud Operations (fka Stackdriver).
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+Note: Cloud SDK introduced support for Python 3 in release 274.0.0 and users are strongly encouraged to migrate to Python 3. Support for Python 2 will be deprecated on July 31, 2020. See also [Python 2 Sunset](https://cloud.google.com/python/docs/python2-sunset/) and [Using Python 3](https://cloud.google.com/sdk/gcloud/reference/topic/startup).
+
 ## 295.0.0 (2020-06-02)
 
 ### Anthos

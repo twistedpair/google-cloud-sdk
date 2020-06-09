@@ -361,18 +361,18 @@
           "type": "string"
         },
         "connectVersion": {
-          "description": "Optional. The connect version to generate for connect_resources, default to the\nlatest.",
+          "description": "Input only. The connect version to generate for connect_resources.\n* If set to \"latest\", the latest Connect resources will be populated. This\n  should be the default option for most clients.\n* If set to a specific Connect version, the Connect resources of the\n  version will be generated. If the version does not exist or is already\n  out of support window, an INVALID_ARGUMENT error will be returned.\n* If unset connect_resources will not be populated.",
           "type": "string"
         },
         "membershipResources": {
-          "description": "Output only. The additional Kubernetes resources that need to be applied to the cluster\nafter the membership creation and every update.\nThis field is only populated upon GetRequest if\nMembershipView = `WITH_MEMBERSHIP_RESOURCES` or `FULL`.",
+          "description": "Output only. The additional Kubernetes resources that need to be applied to the cluster\nafter the membership creation and every update.\nThis field is only populated in the Membership returned after the\nlong-running operation of Create\/UpdateMembership finished, but not in\nstandalone Get\/ListMembership requests.\nTo get the resource manifest after the initial registration, the caller\ncould make an UpdateMembership call with an empty field mask.",
           "type": "array",
           "items": {
             "$ref": "ResourceManifest"
           }
         },
         "connectResources": {
-          "description": "Output only. The Kubernetes resources for installing GKE Connect agent.\nThie field is only populated upon GetRequest if\nMembershipView = `FULL`,",
+          "description": "Output only. The Kubernetes resources for installing GKE Connect agent.\nThis field is only populated in the Membership returned after the\nlong-running operation of Create\/UpdateMembership finished, but not in\nstandalone Get\/ListMembership requests.\nTo get the resource manifest after the initial registration, the caller\ncould make an UpdateMembership call with an empty field mask.",
           "type": "array",
           "items": {
             "$ref": "ResourceManifest"
@@ -1259,17 +1259,6 @@
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/memberships\/[^\/]+$",
                       "type": "string"
-                    },
-                    "view": {
-                      "description": "Optional. View for partial response.",
-                      "location": "query",
-                      "type": "string",
-                      "enum": [
-                        "MEMBERSHIP_VIEW_UNSPECIFIED",
-                        "BASIC",
-                        "FULL",
-                        "WITH_MEMBERSHIP_RESOURCES"
-                      ]
                     }
                   },
                   "parameterOrder": [

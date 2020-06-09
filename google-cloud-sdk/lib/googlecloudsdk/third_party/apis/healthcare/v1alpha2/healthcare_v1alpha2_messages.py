@@ -35,9 +35,9 @@ class AnnotationStore(_messages.Message):
       128 bytes, and must conform to the following PCRE regular expression:
       [\p{Ll}\p{Lo}\p{N}_-]{0,63}  No more than 64 labels can be associated
       with a given store.
-    name: Output only. Resource name of the Annotation store, of the form `pro
-      jects/{project_id}/locations/{location_id}/datasets/{dataset_id}/annotat
-      ionStores/{annotation_store_id}`.
+    name: Resource name of the Annotation store, of the form `projects/{projec
+      t_id}/locations/{location_id}/datasets/{dataset_id}/annotationStores/{an
+      notation_store_id}`.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
@@ -116,11 +116,10 @@ class AttributeDefinition(_messages.Message):
       mappings. If no default value is specified, it defaults to an empty
       value. This field is only applicable to attributes of the category
       `RESOURCE`.
-    description: Optional. A description of the attribute.
-    name: Output only. Resource name of the attribute definition, of the form
-      `projects/{project_id}/locations/{location_id}/datasets/{dataset_id}/con
-      sentStores/{consent_store_id}/attributeDefinitions/{attribute_definition
-      _id}`.
+    description: A description of the attribute.
+    name: Resource name of the attribute definition, of the form `projects/{pr
+      oject_id}/locations/{location_id}/datasets/{dataset_id}/consentStores/{c
+      onsent_store_id}/attributeDefinitions/{attribute_definition_id}`.
   """
 
   class CategoryValueValuesEnum(_messages.Enum):
@@ -347,9 +346,9 @@ class Consent(_messages.Message):
       contains proof of the end user's consent, of the form `projects/{project
       _id}/locations/{location_id}/datasets/{dataset_id}/consentStores/{consen
       t_store_id}/consentArtifacts/{consent_artifact_id}`.
-    name: Output only. Resource name of the Consent, of the form `projects/{pr
-      oject_id}/locations/{location_id}/datasets/{dataset_id}/consentStores/{c
-      onsent_store_id}/consents/{consent_id}`.
+    name: Resource name of the Consent, of the form `projects/{project_id}/loc
+      ations/{location_id}/datasets/{dataset_id}/consentStores/{consent_store_
+      id}/consents/{consent_id}`.
     policies: Represents an end user's consent in terms of the resources that
       can be accessed and under what conditions.
     state: A StateValueValuesEnum attribute.
@@ -387,28 +386,28 @@ class ConsentArtifact(_messages.Message):
   r"""Proof of an end user's consent.
 
   Messages:
-    MetadataValue: Optional. Metadata associated with the consent artifact.
-      For example, the consent locale or user agent version.
+    MetadataValue: Metadata associated with the consent artifact. For example,
+      the consent locale or user agent version.
 
   Fields:
-    consentContentScreenshots: Optional. Screenshots of the consent content.
-    consentContentVersion: Optional. An string indicating the version of the
-      consent content.
-    guardianSignature: Optional. A signature from guardian.
-    metadata: Optional. Metadata associated with the consent artifact. For
-      example, the consent locale or user agent version.
-    name: Output only. Resource name of the Consent artifact, of the form `pro
-      jects/{project_id}/locations/{location_id}/datasets/{dataset_id}/consent
-      Stores/{consent_store_id}/consentArtifacts/{consent_artifact_id}`.
+    consentContentScreenshots: Screenshots of the consent content.
+    consentContentVersion: An string indicating the version of the consent
+      content.
+    guardianSignature: A signature from guardian.
+    metadata: Metadata associated with the consent artifact. For example, the
+      consent locale or user agent version.
+    name: Resource name of the Consent artifact, of the form `projects/{projec
+      t_id}/locations/{location_id}/datasets/{dataset_id}/consentStores/{conse
+      nt_store_id}/consentArtifacts/{consent_artifact_id}`.
     userId: User's UUID provided by the client.
     userSignature: User's signature.
-    witnessSignature: Optional. A signature from a witness.
+    witnessSignature: A signature from a witness.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class MetadataValue(_messages.Message):
-    r"""Optional. Metadata associated with the consent artifact. For example,
-    the consent locale or user agent version.
+    r"""Metadata associated with the consent artifact. For example, the
+    consent locale or user agent version.
 
     Messages:
       AdditionalProperty: An additional property for a MetadataValue object.
@@ -444,17 +443,7 @@ class ConsentStore(_messages.Message):
   r"""Represents a Consent store.
 
   Messages:
-    LabelsValue: Optional. User-supplied key-value pairs used to organize
-      Consent stores.  Label keys must be between 1 and 63 characters long,
-      have a UTF-8 encoding of maximum 128 bytes, and must conform to the
-      following PCRE regular expression: \p{Ll}\p{Lo}{0,62}  Label values must
-      be between 1 and 63 characters long, have a UTF-8 encoding of maximum
-      128 bytes, and must conform to the following PCRE regular expression:
-      [\p{Ll}\p{Lo}\p{N}_-]{0,63}  No more than 64 labels can be associated
-      with a given store.
-
-  Fields:
-    labels: Optional. User-supplied key-value pairs used to organize Consent
+    LabelsValue: User-supplied key-value pairs used to organize Consent
       stores.  Label keys must be between 1 and 63 characters long, have a
       UTF-8 encoding of maximum 128 bytes, and must conform to the following
       PCRE regular expression: \p{Ll}\p{Lo}{0,62}  Label values must be
@@ -462,18 +451,28 @@ class ConsentStore(_messages.Message):
       bytes, and must conform to the following PCRE regular expression:
       [\p{Ll}\p{Lo}\p{N}_-]{0,63}  No more than 64 labels can be associated
       with a given store.
-    name: Output only. Resource name of the Consent store, of the form `projec
-      ts/{project_id}/locations/{location_id}/datasets/{dataset_id}/consentSto
-      res/{consent_store_id}`.
+
+  Fields:
+    labels: User-supplied key-value pairs used to organize Consent stores.
+      Label keys must be between 1 and 63 characters long, have a UTF-8
+      encoding of maximum 128 bytes, and must conform to the following PCRE
+      regular expression: \p{Ll}\p{Lo}{0,62}  Label values must be between 1
+      and 63 characters long, have a UTF-8 encoding of maximum 128 bytes, and
+      must conform to the following PCRE regular expression:
+      [\p{Ll}\p{Lo}\p{N}_-]{0,63}  No more than 64 labels can be associated
+      with a given store.
+    name: Resource name of the Consent store, of the form `projects/{project_i
+      d}/locations/{location_id}/datasets/{dataset_id}/consentStores/{consent_
+      store_id}`.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
-    r"""Optional. User-supplied key-value pairs used to organize Consent
-    stores.  Label keys must be between 1 and 63 characters long, have a UTF-8
-    encoding of maximum 128 bytes, and must conform to the following PCRE
-    regular expression: \p{Ll}\p{Lo}{0,62}  Label values must be between 1 and
-    63 characters long, have a UTF-8 encoding of maximum 128 bytes, and must
+    r"""User-supplied key-value pairs used to organize Consent stores.  Label
+    keys must be between 1 and 63 characters long, have a UTF-8 encoding of
+    maximum 128 bytes, and must conform to the following PCRE regular
+    expression: \p{Ll}\p{Lo}{0,62}  Label values must be between 1 and 63
+    characters long, have a UTF-8 encoding of maximum 128 bytes, and must
     conform to the following PCRE regular expression:
     [\p{Ll}\p{Lo}\p{N}_-]{0,63}  No more than 64 labels can be associated with
     a given store.
@@ -523,8 +522,9 @@ class Dataset(_messages.Message):
   records or medical imaging data.
 
   Fields:
-    name: Output only. Resource name of the dataset, of the form
+    name: Resource name of the dataset, of the form
       `projects/{project_id}/locations/{location_id}/datasets/{dataset_id}`.
+    storageOptions: StorageOptions defines the options for storing datasets.
     timeZone: The default timezone used by this dataset. Must be a either a
       valid IANA time zone name such as "America/New_York" or empty, which
       defaults to UTC. This is used for parsing times in resources, such as
@@ -532,7 +532,8 @@ class Dataset(_messages.Message):
   """
 
   name = _messages.StringField(1)
-  timeZone = _messages.StringField(2)
+  storageOptions = _messages.MessageField('StorageOptions', 2)
+  timeZone = _messages.StringField(3)
 
 
 class DateShiftConfig(_messages.Message):
@@ -689,9 +690,9 @@ class DicomStore(_messages.Message):
       128 bytes, and must conform to the following PCRE regular expression:
       [\p{Ll}\p{Lo}\p{N}_-]{0,63}  No more than 64 labels can be associated
       with a given store.
-    name: Output only. Resource name of the DICOM store, of the form `projects
-      /{project_id}/locations/{location_id}/datasets/{dataset_id}/dicomStores/
-      {dicom_store_id}`.
+    name: Resource name of the DICOM store, of the form `projects/{project_id}
+      /locations/{location_id}/datasets/{dataset_id}/dicomStores/{dicom_store_
+      id}`.
     notificationConfig: Notification destination for new DICOM instances.
       Supplied by the client.
   """
@@ -1010,8 +1011,6 @@ class FhirStore(_messages.Message):
       the server stops streaming to that location. Some lag (typically on the
       order of dozens of seconds) is expected before the results show up in
       the streaming destination.
-    validationConfig: Configuration for how to validate incoming FHIR
-      resources against configured profiles.
     version: The FHIR specification version that this FHIR store supports
       natively. This field is immutable after store creation. Requests are
       rejected if they contain FHIR resources of a different version. An empty
@@ -1075,8 +1074,7 @@ class FhirStore(_messages.Message):
   name = _messages.StringField(5)
   notificationConfig = _messages.MessageField('NotificationConfig', 6)
   streamConfigs = _messages.MessageField('StreamConfig', 7, repeated=True)
-  validationConfig = _messages.MessageField('ValidationConfig', 8)
-  version = _messages.EnumField('VersionValueValuesEnum', 9)
+  version = _messages.EnumField('VersionValueValuesEnum', 8)
 
 
 class FieldMetadata(_messages.Message):
@@ -1579,9 +1577,9 @@ class HealthcareProjectsLocationsDatasetsAnnotationStoresPatchRequest(_messages.
   Fields:
     annotationStore: A AnnotationStore resource to be passed as the request
       body.
-    name: Output only. Resource name of the Annotation store, of the form `pro
-      jects/{project_id}/locations/{location_id}/datasets/{dataset_id}/annotat
-      ionStores/{annotation_store_id}`.
+    name: Resource name of the Annotation store, of the form `projects/{projec
+      t_id}/locations/{location_id}/datasets/{dataset_id}/annotationStores/{an
+      notation_store_id}`.
     updateMask: The update mask applies to the resource. For the `FieldMask`
       definition, see https://developers.google.com/protocol-
       buffers/docs/reference/google.protobuf#fieldmask
@@ -1695,10 +1693,9 @@ class HealthcareProjectsLocationsDatasetsConsentStoresAttributeDefinitionsPatchR
   Fields:
     attributeDefinition: A AttributeDefinition resource to be passed as the
       request body.
-    name: Output only. Resource name of the attribute definition, of the form
-      `projects/{project_id}/locations/{location_id}/datasets/{dataset_id}/con
-      sentStores/{consent_store_id}/attributeDefinitions/{attribute_definition
-      _id}`.
+    name: Resource name of the attribute definition, of the form `projects/{pr
+      oject_id}/locations/{location_id}/datasets/{dataset_id}/consentStores/{c
+      onsent_store_id}/attributeDefinitions/{attribute_definition_id}`.
     updateMask: The update mask that applies to the resource. For the
       `FieldMask` definition, see https://developers.google.com/protocol-
       buffers/docs/reference/google.protobuf#fieldmask. The `description`,
@@ -1892,9 +1889,9 @@ class HealthcareProjectsLocationsDatasetsConsentStoresConsentsPatchRequest(_mess
 
   Fields:
     consent: A Consent resource to be passed as the request body.
-    name: Output only. Resource name of the Consent, of the form `projects/{pr
-      oject_id}/locations/{location_id}/datasets/{dataset_id}/consentStores/{c
-      onsent_store_id}/consents/{consent_id}`.
+    name: Resource name of the Consent, of the form `projects/{project_id}/loc
+      ations/{location_id}/datasets/{dataset_id}/consentStores/{consent_store_
+      id}/consents/{consent_id}`.
     updateMask: The update mask to apply to the resource. For the `FieldMask`
       definition, see https://developers.google.com/protocol-
       buffers/docs/reference/google.protobuf#fieldmask. The `user_id`,
@@ -2004,9 +2001,9 @@ class HealthcareProjectsLocationsDatasetsConsentStoresPatchRequest(_messages.Mes
 
   Fields:
     consentStore: A ConsentStore resource to be passed as the request body.
-    name: Output only. Resource name of the Consent store, of the form `projec
-      ts/{project_id}/locations/{location_id}/datasets/{dataset_id}/consentSto
-      res/{consent_store_id}`.
+    name: Resource name of the Consent store, of the form `projects/{project_i
+      d}/locations/{location_id}/datasets/{dataset_id}/consentStores/{consent_
+      store_id}`.
     updateMask: The update mask that applies to the resource. For the
       `FieldMask` definition, see https://developers.google.com/protocol-
       buffers/docs/reference/google.protobuf#fieldmask. The `labels` field is
@@ -2144,9 +2141,9 @@ class HealthcareProjectsLocationsDatasetsConsentStoresUserDataMappingsPatchReque
   object.
 
   Fields:
-    name: Output only. Resource name of the User data mapping, of the form `pr
-      ojects/{project_id}/locations/{location_id}/datasets/{dataset_id}/consen
-      tStores/{consent_store_id}/userDataMappings/{user_data_mapping_id}`.
+    name: Resource name of the User data mapping, of the form `projects/{proje
+      ct_id}/locations/{location_id}/datasets/{dataset_id}/consentStores/{cons
+      ent_store_id}/userDataMappings/{user_data_mapping_id}`.
     updateMask: The update mask that applies to the resource. For the
       `FieldMask` definition, see https://developers.google.com/protocol-
       buffers/docs/reference/google.protobuf#fieldmask.
@@ -2368,9 +2365,9 @@ class HealthcareProjectsLocationsDatasetsDicomStoresPatchRequest(_messages.Messa
 
   Fields:
     dicomStore: A DicomStore resource to be passed as the request body.
-    name: Output only. Resource name of the DICOM store, of the form `projects
-      /{project_id}/locations/{location_id}/datasets/{dataset_id}/dicomStores/
-      {dicom_store_id}`.
+    name: Resource name of the DICOM store, of the form `projects/{project_id}
+      /locations/{location_id}/datasets/{dataset_id}/dicomStores/{dicom_store_
+      id}`.
     updateMask: The update mask applies to the resource. For the `FieldMask`
       definition, see https://developers.google.com/protocol-
       buffers/docs/reference/google.protobuf#fieldmask
@@ -2685,8 +2682,8 @@ class HealthcareProjectsLocationsDatasetsHl7V2StoresPatchRequest(_messages.Messa
 
   Fields:
     hl7V2Store: A Hl7V2Store resource to be passed as the request body.
-    name: Output only. Resource name of the HL7v2 store, of the form `projects
-      /{project_id}/datasets/{dataset_id}/hl7V2Stores/{hl7v2_store_id}`.
+    name: Resource name of the HL7v2 store, of the form `projects/{project_id}
+      /datasets/{dataset_id}/hl7V2Stores/{hl7v2_store_id}`.
     updateMask: The update mask applies to the resource. For the `FieldMask`
       definition, see https://developers.google.com/protocol-
       buffers/docs/reference/google.protobuf#fieldmask
@@ -2791,7 +2788,7 @@ class HealthcareProjectsLocationsDatasetsPatchRequest(_messages.Message):
 
   Fields:
     dataset: A Dataset resource to be passed as the request body.
-    name: Output only. Resource name of the dataset, of the form
+    name: Resource name of the dataset, of the form
       `projects/{project_id}/locations/{location_id}/datasets/{dataset_id}`.
     updateMask: The update mask applies to the resource. For the `FieldMask`
       definition, see https://developers.google.com/protocol-
@@ -2881,8 +2878,8 @@ class Hl7V2Store(_messages.Message):
       128 bytes, and must conform to the following PCRE regular expression:
       [\p{Ll}\p{Lo}\p{N}_-]{0,63}  No more than 64 labels can be associated
       with a given store.
-    name: Output only. Resource name of the HL7v2 store, of the form `projects
-      /{project_id}/datasets/{dataset_id}/hl7V2Stores/{hl7v2_store_id}`.
+    name: Resource name of the HL7v2 store, of the form `projects/{project_id}
+      /datasets/{dataset_id}/hl7V2Stores/{hl7v2_store_id}`.
     notificationConfig: The notification destination all messages (both Ingest
       & Create) are published on. Only the message name is sent as part of the
       notification. If this is unset, no notifications are sent. Supplied by
@@ -3830,21 +3827,21 @@ class Signature(_messages.Message):
   r"""User signature.
 
   Messages:
-    MetadataValue: Optional. Metadata associated with the user's signature.
-      For example, the user's name or the user's title.
+    MetadataValue: Metadata associated with the user's signature. For example,
+      the user's name or the user's title.
 
   Fields:
-    image: Optional. An image of the user's signature.
-    metadata: Optional. Metadata associated with the user's signature. For
-      example, the user's name or the user's title.
-    signatureTime: Optional. Timestamp of the signature.
+    image: An image of the user's signature.
+    metadata: Metadata associated with the user's signature. For example, the
+      user's name or the user's title.
+    signatureTime: Timestamp of the signature.
     userId: User's UUID provided by the client.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class MetadataValue(_messages.Message):
-    r"""Optional. Metadata associated with the user's signature. For example,
-    the user's name or the user's title.
+    r"""Metadata associated with the user's signature. For example, the user's
+    name or the user's title.
 
     Messages:
       AdditionalProperty: An additional property for a MetadataValue object.
@@ -3986,6 +3983,49 @@ class Status(_messages.Message):
   message = _messages.StringField(3)
 
 
+class StorageOptions(_messages.Message):
+  r"""StorageOptions defines the options for storing datasets.
+
+  Enums:
+    DefaultBlobStorageClassValueValuesEnum: The default storage class for
+      Blobs stored in this dataset. Applies to DICOM objects only. If you
+      change the storage class after creation, new DICOM objects are in the
+      new storage class. The storage class of existing objects in the dataset
+      is unchanged.
+
+  Fields:
+    defaultBlobStorageClass: The default storage class for Blobs stored in
+      this dataset. Applies to DICOM objects only. If you change the storage
+      class after creation, new DICOM objects are in the new storage class.
+      The storage class of existing objects in the dataset is unchanged.
+  """
+
+  class DefaultBlobStorageClassValueValuesEnum(_messages.Enum):
+    r"""The default storage class for Blobs stored in this dataset. Applies to
+    DICOM objects only. If you change the storage class after creation, new
+    DICOM objects are in the new storage class. The storage class of existing
+    objects in the dataset is unchanged.
+
+    Values:
+      BLOB_STORAGE_CLASS_UNSPECIFIED: If unspecified in CreateDataset, the
+        StorageClass defaults to STANDARD. If unspecified in UpdateDataset and
+        the StorageClass is set in the field mask, an InvalidRequest error is
+        thrown.
+      STANDARD: Stores the Object in Blob Standard Storage:
+        https://cloud.google.com/storage/docs/storage-classes#standard
+      NEARLINE: Stores the Object in Blob Nearline Storage:
+        https://cloud.google.com/storage/docs/storage-classes#nearline
+      COLDLINE: Stores the Object in Blob Coldline Storage:
+        https://cloud.google.com/storage/docs/storage-classes#coldline
+    """
+    BLOB_STORAGE_CLASS_UNSPECIFIED = 0
+    STANDARD = 1
+    NEARLINE = 2
+    COLDLINE = 3
+
+  defaultBlobStorageClass = _messages.EnumField('DefaultBlobStorageClassValueValuesEnum', 1)
+
+
 class StreamConfig(_messages.Message):
   r"""Contains configuration for streaming FHIR export.
 
@@ -4092,9 +4132,9 @@ class UserDataMapping(_messages.Message):
       archived.
     archived: Output only. Indicates whether this data mapping is archived.
     dataId: A unique identifier for the mapped data.
-    name: Output only. Resource name of the User data mapping, of the form `pr
-      ojects/{project_id}/locations/{location_id}/datasets/{dataset_id}/consen
-      tStores/{consent_store_id}/userDataMappings/{user_data_mapping_id}`.
+    name: Resource name of the User data mapping, of the form `projects/{proje
+      ct_id}/locations/{location_id}/datasets/{dataset_id}/consentStores/{cons
+      ent_store_id}/userDataMappings/{user_data_mapping_id}`.
     resourceAttributes: Attributes of end user data. Each attribute can have
       exactly one value specified. Only explicitly set attributes are
       displayed here. Attribute definitions with defaults set implicitly apply
@@ -4110,34 +4150,6 @@ class UserDataMapping(_messages.Message):
   name = _messages.StringField(4)
   resourceAttributes = _messages.MessageField('Attribute', 5, repeated=True)
   userId = _messages.StringField(6)
-
-
-class ValidationConfig(_messages.Message):
-  r"""Contains the configuration for FHIR profiles and validation.
-
-  Fields:
-    disableProfileValidation: Whether to disable profile validation for this
-      FHIR store. Set this to true to disable checking incoming resources for
-      conformance against StructureDefinitions in this FHIR store.
-    enabledImplementationGuides: A list of ImplementationGuide URLs in this
-      FHIR store that are used to configure which profiles are used for
-      validation. For example, if you were using the US Core profiles to your
-      FHIR store you would set `enabled_implementation_guides` to
-      `["http://hl7.org/fhir/us/core/ImplementationGuide/ig"]`. If
-      `enabled_implementation_guides` is empty or omitted, then incoming
-      resources are only required to conform to the base FHIR profiles.
-      Otherwise, a resource must conform to at least one profile listed in the
-      `global` property of one of the enabled ImplementationGuides.  The Cloud
-      Healthcare API does not currently enforce all of the rules in a
-      StructureDefinition. The following rules are supported:     - min/max
-      - minValue/maxValue     - maxLength     - type     - fixed[x]     -
-      pattern[x] on simple types     - slicing, when using "value" as the
-      discriminator type When a URL cannot be resolved (for example, in a type
-      assertion), the server does not return an error.
-  """
-
-  disableProfileValidation = _messages.BooleanField(1)
-  enabledImplementationGuides = _messages.StringField(2, repeated=True)
 
 
 encoding.AddCustomJsonFieldMapping(

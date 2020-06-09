@@ -443,7 +443,7 @@ class HTMLRenderer(renderer.Renderer):
                   r'\1<a href="#\2">\2</a>\3',
                   line)
 
-    line = re.sub(r'(<code><a href="#[-a-z0-9]+">\S+)',
+    line = re.sub(r'(<code><a href="#[-a-z0-9]+">[-a-z0-9]+(<[^>]*>|\S)*)',
                   r'<span class="flag">\1</span>',
                   line)
 

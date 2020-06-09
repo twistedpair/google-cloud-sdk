@@ -151,7 +151,7 @@ class GkehubV1alpha2(base_api.BaseApiClient):
         method_id='gkehub.projects.locations.memberships.get',
         ordered_params=['name'],
         path_params=['name'],
-        query_params=['view'],
+        query_params=[],
         relative_path='v1alpha2/{+name}',
         request_field='',
         request_type_name='GkehubProjectsLocationsMembershipsGetRequest',

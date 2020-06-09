@@ -160,11 +160,13 @@ def _FormatCustomMachineTypeName(mt):
 
   Helper function for _MachineTypeNameToCell
   """
-  custom_cpu, custom_ram = instance_utils.GetCpuRamFromCustomName(mt)
-  if custom_cpu and custom_ram:
+  custom_family, custom_cpu, custom_ram = \
+    instance_utils.GetCpuRamVmFamilyFromCustomName(mt)
+  if custom_cpu and custom_ram and custom_family:
     # Restricting output to 2 decimal places
     custom_ram_gb = '{0:.2f}'.format(custom_ram / (2**10))
-    mt = 'custom ({0} vCPU, {1} GiB)'.format(custom_cpu, custom_ram_gb)
+    mt = 'custom ({0}, {1} vCPU, {2} GiB)'.format(custom_family, custom_cpu,
+                                                  custom_ram_gb)
   return mt
 
 

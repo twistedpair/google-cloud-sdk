@@ -179,13 +179,13 @@ def CallCreateInstances(holder, igm_ref, per_instance_config_message):
   return operation_ref, service
 
 
-def GetApplyUpdatesToInstancesRequestsZonal(holder, igm_ref, instances):
+def GetApplyUpdatesToInstancesRequestsZonal(holder, igm_ref, instances,
+                                            minimal_action):
   """Immediately applies updates to instances (zonal case)."""
   messages = holder.client.messages
   request = messages.InstanceGroupManagersApplyUpdatesRequest(
       instances=instances,
-      minimalAction=messages.InstanceGroupManagersApplyUpdatesRequest
-      .MinimalActionValueValuesEnum.NONE,
+      minimalAction=minimal_action,
       mostDisruptiveAllowedAction=messages
       .InstanceGroupManagersApplyUpdatesRequest
       .MostDisruptiveAllowedActionValueValuesEnum.REPLACE)
@@ -197,13 +197,13 @@ def GetApplyUpdatesToInstancesRequestsZonal(holder, igm_ref, instances):
   )
 
 
-def GetApplyUpdatesToInstancesRequestsRegional(holder, igm_ref, instances):
+def GetApplyUpdatesToInstancesRequestsRegional(holder, igm_ref, instances,
+                                               minimal_action):
   """Immediately applies updates to instances (regional case)."""
   messages = holder.client.messages
   request = messages.RegionInstanceGroupManagersApplyUpdatesRequest(
       instances=instances,
-      minimalAction=messages.RegionInstanceGroupManagersApplyUpdatesRequest
-      .MinimalActionValueValuesEnum.NONE,
+      minimalAction=minimal_action,
       mostDisruptiveAllowedAction=messages
       .RegionInstanceGroupManagersApplyUpdatesRequest
       .MostDisruptiveAllowedActionValueValuesEnum.REPLACE)
@@ -217,18 +217,24 @@ def GetApplyUpdatesToInstancesRequestsRegional(holder, igm_ref, instances):
   )
 
 
-def CallApplyUpdatesToInstances(holder, igm_ref, instances):
+def CallApplyUpdatesToInstances(holder, igm_ref, instances, minimal_action):
   """Calls proper (zonal or reg.) resource for applying updates to instances."""
   if igm_ref.Collection() == 'compute.instanceGroupManagers':
     operation_collection = 'compute.zoneOperations'
     service = holder.client.apitools_client.instanceGroupManagers
+    minimal_action = (
+        holder.client.messages.InstanceGroupManagersApplyUpdatesRequest
+        .MinimalActionValueValuesEnum(minimal_action.upper()))
     apply_request = GetApplyUpdatesToInstancesRequestsZonal(
-        holder, igm_ref, instances)
+        holder, igm_ref, instances, minimal_action)
   elif igm_ref.Collection() == 'compute.regionInstanceGroupManagers':
     operation_collection = 'compute.regionOperations'
     service = holder.client.apitools_client.regionInstanceGroupManagers
+    minimal_action = (
+        holder.client.messages.RegionInstanceGroupManagersApplyUpdatesRequest
+        .MinimalActionValueValuesEnum(minimal_action.upper()))
     apply_request = GetApplyUpdatesToInstancesRequestsRegional(
-        holder, igm_ref, instances)
+        holder, igm_ref, instances, minimal_action)
   else:
     raise ValueError('Unknown reference type {0}'.format(igm_ref.Collection()))
   apply_operation = service.ApplyUpdatesToInstances(apply_request)

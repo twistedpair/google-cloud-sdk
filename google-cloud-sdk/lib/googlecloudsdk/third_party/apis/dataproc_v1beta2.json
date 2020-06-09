@@ -2306,6 +2306,16 @@
           "description": "Output only. The timeout duration for the DAG of jobs.",
           "type": "string",
           "format": "google-duration"
+        },
+        "dagStartTime": {
+          "description": "Output only. DAG start time, only set for workflows with dag_timeout when DAG begins.",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "dagEndTime": {
+          "description": "Output only. DAG end time, only set for workflows with dag_timeout when DAG ends.",
+          "type": "string",
+          "format": "google-datetime"
         }
       }
     },

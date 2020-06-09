@@ -661,6 +661,10 @@ class DnsPoliciesDeleteRequest(_messages.Message):
   project = _messages.StringField(3, required=True)
 
 
+class DnsPoliciesDeleteResponse(_messages.Message):
+  r"""An empty DnsPoliciesDelete response."""
+
+
 class DnsPoliciesGetRequest(_messages.Message):
   r"""A DnsPoliciesGetRequest object.
 
@@ -1245,10 +1249,6 @@ class PeeringZonesListResponse(_messages.Message):
   kind = _messages.StringField(2, default='dns#peeringZonesListResponse')
   nextPageToken = _messages.StringField(3)
   peeringZones = _messages.MessageField('ManagedZone', 4, repeated=True)
-
-
-class PoliciesDeleteResponse(_messages.Message):
-  r"""A PoliciesDeleteResponse object."""
 
 
 class PoliciesListResponse(_messages.Message):

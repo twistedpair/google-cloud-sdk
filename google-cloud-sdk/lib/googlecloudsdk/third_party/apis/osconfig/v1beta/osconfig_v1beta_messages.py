@@ -309,8 +309,7 @@ class ExecStepConfig(_messages.Message):
 
 
 class ExecutePatchJobRequest(_messages.Message):
-  r"""A request message to initiate patching across Google Compute Engine
-  instances.
+  r"""A request message to initiate patching across Compute Engine instances.
 
   Fields:
     description: Description of the patch job. Length of the description is
@@ -971,18 +970,18 @@ class PatchInstanceFilterGroupLabel(_messages.Message):
   labels, for example "env=prod and app=web".
 
   Messages:
-    LabelsValue: Google Compute Engine instance labels that must be present
-      for a VM instance to be targeted by this filter.
+    LabelsValue: Compute Engine instance labels that must be present for a VM
+      instance to be targeted by this filter.
 
   Fields:
-    labels: Google Compute Engine instance labels that must be present for a
-      VM instance to be targeted by this filter.
+    labels: Compute Engine instance labels that must be present for a VM
+      instance to be targeted by this filter.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
-    r"""Google Compute Engine instance labels that must be present for a VM
-    instance to be targeted by this filter.
+    r"""Compute Engine instance labels that must be present for a VM instance
+    to be targeted by this filter.
 
     Messages:
       AdditionalProperty: An additional property for a LabelsValue object.
@@ -1009,14 +1008,14 @@ class PatchInstanceFilterGroupLabel(_messages.Message):
 
 class PatchJob(_messages.Message):
   r"""A high level representation of a patch job that is either in progress or
-  has completed.  Instances details are not included in the job. To paginate
-  through instance details, use ListPatchJobInstanceDetails.  For more
+  has completed.  Instance details are not included in the job. To paginate
+  through instance details, use `ListPatchJobInstanceDetails`.  For more
   information about patch jobs, see [Creating patch
   jobs](https://cloud.google.com/compute/docs/os-patch-management/create-
   patch-job).
 
   Enums:
-    StateValueValuesEnum: The current state of the PatchJob .
+    StateValueValuesEnum: The current state of the PatchJob.
 
   Fields:
     createTime: Time this patch job was created.
@@ -1039,12 +1038,12 @@ class PatchJob(_messages.Message):
       this patch job.
     percentComplete: Reflects the overall progress of the patch job in the
       range of 0.0 being no progress to 100.0 being complete.
-    state: The current state of the PatchJob .
+    state: The current state of the PatchJob.
     updateTime: Last time this patch job was updated.
   """
 
   class StateValueValuesEnum(_messages.Enum):
-    r"""The current state of the PatchJob .
+    r"""The current state of the PatchJob.
 
     Values:
       STATE_UNSPECIFIED: State must be specified.

@@ -26,7 +26,7 @@ from googlecloudsdk.command_lib.code import yaml_helper
 from googlecloudsdk.core import yaml
 
 _SKAFFOLD_TEMPLATE = """
-apiVersion: skaffold/v1
+apiVersion: skaffold/v2beta1
 kind: Config
 build:
   artifacts: []
@@ -97,7 +97,11 @@ class LocalRuntimeFiles(object):
     manifests.append(kubernetes_file_path)
     artifact = {'image': self._settings.image_name}
     if self._settings.builder:
-      artifact['buildpack'] = {'builder': self._settings.builder}
+      artifact['buildpack'] = {
+          'builder': self._settings.builder,
+          'env': ['GOOGLE_DEVMODE=1']
+      }
+      artifact['sync'] = {'auto': {}}
     elif self._settings.dockerfile:
       artifact['docker'] = {'dockerfile': self._settings.dockerfile}
 

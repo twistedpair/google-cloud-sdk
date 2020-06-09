@@ -628,31 +628,12 @@ class GkehubProjectsLocationsMembershipsGetIamPolicyRequest(_messages.Message):
 class GkehubProjectsLocationsMembershipsGetRequest(_messages.Message):
   r"""A GkehubProjectsLocationsMembershipsGetRequest object.
 
-  Enums:
-    ViewValueValuesEnum: Optional. View for partial response.
-
   Fields:
     name: Required. The Membership resource name in the format:
       `projects/[project_number]/locations/global/memberships/[membership_id]`
-    view: Optional. View for partial response.
   """
 
-  class ViewValueValuesEnum(_messages.Enum):
-    r"""Optional. View for partial response.
-
-    Values:
-      MEMBERSHIP_VIEW_UNSPECIFIED: <no description>
-      BASIC: <no description>
-      FULL: <no description>
-      WITH_MEMBERSHIP_RESOURCES: <no description>
-    """
-    MEMBERSHIP_VIEW_UNSPECIFIED = 0
-    BASIC = 1
-    FULL = 2
-    WITH_MEMBERSHIP_RESOURCES = 3
-
   name = _messages.StringField(1, required=True)
-  view = _messages.EnumField('ViewValueValuesEnum', 2)
 
 
 class GkehubProjectsLocationsMembershipsListRequest(_messages.Message):
@@ -873,18 +854,29 @@ class KubernetesResource(_messages.Message):
 
   Fields:
     connectResources: Output only. The Kubernetes resources for installing GKE
-      Connect agent. Thie field is only populated upon GetRequest if
-      MembershipView = `FULL`,
-    connectVersion: Optional. The connect version to generate for
-      connect_resources, default to the latest.
+      Connect agent. This field is only populated in the Membership returned
+      after the long-running operation of Create/UpdateMembership finished,
+      but not in standalone Get/ListMembership requests. To get the resource
+      manifest after the initial registration, the caller could make an
+      UpdateMembership call with an empty field mask.
+    connectVersion: Input only. The connect version to generate for
+      connect_resources. * If set to "latest", the latest Connect resources
+      will be populated. This   should be the default option for most clients.
+      * If set to a specific Connect version, the Connect resources of the
+      version will be generated. If the version does not exist or is already
+      out of support window, an INVALID_ARGUMENT error will be returned. * If
+      unset connect_resources will not be populated.
     membershipCrManifest: Input only. The YAML representation of the
       Membership CR if already exists in the cluster. Leave empty if no
       Membership CR exists. The CR manifest will be used to validate that the
       cluster has not been registered with another Membership.
     membershipResources: Output only. The additional Kubernetes resources that
       need to be applied to the cluster after the membership creation and
-      every update. This field is only populated upon GetRequest if
-      MembershipView = `WITH_MEMBERSHIP_RESOURCES` or `FULL`.
+      every update. This field is only populated in the Membership returned
+      after the long-running operation of Create/UpdateMembership finished,
+      but not in standalone Get/ListMembership requests. To get the resource
+      manifest after the initial registration, the caller could make an
+      UpdateMembership call with an empty field mask.
   """
 
   connectResources = _messages.MessageField('ResourceManifest', 1, repeated=True)

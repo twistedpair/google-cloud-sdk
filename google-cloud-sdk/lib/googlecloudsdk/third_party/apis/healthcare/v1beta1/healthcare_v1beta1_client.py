@@ -36,6 +36,7 @@ class HealthcareV1beta1(base_api.BaseApiClient):
         default_global_params=default_global_params,
         additional_http_headers=additional_http_headers,
         response_encoding=response_encoding)
+    self.projects_locations_datasets_annotationStores_annotations = self.ProjectsLocationsDatasetsAnnotationStoresAnnotationsService(self)
     self.projects_locations_datasets_annotationStores = self.ProjectsLocationsDatasetsAnnotationStoresService(self)
     self.projects_locations_datasets_dicomStores_studies_series_instances_frames = self.ProjectsLocationsDatasetsDicomStoresStudiesSeriesInstancesFramesService(self)
     self.projects_locations_datasets_dicomStores_studies_series_instances = self.ProjectsLocationsDatasetsDicomStoresStudiesSeriesInstancesService(self)
@@ -51,6 +52,156 @@ class HealthcareV1beta1(base_api.BaseApiClient):
     self.projects_locations = self.ProjectsLocationsService(self)
     self.projects = self.ProjectsService(self)
 
+  class ProjectsLocationsDatasetsAnnotationStoresAnnotationsService(base_api.BaseApiService):
+    """Service class for the projects_locations_datasets_annotationStores_annotations resource."""
+
+    _NAME = 'projects_locations_datasets_annotationStores_annotations'
+
+    def __init__(self, client):
+      super(HealthcareV1beta1.ProjectsLocationsDatasetsAnnotationStoresAnnotationsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Creates a new Annotation record. It is.
+valid to create Annotation objects for the same source more than once since
+a unique ID is assigned to each record by this service.
+
+      Args:
+        request: (HealthcareProjectsLocationsDatasetsAnnotationStoresAnnotationsCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Annotation) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/annotationStores/{annotationStoresId}/annotations',
+        http_method='POST',
+        method_id='healthcare.projects.locations.datasets.annotationStores.annotations.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=[],
+        relative_path='v1beta1/{+parent}/annotations',
+        request_field='annotation',
+        request_type_name='HealthcareProjectsLocationsDatasetsAnnotationStoresAnnotationsCreateRequest',
+        response_type_name='Annotation',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes an Annotation or returns.
+NOT_FOUND if it does not exist.
+
+      Args:
+        request: (HealthcareProjectsLocationsDatasetsAnnotationStoresAnnotationsDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Empty) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/annotationStores/{annotationStoresId}/annotations/{annotationsId}',
+        http_method='DELETE',
+        method_id='healthcare.projects.locations.datasets.annotationStores.annotations.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1beta1/{+name}',
+        request_field='',
+        request_type_name='HealthcareProjectsLocationsDatasetsAnnotationStoresAnnotationsDeleteRequest',
+        response_type_name='Empty',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Gets an Annotation.
+
+      Args:
+        request: (HealthcareProjectsLocationsDatasetsAnnotationStoresAnnotationsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Annotation) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/annotationStores/{annotationStoresId}/annotations/{annotationsId}',
+        http_method='GET',
+        method_id='healthcare.projects.locations.datasets.annotationStores.annotations.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1beta1/{+name}',
+        request_field='',
+        request_type_name='HealthcareProjectsLocationsDatasetsAnnotationStoresAnnotationsGetRequest',
+        response_type_name='Annotation',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists the Annotations in the given.
+Annotation store for a source
+resource.
+
+      Args:
+        request: (HealthcareProjectsLocationsDatasetsAnnotationStoresAnnotationsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListAnnotationsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/annotationStores/{annotationStoresId}/annotations',
+        http_method='GET',
+        method_id='healthcare.projects.locations.datasets.annotationStores.annotations.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'pageSize', 'pageToken', 'view'],
+        relative_path='v1beta1/{+parent}/annotations',
+        request_field='',
+        request_type_name='HealthcareProjectsLocationsDatasetsAnnotationStoresAnnotationsListRequest',
+        response_type_name='ListAnnotationsResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Updates the Annotation.
+
+      Args:
+        request: (HealthcareProjectsLocationsDatasetsAnnotationStoresAnnotationsPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Annotation) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/annotationStores/{annotationStoresId}/annotations/{annotationsId}',
+        http_method='PATCH',
+        method_id='healthcare.projects.locations.datasets.annotationStores.annotations.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v1beta1/{+name}',
+        request_field='annotation',
+        request_type_name='HealthcareProjectsLocationsDatasetsAnnotationStoresAnnotationsPatchRequest',
+        response_type_name='Annotation',
+        supports_download=False,
+    )
+
   class ProjectsLocationsDatasetsAnnotationStoresService(base_api.BaseApiService):
     """Service class for the projects_locations_datasets_annotationStores resource."""
 
@@ -60,6 +211,162 @@ class HealthcareV1beta1(base_api.BaseApiClient):
       super(HealthcareV1beta1.ProjectsLocationsDatasetsAnnotationStoresService, self).__init__(client)
       self._upload_configs = {
           }
+
+    def Create(self, request, global_params=None):
+      r"""Creates a new Annotation store within the parent dataset.
+
+      Args:
+        request: (HealthcareProjectsLocationsDatasetsAnnotationStoresCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (AnnotationStore) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/annotationStores',
+        http_method='POST',
+        method_id='healthcare.projects.locations.datasets.annotationStores.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['annotationStoreId'],
+        relative_path='v1beta1/{+parent}/annotationStores',
+        request_field='annotationStore',
+        request_type_name='HealthcareProjectsLocationsDatasetsAnnotationStoresCreateRequest',
+        response_type_name='AnnotationStore',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes the specified Annotation store and removes all annotations that are.
+contained within it.
+
+      Args:
+        request: (HealthcareProjectsLocationsDatasetsAnnotationStoresDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Empty) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/annotationStores/{annotationStoresId}',
+        http_method='DELETE',
+        method_id='healthcare.projects.locations.datasets.annotationStores.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1beta1/{+name}',
+        request_field='',
+        request_type_name='HealthcareProjectsLocationsDatasetsAnnotationStoresDeleteRequest',
+        response_type_name='Empty',
+        supports_download=False,
+    )
+
+    def Evaluate(self, request, global_params=None):
+      r"""Evaluate an Annotation store against a.
+ground truth Annotation store.
+When the operation finishes successfully, a detailed response is returned
+of type EvaluateAnnotationStoreResponse, contained in the response. The metadata field type is
+OperationMetadata.
+Errors are logged to Cloud Logging
+(see [Viewing logs](/healthcare/docs/how-tos/logging)).
+
+      Args:
+        request: (HealthcareProjectsLocationsDatasetsAnnotationStoresEvaluateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Evaluate')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Evaluate.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/annotationStores/{annotationStoresId}:evaluate',
+        http_method='POST',
+        method_id='healthcare.projects.locations.datasets.annotationStores.evaluate',
+        ordered_params=['evalStore'],
+        path_params=['evalStore'],
+        query_params=[],
+        relative_path='v1beta1/{+evalStore}:evaluate',
+        request_field='evaluateAnnotationStoreRequest',
+        request_type_name='HealthcareProjectsLocationsDatasetsAnnotationStoresEvaluateRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Export(self, request, global_params=None):
+      r"""Export.
+Annotations from
+the Annotation
+store.
+If the request is successful, a detailed response is returned of type
+ExportAnnotationsResponse, contained in the
+response field when the
+operation finishes.
+The metadata field type is
+OperationMetadata.
+If errors occur, the error
+field type is ImportAnnotationsErrorDetails.
+Errors are also logged to Cloud Logging
+(see [Viewing logs](/healthcare/docs/how-tos/logging)).
+
+      Args:
+        request: (HealthcareProjectsLocationsDatasetsAnnotationStoresExportRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Export')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Export.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/annotationStores/{annotationStoresId}:export',
+        http_method='POST',
+        method_id='healthcare.projects.locations.datasets.annotationStores.export',
+        ordered_params=['annotationStore'],
+        path_params=['annotationStore'],
+        query_params=[],
+        relative_path='v1beta1/{+annotationStore}:export',
+        request_field='exportAnnotationsRequest',
+        request_type_name='HealthcareProjectsLocationsDatasetsAnnotationStoresExportRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Gets the specified Annotation store or returns NOT_FOUND if it does not.
+exist.
+
+      Args:
+        request: (HealthcareProjectsLocationsDatasetsAnnotationStoresGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (AnnotationStore) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/annotationStores/{annotationStoresId}',
+        http_method='GET',
+        method_id='healthcare.projects.locations.datasets.annotationStores.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1beta1/{+name}',
+        request_field='',
+        request_type_name='HealthcareProjectsLocationsDatasetsAnnotationStoresGetRequest',
+        response_type_name='AnnotationStore',
+        supports_download=False,
+    )
 
     def GetIamPolicy(self, request, global_params=None):
       r"""Gets the access control policy for a resource.
@@ -87,6 +394,101 @@ set.
         request_field='',
         request_type_name='HealthcareProjectsLocationsDatasetsAnnotationStoresGetIamPolicyRequest',
         response_type_name='Policy',
+        supports_download=False,
+    )
+
+    def Import(self, request, global_params=None):
+      r"""Import.
+Annotations to
+the Annotation
+store by
+loading data from the specified sources.
+If the request is successful, a detailed response is returned as of type
+ImportAnnotationsResponse, contained in the
+response field when the
+operation finishes.
+The metadata field type is
+OperationMetadata.
+If errors occur, the error
+field type is ImportAnnotationsErrorDetails.
+Errors are also logged to Cloud Logging
+(see [Viewing logs](/healthcare/docs/how-tos/logging)).
+
+      Args:
+        request: (HealthcareProjectsLocationsDatasetsAnnotationStoresImportRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Import')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Import.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/annotationStores/{annotationStoresId}:import',
+        http_method='POST',
+        method_id='healthcare.projects.locations.datasets.annotationStores.import',
+        ordered_params=['annotationStore'],
+        path_params=['annotationStore'],
+        query_params=[],
+        relative_path='v1beta1/{+annotationStore}:import',
+        request_field='importAnnotationsRequest',
+        request_type_name='HealthcareProjectsLocationsDatasetsAnnotationStoresImportRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists the Annotation stores in the given dataset for a source store.
+
+      Args:
+        request: (HealthcareProjectsLocationsDatasetsAnnotationStoresListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListAnnotationStoresResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/annotationStores',
+        http_method='GET',
+        method_id='healthcare.projects.locations.datasets.annotationStores.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'pageSize', 'pageToken'],
+        relative_path='v1beta1/{+parent}/annotationStores',
+        request_field='',
+        request_type_name='HealthcareProjectsLocationsDatasetsAnnotationStoresListRequest',
+        response_type_name='ListAnnotationStoresResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Updates the specified Annotation store.
+
+      Args:
+        request: (HealthcareProjectsLocationsDatasetsAnnotationStoresPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (AnnotationStore) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/annotationStores/{annotationStoresId}',
+        http_method='PATCH',
+        method_id='healthcare.projects.locations.datasets.annotationStores.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v1beta1/{+name}',
+        request_field='annotationStore',
+        request_type_name='HealthcareProjectsLocationsDatasetsAnnotationStoresPatchRequest',
+        response_type_name='AnnotationStore',
         supports_download=False,
     )
 

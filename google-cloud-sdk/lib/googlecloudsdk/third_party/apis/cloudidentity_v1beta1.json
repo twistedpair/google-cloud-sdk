@@ -103,6 +103,9 @@
   "auth": {
     "oauth2": {
       "scopes": {
+        "https://www.googleapis.com/auth/cloud-identity.devices.lookup": {
+          "description": "See your device details"
+        },
         "https://www.googleapis.com/auth/cloud-identity.groups": {
           "description": "See, change, create, and delete any of the Cloud Identity Groups that you can access, including the members of each group"
         },
@@ -3001,7 +3004,7 @@
                     "name"
                   ],
                   "response": {
-                    "$ref": "ClientState"
+                    "$ref": "Operation"
                   },
                   "description": "Get client state for a device user"
                 },
@@ -3125,6 +3128,7 @@
                     "$ref": "Operation"
                   },
                   "scopes": [
+                    "https://www.googleapis.com/auth/cloud-identity.devices.lookup",
                     "https://www.googleapis.com/auth/userinfo.profile"
                   ],
                   "description": "Looks up resource names of the DeviceUsers associated with the\ncaller's credentials, as well as the properties provided in the request."

@@ -921,7 +921,7 @@
           "format": "int64"
         },
         "substitutionOption": {
-          "description": "Option to specify behavior when there is an error in the substitution\nchecks.",
+          "description": "Option to specify behavior when there is an error in the substitution\nchecks.\n\nNOTE: this is always set to ALLOW_LOOSE for triggered builds and cannot\nbe overridden in the build configuration file.",
           "enumDescriptions": [
             "Fails the build if error in substitutions checks, like missing\na substitution in the template or in the map.",
             "Do not fail the build if error in substitutions checks."
@@ -931,6 +931,10 @@
             "MUST_MATCH",
             "ALLOW_LOOSE"
           ]
+        },
+        "dynamicSubstitutions": {
+          "description": "Option to specify whether or not to apply bash style string\noperations to the substitutions.\n\nNOTE: this is always enabled for triggered builds and cannot be\noverridden in the build configuration file.",
+          "type": "boolean"
         },
         "logStreamingOption": {
           "description": "Option to define build log streaming behavior to Google Cloud\nStorage.",

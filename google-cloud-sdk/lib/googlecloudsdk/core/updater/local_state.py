@@ -549,16 +549,25 @@ class InstallationState(object):
     root = self.__sdk_root
 
     dirs_to_remove = set()
+    pycache_dirs = set()
     for num, p in enumerate(paths, start=1):
       path = os.path.join(root, p)
       if os.path.isfile(path) or os.path.islink(path):
         os.remove(path)
-        # Clean up the pyc files that correspond to any py files being removed.
+        dir_path = os.path.dirname(os.path.normpath(p))
         if p.endswith('.py'):
+          # Python 2 processes leave behind .pyc files adjacent to the .py file;
+          # clean these up for any .py files being removed.
           pyc_path = path + 'c'
           if os.path.isfile(pyc_path):
             os.remove(pyc_path)
-        dir_path = os.path.dirname(os.path.normpath(p))
+          # Python 3 processes leave behind __pycache__ folders in the .py
+          # file's directory; clean these up as well. Since the .pyc files
+          # within have different suffixes depending on the Python version, and
+          # the version of Python that compiled the file may differ from the
+          # current one running, it's faster to just delete the whole folder
+          # later instead of trying to match the file(s) here.
+          pycache_dirs.add(os.path.join(root, dir_path, '__pycache__'))
         while dir_path:
           dirs_to_remove.add(os.path.join(root, dir_path))
           dir_path = os.path.dirname(dir_path)
@@ -566,6 +575,10 @@ class InstallationState(object):
         dirs_to_remove.add(os.path.normpath(path))
       if progress_callback:
         progress_callback(num / total_paths)
+
+    for d in pycache_dirs:
+      if os.path.isdir(d) and not os.path.islink(d):
+        file_utils.RmTree(d)
 
     # Remove dirs from the bottom up.  Subdirs will always have a longer path
     # than it's parent.
