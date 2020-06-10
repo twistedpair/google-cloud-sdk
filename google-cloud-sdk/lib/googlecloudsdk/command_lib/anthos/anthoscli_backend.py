@@ -235,6 +235,8 @@ def _GetClusterConfig(all_configs, cluster):
 
 def GetPreferredAuthForCluster(cluster, config_file, force_update=False):
   """Get preferredAuthentication value for cluster."""
+  if not (cluster and config_file):
+    return None
   configs = file_parsers.YamlConfigFile(config_file,
                                         file_parsers.LoginConfigObject)
   cluster_config = _GetClusterConfig(configs, cluster)
