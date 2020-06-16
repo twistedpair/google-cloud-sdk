@@ -12,7 +12,6 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
 """Default values and fallbacks for missing surface arguments."""
 
 from __future__ import absolute_import
@@ -28,8 +27,8 @@ from googlecloudsdk.command_lib.apigee import errors
 from googlecloudsdk.core import config
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
-from googlecloudsdk.core.util import files
 from googlecloudsdk.core import yaml
+from googlecloudsdk.core.util import files
 
 
 def _CachedDataWithName(name):
@@ -45,7 +44,7 @@ def _CachedDataWithName(name):
     not be read for whatever reason.
   """
   config_dir = config.Paths().global_config_dir
-  cache_path = os.path.join(config_dir, ".apigee-cached-"+name)
+  cache_path = os.path.join(config_dir, ".apigee-cached-" + name)
   if not os.path.isfile(cache_path):
     return {}
   try:
@@ -66,7 +65,7 @@ def _SaveCachedDataWithName(data, name):
     name: The name of the cache file.
   """
   config_dir = config.Paths().global_config_dir
-  cache_path = os.path.join(config_dir, ".apigee-cached-"+name)
+  cache_path = os.path.join(config_dir, ".apigee-cached-" + name)
   files.WriteFileContents(cache_path, yaml.dump(data))
 
 
@@ -87,6 +86,34 @@ class Fallthrough(deps.Fallthrough):
         "actually provide a fallthrough.")
 
 
+def OrganizationFromGCPProduct():
+  """Returns the organization associated with the active GCP project."""
+  project = properties.VALUES.core.project.Get()
+  if project is None:
+    log.warning("Neither Apigee organization nor GCP project is known.")
+    return None
+
+  # Listing organizations is an expensive operation for users with a lot of GCP
+  # projects. Since the GCP project -> Apigee organization mapping is immutable
+  # once created, cache known mappings to avoid the extra API call.
+
+  project_mapping = _CachedDataWithName("project-mapping")
+  if project not in project_mapping:
+    for organization in apigee.OrganizationsClient.List()["organizations"]:
+      organization_name = organization["organization"]
+      for matching_project in organization["projectIds"]:
+        project_mapping[matching_project] = organization_name
+    _SaveCachedDataWithName(project_mapping, "project-mapping")
+
+  if project not in project_mapping:
+    log.warning("No Apigee organization found for GCP project `%s`." % project)
+    return None
+
+  chosen_organization = project_mapping[project]
+  log.status.Print("Using Apigee organization `%s`" % chosen_organization)
+  return chosen_organization
+
+
 class GCPProductOrganizationFallthrough(Fallthrough):
   """Falls through to the organization for the active GCP project."""
   _handled_fields = ["organization"]
@@ -98,39 +125,7 @@ class GCPProductOrganizationFallthrough(Fallthrough):
         "organization")
 
   def _Call(self, parsed_args):
-    project = properties.VALUES.core.project.Get()
-    if project is None:
-      log.warning("Neither Apigee organization nor GCP project is known.")
-      return None
-
-    # Listing organizations is an expensive operation for users with a lot of
-    # GCP projects. Since the GCP project -> Apigee organization mapping is
-    # immutable once created, cache known mappings to avoid the extra API call.
-
-    project_mapping = _CachedDataWithName("project-mapping")
-    if project not in project_mapping:
-      for organization in apigee.OrganizationsClient.List()["organizations"]:
-        organization_name = organization["organization"]
-        for matching_project in organization["projectIds"]:
-          if matching_project in project_mapping:
-            # Supposedly project->organization mapping will never change once
-            # established, but the data structure allows it. Warn if this kind
-            # of thing happens.
-            old_organization = project_mapping[matching_project]
-            if old_organization != organization_name:
-              log.warning(
-                  "GCP project `%s` has conflicting organizations: %s %s"
-                  %(matching_project, organization, old_organization))
-          project_mapping[matching_project] = organization_name
-      _SaveCachedDataWithName(project_mapping, "project-mapping")
-
-    if project not in project_mapping:
-      log.warning("No Apigee organization found for GCP project `%s`."%project)
-      return None
-
-    chosen_organization = project_mapping[project]
-    log.status.Print("Using Apigee organization `%s`"%chosen_organization)
-    return chosen_organization
+    return OrganizationFromGCPProduct()
 
 
 class StaticFallthrough(Fallthrough):
@@ -138,7 +133,7 @@ class StaticFallthrough(Fallthrough):
 
   def __init__(self, argument, value):
     super(StaticFallthrough, self).__init__(
-        "file a bug; this argument should be optional")
+        "leave the argument unspecified for it to be chosen automatically")
     self._handled_fields = [argument]
     self.value = value
 
@@ -150,8 +145,8 @@ def FallBackToDeployedProxyRevision(args):
   """If `args` provides no revision, adds the deployed revision, if unambiguous.
 
   Args:
-    args: a dictionary of resource identifiers which identifies an API proxy
-      and an environment, to which the deployed revision should be added.
+    args: a dictionary of resource identifiers which identifies an API proxy and
+      an environment, to which the deployed revision should be added.
 
   Raises:
     EntityNotFoundError: no deployment that matches `args` exists.
@@ -162,16 +157,14 @@ def FallBackToDeployedProxyRevision(args):
   if not deployments:
     error_identifier = collections.OrderedDict([
         ("organization", args["organizationsId"]),
-        ("environment", args["environmentsId"]),
-        ("api", args["apisId"])
+        ("environment", args["environmentsId"]), ("api", args["apisId"])
     ])
-    raise errors.EntityNotFoundError(
-        "deployment", error_identifier, "undeploy")
+    raise errors.EntityNotFoundError("deployment", error_identifier, "undeploy")
 
   if len(deployments) > 1:
     message = "Found more than one deployment that matches this request.\n"
     raise errors.AmbiguousRequestError(message + yaml.dump(deployments))
 
   deployed_revision = deployments[0]["revision"]
-  log.status.Print("Using deployed revision `%s`"%deployed_revision)
+  log.status.Print("Using deployed revision `%s`" % deployed_revision)
   args["revisionsId"] = deployed_revision

@@ -34,18 +34,23 @@ import six
 
 
 def CheckSpecifiedDiskArgs(args,
+                           support_disks=True,
                            skip_defaults=False,
                            support_kms=False,
                            support_nvdimm=False):
   """Checks if relevant disk arguments have been specified."""
   flags_to_check = [
-      'disk',
       'local_ssd',
       'boot_disk_type',
       'boot_disk_device_name',
       'boot_disk_auto_delete',
-      'require_csek_key_create',
   ]
+
+  if support_disks:
+    flags_to_check.extend([
+        'disk',
+        'require_csek_key_create',
+    ])
   if support_kms:
     flags_to_check.extend([
         'create_disk',
@@ -139,9 +144,9 @@ def CreateDiskMessages(args,
     boot_disk = CreateDefaultBootAttachedDiskMessage(
         compute_client=compute_client,
         resources=resource_parser,
-        disk_type=getattr(args, 'boot_disk_type', None),
-        disk_device_name=getattr(args, 'boot_disk_device_name', None),
-        disk_auto_delete=getattr(args, 'boot_disk_auto_delete', None),
+        disk_type=args.boot_disk_type,
+        disk_device_name=args.boot_disk_device_name,
+        disk_auto_delete=args.boot_disk_auto_delete,
         disk_size_gb=boot_disk_size_gb,
         require_csek_key_create=(args.require_csek_key_create
                                  if csek_keys else None),
@@ -576,6 +581,34 @@ def _CreateLocalSsdMessage(resources,
   return local_ssd
 
 
+def GetBulkNetworkInterfaces(args, resource_parser, compute_client, holder,
+                             project, location, scope, skip_defaults):
+  if (skip_defaults and not instance_utils.IsAnySpecified(
+      args, 'network_interface', 'network', 'network_tier', 'subnet')):
+    return []
+  elif args.network_interface:
+    return CreateNetworkInterfaceMessages(
+        resources=resource_parser,
+        compute_client=compute_client,
+        network_interface_arg=args.network_interface,
+        project=project,
+        location=location,
+        scope=scope)
+  else:
+    return [
+        CreateNetworkInterfaceMessage(
+            resources=holder.resources,
+            compute_client=compute_client,
+            network=args.network,
+            subnet=args.subnet,
+            project=project,
+            location=location,
+            scope=scope,
+            network_tier=getattr(args, 'network_tier', None),
+        )
+    ]
+
+
 def GetNetworkInterfaces(args, client, holder, project, location, scope,
                          skip_defaults):
   """Get network interfaces."""
@@ -599,7 +632,6 @@ def GetNetworkInterfaces(args, client, holder, project, location, scope,
           compute_client=client,
           network=args.network,
           subnet=args.subnet,
-          private_network_ip=args.private_network_ip,
           no_address=args.no_address,
           address=args.address,
           project=project,
@@ -609,6 +641,7 @@ def GetNetworkInterfaces(args, client, holder, project, location, scope,
           public_ptr=args.public_ptr,
           no_public_ptr_domain=args.no_public_ptr_domain,
           public_ptr_domain=args.public_ptr_domain,
+          private_network_ip=getattr(args, 'private_network_ip', None),
           network_tier=getattr(args, 'network_tier', None),
       )
   ]
@@ -627,12 +660,12 @@ def GetNetworkInterfacesAlpha(args, client, holder, project, location, scope,
           compute_client=client,
           network=args.network,
           subnet=args.subnet,
-          private_network_ip=args.private_network_ip,
           no_address=args.no_address,
           address=args.address,
           project=project,
           location=location,
           scope=scope,
+          private_network_ip=getattr(args, 'private_network_ip', None),
           network_tier=getattr(args, 'network_tier', None),
           no_public_dns=getattr(args, 'no_public_dns', None),
           public_dns=getattr(args, 'public_dns', None),
@@ -647,12 +680,12 @@ def CreateNetworkInterfaceMessage(resources,
                                   compute_client,
                                   network,
                                   subnet,
-                                  private_network_ip,
-                                  no_address,
-                                  address,
                                   project,
                                   location,
                                   scope,
+                                  no_address=None,
+                                  address=None,
+                                  private_network_ip=None,
                                   alias_ip_ranges_string=None,
                                   network_tier=None,
                                   no_public_dns=None,
@@ -768,11 +801,18 @@ def CreateNetworkInterfaceMessages(resources, compute_client,
 
       result.append(
           CreateNetworkInterfaceMessage(
-              resources, compute_client, interface.get('network', None),
-              interface.get('subnet', None),
-              interface.get('private-network-ip', None),
-              no_address, address, project, location, scope,
-              interface.get('aliases', None), network_tier))
+              resources=resources,
+              compute_client=compute_client,
+              network=interface.get('network', None),
+              subnet=interface.get('subnet', None),
+              private_network_ip=interface.get('private-network-ip', None),
+              no_address=no_address,
+              address=address,
+              project=project,
+              location=location,
+              scope=scope,
+              alias_ip_ranges_string=interface.get('aliases', None),
+              network_tier=network_tier))
   return result
 
 

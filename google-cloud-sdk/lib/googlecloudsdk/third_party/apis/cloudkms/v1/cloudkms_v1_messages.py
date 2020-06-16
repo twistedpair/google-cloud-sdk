@@ -145,13 +145,13 @@ class AuditConfig(_messages.Message):
   service: the log_types specified in each AuditConfig are enabled, and the
   exempted_members in each AuditLogConfig are exempted.  Example Policy with
   multiple AuditConfigs:      {       "audit_configs": [         {
-  "service": "allServices"           "audit_log_configs": [             {
+  "service": "allServices",           "audit_log_configs": [             {
   "log_type": "DATA_READ",               "exempted_members": [
   "user:jose@example.com"               ]             },             {
-  "log_type": "DATA_WRITE",             },             {
-  "log_type": "ADMIN_READ",             }           ]         },         {
-  "service": "sampleservice.googleapis.com"           "audit_log_configs": [
-  {               "log_type": "DATA_READ",             },             {
+  "log_type": "DATA_WRITE"             },             {
+  "log_type": "ADMIN_READ"             }           ]         },         {
+  "service": "sampleservice.googleapis.com",           "audit_log_configs": [
+  {               "log_type": "DATA_READ"             },             {
   "log_type": "DATA_WRITE",               "exempted_members": [
   "user:aliya@example.com"               ]             }           ]         }
   ]     }  For sampleservice, this policy enables DATA_READ, DATA_WRITE and
@@ -173,7 +173,7 @@ class AuditLogConfig(_messages.Message):
   r"""Provides the configuration for logging a type of permissions. Example:
   {       "audit_log_configs": [         {           "log_type": "DATA_READ",
   "exempted_members": [             "user:jose@example.com"           ]
-  },         {           "log_type": "DATA_WRITE",         }       ]     }
+  },         {           "log_type": "DATA_WRITE"         }       ]     }
   This enables 'DATA_READ' and 'DATA_WRITE' logging, while exempting
   jose@example.com from DATA_READ logging.
 
@@ -866,12 +866,12 @@ class CryptoKey(_messages.Message):
 
   Messages:
     LabelsValue: Labels with user-defined metadata. For more information, see
-      [Labeling Keys](/kms/docs/labeling-keys).
+      [Labeling Keys](https://cloud.google.com/kms/docs/labeling-keys).
 
   Fields:
     createTime: Output only. The time at which this CryptoKey was created.
     labels: Labels with user-defined metadata. For more information, see
-      [Labeling Keys](/kms/docs/labeling-keys).
+      [Labeling Keys](https://cloud.google.com/kms/docs/labeling-keys).
     name: Output only. The resource name for this CryptoKey in the format
       `projects/*/locations/*/keyRings/*/cryptoKeys/*`.
     nextRotationTime: At next_rotation_time, the Key Management Service will
@@ -917,7 +917,7 @@ class CryptoKey(_messages.Message):
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
     r"""Labels with user-defined metadata. For more information, see [Labeling
-    Keys](/kms/docs/labeling-keys).
+    Keys](https://cloud.google.com/kms/docs/labeling-keys).
 
     Messages:
       AdditionalProperty: An additional property for a LabelsValue object.

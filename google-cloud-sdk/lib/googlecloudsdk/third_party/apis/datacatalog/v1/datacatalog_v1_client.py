@@ -42,6 +42,7 @@ class DatacatalogV1(base_api.BaseApiClient):
     self.projects_locations_entryGroups_entries = self.ProjectsLocationsEntryGroupsEntriesService(self)
     self.projects_locations_entryGroups_tags = self.ProjectsLocationsEntryGroupsTagsService(self)
     self.projects_locations_entryGroups = self.ProjectsLocationsEntryGroupsService(self)
+    self.projects_locations_tagTemplates_fields_enumValues = self.ProjectsLocationsTagTemplatesFieldsEnumValuesService(self)
     self.projects_locations_tagTemplates_fields = self.ProjectsLocationsTagTemplatesFieldsService(self)
     self.projects_locations_tagTemplates = self.ProjectsLocationsTagTemplatesService(self)
     self.projects_locations = self.ProjectsLocationsService(self)
@@ -917,6 +918,44 @@ request.
         request_field='testIamPermissionsRequest',
         request_type_name='DatacatalogProjectsLocationsEntryGroupsTestIamPermissionsRequest',
         response_type_name='TestIamPermissionsResponse',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsTagTemplatesFieldsEnumValuesService(base_api.BaseApiService):
+    """Service class for the projects_locations_tagTemplates_fields_enumValues resource."""
+
+    _NAME = 'projects_locations_tagTemplates_fields_enumValues'
+
+    def __init__(self, client):
+      super(DatacatalogV1.ProjectsLocationsTagTemplatesFieldsEnumValuesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Rename(self, request, global_params=None):
+      r"""Renames an enum value in a tag template. The enum values have to be unique.
+within one enum field.
+
+      Args:
+        request: (DatacatalogProjectsLocationsTagTemplatesFieldsEnumValuesRenameRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudDatacatalogV1TagTemplateField) The response message.
+      """
+      config = self.GetMethodConfig('Rename')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Rename.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/tagTemplates/{tagTemplatesId}/fields/{fieldsId}/enumValues/{enumValuesId}:rename',
+        http_method='POST',
+        method_id='datacatalog.projects.locations.tagTemplates.fields.enumValues.rename',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}:rename',
+        request_field='googleCloudDatacatalogV1RenameTagTemplateFieldEnumValueRequest',
+        request_type_name='DatacatalogProjectsLocationsTagTemplatesFieldsEnumValuesRenameRequest',
+        response_type_name='GoogleCloudDatacatalogV1TagTemplateField',
         supports_download=False,
     )
 

@@ -45,6 +45,19 @@ def AddWorkflowTemplatesArgs(parser, api_version):
       help='(Optional) List of step IDs to start this job after.')
 
 
+def AddDagTimeoutFlag(parser, is_required):
+  parser.add_argument(
+      '--dag-timeout',
+      type=arg_parsers.Duration(),
+      required=is_required,
+      help="""\
+          The duration for which a DAG of jobs can run before being
+          auto-cancelled, such as "10m" or "16h".
+          See $ gcloud topic datetimes for information on duration formats.
+          """,
+      hidden=True)
+
+
 def CreateWorkflowTemplateOrderedJob(args, dataproc):
   """Create an ordered job for workflow template."""
   ordered_job = dataproc.messages.OrderedJob(stepId=args.step_id)

@@ -410,9 +410,16 @@ def WaitForOperations(
         if operation.error:
           continue
 
+        # If the operation is done and we do not want to get the target resource
+        # but do want to print results from the operation, we return the
+        # operation.
+        if data.no_followup:
+          yield operation
+          continue
+
         # We shouldn't get the target resource if the operation type
         # is delete because there will be no resource left.
-        if not _IsDeleteOp(operation.operationType) and not data.no_followup:
+        if not _IsDeleteOp(operation.operationType):
           request = data.ResourceGetRequest()
           # Some operations do not have target and should not send get request.
           if request:

@@ -292,6 +292,13 @@
           "description": "Maximum throughput of the connector in Mbps. Default is 200, max is 1000.",
           "type": "integer",
           "format": "int32"
+        },
+        "connectedProjects": {
+          "description": "Output only. List of projects using the connector.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
         }
       }
     },

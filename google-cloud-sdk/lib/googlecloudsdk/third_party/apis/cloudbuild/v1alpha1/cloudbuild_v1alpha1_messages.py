@@ -260,7 +260,7 @@ class BuildOptions(_messages.Message):
     LogStreamingOptionValueValuesEnum: Option to define build log streaming
       behavior to Google Cloud Storage.
     LoggingValueValuesEnum: Option to specify the logging mode, which
-      determines where the logs are stored.
+      determines if and where build logs are stored.
     MachineTypeValueValuesEnum: Compute Engine machine type on which to run
       the build.
     RequestedVerifyOptionValueValuesEnum: Requested verifiability options.
@@ -289,8 +289,8 @@ class BuildOptions(_messages.Message):
       being given the value "VALUE".
     logStreamingOption: Option to define build log streaming behavior to
       Google Cloud Storage.
-    logging: Option to specify the logging mode, which determines where the
-      logs are stored.
+    logging: Option to specify the logging mode, which determines if and where
+      build logs are stored.
     machineType: Compute Engine machine type on which to run the build.
     requestedVerifyOption: Requested verifiability options.
     secretEnv: A list of global environment variables, which are encrypted
@@ -328,8 +328,8 @@ class BuildOptions(_messages.Message):
     STREAM_OFF = 2
 
   class LoggingValueValuesEnum(_messages.Enum):
-    r"""Option to specify the logging mode, which determines where the logs
-    are stored.
+    r"""Option to specify the logging mode, which determines if and where
+    build logs are stored.
 
     Values:
       LOGGING_UNSPECIFIED: The service determines the logging mode. The

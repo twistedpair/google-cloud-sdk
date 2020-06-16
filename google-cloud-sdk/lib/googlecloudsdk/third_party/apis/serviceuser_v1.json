@@ -1275,13 +1275,6 @@
             "type": "string"
           }
         },
-        "features": {
-          "description": "The list of features enabled on this endpoint.",
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
-        },
         "target": {
           "description": "The specification of an Internet routable address of API frontend that will\nhandle requests to this [API\nEndpoint](https:\/\/cloud.google.com\/apis\/design\/glossary). It should be\neither a valid IPv4 address or a fully-qualified domain name. For example,\n\"8.8.8.8\" or \"myservice.appspot.com\".",
           "type": "string"

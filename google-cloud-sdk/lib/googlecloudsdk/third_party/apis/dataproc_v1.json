@@ -23,11 +23,6 @@
   "batchPath": "batch",
   "fullyEncodeReservedExpansion": true,
   "parameters": {
-    "access_token": {
-      "type": "string",
-      "description": "OAuth access token.",
-      "location": "query"
-    },
     "alt": {
       "type": "string",
       "description": "Data format for response.",
@@ -57,11 +52,6 @@
     "key": {
       "type": "string",
       "description": "API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.",
-      "location": "query"
-    },
-    "oauth_token": {
-      "type": "string",
-      "description": "OAuth 2.0 token for the current user.",
       "location": "query"
     },
     "prettyPrint": {
@@ -406,6 +396,10 @@
         "lifecycleConfig": {
           "description": "Optional. Lifecycle setting for the cluster.",
           "$ref": "LifecycleConfig"
+        },
+        "endpointConfig": {
+          "description": "Optional. Port\/endpoint configuration for this cluster",
+          "$ref": "EndpointConfig"
         }
       }
     },
@@ -630,7 +624,7 @@
         "optionalComponents": {
           "description": "Optional. The set of components to activate on the cluster.",
           "enumDescriptions": [
-            "Unspecified component.",
+            "Unspecified component. Specifying this will cause Cluster creation to fail.",
             "The Anaconda python distribution.",
             "Docker",
             "The Druid query engine.",
@@ -809,6 +803,24 @@
           "description": "Output only. The time when cluster became idle (most recent job finished) and became eligible for deletion due to idleness (see JSON representation of Timestamp (https:\/\/developers.google.com\/protocol-buffers\/docs\/proto3#json)).",
           "type": "string",
           "format": "google-datetime"
+        }
+      }
+    },
+    "EndpointConfig": {
+      "id": "EndpointConfig",
+      "description": "Endpoint config for this cluster",
+      "type": "object",
+      "properties": {
+        "httpPorts": {
+          "description": "Output only. The map of port descriptions to URLs. Will only be populated if enable_http_port_access is true.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "enableHttpPortAccess": {
+          "description": "Optional. If true, enable http access to specific ports on the cluster from external sources. Defaults to false.",
+          "type": "boolean"
         }
       }
     },

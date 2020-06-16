@@ -12,6 +12,43 @@ from apitools.base.py import extra_types
 package = 'tpu'
 
 
+class AcceleratorType(_messages.Message):
+  r"""A accelerator type that a Node can be configured with.
+
+  Fields:
+    name: The resource name.
+    type: the accelerator type.
+  """
+
+  name = _messages.StringField(1)
+  type = _messages.StringField(2)
+
+
+class AccessConfig(_messages.Message):
+  r"""An access config attached to the TPU worker.
+
+  Fields:
+    externalIp: Output only. An external IP address associated with the TPU
+      worker.
+  """
+
+  externalIp = _messages.StringField(1)
+
+
+class AttachedDisk(_messages.Message):
+  r"""A node-attached disk resource.
+
+  Fields:
+    diskSizeGb: Specifies the size of the disk in base-2 GB. The size must be
+      at least 10 GB.
+    sourceImage: Specifies the image full path of the disk. For example:
+      "projects/my-project/global/images/my-image".
+  """
+
+  diskSizeGb = _messages.IntegerField(1)
+  sourceImage = _messages.StringField(2)
+
+
 class Empty(_messages.Message):
   r"""A generic empty message that you can re-use to avoid defining duplicated
   empty messages in your APIs. A typical example is to use it as the request
@@ -20,6 +57,20 @@ class Empty(_messages.Message):
   JSON representation for `Empty` is empty JSON object `{}`.
   """
 
+
+
+class ListAcceleratorTypesResponse(_messages.Message):
+  r"""Response for ListAcceleratorTypes.
+
+  Fields:
+    acceleratorTypes: The listed nodes.
+    nextPageToken: The next page token or empty if none.
+    unreachable: Locations that could not be reached.
+  """
+
+  acceleratorTypes = _messages.MessageField('AcceleratorType', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+  unreachable = _messages.StringField(3, repeated=True)
 
 
 class ListLocationsResponse(_messages.Message):
@@ -35,6 +86,20 @@ class ListLocationsResponse(_messages.Message):
   nextPageToken = _messages.StringField(2)
 
 
+class ListNodesResponse(_messages.Message):
+  r"""Response for ListNodes.
+
+  Fields:
+    nextPageToken: The next page token or empty if none.
+    nodes: The listed nodes.
+    unreachable: Locations that could not be reached.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  nodes = _messages.MessageField('Node', 2, repeated=True)
+  unreachable = _messages.StringField(3, repeated=True)
+
+
 class ListOperationsResponse(_messages.Message):
   r"""The response message for Operations.ListOperations.
 
@@ -46,6 +111,20 @@ class ListOperationsResponse(_messages.Message):
 
   nextPageToken = _messages.StringField(1)
   operations = _messages.MessageField('Operation', 2, repeated=True)
+
+
+class ListRuntimeVersionsResponse(_messages.Message):
+  r"""Response for ListRuntimeVersions.
+
+  Fields:
+    nextPageToken: The next page token or empty if none.
+    runtimeVersions: The listed nodes.
+    unreachable: Locations that could not be reached.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  runtimeVersions = _messages.MessageField('RuntimeVersion', 2, repeated=True)
+  unreachable = _messages.StringField(3, repeated=True)
 
 
 class Location(_messages.Message):
@@ -126,6 +205,264 @@ class Location(_messages.Message):
   locationId = _messages.StringField(3)
   metadata = _messages.MessageField('MetadataValue', 4)
   name = _messages.StringField(5)
+
+
+class NetworkConfig(_messages.Message):
+  r"""Network related configurations.
+
+  Fields:
+    enableExternalIps: Indicates that external IP addresses would be
+      associated with the TPU workers. If set to false, the specified
+      subnetwork or network should have Private Google Access enabled.
+    network: The name of the network for the TPU node. It must be a
+      preexisting Google Compute Engine network. If none is provided,
+      "default" will be used.
+    subnetwork: The name of the subnetwork for the TPU node. It must be a
+      preexisting Google Compute Engine subnetwork. If none is provided,
+      "default" will be used.
+  """
+
+  enableExternalIps = _messages.BooleanField(1)
+  network = _messages.StringField(2)
+  subnetwork = _messages.StringField(3)
+
+
+class NetworkEndpoint(_messages.Message):
+  r"""A network endpoint over which a TPU worker can be reached.
+
+  Fields:
+    accessConfig: The access config for the TPU worker.
+    ipAddress: The internal IP address of this network endpoint.
+    port: The port of this network endpoint.
+    tpuVmInstanceId: The instance ID for the TPU worker.
+    tpuVmSelflink: The SelfLink for the VM backing this TPU worker.
+  """
+
+  accessConfig = _messages.MessageField('AccessConfig', 1)
+  ipAddress = _messages.StringField(2)
+  port = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  tpuVmInstanceId = _messages.StringField(4)
+  tpuVmSelflink = _messages.StringField(5)
+
+
+class Node(_messages.Message):
+  r"""A TPU instance.
+
+  Enums:
+    ApiVersionValueValuesEnum: Output only. The API version that created this
+      Node.
+    HealthValueValuesEnum: The health status of the TPU node.
+    StateValueValuesEnum: Output only. The current state for the TPU Node.
+
+  Messages:
+    LabelsValue: Resource labels to represent user-provided metadata.
+    MetadataValue: Custom metadata to apply to the TPU Node. Can set startup-
+      script and shutdown-script
+
+  Fields:
+    acceleratorType: Required. The type of hardware accelerators associated
+      with this node.
+    apiVersion: Output only. The API version that created this Node.
+    bootDisk: The attached boot disk for the Node.
+    cidrBlock: The CIDR block that the TPU node will use when selecting an IP
+      address. This CIDR block must be a /29 block; the Compute Engine
+      networks API forbids a smaller block, and using a larger block would be
+      wasteful (a node can only consume one IP address). Errors will occur if
+      the CIDR block has already been used for a currently existing TPU node,
+      the CIDR block conflicts with any subnetworks in the user's provided
+      network, or the provided network is peered with another network that is
+      using that CIDR block.
+    createTime: Output only. The time when the node was created.
+    description: The user-supplied description of the TPU. Maximum of 512
+      characters.
+    health: The health status of the TPU node.
+    healthDescription: Output only. If this field is populated, it contains a
+      description of why the TPU Node is unhealthy.
+    id: Output only. The unique identifier for the TPU Node.
+    labels: Resource labels to represent user-provided metadata.
+    machineType: A string attribute.
+    metadata: Custom metadata to apply to the TPU Node. Can set startup-script
+      and shutdown-script
+    modelBasePath: Inference Mode: Base path to exported saved model. This
+      field can be used instead of model_config_file directly to specify the
+      exported saved model's base path (excluding timestamp), whereas
+      model_config_file points to a GCS path to a ModelServerConfig proto.
+    modelConfigFile: Inference Mode: GCS path to model configuration file for
+      models to serve The contents of the model_config.pbtxt is a
+      ModelServerConfig proto.
+    modelName: Inference Mode: Model name for tensorflow serving to serve to
+      incoming requests. If none is provided, "serving_default" will be used.
+    name: Output only. Immutable. The name of the TPU.
+    networkConfig: Network configurations for the TPU node.
+    networkEndpoints: Output only. The network endpoints where TPU workers can
+      be accessed and sent work. It is recommended that runtime clients of the
+      node reach out to the 0th entry in this map first.
+    platformConfigFile: Inference Mode: GCS path to configuration file for
+      platform requirements The contents of the platform_config.pbtxt is a
+      PlatformConfigMap proto.
+    runtimeEnvVars: Allow tests to pass environment variables to runtime
+      server.
+    runtimeFlags: Allow tests to pass flags to runtime server.
+    runtimeUrlOverride: A string attribute.
+    runtimeVersion: Required. The runtime version running in the Node.
+    schedulingConfig: A SchedulingConfig attribute.
+    serviceAccount: The Google Cloud Platform Service Account to be used by
+      the TPU node VMs. If None is specified, the default compute service
+      account will be used.
+    state: Output only. The current state for the TPU Node.
+    symptoms: Output only. The Symptoms that have occurred to the TPU Node.
+    tags: Tags to apply to the TPU Node. Tags are used to identify valid
+      sources or targets for network firewalls.
+  """
+
+  class ApiVersionValueValuesEnum(_messages.Enum):
+    r"""Output only. The API version that created this Node.
+
+    Values:
+      API_VERSION_UNSPECIFIED: API version is unknown.
+      V1_ALPHA1: TPU API V1Alpha1 version.
+      V1: TPU API V1 version.
+      V2_ALPHA1: TPU API V2Alpha1 version.
+    """
+    API_VERSION_UNSPECIFIED = 0
+    V1_ALPHA1 = 1
+    V1 = 2
+    V2_ALPHA1 = 3
+
+  class HealthValueValuesEnum(_messages.Enum):
+    r"""The health status of the TPU node.
+
+    Values:
+      HEALTH_UNSPECIFIED: Health status is unknown: not initialized or failed
+        to retrieve.
+      HEALTHY: The resource is healthy.
+      TIMEOUT: The resource is unresponsive.
+      UNHEALTHY_TENSORFLOW: The in-guest ML stack is unhealthy.
+      UNHEALTHY_MAINTENANCE: The node is under maintenance/priority boost
+        caused rescheduling and will resume running once rescheduled.
+    """
+    HEALTH_UNSPECIFIED = 0
+    HEALTHY = 1
+    TIMEOUT = 2
+    UNHEALTHY_TENSORFLOW = 3
+    UNHEALTHY_MAINTENANCE = 4
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Output only. The current state for the TPU Node.
+
+    Values:
+      STATE_UNSPECIFIED: TPU node state is not known/set.
+      CREATING: TPU node is being created.
+      READY: TPU node has been created and is fully usable.
+      RESTARTING: TPU node is restarting.
+      REIMAGING: TPU node is undergoing reimaging.
+      DELETING: TPU node is being deleted.
+      REPAIRING: TPU node is being repaired and may be unusable. Details can
+        be found in the `help_description` field.
+      STOPPED: TPU node is stopped.
+      STOPPING: TPU node is currently stopping.
+      STARTING: TPU node is currently starting.
+      PREEMPTED: TPU node has been preempted. Only applies to Preemptible TPU
+        Nodes.
+      TERMINATED: TPU node has been terminated due to maintenance or has
+        reached the end of its life cycle (for preemptible nodes).
+      HIDING: TPU node is currently hiding.
+      HIDDEN: TPU node has been hidden.
+      UNHIDING: TPU node is currently unhiding.
+    """
+    STATE_UNSPECIFIED = 0
+    CREATING = 1
+    READY = 2
+    RESTARTING = 3
+    REIMAGING = 4
+    DELETING = 5
+    REPAIRING = 6
+    STOPPED = 7
+    STOPPING = 8
+    STARTING = 9
+    PREEMPTED = 10
+    TERMINATED = 11
+    HIDING = 12
+    HIDDEN = 13
+    UNHIDING = 14
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Resource labels to represent user-provided metadata.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class MetadataValue(_messages.Message):
+    r"""Custom metadata to apply to the TPU Node. Can set startup-script and
+    shutdown-script
+
+    Messages:
+      AdditionalProperty: An additional property for a MetadataValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type MetadataValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a MetadataValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  acceleratorType = _messages.StringField(1)
+  apiVersion = _messages.EnumField('ApiVersionValueValuesEnum', 2)
+  bootDisk = _messages.MessageField('AttachedDisk', 3)
+  cidrBlock = _messages.StringField(4)
+  createTime = _messages.StringField(5)
+  description = _messages.StringField(6)
+  health = _messages.EnumField('HealthValueValuesEnum', 7)
+  healthDescription = _messages.StringField(8)
+  id = _messages.IntegerField(9)
+  labels = _messages.MessageField('LabelsValue', 10)
+  machineType = _messages.StringField(11)
+  metadata = _messages.MessageField('MetadataValue', 12)
+  modelBasePath = _messages.StringField(13)
+  modelConfigFile = _messages.StringField(14)
+  modelName = _messages.StringField(15)
+  name = _messages.StringField(16)
+  networkConfig = _messages.MessageField('NetworkConfig', 17)
+  networkEndpoints = _messages.MessageField('NetworkEndpoint', 18, repeated=True)
+  platformConfigFile = _messages.StringField(19)
+  runtimeEnvVars = _messages.StringField(20)
+  runtimeFlags = _messages.StringField(21)
+  runtimeUrlOverride = _messages.StringField(22)
+  runtimeVersion = _messages.StringField(23)
+  schedulingConfig = _messages.MessageField('SchedulingConfig', 24)
+  serviceAccount = _messages.MessageField('ServiceAccount', 25)
+  state = _messages.EnumField('StateValueValuesEnum', 26)
+  symptoms = _messages.MessageField('Symptom', 27, repeated=True)
+  tags = _messages.StringField(28, repeated=True)
 
 
 class Operation(_messages.Message):
@@ -263,6 +600,44 @@ class OperationMetadata(_messages.Message):
   verb = _messages.StringField(7)
 
 
+class RuntimeVersion(_messages.Message):
+  r"""A runtime version that a Node can be configured with.
+
+  Fields:
+    name: The resource name.
+    version: The runtime version.
+  """
+
+  name = _messages.StringField(1)
+  version = _messages.StringField(2)
+
+
+class SchedulingConfig(_messages.Message):
+  r"""A SchedulingConfig object.
+
+  Fields:
+    preemptible: A boolean attribute.
+    reserved: Whether the node is created under a reservation.
+  """
+
+  preemptible = _messages.BooleanField(1)
+  reserved = _messages.BooleanField(2)
+
+
+class ServiceAccount(_messages.Message):
+  r"""A service account.
+
+  Fields:
+    email: Email address of the service account. If empty, default Compute
+      service account will be used.
+    scope: The list of scopes to be made available for this service account.
+      If empty, access to all Cloud APIs will be allowed.
+  """
+
+  email = _messages.StringField(1)
+  scope = _messages.StringField(2, repeated=True)
+
+
 class StandardQueryParameters(_messages.Message):
   r"""Query parameters accepted by all methods.
 
@@ -272,14 +647,12 @@ class StandardQueryParameters(_messages.Message):
 
   Fields:
     f__xgafv: V1 error format.
-    access_token: OAuth access token.
     alt: Data format for response.
     callback: JSONP
     fields: Selector specifying which fields to include in a partial response.
     key: API key. Your API key identifies your project and provides you with
       API access, quota, and reports. Required unless you provide an OAuth 2.0
       token.
-    oauth_token: OAuth 2.0 token for the current user.
     prettyPrint: Returns response with indentations and line breaks.
     quotaUser: Available to use for quota purposes for server-side
       applications. Can be any arbitrary string assigned to a user, but should
@@ -313,17 +686,19 @@ class StandardQueryParameters(_messages.Message):
     _2 = 1
 
   f__xgafv = _messages.EnumField('FXgafvValueValuesEnum', 1)
-  access_token = _messages.StringField(2)
-  alt = _messages.EnumField('AltValueValuesEnum', 3, default='json')
-  callback = _messages.StringField(4)
-  fields = _messages.StringField(5)
-  key = _messages.StringField(6)
-  oauth_token = _messages.StringField(7)
-  prettyPrint = _messages.BooleanField(8, default=True)
-  quotaUser = _messages.StringField(9)
-  trace = _messages.StringField(10)
-  uploadType = _messages.StringField(11)
-  upload_protocol = _messages.StringField(12)
+  alt = _messages.EnumField('AltValueValuesEnum', 2, default='json')
+  callback = _messages.StringField(3)
+  fields = _messages.StringField(4)
+  key = _messages.StringField(5)
+  prettyPrint = _messages.BooleanField(6, default=True)
+  quotaUser = _messages.StringField(7)
+  trace = _messages.StringField(8)
+  uploadType = _messages.StringField(9)
+  upload_protocol = _messages.StringField(10)
+
+
+class StartNodeRequest(_messages.Message):
+  r"""Request for StartNode."""
 
 
 class Status(_messages.Message):
@@ -377,6 +752,76 @@ class Status(_messages.Message):
   message = _messages.StringField(3)
 
 
+class StopNodeRequest(_messages.Message):
+  r"""Request for StopNode."""
+
+
+class Symptom(_messages.Message):
+  r"""A Symptom instance.
+
+  Enums:
+    SymptomTypeValueValuesEnum: Type of the Symptom.
+
+  Fields:
+    createTime: Timestamp when the Symptom is created.
+    details: Detailed information of the current Symptom.
+    symptomType: Type of the Symptom.
+    workerId: A string used to uniquely distinguish a worker within a TPU
+      node.
+  """
+
+  class SymptomTypeValueValuesEnum(_messages.Enum):
+    r"""Type of the Symptom.
+
+    Values:
+      SYMPTOM_TYPE_UNSPECIFIED: Unspecified symptom.
+      LOW_MEMORY: TPU VM memory is low.
+      OUT_OF_MEMORY: TPU runtime is out of memory.
+      EXECUTE_TIMED_OUT: TPU runtime execution has timed out.
+      MESH_BUILD_FAIL: TPU runtime fails to construct a mesh that recognizes
+        each TPU device's neighbors.
+    """
+    SYMPTOM_TYPE_UNSPECIFIED = 0
+    LOW_MEMORY = 1
+    OUT_OF_MEMORY = 2
+    EXECUTE_TIMED_OUT = 3
+    MESH_BUILD_FAIL = 4
+
+  createTime = _messages.StringField(1)
+  details = _messages.StringField(2)
+  symptomType = _messages.EnumField('SymptomTypeValueValuesEnum', 3)
+  workerId = _messages.StringField(4)
+
+
+class TpuProjectsLocationsAcceleratorTypesGetRequest(_messages.Message):
+  r"""A TpuProjectsLocationsAcceleratorTypesGetRequest object.
+
+  Fields:
+    name: The resource name.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class TpuProjectsLocationsAcceleratorTypesListRequest(_messages.Message):
+  r"""A TpuProjectsLocationsAcceleratorTypesListRequest object.
+
+  Fields:
+    filter: List filter.
+    orderBy: Sort results.
+    pageSize: The maximum number of items to return.
+    pageToken: The next_page_token value returned from a previous List
+      request, if any.
+    parent: The parent resource name.
+  """
+
+  filter = _messages.StringField(1)
+  orderBy = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
+
+
 class TpuProjectsLocationsGetRequest(_messages.Message):
   r"""A TpuProjectsLocationsGetRequest object.
 
@@ -401,6 +846,101 @@ class TpuProjectsLocationsListRequest(_messages.Message):
   name = _messages.StringField(2, required=True)
   pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(4)
+
+
+class TpuProjectsLocationsNodesCreateRequest(_messages.Message):
+  r"""A TpuProjectsLocationsNodesCreateRequest object.
+
+  Fields:
+    node: A Node resource to be passed as the request body.
+    nodeId: The unqualified resource name.
+    parent: The parent resource name.
+    serviceAccount: Allows user to set the service account running on the TPU
+      node's workers.
+  """
+
+  node = _messages.MessageField('Node', 1)
+  nodeId = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+  serviceAccount = _messages.StringField(4)
+
+
+class TpuProjectsLocationsNodesDeleteRequest(_messages.Message):
+  r"""A TpuProjectsLocationsNodesDeleteRequest object.
+
+  Fields:
+    deleteTenantProject: A boolean attribute.
+    name: The resource name.
+  """
+
+  deleteTenantProject = _messages.BooleanField(1)
+  name = _messages.StringField(2, required=True)
+
+
+class TpuProjectsLocationsNodesGetRequest(_messages.Message):
+  r"""A TpuProjectsLocationsNodesGetRequest object.
+
+  Fields:
+    name: The resource name.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class TpuProjectsLocationsNodesListRequest(_messages.Message):
+  r"""A TpuProjectsLocationsNodesListRequest object.
+
+  Fields:
+    pageSize: The maximum number of items to return.
+    pageToken: The next_page_token value returned from a previous List
+      request, if any.
+    parent: The parent resource name.
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class TpuProjectsLocationsNodesPatchRequest(_messages.Message):
+  r"""A TpuProjectsLocationsNodesPatchRequest object.
+
+  Fields:
+    name: Output only. Immutable. The name of the TPU.
+    node: A Node resource to be passed as the request body.
+    updateMask: Required. Mask of fields from Node to update. Supported
+      fields: None.
+  """
+
+  name = _messages.StringField(1, required=True)
+  node = _messages.MessageField('Node', 2)
+  updateMask = _messages.StringField(3)
+
+
+class TpuProjectsLocationsNodesStartRequest(_messages.Message):
+  r"""A TpuProjectsLocationsNodesStartRequest object.
+
+  Fields:
+    name: The resource name.
+    startNodeRequest: A StartNodeRequest resource to be passed as the request
+      body.
+  """
+
+  name = _messages.StringField(1, required=True)
+  startNodeRequest = _messages.MessageField('StartNodeRequest', 2)
+
+
+class TpuProjectsLocationsNodesStopRequest(_messages.Message):
+  r"""A TpuProjectsLocationsNodesStopRequest object.
+
+  Fields:
+    name: The resource name.
+    stopNodeRequest: A StopNodeRequest resource to be passed as the request
+      body.
+  """
+
+  name = _messages.StringField(1, required=True)
+  stopNodeRequest = _messages.MessageField('StopNodeRequest', 2)
 
 
 class TpuProjectsLocationsOperationsCancelRequest(_messages.Message):
@@ -447,6 +987,35 @@ class TpuProjectsLocationsOperationsListRequest(_messages.Message):
   name = _messages.StringField(2, required=True)
   pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(4)
+
+
+class TpuProjectsLocationsRuntimeVersionsGetRequest(_messages.Message):
+  r"""A TpuProjectsLocationsRuntimeVersionsGetRequest object.
+
+  Fields:
+    name: Required. The resource name.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class TpuProjectsLocationsRuntimeVersionsListRequest(_messages.Message):
+  r"""A TpuProjectsLocationsRuntimeVersionsListRequest object.
+
+  Fields:
+    filter: List filter.
+    orderBy: Sort results.
+    pageSize: The maximum number of items to return.
+    pageToken: The next_page_token value returned from a previous List
+      request, if any.
+    parent: Required. The parent resource name.
+  """
+
+  filter = _messages.StringField(1)
+  orderBy = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
 
 
 encoding.AddCustomJsonFieldMapping(

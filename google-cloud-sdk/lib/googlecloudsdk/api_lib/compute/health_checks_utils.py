@@ -540,6 +540,9 @@ def _AddUseServingPortFlag(parser, use_port_name=True):
 
         - When health checking network endpoints in a Network Endpoint
           Group, use the port specified with each endpoint.
+          `--use-serving-port` must be used when using a Network Endpoint Group
+          as a backend as this flag specifies the `portSpecification` option for
+          a Health Check object.
         - When health checking other backends, use the port%s of
           the backend service.""" % (' or named port' if use_port_name else ''))
 

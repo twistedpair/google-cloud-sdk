@@ -47,10 +47,10 @@ class AcceleratorType(_messages.Message):
       is defined by the server.
     kind: [Output Only] The type of the resource. Always
       compute#acceleratorType for accelerator types.
-    maximumCardsPerInstance: [Output Only] Maximum accelerator cards allowed
-      per instance.
+    maximumCardsPerInstance: [Output Only] Maximum number of accelerator cards
+      allowed per instance.
     name: [Output Only] Name of the resource.
-    selfLink: [Output Only] Server-defined fully-qualified URL for this
+    selfLink: [Output Only] Server-defined, fully qualified URL for this
       resource.
     zone: [Output Only] The name of the zone where the accelerator type
       resides, such as us-central1-a. You must specify this field as part of
@@ -1454,6 +1454,8 @@ class AttachedDiskInitializeParams(_messages.Message):
     labels: Labels to apply to this disk. These can be later modified by the
       disks.setLabels method. This field is only applicable for persistent
       disks.
+    multiWriter: Indicates whether or not the disk can be read/write attached
+      to more than one instance.
     onUpdateAction: Specifies which action to take on instance update with
       this disk. Default is to use the existing disk.
     resourcePolicies: Resource policies applied to this disk for automatic
@@ -1535,12 +1537,13 @@ class AttachedDiskInitializeParams(_messages.Message):
   diskType = _messages.StringField(4)
   guestOsFeatures = _messages.MessageField('GuestOsFeature', 5, repeated=True)
   labels = _messages.MessageField('LabelsValue', 6)
-  onUpdateAction = _messages.EnumField('OnUpdateActionValueValuesEnum', 7)
-  resourcePolicies = _messages.StringField(8, repeated=True)
-  sourceImage = _messages.StringField(9)
-  sourceImageEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 10)
-  sourceSnapshot = _messages.StringField(11)
-  sourceSnapshotEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 12)
+  multiWriter = _messages.BooleanField(7)
+  onUpdateAction = _messages.EnumField('OnUpdateActionValueValuesEnum', 8)
+  resourcePolicies = _messages.StringField(9, repeated=True)
+  sourceImage = _messages.StringField(10)
+  sourceImageEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 11)
+  sourceSnapshot = _messages.StringField(12)
+  sourceSnapshotEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 13)
 
 
 class AuditConfig(_messages.Message):
@@ -1551,11 +1554,11 @@ class AuditConfig(_messages.Message):
   specific service, the union of the two AuditConfigs is used for that
   service: the log_types specified in each AuditConfig are enabled, and the
   exempted_members in each AuditLogConfig are exempted.  Example Policy with
-  multiple AuditConfigs:  { "audit_configs": [ { "service": "allServices"
+  multiple AuditConfigs:  { "audit_configs": [ { "service": "allServices",
   "audit_log_configs": [ { "log_type": "DATA_READ", "exempted_members": [
-  "user:jose@example.com" ] }, { "log_type": "DATA_WRITE", }, { "log_type":
-  "ADMIN_READ", } ] }, { "service": "sampleservice.googleapis.com"
-  "audit_log_configs": [ { "log_type": "DATA_READ", }, { "log_type":
+  "user:jose@example.com" ] }, { "log_type": "DATA_WRITE" }, { "log_type":
+  "ADMIN_READ" } ] }, { "service": "sampleservice.googleapis.com",
+  "audit_log_configs": [ { "log_type": "DATA_READ" }, { "log_type":
   "DATA_WRITE", "exempted_members": [ "user:aliya@example.com" ] } ] } ] }
   For sampleservice, this policy enables DATA_READ, DATA_WRITE and ADMIN_READ
   logging. It also exempts jose@example.com from DATA_READ logging, and
@@ -1577,7 +1580,7 @@ class AuditConfig(_messages.Message):
 class AuditLogConfig(_messages.Message):
   r"""Provides the configuration for logging a type of permissions. Example:
   { "audit_log_configs": [ { "log_type": "DATA_READ", "exempted_members": [
-  "user:jose@example.com" ] }, { "log_type": "DATA_WRITE", } ] }  This enables
+  "user:jose@example.com" ] }, { "log_type": "DATA_WRITE" } ] }  This enables
   'DATA_READ' and 'DATA_WRITE' logging, while exempting jose@example.com from
   DATA_READ logging.
 
@@ -2985,7 +2988,7 @@ class BackendService(_messages.Message):
       be specified. Backend services with instance group or zonal NEG backends
       must have a health check. Backend services with internet NEG backends
       must not have a health check. A health check must
-    iap: A BackendServiceIAP attribute.
+    iap: The configurations for Identity-Aware Proxy on this resource.
     id: [Output Only] The unique identifier for the resource. This identifier
       is defined by the server.
     kind: [Output Only] Type of resource. Always compute#backendService for
@@ -3480,9 +3483,14 @@ class BackendServiceIAP(_messages.Message):
   r"""Identity-Aware Proxy
 
   Fields:
-    enabled: A boolean attribute.
-    oauth2ClientId: A string attribute.
-    oauth2ClientSecret: A string attribute.
+    enabled: Whether the serving infrastructure will authenticate and
+      authorize all incoming requests. If true, the oauth2ClientId and
+      oauth2ClientSecret fields must be non-empty.
+    oauth2ClientId: OAuth2 client ID to use for the authentication flow.
+    oauth2ClientSecret: OAuth2 client secret to use for the authentication
+      flow. For security reasons, this value cannot be retrieved via the API.
+      Instead, the SHA-256 hash of the value is returned in the
+      oauth2ClientSecretSha256 field.
     oauth2ClientSecretSha256: [Output Only] SHA256 hash value for the field
       oauth2_client_secret above.
   """
@@ -16111,6 +16119,126 @@ class ComputeRegionInstanceGroupsTestIamPermissionsRequest(_messages.Message):
   testPermissionsRequest = _messages.MessageField('TestPermissionsRequest', 4)
 
 
+class ComputeRegionNetworkEndpointGroupsDeleteRequest(_messages.Message):
+  r"""A ComputeRegionNetworkEndpointGroupsDeleteRequest object.
+
+  Fields:
+    networkEndpointGroup: The name of the network endpoint group to delete. It
+      should comply with RFC1035.
+    project: Project ID for this request.
+    region: The name of the region where the network endpoint group is
+      located. It should comply with RFC1035.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
+  """
+
+  networkEndpointGroup = _messages.StringField(1, required=True)
+  project = _messages.StringField(2, required=True)
+  region = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(4)
+
+
+class ComputeRegionNetworkEndpointGroupsGetRequest(_messages.Message):
+  r"""A ComputeRegionNetworkEndpointGroupsGetRequest object.
+
+  Fields:
+    networkEndpointGroup: The name of the network endpoint group. It should
+      comply with RFC1035.
+    project: Project ID for this request.
+    region: The name of the region where the network endpoint group is
+      located. It should comply with RFC1035.
+  """
+
+  networkEndpointGroup = _messages.StringField(1, required=True)
+  project = _messages.StringField(2, required=True)
+  region = _messages.StringField(3, required=True)
+
+
+class ComputeRegionNetworkEndpointGroupsInsertRequest(_messages.Message):
+  r"""A ComputeRegionNetworkEndpointGroupsInsertRequest object.
+
+  Fields:
+    networkEndpointGroup: A NetworkEndpointGroup resource to be passed as the
+      request body.
+    project: Project ID for this request.
+    region: The name of the region where you want to create the network
+      endpoint group. It should comply with RFC1035.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
+  """
+
+  networkEndpointGroup = _messages.MessageField('NetworkEndpointGroup', 1)
+  project = _messages.StringField(2, required=True)
+  region = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(4)
+
+
+class ComputeRegionNetworkEndpointGroupsListRequest(_messages.Message):
+  r"""A ComputeRegionNetworkEndpointGroupsListRequest object.
+
+  Fields:
+    filter: A filter expression that filters resources listed in the response.
+      The expression must specify the field name, a comparison operator, and
+      the value that you want to use for filtering. The value must be a
+      string, a number, or a boolean. The comparison operator must be either
+      `=`, `!=`, `>`, or `<`.  For example, if you are filtering Compute
+      Engine instances, you can exclude instances named `example-instance` by
+      specifying `name != example-instance`.  You can also filter nested
+      fields. For example, you could specify `scheduling.automaticRestart =
+      false` to include instances only if they are not scheduled for automatic
+      restarts. You can use filtering on nested fields to filter based on
+      resource labels.  To filter on multiple expressions, provide each
+      separate expression within parentheses. For example: ```
+      (scheduling.automaticRestart = true) (cpuPlatform = "Intel Skylake") ```
+      By default, each expression is an `AND` expression. However, you can
+      include `AND` and `OR` expressions explicitly. For example: ```
+      (cpuPlatform = "Intel Skylake") OR (cpuPlatform = "Intel Broadwell") AND
+      (scheduling.automaticRestart = true) ```
+    maxResults: The maximum number of results per page that should be
+      returned. If the number of available results is larger than
+      `maxResults`, Compute Engine returns a `nextPageToken` that can be used
+      to get the next page of results in subsequent list requests. Acceptable
+      values are `0` to `500`, inclusive. (Default: `500`)
+    orderBy: Sorts list results by a certain order. By default, results are
+      returned in alphanumerical order based on the resource name.  You can
+      also sort results in descending order based on the creation timestamp
+      using `orderBy="creationTimestamp desc"`. This sorts results based on
+      the `creationTimestamp` field in reverse chronological order (newest
+      result first). Use this to sort resources like operations so that the
+      newest operation is returned first.  Currently, only sorting by `name`
+      or `creationTimestamp desc` is supported.
+    pageToken: Specifies a page token to use. Set `pageToken` to the
+      `nextPageToken` returned by a previous list request to get the next page
+      of results.
+    project: Project ID for this request.
+    region: The name of the region where the network endpoint group is
+      located. It should comply with RFC1035.
+  """
+
+  filter = _messages.StringField(1)
+  maxResults = _messages.IntegerField(2, variant=_messages.Variant.UINT32, default=500)
+  orderBy = _messages.StringField(3)
+  pageToken = _messages.StringField(4)
+  project = _messages.StringField(5, required=True)
+  region = _messages.StringField(6, required=True)
+
+
 class ComputeRegionNotificationEndpointsDeleteRequest(_messages.Message):
   r"""A ComputeRegionNotificationEndpointsDeleteRequest object.
 
@@ -21860,6 +21988,8 @@ class Disk(_messages.Message):
     licenseCodes: Integer license codes indicating which licenses are attached
       to this disk.
     licenses: A list of publicly visible licenses. Reserved for Google's use.
+    multiWriter: Indicates whether or not the disk can be read/write attached
+      to more than one instance.
     name: Name of the resource. Provided by the client when the resource is
       created. The name must be 1-63 characters long, and comply with RFC1035.
       Specifically, the name must be 1-63 characters long and match the
@@ -22021,25 +22151,26 @@ class Disk(_messages.Message):
   lastDetachTimestamp = _messages.StringField(12)
   licenseCodes = _messages.IntegerField(13, repeated=True)
   licenses = _messages.StringField(14, repeated=True)
-  name = _messages.StringField(15)
-  options = _messages.StringField(16)
-  physicalBlockSizeBytes = _messages.IntegerField(17)
-  region = _messages.StringField(18)
-  replicaZones = _messages.StringField(19, repeated=True)
-  resourcePolicies = _messages.StringField(20, repeated=True)
-  selfLink = _messages.StringField(21)
-  sizeGb = _messages.IntegerField(22)
-  sourceImage = _messages.StringField(23)
-  sourceImageEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 24)
-  sourceImageId = _messages.StringField(25)
-  sourceSnapshot = _messages.StringField(26)
-  sourceSnapshotEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 27)
-  sourceSnapshotId = _messages.StringField(28)
-  status = _messages.EnumField('StatusValueValuesEnum', 29)
-  storageType = _messages.EnumField('StorageTypeValueValuesEnum', 30)
-  type = _messages.StringField(31)
-  users = _messages.StringField(32, repeated=True)
-  zone = _messages.StringField(33)
+  multiWriter = _messages.BooleanField(15)
+  name = _messages.StringField(16)
+  options = _messages.StringField(17)
+  physicalBlockSizeBytes = _messages.IntegerField(18)
+  region = _messages.StringField(19)
+  replicaZones = _messages.StringField(20, repeated=True)
+  resourcePolicies = _messages.StringField(21, repeated=True)
+  selfLink = _messages.StringField(22)
+  sizeGb = _messages.IntegerField(23)
+  sourceImage = _messages.StringField(24)
+  sourceImageEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 25)
+  sourceImageId = _messages.StringField(26)
+  sourceSnapshot = _messages.StringField(27)
+  sourceSnapshotEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 28)
+  sourceSnapshotId = _messages.StringField(29)
+  status = _messages.EnumField('StatusValueValuesEnum', 30)
+  storageType = _messages.EnumField('StorageTypeValueValuesEnum', 31)
+  type = _messages.StringField(32)
+  users = _messages.StringField(33, repeated=True)
+  zone = _messages.StringField(34)
 
 
 class DiskAggregatedList(_messages.Message):
@@ -23564,14 +23695,14 @@ class Firewall(_messages.Message):
       not exist. If this is unspecified, the firewall rule will be enabled.
     enableLogging: Deprecated in favor of enable in LogConfig. This field
       denotes whether to enable logging for a particular firewall rule. If
-      logging is enabled, logs will be exported to Stackdriver.
+      logging is enabled, logs will be exported t Cloud Logging.
     id: [Output Only] The unique identifier for the resource. This identifier
       is defined by the server.
     kind: [Output Only] Type of the resource. Always compute#firewall for
       firewall rules.
     logConfig: This field denotes the logging options for a particular
-      firewall rule. If logging is enabled, logs will be exported to
-      Stackdriver.
+      firewall rule. If logging is enabled, logs will be exported to Cloud
+      Logging.
     name: Name of the resource; provided by the client when the resource is
       created. The name must be 1-63 characters long, and comply with RFC1035.
       Specifically, the name must be 1-63 characters long and match the
@@ -26854,21 +26985,20 @@ class Image(_messages.Message):
     sourceDiskId: [Output Only] The ID value of the disk used to create this
       image. This value may be used to determine whether the image was taken
       from the current or a previous instance of a given disk name.
-    sourceImage: URL of the source image used to create this image. This can
-      be a full or valid partial URL. You must provide exactly one of:   -
-      this property, or   - the rawDisk.source property, or   - the sourceDisk
-      property   in order to create an image.
+    sourceImage: URL of the source image used to create this image.  In order
+      to create an image, you must provide the full or partial URL of one of
+      the following:   - The selfLink URL   - This property   - The
+      rawDisk.source URL   - The sourceDisk URL
     sourceImageEncryptionKey: The customer-supplied encryption key of the
       source image. Required if the source image is protected by a customer-
       supplied encryption key.
     sourceImageId: [Output Only] The ID value of the image used to create this
       image. This value may be used to determine whether the image was taken
       from the current or a previous instance of a given image name.
-    sourceSnapshot: URL of the source snapshot used to create this image. This
-      can be a full or valid partial URL. You must provide exactly one of:   -
-      this property, or   - the sourceImage property, or   - the
-      rawDisk.source property, or   - the sourceDisk property   in order to
-      create an image.
+    sourceSnapshot: URL of the source snapshot used to create this image.  In
+      order to create an image, you must provide the full or partial URL of
+      one of the following:   - The selfLink URL   - This property  - The
+      sourceImage URL   - The rawDisk.source URL   - The sourceDisk URL
     sourceSnapshotEncryptionKey: The customer-supplied encryption key of the
       source snapshot. Required if the source snapshot is protected by a
       customer-supplied encryption key.
@@ -31429,7 +31559,6 @@ class InterconnectAttachmentsScopedList(_messages.Message):
 class InterconnectCircuitInfo(_messages.Message):
   r"""Describes a single physical circuit between the Customer and Google.
   CircuitInfo objects are created by Google, so all fields are output only.
-  Next id: 4
 
   Fields:
     customerDemarcId: Customer-side demarc ID for this circuit.
@@ -31991,7 +32120,7 @@ class InterconnectLocationRegionInfo(_messages.Message):
 
 
 class InterconnectOutageNotification(_messages.Message):
-  r"""Description of a planned outage on this Interconnect. Next id: 9
+  r"""Description of a planned outage on this Interconnect.
 
   Enums:
     IssueTypeValueValuesEnum: Form this outage is expected to take, which can
@@ -33559,7 +33688,7 @@ class Network(_messages.Message):
 
 
 class NetworkEndpoint(_messages.Message):
-  r"""The network endpoint. Next ID: 7
+  r"""The network endpoint.
 
   Messages:
     AnnotationsValue: Metadata defined as annotations on the network endpoint.
@@ -33634,6 +33763,12 @@ class NetworkEndpointGroup(_messages.Message):
   Fields:
     annotations: Metadata defined as annotations on the network endpoint
       group.
+    appEngine: Only valid when networkEndpointType is "SERVERLESS". Only one
+      of cloudRun, appEngine or cloudFunction may be set.
+    cloudFunction: Only valid when networkEndpointType is "SERVERLESS". Only
+      one of cloudRun, appEngine or cloudFunction may be set.
+    cloudRun: Only valid when networkEndpointType is "SERVERLESS". Only one of
+      cloudRun, appEngine or cloudFunction may be set.
     creationTimestamp: [Output Only] Creation timestamp in RFC3339 text
       format.
     defaultPort: The default port used if the port number is not specified in
@@ -33657,6 +33792,8 @@ class NetworkEndpointGroup(_messages.Message):
       belong. Uses "default" project network if unspecified.
     networkEndpointType: Type of network endpoints in this network endpoint
       group.
+    region: [Output Only] The URL of the region where the network endpoint
+      group is located.
     selfLink: [Output Only] Server-defined URL for the resource.
     size: [Output only] Number of network endpoints in the network endpoint
       group.
@@ -33673,10 +33810,12 @@ class NetworkEndpointGroup(_messages.Message):
       GCE_VM_IP_PORT: <no description>
       INTERNET_FQDN_PORT: <no description>
       INTERNET_IP_PORT: <no description>
+      SERVERLESS: <no description>
     """
     GCE_VM_IP_PORT = 0
     INTERNET_FQDN_PORT = 1
     INTERNET_IP_PORT = 2
+    SERVERLESS = 3
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class AnnotationsValue(_messages.Message):
@@ -33704,19 +33843,23 @@ class NetworkEndpointGroup(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   annotations = _messages.MessageField('AnnotationsValue', 1)
-  creationTimestamp = _messages.StringField(2)
-  defaultPort = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  description = _messages.StringField(4)
-  id = _messages.IntegerField(5, variant=_messages.Variant.UINT64)
-  kind = _messages.StringField(6, default='compute#networkEndpointGroup')
-  loadBalancer = _messages.MessageField('NetworkEndpointGroupLbNetworkEndpointGroup', 7)
-  name = _messages.StringField(8)
-  network = _messages.StringField(9)
-  networkEndpointType = _messages.EnumField('NetworkEndpointTypeValueValuesEnum', 10)
-  selfLink = _messages.StringField(11)
-  size = _messages.IntegerField(12, variant=_messages.Variant.INT32)
-  subnetwork = _messages.StringField(13)
-  zone = _messages.StringField(14)
+  appEngine = _messages.MessageField('NetworkEndpointGroupAppEngine', 2)
+  cloudFunction = _messages.MessageField('NetworkEndpointGroupCloudFunction', 3)
+  cloudRun = _messages.MessageField('NetworkEndpointGroupCloudRun', 4)
+  creationTimestamp = _messages.StringField(5)
+  defaultPort = _messages.IntegerField(6, variant=_messages.Variant.INT32)
+  description = _messages.StringField(7)
+  id = _messages.IntegerField(8, variant=_messages.Variant.UINT64)
+  kind = _messages.StringField(9, default='compute#networkEndpointGroup')
+  loadBalancer = _messages.MessageField('NetworkEndpointGroupLbNetworkEndpointGroup', 10)
+  name = _messages.StringField(11)
+  network = _messages.StringField(12)
+  networkEndpointType = _messages.EnumField('NetworkEndpointTypeValueValuesEnum', 13)
+  region = _messages.StringField(14)
+  selfLink = _messages.StringField(15)
+  size = _messages.IntegerField(16, variant=_messages.Variant.INT32)
+  subnetwork = _messages.StringField(17)
+  zone = _messages.StringField(18)
 
 
 class NetworkEndpointGroupAggregatedList(_messages.Message):
@@ -33869,6 +34012,86 @@ class NetworkEndpointGroupAggregatedList(_messages.Message):
   nextPageToken = _messages.StringField(4)
   selfLink = _messages.StringField(5)
   warning = _messages.MessageField('WarningValue', 6)
+
+
+class NetworkEndpointGroupAppEngine(_messages.Message):
+  r"""Configuration for an App Engine network endpoint group (NEG). The
+  service is optional, may be provided explicitly or in the URL mask. The
+  version is optional and can only be provided explicitly or in the URL mask
+  when service is present.  Note: App Engine service must be in the same
+  project and located in the same region as the Serverless NEG.
+
+  Fields:
+    service: Optional serving service.  The service name must be 1-63
+      characters long, and comply with RFC1035.  Example value: "default",
+      "my-service".
+    urlMask: A template to parse service and version fields from a request
+      URL. URL mask allows for routing to multiple App Engine services without
+      having to create multiple Network Endpoint Groups and backend services.
+      For example, the request URLs "foo1-dot-appname.appspot.com/v1" and
+      "foo1-dot-appname.appspot.com/v2" can be backed by the same Serverless
+      NEG with URL mask "-dot-appname.appspot.com/". The URL mask will parse
+      them to { service = "foo1", version = "v1" } and { service = "foo1",
+      version = "v2" } respectively.
+    version: Optional serving version.  The version must be 1-63 characters
+      long, and comply with RFC1035.  Example value: "v1", "v2".
+  """
+
+  service = _messages.StringField(1)
+  urlMask = _messages.StringField(2)
+  version = _messages.StringField(3)
+
+
+class NetworkEndpointGroupCloudFunction(_messages.Message):
+  r"""Configuration for a Cloud Function network endpoint group (NEG). The
+  function must be provided explicitly or in the URL mask.  Note: Cloud
+  Function must be in the same project and located in the same region as the
+  Serverless NEG.
+
+  Fields:
+    function: A user-defined name of the Cloud Function.  The function name is
+      case-sensitive and must be 1-63 characters long.  Example value:
+      "func1".
+    urlMask: A template to parse function field from a request URL. URL mask
+      allows for routing to multiple Cloud Functions without having to create
+      multiple Network Endpoint Groups and backend services.  For example,
+      request URLs "mydomain.com/function1" and "mydomain.com/function2" can
+      be backed by the same Serverless NEG with URL mask "/". The URL mask
+      will parse them to { function = "function1" } and { function =
+      "function2" } respectively.
+  """
+
+  function = _messages.StringField(1)
+  urlMask = _messages.StringField(2)
+
+
+class NetworkEndpointGroupCloudRun(_messages.Message):
+  r"""Configuration for a Cloud Run network endpoint group (NEG). The service
+  must be provided explicitly or in the URL mask. The tag is optional, may be
+  provided explicitly or in the URL mask.  Note: Cloud Run service must be in
+  the same project and located in the same region as the Serverless NEG.
+
+  Fields:
+    service: Cloud Run service is the main resource of Cloud Run.  The service
+      must be 1-63 characters long, and comply with RFC1035.  Example value:
+      "run-service".
+    tag: Optional Cloud Run tag represents the "named-revision" to provide
+      additional fine-grained traffic routing information.  The tag must be
+      1-63 characters long, and comply with RFC1035.  Example value:
+      "revision-0010".
+    urlMask: A template to parse service and tag fields from a request URL.
+      URL mask allows for routing to multiple Run services without having to
+      create multiple network endpoint groups and backend services.  For
+      example, request URLs "foo1.domain.com/bar1" and "foo1.domain.com/bar2"
+      can be backed by the same Serverless Network Endpoint Group (NEG) with
+      URL mask ".domain.com/". The URL mask will parse them to {
+      service="bar1", tag="foo1" } and { service="bar2", tag="foo2" }
+      respectively.
+  """
+
+  service = _messages.StringField(1)
+  tag = _messages.StringField(2)
+  urlMask = _messages.StringField(3)
 
 
 class NetworkEndpointGroupLbNetworkEndpointGroup(_messages.Message):
@@ -35419,7 +35642,7 @@ class NodeTemplate(_messages.Message):
   r"""Represent a sole-tenant Node Template resource.  You can use a template
   to define properties for nodes in a node group. For more information, read
   Creating node groups and instances. (== resource_for
-  {$api_version}.nodeTemplates ==) (== NextID: 19 ==)
+  {$api_version}.nodeTemplates ==)
 
   Enums:
     CpuOvercommitTypeValueValuesEnum: CPU overcommit.
@@ -38457,8 +38680,10 @@ class Quota(_messages.Message):
       COMMITTED_CPUS: <no description>
       COMMITTED_LICENSES: <no description>
       COMMITTED_LOCAL_SSD_TOTAL_GB: <no description>
+      COMMITTED_MEMORY_OPTIMIZED_CPUS: <no description>
       COMMITTED_N2D_CPUS: <no description>
       COMMITTED_N2_CPUS: <no description>
+      COMMITTED_NVIDIA_A100_GPUS: <no description>
       COMMITTED_NVIDIA_K80_GPUS: <no description>
       COMMITTED_NVIDIA_P100_GPUS: <no description>
       COMMITTED_NVIDIA_P4_GPUS: <no description>
@@ -38495,8 +38720,10 @@ class Quota(_messages.Message):
       N2_CPUS: <no description>
       NETWORKS: <no description>
       NETWORK_ENDPOINT_GROUPS: <no description>
+      NETWORK_FIREWALL_POLICIES: <no description>
       NODE_GROUPS: <no description>
       NODE_TEMPLATES: <no description>
+      NVIDIA_A100_GPUS: <no description>
       NVIDIA_K80_GPUS: <no description>
       NVIDIA_P100_GPUS: <no description>
       NVIDIA_P100_VWS_GPUS: <no description>
@@ -38508,6 +38735,7 @@ class Quota(_messages.Message):
       PACKET_MIRRORINGS: <no description>
       PREEMPTIBLE_CPUS: <no description>
       PREEMPTIBLE_LOCAL_SSD_GB: <no description>
+      PREEMPTIBLE_NVIDIA_A100_GPUS: <no description>
       PREEMPTIBLE_NVIDIA_K80_GPUS: <no description>
       PREEMPTIBLE_NVIDIA_P100_GPUS: <no description>
       PREEMPTIBLE_NVIDIA_P100_VWS_GPUS: <no description>
@@ -38557,93 +38785,98 @@ class Quota(_messages.Message):
     COMMITTED_CPUS = 9
     COMMITTED_LICENSES = 10
     COMMITTED_LOCAL_SSD_TOTAL_GB = 11
-    COMMITTED_N2D_CPUS = 12
-    COMMITTED_N2_CPUS = 13
-    COMMITTED_NVIDIA_K80_GPUS = 14
-    COMMITTED_NVIDIA_P100_GPUS = 15
-    COMMITTED_NVIDIA_P4_GPUS = 16
-    COMMITTED_NVIDIA_T4_GPUS = 17
-    COMMITTED_NVIDIA_V100_GPUS = 18
-    CPUS = 19
-    CPUS_ALL_REGIONS = 20
-    DISKS_TOTAL_GB = 21
-    EXTERNAL_VPN_GATEWAYS = 22
-    FIREWALLS = 23
-    FORWARDING_RULES = 24
-    GLOBAL_INTERNAL_ADDRESSES = 25
-    GPUS_ALL_REGIONS = 26
-    HEALTH_CHECKS = 27
-    IMAGES = 28
-    INSTANCES = 29
-    INSTANCE_GROUPS = 30
-    INSTANCE_GROUP_MANAGERS = 31
-    INSTANCE_TEMPLATES = 32
-    INTERCONNECTS = 33
-    INTERCONNECT_ATTACHMENTS_PER_REGION = 34
-    INTERCONNECT_ATTACHMENTS_TOTAL_MBPS = 35
-    INTERCONNECT_TOTAL_GBPS = 36
-    INTERNAL_ADDRESSES = 37
-    IN_PLACE_SNAPSHOTS = 38
-    IN_USE_ADDRESSES = 39
-    IN_USE_BACKUP_SCHEDULES = 40
-    IN_USE_SNAPSHOT_SCHEDULES = 41
-    LOCAL_SSD_TOTAL_GB = 42
-    M1_CPUS = 43
-    M2_CPUS = 44
-    MACHINE_IMAGES = 45
-    N2D_CPUS = 46
-    N2_CPUS = 47
-    NETWORKS = 48
-    NETWORK_ENDPOINT_GROUPS = 49
-    NODE_GROUPS = 50
-    NODE_TEMPLATES = 51
-    NVIDIA_K80_GPUS = 52
-    NVIDIA_P100_GPUS = 53
-    NVIDIA_P100_VWS_GPUS = 54
-    NVIDIA_P4_GPUS = 55
-    NVIDIA_P4_VWS_GPUS = 56
-    NVIDIA_T4_GPUS = 57
-    NVIDIA_T4_VWS_GPUS = 58
-    NVIDIA_V100_GPUS = 59
-    PACKET_MIRRORINGS = 60
-    PREEMPTIBLE_CPUS = 61
-    PREEMPTIBLE_LOCAL_SSD_GB = 62
-    PREEMPTIBLE_NVIDIA_K80_GPUS = 63
-    PREEMPTIBLE_NVIDIA_P100_GPUS = 64
-    PREEMPTIBLE_NVIDIA_P100_VWS_GPUS = 65
-    PREEMPTIBLE_NVIDIA_P4_GPUS = 66
-    PREEMPTIBLE_NVIDIA_P4_VWS_GPUS = 67
-    PREEMPTIBLE_NVIDIA_T4_GPUS = 68
-    PREEMPTIBLE_NVIDIA_T4_VWS_GPUS = 69
-    PREEMPTIBLE_NVIDIA_V100_GPUS = 70
-    PRIVATE_V6_ACCESS_SUBNETWORKS = 71
-    PUBLIC_ADVERTISED_PREFIXES = 72
-    PUBLIC_DELEGATED_PREFIXES = 73
-    REGIONAL_AUTOSCALERS = 74
-    REGIONAL_INSTANCE_GROUP_MANAGERS = 75
-    RESERVATIONS = 76
-    RESOURCE_POLICIES = 77
-    ROUTERS = 78
-    ROUTES = 79
-    SECURITY_POLICIES = 80
-    SECURITY_POLICY_CEVAL_RULES = 81
-    SECURITY_POLICY_RULES = 82
-    SNAPSHOTS = 83
-    SSD_TOTAL_GB = 84
-    SSL_CERTIFICATES = 85
-    STATIC_ADDRESSES = 86
-    STATIC_BYOIP_ADDRESSES = 87
-    SUBNETWORKS = 88
-    TARGET_HTTPS_PROXIES = 89
-    TARGET_HTTP_PROXIES = 90
-    TARGET_INSTANCES = 91
-    TARGET_POOLS = 92
-    TARGET_SSL_PROXIES = 93
-    TARGET_TCP_PROXIES = 94
-    TARGET_VPN_GATEWAYS = 95
-    URL_MAPS = 96
-    VPN_GATEWAYS = 97
-    VPN_TUNNELS = 98
+    COMMITTED_MEMORY_OPTIMIZED_CPUS = 12
+    COMMITTED_N2D_CPUS = 13
+    COMMITTED_N2_CPUS = 14
+    COMMITTED_NVIDIA_A100_GPUS = 15
+    COMMITTED_NVIDIA_K80_GPUS = 16
+    COMMITTED_NVIDIA_P100_GPUS = 17
+    COMMITTED_NVIDIA_P4_GPUS = 18
+    COMMITTED_NVIDIA_T4_GPUS = 19
+    COMMITTED_NVIDIA_V100_GPUS = 20
+    CPUS = 21
+    CPUS_ALL_REGIONS = 22
+    DISKS_TOTAL_GB = 23
+    EXTERNAL_VPN_GATEWAYS = 24
+    FIREWALLS = 25
+    FORWARDING_RULES = 26
+    GLOBAL_INTERNAL_ADDRESSES = 27
+    GPUS_ALL_REGIONS = 28
+    HEALTH_CHECKS = 29
+    IMAGES = 30
+    INSTANCES = 31
+    INSTANCE_GROUPS = 32
+    INSTANCE_GROUP_MANAGERS = 33
+    INSTANCE_TEMPLATES = 34
+    INTERCONNECTS = 35
+    INTERCONNECT_ATTACHMENTS_PER_REGION = 36
+    INTERCONNECT_ATTACHMENTS_TOTAL_MBPS = 37
+    INTERCONNECT_TOTAL_GBPS = 38
+    INTERNAL_ADDRESSES = 39
+    IN_PLACE_SNAPSHOTS = 40
+    IN_USE_ADDRESSES = 41
+    IN_USE_BACKUP_SCHEDULES = 42
+    IN_USE_SNAPSHOT_SCHEDULES = 43
+    LOCAL_SSD_TOTAL_GB = 44
+    M1_CPUS = 45
+    M2_CPUS = 46
+    MACHINE_IMAGES = 47
+    N2D_CPUS = 48
+    N2_CPUS = 49
+    NETWORKS = 50
+    NETWORK_ENDPOINT_GROUPS = 51
+    NETWORK_FIREWALL_POLICIES = 52
+    NODE_GROUPS = 53
+    NODE_TEMPLATES = 54
+    NVIDIA_A100_GPUS = 55
+    NVIDIA_K80_GPUS = 56
+    NVIDIA_P100_GPUS = 57
+    NVIDIA_P100_VWS_GPUS = 58
+    NVIDIA_P4_GPUS = 59
+    NVIDIA_P4_VWS_GPUS = 60
+    NVIDIA_T4_GPUS = 61
+    NVIDIA_T4_VWS_GPUS = 62
+    NVIDIA_V100_GPUS = 63
+    PACKET_MIRRORINGS = 64
+    PREEMPTIBLE_CPUS = 65
+    PREEMPTIBLE_LOCAL_SSD_GB = 66
+    PREEMPTIBLE_NVIDIA_A100_GPUS = 67
+    PREEMPTIBLE_NVIDIA_K80_GPUS = 68
+    PREEMPTIBLE_NVIDIA_P100_GPUS = 69
+    PREEMPTIBLE_NVIDIA_P100_VWS_GPUS = 70
+    PREEMPTIBLE_NVIDIA_P4_GPUS = 71
+    PREEMPTIBLE_NVIDIA_P4_VWS_GPUS = 72
+    PREEMPTIBLE_NVIDIA_T4_GPUS = 73
+    PREEMPTIBLE_NVIDIA_T4_VWS_GPUS = 74
+    PREEMPTIBLE_NVIDIA_V100_GPUS = 75
+    PRIVATE_V6_ACCESS_SUBNETWORKS = 76
+    PUBLIC_ADVERTISED_PREFIXES = 77
+    PUBLIC_DELEGATED_PREFIXES = 78
+    REGIONAL_AUTOSCALERS = 79
+    REGIONAL_INSTANCE_GROUP_MANAGERS = 80
+    RESERVATIONS = 81
+    RESOURCE_POLICIES = 82
+    ROUTERS = 83
+    ROUTES = 84
+    SECURITY_POLICIES = 85
+    SECURITY_POLICY_CEVAL_RULES = 86
+    SECURITY_POLICY_RULES = 87
+    SNAPSHOTS = 88
+    SSD_TOTAL_GB = 89
+    SSL_CERTIFICATES = 90
+    STATIC_ADDRESSES = 91
+    STATIC_BYOIP_ADDRESSES = 92
+    SUBNETWORKS = 93
+    TARGET_HTTPS_PROXIES = 94
+    TARGET_HTTP_PROXIES = 95
+    TARGET_INSTANCES = 96
+    TARGET_POOLS = 97
+    TARGET_SSL_PROXIES = 98
+    TARGET_TCP_PROXIES = 99
+    TARGET_VPN_GATEWAYS = 100
+    URL_MAPS = 101
+    VPN_GATEWAYS = 102
+    VPN_TUNNELS = 103
 
   limit = _messages.FloatField(1)
   metric = _messages.EnumField('MetricValueValuesEnum', 2)
@@ -42473,7 +42706,7 @@ class RouterStatusBgpPeerStatus(_messages.Message):
 
 
 class RouterStatusNatStatus(_messages.Message):
-  r"""Status of a NAT contained in this router. Next tag: 9
+  r"""Status of a NAT contained in this router.
 
   Fields:
     autoAllocatedNatIps: A list of IPs auto-allocated for NAT. Example:
@@ -45181,7 +45414,7 @@ class Subnetwork(_messages.Message):
     kind: [Output Only] Type of the resource. Always compute#subnetwork for
       Subnetwork resources.
     logConfig: This field denotes the VPC flow logging options for this
-      subnetwork. If logging is enabled, logs are exported to Stackdriver.
+      subnetwork. If logging is enabled, logs are exported to Cloud Logging.
     name: The name of the resource, provided by the client when initially
       creating the resource. The name must be 1-63 characters long, and comply
       with RFC1035. Specifically, the name must be 1-63 characters long and

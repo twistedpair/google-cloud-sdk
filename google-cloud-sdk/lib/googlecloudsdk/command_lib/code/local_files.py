@@ -24,6 +24,7 @@ import os.path
 from googlecloudsdk.command_lib.code import local
 from googlecloudsdk.command_lib.code import yaml_helper
 from googlecloudsdk.core import yaml
+import six
 
 _SKAFFOLD_TEMPLATE = """
 apiVersion: skaffold/v2beta1
@@ -96,18 +97,28 @@ class LocalRuntimeFiles(object):
         skaffold_yaml, ('deploy', 'kubectl', 'manifests'), constructor=list)
     manifests.append(kubernetes_file_path)
     artifact = {'image': self._settings.image_name}
-    if self._settings.builder:
+    # Need to escape file paths for the yaml encoder. The yaml encoder will
+    # interpret \ as the beginning of an escape character. Windows paths may
+    # have backslashes.
+    artifact['context'] = six.ensure_text(
+        self._settings.build_context_directory.encode('unicode_escape'))
+
+    if isinstance(self._settings.builder, local.BuildpackBuilder):
       artifact['buildpack'] = {
-          'builder': self._settings.builder,
-          'env': ['GOOGLE_DEVMODE=1']
+          'builder': self._settings.builder.builder,
+          'env': ['GOOGLE_DEVMODE=1'],
       }
       artifact['sync'] = {'auto': {}}
-    elif self._settings.dockerfile:
-      artifact['docker'] = {'dockerfile': self._settings.dockerfile}
+    else:
+      artifact['docker'] = {
+          'dockerfile':
+              six.ensure_text(
+                  os.path.relpath(
+                      self._settings.builder.dockerfile,
+                      self._settings.build_context_directory).encode(
+                          'unicode_escape'))
+      }
 
-    artifact['context'] = (
-        self._settings.build_context_directory or
-        os.path.dirname(self._settings.dockerfile) or '.')
     artifacts = yaml_helper.GetOrCreate(
         skaffold_yaml, ('build', 'artifacts'), constructor=list)
     artifacts.append(artifact)

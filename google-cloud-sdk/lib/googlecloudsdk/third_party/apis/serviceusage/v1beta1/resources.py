@@ -44,6 +44,29 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  SERVICES_CONSUMERQUOTAMETRICS = (
+      'services.consumerQuotaMetrics',
+      '{+name}',
+      {
+          '':
+              '{v1beta1Id}/{v1beta1Id1}/services/{servicesId}/'
+              'consumerQuotaMetrics/{consumerQuotaMetricsId}',
+      },
+      ['name'],
+      True
+  )
+  SERVICES_CONSUMERQUOTAMETRICS_LIMITS = (
+      'services.consumerQuotaMetrics.limits',
+      '{+name}',
+      {
+          '':
+              '{v1beta1Id}/{v1beta1Id1}/services/{servicesId}/'
+              'consumerQuotaMetrics/{consumerQuotaMetricsId}/limits/'
+              '{limitsId}',
+      },
+      ['name'],
+      True
+  )
 
   def __init__(self, collection_name, path, flat_paths, params,
                enable_uri_parsing):

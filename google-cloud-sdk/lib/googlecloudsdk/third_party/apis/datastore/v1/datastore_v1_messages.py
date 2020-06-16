@@ -741,7 +741,7 @@ class GoogleDatastoreAdminV1ImportEntitiesRequest(_messages.Message):
 
 
 class GoogleDatastoreAdminV1Index(_messages.Message):
-  r"""A minimal index definition.
+  r"""Datastore composite index definition.
 
   Enums:
     AncestorValueValuesEnum: Required. The index's ancestor mode.  Must not be

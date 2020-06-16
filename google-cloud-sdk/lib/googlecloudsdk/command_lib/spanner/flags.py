@@ -139,7 +139,10 @@ def Config(required=True):
       '--config',
       completer=InstanceConfigCompleter,
       required=required,
-      help='Instance config for the instance.')
+      help='Instance configuration defines the geographic placement and '
+      'replication of the databases in that instance. Available '
+      'configurations can be found by running '
+      '"gcloud spanner instance-configs list"')
 
 
 def Description(required=True):

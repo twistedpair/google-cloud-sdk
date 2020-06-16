@@ -65,28 +65,36 @@ _GRANT_TYPE = 'urn:ietf:params:oauth:grant-type:jwt-bearer'
 
 _CREDENTIALS_EXPIRY_WINDOW = '300s'
 
+AUTH_LOGIN_COMMAND = 'gcloud auth login'
+ADC_LOGIN_COMMAND = 'gcloud auth application-default login'
+
 
 class Error(exceptions.Error):
   """Exceptions for the credentials module."""
 
 
 class AuthenticationException(Error):
-  """Exceptions that tell the users to run auth login."""
+  """Exceptions that tell the users to re-login."""
 
-  def __init__(self, message):
-    super(AuthenticationException, self).__init__(textwrap.dedent("""\
+  def __init__(self, message, for_adc=False):
+    login_command = ADC_LOGIN_COMMAND if for_adc else AUTH_LOGIN_COMMAND
+    extended_msg = textwrap.dedent("""\
         {message}
         Please run:
 
-          $ gcloud auth login
+          $ {login_command}
 
-        to obtain new credentials, or if you have already logged in with a
-        different account:
+        to obtain new credentials.""".format(
+            message=message, login_command=login_command))
+    if not for_adc:
+      switch_account_msg = textwrap.dedent("""\
+      If you have already logged in with a different account:
 
           $ gcloud config set account ACCOUNT
 
-        to select an already authenticated account to use.""".format(
-            message=message)))
+      to select an already authenticated account to use.""")
+      extended_msg = '\n'.join([extended_msg, switch_account_msg])
+    super(AuthenticationException, self).__init__(extended_msg)
 
 
 class PrintTokenAuthenticationException(Error):
@@ -132,32 +140,35 @@ class TokenRefreshError(AuthenticationException,
                         client.AccessTokenRefreshError):
   """An exception raised when the auth tokens fail to refresh."""
 
-  def __init__(self, error):
+  def __init__(self, error, for_adc=False):
     message = ('There was a problem refreshing your current auth tokens: {0}'
                .format(error))
-    super(TokenRefreshError, self).__init__(message)
+    super(TokenRefreshError, self).__init__(message, for_adc=for_adc)
 
 
 class ReauthenticationException(Error):
   """Exceptions that tells the user to retry his command or run auth login."""
 
-  def __init__(self, message):
-    super(ReauthenticationException, self).__init__(textwrap.dedent("""\
+  def __init__(self, message, for_adc=False):
+    login_command = ADC_LOGIN_COMMAND if for_adc else AUTH_LOGIN_COMMAND
+    super(ReauthenticationException, self).__init__(
+        textwrap.dedent("""\
         {message}
         Please retry your command or run:
 
-          $ gcloud auth login
+          $ {login_command}
 
-        to obtain new credentials.""".format(message=message)))
+        to obtain new credentials.""".format(
+            message=message, login_command=login_command)))
 
 
 class TokenRefreshReauthError(ReauthenticationException):
   """An exception raised when the auth tokens fail to refresh due to reauth."""
 
-  def __init__(self, error):
+  def __init__(self, error, for_adc=False):
     message = ('There was a problem reauthenticating while refreshing your '
                'current auth tokens: {0}').format(error)
-    super(TokenRefreshReauthError, self).__init__(message)
+    super(TokenRefreshReauthError, self).__init__(message, for_adc=for_adc)
 
 
 class WebLoginRequiredReauthError(Error):
@@ -168,13 +179,14 @@ class WebLoginRequiredReauthError(Error):
   web login and allow users to be authenticated by their IDP.
   """
 
-  def __init__(self):
+  def __init__(self, for_adc=False):
+    login_command = ADC_LOGIN_COMMAND if for_adc else AUTH_LOGIN_COMMAND
     super(WebLoginRequiredReauthError, self).__init__(textwrap.dedent("""\
         Please run:
 
-          $ gcloud auth login
+          $ {login_command}
 
-        to complete reauthentication."""))
+        to complete reauthentication.""".format(login_command=login_command)))
 
 
 class InvalidCredentialFileException(Error):
@@ -430,7 +442,7 @@ def LoadIfEnabled(allow_account_impersonation=True, use_google_auth=False):
     on use_google_auth and whether google-auth is supported in the current
     authentication scenario. The only two scenarios that google-auth is not
     supported are,
-    1) Property auth/disable_google_auth is set to True;
+    1) Property auth/disable_load_google_auth is set to True;
     2) P12 service account key is being used.
 
     The only time None is returned is when credentials are disabled via
@@ -490,7 +502,7 @@ def Load(account=None,
     on use_google_auth and whether google-auth is supported in the current
     authentication sceanrio. The only two scenarios that google-auth is not
     supported are,
-    1) Property auth/disable_google_auth is set to True;
+    1) Property auth/disable_load_google_auth is set to True;
     2) P12 service account key is being used.
 
   Raises:
@@ -505,7 +517,8 @@ def Load(account=None,
     AccountImpersonationError: If impersonation is requested but an
       impersonation provider is not configured.
   """
-  google_auth_disabled = properties.VALUES.auth.disable_google_auth.GetBool()
+  google_auth_disabled = (
+      properties.VALUES.auth.disable_load_google_auth.GetBool())
   use_google_auth = use_google_auth and (not google_auth_disabled)
 
   impersonate_service_account = (
@@ -690,7 +703,7 @@ def _Refresh(credentials,
 
 
 @contextlib.contextmanager
-def HandleGoogleAuthCredentialsRefreshError():
+def HandleGoogleAuthCredentialsRefreshError(for_adc=False):
   """Handles exceptions during refreshing google auth credentials."""
   # Import only when necessary to decrease the startup time. Move it to
   # global once google-auth is ready to replace oauth2client.
@@ -700,12 +713,12 @@ def HandleGoogleAuthCredentialsRefreshError():
   try:
     yield
   except reauth_errors.ReauthSamlLoginRequiredError:
-    raise WebLoginRequiredReauthError()
+    raise WebLoginRequiredReauthError(for_adc=for_adc)
   except (reauth_errors.ReauthError,
           c_google_auth.ReauthRequiredError) as e:
-    raise TokenRefreshReauthError(str(e))
+    raise TokenRefreshReauthError(str(e), for_adc=for_adc)
   except google_auth_exceptions.RefreshError as e:
-    raise TokenRefreshError(six.text_type(e))
+    raise TokenRefreshError(six.text_type(e), for_adc=for_adc)
 
 
 def _RefreshGoogleAuth(credentials,

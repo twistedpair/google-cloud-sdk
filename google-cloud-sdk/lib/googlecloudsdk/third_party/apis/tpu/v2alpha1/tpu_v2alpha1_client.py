@@ -36,9 +36,275 @@ class TpuV2alpha1(base_api.BaseApiClient):
         default_global_params=default_global_params,
         additional_http_headers=additional_http_headers,
         response_encoding=response_encoding)
+    self.projects_locations_acceleratorTypes = self.ProjectsLocationsAcceleratorTypesService(self)
+    self.projects_locations_nodes = self.ProjectsLocationsNodesService(self)
     self.projects_locations_operations = self.ProjectsLocationsOperationsService(self)
+    self.projects_locations_runtimeVersions = self.ProjectsLocationsRuntimeVersionsService(self)
     self.projects_locations = self.ProjectsLocationsService(self)
     self.projects = self.ProjectsService(self)
+
+  class ProjectsLocationsAcceleratorTypesService(base_api.BaseApiService):
+    """Service class for the projects_locations_acceleratorTypes resource."""
+
+    _NAME = 'projects_locations_acceleratorTypes'
+
+    def __init__(self, client):
+      super(TpuV2alpha1.ProjectsLocationsAcceleratorTypesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Get(self, request, global_params=None):
+      r"""Gets AcceleratorType.
+
+      Args:
+        request: (TpuProjectsLocationsAcceleratorTypesGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (AcceleratorType) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2alpha1/projects/{projectsId}/locations/{locationsId}/acceleratorTypes/{acceleratorTypesId}',
+        http_method='GET',
+        method_id='tpu.projects.locations.acceleratorTypes.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v2alpha1/{+name}',
+        request_field='',
+        request_type_name='TpuProjectsLocationsAcceleratorTypesGetRequest',
+        response_type_name='AcceleratorType',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists accelerator types supported by this API.
+
+      Args:
+        request: (TpuProjectsLocationsAcceleratorTypesListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListAcceleratorTypesResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2alpha1/projects/{projectsId}/locations/{locationsId}/acceleratorTypes',
+        http_method='GET',
+        method_id='tpu.projects.locations.acceleratorTypes.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'orderBy', 'pageSize', 'pageToken'],
+        relative_path='v2alpha1/{+parent}/acceleratorTypes',
+        request_field='',
+        request_type_name='TpuProjectsLocationsAcceleratorTypesListRequest',
+        response_type_name='ListAcceleratorTypesResponse',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsNodesService(base_api.BaseApiService):
+    """Service class for the projects_locations_nodes resource."""
+
+    _NAME = 'projects_locations_nodes'
+
+    def __init__(self, client):
+      super(TpuV2alpha1.ProjectsLocationsNodesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Creates a node.
+
+      Args:
+        request: (TpuProjectsLocationsNodesCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2alpha1/projects/{projectsId}/locations/{locationsId}/nodes',
+        http_method='POST',
+        method_id='tpu.projects.locations.nodes.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['nodeId', 'serviceAccount'],
+        relative_path='v2alpha1/{+parent}/nodes',
+        request_field='node',
+        request_type_name='TpuProjectsLocationsNodesCreateRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes a node.
+
+      Args:
+        request: (TpuProjectsLocationsNodesDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2alpha1/projects/{projectsId}/locations/{locationsId}/nodes/{nodesId}',
+        http_method='DELETE',
+        method_id='tpu.projects.locations.nodes.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['deleteTenantProject'],
+        relative_path='v2alpha1/{+name}',
+        request_field='',
+        request_type_name='TpuProjectsLocationsNodesDeleteRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Gets the details of a node.
+
+      Args:
+        request: (TpuProjectsLocationsNodesGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Node) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2alpha1/projects/{projectsId}/locations/{locationsId}/nodes/{nodesId}',
+        http_method='GET',
+        method_id='tpu.projects.locations.nodes.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v2alpha1/{+name}',
+        request_field='',
+        request_type_name='TpuProjectsLocationsNodesGetRequest',
+        response_type_name='Node',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists nodes.
+
+      Args:
+        request: (TpuProjectsLocationsNodesListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListNodesResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2alpha1/projects/{projectsId}/locations/{locationsId}/nodes',
+        http_method='GET',
+        method_id='tpu.projects.locations.nodes.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v2alpha1/{+parent}/nodes',
+        request_field='',
+        request_type_name='TpuProjectsLocationsNodesListRequest',
+        response_type_name='ListNodesResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Updates the configurations of a node.
+
+      Args:
+        request: (TpuProjectsLocationsNodesPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2alpha1/projects/{projectsId}/locations/{locationsId}/nodes/{nodesId}',
+        http_method='PATCH',
+        method_id='tpu.projects.locations.nodes.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v2alpha1/{+name}',
+        request_field='node',
+        request_type_name='TpuProjectsLocationsNodesPatchRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Start(self, request, global_params=None):
+      r"""Starts a node.
+
+      Args:
+        request: (TpuProjectsLocationsNodesStartRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Start')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Start.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2alpha1/projects/{projectsId}/locations/{locationsId}/nodes/{nodesId}:start',
+        http_method='POST',
+        method_id='tpu.projects.locations.nodes.start',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v2alpha1/{+name}:start',
+        request_field='startNodeRequest',
+        request_type_name='TpuProjectsLocationsNodesStartRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Stop(self, request, global_params=None):
+      r"""Stops a node.
+
+      Args:
+        request: (TpuProjectsLocationsNodesStopRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Stop')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Stop.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2alpha1/projects/{projectsId}/locations/{locationsId}/nodes/{nodesId}:stop',
+        http_method='POST',
+        method_id='tpu.projects.locations.nodes.stop',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v2alpha1/{+name}:stop',
+        request_field='stopNodeRequest',
+        request_type_name='TpuProjectsLocationsNodesStopRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
 
   class ProjectsLocationsOperationsService(base_api.BaseApiService):
     """Service class for the projects_locations_operations resource."""
@@ -178,6 +444,70 @@ is the parent resource, without the operations collection id.
         request_field='',
         request_type_name='TpuProjectsLocationsOperationsListRequest',
         response_type_name='ListOperationsResponse',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsRuntimeVersionsService(base_api.BaseApiService):
+    """Service class for the projects_locations_runtimeVersions resource."""
+
+    _NAME = 'projects_locations_runtimeVersions'
+
+    def __init__(self, client):
+      super(TpuV2alpha1.ProjectsLocationsRuntimeVersionsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Get(self, request, global_params=None):
+      r"""Gets a runtime version.
+
+      Args:
+        request: (TpuProjectsLocationsRuntimeVersionsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (RuntimeVersion) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2alpha1/projects/{projectsId}/locations/{locationsId}/runtimeVersions/{runtimeVersionsId}',
+        http_method='GET',
+        method_id='tpu.projects.locations.runtimeVersions.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v2alpha1/{+name}',
+        request_field='',
+        request_type_name='TpuProjectsLocationsRuntimeVersionsGetRequest',
+        response_type_name='RuntimeVersion',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists runtime versions supported by this API.
+
+      Args:
+        request: (TpuProjectsLocationsRuntimeVersionsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListRuntimeVersionsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2alpha1/projects/{projectsId}/locations/{locationsId}/runtimeVersions',
+        http_method='GET',
+        method_id='tpu.projects.locations.runtimeVersions.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'orderBy', 'pageSize', 'pageToken'],
+        relative_path='v2alpha1/{+parent}/runtimeVersions',
+        request_field='',
+        request_type_name='TpuProjectsLocationsRuntimeVersionsListRequest',
+        response_type_name='ListRuntimeVersionsResponse',
         supports_download=False,
     )
 

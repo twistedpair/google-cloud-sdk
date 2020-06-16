@@ -20,6 +20,7 @@ from __future__ import print_function
 from __future__ import unicode_literals
 
 import collections
+import re
 
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope.concepts import concepts
@@ -53,6 +54,12 @@ _ENTITY_TUPLES = [
                  "The relevant application for the {resource}."),
 ]
 ENTITIES = {item.singular: item for item in _ENTITY_TUPLES}
+
+
+def ValidPatternForEntity(name):
+  if ENTITIES[name].valid_pattern is None:
+    return re.compile(".")
+  return re.compile(ENTITIES[name].valid_pattern)
 
 
 def AttributeConfig(name, fallthroughs=None, help_text=None, validate=False):
@@ -101,8 +108,11 @@ def ResourceSpec(path, fallthroughs=tuple(), help_texts=None, validate=False):
         fallthrough for fallthrough in fallthroughs
         if entity.singular in fallthrough
     ]
-    config = AttributeConfig(entity.singular, relevant_fallthroughs,
-                             help_texts[entity.singular], validate=validate)
+    config = AttributeConfig(
+        entity.singular,
+        relevant_fallthroughs,
+        help_texts[entity.singular],
+        validate=validate)
     ids[entity.plural + "Id"] = config
 
   return concepts.ResourceSpec(

@@ -19,6 +19,7 @@ class Connector(_messages.Message):
     StateValueValuesEnum: Output only. State of the VPC access connector.
 
   Fields:
+    connectedProjects: Output only. List of projects using the connector.
     ipCidrRange: The range of internal addresses that follows RFC 4632
       notation. Example: `10.132.0.0/28`.
     maxThroughput: Maximum throughput of the connector in Mbps. Default is
@@ -49,12 +50,13 @@ class Connector(_messages.Message):
     ERROR = 4
     UPDATING = 5
 
-  ipCidrRange = _messages.StringField(1)
-  maxThroughput = _messages.IntegerField(2, variant=_messages.Variant.INT32)
-  minThroughput = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  name = _messages.StringField(4)
-  network = _messages.StringField(5)
-  state = _messages.EnumField('StateValueValuesEnum', 6)
+  connectedProjects = _messages.StringField(1, repeated=True)
+  ipCidrRange = _messages.StringField(2)
+  maxThroughput = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  minThroughput = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  name = _messages.StringField(5)
+  network = _messages.StringField(6)
+  state = _messages.EnumField('StateValueValuesEnum', 7)
 
 
 class ListConnectorsResponse(_messages.Message):

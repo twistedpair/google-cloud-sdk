@@ -180,11 +180,32 @@ class ClientCertificateConfig(_messages.Message):
 class CloudRunConfig(_messages.Message):
   r"""Configuration options for the Cloud Run feature.
 
+  Enums:
+    LoadBalancerTypeValueValuesEnum: Which load balancer type is installed for
+      Cloud Run.
+
   Fields:
     disabled: Whether Cloud Run addon is enabled for this cluster.
+    loadBalancerType: Which load balancer type is installed for Cloud Run.
   """
 
+  class LoadBalancerTypeValueValuesEnum(_messages.Enum):
+    r"""Which load balancer type is installed for Cloud Run.
+
+    Values:
+      LOAD_BALANCER_TYPE_UNSPECIFIED: Load balancer type for Cloud Run is
+        unspecified.
+      LOAD_BALANCER_TYPE_EXTERNAL: Install external load balancer for Cloud
+        Run.
+      LOAD_BALANCER_TYPE_INTERNAL: Install internal load balancer for Cloud
+        Run.
+    """
+    LOAD_BALANCER_TYPE_UNSPECIFIED = 0
+    LOAD_BALANCER_TYPE_EXTERNAL = 1
+    LOAD_BALANCER_TYPE_INTERNAL = 2
+
   disabled = _messages.BooleanField(1)
+  loadBalancerType = _messages.EnumField('LoadBalancerTypeValueValuesEnum', 2)
 
 
 class Cluster(_messages.Message):
@@ -218,7 +239,7 @@ class Cluster(_messages.Message):
       information.
     currentNodeVersion: [Output only] Deprecated, use
       [NodePools.version](https://cloud.google.com/kubernetes-
-      engine/docs/reference/rest/v1/projects.zones.clusters.nodePools)
+      engine/docs/reference/rest/v1/projects.locations.clusters.nodePools)
       instead. The current version of the node software components. If they
       are currently at multiple versions because they're in the process of
       being upgraded, this reflects the minimum version of all nodes.
@@ -251,14 +272,14 @@ class Cluster(_messages.Message):
       gke.N patch in the 1.X.Y version - "1.X.Y-gke.N": picks an explicit
       Kubernetes version - "","-": picks the default Kubernetes version
     initialNodeCount: The number of nodes to create in this cluster. You must
-      ensure that your Compute Engine <a href="/compute/docs/resource-
-      quotas">resource quota</a> is sufficient for this number of instances.
-      You must also have available firewall and routes quota. For requests,
-      this field should only be used in lieu of a "node_pool" object, since
-      this configuration (along with the "node_config") will be used to create
-      a "NodePool" object with an auto-generated name. Do not use this and a
-      node_pool at the same time.  This field is deprecated, use
-      node_pool.initial_node_count instead.
+      ensure that your Compute Engine [resource
+      quota](https://cloud.google.com/compute/quotas) is sufficient for this
+      number of instances. You must also have available firewall and routes
+      quota. For requests, this field should only be used in lieu of a
+      "node_pool" object, since this configuration (along with the
+      "node_config") will be used to create a "NodePool" object with an auto-
+      generated name. Do not use this and a node_pool at the same time.  This
+      field is deprecated, use node_pool.initial_node_count instead.
     instanceGroupUrls: Deprecated. Use node_pools.instance_group_urls.
     ipAllocationPolicy: Configuration for cluster IP allocation.
     labelFingerprint: The fingerprint of the set of labels for this cluster.
@@ -1096,7 +1117,7 @@ class CreateClusterRequest(_messages.Message):
   Fields:
     cluster: Required. A [cluster
       resource](https://cloud.google.com/container-
-      engine/reference/rest/v1/projects.zones.clusters)
+      engine/reference/rest/v1/projects.locations.clusters)
     parent: The parent (project and location) where the cluster will be
       created. Specified in the format `projects/*/locations/*`.
     projectId: Deprecated. The Google Developers Console [project ID or
@@ -1734,6 +1755,12 @@ class NodeConfig(_messages.Message):
     accelerators: A list of hardware accelerators to be attached to each node.
       See https://cloud.google.com/compute/docs/gpus for more information
       about support for GPUs.
+    bootDiskKmsKey:  The Customer Managed Encryption Key used to encrypt the
+      boot disk attached to each node in the node pool. This should be of the
+      form projects/[KEY_PROJECT_ID]/locations/[LOCATION]/keyRings/[RING_NAME]
+      /cryptoKeys/[KEY_NAME]. For more information about protecting resources
+      with Cloud KMS Keys please see:
+      https://cloud.google.com/compute/docs/disks/customer-managed-encryption
     diskSizeGb: Size of the disk attached to each node, specified in GB. The
       smallest allowed disk size is 10GB.  If unspecified, the default disk
       size is 100GB.
@@ -1888,24 +1915,25 @@ class NodeConfig(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   accelerators = _messages.MessageField('AcceleratorConfig', 1, repeated=True)
-  diskSizeGb = _messages.IntegerField(2, variant=_messages.Variant.INT32)
-  diskType = _messages.StringField(3)
-  imageType = _messages.StringField(4)
-  labels = _messages.MessageField('LabelsValue', 5)
-  localSsdCount = _messages.IntegerField(6, variant=_messages.Variant.INT32)
-  machineType = _messages.StringField(7)
-  metadata = _messages.MessageField('MetadataValue', 8)
-  minCpuPlatform = _messages.StringField(9)
-  nodeImageConfig = _messages.MessageField('CustomImageConfig', 10)
-  oauthScopes = _messages.StringField(11, repeated=True)
-  preemptible = _messages.BooleanField(12)
-  reservationAffinity = _messages.MessageField('ReservationAffinity', 13)
-  sandboxConfig = _messages.MessageField('SandboxConfig', 14)
-  serviceAccount = _messages.StringField(15)
-  shieldedInstanceConfig = _messages.MessageField('ShieldedInstanceConfig', 16)
-  tags = _messages.StringField(17, repeated=True)
-  taints = _messages.MessageField('NodeTaint', 18, repeated=True)
-  workloadMetadataConfig = _messages.MessageField('WorkloadMetadataConfig', 19)
+  bootDiskKmsKey = _messages.StringField(2)
+  diskSizeGb = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  diskType = _messages.StringField(4)
+  imageType = _messages.StringField(5)
+  labels = _messages.MessageField('LabelsValue', 6)
+  localSsdCount = _messages.IntegerField(7, variant=_messages.Variant.INT32)
+  machineType = _messages.StringField(8)
+  metadata = _messages.MessageField('MetadataValue', 9)
+  minCpuPlatform = _messages.StringField(10)
+  nodeImageConfig = _messages.MessageField('CustomImageConfig', 11)
+  oauthScopes = _messages.StringField(12, repeated=True)
+  preemptible = _messages.BooleanField(13)
+  reservationAffinity = _messages.MessageField('ReservationAffinity', 14)
+  sandboxConfig = _messages.MessageField('SandboxConfig', 15)
+  serviceAccount = _messages.StringField(16)
+  shieldedInstanceConfig = _messages.MessageField('ShieldedInstanceConfig', 17)
+  tags = _messages.StringField(18, repeated=True)
+  taints = _messages.MessageField('NodeTaint', 19, repeated=True)
+  workloadMetadataConfig = _messages.MessageField('WorkloadMetadataConfig', 20)
 
 
 class NodeManagement(_messages.Message):
@@ -1946,9 +1974,10 @@ class NodePool(_messages.Message):
     conditions: Which conditions caused the current node pool state.
     config: The node configuration of the pool.
     initialNodeCount: The initial node count for the pool. You must ensure
-      that your Compute Engine <a href="/compute/docs/resource-
-      quotas">resource quota</a> is sufficient for this number of instances.
-      You must also have available firewall and routes quota.
+      that your Compute Engine [resource
+      quota](https://cloud.google.com/compute/quotas) is sufficient for this
+      number of instances. You must also have available firewall and routes
+      quota.
     instanceGroupUrls: [Output only] The resource URLs of the [managed
       instance groups](https://cloud.google.com/compute/docs/instance-
       groups/creating-groups-of-managed-instances) associated with this node
@@ -2409,8 +2438,9 @@ class ServerConfig(_messages.Message):
       default.
     defaultImageType: Default image type.
     validImageTypes: List of valid image types.
-    validMasterVersions: List of valid master versions.
-    validNodeVersions: List of valid node upgrade target versions.
+    validMasterVersions: List of valid master versions, in descending order.
+    validNodeVersions: List of valid node upgrade target versions, in
+      descending order.
   """
 
   defaultClusterVersion = _messages.StringField(1)

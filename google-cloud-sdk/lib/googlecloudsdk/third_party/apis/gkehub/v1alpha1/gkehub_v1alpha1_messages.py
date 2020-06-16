@@ -20,13 +20,13 @@ class AuditConfig(_messages.Message):
   service: the log_types specified in each AuditConfig are enabled, and the
   exempted_members in each AuditLogConfig are exempted.  Example Policy with
   multiple AuditConfigs:      {       "audit_configs": [         {
-  "service": "allServices"           "audit_log_configs": [             {
+  "service": "allServices",           "audit_log_configs": [             {
   "log_type": "DATA_READ",               "exempted_members": [
   "user:jose@example.com"               ]             },             {
-  "log_type": "DATA_WRITE",             },             {
-  "log_type": "ADMIN_READ",             }           ]         },         {
-  "service": "sampleservice.googleapis.com"           "audit_log_configs": [
-  {               "log_type": "DATA_READ",             },             {
+  "log_type": "DATA_WRITE"             },             {
+  "log_type": "ADMIN_READ"             }           ]         },         {
+  "service": "sampleservice.googleapis.com",           "audit_log_configs": [
+  {               "log_type": "DATA_READ"             },             {
   "log_type": "DATA_WRITE",               "exempted_members": [
   "user:aliya@example.com"               ]             }           ]         }
   ]     }  For sampleservice, this policy enables DATA_READ, DATA_WRITE and
@@ -50,7 +50,7 @@ class AuditLogConfig(_messages.Message):
   r"""Provides the configuration for logging a type of permissions. Example:
   {       "audit_log_configs": [         {           "log_type": "DATA_READ",
   "exempted_members": [             "user:jose@example.com"           ]
-  },         {           "log_type": "DATA_WRITE",         }       ]     }
+  },         {           "log_type": "DATA_WRITE"         }       ]     }
   This enables 'DATA_READ' and 'DATA_WRITE' logging, while exempting
   jose@example.com from DATA_READ logging.
 
@@ -874,7 +874,7 @@ class GitConfig(_messages.Message):
     policyDir: The path within the Git repository that represents the top
       level of the repo to sync. Default: the root directory of the
       repository.
-    secretType: Git revision (tag or hash) to check out. Default HEAD.
+    secretType: Type of secret configured for access to the Git repo.
     syncBranch: The branch of the repository to sync from. Default: master.
     syncRepo: The URL of the Git repository to use as the source of truth.
     syncRev: Git revision (tag or hash) to check out. Default HEAD.
@@ -1725,14 +1725,12 @@ class StandardQueryParameters(_messages.Message):
 
   Fields:
     f__xgafv: V1 error format.
-    access_token: OAuth access token.
     alt: Data format for response.
     callback: JSONP
     fields: Selector specifying which fields to include in a partial response.
     key: API key. Your API key identifies your project and provides you with
       API access, quota, and reports. Required unless you provide an OAuth 2.0
       token.
-    oauth_token: OAuth 2.0 token for the current user.
     prettyPrint: Returns response with indentations and line breaks.
     quotaUser: Available to use for quota purposes for server-side
       applications. Can be any arbitrary string assigned to a user, but should
@@ -1766,17 +1764,15 @@ class StandardQueryParameters(_messages.Message):
     _2 = 1
 
   f__xgafv = _messages.EnumField('FXgafvValueValuesEnum', 1)
-  access_token = _messages.StringField(2)
-  alt = _messages.EnumField('AltValueValuesEnum', 3, default='json')
-  callback = _messages.StringField(4)
-  fields = _messages.StringField(5)
-  key = _messages.StringField(6)
-  oauth_token = _messages.StringField(7)
-  prettyPrint = _messages.BooleanField(8, default=True)
-  quotaUser = _messages.StringField(9)
-  trace = _messages.StringField(10)
-  uploadType = _messages.StringField(11)
-  upload_protocol = _messages.StringField(12)
+  alt = _messages.EnumField('AltValueValuesEnum', 2, default='json')
+  callback = _messages.StringField(3)
+  fields = _messages.StringField(4)
+  key = _messages.StringField(5)
+  prettyPrint = _messages.BooleanField(6, default=True)
+  quotaUser = _messages.StringField(7)
+  trace = _messages.StringField(8)
+  uploadType = _messages.StringField(9)
+  upload_protocol = _messages.StringField(10)
 
 
 class SyncError(_messages.Message):

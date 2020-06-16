@@ -18,10 +18,18 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+import enum
+
 from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import base
 from googlecloudsdk.command_lib.util.apis import arg_utils
+
+
+class MutationOp(enum.Enum):
+  """Different types of mutation operations."""
+  REGISTER = 1
+  UPDATE = 2
 
 
 def AddConfigureDNSSettingsFlagsToParser(parser):
@@ -30,7 +38,8 @@ def AddConfigureDNSSettingsFlagsToParser(parser):
   Args:
     parser: argparse parser to which to add these flags.
   """
-  _AddDNSSettingsFlagsToParser(parser, allow_from_file=True)
+  _AddDNSSettingsFlagsToParser(
+      parser, allow_from_file=True, mutation_op=MutationOp.UPDATE)
 
   base.Argument(  # This is not a go/gcloud-style#commonly-used-flags.
       '--unsafe-dns-update',
@@ -46,7 +55,7 @@ def AddConfigureContactsSettingsFlagsToParser(parser):
   Args:
     parser: argparse parser to which to add these flags.
   """
-  _AddContactSettingsFlagsToParser(parser, is_update=True)
+  _AddContactSettingsFlagsToParser(parser, mutation_op=MutationOp.UPDATE)
 
   base.Argument(  # This is not a go/gcloud-style#commonly-used-flags.
       '--notices',
@@ -63,13 +72,14 @@ def AddRegisterFlagsToParser(parser):
   Args:
     parser: argparse parser to which to add these flags.
   """
-  _AddDNSSettingsFlagsToParser(parser, allow_from_file=False)
-  _AddContactSettingsFlagsToParser(parser, is_update=False)
+  _AddDNSSettingsFlagsToParser(
+      parser, allow_from_file=False, mutation_op=MutationOp.REGISTER)
+  _AddContactSettingsFlagsToParser(parser, mutation_op=MutationOp.REGISTER)
   base.Argument(  # This is not a go/gcloud-style#commonly-used-flags.
       '--yearly-price',
-      help=('You have to accept the yearly price of the domain, either in the '
+      help=('You must accept the yearly price of the domain, either in the '
             'interactive flow or using this flag. The expected format is a '
-            'number followed by a currency code, e.g. "12.00USD". You can get '
+            'number followed by a currency code, e.g. "12.00 USD". You can get '
             'the price using the get-register-parameters command.'),
   ).AddToParser(parser)
 
@@ -89,18 +99,29 @@ def AddRegisterFlagsToParser(parser):
                                choices=notice_choices)).AddToParser(parser)
 
 
-def _AddDNSSettingsFlagsToParser(parser, allow_from_file):
+def _AddDNSSettingsFlagsToParser(parser, allow_from_file, mutation_op):
   """Get flags for providing DNS settings.
 
   Args:
     parser: argparse parser to which to add these flags.
     allow_from_file: If true, --dns-settings-from-file will also be added.
+    mutation_op: operation for which we're adding flags.
   """
+  group_help_text = """\
+      Set the authoritative name servers for the given domain.
+      """
+  if mutation_op != MutationOp.REGISTER:
+    group_help_text = group_help_text + """
+
+    Warning: Do not change name servers if ds_records is non-empty. Clear
+    ds_records first by calling this command with the --disable-dnssec flag, and
+    wait 24 hours before changing name servers. Otherwise your domain may stop
+    serving.
+
+        """
+
   dns_group = base.ArgumentGroup(
-      mutex=True,
-      help=('Set the addresses of authoritative name servers for the given '
-            'domain.'),
-      category=base.COMMONLY_USED_FLAGS)
+      mutex=True, help=group_help_text, category=base.COMMONLY_USED_FLAGS)
   dns_group.AddArgument(
       base.Argument(
           '--name-servers',
@@ -116,85 +137,86 @@ def _AddDNSSettingsFlagsToParser(parser, allow_from_file):
               'If it\'s in the same project, you can use short name. If not, '
               'use the full resource name, e.g.: --cloud-dns-zone='
               'projects/example-project/managedZones/example-zone.\n'
-              'DNS Security (DNSSEC) is turned on by default (if possible).')))
+              'If the zone is signed, DNSSEC will be enabled by default unless '
+              'you pass --disable-dnssec.')))
   dns_group.AddArgument(
       base.Argument(
           '--use-google-domains-dns',
-          help=('Use free name servers provided by Google Domains. \n'
-                'DNS Security (DNSSEC) is turned on by default.'),
+          help=(
+              'Use free name servers provided by Google Domains. \n'
+              'If the zone is signed, DNSSEC will be enabled by default unless '
+              'you pass --disable-dnssec.'),
           default=False,
           action='store_true'))
   if allow_from_file:
+    help_text = """\
+    A YAML file containing the required DNS settings.
+    If specified, its content will replace the values currently used in the
+    registration resource. If the file is missing some of the dns_settings
+    fields, those fields will be cleared.
+
+    Examples of file contents:
+
+    ```
+    googleDomainsDns:
+      dsState: DS_RECORDS_PUBLISHED
+    glueRecords:
+    - hostName: ns1.example.com
+      ipv4Addresses:
+      - 8.8.8.8
+    - hostName: ns2.example.com
+      ipv4Addresses:
+      - 8.8.8.8
+    ```
+
+    ```
+    customDns:
+      nameServers:
+      - new.ns1.com
+      - new.ns2.com
+      dsRecords:
+      - keyTag: 24
+        algorithm: RSASHA1
+        digestType: SHA256
+        digest: 2e1cfa82b035c26cbbbdae632cea070514eb8b773f616aaeaf668e2f0be8f10d
+      - keyTag: 42
+        algorithm: RSASHA1
+        digestType: SHA256
+        digest: 2e1cfa82bf35c26cbbbdae632cea070514eb8b773f616aaeaf668e2f0be8f10d
+    ```
+        """
     dns_group.AddArgument(
         base.Argument(
             '--dns-settings-from-file',
-            help=("""\
-        A YAML file containing the required DNS settings.
-        If specified, its content will replace the values currently used in the
-        registration resource. It means, that if the file is missing some of the
-        dns_settings field, they will be cleared.
-
-        Examples of file contents:
-
-        ```
-        googleDomainsDns:
-          dsState: DS_RECORDS_PUBLISHED
-        glueRecords:
-        - hostName: ns1.example.com
-          ipv4Addresses:
-          - 8.8.8.8
-        - hostName: ns2.example.com
-          ipv4Addresses:
-          - 8.8.8.8
-        ```
-
-        ```
-        customDns:
-          nameServers:
-          - new.ns1.com
-          - new.ns2.com
-          dsRecords:
-          - keyTag: 24
-            algorithm: RSASHA1
-            digestType: SHA256
-            digest: 2e1cfa82b035c26cbbbdae632cea070514eb8b773f616aaeaf668e2f0be8f10d
-          - keyTag: 42
-            algorithm: RSASHA1
-            digestType: SHA256
-            digest: 2e1cfa82bf35c26cbbbdae632cea070514eb8b773f616aaeaf668e2f0be8f10d
-        ```
-
-        Warning: Do not change name servers if ds_records is non-empty. Clear
-        ds_records first and wait 24 hours before changing name servers.
-        Otherwise your domain may stop serving.
-            """)))
+            help=help_text,
+            metavar='DNS_SETTINGS_FILE_NAME'))
   dns_group.AddToParser(parser)
   base.Argument(
       '--disable-dnssec',
       help="""\
-      When using Cloud DNS Zone or Google Domains nameservers the DNS Security
-      (DNSSEC) will be enabled for the domain (unless the zone is not signed).
-      Use this flag to disable DNSSEC.
+      Use this flag to disable DNSSEC, or to skip enabling it when switching
+      to a Cloud DNS Zone or Google Domains nameservers.
       """,
       default=False,
       action='store_true').AddToParser(parser)
 
 
-def _AddContactSettingsFlagsToParser(parser, is_update):
+def _AddContactSettingsFlagsToParser(parser, mutation_op):
   """Get flags for providing Contact settings.
 
   Args:
     parser: argparse parser to which to add these flags.
-    is_update: Set to True for the update command and to False for Register or
-      Transfer commands.
+    mutation_op: operation for which we're adding flags.
   """
   help_text = """\
-    A YAML file containing the required contact data. It can specify contact data with label
-    'allContacts' (it means that a single contact will be used for registrant, admin and technical
-    contacts) or separate contact data with labels 'registrantContact', 'adminContact' and
-    'technicalContact'.
+    A YAML file containing the contact data for the domain's three contacts:
+    registrant, admin, and technical.
+
+    The file can either specify a single set of contact data with label
+    'allContacts', or three separate sets of contact data with labels
+    'adminContact' and 'technicalContact'.
     {}
-    If specified, each contact data must contain values for all required fields: email,
+    Each contact data must contain values for all required fields: email,
     phoneNumber and postalAddress in google.type.PostalAddress format.
 
     For more guidance on how to specify postalAddress, please see:
@@ -248,11 +270,11 @@ def _AddContactSettingsFlagsToParser(parser, is_update):
         recipients: ['Technic Jane Doe']
     ```
     """
-  if is_update:
+  if mutation_op == MutationOp.UPDATE:
     help_text = help_text.format(
         """
     If 'registrantContact', 'adminContact' or 'technicalContact' labels are used
-    then only the specified contact is updated.
+    then only the specified contacts are updated.
     """, """
     ```
     adminContact:
@@ -273,6 +295,7 @@ def _AddContactSettingsFlagsToParser(parser, is_update):
   base.Argument(
       '--contact-data-from-file',
       help=help_text,
+      metavar='CONTACT_DATA_FILE_NAME',
       category=base.COMMONLY_USED_FLAGS).AddToParser(parser)
 
   def _ChoiceValueType(value):
@@ -332,12 +355,16 @@ CONTACT_PRIVACY_ENUM_MAPPER = arg_utils.ChoiceEnumMapper(
               'directory at no extra cost. They will forward received messages '
               'to you.')),
         'REDACTED_CONTACT_DATA': ('redacted-contact-data', (
-            'Limited personal info will be available to the public. The actual '
-            'information redacted depends on the domain. For more information '
-            'see https://support.google.com/domains/answer/3251242?hl=en.')),
+            'Limited personal information will be available to the public. The '
+            'actual information redacted depends on the domain. For more '
+            'information see '
+            'https://support.google.com/domains/answer/3251242.')),
         'PUBLIC_CONTACT_DATA':
             ('public-contact-data',
-             ('All the data from contact config is publicly available.')),
+             ('All the data from contact config is publicly available. To set '
+              'this value, you must also pass the --notices flag with value '
+              'public-contact-data-acknowledgement or agree to the notice '
+              'interactively.')),
     },
     required=False,
     help_str=('The contact privacy mode to use. Supported privacy modes '

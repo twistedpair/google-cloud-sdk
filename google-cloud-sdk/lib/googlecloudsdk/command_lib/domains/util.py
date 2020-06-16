@@ -238,12 +238,12 @@ def TransformMoneyType(r):
 
 
 def _ParseMoney(money):
-  """Parses money string as touple (units, cents, currency)."""
-  match = re.match(r'^(\d+|\d+\.\d{2})([A-Z]{3})$', money)
+  """Parses money string as tuple (units, cents, currency)."""
+  match = re.match(r'^(\d+|\d+\.\d{2})\s*([A-Z]{3})$', money)
   if match:
     number, s = match.groups()
   else:
-    raise ValueError('Value could not be parsed as number + string')
+    raise ValueError('Value could not be parsed as number + currency code')
   if '.' in number:
     index = number.find('.')
     return int(number[:index]), int(number[index + 1:]), s
@@ -326,10 +326,12 @@ def WaitForOperation(response, asynchronous):
   Returns:
     The last information about the operation.
   """
-  if not asynchronous:
+  operation_ref = ParseOperation(response.name)
+  if asynchronous:
+    log.status.Print('Started \'{}\''.format(operation_ref.Name()))
+  else:
     message = 'Waiting for \'{}\' to complete'
     operations_client = operations.Client.FromApiVersion('v1alpha2')
-    operation_ref = ParseOperation(response.name)
     response = operations_client.WaitForOperation(
         operation_ref, message.format(operation_ref.Name()))
   return response

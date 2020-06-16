@@ -1524,6 +1524,16 @@ MAP = {
                 enable_mtls=False,
                 mtls_endpoint_override=''),
     },
+    'sddc': {
+        'v1alpha1':
+            APIDef(
+                class_path='googlecloudsdk.third_party.apis.sddc.v1alpha1',
+                client_classpath='sddc_v1alpha1_client.SddcV1alpha1',
+                messages_modulepath='sddc_v1alpha1_messages',
+                default_version=True,
+                enable_mtls=False,
+                mtls_endpoint_override=''),
+    },
     'secretmanager': {
         'v1':
             APIDef(

@@ -874,7 +874,7 @@ consent artifact.
     )
 
     def List(self, request, global_params=None):
-      r"""Lists the Consents in.
+      r"""Lists the Consent in.
 the given Consent store.
 
       Args:

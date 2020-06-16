@@ -24,13 +24,13 @@ class AuditConfig(_messages.Message):
   service: the log_types specified in each AuditConfig are enabled, and the
   exempted_members in each AuditLogConfig are exempted.  Example Policy with
   multiple AuditConfigs:      {       "audit_configs": [         {
-  "service": "allServices"           "audit_log_configs": [             {
+  "service": "allServices",           "audit_log_configs": [             {
   "log_type": "DATA_READ",               "exempted_members": [
   "user:jose@example.com"               ]             },             {
-  "log_type": "DATA_WRITE",             },             {
-  "log_type": "ADMIN_READ",             }           ]         },         {
-  "service": "sampleservice.googleapis.com"           "audit_log_configs": [
-  {               "log_type": "DATA_READ",             },             {
+  "log_type": "DATA_WRITE"             },             {
+  "log_type": "ADMIN_READ"             }           ]         },         {
+  "service": "sampleservice.googleapis.com",           "audit_log_configs": [
+  {               "log_type": "DATA_READ"             },             {
   "log_type": "DATA_WRITE",               "exempted_members": [
   "user:aliya@example.com"               ]             }           ]         }
   ]     }  For sampleservice, this policy enables DATA_READ, DATA_WRITE and
@@ -54,7 +54,7 @@ class AuditLogConfig(_messages.Message):
   r"""Provides the configuration for logging a type of permissions. Example:
   {       "audit_log_configs": [         {           "log_type": "DATA_READ",
   "exempted_members": [             "user:jose@example.com"           ]
-  },         {           "log_type": "DATA_WRITE",         }       ]     }
+  },         {           "log_type": "DATA_WRITE"         }       ]     }
   This enables 'DATA_READ' and 'DATA_WRITE' logging, while exempting
   jose@example.com from DATA_READ logging.
 

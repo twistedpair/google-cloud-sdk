@@ -9,7 +9,7 @@ class ServiceusageV1beta1(base_api.BaseApiClient):
 
   MESSAGES_MODULE = messages
   BASE_URL = 'https://serviceusage.googleapis.com/'
-  MTLS_BASE_URL = ''
+  MTLS_BASE_URL = 'https://serviceusage.mtls.googleapis.com/'
 
   _PACKAGE = 'serviceusage'
   _SCOPES = ['https://www.googleapis.com/auth/cloud-platform', 'https://www.googleapis.com/auth/cloud-platform.read-only', 'https://www.googleapis.com/auth/service.management']
@@ -37,6 +37,10 @@ class ServiceusageV1beta1(base_api.BaseApiClient):
         additional_http_headers=additional_http_headers,
         response_encoding=response_encoding)
     self.operations = self.OperationsService(self)
+    self.services_consumerQuotaMetrics_limits_adminOverrides = self.ServicesConsumerQuotaMetricsLimitsAdminOverridesService(self)
+    self.services_consumerQuotaMetrics_limits_consumerOverrides = self.ServicesConsumerQuotaMetricsLimitsConsumerOverridesService(self)
+    self.services_consumerQuotaMetrics_limits = self.ServicesConsumerQuotaMetricsLimitsService(self)
+    self.services_consumerQuotaMetrics = self.ServicesConsumerQuotaMetricsService(self)
     self.services = self.ServicesService(self)
 
   class OperationsService(base_api.BaseApiService):
@@ -110,6 +114,356 @@ is the parent resource, without the operations collection id.
         request_field='',
         request_type_name='ServiceusageOperationsListRequest',
         response_type_name='ListOperationsResponse',
+        supports_download=False,
+    )
+
+  class ServicesConsumerQuotaMetricsLimitsAdminOverridesService(base_api.BaseApiService):
+    """Service class for the services_consumerQuotaMetrics_limits_adminOverrides resource."""
+
+    _NAME = 'services_consumerQuotaMetrics_limits_adminOverrides'
+
+    def __init__(self, client):
+      super(ServiceusageV1beta1.ServicesConsumerQuotaMetricsLimitsAdminOverridesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Creates an admin override.
+An admin override is applied by an administrator of a parent folder or
+parent organization of the consumer receiving the override. An admin
+override is intended to limit the amount of quota the consumer can use out
+of the total quota pool allocated to all children of the folder or
+organization.
+
+      Args:
+        request: (ServiceusageServicesConsumerQuotaMetricsLimitsAdminOverridesCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/{v1beta1Id}/{v1beta1Id1}/services/{servicesId}/consumerQuotaMetrics/{consumerQuotaMetricsId}/limits/{limitsId}/adminOverrides',
+        http_method='POST',
+        method_id='serviceusage.services.consumerQuotaMetrics.limits.adminOverrides.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['force'],
+        relative_path='v1beta1/{+parent}/adminOverrides',
+        request_field='quotaOverride',
+        request_type_name='ServiceusageServicesConsumerQuotaMetricsLimitsAdminOverridesCreateRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes an admin override.
+
+      Args:
+        request: (ServiceusageServicesConsumerQuotaMetricsLimitsAdminOverridesDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/{v1beta1Id}/{v1beta1Id1}/services/{servicesId}/consumerQuotaMetrics/{consumerQuotaMetricsId}/limits/{limitsId}/adminOverrides/{adminOverridesId}',
+        http_method='DELETE',
+        method_id='serviceusage.services.consumerQuotaMetrics.limits.adminOverrides.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['force'],
+        relative_path='v1beta1/{+name}',
+        request_field='',
+        request_type_name='ServiceusageServicesConsumerQuotaMetricsLimitsAdminOverridesDeleteRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists all admin overrides on this limit.
+
+      Args:
+        request: (ServiceusageServicesConsumerQuotaMetricsLimitsAdminOverridesListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListAdminOverridesResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/{v1beta1Id}/{v1beta1Id1}/services/{servicesId}/consumerQuotaMetrics/{consumerQuotaMetricsId}/limits/{limitsId}/adminOverrides',
+        http_method='GET',
+        method_id='serviceusage.services.consumerQuotaMetrics.limits.adminOverrides.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v1beta1/{+parent}/adminOverrides',
+        request_field='',
+        request_type_name='ServiceusageServicesConsumerQuotaMetricsLimitsAdminOverridesListRequest',
+        response_type_name='ListAdminOverridesResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Updates an admin override.
+
+      Args:
+        request: (ServiceusageServicesConsumerQuotaMetricsLimitsAdminOverridesPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/{v1beta1Id}/{v1beta1Id1}/services/{servicesId}/consumerQuotaMetrics/{consumerQuotaMetricsId}/limits/{limitsId}/adminOverrides/{adminOverridesId}',
+        http_method='PATCH',
+        method_id='serviceusage.services.consumerQuotaMetrics.limits.adminOverrides.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['force', 'updateMask'],
+        relative_path='v1beta1/{+name}',
+        request_field='quotaOverride',
+        request_type_name='ServiceusageServicesConsumerQuotaMetricsLimitsAdminOverridesPatchRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+  class ServicesConsumerQuotaMetricsLimitsConsumerOverridesService(base_api.BaseApiService):
+    """Service class for the services_consumerQuotaMetrics_limits_consumerOverrides resource."""
+
+    _NAME = 'services_consumerQuotaMetrics_limits_consumerOverrides'
+
+    def __init__(self, client):
+      super(ServiceusageV1beta1.ServicesConsumerQuotaMetricsLimitsConsumerOverridesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Creates a consumer override.
+A consumer override is applied to the consumer on its own authority to
+limit its own quota usage. Consumer overrides cannot be used to grant more
+quota than would be allowed by admin overrides, producer overrides, or the
+default limit of the service.
+
+      Args:
+        request: (ServiceusageServicesConsumerQuotaMetricsLimitsConsumerOverridesCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/{v1beta1Id}/{v1beta1Id1}/services/{servicesId}/consumerQuotaMetrics/{consumerQuotaMetricsId}/limits/{limitsId}/consumerOverrides',
+        http_method='POST',
+        method_id='serviceusage.services.consumerQuotaMetrics.limits.consumerOverrides.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['force'],
+        relative_path='v1beta1/{+parent}/consumerOverrides',
+        request_field='quotaOverride',
+        request_type_name='ServiceusageServicesConsumerQuotaMetricsLimitsConsumerOverridesCreateRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes a consumer override.
+
+      Args:
+        request: (ServiceusageServicesConsumerQuotaMetricsLimitsConsumerOverridesDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/{v1beta1Id}/{v1beta1Id1}/services/{servicesId}/consumerQuotaMetrics/{consumerQuotaMetricsId}/limits/{limitsId}/consumerOverrides/{consumerOverridesId}',
+        http_method='DELETE',
+        method_id='serviceusage.services.consumerQuotaMetrics.limits.consumerOverrides.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['force'],
+        relative_path='v1beta1/{+name}',
+        request_field='',
+        request_type_name='ServiceusageServicesConsumerQuotaMetricsLimitsConsumerOverridesDeleteRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists all consumer overrides on this limit.
+
+      Args:
+        request: (ServiceusageServicesConsumerQuotaMetricsLimitsConsumerOverridesListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListConsumerOverridesResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/{v1beta1Id}/{v1beta1Id1}/services/{servicesId}/consumerQuotaMetrics/{consumerQuotaMetricsId}/limits/{limitsId}/consumerOverrides',
+        http_method='GET',
+        method_id='serviceusage.services.consumerQuotaMetrics.limits.consumerOverrides.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v1beta1/{+parent}/consumerOverrides',
+        request_field='',
+        request_type_name='ServiceusageServicesConsumerQuotaMetricsLimitsConsumerOverridesListRequest',
+        response_type_name='ListConsumerOverridesResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Updates a consumer override.
+
+      Args:
+        request: (ServiceusageServicesConsumerQuotaMetricsLimitsConsumerOverridesPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/{v1beta1Id}/{v1beta1Id1}/services/{servicesId}/consumerQuotaMetrics/{consumerQuotaMetricsId}/limits/{limitsId}/consumerOverrides/{consumerOverridesId}',
+        http_method='PATCH',
+        method_id='serviceusage.services.consumerQuotaMetrics.limits.consumerOverrides.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['force', 'updateMask'],
+        relative_path='v1beta1/{+name}',
+        request_field='quotaOverride',
+        request_type_name='ServiceusageServicesConsumerQuotaMetricsLimitsConsumerOverridesPatchRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+  class ServicesConsumerQuotaMetricsLimitsService(base_api.BaseApiService):
+    """Service class for the services_consumerQuotaMetrics_limits resource."""
+
+    _NAME = 'services_consumerQuotaMetrics_limits'
+
+    def __init__(self, client):
+      super(ServiceusageV1beta1.ServicesConsumerQuotaMetricsLimitsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Get(self, request, global_params=None):
+      r"""Retrieves a summary of quota information for a specific quota limit.
+
+      Args:
+        request: (ServiceusageServicesConsumerQuotaMetricsLimitsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ConsumerQuotaLimit) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/{v1beta1Id}/{v1beta1Id1}/services/{servicesId}/consumerQuotaMetrics/{consumerQuotaMetricsId}/limits/{limitsId}',
+        http_method='GET',
+        method_id='serviceusage.services.consumerQuotaMetrics.limits.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['view'],
+        relative_path='v1beta1/{+name}',
+        request_field='',
+        request_type_name='ServiceusageServicesConsumerQuotaMetricsLimitsGetRequest',
+        response_type_name='ConsumerQuotaLimit',
+        supports_download=False,
+    )
+
+  class ServicesConsumerQuotaMetricsService(base_api.BaseApiService):
+    """Service class for the services_consumerQuotaMetrics resource."""
+
+    _NAME = 'services_consumerQuotaMetrics'
+
+    def __init__(self, client):
+      super(ServiceusageV1beta1.ServicesConsumerQuotaMetricsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Get(self, request, global_params=None):
+      r"""Retrieves a summary of quota information for a specific quota metric.
+
+      Args:
+        request: (ServiceusageServicesConsumerQuotaMetricsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ConsumerQuotaMetric) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/{v1beta1Id}/{v1beta1Id1}/services/{servicesId}/consumerQuotaMetrics/{consumerQuotaMetricsId}',
+        http_method='GET',
+        method_id='serviceusage.services.consumerQuotaMetrics.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['view'],
+        relative_path='v1beta1/{+name}',
+        request_field='',
+        request_type_name='ServiceusageServicesConsumerQuotaMetricsGetRequest',
+        response_type_name='ConsumerQuotaMetric',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Retrieves a summary of all quota information visible to the service.
+consumer, organized by service metric. Each metric includes information
+about all of its defined limits. Each limit includes the limit
+configuration (quota unit, preciseness, default value), the current
+effective limit value, and all of the overrides applied to the limit.
+
+      Args:
+        request: (ServiceusageServicesConsumerQuotaMetricsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListConsumerQuotaMetricsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/{v1beta1Id}/{v1beta1Id1}/services/{servicesId}/consumerQuotaMetrics',
+        http_method='GET',
+        method_id='serviceusage.services.consumerQuotaMetrics.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken', 'view'],
+        relative_path='v1beta1/{+parent}/consumerQuotaMetrics',
+        request_field='',
+        request_type_name='ServiceusageServicesConsumerQuotaMetricsListRequest',
+        response_type_name='ListConsumerQuotaMetricsResponse',
         supports_download=False,
     )
 
@@ -268,33 +622,6 @@ Operation<response: google.protobuf.Empty>
         request_field='',
         request_type_name='ServiceusageServicesGetRequest',
         response_type_name='Service',
-        supports_download=False,
-    )
-
-    def GetServiceIdentity(self, request, global_params=None):
-      r"""Get service identity for service.
-
-      Args:
-        request: (ServiceusageServicesGetServiceIdentityRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Operation) The response message.
-      """
-      config = self.GetMethodConfig('GetServiceIdentity')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    GetServiceIdentity.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1beta1/{v1beta1Id}/{v1beta1Id1}/services/{servicesId}:getServiceIdentity',
-        http_method='GET',
-        method_id='serviceusage.services.getServiceIdentity',
-        ordered_params=['parent'],
-        path_params=['parent'],
-        query_params=[],
-        relative_path='v1beta1/{+parent}:getServiceIdentity',
-        request_field='',
-        request_type_name='ServiceusageServicesGetServiceIdentityRequest',
-        response_type_name='Operation',
         supports_download=False,
     )
 

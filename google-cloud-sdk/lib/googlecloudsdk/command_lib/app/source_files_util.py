@@ -71,8 +71,6 @@ _JAVA_GCLOUDIGNORE = '\n'.join([
     gcloudignore.DEFAULT_IGNORE_FILE,
     '# Target directory for maven builds',
     'target/',
-    '# Build directory for gradle builds',
-    'build/'
 ])
 
 _GCLOUDIGNORE_REGISTRY = {

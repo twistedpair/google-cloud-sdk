@@ -355,6 +355,8 @@ apis:
           path: entries
         projects.locations.tagTemplates.fields:
           path: projects/{projectsId}/locations/{locationsId}/tagTemplates/{tagTemplatesId}/fields/{fieldsId}
+        projects.locations.tagTemplates.fields.enumValues:
+          path: projects/{projectsId}/locations/{locationsId}/tagTemplates/{tagTemplatesId}/fields/{fieldsId}/enumValues/{enumValuesId}
         projects.locations.entryGroups.entries.tags:
           path: projects/{projectsId}/locations/{locationsId}/entryGroups/{entryGroupsId}/entries/{entriesId}/tags/{tagsId}
     v1:
@@ -366,6 +368,8 @@ apis:
           path: entries
         projects.locations.tagTemplates.fields:
           path: projects/{projectsId}/locations/{locationsId}/tagTemplates/{tagTemplatesId}/fields/{fieldsId}
+        projects.locations.tagTemplates.fields.enumValues:
+          path: projects/{projectsId}/locations/{locationsId}/tagTemplates/{tagTemplatesId}/fields/{fieldsId}/enumValues/{enumValuesId}
         projects.locations.entryGroups.entries.tags:
           path: projects/{projectsId}/locations/{locationsId}/entryGroups/{entryGroupsId}/entries/{entriesId}/tags/{tagsId}
   dataflow:
@@ -922,3 +926,6 @@ apis:
       default: true
     v1beta:
       discovery_doc: workflows_v1beta.json
+  sddc:
+    v1alpha1:
+      discovery_doc: sddc_v1alpha1.json

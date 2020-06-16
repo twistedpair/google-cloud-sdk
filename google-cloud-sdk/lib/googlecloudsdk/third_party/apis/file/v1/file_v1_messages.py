@@ -238,6 +238,8 @@ class GoogleCloudSaasacceleratorManagementProvidersV1Instance(_messages.Message)
       refer to go/cloud-saas-mw-ug.
     maintenanceSchedules: The MaintenanceSchedule contains the scheduling
       information of published maintenance schedule.
+    maintenanceSettings: Optional. The MaintenanceSettings associated with
+      instance.
     name: Unique name of the resource. It uses the form:
       `projects/{project_id}/locations/{location_id}/instances/{instance_id}`
     producerMetadata: Output only. Custom string attributes used primarily to
@@ -428,15 +430,16 @@ class GoogleCloudSaasacceleratorManagementProvidersV1Instance(_messages.Message)
   labels = _messages.MessageField('LabelsValue', 3)
   maintenancePolicyNames = _messages.MessageField('MaintenancePolicyNamesValue', 4)
   maintenanceSchedules = _messages.MessageField('MaintenanceSchedulesValue', 5)
-  name = _messages.StringField(6)
-  producerMetadata = _messages.MessageField('ProducerMetadataValue', 7)
-  provisionedResources = _messages.MessageField('GoogleCloudSaasacceleratorManagementProvidersV1ProvisionedResource', 8, repeated=True)
-  slmInstanceTemplate = _messages.StringField(9)
-  sloMetadata = _messages.MessageField('GoogleCloudSaasacceleratorManagementProvidersV1SloMetadata', 10)
-  softwareVersions = _messages.MessageField('SoftwareVersionsValue', 11)
-  state = _messages.EnumField('StateValueValuesEnum', 12)
-  tenantProjectId = _messages.StringField(13)
-  updateTime = _messages.StringField(14)
+  maintenanceSettings = _messages.MessageField('GoogleCloudSaasacceleratorManagementProvidersV1MaintenanceSettings', 6)
+  name = _messages.StringField(7)
+  producerMetadata = _messages.MessageField('ProducerMetadataValue', 8)
+  provisionedResources = _messages.MessageField('GoogleCloudSaasacceleratorManagementProvidersV1ProvisionedResource', 9, repeated=True)
+  slmInstanceTemplate = _messages.StringField(10)
+  sloMetadata = _messages.MessageField('GoogleCloudSaasacceleratorManagementProvidersV1SloMetadata', 11)
+  softwareVersions = _messages.MessageField('SoftwareVersionsValue', 12)
+  state = _messages.EnumField('StateValueValuesEnum', 13)
+  tenantProjectId = _messages.StringField(14)
+  updateTime = _messages.StringField(15)
 
 
 class GoogleCloudSaasacceleratorManagementProvidersV1MaintenanceSchedule(_messages.Message):
@@ -458,6 +461,19 @@ class GoogleCloudSaasacceleratorManagementProvidersV1MaintenanceSchedule(_messag
   endTime = _messages.StringField(2)
   rolloutManagementPolicy = _messages.StringField(3)
   startTime = _messages.StringField(4)
+
+
+class GoogleCloudSaasacceleratorManagementProvidersV1MaintenanceSettings(_messages.Message):
+  r"""Maintenance settings associated with instance. Allows service producers
+  and end users to assign settings that controls maintenance on this instance.
+
+  Fields:
+    exclude: Optional. Exclude instance from maintenance. When true, rollout
+      service will not attempt maintenance on the instance. Rollout service
+      will include the instance in reported rollout progress as not attempted.
+  """
+
+  exclude = _messages.BooleanField(1)
 
 
 class GoogleCloudSaasacceleratorManagementProvidersV1NodeSloMetadata(_messages.Message):
@@ -993,14 +1009,12 @@ class StandardQueryParameters(_messages.Message):
 
   Fields:
     f__xgafv: V1 error format.
-    access_token: OAuth access token.
     alt: Data format for response.
     callback: JSONP
     fields: Selector specifying which fields to include in a partial response.
     key: API key. Your API key identifies your project and provides you with
       API access, quota, and reports. Required unless you provide an OAuth 2.0
       token.
-    oauth_token: OAuth 2.0 token for the current user.
     prettyPrint: Returns response with indentations and line breaks.
     quotaUser: Available to use for quota purposes for server-side
       applications. Can be any arbitrary string assigned to a user, but should
@@ -1034,17 +1048,15 @@ class StandardQueryParameters(_messages.Message):
     _2 = 1
 
   f__xgafv = _messages.EnumField('FXgafvValueValuesEnum', 1)
-  access_token = _messages.StringField(2)
-  alt = _messages.EnumField('AltValueValuesEnum', 3, default='json')
-  callback = _messages.StringField(4)
-  fields = _messages.StringField(5)
-  key = _messages.StringField(6)
-  oauth_token = _messages.StringField(7)
-  prettyPrint = _messages.BooleanField(8, default=True)
-  quotaUser = _messages.StringField(9)
-  trace = _messages.StringField(10)
-  uploadType = _messages.StringField(11)
-  upload_protocol = _messages.StringField(12)
+  alt = _messages.EnumField('AltValueValuesEnum', 2, default='json')
+  callback = _messages.StringField(3)
+  fields = _messages.StringField(4)
+  key = _messages.StringField(5)
+  prettyPrint = _messages.BooleanField(6, default=True)
+  quotaUser = _messages.StringField(7)
+  trace = _messages.StringField(8)
+  uploadType = _messages.StringField(9)
+  upload_protocol = _messages.StringField(10)
 
 
 class Status(_messages.Message):

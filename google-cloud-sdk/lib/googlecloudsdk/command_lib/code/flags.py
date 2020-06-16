@@ -45,8 +45,7 @@ def CommonFlags(parser):
   parser.add_argument(
       '--build-context-directory',
       help='If set, use this as the context directory when building the '
-      'container image. Otherwise, the directory of the Dockerfile will be '
-      'used.')
+      'container image. If not specified, the current directory is used.')
 
   credential_group = parser.add_mutually_exclusive_group(required=False)
   credential_group.add_argument(

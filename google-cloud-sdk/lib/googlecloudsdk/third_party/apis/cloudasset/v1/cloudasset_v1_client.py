@@ -237,10 +237,10 @@ service.
 
     def BatchGetAssetsHistory(self, request, global_params=None):
       r"""Batch gets the update history of assets that overlap a time window.
-For RESOURCE content, this API outputs history with asset in both
-non-delete or deleted status.
 For IAM_POLICY content, this API outputs history when the asset and its
 attached IAM POLICY both exist. This can create gaps in the output history.
+Otherwise, this API outputs history with asset in both non-delete or
+deleted status.
 If a specified asset does not exist, this API returns an INVALID_ARGUMENT
 error.
 
@@ -270,13 +270,15 @@ error.
 
     def ExportAssets(self, request, global_params=None):
       r"""Exports assets with time and resource types to a given Cloud Storage.
-location. The output format is newline-delimited JSON. Each line represents
-a google.cloud.asset.v1.Asset in the JSON format.
-This API implements the google.longrunning.Operation API allowing you
-to keep track of the export. We recommend intervals of at least 2 seconds
-with exponential retry to poll the export operation result. For
-regular-size resource parent, the export operation usually finishes within
-5 minutes.
+location/BigQuery table. For Cloud Storage location destinations, the
+output format is newline-delimited JSON. Each line represents a
+google.cloud.asset.v1.Asset in the JSON format; for BigQuery table
+destinations, the output table stores the fields in asset proto as columns.
+This API implements the google.longrunning.Operation API
+, which allows you to keep track of the export. We recommend intervals of
+at least 2 seconds with exponential retry to poll the export operation
+result. For regular-size resource parent, the export operation usually
+finishes within 5 minutes.
 
       Args:
         request: (CloudassetExportAssetsRequest) input message
@@ -299,5 +301,65 @@ regular-size resource parent, the export operation usually finishes within
         request_field='exportAssetsRequest',
         request_type_name='CloudassetExportAssetsRequest',
         response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def SearchAllIamPolicies(self, request, global_params=None):
+      r"""Searches all the IAM policies within the given accessible scope (e.g., a.
+project, a folder or an organization). Callers should have
+`cloud.assets.SearchAllIamPolicies` permission upon the requested scope,
+otherwise the request will be rejected.
+
+      Args:
+        request: (CloudassetSearchAllIamPoliciesRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (SearchAllIamPoliciesResponse) The response message.
+      """
+      config = self.GetMethodConfig('SearchAllIamPolicies')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SearchAllIamPolicies.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/{v1Id}/{v1Id1}:searchAllIamPolicies',
+        http_method='GET',
+        method_id='cloudasset.searchAllIamPolicies',
+        ordered_params=['scope'],
+        path_params=['scope'],
+        query_params=['pageSize', 'pageToken', 'query'],
+        relative_path='v1/{+scope}:searchAllIamPolicies',
+        request_field='',
+        request_type_name='CloudassetSearchAllIamPoliciesRequest',
+        response_type_name='SearchAllIamPoliciesResponse',
+        supports_download=False,
+    )
+
+    def SearchAllResources(self, request, global_params=None):
+      r"""Searches all the resources within the given accessible scope (e.g., a.
+project, a folder or an organization). Callers should have
+`cloud.assets.SearchAllResources` permission upon the requested scope,
+otherwise the request will be rejected.
+
+      Args:
+        request: (CloudassetSearchAllResourcesRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (SearchAllResourcesResponse) The response message.
+      """
+      config = self.GetMethodConfig('SearchAllResources')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SearchAllResources.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/{v1Id}/{v1Id1}:searchAllResources',
+        http_method='GET',
+        method_id='cloudasset.searchAllResources',
+        ordered_params=['scope'],
+        path_params=['scope'],
+        query_params=['assetTypes', 'orderBy', 'pageSize', 'pageToken', 'query'],
+        relative_path='v1/{+scope}:searchAllResources',
+        request_field='',
+        request_type_name='CloudassetSearchAllResourcesRequest',
+        response_type_name='SearchAllResourcesResponse',
         supports_download=False,
     )

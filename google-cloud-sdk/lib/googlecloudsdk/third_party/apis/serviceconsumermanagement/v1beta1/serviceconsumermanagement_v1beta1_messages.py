@@ -79,12 +79,14 @@ class AuthProvider(_messages.Message):
     audiences: The list of JWT [audiences](https://tools.ietf.org/html/draft-
       ietf-oauth-json-web-token-32#section-4.1.3). that are allowed to access.
       A JWT containing any of these audiences will be accepted. When this
-      setting is absent, only JWTs with audience
-      "https://Service_name/API_name" will be accepted. For example, if no
-      audiences are in the setting, LibraryService API will only accept JWTs
-      with the following audience "https://library-
-      example.googleapis.com/google.example.library.v1.LibraryService".
-      Example:      audiences: bookstore_android.apps.googleusercontent.com,
+      setting is absent, JWTs with audiences:   -
+      "https://[service.name]/[google.protobuf.Api.name]"   -
+      "https://[service.name]/" will be accepted. For example, if no audiences
+      are in the setting, LibraryService API will accept JWTs with the
+      following audiences:   -   https://library-
+      example.googleapis.com/google.example.library.v1.LibraryService   -
+      https://library-example.googleapis.com/  Example:      audiences:
+      bookstore_android.apps.googleusercontent.com,
       bookstore_web.apps.googleusercontent.com
     authorizationUrl: Redirect URL if JWT token is required but not present or
       is expired. Implement authorizationUrl of securityDefinitions in OpenAPI
@@ -104,6 +106,15 @@ class AuthProvider(_messages.Message):
       the issuer.  - can be inferred from the email domain of the issuer (e.g.
       a Google  service account).  Example:
       https://www.googleapis.com/oauth2/v1/certs
+    jwtLocations: Defines the locations to extract the JWT.  JWT locations can
+      be either from HTTP headers or URL query parameters. The rule is that
+      the first match wins. The checking order is: checking all headers first,
+      then URL query parameters.  If not specified,  default to use following
+      3 locations:    1) Authorization: Bearer    2) x-goog-iap-jwt-assertion
+      3) access_token query parameter  Default locations can be specified as
+      followings:    jwt_locations:    - header: Authorization
+      value_prefix: "Bearer "    - header: x-goog-iap-jwt-assertion    -
+      query: access_token
   """
 
   audiences = _messages.StringField(1)
@@ -111,6 +122,7 @@ class AuthProvider(_messages.Message):
   id = _messages.StringField(3)
   issuer = _messages.StringField(4)
   jwksUri = _messages.StringField(5)
+  jwtLocations = _messages.MessageField('JwtLocation', 6, repeated=True)
 
 
 class AuthRequirement(_messages.Message):
@@ -200,17 +212,40 @@ class BackendRule(_messages.Message):
     PathTranslationValueValuesEnum:
 
   Fields:
-    address: The address of the API backend.
-    deadline: The number of seconds to wait for a response from a request.
-      The default deadline for gRPC is infinite (no deadline) and HTTP
-      requests is 5 seconds.
-    jwtAudience: The JWT audience is used when generating a JWT id token for
-      the backend.
+    address: The address of the API backend.  The scheme is used to determine
+      the backend protocol and security. The following schemes are accepted:
+      SCHEME        PROTOCOL    SECURITY    http://       HTTP        None
+      https://      HTTP        TLS    grpc://       gRPC        None
+      grpcs://      gRPC        TLS  It is recommended to explicitly include a
+      scheme. Leaving out the scheme may cause constrasting behaviors across
+      platforms.  If the port is unspecified, the default is: - 80 for schemes
+      without TLS - 443 for schemes with TLS  For HTTP backends, use protocol
+      to specify the protocol version.
+    deadline: The number of seconds to wait for a response from a request. The
+      default varies based on the request protocol and deployment environment.
+    disableAuth: When disable_auth is true, a JWT ID token won't be generated
+      and the original "Authorization" HTTP header will be preserved. If the
+      header is used to carry the original token and is expected by the
+      backend, this field must be set to true to preserve the header.
+    jwtAudience: The JWT audience is used when generating a JWT ID token for
+      the backend. This ID token will be added in the HTTP "authorization"
+      header, and sent to the backend.
     minDeadline: Minimum deadline in seconds needed for this method. Calls
       having deadline value lower than this will be rejected.
     operationDeadline: The number of seconds to wait for the completion of a
       long running operation. The default is no deadline.
     pathTranslation: A PathTranslationValueValuesEnum attribute.
+    protocol: The protocol used for sending a request to the backend. The
+      supported values are "http/1.1" and "h2".  The default value is inferred
+      from the scheme in the address field:     SCHEME        PROTOCOL
+      http://       http/1.1    https://      http/1.1    grpc://       h2
+      grpcs://      h2  For secure HTTP backends (https://) that support
+      HTTP/2, set this field to "h2" for improved performance.  Configuring
+      this field to non-default values is only supported for secure HTTP
+      backends. This field will be ignored for all other backends.  See
+      https://www.iana.org/assignments/tls-extensiontype-values/tls-
+      extensiontype-values.xhtml#alpn-protocol-ids for more details on the
+      supported values.
     selector: Selects the methods to which this rule applies.  Refer to
       selector for syntax details.
   """
@@ -251,24 +286,33 @@ class BackendRule(_messages.Message):
 
   address = _messages.StringField(1)
   deadline = _messages.FloatField(2)
-  jwtAudience = _messages.StringField(3)
-  minDeadline = _messages.FloatField(4)
-  operationDeadline = _messages.FloatField(5)
-  pathTranslation = _messages.EnumField('PathTranslationValueValuesEnum', 6)
-  selector = _messages.StringField(7)
+  disableAuth = _messages.BooleanField(3)
+  jwtAudience = _messages.StringField(4)
+  minDeadline = _messages.FloatField(5)
+  operationDeadline = _messages.FloatField(6)
+  pathTranslation = _messages.EnumField('PathTranslationValueValuesEnum', 7)
+  protocol = _messages.StringField(8)
+  selector = _messages.StringField(9)
 
 
 class Billing(_messages.Message):
   r"""Billing related configuration of the service.  The following example
-  shows how to configure monitored resources and metrics for billing:
-  monitored_resources:     - type: library.googleapis.com/branch       labels:
-  - key: /city         description: The city where the library branch is
-  located in.       - key: /name         description: The name of the branch.
-  metrics:     - name: library.googleapis.com/book/borrowed_count
-  metric_kind: DELTA       value_type: INT64     billing:
-  consumer_destinations:       - monitored_resource:
-  library.googleapis.com/branch         metrics:         -
-  library.googleapis.com/book/borrowed_count
+  shows how to configure monitored resources and metrics for billing,
+  `consumer_destinations` is the only supported destination and the monitored
+  resources need at least one label key `cloud.googleapis.com/location` to
+  indicate the location of the billing usage, using different monitored
+  resources between monitoring and billing is recommended so they can be
+  evolved independently:       monitored_resources:     - type:
+  library.googleapis.com/billing_branch       labels:       - key:
+  cloud.googleapis.com/location         description: |           Predefined
+  label to support billing location restriction.       - key: city
+  description: |           Custom label to define the city where the library
+  branch is located           in.       - key: name         description:
+  Custom label to define the name of the library branch.     metrics:     -
+  name: library.googleapis.com/book/borrowed_count       metric_kind: DELTA
+  value_type: INT64       unit: "1"     billing:       consumer_destinations:
+  - monitored_resource: library.googleapis.com/billing_branch         metrics:
+  - library.googleapis.com/book/borrowed_count
 
   Fields:
     consumerDestinations: Billing configurations for sending metrics to the
@@ -446,6 +490,10 @@ class Documentation(_messages.Message):
     rules: A list of documentation rules that apply to individual API
       elements.  **NOTE:** All service configuration rules follow "last one
       wins" order.
+    serviceRootUrl: Specifies the service root url if the default one (the
+      service name from the yaml file) is not suitable. This can be seen in
+      any fully specified service urls as well as sections that show a base
+      that other urls are relative to.
     summary: A short summary of what the service does. Can only be provided by
       plain text.
   """
@@ -454,7 +502,8 @@ class Documentation(_messages.Message):
   overview = _messages.StringField(2)
   pages = _messages.MessageField('Page', 3, repeated=True)
   rules = _messages.MessageField('DocumentationRule', 4, repeated=True)
-  summary = _messages.StringField(5)
+  serviceRootUrl = _messages.StringField(5)
+  summary = _messages.StringField(6)
 
 
 class DocumentationRule(_messages.Message):
@@ -509,7 +558,6 @@ class Endpoint(_messages.Message):
       backends served from this endpoint to receive and respond to HTTP
       OPTIONS requests. The response will be used by the browser to determine
       whether the subsequent cross-origin request is allowed to proceed.
-    features: The list of features enabled on this endpoint.
     name: The canonical name of this endpoint.
     target: The specification of an Internet routable address of API frontend
       that will handle requests to this [API
@@ -520,9 +568,8 @@ class Endpoint(_messages.Message):
 
   aliases = _messages.StringField(1, repeated=True)
   allowCors = _messages.BooleanField(2)
-  features = _messages.StringField(3, repeated=True)
-  name = _messages.StringField(4)
-  target = _messages.StringField(5)
+  name = _messages.StringField(3)
+  target = _messages.StringField(4)
 
 
 class Enum(_messages.Message):
@@ -836,6 +883,8 @@ class HttpRule(_messages.Message):
     additionalBindings: Additional HTTP bindings for the selector. Nested
       bindings must not contain an `additional_bindings` field themselves
       (that is, the nesting may only be one level deep).
+    allowHalfDuplex: When this flag is set to true, HTTP requests will be
+      allowed to invoke a half-duplex streaming method.
     body: The name of the request field whose value is mapped to the HTTP
       request body, or `*` for mapping all request fields not captured by the
       path pattern to the HTTP body, or omitted for not having any HTTP
@@ -861,15 +910,35 @@ class HttpRule(_messages.Message):
   """
 
   additionalBindings = _messages.MessageField('HttpRule', 1, repeated=True)
-  body = _messages.StringField(2)
-  custom = _messages.MessageField('CustomHttpPattern', 3)
-  delete = _messages.StringField(4)
-  get = _messages.StringField(5)
-  patch = _messages.StringField(6)
-  post = _messages.StringField(7)
-  put = _messages.StringField(8)
-  responseBody = _messages.StringField(9)
-  selector = _messages.StringField(10)
+  allowHalfDuplex = _messages.BooleanField(2)
+  body = _messages.StringField(3)
+  custom = _messages.MessageField('CustomHttpPattern', 4)
+  delete = _messages.StringField(5)
+  get = _messages.StringField(6)
+  patch = _messages.StringField(7)
+  post = _messages.StringField(8)
+  put = _messages.StringField(9)
+  responseBody = _messages.StringField(10)
+  selector = _messages.StringField(11)
+
+
+class JwtLocation(_messages.Message):
+  r"""Specifies a location to extract JWT from an API request.
+
+  Fields:
+    header: Specifies HTTP header name to extract JWT token.
+    query: Specifies URL query parameter name to extract JWT token.
+    valuePrefix: The value prefix. The value format is "value_prefix{token}"
+      Only applies to "in" header type. Must be empty for "in" query type. If
+      not empty, the header value has to match (case sensitive) this prefix.
+      If not matched, JWT will not be extracted. If matched, JWT will be
+      extracted after the prefix is removed.  For example, for "Authorization:
+      Bearer {JWT}", value_prefix="Bearer " with a space at the end.
+  """
+
+  header = _messages.StringField(1)
+  query = _messages.StringField(2)
+  valuePrefix = _messages.StringField(3)
 
 
 class LabelDescriptor(_messages.Message):
@@ -1015,7 +1084,14 @@ class Method(_messages.Message):
 class MetricDescriptor(_messages.Message):
   r"""Defines a metric type and its schema. Once a metric descriptor is
   created, deleting or altering it stops data collection and makes the metric
-  type's existing data unusable.
+  type's existing data unusable.  The following are specific rules for service
+  defined Monitoring metric descriptors:  * `type`, `metric_kind`,
+  `value_type`, `description`, `display_name`,   `launch_stage` fields are all
+  required. The `unit` field must be specified   if the `value_type` is any of
+  DOUBLE, INT64, DISTRIBUTION. * Maximum of default 500 metric descriptors per
+  service is allowed. * Maximum of default 10 labels per metric descriptor is
+  allowed.  The default maximum limit can be overridden. Please follow
+  https://cloud.google.com/monitoring/quotas
 
   Enums:
     LaunchStageValueValuesEnum: Optional. The launch stage of the metric
@@ -1035,7 +1111,10 @@ class MetricDescriptor(_messages.Message):
       "Request count". This field is optional but it is recommended to be set
       for any metrics associated with user-visible concepts, such as Quota.
     labels: The set of labels that can be used to describe a specific instance
-      of this metric type. For example, the
+      of this metric type.  The label key name must follow:  * Only upper and
+      lower-case letters, digits and underscores (_) are   allowed. * Label
+      name must start with a letter or digit. * The maximum length of a label
+      name is 100 characters.  For example, the
       `appengine.googleapis.com/http/server/response_latencies` metric type
       has a label for the HTTP response code, `response_code`, so you can look
       at latencies for successful responses or just for responses that failed.
@@ -1045,40 +1124,80 @@ class MetricDescriptor(_messages.Message):
     metricKind: Whether the metric records instantaneous values, changes to a
       value, etc. Some combinations of `metric_kind` and `value_type` might
       not be supported.
+    monitoredResourceTypes: Read-only. If present, then a time series, which
+      is identified partially by a metric type and a
+      MonitoredResourceDescriptor, that is associated with this metric type
+      can only be associated with one of the monitored resource types listed
+      here.
     name: The resource name of the metric descriptor.
     type: The metric type, including its DNS name prefix. The type is not URL-
-      encoded.  All user-defined metric types have the DNS name
-      `custom.googleapis.com` or `external.googleapis.com`.  Metric types
-      should use a natural hierarchical grouping. For example:
+      encoded.  All service defined metrics must be prefixed with the service
+      name, in the format of `{service name}/{relative metric name}`, such as
+      `cloudsql.googleapis.com/database/cpu/utilization`. The relative metric
+      name must follow:  * Only upper and lower-case letters, digits, '/' and
+      underscores '_' are   allowed. * The maximum number of characters
+      allowed for the relative_metric_name is   100.  All user-defined metric
+      types have the DNS name `custom.googleapis.com`,
+      `external.googleapis.com`, or `logging.googleapis.com/user/`.  Metric
+      types should use a natural hierarchical grouping. For example:
       "custom.googleapis.com/invoice/paid/amount"
       "external.googleapis.com/prometheus/up"
       "appengine.googleapis.com/http/server/response_latencies"
-    unit: The unit in which the metric value is reported. It is only
+    unit: The units in which the metric value is reported. It is only
       applicable if the `value_type` is `INT64`, `DOUBLE`, or `DISTRIBUTION`.
-      The supported units are a subset of [The Unified Code for Units of
-      Measure](http://unitsofmeasure.org/ucum.html) standard:  **Basic units
-      (UNIT)**  * `bit`   bit * `By`    byte * `s`     second * `min`   minute
-      * `h`     hour * `d`     day  **Prefixes (PREFIX)**  * `k`     kilo
-      (10**3) * `M`     mega    (10**6) * `G`     giga    (10**9) * `T`
-      tera    (10**12) * `P`     peta    (10**15) * `E`     exa     (10**18) *
-      `Z`     zetta   (10**21) * `Y`     yotta   (10**24) * `m`     milli
-      (10**-3) * `u`     micro   (10**-6) * `n`     nano    (10**-9) * `p`
-      pico    (10**-12) * `f`     femto   (10**-15) * `a`     atto
-      (10**-18) * `z`     zepto   (10**-21) * `y`     yocto   (10**-24) * `Ki`
-      kibi    (2**10) * `Mi`    mebi    (2**20) * `Gi`    gibi    (2**30) *
-      `Ti`    tebi    (2**40)  **Grammar**  The grammar also includes these
-      connectors:  * `/`    division (as an infix operator, e.g. `1/s`). * `.`
-      multiplication (as an infix operator, e.g. `GBy.d`)  The grammar for a
-      unit is as follows:      Expression = Component { "." Component } { "/"
-      Component } ;      Component = ( [ PREFIX ] UNIT | "%" ) [ Annotation ]
-      | Annotation               | "1"               ;      Annotation = "{"
-      NAME "}" ;  Notes:  * `Annotation` is just a comment if it follows a
-      `UNIT` and is    equivalent to `1` if it is used alone. For examples,
-      `{requests}/s == 1/s`, `By{transmitted}/s == By/s`. * `NAME` is a
-      sequence of non-blank printable ASCII characters not    containing '{'
-      or '}'. * `1` represents dimensionless value 1, such as in `1/s`. * `%`
-      represents dimensionless value 1/100, and annotates values giving    a
-      percentage.
+      The `unit` defines the representation of the stored metric values.
+      Different systems may scale the values to be more easily displayed (so a
+      value of `0.02KBy` _might_ be displayed as `20By`, and a value of
+      `3523KBy` _might_ be displayed as `3.5MBy`). However, if the `unit` is
+      `KBy`, then the value of the metric is always in thousands of bytes, no
+      matter how it may be displayed..  If you want a custom metric to record
+      the exact number of CPU-seconds used by a job, you can create an `INT64
+      CUMULATIVE` metric whose `unit` is `s{CPU}` (or equivalently `1s{CPU}`
+      or just `s`). If the job uses 12,005 CPU-seconds, then the value is
+      written as `12005`.  Alternatively, if you want a custom metric to
+      record data in a more granular way, you can create a `DOUBLE CUMULATIVE`
+      metric whose `unit` is `ks{CPU}`, and then write the value `12.005`
+      (which is `12005/1000`), or use `Kis{CPU}` and write `11.723` (which is
+      `12005/1024`).  The supported units are a subset of [The Unified Code
+      for Units of Measure](http://unitsofmeasure.org/ucum.html) standard:
+      **Basic units (UNIT)**  * `bit`   bit * `By`    byte * `s`     second *
+      `min`   minute * `h`     hour * `d`     day  **Prefixes (PREFIX)**  *
+      `k`     kilo    (10^3) * `M`     mega    (10^6) * `G`     giga    (10^9)
+      * `T`     tera    (10^12) * `P`     peta    (10^15) * `E`     exa
+      (10^18) * `Z`     zetta   (10^21) * `Y`     yotta   (10^24)  * `m`
+      milli   (10^-3) * `u`     micro   (10^-6) * `n`     nano    (10^-9) *
+      `p`     pico    (10^-12) * `f`     femto   (10^-15) * `a`     atto
+      (10^-18) * `z`     zepto   (10^-21) * `y`     yocto   (10^-24)  * `Ki`
+      kibi    (2^10) * `Mi`    mebi    (2^20) * `Gi`    gibi    (2^30) * `Ti`
+      tebi    (2^40) * `Pi`    pebi    (2^50)  **Grammar**  The grammar also
+      includes these connectors:  * `/`    division or ratio (as an infix
+      operator). For examples,          `kBy/{email}` or `MiBy/10ms` (although
+      you should almost never          have `/s` in a metric `unit`; rates
+      should always be computed at          query time from the underlying
+      cumulative or delta value). * `.`    multiplication or composition (as
+      an infix operator). For          examples, `GBy.d` or `k{watt}.h`.  The
+      grammar for a unit is as follows:      Expression = Component { "."
+      Component } { "/" Component } ;      Component = ( [ PREFIX ] UNIT | "%"
+      ) [ Annotation ]               | Annotation               | "1"
+      ;      Annotation = "{" NAME "}" ;  Notes:  * `Annotation` is just a
+      comment if it follows a `UNIT`. If the annotation    is used alone, then
+      the unit is equivalent to `1`. For examples,    `{request}/s == 1/s`,
+      `By{transmitted}/s == By/s`. * `NAME` is a sequence of non-blank
+      printable ASCII characters not    containing `{` or `}`. * `1`
+      represents a unitary [dimensionless
+      unit](https://en.wikipedia.org/wiki/Dimensionless_quantity) of 1, such
+      as in `1/s`. It is typically used when none of the basic units are
+      appropriate. For example, "new users per day" can be represented as
+      `1/d` or `{new-users}/d` (and a metric value `5` would mean "5 new
+      users). Alternatively, "thousands of page views per day" would be
+      represented as `1000/d` or `k1/d` or `k{page_views}/d` (and a metric
+      value of `5.3` would mean "5300 page views per day"). * `%` represents
+      dimensionless value of 1/100, and annotates values giving    a
+      percentage (so the metric values are typically in the range of 0..100,
+      and a metric value `3` means "3 percent"). * `10^2.%` indicates a metric
+      contains a ratio, typically in the range    0..1, that will be
+      multiplied by 100 and displayed as a percentage    (so a metric value
+      `0.03` means "3 percent").
     valueType: Whether the measurement is an integer, a floating-point number,
       etc. Some combinations of `metric_kind` and `value_type` might not be
       supported.
@@ -1089,6 +1208,9 @@ class MetricDescriptor(_messages.Message):
 
     Values:
       LAUNCH_STAGE_UNSPECIFIED: Do not use this default value.
+      UNIMPLEMENTED: The feature is not yet implemented. Users can not use it.
+      PRELAUNCH: Prelaunch features are hidden from users and are only visible
+        internally.
       EARLY_ACCESS: Early Access features are limited to a closed group of
         testers. To use these features, you must sign up in advance and sign a
         Trusted Tester agreement (which includes confidentiality provisions).
@@ -1117,11 +1239,13 @@ class MetricDescriptor(_messages.Message):
         Policy](https://cloud.google.com/terms/deprecation) documentation.
     """
     LAUNCH_STAGE_UNSPECIFIED = 0
-    EARLY_ACCESS = 1
-    ALPHA = 2
-    BETA = 3
-    GA = 4
-    DEPRECATED = 5
+    UNIMPLEMENTED = 1
+    PRELAUNCH = 2
+    EARLY_ACCESS = 3
+    ALPHA = 4
+    BETA = 5
+    GA = 6
+    DEPRECATED = 7
 
   class MetricKindValueValuesEnum(_messages.Enum):
     r"""Whether the metric records instantaneous values, changes to a value,
@@ -1172,26 +1296,26 @@ class MetricDescriptor(_messages.Message):
   launchStage = _messages.EnumField('LaunchStageValueValuesEnum', 4)
   metadata = _messages.MessageField('MetricDescriptorMetadata', 5)
   metricKind = _messages.EnumField('MetricKindValueValuesEnum', 6)
-  name = _messages.StringField(7)
-  type = _messages.StringField(8)
-  unit = _messages.StringField(9)
-  valueType = _messages.EnumField('ValueTypeValueValuesEnum', 10)
+  monitoredResourceTypes = _messages.StringField(7, repeated=True)
+  name = _messages.StringField(8)
+  type = _messages.StringField(9)
+  unit = _messages.StringField(10)
+  valueType = _messages.EnumField('ValueTypeValueValuesEnum', 11)
 
 
 class MetricDescriptorMetadata(_messages.Message):
   r"""Additional annotations that can be used to guide the usage of a metric.
 
   Enums:
-    LaunchStageValueValuesEnum: Deprecated. Please use the
-      MetricDescriptor.launch_stage instead. The launch stage of the metric
-      definition.
+    LaunchStageValueValuesEnum: Deprecated. Must use the
+      MetricDescriptor.launch_stage instead.
 
   Fields:
     ingestDelay: The delay of data points caused by ingestion. Data points
       older than this age are guaranteed to be ingested and available to be
       read, excluding data loss due to errors.
-    launchStage: Deprecated. Please use the MetricDescriptor.launch_stage
-      instead. The launch stage of the metric definition.
+    launchStage: Deprecated. Must use the MetricDescriptor.launch_stage
+      instead.
     samplePeriod: The sampling period of metric data points. For metrics which
       are written periodically, consecutive data points are stored at this
       time interval, excluding data loss due to errors. Metrics with a higher
@@ -1199,11 +1323,13 @@ class MetricDescriptorMetadata(_messages.Message):
   """
 
   class LaunchStageValueValuesEnum(_messages.Enum):
-    r"""Deprecated. Please use the MetricDescriptor.launch_stage instead. The
-    launch stage of the metric definition.
+    r"""Deprecated. Must use the MetricDescriptor.launch_stage instead.
 
     Values:
       LAUNCH_STAGE_UNSPECIFIED: Do not use this default value.
+      UNIMPLEMENTED: The feature is not yet implemented. Users can not use it.
+      PRELAUNCH: Prelaunch features are hidden from users and are only visible
+        internally.
       EARLY_ACCESS: Early Access features are limited to a closed group of
         testers. To use these features, you must sign up in advance and sign a
         Trusted Tester agreement (which includes confidentiality provisions).
@@ -1232,11 +1358,13 @@ class MetricDescriptorMetadata(_messages.Message):
         Policy](https://cloud.google.com/terms/deprecation) documentation.
     """
     LAUNCH_STAGE_UNSPECIFIED = 0
-    EARLY_ACCESS = 1
-    ALPHA = 2
-    BETA = 3
-    GA = 4
-    DEPRECATED = 5
+    UNIMPLEMENTED = 1
+    PRELAUNCH = 2
+    EARLY_ACCESS = 3
+    ALPHA = 4
+    BETA = 5
+    GA = 6
+    DEPRECATED = 7
 
   ingestDelay = _messages.StringField(1)
   launchStage = _messages.EnumField('LaunchStageValueValuesEnum', 2)
@@ -1347,9 +1475,17 @@ class MonitoredResourceDescriptor(_messages.Message):
   a type name and a set of labels.  For example, the monitored resource
   descriptor for Google Compute Engine VM instances has a type of
   `"gce_instance"` and specifies the use of the labels `"instance_id"` and
-  `"zone"` to identify particular VM instances.  Different APIs can support
-  different monitored resource types. APIs generally provide a `list` method
-  that returns the monitored resource descriptors used by the API.
+  `"zone"` to identify particular VM instances.  Different services can
+  support different monitored resource types.  The following are specific
+  rules to service defined monitored resources for Monitoring and Logging:  *
+  The `type`, `display_name`, `description`, `labels` and `launch_stage`
+  fields are all required. * The first label of the monitored resource
+  descriptor must be   `resource_container`. There are legacy monitored
+  resource descritptors   start with `project_id`. * It must include a
+  `location` label. * Maximum of default 5 service defined monitored resource
+  descriptors   is allowed per service. * Maximum of default 10 labels per
+  monitored resource is allowed.  The default maximum limit can be overridden.
+  Please follow https://cloud.google.com/monitoring/quotas
 
   Enums:
     LaunchStageValueValuesEnum: Optional. The launch stage of the monitored
@@ -1363,9 +1499,12 @@ class MonitoredResourceDescriptor(_messages.Message):
       Phrase, without any article or other determiners. For example, `"Google
       Cloud SQL Database"`.
     labels: Required. A set of labels used to describe instances of this
-      monitored resource type. For example, an individual Google Cloud SQL
-      database is identified by values for the labels `"database_id"` and
-      `"zone"`.
+      monitored resource type. The label key name must follow:  * Only upper
+      and lower-case letters, digits and underscores (_) are   allowed. *
+      Label name must start with a letter or digit. * The maximum length of a
+      label name is 100 characters.  For example, an individual Google Cloud
+      SQL database is identified by values for the labels `database_id` and
+      `location`.
     launchStage: Optional. The launch stage of the monitored resource
       definition.
     name: Optional. The resource name of the monitored resource descriptor:
@@ -1374,9 +1513,8 @@ class MonitoredResourceDescriptor(_messages.Message):
       is a project ID that provides API-specific context for accessing the
       type.  APIs that do not use project information can use the resource
       name format `"monitoredResourceDescriptors/{type}"`.
-    type: Required. The monitored resource type. For example, the type
-      `"cloudsql_database"` represents databases in Google Cloud SQL. The
-      maximum length of this value is 256 characters.
+    type: Note there are legacy service monitored resources not following this
+      rule.
   """
 
   class LaunchStageValueValuesEnum(_messages.Enum):
@@ -1384,6 +1522,9 @@ class MonitoredResourceDescriptor(_messages.Message):
 
     Values:
       LAUNCH_STAGE_UNSPECIFIED: Do not use this default value.
+      UNIMPLEMENTED: The feature is not yet implemented. Users can not use it.
+      PRELAUNCH: Prelaunch features are hidden from users and are only visible
+        internally.
       EARLY_ACCESS: Early Access features are limited to a closed group of
         testers. To use these features, you must sign up in advance and sign a
         Trusted Tester agreement (which includes confidentiality provisions).
@@ -1412,11 +1553,13 @@ class MonitoredResourceDescriptor(_messages.Message):
         Policy](https://cloud.google.com/terms/deprecation) documentation.
     """
     LAUNCH_STAGE_UNSPECIFIED = 0
-    EARLY_ACCESS = 1
-    ALPHA = 2
-    BETA = 3
-    GA = 4
-    DEPRECATED = 5
+    UNIMPLEMENTED = 1
+    PRELAUNCH = 2
+    EARLY_ACCESS = 3
+    ALPHA = 4
+    BETA = 5
+    GA = 6
+    DEPRECATED = 7
 
   description = _messages.StringField(1)
   displayName = _messages.StringField(2)
@@ -1758,11 +1901,8 @@ class QuotaLimit(_messages.Message):
       set, the UI will provide a default display name based on the quota
       configuration. This field can be used to override the default display
       name generated from the configuration.
-    duration: Duration of this limit in textual notation. Example: "100s",
-      "24h", "1d". For duration longer than a day, only multiple of days is
-      supported. We support only "100s" and "1d" for now. Additional support
-      will be added in the future. "0" indicates indefinite duration.  Used by
-      group-based quotas only.
+    duration: Duration of this limit in textual notation. Must be "100s" or
+      "1d".  Used by group-based quotas only.
     freeTier: Free tier value displayed in the Developers Console for this
       limit. The free tier is the number of tokens that will be subtracted
       from the billed amount when billing is enabled. This field can only be
@@ -1860,7 +2000,7 @@ class Service(_messages.Message):
     configVersion: The semantic version of the service configuration. The
       config version affects the interpretation of the service configuration.
       For example, certain features are enabled by default for certain config
-      versions. The latest config version is `3`.
+      versions.  The latest config version is `3`.
     context: Context configuration.
     control: Configuration for the service control plane.
     customError: Custom error configuration.
@@ -1875,8 +2015,9 @@ class Service(_messages.Message):
       google.someapi.v1.SomeEnum
     http: HTTP configuration.
     id: A unique ID for a specific instance of this message, typically
-      assigned by the client for tracking purpose. If empty, the server may
-      choose to generate one instead. Must be no longer than 60 characters.
+      assigned by the client for tracking purpose. Must be no longer than 63
+      characters and only lower case letters, digits, '.', '_' and '-' are
+      allowed. If empty, the server may choose to generate one instead.
     logging: Logging configuration.
     logs: Defines the logs used by this service.
     metrics: Defines the metrics used by this service.
@@ -1936,6 +2077,28 @@ class Service(_messages.Message):
   usage = _messages.MessageField('Usage', 27)
 
 
+class ServiceIdentity(_messages.Message):
+  r"""The per-product per-project service identity for a service.   Use this
+  field to configure per-product per-project service identity. Example of a
+  service identity configuration.      usage:       service_identity:       -
+  service_account_parent: "projects/123456789"         display_name: "Cloud
+  XXX Service Agent"         description: "Used as the identity of Cloud XXX
+  to access resources"
+
+  Fields:
+    description: Optional. A user-specified opaque description of the service
+      account. Must be less than or equal to 256 UTF-8 bytes.
+    displayName: Optional. A user-specified name for the service account. Must
+      be less than or equal to 100 UTF-8 bytes.
+    serviceAccountParent: A service account project that hosts the service
+      accounts.  An example name would be: `projects/123456789`
+  """
+
+  description = _messages.StringField(1)
+  displayName = _messages.StringField(2)
+  serviceAccountParent = _messages.StringField(3)
+
+
 class ServiceconsumermanagementOperationsGetRequest(_messages.Message):
   r"""A ServiceconsumermanagementOperationsGetRequest object.
 
@@ -1976,6 +2139,22 @@ class ServiceconsumermanagementServicesConsumerQuotaMetricsGetRequest(_messages.
 
   name = _messages.StringField(1, required=True)
   view = _messages.EnumField('ViewValueValuesEnum', 2)
+
+
+class ServiceconsumermanagementServicesConsumerQuotaMetricsImportProducerOverridesRequest(_messages.Message):
+  r"""A ServiceconsumermanagementServicesConsumerQuotaMetricsImportProducerOve
+  rridesRequest object.
+
+  Fields:
+    parent: The resource name of the consumer.  An example name would be:
+      `services/compute.googleapis.com/projects/123`
+    v1Beta1ImportProducerOverridesRequest: A
+      V1Beta1ImportProducerOverridesRequest resource to be passed as the
+      request body.
+  """
+
+  parent = _messages.StringField(1, required=True)
+  v1Beta1ImportProducerOverridesRequest = _messages.MessageField('V1Beta1ImportProducerOverridesRequest', 2)
 
 
 class ServiceconsumermanagementServicesConsumerQuotaMetricsLimitsGetRequest(_messages.Message):
@@ -2411,11 +2590,14 @@ class Usage(_messages.Message):
       'serviceusage.googleapis.com/billing-enabled'.
     rules: A list of usage rules that apply to individual API methods.
       **NOTE:** All service configuration rules follow "last one wins" order.
+    serviceIdentity: The configuration of a per-product per-project service
+      identity.
   """
 
   producerNotificationChannel = _messages.StringField(1)
   requirements = _messages.StringField(2, repeated=True)
   rules = _messages.MessageField('UsageRule', 3, repeated=True)
+  serviceIdentity = _messages.MessageField('ServiceIdentity', 4)
 
 
 class UsageRule(_messages.Message):
@@ -2502,12 +2684,14 @@ class V1Beta1ConsumerQuotaMetric(_messages.Message):
       The resource name is intended to be opaque and should not be parsed for
       its component strings, since its representation could change in the
       future.
+    unit: The units in which the metric value is reported.
   """
 
   consumerQuotaLimits = _messages.MessageField('V1Beta1ConsumerQuotaLimit', 1, repeated=True)
   displayName = _messages.StringField(2)
   metric = _messages.StringField(3)
   name = _messages.StringField(4)
+  unit = _messages.StringField(5)
 
 
 class V1Beta1DisableConsumerResponse(_messages.Message):
@@ -2526,6 +2710,34 @@ class V1Beta1EnableConsumerResponse(_messages.Message):
 
 
 
+class V1Beta1GenerateServiceIdentityResponse(_messages.Message):
+  r"""Response message for the `GenerateServiceIdentity` method.  This
+  response message is assigned to the `response` field of the returned
+  Operation when that operation is done.
+
+  Fields:
+    identity: ServiceIdentity that was created or retrieved.
+  """
+
+  identity = _messages.MessageField('V1Beta1ServiceIdentity', 1)
+
+
+class V1Beta1ImportProducerOverridesRequest(_messages.Message):
+  r"""Request message for ImportProducerOverrides
+
+  Fields:
+    force: Whether to force the creation of the quota overrides. If creating
+      an override would cause the effective quota for the consumer to decrease
+      by more than 10 percent, the call is rejected, as a safety measure to
+      avoid accidentally decreasing quota too quickly. Setting the force
+      parameter to true ignores this restriction.
+    inlineSource: The import data is specified in the request message itself
+  """
+
+  force = _messages.BooleanField(1)
+  inlineSource = _messages.MessageField('V1Beta1OverrideInlineSource', 2)
+
+
 class V1Beta1ImportProducerOverridesResponse(_messages.Message):
   r"""Response message for ImportProducerOverrides
 
@@ -2534,6 +2746,16 @@ class V1Beta1ImportProducerOverridesResponse(_messages.Message):
   """
 
   overrides = _messages.MessageField('V1Beta1QuotaOverride', 1, repeated=True)
+
+
+class V1Beta1ImportProducerQuotaPoliciesResponse(_messages.Message):
+  r"""Response message for ImportProducerQuotaPolicies
+
+  Fields:
+    policies: The policies that were created from the imported data.
+  """
+
+  policies = _messages.MessageField('V1Beta1ProducerQuotaPolicy', 1, repeated=True)
 
 
 class V1Beta1ListConsumerQuotaMetricsResponse(_messages.Message):
@@ -2560,6 +2782,117 @@ class V1Beta1ListProducerOverridesResponse(_messages.Message):
 
   nextPageToken = _messages.StringField(1)
   overrides = _messages.MessageField('V1Beta1QuotaOverride', 2, repeated=True)
+
+
+class V1Beta1OverrideInlineSource(_messages.Message):
+  r"""Import data embedded in the request message
+
+  Fields:
+    overrides: The overrides to create. Each override must have a value for
+      'metric' and 'unit', to specify which metric and which limit the
+      override should be applied to.
+  """
+
+  overrides = _messages.MessageField('V1Beta1QuotaOverride', 1, repeated=True)
+
+
+class V1Beta1ProducerQuotaPolicy(_messages.Message):
+  r"""Quota policy created by service producer.
+
+  Messages:
+    DimensionsValue:  If this map is nonempty, then this policy applies only
+      to specific values for dimensions defined in the limit unit.  For
+      example, an policy on a limit with the unit 1/{project}/{region} could
+      contain an entry with the key "region" and the value "us-east-1"; the
+      policy is only applied to quota consumed in that region.  This map has
+      the following restrictions:  *   Keys that are not defined in the
+      limit's unit are not valid keys.     Any string appearing in {brackets}
+      in the unit (besides {project} or     {user}) is a defined key. *
+      "project" is not a valid key; the project is already specified in
+      the parent resource name. *   "user" is not a valid key; the API does
+      not support quota polcies     that apply only to a specific user. *   If
+      "region" appears as a key, its value must be a valid Cloud region. *
+      If "zone" appears as a key, its value must be a valid Cloud zone. *   If
+      any valid key other than "region" or "zone" appears in the map, then
+      all valid keys other than "region" or "zone" must also appear in the
+      map.
+
+  Fields:
+    container: The cloud resource container at which the quota policy is
+      created. The format is {container_type}/{container_number}
+    dimensions:  If this map is nonempty, then this policy applies only to
+      specific values for dimensions defined in the limit unit.  For example,
+      an policy on a limit with the unit 1/{project}/{region} could contain an
+      entry with the key "region" and the value "us-east-1"; the policy is
+      only applied to quota consumed in that region.  This map has the
+      following restrictions:  *   Keys that are not defined in the limit's
+      unit are not valid keys.     Any string appearing in {brackets} in the
+      unit (besides {project} or     {user}) is a defined key. *   "project"
+      is not a valid key; the project is already specified in     the parent
+      resource name. *   "user" is not a valid key; the API does not support
+      quota polcies     that apply only to a specific user. *   If "region"
+      appears as a key, its value must be a valid Cloud region. *   If "zone"
+      appears as a key, its value must be a valid Cloud zone. *   If any valid
+      key other than "region" or "zone" appears in the map, then     all valid
+      keys other than "region" or "zone" must also appear in the     map.
+    metric: The name of the metric to which this policy applies.  An example
+      name would be: `compute.googleapis.com/cpus`
+    name: The resource name of the producer policy. An example name would be:
+      `services/compute.googleapis.com/organizations/123/consumerQuotaMetrics/
+      compute.googleapis.com%2Fcpus/limits/%2Fproject%2Fregion/producerQuotaPo
+      licies/4a3f2c1d`
+    policyValue: The quota policy value. Can be any nonnegative integer, or -1
+      (unlimited quota).
+    unit: The limit unit of the limit to which this policy applies.  An
+      example unit would be: `1/{project}/{region}` Note that `{project}` and
+      `{region}` are not placeholders in this example; the literal characters
+      `{` and `}` occur in the string.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class DimensionsValue(_messages.Message):
+    r""" If this map is nonempty, then this policy applies only to specific
+    values for dimensions defined in the limit unit.  For example, an policy
+    on a limit with the unit 1/{project}/{region} could contain an entry with
+    the key "region" and the value "us-east-1"; the policy is only applied to
+    quota consumed in that region.  This map has the following restrictions:
+    *   Keys that are not defined in the limit's unit are not valid keys.
+    Any string appearing in {brackets} in the unit (besides {project} or
+    {user}) is a defined key. *   "project" is not a valid key; the project is
+    already specified in     the parent resource name. *   "user" is not a
+    valid key; the API does not support quota polcies     that apply only to a
+    specific user. *   If "region" appears as a key, its value must be a valid
+    Cloud region. *   If "zone" appears as a key, its value must be a valid
+    Cloud zone. *   If any valid key other than "region" or "zone" appears in
+    the map, then     all valid keys other than "region" or "zone" must also
+    appear in the     map.
+
+    Messages:
+      AdditionalProperty: An additional property for a DimensionsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type DimensionsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a DimensionsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  container = _messages.StringField(1)
+  dimensions = _messages.MessageField('DimensionsValue', 2)
+  metric = _messages.StringField(3)
+  name = _messages.StringField(4)
+  policyValue = _messages.IntegerField(5)
+  unit = _messages.StringField(6)
 
 
 class V1Beta1QuotaBucket(_messages.Message):
@@ -2637,38 +2970,39 @@ class V1Beta1QuotaOverride(_messages.Message):
   r"""A quota override
 
   Messages:
-    DimensionsValue: If this map is nonempty, then this override applies only
+    DimensionsValue:  If this map is nonempty, then this override applies only
       to specific values for dimensions defined in the limit unit.  For
       example, an override on a limit with the unit 1/{project}/{region} could
       contain an entry with the key "region" and the value "us-east-1"; the
       override is only applied to quota consumed in that region.  This map has
-      the following restrictions: - Keys that are not defined in the limit's
-      unit are not valid keys.   Any string appearing in {brackets} in the
-      unit (besides {project} or   {user}) is a defined key. - "project" is
-      not a valid key; the project is already specified in   the parent
-      resource name. - "user" is not a valid key; the API does not support
-      quota overrides   that apply only to a specific user. - If "region"
-      appears as a key, its value must be a valid Cloud region. - If "zone"
-      appears as a key, its value must be a valid Cloud zone. - If any valid
-      key other than "region" or "zone" appears in the map, then   all valid
-      keys other than "region" or "zone" must also appear in the map.
+      the following restrictions:  *   Keys that are not defined in the
+      limit's unit are not valid keys.     Any string appearing in {brackets}
+      in the unit (besides {project} or     {user}) is a defined key. *
+      "project" is not a valid key; the project is already specified in
+      the parent resource name. *   "user" is not a valid key; the API does
+      not support quota overrides     that apply only to a specific user. *
+      If "region" appears as a key, its value must be a valid Cloud region. *
+      If "zone" appears as a key, its value must be a valid Cloud zone. *   If
+      any valid key other than "region" or "zone" appears in the map, then
+      all valid keys other than "region" or "zone" must also appear in the
+      map.
 
   Fields:
-    dimensions: If this map is nonempty, then this override applies only to
+    dimensions:  If this map is nonempty, then this override applies only to
       specific values for dimensions defined in the limit unit.  For example,
       an override on a limit with the unit 1/{project}/{region} could contain
       an entry with the key "region" and the value "us-east-1"; the override
       is only applied to quota consumed in that region.  This map has the
-      following restrictions: - Keys that are not defined in the limit's unit
-      are not valid keys.   Any string appearing in {brackets} in the unit
-      (besides {project} or   {user}) is a defined key. - "project" is not a
-      valid key; the project is already specified in   the parent resource
-      name. - "user" is not a valid key; the API does not support quota
-      overrides   that apply only to a specific user. - If "region" appears as
-      a key, its value must be a valid Cloud region. - If "zone" appears as a
-      key, its value must be a valid Cloud zone. - If any valid key other than
-      "region" or "zone" appears in the map, then   all valid keys other than
-      "region" or "zone" must also appear in the map.
+      following restrictions:  *   Keys that are not defined in the limit's
+      unit are not valid keys.     Any string appearing in {brackets} in the
+      unit (besides {project} or     {user}) is a defined key. *   "project"
+      is not a valid key; the project is already specified in     the parent
+      resource name. *   "user" is not a valid key; the API does not support
+      quota overrides     that apply only to a specific user. *   If "region"
+      appears as a key, its value must be a valid Cloud region. *   If "zone"
+      appears as a key, its value must be a valid Cloud zone. *   If any valid
+      key other than "region" or "zone" appears in the map, then     all valid
+      keys other than "region" or "zone" must also appear in the     map.
     metric: The name of the metric to which this override applies.  An example
       name would be: `compute.googleapis.com/cpus`
     name: The resource name of the producer override. An example name would
@@ -2685,21 +3019,21 @@ class V1Beta1QuotaOverride(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class DimensionsValue(_messages.Message):
-    r"""If this map is nonempty, then this override applies only to specific
+    r""" If this map is nonempty, then this override applies only to specific
     values for dimensions defined in the limit unit.  For example, an override
     on a limit with the unit 1/{project}/{region} could contain an entry with
     the key "region" and the value "us-east-1"; the override is only applied
     to quota consumed in that region.  This map has the following
-    restrictions: - Keys that are not defined in the limit's unit are not
-    valid keys.   Any string appearing in {brackets} in the unit (besides
-    {project} or   {user}) is a defined key. - "project" is not a valid key;
-    the project is already specified in   the parent resource name. - "user"
-    is not a valid key; the API does not support quota overrides   that apply
-    only to a specific user. - If "region" appears as a key, its value must be
-    a valid Cloud region. - If "zone" appears as a key, its value must be a
-    valid Cloud zone. - If any valid key other than "region" or "zone" appears
-    in the map, then   all valid keys other than "region" or "zone" must also
-    appear in the map.
+    restrictions:  *   Keys that are not defined in the limit's unit are not
+    valid keys.     Any string appearing in {brackets} in the unit (besides
+    {project} or     {user}) is a defined key. *   "project" is not a valid
+    key; the project is already specified in     the parent resource name. *
+    "user" is not a valid key; the API does not support quota overrides
+    that apply only to a specific user. *   If "region" appears as a key, its
+    value must be a valid Cloud region. *   If "zone" appears as a key, its
+    value must be a valid Cloud zone. *   If any valid key other than "region"
+    or "zone" appears in the map, then     all valid keys other than "region"
+    or "zone" must also appear in the     map.
 
     Messages:
       AdditionalProperty: An additional property for a DimensionsValue object.
@@ -2736,6 +3070,26 @@ class V1Beta1RefreshConsumerResponse(_messages.Message):
 
 
 
+class V1Beta1ServiceIdentity(_messages.Message):
+  r"""A service identity in the Identity and Access Management API.
+
+  Fields:
+    email: The email address of the service identity.
+    name: P4 service identity resource name.  An example name would be: `servi
+      ces/serviceconsumermanagement.googleapis.com/projects/123/serviceIdentit
+      ies/default`
+    tag: The P4 service identity configuration tag. This must be defined in
+      activation_grants. If not specified when creating the account, the tag
+      is set to "default".
+    uniqueId: The unique and stable id of the service identity.
+  """
+
+  email = _messages.StringField(1)
+  name = _messages.StringField(2)
+  tag = _messages.StringField(3)
+  uniqueId = _messages.StringField(4)
+
+
 class V1beta1AddVisibilityLabelsResponse(_messages.Message):
   r"""Response message for the `AddVisibilityLabels` method. This response
   message is assigned to the `response` field of the returned Operation when
@@ -2747,6 +3101,21 @@ class V1beta1AddVisibilityLabelsResponse(_messages.Message):
   """
 
   labels = _messages.StringField(1, repeated=True)
+
+
+class V1beta1DefaultIdentity(_messages.Message):
+  r"""A default identity in the Identity and Access Management API.
+
+  Fields:
+    email: The email address of the default identity.
+    name: Default identity resource name.  An example name would be: `services
+      /serviceconsumermanagement.googleapis.com/projects/123/defaultIdentity`
+    uniqueId: The unique and stable id of the default identity.
+  """
+
+  email = _messages.StringField(1)
+  name = _messages.StringField(2)
+  uniqueId = _messages.StringField(3)
 
 
 class V1beta1DisableConsumerResponse(_messages.Message):
@@ -2763,6 +3132,53 @@ class V1beta1EnableConsumerResponse(_messages.Message):
   operation is done.
   """
 
+
+
+class V1beta1GenerateDefaultIdentityResponse(_messages.Message):
+  r"""Response message for the `GenerateDefaultIdentity` method.  This
+  response message is assigned to the `response` field of the returned
+  Operation when that operation is done.
+
+  Enums:
+    AttachStatusValueValuesEnum: Status of the role attachment. Under
+      development (go/si-attach-role), currently always return
+      ATTACH_STATUS_UNSPECIFIED)
+
+  Fields:
+    attachStatus: Status of the role attachment. Under development (go/si-
+      attach-role), currently always return ATTACH_STATUS_UNSPECIFIED)
+    identity: DefaultIdentity that was created or retrieved.
+    role: Role attached to consumer project. Empty if not attached in this
+      request. (Under development, currently always return empty.)
+  """
+
+  class AttachStatusValueValuesEnum(_messages.Enum):
+    r"""Status of the role attachment. Under development (go/si-attach-role),
+    currently always return ATTACH_STATUS_UNSPECIFIED)
+
+    Values:
+      ATTACH_STATUS_UNSPECIFIED: Indicates that the AttachStatus was not set.
+      ATTACHED: The default identity was attached to a role successfully in
+        this request.
+      ATTACH_SKIPPED: The request specified that no attempt should be made to
+        attach the role.
+      PREVIOUSLY_ATTACHED: Role was attached to the consumer project at some
+        point in time. Tenant manager doesn't make assertion about the current
+        state of the identity with respect to the consumer.  Role attachment
+        should happen only once after activation and cannot be reattached
+        after customer removes it. (go/si-attach-role)
+      ATTACH_DENIED_BY_ORG_POLICY: Role attachment was denied in this request
+        by customer set org policy. (go/si-attach-role)
+    """
+    ATTACH_STATUS_UNSPECIFIED = 0
+    ATTACHED = 1
+    ATTACH_SKIPPED = 2
+    PREVIOUSLY_ATTACHED = 3
+    ATTACH_DENIED_BY_ORG_POLICY = 4
+
+  attachStatus = _messages.EnumField('AttachStatusValueValuesEnum', 1)
+  identity = _messages.MessageField('V1beta1DefaultIdentity', 2)
+  role = _messages.StringField(3)
 
 
 class V1beta1GenerateServiceAccountResponse(_messages.Message):
@@ -2803,8 +3219,7 @@ class V1beta1ServiceAccount(_messages.Message):
 
   Fields:
     email: The email address of the service account.
-    iamAccountName: The IAM resource name of the service account in the
-      following format: projects/{PROJECT_ID}/serviceAccounts/{ACCOUNT}.
+    iamAccountName: Deprecated. See b/136209818.
     name: P4 SA resource name.  An example name would be: `services/servicecon
       sumermanagement.googleapis.com/projects/123/serviceAccounts/default`
     tag: The P4 SA configuration tag. This must be defined in

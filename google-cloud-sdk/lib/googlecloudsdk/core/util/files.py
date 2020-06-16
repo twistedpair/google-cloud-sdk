@@ -1244,6 +1244,11 @@ def ExpandHomeDir(path):
   return encoding_util.Decode(os.path.expanduser(path))
 
 
+def ExpandHomeAndVars(path):
+  """Expands ~ and ENV_VARS in path."""
+  return encoding_util.Decode(os.path.expandvars(ExpandHomeDir(path)))
+
+
 def _MakePathToFile(path, mode=0o777):
   parent_dir_path, _ = os.path.split(path)
   full_parent_dir_path = os.path.realpath(ExpandHomeDir(parent_dir_path))

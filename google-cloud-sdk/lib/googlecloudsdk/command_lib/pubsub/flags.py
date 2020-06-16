@@ -260,7 +260,8 @@ def AddSubscriptionSettingsFlags(parser,
         type=str,
         help="""Expression to filter messages. If set, Pub/Sub only delivers the
         messages that match the filter. The expression must be a non-empty
-        string in the Pub/Sub filtering language.""")
+        string in the [Pub/Sub filtering
+        language](https://cloud.google.com/pubsub/docs/filtering).""")
   current_group = parser
   if is_update:
     mutual_exclusive_group = current_group.add_mutually_exclusive_group()

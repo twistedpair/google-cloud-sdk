@@ -5833,6 +5833,10 @@ class WorkItemServiceState(_messages.Message):
       particular worker harness.
 
   Fields:
+    completeWorkStatus: If set, a request to complete the work item with the
+      given status. This will not be set to OK, unless supported by the
+      specific kind of WorkItem. It can be used for the backend to indicate a
+      WorkItem must terminate, e.g., for aborting work.
     harnessData: Other data returned by the service, specific to the
       particular worker harness.
     hotKeyDetection: A hot key is a symptom of poor data distribution in which
@@ -5881,15 +5885,16 @@ class WorkItemServiceState(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  harnessData = _messages.MessageField('HarnessDataValue', 1)
-  hotKeyDetection = _messages.MessageField('HotKeyDetection', 2)
-  leaseExpireTime = _messages.StringField(3)
-  metricShortId = _messages.MessageField('MetricShortId', 4, repeated=True)
-  nextReportIndex = _messages.IntegerField(5)
-  reportStatusInterval = _messages.StringField(6)
-  splitRequest = _messages.MessageField('ApproximateSplitRequest', 7)
-  suggestedStopPoint = _messages.MessageField('ApproximateProgress', 8)
-  suggestedStopPosition = _messages.MessageField('Position', 9)
+  completeWorkStatus = _messages.MessageField('Status', 1)
+  harnessData = _messages.MessageField('HarnessDataValue', 2)
+  hotKeyDetection = _messages.MessageField('HotKeyDetection', 3)
+  leaseExpireTime = _messages.StringField(4)
+  metricShortId = _messages.MessageField('MetricShortId', 5, repeated=True)
+  nextReportIndex = _messages.IntegerField(6)
+  reportStatusInterval = _messages.StringField(7)
+  splitRequest = _messages.MessageField('ApproximateSplitRequest', 8)
+  suggestedStopPoint = _messages.MessageField('ApproximateProgress', 9)
+  suggestedStopPosition = _messages.MessageField('Position', 10)
 
 
 class WorkItemStatus(_messages.Message):

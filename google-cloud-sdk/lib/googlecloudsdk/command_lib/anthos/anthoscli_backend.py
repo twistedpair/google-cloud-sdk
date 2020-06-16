@@ -28,10 +28,21 @@ from googlecloudsdk.core import exceptions as c_except
 from googlecloudsdk.core import log
 from googlecloudsdk.core.console import console_io
 from googlecloudsdk.core.credentials import store as c_store
+from googlecloudsdk.core.util import files
+from googlecloudsdk.core.util import platforms
 
 import six
 
 DEFAULT_ENV_ARGS = {'COBRA_SILENCE_USAGE': 'true'}
+
+DEFAULT_LOGIN_CONFIG_PATH = {
+    platforms.OperatingSystem.LINUX.id:
+        '~/.config/google/anthos/kubectl-anthos-config.yaml',
+    platforms.OperatingSystem.MACOSX.id:
+        '~/Library/Preferences/google/anthos/kubectl-anthos-config.yaml',
+    platforms.OperatingSystem.WINDOWS.id: os.path.join(
+        '%APPDATA%', 'google', 'anthos', 'kubectl-anthos-config.yaml')
+}
 
 
 def GetEnvArgsForCommand(extra_vars=None, exclude_vars=None):
@@ -187,6 +198,11 @@ class AnthosAuthWrapper(binary_operations.StreamingBinaryBackedOperation):
     super(AnthosAuthWrapper, self).__init__(binary='kubectl-anthos',
                                             custom_errors=custom_errors,
                                             **kwargs)
+
+  @property
+  def default_config_path(self):
+    return files.ExpandHomeAndVars(
+        DEFAULT_LOGIN_CONFIG_PATH[platforms.OperatingSystem.Current().id])
 
   def _ParseLoginArgs(self,
                       cluster,

@@ -9,7 +9,7 @@ class ServiceconsumermanagementV1beta1(base_api.BaseApiClient):
 
   MESSAGES_MODULE = messages
   BASE_URL = 'https://serviceconsumermanagement.googleapis.com/'
-  MTLS_BASE_URL = ''
+  MTLS_BASE_URL = 'https://serviceconsumermanagement.mtls.googleapis.com/'
 
   _PACKAGE = 'serviceconsumermanagement'
   _SCOPES = ['https://www.googleapis.com/auth/cloud-platform']
@@ -96,6 +96,10 @@ service.
 A producer override is applied by the owner or administrator of a service
 to increase or decrease the amount of quota a consumer of the service is
 allowed to use.
+To create multiple overrides at once, use ImportProducerOverrides instead.
+If an override with the specified dimensions already exists, this call will
+fail. To overwrite an existing override if one is already present ("upsert"
+semantics), use ImportProducerOverrides instead.
 
       Args:
         request: (ServiceconsumermanagementServicesConsumerQuotaMetricsLimitsProducerOverridesCreateRequest) input message
@@ -273,6 +277,35 @@ allowed to use.
         request_field='',
         request_type_name='ServiceconsumermanagementServicesConsumerQuotaMetricsGetRequest',
         response_type_name='V1Beta1ConsumerQuotaMetric',
+        supports_download=False,
+    )
+
+    def ImportProducerOverrides(self, request, global_params=None):
+      r"""Create or update multiple producer overrides atomically, all on the.
+same consumer, but on many different metrics or limits.
+The name field in the quota override message should not be set.
+
+      Args:
+        request: (ServiceconsumermanagementServicesConsumerQuotaMetricsImportProducerOverridesRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('ImportProducerOverrides')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    ImportProducerOverrides.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/services/{servicesId}/{servicesId1}/{servicesId2}/consumerQuotaMetrics:importProducerOverrides',
+        http_method='POST',
+        method_id='serviceconsumermanagement.services.consumerQuotaMetrics.importProducerOverrides',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=[],
+        relative_path='v1beta1/{+parent}/consumerQuotaMetrics:importProducerOverrides',
+        request_field='v1Beta1ImportProducerOverridesRequest',
+        request_type_name='ServiceconsumermanagementServicesConsumerQuotaMetricsImportProducerOverridesRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 

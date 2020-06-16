@@ -101,6 +101,14 @@ class Collections(enum.Enum):
       ['projectsId', 'locationsId', 'tagTemplatesId', 'fieldsId'],
       True
   )
+  PROJECTS_LOCATIONS_TAGTEMPLATES_FIELDS_ENUMVALUES = (
+      'projects.locations.tagTemplates.fields.enumValues',
+      'projects/{projectsId}/locations/{locationsId}/tagTemplates/'
+      '{tagTemplatesId}/fields/{fieldsId}/enumValues/{enumValuesId}',
+      {},
+      ['projectsId', 'locationsId', 'tagTemplatesId', 'fieldsId', 'enumValuesId'],
+      True
+  )
 
   def __init__(self, collection_name, path, flat_paths, params,
                enable_uri_parsing):

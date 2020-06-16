@@ -1000,6 +1000,11 @@ class Repository(_messages.Message):
     createTime: The time when the repository was created.
     description: The user-provided description of the repository.
     format: The format of packages that are stored in the repository.
+    kmsKeyName: The Cloud KMS resource name of the customer managed encryption
+      key that's used to encrypt the contents of the Repository. Has the form:
+      `projects/my-project/locations/my-region/keyRings/my-kr/cryptoKeys/my-
+      key`. This value may not be changed after the Repository has been
+      created.
     labels: Labels with user-defined metadata. This field may contain up to 64
       entries. Label keys and values may be no longer than 63 characters.
       Label keys must begin with a lowercase letter and may only contain
@@ -1055,9 +1060,10 @@ class Repository(_messages.Message):
   createTime = _messages.StringField(1)
   description = _messages.StringField(2)
   format = _messages.EnumField('FormatValueValuesEnum', 3)
-  labels = _messages.MessageField('LabelsValue', 4)
-  name = _messages.StringField(5)
-  updateTime = _messages.StringField(6)
+  kmsKeyName = _messages.StringField(4)
+  labels = _messages.MessageField('LabelsValue', 5)
+  name = _messages.StringField(6)
+  updateTime = _messages.StringField(7)
 
 
 class SetIamPolicyRequest(_messages.Message):

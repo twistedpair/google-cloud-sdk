@@ -101,13 +101,13 @@ class AuditConfig(_messages.Message):
   service: the log_types specified in each AuditConfig are enabled, and the
   exempted_members in each AuditLogConfig are exempted.  Example Policy with
   multiple AuditConfigs:      {       "audit_configs": [         {
-  "service": "allServices"           "audit_log_configs": [             {
+  "service": "allServices",           "audit_log_configs": [             {
   "log_type": "DATA_READ",               "exempted_members": [
   "user:jose@example.com"               ]             },             {
-  "log_type": "DATA_WRITE",             },             {
-  "log_type": "ADMIN_READ",             }           ]         },         {
-  "service": "sampleservice.googleapis.com"           "audit_log_configs": [
-  {               "log_type": "DATA_READ",             },             {
+  "log_type": "DATA_WRITE"             },             {
+  "log_type": "ADMIN_READ"             }           ]         },         {
+  "service": "sampleservice.googleapis.com",           "audit_log_configs": [
+  {               "log_type": "DATA_READ"             },             {
   "log_type": "DATA_WRITE",               "exempted_members": [
   "user:aliya@example.com"               ]             }           ]         }
   ]     }  For sampleservice, this policy enables DATA_READ, DATA_WRITE and
@@ -141,7 +141,7 @@ class AuditLogConfig(_messages.Message):
   r"""Provides the configuration for logging a type of permissions. Example:
   {       "audit_log_configs": [         {           "log_type": "DATA_READ",
   "exempted_members": [             "user:jose@example.com"           ]
-  },         {           "log_type": "DATA_WRITE",         }       ]     }
+  },         {           "log_type": "DATA_WRITE"         }       ]     }
   This enables 'DATA_READ' and 'DATA_WRITE' logging, while exempting
   jose@example.com from DATA_READ logging.
 
@@ -2077,7 +2077,13 @@ class SignJwtRequest(_messages.Message):
   r"""The service account sign JWT request.
 
   Fields:
-    payload: Required. The JWT payload to sign, a JSON JWT Claim set.
+    payload: Required. The JWT payload to sign. Must be a serialized JSON
+      object that contains a JWT Claims Set. For example: `{"sub":
+      "user@example.com", "iat": 313435}`  If the JWT Claims Set contains an
+      expiration time (`exp`) claim, it must be an integer timestamp that is
+      not in the past and no more than 1 hour in the future.  If the JWT
+      Claims Set does not contain an expiration time (`exp`) claim, this claim
+      is added automatically, with a timestamp that is 1 hour in the future.
   """
 
   payload = _messages.StringField(1)

@@ -280,6 +280,33 @@ set.
         supports_download=False,
     )
 
+    def IsUpgradeable(self, request, global_params=None):
+      r"""Check if a notebook instance is upgradable.
+
+      Args:
+        request: (NotebooksProjectsLocationsInstancesIsUpgradeableRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (IsInstanceUpgradeableResponse) The response message.
+      """
+      config = self.GetMethodConfig('IsUpgradeable')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    IsUpgradeable.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/instances/{instancesId}:isUpgradeable',
+        http_method='GET',
+        method_id='notebooks.projects.locations.instances.isUpgradeable',
+        ordered_params=['notebookInstance'],
+        path_params=['notebookInstance'],
+        query_params=[],
+        relative_path='v1beta1/{+notebookInstance}:isUpgradeable',
+        request_field='',
+        request_type_name='NotebooksProjectsLocationsInstancesIsUpgradeableRequest',
+        response_type_name='IsInstanceUpgradeableResponse',
+        supports_download=False,
+    )
+
     def List(self, request, global_params=None):
       r"""Lists instances in a given project and location.
 

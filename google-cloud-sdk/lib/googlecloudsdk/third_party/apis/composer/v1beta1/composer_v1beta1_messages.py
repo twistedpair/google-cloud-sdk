@@ -174,8 +174,14 @@ class ComposerProjectsLocationsEnvironmentsPatchRequest(_messages.Message):
       current image version's Composer major  version and Airflow major and
       minor versions. Consult the  <a
       href="/composer/docs/concepts/versioning/composer-versions">Cloud
-      Composer Version List</a> for valid values.</td>  </tr>  </tbody>
-      </table>
+      Composer Version List</a> for valid values.</td>  </tr>  <tr>
+      <td>config.databaseConfig.machineType</td>  <td>Cloud SQL machine type
+      used by Airflow database.  It has to be one of: db-n1-standard-2,
+      db-n1-standard-4, db-n1-standard-8  or db-n1-standard-16.</td>  </tr>
+      <tr>  <td>config.webServerConfig.machineType</td>  <td>Machine type on
+      which Airflow web server is running.  It has to be one of:
+      composer-n1-webserver-2, composer-n1-webserver-4 or
+      composer-n1-webserver-8.  </td>  </tr>  </tbody>  </table>
   """
 
   environment = _messages.MessageField('Environment', 1)
@@ -240,8 +246,9 @@ class DatabaseConfig(_messages.Message):
   Airflow software.
 
   Fields:
-    machineType: Optional. Cloud SQL tier used by Airflow database. If not
-      specified, db-n1-standard-2 will be used.
+    machineType: Optional. Cloud SQL machine type used by Airflow database. It
+      has to be one of: db-n1-standard-2, db-n1-standard-4, db-n1-standard-8
+      or db-n1-standard-16. If not specified, db-n1-standard-2 will be used.
   """
 
   machineType = _messages.StringField(1)
@@ -1100,10 +1107,11 @@ class WebServerConfig(_messages.Message):
 
   Fields:
     machineType: Optional. Machine type on which Airflow web server is
-      running. For example: composer-n1-webserver-2, composer-n1-webserver-4,
-      composer-n1-webserver-8. If not specified, composer-n1-webserver-2 will
-      be used. Value custom is returned only in response, if Airflow web
-      server parameters were manually changed to a non-standard values.
+      running. It has to be one of: composer-n1-webserver-2,
+      composer-n1-webserver-4 or composer-n1-webserver-8. If not specified,
+      composer-n1-webserver-2 will be used. Value custom is returned only in
+      response, if Airflow web server parameters were manually changed to a
+      non-standard values.
   """
 
   machineType = _messages.StringField(1)

@@ -24,7 +24,7 @@ class DlpInfoTypesListRequest(_messages.Message):
       If omitted, or if localized strings are not available, en-US strings
       will be returned.
     locationId: Deprecated. This field has no effect.
-    parent: The parent resource name, for example locations/{location_id}.
+    parent: The parent resource name. - Format:locations/[LOCATION-ID]
   """
 
   filter = _messages.StringField(1)
@@ -43,7 +43,7 @@ class DlpLocationsInfoTypesListRequest(_messages.Message):
       If omitted, or if localized strings are not available, en-US strings
       will be returned.
     locationId: Deprecated. This field has no effect.
-    parent: The parent resource name, for example locations/{location_id}.
+    parent: The parent resource name. - Format:locations/[LOCATION-ID]
   """
 
   filter = _messages.StringField(1)
@@ -59,8 +59,10 @@ class DlpOrganizationsDeidentifyTemplatesCreateRequest(_messages.Message):
     googlePrivacyDlpV2CreateDeidentifyTemplateRequest: A
       GooglePrivacyDlpV2CreateDeidentifyTemplateRequest resource to be passed
       as the request body.
-    parent: Required. The parent resource name, for example projects/my-
-      project-id or organizations/my-org-id.
+    parent: Required. Parent resource name. - Format:projects/[PROJECT-ID] -
+      Format:organizations/[ORGANIZATION-ID] - Format:projects/[PROJECT-
+      ID]/locations/[LOCATION-ID] - Format:organizations/[ORGANIZATION-
+      ID]/locations/[LOCATION-ID]
   """
 
   googlePrivacyDlpV2CreateDeidentifyTemplateRequest = _messages.MessageField('GooglePrivacyDlpV2CreateDeidentifyTemplateRequest', 1)
@@ -110,8 +112,10 @@ class DlpOrganizationsDeidentifyTemplatesListRequest(_messages.Message):
       returns a page of max size 100.
     pageToken: Page token to continue retrieval. Comes from previous call to
       `ListDeidentifyTemplates`.
-    parent: Required. The parent resource name, for example projects/my-
-      project-id or organizations/my-org-id.
+    parent: Required. Parent resource name. - Format:projects/[PROJECT-ID] -
+      Format:organizations/[ORGANIZATION-ID] - Format:projects/[PROJECT-
+      ID]/locations/[LOCATION-ID] - Format:organizations/[ORGANIZATION-
+      ID]/locations/[LOCATION-ID]
   """
 
   locationId = _messages.StringField(1)
@@ -145,8 +149,10 @@ class DlpOrganizationsInspectTemplatesCreateRequest(_messages.Message):
     googlePrivacyDlpV2CreateInspectTemplateRequest: A
       GooglePrivacyDlpV2CreateInspectTemplateRequest resource to be passed as
       the request body.
-    parent: Required. The parent resource name, for example projects/my-
-      project-id or organizations/my-org-id.
+    parent: Required. Parent resource name. - Format:projects/[PROJECT-ID] -
+      Format:organizations/[ORGANIZATION-ID] - Format:projects/[PROJECT-
+      ID]/locations/[LOCATION-ID] - Format:organizations/[ORGANIZATION-
+      ID]/locations/[LOCATION-ID]
   """
 
   googlePrivacyDlpV2CreateInspectTemplateRequest = _messages.MessageField('GooglePrivacyDlpV2CreateInspectTemplateRequest', 1)
@@ -196,8 +202,10 @@ class DlpOrganizationsInspectTemplatesListRequest(_messages.Message):
       returns a page of max size 100.
     pageToken: Page token to continue retrieval. Comes from previous call to
       `ListInspectTemplates`.
-    parent: Required. The parent resource name, for example projects/my-
-      project-id or organizations/my-org-id.
+    parent: Required. Parent resource name. - Format:projects/[PROJECT-ID] -
+      Format:organizations/[ORGANIZATION-ID] - Format:projects/[PROJECT-
+      ID]/locations/[LOCATION-ID] - Format:organizations/[ORGANIZATION-
+      ID]/locations/[LOCATION-ID]
   """
 
   locationId = _messages.StringField(1)
@@ -231,8 +239,10 @@ class DlpOrganizationsLocationsDeidentifyTemplatesCreateRequest(_messages.Messag
     googlePrivacyDlpV2CreateDeidentifyTemplateRequest: A
       GooglePrivacyDlpV2CreateDeidentifyTemplateRequest resource to be passed
       as the request body.
-    parent: Required. The parent resource name, for example projects/my-
-      project-id or organizations/my-org-id.
+    parent: Required. Parent resource name. - Format:projects/[PROJECT-ID] -
+      Format:organizations/[ORGANIZATION-ID] - Format:projects/[PROJECT-
+      ID]/locations/[LOCATION-ID] - Format:organizations/[ORGANIZATION-
+      ID]/locations/[LOCATION-ID]
   """
 
   googlePrivacyDlpV2CreateDeidentifyTemplateRequest = _messages.MessageField('GooglePrivacyDlpV2CreateDeidentifyTemplateRequest', 1)
@@ -282,8 +292,10 @@ class DlpOrganizationsLocationsDeidentifyTemplatesListRequest(_messages.Message)
       returns a page of max size 100.
     pageToken: Page token to continue retrieval. Comes from previous call to
       `ListDeidentifyTemplates`.
-    parent: Required. The parent resource name, for example projects/my-
-      project-id or organizations/my-org-id.
+    parent: Required. Parent resource name. - Format:projects/[PROJECT-ID] -
+      Format:organizations/[ORGANIZATION-ID] - Format:projects/[PROJECT-
+      ID]/locations/[LOCATION-ID] - Format:organizations/[ORGANIZATION-
+      ID]/locations/[LOCATION-ID]
   """
 
   locationId = _messages.StringField(1)
@@ -317,8 +329,10 @@ class DlpOrganizationsLocationsInspectTemplatesCreateRequest(_messages.Message):
     googlePrivacyDlpV2CreateInspectTemplateRequest: A
       GooglePrivacyDlpV2CreateInspectTemplateRequest resource to be passed as
       the request body.
-    parent: Required. The parent resource name, for example projects/my-
-      project-id or organizations/my-org-id.
+    parent: Required. Parent resource name. - Format:projects/[PROJECT-ID] -
+      Format:organizations/[ORGANIZATION-ID] - Format:projects/[PROJECT-
+      ID]/locations/[LOCATION-ID] - Format:organizations/[ORGANIZATION-
+      ID]/locations/[LOCATION-ID]
   """
 
   googlePrivacyDlpV2CreateInspectTemplateRequest = _messages.MessageField('GooglePrivacyDlpV2CreateInspectTemplateRequest', 1)
@@ -368,8 +382,10 @@ class DlpOrganizationsLocationsInspectTemplatesListRequest(_messages.Message):
       returns a page of max size 100.
     pageToken: Page token to continue retrieval. Comes from previous call to
       `ListInspectTemplates`.
-    parent: Required. The parent resource name, for example projects/my-
-      project-id or organizations/my-org-id.
+    parent: Required. Parent resource name. - Format:projects/[PROJECT-ID] -
+      Format:organizations/[ORGANIZATION-ID] - Format:projects/[PROJECT-
+      ID]/locations/[LOCATION-ID] - Format:organizations/[ORGANIZATION-
+      ID]/locations/[LOCATION-ID]
   """
 
   locationId = _messages.StringField(1)
@@ -403,8 +419,10 @@ class DlpOrganizationsLocationsStoredInfoTypesCreateRequest(_messages.Message):
     googlePrivacyDlpV2CreateStoredInfoTypeRequest: A
       GooglePrivacyDlpV2CreateStoredInfoTypeRequest resource to be passed as
       the request body.
-    parent: Required. The parent resource name, for example projects/my-
-      project-id or organizations/my-org-id.
+    parent: Required. Parent resource name. - Format:projects/[PROJECT-ID] -
+      Format:organizations/[ORGANIZATION-ID] - Format:projects/[PROJECT-
+      ID]/locations/[LOCATION-ID] - Format:organizations/[ORGANIZATION-
+      ID]/locations/[LOCATION-ID]
   """
 
   googlePrivacyDlpV2CreateStoredInfoTypeRequest = _messages.MessageField('GooglePrivacyDlpV2CreateStoredInfoTypeRequest', 1)
@@ -452,8 +470,10 @@ class DlpOrganizationsLocationsStoredInfoTypesListRequest(_messages.Message):
       returns a page of max size 100.
     pageToken: Page token to continue retrieval. Comes from previous call to
       `ListStoredInfoTypes`.
-    parent: Required. The parent resource name, for example projects/my-
-      project-id or organizations/my-org-id.
+    parent: Required. Parent resource name. - Format:projects/[PROJECT-ID] -
+      Format:organizations/[ORGANIZATION-ID] - Format:projects/[PROJECT-
+      ID]/locations/[LOCATION-ID] - Format:organizations/[ORGANIZATION-
+      ID]/locations/[LOCATION-ID]
   """
 
   locationId = _messages.StringField(1)
@@ -486,8 +506,10 @@ class DlpOrganizationsStoredInfoTypesCreateRequest(_messages.Message):
     googlePrivacyDlpV2CreateStoredInfoTypeRequest: A
       GooglePrivacyDlpV2CreateStoredInfoTypeRequest resource to be passed as
       the request body.
-    parent: Required. The parent resource name, for example projects/my-
-      project-id or organizations/my-org-id.
+    parent: Required. Parent resource name. - Format:projects/[PROJECT-ID] -
+      Format:organizations/[ORGANIZATION-ID] - Format:projects/[PROJECT-
+      ID]/locations/[LOCATION-ID] - Format:organizations/[ORGANIZATION-
+      ID]/locations/[LOCATION-ID]
   """
 
   googlePrivacyDlpV2CreateStoredInfoTypeRequest = _messages.MessageField('GooglePrivacyDlpV2CreateStoredInfoTypeRequest', 1)
@@ -535,8 +557,10 @@ class DlpOrganizationsStoredInfoTypesListRequest(_messages.Message):
       returns a page of max size 100.
     pageToken: Page token to continue retrieval. Comes from previous call to
       `ListStoredInfoTypes`.
-    parent: Required. The parent resource name, for example projects/my-
-      project-id or organizations/my-org-id.
+    parent: Required. Parent resource name. - Format:projects/[PROJECT-ID] -
+      Format:organizations/[ORGANIZATION-ID] - Format:projects/[PROJECT-
+      ID]/locations/[LOCATION-ID] - Format:organizations/[ORGANIZATION-
+      ID]/locations/[LOCATION-ID]
   """
 
   locationId = _messages.StringField(1)
@@ -569,7 +593,8 @@ class DlpProjectsContentDeidentifyRequest(_messages.Message):
     googlePrivacyDlpV2DeidentifyContentRequest: A
       GooglePrivacyDlpV2DeidentifyContentRequest resource to be passed as the
       request body.
-    parent: The parent resource name, for example projects/my-project-id.
+    parent: Parent resource name. - Format:projects/[PROJECT-ID] -
+      Format:projects/[PROJECT-ID]/locations/[LOCATION-ID]
   """
 
   googlePrivacyDlpV2DeidentifyContentRequest = _messages.MessageField('GooglePrivacyDlpV2DeidentifyContentRequest', 1)
@@ -583,7 +608,8 @@ class DlpProjectsContentInspectRequest(_messages.Message):
     googlePrivacyDlpV2InspectContentRequest: A
       GooglePrivacyDlpV2InspectContentRequest resource to be passed as the
       request body.
-    parent: The parent resource name, for example projects/my-project-id.
+    parent: Parent resource name. - Format:projects/[PROJECT-ID] -
+      Format:projects/[PROJECT-ID]/locations/[LOCATION-ID]
   """
 
   googlePrivacyDlpV2InspectContentRequest = _messages.MessageField('GooglePrivacyDlpV2InspectContentRequest', 1)
@@ -597,7 +623,8 @@ class DlpProjectsContentReidentifyRequest(_messages.Message):
     googlePrivacyDlpV2ReidentifyContentRequest: A
       GooglePrivacyDlpV2ReidentifyContentRequest resource to be passed as the
       request body.
-    parent: Required. The parent resource name.
+    parent: Required. The parent resource name. - Format:projects/[PROJECT-ID]
+      - Format:projects/[PROJECT-ID]/locations/[LOCATION-ID]
   """
 
   googlePrivacyDlpV2ReidentifyContentRequest = _messages.MessageField('GooglePrivacyDlpV2ReidentifyContentRequest', 1)
@@ -611,8 +638,10 @@ class DlpProjectsDeidentifyTemplatesCreateRequest(_messages.Message):
     googlePrivacyDlpV2CreateDeidentifyTemplateRequest: A
       GooglePrivacyDlpV2CreateDeidentifyTemplateRequest resource to be passed
       as the request body.
-    parent: Required. The parent resource name, for example projects/my-
-      project-id or organizations/my-org-id.
+    parent: Required. Parent resource name. - Format:projects/[PROJECT-ID] -
+      Format:organizations/[ORGANIZATION-ID] - Format:projects/[PROJECT-
+      ID]/locations/[LOCATION-ID] - Format:organizations/[ORGANIZATION-
+      ID]/locations/[LOCATION-ID]
   """
 
   googlePrivacyDlpV2CreateDeidentifyTemplateRequest = _messages.MessageField('GooglePrivacyDlpV2CreateDeidentifyTemplateRequest', 1)
@@ -662,8 +691,10 @@ class DlpProjectsDeidentifyTemplatesListRequest(_messages.Message):
       returns a page of max size 100.
     pageToken: Page token to continue retrieval. Comes from previous call to
       `ListDeidentifyTemplates`.
-    parent: Required. The parent resource name, for example projects/my-
-      project-id or organizations/my-org-id.
+    parent: Required. Parent resource name. - Format:projects/[PROJECT-ID] -
+      Format:organizations/[ORGANIZATION-ID] - Format:projects/[PROJECT-
+      ID]/locations/[LOCATION-ID] - Format:organizations/[ORGANIZATION-
+      ID]/locations/[LOCATION-ID]
   """
 
   locationId = _messages.StringField(1)
@@ -711,8 +742,8 @@ class DlpProjectsDlpJobsCreateRequest(_messages.Message):
     googlePrivacyDlpV2CreateDlpJobRequest: A
       GooglePrivacyDlpV2CreateDlpJobRequest resource to be passed as the
       request body.
-    parent: Required. The parent resource name, for example projects/my-
-      project-id.
+    parent: Required. Parent resource name. - Format:projects/[PROJECT-ID] -
+      Format:projects/[PROJECT-ID]/locations/[LOCATION-ID]
   """
 
   googlePrivacyDlpV2CreateDlpJobRequest = _messages.MessageField('GooglePrivacyDlpV2CreateDlpJobRequest', 1)
@@ -774,8 +805,8 @@ class DlpProjectsDlpJobsListRequest(_messages.Message):
       - `state`: corresponds to `state`
     pageSize: The standard list page size.
     pageToken: The standard list page token.
-    parent: Required. The parent resource name, for example projects/my-
-      project-id.
+    parent: Required. Parent resource name. - Format:projects/[PROJECT-ID] -
+      Format:projects/[PROJECT-ID]/locations/[LOCATION-ID]
     type: The type of job. Defaults to `DlpJobType.INSPECT`
   """
 
@@ -807,7 +838,8 @@ class DlpProjectsImageRedactRequest(_messages.Message):
     googlePrivacyDlpV2RedactImageRequest: A
       GooglePrivacyDlpV2RedactImageRequest resource to be passed as the
       request body.
-    parent: The parent resource name, for example projects/my-project-id.
+    parent: The parent resource name. - Format:projects/[PROJECT-ID] -
+      Format:projects/[PROJECT-ID]/locations/[LOCATION-ID]
   """
 
   googlePrivacyDlpV2RedactImageRequest = _messages.MessageField('GooglePrivacyDlpV2RedactImageRequest', 1)
@@ -821,8 +853,10 @@ class DlpProjectsInspectTemplatesCreateRequest(_messages.Message):
     googlePrivacyDlpV2CreateInspectTemplateRequest: A
       GooglePrivacyDlpV2CreateInspectTemplateRequest resource to be passed as
       the request body.
-    parent: Required. The parent resource name, for example projects/my-
-      project-id or organizations/my-org-id.
+    parent: Required. Parent resource name. - Format:projects/[PROJECT-ID] -
+      Format:organizations/[ORGANIZATION-ID] - Format:projects/[PROJECT-
+      ID]/locations/[LOCATION-ID] - Format:organizations/[ORGANIZATION-
+      ID]/locations/[LOCATION-ID]
   """
 
   googlePrivacyDlpV2CreateInspectTemplateRequest = _messages.MessageField('GooglePrivacyDlpV2CreateInspectTemplateRequest', 1)
@@ -872,8 +906,10 @@ class DlpProjectsInspectTemplatesListRequest(_messages.Message):
       returns a page of max size 100.
     pageToken: Page token to continue retrieval. Comes from previous call to
       `ListInspectTemplates`.
-    parent: Required. The parent resource name, for example projects/my-
-      project-id or organizations/my-org-id.
+    parent: Required. Parent resource name. - Format:projects/[PROJECT-ID] -
+      Format:organizations/[ORGANIZATION-ID] - Format:projects/[PROJECT-
+      ID]/locations/[LOCATION-ID] - Format:organizations/[ORGANIZATION-
+      ID]/locations/[LOCATION-ID]
   """
 
   locationId = _messages.StringField(1)
@@ -922,8 +958,8 @@ class DlpProjectsJobTriggersCreateRequest(_messages.Message):
     googlePrivacyDlpV2CreateJobTriggerRequest: A
       GooglePrivacyDlpV2CreateJobTriggerRequest resource to be passed as the
       request body.
-    parent: Required. The parent resource name, for example projects/my-
-      project-id.
+    parent: Required. Parent resource name. - Format:projects/[PROJECT-ID] -
+      Format:projects/[PROJECT-ID]/locations/[LOCATION-ID]
   """
 
   googlePrivacyDlpV2CreateJobTriggerRequest = _messages.MessageField('GooglePrivacyDlpV2CreateJobTriggerRequest', 1)
@@ -986,8 +1022,8 @@ class DlpProjectsJobTriggersListRequest(_messages.Message):
     pageSize: Size of the page, can be limited by a server.
     pageToken: Page token to continue retrieval. Comes from previous call to
       ListJobTriggers. `order_by` field must not change for subsequent calls.
-    parent: Required. The parent resource name, for example `projects/my-
-      project-id`.
+    parent: Required. Parent resource name. - Format:projects/[PROJECT-ID] -
+      Format:projects/[PROJECT-ID]/locations/[LOCATION-ID]
   """
 
   filter = _messages.StringField(1)
@@ -1020,7 +1056,8 @@ class DlpProjectsLocationsContentDeidentifyRequest(_messages.Message):
     googlePrivacyDlpV2DeidentifyContentRequest: A
       GooglePrivacyDlpV2DeidentifyContentRequest resource to be passed as the
       request body.
-    parent: The parent resource name, for example projects/my-project-id.
+    parent: Parent resource name. - Format:projects/[PROJECT-ID] -
+      Format:projects/[PROJECT-ID]/locations/[LOCATION-ID]
   """
 
   googlePrivacyDlpV2DeidentifyContentRequest = _messages.MessageField('GooglePrivacyDlpV2DeidentifyContentRequest', 1)
@@ -1034,7 +1071,8 @@ class DlpProjectsLocationsContentInspectRequest(_messages.Message):
     googlePrivacyDlpV2InspectContentRequest: A
       GooglePrivacyDlpV2InspectContentRequest resource to be passed as the
       request body.
-    parent: The parent resource name, for example projects/my-project-id.
+    parent: Parent resource name. - Format:projects/[PROJECT-ID] -
+      Format:projects/[PROJECT-ID]/locations/[LOCATION-ID]
   """
 
   googlePrivacyDlpV2InspectContentRequest = _messages.MessageField('GooglePrivacyDlpV2InspectContentRequest', 1)
@@ -1048,7 +1086,8 @@ class DlpProjectsLocationsContentReidentifyRequest(_messages.Message):
     googlePrivacyDlpV2ReidentifyContentRequest: A
       GooglePrivacyDlpV2ReidentifyContentRequest resource to be passed as the
       request body.
-    parent: Required. The parent resource name.
+    parent: Required. The parent resource name. - Format:projects/[PROJECT-ID]
+      - Format:projects/[PROJECT-ID]/locations/[LOCATION-ID]
   """
 
   googlePrivacyDlpV2ReidentifyContentRequest = _messages.MessageField('GooglePrivacyDlpV2ReidentifyContentRequest', 1)
@@ -1062,8 +1101,10 @@ class DlpProjectsLocationsDeidentifyTemplatesCreateRequest(_messages.Message):
     googlePrivacyDlpV2CreateDeidentifyTemplateRequest: A
       GooglePrivacyDlpV2CreateDeidentifyTemplateRequest resource to be passed
       as the request body.
-    parent: Required. The parent resource name, for example projects/my-
-      project-id or organizations/my-org-id.
+    parent: Required. Parent resource name. - Format:projects/[PROJECT-ID] -
+      Format:organizations/[ORGANIZATION-ID] - Format:projects/[PROJECT-
+      ID]/locations/[LOCATION-ID] - Format:organizations/[ORGANIZATION-
+      ID]/locations/[LOCATION-ID]
   """
 
   googlePrivacyDlpV2CreateDeidentifyTemplateRequest = _messages.MessageField('GooglePrivacyDlpV2CreateDeidentifyTemplateRequest', 1)
@@ -1113,8 +1154,10 @@ class DlpProjectsLocationsDeidentifyTemplatesListRequest(_messages.Message):
       returns a page of max size 100.
     pageToken: Page token to continue retrieval. Comes from previous call to
       `ListDeidentifyTemplates`.
-    parent: Required. The parent resource name, for example projects/my-
-      project-id or organizations/my-org-id.
+    parent: Required. Parent resource name. - Format:projects/[PROJECT-ID] -
+      Format:organizations/[ORGANIZATION-ID] - Format:projects/[PROJECT-
+      ID]/locations/[LOCATION-ID] - Format:organizations/[ORGANIZATION-
+      ID]/locations/[LOCATION-ID]
   """
 
   locationId = _messages.StringField(1)
@@ -1162,8 +1205,8 @@ class DlpProjectsLocationsDlpJobsCreateRequest(_messages.Message):
     googlePrivacyDlpV2CreateDlpJobRequest: A
       GooglePrivacyDlpV2CreateDlpJobRequest resource to be passed as the
       request body.
-    parent: Required. The parent resource name, for example projects/my-
-      project-id.
+    parent: Required. Parent resource name. - Format:projects/[PROJECT-ID] -
+      Format:projects/[PROJECT-ID]/locations/[LOCATION-ID]
   """
 
   googlePrivacyDlpV2CreateDlpJobRequest = _messages.MessageField('GooglePrivacyDlpV2CreateDlpJobRequest', 1)
@@ -1254,8 +1297,8 @@ class DlpProjectsLocationsDlpJobsListRequest(_messages.Message):
       - `state`: corresponds to `state`
     pageSize: The standard list page size.
     pageToken: The standard list page token.
-    parent: Required. The parent resource name, for example projects/my-
-      project-id.
+    parent: Required. Parent resource name. - Format:projects/[PROJECT-ID] -
+      Format:projects/[PROJECT-ID]/locations/[LOCATION-ID]
     type: The type of job. Defaults to `DlpJobType.INSPECT`
   """
 
@@ -1287,7 +1330,8 @@ class DlpProjectsLocationsImageRedactRequest(_messages.Message):
     googlePrivacyDlpV2RedactImageRequest: A
       GooglePrivacyDlpV2RedactImageRequest resource to be passed as the
       request body.
-    parent: The parent resource name, for example projects/my-project-id.
+    parent: The parent resource name. - Format:projects/[PROJECT-ID] -
+      Format:projects/[PROJECT-ID]/locations/[LOCATION-ID]
   """
 
   googlePrivacyDlpV2RedactImageRequest = _messages.MessageField('GooglePrivacyDlpV2RedactImageRequest', 1)
@@ -1301,8 +1345,10 @@ class DlpProjectsLocationsInspectTemplatesCreateRequest(_messages.Message):
     googlePrivacyDlpV2CreateInspectTemplateRequest: A
       GooglePrivacyDlpV2CreateInspectTemplateRequest resource to be passed as
       the request body.
-    parent: Required. The parent resource name, for example projects/my-
-      project-id or organizations/my-org-id.
+    parent: Required. Parent resource name. - Format:projects/[PROJECT-ID] -
+      Format:organizations/[ORGANIZATION-ID] - Format:projects/[PROJECT-
+      ID]/locations/[LOCATION-ID] - Format:organizations/[ORGANIZATION-
+      ID]/locations/[LOCATION-ID]
   """
 
   googlePrivacyDlpV2CreateInspectTemplateRequest = _messages.MessageField('GooglePrivacyDlpV2CreateInspectTemplateRequest', 1)
@@ -1352,8 +1398,10 @@ class DlpProjectsLocationsInspectTemplatesListRequest(_messages.Message):
       returns a page of max size 100.
     pageToken: Page token to continue retrieval. Comes from previous call to
       `ListInspectTemplates`.
-    parent: Required. The parent resource name, for example projects/my-
-      project-id or organizations/my-org-id.
+    parent: Required. Parent resource name. - Format:projects/[PROJECT-ID] -
+      Format:organizations/[ORGANIZATION-ID] - Format:projects/[PROJECT-
+      ID]/locations/[LOCATION-ID] - Format:organizations/[ORGANIZATION-
+      ID]/locations/[LOCATION-ID]
   """
 
   locationId = _messages.StringField(1)
@@ -1402,8 +1450,8 @@ class DlpProjectsLocationsJobTriggersCreateRequest(_messages.Message):
     googlePrivacyDlpV2CreateJobTriggerRequest: A
       GooglePrivacyDlpV2CreateJobTriggerRequest resource to be passed as the
       request body.
-    parent: Required. The parent resource name, for example projects/my-
-      project-id.
+    parent: Required. Parent resource name. - Format:projects/[PROJECT-ID] -
+      Format:projects/[PROJECT-ID]/locations/[LOCATION-ID]
   """
 
   googlePrivacyDlpV2CreateJobTriggerRequest = _messages.MessageField('GooglePrivacyDlpV2CreateJobTriggerRequest', 1)
@@ -1481,8 +1529,8 @@ class DlpProjectsLocationsJobTriggersListRequest(_messages.Message):
     pageSize: Size of the page, can be limited by a server.
     pageToken: Page token to continue retrieval. Comes from previous call to
       ListJobTriggers. `order_by` field must not change for subsequent calls.
-    parent: Required. The parent resource name, for example `projects/my-
-      project-id`.
+    parent: Required. Parent resource name. - Format:projects/[PROJECT-ID] -
+      Format:projects/[PROJECT-ID]/locations/[LOCATION-ID]
   """
 
   filter = _messages.StringField(1)
@@ -1515,8 +1563,10 @@ class DlpProjectsLocationsStoredInfoTypesCreateRequest(_messages.Message):
     googlePrivacyDlpV2CreateStoredInfoTypeRequest: A
       GooglePrivacyDlpV2CreateStoredInfoTypeRequest resource to be passed as
       the request body.
-    parent: Required. The parent resource name, for example projects/my-
-      project-id or organizations/my-org-id.
+    parent: Required. Parent resource name. - Format:projects/[PROJECT-ID] -
+      Format:organizations/[ORGANIZATION-ID] - Format:projects/[PROJECT-
+      ID]/locations/[LOCATION-ID] - Format:organizations/[ORGANIZATION-
+      ID]/locations/[LOCATION-ID]
   """
 
   googlePrivacyDlpV2CreateStoredInfoTypeRequest = _messages.MessageField('GooglePrivacyDlpV2CreateStoredInfoTypeRequest', 1)
@@ -1564,8 +1614,10 @@ class DlpProjectsLocationsStoredInfoTypesListRequest(_messages.Message):
       returns a page of max size 100.
     pageToken: Page token to continue retrieval. Comes from previous call to
       `ListStoredInfoTypes`.
-    parent: Required. The parent resource name, for example projects/my-
-      project-id or organizations/my-org-id.
+    parent: Required. Parent resource name. - Format:projects/[PROJECT-ID] -
+      Format:organizations/[ORGANIZATION-ID] - Format:projects/[PROJECT-
+      ID]/locations/[LOCATION-ID] - Format:organizations/[ORGANIZATION-
+      ID]/locations/[LOCATION-ID]
   """
 
   locationId = _messages.StringField(1)
@@ -1598,8 +1650,10 @@ class DlpProjectsStoredInfoTypesCreateRequest(_messages.Message):
     googlePrivacyDlpV2CreateStoredInfoTypeRequest: A
       GooglePrivacyDlpV2CreateStoredInfoTypeRequest resource to be passed as
       the request body.
-    parent: Required. The parent resource name, for example projects/my-
-      project-id or organizations/my-org-id.
+    parent: Required. Parent resource name. - Format:projects/[PROJECT-ID] -
+      Format:organizations/[ORGANIZATION-ID] - Format:projects/[PROJECT-
+      ID]/locations/[LOCATION-ID] - Format:organizations/[ORGANIZATION-
+      ID]/locations/[LOCATION-ID]
   """
 
   googlePrivacyDlpV2CreateStoredInfoTypeRequest = _messages.MessageField('GooglePrivacyDlpV2CreateStoredInfoTypeRequest', 1)
@@ -1647,8 +1701,10 @@ class DlpProjectsStoredInfoTypesListRequest(_messages.Message):
       returns a page of max size 100.
     pageToken: Page token to continue retrieval. Comes from previous call to
       `ListStoredInfoTypes`.
-    parent: Required. The parent resource name, for example projects/my-
-      project-id or organizations/my-org-id.
+    parent: Required. Parent resource name. - Format:projects/[PROJECT-ID] -
+      Format:organizations/[ORGANIZATION-ID] - Format:projects/[PROJECT-
+      ID]/locations/[LOCATION-ID] - Format:organizations/[ORGANIZATION-
+      ID]/locations/[LOCATION-ID]
   """
 
   locationId = _messages.StringField(1)
@@ -2577,18 +2633,18 @@ class GooglePrivacyDlpV2CryptoReplaceFfxFpeConfig(_messages.Message):
       name of custom infoType is 'MY_TOKEN_INFO_TYPE' and the surrogate is
       'abc', the full replacement value will be: 'MY_TOKEN_INFO_TYPE(3):abc'
       This annotation identifies the surrogate when inspecting content using
-      the custom infoType [`SurrogateType`](/dlp/docs/reference/rest/v2/Inspec
-      tConfig#surrogatetype). This facilitates reversal of the surrogate when
-      it occurs in free text.  In order for inspection to work properly, the
-      name of this infoType must not occur naturally anywhere in your data;
-      otherwise, inspection may find a surrogate that does not correspond to
-      an actual identifier. Therefore, choose your custom infoType name
-      carefully after considering what your data looks like. One way to select
-      a name that has a high chance of yielding reliable detection is to
-      include one or more unicode characters that are highly improbable to
-      exist in your data. For example, assuming your data is entered from a
-      regular ASCII keyboard, the symbol with the hex code point 29DD might be
-      used like so: \u29ddMY_TOKEN_TYPE
+      the custom infoType [`SurrogateType`](https://cloud.google.com/dlp/docs/
+      reference/rest/v2/InspectConfig#surrogatetype). This facilitates
+      reversal of the surrogate when it occurs in free text.  In order for
+      inspection to work properly, the name of this infoType must not occur
+      naturally anywhere in your data; otherwise, inspection may find a
+      surrogate that does not correspond to an actual identifier. Therefore,
+      choose your custom infoType name carefully after considering what your
+      data looks like. One way to select a name that has a high chance of
+      yielding reliable detection is to include one or more unicode characters
+      that are highly improbable to exist in your data. For example, assuming
+      your data is entered from a regular ASCII keyboard, the symbol with the
+      hex code point 29DD might be used like so: \u29ddMY_TOKEN_TYPE
   """
 
   class CommonAlphabetValueValuesEnum(_messages.Enum):
@@ -2596,10 +2652,10 @@ class GooglePrivacyDlpV2CryptoReplaceFfxFpeConfig(_messages.Message):
 
     Values:
       FFX_COMMON_NATIVE_ALPHABET_UNSPECIFIED: Unused.
-      NUMERIC: [0-9] (radix of 10)
-      HEXADECIMAL: [0-9A-F] (radix of 16)
-      UPPER_CASE_ALPHA_NUMERIC: [0-9A-Z] (radix of 36)
-      ALPHA_NUMERIC: [0-9A-Za-z] (radix of 62)
+      NUMERIC: `[0-9]` (radix of 10)
+      HEXADECIMAL: `[0-9A-F]` (radix of 16)
+      UPPER_CASE_ALPHA_NUMERIC: `[0-9A-Z]` (radix of 36)
+      ALPHA_NUMERIC: `[0-9A-Za-z]` (radix of 62)
     """
     FFX_COMMON_NATIVE_ALPHABET_UNSPECIFIED = 0
     NUMERIC = 1
@@ -4768,9 +4824,8 @@ class GooglePrivacyDlpV2PublishSummaryToCscc(_messages.Message):
 class GooglePrivacyDlpV2PublishToPubSub(_messages.Message):
   r"""Publish a message into given Pub/Sub topic when DlpJob has completed.
   The message contains a single field, `DlpJobName`, which is equal to the
-  finished job's
-  [`DlpJob.name`](/dlp/docs/reference/rest/v2/projects.dlpJobs#DlpJob).
-  Compatible with: Inspect, Risk
+  finished job's [`DlpJob.name`](https://cloud.google.com/dlp/docs/reference/r
+  est/v2/projects.dlpJobs#DlpJob). Compatible with: Inspect, Risk
 
   Fields:
     topic: Cloud Pub/Sub topic to send notifications to. The topic must have
@@ -5348,12 +5403,12 @@ class GooglePrivacyDlpV2SummaryResult(_messages.Message):
 
 class GooglePrivacyDlpV2SurrogateType(_messages.Message):
   r"""Message for detecting output from deidentification transformations such
-  as [`CryptoReplaceFfxFpeConfig`](/dlp/docs/reference/rest/v2/organizations.d
-  eidentifyTemplates#cryptoreplaceffxfpeconfig). These types of
-  transformations are those that perform pseudonymization, thereby producing a
-  "surrogate" as output. This should be used in conjunction with a field on
-  the transformation such as `surrogate_info_type`. This CustomInfoType does
-  not support the use of `detection_rules`.
+  as [`CryptoReplaceFfxFpeConfig`](https://cloud.google.com/dlp/docs/reference
+  /rest/v2/organizations.deidentifyTemplates#cryptoreplaceffxfpeconfig). These
+  types of transformations are those that perform pseudonymization, thereby
+  producing a "surrogate" as output. This should be used in conjunction with a
+  field on the transformation such as `surrogate_info_type`. This
+  CustomInfoType does not support the use of `detection_rules`.
   """
 
 

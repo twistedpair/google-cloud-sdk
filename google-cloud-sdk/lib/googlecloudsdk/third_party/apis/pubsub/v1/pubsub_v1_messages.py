@@ -1357,7 +1357,7 @@ class Subscription(_messages.Message):
       associated with this subscriptions's parent project (i.e.,
       service-{project_number}@gcp-sa-pubsub.iam.gserviceaccount.com) must
       have permission to Acknowledge() messages on this subscription.
-    detached:  Indicates whether the subscription is detached from its topic.
+    detached: Indicates whether the subscription is detached from its topic.
       Detached subscriptions don't receive messages from their topic and don't
       retain any backlog. `Pull` and `StreamingPull` requests will return
       FAILED_PRECONDITION. If the subscription is a push subscription, pushes

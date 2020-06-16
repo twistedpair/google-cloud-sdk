@@ -1103,6 +1103,45 @@ class StandardQueryParameters(_messages.Message):
   upload_protocol = _messages.StringField(12)
 
 
+class StatisticalTimeSeriesFilter(_messages.Message):
+  r"""A filter that ranks streams based on their statistical relation to other
+  streams in a request. Note: This field is deprecated and completely ignored
+  by the API.
+
+  Enums:
+    RankingMethodValueValuesEnum: rankingMethod is applied to a set of time
+      series, and then the produced value for each individual time series is
+      used to compare a given time series to others. These are methods that
+      cannot be applied stream-by-stream, but rather require the full context
+      of a request to evaluate time series.
+
+  Fields:
+    numTimeSeries: How many time series to output.
+    rankingMethod: rankingMethod is applied to a set of time series, and then
+      the produced value for each individual time series is used to compare a
+      given time series to others. These are methods that cannot be applied
+      stream-by-stream, but rather require the full context of a request to
+      evaluate time series.
+  """
+
+  class RankingMethodValueValuesEnum(_messages.Enum):
+    r"""rankingMethod is applied to a set of time series, and then the
+    produced value for each individual time series is used to compare a given
+    time series to others. These are methods that cannot be applied stream-by-
+    stream, but rather require the full context of a request to evaluate time
+    series.
+
+    Values:
+      METHOD_UNSPECIFIED: Not allowed in well-formed requests.
+      METHOD_CLUSTER_OUTLIER: Compute the outlier score of each stream.
+    """
+    METHOD_UNSPECIFIED = 0
+    METHOD_CLUSTER_OUTLIER = 1
+
+  numTimeSeries = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  rankingMethod = _messages.EnumField('RankingMethodValueValuesEnum', 2)
+
+
 class Text(_messages.Message):
   r"""A widget that displays textual content.
 
@@ -1197,12 +1236,15 @@ class TimeSeriesFilter(_messages.Message):
     pickTimeSeriesFilter: Ranking based time series filter.
     secondaryAggregation: Apply a second aggregation after aggregation is
       applied.
+    statisticalTimeSeriesFilter: Statistics based time series filter. Note:
+      This field is deprecated and completely ignored by the API.
   """
 
   aggregation = _messages.MessageField('Aggregation', 1)
   filter = _messages.StringField(2)
   pickTimeSeriesFilter = _messages.MessageField('PickTimeSeriesFilter', 3)
   secondaryAggregation = _messages.MessageField('Aggregation', 4)
+  statisticalTimeSeriesFilter = _messages.MessageField('StatisticalTimeSeriesFilter', 5)
 
 
 class TimeSeriesFilterRatio(_messages.Message):
@@ -1216,12 +1258,15 @@ class TimeSeriesFilterRatio(_messages.Message):
     pickTimeSeriesFilter: Ranking based time series filter.
     secondaryAggregation: Apply a second aggregation after the ratio is
       computed.
+    statisticalTimeSeriesFilter: Statistics based time series filter. Note:
+      This field is deprecated and completely ignored by the API.
   """
 
   denominator = _messages.MessageField('RatioPart', 1)
   numerator = _messages.MessageField('RatioPart', 2)
   pickTimeSeriesFilter = _messages.MessageField('PickTimeSeriesFilter', 3)
   secondaryAggregation = _messages.MessageField('Aggregation', 4)
+  statisticalTimeSeriesFilter = _messages.MessageField('StatisticalTimeSeriesFilter', 5)
 
 
 class TimeSeriesQuery(_messages.Message):

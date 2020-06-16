@@ -209,12 +209,11 @@ class ClouderrorreportingProjectsGroupsGetRequest(_messages.Message):
 
   Fields:
     groupName: Required. The group resource name. Written as
-      <code>projects/<var>projectID</var>/groups/<var>group_name</var></code>.
-      Call <a href="/error-
-      reporting/reference/rest/v1beta1/projects.groupStats/list">
-      <code>groupStats.list</code></a> to return a list of groups belonging to
-      this project.  Example: <code>projects/my-project-123/groups/my-
-      group</code>
+      `projects/{projectID}/groups/{group_name}`. Call
+      [`groupStats.list`](https://cloud.google.com/error-
+      reporting/reference/rest/v1beta1/projects.groupStats/list) to return a
+      list of groups belonging to this project.  Example: `projects/my-
+      project-123/groups/my-group`
   """
 
   groupName = _messages.StringField(1, required=True)
@@ -588,7 +587,7 @@ class TrackingIssue(_messages.Message):
 
   Fields:
     url: A URL pointing to a related entry in an issue tracking system.
-      Example: https://github.com/user/project/issues/4
+      Example: `https://github.com/user/project/issues/4`
   """
 
   url = _messages.StringField(1)

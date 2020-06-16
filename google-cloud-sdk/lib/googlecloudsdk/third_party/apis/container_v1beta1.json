@@ -145,7 +145,7 @@
           "type": "string"
         },
         "initialNodeCount": {
-          "description": "The number of nodes to create in this cluster. You must ensure that your\nCompute Engine <a href=\"\/compute\/docs\/resource-quotas\">resource quota<\/a>\nis sufficient for this number of instances. You must also have available\nfirewall and routes quota.\nFor requests, this field should only be used in lieu of a\n\"node_pool\" object, since this configuration (along with the\n\"node_config\") will be used to create a \"NodePool\" object with an\nauto-generated name. Do not use this and a node_pool at the same time.\n\nThis field is deprecated, use node_pool.initial_node_count instead.",
+          "description": "The number of nodes to create in this cluster. You must ensure that your\nCompute Engine [resource quota](https:\/\/cloud.google.com\/compute\/quotas)\nis sufficient for this number of instances. You must also have available\nfirewall and routes quota.\nFor requests, this field should only be used in lieu of a\n\"node_pool\" object, since this configuration (along with the\n\"node_config\") will be used to create a \"NodePool\" object with an\nauto-generated name. Do not use this and a node_pool at the same time.\n\nThis field is deprecated, use node_pool.initial_node_count instead.",
           "type": "integer",
           "format": "int32"
         },
@@ -706,7 +706,7 @@
       "type": "object",
       "properties": {
         "sysctls": {
-          "description": "The Linux kernel parameters to be applied to the nodes and all pods running\non the nodes.",
+          "description": "The Linux kernel parameters to be applied to the nodes and all pods running\non the nodes.\n\nThe following parameters are supported.\n\nnet.core.netdev_max_backlog\nnet.core.rmem_max\nnet.core.wmem_default\nnet.core.wmem_max\nnet.core.optmem_max\nnet.core.somaxconn\nnet.ipv4.tcp_rmem\nnet.ipv4.tcp_wmem\nnet.ipv4.tcp_tw_reuse",
           "type": "object",
           "additionalProperties": {
             "type": "string"
@@ -896,6 +896,20 @@
         "disabled": {
           "description": "Whether Cloud Run addon is enabled for this cluster.",
           "type": "boolean"
+        },
+        "loadBalancerType": {
+          "description": "Which load balancer type is installed for Cloud Run.",
+          "enumDescriptions": [
+            "Load balancer type for Cloud Run is unspecified.",
+            "Install external load balancer for Cloud Run.",
+            "Install internal load balancer for Cloud Run."
+          ],
+          "type": "string",
+          "enum": [
+            "LOAD_BALANCER_TYPE_UNSPECIFIED",
+            "LOAD_BALANCER_TYPE_EXTERNAL",
+            "LOAD_BALANCER_TYPE_INTERNAL"
+          ]
         }
       }
     },
@@ -1464,26 +1478,26 @@
       "type": "object",
       "properties": {
         "oauthScopes": {
-          "description": "Scopes that are used by NAP when creating node pools.",
+          "description": "The set of Google API scopes to be made available on all of the\nnode VMs under the \"default\" service account.\n\nThe following scopes are recommended, but not required, and by default are\nnot included:\n\n* `https:\/\/www.googleapis.com\/auth\/compute` is required for mounting\npersistent storage on your nodes.\n* `https:\/\/www.googleapis.com\/auth\/devstorage.read_only` is required for\ncommunicating with **gcr.io**\n(the [Google Container\nRegistry](https:\/\/cloud.google.com\/container-registry\/)).\n\nIf unspecified, no scopes are added, unless Cloud Logging or Cloud\nMonitoring are enabled, in which case their required scopes will be added.",
           "type": "array",
           "items": {
             "type": "string"
           }
         },
         "serviceAccount": {
-          "description": "The Google Cloud Platform Service Account to be used by the node VMs.",
+          "description": "The Google Cloud Platform Service Account to be used by the node VMs.\nSpecify the email address of the Service Account; otherwise, if no Service\nAccount is specified, the \"default\" service account is used.",
           "type": "string"
         },
         "upgradeSettings": {
-          "description": "Specifies the upgrade settings for NAP created node pools",
+          "description": "Upgrade settings control disruption and speed of the upgrade.",
           "$ref": "UpgradeSettings"
         },
         "management": {
-          "description": "Specifies the node management options for NAP created node-pools.",
+          "description": "NodeManagement configuration for this NodePool.",
           "$ref": "NodeManagement"
         },
         "minCpuPlatform": {
-          "description": "Minimum CPU platform to be used for NAP created node pools.\nThe instance may be scheduled on the specified or newer CPU platform.\nApplicable values are the friendly names of CPU platforms, such as\n<code>minCpuPlatform: &quot;Intel Haswell&quot;<\/code> or\n<code>minCpuPlatform: &quot;Intel Sandy Bridge&quot;<\/code>. For more\ninformation, read [how to specify min CPU\nplatform](https:\/\/cloud.google.com\/compute\/docs\/instances\/specify-min-cpu-platform)\nTo unset the min cpu platform field pass \"automatic\" as field value.",
+          "description": "Minimum CPU platform to be used by this instance. The instance may be\nscheduled on the specified or newer CPU platform. Applicable values are the\nfriendly names of CPU platforms, such as\n<code>minCpuPlatform: &quot;Intel Haswell&quot;<\/code> or\n<code>minCpuPlatform: &quot;Intel Sandy Bridge&quot;<\/code>. For more\ninformation, read [how to specify min CPU\nplatform](https:\/\/cloud.google.com\/compute\/docs\/instances\/specify-min-cpu-platform)\nTo unset the min cpu platform field pass \"automatic\"\nas field value.",
           "type": "string"
         }
       }
@@ -1849,7 +1863,7 @@
           "type": "string"
         },
         "cluster": {
-          "description": "Required. A [cluster\nresource](https:\/\/cloud.google.com\/container-engine\/reference\/rest\/v1beta1\/projects.zones.clusters)",
+          "description": "Required. A [cluster\nresource](https:\/\/cloud.google.com\/container-engine\/reference\/rest\/v1beta1\/projects.locations.clusters)",
           "$ref": "Cluster"
         },
         "parent": {
@@ -2576,7 +2590,7 @@
           "type": "string"
         },
         "validNodeVersions": {
-          "description": "List of valid node upgrade target versions.",
+          "description": "List of valid node upgrade target versions, in descending order.",
           "type": "array",
           "items": {
             "type": "string"
@@ -2594,7 +2608,7 @@
           }
         },
         "validMasterVersions": {
-          "description": "List of valid master versions.",
+          "description": "List of valid master versions, in descending order.",
           "type": "array",
           "items": {
             "type": "string"

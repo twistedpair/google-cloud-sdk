@@ -55,9 +55,9 @@ def MakeSourceInstanceArg():
   )
 
 
-def AddServiceProxyConfigArgs(parser):
+def AddServiceProxyConfigArgs(parser, hide_arguments=False):
   """Adds service proxy configuration arguments for instance templates."""
-  service_proxy_group = parser.add_group()
+  service_proxy_group = parser.add_group(hidden=hide_arguments)
   service_proxy_group.add_argument(
       '--service-proxy',
       type=arg_parsers.ArgDict(
@@ -71,6 +71,7 @@ def AddServiceProxyConfigArgs(parser):
           },
           allow_key_only=True,
           required_keys=['enabled']),
+      hidden=hide_arguments,
       help="""\
       Controls whether the service proxy and agent are installed and configured on the VM.
       "cloud-platform" scope will be enabled to allow connection to Traffic Director API.
@@ -103,6 +104,7 @@ def AddServiceProxyConfigArgs(parser):
       '--service-proxy-labels',
       metavar='KEY=VALUE, ...',
       type=arg_parsers.ArgDict(),
+      hidden=hide_arguments,
       help="""\
       Labels that you can apply to your service proxy. These will be reflected in your Envoy proxy's bootstrap metadata.
       These can be any `key=value` pairs that you want to set as proxy metadata (for example, for use with config filtering).

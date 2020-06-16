@@ -24,13 +24,13 @@ class AuditConfig(_messages.Message):
   service: the log_types specified in each AuditConfig are enabled, and the
   exempted_members in each AuditLogConfig are exempted.  Example Policy with
   multiple AuditConfigs:      {       "audit_configs": [         {
-  "service": "allServices"           "audit_log_configs": [             {
+  "service": "allServices",           "audit_log_configs": [             {
   "log_type": "DATA_READ",               "exempted_members": [
   "user:jose@example.com"               ]             },             {
-  "log_type": "DATA_WRITE",             },             {
-  "log_type": "ADMIN_READ",             }           ]         },         {
-  "service": "sampleservice.googleapis.com"           "audit_log_configs": [
-  {               "log_type": "DATA_READ",             },             {
+  "log_type": "DATA_WRITE"             },             {
+  "log_type": "ADMIN_READ"             }           ]         },         {
+  "service": "sampleservice.googleapis.com",           "audit_log_configs": [
+  {               "log_type": "DATA_READ"             },             {
   "log_type": "DATA_WRITE",               "exempted_members": [
   "user:aliya@example.com"               ]             }           ]         }
   ]     }  For sampleservice, this policy enables DATA_READ, DATA_WRITE and
@@ -52,7 +52,7 @@ class AuditLogConfig(_messages.Message):
   r"""Provides the configuration for logging a type of permissions. Example:
   {       "audit_log_configs": [         {           "log_type": "DATA_READ",
   "exempted_members": [             "user:jose@example.com"           ]
-  },         {           "log_type": "DATA_WRITE",         }       ]     }
+  },         {           "log_type": "DATA_WRITE"         }       ]     }
   This enables 'DATA_READ' and 'DATA_WRITE' logging, while exempting
   jose@example.com from DATA_READ logging.
 
@@ -195,12 +195,6 @@ class LabelKey(_messages.Message):
   r"""A LabelKey, used to group a set of LabelValues.
 
   Enums:
-    PurposeValueValuesEnum: Optional. A purpose denotes that this Label is
-      intended for use in policies of a specific policy engine, and will
-      involve that policy engine in management operations involving this
-      Label. A purpose does not grant a policy engine exclusive rights to the
-      Label; it may be referenced by other policy engines.  A purpose cannot
-      be changed once set.
     StateValueValuesEnum: Output only. LabelKey lifecycle state.
 
   Fields:
@@ -220,28 +214,8 @@ class LabelKey(_messages.Message):
       labelKeys/123.
     parent: Immutable. The resource name of the new LabelKey's parent. Must be
       of the form `organizations/{org_id}`.
-    purpose: Optional. A purpose denotes that this Label is intended for use
-      in policies of a specific policy engine, and will involve that policy
-      engine in management operations involving this Label. A purpose does not
-      grant a policy engine exclusive rights to the Label; it may be
-      referenced by other policy engines.  A purpose cannot be changed once
-      set.
     state: Output only. LabelKey lifecycle state.
   """
-
-  class PurposeValueValuesEnum(_messages.Enum):
-    r"""Optional. A purpose denotes that this Label is intended for use in
-    policies of a specific policy engine, and will involve that policy engine
-    in management operations involving this Label. A purpose does not grant a
-    policy engine exclusive rights to the Label; it may be referenced by other
-    policy engines.  A purpose cannot be changed once set.
-
-    Values:
-      PURPOSE_UNSPECIFIED: Unspecified purpose.
-      GCE_FIREWALL: Purpose for GCE firewalls.
-    """
-    PURPOSE_UNSPECIFIED = 0
-    GCE_FIREWALL = 1
 
   class StateValueValuesEnum(_messages.Enum):
     r"""Output only. LabelKey lifecycle state.
@@ -266,8 +240,7 @@ class LabelKey(_messages.Message):
   etag = _messages.StringField(5)
   name = _messages.StringField(6)
   parent = _messages.StringField(7)
-  purpose = _messages.EnumField('PurposeValueValuesEnum', 8)
-  state = _messages.EnumField('StateValueValuesEnum', 9)
+  state = _messages.EnumField('StateValueValuesEnum', 8)
 
 
 class LabelValue(_messages.Message):

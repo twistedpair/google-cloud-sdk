@@ -42,10 +42,13 @@ from six.moves import map
 
 
 DEFAULT_SETUP_FILE = """\
-from setuptools import setup
+from setuptools import setup, find_packages
 
 if __name__ == '__main__':
-    setup(name='{package_name}', packages=['{package_name}'])
+    setup(
+        name='{package_name}',
+        packages=find_packages(include=['{package_name}'])
+    )
 """
 
 

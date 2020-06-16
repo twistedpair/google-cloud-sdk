@@ -144,7 +144,7 @@
           "type": "string"
         },
         "initialNodeCount": {
-          "description": "The number of nodes to create in this cluster. You must ensure that your\nCompute Engine <a href=\"\/compute\/docs\/resource-quotas\">resource quota<\/a>\nis sufficient for this number of instances. You must also have available\nfirewall and routes quota.\nFor requests, this field should only be used in lieu of a\n\"node_pool\" object, since this configuration (along with the\n\"node_config\") will be used to create a \"NodePool\" object with an\nauto-generated name. Do not use this and a node_pool at the same time.\n\nThis field is deprecated, use node_pool.initial_node_count instead.",
+          "description": "The number of nodes to create in this cluster. You must ensure that your\nCompute Engine [resource quota](https:\/\/cloud.google.com\/compute\/quotas)\nis sufficient for this number of instances. You must also have available\nfirewall and routes quota.\nFor requests, this field should only be used in lieu of a\n\"node_pool\" object, since this configuration (along with the\n\"node_config\") will be used to create a \"NodePool\" object with an\nauto-generated name. Do not use this and a node_pool at the same time.\n\nThis field is deprecated, use node_pool.initial_node_count instead.",
           "type": "integer",
           "format": "int32"
         },
@@ -294,7 +294,7 @@
           "type": "string"
         },
         "currentNodeVersion": {
-          "description": "[Output only] Deprecated, use\n[NodePools.version](https:\/\/cloud.google.com\/kubernetes-engine\/docs\/reference\/rest\/v1\/projects.zones.clusters.nodePools)\ninstead. The current version of the node software components. If they are\ncurrently at multiple versions because they're in the process of being\nupgraded, this reflects the minimum version of all nodes.",
+          "description": "[Output only] Deprecated, use\n[NodePools.version](https:\/\/cloud.google.com\/kubernetes-engine\/docs\/reference\/rest\/v1\/projects.locations.clusters.nodePools)\ninstead. The current version of the node software components. If they are\ncurrently at multiple versions because they're in the process of being\nupgraded, this reflects the minimum version of all nodes.",
           "type": "string"
         },
         "createTime": {
@@ -473,6 +473,10 @@
         "shieldedInstanceConfig": {
           "description": "Shielded Instance options.",
           "$ref": "ShieldedInstanceConfig"
+        },
+        "bootDiskKmsKey": {
+          "description": "\nThe Customer Managed Encryption Key used to encrypt the boot disk attached\nto each node in the node pool. This should be of the form\nprojects\/[KEY_PROJECT_ID]\/locations\/[LOCATION]\/keyRings\/[RING_NAME]\/cryptoKeys\/[KEY_NAME].\nFor more information about protecting resources with Cloud KMS Keys please\nsee:\nhttps:\/\/cloud.google.com\/compute\/docs\/disks\/customer-managed-encryption",
+          "type": "string"
         }
       }
     },
@@ -756,6 +760,20 @@
         "disabled": {
           "description": "Whether Cloud Run addon is enabled for this cluster.",
           "type": "boolean"
+        },
+        "loadBalancerType": {
+          "description": "Which load balancer type is installed for Cloud Run.",
+          "enumDescriptions": [
+            "Load balancer type for Cloud Run is unspecified.",
+            "Install external load balancer for Cloud Run.",
+            "Install internal load balancer for Cloud Run."
+          ],
+          "type": "string",
+          "enum": [
+            "LOAD_BALANCER_TYPE_UNSPECIFIED",
+            "LOAD_BALANCER_TYPE_EXTERNAL",
+            "LOAD_BALANCER_TYPE_INTERNAL"
+          ]
         }
       }
     },
@@ -784,7 +802,7 @@
           "$ref": "NodeConfig"
         },
         "initialNodeCount": {
-          "description": "The initial node count for the pool. You must ensure that your\nCompute Engine <a href=\"\/compute\/docs\/resource-quotas\">resource quota<\/a>\nis sufficient for this number of instances. You must also have available\nfirewall and routes quota.",
+          "description": "The initial node count for the pool. You must ensure that your\nCompute Engine [resource quota](https:\/\/cloud.google.com\/compute\/quotas)\nis sufficient for this number of instances. You must also have available\nfirewall and routes quota.",
           "type": "integer",
           "format": "int32"
         },
@@ -1456,7 +1474,7 @@
           "type": "string"
         },
         "cluster": {
-          "description": "Required. A [cluster\nresource](https:\/\/cloud.google.com\/container-engine\/reference\/rest\/v1\/projects.zones.clusters)",
+          "description": "Required. A [cluster\nresource](https:\/\/cloud.google.com\/container-engine\/reference\/rest\/v1\/projects.locations.clusters)",
           "$ref": "Cluster"
         },
         "parent": {
@@ -2113,7 +2131,7 @@
           "type": "string"
         },
         "validNodeVersions": {
-          "description": "List of valid node upgrade target versions.",
+          "description": "List of valid node upgrade target versions, in descending order.",
           "type": "array",
           "items": {
             "type": "string"
@@ -2131,7 +2149,7 @@
           }
         },
         "validMasterVersions": {
-          "description": "List of valid master versions.",
+          "description": "List of valid master versions, in descending order.",
           "type": "array",
           "items": {
             "type": "string"

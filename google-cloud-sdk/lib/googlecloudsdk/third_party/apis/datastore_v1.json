@@ -265,7 +265,7 @@
     },
     "GoogleDatastoreAdminV1Index": {
       "id": "GoogleDatastoreAdminV1Index",
-      "description": "A minimal index definition.",
+      "description": "Datastore composite index definition.",
       "type": "object",
       "properties": {
         "projectId": {

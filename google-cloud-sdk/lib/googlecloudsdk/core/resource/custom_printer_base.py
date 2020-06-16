@@ -80,6 +80,13 @@ class _Marker(object):
         column in any tables contained in this record.
     """
 
+  @abc.abstractmethod
+  def WillPrintOutput(self):
+    """Returns true if this record will print non-empty output.
+
+    Blank lines count as non-empty output.
+    """
+
 
 class Table(list, _Marker):
   """Marker class for a table."""
@@ -102,6 +109,12 @@ class Table(list, _Marker):
                        indent_length))
     return widths
 
+  def _ShouldSkipPrintingRow(self, row):
+    """Returns true if the given row should not be printed."""
+    followed_by_empty = (
+        _FollowedByEmpty(row, 0) or _FollowedByMarkerWithNoOutput(row, 0))
+    return not row or (self.skip_empty and followed_by_empty)
+
   def _GenerateColumnValue(self, index, row, indent_length, column_widths):
     """Generates the string value for one column in one row."""
     width = column_widths.widths[index]
@@ -120,7 +133,7 @@ class Table(list, _Marker):
   def Print(self, output, indent_length, column_widths):
     """See _Marker base class."""
     for row in self:
-      if not row or (self.skip_empty and _FollowedByEmpty(row, 0)):
+      if self._ShouldSkipPrintingRow(row):
         continue
       column_values = []
       for i in range(len(row) - 1):
@@ -136,6 +149,10 @@ class Table(list, _Marker):
             self._GenerateColumnValue(
                 len(row) - 1, row, indent_length, column_widths))
         self._WriteColumns(output, indent_length, column_values)
+
+  def WillPrintOutput(self):
+    """See _Marker base class."""
+    return any(not self._ShouldSkipPrintingRow(row) for row in self)
 
 
 class Labeled(Table):
@@ -168,6 +185,17 @@ class Lines(list, _Marker):
         line.Print(output, indent_length, column_widths)
       elif line:
         output.write(_GenerateLineValue(line, indent_length))
+
+  def WillPrintOutput(self):
+    """See _Marker base class."""
+    for line in self:
+      if not isinstance(line, _Marker):
+        # Lines always prints non-Marker lines. If the line is empty, this will
+        # result in a blank line, which counts as non-empty output.
+        return True
+      if line.WillPrintOutput():
+        return True
+    return False
 
 
 class Section(_Marker):
@@ -225,10 +253,21 @@ class Section(_Marker):
       self.CalculateColumnWidths(indent_length=indent_length)
     self._lines.Print(output, indent_length, self._column_widths)
 
+  def WillPrintOutput(self):
+    """See _Marker base class."""
+    return self._lines.WillPrintOutput()
+
 
 def _FollowedByEmpty(row, index):
   """Returns true if all columns after the given index are empty."""
   return not any(row[index + 1:])
+
+
+def _FollowedByMarkerWithNoOutput(row, index):
+  """Returns true if the column after the given index is a no-output _Marker."""
+  next_index = index + 1
+  return (len(row) > next_index and isinstance(row[next_index], _Marker) and
+          not row[next_index].WillPrintOutput())
 
 
 def _IsLastColumnInRow(row, column_index, last_index, skip_empty):

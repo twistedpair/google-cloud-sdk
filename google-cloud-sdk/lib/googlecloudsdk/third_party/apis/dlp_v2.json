@@ -388,7 +388,7 @@
     },
     "GooglePrivacyDlpV2SurrogateType": {
       "id": "GooglePrivacyDlpV2SurrogateType",
-      "description": "Message for detecting output from deidentification transformations\nsuch as\n[`CryptoReplaceFfxFpeConfig`](\/dlp\/docs\/reference\/rest\/v2\/organizations.deidentifyTemplates#cryptoreplaceffxfpeconfig).\nThese types of transformations are\nthose that perform pseudonymization, thereby producing a \"surrogate\" as\noutput. This should be used in conjunction with a field on the\ntransformation such as `surrogate_info_type`. This CustomInfoType does\nnot support the use of `detection_rules`.",
+      "description": "Message for detecting output from deidentification transformations\nsuch as\n[`CryptoReplaceFfxFpeConfig`](https:\/\/cloud.google.com\/dlp\/docs\/reference\/rest\/v2\/organizations.deidentifyTemplates#cryptoreplaceffxfpeconfig).\nThese types of transformations are\nthose that perform pseudonymization, thereby producing a \"surrogate\" as\noutput. This should be used in conjunction with a field on the\ntransformation such as `surrogate_info_type`. This CustomInfoType does\nnot support the use of `detection_rules`.",
       "type": "object",
       "properties": {
       }
@@ -1628,10 +1628,10 @@
           "description": "Common alphabets.",
           "enumDescriptions": [
             "Unused.",
-            "[0-9] (radix of 10)",
-            "[0-9A-F] (radix of 16)",
-            "[0-9A-Z] (radix of 36)",
-            "[0-9A-Za-z] (radix of 62)"
+            "`[0-9]` (radix of 10)",
+            "`[0-9A-F]` (radix of 16)",
+            "`[0-9A-Z]` (radix of 36)",
+            "`[0-9A-Za-z]` (radix of 62)"
           ],
           "type": "string",
           "enum": [
@@ -1652,7 +1652,7 @@
           "format": "int32"
         },
         "surrogateInfoType": {
-          "description": "The custom infoType to annotate the surrogate with.\nThis annotation will be applied to the surrogate by prefixing it with\nthe name of the custom infoType followed by the number of\ncharacters comprising the surrogate. The following scheme defines the\nformat: info_type_name(surrogate_character_count):surrogate\n\nFor example, if the name of custom infoType is 'MY_TOKEN_INFO_TYPE' and\nthe surrogate is 'abc', the full replacement value\nwill be: 'MY_TOKEN_INFO_TYPE(3):abc'\n\nThis annotation identifies the surrogate when inspecting content using the\ncustom infoType\n[`SurrogateType`](\/dlp\/docs\/reference\/rest\/v2\/InspectConfig#surrogatetype).\nThis facilitates reversal of the surrogate when it occurs in free text.\n\nIn order for inspection to work properly, the name of this infoType must\nnot occur naturally anywhere in your data; otherwise, inspection may\nfind a surrogate that does not correspond to an actual identifier.\nTherefore, choose your custom infoType name carefully after considering\nwhat your data looks like. One way to select a name that has a high chance\nof yielding reliable detection is to include one or more unicode characters\nthat are highly improbable to exist in your data.\nFor example, assuming your data is entered from a regular ASCII keyboard,\nthe symbol with the hex code point 29DD might be used like so:\n\u29DDMY_TOKEN_TYPE",
+          "description": "The custom infoType to annotate the surrogate with.\nThis annotation will be applied to the surrogate by prefixing it with\nthe name of the custom infoType followed by the number of\ncharacters comprising the surrogate. The following scheme defines the\nformat: info_type_name(surrogate_character_count):surrogate\n\nFor example, if the name of custom infoType is 'MY_TOKEN_INFO_TYPE' and\nthe surrogate is 'abc', the full replacement value\nwill be: 'MY_TOKEN_INFO_TYPE(3):abc'\n\nThis annotation identifies the surrogate when inspecting content using the\ncustom infoType\n[`SurrogateType`](https:\/\/cloud.google.com\/dlp\/docs\/reference\/rest\/v2\/InspectConfig#surrogatetype).\nThis facilitates reversal of the surrogate when it occurs in free text.\n\nIn order for inspection to work properly, the name of this infoType must\nnot occur naturally anywhere in your data; otherwise, inspection may\nfind a surrogate that does not correspond to an actual identifier.\nTherefore, choose your custom infoType name carefully after considering\nwhat your data looks like. One way to select a name that has a high chance\nof yielding reliable detection is to include one or more unicode characters\nthat are highly improbable to exist in your data.\nFor example, assuming your data is entered from a regular ASCII keyboard,\nthe symbol with the hex code point 29DD might be used like so:\n\u29DDMY_TOKEN_TYPE",
           "$ref": "GooglePrivacyDlpV2InfoType"
         }
       }
@@ -2602,11 +2602,11 @@
           "description": "List of file type groups to include in the scan.\nIf empty, all files are scanned and available data format processors\nare applied. In addition, the binary content of the selected files\nis always scanned as well.\nImages are scanned only as binary if the specified region\ndoes not support image inspection and no file_types were specified.\nImage inspection is restricted to 'global', 'us', 'asia', and 'europe'.",
           "enumDescriptions": [
             "Includes all files.",
-            "Includes all file extensions not covered by text file types.",
+            "Includes all file extensions not covered by another entry. Binary\nscanning attempts to convert the content of the file to utf_8 to scan\nthe file.\nIf you wish to avoid this fall back, specify one or more of the other\nFileType's in your storage scan.",
             "Included file extensions:\n  asc, brf, c, cc, cpp, csv, cxx, c++, cs, css, dart, eml, go, h, hh, hpp,\n  hxx, h++, hs, html, htm, shtml, shtm, xhtml, lhs, ini, java, js, json,\n  ocaml, md, mkd, markdown, m, ml, mli, pl, pm, php, phtml, pht, py, pyw,\n  rb, rbw, rs, rc, scala, sh, sql, tex, txt, text, tsv, vcard, vcs, wml,\n  xml, xsl, xsd, yml, yaml.",
             "Included file extensions:\n  bmp, gif, jpg, jpeg, jpe, png.\nbytes_limit_per_file has no effect on image files.\nImage inspection is restricted to 'global', 'us', 'asia', and 'europe'.",
-            "Included file extensions:\n  docx, dotx, docm, dotm",
-            "Included file extensions:\n  pdf",
+            "Word files >30 MB will be scanned as binary files.\nIncluded file extensions:\n  docx, dotx, docm, dotm",
+            "PDF files >30 MB will be scanned as binary files.\nIncluded file extensions:\n  pdf",
             "Included file extensions:\n  avro"
           ],
           "type": "array",
@@ -2874,7 +2874,7 @@
     },
     "GooglePrivacyDlpV2PublishToPubSub": {
       "id": "GooglePrivacyDlpV2PublishToPubSub",
-      "description": "Publish a message into given Pub\/Sub topic when DlpJob has completed. The\nmessage contains a single field, `DlpJobName`, which is equal to the\nfinished job's\n[`DlpJob.name`](\/dlp\/docs\/reference\/rest\/v2\/projects.dlpJobs#DlpJob).\nCompatible with: Inspect, Risk",
+      "description": "Publish a message into given Pub\/Sub topic when DlpJob has completed. The\nmessage contains a single field, `DlpJobName`, which is equal to the\nfinished job's\n[`DlpJob.name`](https:\/\/cloud.google.com\/dlp\/docs\/reference\/rest\/v2\/projects.dlpJobs#DlpJob).\nCompatible with: Inspect, Risk",
       "type": "object",
       "properties": {
         "topic": {
@@ -4265,7 +4265,7 @@
               "httpMethod": "POST",
               "parameters": {
                 "parent": {
-                  "description": "The parent resource name, for example projects\/my-project-id.",
+                  "description": "Parent resource name.\n- Format:projects\/[PROJECT-ID]\n- Format:projects\/[PROJECT-ID]\/locations\/[LOCATION-ID]",
                   "location": "path",
                   "required": true,
                   "pattern": "^projects\/[^\/]+$",
@@ -4293,7 +4293,7 @@
               "httpMethod": "POST",
               "parameters": {
                 "parent": {
-                  "description": "The parent resource name, for example projects\/my-project-id.",
+                  "description": "Parent resource name.\n- Format:projects\/[PROJECT-ID]\n- Format:projects\/[PROJECT-ID]\/locations\/[LOCATION-ID]",
                   "location": "path",
                   "required": true,
                   "pattern": "^projects\/[^\/]+$",
@@ -4321,7 +4321,7 @@
               "httpMethod": "POST",
               "parameters": {
                 "parent": {
-                  "description": "Required. The parent resource name.",
+                  "description": "Required. The parent resource name.\n- Format:projects\/[PROJECT-ID]\n- Format:projects\/[PROJECT-ID]\/locations\/[LOCATION-ID]",
                   "location": "path",
                   "required": true,
                   "pattern": "^projects\/[^\/]+$",
@@ -4355,7 +4355,7 @@
                   "httpMethod": "POST",
                   "parameters": {
                     "parent": {
-                      "description": "The parent resource name, for example projects\/my-project-id.",
+                      "description": "Parent resource name.\n- Format:projects\/[PROJECT-ID]\n- Format:projects\/[PROJECT-ID]\/locations\/[LOCATION-ID]",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
@@ -4383,7 +4383,7 @@
                   "httpMethod": "POST",
                   "parameters": {
                     "parent": {
-                      "description": "The parent resource name, for example projects\/my-project-id.",
+                      "description": "Parent resource name.\n- Format:projects\/[PROJECT-ID]\n- Format:projects\/[PROJECT-ID]\/locations\/[LOCATION-ID]",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
@@ -4411,7 +4411,7 @@
                   "httpMethod": "POST",
                   "parameters": {
                     "parent": {
-                      "description": "Required. The parent resource name.",
+                      "description": "Required. The parent resource name.\n- Format:projects\/[PROJECT-ID]\n- Format:projects\/[PROJECT-ID]\/locations\/[LOCATION-ID]",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
@@ -4443,7 +4443,7 @@
                   "httpMethod": "POST",
                   "parameters": {
                     "parent": {
-                      "description": "The parent resource name, for example projects\/my-project-id.",
+                      "description": "The parent resource name.\n- Format:projects\/[PROJECT-ID]\n- Format:projects\/[PROJECT-ID]\/locations\/[LOCATION-ID]",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
@@ -4475,7 +4475,7 @@
                   "httpMethod": "POST",
                   "parameters": {
                     "parent": {
-                      "description": "Required. The parent resource name, for example projects\/my-project-id or\norganizations\/my-org-id.",
+                      "description": "Required. Parent resource name.\n- Format:projects\/[PROJECT-ID]\n- Format:organizations\/[ORGANIZATION-ID]\n- Format:projects\/[PROJECT-ID]\/locations\/[LOCATION-ID]\n- Format:organizations\/[ORGANIZATION-ID]\/locations\/[LOCATION-ID]",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
@@ -4556,7 +4556,7 @@
                   "httpMethod": "GET",
                   "parameters": {
                     "parent": {
-                      "description": "Required. The parent resource name, for example projects\/my-project-id or\norganizations\/my-org-id.",
+                      "description": "Required. Parent resource name.\n- Format:projects\/[PROJECT-ID]\n- Format:organizations\/[ORGANIZATION-ID]\n- Format:projects\/[PROJECT-ID]\/locations\/[LOCATION-ID]\n- Format:organizations\/[ORGANIZATION-ID]\/locations\/[LOCATION-ID]",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
@@ -4631,7 +4631,7 @@
                   "httpMethod": "POST",
                   "parameters": {
                     "parent": {
-                      "description": "Required. The parent resource name, for example projects\/my-project-id or\norganizations\/my-org-id.",
+                      "description": "Required. Parent resource name.\n- Format:projects\/[PROJECT-ID]\n- Format:organizations\/[ORGANIZATION-ID]\n- Format:projects\/[PROJECT-ID]\/locations\/[LOCATION-ID]\n- Format:organizations\/[ORGANIZATION-ID]\/locations\/[LOCATION-ID]",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
@@ -4712,7 +4712,7 @@
                   "httpMethod": "GET",
                   "parameters": {
                     "parent": {
-                      "description": "Required. The parent resource name, for example projects\/my-project-id or\norganizations\/my-org-id.",
+                      "description": "Required. Parent resource name.\n- Format:projects\/[PROJECT-ID]\n- Format:organizations\/[ORGANIZATION-ID]\n- Format:projects\/[PROJECT-ID]\/locations\/[LOCATION-ID]\n- Format:organizations\/[ORGANIZATION-ID]\/locations\/[LOCATION-ID]",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
@@ -4787,7 +4787,7 @@
                   "httpMethod": "POST",
                   "parameters": {
                     "parent": {
-                      "description": "Required. The parent resource name, for example projects\/my-project-id.",
+                      "description": "Required. Parent resource name.\n- Format:projects\/[PROJECT-ID]\n- Format:projects\/[PROJECT-ID]\/locations\/[LOCATION-ID]",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
@@ -4896,7 +4896,7 @@
                   "httpMethod": "GET",
                   "parameters": {
                     "parent": {
-                      "description": "Required. The parent resource name, for example `projects\/my-project-id`.",
+                      "description": "Required. Parent resource name.\n- Format:projects\/[PROJECT-ID]\n- Format:projects\/[PROJECT-ID]\/locations\/[LOCATION-ID]",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
@@ -5004,7 +5004,7 @@
                   "httpMethod": "POST",
                   "parameters": {
                     "parent": {
-                      "description": "Required. The parent resource name, for example projects\/my-project-id.",
+                      "description": "Required. Parent resource name.\n- Format:projects\/[PROJECT-ID]\n- Format:projects\/[PROJECT-ID]\/locations\/[LOCATION-ID]",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
@@ -5032,7 +5032,7 @@
                   "httpMethod": "GET",
                   "parameters": {
                     "parent": {
-                      "description": "Required. The parent resource name, for example projects\/my-project-id.",
+                      "description": "Required. Parent resource name.\n- Format:projects\/[PROJECT-ID]\n- Format:projects\/[PROJECT-ID]\/locations\/[LOCATION-ID]",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
@@ -5231,7 +5231,7 @@
                   "httpMethod": "POST",
                   "parameters": {
                     "parent": {
-                      "description": "Required. The parent resource name, for example projects\/my-project-id or\norganizations\/my-org-id.",
+                      "description": "Required. Parent resource name.\n- Format:projects\/[PROJECT-ID]\n- Format:organizations\/[ORGANIZATION-ID]\n- Format:projects\/[PROJECT-ID]\/locations\/[LOCATION-ID]\n- Format:organizations\/[ORGANIZATION-ID]\/locations\/[LOCATION-ID]",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
@@ -5312,7 +5312,7 @@
                   "httpMethod": "GET",
                   "parameters": {
                     "parent": {
-                      "description": "Required. The parent resource name, for example projects\/my-project-id or\norganizations\/my-org-id.",
+                      "description": "Required. Parent resource name.\n- Format:projects\/[PROJECT-ID]\n- Format:organizations\/[ORGANIZATION-ID]\n- Format:projects\/[PROJECT-ID]\/locations\/[LOCATION-ID]\n- Format:organizations\/[ORGANIZATION-ID]\/locations\/[LOCATION-ID]",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
@@ -5389,7 +5389,7 @@
               "httpMethod": "POST",
               "parameters": {
                 "parent": {
-                  "description": "The parent resource name, for example projects\/my-project-id.",
+                  "description": "The parent resource name.\n- Format:projects\/[PROJECT-ID]\n- Format:projects\/[PROJECT-ID]\/locations\/[LOCATION-ID]",
                   "location": "path",
                   "required": true,
                   "pattern": "^projects\/[^\/]+$",
@@ -5421,7 +5421,7 @@
               "httpMethod": "POST",
               "parameters": {
                 "parent": {
-                  "description": "Required. The parent resource name, for example projects\/my-project-id or\norganizations\/my-org-id.",
+                  "description": "Required. Parent resource name.\n- Format:projects\/[PROJECT-ID]\n- Format:organizations\/[ORGANIZATION-ID]\n- Format:projects\/[PROJECT-ID]\/locations\/[LOCATION-ID]\n- Format:organizations\/[ORGANIZATION-ID]\/locations\/[LOCATION-ID]",
                   "location": "path",
                   "required": true,
                   "pattern": "^projects\/[^\/]+$",
@@ -5502,7 +5502,7 @@
               "httpMethod": "GET",
               "parameters": {
                 "parent": {
-                  "description": "Required. The parent resource name, for example projects\/my-project-id or\norganizations\/my-org-id.",
+                  "description": "Required. Parent resource name.\n- Format:projects\/[PROJECT-ID]\n- Format:organizations\/[ORGANIZATION-ID]\n- Format:projects\/[PROJECT-ID]\/locations\/[LOCATION-ID]\n- Format:organizations\/[ORGANIZATION-ID]\/locations\/[LOCATION-ID]",
                   "location": "path",
                   "required": true,
                   "pattern": "^projects\/[^\/]+$",
@@ -5577,7 +5577,7 @@
               "httpMethod": "POST",
               "parameters": {
                 "parent": {
-                  "description": "Required. The parent resource name, for example projects\/my-project-id or\norganizations\/my-org-id.",
+                  "description": "Required. Parent resource name.\n- Format:projects\/[PROJECT-ID]\n- Format:organizations\/[ORGANIZATION-ID]\n- Format:projects\/[PROJECT-ID]\/locations\/[LOCATION-ID]\n- Format:organizations\/[ORGANIZATION-ID]\/locations\/[LOCATION-ID]",
                   "location": "path",
                   "required": true,
                   "pattern": "^projects\/[^\/]+$",
@@ -5658,7 +5658,7 @@
               "httpMethod": "GET",
               "parameters": {
                 "parent": {
-                  "description": "Required. The parent resource name, for example projects\/my-project-id or\norganizations\/my-org-id.",
+                  "description": "Required. Parent resource name.\n- Format:projects\/[PROJECT-ID]\n- Format:organizations\/[ORGANIZATION-ID]\n- Format:projects\/[PROJECT-ID]\/locations\/[LOCATION-ID]\n- Format:organizations\/[ORGANIZATION-ID]\/locations\/[LOCATION-ID]",
                   "location": "path",
                   "required": true,
                   "pattern": "^projects\/[^\/]+$",
@@ -5733,7 +5733,7 @@
               "httpMethod": "POST",
               "parameters": {
                 "parent": {
-                  "description": "Required. The parent resource name, for example projects\/my-project-id.",
+                  "description": "Required. Parent resource name.\n- Format:projects\/[PROJECT-ID]\n- Format:projects\/[PROJECT-ID]\/locations\/[LOCATION-ID]",
                   "location": "path",
                   "required": true,
                   "pattern": "^projects\/[^\/]+$",
@@ -5814,7 +5814,7 @@
               "httpMethod": "GET",
               "parameters": {
                 "parent": {
-                  "description": "Required. The parent resource name, for example `projects\/my-project-id`.",
+                  "description": "Required. Parent resource name.\n- Format:projects\/[PROJECT-ID]\n- Format:projects\/[PROJECT-ID]\/locations\/[LOCATION-ID]",
                   "location": "path",
                   "required": true,
                   "pattern": "^projects\/[^\/]+$",
@@ -5922,7 +5922,7 @@
               "httpMethod": "POST",
               "parameters": {
                 "parent": {
-                  "description": "Required. The parent resource name, for example projects\/my-project-id.",
+                  "description": "Required. Parent resource name.\n- Format:projects\/[PROJECT-ID]\n- Format:projects\/[PROJECT-ID]\/locations\/[LOCATION-ID]",
                   "location": "path",
                   "required": true,
                   "pattern": "^projects\/[^\/]+$",
@@ -5950,7 +5950,7 @@
               "httpMethod": "GET",
               "parameters": {
                 "parent": {
-                  "description": "Required. The parent resource name, for example projects\/my-project-id.",
+                  "description": "Required. Parent resource name.\n- Format:projects\/[PROJECT-ID]\n- Format:projects\/[PROJECT-ID]\/locations\/[LOCATION-ID]",
                   "location": "path",
                   "required": true,
                   "pattern": "^projects\/[^\/]+$",
@@ -6093,7 +6093,7 @@
               "httpMethod": "POST",
               "parameters": {
                 "parent": {
-                  "description": "Required. The parent resource name, for example projects\/my-project-id or\norganizations\/my-org-id.",
+                  "description": "Required. Parent resource name.\n- Format:projects\/[PROJECT-ID]\n- Format:organizations\/[ORGANIZATION-ID]\n- Format:projects\/[PROJECT-ID]\/locations\/[LOCATION-ID]\n- Format:organizations\/[ORGANIZATION-ID]\/locations\/[LOCATION-ID]",
                   "location": "path",
                   "required": true,
                   "pattern": "^projects\/[^\/]+$",
@@ -6174,7 +6174,7 @@
               "httpMethod": "GET",
               "parameters": {
                 "parent": {
-                  "description": "Required. The parent resource name, for example projects\/my-project-id or\norganizations\/my-org-id.",
+                  "description": "Required. Parent resource name.\n- Format:projects\/[PROJECT-ID]\n- Format:organizations\/[ORGANIZATION-ID]\n- Format:projects\/[PROJECT-ID]\/locations\/[LOCATION-ID]\n- Format:organizations\/[ORGANIZATION-ID]\/locations\/[LOCATION-ID]",
                   "location": "path",
                   "required": true,
                   "pattern": "^projects\/[^\/]+$",
@@ -6251,7 +6251,7 @@
           "httpMethod": "GET",
           "parameters": {
             "parent": {
-              "description": "The parent resource name, for example locations\/{location_id}.",
+              "description": "The parent resource name.\n- Format:locations\/[LOCATION-ID]",
               "location": "query",
               "type": "string"
             },
@@ -6294,7 +6294,7 @@
               "httpMethod": "GET",
               "parameters": {
                 "parent": {
-                  "description": "The parent resource name, for example locations\/{location_id}.",
+                  "description": "The parent resource name.\n- Format:locations\/[LOCATION-ID]",
                   "location": "path",
                   "required": true,
                   "pattern": "^locations\/[^\/]+$",
@@ -6342,7 +6342,7 @@
               "httpMethod": "POST",
               "parameters": {
                 "parent": {
-                  "description": "Required. The parent resource name, for example projects\/my-project-id or\norganizations\/my-org-id.",
+                  "description": "Required. Parent resource name.\n- Format:projects\/[PROJECT-ID]\n- Format:organizations\/[ORGANIZATION-ID]\n- Format:projects\/[PROJECT-ID]\/locations\/[LOCATION-ID]\n- Format:organizations\/[ORGANIZATION-ID]\/locations\/[LOCATION-ID]",
                   "location": "path",
                   "required": true,
                   "pattern": "^organizations\/[^\/]+$",
@@ -6423,7 +6423,7 @@
               "httpMethod": "GET",
               "parameters": {
                 "parent": {
-                  "description": "Required. The parent resource name, for example projects\/my-project-id or\norganizations\/my-org-id.",
+                  "description": "Required. Parent resource name.\n- Format:projects\/[PROJECT-ID]\n- Format:organizations\/[ORGANIZATION-ID]\n- Format:projects\/[PROJECT-ID]\/locations\/[LOCATION-ID]\n- Format:organizations\/[ORGANIZATION-ID]\/locations\/[LOCATION-ID]",
                   "location": "path",
                   "required": true,
                   "pattern": "^organizations\/[^\/]+$",
@@ -6500,7 +6500,7 @@
                   "httpMethod": "POST",
                   "parameters": {
                     "parent": {
-                      "description": "Required. The parent resource name, for example projects\/my-project-id or\norganizations\/my-org-id.",
+                      "description": "Required. Parent resource name.\n- Format:projects\/[PROJECT-ID]\n- Format:organizations\/[ORGANIZATION-ID]\n- Format:projects\/[PROJECT-ID]\/locations\/[LOCATION-ID]\n- Format:organizations\/[ORGANIZATION-ID]\/locations\/[LOCATION-ID]",
                       "location": "path",
                       "required": true,
                       "pattern": "^organizations\/[^\/]+\/locations\/[^\/]+$",
@@ -6581,7 +6581,7 @@
                   "httpMethod": "GET",
                   "parameters": {
                     "parent": {
-                      "description": "Required. The parent resource name, for example projects\/my-project-id or\norganizations\/my-org-id.",
+                      "description": "Required. Parent resource name.\n- Format:projects\/[PROJECT-ID]\n- Format:organizations\/[ORGANIZATION-ID]\n- Format:projects\/[PROJECT-ID]\/locations\/[LOCATION-ID]\n- Format:organizations\/[ORGANIZATION-ID]\/locations\/[LOCATION-ID]",
                       "location": "path",
                       "required": true,
                       "pattern": "^organizations\/[^\/]+\/locations\/[^\/]+$",
@@ -6656,7 +6656,7 @@
                   "httpMethod": "POST",
                   "parameters": {
                     "parent": {
-                      "description": "Required. The parent resource name, for example projects\/my-project-id or\norganizations\/my-org-id.",
+                      "description": "Required. Parent resource name.\n- Format:projects\/[PROJECT-ID]\n- Format:organizations\/[ORGANIZATION-ID]\n- Format:projects\/[PROJECT-ID]\/locations\/[LOCATION-ID]\n- Format:organizations\/[ORGANIZATION-ID]\/locations\/[LOCATION-ID]",
                       "location": "path",
                       "required": true,
                       "pattern": "^organizations\/[^\/]+\/locations\/[^\/]+$",
@@ -6737,7 +6737,7 @@
                   "httpMethod": "GET",
                   "parameters": {
                     "parent": {
-                      "description": "Required. The parent resource name, for example projects\/my-project-id or\norganizations\/my-org-id.",
+                      "description": "Required. Parent resource name.\n- Format:projects\/[PROJECT-ID]\n- Format:organizations\/[ORGANIZATION-ID]\n- Format:projects\/[PROJECT-ID]\/locations\/[LOCATION-ID]\n- Format:organizations\/[ORGANIZATION-ID]\/locations\/[LOCATION-ID]",
                       "location": "path",
                       "required": true,
                       "pattern": "^organizations\/[^\/]+\/locations\/[^\/]+$",
@@ -6812,7 +6812,7 @@
                   "httpMethod": "POST",
                   "parameters": {
                     "parent": {
-                      "description": "Required. The parent resource name, for example projects\/my-project-id or\norganizations\/my-org-id.",
+                      "description": "Required. Parent resource name.\n- Format:projects\/[PROJECT-ID]\n- Format:organizations\/[ORGANIZATION-ID]\n- Format:projects\/[PROJECT-ID]\/locations\/[LOCATION-ID]\n- Format:organizations\/[ORGANIZATION-ID]\/locations\/[LOCATION-ID]",
                       "location": "path",
                       "required": true,
                       "pattern": "^organizations\/[^\/]+\/locations\/[^\/]+$",
@@ -6893,7 +6893,7 @@
                   "httpMethod": "GET",
                   "parameters": {
                     "parent": {
-                      "description": "Required. The parent resource name, for example projects\/my-project-id or\norganizations\/my-org-id.",
+                      "description": "Required. Parent resource name.\n- Format:projects\/[PROJECT-ID]\n- Format:organizations\/[ORGANIZATION-ID]\n- Format:projects\/[PROJECT-ID]\/locations\/[LOCATION-ID]\n- Format:organizations\/[ORGANIZATION-ID]\/locations\/[LOCATION-ID]",
                       "location": "path",
                       "required": true,
                       "pattern": "^organizations\/[^\/]+\/locations\/[^\/]+$",
@@ -6970,7 +6970,7 @@
               "httpMethod": "POST",
               "parameters": {
                 "parent": {
-                  "description": "Required. The parent resource name, for example projects\/my-project-id or\norganizations\/my-org-id.",
+                  "description": "Required. Parent resource name.\n- Format:projects\/[PROJECT-ID]\n- Format:organizations\/[ORGANIZATION-ID]\n- Format:projects\/[PROJECT-ID]\/locations\/[LOCATION-ID]\n- Format:organizations\/[ORGANIZATION-ID]\/locations\/[LOCATION-ID]",
                   "location": "path",
                   "required": true,
                   "pattern": "^organizations\/[^\/]+$",
@@ -7051,7 +7051,7 @@
               "httpMethod": "GET",
               "parameters": {
                 "parent": {
-                  "description": "Required. The parent resource name, for example projects\/my-project-id or\norganizations\/my-org-id.",
+                  "description": "Required. Parent resource name.\n- Format:projects\/[PROJECT-ID]\n- Format:organizations\/[ORGANIZATION-ID]\n- Format:projects\/[PROJECT-ID]\/locations\/[LOCATION-ID]\n- Format:organizations\/[ORGANIZATION-ID]\/locations\/[LOCATION-ID]",
                   "location": "path",
                   "required": true,
                   "pattern": "^organizations\/[^\/]+$",
@@ -7126,7 +7126,7 @@
               "httpMethod": "POST",
               "parameters": {
                 "parent": {
-                  "description": "Required. The parent resource name, for example projects\/my-project-id or\norganizations\/my-org-id.",
+                  "description": "Required. Parent resource name.\n- Format:projects\/[PROJECT-ID]\n- Format:organizations\/[ORGANIZATION-ID]\n- Format:projects\/[PROJECT-ID]\/locations\/[LOCATION-ID]\n- Format:organizations\/[ORGANIZATION-ID]\/locations\/[LOCATION-ID]",
                   "location": "path",
                   "required": true,
                   "pattern": "^organizations\/[^\/]+$",
@@ -7207,7 +7207,7 @@
               "httpMethod": "GET",
               "parameters": {
                 "parent": {
-                  "description": "Required. The parent resource name, for example projects\/my-project-id or\norganizations\/my-org-id.",
+                  "description": "Required. Parent resource name.\n- Format:projects\/[PROJECT-ID]\n- Format:organizations\/[ORGANIZATION-ID]\n- Format:projects\/[PROJECT-ID]\/locations\/[LOCATION-ID]\n- Format:organizations\/[ORGANIZATION-ID]\/locations\/[LOCATION-ID]",
                   "location": "path",
                   "required": true,
                   "pattern": "^organizations\/[^\/]+$",

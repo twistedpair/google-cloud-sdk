@@ -162,8 +162,8 @@ def BindMissingRolesWithPrompt(service_account_ref, required_roles):
       ['- {}'.format(r) for r in sorted(missing_roles)])
   if console_io.CanPrompt():
     message = (
-        '\nThis will bind the following project roles to this service '
-        'account:\n{}'.format(formatted_roles))
+        '\nThis will bind the following project roles to the service '
+        'account [{}]:\n{}'.format(service_account_ref.Name(), formatted_roles))
     console_io.PromptContinue(message=message, cancel_on_no=True)
   _BindProjectRolesForServiceAccount(service_account_ref, missing_roles)
   log.status.Print('Roles successfully bound.')

@@ -53,13 +53,13 @@ class AuditConfig(_messages.Message):
   service: the log_types specified in each AuditConfig are enabled, and the
   exempted_members in each AuditLogConfig are exempted.  Example Policy with
   multiple AuditConfigs:      {       "audit_configs": [         {
-  "service": "allServices"           "audit_log_configs": [             {
+  "service": "allServices",           "audit_log_configs": [             {
   "log_type": "DATA_READ",               "exempted_members": [
   "user:jose@example.com"               ]             },             {
-  "log_type": "DATA_WRITE",             },             {
-  "log_type": "ADMIN_READ",             }           ]         },         {
-  "service": "sampleservice.googleapis.com"           "audit_log_configs": [
-  {               "log_type": "DATA_READ",             },             {
+  "log_type": "DATA_WRITE"             },             {
+  "log_type": "ADMIN_READ"             }           ]         },         {
+  "service": "sampleservice.googleapis.com",           "audit_log_configs": [
+  {               "log_type": "DATA_READ"             },             {
   "log_type": "DATA_WRITE",               "exempted_members": [
   "user:aliya@example.com"               ]             }           ]         }
   ]     }  For sampleservice, this policy enables DATA_READ, DATA_WRITE and
@@ -81,7 +81,7 @@ class AuditLogConfig(_messages.Message):
   r"""Provides the configuration for logging a type of permissions. Example:
   {       "audit_log_configs": [         {           "log_type": "DATA_READ",
   "exempted_members": [             "user:jose@example.com"           ]
-  },         {           "log_type": "DATA_WRITE",         }       ]     }
+  },         {           "log_type": "DATA_WRITE"         }       ]     }
   This enables 'DATA_READ' and 'DATA_WRITE' logging, while exempting
   jose@example.com from DATA_READ logging.
 
@@ -356,10 +356,32 @@ class GoogleCloudSecuritycenterV1NotificationMessage(_messages.Message):
       populated.
     notificationConfigName: Name of the notification config that generated
       current notification.
+    resource: The Cloud resource tied to this notification's Finding.
   """
 
   finding = _messages.MessageField('Finding', 1)
   notificationConfigName = _messages.StringField(2)
+  resource = _messages.MessageField('GoogleCloudSecuritycenterV1Resource', 3)
+
+
+class GoogleCloudSecuritycenterV1Resource(_messages.Message):
+  r""" Information related to the Google Cloud resource.
+
+  Fields:
+    name: The full resource name of the resource. See:
+      https://cloud.google.com/apis/design/resource_names#full_resource_name
+    parent: The full resource name of resource's parent.
+    parentDisplayName:  The human readable name of resource's parent.
+    project: The full resource name of project that the resource belongs to.
+    projectDisplayName:  The human readable name of project that the resource
+      belongs to.
+  """
+
+  name = _messages.StringField(1)
+  parent = _messages.StringField(2)
+  parentDisplayName = _messages.StringField(3)
+  project = _messages.StringField(4)
+  projectDisplayName = _messages.StringField(5)
 
 
 class GoogleCloudSecuritycenterV1RunAssetDiscoveryResponse(_messages.Message):
@@ -627,13 +649,35 @@ class GoogleCloudSecuritycenterV1p1beta1NotificationMessage(_messages.Message):
       populated.
     notificationConfigName: Name of the notification config that generated
       current notification.
+    resource: The Cloud resource tied to the notification.
     temporalAsset: If it's an asset based notification config, this field will
       be populated.
   """
 
   finding = _messages.MessageField('GoogleCloudSecuritycenterV1p1beta1Finding', 1)
   notificationConfigName = _messages.StringField(2)
-  temporalAsset = _messages.MessageField('GoogleCloudSecuritycenterV1p1beta1TemporalAsset', 3)
+  resource = _messages.MessageField('GoogleCloudSecuritycenterV1p1beta1Resource', 3)
+  temporalAsset = _messages.MessageField('GoogleCloudSecuritycenterV1p1beta1TemporalAsset', 4)
+
+
+class GoogleCloudSecuritycenterV1p1beta1Resource(_messages.Message):
+  r""" Information related to the Google Cloud resource.
+
+  Fields:
+    name: The full resource name of the resource. See:
+      https://cloud.google.com/apis/design/resource_names#full_resource_name
+    parent: The full resource name of resource's parent.
+    parentDisplayName:  The human readable name of resource's parent.
+    project: The full resource name of project that the resource belongs to.
+    projectDisplayName:  The human readable name of project that the resource
+      belongs to.
+  """
+
+  name = _messages.StringField(1)
+  parent = _messages.StringField(2)
+  parentDisplayName = _messages.StringField(3)
+  project = _messages.StringField(4)
+  projectDisplayName = _messages.StringField(5)
 
 
 class GoogleCloudSecuritycenterV1p1beta1RunAssetDiscoveryResponse(_messages.Message):

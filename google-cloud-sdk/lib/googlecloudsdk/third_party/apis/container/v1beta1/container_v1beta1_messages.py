@@ -119,21 +119,33 @@ class AutoprovisioningNodePoolDefaults(_messages.Message):
   created by NAP.
 
   Fields:
-    management: Specifies the node management options for NAP created node-
-      pools.
-    minCpuPlatform: Minimum CPU platform to be used for NAP created node
-      pools. The instance may be scheduled on the specified or newer CPU
-      platform. Applicable values are the friendly names of CPU platforms,
-      such as <code>minCpuPlatform: &quot;Intel Haswell&quot;</code> or
+    management: NodeManagement configuration for this NodePool.
+    minCpuPlatform: Minimum CPU platform to be used by this instance. The
+      instance may be scheduled on the specified or newer CPU platform.
+      Applicable values are the friendly names of CPU platforms, such as
+      <code>minCpuPlatform: &quot;Intel Haswell&quot;</code> or
       <code>minCpuPlatform: &quot;Intel Sandy Bridge&quot;</code>. For more
       information, read [how to specify min CPU
       platform](https://cloud.google.com/compute/docs/instances/specify-min-
       cpu-platform) To unset the min cpu platform field pass "automatic" as
       field value.
-    oauthScopes: Scopes that are used by NAP when creating node pools.
+    oauthScopes: The set of Google API scopes to be made available on all of
+      the node VMs under the "default" service account.  The following scopes
+      are recommended, but not required, and by default are not included:  *
+      `https://www.googleapis.com/auth/compute` is required for mounting
+      persistent storage on your nodes. *
+      `https://www.googleapis.com/auth/devstorage.read_only` is required for
+      communicating with **gcr.io** (the [Google Container
+      Registry](https://cloud.google.com/container-registry/)).  If
+      unspecified, no scopes are added, unless Cloud Logging or Cloud
+      Monitoring are enabled, in which case their required scopes will be
+      added.
     serviceAccount: The Google Cloud Platform Service Account to be used by
-      the node VMs.
-    upgradeSettings: Specifies the upgrade settings for NAP created node pools
+      the node VMs. Specify the email address of the Service Account;
+      otherwise, if no Service Account is specified, the "default" service
+      account is used.
+    upgradeSettings: Upgrade settings control disruption and speed of the
+      upgrade.
   """
 
   management = _messages.MessageField('NodeManagement', 1)
@@ -228,11 +240,32 @@ class ClientCertificateConfig(_messages.Message):
 class CloudRunConfig(_messages.Message):
   r"""Configuration options for the Cloud Run feature.
 
+  Enums:
+    LoadBalancerTypeValueValuesEnum: Which load balancer type is installed for
+      Cloud Run.
+
   Fields:
     disabled: Whether Cloud Run addon is enabled for this cluster.
+    loadBalancerType: Which load balancer type is installed for Cloud Run.
   """
 
+  class LoadBalancerTypeValueValuesEnum(_messages.Enum):
+    r"""Which load balancer type is installed for Cloud Run.
+
+    Values:
+      LOAD_BALANCER_TYPE_UNSPECIFIED: Load balancer type for Cloud Run is
+        unspecified.
+      LOAD_BALANCER_TYPE_EXTERNAL: Install external load balancer for Cloud
+        Run.
+      LOAD_BALANCER_TYPE_INTERNAL: Install internal load balancer for Cloud
+        Run.
+    """
+    LOAD_BALANCER_TYPE_UNSPECIFIED = 0
+    LOAD_BALANCER_TYPE_EXTERNAL = 1
+    LOAD_BALANCER_TYPE_INTERNAL = 2
+
   disabled = _messages.BooleanField(1)
+  loadBalancerType = _messages.EnumField('LoadBalancerTypeValueValuesEnum', 2)
 
 
 class Cluster(_messages.Message):
@@ -304,14 +337,14 @@ class Cluster(_messages.Message):
       gke.N patch in the 1.X.Y version - "1.X.Y-gke.N": picks an explicit
       Kubernetes version - "","-": picks the default Kubernetes version
     initialNodeCount: The number of nodes to create in this cluster. You must
-      ensure that your Compute Engine <a href="/compute/docs/resource-
-      quotas">resource quota</a> is sufficient for this number of instances.
-      You must also have available firewall and routes quota. For requests,
-      this field should only be used in lieu of a "node_pool" object, since
-      this configuration (along with the "node_config") will be used to create
-      a "NodePool" object with an auto-generated name. Do not use this and a
-      node_pool at the same time.  This field is deprecated, use
-      node_pool.initial_node_count instead.
+      ensure that your Compute Engine [resource
+      quota](https://cloud.google.com/compute/quotas) is sufficient for this
+      number of instances. You must also have available firewall and routes
+      quota. For requests, this field should only be used in lieu of a
+      "node_pool" object, since this configuration (along with the
+      "node_config") will be used to create a "NodePool" object with an auto-
+      generated name. Do not use this and a node_pool at the same time.  This
+      field is deprecated, use node_pool.initial_node_count instead.
     instanceGroupUrls: Deprecated. Use node_pools.instance_group_urls.
     ipAllocationPolicy: Configuration for cluster IP allocation.
     labelFingerprint: The fingerprint of the set of labels for this cluster.
@@ -1301,7 +1334,7 @@ class CreateClusterRequest(_messages.Message):
   Fields:
     cluster: Required. A [cluster
       resource](https://cloud.google.com/container-
-      engine/reference/rest/v1beta1/projects.zones.clusters)
+      engine/reference/rest/v1beta1/projects.locations.clusters)
     parent: The parent (project and location) where the cluster will be
       created. Specified in the format `projects/*/locations/*`.
     projectId: Required. Deprecated. The Google Developers Console [project ID
@@ -1728,17 +1761,26 @@ class LinuxNodeConfig(_messages.Message):
 
   Messages:
     SysctlsValue: The Linux kernel parameters to be applied to the nodes and
-      all pods running on the nodes.
+      all pods running on the nodes.  The following parameters are supported.
+      net.core.netdev_max_backlog net.core.rmem_max net.core.wmem_default
+      net.core.wmem_max net.core.optmem_max net.core.somaxconn
+      net.ipv4.tcp_rmem net.ipv4.tcp_wmem net.ipv4.tcp_tw_reuse
 
   Fields:
     sysctls: The Linux kernel parameters to be applied to the nodes and all
-      pods running on the nodes.
+      pods running on the nodes.  The following parameters are supported.
+      net.core.netdev_max_backlog net.core.rmem_max net.core.wmem_default
+      net.core.wmem_max net.core.optmem_max net.core.somaxconn
+      net.ipv4.tcp_rmem net.ipv4.tcp_wmem net.ipv4.tcp_tw_reuse
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class SysctlsValue(_messages.Message):
     r"""The Linux kernel parameters to be applied to the nodes and all pods
-    running on the nodes.
+    running on the nodes.  The following parameters are supported.
+    net.core.netdev_max_backlog net.core.rmem_max net.core.wmem_default
+    net.core.wmem_max net.core.optmem_max net.core.somaxconn net.ipv4.tcp_rmem
+    net.ipv4.tcp_wmem net.ipv4.tcp_tw_reuse
 
     Messages:
       AdditionalProperty: An additional property for a SysctlsValue object.
@@ -3029,8 +3071,9 @@ class ServerConfig(_messages.Message):
       default.
     defaultImageType: Default image type.
     validImageTypes: List of valid image types.
-    validMasterVersions: List of valid master versions.
-    validNodeVersions: List of valid node upgrade target versions.
+    validMasterVersions: List of valid master versions, in descending order.
+    validNodeVersions: List of valid node upgrade target versions, in
+      descending order.
   """
 
   channels = _messages.MessageField('ReleaseChannelConfig', 1, repeated=True)

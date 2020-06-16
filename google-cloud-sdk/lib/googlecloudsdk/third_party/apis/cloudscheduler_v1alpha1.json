@@ -669,6 +669,11 @@
                       "description": "A token identifying a page of results the server will return. To\nrequest the first page results, page_token must be empty. To\nrequest the next page of results, page_token must be the value of\nListJobsResponse.next_page_token returned from the previous\ncall to CloudScheduler.ListJobs. It is an error to switch the\nvalue of ListJobsRequest.filter or\nListJobsRequest.order_by while iterating through pages.",
                       "location": "query",
                       "type": "string"
+                    },
+                    "legacyAppEngineCron": {
+                      "description": "This field is used to manage the legacy App Engine Cron jobs using the\nCloud Scheduler API. If the field is set to true, the jobs in the __cron\nqueue will be listed instead.",
+                      "location": "query",
+                      "type": "boolean"
                     }
                   },
                   "parameterOrder": [

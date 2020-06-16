@@ -2892,6 +2892,8 @@ net.core.somaxconn                         | Must be [128, 2147483647]
 net.ipv4.tcp_rmem                          | Any positive integer tuple
 net.ipv4.tcp_wmem                          | Any positive integer tuple
 net.ipv4.tcp_tw_reuse                      | Must be {0, 1}
+
+Note, updating the system configuration of an existing node pool requires recreation of the nodes which which might cause a disruption.
 """)
 
 

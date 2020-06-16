@@ -455,6 +455,17 @@ class Paths(object):
     """
     if not account:
       account = 'default'
+
+    # some file/directory names are reserved on Windows
+    # https://docs.microsoft.com/en-us/windows/win32/fileio/naming-a-file
+    # This will handle common cases where these are email prefixes
+    if platforms.OperatingSystem.Current(
+    ) == platforms.OperatingSystem.WINDOWS and (
+        account.upper().startswith('CON.') or account.upper().startswith('PRN.')
+        or account.upper().startswith('AUX.') or
+        account.upper().startswith('NUL.')):
+      # prepend a dot to create a legal directory name
+      account = '.' + account
     return os.path.join(self.global_config_dir, 'legacy_credentials', account)
 
   def LegacyCredentialsBqPath(self, account):

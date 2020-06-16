@@ -121,21 +121,33 @@ class AutoprovisioningNodePoolDefaults(_messages.Message):
   created by NAP.
 
   Fields:
-    management: Specifies the node management options for NAP created node-
-      pools.
-    minCpuPlatform: Minimum CPU platform to be used for NAP created node
-      pools. The instance may be scheduled on the specified or newer CPU
-      platform. Applicable values are the friendly names of CPU platforms,
-      such as <code>minCpuPlatform: &quot;Intel Haswell&quot;</code> or
+    management: NodeManagement configuration for this NodePool.
+    minCpuPlatform: Minimum CPU platform to be used by this instance. The
+      instance may be scheduled on the specified or newer CPU platform.
+      Applicable values are the friendly names of CPU platforms, such as
+      <code>minCpuPlatform: &quot;Intel Haswell&quot;</code> or
       <code>minCpuPlatform: &quot;Intel Sandy Bridge&quot;</code>. For more
       information, read [how to specify min CPU
       platform](https://cloud.google.com/compute/docs/instances/specify-min-
       cpu-platform) To unset the min cpu platform field pass "automatic" as
       field value.
-    oauthScopes: Scopes that are used by NAP when creating node pools.
+    oauthScopes: The set of Google API scopes to be made available on all of
+      the node VMs under the "default" service account.  The following scopes
+      are recommended, but not required, and by default are not included:  *
+      `https://www.googleapis.com/auth/compute` is required for mounting
+      persistent storage on your nodes. *
+      `https://www.googleapis.com/auth/devstorage.read_only` is required for
+      communicating with **gcr.io** (the [Google Container
+      Registry](https://cloud.google.com/container-registry/)).  If
+      unspecified, no scopes are added, unless Cloud Logging or Cloud
+      Monitoring are enabled, in which case their required scopes will be
+      added.
     serviceAccount: The Google Cloud Platform Service Account to be used by
-      the node VMs.
-    upgradeSettings: Specifies the upgrade settings for NAP created node pools
+      the node VMs. Specify the email address of the Service Account;
+      otherwise, if no Service Account is specified, the "default" service
+      account is used.
+    upgradeSettings: Upgrade settings control disruption and speed of the
+      upgrade.
   """
 
   management = _messages.MessageField('NodeManagement', 1)
@@ -255,14 +267,35 @@ class CloudNatStatus(_messages.Message):
 class CloudRunConfig(_messages.Message):
   r"""Configuration options for the Cloud Run feature.
 
+  Enums:
+    LoadBalancerTypeValueValuesEnum: Which load balancer type is installed for
+      Cloud Run.
+
   Fields:
     disabled: Whether Cloud Run is enabled for this cluster.
     enableAlphaFeatures: Enable alpha features of Cloud Run. These features
       are only available to trusted testers.
+    loadBalancerType: Which load balancer type is installed for Cloud Run.
   """
+
+  class LoadBalancerTypeValueValuesEnum(_messages.Enum):
+    r"""Which load balancer type is installed for Cloud Run.
+
+    Values:
+      LOAD_BALANCER_TYPE_UNSPECIFIED: Load balancer type for Cloud Run is
+        unspecified.
+      LOAD_BALANCER_TYPE_EXTERNAL: Install external load balancer for Cloud
+        Run.
+      LOAD_BALANCER_TYPE_INTERNAL: Install internal load balancer for Cloud
+        Run.
+    """
+    LOAD_BALANCER_TYPE_UNSPECIFIED = 0
+    LOAD_BALANCER_TYPE_EXTERNAL = 1
+    LOAD_BALANCER_TYPE_INTERNAL = 2
 
   disabled = _messages.BooleanField(1)
   enableAlphaFeatures = _messages.BooleanField(2)
+  loadBalancerType = _messages.EnumField('LoadBalancerTypeValueValuesEnum', 3)
 
 
 class Cluster(_messages.Message):
@@ -299,11 +332,11 @@ class Cluster(_messages.Message):
       cluster. Deprecated. Call Kubernetes API directly to retrieve node
       information.
     currentNodeVersion: [Output only] Deprecated, use
-      [NodePool.version](/kubernetes-
-      engine/docs/reference/rest/v1alpha1/projects.zones.clusters.nodePool)
-      instead. The current version of the node software components. If they
-      are currently at multiple versions because they're in the process of
-      being upgraded, this reflects the minimum version of all nodes.
+      [NodePool.version](/kubernetes-engine/docs/reference/rest/v1alpha1/proje
+      cts.locations.clusters.nodePool) instead. The current version of the
+      node software components. If they are currently at multiple versions
+      because they're in the process of being upgraded, this reflects the
+      minimum version of all nodes.
     databaseEncryption: Configuration of etcd encryption.
     databaseEncryptionKeyId: Resource name of a CloudKMS key to be used for
       the encryption of secrets in etcd. Ex. projects/kms-
@@ -1372,7 +1405,7 @@ class CreateClusterRequest(_messages.Message):
 
   Fields:
     cluster: A [cluster resource](/container-
-      engine/reference/rest/v1alpha1/projects.zones.clusters)
+      engine/reference/rest/v1alpha1/projects.locations.clusters)
     parent: The parent (project and location) where the cluster will be
       created. Specified in the format 'projects/*/locations/*'.
     projectId: Deprecated. The Google Developers Console [project ID or
@@ -1818,60 +1851,25 @@ class LinuxNodeConfig(_messages.Message):
   Messages:
     SysctlsValue: The Linux kernel parameters to be applied to the nodes and
       all pods running on the nodes.  The following parameters are supported.
-      kernel.pid_max kernel.threads-max fs.inotify.max_queued_events
-      fs.inotify.max_user_instances fs.inotify.max_user_watches
-      net.core.netdev_budget net.core.netdev_budget_usecs
-      net.core.netdev_max_backlog net.core.rmem_default net.core.rmem_max
-      net.core.wmem_default net.core.wmem_max net.core.optmem_max
-      net.core.somaxconn net.ipv4.tcp_rmem net.ipv4.tcp_wmem net.ipv4.tcp_mem
-      net.ipv4.tcp_fin_timeout net.ipv4.tcp_keepalive_intvl
-      net.ipv4.tcp_keepalive_probes net.ipv4.tcp_keepalive_time
-      net.ipv4.tcp_max_orphans net.ipv4.tcp_max_syn_backlog
-      net.ipv4.tcp_max_tw_buckets net.ipv4.tcp_syn_retries
-      net.ipv4.tcp_tw_reuse net.ipv4.udp_mem net.ipv4.udp_rmem_min
-      net.ipv4.udp_wmem_min net.netfilter.nf_conntrack_generic_timeout
-      net.netfilter.nf_conntrack_max
-      net.netfilter.nf_conntrack_tcp_timeout_close_wait
-      net.netfilter.nf_conntrack_tcp_timeout_established
+      net.core.netdev_max_backlog net.core.rmem_max net.core.wmem_default
+      net.core.wmem_max net.core.optmem_max net.core.somaxconn
+      net.ipv4.tcp_rmem net.ipv4.tcp_wmem net.ipv4.tcp_tw_reuse
 
   Fields:
     sysctls: The Linux kernel parameters to be applied to the nodes and all
       pods running on the nodes.  The following parameters are supported.
-      kernel.pid_max kernel.threads-max fs.inotify.max_queued_events
-      fs.inotify.max_user_instances fs.inotify.max_user_watches
-      net.core.netdev_budget net.core.netdev_budget_usecs
-      net.core.netdev_max_backlog net.core.rmem_default net.core.rmem_max
-      net.core.wmem_default net.core.wmem_max net.core.optmem_max
-      net.core.somaxconn net.ipv4.tcp_rmem net.ipv4.tcp_wmem net.ipv4.tcp_mem
-      net.ipv4.tcp_fin_timeout net.ipv4.tcp_keepalive_intvl
-      net.ipv4.tcp_keepalive_probes net.ipv4.tcp_keepalive_time
-      net.ipv4.tcp_max_orphans net.ipv4.tcp_max_syn_backlog
-      net.ipv4.tcp_max_tw_buckets net.ipv4.tcp_syn_retries
-      net.ipv4.tcp_tw_reuse net.ipv4.udp_mem net.ipv4.udp_rmem_min
-      net.ipv4.udp_wmem_min net.netfilter.nf_conntrack_generic_timeout
-      net.netfilter.nf_conntrack_max
-      net.netfilter.nf_conntrack_tcp_timeout_close_wait
-      net.netfilter.nf_conntrack_tcp_timeout_established
+      net.core.netdev_max_backlog net.core.rmem_max net.core.wmem_default
+      net.core.wmem_max net.core.optmem_max net.core.somaxconn
+      net.ipv4.tcp_rmem net.ipv4.tcp_wmem net.ipv4.tcp_tw_reuse
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class SysctlsValue(_messages.Message):
     r"""The Linux kernel parameters to be applied to the nodes and all pods
     running on the nodes.  The following parameters are supported.
-    kernel.pid_max kernel.threads-max fs.inotify.max_queued_events
-    fs.inotify.max_user_instances fs.inotify.max_user_watches
-    net.core.netdev_budget net.core.netdev_budget_usecs
-    net.core.netdev_max_backlog net.core.rmem_default net.core.rmem_max
-    net.core.wmem_default net.core.wmem_max net.core.optmem_max
-    net.core.somaxconn net.ipv4.tcp_rmem net.ipv4.tcp_wmem net.ipv4.tcp_mem
-    net.ipv4.tcp_fin_timeout net.ipv4.tcp_keepalive_intvl
-    net.ipv4.tcp_keepalive_probes net.ipv4.tcp_keepalive_time
-    net.ipv4.tcp_max_orphans net.ipv4.tcp_max_syn_backlog
-    net.ipv4.tcp_max_tw_buckets net.ipv4.tcp_syn_retries net.ipv4.tcp_tw_reuse
-    net.ipv4.udp_mem net.ipv4.udp_rmem_min net.ipv4.udp_wmem_min
-    net.netfilter.nf_conntrack_generic_timeout net.netfilter.nf_conntrack_max
-    net.netfilter.nf_conntrack_tcp_timeout_close_wait
-    net.netfilter.nf_conntrack_tcp_timeout_established
+    net.core.netdev_max_backlog net.core.rmem_max net.core.wmem_default
+    net.core.wmem_max net.core.optmem_max net.core.somaxconn net.ipv4.tcp_rmem
+    net.ipv4.tcp_wmem net.ipv4.tcp_tw_reuse
 
     Messages:
       AdditionalProperty: An additional property for a SysctlsValue object.
@@ -3253,8 +3251,9 @@ class ServerConfig(_messages.Message):
       default.
     defaultImageType: Default image type.
     validImageTypes: List of valid image types.
-    validMasterVersions: List of valid master versions.
-    validNodeVersions: List of valid node upgrade target versions.
+    validMasterVersions: List of valid master versions, in descending order.
+    validNodeVersions: List of valid node upgrade target versions, in
+      descending order.
   """
 
   channels = _messages.MessageField('ReleaseChannelConfig', 1, repeated=True)

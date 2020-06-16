@@ -2529,7 +2529,7 @@
                   "httpMethod": "GET",
                   "parameters": {
                     "database": {
-                      "description": "Required. The database whose schema we wish to get.",
+                      "description": "Required. The database whose schema we wish to get.\nValues are of the form\n`projects\/<project>\/instances\/<instance>\/databases\/<database>`",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/instances\/[^\/]+\/databases\/[^\/]+$",

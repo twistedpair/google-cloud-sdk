@@ -47,10 +47,10 @@ class AcceleratorType(_messages.Message):
       is defined by the server.
     kind: [Output Only] The type of the resource. Always
       compute#acceleratorType for accelerator types.
-    maximumCardsPerInstance: [Output Only] Maximum accelerator cards allowed
-      per instance.
+    maximumCardsPerInstance: [Output Only] Maximum number of accelerator cards
+      allowed per instance.
     name: [Output Only] Name of the resource.
-    selfLink: [Output Only] Server-defined fully-qualified URL for this
+    selfLink: [Output Only] Server-defined, fully qualified URL for this
       resource.
     selfLinkWithId: [Output Only] Server-defined URL for this resource's
       resource id.
@@ -1635,11 +1635,11 @@ class AuditConfig(_messages.Message):
   specific service, the union of the two AuditConfigs is used for that
   service: the log_types specified in each AuditConfig are enabled, and the
   exempted_members in each AuditLogConfig are exempted.  Example Policy with
-  multiple AuditConfigs:  { "audit_configs": [ { "service": "allServices"
+  multiple AuditConfigs:  { "audit_configs": [ { "service": "allServices",
   "audit_log_configs": [ { "log_type": "DATA_READ", "exempted_members": [
-  "user:jose@example.com" ] }, { "log_type": "DATA_WRITE", }, { "log_type":
-  "ADMIN_READ", } ] }, { "service": "sampleservice.googleapis.com"
-  "audit_log_configs": [ { "log_type": "DATA_READ", }, { "log_type":
+  "user:jose@example.com" ] }, { "log_type": "DATA_WRITE" }, { "log_type":
+  "ADMIN_READ" } ] }, { "service": "sampleservice.googleapis.com",
+  "audit_log_configs": [ { "log_type": "DATA_READ" }, { "log_type":
   "DATA_WRITE", "exempted_members": [ "user:aliya@example.com" ] } ] } ] }
   For sampleservice, this policy enables DATA_READ, DATA_WRITE and ADMIN_READ
   logging. It also exempts jose@example.com from DATA_READ logging, and
@@ -1661,7 +1661,7 @@ class AuditConfig(_messages.Message):
 class AuditLogConfig(_messages.Message):
   r"""Provides the configuration for logging a type of permissions. Example:
   { "audit_log_configs": [ { "log_type": "DATA_READ", "exempted_members": [
-  "user:jose@example.com" ] }, { "log_type": "DATA_WRITE", } ] }  This enables
+  "user:jose@example.com" ] }, { "log_type": "DATA_WRITE" } ] }  This enables
   'DATA_READ' and 'DATA_WRITE' logging, while exempting jose@example.com from
   DATA_READ logging.
 
@@ -3198,7 +3198,7 @@ class BackendService(_messages.Message):
       be specified. Backend services with instance group or zonal NEG backends
       must have a health check. Backend services with internet NEG backends
       must not have a health check. A health check must
-    iap: A BackendServiceIAP attribute.
+    iap: The configurations for Identity-Aware Proxy on this resource.
     id: [Output Only] The unique identifier for the resource. This identifier
       is defined by the server.
     kind: [Output Only] Type of resource. Always compute#backendService for
@@ -3704,11 +3704,16 @@ class BackendServiceIAP(_messages.Message):
   r"""Identity-Aware Proxy
 
   Fields:
-    enabled: A boolean attribute.
-    oauth2ClientId: A string attribute.
+    enabled: Whether the serving infrastructure will authenticate and
+      authorize all incoming requests. If true, the oauth2ClientId and
+      oauth2ClientSecret fields must be non-empty.
+    oauth2ClientId: OAuth2 client ID to use for the authentication flow.
     oauth2ClientInfo: [Input Only] OAuth client info required to generate
       client id to be used for IAP.
-    oauth2ClientSecret: A string attribute.
+    oauth2ClientSecret: OAuth2 client secret to use for the authentication
+      flow. For security reasons, this value cannot be retrieved via the API.
+      Instead, the SHA-256 hash of the value is returned in the
+      oauth2ClientSecretSha256 field.
     oauth2ClientSecretSha256: [Output Only] SHA256 hash value for the field
       oauth2_client_secret above.
   """
@@ -26958,14 +26963,14 @@ class Firewall(_messages.Message):
       not exist. If this is unspecified, the firewall rule will be enabled.
     enableLogging: Deprecated in favor of enable in LogConfig. This field
       denotes whether to enable logging for a particular firewall rule. If
-      logging is enabled, logs will be exported to Stackdriver.
+      logging is enabled, logs will be exported t Cloud Logging.
     id: [Output Only] The unique identifier for the resource. This identifier
       is defined by the server.
     kind: [Output Only] Type of the resource. Always compute#firewall for
       firewall rules.
     logConfig: This field denotes the logging options for a particular
-      firewall rule. If logging is enabled, logs will be exported to
-      Stackdriver.
+      firewall rule. If logging is enabled, logs will be exported to Cloud
+      Logging.
     name: Name of the resource; provided by the client when the resource is
       created. The name must be 1-63 characters long, and comply with RFC1035.
       Specifically, the name must be 1-63 characters long and match the
@@ -30721,21 +30726,20 @@ class Image(_messages.Message):
     sourceDiskId: [Output Only] The ID value of the disk used to create this
       image. This value may be used to determine whether the image was taken
       from the current or a previous instance of a given disk name.
-    sourceImage: URL of the source image used to create this image. This can
-      be a full or valid partial URL. You must provide exactly one of:   -
-      this property, or   - the rawDisk.source property, or   - the sourceDisk
-      property   in order to create an image.
+    sourceImage: URL of the source image used to create this image.  In order
+      to create an image, you must provide the full or partial URL of one of
+      the following:   - The selfLink URL   - This property   - The
+      rawDisk.source URL   - The sourceDisk URL
     sourceImageEncryptionKey: The customer-supplied encryption key of the
       source image. Required if the source image is protected by a customer-
       supplied encryption key.
     sourceImageId: [Output Only] The ID value of the image used to create this
       image. This value may be used to determine whether the image was taken
       from the current or a previous instance of a given image name.
-    sourceSnapshot: URL of the source snapshot used to create this image. This
-      can be a full or valid partial URL. You must provide exactly one of:   -
-      this property, or   - the sourceImage property, or   - the
-      rawDisk.source property, or   - the sourceDisk property   in order to
-      create an image.
+    sourceSnapshot: URL of the source snapshot used to create this image.  In
+      order to create an image, you must provide the full or partial URL of
+      one of the following:   - The selfLink URL   - This property  - The
+      sourceImage URL   - The rawDisk.source URL   - The sourceDisk URL
     sourceSnapshotEncryptionKey: The customer-supplied encryption key of the
       source snapshot. Required if the source snapshot is protected by a
       customer-supplied encryption key.
@@ -35729,7 +35733,6 @@ class InterconnectAttachmentsScopedList(_messages.Message):
 class InterconnectCircuitInfo(_messages.Message):
   r"""Describes a single physical circuit between the Customer and Google.
   CircuitInfo objects are created by Google, so all fields are output only.
-  Next id: 4
 
   Fields:
     customerDemarcId: Customer-side demarc ID for this circuit.
@@ -36298,7 +36301,7 @@ class InterconnectLocationRegionInfo(_messages.Message):
 
 
 class InterconnectOutageNotification(_messages.Message):
-  r"""Description of a planned outage on this Interconnect. Next id: 9
+  r"""Description of a planned outage on this Interconnect.
 
   Enums:
     IssueTypeValueValuesEnum: Form this outage is expected to take, which can
@@ -38365,7 +38368,7 @@ class Network(_messages.Message):
 
 
 class NetworkEndpoint(_messages.Message):
-  r"""The network endpoint. Next ID: 7
+  r"""The network endpoint.
 
   Messages:
     AnnotationsValue: Metadata defined as annotations on the network endpoint.
@@ -40407,7 +40410,7 @@ class NodeTemplate(_messages.Message):
   r"""Represent a sole-tenant Node Template resource.  You can use a template
   to define properties for nodes in a node group. For more information, read
   Creating node groups and instances. (== resource_for
-  {$api_version}.nodeTemplates ==) (== NextID: 19 ==)
+  {$api_version}.nodeTemplates ==)
 
   Enums:
     CpuOvercommitTypeValueValuesEnum: CPU overcommit.
@@ -44379,8 +44382,10 @@ class Quota(_messages.Message):
       COMMITTED_CPUS: <no description>
       COMMITTED_LICENSES: <no description>
       COMMITTED_LOCAL_SSD_TOTAL_GB: <no description>
+      COMMITTED_MEMORY_OPTIMIZED_CPUS: <no description>
       COMMITTED_N2D_CPUS: <no description>
       COMMITTED_N2_CPUS: <no description>
+      COMMITTED_NVIDIA_A100_GPUS: <no description>
       COMMITTED_NVIDIA_K80_GPUS: <no description>
       COMMITTED_NVIDIA_P100_GPUS: <no description>
       COMMITTED_NVIDIA_P4_GPUS: <no description>
@@ -44426,8 +44431,10 @@ class Quota(_messages.Message):
       N2_CPUS: <no description>
       NETWORKS: <no description>
       NETWORK_ENDPOINT_GROUPS: <no description>
+      NETWORK_FIREWALL_POLICIES: <no description>
       NODE_GROUPS: <no description>
       NODE_TEMPLATES: <no description>
+      NVIDIA_A100_GPUS: <no description>
       NVIDIA_K80_GPUS: <no description>
       NVIDIA_P100_GPUS: <no description>
       NVIDIA_P100_VWS_GPUS: <no description>
@@ -44439,6 +44446,7 @@ class Quota(_messages.Message):
       PACKET_MIRRORINGS: <no description>
       PREEMPTIBLE_CPUS: <no description>
       PREEMPTIBLE_LOCAL_SSD_GB: <no description>
+      PREEMPTIBLE_NVIDIA_A100_GPUS: <no description>
       PREEMPTIBLE_NVIDIA_K80_GPUS: <no description>
       PREEMPTIBLE_NVIDIA_P100_GPUS: <no description>
       PREEMPTIBLE_NVIDIA_P100_VWS_GPUS: <no description>
@@ -44493,102 +44501,107 @@ class Quota(_messages.Message):
     COMMITTED_CPUS = 11
     COMMITTED_LICENSES = 12
     COMMITTED_LOCAL_SSD_TOTAL_GB = 13
-    COMMITTED_N2D_CPUS = 14
-    COMMITTED_N2_CPUS = 15
-    COMMITTED_NVIDIA_K80_GPUS = 16
-    COMMITTED_NVIDIA_P100_GPUS = 17
-    COMMITTED_NVIDIA_P4_GPUS = 18
-    COMMITTED_NVIDIA_T4_GPUS = 19
-    COMMITTED_NVIDIA_V100_GPUS = 20
-    CPUS = 21
-    CPUS_ALL_REGIONS = 22
-    DISKS_TOTAL_GB = 23
-    EXTERNAL_VPN_GATEWAYS = 24
-    FIREWALLS = 25
-    FORWARDING_RULES = 26
-    GLOBAL_INTERNAL_ADDRESSES = 27
-    GPUS_ALL_REGIONS = 28
-    HEALTH_CHECKS = 29
-    IMAGES = 30
-    INSTANCES = 31
-    INSTANCES_PER_NETWORK_GLOBAL = 32
-    INSTANCE_GROUPS = 33
-    INSTANCE_GROUP_MANAGERS = 34
-    INSTANCE_TEMPLATES = 35
-    INTERCONNECTS = 36
-    INTERCONNECT_ATTACHMENTS_PER_REGION = 37
-    INTERCONNECT_ATTACHMENTS_TOTAL_MBPS = 38
-    INTERCONNECT_TOTAL_GBPS = 39
-    INTERNAL_ADDRESSES = 40
-    INTERNAL_FORWARDING_RULES_PER_NETWORK = 41
-    INTERNAL_FORWARDING_RULES_WITH_GLOBAL_ACCESS_PER_NETWORK = 42
-    INTERNAL_FORWARDING_RULES_WITH_TARGET_INSTANCE_PER_NETWORK = 43
-    INTERNAL_TARGET_INSTANCE_WITH_GLOBAL_ACCESS_PER_NETWORK = 44
-    IN_PLACE_SNAPSHOTS = 45
-    IN_USE_ADDRESSES = 46
-    IN_USE_BACKUP_SCHEDULES = 47
-    IN_USE_MAINTENANCE_WINDOWS = 48
-    IN_USE_SNAPSHOT_SCHEDULES = 49
-    LOCAL_SSD_TOTAL_GB = 50
-    M1_CPUS = 51
-    M2_CPUS = 52
-    MACHINE_IMAGES = 53
-    N2D_CPUS = 54
-    N2_CPUS = 55
-    NETWORKS = 56
-    NETWORK_ENDPOINT_GROUPS = 57
-    NODE_GROUPS = 58
-    NODE_TEMPLATES = 59
-    NVIDIA_K80_GPUS = 60
-    NVIDIA_P100_GPUS = 61
-    NVIDIA_P100_VWS_GPUS = 62
-    NVIDIA_P4_GPUS = 63
-    NVIDIA_P4_VWS_GPUS = 64
-    NVIDIA_T4_GPUS = 65
-    NVIDIA_T4_VWS_GPUS = 66
-    NVIDIA_V100_GPUS = 67
-    PACKET_MIRRORINGS = 68
-    PREEMPTIBLE_CPUS = 69
-    PREEMPTIBLE_LOCAL_SSD_GB = 70
-    PREEMPTIBLE_NVIDIA_K80_GPUS = 71
-    PREEMPTIBLE_NVIDIA_P100_GPUS = 72
-    PREEMPTIBLE_NVIDIA_P100_VWS_GPUS = 73
-    PREEMPTIBLE_NVIDIA_P4_GPUS = 74
-    PREEMPTIBLE_NVIDIA_P4_VWS_GPUS = 75
-    PREEMPTIBLE_NVIDIA_T4_GPUS = 76
-    PREEMPTIBLE_NVIDIA_T4_VWS_GPUS = 77
-    PREEMPTIBLE_NVIDIA_V100_GPUS = 78
-    PRIVATE_V6_ACCESS_SUBNETWORKS = 79
-    PSC_GOOGLE_APIS_FORWARDING_RULES_PER_NETWORK = 80
-    PUBLIC_ADVERTISED_PREFIXES = 81
-    PUBLIC_DELEGATED_PREFIXES = 82
-    REGIONAL_AUTOSCALERS = 83
-    REGIONAL_INSTANCE_GROUP_MANAGERS = 84
-    RESERVATIONS = 85
-    RESOURCE_POLICIES = 86
-    ROUTERS = 87
-    ROUTES = 88
-    SECURITY_POLICIES = 89
-    SECURITY_POLICY_CEVAL_RULES = 90
-    SECURITY_POLICY_RULES = 91
-    SNAPSHOTS = 92
-    SSD_TOTAL_GB = 93
-    SSL_CERTIFICATES = 94
-    STATIC_ADDRESSES = 95
-    STATIC_BYOIP_ADDRESSES = 96
-    SUBNETWORKS = 97
-    SUBNET_RANGES_PER_NETWORK = 98
-    TARGET_HTTPS_PROXIES = 99
-    TARGET_HTTP_PROXIES = 100
-    TARGET_INSTANCES = 101
-    TARGET_POOLS = 102
-    TARGET_SSL_PROXIES = 103
-    TARGET_TCP_PROXIES = 104
-    TARGET_VPN_GATEWAYS = 105
-    URL_MAPS = 106
-    VPN_GATEWAYS = 107
-    VPN_TUNNELS = 108
-    XPN_SERVICE_PROJECTS = 109
+    COMMITTED_MEMORY_OPTIMIZED_CPUS = 14
+    COMMITTED_N2D_CPUS = 15
+    COMMITTED_N2_CPUS = 16
+    COMMITTED_NVIDIA_A100_GPUS = 17
+    COMMITTED_NVIDIA_K80_GPUS = 18
+    COMMITTED_NVIDIA_P100_GPUS = 19
+    COMMITTED_NVIDIA_P4_GPUS = 20
+    COMMITTED_NVIDIA_T4_GPUS = 21
+    COMMITTED_NVIDIA_V100_GPUS = 22
+    CPUS = 23
+    CPUS_ALL_REGIONS = 24
+    DISKS_TOTAL_GB = 25
+    EXTERNAL_VPN_GATEWAYS = 26
+    FIREWALLS = 27
+    FORWARDING_RULES = 28
+    GLOBAL_INTERNAL_ADDRESSES = 29
+    GPUS_ALL_REGIONS = 30
+    HEALTH_CHECKS = 31
+    IMAGES = 32
+    INSTANCES = 33
+    INSTANCES_PER_NETWORK_GLOBAL = 34
+    INSTANCE_GROUPS = 35
+    INSTANCE_GROUP_MANAGERS = 36
+    INSTANCE_TEMPLATES = 37
+    INTERCONNECTS = 38
+    INTERCONNECT_ATTACHMENTS_PER_REGION = 39
+    INTERCONNECT_ATTACHMENTS_TOTAL_MBPS = 40
+    INTERCONNECT_TOTAL_GBPS = 41
+    INTERNAL_ADDRESSES = 42
+    INTERNAL_FORWARDING_RULES_PER_NETWORK = 43
+    INTERNAL_FORWARDING_RULES_WITH_GLOBAL_ACCESS_PER_NETWORK = 44
+    INTERNAL_FORWARDING_RULES_WITH_TARGET_INSTANCE_PER_NETWORK = 45
+    INTERNAL_TARGET_INSTANCE_WITH_GLOBAL_ACCESS_PER_NETWORK = 46
+    IN_PLACE_SNAPSHOTS = 47
+    IN_USE_ADDRESSES = 48
+    IN_USE_BACKUP_SCHEDULES = 49
+    IN_USE_MAINTENANCE_WINDOWS = 50
+    IN_USE_SNAPSHOT_SCHEDULES = 51
+    LOCAL_SSD_TOTAL_GB = 52
+    M1_CPUS = 53
+    M2_CPUS = 54
+    MACHINE_IMAGES = 55
+    N2D_CPUS = 56
+    N2_CPUS = 57
+    NETWORKS = 58
+    NETWORK_ENDPOINT_GROUPS = 59
+    NETWORK_FIREWALL_POLICIES = 60
+    NODE_GROUPS = 61
+    NODE_TEMPLATES = 62
+    NVIDIA_A100_GPUS = 63
+    NVIDIA_K80_GPUS = 64
+    NVIDIA_P100_GPUS = 65
+    NVIDIA_P100_VWS_GPUS = 66
+    NVIDIA_P4_GPUS = 67
+    NVIDIA_P4_VWS_GPUS = 68
+    NVIDIA_T4_GPUS = 69
+    NVIDIA_T4_VWS_GPUS = 70
+    NVIDIA_V100_GPUS = 71
+    PACKET_MIRRORINGS = 72
+    PREEMPTIBLE_CPUS = 73
+    PREEMPTIBLE_LOCAL_SSD_GB = 74
+    PREEMPTIBLE_NVIDIA_A100_GPUS = 75
+    PREEMPTIBLE_NVIDIA_K80_GPUS = 76
+    PREEMPTIBLE_NVIDIA_P100_GPUS = 77
+    PREEMPTIBLE_NVIDIA_P100_VWS_GPUS = 78
+    PREEMPTIBLE_NVIDIA_P4_GPUS = 79
+    PREEMPTIBLE_NVIDIA_P4_VWS_GPUS = 80
+    PREEMPTIBLE_NVIDIA_T4_GPUS = 81
+    PREEMPTIBLE_NVIDIA_T4_VWS_GPUS = 82
+    PREEMPTIBLE_NVIDIA_V100_GPUS = 83
+    PRIVATE_V6_ACCESS_SUBNETWORKS = 84
+    PSC_GOOGLE_APIS_FORWARDING_RULES_PER_NETWORK = 85
+    PUBLIC_ADVERTISED_PREFIXES = 86
+    PUBLIC_DELEGATED_PREFIXES = 87
+    REGIONAL_AUTOSCALERS = 88
+    REGIONAL_INSTANCE_GROUP_MANAGERS = 89
+    RESERVATIONS = 90
+    RESOURCE_POLICIES = 91
+    ROUTERS = 92
+    ROUTES = 93
+    SECURITY_POLICIES = 94
+    SECURITY_POLICY_CEVAL_RULES = 95
+    SECURITY_POLICY_RULES = 96
+    SNAPSHOTS = 97
+    SSD_TOTAL_GB = 98
+    SSL_CERTIFICATES = 99
+    STATIC_ADDRESSES = 100
+    STATIC_BYOIP_ADDRESSES = 101
+    SUBNETWORKS = 102
+    SUBNET_RANGES_PER_NETWORK = 103
+    TARGET_HTTPS_PROXIES = 104
+    TARGET_HTTP_PROXIES = 105
+    TARGET_INSTANCES = 106
+    TARGET_POOLS = 107
+    TARGET_SSL_PROXIES = 108
+    TARGET_TCP_PROXIES = 109
+    TARGET_VPN_GATEWAYS = 110
+    URL_MAPS = 111
+    VPN_GATEWAYS = 112
+    VPN_TUNNELS = 113
+    XPN_SERVICE_PROJECTS = 114
 
   limit = _messages.FloatField(1)
   metric = _messages.EnumField('MetricValueValuesEnum', 2)
@@ -48761,7 +48774,7 @@ class RouterStatusBgpPeerStatus(_messages.Message):
 
 
 class RouterStatusNatStatus(_messages.Message):
-  r"""Status of a NAT contained in this router. Next tag: 9
+  r"""Status of a NAT contained in this router.
 
   Fields:
     autoAllocatedNatIps: A list of IPs auto-allocated for NAT. Example:
@@ -51925,7 +51938,7 @@ class Subnetwork(_messages.Message):
     kind: [Output Only] Type of the resource. Always compute#subnetwork for
       Subnetwork resources.
     logConfig: This field denotes the VPC flow logging options for this
-      subnetwork. If logging is enabled, logs are exported to Stackdriver.
+      subnetwork. If logging is enabled, logs are exported to Cloud Logging.
     metadata: Can only be specified if VPC flow logging for this subnetwork is
       enabled. Configures whether metadata fields should be added to the
       reported VPC flow logs. Default is INCLUDE_ALL_METADATA.

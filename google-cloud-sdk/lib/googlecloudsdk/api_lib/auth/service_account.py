@@ -60,7 +60,7 @@ def CredentialsFromAdcFile(filename):
 
 
 def CredentialsFromAdcDict(json_key):
-  """Creates credentials object from a dict of application default creds."""
+  """Creates oauth2client creds from a dict of application default creds."""
   if 'client_email' not in json_key:
     raise BadCredentialJsonFileException(
         'The .json key file is not in a valid format.')
@@ -71,6 +71,36 @@ def CredentialsFromAdcDict(json_key):
   # https://github.com/google/oauth2client/issues/445
   # pylint: disable=protected-access
   creds.user_agent = creds._user_agent = config.CLOUDSDK_USER_AGENT
+  return creds
+
+
+def CredentialsFromAdcDictGoogleAuth(json_key):
+  """Creates google-auth creds from a dict of application default creds."""
+  # Import only when necessary to decrease the startup time. Move it to
+  # global once google-auth is ready to replace oauth2client.
+  # pylint: disable=g-import-not-at-top
+  from google.oauth2 import service_account as google_auth_service_account
+  # pylint: enable=g-import-not-at-top
+
+  keys_needed = set(['client_email', 'token_uri'])
+  missing = keys_needed.difference(json_key.keys())
+
+  if missing:
+    raise BadCredentialJsonFileException(
+        'The .json key file is not in a valid format, missing field(s) {}'
+        .format(', '.join(missing)))
+
+  service_account_credentials = (
+      google_auth_service_account.Credentials.from_service_account_info)
+  creds = service_account_credentials(json_key, scopes=config.CLOUDSDK_SCOPES)
+  # The below additional fields are not natively supported in the google-auth
+  # library but are needed in gcloud:
+  # private_key, private_key_id: required by credentials deserialization;
+  # client_id: to provid backward compatibility for oauth2client. This field is
+  # used in oauth2client service account credentials.
+  creds.private_key = json_key.get('private_key')
+  creds.private_key_id = json_key.get('private_key_id')
+  creds.client_id = json_key.get('client_id')
   return creds
 
 

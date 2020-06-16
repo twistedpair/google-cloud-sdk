@@ -542,6 +542,22 @@ def AddVpcConnectorArg(parser):
       help='Remove the VPC connector for this Service.')
 
 
+def AddEgressSettingsFlag(parser):
+  """Adds a flag for configuring VPC egress for fully-managed."""
+  parser.add_argument(
+      '--vpc-egress',
+      help='The outbound traffic to send through the VPC connector'
+      ' for this Service. This Service must have a VPC connector to set'
+      ' VPC egress.',
+      choices={
+          'private-ranges-only':
+              'Default option. Sends outbound traffic to private IP addresses '
+              'defined by RFC1918 through the VPC connector.',
+          'all':
+              'Sends all outbound traffic through the VPC connector.'
+      })
+
+
 def AddSecretsFlags(parser):
   """Adds flags for creating, updating, and deleting secrets."""
   AddMapFlagsNoFile(
@@ -1004,6 +1020,10 @@ def GetConfigurationChanges(args):
     changes.append(config_changes.VpcConnectorChange(args.vpc_connector))
   if 'clear_vpc_connector' in args and args.clear_vpc_connector:
     changes.append(config_changes.ClearVpcConnectorChange())
+  if FlagIsExplicitlySet(args, 'vpc_egress'):
+    changes.append(
+        config_changes.SetTemplateAnnotationChange(
+            revision.EGRESS_SETTINGS_ANNOTATION, args.vpc_egress))
   if 'connectivity' in args and args.connectivity:
     if args.connectivity == 'internal':
       changes.append(config_changes.EndpointVisibilityChange(True))
@@ -1333,6 +1353,13 @@ def VerifyGKEFlags(args, release_track, product):
             platform=PLATFORM_MANAGED,
             platform_desc=_PLATFORM_SHORT_DESCRIPTIONS[PLATFORM_MANAGED]))
 
+  if FlagIsExplicitlySet(args, 'vpc_egress'):
+    raise serverless_exceptions.ConfigurationError(
+        error_msg.format(
+            flag='--vpc-egress',
+            platform=PLATFORM_MANAGED,
+            platform_desc=_PLATFORM_SHORT_DESCRIPTIONS[PLATFORM_MANAGED]))
+
   if FlagIsExplicitlySet(args, 'kubeconfig'):
     raise serverless_exceptions.ConfigurationError(
         error_msg.format(
@@ -1389,6 +1416,13 @@ def VerifyKubernetesFlags(args, release_track, product):
     raise serverless_exceptions.ConfigurationError(
         error_msg.format(
             flag='--clear-vpc-connector',
+            platform=PLATFORM_MANAGED,
+            platform_desc=_PLATFORM_SHORT_DESCRIPTIONS[PLATFORM_MANAGED]))
+
+  if FlagIsExplicitlySet(args, 'vpc_egress'):
+    raise serverless_exceptions.ConfigurationError(
+        error_msg.format(
+            flag='--vpc-egress',
             platform=PLATFORM_MANAGED,
             platform_desc=_PLATFORM_SHORT_DESCRIPTIONS[PLATFORM_MANAGED]))
 

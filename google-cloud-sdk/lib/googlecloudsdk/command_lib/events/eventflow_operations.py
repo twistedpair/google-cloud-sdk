@@ -34,7 +34,6 @@ from googlecloudsdk.api_lib.run import secret
 from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.api_lib.util import apis_internal
 from googlecloudsdk.command_lib.events import exceptions
-from googlecloudsdk.command_lib.events import resource_args
 from googlecloudsdk.command_lib.events import stages
 from googlecloudsdk.command_lib.events import util
 from googlecloudsdk.command_lib.run import serverless_operations
@@ -105,6 +104,7 @@ def Connect(conn_context):
     # pylint: enable=protected-access
     yield EventflowOperations(
         client,
+        conn_info.api_version,
         conn_info.region,
         core_client,
         crd_client,
@@ -213,11 +213,13 @@ class SourceConditionPoller(TimeLockedUnfailingConditionPoller):
 class EventflowOperations(object):
   """Client used by Eventflow to communicate with the actual API."""
 
-  def __init__(self, client, region, core_client, crd_client, op_client):
+  def __init__(self, client, api_version, region, core_client, crd_client,
+               op_client):
     """Inits EventflowOperations with given API clients.
 
     Args:
       client: The API client for interacting with Kubernetes Cloud Run APIs.
+      api_version: Version of resources & clients (v1alpha1, v1beta1)
       region: str, The region of the control plane if operating against
         hosted Cloud Run, else None.
       core_client: The API client for queries against core resources if
@@ -227,6 +229,7 @@ class EventflowOperations(object):
         None if interacting with Cloud Run for Anthos.
     """
     self._client = client
+    self._api_version = api_version
     self._core_client = core_client
     self._crd_client = crd_client
     self._op_client = op_client
@@ -340,7 +343,7 @@ class EventflowOperations(object):
         util.SOURCE_COLLECTION_NAME.format(
             plural_kind=source_crd.source_kind_plural),
         method_name,
-        api_version=resource_args.EVENTS_ALPHA_API_VERSION)
+        api_version=self._api_version)
 
   def SourceGetMethod(self, source_crd):
     """Returns the request method for a Get request of this source."""
@@ -392,7 +395,7 @@ class EventflowOperations(object):
             name=owner_trigger.name,
             uid=owner_trigger.uid,
             controller=True))
-    source_obj.sink = broker
+    source_obj.set_sink(broker, self._api_version)
     arg_utils.ParseStaticFieldsIntoMessage(source_obj.spec, parameters)
 
     request_method = self.SourceCreateMethod(source_crd)
@@ -442,7 +445,7 @@ class EventflowOperations(object):
     namespace_ref = resources.REGISTRY.Parse(
         properties.VALUES.core.project.Get(),
         collection='run.namespaces',
-        api_version=resource_args.EVENTS_ALPHA_API_VERSION)
+        api_version=self._api_version)
 
     messages = self._crd_client.MESSAGES_MODULE
     request = messages.RunCustomresourcedefinitionsListRequest(

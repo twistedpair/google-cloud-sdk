@@ -170,7 +170,14 @@ class ComposerProjectsLocationsEnvironmentsPatchRequest(_messages.Message):
       variables. If a replacement environment  variable map is not included in
       `environment`, all custom environment  variables  are cleared.  It is an
       error to provide both this mask and a mask specifying one or  more
-      individual environment variables.</td>  </tr>  </tbody>  </table>
+      individual environment variables.</td>  </tr>  <tr>
+      <td>config.databaseConfig.machineType</td>  <td>Cloud SQL machine type
+      used by Airflow database.  It has to be one of: db-n1-standard-2,
+      db-n1-standard-4, db-n1-standard-8  or db-n1-standard-16.</td>  </tr>
+      <tr>  <td>config.webServerConfig.machineType</td>  <td>Machine type on
+      which Airflow web server is running.  It has to be one of:
+      composer-n1-webserver-2, composer-n1-webserver-4 or
+      composer-n1-webserver-8.  </td>  </tr>  </tbody>  </table>
   """
 
   environment = _messages.MessageField('Environment', 1)
@@ -266,8 +273,9 @@ class DatabaseConfig(_messages.Message):
   Airflow software.
 
   Fields:
-    machineType: Optional. Cloud SQL tier used by Airflow database. If not
-      specified, db-n1-standard-2 will be used.
+    machineType: Optional. Cloud SQL machine type used by Airflow database. It
+      has to be one of: db-n1-standard-2, db-n1-standard-4, db-n1-standard-8
+      or db-n1-standard-16. If not specified, db-n1-standard-2 will be used.
   """
 
   machineType = _messages.StringField(1)
@@ -306,6 +314,19 @@ class Empty(_messages.Message):
   JSON representation for `Empty` is empty JSON object `{}`.
   """
 
+
+
+class EncryptionConfig(_messages.Message):
+  r"""The encryption options for the Composer environment and its
+  dependencies.
+
+  Fields:
+    kmsKeyName: Optional. Customer-managed Encryption Key available through
+      Google's Key Management Service. Cannot be updated. If not specified,
+      Google-managed key will be used.
+  """
+
+  kmsKeyName = _messages.StringField(1)
 
 
 class Environment(_messages.Message):
@@ -415,6 +436,8 @@ class EnvironmentConfig(_messages.Message):
       directory with the given prefix.
     databaseConfig: Optional. The configuration settings for Cloud SQL
       instance used internally by Apache Airflow software.
+    encryptionConfig: Optional. The encryption options for the Composer
+      environment and its dependencies. Cannot be updated.
     gkeCluster: Output only. The Kubernetes Engine cluster used to run this
       environment.
     nodeConfig: The configuration used for the Kubernetes Engine cluster.
@@ -434,13 +457,14 @@ class EnvironmentConfig(_messages.Message):
   airflowUri = _messages.StringField(1)
   dagGcsPrefix = _messages.StringField(2)
   databaseConfig = _messages.MessageField('DatabaseConfig', 3)
-  gkeCluster = _messages.StringField(4)
-  nodeConfig = _messages.MessageField('NodeConfig', 5)
-  nodeCount = _messages.IntegerField(6, variant=_messages.Variant.INT32)
-  privateEnvironmentConfig = _messages.MessageField('PrivateEnvironmentConfig', 7)
-  softwareConfig = _messages.MessageField('SoftwareConfig', 8)
-  webServerConfig = _messages.MessageField('WebServerConfig', 9)
-  webServerNetworkAccessControl = _messages.MessageField('WebServerNetworkAccessControl', 10)
+  encryptionConfig = _messages.MessageField('EncryptionConfig', 4)
+  gkeCluster = _messages.StringField(5)
+  nodeConfig = _messages.MessageField('NodeConfig', 6)
+  nodeCount = _messages.IntegerField(7, variant=_messages.Variant.INT32)
+  privateEnvironmentConfig = _messages.MessageField('PrivateEnvironmentConfig', 8)
+  softwareConfig = _messages.MessageField('SoftwareConfig', 9)
+  webServerConfig = _messages.MessageField('WebServerConfig', 10)
+  webServerNetworkAccessControl = _messages.MessageField('WebServerNetworkAccessControl', 11)
 
 
 class IPAllocationPolicy(_messages.Message):
@@ -1171,10 +1195,11 @@ class WebServerConfig(_messages.Message):
 
   Fields:
     machineType: Optional. Machine type on which Airflow web server is
-      running. For example: composer-n1-webserver-2, composer-n1-webserver-4,
-      composer-n1-webserver-8. Value custom will be returned in response if
-      Airflow web server parameters were manually changed to non-standard
-      values. If not specified, composer-n1-webserver-2 will be used.
+      running. It has to be one of: composer-n1-webserver-2,
+      composer-n1-webserver-4 or composer-n1-webserver-8. If not specified,
+      composer-n1-webserver-2 will be used. Value custom is returned only in
+      response, if Airflow web server parameters were manually changed to a
+      non-standard values.
   """
 
   machineType = _messages.StringField(1)

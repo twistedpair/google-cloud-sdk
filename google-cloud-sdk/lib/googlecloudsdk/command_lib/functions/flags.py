@@ -35,10 +35,11 @@ LOCATIONS_COLLECTION = API + '.projects.locations'
 
 SEVERITIES = ['DEBUG', 'INFO', 'ERROR']
 EGRESS_SETTINGS = ['PRIVATE-RANGES-ONLY', 'ALL']
-INGRESS_SETTINGS = ['ALL', 'INTERNAL-ONLY']
+INGRESS_SETTINGS = ['ALL', 'INTERNAL-ONLY', 'INTERNAL-AND-GCLB']
 INGRESS_SETTINGS_MAPPING = {
     'ALLOW_ALL': 'all',
     'ALLOW_INTERNAL_ONLY': 'internal-only',
+    'ALLOW_INTERNAL_AND_GCLB': 'internal-and-gclb',
 }
 
 EGRESS_SETTINGS_MAPPING = {
@@ -160,12 +161,18 @@ def AddSourceFlag(parser):
       * Reference to source repository or,
       * Local filesystem path (root directory of function source).
 
-      Note that if you do not specify the `--source` flag:
+      Note that, depending on your runtime type, Cloud Functions will look
+      for files with specific names for deployable functions. For Node.js,
+      these filenames are `index.js` or `function.js`. For Python, this is
+      `main.py`.
 
-      * Current directory will be used for new function deployments.
-      * If the function is previously deployed using a local filesystem path,
-      then function's source code will be updated using the current directory.
-      * If the function is previously deployed using a Google Cloud Storage
+      If you do not specify the `--source` flag:
+
+      * The current directory will be used for new function deployments.
+      * If the function was previously deployed using a local filesystem path,
+      then the function's source code will be updated using the current
+      directory.
+      * If the function was previously deployed using a Google Cloud Storage
       location or a source repository, then the function's source code will not
       be updated.
 
@@ -184,8 +191,8 @@ def AddSourceFlag(parser):
       The minimal source repository URL is:
       `https://source.developers.google.com/projects/${PROJECT}/repos/${REPO}`
 
-      By using the URL above, sources from the root directory of the repository
-      on the revision tagged `master` will be used.
+      By using the URL above, sources from the root directory of the
+      repository on the revision tagged `master` will be used.
 
       If you want to deploy from a revision different from `master`, append one
       of the following three sources to the URL:
@@ -286,9 +293,10 @@ def AddBuildWorkerPoolMutexGroup(parser):
       help="""\
         Name of the Cloud Build Custom Worker Pool that should be used to build
         the function. The format of this field is
-        `projects/${PROJECT}/workerPools/${WORKERPOOL}` where ${PROJECT} is the
-        project id where the worker pool is defined and ${WORKERPOOL} is the
-        short name of the worker pool.
+        `projects/${PROJECT}/locations/${LOCATION}/workerPools/${WORKERPOOL}`
+        where ${PROJECT} is the project id and ${LOCATION} is the location where
+        the worker pool is defined and ${WORKERPOOL} is the short name of the
+        worker pool.
       """)
   mutex_group.add_argument(
       '--clear-build-worker-pool',
@@ -346,7 +354,10 @@ def AddTriggerFlagGroup(parser):
       '--trigger-topic',
       help=('Name of Pub/Sub topic. Every message published in this topic '
             'will trigger function execution with message contents passed as '
-            'input data.'),
+            'input data. Note that this flag does not accept the format of '
+            'projects/PROJECT_ID/topics/TOPIC_ID. Use this flag to specify the '
+            'final element TOPIC_ID. The PROJECT_ID will be read from the '
+            'active configuration.'),
       type=api_util.ValidatePubsubTopicNameOrRaise)
   trigger_group.add_argument(
       '--trigger-bucket',

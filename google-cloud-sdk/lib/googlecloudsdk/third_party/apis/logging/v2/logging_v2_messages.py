@@ -350,9 +350,9 @@ class ListLogEntriesRequest(_messages.Message):
       in order of decreasing timestamps (newest first). Entries with equal
       timestamps are returned in order of their insert_id values.
     pageSize: Optional. The maximum number of results to return from this
-      request. Non-positive values are ignored. The presence of
-      next_page_token in the response indicates that more results might be
-      available.
+      request. Default is 50. If the value is negative or exceeds 1000, the
+      request is rejected. The presence of next_page_token in the response
+      indicates that more results might be available.
     pageToken: Optional. If present, then retrieve the next batch of results
       from the preceding call to this method. page_token must be the value of
       next_page_token from the previous response. The values of other method
@@ -568,7 +568,6 @@ class LogBucket(_messages.Message):
     createTime: Output only. The creation timestamp of the bucket. This is not
       set for any of the default buckets.
     description: Describes this bucket.
-    displayName: Display name of the bucket.
     etag: etag is used for optimistic concurrency control as a way to help
       prevent simultaneous updates of a bucket from overwriting each other. It
       is strongly suggested that systems make use of the etag in the read-
@@ -609,13 +608,12 @@ class LogBucket(_messages.Message):
 
   createTime = _messages.StringField(1)
   description = _messages.StringField(2)
-  displayName = _messages.StringField(3)
-  etag = _messages.BytesField(4)
-  lifecycleState = _messages.EnumField('LifecycleStateValueValuesEnum', 5)
-  locked = _messages.BooleanField(6)
-  name = _messages.StringField(7)
-  retentionDays = _messages.IntegerField(8, variant=_messages.Variant.INT32)
-  updateTime = _messages.StringField(9)
+  etag = _messages.BytesField(3)
+  lifecycleState = _messages.EnumField('LifecycleStateValueValuesEnum', 4)
+  locked = _messages.BooleanField(5)
+  name = _messages.StringField(6)
+  retentionDays = _messages.IntegerField(7, variant=_messages.Variant.INT32)
+  updateTime = _messages.StringField(8)
 
 
 class LogEntry(_messages.Message):
@@ -1240,7 +1238,6 @@ class LogView(_messages.Message):
   Fields:
     createTime: Output only. The creation timestamp of the view.
     description: Describes this view.
-    displayName: Display name of the view.
     filter: Filter that restricts which log entries in a bucket are visible in
       this view. Filters are restricted to be a logical AND of ==/!= of any of
       the following:  originating project/folder/organization/billing account.
@@ -1252,10 +1249,9 @@ class LogView(_messages.Message):
 
   createTime = _messages.StringField(1)
   description = _messages.StringField(2)
-  displayName = _messages.StringField(3)
-  filter = _messages.StringField(4)
-  name = _messages.StringField(5)
-  updateTime = _messages.StringField(6)
+  filter = _messages.StringField(3)
+  name = _messages.StringField(4)
+  updateTime = _messages.StringField(5)
 
 
 class LoggingBillingAccountsBucketsGetRequest(_messages.Message):

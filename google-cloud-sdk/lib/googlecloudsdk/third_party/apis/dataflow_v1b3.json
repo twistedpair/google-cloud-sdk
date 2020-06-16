@@ -3338,6 +3338,10 @@
           "description": "A hot key is a symptom of poor data distribution in which there are enough\nelements mapped to a single key to impact pipeline performance. When\npresent, this field includes metadata associated with any hot key.",
           "$ref": "HotKeyDetection"
         },
+        "completeWorkStatus": {
+          "description": "If set, a request to complete the work item with the given status. This\nwill not be set to OK, unless supported by the specific kind of WorkItem.\nIt can be used for the backend to indicate a WorkItem must terminate, e.g.,\nfor aborting work.",
+          "$ref": "Status"
+        },
         "suggestedStopPosition": {
           "description": "Obsolete, always empty.",
           "$ref": "Position"

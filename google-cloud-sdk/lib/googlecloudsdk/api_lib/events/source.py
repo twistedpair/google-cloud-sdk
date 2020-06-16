@@ -20,9 +20,7 @@ from __future__ import unicode_literals
 
 from googlecloudsdk.api_lib.run import k8s_object
 
-
-# TODO(b/141719436): Don't hardcode v1alpha1 version
-_BROKER_API_CATEGORY = 'eventing.knative.dev/v1alpha1'
+_BROKER_API_CATEGORY = 'eventing.knative.dev'
 _BROKER_KIND = 'Broker'
 
 
@@ -47,10 +45,10 @@ class Source(k8s_object.KubernetesObject):
   def sink(self):
     return self._m.spec.sink.ref.name
 
-  @sink.setter
-  def sink(self, broker_name):
+  def set_sink(self, broker_name, api_version):
     """Set the sink to a broker."""
-    self._m.spec.sink.ref.apiVersion = _BROKER_API_CATEGORY
+    self._m.spec.sink.ref.apiVersion = '{}/{}'.format(_BROKER_API_CATEGORY,
+                                                      api_version)
     self._m.spec.sink.ref.kind = _BROKER_KIND
     self._m.spec.sink.ref.name = broker_name
 

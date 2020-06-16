@@ -42,6 +42,10 @@ IAM_MESSAGE_MODULE = apis.GetMessagesModule('iam', 'v1')
 CRM_MESSAGE_MODULE = apis.GetMessagesModule('cloudresourcemanager', 'v1')
 
 
+class InvalidLocationError(exceptions.Error):
+  """File is in an invalid location."""
+
+
 class _DataType(type):
   """Dumb immutable data type."""
 
@@ -96,6 +100,16 @@ class ApplicationDefaultCredentialSetting(DataObject):
     return cls._instance
 
 
+class BuildpackBuilder(DataObject):
+
+  NAMES = ('builder',)
+
+
+class DockerfileBuilder(DataObject):
+
+  NAMES = ('dockerfile',)
+
+
 class Settings(DataObject):
   """Settings for local development environments.
 
@@ -104,7 +118,6 @@ class Settings(DataObject):
       image_name: Docker image tag.
       credential: Credential setting for either service account or application
         default credential.
-      dockerfile: Path to dockerfile.
       build_context_directory: Path to directory to use as the current working
         directory for the docker build.
       builder: Buildpack builder.
@@ -115,7 +128,7 @@ class Settings(DataObject):
       cpu_limit: CPU limit.
   """
 
-  NAMES = ('service_name', 'image_name', 'credential', 'dockerfile',
+  NAMES = ('service_name', 'image_name', 'credential',
            'build_context_directory', 'builder', 'local_port', 'env_vars',
            'cloudsql_instances', 'memory_limit', 'cpu_limit')
 
@@ -127,8 +140,7 @@ class Settings(DataObject):
     if args.IsSpecified('service_name'):
       service_name = args.service_name
     else:
-      dir_name = os.path.basename(
-          os.path.dirname(os.path.join(files.GetCWD(), args.dockerfile)))
+      dir_name = os.path.basename(files.GetCWD())
       service_name = dir_name.replace('_', '-')
 
     if not args.IsSpecified('image_name'):
@@ -148,18 +160,40 @@ class Settings(DataObject):
     else:
       credential = None
 
+    context = os.path.abspath(args.build_context_directory or files.GetCWD())
+
+    builder = cls._CreateBuilder(args, context)
+
     return cls(
         service_name=service_name,
         image_name=image_name,
         credential=credential,
-        dockerfile=args.dockerfile,
-        build_context_directory=args.build_context_directory,
-        builder=args.builder,
+        build_context_directory=context,
+        builder=builder,
         local_port=args.local_port,
         env_vars=args.env_vars or args.env_vars_file,
         cloudsql_instances=args.cloudsql_instances,
         memory_limit=args.memory_limit,
         cpu_limit=args.cpu_limit)
+
+  @classmethod
+  def _CreateBuilder(cls, args, context):
+    if args.IsSpecified('builder'):
+      return BuildpackBuilder(builder=args.builder)
+    else:
+      dockerfile = os.path.abspath(args.dockerfile)
+      return DockerfileBuilder(
+          dockerfile=cls._CheckDockerfilePath(dockerfile, context))
+
+  @staticmethod
+  def _CheckDockerfilePath(dockerfile, context):
+    if os.path.commonprefix([context, dockerfile]) != context:
+      raise InvalidLocationError(
+          'Invalid Dockerfile path. Dockerfile must be located in the build '
+          'context directory.\n'
+          'Dockerfile: {0}\n'
+          'Build Context Directory: {1}'.format(dockerfile, context))
+    return dockerfile
 
 
 _POD_TEMPLATE = """

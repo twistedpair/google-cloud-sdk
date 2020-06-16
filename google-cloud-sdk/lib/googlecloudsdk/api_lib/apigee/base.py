@@ -46,6 +46,13 @@ class BaseClient(object):
       raise NotImplementedError("%s class must provide an entity path." % cls)
     return request.ResponseToApiRequest(identifiers or {}, cls._entity_path)
 
+  @classmethod
+  def Delete(cls, identifiers=None):
+    if cls._entity_path is None:
+      raise NotImplementedError("%s class must provide an entity path." % cls)
+    return request.ResponseToApiRequest(
+        identifiers or {}, cls._entity_path, method="DELETE")
+
 
 class PagedListClient(BaseClient):
   """Client for `List` APIs that can only return a limited number of objects.
@@ -73,8 +80,12 @@ class PagedListClient(BaseClient):
   _start_at_param = "startKey"
 
   @classmethod
-  def List(cls, identifiers=None):
+  def List(cls, identifiers=None, start_at_param=None, extra_params=None):
+    if start_at_param is None:
+      start_at_param = cls._start_at_param
     params = {cls._limit_param: cls._max_per_page}
+    if extra_params:
+      params.update(extra_params)
     while True:
       result_chunk = super(PagedListClient, cls).List(identifiers, params)
 
@@ -107,4 +118,4 @@ class PagedListClient(BaseClient):
       if cls._page_field is not None:
         last_item_on_page = last_item_on_page[cls._page_field]
 
-      params[cls._start_at_param] = last_item_on_page
+      params[start_at_param] = last_item_on_page

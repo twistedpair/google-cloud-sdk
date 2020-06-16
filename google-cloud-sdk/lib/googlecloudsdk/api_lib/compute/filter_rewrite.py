@@ -226,6 +226,7 @@ class Rewriter(resource_expr_rewrite.Backend):
   """
 
   _INVERT = {'eq': 'ne', 'ne': 'eq'}
+  _FIELD_MAPPING = {'machine_type': 'machineType'}
 
   def Rewrite(self, expression, defaults=None):
     frontend, backend_tokens = super(Rewriter, self).Rewrite(
@@ -279,6 +280,10 @@ class Rewriter(resource_expr_rewrite.Backend):
         pass
       else:
         matchable = False
+
+    # Transform input field to List API field.
+    if matchable and key.lower() in self._FIELD_MAPPING:
+      key = self._FIELD_MAPPING[key]
 
     if operand.lower() in ('true', 'false'):
       operand = operand.lower()

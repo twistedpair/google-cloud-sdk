@@ -24,11 +24,6 @@
   "version_module": true,
   "fullyEncodeReservedExpansion": true,
   "parameters": {
-    "access_token": {
-      "type": "string",
-      "description": "OAuth access token.",
-      "location": "query"
-    },
     "alt": {
       "type": "string",
       "description": "Data format for response.",
@@ -58,11 +53,6 @@
     "key": {
       "type": "string",
       "description": "API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.",
-      "location": "query"
-    },
-    "oauth_token": {
-      "type": "string",
-      "description": "OAuth 2.0 token for the current user.",
       "location": "query"
     },
     "prettyPrint": {
@@ -639,7 +629,7 @@
         "optionalComponents": {
           "description": "The set of optional components to activate on the cluster.",
           "enumDescriptions": [
-            "Unspecified component.",
+            "Unspecified component. Specifying this will cause Cluster creation to fail.",
             "The Anaconda python distribution.",
             "Docker",
             "The Druid query engine.",

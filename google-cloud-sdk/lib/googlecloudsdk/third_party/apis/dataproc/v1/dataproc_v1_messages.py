@@ -284,6 +284,7 @@ class ClusterConfig(_messages.Message):
       (https://cloud.google.com/dataproc/docs/concepts/configuring-
       clusters/staging-bucket)).
     encryptionConfig: Optional. Encryption settings for the cluster.
+    endpointConfig: Optional. Port/endpoint configuration for this cluster
     gceClusterConfig: Optional. The shared Compute Engine config settings for
       all instances in a cluster.
     initializationActions: Optional. Commands to execute on each node after
@@ -309,14 +310,15 @@ class ClusterConfig(_messages.Message):
   autoscalingConfig = _messages.MessageField('AutoscalingConfig', 1)
   configBucket = _messages.StringField(2)
   encryptionConfig = _messages.MessageField('EncryptionConfig', 3)
-  gceClusterConfig = _messages.MessageField('GceClusterConfig', 4)
-  initializationActions = _messages.MessageField('NodeInitializationAction', 5, repeated=True)
-  lifecycleConfig = _messages.MessageField('LifecycleConfig', 6)
-  masterConfig = _messages.MessageField('InstanceGroupConfig', 7)
-  secondaryWorkerConfig = _messages.MessageField('InstanceGroupConfig', 8)
-  securityConfig = _messages.MessageField('SecurityConfig', 9)
-  softwareConfig = _messages.MessageField('SoftwareConfig', 10)
-  workerConfig = _messages.MessageField('InstanceGroupConfig', 11)
+  endpointConfig = _messages.MessageField('EndpointConfig', 4)
+  gceClusterConfig = _messages.MessageField('GceClusterConfig', 5)
+  initializationActions = _messages.MessageField('NodeInitializationAction', 6, repeated=True)
+  lifecycleConfig = _messages.MessageField('LifecycleConfig', 7)
+  masterConfig = _messages.MessageField('InstanceGroupConfig', 8)
+  secondaryWorkerConfig = _messages.MessageField('InstanceGroupConfig', 9)
+  securityConfig = _messages.MessageField('SecurityConfig', 10)
+  softwareConfig = _messages.MessageField('SoftwareConfig', 11)
+  workerConfig = _messages.MessageField('InstanceGroupConfig', 12)
 
 
 class ClusterMetrics(_messages.Message):
@@ -1765,6 +1767,49 @@ class EncryptionConfig(_messages.Message):
   """
 
   gcePdKmsKeyName = _messages.StringField(1)
+
+
+class EndpointConfig(_messages.Message):
+  r"""Endpoint config for this cluster
+
+  Messages:
+    HttpPortsValue: Output only. The map of port descriptions to URLs. Will
+      only be populated if enable_http_port_access is true.
+
+  Fields:
+    enableHttpPortAccess: Optional. If true, enable http access to specific
+      ports on the cluster from external sources. Defaults to false.
+    httpPorts: Output only. The map of port descriptions to URLs. Will only be
+      populated if enable_http_port_access is true.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class HttpPortsValue(_messages.Message):
+    r"""Output only. The map of port descriptions to URLs. Will only be
+    populated if enable_http_port_access is true.
+
+    Messages:
+      AdditionalProperty: An additional property for a HttpPortsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type HttpPortsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a HttpPortsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  enableHttpPortAccess = _messages.BooleanField(1)
+  httpPorts = _messages.MessageField('HttpPortsValue', 2)
 
 
 class Expr(_messages.Message):
@@ -3753,14 +3798,12 @@ class StandardQueryParameters(_messages.Message):
 
   Fields:
     f__xgafv: V1 error format.
-    access_token: OAuth access token.
     alt: Data format for response.
     callback: JSONP
     fields: Selector specifying which fields to include in a partial response.
     key: API key. Your API key identifies your project and provides you with
       API access, quota, and reports. Required unless you provide an OAuth 2.0
       token.
-    oauth_token: OAuth 2.0 token for the current user.
     prettyPrint: Returns response with indentations and line breaks.
     quotaUser: Available to use for quota purposes for server-side
       applications. Can be any arbitrary string assigned to a user, but should
@@ -3794,17 +3837,15 @@ class StandardQueryParameters(_messages.Message):
     _2 = 1
 
   f__xgafv = _messages.EnumField('FXgafvValueValuesEnum', 1)
-  access_token = _messages.StringField(2)
-  alt = _messages.EnumField('AltValueValuesEnum', 3, default='json')
-  callback = _messages.StringField(4)
-  fields = _messages.StringField(5)
-  key = _messages.StringField(6)
-  oauth_token = _messages.StringField(7)
-  prettyPrint = _messages.BooleanField(8, default=True)
-  quotaUser = _messages.StringField(9)
-  trace = _messages.StringField(10)
-  uploadType = _messages.StringField(11)
-  upload_protocol = _messages.StringField(12)
+  alt = _messages.EnumField('AltValueValuesEnum', 2, default='json')
+  callback = _messages.StringField(3)
+  fields = _messages.StringField(4)
+  key = _messages.StringField(5)
+  prettyPrint = _messages.BooleanField(6, default=True)
+  quotaUser = _messages.StringField(7)
+  trace = _messages.StringField(8)
+  uploadType = _messages.StringField(9)
+  upload_protocol = _messages.StringField(10)
 
 
 class Status(_messages.Message):

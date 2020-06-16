@@ -41,6 +41,27 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  PROJECTS_LOCATIONS_ACCELERATORTYPES = (
+      'projects.locations.acceleratorTypes',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/'
+              'acceleratorTypes/{acceleratorTypesId}',
+      },
+      ['name'],
+      True
+  )
+  PROJECTS_LOCATIONS_NODES = (
+      'projects.locations.nodes',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/nodes/{nodesId}',
+      },
+      ['name'],
+      True
+  )
   PROJECTS_LOCATIONS_OPERATIONS = (
       'projects.locations.operations',
       '{+name}',
@@ -48,6 +69,17 @@ class Collections(enum.Enum):
           '':
               'projects/{projectsId}/locations/{locationsId}/operations/'
               '{operationsId}',
+      },
+      ['name'],
+      True
+  )
+  PROJECTS_LOCATIONS_RUNTIMEVERSIONS = (
+      'projects.locations.runtimeVersions',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/runtimeVersions/'
+              '{runtimeVersionsId}',
       },
       ['name'],
       True

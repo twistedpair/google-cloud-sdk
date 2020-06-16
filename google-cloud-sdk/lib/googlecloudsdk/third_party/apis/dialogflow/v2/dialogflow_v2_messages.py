@@ -1113,58 +1113,22 @@ class GoogleCloudDialogflowCxV3beta1PageInfo(_messages.Message):
       ID>/flows/<Flow ID>/pages/<Page ID>`.
     formInfo: Optional for both WebhookRequest and WebhookResponse.
       Information about the form.
-    nextPage: Deprecated. Please use WebhookResponse.target_page or
-      WebhookResponse.target_flow instead.  Optional for WebhookResponse. The
-      unique identifier of the next page. This field can be set by the webhook
-      to immediately transition to a page different from `current_page`.
-      Format: `projects/<Project ID>/locations/<Location ID>/agents/<Agent
-      ID>/flows/<Flow ID>/pages/<Page ID>`.
   """
 
   currentPage = _messages.StringField(1)
   formInfo = _messages.MessageField('GoogleCloudDialogflowCxV3beta1PageInfoFormInfo', 2)
-  nextPage = _messages.StringField(3)
 
 
 class GoogleCloudDialogflowCxV3beta1PageInfoFormInfo(_messages.Message):
   r"""Represents form information.
 
-  Enums:
-    StateValueValuesEnum: Always present for WebhookRequest. Ignored for
-      WebhookResponse. The current state of the form.
-
   Fields:
     parameterInfo: Optional for both WebhookRequest and WebhookResponse. The
       parameters contained in the form. Note that the webhook cannot add or
       remove any form parameter.
-    state: Always present for WebhookRequest. Ignored for WebhookResponse. The
-      current state of the form.
   """
 
-  class StateValueValuesEnum(_messages.Enum):
-    r"""Always present for WebhookRequest. Ignored for WebhookResponse. The
-    current state of the form.
-
-    Values:
-      FORM_STATE_UNSPECIFIED: Not specified. This value should be never used.
-      INITIALIZING: The server is initializing the form. The webhook can
-        process the form before parameter collection begins.
-      COLLECTING: The server is collecting form parameters from the user. The
-        webhook can modify form parameters that have been collected or are to
-        be collected.
-      FINALIZED: The server has collected all required form parameters from
-        the user. The webhook can modify collected form parameters. If any
-        required parameter is invalidated by the webhook, the form will return
-        to the parameter collection state; otherwise, parameter collection
-        will conclude.
-    """
-    FORM_STATE_UNSPECIFIED = 0
-    INITIALIZING = 1
-    COLLECTING = 2
-    FINALIZED = 3
-
   parameterInfo = _messages.MessageField('GoogleCloudDialogflowCxV3beta1PageInfoFormInfoParameterInfo', 1, repeated=True)
-  state = _messages.EnumField('StateValueValuesEnum', 2)
 
 
 class GoogleCloudDialogflowCxV3beta1PageInfoFormInfoParameterInfo(_messages.Message):
@@ -1183,10 +1147,6 @@ class GoogleCloudDialogflowCxV3beta1PageInfoFormInfoParameterInfo(_messages.Mess
     justCollected: Optional for WebhookRequest. Ignored for WebhookResponse.
       Indicates if the parameter value was just collected on the last
       conversation turn.
-    prompt: Not set for WebhookRequest. Optional for WebhookResponse. The
-      prompt to send to the user to fill a required form parameter. This field
-      can be set by the webhook. If set, this field overrides the prompt
-      defined for the form parameter.
     required: Optional for both WebhookRequest and WebhookResponse. Indicates
       whether the parameter is required. Optional parameters will not trigger
       prompts; however, they are filled if the user specifies them. Required
@@ -1221,10 +1181,9 @@ class GoogleCloudDialogflowCxV3beta1PageInfoFormInfoParameterInfo(_messages.Mess
 
   displayName = _messages.StringField(1)
   justCollected = _messages.BooleanField(2)
-  prompt = _messages.MessageField('GoogleCloudDialogflowCxV3beta1ResponseMessage', 3, repeated=True)
-  required = _messages.BooleanField(4)
-  state = _messages.EnumField('StateValueValuesEnum', 5)
-  value = _messages.MessageField('extra_types.JsonValue', 6)
+  required = _messages.BooleanField(3)
+  state = _messages.EnumField('StateValueValuesEnum', 4)
+  value = _messages.MessageField('extra_types.JsonValue', 5)
 
 
 class GoogleCloudDialogflowCxV3beta1ResponseMessage(_messages.Message):

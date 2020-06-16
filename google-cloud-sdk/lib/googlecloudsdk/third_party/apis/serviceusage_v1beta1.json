@@ -17,6 +17,7 @@
   "documentationLink": "https://cloud.google.com/service-usage/",
   "protocol": "rest",
   "rootUrl": "https://serviceusage.googleapis.com/",
+  "mtlsRootUrl": "https://serviceusage.mtls.googleapis.com/",
   "servicePath": "",
   "baseUrl": "https://serviceusage.googleapis.com/",
   "batchPath": "batch",
@@ -693,11 +694,37 @@
           "type": "string"
         },
         "audiences": {
-          "description": "The list of JWT\n[audiences](https:\/\/tools.ietf.org\/html\/draft-ietf-oauth-json-web-token-32#section-4.1.3).\nthat are allowed to access. A JWT containing any of these audiences will\nbe accepted. When this setting is absent, only JWTs with audience\n\"https:\/\/Service_name\/API_name\"\nwill be accepted. For example, if no audiences are in the setting,\nLibraryService API will only accept JWTs with the following audience\n\"https:\/\/library-example.googleapis.com\/google.example.library.v1.LibraryService\".\n\nExample:\n\n    audiences: bookstore_android.apps.googleusercontent.com,\n               bookstore_web.apps.googleusercontent.com",
+          "description": "The list of JWT\n[audiences](https:\/\/tools.ietf.org\/html\/draft-ietf-oauth-json-web-token-32#section-4.1.3).\nthat are allowed to access. A JWT containing any of these audiences will\nbe accepted. When this setting is absent, JWTs with audiences:\n  - \"https:\/\/[service.name]\/[google.protobuf.Api.name]\"\n  - \"https:\/\/[service.name]\/\"\nwill be accepted.\nFor example, if no audiences are in the setting, LibraryService API will\naccept JWTs with the following audiences:\n  -\n  https:\/\/library-example.googleapis.com\/google.example.library.v1.LibraryService\n  - https:\/\/library-example.googleapis.com\/\n\nExample:\n\n    audiences: bookstore_android.apps.googleusercontent.com,\n               bookstore_web.apps.googleusercontent.com",
           "type": "string"
         },
         "authorizationUrl": {
           "description": "Redirect URL if JWT token is required but not present or is expired.\nImplement authorizationUrl of securityDefinitions in OpenAPI spec.",
+          "type": "string"
+        },
+        "jwtLocations": {
+          "description": "Defines the locations to extract the JWT.\n\nJWT locations can be either from HTTP headers or URL query parameters.\nThe rule is that the first match wins. The checking order is: checking\nall headers first, then URL query parameters.\n\nIf not specified,  default to use following 3 locations:\n   1) Authorization: Bearer\n   2) x-goog-iap-jwt-assertion\n   3) access_token query parameter\n\nDefault locations can be specified as followings:\n   jwt_locations:\n   - header: Authorization\n     value_prefix: \"Bearer \"\n   - header: x-goog-iap-jwt-assertion\n   - query: access_token",
+          "type": "array",
+          "items": {
+            "$ref": "JwtLocation"
+          }
+        }
+      }
+    },
+    "JwtLocation": {
+      "id": "JwtLocation",
+      "description": "Specifies a location to extract JWT from an API request.",
+      "type": "object",
+      "properties": {
+        "header": {
+          "description": "Specifies HTTP header name to extract JWT token.",
+          "type": "string"
+        },
+        "query": {
+          "description": "Specifies URL query parameter name to extract JWT token.",
+          "type": "string"
+        },
+        "valuePrefix": {
+          "description": "The value prefix. The value format is \"value_prefix{token}\"\nOnly applies to \"in\" header type. Must be empty for \"in\" query type.\nIf not empty, the header value has to match (case sensitive) this prefix.\nIf not matched, JWT will not be extracted. If matched, JWT will be\nextracted after the prefix is removed.\n\nFor example, for \"Authorization: Bearer {JWT}\",\nvalue_prefix=\"Bearer \" with a space at the end.",
           "type": "string"
         }
       }
@@ -724,6 +751,10 @@
         "producerNotificationChannel": {
           "description": "The full resource name of a channel used for sending notifications to the\nservice producer.\n\nGoogle Service Management currently only supports\n[Google Cloud Pub\/Sub](https:\/\/cloud.google.com\/pubsub) as a notification\nchannel. To use Google Cloud Pub\/Sub as the channel, this must be the name\nof a Cloud Pub\/Sub topic that uses the Cloud Pub\/Sub topic name format\ndocumented in https:\/\/cloud.google.com\/pubsub\/docs\/overview.",
           "type": "string"
+        },
+        "serviceIdentity": {
+          "description": "The configuration of a per-product per-project service identity.",
+          "$ref": "GoogleApiServiceIdentity"
         }
       }
     },
@@ -746,6 +777,25 @@
         }
       }
     },
+    "GoogleApiServiceIdentity": {
+      "id": "GoogleApiServiceIdentity",
+      "description": "The per-product per-project service identity for a service.\n\n\nUse this field to configure per-product per-project service identity.\nExample of a service identity configuration.\n\n    usage:\n      service_identity:\n      - service_account_parent: \"projects\/123456789\"\n        display_name: \"Cloud XXX Service Agent\"\n        description: \"Used as the identity of Cloud XXX to access resources\"",
+      "type": "object",
+      "properties": {
+        "serviceAccountParent": {
+          "description": "A service account project that hosts the service accounts.\n\nAn example name would be:\n`projects\/123456789`",
+          "type": "string"
+        },
+        "displayName": {
+          "description": "Optional. A user-specified name for the service account.\nMust be less than or equal to 100 UTF-8 bytes.",
+          "type": "string"
+        },
+        "description": {
+          "description": "Optional. A user-specified opaque description of the service account.\nMust be less than or equal to 256 UTF-8 bytes.",
+          "type": "string"
+        }
+      }
+    },
     "Endpoint": {
       "id": "Endpoint",
       "description": "`Endpoint` describes a network endpoint that serves a set of APIs.\nA service may expose any number of endpoints, and all endpoints share the\nsame service configuration, such as quota configuration and monitoring\nconfiguration.\n\nExample service configuration:\n\n    name: library-example.googleapis.com\n    endpoints:\n      # Below entry makes 'google.example.library.v1.Library'\n      # API be served from endpoint address library-example.googleapis.com.\n      # It also allows HTTP OPTIONS calls to be passed to the backend, for\n      # it to decide whether the subsequent cross-origin request is\n      # allowed to proceed.\n    - name: library-example.googleapis.com\n      allow_cors: true",
@@ -757,13 +807,6 @@
         },
         "aliases": {
           "description": "DEPRECATED: This field is no longer supported. Instead of using aliases,\nplease specify multiple google.api.Endpoint for each of the intended\naliases.\n\nAdditional names that this endpoint will be hosted on.",
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
-        },
-        "features": {
-          "description": "The list of features enabled on this endpoint.",
           "type": "array",
           "items": {
             "type": "string"
@@ -811,13 +854,198 @@
         }
       }
     },
+    "ListConsumerQuotaMetricsResponse": {
+      "id": "ListConsumerQuotaMetricsResponse",
+      "description": "Response message for ListConsumerQuotaMetrics",
+      "type": "object",
+      "properties": {
+        "metrics": {
+          "description": "Quota settings for the consumer, organized by quota metric.",
+          "type": "array",
+          "items": {
+            "$ref": "ConsumerQuotaMetric"
+          }
+        },
+        "nextPageToken": {
+          "description": "Token identifying which result to start with; returned by a previous list\ncall.",
+          "type": "string"
+        }
+      }
+    },
+    "ConsumerQuotaMetric": {
+      "id": "ConsumerQuotaMetric",
+      "description": "Consumer quota settings for a quota metric.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "The resource name of the quota settings on this metric for this consumer.\n\nAn example name would be:\n`projects\/123\/services\/compute.googleapis.com\/consumerQuotaMetrics\/compute.googleapis.com%2Fcpus\n\nThe resource name is intended to be opaque and should not be parsed for\nits component strings, since its representation could change in the future.",
+          "type": "string"
+        },
+        "metric": {
+          "description": "The name of the metric.\n\nAn example name would be:\n`compute.googleapis.com\/cpus`",
+          "type": "string"
+        },
+        "displayName": {
+          "description": "The display name of the metric.\n\nAn example name would be:\n\"CPUs\"",
+          "type": "string"
+        },
+        "consumerQuotaLimits": {
+          "description": "The consumer quota for each quota limit defined on the metric.",
+          "type": "array",
+          "items": {
+            "$ref": "ConsumerQuotaLimit"
+          }
+        },
+        "unit": {
+          "description": "The units in which the metric value is reported.",
+          "type": "string"
+        }
+      }
+    },
+    "ConsumerQuotaLimit": {
+      "id": "ConsumerQuotaLimit",
+      "description": "Consumer quota settings for a quota limit.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "The resource name of the quota limit.\n\nAn example name would be:\n`projects\/123\/services\/compute.googleapis.com\/consumerQuotaMetrics\/compute.googleapis.com%2Fcpus\/limits\/%2Fproject%2Fregion`\n\nThe resource name is intended to be opaque and should not be parsed for\nits component strings, since its representation could change in the future.",
+          "type": "string"
+        },
+        "metric": {
+          "description": "The name of the parent metric of this limit.\n\nAn example name would be:\n`compute.googleapis.com\/cpus`",
+          "type": "string"
+        },
+        "unit": {
+          "description": "The limit unit.\n\nAn example unit would be\n`1\/{project}\/{region}`\nNote that `{project}` and `{region}` are not placeholders in this example;\nthe literal characters `{` and `}` occur in the string.",
+          "type": "string"
+        },
+        "isPrecise": {
+          "description": "Whether this limit is precise or imprecise.",
+          "type": "boolean"
+        },
+        "allowsAdminOverrides": {
+          "description": "Whether admin overrides are allowed on this limit",
+          "type": "boolean"
+        },
+        "quotaBuckets": {
+          "description": "Summary of the enforced quota buckets, organized by quota dimension,\nordered from least specific to most specific (for example, the global\ndefault bucket, with no quota dimensions, will always appear first).",
+          "type": "array",
+          "items": {
+            "$ref": "QuotaBucket"
+          }
+        }
+      }
+    },
+    "QuotaBucket": {
+      "id": "QuotaBucket",
+      "description": "A quota bucket is a quota provisioning unit for a specific set of dimensions.",
+      "type": "object",
+      "properties": {
+        "effectiveLimit": {
+          "description": "The effective limit of this quota bucket. Equal to default_limit if there\nare no overrides.",
+          "type": "string",
+          "format": "int64"
+        },
+        "defaultLimit": {
+          "description": "The default limit of this quota bucket, as specified by the service\nconfiguration.",
+          "type": "string",
+          "format": "int64"
+        },
+        "producerOverride": {
+          "description": "Producer override on this quota bucket.",
+          "$ref": "QuotaOverride"
+        },
+        "consumerOverride": {
+          "description": "Consumer override on this quota bucket.",
+          "$ref": "QuotaOverride"
+        },
+        "adminOverride": {
+          "description": "Admin override on this quota bucket.",
+          "$ref": "QuotaOverride"
+        },
+        "dimensions": {
+          "description": "The dimensions of this quota bucket.\n\nIf this map is empty, this is the global bucket, which is the default quota\nvalue applied to all requests that do not have a more specific override.\n\nIf this map is nonempty, the default limit, effective limit, and quota\noverrides apply only to requests that have the dimensions given in the map.\n\nFor example, if the map has key \"region\" and value \"us-east-1\", then the\nspecified effective limit is only effective in that region, and the\nspecified overrides apply only in that region.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "QuotaOverride": {
+      "id": "QuotaOverride",
+      "description": "A quota override",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "The resource name of the override.\nThis name is generated by the server when the override is created.\n\nExample names would be:\n`projects\/123\/services\/compute.googleapis.com\/consumerQuotaMetrics\/compute.googleapis.com%2Fcpus\/limits\/%2Fproject%2Fregion\/adminOverrides\/4a3f2c1d`\n`projects\/123\/services\/compute.googleapis.com\/consumerQuotaMetrics\/compute.googleapis.com%2Fcpus\/limits\/%2Fproject%2Fregion\/consumerOverrides\/4a3f2c1d`\n\nThe resource name is intended to be opaque and should not be parsed for\nits component strings, since its representation could change in the future.",
+          "type": "string"
+        },
+        "overrideValue": {
+          "description": "The overriding quota limit value.\nCan be any nonnegative integer, or -1 (unlimited quota).",
+          "type": "string",
+          "format": "int64"
+        },
+        "dimensions": {
+          "description": "If this map is nonempty, then this override applies only to specific values\nfor dimensions defined in the limit unit.\n\nFor example, an override on a limit with the unit 1\/{project}\/{region}\ncould contain an entry with the key \"region\" and the value \"us-east-1\";\nthe override is only applied to quota consumed in that region.\n\nThis map has the following restrictions:\n\n*   Keys that are not defined in the limit's unit are not valid keys.\n    Any string appearing in {brackets} in the unit (besides {project} or\n    {user}) is a defined key.\n*   \"project\" is not a valid key; the project is already specified in\n    the parent resource name.\n*   \"user\" is not a valid key; the API does not support quota overrides\n    that apply only to a specific user.\n*   If \"region\" appears as a key, its value must be a valid Cloud region.\n*   If \"zone\" appears as a key, its value must be a valid Cloud zone.\n*   If any valid key other than \"region\" or \"zone\" appears in the map, then\n    all valid keys other than \"region\" or \"zone\" must also appear in the\n    map.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "metric": {
+          "description": "The name of the metric to which this override applies.\n\nAn example name would be:\n`compute.googleapis.com\/cpus`",
+          "type": "string"
+        },
+        "unit": {
+          "description": "The limit unit of the limit to which this override applies.\n\nAn example unit would be:\n`1\/{project}\/{region}`\nNote that `{project}` and `{region}` are not placeholders in this example;\nthe literal characters `{` and `}` occur in the string.",
+          "type": "string"
+        }
+      }
+    },
+    "ListAdminOverridesResponse": {
+      "id": "ListAdminOverridesResponse",
+      "description": "Response message for ListAdminOverrides.",
+      "type": "object",
+      "properties": {
+        "overrides": {
+          "description": "Admin overrides on this limit.",
+          "type": "array",
+          "items": {
+            "$ref": "QuotaOverride"
+          }
+        },
+        "nextPageToken": {
+          "description": "Token identifying which result to start with; returned by a previous list\ncall.",
+          "type": "string"
+        }
+      }
+    },
+    "ListConsumerOverridesResponse": {
+      "id": "ListConsumerOverridesResponse",
+      "description": "Response message for ListConsumerOverrides.",
+      "type": "object",
+      "properties": {
+        "overrides": {
+          "description": "Consumer overrides on this limit.",
+          "type": "array",
+          "items": {
+            "$ref": "QuotaOverride"
+          }
+        },
+        "nextPageToken": {
+          "description": "Token identifying which result to start with; returned by a previous list\ncall.",
+          "type": "string"
+        }
+      }
+    },
     "GoogleApiService": {
       "id": "GoogleApiService",
       "description": "`Service` is the root object of Google service configuration schema. It\ndescribes basic information about a service, such as the name and the\ntitle, and delegates other aspects to sub-sections. Each sub-section is\neither a proto message or a repeated proto message that configures a\nspecific aspect, such as auth. See each proto message definition for details.\n\nExample:\n\n    type: google.api.Service\n    config_version: 3\n    name: calendar.googleapis.com\n    title: Google Calendar API\n    apis:\n    - name: google.calendar.v3.Calendar\n    authentication:\n      providers:\n      - id: google_calendar_auth\n        jwks_uri: https:\/\/www.googleapis.com\/oauth2\/v1\/certs\n        issuer: https:\/\/securetoken.google.com\n      rules:\n      - selector: \"*\"\n        requirements:\n          provider_id: google_calendar_auth",
       "type": "object",
       "properties": {
         "configVersion": {
-          "description": "The semantic version of the service configuration. The config version\naffects the interpretation of the service configuration. For example,\ncertain features are enabled by default for certain config versions.\nThe latest config version is `3`.",
+          "description": "The semantic version of the service configuration. The config version\naffects the interpretation of the service configuration. For example,\ncertain features are enabled by default for certain config versions.\n\nThe latest config version is `3`.",
           "type": "integer",
           "format": "uint32"
         },
@@ -826,7 +1054,7 @@
           "type": "string"
         },
         "id": {
-          "description": "A unique ID for a specific instance of this message, typically assigned\nby the client for tracking purpose. If empty, the server may choose to\ngenerate one instead. Must be no longer than 60 characters.",
+          "description": "A unique ID for a specific instance of this message, typically assigned\nby the client for tracking purpose. Must be no longer than 63 characters\nand only lower case letters, digits, '.', '_' and '-' are allowed. If\nempty, the server may choose to generate one instead.",
           "type": "string"
         },
         "title": {
@@ -1193,11 +1421,11 @@
           "type": "string"
         },
         "address": {
-          "description": "The address of the API backend.",
+          "description": "The address of the API backend.\n\nThe scheme is used to determine the backend protocol and security.\nThe following schemes are accepted:\n\n   SCHEME        PROTOCOL    SECURITY\n   http:\/\/       HTTP        None\n   https:\/\/      HTTP        TLS\n   grpc:\/\/       gRPC        None\n   grpcs:\/\/      gRPC        TLS\n\nIt is recommended to explicitly include a scheme. Leaving out the scheme\nmay cause constrasting behaviors across platforms.\n\nIf the port is unspecified, the default is:\n- 80 for schemes without TLS\n- 443 for schemes with TLS\n\nFor HTTP backends, use protocol\nto specify the protocol version.",
           "type": "string"
         },
         "deadline": {
-          "description": "The number of seconds to wait for a response from a request.  The default\ndeadline for gRPC is infinite (no deadline) and HTTP requests is 5 seconds.",
+          "description": "The number of seconds to wait for a response from a request. The default\nvaries based on the request protocol and deployment environment.",
           "type": "number",
           "format": "double"
         },
@@ -1225,7 +1453,15 @@
           ]
         },
         "jwtAudience": {
-          "description": "The JWT audience is used when generating a JWT id token for the backend.",
+          "description": "The JWT audience is used when generating a JWT ID token for the backend.\nThis ID token will be added in the HTTP \"authorization\" header, and sent\nto the backend.",
+          "type": "string"
+        },
+        "disableAuth": {
+          "description": "When disable_auth is true, a JWT ID token won't be generated and the\noriginal \"Authorization\" HTTP header will be preserved. If the header is\nused to carry the original token and is expected by the backend, this\nfield must be set to true to preserve the header.",
+          "type": "boolean"
+        },
+        "protocol": {
+          "description": "The protocol used for sending a request to the backend.\nThe supported values are \"http\/1.1\" and \"h2\".\n\nThe default value is inferred from the scheme in the\naddress field:\n\n   SCHEME        PROTOCOL\n   http:\/\/       http\/1.1\n   https:\/\/      http\/1.1\n   grpc:\/\/       h2\n   grpcs:\/\/      h2\n\nFor secure HTTP backends (https:\/\/) that support HTTP\/2, set this field\nto \"h2\" for improved performance.\n\nConfiguring this field to non-default values is only supported for secure\nHTTP backends. This field will be ignored for all other backends.\n\nSee\nhttps:\/\/www.iana.org\/assignments\/tls-extensiontype-values\/tls-extensiontype-values.xhtml#alpn-protocol-ids\nfor more details on the supported values.",
           "type": "string"
         }
       }
@@ -1295,6 +1531,10 @@
           "items": {
             "$ref": "HttpRule"
           }
+        },
+        "allowHalfDuplex": {
+          "description": "When this flag is set to true, HTTP requests will be allowed to invoke a\nhalf-duplex streaming method.",
+          "type": "boolean"
         }
       }
     },
@@ -1470,7 +1710,7 @@
     },
     "MetricDescriptor": {
       "id": "MetricDescriptor",
-      "description": "Defines a metric type and its schema. Once a metric descriptor is created,\ndeleting or altering it stops data collection and makes the metric type's\nexisting data unusable.",
+      "description": "Defines a metric type and its schema. Once a metric descriptor is created,\ndeleting or altering it stops data collection and makes the metric type's\nexisting data unusable.\n\nThe following are specific rules for service defined Monitoring metric\ndescriptors:\n\n* `type`, `metric_kind`, `value_type`, `description`, `display_name`,\n  `launch_stage` fields are all required. The `unit` field must be specified\n  if the `value_type` is any of DOUBLE, INT64, DISTRIBUTION.\n* Maximum of default 500 metric descriptors per service is allowed.\n* Maximum of default 10 labels per metric descriptor is allowed.\n\nThe default maximum limit can be overridden. Please follow\nhttps:\/\/cloud.google.com\/monitoring\/quotas",
       "type": "object",
       "properties": {
         "name": {
@@ -1478,11 +1718,11 @@
           "type": "string"
         },
         "type": {
-          "description": "The metric type, including its DNS name prefix. The type is not\nURL-encoded.  All user-defined metric types have the DNS name\n`custom.googleapis.com` or `external.googleapis.com`.  Metric types should\nuse a natural hierarchical grouping. For example:\n\n    \"custom.googleapis.com\/invoice\/paid\/amount\"\n    \"external.googleapis.com\/prometheus\/up\"\n    \"appengine.googleapis.com\/http\/server\/response_latencies\"",
+          "description": "The metric type, including its DNS name prefix. The type is not\nURL-encoded.\n\nAll service defined metrics must be prefixed with the service name, in the\nformat of `{service name}\/{relative metric name}`, such as\n`cloudsql.googleapis.com\/database\/cpu\/utilization`. The relative metric\nname must follow:\n\n* Only upper and lower-case letters, digits, '\/' and underscores '_' are\n  allowed.\n* The maximum number of characters allowed for the relative_metric_name is\n  100.\n\nAll user-defined metric types have the DNS name\n`custom.googleapis.com`, `external.googleapis.com`, or\n`logging.googleapis.com\/user\/`.\n\nMetric types should use a natural hierarchical grouping. For example:\n\n    \"custom.googleapis.com\/invoice\/paid\/amount\"\n    \"external.googleapis.com\/prometheus\/up\"\n    \"appengine.googleapis.com\/http\/server\/response_latencies\"",
           "type": "string"
         },
         "labels": {
-          "description": "The set of labels that can be used to describe a specific\ninstance of this metric type. For example, the\n`appengine.googleapis.com\/http\/server\/response_latencies` metric\ntype has a label for the HTTP response code, `response_code`, so\nyou can look at latencies for successful responses or just\nfor responses that failed.",
+          "description": "The set of labels that can be used to describe a specific\ninstance of this metric type.\n\nThe label key name must follow:\n\n* Only upper and lower-case letters, digits and underscores (_) are\n  allowed.\n* Label name must start with a letter or digit.\n* The maximum length of a label name is 100 characters.\n\nFor example, the\n`appengine.googleapis.com\/http\/server\/response_latencies` metric\ntype has a label for the HTTP response code, `response_code`, so\nyou can look at latencies for successful responses or just\nfor responses that failed.",
           "type": "array",
           "items": {
             "$ref": "LabelDescriptor"
@@ -1527,7 +1767,7 @@
           ]
         },
         "unit": {
-          "description": "The unit in which the metric value is reported. It is only applicable\nif the `value_type` is `INT64`, `DOUBLE`, or `DISTRIBUTION`. The\nsupported units are a subset of [The Unified Code for Units of\nMeasure](http:\/\/unitsofmeasure.org\/ucum.html) standard:\n\n**Basic units (UNIT)**\n\n* `bit`   bit\n* `By`    byte\n* `s`     second\n* `min`   minute\n* `h`     hour\n* `d`     day\n\n**Prefixes (PREFIX)**\n\n* `k`     kilo    (10**3)\n* `M`     mega    (10**6)\n* `G`     giga    (10**9)\n* `T`     tera    (10**12)\n* `P`     peta    (10**15)\n* `E`     exa     (10**18)\n* `Z`     zetta   (10**21)\n* `Y`     yotta   (10**24)\n* `m`     milli   (10**-3)\n* `u`     micro   (10**-6)\n* `n`     nano    (10**-9)\n* `p`     pico    (10**-12)\n* `f`     femto   (10**-15)\n* `a`     atto    (10**-18)\n* `z`     zepto   (10**-21)\n* `y`     yocto   (10**-24)\n* `Ki`    kibi    (2**10)\n* `Mi`    mebi    (2**20)\n* `Gi`    gibi    (2**30)\n* `Ti`    tebi    (2**40)\n\n**Grammar**\n\nThe grammar also includes these connectors:\n\n* `\/`    division (as an infix operator, e.g. `1\/s`).\n* `.`    multiplication (as an infix operator, e.g. `GBy.d`)\n\nThe grammar for a unit is as follows:\n\n    Expression = Component { \".\" Component } { \"\/\" Component } ;\n\n    Component = ( [ PREFIX ] UNIT | \"%\" ) [ Annotation ]\n              | Annotation\n              | \"1\"\n              ;\n\n    Annotation = \"{\" NAME \"}\" ;\n\nNotes:\n\n* `Annotation` is just a comment if it follows a `UNIT` and is\n   equivalent to `1` if it is used alone. For examples,\n   `{requests}\/s == 1\/s`, `By{transmitted}\/s == By\/s`.\n* `NAME` is a sequence of non-blank printable ASCII characters not\n   containing '{' or '}'.\n* `1` represents dimensionless value 1, such as in `1\/s`.\n* `%` represents dimensionless value 1\/100, and annotates values giving\n   a percentage.",
+          "description": "The units in which the metric value is reported. It is only applicable\nif the `value_type` is `INT64`, `DOUBLE`, or `DISTRIBUTION`. The `unit`\ndefines the representation of the stored metric values.\n\nDifferent systems may scale the values to be more easily displayed (so a\nvalue of `0.02KBy` _might_ be displayed as `20By`, and a value of\n`3523KBy` _might_ be displayed as `3.5MBy`). However, if the `unit` is\n`KBy`, then the value of the metric is always in thousands of bytes, no\nmatter how it may be displayed..\n\nIf you want a custom metric to record the exact number of CPU-seconds used\nby a job, you can create an `INT64 CUMULATIVE` metric whose `unit` is\n`s{CPU}` (or equivalently `1s{CPU}` or just `s`). If the job uses 12,005\nCPU-seconds, then the value is written as `12005`.\n\nAlternatively, if you want a custom metric to record data in a more\ngranular way, you can create a `DOUBLE CUMULATIVE` metric whose `unit` is\n`ks{CPU}`, and then write the value `12.005` (which is `12005\/1000`),\nor use `Kis{CPU}` and write `11.723` (which is `12005\/1024`).\n\nThe supported units are a subset of [The Unified Code for Units of\nMeasure](http:\/\/unitsofmeasure.org\/ucum.html) standard:\n\n**Basic units (UNIT)**\n\n* `bit`   bit\n* `By`    byte\n* `s`     second\n* `min`   minute\n* `h`     hour\n* `d`     day\n\n**Prefixes (PREFIX)**\n\n* `k`     kilo    (10^3)\n* `M`     mega    (10^6)\n* `G`     giga    (10^9)\n* `T`     tera    (10^12)\n* `P`     peta    (10^15)\n* `E`     exa     (10^18)\n* `Z`     zetta   (10^21)\n* `Y`     yotta   (10^24)\n\n* `m`     milli   (10^-3)\n* `u`     micro   (10^-6)\n* `n`     nano    (10^-9)\n* `p`     pico    (10^-12)\n* `f`     femto   (10^-15)\n* `a`     atto    (10^-18)\n* `z`     zepto   (10^-21)\n* `y`     yocto   (10^-24)\n\n* `Ki`    kibi    (2^10)\n* `Mi`    mebi    (2^20)\n* `Gi`    gibi    (2^30)\n* `Ti`    tebi    (2^40)\n* `Pi`    pebi    (2^50)\n\n**Grammar**\n\nThe grammar also includes these connectors:\n\n* `\/`    division or ratio (as an infix operator). For examples,\n         `kBy\/{email}` or `MiBy\/10ms` (although you should almost never\n         have `\/s` in a metric `unit`; rates should always be computed at\n         query time from the underlying cumulative or delta value).\n* `.`    multiplication or composition (as an infix operator). For\n         examples, `GBy.d` or `k{watt}.h`.\n\nThe grammar for a unit is as follows:\n\n    Expression = Component { \".\" Component } { \"\/\" Component } ;\n\n    Component = ( [ PREFIX ] UNIT | \"%\" ) [ Annotation ]\n              | Annotation\n              | \"1\"\n              ;\n\n    Annotation = \"{\" NAME \"}\" ;\n\nNotes:\n\n* `Annotation` is just a comment if it follows a `UNIT`. If the annotation\n   is used alone, then the unit is equivalent to `1`. For examples,\n   `{request}\/s == 1\/s`, `By{transmitted}\/s == By\/s`.\n* `NAME` is a sequence of non-blank printable ASCII characters not\n   containing `{` or `}`.\n* `1` represents a unitary [dimensionless\n   unit](https:\/\/en.wikipedia.org\/wiki\/Dimensionless_quantity) of 1, such\n   as in `1\/s`. It is typically used when none of the basic units are\n   appropriate. For example, \"new users per day\" can be represented as\n   `1\/d` or `{new-users}\/d` (and a metric value `5` would mean \"5 new\n   users). Alternatively, \"thousands of page views per day\" would be\n   represented as `1000\/d` or `k1\/d` or `k{page_views}\/d` (and a metric\n   value of `5.3` would mean \"5300 page views per day\").\n* `%` represents dimensionless value of 1\/100, and annotates values giving\n   a percentage (so the metric values are typically in the range of 0..100,\n   and a metric value `3` means \"3 percent\").\n* `10^2.%` indicates a metric contains a ratio, typically in the range\n   0..1, that will be multiplied by 100 and displayed as a percentage\n   (so a metric value `0.03` means \"3 percent\").",
           "type": "string"
         },
         "description": {
@@ -1546,6 +1786,8 @@
           "description": "Optional. The launch stage of the metric definition.",
           "enumDescriptions": [
             "Do not use this default value.",
+            "The feature is not yet implemented. Users can not use it.",
+            "Prelaunch features are hidden from users and are only visible internally.",
             "Early Access features are limited to a closed group of testers. To use\nthese features, you must sign up in advance and sign a Trusted Tester\nagreement (which includes confidentiality provisions). These features may\nbe unstable, changed in backward-incompatible ways, and are not\nguaranteed to be released.",
             "Alpha is a limited availability test for releases before they are cleared\nfor widespread use. By Alpha, all significant design issues are resolved\nand we are in the process of verifying functionality. Alpha customers\nneed to apply for access, agree to applicable terms, and have their\nprojects whitelisted. Alpha releases don\u2019t have to be feature complete,\nno SLAs are provided, and there are no technical support obligations, but\nthey will be far enough along that customers can actually use them in\ntest environments or for limited-use tests -- just like they would in\nnormal production cases.",
             "Beta is the point at which we are ready to open a release for any\ncustomer to use. There are no SLA or technical support obligations in a\nBeta release. Products will be complete from a feature perspective, but\nmay have some open outstanding issues. Beta releases are suitable for\nlimited production use cases.",
@@ -1555,6 +1797,8 @@
           "type": "string",
           "enum": [
             "LAUNCH_STAGE_UNSPECIFIED",
+            "UNIMPLEMENTED",
+            "PRELAUNCH",
             "EARLY_ACCESS",
             "ALPHA",
             "BETA",
@@ -1580,6 +1824,8 @@
           "description": "Deprecated. Must use the MetricDescriptor.launch_stage instead.",
           "enumDescriptions": [
             "Do not use this default value.",
+            "The feature is not yet implemented. Users can not use it.",
+            "Prelaunch features are hidden from users and are only visible internally.",
             "Early Access features are limited to a closed group of testers. To use\nthese features, you must sign up in advance and sign a Trusted Tester\nagreement (which includes confidentiality provisions). These features may\nbe unstable, changed in backward-incompatible ways, and are not\nguaranteed to be released.",
             "Alpha is a limited availability test for releases before they are cleared\nfor widespread use. By Alpha, all significant design issues are resolved\nand we are in the process of verifying functionality. Alpha customers\nneed to apply for access, agree to applicable terms, and have their\nprojects whitelisted. Alpha releases don\u2019t have to be feature complete,\nno SLAs are provided, and there are no technical support obligations, but\nthey will be far enough along that customers can actually use them in\ntest environments or for limited-use tests -- just like they would in\nnormal production cases.",
             "Beta is the point at which we are ready to open a release for any\ncustomer to use. There are no SLA or technical support obligations in a\nBeta release. Products will be complete from a feature perspective, but\nmay have some open outstanding issues. Beta releases are suitable for\nlimited production use cases.",
@@ -1589,6 +1835,8 @@
           "type": "string",
           "enum": [
             "LAUNCH_STAGE_UNSPECIFIED",
+            "UNIMPLEMENTED",
+            "PRELAUNCH",
             "EARLY_ACCESS",
             "ALPHA",
             "BETA",
@@ -1610,7 +1858,7 @@
     },
     "MonitoredResourceDescriptor": {
       "id": "MonitoredResourceDescriptor",
-      "description": "An object that describes the schema of a MonitoredResource object using a\ntype name and a set of labels.  For example, the monitored resource\ndescriptor for Google Compute Engine VM instances has a type of\n`\"gce_instance\"` and specifies the use of the labels `\"instance_id\"` and\n`\"zone\"` to identify particular VM instances.\n\nDifferent APIs can support different monitored resource types. APIs generally\nprovide a `list` method that returns the monitored resource descriptors used\nby the API.",
+      "description": "An object that describes the schema of a MonitoredResource object using a\ntype name and a set of labels.  For example, the monitored resource\ndescriptor for Google Compute Engine VM instances has a type of\n`\"gce_instance\"` and specifies the use of the labels `\"instance_id\"` and\n`\"zone\"` to identify particular VM instances.\n\nDifferent services can support different monitored resource types.\n\nThe following are specific rules to service defined monitored resources for\nMonitoring and Logging:\n\n* The `type`, `display_name`, `description`, `labels` and `launch_stage`\n  fields are all required.\n* The first label of the monitored resource descriptor must be\n  `resource_container`. There are legacy monitored resource descritptors\n  start with `project_id`.\n* It must include a `location` label. * Maximum of default 5 service defined monitored resource descriptors\n  is allowed per service.\n* Maximum of default 10 labels per monitored resource is allowed.\n\nThe default maximum limit can be overridden. Please follow\nhttps:\/\/cloud.google.com\/monitoring\/quotas",
       "type": "object",
       "properties": {
         "name": {
@@ -1618,7 +1866,7 @@
           "type": "string"
         },
         "type": {
-          "description": "Required. The monitored resource type. For example, the type\n`\"cloudsql_database\"` represents databases in Google Cloud SQL.\nThe maximum length of this value is 256 characters.",
+          "description": "Note there are legacy service monitored resources not following this rule.",
           "type": "string"
         },
         "displayName": {
@@ -1630,7 +1878,7 @@
           "type": "string"
         },
         "labels": {
-          "description": "Required. A set of labels used to describe instances of this monitored\nresource type. For example, an individual Google Cloud SQL database is\nidentified by values for the labels `\"database_id\"` and `\"zone\"`.",
+          "description": "Required. A set of labels used to describe instances of this monitored\nresource type.\nThe label key name must follow:\n\n* Only upper and lower-case letters, digits and underscores (_) are\n  allowed.\n* Label name must start with a letter or digit.\n* The maximum length of a label name is 100 characters.\n\nFor example, an individual Google Cloud SQL database is\nidentified by values for the labels `database_id` and `location`.",
           "type": "array",
           "items": {
             "$ref": "LabelDescriptor"
@@ -1640,6 +1888,8 @@
           "description": "Optional. The launch stage of the monitored resource definition.",
           "enumDescriptions": [
             "Do not use this default value.",
+            "The feature is not yet implemented. Users can not use it.",
+            "Prelaunch features are hidden from users and are only visible internally.",
             "Early Access features are limited to a closed group of testers. To use\nthese features, you must sign up in advance and sign a Trusted Tester\nagreement (which includes confidentiality provisions). These features may\nbe unstable, changed in backward-incompatible ways, and are not\nguaranteed to be released.",
             "Alpha is a limited availability test for releases before they are cleared\nfor widespread use. By Alpha, all significant design issues are resolved\nand we are in the process of verifying functionality. Alpha customers\nneed to apply for access, agree to applicable terms, and have their\nprojects whitelisted. Alpha releases don\u2019t have to be feature complete,\nno SLAs are provided, and there are no technical support obligations, but\nthey will be far enough along that customers can actually use them in\ntest environments or for limited-use tests -- just like they would in\nnormal production cases.",
             "Beta is the point at which we are ready to open a release for any\ncustomer to use. There are no SLA or technical support obligations in a\nBeta release. Products will be complete from a feature perspective, but\nmay have some open outstanding issues. Beta releases are suitable for\nlimited production use cases.",
@@ -1649,6 +1899,8 @@
           "type": "string",
           "enum": [
             "LAUNCH_STAGE_UNSPECIFIED",
+            "UNIMPLEMENTED",
+            "PRELAUNCH",
             "EARLY_ACCESS",
             "ALPHA",
             "BETA",
@@ -1660,7 +1912,7 @@
     },
     "Billing": {
       "id": "Billing",
-      "description": "Billing related configuration of the service.\n\nThe following example shows how to configure monitored resources and metrics\nfor billing:\n\n    monitored_resources:\n    - type: library.googleapis.com\/branch\n      labels:\n      - key: \/city\n        description: The city where the library branch is located in.\n      - key: \/name\n        description: The name of the branch.\n    metrics:\n    - name: library.googleapis.com\/book\/borrowed_count\n      metric_kind: DELTA\n      value_type: INT64\n    billing:\n      consumer_destinations:\n      - monitored_resource: library.googleapis.com\/branch\n        metrics:\n        - library.googleapis.com\/book\/borrowed_count",
+      "description": "Billing related configuration of the service.\n\nThe following example shows how to configure monitored resources and metrics\nfor billing, `consumer_destinations` is the only supported destination and\nthe monitored resources need at least one label key\n`cloud.googleapis.com\/location` to indicate the location of the billing\nusage, using different monitored resources between monitoring and billing is\nrecommended so they can be evolved independently:\n\n\n    monitored_resources:\n    - type: library.googleapis.com\/billing_branch\n      labels:\n      - key: cloud.googleapis.com\/location\n        description: |\n          Predefined label to support billing location restriction.\n      - key: city\n        description: |\n          Custom label to define the city where the library branch is located\n          in.\n      - key: name\n        description: Custom label to define the name of the library branch.\n    metrics:\n    - name: library.googleapis.com\/book\/borrowed_count\n      metric_kind: DELTA\n      value_type: INT64\n      unit: \"1\"\n    billing:\n      consumer_destinations:\n      - monitored_resource: library.googleapis.com\/billing_branch\n        metrics:\n        - library.googleapis.com\/book\/borrowed_count",
       "type": "object",
       "properties": {
         "consumerDestinations": {
@@ -2091,29 +2343,6 @@
         }
       }
     },
-    "QuotaOverride": {
-      "id": "QuotaOverride",
-      "description": "A quota override",
-      "type": "object",
-      "properties": {
-        "name": {
-          "description": "The resource name of the override.\nThis name is generated by the server when the override is created.\n\nExample names would be:\n`projects\/123\/services\/compute.googleapis.com\/consumerQuotaMetrics\/compute.googleapis.com%2Fcpus\/limits\/%2Fproject%2Fregion\/adminOverrides\/4a3f2c1d`\n`projects\/123\/services\/compute.googleapis.com\/consumerQuotaMetrics\/compute.googleapis.com%2Fcpus\/limits\/%2Fproject%2Fregion\/consumerOverrides\/4a3f2c1d`\n\nThe resource name is intended to be opaque and should not be parsed for\nits component strings, since its representation could change in the future.",
-          "type": "string"
-        },
-        "overrideValue": {
-          "description": "The overriding quota limit value.\nCan be any nonnegative integer, or -1 (unlimited quota).",
-          "type": "string",
-          "format": "int64"
-        },
-        "dimensions": {
-          "description": "If this map is nonempty, then this override applies only to specific values\nfor dimensions defined in the limit unit.\n\nFor example, an override on a limit with the unit 1\/{project}\/{region}\ncould contain an entry with the key \"region\" and the value \"us-east-1\";\nthe override is only applied to quota consumed in that region.\n\nThis map has the following restrictions:\n- Keys that are not defined in the limit's unit are not valid keys.\n  Any string appearing in {brackets} in the unit (besides {project} or\n  {user}) is a defined key.\n- \"project\" is not a valid key; the project is already specified in\n  the parent resource name.\n- \"user\" is not a valid key; the API does not support quota overrides\n  that apply only to a specific user.\n- If \"region\" appears as a key, its value must be a valid Cloud region.\n- If \"zone\" appears as a key, its value must be a valid Cloud zone.\n- If any valid key other than \"region\" or \"zone\" appears in the map, then\n  all valid keys other than \"region\" or \"zone\" must also appear in the map.",
-          "type": "object",
-          "additionalProperties": {
-            "type": "string"
-          }
-        }
-      }
-    },
     "BatchCreateAdminOverridesResponse": {
       "id": "BatchCreateAdminOverridesResponse",
       "description": "Response message for BatchCreateAdminOverrides",
@@ -2125,6 +2354,83 @@
           "items": {
             "$ref": "QuotaOverride"
           }
+        }
+      }
+    },
+    "ImportAdminOverridesResponse": {
+      "id": "ImportAdminOverridesResponse",
+      "description": "Response message for ImportAdminOverrides",
+      "type": "object",
+      "properties": {
+        "overrides": {
+          "description": "The overrides that were created from the imported data.",
+          "type": "array",
+          "items": {
+            "$ref": "QuotaOverride"
+          }
+        }
+      }
+    },
+    "ImportConsumerOverridesResponse": {
+      "id": "ImportConsumerOverridesResponse",
+      "description": "Response message for ImportConsumerOverrides",
+      "type": "object",
+      "properties": {
+        "overrides": {
+          "description": "The overrides that were created from the imported data.",
+          "type": "array",
+          "items": {
+            "$ref": "QuotaOverride"
+          }
+        }
+      }
+    },
+    "ImportAdminQuotaPoliciesResponse": {
+      "id": "ImportAdminQuotaPoliciesResponse",
+      "description": "Response message for ImportAdminQuotaPolicies",
+      "type": "object",
+      "properties": {
+        "policies": {
+          "description": "The policies that were created from the imported data.",
+          "type": "array",
+          "items": {
+            "$ref": "AdminQuotaPolicy"
+          }
+        }
+      }
+    },
+    "AdminQuotaPolicy": {
+      "id": "AdminQuotaPolicy",
+      "description": "Quota policy created by quota administrator.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "The resource name of the policy.\nThis name is generated by the server when the policy is created.\n\nExample names would be:\n`organizations\/123\/services\/compute.googleapis.com\/consumerQuotaMetrics\/compute.googleapis.com%2Fcpus\/limits\/%2Fproject%2Fregion\/adminPolicies\/4a3f2c1d`",
+          "type": "string"
+        },
+        "policyValue": {
+          "description": "The quota policy value.\nCan be any nonnegative integer, or -1 (unlimited quota).",
+          "type": "string",
+          "format": "int64"
+        },
+        "dimensions": {
+          "description": "\nIf this map is nonempty, then this policy applies only to specific values\nfor dimensions defined in the limit unit.\n\nFor example, an policy on a limit with the unit 1\/{project}\/{region}\ncould contain an entry with the key \"region\" and the value \"us-east-1\";\nthe policy is only applied to quota consumed in that region.\n\nThis map has the following restrictions:\n\n*   If \"region\" appears as a key, its value must be a valid Cloud region.\n*   If \"zone\" appears as a key, its value must be a valid Cloud zone.\n*   Keys other than \"region\" or \"zone\" are not valid.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "metric": {
+          "description": "The name of the metric to which this policy applies.\n\nAn example name would be:\n`compute.googleapis.com\/cpus`",
+          "type": "string"
+        },
+        "unit": {
+          "description": "The limit unit of the limit to which this policy applies.\n\nAn example unit would be:\n`1\/{project}\/{region}`\nNote that `{project}` and `{region}` are not placeholders in this example;\nthe literal characters `{` and `}` occur in the string.",
+          "type": "string"
+        },
+        "container": {
+          "description": "The cloud resource container at which the quota policy is created. The\nformat is {container_type}\/{container_number}",
+          "type": "string"
         }
       }
     },
@@ -2388,32 +2694,434 @@
             "https://www.googleapis.com/auth/service.management"
           ],
           "description": "Generate service identity for service."
-        },
-        "getServiceIdentity": {
-          "id": "serviceusage.services.getServiceIdentity",
-          "path": "v1beta1/{+parent}:getServiceIdentity",
-          "flatPath": "v1beta1/{v1beta1Id}/{v1beta1Id1}/services/{servicesId}:getServiceIdentity",
-          "httpMethod": "GET",
-          "parameters": {
-            "parent": {
-              "description": "Name of the consumer and service to get an identity for.\n\nThe `GetServiceIdentity` methods currently only support projects.\n\nAn example name would be:\n`projects\/123\/services\/example.googleapis.com` where `123` is the\nproject number.",
-              "location": "path",
-              "required": true,
-              "pattern": "^[^\/]+\/[^\/]+\/services\/[^\/]+$",
-              "type": "string"
+        }
+      }
+      ,
+      "resources": {
+        "consumerQuotaMetrics": {
+          "methods": {
+            "list": {
+              "id": "serviceusage.services.consumerQuotaMetrics.list",
+              "path": "v1beta1/{+parent}/consumerQuotaMetrics",
+              "flatPath": "v1beta1/{v1beta1Id}/{v1beta1Id1}/services/{servicesId}/consumerQuotaMetrics",
+              "httpMethod": "GET",
+              "parameters": {
+                "parent": {
+                  "description": "Parent of the quotas resource.\n\nSome example names would be:\nprojects\/123\/services\/serviceconsumermanagement.googleapis.com\nfolders\/345\/services\/serviceconsumermanagement.googleapis.com\norganizations\/456\/services\/serviceconsumermanagement.googleapis.com",
+                  "location": "path",
+                  "required": true,
+                  "pattern": "^[^\/]+\/[^\/]+\/services\/[^\/]+$",
+                  "type": "string"
+                },
+                "pageSize": {
+                  "description": "Requested size of the next page of data.",
+                  "location": "query",
+                  "type": "integer",
+                  "format": "int32"
+                },
+                "pageToken": {
+                  "description": "Token identifying which result to start with; returned by a previous list\ncall.",
+                  "location": "query",
+                  "type": "string"
+                },
+                "view": {
+                  "description": "Specifies the level of detail for quota information in the response.",
+                  "location": "query",
+                  "type": "string",
+                  "enum": [
+                    "QUOTA_VIEW_UNSPECIFIED",
+                    "BASIC",
+                    "FULL"
+                  ]
+                }
+              },
+              "parameterOrder": [
+                "parent"
+              ],
+              "response": {
+                "$ref": "ListConsumerQuotaMetricsResponse"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform",
+                "https://www.googleapis.com/auth/cloud-platform.read-only"
+              ],
+              "description": "Retrieves a summary of all quota information visible to the service\nconsumer, organized by service metric. Each metric includes information\nabout all of its defined limits. Each limit includes the limit\nconfiguration (quota unit, preciseness, default value), the current\neffective limit value, and all of the overrides applied to the limit."
+            },
+            "get": {
+              "id": "serviceusage.services.consumerQuotaMetrics.get",
+              "path": "v1beta1/{+name}",
+              "flatPath": "v1beta1/{v1beta1Id}/{v1beta1Id1}/services/{servicesId}/consumerQuotaMetrics/{consumerQuotaMetricsId}",
+              "httpMethod": "GET",
+              "parameters": {
+                "name": {
+                  "description": "The resource name of the quota limit.\n\nAn example name would be:\nprojects\/123\/services\/serviceusage.googleapis.com\/quotas\/metrics\/serviceusage.googleapis.com%2Fmutate_requests",
+                  "location": "path",
+                  "required": true,
+                  "pattern": "^[^\/]+\/[^\/]+\/services\/[^\/]+\/consumerQuotaMetrics\/[^\/]+$",
+                  "type": "string"
+                },
+                "view": {
+                  "description": "Specifies the level of detail for quota information in the response.",
+                  "location": "query",
+                  "type": "string",
+                  "enum": [
+                    "QUOTA_VIEW_UNSPECIFIED",
+                    "BASIC",
+                    "FULL"
+                  ]
+                }
+              },
+              "parameterOrder": [
+                "name"
+              ],
+              "response": {
+                "$ref": "ConsumerQuotaMetric"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform",
+                "https://www.googleapis.com/auth/cloud-platform.read-only"
+              ],
+              "description": "Retrieves a summary of quota information for a specific quota metric"
             }
-          },
-          "parameterOrder": [
-            "parent"
-          ],
-          "response": {
-            "$ref": "Operation"
-          },
-          "scopes": [
-            "https://www.googleapis.com/auth/cloud-platform",
-            "https://www.googleapis.com/auth/cloud-platform.read-only"
-          ],
-          "description": "Get service identity for service."
+          }
+          ,
+          "resources": {
+            "limits": {
+              "methods": {
+                "get": {
+                  "id": "serviceusage.services.consumerQuotaMetrics.limits.get",
+                  "path": "v1beta1/{+name}",
+                  "flatPath": "v1beta1/{v1beta1Id}/{v1beta1Id1}/services/{servicesId}/consumerQuotaMetrics/{consumerQuotaMetricsId}/limits/{limitsId}",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "name": {
+                      "description": "The resource name of the quota limit.\n\nUse the quota limit resource name returned by previous\nListConsumerQuotaMetrics and GetConsumerQuotaMetric API calls.",
+                      "location": "path",
+                      "required": true,
+                      "pattern": "^[^\/]+\/[^\/]+\/services\/[^\/]+\/consumerQuotaMetrics\/[^\/]+\/limits\/[^\/]+$",
+                      "type": "string"
+                    },
+                    "view": {
+                      "description": "Specifies the level of detail for quota information in the response.",
+                      "location": "query",
+                      "type": "string",
+                      "enum": [
+                        "QUOTA_VIEW_UNSPECIFIED",
+                        "BASIC",
+                        "FULL"
+                      ]
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "ConsumerQuotaLimit"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform",
+                    "https://www.googleapis.com/auth/cloud-platform.read-only"
+                  ],
+                  "description": "Retrieves a summary of quota information for a specific quota limit."
+                }
+              }
+              ,
+              "resources": {
+                "adminOverrides": {
+                  "methods": {
+                    "create": {
+                      "id": "serviceusage.services.consumerQuotaMetrics.limits.adminOverrides.create",
+                      "path": "v1beta1/{+parent}/adminOverrides",
+                      "flatPath": "v1beta1/{v1beta1Id}/{v1beta1Id1}/services/{servicesId}/consumerQuotaMetrics/{consumerQuotaMetricsId}/limits/{limitsId}/adminOverrides",
+                      "httpMethod": "POST",
+                      "parameters": {
+                        "parent": {
+                          "description": "The resource name of the parent quota limit, returned by a\nListConsumerQuotaMetrics or GetConsumerQuotaMetric call.\n\nAn example name would be:\n`projects\/123\/services\/compute.googleapis.com\/consumerQuotaMetrics\/compute.googleapis.com%2Fcpus\/limits\/%2Fproject%2Fregion`",
+                          "location": "path",
+                          "required": true,
+                          "pattern": "^[^\/]+\/[^\/]+\/services\/[^\/]+\/consumerQuotaMetrics\/[^\/]+\/limits\/[^\/]+$",
+                          "type": "string"
+                        },
+                        "force": {
+                          "description": "Whether to force the creation of the quota override.\nIf creating an override would cause the effective quota for the consumer to\ndecrease by more than 10 percent, the call is rejected, as a safety measure\nto avoid accidentally decreasing quota too quickly. Setting the force\nparameter to true ignores this restriction.",
+                          "location": "query",
+                          "type": "boolean"
+                        }
+                      },
+                      "parameterOrder": [
+                        "parent"
+                      ],
+                      "request": {
+                        "$ref": "QuotaOverride"
+                      },
+                      "response": {
+                        "$ref": "Operation"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform",
+                        "https://www.googleapis.com/auth/service.management"
+                      ],
+                      "description": "Creates an admin override.\nAn admin override is applied by an administrator of a parent folder or\nparent organization of the consumer receiving the override. An admin\noverride is intended to limit the amount of quota the consumer can use out\nof the total quota pool allocated to all children of the folder or\norganization."
+                    },
+                    "patch": {
+                      "id": "serviceusage.services.consumerQuotaMetrics.limits.adminOverrides.patch",
+                      "path": "v1beta1/{+name}",
+                      "flatPath": "v1beta1/{v1beta1Id}/{v1beta1Id1}/services/{servicesId}/consumerQuotaMetrics/{consumerQuotaMetricsId}/limits/{limitsId}/adminOverrides/{adminOverridesId}",
+                      "httpMethod": "PATCH",
+                      "parameters": {
+                        "name": {
+                          "description": "The resource name of the override to update.\n\nAn example name would be:\n`projects\/123\/services\/compute.googleapis.com\/consumerQuotaMetrics\/compute.googleapis.com%2Fcpus\/limits\/%2Fproject%2Fregion\/adminOverrides\/4a3f2c1d`",
+                          "location": "path",
+                          "required": true,
+                          "pattern": "^[^\/]+\/[^\/]+\/services\/[^\/]+\/consumerQuotaMetrics\/[^\/]+\/limits\/[^\/]+\/adminOverrides\/[^\/]+$",
+                          "type": "string"
+                        },
+                        "force": {
+                          "description": "Whether to force the update of the quota override.\nIf updating an override would cause the effective quota for the consumer to\ndecrease by more than 10 percent, the call is rejected, as a safety measure\nto avoid accidentally decreasing quota too quickly. Setting the force\nparameter to true ignores this restriction.",
+                          "location": "query",
+                          "type": "boolean"
+                        },
+                        "updateMask": {
+                          "description": "Update only the specified fields of the override.\nIf unset, all fields will be updated.",
+                          "location": "query",
+                          "type": "string",
+                          "format": "google-fieldmask"
+                        }
+                      },
+                      "parameterOrder": [
+                        "name"
+                      ],
+                      "request": {
+                        "$ref": "QuotaOverride"
+                      },
+                      "response": {
+                        "$ref": "Operation"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform",
+                        "https://www.googleapis.com/auth/service.management"
+                      ],
+                      "description": "Updates an admin override."
+                    },
+                    "delete": {
+                      "id": "serviceusage.services.consumerQuotaMetrics.limits.adminOverrides.delete",
+                      "path": "v1beta1/{+name}",
+                      "flatPath": "v1beta1/{v1beta1Id}/{v1beta1Id1}/services/{servicesId}/consumerQuotaMetrics/{consumerQuotaMetricsId}/limits/{limitsId}/adminOverrides/{adminOverridesId}",
+                      "httpMethod": "DELETE",
+                      "parameters": {
+                        "name": {
+                          "description": "The resource name of the override to delete.\n\nAn example name would be:\n`projects\/123\/services\/compute.googleapis.com\/consumerQuotaMetrics\/compute.googleapis.com%2Fcpus\/limits\/%2Fproject%2Fregion\/adminOverrides\/4a3f2c1d`",
+                          "location": "path",
+                          "required": true,
+                          "pattern": "^[^\/]+\/[^\/]+\/services\/[^\/]+\/consumerQuotaMetrics\/[^\/]+\/limits\/[^\/]+\/adminOverrides\/[^\/]+$",
+                          "type": "string"
+                        },
+                        "force": {
+                          "description": "Whether to force the deletion of the quota override.\nIf deleting an override would cause the effective quota for the consumer to\ndecrease by more than 10 percent, the call is rejected, as a safety measure\nto avoid accidentally decreasing quota too quickly. Setting the force\nparameter to true ignores this restriction.",
+                          "location": "query",
+                          "type": "boolean"
+                        }
+                      },
+                      "parameterOrder": [
+                        "name"
+                      ],
+                      "response": {
+                        "$ref": "Operation"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform",
+                        "https://www.googleapis.com/auth/service.management"
+                      ],
+                      "description": "Deletes an admin override."
+                    },
+                    "list": {
+                      "id": "serviceusage.services.consumerQuotaMetrics.limits.adminOverrides.list",
+                      "path": "v1beta1/{+parent}/adminOverrides",
+                      "flatPath": "v1beta1/{v1beta1Id}/{v1beta1Id1}/services/{servicesId}/consumerQuotaMetrics/{consumerQuotaMetricsId}/limits/{limitsId}/adminOverrides",
+                      "httpMethod": "GET",
+                      "parameters": {
+                        "parent": {
+                          "description": "The resource name of the parent quota limit, returned by a\nListConsumerQuotaMetrics or GetConsumerQuotaMetric call.\n\nAn example name would be:\n`projects\/123\/services\/compute.googleapis.com\/consumerQuotaMetrics\/compute.googleapis.com%2Fcpus\/limits\/%2Fproject%2Fregion`",
+                          "location": "path",
+                          "required": true,
+                          "pattern": "^[^\/]+\/[^\/]+\/services\/[^\/]+\/consumerQuotaMetrics\/[^\/]+\/limits\/[^\/]+$",
+                          "type": "string"
+                        },
+                        "pageSize": {
+                          "description": "Requested size of the next page of data.",
+                          "location": "query",
+                          "type": "integer",
+                          "format": "int32"
+                        },
+                        "pageToken": {
+                          "description": "Token identifying which result to start with; returned by a previous list\ncall.",
+                          "location": "query",
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "parent"
+                      ],
+                      "response": {
+                        "$ref": "ListAdminOverridesResponse"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform",
+                        "https://www.googleapis.com/auth/cloud-platform.read-only"
+                      ],
+                      "description": "Lists all admin overrides on this limit."
+                    }
+                  }
+                },
+                "consumerOverrides": {
+                  "methods": {
+                    "create": {
+                      "id": "serviceusage.services.consumerQuotaMetrics.limits.consumerOverrides.create",
+                      "path": "v1beta1/{+parent}/consumerOverrides",
+                      "flatPath": "v1beta1/{v1beta1Id}/{v1beta1Id1}/services/{servicesId}/consumerQuotaMetrics/{consumerQuotaMetricsId}/limits/{limitsId}/consumerOverrides",
+                      "httpMethod": "POST",
+                      "parameters": {
+                        "parent": {
+                          "description": "The resource name of the parent quota limit, returned by a\nListConsumerQuotaMetrics or GetConsumerQuotaMetric call.\n\nAn example name would be:\n`projects\/123\/services\/compute.googleapis.com\/consumerQuotaMetrics\/compute.googleapis.com%2Fcpus\/limits\/%2Fproject%2Fregion`",
+                          "location": "path",
+                          "required": true,
+                          "pattern": "^[^\/]+\/[^\/]+\/services\/[^\/]+\/consumerQuotaMetrics\/[^\/]+\/limits\/[^\/]+$",
+                          "type": "string"
+                        },
+                        "force": {
+                          "description": "Whether to force the creation of the quota override.\nIf creating an override would cause the effective quota for the consumer to\ndecrease by more than 10 percent, the call is rejected, as a safety measure\nto avoid accidentally decreasing quota too quickly. Setting the force\nparameter to true ignores this restriction.",
+                          "location": "query",
+                          "type": "boolean"
+                        }
+                      },
+                      "parameterOrder": [
+                        "parent"
+                      ],
+                      "request": {
+                        "$ref": "QuotaOverride"
+                      },
+                      "response": {
+                        "$ref": "Operation"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform",
+                        "https://www.googleapis.com/auth/service.management"
+                      ],
+                      "description": "Creates a consumer override.\nA consumer override is applied to the consumer on its own authority to\nlimit its own quota usage. Consumer overrides cannot be used to grant more\nquota than would be allowed by admin overrides, producer overrides, or the\ndefault limit of the service."
+                    },
+                    "patch": {
+                      "id": "serviceusage.services.consumerQuotaMetrics.limits.consumerOverrides.patch",
+                      "path": "v1beta1/{+name}",
+                      "flatPath": "v1beta1/{v1beta1Id}/{v1beta1Id1}/services/{servicesId}/consumerQuotaMetrics/{consumerQuotaMetricsId}/limits/{limitsId}/consumerOverrides/{consumerOverridesId}",
+                      "httpMethod": "PATCH",
+                      "parameters": {
+                        "name": {
+                          "description": "The resource name of the override to update.\n\nAn example name would be:\n`projects\/123\/services\/compute.googleapis.com\/consumerQuotaMetrics\/compute.googleapis.com%2Fcpus\/limits\/%2Fproject%2Fregion\/consumerOverrides\/4a3f2c1d`",
+                          "location": "path",
+                          "required": true,
+                          "pattern": "^[^\/]+\/[^\/]+\/services\/[^\/]+\/consumerQuotaMetrics\/[^\/]+\/limits\/[^\/]+\/consumerOverrides\/[^\/]+$",
+                          "type": "string"
+                        },
+                        "force": {
+                          "description": "Whether to force the update of the quota override.\nIf updating an override would cause the effective quota for the consumer to\ndecrease by more than 10 percent, the call is rejected, as a safety measure\nto avoid accidentally decreasing quota too quickly. Setting the force\nparameter to true ignores this restriction.",
+                          "location": "query",
+                          "type": "boolean"
+                        },
+                        "updateMask": {
+                          "description": "Update only the specified fields of the override.\nIf unset, all fields will be updated.",
+                          "location": "query",
+                          "type": "string",
+                          "format": "google-fieldmask"
+                        }
+                      },
+                      "parameterOrder": [
+                        "name"
+                      ],
+                      "request": {
+                        "$ref": "QuotaOverride"
+                      },
+                      "response": {
+                        "$ref": "Operation"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform",
+                        "https://www.googleapis.com/auth/service.management"
+                      ],
+                      "description": "Updates a consumer override."
+                    },
+                    "delete": {
+                      "id": "serviceusage.services.consumerQuotaMetrics.limits.consumerOverrides.delete",
+                      "path": "v1beta1/{+name}",
+                      "flatPath": "v1beta1/{v1beta1Id}/{v1beta1Id1}/services/{servicesId}/consumerQuotaMetrics/{consumerQuotaMetricsId}/limits/{limitsId}/consumerOverrides/{consumerOverridesId}",
+                      "httpMethod": "DELETE",
+                      "parameters": {
+                        "name": {
+                          "description": "The resource name of the override to delete.\n\nAn example name would be:\n`projects\/123\/services\/compute.googleapis.com\/consumerQuotaMetrics\/compute.googleapis.com%2Fcpus\/limits\/%2Fproject%2Fregion\/consumerOverrides\/4a3f2c1d`",
+                          "location": "path",
+                          "required": true,
+                          "pattern": "^[^\/]+\/[^\/]+\/services\/[^\/]+\/consumerQuotaMetrics\/[^\/]+\/limits\/[^\/]+\/consumerOverrides\/[^\/]+$",
+                          "type": "string"
+                        },
+                        "force": {
+                          "description": "Whether to force the deletion of the quota override.\nIf deleting an override would cause the effective quota for the consumer to\ndecrease by more than 10 percent, the call is rejected, as a safety measure\nto avoid accidentally decreasing quota too quickly. Setting the force\nparameter to true ignores this restriction.",
+                          "location": "query",
+                          "type": "boolean"
+                        }
+                      },
+                      "parameterOrder": [
+                        "name"
+                      ],
+                      "response": {
+                        "$ref": "Operation"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform",
+                        "https://www.googleapis.com/auth/service.management"
+                      ],
+                      "description": "Deletes a consumer override."
+                    },
+                    "list": {
+                      "id": "serviceusage.services.consumerQuotaMetrics.limits.consumerOverrides.list",
+                      "path": "v1beta1/{+parent}/consumerOverrides",
+                      "flatPath": "v1beta1/{v1beta1Id}/{v1beta1Id1}/services/{servicesId}/consumerQuotaMetrics/{consumerQuotaMetricsId}/limits/{limitsId}/consumerOverrides",
+                      "httpMethod": "GET",
+                      "parameters": {
+                        "parent": {
+                          "description": "The resource name of the parent quota limit, returned by a\nListConsumerQuotaMetrics or GetConsumerQuotaMetric call.\n\nAn example name would be:\n`projects\/123\/services\/compute.googleapis.com\/consumerQuotaMetrics\/compute.googleapis.com%2Fcpus\/limits\/%2Fproject%2Fregion`",
+                          "location": "path",
+                          "required": true,
+                          "pattern": "^[^\/]+\/[^\/]+\/services\/[^\/]+\/consumerQuotaMetrics\/[^\/]+\/limits\/[^\/]+$",
+                          "type": "string"
+                        },
+                        "pageSize": {
+                          "description": "Requested size of the next page of data.",
+                          "location": "query",
+                          "type": "integer",
+                          "format": "int32"
+                        },
+                        "pageToken": {
+                          "description": "Token identifying which result to start with; returned by a previous list\ncall.",
+                          "location": "query",
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "parent"
+                      ],
+                      "response": {
+                        "$ref": "ListConsumerOverridesResponse"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform",
+                        "https://www.googleapis.com/auth/cloud-platform.read-only"
+                      ],
+                      "description": "Lists all consumer overrides on this limit."
+                    }
+                  }
+                }
+              }
+            }
+          }
         }
       }
     }

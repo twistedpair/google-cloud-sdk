@@ -41,7 +41,10 @@ V1P4ALPHA1_API_VERSION = 'v1p4alpha1'
 V1P4BETA1_API_VERSION = 'v1p4beta1'
 V1P5ALPHA1_API_VERSION = 'v1p5alpha1'
 BASE_URL = 'https://cloudasset.googleapis.com'
-_HEADERS = {'Content-Type': 'application/json', 'X-HTTP-Method-Override': 'GET'}
+_HEADERS = {
+    'Content-Type': 'application/x-www-form-urlencoded',
+    'X-HTTP-Method-Override': 'GET'
+}
 _HTTP_ERROR_FORMAT = ('HTTP request failed with status code {}. '
                       'Response content: {}')
 # A dictionary that captures version differences for IAM Policy Analyzer.
@@ -114,11 +117,11 @@ def MakeGetAssetsHistoryHttpRequests(args, api_version=DEFAULT_API_VERSION):
                           times.FormatDateTime(args.end_time))])
   parent = asset_utils.GetParentNameForGetHistory(args.organization,
                                                   args.project)
-  url_base = '{0}/{1}/{2}:{3}'.format(BASE_URL, api_version, parent,
-                                      'batchGetAssetsHistory')
-  url_query = six.moves.urllib.parse.urlencode(query_params)
-  url = '?'.join([url_base, url_query])
-  response, raw_content = http_client.request(uri=url, headers=_HEADERS)
+  url = '{0}/{1}/{2}:{3}'.format(BASE_URL, api_version, parent,
+                                 'batchGetAssetsHistory')
+  encoded_query_params = six.moves.urllib.parse.urlencode(query_params)
+  response, raw_content = http_client.request(
+      uri=url, headers=_HEADERS, method='POST', body=encoded_query_params)
 
   content = core_encoding.Decode(raw_content)
 
@@ -187,8 +190,8 @@ def MakeAnalyzeIamPolicyHttpRequests(args, api_version=V1P4ALPHA1_API_VERSION):
 
   parent = asset_utils.GetParentNameForAnalyzeIamPolicy(args.organization,
                                                         folder)
-  url_base = '{0}/{1}/{2}:{3}'.format(BASE_URL, api_version, parent,
-                                      'analyzeIamPolicy')
+  url = '{0}/{1}/{2}:{3}'.format(BASE_URL, api_version, parent,
+                                 'analyzeIamPolicy')
 
   params = []
   if args.IsSpecified('full_resource_name'):
@@ -242,9 +245,9 @@ def MakeAnalyzeIamPolicyHttpRequests(args, api_version=V1P4ALPHA1_API_VERSION):
     params.extend([('options.executionTimeout',
                     str(args.execution_timeout) + 's')])
 
-  url_query = six.moves.urllib.parse.urlencode(params)
-  url = '?'.join([url_base, url_query])
-  response, raw_content = http_client.request(uri=url, headers=_HEADERS)
+  encoded_params = six.moves.urllib.parse.urlencode(params)
+  response, raw_content = http_client.request(
+      uri=url, headers=_HEADERS, method='POST', body=encoded_params)
 
   content = core_encoding.Decode(raw_content)
 

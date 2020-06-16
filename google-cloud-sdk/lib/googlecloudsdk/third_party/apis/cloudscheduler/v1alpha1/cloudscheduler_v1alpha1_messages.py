@@ -271,6 +271,9 @@ class CloudschedulerProjectsLocationsJobsListRequest(_messages.Message):
   r"""A CloudschedulerProjectsLocationsJobsListRequest object.
 
   Fields:
+    legacyAppEngineCron: This field is used to manage the legacy App Engine
+      Cron jobs using the Cloud Scheduler API. If the field is set to true,
+      the jobs in the __cron queue will be listed instead.
     pageSize: Requested page size. Fewer jobs than requested might be
       returned.  The maximum page size is 500. If unspecified, the page size
       will be the maximum. Fewer jobs than requested might be returned, even
@@ -286,9 +289,10 @@ class CloudschedulerProjectsLocationsJobsListRequest(_messages.Message):
       `projects/PROJECT_ID/locations/LOCATION_ID`.
   """
 
-  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(2)
-  parent = _messages.StringField(3, required=True)
+  legacyAppEngineCron = _messages.BooleanField(1)
+  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(3)
+  parent = _messages.StringField(4, required=True)
 
 
 class CloudschedulerProjectsLocationsJobsPatchRequest(_messages.Message):

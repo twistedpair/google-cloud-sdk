@@ -462,7 +462,7 @@
           "$ref": "RetryPolicy"
         },
         "detached": {
-          "description": "\nIndicates whether the subscription is detached from its topic. Detached\nsubscriptions don\u2019t receive messages from their topic and don\u2019t retain any\nbacklog. `Pull` and `StreamingPull` requests will return\nFAILED_PRECONDITION. If the subscription is a push subscription, pushes to\nthe endpoint will not be made.",
+          "description": "Indicates whether the subscription is detached from its topic. Detached\nsubscriptions don't receive messages from their topic and don't retain any\nbacklog. `Pull` and `StreamingPull` requests will return\nFAILED_PRECONDITION. If the subscription is a push subscription, pushes to\nthe endpoint will not be made.",
           "type": "boolean"
         }
       }

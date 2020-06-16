@@ -19,6 +19,7 @@ class Connector(_messages.Message):
     StatusValueValuesEnum: Output only. Status of the VPC access connector.
 
   Fields:
+    connectedProjects: Output only. List of projects using the connector.
     id: Identifier for the connector, short form of the name. Example:
       `access1`.
     ipCidrRange: The range of internal addresses that follows RFC 4632
@@ -51,13 +52,14 @@ class Connector(_messages.Message):
     ERROR = 4
     UPDATING = 5
 
-  id = _messages.StringField(1)
-  ipCidrRange = _messages.StringField(2)
-  maxThroughput = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  minThroughput = _messages.IntegerField(4, variant=_messages.Variant.INT32)
-  name = _messages.StringField(5)
-  network = _messages.StringField(6)
-  status = _messages.EnumField('StatusValueValuesEnum', 7)
+  connectedProjects = _messages.StringField(1, repeated=True)
+  id = _messages.StringField(2)
+  ipCidrRange = _messages.StringField(3)
+  maxThroughput = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  minThroughput = _messages.IntegerField(5, variant=_messages.Variant.INT32)
+  name = _messages.StringField(6)
+  network = _messages.StringField(7)
+  status = _messages.EnumField('StatusValueValuesEnum', 8)
 
 
 class ListConnectorsResponse(_messages.Message):

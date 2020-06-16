@@ -1248,28 +1248,27 @@ class ApigeeOrganizationsEnvironmentsOptimizedStatsGetRequest(_messages.Message)
   r"""A ApigeeOrganizationsEnvironmentsOptimizedStatsGetRequest object.
 
   Fields:
-    accuracy: Legacy field. not used anymore
+    accuracy: Legacy field: not used anymore.
     aggTable: If customers want to query custom aggregate tables, then this
       parameter can be used to specify the table name. If this parameter is
       skipped, then Edge Query will try to retrieve the data from fact tables
       which will be expensive.
-    filter: Enables drill-down on specific dimension values
+    filter: Enables drill-down on specific dimension values.
     limit: This parameter is used to limit the number of result items. Default
-      and the max value is 14400
-    name: Required. The organization and environment name for which the
-      interactive query will be executed. Must be of the form   `organizations
-      /{organization_id}/environments/{environment_id/stats/{dimensions}`
-      Dimensions let you view metrics in meaningful groupings. E.g. apiproxy,
-      target_host. The value of dimensions should be comma separated list as
-      shown below
+      and the max value is 14400.
+    name: Required. The resource name for which the interactive query will be
+      executed. Must be of the form   `organizations/{organization_id}/environ
+      ments/{environment_id/stats/{dimensions}` Dimensions let you view
+      metrics in meaningful groupings. E.g. apiproxy, target_host. The value
+      of dimensions should be comma separated list as shown below
       `organizations/{org}/environments/{env}/stats/apiproxy,request_verb`
     offset: Use offset with limit to enable pagination of results. For
       example, to display results 11-20, set limit to '10' and offset to '10'.
-    realtime: Legacy field: not used anymore
+    realtime: Legacy field: not used anymore.
     select: Required. The select parameter contains a comma separated list of
-      metrics E.g. sum(message_count),sum(error_count)
+      metrics. E.g. sum(message_count),sum(error_count)
     sonar: This parameter routes the query to api monitoring service for last
-      hour
+      hour.
     sort: This parameter specifies if the sort order should be ascending or
       descending Supported values are DESC and ASC.
     sortby: Comma separated list of columns to sort the final result.
@@ -1281,7 +1280,7 @@ class ApigeeOrganizationsEnvironmentsOptimizedStatsGetRequest(_messages.Message)
       results 'topk=5'.
     tsAscending: Lists timestamps in ascending order if set to true. Recommend
       setting this value to true if you are using sortby with sort=DESC.
-    tzo: This parameters contains the timezone offset value
+    tzo: This parameters contains the timezone offset value.
   """
 
   accuracy = _messages.StringField(1)
@@ -1308,8 +1307,8 @@ class ApigeeOrganizationsEnvironmentsQueriesCreateRequest(_messages.Message):
   Fields:
     googleCloudApigeeV1Query: A GoogleCloudApigeeV1Query resource to be passed
       as the request body.
-    parent: Required. The parent organization and environment names. Must be
-      of the form `organizations/{org}/environments/{env}`.
+    parent: Required. The parent resource name. Must be of the form
+      `organizations/{org}/environments/{env}`.
   """
 
   googleCloudApigeeV1Query = _messages.MessageField('GoogleCloudApigeeV1Query', 1)
@@ -1349,10 +1348,10 @@ class ApigeeOrganizationsEnvironmentsQueriesListRequest(_messages.Message):
       '2011-12-03T10:15:30Z'.
     inclQueriesWithoutReport: Flag to include asynchronous queries that don't
       have a report denifition.
-    parent: Required. The parent organization and environment names. Must be
-      of the form `organizations/{org}/environments/{env}`.
-    status: Filter response list by asynchronous query status
-    submittedBy: Filter response list by user who submitted queries
+    parent: Required. The parent resource name. Must be of the form
+      `organizations/{org}/environments/{env}`.
+    status: Filter response list by asynchronous query status.
+    submittedBy: Filter response list by user who submitted queries.
     to: Filter response list by returning asynchronous queries that created
       before this date time. Time must be in ISO date-time format like
       '2011-12-03T10:16:30Z'.
@@ -1562,29 +1561,28 @@ class ApigeeOrganizationsEnvironmentsStatsGetRequest(_messages.Message):
   r"""A ApigeeOrganizationsEnvironmentsStatsGetRequest object.
 
   Fields:
-    accuracy: Legacy field. not used anymore This field is present to support
-      UI calls which still use this parameter
+    accuracy: Legacy field: not used anymore. This field is present to support
+      UI calls which still use this parameter.
     aggTable: If customers want to query custom aggregate tables, then this
       parameter can be used to specify the table name. If this parameter is
       skipped, then Edge Query will try to retrieve the data from fact tables
       which will be expensive.
     filter: Enables drill-down on specific dimension values
     limit: This parameter is used to limit the number of result items. Default
-      and the max value is 14400
-    name: Required. The organization and environment name for which the
-      interactive query will be executed. Must be of the form   `organizations
-      /{organization_id}/environments/{environment_id/stats/{dimensions}`
-      Dimensions let you view metrics in meaningful groupings. E.g. apiproxy,
-      target_host. The value of dimensions should be comma separated list as
-      shown below
+      and the max value is 14400.
+    name: Required. The resource name for which the interactive query will be
+      executed. Must be of the form   `organizations/{organization_id}/environ
+      ments/{environment_id/stats/{dimensions}` Dimensions let you view
+      metrics in meaningful groupings. E.g. apiproxy, target_host. The value
+      of dimensions should be comma separated list as shown below
       `organizations/{org}/environments/{env}/stats/apiproxy,request_verb`
     offset: Use offset with limit to enable pagination of results. For
       example, to display results 11-20, set limit to '10' and offset to '10'.
-    realtime: Legacy field: not used anymore
-    select: The select parameter contains a comma separated list of metrics
+    realtime: Legacy field: not used anymore.
+    select: The select parameter contains a comma separated list of metrics.
       E.g. sum(message_count),sum(error_count)
     sonar: This parameter routes the query to api monitoring service for last
-      hour
+      hour.
     sort: This parameter specifies if the sort order should be ascending or
       descending Supported values are DESC and ASC.
     sortby: Comma separated list of columns to sort the final result.
@@ -1596,7 +1594,7 @@ class ApigeeOrganizationsEnvironmentsStatsGetRequest(_messages.Message):
       results 'topk=5'.
     tsAscending: Lists timestamps in ascending order if set to true. Recommend
       setting this value to true if you are using sortby with sort=DESC.
-    tzo: This parameters contains the timezone offset value
+    tzo: This parameters contains the timezone offset value.
   """
 
   accuracy = _messages.StringField(1)
@@ -2460,22 +2458,22 @@ class GoogleCloudApigeeV1AsyncQuery(_messages.Message):
   r"""A GoogleCloudApigeeV1AsyncQuery object.
 
   Fields:
-    created: Creation time of the query
-    error: Error is set when query fails
+    created: Creation time of the query.
+    error: Error is set when query fails.
     executionTime: ExecutionTime is available only after the query is
-      completed
+      completed.
     name: Asynchronous Query Name.
     queryParams: Contains information like metrics, dimenstions etc of the
-      AsyncQuery
+      AsyncQuery.
     reportDefinitionId: Asynchronous Report ID.
-    result: Result is available only after the query is completed
+    result: Result is available only after the query is completed.
     resultFileSize: ResultFileSize is available only after the query is
-      completed
-    resultRows: ResultRows is available only after the query is completed
-    self: Self link of the query  Example: `/organizations/myorg/environments/
-      myenv/queries/9cfc0d85-0f30-46d6-ae6f-318d0cb961bd`
-    state: Query state could be "enqueued", "running", "completed", "failed"
-    updated: Last updated timestamp for the query
+      completed.
+    resultRows: ResultRows is available only after the query is completed.
+    self: Self link of the query.  Example: `/organizations/myorg/environments
+      /myenv/queries/9cfc0d85-0f30-46d6-ae6f-318d0cb961bd`
+    state: Query state could be "enqueued", "running", "completed", "failed".
+    updated: Last updated timestamp for the query.
   """
 
   created = _messages.StringField(1)
@@ -2497,8 +2495,8 @@ class GoogleCloudApigeeV1AsyncQueryResult(_messages.Message):
 
   Fields:
     expires: Query result will be unaccessable after this time.
-    self: Self link of the query results  Example: `/organizations/myorg/envir
-      onments/myenv/queries/9cfc0d85-0f30-46d6-ae6f-318d0cb961bd/result`
+    self: Self link of the query results.  Example: `/organizations/myorg/envi
+      ronments/myenv/queries/9cfc0d85-0f30-46d6-ae6f-318d0cb961bd/result`
   """
 
   expires = _messages.StringField(1)
@@ -2999,11 +2997,11 @@ class GoogleCloudApigeeV1DeveloperAppKey(_messages.Message):
 
 
 class GoogleCloudApigeeV1DimensionMetric(_messages.Message):
-  r"""This message type encapsulates a metric grouped by dimension
+  r"""This message type encapsulates a metric grouped by dimension.
 
   Fields:
-    metrics: This field contains a list of metrics
-    name: This field contains the name of the dimension
+    metrics: This field contains a list of metrics.
+    name: This field contains the name of the dimension.
   """
 
   metrics = _messages.MessageField('GoogleCloudApigeeV1Metric', 1, repeated=True)
@@ -3254,11 +3252,10 @@ class GoogleCloudApigeeV1ListAppsResponse(_messages.Message):
 
 
 class GoogleCloudApigeeV1ListAsyncQueriesResponse(_messages.Message):
-  r"""The response for ListAsyncQueries
+  r"""The response for ListAsyncQueries.
 
   Fields:
-    queries: The asynchronous queries belong to requested organization and
-      environment
+    queries: The asynchronous queries belong to requested resource name.
   """
 
   queries = _messages.MessageField('GoogleCloudApigeeV1AsyncQuery', 1, repeated=True)
@@ -3361,10 +3358,10 @@ class GoogleCloudApigeeV1ListSharedFlowsResponse(_messages.Message):
 
 class GoogleCloudApigeeV1Metadata(_messages.Message):
   r"""This message type encapsulates additional information about query
-  execution
+  execution.
 
   Fields:
-    errors: List of error messages as strings
+    errors: List of error messages as strings.
     notices: List of additional information such as data source, if result was
       truncated etc. E.g "notices": [              "Source:Postgres",
       "PG Host:uappg0rw.e2e.apigeeks.net",              "query served
@@ -3377,7 +3374,7 @@ class GoogleCloudApigeeV1Metadata(_messages.Message):
 
 
 class GoogleCloudApigeeV1Metric(_messages.Message):
-  r"""This message type encapsulates the metric data point Example {
+  r"""This message type encapsulates the metric data point. Example: {
   "name": "sum(message_count)",    "values" : [ {
   "timestamp": 1549004400000,                   "value": "39.0"
   },                 {                   "timestamp" : 1548997200000,
@@ -3385,8 +3382,8 @@ class GoogleCloudApigeeV1Metric(_messages.Message):
   "values" : ["39.0"] }
 
   Fields:
-    name: This field contains the metric name
-    values: List of metric values Possible value format "values":["39.0"] or
+    name: This field contains the metric name.
+    values: List of metric values. Possible value format: "values":["39.0"] or
       "values":[ { "value": "39.0", "timestamp": 1232434354} ]
   """
 
@@ -3467,7 +3464,18 @@ class GoogleCloudApigeeV1OptimizedStats(_messages.Message):
 
 
 class GoogleCloudApigeeV1OptimizedStatsNode(_messages.Message):
-  r"""A GoogleCloudApigeeV1OptimizedStatsNode object.
+  r"""This message type encapsulates a data node as represented below:
+  {            "identifier": {                "names": [
+  "apiproxy"                ],                "values": [
+  "sirjee"                ]            },            "metric": [
+  {                    "env": "prod",                    "name":
+  "sum(message_count)",                    "values": [
+  36.0                    ]                }            ]        }         OR
+  {          "env": "prod",          "name": "sum(message_count)",
+  "values": [                        36.0                    ]        }
+  Depending on whether a dimension is present in the query or not the data
+  node type can be a simple metric value or dimension identifier with list of
+  metrics.
 
   Fields:
     data: A extra_types.JsonValue attribute.
@@ -3478,7 +3486,7 @@ class GoogleCloudApigeeV1OptimizedStatsNode(_messages.Message):
 
 class GoogleCloudApigeeV1OptimizedStatsResponse(_messages.Message):
   r"""This message type encapsulates a response format for Js Optimized
-  Scenario
+  Scenario.
 
   Fields:
     TimeUnit: This field contains a list of time unit values. Time unit refers
@@ -3487,7 +3495,7 @@ class GoogleCloudApigeeV1OptimizedStatsResponse(_messages.Message):
       executed
     resultTruncated: This ia a boolean field to indicate if the results were
       truncated based on the limit parameter.
-    stats: This field contains a stats results
+    stats: This field contains a stats results.
   """
 
   TimeUnit = _messages.IntegerField(1, repeated=True)
@@ -3524,6 +3532,7 @@ class GoogleCloudApigeeV1Organization(_messages.Message):
     lastModifiedAt: Output only. Time that the Apigee organization was last
       modified in milliseconds since epoch.
     name: Output only. Name of the Apigee organization.
+    projectId: The project ID associated with the Apigee organization.
     properties: Properties defined in the Apigee organization profile.
     runtimeType: Output only. Runtime type of the Apigee organization based on
       the Apigee subscription purchased.
@@ -3589,10 +3598,11 @@ class GoogleCloudApigeeV1Organization(_messages.Message):
   environments = _messages.StringField(7, repeated=True)
   lastModifiedAt = _messages.IntegerField(8)
   name = _messages.StringField(9)
-  properties = _messages.MessageField('GoogleCloudApigeeV1Properties', 10)
-  runtimeType = _messages.EnumField('RuntimeTypeValueValuesEnum', 11)
-  subscriptionType = _messages.EnumField('SubscriptionTypeValueValuesEnum', 12)
-  type = _messages.EnumField('TypeValueValuesEnum', 13)
+  projectId = _messages.StringField(10)
+  properties = _messages.MessageField('GoogleCloudApigeeV1Properties', 11)
+  runtimeType = _messages.EnumField('RuntimeTypeValueValuesEnum', 12)
+  subscriptionType = _messages.EnumField('SubscriptionTypeValueValuesEnum', 13)
+  type = _messages.EnumField('TypeValueValuesEnum', 14)
 
 
 class GoogleCloudApigeeV1OrganizationProjectMapping(_messages.Message):
@@ -3692,7 +3702,7 @@ class GoogleCloudApigeeV1Query(_messages.Message):
     csvDelimiter: Delimiter used in the CSV file, if `outputFormat` is set to
       `csv`. Defaults to the `,` (comma) character. Supported delimiter
       characters include comma (`,`), pipe (`|`), and tab (`\t`).
-    dimensions: A list of dimensions https://docs.apigee.com/api-
+    dimensions: A list of dimensions. https://docs.apigee.com/api-
       platform/analytics/analytics-reference#dimensions
     filter: Boolean expression that can be used to filter data. Filter
       expressions can be combined using AND/OR terms and should be fully
@@ -3710,7 +3720,7 @@ class GoogleCloudApigeeV1Query(_messages.Message):
       milliseconds precision. If a query omits groupByTimeUnit, then the
       resultant timestamp includes milliseconds precision.
     limit: Maximum number of rows that can be returned in the result.
-    metrics: A list of Metrics
+    metrics: A list of Metrics.
     name: Asynchronous Query Name.
     outputFormat: Valid values include: `csv` or `json`. Defaults to `json`.
       Note: Configure the delimiter for CSV output using the csvDelimiter
@@ -3764,9 +3774,9 @@ class GoogleCloudApigeeV1QueryMetric(_messages.Message):
   Fields:
     alias: Alias for the metric. Alias will be used to replace metric name in
       query results.
-    function: Aggregation function: avg, min, max, or sum
-    name: Required. Metric name
-    operator: One of `+`, `-`, `/`, `%`, `*`
+    function: Aggregation function: avg, min, max, or sum.
+    name: Required. Metric name.
+    operator: One of `+`, `-`, `/`, `%`, `*`.
     value: Operand value should be provided when operator is set.
   """
 
@@ -4070,11 +4080,12 @@ class GoogleCloudApigeeV1SharedFlowRevision(_messages.Message):
 
 
 class GoogleCloudApigeeV1Stats(_messages.Message):
-  r"""This message type encapsulates a stats response
+  r"""This message type encapsulates a stats response.
 
   Fields:
-    environments: A GoogleCloudApigeeV1StatsEnvironmentStats attribute.
-    metaData: This field contains the metadata information
+    environments: This field contains a list of query results on environment
+      level.
+    metaData: This field contains the metadata information.
   """
 
   environments = _messages.MessageField('GoogleCloudApigeeV1StatsEnvironmentStats', 1, repeated=True)
@@ -4082,7 +4093,7 @@ class GoogleCloudApigeeV1Stats(_messages.Message):
 
 
 class GoogleCloudApigeeV1StatsEnvironmentStats(_messages.Message):
-  r"""This message type encapsulates the environment wrapper
+  r"""This message type encapsulates the environment wrapper:
   "environments": [      {          "metrics": [              {
   "name": "sum(message_count)",                  "values": [
   "2.52056245E8"                  ]              }          ],
@@ -4090,7 +4101,7 @@ class GoogleCloudApigeeV1StatsEnvironmentStats(_messages.Message):
 
   Fields:
     dimensions: This field contains the list of metrics grouped under
-      dimensions
+      dimensions.
     metrics: In the final response, only one of the following fields will be
       present based on the dimensions provided. If no dimensions are provided,
       then only a top level metrics is provided. If dimensions are included,
@@ -4106,7 +4117,7 @@ class GoogleCloudApigeeV1StatsEnvironmentStats(_messages.Message):
       "sum(message_count)",                         "values": [
       "2.19026331E8"                        ]                    }
       ],                "name": "prod"            }        ] This field
-      contains the list of metric values
+      contains the list of metric values.
     name: A string attribute.
   """
 
@@ -4296,13 +4307,13 @@ class GoogleIamV1AuditConfig(_messages.Message):
   service: the log_types specified in each AuditConfig are enabled, and the
   exempted_members in each AuditLogConfig are exempted.  Example Policy with
   multiple AuditConfigs:      {       "audit_configs": [         {
-  "service": "allServices"           "audit_log_configs": [             {
+  "service": "allServices",           "audit_log_configs": [             {
   "log_type": "DATA_READ",               "exempted_members": [
   "user:jose@example.com"               ]             },             {
-  "log_type": "DATA_WRITE",             },             {
-  "log_type": "ADMIN_READ",             }           ]         },         {
-  "service": "sampleservice.googleapis.com"           "audit_log_configs": [
-  {               "log_type": "DATA_READ",             },             {
+  "log_type": "DATA_WRITE"             },             {
+  "log_type": "ADMIN_READ"             }           ]         },         {
+  "service": "sampleservice.googleapis.com",           "audit_log_configs": [
+  {               "log_type": "DATA_READ"             },             {
   "log_type": "DATA_WRITE",               "exempted_members": [
   "user:aliya@example.com"               ]             }           ]         }
   ]     }  For sampleservice, this policy enables DATA_READ, DATA_WRITE and
@@ -4324,7 +4335,7 @@ class GoogleIamV1AuditLogConfig(_messages.Message):
   r"""Provides the configuration for logging a type of permissions. Example:
   {       "audit_log_configs": [         {           "log_type": "DATA_READ",
   "exempted_members": [             "user:jose@example.com"           ]
-  },         {           "log_type": "DATA_WRITE",         }       ]     }
+  },         {           "log_type": "DATA_WRITE"         }       ]     }
   This enables 'DATA_READ' and 'DATA_WRITE' logging, while exempting
   jose@example.com from DATA_READ logging.
 

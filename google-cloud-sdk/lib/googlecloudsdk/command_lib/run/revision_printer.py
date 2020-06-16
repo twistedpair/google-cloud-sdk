@@ -119,7 +119,11 @@ class RevisionPrinter(k8s_object_printer.K8sObjectPrinter):
 
   @staticmethod
   def GetVpcConnector(record):
-    return record.annotations.get(revision.VPC_ACCESS_ANNOTATION, '')
+    return cp.Labeled([
+        ('Name', record.annotations.get(revision.VPC_ACCESS_ANNOTATION, '')),
+        ('Egress',
+         record.annotations.get(revision.EGRESS_SETTINGS_ANNOTATION, ''))
+    ])
 
   @staticmethod
   def GetMinInstances(record):

@@ -201,10 +201,6 @@
           "description": "The resource name of the bucket. For example: \"projects\/my-project-id\/locations\/my-location\/buckets\/my-bucket-id The supported locations are:  \"global\"  \"us-central1\"For the location of global it is unspecified where logs are actually stored. Once a bucket has been created, the location can not be changed.",
           "type": "string"
         },
-        "displayName": {
-          "description": "Display name of the bucket.",
-          "type": "string"
-        },
         "description": {
           "description": "Describes this bucket.",
           "type": "string"
@@ -288,10 +284,6 @@
       "properties": {
         "name": {
           "description": "The resource name of the view. For example \"projects\/my-project-id\/locations\/my-location\/buckets\/my-bucket-id\/views\/my-view",
-          "type": "string"
-        },
-        "displayName": {
-          "description": "Display name of the view.",
           "type": "string"
         },
         "description": {
@@ -854,7 +846,7 @@
           "type": "string"
         },
         "pageSize": {
-          "description": "Optional. The maximum number of results to return from this request. Non-positive values are ignored. The presence of next_page_token in the response indicates that more results might be available.",
+          "description": "Optional. The maximum number of results to return from this request. Default is 50. If the value is negative or exceeds 1000, the request is rejected. The presence of next_page_token in the response indicates that more results might be available.",
           "type": "integer",
           "format": "int32"
         },

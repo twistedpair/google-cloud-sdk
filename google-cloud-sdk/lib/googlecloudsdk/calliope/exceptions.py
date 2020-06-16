@@ -132,12 +132,6 @@ def RaiseErrorInsteadOf(error, *error_types):
   return Wrap
 
 
-# TODO(b/32328530): Remove RaiseToolExceptionInsteadOf when the last ref is gone
-def RaiseToolExceptionInsteadOf(*error_types):
-  """A decorator that re-raises as ToolException."""
-  return RaiseErrorInsteadOf(ToolException, *error_types)
-
-
 def _TruncateToLineWidth(string, align, width, fill=''):
   """Truncate string to line width, right aligning at align.
 
@@ -527,8 +521,41 @@ def HandleError(exc, command_path, known_error_handler=None):
     core_exceptions.reraise(exc)
 
 
-def _MessageWhenMissingServiceUsePermission(known_exc):
-  """Generates message when missing 'serviceusage.services.use' permission."""
+class HttpExceptionAdditionalHelp(object):
+  """Additional help text generator when specific HttpException was raised.
+
+  Attributes:
+     known_exc: googlecloudsdk.api_lib.util.exceptions.HttpException, The
+      exception to handle.
+    error_msg_signature: string, The signature message to determine the
+      nature of the error.
+    additional_help: string, The additional help to print if error_msg_signature
+      appears in the exception error message.
+  """
+
+  def __init__(self, known_exc, error_msg_signature, additional_help):
+    self.known_exc = known_exc
+    self.error_msg_signature = error_msg_signature
+    self.additional_help = additional_help
+
+  def Extend(self, msg):
+    """Appends the additional help to the given msg."""
+    if self.error_msg_signature in self.known_exc.message:
+      return '{0}\n\n{1}'.format(msg,
+                                 console_attr.SafeText(self.additional_help))
+    else:
+      return msg
+
+
+def _BuildMissingServiceUsePermissionAdditionalHelp(known_exc):
+  """Additional help when missing the 'serviceusage.services.use' permission.
+
+  Args:
+    known_exc: googlecloudsdk.api_lib.util.exceptions.HttpException, The
+     exception to handle.
+  Returns:
+    A HttpExceptionAdditionalHelp object.
+  """
   error_message_signature = (
       'Grant the caller the Owner or Editor role, or a '
       'custom role with the serviceusage.services.use permission')
@@ -536,21 +563,48 @@ def _MessageWhenMissingServiceUsePermission(known_exc):
                   'from the target resource project, use `--billing-project` '
                   'or `{}` property.'.format(
                       properties.VALUES.billing.quota_project))
+  return HttpExceptionAdditionalHelp(known_exc, error_message_signature,
+                                     help_message)
 
-  if (isinstance(known_exc, api_exceptions.HttpException) and
-      error_message_signature in known_exc.message):
-    return help_message
-  else:
-    return None
+
+def _BuildMissingAuthScopesAdditionalHelp(known_exc):
+  """Additional help when missing authentication scopes.
+
+  When authenticated using user credentials and service account credentials
+  locally, the requested scopes (googlecloudsdk.core.config.CLOUDSDK_SCOPES)
+  should be enough to run gcloud commands. If users run gcloud from a GCE VM,
+  the scopes of the default service account is customizable during vm creation.
+  It is possible that the default service account does not have required scopes.
+
+  Args:
+    known_exc: googlecloudsdk.api_lib.util.exceptions.HttpException, The
+     exception to handle.
+  Returns:
+    A HttpExceptionAdditionalHelp object.
+  """
+  error_message_signature = 'Request had insufficient authentication scopes'
+  help_message = (
+      'If you are in a compute engine VM, it is likely that the specified '
+      'scopes during VM creation are not enough to run this command.\nSee '
+      'https://cloud.google.com/compute/docs/access/service-accounts#accesscopesiam'
+      ' for more information of access scopes.\nSee '
+      'https://cloud.google.com/compute/docs/access/create-enable-service-accounts-for-instances#changeserviceaccountandscopes'
+      ' for how to update access scopes of the VM.')
+  return HttpExceptionAdditionalHelp(known_exc, error_message_signature,
+                                     help_message)
 
 
 def _LogKnownError(known_exc, command_path, print_error):
+  """Logs the error message of the known exception."""
   msg = '({0}) {1}'.format(
       console_attr.SafeText(command_path),
       console_attr.SafeText(known_exc))
-  help_message = _MessageWhenMissingServiceUsePermission(known_exc)
-  if help_message:
-    msg = '{0}\n\n{1}'.format(msg, console_attr.SafeText(help_message))
+  if isinstance(known_exc, api_exceptions.HttpException):
+    service_use_help = _BuildMissingServiceUsePermissionAdditionalHelp(
+        known_exc)
+    auth_scopes_help = _BuildMissingAuthScopesAdditionalHelp(known_exc)
+    msg = service_use_help.Extend(msg)
+    msg = auth_scopes_help.Extend(msg)
   log.debug(msg, exc_info=sys.exc_info())
   if print_error:
     log.error(msg)

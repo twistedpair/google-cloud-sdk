@@ -2586,7 +2586,9 @@ class SpannerProjectsInstancesDatabasesGetDdlRequest(_messages.Message):
   r"""A SpannerProjectsInstancesDatabasesGetDdlRequest object.
 
   Fields:
-    database: Required. The database whose schema we wish to get.
+    database: Required. The database whose schema we wish to get. Values are
+      of the form
+      `projects/<project>/instances/<instance>/databases/<database>`
   """
 
   database = _messages.StringField(1, required=True)

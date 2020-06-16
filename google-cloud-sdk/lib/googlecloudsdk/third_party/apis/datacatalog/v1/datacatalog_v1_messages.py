@@ -556,6 +556,23 @@ class DatacatalogProjectsLocationsTagTemplatesFieldsDeleteRequest(_messages.Mess
   name = _messages.StringField(2, required=True)
 
 
+class DatacatalogProjectsLocationsTagTemplatesFieldsEnumValuesRenameRequest(_messages.Message):
+  r"""A DatacatalogProjectsLocationsTagTemplatesFieldsEnumValuesRenameRequest
+  object.
+
+  Fields:
+    googleCloudDatacatalogV1RenameTagTemplateFieldEnumValueRequest: A
+      GoogleCloudDatacatalogV1RenameTagTemplateFieldEnumValueRequest resource
+      to be passed as the request body.
+    name: Required. The name of the enum field value. Example:  * projects/{pr
+      oject_id}/locations/{location}/tagTemplates/{tag_template_id}/fields/{ta
+      g_template_field_id}/enumValues/{enum_value_display_name}
+  """
+
+  googleCloudDatacatalogV1RenameTagTemplateFieldEnumValueRequest = _messages.MessageField('GoogleCloudDatacatalogV1RenameTagTemplateFieldEnumValueRequest', 1)
+  name = _messages.StringField(2, required=True)
+
+
 class DatacatalogProjectsLocationsTagTemplatesFieldsPatchRequest(_messages.Message):
   r"""A DatacatalogProjectsLocationsTagTemplatesFieldsPatchRequest object.
 
@@ -1048,15 +1065,14 @@ class GoogleCloudDatacatalogV1GcsFilesetSpec(_messages.Message):
 
   Fields:
     filePatterns: Required. Patterns to identify a set of files in Google
-      Cloud Storage. See [Cloud Storage
-      documentation](/storage/docs/gsutil/addlhelp/WildcardNames) for more
-      information. Note that bucket wildcards are currently not supported.
-      Examples of valid file_patterns:   * `gs://bucket_name/dir/*`: matches
-      all files within `bucket_name/dir`
-      directory.  * `gs://bucket_name/dir/**`: matches all files in
-      `bucket_name/dir`                               spanning all
-      subdirectories.  * `gs://bucket_name/file*`: matches files prefixed by
-      `file` in                              `bucket_name`  *
+      Cloud Storage. See [Cloud Storage documentation](https://cloud.google.co
+      m/storage/docs/gsutil/addlhelp/WildcardNames) for more information. Note
+      that bucket wildcards are currently not supported.  Examples of valid
+      file_patterns:   * `gs://bucket_name/dir/*`: matches all files within
+      `bucket_name/dir`                              directory.  *
+      `gs://bucket_name/dir/**`: matches all files in `bucket_name/dir`
+      spanning all subdirectories.  * `gs://bucket_name/file*`: matches files
+      prefixed by `file` in                              `bucket_name`  *
       `gs://bucket_name/??.txt`: matches files with two characters followed by
       `.txt` in `bucket_name`  * `gs://bucket_name/[aeiou].txt`: matches files
       that contain a single                                    vowel character
@@ -1113,6 +1129,17 @@ class GoogleCloudDatacatalogV1ListTagsResponse(_messages.Message):
 
   nextPageToken = _messages.StringField(1)
   tags = _messages.MessageField('GoogleCloudDatacatalogV1Tag', 2, repeated=True)
+
+
+class GoogleCloudDatacatalogV1RenameTagTemplateFieldEnumValueRequest(_messages.Message):
+  r"""Request message for RenameTagTemplateFieldEnumValue.
+
+  Fields:
+    newEnumValueDisplayName: Required. The new display name of the enum value.
+      For example, `my_new_enum_value`.
+  """
+
+  newEnumValueDisplayName = _messages.StringField(1)
 
 
 class GoogleCloudDatacatalogV1RenameTagTemplateFieldRequest(_messages.Message):
@@ -1631,14 +1658,12 @@ class StandardQueryParameters(_messages.Message):
 
   Fields:
     f__xgafv: V1 error format.
-    access_token: OAuth access token.
     alt: Data format for response.
     callback: JSONP
     fields: Selector specifying which fields to include in a partial response.
     key: API key. Your API key identifies your project and provides you with
       API access, quota, and reports. Required unless you provide an OAuth 2.0
       token.
-    oauth_token: OAuth 2.0 token for the current user.
     prettyPrint: Returns response with indentations and line breaks.
     quotaUser: Available to use for quota purposes for server-side
       applications. Can be any arbitrary string assigned to a user, but should
@@ -1672,17 +1697,15 @@ class StandardQueryParameters(_messages.Message):
     _2 = 1
 
   f__xgafv = _messages.EnumField('FXgafvValueValuesEnum', 1)
-  access_token = _messages.StringField(2)
-  alt = _messages.EnumField('AltValueValuesEnum', 3, default='json')
-  callback = _messages.StringField(4)
-  fields = _messages.StringField(5)
-  key = _messages.StringField(6)
-  oauth_token = _messages.StringField(7)
-  prettyPrint = _messages.BooleanField(8, default=True)
-  quotaUser = _messages.StringField(9)
-  trace = _messages.StringField(10)
-  uploadType = _messages.StringField(11)
-  upload_protocol = _messages.StringField(12)
+  alt = _messages.EnumField('AltValueValuesEnum', 2, default='json')
+  callback = _messages.StringField(3)
+  fields = _messages.StringField(4)
+  key = _messages.StringField(5)
+  prettyPrint = _messages.BooleanField(6, default=True)
+  quotaUser = _messages.StringField(7)
+  trace = _messages.StringField(8)
+  uploadType = _messages.StringField(9)
+  upload_protocol = _messages.StringField(10)
 
 
 class TestIamPermissionsRequest(_messages.Message):

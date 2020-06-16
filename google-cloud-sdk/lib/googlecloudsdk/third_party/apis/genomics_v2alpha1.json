@@ -685,6 +685,40 @@
         }
       }
     },
+    "HttpBody": {
+      "id": "HttpBody",
+      "description": "Message that represents an arbitrary HTTP body. It should only be used for\npayload formats that can't be represented as JSON, such as raw binary or\nan HTML page.\n\n\nThis message can be used both in streaming and non-streaming API methods in\nthe request as well as the response.\n\nIt can be used as a top-level request field, which is convenient if one\nwants to extract parameters from either the URL or HTTP template into the\nrequest fields and also want access to the raw HTTP body.\n\nExample:\n\n    message GetResourceRequest {\n      \/\/ A unique request id.\n      string request_id = 1;\n\n      \/\/ The raw HTTP body is bound to this field.\n      google.api.HttpBody http_body = 2;\n    }\n\n    service ResourceService {\n      rpc GetResource(GetResourceRequest) returns (google.api.HttpBody);\n      rpc UpdateResource(google.api.HttpBody) returns\n      (google.protobuf.Empty);\n    }\n\nExample with streaming methods:\n\n    service CaldavService {\n      rpc GetCalendar(stream google.api.HttpBody)\n        returns (stream google.api.HttpBody);\n      rpc UpdateCalendar(stream google.api.HttpBody)\n        returns (stream google.api.HttpBody);\n    }\n\nUse of this type only changes how the request and response bodies are\nhandled, all other features will continue to work unchanged.",
+      "type": "object",
+      "properties": {
+        "contentType": {
+          "description": "The HTTP Content-Type header value specifying the content type of the body.",
+          "type": "string"
+        },
+        "data": {
+          "description": "The HTTP request\/response body as raw binary.",
+          "type": "string",
+          "format": "byte"
+        },
+        "extensions": {
+          "description": "Application specific response metadata. Must be set in the first response\nfor streaming APIs.",
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "any",
+              "description": "Properties of the object. Contains field @type with type URL."
+            }
+          }
+        }
+      }
+    },
+    "UploadSOSReportResponse": {
+      "id": "UploadSOSReportResponse",
+      "description": "The response to the UploadSOSReport method.",
+      "type": "object",
+      "properties": {
+      }
+    },
     "OperationMetadata": {
       "id": "OperationMetadata",
       "description": "Metadata describing an Operation.",
@@ -1189,7 +1223,7 @@
               "httpMethod": "POST",
               "parameters": {
                 "id": {
-                  "description": "The worker id, assigned when it was created.",
+                  "description": "The VM identity token for authenticating the VM instance.\nhttps:\/\/cloud.google.com\/compute\/docs\/instances\/verifying-instance-identity",
                   "location": "path",
                   "required": true,
                   "pattern": "^projects\/[^\/]+\/workers\/[^\/]+$",
@@ -1249,7 +1283,7 @@
           "httpMethod": "POST",
           "parameters": {
             "id": {
-              "description": "The worker id, assigned when it was created.",
+              "description": "The VM identity token for authenticating the VM instance.\nhttps:\/\/cloud.google.com\/compute\/docs\/instances\/verifying-instance-identity",
               "location": "path",
               "required": true,
               "type": "string"
@@ -1269,6 +1303,46 @@
             "https://www.googleapis.com/auth/genomics"
           ],
           "description": "The worker uses this method to retrieve the assigned operation and\nprovide periodic status updates."
+        }
+      }
+      ,
+      "resources": {
+        "projects": {
+          "resources": {
+            "workers": {
+              "methods": {
+                "uploadSosReport": {
+                  "id": "genomics.workers.projects.workers.uploadSosReport",
+                  "path": "v2alpha1/workers/{+id}:uploadSosReport",
+                  "flatPath": "v2alpha1/workers/projects/{projectsId}/workers/{workersId}:uploadSosReport",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "id": {
+                      "description": "The VM identity token for authenticating the VM instance.\nhttps:\/\/cloud.google.com\/compute\/docs\/instances\/verifying-instance-identity",
+                      "location": "path",
+                      "required": true,
+                      "pattern": "^projects\/[^\/]+\/workers\/[^\/]+$",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "id"
+                  ],
+                  "request": {
+                    "$ref": "HttpBody"
+                  },
+                  "response": {
+                    "$ref": "UploadSOSReportResponse"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform",
+                    "https://www.googleapis.com/auth/genomics"
+                  ],
+                  "description": "The worker uses this method to upload SOS reports for unexpected errors."
+                }
+              }
+            }
+          }
         }
       }
     }

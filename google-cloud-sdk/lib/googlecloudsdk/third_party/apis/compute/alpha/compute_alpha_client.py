@@ -185,7 +185,7 @@ class ComputeAlpha(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Retrieves a list of accelerator types available to the specified project.
+      r"""Retrieves a list of accelerator types that are available to the specified project.
 
       Args:
         request: (ComputeAcceleratorTypesListRequest) input message

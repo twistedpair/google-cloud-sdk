@@ -25,9 +25,6 @@ from googlecloudsdk.api_lib.util import apis
 
 _SERVICE_CONSUMER_RESOURCE = 'services/%s/%s'
 _LIMIT_OVERRIDE_RESOURCE = '%s/producerOverrides/%s'
-# Use an synthetic override ID for create limit call because the server will
-# generate an override ID anyway.
-_OVERRIDE_ID = 'kawaii'
 
 
 def ListQuotaMetrics(service, consumer, page_size=None, limit=None):
@@ -60,65 +57,10 @@ def ListQuotaMetrics(service, consumer, page_size=None, limit=None):
       field='metrics')
 
 
-def CreateQuotaOverrideCall(service,
-                            consumer,
-                            metric,
-                            unit,
-                            dimensions,
-                            value,
-                            force=False):
-  """Create a quota override.
-
-  Args:
-    service: The service to create an override for.
-    consumer: The consumer to create an override for, e.g. "projects/123".
-    metric: The quota metric name.
-    unit: The unit of quota metric.
-    dimensions: The dimensions of the override in dictionary format. It can be
-      None.
-    value: The override integer value.
-    force: Force override creation even if the change results in a substantial
-      decrease in available quota.
-
-  Raises:
-    exceptions.CreateQuotaOverridePermissionDeniedException: when creating an
-    override fails.
-    apitools_exceptions.HttpError: Another miscellaneous error with the service.
-
-  Returns:
-    The quota override operation.
-  """
-  client = _GetClientInstance()
-  messages = client.MESSAGES_MODULE
-
-  parent = _GetMetricResourceName(service, consumer, metric, unit)
-  name = _LIMIT_OVERRIDE_RESOURCE % (parent, _OVERRIDE_ID)
-  dimensions_message = _GetDimensions(messages, dimensions)
-  request = messages.ServiceconsumermanagementServicesConsumerQuotaMetricsLimitsProducerOverridesCreateRequest(
-      parent=parent,
-      v1Beta1QuotaOverride=messages.V1Beta1QuotaOverride(
-          name=name,
-          metric=metric,
-          unit=unit,
-          dimensions=dimensions_message,
-          overrideValue=value,
-      ),
-      force=force,
-  )
-  try:
-    return client.services_consumerQuotaMetrics_limits_producerOverrides.Create(
-        request)
-  except (apitools_exceptions.HttpForbiddenError,
-          apitools_exceptions.HttpNotFoundError) as e:
-    exceptions.ReraiseError(
-        e, exceptions.CreateQuotaOverridePermissionDeniedException)
-
-
 def UpdateQuotaOverrideCall(service,
                             consumer,
                             metric,
                             unit,
-                            override_id,
                             dimensions,
                             value,
                             force=False):
@@ -129,7 +71,6 @@ def UpdateQuotaOverrideCall(service,
     consumer: The consumer to update a quota override for, e.g. "projects/123".
     metric: The quota metric name.
     unit: The unit of quota metric.
-    override_id: The override ID.
     dimensions: The dimensions of the override in dictionary format. It can be
       None.
     value: The override integer value.
@@ -147,23 +88,23 @@ def UpdateQuotaOverrideCall(service,
   client = _GetClientInstance()
   messages = client.MESSAGES_MODULE
 
-  parent = _GetMetricResourceName(service, consumer, metric, unit)
-  name = _LIMIT_OVERRIDE_RESOURCE % (parent, override_id)
   dimensions_message = _GetDimensions(messages, dimensions)
-  request = messages.ServiceconsumermanagementServicesConsumerQuotaMetricsLimitsProducerOverridesPatchRequest(
-      name=name,
-      v1Beta1QuotaOverride=messages.V1Beta1QuotaOverride(
-          name=name,
-          metric=metric,
-          unit=unit,
-          dimensions=dimensions_message,
-          overrideValue=value,
-      ),
-      force=force,
+  request = messages.ServiceconsumermanagementServicesConsumerQuotaMetricsImportProducerOverridesRequest(
+      parent=_SERVICE_CONSUMER_RESOURCE % (service, consumer),
+      v1Beta1ImportProducerOverridesRequest=messages
+      .V1Beta1ImportProducerOverridesRequest(
+          inlineSource=messages.V1Beta1OverrideInlineSource(
+              overrides=[
+                  messages.V1Beta1QuotaOverride(
+                      metric=metric,
+                      unit=unit,
+                      overrideValue=value,
+                      dimensions=dimensions_message)
+              ],),
+          force=force),
   )
   try:
-    return client.services_consumerQuotaMetrics_limits_producerOverrides.Patch(
-        request)
+    return client.services_consumerQuotaMetrics.ImportProducerOverrides(request)
   except (apitools_exceptions.HttpForbiddenError,
           apitools_exceptions.HttpNotFoundError) as e:
     exceptions.ReraiseError(

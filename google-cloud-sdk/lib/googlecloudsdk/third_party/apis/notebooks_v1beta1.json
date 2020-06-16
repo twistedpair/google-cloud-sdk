@@ -24,11 +24,6 @@
   "version_module": true,
   "fullyEncodeReservedExpansion": true,
   "parameters": {
-    "access_token": {
-      "type": "string",
-      "description": "OAuth access token.",
-      "location": "query"
-    },
     "alt": {
       "type": "string",
       "description": "Data format for response.",
@@ -58,11 +53,6 @@
     "key": {
       "type": "string",
       "description": "API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.",
-      "location": "query"
-    },
-    "oauth_token": {
-      "type": "string",
-      "description": "OAuth 2.0 token for the current user.",
       "location": "query"
     },
     "prettyPrint": {
@@ -647,6 +637,21 @@
           "additionalProperties": {
             "type": "string"
           }
+        }
+      }
+    },
+    "IsInstanceUpgradeableResponse": {
+      "id": "IsInstanceUpgradeableResponse",
+      "description": "Response for checking if a notebook instance is upgradeable.",
+      "type": "object",
+      "properties": {
+        "upgradeable": {
+          "description": "If an instance is upgradeable.",
+          "type": "boolean"
+        },
+        "upgradeVersion": {
+          "description": "The version this instance will be upgraded to if calling the upgrade\nendpoint. This field will only be populated if field upgradeable is true.",
+          "type": "string"
         }
       }
     },
@@ -1416,6 +1421,31 @@
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
                   "description": "Allows notebook instances to\nreport their latest instance information to the Notebooks\nAPI server. The server will merge the reported information to\nthe instance metadata store. Do not use this method directly."
+                },
+                "isUpgradeable": {
+                  "id": "notebooks.projects.locations.instances.isUpgradeable",
+                  "path": "v1beta1/{+notebookInstance}:isUpgradeable",
+                  "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/instances/{instancesId}:isUpgradeable",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "notebookInstance": {
+                      "description": "Required. Format:\n`projects\/{project_id}\/locations\/{location}\/instances\/{instance_id}`",
+                      "location": "path",
+                      "required": true,
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/instances\/[^\/]+$",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "notebookInstance"
+                  ],
+                  "response": {
+                    "$ref": "IsInstanceUpgradeableResponse"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Check if a notebook instance is upgradable."
                 },
                 "upgrade": {
                   "id": "notebooks.projects.locations.instances.upgrade",

@@ -341,7 +341,7 @@
           "type": "string"
         },
         "currentNodeVersion": {
-          "description": "[Output only] Deprecated, use\n[NodePool.version](\/kubernetes-engine\/docs\/reference\/rest\/v1alpha1\/projects.zones.clusters.nodePool)\ninstead. The current version of the node software components.\nIf they are currently at multiple versions because they're in the process\nof being upgraded, this reflects the minimum version of all nodes.",
+          "description": "[Output only] Deprecated, use\n[NodePool.version](\/kubernetes-engine\/docs\/reference\/rest\/v1alpha1\/projects.locations.clusters.nodePool)\ninstead. The current version of the node software components.\nIf they are currently at multiple versions because they're in the process\nof being upgraded, this reflects the minimum version of all nodes.",
           "type": "string"
         },
         "createTime": {
@@ -777,7 +777,7 @@
       "type": "object",
       "properties": {
         "sysctls": {
-          "description": "The Linux kernel parameters to be applied to the nodes and all pods running\non the nodes.\n\nThe following parameters are supported.\n\nkernel.pid_max\nkernel.threads-max\nfs.inotify.max_queued_events\nfs.inotify.max_user_instances\nfs.inotify.max_user_watches\nnet.core.netdev_budget\nnet.core.netdev_budget_usecs\nnet.core.netdev_max_backlog\nnet.core.rmem_default\nnet.core.rmem_max\nnet.core.wmem_default\nnet.core.wmem_max\nnet.core.optmem_max\nnet.core.somaxconn\nnet.ipv4.tcp_rmem\nnet.ipv4.tcp_wmem\nnet.ipv4.tcp_mem\nnet.ipv4.tcp_fin_timeout\nnet.ipv4.tcp_keepalive_intvl\nnet.ipv4.tcp_keepalive_probes\nnet.ipv4.tcp_keepalive_time\nnet.ipv4.tcp_max_orphans\nnet.ipv4.tcp_max_syn_backlog\nnet.ipv4.tcp_max_tw_buckets\nnet.ipv4.tcp_syn_retries\nnet.ipv4.tcp_tw_reuse\nnet.ipv4.udp_mem\nnet.ipv4.udp_rmem_min\nnet.ipv4.udp_wmem_min\nnet.netfilter.nf_conntrack_generic_timeout\nnet.netfilter.nf_conntrack_max\nnet.netfilter.nf_conntrack_tcp_timeout_close_wait\nnet.netfilter.nf_conntrack_tcp_timeout_established",
+          "description": "The Linux kernel parameters to be applied to the nodes and all pods running\non the nodes.\n\nThe following parameters are supported.\n\nnet.core.netdev_max_backlog\nnet.core.rmem_max\nnet.core.wmem_default\nnet.core.wmem_max\nnet.core.optmem_max\nnet.core.somaxconn\nnet.ipv4.tcp_rmem\nnet.ipv4.tcp_wmem\nnet.ipv4.tcp_tw_reuse",
           "type": "object",
           "additionalProperties": {
             "type": "string"
@@ -980,6 +980,20 @@
         "enableAlphaFeatures": {
           "description": "Enable alpha features of Cloud Run. These features are only available to\ntrusted testers.",
           "type": "boolean"
+        },
+        "loadBalancerType": {
+          "description": "Which load balancer type is installed for Cloud Run.",
+          "enumDescriptions": [
+            "Load balancer type for Cloud Run is unspecified.",
+            "Install external load balancer for Cloud Run.",
+            "Install internal load balancer for Cloud Run."
+          ],
+          "type": "string",
+          "enum": [
+            "LOAD_BALANCER_TYPE_UNSPECIFIED",
+            "LOAD_BALANCER_TYPE_EXTERNAL",
+            "LOAD_BALANCER_TYPE_INTERNAL"
+          ]
         }
       }
     },
@@ -1567,26 +1581,26 @@
       "type": "object",
       "properties": {
         "oauthScopes": {
-          "description": "Scopes that are used by NAP when creating node pools.",
+          "description": "The set of Google API scopes to be made available on all of the\nnode VMs under the \"default\" service account.\n\nThe following scopes are recommended, but not required, and by default are\nnot included:\n\n* `https:\/\/www.googleapis.com\/auth\/compute` is required for mounting\npersistent storage on your nodes.\n* `https:\/\/www.googleapis.com\/auth\/devstorage.read_only` is required for\ncommunicating with **gcr.io**\n(the [Google Container\nRegistry](https:\/\/cloud.google.com\/container-registry\/)).\n\nIf unspecified, no scopes are added, unless Cloud Logging or Cloud\nMonitoring are enabled, in which case their required scopes will be added.",
           "type": "array",
           "items": {
             "type": "string"
           }
         },
         "serviceAccount": {
-          "description": "The Google Cloud Platform Service Account to be used by the node VMs.",
+          "description": "The Google Cloud Platform Service Account to be used by the node VMs.\nSpecify the email address of the Service Account; otherwise, if no Service\nAccount is specified, the \"default\" service account is used.",
           "type": "string"
         },
         "upgradeSettings": {
-          "description": "Specifies the upgrade settings for NAP created node pools",
+          "description": "Upgrade settings control disruption and speed of the upgrade.",
           "$ref": "UpgradeSettings"
         },
         "management": {
-          "description": "Specifies the node management options for NAP created node-pools.",
+          "description": "NodeManagement configuration for this NodePool.",
           "$ref": "NodeManagement"
         },
         "minCpuPlatform": {
-          "description": "Minimum CPU platform to be used for NAP created node pools.\nThe instance may be scheduled on the specified or newer CPU platform.\nApplicable values are the friendly names of CPU platforms, such as\n<code>minCpuPlatform: &quot;Intel Haswell&quot;<\/code> or\n<code>minCpuPlatform: &quot;Intel Sandy Bridge&quot;<\/code>. For more\ninformation, read [how to specify min CPU\nplatform](https:\/\/cloud.google.com\/compute\/docs\/instances\/specify-min-cpu-platform)\nTo unset the min cpu platform field pass \"automatic\" as field value.",
+          "description": "Minimum CPU platform to be used by this instance. The instance may be\nscheduled on the specified or newer CPU platform. Applicable values are the\nfriendly names of CPU platforms, such as\n<code>minCpuPlatform: &quot;Intel Haswell&quot;<\/code> or\n<code>minCpuPlatform: &quot;Intel Sandy Bridge&quot;<\/code>. For more\ninformation, read [how to specify min CPU\nplatform](https:\/\/cloud.google.com\/compute\/docs\/instances\/specify-min-cpu-platform)\nTo unset the min cpu platform field pass \"automatic\"\nas field value.",
           "type": "string"
         }
       }
@@ -1998,7 +2012,7 @@
           "type": "string"
         },
         "cluster": {
-          "description": "A [cluster\nresource](\/container-engine\/reference\/rest\/v1alpha1\/projects.zones.clusters)",
+          "description": "A [cluster\nresource](\/container-engine\/reference\/rest\/v1alpha1\/projects.locations.clusters)",
           "$ref": "Cluster"
         },
         "parent": {
@@ -2797,7 +2811,7 @@
           "type": "string"
         },
         "validNodeVersions": {
-          "description": "List of valid node upgrade target versions.",
+          "description": "List of valid node upgrade target versions, in descending order.",
           "type": "array",
           "items": {
             "type": "string"
@@ -2815,7 +2829,7 @@
           }
         },
         "validMasterVersions": {
-          "description": "List of valid master versions.",
+          "description": "List of valid master versions, in descending order.",
           "type": "array",
           "items": {
             "type": "string"

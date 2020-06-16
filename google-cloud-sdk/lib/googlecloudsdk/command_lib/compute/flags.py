@@ -732,6 +732,11 @@ class ResourceArgument(object):
                            '\'name\' at: '
                            'https://cloud.google.com/compute/docs/reference/'
                            'rest/v1/instances')
+      if self.name == 'DISK_NAME' and operation_type == 'create':
+        params['help'] += (' For details on the naming convention for this '
+                           'resource, refer to: '
+                           'https://cloud.google.com/compute/docs/'
+                           'naming-resources')
 
     if self.name_arg.startswith('--'):
       params['required'] = self.required
