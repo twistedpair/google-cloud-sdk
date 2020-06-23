@@ -53,6 +53,10 @@ encoding.AddCustomJsonFieldMapping(
 encoding.AddCustomJsonFieldMapping(
     kms_message.CloudkmsProjectsLocationsKeyRingsImportJobsGetIamPolicyRequest,
     'options_requestedPolicyVersion', 'options.requestedPolicyVersion')
+secrets_message = core_apis.GetMessagesModule('secretmanager', 'v1')
+encoding.AddCustomJsonFieldMapping(
+    secrets_message.SecretmanagerProjectsSecretsGetIamPolicyRequest,
+    'options_requestedPolicyVersion', 'options.requestedPolicyVersion')
 
 msgs = core_apis.GetMessagesModule('iam', 'v1')
 encoding.AddCustomJsonFieldMapping(
@@ -157,11 +161,9 @@ def _ConditionHelpText(intro):
 evaluates to True or False. This uses a subset of Common Expression
 Language syntax.
 
-*title*::: (Required) Title for the expression, i.e. a short string
-describing its purpose.
+*title*::: (Required) A short string describing the purpose of the expression.
 
-*description*::: (Optional) Description for the expression. This is
-a longer text which describes the expression.
+*description*::: (Optional) Additional description for the expression.
 
 NOTE: An unsatisfied condition will not allow access via this
 binding.""".format(intro=intro)
@@ -172,9 +174,9 @@ binding.""".format(intro=intro)
 def _AddConditionFlagsForAddBindingToIamPolicy(parser):
   """Create flags for condition and add to parser."""
   condition_intro = """
-Condition of the binding to be added. When condition is explicitly
-specified as `None` (e.g. --condition=None), a binding without a condition is
-added. When --condition is specified and is not a `None` condition, `--role`
+The condition of the binding to be added. When the condition is explicitly
+specified as `None` (`--condition=None`), a binding without a condition is
+added. When the condition is specified and is not `None`, `--role`
 cannot be a primitive role. Primitive roles are `roles/editor`, `roles/owner`,
 and `roles/viewer`."""
   help_str_condition = _ConditionHelpText(condition_intro)
@@ -198,8 +200,8 @@ def _AddConditionFlagsForRemoveBindingFromIamPolicy(parser,
                                                     condition_completer=None):
   """Create flags for condition and add to parser."""
   condition_intro = """
-Condition of the binding to be removed. When condition is explicitly
-specified as `None` (e.g. --condition=None), it matches a binding without a
+The condition of the binding to be removed. When the condition is explicitly
+specified as `None` (`--condition=None`), it matches a binding without a
 condition. Otherwise, only the binding with a condition which exactly matches
 the specified condition (including the optional description) will be removed."""
   help_str_condition = _ConditionHelpText(condition_intro)
@@ -293,7 +295,7 @@ def AddArgsForAddIamPolicyBinding(parser,
   Args:
     parser: An argparse.ArgumentParser-like object to which we add the argss.
     role_completer: A command_lib.iam.completers.IamRolesCompleter class to
-      complete the --role flag value.
+      complete the `--role` flag value.
     add_condition: boolean, If true, add the flags for condition.
 
   Raises:
@@ -891,17 +893,22 @@ def GetDetailedHelpForSetIamPolicy(collection, example_id='',
   additional_flags = additional_flags + ' ' if additional_flags else ''
   a = 'an' if use_an else 'a'
   return {
-      'brief': 'Set IAM policy for {0} {1}.'.format(a, collection),
-      'DESCRIPTION': '{description}',
-      'EXAMPLES': """\
-          The following command will read an IAM policy defined in a JSON file
+      'brief':
+          'Set IAM policy for {0} {1}.'.format(a, collection),
+      'DESCRIPTION':
+          '{description}',
+      'EXAMPLES':
+          """The following command will read an IAM policy defined in a JSON file
           'policy.json' and set it for {a} {collection} with identifier '{id}'
 
             $ {{command}} {flags}{id} policy.json
 
-          {see_more}""".format(collection=collection, id=example_id,
-                               see_more=example_see_more,
-                               flags=additional_flags, a=a)
+          {see_more}""".format(
+              collection=collection,
+              id=example_id,
+              see_more=example_see_more,
+              flags=additional_flags,
+              a=a)
   }
 
 
@@ -934,8 +941,8 @@ def GetDetailedHelpForAddIamPolicyBinding(collection,
           'Add IAM policy binding for {0} {1}.'.format(a, collection),
       'DESCRIPTION':
           '{description}',
-      'EXAMPLES': """\
-To add an IAM policy binding for the role of '{role}' for the user
+      'EXAMPLES':
+          """To add an IAM policy binding for the role of '{role}' for the user
 'test-user@gmail.com' on {a} {collection} with identifier
 '{example_id}', run:
 

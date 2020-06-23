@@ -320,6 +320,10 @@
           "description": "Configuration for Cloud TPU support;",
           "$ref": "TpuConfig"
         },
+        "notificationConfig": {
+          "description": "Notification configuration of the cluster.",
+          "$ref": "NotificationConfig"
+        },
         "selfLink": {
           "description": "[Output only] Server-defined URL for the resource.",
           "type": "string"
@@ -1675,6 +1679,10 @@
             "PRIVATE_IPV6_GOOGLE_ACCESS_TO_GOOGLE",
             "PRIVATE_IPV6_GOOGLE_ACCESS_BIDIRECTIONAL"
           ]
+        },
+        "dnsConfig": {
+          "description": "DNSConfig contains clusterDNS config for this cluster.",
+          "$ref": "DNSConfig"
         }
       }
     },
@@ -1686,6 +1694,45 @@
         "disabled": {
           "description": "Disables cluster default sNAT rules.",
           "type": "boolean"
+        }
+      }
+    },
+    "DNSConfig": {
+      "id": "DNSConfig",
+      "description": "DNSConfig contains the desired set of options for configuring clusterDNS.",
+      "type": "object",
+      "properties": {
+        "clusterDns": {
+          "description": "cluster_dns indicates which in-cluster DNS provider should be used.",
+          "enumDescriptions": [
+            "Default value",
+            "Use GKE default DNS provider(kube-dns) for DNS resolution",
+            "Use CloudDNS for DNS resolution"
+          ],
+          "type": "string",
+          "enum": [
+            "PROVIDER_UNSPECIFIED",
+            "PLATFORM_DEFAULT",
+            "CLOUD_DNS"
+          ]
+        },
+        "clusterDnsScope": {
+          "description": "cluster_dns_scope indicates the scope of access to cluster DNS records.",
+          "enumDescriptions": [
+            "Default value, will be inferred as cluster scope",
+            "DNS records are accessible from within the cluster",
+            "DNS records are accessible from within the VPC"
+          ],
+          "type": "string",
+          "enum": [
+            "DNS_SCOPE_UNSPECIFIED",
+            "CLUSTER_SCOPE",
+            "VPC_SCOPE"
+          ]
+        },
+        "clusterDnsDomain": {
+          "description": "cluster_dns_domain is the suffix used for all cluster service records.",
+          "type": "string"
         }
       }
     },
@@ -1855,16 +1902,16 @@
     },
     "ReleaseChannel": {
       "id": "ReleaseChannel",
-      "description": "ReleaseChannel indicates which release channel a cluster is\nsubscribed to. Release channels are arranged in order of risk and\nfrequency of updates.\n\nWhen a cluster is subscribed to a release channel, Google maintains\nboth the master version and the node version. Node auto-upgrade\ndefaults to true and cannot be disabled. Updates to version related\nfields (e.g. current_master_version) return an error.",
+      "description": "ReleaseChannel indicates which release channel a cluster is\nsubscribed to. Release channels are arranged in order of risk.\n\nWhen a cluster is subscribed to a release channel, Google maintains\nboth the master version and the node version. Node auto-upgrade\ndefaults to true and cannot be disabled.",
       "type": "object",
       "properties": {
         "channel": {
           "description": "channel specifies which release channel the cluster is subscribed to.",
           "enumDescriptions": [
             "No channel specified.",
-            "RAPID channel is offered on an early access basis for customers who want\nto test new releases before they are qualified for production use or\ngeneral availability. New upgrades will occur roughly weekly.\n\nWARNING: Versions available in the RAPID Channel may be subject to\nunresolved issues with no known workaround and are not for use with\nproduction workloads or subject to any SLAs.",
-            "Clusters subscribed to REGULAR receive versions that are considered GA\nquality. REGULAR is intended for production users who want to take\nadvantage of new features. New upgrades will occur roughly every few\nweeks.",
-            "Clusters subscribed to STABLE receive versions that are known to be\nstable and reliable in production. STABLE is intended for production\nusers who need stability above all else, or for whom frequent upgrades\nare too risky. New upgrades will occur roughly every few months."
+            "RAPID channel is offered on an early access basis for customers who want\nto test new releases.\n\nWARNING: Versions available in the RAPID Channel may be subject to\nunresolved issues with no known workaround and are not subject to any\nSLAs.",
+            "Clusters subscribed to REGULAR receive versions that are considered GA\nquality. REGULAR is intended for production users who want to take\nadvantage of new features.",
+            "Clusters subscribed to STABLE receive versions that are known to be\nstable and reliable in production."
           ],
           "type": "string",
           "enum": [
@@ -1940,6 +1987,32 @@
         },
         "ipv4CidrBlock": {
           "description": "IPv4 CIDR block reserved for Cloud TPU in the VPC.",
+          "type": "string"
+        }
+      }
+    },
+    "NotificationConfig": {
+      "id": "NotificationConfig",
+      "description": "NotificationConfig is the configuration of notifications.",
+      "type": "object",
+      "properties": {
+        "pubsub": {
+          "description": "Notification config for Pub\/Sub.",
+          "$ref": "PubSub"
+        }
+      }
+    },
+    "PubSub": {
+      "id": "PubSub",
+      "description": "Pub\/Sub specific notification config.",
+      "type": "object",
+      "properties": {
+        "enabled": {
+          "description": "Enable notifications for Pub\/Sub.",
+          "type": "boolean"
+        },
+        "topic": {
+          "description": "The desired Pub\/Sub topic to which notifications will be\nsent by GKE. Format is `projects\/{project}\/topics\/{topic}`.",
           "type": "string"
         }
       }
@@ -2385,6 +2458,14 @@
             "PRIVATE_IPV6_GOOGLE_ACCESS_TO_GOOGLE",
             "PRIVATE_IPV6_GOOGLE_ACCESS_BIDIRECTIONAL"
           ]
+        },
+        "desiredDnsConfig": {
+          "description": "DNSConfig contains clusterDNS config for this cluster.",
+          "$ref": "DNSConfig"
+        },
+        "desiredNotificationConfig": {
+          "description": "The desired notification configuration.",
+          "$ref": "NotificationConfig"
         },
         "desiredEnableGvnic": {
           "description": "Enable or disable gvnic on this cluster. This field is not yet used.",
@@ -2853,9 +2934,9 @@
           "description": "The release channel this configuration applies to.",
           "enumDescriptions": [
             "No channel specified.",
-            "RAPID channel is offered on an early access basis for customers who want\nto test new releases before they are qualified for production use or\ngeneral availability. New upgrades will occur roughly weekly.\n\nWARNING: Versions available in the RAPID Channel may be subject to\nunresolved issues with no known workaround and are not for use with\nproduction workloads or subject to any SLAs.",
-            "Clusters subscribed to REGULAR receive versions that are considered GA\nquality. REGULAR is intended for production users who want to take\nadvantage of new features. New upgrades will occur roughly every few\nweeks.",
-            "Clusters subscribed to STABLE receive versions that are known to be\nstable and reliable in production. STABLE is intended for production\nusers who need stability above all else, or for whom frequent upgrades\nare too risky. New upgrades will occur roughly every few months."
+            "RAPID channel is offered on an early access basis for customers who want\nto test new releases.\n\nWARNING: Versions available in the RAPID Channel may be subject to\nunresolved issues with no known workaround and are not subject to any\nSLAs.",
+            "Clusters subscribed to REGULAR receive versions that are considered GA\nquality. REGULAR is intended for production users who want to take\nadvantage of new features.",
+            "Clusters subscribed to STABLE receive versions that are known to be\nstable and reliable in production."
           ],
           "type": "string",
           "enum": [
@@ -2870,17 +2951,24 @@
           "type": "string"
         },
         "availableVersions": {
-          "description": "List of available versions for the release channel.",
+          "description": "Deprecated.\nThis field has been deprecated and replaced with the valid_versions\nfield.",
           "type": "array",
           "items": {
             "$ref": "AvailableVersion"
+          }
+        },
+        "validVersions": {
+          "description": "List of valid versions for the channel.",
+          "type": "array",
+          "items": {
+            "type": "string"
           }
         }
       }
     },
     "AvailableVersion": {
       "id": "AvailableVersion",
-      "description": "AvailableVersion is an additional Kubernetes versions offered\nto users who subscribed to the release channel.",
+      "description": "Deprecated.",
       "type": "object",
       "properties": {
         "version": {

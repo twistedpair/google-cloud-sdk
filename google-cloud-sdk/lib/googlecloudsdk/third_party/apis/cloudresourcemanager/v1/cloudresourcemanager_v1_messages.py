@@ -605,10 +605,10 @@ class CloudresourcemanagerProjectsListRequest(_messages.Message):
 
   Fields:
     filter: An expression for filtering the results of the request.  Filter
-      rules are case insensitive. The fields eligible for filtering are:  +
+      rules are case insensitive. Some eligible fields for filtering are:  +
       `name` + `id` + `labels.<key>` (where *key* is the name of a label) +
-      `parent.type` + `parent.id`  Some examples of using labels as filters:
-      | Filter           | Description
+      `parent.type` + `parent.id` + `lifecycleState`  Some examples of filter
+      strings:  | Filter           | Description
       | |------------------|--------------------------------------------------
       ---| | name:how*        | The project's name starts with "how".
       | | name:Howl        | The project's name is `Howl` or `howl`.
@@ -616,9 +616,13 @@ class CloudresourcemanagerProjectsListRequest(_messages.Message):
       | | NAME:howl        | Equivalent to above.
       | | labels.color:*   | The project has the label `color`.
       | | labels.color:red | The project's label `color` has the value `red`.
-      | | labels.color:red&nbsp;labels.size:big |The project's label `color`
-      has   the value `red` and its label `size` has the value `big`.
-      |  If no filter is specified, the call will return projects for which
+      | | labels.color:red&nbsp;labels.size:big | The project's label `color`
+      | :                                       : has the value `red` and its
+      : :                                       : label`size` has the value
+      : :                                       : `big`.
+      : | lifecycleState:DELETE_REQUESTED       | Only show projects that are
+      | :                                       : pending deletion.
+      :  If no filter is specified, the call will return projects for which
       the user has the `resourcemanager.projects.get` permission.  NOTE: To
       perform a by-parent query (eg., what projects are directly in a Folder),
       the caller must have the `resourcemanager.projects.list` permission on
@@ -701,23 +705,24 @@ class Constraint(_messages.Message):
   be restricted. For example, it controls which cloud services can be
   activated across an organization, or whether a Compute Engine instance can
   have serial port connections established. `Constraints` can be configured by
-  the organization's policy adminstrator to fit the needs of the organzation
+  the organization's policy administrator to fit the needs of the organzation
   by setting Policies for `Constraints` at different locations in the
   organization's resource hierarchy. Policies are inherited down the resource
   hierarchy from higher levels, but can also be overridden. For details about
-  the inheritance rules please read about Policies.  `Constraints` have a
-  default behavior determined by the `constraint_default` field, which is the
-  enforcement behavior that is used in the absence of a `Policy` being defined
-  or inherited for the resource in question.
+  the inheritance rules please read about [Policies](/resource-
+  manager/reference/rest/v1/Policy).  `Constraints` have a default behavior
+  determined by the `constraint_default` field, which is the enforcement
+  behavior that is used in the absence of a `Policy` being defined or
+  inherited for the resource in question.
 
   Enums:
     ConstraintDefaultValueValuesEnum: The evaluation behavior of this
-      constraint in the absense of 'Policy'.
+      constraint in the absence of 'Policy'.
 
   Fields:
     booleanConstraint: Defines this constraint as being a BooleanConstraint.
     constraintDefault: The evaluation behavior of this constraint in the
-      absense of 'Policy'.
+      absence of 'Policy'.
     description: Detailed description of what this `Constraint` controls as
       well as how and where it is enforced.  Mutable.
     displayName: The human readable name.  Mutable.
@@ -728,7 +733,7 @@ class Constraint(_messages.Message):
   """
 
   class ConstraintDefaultValueValuesEnum(_messages.Enum):
-    r"""The evaluation behavior of this constraint in the absense of 'Policy'.
+    r"""The evaluation behavior of this constraint in the absence of 'Policy'.
 
     Values:
       CONSTRAINT_DEFAULT_UNSPECIFIED: This is only used for distinguishing
@@ -837,7 +842,7 @@ method."""
 
 
 class GetAncestryResponse(_messages.Message):
-  r"""Response from the GetAncestry method.
+  r"""Response from the projects.getAncestry method.
 
   Fields:
     ancestor: Ancestors are ordered from bottom to top of the resource
@@ -930,8 +935,8 @@ class Lien(_messages.Message):
 
 
 class ListAvailableOrgPolicyConstraintsRequest(_messages.Message):
-  r"""The request sent to the [ListAvailableOrgPolicyConstraints]
-  google.cloud.OrgPolicy.v1.ListAvailableOrgPolicyConstraints] method.
+  r"""The request sent to the `ListAvailableOrgPolicyConstraints` method on
+  the project, folder, or organization.
 
   Fields:
     pageSize: Size of the pages to be returned. This is currently unsupported
@@ -947,10 +952,10 @@ class ListAvailableOrgPolicyConstraintsRequest(_messages.Message):
 
 
 class ListAvailableOrgPolicyConstraintsResponse(_messages.Message):
-  r"""The response returned from the ListAvailableOrgPolicyConstraints method.
-  Returns all `Constraints` that could be set at this level of the hierarchy
-  (contrast with the response from `ListPolicies`, which returns all policies
-  which are set).
+  r"""The response returned from the `ListAvailableOrgPolicyConstraints`
+  method. Returns all `Constraints` that could be set at this level of the
+  hierarchy (contrast with the response from `ListPolicies`, which returns all
+  policies which are set).
 
   Fields:
     constraints: The collection of constraints that are settable on the
@@ -1010,8 +1015,8 @@ class ListOrgPoliciesRequest(_messages.Message):
 
 
 class ListOrgPoliciesResponse(_messages.Message):
-  r"""The response returned from the ListOrgPolicies method. It will be empty
-  if no `Policies` are set on the resource.
+  r"""The response returned from the `ListOrgPolicies` method. It will be
+  empty if no `Policies` are set on the resource.
 
   Fields:
     nextPageToken: Page token used to retrieve the next page. This is
@@ -1055,7 +1060,7 @@ class ListPolicy(_messages.Message):
     deniedValues: List of values denied at this resource. Can only be set if
       `all_values` is set to `ALL_VALUES_UNSPECIFIED`.
     inheritFromParent: Determines the inheritance behavior for this `Policy`.
-      By default, a `ListPolicy` set at a resource supercedes any `Policy` set
+      By default, a `ListPolicy` set at a resource supersedes any `Policy` set
       anywhere up the resource hierarchy. However, if `inherit_from_parent` is
       set to `true`, then the values from the effective `Policy` of the parent
       resource are inherited, meaning the values set in this `Policy` are
@@ -1282,7 +1287,9 @@ class OrgPolicy(_messages.Message):
     booleanPolicy: For boolean `Constraints`, whether to enforce the
       `Constraint` or not.
     constraint: The name of the `Constraint` the `Policy` is configuring, for
-      example, `constraints/serviceuser.services`.  Immutable after creation.
+      example, `constraints/serviceuser.services`.  A [list of available
+      constraints](/resource-manager/docs/organization-policy/org-policy-
+      constraints) is available.  Immutable after creation.
     etag: An opaque tag indicating the current version of the `Policy`, used
       for concurrency control.  When the `Policy` is returned from either a
       `GetPolicy` or a `ListOrgPolicy` request, this `etag` indicates the
@@ -1457,25 +1464,25 @@ class Project(_messages.Message):
   Messages:
     LabelsValue: The labels associated with this Project.  Label keys must be
       between 1 and 63 characters long and must conform to the following
-      regular expression: \[a-z\](\[-a-z0-9\]*\[a-z0-9\])?.  Label values must
-      be between 0 and 63 characters long and must conform to the regular
-      expression (\[a-z\](\[-a-z0-9\]*\[a-z0-9\])?)?. A label value can be
-      empty.  No more than 256 labels can be associated with a given resource.
-      Clients should store labels in a representation such as JSON that does
-      not depend on specific characters being disallowed.  Example:
-      <code>"environment" : "dev"</code> Read-write.
+      regular expression: a-z{0,62}.  Label values must be between 0 and 63
+      characters long and must conform to the regular expression
+      [a-z0-9_-]{0,63}. A label value can be empty.  No more than 256 labels
+      can be associated with a given resource.  Clients should store labels in
+      a representation such as JSON that does not depend on specific
+      characters being disallowed.  Example: <code>"environment" :
+      "dev"</code> Read-write.
 
   Fields:
     createTime: Creation time.  Read-only.
     labels: The labels associated with this Project.  Label keys must be
       between 1 and 63 characters long and must conform to the following
-      regular expression: \[a-z\](\[-a-z0-9\]*\[a-z0-9\])?.  Label values must
-      be between 0 and 63 characters long and must conform to the regular
-      expression (\[a-z\](\[-a-z0-9\]*\[a-z0-9\])?)?. A label value can be
-      empty.  No more than 256 labels can be associated with a given resource.
-      Clients should store labels in a representation such as JSON that does
-      not depend on specific characters being disallowed.  Example:
-      <code>"environment" : "dev"</code> Read-write.
+      regular expression: a-z{0,62}.  Label values must be between 0 and 63
+      characters long and must conform to the regular expression
+      [a-z0-9_-]{0,63}. A label value can be empty.  No more than 256 labels
+      can be associated with a given resource.  Clients should store labels in
+      a representation such as JSON that does not depend on specific
+      characters being disallowed.  Example: <code>"environment" :
+      "dev"</code> Read-write.
     lifecycleState: The Project lifecycle state.  Read-only.
     name: The optional user-assigned display name of the Project. When present
       it must be between 4 to 30 characters. Allowed characters are: lowercase
@@ -1517,13 +1524,12 @@ class Project(_messages.Message):
   class LabelsValue(_messages.Message):
     r"""The labels associated with this Project.  Label keys must be between 1
     and 63 characters long and must conform to the following regular
-    expression: \[a-z\](\[-a-z0-9\]*\[a-z0-9\])?.  Label values must be
-    between 0 and 63 characters long and must conform to the regular
-    expression (\[a-z\](\[-a-z0-9\]*\[a-z0-9\])?)?. A label value can be
-    empty.  No more than 256 labels can be associated with a given resource.
-    Clients should store labels in a representation such as JSON that does not
-    depend on specific characters being disallowed.  Example:
-    <code>"environment" : "dev"</code> Read-write.
+    expression: a-z{0,62}.  Label values must be between 0 and 63 characters
+    long and must conform to the regular expression [a-z0-9_-]{0,63}. A label
+    value can be empty.  No more than 256 labels can be associated with a
+    given resource.  Clients should store labels in a representation such as
+    JSON that does not depend on specific characters being disallowed.
+    Example: <code>"environment" : "dev"</code> Read-write.
 
     Messages:
       AdditionalProperty: An additional property for a LabelsValue object.
@@ -1681,12 +1687,14 @@ class StandardQueryParameters(_messages.Message):
 
   Fields:
     f__xgafv: V1 error format.
+    access_token: OAuth access token.
     alt: Data format for response.
     callback: JSONP
     fields: Selector specifying which fields to include in a partial response.
     key: API key. Your API key identifies your project and provides you with
       API access, quota, and reports. Required unless you provide an OAuth 2.0
       token.
+    oauth_token: OAuth 2.0 token for the current user.
     prettyPrint: Returns response with indentations and line breaks.
     quotaUser: Available to use for quota purposes for server-side
       applications. Can be any arbitrary string assigned to a user, but should
@@ -1720,15 +1728,17 @@ class StandardQueryParameters(_messages.Message):
     _2 = 1
 
   f__xgafv = _messages.EnumField('FXgafvValueValuesEnum', 1)
-  alt = _messages.EnumField('AltValueValuesEnum', 2, default='json')
-  callback = _messages.StringField(3)
-  fields = _messages.StringField(4)
-  key = _messages.StringField(5)
-  prettyPrint = _messages.BooleanField(6, default=True)
-  quotaUser = _messages.StringField(7)
-  trace = _messages.StringField(8)
-  uploadType = _messages.StringField(9)
-  upload_protocol = _messages.StringField(10)
+  access_token = _messages.StringField(2)
+  alt = _messages.EnumField('AltValueValuesEnum', 3, default='json')
+  callback = _messages.StringField(4)
+  fields = _messages.StringField(5)
+  key = _messages.StringField(6)
+  oauth_token = _messages.StringField(7)
+  prettyPrint = _messages.BooleanField(8, default=True)
+  quotaUser = _messages.StringField(9)
+  trace = _messages.StringField(10)
+  uploadType = _messages.StringField(11)
+  upload_protocol = _messages.StringField(12)
 
 
 class Status(_messages.Message):

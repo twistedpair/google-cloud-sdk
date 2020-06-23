@@ -455,10 +455,6 @@
             "CSV",
             "BAK"
           ]
-        },
-        "offload": {
-          "description": "Option for export offload.",
-          "type": "boolean"
         }
       }
     },
@@ -1019,7 +1015,7 @@
     },
     "DatabaseInstance": {
       "id": "DatabaseInstance",
-      "description": "A Cloud SQL instance resource.",
+      "description": "A Cloud SQL instance resource.\nNext field: 34",
       "type": "object",
       "properties": {
         "kind": {
@@ -1246,10 +1242,6 @@
         "scheduledMaintenance": {
           "description": "The start time of any upcoming scheduled maintenance for this instance.",
           "$ref": "SqlScheduledMaintenance"
-        },
-        "sqlserverInstanceConfiguration": {
-          "description": "SQL Server specific configuration",
-          "$ref": "SqlServerInstanceConfiguration"
         }
       }
     },
@@ -1407,6 +1399,10 @@
         "activeDirectoryConfig": {
           "description": "Active Directory configuration, for now relevant only for SQL Server",
           "$ref": "SqlActiveDirectoryConfig"
+        },
+        "collation": {
+          "description": "The name of server Instance collation.",
+          "type": "string"
         }
       }
     },
@@ -1785,17 +1781,6 @@
         "canReschedule": {
           "description": "If the scheduled maintenance can be rescheduled.",
           "type": "boolean"
-        }
-      }
-    },
-    "SqlServerInstanceConfiguration": {
-      "id": "SqlServerInstanceConfiguration",
-      "description": "SQL Server specific configuration.",
-      "type": "object",
-      "properties": {
-        "collation": {
-          "description": "The name of Sqlserver Instance collation.",
-          "type": "string"
         }
       }
     },

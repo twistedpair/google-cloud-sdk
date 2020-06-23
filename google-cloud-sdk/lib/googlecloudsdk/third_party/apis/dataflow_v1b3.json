@@ -2192,6 +2192,13 @@
           "additionalProperties": {
             "type": "string"
           }
+        },
+        "launchOptions": {
+          "description": "Launch options for this flex template job. This is a common set of options\nacross languages and templates. This should not be used to pass job\nparameters.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
         }
       }
     },

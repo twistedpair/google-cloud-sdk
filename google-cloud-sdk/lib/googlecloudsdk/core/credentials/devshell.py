@@ -158,10 +158,10 @@ def _SendRecvPort(request, port):
     s = socket.socket()
 
   s.connect(('localhost', port))
-  msg = ('%s\n%s' % (nstr, data)).encode('utf8')
+  msg = ('%s\n%s' % (nstr, data)).encode('utf-8')
   s.sendall(msg)
 
-  resp_1 = s.recv(6).decode('utf8')
+  resp_1 = s.recv(6).decode('utf-8')
   if '\n' not in resp_1:
     raise CommunicationError('saw no newline in the first 6 bytes')
   nstr, extra = resp_1.split('\n', 1)
@@ -169,7 +169,7 @@ def _SendRecvPort(request, port):
   n = int(nstr)
   to_read = n-len(extra)
   if to_read > 0:
-    resp_buffer += s.recv(to_read, socket.MSG_WAITALL).decode('utf8')
+    resp_buffer += s.recv(to_read, socket.MSG_WAITALL).decode('utf-8')
 
   return JSONToMessage(resp_buffer, CredentialInfoResponse)
 

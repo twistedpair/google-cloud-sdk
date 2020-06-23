@@ -24,6 +24,7 @@ import re
 import sys
 
 from apitools.base.py import list_pager
+from apitools.base.py.exceptions import HttpNotFoundError
 from googlecloudsdk.api_lib.compute import base_classes
 from googlecloudsdk.api_lib.compute.operations import poller
 from googlecloudsdk.api_lib.util import apis
@@ -54,11 +55,13 @@ class TPUNode(object):
     self.client = apis.GetClientInstance('tpu', self._api_version)
     self.messages = apis.GetMessagesModule('tpu', self._api_version)
 
-  def _CreateDefaultNode(self, accelerator_type, tf_version):
+  def _CreateDefaultNode(self, accelerator_type, tf_version, preemptible):
     node = self.messages.Node()
     node.acceleratorType = accelerator_type
     node.network = ''
     node.tensorflowVersion = tf_version
+    node.schedulingConfig = self.messages.SchedulingConfig(
+        preemptible=preemptible)
     return node
 
   def _GetTpuOperationRef(self, operation):
@@ -66,7 +69,7 @@ class TPUNode(object):
     return resources.REGISTRY.ParseRelativeName(
         operation.name, collection='tpu.projects.locations.operations')
 
-  def Create(self, name, accelerator_type, tf_version, zone):
+  def Create(self, name, accelerator_type, tf_version, zone, preemptible):
     """Create builds and issues a request to create a TPU node.
 
     Args:
@@ -74,14 +77,19 @@ class TPUNode(object):
       accelerator_type: Slice type of TPU accelerator like 'v2-8', 'v2-32'.
       tf_version: Tensorflow Version like '1.1', '1.5'.
       zone: Zone to create the TPU Node in.
+      preemptible: Boolean argument, to create a Preemptible node.
     Returns:
       A TPU Create response which needs to be polled on.
     """
     project = properties.VALUES.core.project.Get(required=True)
+    parent_ref = resources.REGISTRY.Parse(
+        zone,
+        params={'projectsId': project},
+        collection='tpu.projects.locations')
     request = self.messages.TpuProjectsLocationsNodesCreateRequest(
-        parent='projects/{}/locations/{}'.format(project, zone),
+        parent=parent_ref.RelativeName(),
         nodeId=name,
-        node=self._CreateDefaultNode(accelerator_type, tf_version))
+        node=self._CreateDefaultNode(accelerator_type, tf_version, preemptible))
     operation = self.client.projects_locations_nodes.Create(request)
     return self._GetTpuOperationRef(operation)
 
@@ -99,18 +107,28 @@ class TPUNode(object):
   def Delete(self, name, zone):
     """Deletes the TPU node with the given name."""
     project = properties.VALUES.core.project.Get(required=True)
-    node = 'projects/{}/locations/{}/nodes/{}'.format(project, zone, name)
-    request = self.messages.TpuProjectsLocationsNodesDeleteRequest(name=node)
+    fully_qualified_node_name_ref = resources.REGISTRY.Parse(
+        name,
+        params={
+            'locationsId': zone,
+            'projectsId': project
+        },
+        collection='tpu.projects.locations.nodes',
+        )
+    request = self.messages.TpuProjectsLocationsNodesDeleteRequest(
+        name=fully_qualified_node_name_ref.RelativeName())
     operation = self.client.projects_locations_nodes.Delete(request)
     return self._GetTpuOperationRef(operation)
 
   def List(self, zone):
     """Retrieves all TPU Nodes."""
     project = properties.VALUES.core.project.Get(required=True)
-    parent_path = 'projects/{}/locations/{}'.format(project, zone)
-
+    parent_ref = resources.REGISTRY.Parse(
+        zone,
+        params={'projectsId': project},
+        collection='tpu.projects.locations')
     request = self.messages.TpuProjectsLocationsNodesListRequest(
-        parent=parent_path)
+        parent=parent_ref.RelativeName())
     return list_pager.YieldFromList(
         service=self.client.projects_locations_nodes,
         request=request,
@@ -118,6 +136,21 @@ class TPUNode(object):
         batch_size_attribute='pageSize',
         field='nodes'
         )
+
+  def Get(self, name, zone):
+    """Retrieves the TPU node in the given zone."""
+    project = properties.VALUES.core.project.Get(required=True)
+    fully_qualified_node_name_ref = resources.REGISTRY.Parse(
+        name,
+        params={
+            'locationsId': zone,
+            'projectsId': project
+        },
+        collection='tpu.projects.locations.nodes',
+        )
+    request = self.messages.TpuProjectsLocationsNodesGetRequest(
+        name=fully_qualified_node_name_ref.RelativeName())
+    return self.client.projects_locations_nodes.Get(request)
 
   def IsRunning(self, node):
     return node.state == self.messages.Node.StateValueValuesEnum.READY or (
@@ -212,6 +245,28 @@ class Instance(object):
     operation = self.client.instances.Insert(request)
     return self._GetComputeZoneOperationRef(operation)
 
+  def Stop(self, name, zone):
+    """Issue request to stop the Instance."""
+    project = properties.VALUES.core.project.Get(required=True)
+    request = self.messages.ComputeInstancesStopRequest(
+        instance=name,
+        project=project,
+        zone=zone
+        )
+    operation = self.client.instances.Stop(request)
+    return self._GetComputeZoneOperationRef(operation)
+
+  def Start(self, name, zone):
+    """Issue request to start the Instance."""
+    project = properties.VALUES.core.project.Get(required=True)
+    request = self.messages.ComputeInstancesStartRequest(
+        instance=name,
+        project=project,
+        zone=zone
+        )
+    operation = self.client.instances.Start(request)
+    return self._GetComputeZoneOperationRef(operation)
+
   def WaitForOperation(self, operation_ref, message):
     """Wait for Instance operation to complete."""
     operation_poller = poller.Poller(self.client.instances)
@@ -238,6 +293,17 @@ class Instance(object):
         result_set.append(instance)
 
     return result_set
+
+  def Get(self, instance_name, zone):
+    """Retrieves the Instance data."""
+    project = properties.VALUES.core.project.Get(required=True)
+    request = self.messages.ComputeInstancesGetRequest(
+        zone=zone, project=project, instance=instance_name)
+    instance = self.client.instances.Get(request)
+    if self._VMCreatedByExecGroup(instance):
+      return instance
+    raise HttpNotFoundError(
+        'Instance:{} not found'.format(instance_name), None, None)
 
   def _VMCreatedByExecGroup(self, instance):
     if instance and instance.labels:
@@ -334,11 +400,11 @@ class SSH(object):
     identity_file = ssh_helper.keys.key_file
 
     user, _ = ssh_utils.GetUserAndInstance(args.name)
-    host_keys = self._GetHostKeyFromInstance(
-        args.zone, ssh_helper, instance)
-    options = self._GetSSHOptions(args.name, ssh_helper, instance, host_keys)
-    self._WaitForSSHKeysToPropagate(
-        ssh_helper, remote, identity_file, user, instance, options)
+    host_keys = self._GetHostKeyFromInstance(args.zone, ssh_helper, instance)
+    options = self._GetSSHOptions(args.name, ssh_helper,
+                                  instance, host_keys)
+    self._WaitForSSHKeysToPropagate(ssh_helper, remote, identity_file, user,
+                                    instance, options)
 
     extra_flags = []
     # Ctpu seems to be forwarding some other ports on what

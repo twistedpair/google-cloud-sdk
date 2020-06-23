@@ -34,6 +34,7 @@ class RepoInfoLoadError(DeployError):
   """Indicates a failure to load a source context file."""
 
   def __init__(self, filename, inner_exception):
+    super(RepoInfoLoadError, self).__init__()
     self.filename = filename
     self.inner_exception = inner_exception
 
@@ -47,7 +48,7 @@ class MultiDeployError(DeployError):
 
   def __str__(self):
     return ('No more than one service may be deployed when using the '
-            'image-url flag')
+            'image-url or appyaml flag')
 
 
 class NoRepoInfoWithImageUrlError(DeployError):
@@ -61,6 +62,7 @@ class DefaultBucketAccessError(DeployError):
   """Indicates a failed attempt to access a project's default bucket."""
 
   def __init__(self, project):
+    super(DefaultBucketAccessError, self).__init__()
     self.project = project
 
   def __str__(self):
@@ -155,4 +157,3 @@ class UnknownSourceError(exceptions.Error):
     super(UnknownSourceError, self).__init__(
         '[{path}] could not be identified as a valid source directory or file.'
         .format(path=path))
-

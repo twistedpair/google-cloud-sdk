@@ -103,7 +103,7 @@ def Decode(data, encoding=None):
   # be exceptional if a valid extended ascii encoding with extended chars
   # were also a valid UITF-8 encoding.
   try:
-    return string.decode('utf8')
+    return string.decode('utf-8')
   except UnicodeError:
     # Not a UTF-8 encoding.
     pass

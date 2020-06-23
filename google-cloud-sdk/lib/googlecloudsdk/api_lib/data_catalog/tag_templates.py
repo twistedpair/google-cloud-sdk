@@ -58,8 +58,8 @@ class TagTemplatesClient(object):
   def ParseUpdateTagTemplateFieldArgsIntoRequest(self, args, request):
     """Parses tag-templates fields update args into the request."""
     enum_values = []
-    if args.IsSpecified('add_enum_values'):
-      for value in args.add_enum_values:
+    if args.IsSpecified('enum_values'):
+      for value in args.enum_values:
         enum_values.append(self._MakeEnumValue(value))
     arg_utils.SetFieldInMessage(
         request,

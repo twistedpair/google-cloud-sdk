@@ -680,7 +680,6 @@ service.
 client specifies a name,
 the server will ignore it. Fails if a resource already exists with the same
 group_key.
-To add more access levels to a group, update the existing resource instead.
 Completion of this long-running operation does not necessarily signify that
 the new binding is deployed onto all affected users, which may take more
 time.

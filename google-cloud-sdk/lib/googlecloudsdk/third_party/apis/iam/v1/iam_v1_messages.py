@@ -275,7 +275,9 @@ class CreateRoleRequest(_messages.Message):
 
   Fields:
     role: The Role resource to create.
-    roleId: The role ID to use for this role.
+    roleId: The role ID to use for this role.  A role ID may contain
+      alphanumeric characters, underscores (`_`), and periods (`.`). It must
+      contain a minimum of 3 characters and a maximum of 64 characters.
   """
 
   role = _messages.MessageField('Role', 1)
@@ -547,7 +549,7 @@ class IamOrganizationsRolesListRequest(_messages.Message):
 
   Fields:
     pageSize: Optional limit on the number of roles to include in the
-      response.
+      response.  The default is 300, and the maximum is 1,000.
     pageToken: Optional pagination token returned in an earlier
       ListRolesResponse.
     parent: The `parent` parameter's value depends on the target resource for
@@ -749,7 +751,7 @@ class IamProjectsRolesListRequest(_messages.Message):
 
   Fields:
     pageSize: Optional limit on the number of roles to include in the
-      response.
+      response.  The default is 300, and the maximum is 1,000.
     pageToken: Optional pagination token returned in an earlier
       ListRolesResponse.
     parent: The `parent` parameter's value depends on the target resource for
@@ -1143,6 +1145,7 @@ class IamProjectsServiceAccountsListRequest(_messages.Message):
     pageSize: Optional limit on the number of service accounts to include in
       the response. Further accounts can subsequently be obtained by including
       the ListServiceAccountsResponse.next_page_token in a subsequent request.
+      The default is 20, and the maximum is 100.
     pageToken: Optional pagination token returned in an earlier
       ListServiceAccountsResponse.next_page_token.
   """
@@ -1296,7 +1299,7 @@ class IamRolesListRequest(_messages.Message):
 
   Fields:
     pageSize: Optional limit on the number of roles to include in the
-      response.
+      response.  The default is 300, and the maximum is 1,000.
     pageToken: Optional pagination token returned in an earlier
       ListRolesResponse.
     parent: The `parent` parameter's value depends on the target resource for
@@ -1708,7 +1711,7 @@ class QueryGrantableRolesRequest(_messages.Message):
       format. For example, a Cloud Platform project with id `my-project` will
       be named `//cloudresourcemanager.googleapis.com/projects/my-project`.
     pageSize: Optional limit on the number of roles to include in the
-      response.
+      response.  The default is 300, and the maximum is 1,000.
     pageToken: Optional pagination token returned in an earlier
       QueryGrantableRolesResponse.
     view: A ViewValueValuesEnum attribute.
@@ -1754,7 +1757,7 @@ class QueryTestablePermissionsRequest(_messages.Message):
       project` will be named
       `//cloudresourcemanager.googleapis.com/projects/my-project`.
     pageSize: Optional limit on the number of permissions to include in the
-      response.
+      response.  The default is 100, and the maximum is 1,000.
     pageToken: Optional pagination token returned in an earlier
       QueryTestablePermissionsRequest.
   """

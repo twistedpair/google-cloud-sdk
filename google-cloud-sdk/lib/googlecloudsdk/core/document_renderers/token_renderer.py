@@ -109,7 +109,7 @@ class TokenRenderer(renderer.Renderer):
       self.indent = 0 if compact else TokenRenderer.INDENT
       self.hanging_indent = self.indent
 
-  def __init__(self, height=0, encoding='utf8', compact=True, **kwargs):
+  def __init__(self, height=0, encoding='utf-8', compact=True, **kwargs):
     super(TokenRenderer, self).__init__(**kwargs)
     self._attr = console_attr.GetConsoleAttr(encoding=encoding)
     self._csi = self.CSI

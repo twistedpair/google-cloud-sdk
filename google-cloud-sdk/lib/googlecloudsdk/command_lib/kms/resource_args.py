@@ -25,60 +25,85 @@ from googlecloudsdk.command_lib.util.concepts import presentation_specs
 from googlecloudsdk.core import properties
 
 
-def KeyVersionAttributeConfig():
+def KeyVersionAttributeConfig(kms_prefix=True):
+  name = 'kms-key-version' if kms_prefix else 'key-version'
   return concepts.ResourceParameterAttributeConfig(
-      name='kms-key-version',
-      help_text='The KMS key version of the {resource}.')
+      name=name, help_text='The KMS key version of the {resource}.')
 
 
-def KeyAttributeConfig():
+def KeyAttributeConfig(kms_prefix=True):
+  name = 'kms-key' if kms_prefix else 'key'
   return concepts.ResourceParameterAttributeConfig(
-      name='kms-key', help_text='The KMS key of the {resource}.')
+      name=name, help_text='The KMS key of the {resource}.')
 
 
-def KeyringAttributeConfig():
+def KeyringAttributeConfig(kms_prefix=True):
+  name = 'kms-keyring' if kms_prefix else 'keyring'
   return concepts.ResourceParameterAttributeConfig(
-      name='kms-keyring', help_text='The KMS keyring of the {resource}.')
+      name=name, help_text='The KMS keyring of the {resource}.')
 
 
-def LocationAttributeConfig(region_fallthrough=False):
+def LocationAttributeConfig(kms_prefix=True, region_fallthrough=False):
+  name = 'kms-location' if kms_prefix else 'location'
   fallthroughs = []
   if region_fallthrough:
     fallthroughs.append(deps.ArgFallthrough('--region'))
   return concepts.ResourceParameterAttributeConfig(
-      name='kms-location',
+      name=name,
       help_text='The Cloud location for the {resource}.',
       fallthroughs=fallthroughs)
 
 
-def ProjectAttributeConfig():
+def ProjectAttributeConfig(kms_prefix=True):
+  name = 'kms-project' if kms_prefix else 'project'
   return concepts.ResourceParameterAttributeConfig(
-      name='kms-project',
+      name=name,
       help_text='The Cloud project for the {resource}.',
       fallthroughs=[deps.PropertyFallthrough(properties.VALUES.core.project)])
 
 
-def GetKmsKeyVersionResourceSpec():
+def GetKmsKeyVersionResourceSpec(kms_prefix=True):
   return concepts.ResourceSpec(
       'cloudkms.projects.locations.keyRings.cryptoKeys.cryptoKeyVersions',
       resource_name='key version',
-      cryptoKeyVersionsId=KeyVersionAttributeConfig(),
-      cryptoKeysId=KeyAttributeConfig(),
-      keyRingsId=KeyringAttributeConfig(),
-      locationsId=LocationAttributeConfig(),
-      projectsId=ProjectAttributeConfig(),
+      cryptoKeyVersionsId=KeyVersionAttributeConfig(kms_prefix),
+      cryptoKeysId=KeyAttributeConfig(kms_prefix),
+      keyRingsId=KeyringAttributeConfig(kms_prefix),
+      locationsId=LocationAttributeConfig(kms_prefix=kms_prefix),
+      projectsId=ProjectAttributeConfig(kms_prefix=kms_prefix),
       disable_auto_completers=False)
 
 
-def GetKmsKeyResourceSpec(region_fallthrough=False):
+def GetKmsKeyResourceSpec(kms_prefix=True, region_fallthrough=False):
   return concepts.ResourceSpec(
       'cloudkms.projects.locations.keyRings.cryptoKeys',
       resource_name='key',
-      cryptoKeysId=KeyAttributeConfig(),
-      keyRingsId=KeyringAttributeConfig(),
+      cryptoKeysId=KeyAttributeConfig(kms_prefix),
+      keyRingsId=KeyringAttributeConfig(kms_prefix),
       locationsId=LocationAttributeConfig(
-          region_fallthrough=region_fallthrough),
-      projectsId=ProjectAttributeConfig(),
+          kms_prefix=kms_prefix, region_fallthrough=region_fallthrough),
+      projectsId=ProjectAttributeConfig(kms_prefix),
+      disable_auto_completers=False)
+
+
+def GetKmsKeyRingResourceSpec(kms_prefix=True, region_fallthrough=False):
+  return concepts.ResourceSpec(
+      'cloudkms.projects.locations.keyRings',
+      resource_name='keyring',
+      keyRingsId=KeyringAttributeConfig(kms_prefix),
+      locationsId=LocationAttributeConfig(
+          kms_prefix=kms_prefix, region_fallthrough=region_fallthrough),
+      projectsId=ProjectAttributeConfig(kms_prefix),
+      disable_auto_completers=False)
+
+
+def GetKmsLocationResourceSpec(kms_prefix=True, region_fallthrough=False):
+  return concepts.ResourceSpec(
+      'cloudkms.projects.locations',
+      resource_name='location',
+      locationsId=LocationAttributeConfig(
+          kms_prefix=kms_prefix, region_fallthrough=region_fallthrough),
+      projectsId=ProjectAttributeConfig(kms_prefix),
       disable_auto_completers=False)
 
 
@@ -128,7 +153,7 @@ def AddKmsKeyResourceArg(parser,
                          permission_info=None,
                          required=False,
                          name='--kms-key'):
-  """Add a resource argument for a KMS key.
+  """Add a resource argument for a KMS key to protect other resources.
 
   Args:
     parser: the parser for the command.
@@ -157,4 +182,28 @@ def AddKmsKeyResourceArg(parser,
       'The Cloud KMS (Key Management Service) cryptokey that will be used to '
       'protect the {}. {}.'.format(resource, permission_info),
       flag_name_overrides=flag_overrides,
+      required=required).AddToParser(parser)
+
+
+def AddKmsKeyResourceArgForKMS(parser, required, name):
+  concept_parsers.ConceptParser.ForResource(
+      name,
+      GetKmsKeyResourceSpec(kms_prefix=False),
+      'The KMS key resource.',
+      required=required).AddToParser(parser)
+
+
+def AddKmsKeyringResourceArgForKMS(parser, required, name):
+  concept_parsers.ConceptParser.ForResource(
+      name,
+      GetKmsKeyRingResourceSpec(kms_prefix=False),
+      'The KMS keyring resource.',
+      required=required).AddToParser(parser)
+
+
+def AddKmsLocationResourceArgForKMS(parser, required, name):
+  concept_parsers.ConceptParser.ForResource(
+      name,
+      GetKmsLocationResourceSpec(kms_prefix=False),
+      'The KMS location resource.',
       required=required).AddToParser(parser)

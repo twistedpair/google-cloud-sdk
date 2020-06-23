@@ -1097,7 +1097,14 @@ class Method(_messages.Message):
 class MetricDescriptor(_messages.Message):
   r"""Defines a metric type and its schema. Once a metric descriptor is
   created, deleting or altering it stops data collection and makes the metric
-  type's existing data unusable.
+  type's existing data unusable.  The following are specific rules for service
+  defined Monitoring metric descriptors:  * `type`, `metric_kind`,
+  `value_type`, `description`, `display_name`,   `launch_stage` fields are all
+  required. The `unit` field must be specified   if the `value_type` is any of
+  DOUBLE, INT64, DISTRIBUTION. * Maximum of default 500 metric descriptors per
+  service is allowed. * Maximum of default 10 labels per metric descriptor is
+  allowed.  The default maximum limit can be overridden. Please follow
+  https://cloud.google.com/monitoring/quotas
 
   Enums:
     LaunchStageValueValuesEnum: Optional. The launch stage of the metric
@@ -1117,7 +1124,10 @@ class MetricDescriptor(_messages.Message):
       "Request count". This field is optional but it is recommended to be set
       for any metrics associated with user-visible concepts, such as Quota.
     labels: The set of labels that can be used to describe a specific instance
-      of this metric type. For example, the
+      of this metric type.  The label key name must follow:  * Only upper and
+      lower-case letters, digits and underscores (_) are   allowed. * Label
+      name must start with a letter or digit. * The maximum length of a label
+      name is 100 characters.  For example, the
       `appengine.googleapis.com/http/server/response_latencies` metric type
       has a label for the HTTP response code, `response_code`, so you can look
       at latencies for successful responses or just for responses that failed.
@@ -1134,9 +1144,15 @@ class MetricDescriptor(_messages.Message):
       here.
     name: The resource name of the metric descriptor.
     type: The metric type, including its DNS name prefix. The type is not URL-
-      encoded.  All user-defined metric types have the DNS name
-      `custom.googleapis.com` or `external.googleapis.com`.  Metric types
-      should use a natural hierarchical grouping. For example:
+      encoded.  All service defined metrics must be prefixed with the service
+      name, in the format of `{service name}/{relative metric name}`, such as
+      `cloudsql.googleapis.com/database/cpu/utilization`. The relative metric
+      name must follow:  * Only upper and lower-case letters, digits, '/' and
+      underscores '_' are   allowed. * The maximum number of characters
+      allowed for the relative_metric_name is   100.  All user-defined metric
+      types have the DNS name `custom.googleapis.com`,
+      `external.googleapis.com`, or `logging.googleapis.com/user/`.  Metric
+      types should use a natural hierarchical grouping. For example:
       "custom.googleapis.com/invoice/paid/amount"
       "external.googleapis.com/prometheus/up"
       "appengine.googleapis.com/http/server/response_latencies"
@@ -1158,30 +1174,30 @@ class MetricDescriptor(_messages.Message):
       `12005/1024`).  The supported units are a subset of [The Unified Code
       for Units of Measure](http://unitsofmeasure.org/ucum.html) standard:
       **Basic units (UNIT)**  * `bit`   bit * `By`    byte * `s`     second *
-      `min`   minute * `h`     hour * `d`     day  **Prefixes (PREFIX)**  *
-      `k`     kilo    (10^3) * `M`     mega    (10^6) * `G`     giga    (10^9)
-      * `T`     tera    (10^12) * `P`     peta    (10^15) * `E`     exa
-      (10^18) * `Z`     zetta   (10^21) * `Y`     yotta   (10^24)  * `m`
-      milli   (10^-3) * `u`     micro   (10^-6) * `n`     nano    (10^-9) *
-      `p`     pico    (10^-12) * `f`     femto   (10^-15) * `a`     atto
-      (10^-18) * `z`     zepto   (10^-21) * `y`     yocto   (10^-24)  * `Ki`
-      kibi    (2^10) * `Mi`    mebi    (2^20) * `Gi`    gibi    (2^30) * `Ti`
-      tebi    (2^40) * `Pi`    pebi    (2^50)  **Grammar**  The grammar also
-      includes these connectors:  * `/`    division or ratio (as an infix
-      operator). For examples,          `kBy/{email}` or `MiBy/10ms` (although
-      you should almost never          have `/s` in a metric `unit`; rates
-      should always be computed at          query time from the underlying
-      cumulative or delta value). * `.`    multiplication or composition (as
-      an infix operator). For          examples, `GBy.d` or `k{watt}.h`.  The
-      grammar for a unit is as follows:      Expression = Component { "."
-      Component } { "/" Component } ;      Component = ( [ PREFIX ] UNIT | "%"
-      ) [ Annotation ]               | Annotation               | "1"
-      ;      Annotation = "{" NAME "}" ;  Notes:  * `Annotation` is just a
-      comment if it follows a `UNIT`. If the annotation    is used alone, then
-      the unit is equivalent to `1`. For examples,    `{request}/s == 1/s`,
-      `By{transmitted}/s == By/s`. * `NAME` is a sequence of non-blank
-      printable ASCII characters not    containing `{` or `}`. * `1`
-      represents a unitary [dimensionless
+      `min`   minute * `h`     hour * `d`     day * `1`     dimensionless
+      **Prefixes (PREFIX)**  * `k`     kilo    (10^3) * `M`     mega    (10^6)
+      * `G`     giga    (10^9) * `T`     tera    (10^12) * `P`     peta
+      (10^15) * `E`     exa     (10^18) * `Z`     zetta   (10^21) * `Y`
+      yotta   (10^24)  * `m`     milli   (10^-3) * `u`     micro   (10^-6) *
+      `n`     nano    (10^-9) * `p`     pico    (10^-12) * `f`     femto
+      (10^-15) * `a`     atto    (10^-18) * `z`     zepto   (10^-21) * `y`
+      yocto   (10^-24)  * `Ki`    kibi    (2^10) * `Mi`    mebi    (2^20) *
+      `Gi`    gibi    (2^30) * `Ti`    tebi    (2^40) * `Pi`    pebi    (2^50)
+      **Grammar**  The grammar also includes these connectors:  * `/`
+      division or ratio (as an infix operator). For examples,
+      `kBy/{email}` or `MiBy/10ms` (although you should almost never
+      have `/s` in a metric `unit`; rates should always be computed at
+      query time from the underlying cumulative or delta value). * `.`
+      multiplication or composition (as an infix operator). For
+      examples, `GBy.d` or `k{watt}.h`.  The grammar for a unit is as follows:
+      Expression = Component { "." Component } { "/" Component } ;
+      Component = ( [ PREFIX ] UNIT | "%" ) [ Annotation ]               |
+      Annotation               | "1"               ;      Annotation = "{"
+      NAME "}" ;  Notes:  * `Annotation` is just a comment if it follows a
+      `UNIT`. If the annotation    is used alone, then the unit is equivalent
+      to `1`. For examples,    `{request}/s == 1/s`, `By{transmitted}/s ==
+      By/s`. * `NAME` is a sequence of non-blank printable ASCII characters
+      not    containing `{` or `}`. * `1` represents a unitary [dimensionless
       unit](https://en.wikipedia.org/wiki/Dimensionless_quantity) of 1, such
       as in `1/s`. It is typically used when none of the basic units are
       appropriate. For example, "new users per day" can be represented as
@@ -1472,9 +1488,17 @@ class MonitoredResourceDescriptor(_messages.Message):
   a type name and a set of labels.  For example, the monitored resource
   descriptor for Google Compute Engine VM instances has a type of
   `"gce_instance"` and specifies the use of the labels `"instance_id"` and
-  `"zone"` to identify particular VM instances.  Different APIs can support
-  different monitored resource types. APIs generally provide a `list` method
-  that returns the monitored resource descriptors used by the API.
+  `"zone"` to identify particular VM instances.  Different services can
+  support different monitored resource types.  The following are specific
+  rules to service defined monitored resources for Monitoring and Logging:  *
+  The `type`, `display_name`, `description`, `labels` and `launch_stage`
+  fields are all required. * The first label of the monitored resource
+  descriptor must be   `resource_container`. There are legacy monitored
+  resource descritptors   start with `project_id`. * It must include a
+  `location` label. * Maximum of default 5 service defined monitored resource
+  descriptors   is allowed per service. * Maximum of default 10 labels per
+  monitored resource is allowed.  The default maximum limit can be overridden.
+  Please follow https://cloud.google.com/monitoring/quotas
 
   Enums:
     LaunchStageValueValuesEnum: Optional. The launch stage of the monitored
@@ -1488,9 +1512,12 @@ class MonitoredResourceDescriptor(_messages.Message):
       Phrase, without any article or other determiners. For example, `"Google
       Cloud SQL Database"`.
     labels: Required. A set of labels used to describe instances of this
-      monitored resource type. For example, an individual Google Cloud SQL
-      database is identified by values for the labels `"database_id"` and
-      `"zone"`.
+      monitored resource type. The label key name must follow:  * Only upper
+      and lower-case letters, digits and underscores (_) are   allowed. *
+      Label name must start with a letter or digit. * The maximum length of a
+      label name is 100 characters.  For example, an individual Google Cloud
+      SQL database is identified by values for the labels `database_id` and
+      `location`.
     launchStage: Optional. The launch stage of the monitored resource
       definition.
     name: Optional. The resource name of the monitored resource descriptor:
@@ -1500,8 +1527,15 @@ class MonitoredResourceDescriptor(_messages.Message):
       type.  APIs that do not use project information can use the resource
       name format `"monitoredResourceDescriptors/{type}"`.
     type: Required. The monitored resource type. For example, the type
-      `"cloudsql_database"` represents databases in Google Cloud SQL. The
-      maximum length of this value is 256 characters.
+      `cloudsql_database` represents databases in Google Cloud SQL.  All
+      service defined monitored resource types must be prefixed with the
+      service name, in the format of `{service name}/{relative resource
+      name}`. The relative resource name must follow:  * Only upper and lower-
+      case letters and digits are allowed. * It must start with upper case
+      character and is recommended to use Upper   Camel Case style. * The
+      maximum number of characters allowed for the relative_resource_name   is
+      100.  Note there are legacy service monitored resources not following
+      this rule.
   """
 
   class LaunchStageValueValuesEnum(_messages.Enum):
@@ -1561,34 +1595,41 @@ class Monitoring(_messages.Message):
   configure monitored resources and metrics for monitoring. In the example, a
   monitored resource and two metrics are defined. The
   `library.googleapis.com/book/returned_count` metric is sent to both producer
-  and consumer projects, whereas the
-  `library.googleapis.com/book/overdue_count` metric is only sent to the
-  consumer project.      monitored_resources:     - type:
-  library.googleapis.com/branch       labels:       - key: /city
-  description: The city where the library branch is located in.       - key:
-  /name         description: The name of the branch.     metrics:     - name:
-  library.googleapis.com/book/returned_count       metric_kind: DELTA
-  value_type: INT64       labels:       - key: /customer_id     - name:
-  library.googleapis.com/book/overdue_count       metric_kind: GAUGE
-  value_type: INT64       labels:       - key: /customer_id     monitoring:
+  and consumer projects, whereas the `library.googleapis.com/book/num_overdue`
+  metric is only sent to the consumer project.      monitored_resources:     -
+  type: library.googleapis.com/Branch       display_name: "Library Branch"
+  description: "A branch of a library."       launch_stage: GA       labels:
+  - key: resource_container         description: "The Cloud container (ie.
+  project id) for the Branch."       - key: location         description: "The
+  location of the library branch."       - key: branch_id         description:
+  "The id of the branch."     metrics:     - name:
+  library.googleapis.com/book/returned_count       display_name: "Books
+  Returned"       description: "The count of books that have been returned."
+  launch_stage: GA       metric_kind: DELTA       value_type: INT64
+  unit: "1"       labels:       - key: customer_id         description: "The
+  id of the customer."     - name: library.googleapis.com/book/num_overdue
+  display_name: "Books Overdue"       description: "The current number of
+  overdue books."       launch_stage: GA       metric_kind: GAUGE
+  value_type: INT64       unit: "1"       labels:       - key: customer_id
+  description: "The id of the customer."     monitoring:
   producer_destinations:       - monitored_resource:
-  library.googleapis.com/branch         metrics:         -
+  library.googleapis.com/Branch         metrics:         -
   library.googleapis.com/book/returned_count       consumer_destinations:
-  - monitored_resource: library.googleapis.com/branch         metrics:
+  - monitored_resource: library.googleapis.com/Branch         metrics:
   - library.googleapis.com/book/returned_count         -
-  library.googleapis.com/book/overdue_count
+  library.googleapis.com/book/num_overdue
 
   Fields:
     consumerDestinations: Monitoring configurations for sending metrics to the
       consumer project. There can be multiple consumer destinations. A
-      monitored resouce type may appear in multiple monitoring destinations if
-      different aggregations are needed for different sets of metrics
+      monitored resource type may appear in multiple monitoring destinations
+      if different aggregations are needed for different sets of metrics
       associated with that monitored resource type. A monitored resource and
       metric pair may only be used once in the Monitoring configuration.
     producerDestinations: Monitoring configurations for sending metrics to the
       producer project. There can be multiple producer destinations. A
-      monitored resouce type may appear in multiple monitoring destinations if
-      different aggregations are needed for different sets of metrics
+      monitored resource type may appear in multiple monitoring destinations
+      if different aggregations are needed for different sets of metrics
       associated with that monitored resource type. A monitored resource and
       metric pair may only be used once in the Monitoring configuration.
   """

@@ -37,6 +37,7 @@ import six
 
 API_NAME = 'cloudasset'
 DEFAULT_API_VERSION = 'v1'
+V1P1BETA1_API_VERSION = 'v1p1beta1'
 V1P4ALPHA1_API_VERSION = 'v1p4alpha1'
 V1P4BETA1_API_VERSION = 'v1p4beta1'
 V1P5ALPHA1_API_VERSION = 'v1p5alpha1'
@@ -398,6 +399,58 @@ class AssetFeedClient(object):
     else:
       asset_types = []
     return asset_names, asset_types
+
+
+class AssetSearchClient(object):
+  """Client for search assets."""
+
+  def __init__(self, api_version):
+    self.message_module = GetMessages(api_version)
+    if api_version == V1P1BETA1_API_VERSION:
+      self.resource_service = GetClient(api_version).resources
+      self.search_all_resources_method = 'SearchAll'
+      self.search_all_resources_request = self.message_module.CloudassetResourcesSearchAllRequest
+      self.policy_service = GetClient(api_version).iamPolicies
+      self.search_all_iam_policies_method = 'SearchAll'
+      self.search_all_iam_policies_request = self.message_module.CloudassetIamPoliciesSearchAllRequest
+    else:
+      self.resource_service = GetClient(api_version).v1
+      self.search_all_resources_method = 'SearchAllResources'
+      self.search_all_resources_request = self.message_module.CloudassetSearchAllResourcesRequest
+      self.policy_service = GetClient(api_version).v1
+      self.search_all_iam_policies_method = 'SearchAllIamPolicies'
+      self.search_all_iam_policies_request = self.message_module.CloudassetSearchAllIamPoliciesRequest
+
+  def SearchAllResources(self, args):
+    """Calls SearchAllResources method."""
+    request = self.search_all_resources_request(
+        scope=asset_utils.GetDefaultScopeIfEmpty(args),
+        query=args.query,
+        assetTypes=args.asset_types,
+        orderBy=args.order_by)
+    return list_pager.YieldFromList(
+        self.resource_service,
+        request,
+        method=self.search_all_resources_method,
+        field='results',
+        batch_size=args.page_size,
+        batch_size_attribute='pageSize',
+        current_token_attribute='pageToken',
+        next_token_attribute='nextPageToken')
+
+  def SearchAllIamPolicies(self, args):
+    """Calls SearchAllIamPolicies method."""
+    request = self.search_all_iam_policies_request(
+        scope=asset_utils.GetDefaultScopeIfEmpty(args), query=args.query)
+    return list_pager.YieldFromList(
+        self.policy_service,
+        request,
+        method=self.search_all_iam_policies_method,
+        field='results',
+        batch_size=args.page_size,
+        batch_size_attribute='pageSize',
+        current_token_attribute='pageToken',
+        next_token_attribute='nextPageToken')
 
 
 class AssetListClient(object):

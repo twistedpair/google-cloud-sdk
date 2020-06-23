@@ -26,6 +26,7 @@ from googlecloudsdk.api_lib.services import exceptions
 from googlecloudsdk.api_lib.util import apis_internal
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
+from googlecloudsdk.core import transport
 from googlecloudsdk.core.credentials import http as http_creds
 from googlecloudsdk.core.util import retry
 
@@ -53,7 +54,7 @@ def GetClientInstance():
   enable_resource_quota = (
       properties.VALUES.billing.quota_project.IsExplicitlySet())
   http_client = http_creds.Http(
-      response_encoding=http_creds.ENCODING,
+      response_encoding=transport.ENCODING,
       enable_resource_quota=enable_resource_quota)
   return apis_internal._GetClientInstance(
       'servicemanagement', 'v1', http_client=http_client)

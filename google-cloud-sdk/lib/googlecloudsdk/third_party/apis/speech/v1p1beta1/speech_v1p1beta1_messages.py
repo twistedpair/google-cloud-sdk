@@ -182,11 +182,11 @@ class Empty(_messages.Message):
 
 
 class Endpointer(_messages.Message):
-  r"""Config to enable endpointer settings.
+  r"""Config to enable endpointer.
 
   Fields:
     sensitivity: Value between 0 and 100 indicating endpointer sensitivity.
-      The higher this value, the shorter the wait before closing the
+      The higher the value, the shorter the wait before closing the
       microphone.
   """
 
@@ -695,10 +695,10 @@ class RecognitionConfig(_messages.Message):
       This field is optional for `FLAC` and `WAV` audio files and required for
       all other audio formats. For details, see AudioEncoding.
     endpointer: Config to enable the configurable endpointer. If enabled, you
-      can set the endpointer slider to a value (0-100) better suited to your
-      application. The slider value controls the aggressiveness of the
-      endpointer. If not enabled, the default behavior is used, with the best
-      general WER/latency tradeoff.
+      can set the endpointer sensitivity to a value (0-100) that is suited to
+      your application. The sensitivity value controls the aggressiveness of
+      the endpointer. If not enabled the default behavior is used, which auto-
+      selects a sensitivity value with the best general WER/latency tradeoff.
     languageCode: Required. The language of the supplied audio as a
       [BCP-47](https://www.rfc-editor.org/rfc/bcp/bcp47.txt) language tag.
       Example: "en-US". See [Language
@@ -786,9 +786,10 @@ class RecognitionConfig(_messages.Message):
         as specified in RFC 5574. In other words, each RTP header is replaced
         with a single byte containing the block length. Only Speex wideband is
         supported. `sample_rate_hertz` must be 16000.
-      MP3: MP3 audio. Support all standard MP3 bitrates (which range from
-        32-320 kbps). When using this encoding, `sample_rate_hertz` has to
-        match the sample rate of the file being used.
+      MP3: MP3 audio. MP3 encoding is a Beta feature and only available in
+        v1p1beta1. Support all standard MP3 bitrates (which range from 32-320
+        kbps). When using this encoding, `sample_rate_hertz` has to match the
+        sample rate of the file being used.
     """
     ENCODING_UNSPECIFIED = 0
     LINEAR16 = 1

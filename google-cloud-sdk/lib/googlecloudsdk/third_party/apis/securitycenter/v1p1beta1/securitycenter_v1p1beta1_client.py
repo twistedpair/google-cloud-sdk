@@ -291,7 +291,8 @@ Updates security marks.
 
     def Patch(self, request, global_params=None):
       r""".
-Updates a notification config.
+Updates a notification config. The following update
+fields are allowed: description, pubsub_topic, streaming_config.filter
 
       Args:
         request: (SecuritycenterOrganizationsNotificationConfigsPatchRequest) input message

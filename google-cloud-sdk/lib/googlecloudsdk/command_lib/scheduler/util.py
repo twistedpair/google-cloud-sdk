@@ -344,7 +344,7 @@ def _EncodeMessageBody(message_body):
   Returns:
     String containing HTTP encoded message body.
   """
-  message_body_str = encoding.Decode(message_body, encoding='utf8')
+  message_body_str = encoding.Decode(message_body, encoding='utf-8')
   return http_encoding.Encode(message_body_str)
 
 

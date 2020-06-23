@@ -26,6 +26,7 @@ from googlecloudsdk.api_lib.util import apis_internal
 from googlecloudsdk.api_lib.util import exceptions
 from googlecloudsdk.core import exceptions as core_exceptions
 from googlecloudsdk.core import resources
+from googlecloudsdk.core import transport
 from googlecloudsdk.core.credentials import http as http_creds
 import googlecloudsdk.core.http as http_core
 from oauth2client import client
@@ -45,7 +46,7 @@ def GenerateAccessToken(service_account_id, scopes):
   # pylint: disable=protected-access
   http_client = http_creds.Http(
       enable_resource_quota=False,
-      response_encoding=http_creds.ENCODING,
+      response_encoding=transport.ENCODING,
       allow_account_impersonation=False)
   iam_client = apis_internal._GetClientInstance(
       'iamcredentials', 'v1', http_client=http_client)
@@ -82,7 +83,7 @@ def GenerateIdToken(service_account_id, audience, include_email=False):
   # pylint: disable=protected-access
   http_client = http_creds.Http(
       enable_resource_quota=False,
-      response_encoding=http_creds.ENCODING,
+      response_encoding=transport.ENCODING,
       allow_account_impersonation=False)
   iam_client = apis_internal._GetClientInstance(
       'iamcredentials', 'v1', http_client=http_client)

@@ -19,7 +19,9 @@ from __future__ import division
 from __future__ import unicode_literals
 
 from googlecloudsdk.api_lib.artifacts import exceptions as ar_exceptions
+from googlecloudsdk.api_lib.cloudkms import iam as kms_iam
 from googlecloudsdk.api_lib.util import apis
+from googlecloudsdk.core import resources
 
 ARTIFACTREGISTRY_API_NAME = "artifactregistry"
 ARTIFACTREGISTRY_API_VERSION = "v1beta1"
@@ -28,6 +30,8 @@ STORAGE_API_NAME = "storage"
 STORAGE_API_VERSION = "v1"
 
 _GCR_PERMISSION = "storage.objects.list"
+
+CRYPTO_KEY_COLLECTION = "cloudkms.projects.locations.keyRings.cryptoKeys"
 
 
 def GetStorageClient():
@@ -198,9 +202,25 @@ def ListLocations(project_id, page_size=None, page_token=None, res=None):
 
 
 def TestStorageIAMPermission(bucket, project):
-  """Test storage IAM permission for a given bucket for the user project."""
+  """Tests storage IAM permission for a given bucket for the user project."""
   client = GetStorageClient()
   messages = GetStorageMessages()
   test_req = messages.StorageBucketsTestIamPermissionsRequest(
       bucket=bucket, permissions=_GCR_PERMISSION, userProject=project)
   return client.buckets.TestIamPermissions(test_req)
+
+
+def GetCryptoKeyPolicy(kms_key):
+  """Gets the IAM policy for a given crypto key."""
+  crypto_key_ref = resources.REGISTRY.ParseRelativeName(
+      relative_name=kms_key, collection=CRYPTO_KEY_COLLECTION)
+  return kms_iam.GetCryptoKeyIamPolicy(crypto_key_ref)
+
+
+def AddCryptoKeyPermission(kms_key, service_account):
+  """Adds Encrypter/Decrypter role to the given service account."""
+  crypto_key_ref = resources.REGISTRY.ParseRelativeName(
+      relative_name=kms_key, collection=CRYPTO_KEY_COLLECTION)
+  return kms_iam.AddPolicyBindingToCryptoKey(
+      crypto_key_ref, service_account,
+      "roles/cloudkms.cryptoKeyEncrypterDecrypter")

@@ -1160,7 +1160,7 @@ def FileReader(path):
   Returns:
     A file-like object opened for read in text mode.
   """
-  return _FileOpener(path, 'rt', 'read', encoding='utf8')
+  return _FileOpener(path, 'rt', 'read', encoding='utf-8')
 
 
 def BinaryFileReader(path):
@@ -1192,7 +1192,7 @@ def FileWriter(path, private=False, append=False, create_path=False):
       path,
       mode,
       'write',
-      encoding='utf8',
+      encoding='utf-8',
       private=private,
       create_path=create_path)
 

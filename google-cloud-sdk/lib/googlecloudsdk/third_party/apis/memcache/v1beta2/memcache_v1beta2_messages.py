@@ -683,9 +683,8 @@ class Instance(_messages.Message):
 
   Fields:
     authorizedNetwork: The full name of the Google Compute Engine
-      [network](/compute/docs/networks-and-firewalls#networks) to which the
-      instance is connected. If left unspecified, the `default` network will
-      be used.
+      [network](https://cloud.google.com/vpc/docs/vpc) to which the instance
+      is connected. If left unspecified, the `default` network will be used.
     createTime: Output only. The time the instance was created.
     discoveryEndpoint: Output only. Endpoint for Discovery API
     displayName: User provided name for the instance only used for display

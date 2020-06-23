@@ -36,6 +36,11 @@ COMPUTE_ALPHA_API_VERSION = 'alpha'
 COMPUTE_BETA_API_VERSION = 'beta'
 COMPUTE_GA_API_VERSION = 'v1'
 
+WARN_IF_DISK_SIZE_IS_TOO_SMALL = (
+    'You have selected a disk size of under [%sGB]. This may result in '
+    'poor I/O performance. For more information, see: '
+    'https://developers.google.com/compute/docs/disks#performance.')
+
 
 class InstanceNotReadyError(exceptions.Error):
   """The user is attempting to perform an operation on a not-ready instance."""
@@ -194,16 +199,16 @@ def WarnIfDiskSizeIsTooSmall(size_gb, disk_type):
   if not size_gb:
     return
 
-  if disk_type and 'pd-ssd' in disk_type:
+  if disk_type and (constants.DISK_TYPE_PD_BALANCED in disk_type or
+                    constants.DISK_TYPE_PD_SSD in disk_type or
+                    constants.DISK_TYPE_PD_EXTREME in disk_type):
     warning_threshold_gb = constants.SSD_DISK_PERFORMANCE_WARNING_GB
   else:
     warning_threshold_gb = constants.STANDARD_DISK_PERFORMANCE_WARNING_GB
 
   if size_gb < warning_threshold_gb:
     log.warning(
-        'You have selected a disk size of under [%sGB]. This may result in '
-        'poor I/O performance. For more information, see: '
-        'https://developers.google.com/compute/docs/disks#performance.',
+        WARN_IF_DISK_SIZE_IS_TOO_SMALL,
         warning_threshold_gb)
 
 

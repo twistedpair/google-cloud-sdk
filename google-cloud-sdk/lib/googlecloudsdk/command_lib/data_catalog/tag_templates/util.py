@@ -56,7 +56,7 @@ def UpdateUpdateTagTemplateFieldRequestWithInput(unused_ref, args, request):
   update_mask = []
   if args.IsSpecified('display_name'):
     update_mask.append('display_name')
-  if args.IsSpecified('add_enum_values'):
+  if args.IsSpecified('enum_values'):
     update_mask.append('type.enum_type')
   if args.IsSpecified('required'):
     update_mask.append('is_required')
@@ -72,7 +72,7 @@ def UpdateUpdateTagTemplateFieldRequestWithInputV1(unused_ref, args, request):
   update_mask = []
   if args.IsSpecified('display_name'):
     update_mask.append('display_name')
-  if args.IsSpecified('add_enum_values'):
+  if args.IsSpecified('enum_values'):
     update_mask.append('type.enum_type')
   if args.IsSpecified('required'):
     update_mask.append('is_required')

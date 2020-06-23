@@ -6,6 +6,55 @@ Subscribe to these release notes at [https://groups.google.com/forum/#!forum/goo
 
 Note: Cloud SDK introduced support for Python 3 in release 274.0.0 and users are strongly encouraged to migrate to Python 3. Support for Python 2 will be deprecated on July 31, 2020. See also [Python 2 Sunset](https://cloud.google.com/python/docs/python2-sunset/) and [Using Python 3](https://cloud.google.com/sdk/gcloud/reference/topic/startup).
 
+## 298.0.0 (2020-06-23)
+
+### Breaking Changes
+
+*   **(Cloud Data Catalog)** Removed add-enum-values flag from `gcloud data-catalog tag-templates fields update`.
+
+
+### Cloud SDK
+
+* Changed the bq and gcloud command-line tools to prefer Python 3 for
+  component-based Cloud SDK installs on Unix. See `gcloud topic startup` for
+  information on configuring the Python interpreter used by the Cloud SDK.
+
+### AI Platform
+
+* Added `--network` flag to `gcloud ml-engine jobs submit training` and `gcloud ai-platform jobs submit training`.
+
+### App Engine
+
+* Added an optional `--appyaml` flag to change the app.yaml file location for an application.
+
+### Cloud Data Catalog
+
+* Added enum-values flag in `gcloud data-catalog tag-templates fields update`.
+
+### Compute Engine
+
+* Promote `--condition` flag for
+  * `gcloud compute disks add-iam-policy-binding`
+  * `gcloud compute disks remove-iam-policy-binding`
+  to GA.
+
+* Promote `--condition` flag for
+  * `gcloud compute reservations add-iam-policy-binding`
+  * `gcloud compute reservations remove-iam-policy-binding`
+  to GA.
+
+### Secret Manager
+
+* Updated the following beta commands to better support IAM Conditions:
+  * `gcloud beta secrets get-iam-policy` outputs conditions associated with each binding.
+  * `gcloud beta secrets set-iam-policy` accepts policies with conditional bindings.
+  * `gcloud beta secrets <add|remove>-iam-policy-binding` accepts conditional bindings.
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+Note: Cloud SDK introduced support for Python 3 in release 274.0.0 and users are strongly encouraged to migrate to Python 3. Support for Python 2 will be deprecated on July 31, 2020. See also [Python 2 Sunset](https://cloud.google.com/python/docs/python2-sunset/) and [Using Python 3](https://cloud.google.com/sdk/gcloud/reference/topic/startup).
+
 ## 297.0.1 (2020-06-17)
 
 * Fixed bug in `gcloud app deploy` command.

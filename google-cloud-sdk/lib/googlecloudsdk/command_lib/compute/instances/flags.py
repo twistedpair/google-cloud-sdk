@@ -556,7 +556,8 @@ def AddCreateDiskArgs(parser,
                       resource_policy=False,
                       source_snapshot_csek=False,
                       image_csek=False,
-                      include_name=True):
+                      include_name=True,
+                      support_boot=False):
   """Adds create-disk argument for instances and instance-templates."""
 
   disk_device_name_help = _GetDiskDeviceNameHelp(
@@ -628,6 +629,12 @@ def AddCreateDiskArgs(parser,
           disk_name=disk_name_extra_help,
           disk_mode=disk_mode_extra_help,
           disk_device=disk_device_name_help)
+  if support_boot:
+    disk_help += """
+      *boot*::: If ``yes'', indicates that this is a boot disk. The
+      instance will use the first partition of the disk for
+      its root file system. The default value for this is ``no''.
+    """
   if enable_kms:
     disk_help += """
       *kms-key*::: Fully qualified Cloud KMS cryptokey name that will
@@ -681,6 +688,9 @@ def AddCreateDiskArgs(parser,
     spec['kms-project'] = str
     spec['kms-location'] = str
     spec['kms-keyring'] = str
+
+  if support_boot:
+    spec['boot'] = str
 
   if enable_snapshots:
     disk_help += """

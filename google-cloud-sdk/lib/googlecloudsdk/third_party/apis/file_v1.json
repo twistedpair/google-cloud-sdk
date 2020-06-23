@@ -24,6 +24,11 @@
   "version_module": true,
   "fullyEncodeReservedExpansion": true,
   "parameters": {
+    "access_token": {
+      "type": "string",
+      "description": "OAuth access token.",
+      "location": "query"
+    },
     "alt": {
       "type": "string",
       "description": "Data format for response.",
@@ -53,6 +58,11 @@
     "key": {
       "type": "string",
       "description": "API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.",
+      "location": "query"
+    },
+    "oauth_token": {
+      "type": "string",
+      "description": "OAuth 2.0 token for the current user.",
       "location": "query"
     },
     "prettyPrint": {
@@ -265,8 +275,8 @@
           "description": "The service tier of the instance.",
           "enumDescriptions": [
             "Not set.",
-            "STANDARD tier. BASIC_HDD is the preferred term for this tier.",
-            "PREMIUM tier. BASIC_SSD is the preferred term for this tier.",
+            "STANDARD tier.",
+            "PREMIUM tier.",
             "BASIC instances offer a maximum capacity of 63.9 TB.\nBASIC_HDD is an alias for STANDARD Tier, offering economical\nperformance backed by HDD.",
             "BASIC instances offer a maximum capacity of 63.9 TB.\nBASIC_SSD is an alias for PREMIUM Tier, and offers improved\nperformance backed by SSD.",
             "HIGH_SCALE instances offer expanded capacity and performance scaling\ncapabilities."

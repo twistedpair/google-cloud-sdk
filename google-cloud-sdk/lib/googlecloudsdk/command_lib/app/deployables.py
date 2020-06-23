@@ -84,7 +84,7 @@ class Service(object):
     return self.service_info.file
 
   @classmethod
-  def FromPath(cls, path, stager, path_matchers):
+  def FromPath(cls, path, stager, path_matchers, appyaml):
     """Return a Service from a path using staging if necessary.
 
     Args:
@@ -94,18 +94,19 @@ class Service(object):
           and environment match.
       path_matchers: List[Function], ordered list of functions on the form
           fn(path, stager), where fn returns a Service or None if no match.
+      appyaml: str or None, the app.yaml location to used for deployment.
 
     Returns:
       Service, if one can be derived, else None.
     """
     for matcher in path_matchers:
-      service = matcher(path, stager)
+      service = matcher(path, stager, appyaml)
       if service:
         return service
     return None
 
 
-def ServiceYamlMatcher(path, stager):
+def ServiceYamlMatcher(path, stager, appyaml):
   """Generate a Service from an <service>.yaml source path.
 
   This function is a path matcher that returns if and only if:
@@ -121,6 +122,7 @@ def ServiceYamlMatcher(path, stager):
         any type. There is no guarantee that it exists.
     stager: staging.Stager, stager that will be invoked if there is a runtime
         and environment match.
+    appyaml: str or None, the app.yaml location to used for deployment.
 
   Raises:
     staging.StagingCommandFailedError, staging command failed.
@@ -137,13 +139,13 @@ def ServiceYamlMatcher(path, stager):
     app_dir = os.path.dirname(descriptor)
     service_info = yaml_parsing.ServiceYamlInfo.FromFile(descriptor)
     staging_dir = stager.Stage(descriptor, app_dir, service_info.runtime,
-                               service_info.env)
+                               service_info.env, appyaml)
     # If staging, stage, get stage_dir
     return Service(descriptor, app_dir, service_info, staging_dir or app_dir)
   return None
 
 
-def JarMatcher(jar_path, stager):
+def JarMatcher(jar_path, stager, appyaml):
   """Generate a Service from a Java fatjar path.
 
   This function is a path matcher that returns if and only if:
@@ -156,6 +158,7 @@ def JarMatcher(jar_path, stager):
     jar_path: str, Unsanitized absolute path pointing to a file of jar type.
     stager: staging.Stager, stager that will be invoked if there is a runtime
       and environment match.
+    appyaml: str or None, the app.yaml location to used for deployment.
 
   Raises:
     staging.StagingCommandFailedError, staging command failed.
@@ -168,14 +171,15 @@ def JarMatcher(jar_path, stager):
   if os.path.exists(jar_path) and ext in ['.jar']:
     app_dir = os.path.abspath(os.path.join(jar_path, os.pardir))
     descriptor = jar_path
-    staging_dir = stager.Stage(descriptor, app_dir, 'java-jar', env.STANDARD)
+    staging_dir = stager.Stage(descriptor, app_dir, 'java-jar', env.STANDARD,
+                               appyaml)
     yaml_path = os.path.join(staging_dir, 'app.yaml')
     service_info = yaml_parsing.ServiceYamlInfo.FromFile(yaml_path)
     return Service(descriptor, app_dir, service_info, staging_dir)
   return None
 
 
-def PomXmlMatcher(path, stager):
+def PomXmlMatcher(path, stager, appyaml):
   """Generate a Service from an Maven project source path.
 
   This function is a path matcher that returns true if and only if:
@@ -190,6 +194,7 @@ def PomXmlMatcher(path, stager):
       any type. There is no guarantee that it exists.
     stager: staging.Stager, stager that will be invoked if there is a runtime
       and environment match.
+    appyaml: str or None, the app.yaml location to used for deployment.
 
   Raises:
     staging.StagingCommandFailedError, staging command failed.
@@ -204,14 +209,14 @@ def PomXmlMatcher(path, stager):
   if os.path.exists(descriptor) and filename == 'pom.xml':
     app_dir = os.path.dirname(descriptor)
     staging_dir = stager.Stage(descriptor, app_dir, 'java-maven-project',
-                               env.STANDARD)
+                               env.STANDARD, appyaml)
     yaml_path = os.path.join(staging_dir, 'app.yaml')
     service_info = yaml_parsing.ServiceYamlInfo.FromFile(yaml_path)
     return Service(descriptor, app_dir, service_info, staging_dir)
   return None
 
 
-def AppengineWebMatcher(path, stager):
+def AppengineWebMatcher(path, stager, appyaml):
   """Generate a Service from an appengine-web.xml source path.
 
   This function is a path matcher that returns if and only if:
@@ -227,6 +232,7 @@ def AppengineWebMatcher(path, stager):
         any type. There is no guarantee that it exists.
     stager: staging.Stager, stager that will be invoked if there is a runtime
         and environment match.
+    appyaml: str or None, the app.yaml location to used for deployment.
 
   Raises:
     staging.StagingCommandFailedError, staging command failed.
@@ -240,7 +246,8 @@ def AppengineWebMatcher(path, stager):
   descriptor = os.path.join(app_dir, 'WEB-INF', 'appengine-web.xml')
   if not os.path.isfile(descriptor):
     return None
-  staging_dir = stager.Stage(descriptor, app_dir, 'java-xml', env.STANDARD)
+  staging_dir = stager.Stage(descriptor, app_dir, 'java-xml', env.STANDARD,
+                             appyaml)
   if not staging_dir:
     # After GA launch of appengine-web.xml support, this should never occur.
     return None
@@ -249,17 +256,40 @@ def AppengineWebMatcher(path, stager):
   return Service(descriptor, app_dir, service_info, staging_dir)
 
 
-def UnidentifiedDirMatcher(path, stager):
+def ExplicitAppYamlMatcher(path, stager, appyaml):
+  """Use optional app.yaml with a directory or a file the user wants to deploy.
+
+  Args:
+    path: str, Unsanitized absolute path, may point to a directory or a file of
+      any type. There is no guarantee that it exists.
+    stager: staging.Stager, stager that will not be invoked.
+    appyaml: str or None, the app.yaml location to used for deployment.
+
+  Returns:
+    Service, fully populated with entries that respect a staged deployable
+        service, or None if there is no optional --appyaml flag usage.
+  """
+
+  if appyaml:
+    service_info = yaml_parsing.ServiceYamlInfo.FromFile(appyaml)
+    staging_dir = stager.Stage(appyaml, path, 'generic-copy', service_info.env,
+                               appyaml)
+    return Service(appyaml, path, service_info, staging_dir)
+  return None
+
+
+def UnidentifiedDirMatcher(path, stager, appyaml):
   """Points out to the user that they need an app.yaml to deploy.
 
   Args:
     path: str, Unsanitized absolute path, may point to a directory or a file of
         any type. There is no guarantee that it exists.
     stager: staging.Stager, stager that will not be invoked.
+    appyaml: str or None, the app.yaml location to used for deployment.
   Returns:
     None
   """
-  del stager
+  del stager, appyaml
   if os.path.isdir(path):
     log.error(NO_YAML_ERROR)
   return None
@@ -274,7 +304,7 @@ def GetPathMatchers():
   """
   return [
       ServiceYamlMatcher, AppengineWebMatcher, JarMatcher, PomXmlMatcher,
-      UnidentifiedDirMatcher
+      ExplicitAppYamlMatcher, UnidentifiedDirMatcher
   ]
 
 
@@ -351,7 +381,7 @@ class Configs(object):
     return list(self._configs.values())
 
 
-def GetDeployables(args, stager, path_matchers):
+def GetDeployables(args, stager, path_matchers, appyaml=None):
   """Given a list of args, infer the deployable services and configs.
 
   Given a deploy command, e.g. `gcloud app deploy ./dir other/service.yaml
@@ -375,6 +405,7 @@ def GetDeployables(args, stager, path_matchers):
     path_matchers: List[Function], list of functions on the form
         fn(path, stager) ordered by descending precedence, where fn returns
         a Service or None if no match.
+    appyaml: str or None, the app.yaml location to used for deployment.
 
   Raises:
     FileNotFoundError: One or more argument does not point to an existing file
@@ -392,6 +423,15 @@ def GetDeployables(args, stager, path_matchers):
   paths = [os.path.abspath(arg) for arg in args]
   configs = Configs()
   services = Services()
+  if appyaml:
+    if len(paths) > 1:
+      raise exceptions.MultiDeployError()
+    if not os.path.exists(os.path.abspath(appyaml)):
+      raise exceptions.FileNotFoundError('File {0} referenced by --appyaml '
+                                         'does not exist.'.format(appyaml))
+    if not os.path.exists(paths[0]):
+      raise exceptions.FileNotFoundError(paths[0])
+
   for path in paths:
     if not os.path.exists(path):
       raise exceptions.FileNotFoundError(path)
@@ -399,7 +439,7 @@ def GetDeployables(args, stager, path_matchers):
     if config:
       configs.Add(config)
       continue
-    service = Service.FromPath(path, stager, path_matchers)
+    service = Service.FromPath(path, stager, path_matchers, appyaml)
     if service:
       services.Add(service)
       continue

@@ -343,6 +343,7 @@ class Cluster(_messages.Message):
     nodePools: The node pools associated with this cluster. This field should
       not be set if "node_config" or "initial_node_count" are specified.
     privateClusterConfig: Configuration for private cluster.
+    releaseChannel: Release channel configuration.
     resourceLabels: The resource labels for the cluster to use to annotate any
       related Google Compute Engine resources.
     resourceUsageExportConfig: Configuration for exporting resource usages.
@@ -463,18 +464,19 @@ class Cluster(_messages.Message):
   nodeIpv4CidrSize = _messages.IntegerField(36, variant=_messages.Variant.INT32)
   nodePools = _messages.MessageField('NodePool', 37, repeated=True)
   privateClusterConfig = _messages.MessageField('PrivateClusterConfig', 38)
-  resourceLabels = _messages.MessageField('ResourceLabelsValue', 39)
-  resourceUsageExportConfig = _messages.MessageField('ResourceUsageExportConfig', 40)
-  selfLink = _messages.StringField(41)
-  servicesIpv4Cidr = _messages.StringField(42)
-  shieldedNodes = _messages.MessageField('ShieldedNodes', 43)
-  status = _messages.EnumField('StatusValueValuesEnum', 44)
-  statusMessage = _messages.StringField(45)
-  subnetwork = _messages.StringField(46)
-  tpuIpv4CidrBlock = _messages.StringField(47)
-  verticalPodAutoscaling = _messages.MessageField('VerticalPodAutoscaling', 48)
-  workloadIdentityConfig = _messages.MessageField('WorkloadIdentityConfig', 49)
-  zone = _messages.StringField(50)
+  releaseChannel = _messages.MessageField('ReleaseChannel', 39)
+  resourceLabels = _messages.MessageField('ResourceLabelsValue', 40)
+  resourceUsageExportConfig = _messages.MessageField('ResourceUsageExportConfig', 41)
+  selfLink = _messages.StringField(42)
+  servicesIpv4Cidr = _messages.StringField(43)
+  shieldedNodes = _messages.MessageField('ShieldedNodes', 44)
+  status = _messages.EnumField('StatusValueValuesEnum', 45)
+  statusMessage = _messages.StringField(46)
+  subnetwork = _messages.StringField(47)
+  tpuIpv4CidrBlock = _messages.StringField(48)
+  verticalPodAutoscaling = _messages.MessageField('VerticalPodAutoscaling', 49)
+  workloadIdentityConfig = _messages.MessageField('WorkloadIdentityConfig', 50)
+  zone = _messages.StringField(51)
 
 
 class ClusterAutoscaling(_messages.Message):
@@ -569,6 +571,7 @@ class ClusterUpdate(_messages.Message):
       version - "1.X.Y": picks the highest valid gke.N patch in the 1.X.Y
       version - "1.X.Y-gke.N": picks an explicit Kubernetes version - "-":
       picks the Kubernetes master version
+    desiredReleaseChannel: The desired release channel configuration.
     desiredResourceUsageExportConfig: The desired configuration for exporting
       resource usage.
     desiredShieldedNodes: Configuration for Shielded Nodes.
@@ -593,10 +596,11 @@ class ClusterUpdate(_messages.Message):
   desiredNodePoolAutoscaling = _messages.MessageField('NodePoolAutoscaling', 14)
   desiredNodePoolId = _messages.StringField(15)
   desiredNodeVersion = _messages.StringField(16)
-  desiredResourceUsageExportConfig = _messages.MessageField('ResourceUsageExportConfig', 17)
-  desiredShieldedNodes = _messages.MessageField('ShieldedNodes', 18)
-  desiredVerticalPodAutoscaling = _messages.MessageField('VerticalPodAutoscaling', 19)
-  desiredWorkloadIdentityConfig = _messages.MessageField('WorkloadIdentityConfig', 20)
+  desiredReleaseChannel = _messages.MessageField('ReleaseChannel', 17)
+  desiredResourceUsageExportConfig = _messages.MessageField('ResourceUsageExportConfig', 18)
+  desiredShieldedNodes = _messages.MessageField('ShieldedNodes', 19)
+  desiredVerticalPodAutoscaling = _messages.MessageField('VerticalPodAutoscaling', 20)
+  desiredWorkloadIdentityConfig = _messages.MessageField('WorkloadIdentityConfig', 21)
 
 
 class CompleteIPRotationRequest(_messages.Message):
@@ -2306,6 +2310,83 @@ class RecurringTimeWindow(_messages.Message):
   window = _messages.MessageField('TimeWindow', 2)
 
 
+class ReleaseChannel(_messages.Message):
+  r"""ReleaseChannel indicates which release channel a cluster is subscribed
+  to. Release channels are arranged in order of risk.  When a cluster is
+  subscribed to a release channel, Google maintains both the master version
+  and the node version. Node auto-upgrade defaults to true and cannot be
+  disabled.
+
+  Enums:
+    ChannelValueValuesEnum: channel specifies which release channel the
+      cluster is subscribed to.
+
+  Fields:
+    channel: channel specifies which release channel the cluster is subscribed
+      to.
+  """
+
+  class ChannelValueValuesEnum(_messages.Enum):
+    r"""channel specifies which release channel the cluster is subscribed to.
+
+    Values:
+      UNSPECIFIED: No channel specified.
+      RAPID: RAPID channel is offered on an early access basis for customers
+        who want to test new releases.  WARNING: Versions available in the
+        RAPID Channel may be subject to unresolved issues with no known
+        workaround and are not subject to any SLAs.
+      REGULAR: Clusters subscribed to REGULAR receive versions that are
+        considered GA quality. REGULAR is intended for production users who
+        want to take advantage of new features.
+      STABLE: Clusters subscribed to STABLE receive versions that are known to
+        be stable and reliable in production.
+    """
+    UNSPECIFIED = 0
+    RAPID = 1
+    REGULAR = 2
+    STABLE = 3
+
+  channel = _messages.EnumField('ChannelValueValuesEnum', 1)
+
+
+class ReleaseChannelConfig(_messages.Message):
+  r"""ReleaseChannelConfig exposes configuration for a release channel.
+
+  Enums:
+    ChannelValueValuesEnum: The release channel this configuration applies to.
+
+  Fields:
+    channel: The release channel this configuration applies to.
+    defaultVersion: The default version for newly created clusters on the
+      channel.
+    validVersions: List of valid versions for the channel.
+  """
+
+  class ChannelValueValuesEnum(_messages.Enum):
+    r"""The release channel this configuration applies to.
+
+    Values:
+      UNSPECIFIED: No channel specified.
+      RAPID: RAPID channel is offered on an early access basis for customers
+        who want to test new releases.  WARNING: Versions available in the
+        RAPID Channel may be subject to unresolved issues with no known
+        workaround and are not subject to any SLAs.
+      REGULAR: Clusters subscribed to REGULAR receive versions that are
+        considered GA quality. REGULAR is intended for production users who
+        want to take advantage of new features.
+      STABLE: Clusters subscribed to STABLE receive versions that are known to
+        be stable and reliable in production.
+    """
+    UNSPECIFIED = 0
+    RAPID = 1
+    REGULAR = 2
+    STABLE = 3
+
+  channel = _messages.EnumField('ChannelValueValuesEnum', 1)
+  defaultVersion = _messages.StringField(2)
+  validVersions = _messages.StringField(3, repeated=True)
+
+
 class ReservationAffinity(_messages.Message):
   r"""[ReservationAffinity](https://cloud.google.com/compute/docs/instances/re
   serving-zonal-resources) is the configuration of desired reservation which
@@ -2434,6 +2515,7 @@ class ServerConfig(_messages.Message):
   r"""Kubernetes Engine service configuration.
 
   Fields:
+    channels: List of release channel configurations.
     defaultClusterVersion: Version of Kubernetes the service deploys by
       default.
     defaultImageType: Default image type.
@@ -2443,11 +2525,12 @@ class ServerConfig(_messages.Message):
       descending order.
   """
 
-  defaultClusterVersion = _messages.StringField(1)
-  defaultImageType = _messages.StringField(2)
-  validImageTypes = _messages.StringField(3, repeated=True)
-  validMasterVersions = _messages.StringField(4, repeated=True)
-  validNodeVersions = _messages.StringField(5, repeated=True)
+  channels = _messages.MessageField('ReleaseChannelConfig', 1, repeated=True)
+  defaultClusterVersion = _messages.StringField(2)
+  defaultImageType = _messages.StringField(3)
+  validImageTypes = _messages.StringField(4, repeated=True)
+  validMasterVersions = _messages.StringField(5, repeated=True)
+  validNodeVersions = _messages.StringField(6, repeated=True)
 
 
 class SetAddonsConfigRequest(_messages.Message):

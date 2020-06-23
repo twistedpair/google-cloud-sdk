@@ -296,7 +296,7 @@ class DatabaseFlags(_messages.Message):
 
 
 class DatabaseInstance(_messages.Message):
-  r"""A Cloud SQL instance resource.
+  r"""A Cloud SQL instance resource. Next field: 34
 
   Enums:
     BackendTypeValueValuesEnum: <br><b>SECOND_GEN</b>: Cloud SQL database
@@ -399,7 +399,6 @@ class DatabaseInstance(_messages.Message):
       the instance. This property is applicable only to Second Generation
       instances.
     settings: The user settings.
-    sqlserverInstanceConfiguration: SQL Server specific configuration
     state: The current serving state of the Cloud SQL instance. This can be
       one of the following. <br><b>RUNNABLE</b>: The instance is running, or
       is ready to run when accessed. <br><b>SUSPENDED</b>: The instance is not
@@ -581,9 +580,8 @@ class DatabaseInstance(_messages.Message):
   serverCaCert = _messages.MessageField('SslCert', 25)
   serviceAccountEmailAddress = _messages.StringField(26)
   settings = _messages.MessageField('Settings', 27)
-  sqlserverInstanceConfiguration = _messages.MessageField('SqlServerInstanceConfiguration', 28)
-  state = _messages.EnumField('StateValueValuesEnum', 29)
-  suspensionReason = _messages.EnumField('SuspensionReasonValueListEntryValuesEnum', 30, repeated=True)
+  state = _messages.EnumField('StateValueValuesEnum', 28)
+  suspensionReason = _messages.EnumField('SuspensionReasonValueListEntryValuesEnum', 29, repeated=True)
 
 
 class DatabasesListResponse(_messages.Message):
@@ -712,7 +710,6 @@ class ExportContext(_messages.Message):
     fileType: The file type for the specified uri. <br><b>SQL</b>: The file
       contains SQL statements. <br><b>CSV</b>: The file contains CSV data.
     kind: This is always <b>sql#exportContext</b>.
-    offload: Option for export offload.
     sqlExportOptions: Options for exporting data as SQL statements.
     uri: The path to the file in Google Cloud Storage where the export will be
       stored. The URI is in the form <b>gs: //bucketName/fileName</b>. If the
@@ -780,9 +777,8 @@ class ExportContext(_messages.Message):
   databases = _messages.StringField(2, repeated=True)
   fileType = _messages.EnumField('FileTypeValueValuesEnum', 3)
   kind = _messages.StringField(4)
-  offload = _messages.BooleanField(5)
-  sqlExportOptions = _messages.MessageField('SqlExportOptionsValue', 6)
-  uri = _messages.StringField(7)
+  sqlExportOptions = _messages.MessageField('SqlExportOptionsValue', 5)
+  uri = _messages.StringField(6)
 
 
 class FailoverContext(_messages.Message):
@@ -1676,6 +1672,7 @@ class Settings(_messages.Message):
       more information, see <a href="/sql/docs/postgres/high-availability">
       Overview of the High Availability Configuration</a>.
     backupConfiguration: The daily backup configuration for the instance.
+    collation: The name of server Instance collation.
     crashSafeReplicationEnabled: Configuration specific to read replica
       instances. Indicates whether database flags for crash-safe replication
       are enabled. This property was only applicable to First Generation
@@ -1835,22 +1832,23 @@ class Settings(_messages.Message):
   authorizedGaeApplications = _messages.StringField(3, repeated=True)
   availabilityType = _messages.EnumField('AvailabilityTypeValueValuesEnum', 4)
   backupConfiguration = _messages.MessageField('BackupConfiguration', 5)
-  crashSafeReplicationEnabled = _messages.BooleanField(6)
-  dataDiskSizeGb = _messages.IntegerField(7)
-  dataDiskType = _messages.EnumField('DataDiskTypeValueValuesEnum', 8)
-  databaseFlags = _messages.MessageField('DatabaseFlags', 9, repeated=True)
-  databaseReplicationEnabled = _messages.BooleanField(10)
-  ipConfiguration = _messages.MessageField('IpConfiguration', 11)
-  kind = _messages.StringField(12)
-  locationPreference = _messages.MessageField('LocationPreference', 13)
-  maintenanceWindow = _messages.MessageField('MaintenanceWindow', 14)
-  pricingPlan = _messages.EnumField('PricingPlanValueValuesEnum', 15)
-  replicationType = _messages.EnumField('ReplicationTypeValueValuesEnum', 16)
-  settingsVersion = _messages.IntegerField(17)
-  storageAutoResize = _messages.BooleanField(18)
-  storageAutoResizeLimit = _messages.IntegerField(19)
-  tier = _messages.StringField(20)
-  userLabels = _messages.MessageField('UserLabelsValue', 21)
+  collation = _messages.StringField(6)
+  crashSafeReplicationEnabled = _messages.BooleanField(7)
+  dataDiskSizeGb = _messages.IntegerField(8)
+  dataDiskType = _messages.EnumField('DataDiskTypeValueValuesEnum', 9)
+  databaseFlags = _messages.MessageField('DatabaseFlags', 10, repeated=True)
+  databaseReplicationEnabled = _messages.BooleanField(11)
+  ipConfiguration = _messages.MessageField('IpConfiguration', 12)
+  kind = _messages.StringField(13)
+  locationPreference = _messages.MessageField('LocationPreference', 14)
+  maintenanceWindow = _messages.MessageField('MaintenanceWindow', 15)
+  pricingPlan = _messages.EnumField('PricingPlanValueValuesEnum', 16)
+  replicationType = _messages.EnumField('ReplicationTypeValueValuesEnum', 17)
+  settingsVersion = _messages.IntegerField(18)
+  storageAutoResize = _messages.BooleanField(19)
+  storageAutoResizeLimit = _messages.IntegerField(20)
+  tier = _messages.StringField(21)
+  userLabels = _messages.MessageField('UserLabelsValue', 22)
 
 
 class SqlActiveDirectoryConfig(_messages.Message):
@@ -2510,16 +2508,6 @@ class SqlServerDatabaseDetails(_messages.Message):
 
   compatibilityLevel = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   recoveryModel = _messages.StringField(2)
-
-
-class SqlServerInstanceConfiguration(_messages.Message):
-  r"""SQL Server specific configuration.
-
-  Fields:
-    collation: The name of Sqlserver Instance collation.
-  """
-
-  collation = _messages.StringField(1)
 
 
 class SqlServerUserDetails(_messages.Message):

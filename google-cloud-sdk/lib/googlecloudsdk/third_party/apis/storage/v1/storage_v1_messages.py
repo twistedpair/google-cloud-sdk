@@ -2248,10 +2248,8 @@ class StorageObjectsComposeRequest(_messages.Message):
       operation succeed only if there are no live versions of the object.
     ifMetagenerationMatch: Makes the operation conditional on whether the
       object's current metageneration matches the given value.
-    kmsKeyName: Resource name of the Cloud KMS key, of the form projects/my-
-      project/locations/global/keyRings/my-kr/cryptoKeys/my-key, that will be
-      used to encrypt the object. Overrides the object metadata's kms_key_name
-      value, if any.
+    kmsKeyName: Not currently supported. Specifying the parameter causes the
+      request to fail with status code 400 - Bad Request.
     provisionalUserProject: The project to be billed for this request if the
       target bucket is requester-pays bucket.
     userProject: The project to be billed for this request. Required for

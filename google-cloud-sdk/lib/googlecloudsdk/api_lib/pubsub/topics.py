@@ -12,7 +12,6 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
 """Utilities for Cloud Pub/Sub Topics API."""
 
 from __future__ import absolute_import
@@ -61,6 +60,7 @@ class TopicsClient(object):
     self.client = client or GetClientInstance()
     self.messages = messages or GetMessagesModule(client)
     self._service = self.client.projects_topics
+    self._subscriptions_service = self.client.projects_subscriptions
 
   def Create(self,
              topic_ref,
@@ -75,6 +75,7 @@ class TopicsClient(object):
       kms_key (str): Full resource name of kms_key to set on Topic or None.
       message_storage_policy_allowed_regions (list[str]): List of Cloud regions
         in which messages are allowed to be stored at rest.
+
     Returns:
       Topic: The created topic.
     """
@@ -91,6 +92,7 @@ class TopicsClient(object):
 
     Args:
       topic_ref (Resource): Resource reference to the Topic to get.
+
     Returns:
       Topic: The topic.
     """
@@ -103,6 +105,7 @@ class TopicsClient(object):
 
     Args:
       topic_ref (Resource): Resource reference to the Topic to delete.
+
     Returns:
       Empty: An empty response message.
     """
@@ -110,64 +113,82 @@ class TopicsClient(object):
         topic=topic_ref.RelativeName())
     return self._service.Delete(delete_req)
 
+  def DetachSubscription(self, subscription_ref):
+    """Detaches the subscription from its topic.
+
+    Args:
+      subscription_ref (Resource): Resource reference to the Subscription to
+        detach.
+
+    Returns:
+      Empty: An empty response message.
+    """
+    detach_req = self.messages.PubsubProjectsSubscriptionsDetachRequest(
+        subscription=subscription_ref.RelativeName())
+    return self._subscriptions_service.Detach(detach_req)
+
   def List(self, project_ref, page_size=100):
     """Lists Topics for a given project.
 
     Args:
-      project_ref (Resource): Resource reference to Project to list
-        Topics from.
+      project_ref (Resource): Resource reference to Project to list Topics from.
       page_size (int): the number of entries in each batch (affects requests
         made, but not the yielded results).
+
     Returns:
       A generator of Topics in the Project.
     """
     list_req = self.messages.PubsubProjectsTopicsListRequest(
-        project=project_ref.RelativeName(),
-        pageSize=page_size
-    )
+        project=project_ref.RelativeName(), pageSize=page_size)
     return list_pager.YieldFromList(
-        self._service, list_req, batch_size=page_size,
-        field='topics', batch_size_attribute='pageSize')
+        self._service,
+        list_req,
+        batch_size=page_size,
+        field='topics',
+        batch_size_attribute='pageSize')
 
   def ListSnapshots(self, topic_ref, page_size=100):
     """Lists Snapshots for a given topic.
 
     Args:
-      topic_ref (Resource): Resource reference to Topic to list
-        snapshots from.
+      topic_ref (Resource): Resource reference to Topic to list snapshots from.
       page_size (int): the number of entries in each batch (affects requests
         made, but not the yielded results).
+
     Returns:
       A generator of Snapshots for the Topic.
     """
     list_req = self.messages.PubsubProjectsTopicsSnapshotsListRequest(
-        topic=topic_ref.RelativeName(),
-        pageSize=page_size
-    )
+        topic=topic_ref.RelativeName(), pageSize=page_size)
     list_snaps_service = self.client.projects_topics_snapshots
     return list_pager.YieldFromList(
-        list_snaps_service, list_req, batch_size=page_size,
-        field='snapshots', batch_size_attribute='pageSize')
+        list_snaps_service,
+        list_req,
+        batch_size=page_size,
+        field='snapshots',
+        batch_size_attribute='pageSize')
 
   def ListSubscriptions(self, topic_ref, page_size=100):
     """Lists Subscriptions for a given topic.
 
     Args:
-      topic_ref (Resource): Resource reference to Topic to list
-        subscriptions from.
+      topic_ref (Resource): Resource reference to Topic to list subscriptions
+        from.
       page_size (int): the number of entries in each batch (affects requests
         made, but not the yielded results).
+
     Returns:
       A generator of Subscriptions for the Topic..
     """
     list_req = self.messages.PubsubProjectsTopicsSubscriptionsListRequest(
-        topic=topic_ref.RelativeName(),
-        pageSize=page_size
-    )
+        topic=topic_ref.RelativeName(), pageSize=page_size)
     list_subs_service = self.client.projects_topics_subscriptions
     return list_pager.YieldFromList(
-        list_subs_service, list_req, batch_size=page_size,
-        field='subscriptions', batch_size_attribute='pageSize')
+        list_subs_service,
+        list_req,
+        batch_size=page_size,
+        field='subscriptions',
+        batch_size_attribute='pageSize')
 
   def Publish(self,
               topic_ref,
@@ -179,9 +200,10 @@ class TopicsClient(object):
     Args:
       topic_ref (Resource): Resource reference to Topic to publish to.
       message_body (bytes): Message to send.
-      attributes (list[AdditionalProperty]): List of attributes to attach to
-        the message.
+      attributes (list[AdditionalProperty]): List of attributes to attach to the
+        message.
       ordering_key (string): The ordering key to associate with this message.
+
     Returns:
       PublishResponse: Response message with message ids from the API.
     Raises:
@@ -213,8 +235,7 @@ class TopicsClient(object):
     """Sets an IAM policy on a Topic.
 
     Args:
-      topic_ref (Resource): Resource reference for topic to set
-        IAM policy on.
+      topic_ref (Resource): Resource reference for topic to set IAM policy on.
       policy (Policy): The policy to be added to the Topic.
 
     Returns:
@@ -229,8 +250,8 @@ class TopicsClient(object):
     """Gets the IAM policy for a Topic.
 
     Args:
-      topic_ref (Resource): Resource reference for topic to get
-        the IAM policy of.
+      topic_ref (Resource): Resource reference for topic to get the IAM policy
+        of.
 
     Returns:
       Policy: the policy for the Topic.
@@ -243,10 +264,11 @@ class TopicsClient(object):
     """Adds an IAM Policy binding to a Topic.
 
     Args:
-      topic_ref (Resource): Resource reference for subscription to add
-        IAM policy binding to.
+      topic_ref (Resource): Resource reference for subscription to add IAM
+        policy binding to.
       member (str): The member to add.
       role (str): The role to assign to the member.
+
     Returns:
       Policy: the updated policy.
     Raises:
@@ -260,10 +282,11 @@ class TopicsClient(object):
     """Removes an IAM Policy binding from a Topic.
 
     Args:
-      topic_ref (Resource): Resource reference for subscription to remove
-        IAM policy binding from.
+      topic_ref (Resource): Resource reference for subscription to remove IAM
+        policy binding from.
       member (str): The member to remove.
       role (str): The role to remove the member from.
+
     Returns:
       Policy: the updated policy.
     Raises:
@@ -290,6 +313,7 @@ class TopicsClient(object):
         the message storage policy.
       message_storage_policy_allowed_regions (list[str]): List of Cloud regions
         in which messages are allowed to be stored at rest.
+
     Returns:
       Topic: The updated topic.
     Raises:
@@ -324,8 +348,7 @@ class TopicsClient(object):
 
     patch_req = self.messages.PubsubProjectsTopicsPatchRequest(
         updateTopicRequest=self.messages.UpdateTopicRequest(
-            topic=topic,
-            updateMask=','.join(update_mask)),
+            topic=topic, updateMask=','.join(update_mask)),
         name=topic_ref.RelativeName())
 
     return self._service.Patch(patch_req)

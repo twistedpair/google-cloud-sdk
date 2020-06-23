@@ -250,6 +250,19 @@ SERVICE_ACCOUNT = base.Argument(
     required=False,
     help='Specifies the service account for resource access control.')
 
+NETWORK = base.Argument(
+    '--network',
+    help="""\
+The full name of the Google Compute Engine
+network (https://cloud.google.com/vpc/docs) to which the Job
+is peered with. For example, ``projects/12345/global/networks/myVPC''. The
+format is of the form projects/{project}/global/networks/{network}, where
+{project} is a project number, as in '12345', and {network} is network name.
+Private services access must already have been configured
+(https://cloud.google.com/vpc/docs/configure-private-services-access)
+for the network. If unspecified, the Job is not peered with any network.
+""")
+
 
 def GetModuleNameFlag(required=True):
   return base.Argument(

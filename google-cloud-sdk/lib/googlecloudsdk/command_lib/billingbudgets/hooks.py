@@ -20,6 +20,8 @@ from __future__ import unicode_literals
 
 
 import re
+
+from apitools.base.py import extra_types
 from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.api_lib.util import messages as messages_util
 from googlecloudsdk.core import exceptions
@@ -124,3 +126,28 @@ def CheckMoneyRegex(input_string):
     raise InvalidBudgetAmountInput(
         'The input is not valid for --budget-amount. '
         'It must be an int or float with an optional 3-letter currency code.')
+
+
+class InvalidLabelInput(exceptions.Error):
+  """Error to raise when user label input is not valid."""
+  pass
+
+
+def ParseLabels(labels_dict):
+  """Parses and validates labels input."""
+  # current restrictions limit labels to a single key with a single value
+  if len(labels_dict) > 1:
+    raise InvalidLabelInput(
+        'The input is not valid for `--filter-labels`. '
+        'It must be one key/value pair.')
+  messages = GetMessagesModule()
+  for key in labels_dict:
+    if len(labels_dict[key]) > 1:
+      raise InvalidLabelInput(
+          'The input is not valid for `--filter-labels`. '
+          'It must be one key with one value.')
+    additional_property = messages.LabelsValue.AdditionalProperty(
+        key=key,
+        value=[extra_types.JsonValue(string_value=labels_dict[key][0])])
+
+  return messages.LabelsValue(additionalProperties=[additional_property])

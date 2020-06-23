@@ -24,6 +24,11 @@
   "version_module": true,
   "fullyEncodeReservedExpansion": true,
   "parameters": {
+    "access_token": {
+      "type": "string",
+      "description": "OAuth access token.",
+      "location": "query"
+    },
     "alt": {
       "type": "string",
       "description": "Data format for response.",
@@ -53,6 +58,11 @@
     "key": {
       "type": "string",
       "description": "API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.",
+      "location": "query"
+    },
+    "oauth_token": {
+      "type": "string",
+      "description": "OAuth 2.0 token for the current user.",
       "location": "query"
     },
     "prettyPrint": {
@@ -355,6 +365,10 @@
           "description": "Optional. A Cloud Storage bucket used to stage job dependencies, config files, and job driver console output. If you do not specify a staging bucket, Cloud Dataproc will determine a Cloud Storage location (US, ASIA, or EU) for your cluster's staging bucket according to the Compute Engine zone where your cluster is deployed, and then create and manage this project-level, per-location bucket (see Dataproc staging bucket (https:\/\/cloud.google.com\/dataproc\/docs\/concepts\/configuring-clusters\/staging-bucket)).",
           "type": "string"
         },
+        "tempBucket": {
+          "description": "Optional. A Cloud Storage bucket used to store ephemeral cluster and jobs data, such as Spark and MapReduce history files. If you do not specify a temp bucket, Dataproc will determine a Cloud Storage location (US, ASIA, or EU) for your cluster's temp bucket according to the Compute Engine zone where your cluster is deployed, and then create and manage this project-level, per-location bucket. The default bucket has a TTL of 90 days, but you can use any TTL (or none) if you specify a bucket.",
+          "type": "string"
+        },
         "gceClusterConfig": {
           "description": "Optional. The shared Compute Engine config settings for all instances in a cluster.",
           "$ref": "GceClusterConfig"
@@ -405,6 +419,10 @@
         "gkeClusterConfig": {
           "description": "Optional. The Kubernetes Engine config for Dataproc clusters deployed to Kubernetes. Setting this is considered mutually exclusive with Compute Engine-based options such as gce_cluster_config, master_config, worker_config, secondary_worker_config, and autoscaling_config.",
           "$ref": "GkeClusterConfig"
+        },
+        "metastoreConfig": {
+          "description": "Optional. Metastore configuration.",
+          "$ref": "MetastoreConfig"
         }
       }
     },
@@ -855,6 +873,17 @@
         }
       }
     },
+    "MetastoreConfig": {
+      "id": "MetastoreConfig",
+      "description": "Specifies the metastore configuration.",
+      "type": "object",
+      "properties": {
+        "dataprocMetastoreService": {
+          "description": "Optional. Relative resource name of an existing Dataproc Metastore service.",
+          "type": "string"
+        }
+      }
+    },
     "ClusterStatus": {
       "id": "ClusterStatus",
       "description": "The status of a cluster and its instances.",
@@ -1106,7 +1135,7 @@
       "type": "object",
       "properties": {
         "projectId": {
-          "description": "Required. The ID of the Google Cloud Platform project that the job belongs to.",
+          "description": "Optional. The ID of the Google Cloud Platform project that the job belongs to. If specified, must match the request project ID.",
           "type": "string"
         },
         "jobId": {
@@ -1687,7 +1716,7 @@
     },
     "WorkflowTemplate": {
       "id": "WorkflowTemplate",
-      "description": "A Dataproc workflow template resource. Next ID: 11",
+      "description": "A Dataproc workflow template resource.",
       "type": "object",
       "properties": {
         "id": {

@@ -228,7 +228,7 @@ class _ConsoleWriter(object):
           styled_msg, encoding=stream_encoding, escape=False)
       if six.PY2:
         # Encode to byte strings for output only on Python 2.
-        stream_msg = styled_msg.encode(stream_encoding or 'utf8', 'replace')
+        stream_msg = styled_msg.encode(stream_encoding or 'utf-8', 'replace')
       self.__stream_wrapper.stream.write(stream_msg)
       if self.__always_flush:
         self.flush()
@@ -267,7 +267,7 @@ def _FmtString(fmt):
   # On Py3, only text strings come in and if the format is bytes it can't
   # combine with the log message.
   if six.PY2:
-    return fmt.encode('utf8')
+    return fmt.encode('utf-8')
   return fmt
 
 
@@ -383,7 +383,7 @@ class _ConsoleFormatter(logging.Formatter):
     with _SafeDecodedLogRecord(record, stream_encoding):
       msg = super(_ConsoleFormatter, self).format(record)
     if six.PY2:
-      msg = msg.encode(stream_encoding or 'utf8', 'replace')
+      msg = msg.encode(stream_encoding or 'utf-8', 'replace')
     return msg
 
 
@@ -1158,6 +1158,30 @@ def DeletedResource(resource, kind=None, is_async=False, details=None,
     failed: str, Failure message.
   """
   _PrintResourceChange('delete', resource, kind, is_async, details, failed)
+
+
+def DetachedResource(resource,
+                     kind=None,
+                     is_async=False,
+                     details=None,
+                     failed=None):
+  """Prints a status message indicating that a resource was detached.
+
+  Args:
+    resource: str, The resource name.
+    kind: str, The resource kind (instance, cluster, project, etc.).
+    is_async: bool, True if the operation is in progress.
+    details: str, Extra details appended to the message. Keep it succinct.
+    failed: str, Failure message.
+  """
+  _PrintResourceChange(
+      'detach',
+      resource,
+      kind,
+      is_async,
+      details,
+      failed,
+      operation_past_tense='detached')
 
 
 def RestoredResource(resource, kind=None, is_async=False, details=None,

@@ -951,11 +951,11 @@ class GroupAssetsRequest(_messages.Message):
       quotes.  The following field and operator combinations are supported:  *
       name: `=` * update_time: `=`, `>`, `<`, `>=`, `<=`    Usage: This should
       be milliseconds since epoch or an RFC3339 string.   Examples:
-      "update_time = \"2019-06-10T16:07:18-07:00\""     "update_time =
-      1560208038000"  * create_time: `=`, `>`, `<`, `>=`, `<=`    Usage: This
+      `update_time = "2019-06-10T16:07:18-07:00"`     `update_time =
+      1560208038000`  * create_time: `=`, `>`, `<`, `>=`, `<=`    Usage: This
       should be milliseconds since epoch or an RFC3339 string.   Examples:
-      "create_time = \"2019-06-10T16:07:18-07:00\""     "create_time =
-      1560208038000"  * iam_policy.policy_blob: `=`, `:` *
+      `create_time = "2019-06-10T16:07:18-07:00"`     `create_time =
+      1560208038000`  * iam_policy.policy_blob: `=`, `:` *
       resource_properties: `=`, `:`, `>`, `<`, `>=`, `<=` *
       security_marks.marks: `=`, `:` *
       security_center_properties.resource_name: `=`, `:` *
@@ -968,9 +968,9 @@ class GroupAssetsRequest(_messages.Message):
       security_center_properties.resource_owners: `=`, `:`  For example,
       `resource_properties.size = 100` is a valid filter string.  Use a
       partial match on the empty string to filter based on a property
-      existing: "resource_properties.my_property : \"\""  Use a negated
-      partial match on the empty string to filter based on a property not
-      existing: "-resource_properties.my_property : \"\""
+      existing: `resource_properties.my_property : ""`  Use a negated partial
+      match on the empty string to filter based on a property not existing:
+      `-resource_properties.my_property : ""`
     groupBy: Required. Expression that defines what assets fields to use for
       grouping. The string value should follow SQL syntax: comma separated
       list of fields. For example: "security_center_properties.resource_projec
@@ -1067,14 +1067,13 @@ class GroupFindingsRequest(_messages.Message):
       resource_name: `=`, `:` * state: `=`, `:` * category: `=`, `:` *
       external_uri: `=`, `:` * event_time: `=`, `>`, `<`, `>=`, `<=`    Usage:
       This should be milliseconds since epoch or an RFC3339 string.
-      Examples:     "event_time = \"2019-06-10T16:07:18-07:00\""
-      "event_time = 1560208038000"  * security_marks.marks: `=`, `:` *
-      source_properties: `=`, `:`, `>`, `<`, `>=`, `<=`  For example,
-      `source_properties.size = 100` is a valid filter string.  Use a partial
-      match on the empty string to filter based on a property existing:
-      "source_properties.my_property : \"\""  Use a negated partial match on
-      the empty string to filter based on a property not existing:
-      "-source_properties.my_property : \"\""
+      Examples:     `event_time = "2019-06-10T16:07:18-07:00"`     `event_time
+      = 1560208038000`  * security_marks.marks: `=`, `:` * source_properties:
+      `=`, `:`, `>`, `<`, `>=`, `<=`  For example, `source_properties.size =
+      100` is a valid filter string.  Use a partial match on the empty string
+      to filter based on a property existing: `source_properties.my_property :
+      ""`  Use a negated partial match on the empty string to filter based on
+      a property not existing: `-source_properties.my_property : ""`
     groupBy: Required. Expression that defines what assets fields to use for
       grouping (including `state_change`). The string value should follow SQL
       syntax: comma separated list of fields. For example:
@@ -1705,8 +1704,8 @@ class SecuritycenterOrganizationsAssetsListRequest(_messages.Message):
       compare_duration and read_time.  If compare_duration is not specified,
       then the only possible state_change is "UNUSED",  which will be the
       state_change set for all assets present at read_time.
-    fieldMask: Optional. A field mask to specify the ListAssetsResult fields
-      to be listed in the response. An empty field mask will list all fields.
+    fieldMask: A field mask to specify the ListAssetsResult fields to be
+      listed in the response. An empty field mask will list all fields.
     filter: Expression that defines the filter to apply across assets. The
       expression is a list of zero or more restrictions combined via logical
       operators `AND` and `OR`. Parentheses are supported, and `OR` has higher
@@ -1722,11 +1721,11 @@ class SecuritycenterOrganizationsAssetsListRequest(_messages.Message):
       quotes.  The following are the allowed field and operator combinations:
       * name: `=` * update_time: `=`, `>`, `<`, `>=`, `<=`    Usage: This
       should be milliseconds since epoch or an RFC3339 string.   Examples:
-      "update_time = \"2019-06-10T16:07:18-07:00\""     "update_time =
-      1560208038000"  * create_time: `=`, `>`, `<`, `>=`, `<=`    Usage: This
+      `update_time = "2019-06-10T16:07:18-07:00"`     `update_time =
+      1560208038000`  * create_time: `=`, `>`, `<`, `>=`, `<=`    Usage: This
       should be milliseconds since epoch or an RFC3339 string.   Examples:
-      "create_time = \"2019-06-10T16:07:18-07:00\""     "create_time =
-      1560208038000"  * iam_policy.policy_blob: `=`, `:` *
+      `create_time = "2019-06-10T16:07:18-07:00"`     `create_time =
+      1560208038000`  * iam_policy.policy_blob: `=`, `:` *
       resource_properties: `=`, `:`, `>`, `<`, `>=`, `<=` *
       security_marks.marks: `=`, `:` *
       security_center_properties.resource_name: `=`, `:` *
@@ -1739,9 +1738,9 @@ class SecuritycenterOrganizationsAssetsListRequest(_messages.Message):
       security_center_properties.resource_owners: `=`, `:`  For example,
       `resource_properties.size = 100` is a valid filter string.  Use a
       partial match on the empty string to filter based on a property
-      existing: "resource_properties.my_property : \"\""  Use a negated
-      partial match on the empty string to filter based on a property not
-      existing: "-resource_properties.my_property : \"\""
+      existing: `resource_properties.my_property : ""`  Use a negated partial
+      match on the empty string to filter based on a property not existing:
+      `-resource_properties.my_property : ""`
     orderBy: Expression that defines what fields and order to use for sorting.
       The string value should follow SQL syntax: comma separated list of
       fields. For example: "name,resource_properties.a_property". The default
@@ -2030,8 +2029,8 @@ class SecuritycenterOrganizationsSourcesFindingsListRequest(_messages.Message):
       filter at read_time.  If compare_duration is not specified, then the
       only possible state_change is "UNUSED", which will be the state_change
       set for all findings present at read_time.
-    fieldMask: Optional. A field mask to specify the Finding fields to be
-      listed in the response. An empty field mask will list all fields.
+    fieldMask: A field mask to specify the Finding fields to be listed in the
+      response. An empty field mask will list all fields.
     filter: Expression that defines the filter to apply across findings. The
       expression is a list of one or more restrictions combined via logical
       operators `AND` and `OR`. Parentheses are supported, and `OR` has higher
@@ -2047,13 +2046,13 @@ class SecuritycenterOrganizationsSourcesFindingsListRequest(_messages.Message):
       resource_name: `=`, `:` state: `=`, `:` category: `=`, `:` external_uri:
       `=`, `:` event_time: `=`, `>`, `<`, `>=`, `<=`    Usage: This should be
       milliseconds since epoch or an RFC3339 string.   Examples:
-      "event_time = \"2019-06-10T16:07:18-07:00\""     "event_time =
-      1560208038000"  security_marks.marks: `=`, `:` source_properties: `=`,
+      `event_time = "2019-06-10T16:07:18-07:00"`     `event_time =
+      1560208038000`  security_marks.marks: `=`, `:` source_properties: `=`,
       `:`, `>`, `<`, `>=`, `<=`  For example, `source_properties.size = 100`
       is a valid filter string.  Use a partial match on the empty string to
-      filter based on a property existing: "source_properties.my_property :
-      \"\""  Use a negated partial match on the empty string to filter based
-      on a property not existing: "-source_properties.my_property : \"\""
+      filter based on a property existing: `source_properties.my_property :
+      ""`  Use a negated partial match on the empty string to filter based on
+      a property not existing: `-source_properties.my_property : ""`
     orderBy: Expression that defines what fields and order to use for sorting.
       The string value should follow SQL syntax: comma separated list of
       fields. For example: "name,resource_properties.a_property". The default
@@ -2254,7 +2253,7 @@ class SecuritycenterOrganizationsUpdateOrganizationSettingsRequest(_messages.Mes
       me Example: "organizations/{organization_id}/organizationSettings".
     organizationSettings: A OrganizationSettings resource to be passed as the
       request body.
-    updateMask: The FieldMask to use when updating the settings resource.   If
+    updateMask: The FieldMask to use when updating the settings resource.  If
       empty all mutable fields will be updated.
   """
 

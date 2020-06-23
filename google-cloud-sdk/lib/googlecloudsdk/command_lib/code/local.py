@@ -193,6 +193,8 @@ class Settings(DataObject):
           'context directory.\n'
           'Dockerfile: {0}\n'
           'Build Context Directory: {1}'.format(dockerfile, context))
+    if not os.path.exists(dockerfile):
+      raise InvalidLocationError(dockerfile + ' does not exist.')
     return dockerfile
 
 

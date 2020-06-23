@@ -290,7 +290,7 @@
           "type": "string"
         },
         "nodeType": {
-          "description": "Required. Bare metal node type.",
+          "description": "Required. The baremetal node type used to create a VMWare cluster. The only supported\nvalue is c1-highmem-72-metal.",
           "type": "string"
         },
         "nodeCount": {
@@ -327,8 +327,30 @@
           "format": "google-datetime"
         },
         "status": {
-          "description": "Output only. Status of the resource.",
+          "description": "Output only. Deprecated. Use state instead.\nStatus of the resource.",
           "type": "string"
+        },
+        "state": {
+          "description": "Output only. State of the resource.",
+          "enumDescriptions": [
+            "The default value. This value should never be used.",
+            "The cluster is ready.",
+            "The cluster is being created.",
+            "The cluster is being updated.",
+            "The cluster is being deleted."
+          ],
+          "type": "string",
+          "enum": [
+            "STATE_UNSPECIFIED",
+            "ACTIVE",
+            "CREATING",
+            "UPDATING",
+            "DELETING"
+          ]
+        },
+        "management": {
+          "description": "If the resource to be created a management cluster or not. There can only\nbe one management cluster in an SDDC and it has to be the first one.",
+          "type": "boolean"
         }
       }
     },
@@ -480,8 +502,24 @@
           "format": "google-datetime"
         },
         "status": {
-          "description": "Output only. Status of the resource.",
+          "description": "Output only. Deprecated. Use state instead. Status of the resource.",
           "type": "string"
+        },
+        "state": {
+          "description": "State of the resource.",
+          "enumDescriptions": [
+            "The default value. This value should never be used.",
+            "The cluster group is ready.",
+            "The cluster group is being created.",
+            "The cluster group is being deleted."
+          ],
+          "type": "string",
+          "enum": [
+            "STATE_UNSPECIFIED",
+            "ACTIVE",
+            "CREATING",
+            "DELETING"
+          ]
         },
         "vcenter": {
           "description": "Output only. vCenter information.",
@@ -595,15 +633,23 @@
       "type": "object",
       "properties": {
         "cluster": {
-          "description": "Required. The cluster from which the node is removed.",
+          "description": "Required. Deprecated. Use the cluster_name instead.\nThe cluster from which the node is removed.",
           "$ref": "Cluster"
         },
         "nodeName": {
-          "description": "Required. The name of the node to be removed.",
+          "description": "Required. Deprecated, please use the node property instead.\nThe name of the node to be removed.",
           "type": "string"
         },
         "zone": {
           "description": "Required. The zone where the node belongs to.",
+          "type": "string"
+        },
+        "clusterName": {
+          "description": "Required. The cluster from which the node is removed.",
+          "type": "string"
+        },
+        "node": {
+          "description": "Required. The name of the node to be removed.",
           "type": "string"
         }
       }
@@ -712,7 +758,7 @@
     },
     "AuditConfig": {
       "id": "AuditConfig",
-      "description": "Specifies the audit configuration for a service.\nThe configuration determines which permission types are logged, and what\nidentities, if any, are exempted from logging.\nAn AuditConfig must have one or more AuditLogConfigs.\n\nIf there are AuditConfigs for both `allServices` and a specific service,\nthe union of the two AuditConfigs is used for that service: the log_types\nspecified in each AuditConfig are enabled, and the exempted_members in each\nAuditLogConfig are exempted.\n\nExample Policy with multiple AuditConfigs:\n\n    {\n      \"audit_configs\": [\n        {\n          \"service\": \"allServices\"\n          \"audit_log_configs\": [\n            {\n              \"log_type\": \"DATA_READ\",\n              \"exempted_members\": [\n                \"user:jose@example.com\"\n              ]\n            },\n            {\n              \"log_type\": \"DATA_WRITE\",\n            },\n            {\n              \"log_type\": \"ADMIN_READ\",\n            }\n          ]\n        },\n        {\n          \"service\": \"sampleservice.googleapis.com\"\n          \"audit_log_configs\": [\n            {\n              \"log_type\": \"DATA_READ\",\n            },\n            {\n              \"log_type\": \"DATA_WRITE\",\n              \"exempted_members\": [\n                \"user:aliya@example.com\"\n              ]\n            }\n          ]\n        }\n      ]\n    }\n\nFor sampleservice, this policy enables DATA_READ, DATA_WRITE and ADMIN_READ\nlogging. It also exempts jose@example.com from DATA_READ logging, and\naliya@example.com from DATA_WRITE logging.",
+      "description": "Specifies the audit configuration for a service.\nThe configuration determines which permission types are logged, and what\nidentities, if any, are exempted from logging.\nAn AuditConfig must have one or more AuditLogConfigs.\n\nIf there are AuditConfigs for both `allServices` and a specific service,\nthe union of the two AuditConfigs is used for that service: the log_types\nspecified in each AuditConfig are enabled, and the exempted_members in each\nAuditLogConfig are exempted.\n\nExample Policy with multiple AuditConfigs:\n\n    {\n      \"audit_configs\": [\n        {\n          \"service\": \"allServices\",\n          \"audit_log_configs\": [\n            {\n              \"log_type\": \"DATA_READ\",\n              \"exempted_members\": [\n                \"user:jose@example.com\"\n              ]\n            },\n            {\n              \"log_type\": \"DATA_WRITE\"\n            },\n            {\n              \"log_type\": \"ADMIN_READ\"\n            }\n          ]\n        },\n        {\n          \"service\": \"sampleservice.googleapis.com\",\n          \"audit_log_configs\": [\n            {\n              \"log_type\": \"DATA_READ\"\n            },\n            {\n              \"log_type\": \"DATA_WRITE\",\n              \"exempted_members\": [\n                \"user:aliya@example.com\"\n              ]\n            }\n          ]\n        }\n      ]\n    }\n\nFor sampleservice, this policy enables DATA_READ, DATA_WRITE and ADMIN_READ\nlogging. It also exempts jose@example.com from DATA_READ logging, and\naliya@example.com from DATA_WRITE logging.",
       "type": "object",
       "properties": {
         "service": {
@@ -736,7 +782,7 @@
     },
     "AuditLogConfig": {
       "id": "AuditLogConfig",
-      "description": "Provides the configuration for logging a type of permissions.\nExample:\n\n    {\n      \"audit_log_configs\": [\n        {\n          \"log_type\": \"DATA_READ\",\n          \"exempted_members\": [\n            \"user:jose@example.com\"\n          ]\n        },\n        {\n          \"log_type\": \"DATA_WRITE\",\n        }\n      ]\n    }\n\nThis enables 'DATA_READ' and 'DATA_WRITE' logging, while exempting\njose@example.com from DATA_READ logging.",
+      "description": "Provides the configuration for logging a type of permissions.\nExample:\n\n    {\n      \"audit_log_configs\": [\n        {\n          \"log_type\": \"DATA_READ\",\n          \"exempted_members\": [\n            \"user:jose@example.com\"\n          ]\n        },\n        {\n          \"log_type\": \"DATA_WRITE\"\n        }\n      ]\n    }\n\nThis enables 'DATA_READ' and 'DATA_WRITE' logging, while exempting\njose@example.com from DATA_READ logging.",
       "type": "object",
       "properties": {
         "logType": {
@@ -1778,7 +1824,7 @@
                           "type": "string"
                         },
                         "managementCluster": {
-                          "description": "Required. Whether the cluster is the management cluster.",
+                          "description": "Required. Deprecated. Use the management property in the Cluster resource.\nWhether the cluster is the management cluster.",
                           "location": "query",
                           "type": "boolean"
                         }

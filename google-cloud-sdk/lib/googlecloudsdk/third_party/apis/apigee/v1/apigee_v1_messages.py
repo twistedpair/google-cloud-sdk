@@ -2693,6 +2693,40 @@ class GoogleCloudApigeeV1CustomReportMetric(_messages.Message):
   name = _messages.StringField(2)
 
 
+class GoogleCloudApigeeV1DataCollectorConfig(_messages.Message):
+  r"""A DataCollector and its configuration.
+
+  Enums:
+    TypeValueValuesEnum: The data type this DataCollector accepts.
+
+  Fields:
+    name: The name of the data collector. Must be of the form
+      'organizations/{org}/datacollectors/{dc}'.
+    type: The data type this DataCollector accepts.
+  """
+
+  class TypeValueValuesEnum(_messages.Enum):
+    r"""The data type this DataCollector accepts.
+
+    Values:
+      TYPE_UNSPECIFIED: For future compatibility.
+      INTEGER: For integer values.
+      FLOAT: For float values.
+      STRING: For string values.
+      BOOLEAN: For boolean values.
+      DATETIME: For datetime values.
+    """
+    TYPE_UNSPECIFIED = 0
+    INTEGER = 1
+    FLOAT = 2
+    STRING = 3
+    BOOLEAN = 4
+    DATETIME = 5
+
+  name = _messages.StringField(1)
+  type = _messages.EnumField('TypeValueValuesEnum', 2)
+
+
 class GoogleCloudApigeeV1DebugMask(_messages.Message):
   r"""A GoogleCloudApigeeV1DebugMask object.
 
@@ -3057,6 +3091,8 @@ class GoogleCloudApigeeV1EnvironmentConfig(_messages.Message):
 
   Fields:
     createTime: The time at which this environment config was created.
+    dataCollectors: The list of Data Collectors used by deployments in the
+      environment.
     debugMask: Debug mask that applies to all deployments in the environment.
     deployments: A list of deployments in the environment
     featureFlags: Feature flags inherited from the org and environment
@@ -3107,20 +3143,21 @@ class GoogleCloudApigeeV1EnvironmentConfig(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   createTime = _messages.StringField(1)
-  debugMask = _messages.MessageField('GoogleCloudApigeeV1DebugMask', 2)
-  deployments = _messages.MessageField('GoogleCloudApigeeV1DeploymentConfig', 3, repeated=True)
-  featureFlags = _messages.MessageField('FeatureFlagsValue', 4)
-  flowhooks = _messages.MessageField('GoogleCloudApigeeV1FlowHookConfig', 5, repeated=True)
-  keystores = _messages.MessageField('GoogleCloudApigeeV1KeystoreConfig', 6, repeated=True)
-  name = _messages.StringField(7)
-  provider = _messages.StringField(8)
-  pubsubTopic = _messages.StringField(9)
-  resourceReferences = _messages.MessageField('GoogleCloudApigeeV1ReferenceConfig', 10, repeated=True)
-  resources = _messages.MessageField('GoogleCloudApigeeV1ResourceConfig', 11, repeated=True)
-  revisionId = _messages.IntegerField(12)
-  sequenceNumber = _messages.IntegerField(13)
-  targets = _messages.MessageField('GoogleCloudApigeeV1TargetServerConfig', 14, repeated=True)
-  uid = _messages.StringField(15)
+  dataCollectors = _messages.MessageField('GoogleCloudApigeeV1DataCollectorConfig', 2, repeated=True)
+  debugMask = _messages.MessageField('GoogleCloudApigeeV1DebugMask', 3)
+  deployments = _messages.MessageField('GoogleCloudApigeeV1DeploymentConfig', 4, repeated=True)
+  featureFlags = _messages.MessageField('FeatureFlagsValue', 5)
+  flowhooks = _messages.MessageField('GoogleCloudApigeeV1FlowHookConfig', 6, repeated=True)
+  keystores = _messages.MessageField('GoogleCloudApigeeV1KeystoreConfig', 7, repeated=True)
+  name = _messages.StringField(8)
+  provider = _messages.StringField(9)
+  pubsubTopic = _messages.StringField(10)
+  resourceReferences = _messages.MessageField('GoogleCloudApigeeV1ReferenceConfig', 11, repeated=True)
+  resources = _messages.MessageField('GoogleCloudApigeeV1ResourceConfig', 12, repeated=True)
+  revisionId = _messages.IntegerField(13)
+  sequenceNumber = _messages.IntegerField(14)
+  targets = _messages.MessageField('GoogleCloudApigeeV1TargetServerConfig', 15, repeated=True)
+  uid = _messages.StringField(16)
 
 
 class GoogleCloudApigeeV1FlowHook(_messages.Message):
@@ -3152,8 +3189,8 @@ class GoogleCloudApigeeV1FlowHookConfig(_messages.Message):
     continueOnError: Should the flow abort after an error in the flow hook.
       Should default to true if unset.
     name: The name of the flow hook. Must be of the form
-      'organizations/{org}/environments/{env}/flowhooks/{point}''. Known
-      points are PreProxyFlowHook, PostProxyFlowHook, PreTargetFlowHook, and
+      'organizations/{org}/environments/{env}/flowhooks/{point}'. Known points
+      are PreProxyFlowHook, PostProxyFlowHook, PreTargetFlowHook, and
       PostTargetFlowHook
     sharedFlowName: The name of the shared flow to invoke. Must be of the form
       'organizations/{org}/sharedflows/{sharedflow}'.
@@ -3412,10 +3449,12 @@ class GoogleCloudApigeeV1OperationMetadata(_messages.Message):
       OPERATION_TYPE_UNSPECIFIED: <no description>
       INSERT: <no description>
       DELETE: <no description>
+      UPDATE: <no description>
     """
     OPERATION_TYPE_UNSPECIFIED = 0
     INSERT = 1
     DELETE = 2
+    UPDATE = 3
 
   class StateValueValuesEnum(_messages.Enum):
     r"""StateValueValuesEnum enum type.

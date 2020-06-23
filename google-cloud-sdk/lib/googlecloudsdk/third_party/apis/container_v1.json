@@ -269,6 +269,10 @@
           "description": "Shielded Nodes configuration.",
           "$ref": "ShieldedNodes"
         },
+        "releaseChannel": {
+          "description": "Release channel configuration.",
+          "$ref": "ReleaseChannel"
+        },
         "workloadIdentityConfig": {
           "description": "Configuration for the use of Kubernetes Service Accounts in GCP IAM\npolicies.",
           "$ref": "WorkloadIdentityConfig"
@@ -1449,6 +1453,29 @@
         }
       }
     },
+    "ReleaseChannel": {
+      "id": "ReleaseChannel",
+      "description": "ReleaseChannel indicates which release channel a cluster is\nsubscribed to. Release channels are arranged in order of risk.\n\nWhen a cluster is subscribed to a release channel, Google maintains\nboth the master version and the node version. Node auto-upgrade\ndefaults to true and cannot be disabled.",
+      "type": "object",
+      "properties": {
+        "channel": {
+          "description": "channel specifies which release channel the cluster is subscribed to.",
+          "enumDescriptions": [
+            "No channel specified.",
+            "RAPID channel is offered on an early access basis for customers who want\nto test new releases.\n\nWARNING: Versions available in the RAPID Channel may be subject to\nunresolved issues with no known workaround and are not subject to any\nSLAs.",
+            "Clusters subscribed to REGULAR receive versions that are considered GA\nquality. REGULAR is intended for production users who want to take\nadvantage of new features.",
+            "Clusters subscribed to STABLE receive versions that are known to be\nstable and reliable in production."
+          ],
+          "type": "string",
+          "enum": [
+            "UNSPECIFIED",
+            "RAPID",
+            "REGULAR",
+            "STABLE"
+          ]
+        }
+      }
+    },
     "WorkloadIdentityConfig": {
       "id": "WorkloadIdentityConfig",
       "description": "Configuration for the use of Kubernetes Service Accounts in GCP IAM\npolicies.",
@@ -1782,6 +1809,10 @@
         "desiredIntraNodeVisibilityConfig": {
           "description": "The desired config of Intra-node visibility.",
           "$ref": "IntraNodeVisibilityConfig"
+        },
+        "desiredReleaseChannel": {
+          "description": "The desired release channel configuration.",
+          "$ref": "ReleaseChannel"
         },
         "desiredMasterVersion": {
           "description": "The Kubernetes version to change the master to.\n\nUsers may specify either explicit versions offered by\nKubernetes Engine or version aliases, which have the following behavior:\n\n- \"latest\": picks the highest valid Kubernetes version\n- \"1.X\": picks the highest valid patch+gke.N patch in the 1.X version\n- \"1.X.Y\": picks the highest valid gke.N patch in the 1.X.Y version\n- \"1.X.Y-gke.N\": picks an explicit Kubernetes version\n- \"-\": picks the default Kubernetes version",
@@ -2150,6 +2181,47 @@
         },
         "validMasterVersions": {
           "description": "List of valid master versions, in descending order.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "channels": {
+          "description": "List of release channel configurations.",
+          "type": "array",
+          "items": {
+            "$ref": "ReleaseChannelConfig"
+          }
+        }
+      }
+    },
+    "ReleaseChannelConfig": {
+      "id": "ReleaseChannelConfig",
+      "description": "ReleaseChannelConfig exposes configuration for a release channel.",
+      "type": "object",
+      "properties": {
+        "channel": {
+          "description": "The release channel this configuration applies to.",
+          "enumDescriptions": [
+            "No channel specified.",
+            "RAPID channel is offered on an early access basis for customers who want\nto test new releases.\n\nWARNING: Versions available in the RAPID Channel may be subject to\nunresolved issues with no known workaround and are not subject to any\nSLAs.",
+            "Clusters subscribed to REGULAR receive versions that are considered GA\nquality. REGULAR is intended for production users who want to take\nadvantage of new features.",
+            "Clusters subscribed to STABLE receive versions that are known to be\nstable and reliable in production."
+          ],
+          "type": "string",
+          "enum": [
+            "UNSPECIFIED",
+            "RAPID",
+            "REGULAR",
+            "STABLE"
+          ]
+        },
+        "defaultVersion": {
+          "description": "The default version for newly created clusters on the channel.",
+          "type": "string"
+        },
+        "validVersions": {
+          "description": "List of valid versions for the channel.",
           "type": "array",
           "items": {
             "type": "string"

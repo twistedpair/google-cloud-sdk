@@ -214,8 +214,9 @@ def _BuildFileUploadMap(manifest, source_dir, bucket_ref, tmp_dir,
       skipped_size += size
     else:
       files_to_upload[sha1_hash] = full_path
-  log.info('Incremental upload skipped {pct}% of data'.format(
-      pct=round(100.0*skipped_size/total_size, 2)))
+    if total_size:
+      log.info('Incremental upload skipped {pct}% of data'.format(
+          pct=round(100.0 * skipped_size / total_size, 2)))
   return files_to_upload
 
 

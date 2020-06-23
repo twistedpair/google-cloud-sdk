@@ -101,8 +101,8 @@ _cloudsdk_root_dir() {
 CLOUDSDK_ROOT_DIR=$(_cloudsdk_root_dir "$0")
 
 setup_cloudsdk_python() {
-  # Snap installs prefer python3
-  if [ -z "$CLOUDSDK_PYTHON" ] && [ "$SNAP_INSTANCE_NAME" ]; then
+  # Snap and component-based unix installs prefer python3
+  if [ -z "$CLOUDSDK_PYTHON" ] && { [ "$SNAP_INSTANCE_NAME" ] || [ ! -f "$CLOUDSDK_ROOT_DIR/.install/component_mapping.yaml" ]; }; then
     CLOUDSDK_PYTHON=$(order_python python3 python2 python2.7 python)
   fi
   if [ -z "$CLOUDSDK_PYTHON" ]; then

@@ -82,6 +82,7 @@ class ClientAdapter(object):
                    errors_to_collect=None,
                    progress_tracker=None,
                    no_followup=False,
+                   always_return_operation=False,
                    followup_overrides=None,
                    log_result=True,
                    timeout=None):
@@ -95,6 +96,7 @@ class ClientAdapter(object):
             errors=errors,
             progress_tracker=progress_tracker,
             no_followup=no_followup,
+            always_return_operation=always_return_operation,
             followup_overrides=followup_overrides,
             log_result=log_result,
             timeout=timeout))

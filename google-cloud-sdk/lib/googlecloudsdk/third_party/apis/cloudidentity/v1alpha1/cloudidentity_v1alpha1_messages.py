@@ -848,8 +848,8 @@ class DynamicGroupQuery(_messages.Message):
     r"""ResourceTypeValueValuesEnum enum type.
 
     Values:
-      RESOURCE_TYPE_UNSPECIFIED: <no description>
-      USER: <no description>
+      RESOURCE_TYPE_UNSPECIFIED: Default value (not valid)
+      USER: For queries on User
     """
     RESOURCE_TYPE_UNSPECIFIED = 0
     USER = 1

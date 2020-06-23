@@ -139,9 +139,9 @@ def AddHttpRelatedCreationArgs(parser):
   parser.add_argument(
       '--host',
       help="""\
-      The value of the host header used in this HTTP health check request.
-      The host header is empty by default. When empty, the health check sets
-      the host header to the IP address of the backend VM or endpoint.
+      The value of the host header used for the health check. If unspecified,
+      Google Cloud sets the host header to the IP address of the load balancer's
+      forwarding rule.
       """)
 
   parser.add_argument(

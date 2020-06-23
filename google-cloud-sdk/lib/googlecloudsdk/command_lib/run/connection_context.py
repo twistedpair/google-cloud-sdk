@@ -34,6 +34,7 @@ from googlecloudsdk.calliope import base
 from googlecloudsdk.command_lib.run import exceptions as serverless_exceptions
 from googlecloudsdk.command_lib.run import flags
 from googlecloudsdk.core import properties
+from googlecloudsdk.core import transport
 from googlecloudsdk.core.util import files
 
 import httplib2
@@ -192,7 +193,7 @@ class _GKEConnectionContext(ConnectionInfo):
     assert self.active
     from googlecloudsdk.core.credentials import http as http_creds  # pylint: disable=g-import-not-at-top
     http_client = http_creds.Http(
-        response_encoding=http_creds.ENCODING,
+        response_encoding=transport.ENCODING,
         ca_certs=self.ca_certs)
     return http_client
 
@@ -272,14 +273,14 @@ class _KubeconfigConnectionContext(ConnectionInfo):
       # which is not needed in all cases.
       from googlecloudsdk.core import http as http_core  # pylint: disable=g-import-not-at-top
       http_client = http_core.Http(
-          response_encoding=http_core.ENCODING,
+          response_encoding=transport.ENCODING,
           ca_certs=self.ca_certs)
       http_client.add_certificate(
           self.client_key, self.client_cert, self.client_cert_domain)
       return http_client
     from googlecloudsdk.core.credentials import http as http_creds  # pylint: disable=g-import-not-at-top
     http_client = http_creds.Http(
-        response_encoding=http_creds.ENCODING,
+        response_encoding=transport.ENCODING,
         ca_certs=self.ca_certs)
     return http_client
 

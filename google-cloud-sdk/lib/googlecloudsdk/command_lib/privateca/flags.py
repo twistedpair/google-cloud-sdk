@@ -18,6 +18,7 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+import ipaddress
 import re
 
 from googlecloudsdk.api_lib.privateca import base as privateca_base
@@ -31,7 +32,6 @@ from googlecloudsdk.command_lib.util.apis import arg_utils
 from googlecloudsdk.core import resources
 from googlecloudsdk.core.util import times
 
-import ipaddress
 import six
 
 _EMAIL_SAN_REGEX = re.compile('^[^@]+@[^@]+$')
@@ -185,19 +185,17 @@ def AddCertificateAuthorityIssuancePolicyFlag(parser):
       action='store',
       type=arg_parsers.YAMLFileContents(),
       help=("A YAML file describing this Certificate Authority's issuance "
-            "policy.")
-  ).AddToParser(parser)
+            'policy.')).AddToParser(parser)
 
 
 def AddBucketFlag(parser):
   base.Argument(
       '--bucket',
       help='The name of an existing storage bucket to use for storing the CA '
-           'certificate and CRLs. If omitted, a new bucket with an '
-           'auto-generated name will be created in the same project and '
-           'location as the CA.',
-      required=False
-  ).AddToParser(parser)
+      'certificate and CRLs. If omitted, a new bucket with an '
+      'auto-generated name will be created in the same project and '
+      'location as the CA.',
+      required=False).AddToParser(parser)
 
 
 def AddInlineReusableConfigFlags(parser, is_ca):
@@ -247,13 +245,23 @@ def AddInlineReusableConfigFlags(parser, is_ca):
 # Flag parsing
 
 
+def ReusableConfigFlagsAreSpecified(args):
+  """Returns true if any reusable config flags are specified."""
+  return any([
+      flag in vars(args) and args.IsSpecified(flag) for flag in [
+          'reusable_config', 'key_usages', 'extended_key_usages',
+          'max_chain_length', 'is_ca_cert'
+      ]
+  ])
+
+
 def ParseReusableConfig(args, location, is_ca):
   """Parses the reusable config flags into an API ReusableConfigWrapper.
 
   Args:
     args: The parsed argument values.
-    location: The location of the resource with which this reusable config
-      will be used.
+    location: The location of the resource with which this reusable config will
+      be used.
     is_ca: Whether the current operation is on a CA. If so, certSign and crlSign
       key usages are added.
 
@@ -312,7 +320,7 @@ def ParseReusableConfig(args, location, is_ca):
       ))
 
 
-def _ParseSubject(args):
+def ParseSubject(args):
   """Parses a dictionary with subject attributes into a API Subject type and common name.
 
   Args:
@@ -353,7 +361,7 @@ def _ParseSubject(args):
         '--subject', 'Unrecognized subject attribute.')
 
 
-def _ParseSanFlags(args):
+def ParseSanFlags(args):
   """Validates the san flags and creates a SubjectAltNames message from them.
 
   Args:
@@ -363,6 +371,7 @@ def _ParseSanFlags(args):
     The SubjectAltNames message with the flag data.
   """
   email_addresses, dns_names, ip_addresses, uris = [], [], [], []
+
   if args.IsSpecified('email_san'):
     email_addresses = list(map(ValidateEmailSanFlag, args.email_san))
   if args.IsSpecified('dns_san'):
@@ -377,6 +386,35 @@ def _ParseSanFlags(args):
       dnsNames=dns_names,
       ipAddresses=ip_addresses,
       uris=uris)
+
+
+def ValidateSubjectConfig(subject_config, is_ca):
+  """Validates a SubjectConfig object."""
+  san_names = []
+  if subject_config.subjectAltName:
+    san_names = [
+        subject_config.subjectAltName.emailAddresses,
+        subject_config.subjectAltName.dnsNames,
+        subject_config.subjectAltName.ipAddresses,
+        subject_config.subjectAltName.uris
+    ]
+  if not subject_config.commonName and all([not elem for elem in san_names]):
+    raise exceptions.InvalidArgumentException(
+        '--subject',
+        'The certificate you are creating does not contain a common name or a subject alternative name.'
+    )
+
+  if is_ca and not subject_config.commonName:
+    raise exceptions.InvalidArgumentException(
+        '--subject',
+        'A common name must be provided for a certificate authority certificate.'
+    )
+
+  if is_ca and not subject_config.subject.organization:
+    raise exceptions.InvalidArgumentException(
+        '--subject',
+        'An organization must be provided for a certificate authority certificate.'
+    )
 
 
 def ParseSubjectFlags(args, is_ca):
@@ -394,33 +432,21 @@ def ParseSubjectFlags(args, is_ca):
       subject=messages.Subject(), subjectAltName=messages.SubjectAltNames())
 
   if args.IsSpecified('subject'):
-    subject_config.commonName, subject_config.subject = _ParseSubject(args)
-  if _SanFlagsAreSpecified(args):
-    subject_config.subjectAltName = _ParseSanFlags(args)
+    subject_config.commonName, subject_config.subject = ParseSubject(args)
+  if SanFlagsAreSpecified(args):
+    subject_config.subjectAltName = ParseSanFlags(args)
 
-  if not subject_config.commonName and not _SanFlagsAreSpecified(args):
-    raise exceptions.InvalidArgumentException(
-        '--subject',
-        'The certificate you are creating does not contain a common name or a subject alternative name.'
-    )
+  ValidateSubjectConfig(subject_config, is_ca=is_ca)
 
-  if is_ca and not subject_config.commonName:
-    raise exceptions.InvalidArgumentException(
-        '--subject',
-        'A common name must be provided for a certificate authority certificate.'
-    )
-  if is_ca and not subject_config.subject.organization:
-    raise exceptions.InvalidArgumentException(
-        '--subject',
-        'An organization must be provided for a certificate authority certificate.'
-    )
   return subject_config
 
 
-def _SanFlagsAreSpecified(args):
+def SanFlagsAreSpecified(args):
   """Returns true if any san flags are specified."""
-  return args.IsSpecified('email_san') or args.IsSpecified(
-      'dns_san') or args.IsSpecified('ip_san') or args.IsSpecified('uri_san')
+  return any([
+      flag in vars(args) and args.IsSpecified(flag)
+      for flag in ['dns_san', 'email_san', 'ip_san', 'uri_san']
+  ])
 
 
 def ParseIssuingOptions(args):
@@ -526,4 +552,5 @@ def ParseRevocationChoiceToEnum(choice):
 
 
 def ParseValidityFlag(args):
+  """Parses the validity from args."""
   return times.FormatDurationForJson(times.ParseDuration(args.validity))

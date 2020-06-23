@@ -3652,18 +3652,11 @@ class ProgressCounter(_messages.Message):
 
 class QueryAccessibleDataRequest(_messages.Message):
   r"""Queries all data_ids that are consented for a given use in the given
-  Consent store and writes them to a specified destination. Note that if a
-  user has a Policy in their consents that grants the given use, then the user
-  is considered to have consented even if other policies do not allow the
-  given use. For example, if a user has a policy with `resource_attributes`
-  matching the requested `resource_attributes` and an `authorization_rule`
-  supporting the requested `request_attributes`, then the user is considered
-  to have consented even if the user has another policy with the same
-  `resource_attributes` and an `authorization_rule` rejecting the requested
-  `request_attributes`.  The returned Operation includes a progress counter
-  for the number of User data mappings processed.  Errors are logged to Cloud
-  Logging (see [Viewing logs] (/healthcare/docs/how-tos/logging) and
-  [QueryAccessibleData] for a sample log entry).
+  Consent store and writes them to a specified destination.  The returned
+  Operation includes a progress counter for the number of User data mappings
+  processed.  Errors are logged to Cloud Logging (see [Viewing logs]
+  (/healthcare/docs/how-tos/logging) and [QueryAccessibleData] for a sample
+  log entry).
 
   Messages:
     RequestAttributesValue: The values of request attributes associated with

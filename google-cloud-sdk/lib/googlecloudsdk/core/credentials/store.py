@@ -35,6 +35,7 @@ from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import http
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
+from googlecloudsdk.core import transport
 from googlecloudsdk.core.configurations import named_configs
 from googlecloudsdk.core.credentials import creds as c_creds
 from googlecloudsdk.core.credentials import devshell as c_devshell
@@ -136,8 +137,7 @@ class NoActiveAccountException(AuthenticationException):
         'You do not currently have an active account selected.')
 
 
-class TokenRefreshError(AuthenticationException,
-                        client.AccessTokenRefreshError):
+class TokenRefreshError(AuthenticationException):
   """An exception raised when the auth tokens fail to refresh."""
 
   def __init__(self, error, for_adc=False):
@@ -664,7 +664,7 @@ def _Refresh(credentials,
              gce_token_format='standard',
              gce_include_license=False):
   """Refreshes oauth2client credentials."""
-  http_client = http_client or http.Http(response_encoding=http.ENCODING)
+  http_client = http_client or http.Http(response_encoding=transport.ENCODING)
   try:
     credentials.refresh(http_client)
     id_token = None

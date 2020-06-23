@@ -27,9 +27,9 @@ event_type:
   api_field: notificationConfig.eventType
   default: FINDING
   choices:
-    - arg_value: FINDING
-      enum_value: FINDING
-      help_text: A Notification Configuration for SCC Findings.
+    arg_value: FINDING
+    enum_value: FINDING
+    help_text: A Notification Configuration for SCC Findings.
   is_positional: false
   required: true
   help_text: |
@@ -43,3 +43,12 @@ pubsub_topic:
   help_text: |
     The Pub/Sub topic which will receive notifications. Its format is
     "projects/[project_id]/topics/[topic]".
+
+filter:
+  arg_name: filter
+  api_field: notificationConfig.streamingConfig.filter
+  is_positional: false
+  required: false
+  help_text: |
+    The filter string which will applied to events of findings of a
+    notification configuration.

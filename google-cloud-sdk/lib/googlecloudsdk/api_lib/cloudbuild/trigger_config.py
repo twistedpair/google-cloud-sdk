@@ -18,6 +18,7 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+from googlecloudsdk.api_lib.cloudbuild import cloudbuild_util
 from googlecloudsdk.calliope import arg_parsers
 
 _CREATE_FILE_DESC = ('A file that contains the configuration for the '
@@ -27,37 +28,65 @@ _UPDATE_FILE_DESC = ('A file that contains updates to the configuration for '
 
 
 def AddTriggerArgs(parser):
-  """Set up all the argparse flags for creating or updating a workerpool.
+  """Set up the generic argparse flags for creating or updating a build trigger.
 
   Args:
     parser: An argparse.ArgumentParser-like object.
 
   Returns:
-    A mutually exclusive parser group with trigger flags added in. Additional
-    flag configuration should be added to this group.
+    An empty parser group to be populated with flags specific to a trigger-type.
   """
+
+  parser.display_info.AddFormat("""
+          table(
+            name,
+            createTime.date('%Y-%m-%dT%H:%M:%S%Oz', undefined='-'),
+            status
+          )
+        """)
 
   trigger_config = parser.add_mutually_exclusive_group(required=True)
 
   # Allow trigger config to be specified on the command line or STDIN.
   trigger_config.add_argument(
       '--trigger-config',
-      help='Path to Build Trigger config file. See https://cloud.google.com/cloud-build/docs/api/reference/rest/v1/projects.triggers#BuildTrigger',
+      help=(
+          'Path to Build Trigger config file (JSON or YAML format). For more '
+          'details, see https://cloud.google.com/cloud-build/docs/api/reference/rest/v1/projects.triggers#BuildTrigger'
+      ),
       metavar='PATH',
   )
 
-  trigger_config.add_argument(
-      'inline-config',
-      # This argument is optional.
-      nargs='?',
-      metavar='JSON',
-      help="""\
-Path to a YAML or JSON file containing the trigger configuration.
+  # Trigger configuration
+  flag_config = trigger_config.add_argument_group(
+      help='Flag based trigger configuration')
+  flag_config.add_argument('--description', help='Build trigger description.')
 
-For more details, see: https://cloud.google.com/cloud-build/docs/api/reference/rest/v1/projects.triggers
-""")
+  return flag_config
 
-  return trigger_config
+
+def ParseTriggerArgs(args, messages):
+  """Parses flags generic to all triggers.
+
+  Args:
+    args: An argparse arguments object.
+    messages: A Cloud Build messages module
+
+  Returns:
+    A partially populated build trigger and a boolean indicating whether or not
+    the full trigger was loaded from a file.
+  """
+  if args.trigger_config:
+    trigger = cloudbuild_util.LoadMessageFromPath(
+        path=args.trigger_config,
+        msg_type=messages.BuildTrigger,
+        msg_friendly_name='build trigger config',
+        skip_camel_case=['substitutions'])
+    return trigger, True
+
+  trigger = messages.BuildTrigger()
+  trigger.description = args.description
+  return trigger, False
 
 
 def AddBuildConfigArgs(flag_config):
@@ -147,6 +176,35 @@ If not specified, gcr.io/PROJECT/github.com/REPO_OWNER/REPO_NAME:$COMMIT_SHA wil
 
 Use a build configuration (cloudbuild.yaml) file for building multiple images in a single trigger.
 """)
+
+
+def ParseBuildConfigArgs(trigger, args, messages, default_image):
+  """Parses build-config flags.
+
+  Args:
+    trigger: The trigger to populate.
+    args: An argparse arguments object.
+    messages: A Cloud Build messages module.
+    default_image: The docker image to use if args.dockerfile_image is empty.
+  """
+  if args.build_config:
+    trigger.filename = args.build_config
+    trigger.substitutions = cloudbuild_util.EncodeTriggerSubstitutions(
+        args.substitutions, messages)
+  if args.dockerfile:
+    image = args.dockerfile_image or default_image
+    trigger.build = messages.Build(steps=[
+        messages.BuildStep(
+            name='gcr.io/cloud-builders/docker',
+            dir=args.dockerfile_dir,
+            args=['build', '-t', image, '-f', args.dockerfile, '.'],
+        )
+    ])
+
+  if args.included_files:
+    trigger.includedFiles = args.included_files
+  if args.ignored_files:
+    trigger.ignoredFiles = args.ignored_files
 
 
 def AddBranchPattern(parser):

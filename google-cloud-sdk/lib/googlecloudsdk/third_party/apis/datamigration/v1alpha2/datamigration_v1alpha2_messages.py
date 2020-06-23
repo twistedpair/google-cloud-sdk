@@ -78,6 +78,8 @@ class CloudSqlSettings(_messages.Message):
       "name": "wrench", "mass": "1.3kg", "count": "3" }.
     databaseVersion: The database engine type and version (`MYSQL_5_7` or
       `MYSQL_5_6`).
+    hasRootPassword: Output only. Indicates If this connection profile root
+      password is stored.
     ipConfig: The settings for IP Management. This allows to enable or disable
       the instance IP and manage which external networks can connect to the
       instance. The IPv4 address cannot be disabled.
@@ -206,13 +208,14 @@ class CloudSqlSettings(_messages.Message):
   dataDiskType = _messages.EnumField('DataDiskTypeValueValuesEnum', 4)
   databaseFlags = _messages.MessageField('DatabaseFlagsValue', 5)
   databaseVersion = _messages.EnumField('DatabaseVersionValueValuesEnum', 6)
-  ipConfig = _messages.MessageField('SqlIpConfig', 7)
-  rootPassword = _messages.StringField(8)
-  sourceId = _messages.StringField(9)
-  storageAutoResizeLimit = _messages.IntegerField(10)
-  tier = _messages.StringField(11)
-  userLabels = _messages.MessageField('UserLabelsValue', 12)
-  zone = _messages.StringField(13)
+  hasRootPassword = _messages.BooleanField(7)
+  ipConfig = _messages.MessageField('SqlIpConfig', 8)
+  rootPassword = _messages.StringField(9)
+  sourceId = _messages.StringField(10)
+  storageAutoResizeLimit = _messages.IntegerField(11)
+  tier = _messages.StringField(12)
+  userLabels = _messages.MessageField('UserLabelsValue', 13)
+  zone = _messages.StringField(14)
 
 
 class ConnectionProfile(_messages.Message):
@@ -1186,6 +1189,8 @@ class MySqlConnectionProfile(_messages.Message):
   Fields:
     cloudSqlId: If the source is a Cloud SQL database, use this field to
       provide the Cloud SQL instance ID of the source.
+    hasPassword: Output only. Indicates If this connection profile password is
+      stored.
     host: Required. The IP or hostname of the source MySQL database.
     password: Required. The password for the user that Database Migration
       Service will be using to connect to the database. This field is not
@@ -1200,11 +1205,12 @@ class MySqlConnectionProfile(_messages.Message):
   """
 
   cloudSqlId = _messages.StringField(1)
-  host = _messages.StringField(2)
-  password = _messages.StringField(3)
-  port = _messages.IntegerField(4, variant=_messages.Variant.INT32)
-  ssl = _messages.MessageField('SslConfig', 5)
-  username = _messages.StringField(6)
+  hasPassword = _messages.BooleanField(2)
+  host = _messages.StringField(3)
+  password = _messages.StringField(4)
+  port = _messages.IntegerField(5, variant=_messages.Variant.INT32)
+  ssl = _messages.MessageField('SslConfig', 6)
+  username = _messages.StringField(7)
 
 
 class Operation(_messages.Message):
@@ -1322,6 +1328,8 @@ class PostgreSqlConnectionProfile(_messages.Message):
   Fields:
     cloudSqlId: If the source is a Cloud SQL database, use this field to
       provide the Cloud SQL instance ID of the source.
+    hasPassword: Output only. Indicates If this connection profile password is
+      stored.
     host: Required. The IP or hostname of the source PostgreSQL database.
     password: Required. The password for the user that Database Migration
       Service will be using to connect to the database. This field is not
@@ -1336,11 +1344,12 @@ class PostgreSqlConnectionProfile(_messages.Message):
   """
 
   cloudSqlId = _messages.StringField(1)
-  host = _messages.StringField(2)
-  password = _messages.StringField(3)
-  port = _messages.IntegerField(4, variant=_messages.Variant.INT32)
-  ssl = _messages.MessageField('SslConfig', 5)
-  username = _messages.StringField(6)
+  hasPassword = _messages.BooleanField(2)
+  host = _messages.StringField(3)
+  password = _messages.StringField(4)
+  port = _messages.IntegerField(5, variant=_messages.Variant.INT32)
+  ssl = _messages.MessageField('SslConfig', 6)
+  username = _messages.StringField(7)
 
 
 class PromoteMigrationJobRequest(_messages.Message):
@@ -1478,12 +1487,14 @@ class StandardQueryParameters(_messages.Message):
 
   Fields:
     f__xgafv: V1 error format.
+    access_token: OAuth access token.
     alt: Data format for response.
     callback: JSONP
     fields: Selector specifying which fields to include in a partial response.
     key: API key. Your API key identifies your project and provides you with
       API access, quota, and reports. Required unless you provide an OAuth 2.0
       token.
+    oauth_token: OAuth 2.0 token for the current user.
     prettyPrint: Returns response with indentations and line breaks.
     quotaUser: Available to use for quota purposes for server-side
       applications. Can be any arbitrary string assigned to a user, but should
@@ -1517,15 +1528,17 @@ class StandardQueryParameters(_messages.Message):
     _2 = 1
 
   f__xgafv = _messages.EnumField('FXgafvValueValuesEnum', 1)
-  alt = _messages.EnumField('AltValueValuesEnum', 2, default='json')
-  callback = _messages.StringField(3)
-  fields = _messages.StringField(4)
-  key = _messages.StringField(5)
-  prettyPrint = _messages.BooleanField(6, default=True)
-  quotaUser = _messages.StringField(7)
-  trace = _messages.StringField(8)
-  uploadType = _messages.StringField(9)
-  upload_protocol = _messages.StringField(10)
+  access_token = _messages.StringField(2)
+  alt = _messages.EnumField('AltValueValuesEnum', 3, default='json')
+  callback = _messages.StringField(4)
+  fields = _messages.StringField(5)
+  key = _messages.StringField(6)
+  oauth_token = _messages.StringField(7)
+  prettyPrint = _messages.BooleanField(8, default=True)
+  quotaUser = _messages.StringField(9)
+  trace = _messages.StringField(10)
+  uploadType = _messages.StringField(11)
+  upload_protocol = _messages.StringField(12)
 
 
 class StartMigrationJobRequest(_messages.Message):
@@ -1604,14 +1617,16 @@ class VmCreationConfig(_messages.Message):
   r"""A VmCreationConfig object.
 
   Fields:
+    subnet: The subnet name the vm needs to be created in.
     vmMachineType: Required. VM instance machine type to create.
     vmZone: The Google Cloud Platform zone to create the VM in.
-    vpc: Required. The VPC name the vm needs to be created in.
+    vpc: The VPC name the vm needs to be created in.
   """
 
-  vmMachineType = _messages.StringField(1)
-  vmZone = _messages.StringField(2)
-  vpc = _messages.StringField(3)
+  subnet = _messages.StringField(1)
+  vmMachineType = _messages.StringField(2)
+  vmZone = _messages.StringField(3)
+  vpc = _messages.StringField(4)
 
 
 class VmSelectionConfig(_messages.Message):

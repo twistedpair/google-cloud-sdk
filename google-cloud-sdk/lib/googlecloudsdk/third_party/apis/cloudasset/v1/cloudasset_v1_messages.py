@@ -661,6 +661,13 @@ class Feed(_messages.Message):
       the feed. Example: `"compute.googleapis.com/Disk"`  See [this
       topic](https://cloud.google.com/asset-inventory/docs/supported-asset-
       types) for a list of all supported asset types.
+    condition: A condition which determines whether an asset update should be
+      published. If specified, an asset will be returned only when the
+      expression evaluates to true. When set, `expression` field in the `Expr`
+      must be a valid [CEL expression] (https://github.com/google/cel-spec) on
+      a TemporalAsset with name `temporal_asset`. Example: a Feed with
+      expression ("temporal_asset.deleted == true") will only publish Asset
+      deletions. Other fields of `Expr` are optional.
     contentType: Asset content type. If not specified, no content but the
       asset name and type will be returned.
     feedOutputConfig: Required. Feed output configuration defining where the
@@ -692,9 +699,10 @@ class Feed(_messages.Message):
 
   assetNames = _messages.StringField(1, repeated=True)
   assetTypes = _messages.StringField(2, repeated=True)
-  contentType = _messages.EnumField('ContentTypeValueValuesEnum', 3)
-  feedOutputConfig = _messages.MessageField('FeedOutputConfig', 4)
-  name = _messages.StringField(5)
+  condition = _messages.MessageField('Expr', 3)
+  contentType = _messages.EnumField('ContentTypeValueValuesEnum', 4)
+  feedOutputConfig = _messages.MessageField('FeedOutputConfig', 5)
+  name = _messages.StringField(6)
 
 
 class FeedOutputConfig(_messages.Message):
@@ -798,7 +806,7 @@ class GoogleCloudOrgpolicyV1ListPolicy(_messages.Message):
     deniedValues: List of values denied at this resource. Can only be set if
       `all_values` is set to `ALL_VALUES_UNSPECIFIED`.
     inheritFromParent: Determines the inheritance behavior for this `Policy`.
-      By default, a `ListPolicy` set at a resource supercedes any `Policy` set
+      By default, a `ListPolicy` set at a resource supersedes any `Policy` set
       anywhere up the resource hierarchy. However, if `inherit_from_parent` is
       set to `true`, then the values from the effective `Policy` of the parent
       resource are inherited, meaning the values set in this `Policy` are
@@ -895,7 +903,9 @@ class GoogleCloudOrgpolicyV1Policy(_messages.Message):
     booleanPolicy: For boolean `Constraints`, whether to enforce the
       `Constraint` or not.
     constraint: The name of the `Constraint` the `Policy` is configuring, for
-      example, `constraints/serviceuser.services`.  Immutable after creation.
+      example, `constraints/serviceuser.services`.  A [list of available
+      constraints](/resource-manager/docs/organization-policy/org-policy-
+      constraints) is available.  Immutable after creation.
     etag: An opaque tag indicating the current version of the `Policy`, used
       for concurrency control.  When the `Policy` is returned from either a
       `GetPolicy` or a `ListOrgPolicy` request, this `etag` indicates the
@@ -1939,15 +1949,40 @@ class TemporalAsset(_messages.Message):
   r"""An asset in Google Cloud and its temporal metadata, including the time
   window when it was observed and its status during that window.
 
+  Enums:
+    PriorAssetStateValueValuesEnum: State of prior_asset.
+
   Fields:
     asset: An asset in Google Cloud.
     deleted: Whether the asset has been deleted or not.
+    priorAsset: Prior copy of the asset. Populated if prior_asset_state is
+      PRESENT. Currently this is only set for responses in Real-Time Feed.
+    priorAssetState: State of prior_asset.
     window: The time window when the asset data and state was observed.
   """
 
+  class PriorAssetStateValueValuesEnum(_messages.Enum):
+    r"""State of prior_asset.
+
+    Values:
+      PRIOR_ASSET_STATE_UNSPECIFIED: prior_asset is not applicable for the
+        current asset.
+      PRESENT: prior_asset is populated correctly.
+      INVALID: Failed to set prior_asset.
+      DOES_NOT_EXIST: Current asset is the first known state.
+      DELETED: prior_asset is a deletion.
+    """
+    PRIOR_ASSET_STATE_UNSPECIFIED = 0
+    PRESENT = 1
+    INVALID = 2
+    DOES_NOT_EXIST = 3
+    DELETED = 4
+
   asset = _messages.MessageField('Asset', 1)
   deleted = _messages.BooleanField(2)
-  window = _messages.MessageField('TimeWindow', 3)
+  priorAsset = _messages.MessageField('Asset', 3)
+  priorAssetState = _messages.EnumField('PriorAssetStateValueValuesEnum', 4)
+  window = _messages.MessageField('TimeWindow', 5)
 
 
 class TimeWindow(_messages.Message):

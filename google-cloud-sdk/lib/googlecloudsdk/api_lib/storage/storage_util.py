@@ -227,7 +227,7 @@ class ObjectReference(object):
     _ValidateBucketName(bucket)
     # TODO(b/118379726): Fully implement the object naming requirement checks.
     # See https://cloud.google.com/storage/docs/naming#objectnames
-    if not 0 <= len(name.encode('utf8')) <= 1024:
+    if not 0 <= len(name.encode('utf-8')) <= 1024:
       raise InvalidObjectNameError(name, VALID_OBJECT_LENGTH_MESSAGE)
     if '\r' in name or '\n' in name:
       raise InvalidObjectNameError(name, VALID_OBJECT_CHARS_MESSAGE)

@@ -1010,11 +1010,11 @@ To revert your SDK to the previously installed version, you may run:
 
     if (self.__warn and not
         encoding.GetEncodedValue(os.environ, 'CLOUDSDK_REINSTALL_COMPONENTS')):
-      bad_commands = self.FindAllOldToolsOnPath()
+      bad_commands = self.FindAllOtherToolsOnPath()
       if bad_commands:
         log.warning("""\
-  There are older versions of Google Cloud Platform tools on your system PATH.
-  Please remove the following to avoid accidentally invoking these old tools:
+  There are other instances of Google Cloud Platform tools on your system PATH.
+  Please remove the following to avoid confusion or accidental invocation:
 
   {0}
 
@@ -1089,7 +1089,7 @@ To revert your SDK to the previously installed version, you may run:
 
     return set(update_seed) - deprecated
 
-  def _FindToolsOnPath(self, path=None, duplicates=True, old=True):
+  def _FindToolsOnPath(self, path=None, duplicates=True, other=True):
     """Helper function to find commands matching SDK bin dir on the path."""
     bin_dir = os.path.realpath(
         os.path.join(self.__sdk_root, UpdateManager.BIN_DIR_NAME))
@@ -1105,8 +1105,8 @@ To revert your SDK to the previously installed version, you may run:
       existing_paths = file_utils.SearchForExecutableOnPath(command, path=path)
       if existing_paths:
         this_tool = os.path.join(bin_dir, command)
-        if old:
-          # Add old commands outside of the SDK root.
+        if other:
+          # Add other commands outside of the SDK root.
           bad_commands.update(
               set(os.path.realpath(f) for f in existing_paths
                   if self.__sdk_root not in os.path.realpath(f)
@@ -1121,16 +1121,16 @@ To revert your SDK to the previously installed version, you may run:
               - set([this_tool]))
     return bad_commands.union(duplicates_in_sdk_root)
 
-  def FindAllOldToolsOnPath(self, path=None):
-    """Searches the PATH for any old Cloud SDK tools.
+  def FindAllOtherToolsOnPath(self, path=None):
+    """Searches the PATH for any other instances of Cloud SDK tools.
 
     Args:
       path: str, A path to use instead of the PATH environment variable.
 
     Returns:
-      {str}, The old executable paths that are not in the SDK root directory.
+      {str}, The other executable paths that are not in the SDK root directory.
     """
-    return self._FindToolsOnPath(path=path, duplicates=False, old=True)
+    return self._FindToolsOnPath(path=path, duplicates=False, other=True)
 
   def FindAllDuplicateToolsOnPath(self, path=None):
     """Searches PATH for alternate versions of Cloud SDK tools in installation.
@@ -1145,7 +1145,7 @@ To revert your SDK to the previously installed version, you may run:
     Returns:
       {str}, Alternate executable paths that are in the SDK root directory.
     """
-    return self._FindToolsOnPath(path=path, duplicates=True, old=False)
+    return self._FindToolsOnPath(path=path, duplicates=True, other=False)
 
   def Remove(self, ids, allow_no_backup=False):
     """Uninstalls the given components.

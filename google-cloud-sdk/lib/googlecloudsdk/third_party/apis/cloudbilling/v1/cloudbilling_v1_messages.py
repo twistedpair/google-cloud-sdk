@@ -454,6 +454,39 @@ class Expr(_messages.Message):
   title = _messages.StringField(4)
 
 
+class GeoTaxonomy(_messages.Message):
+  r"""Encapsulates the geographic taxonomy data for a sku.
+
+  Enums:
+    TypeValueValuesEnum: The type of Geo Taxonomy: GLOBAL, REGIONAL, or
+      MULTI_REGIONAL.
+
+  Fields:
+    regions: The list of regions associated with a sku. Empty for Global skus,
+      which are associated with all GCP regions.
+    type: The type of Geo Taxonomy: GLOBAL, REGIONAL, or MULTI_REGIONAL.
+  """
+
+  class TypeValueValuesEnum(_messages.Enum):
+    r"""The type of Geo Taxonomy: GLOBAL, REGIONAL, or MULTI_REGIONAL.
+
+    Values:
+      TYPE_UNSPECIFIED: The type is not specified.
+      GLOBAL: The sku is global in nature, e.g. a license sku. Global skus are
+        available in all regions, and so have an empty region list.
+      REGIONAL: The sku is available in a specific region, e.g. "us-west2".
+      MULTI_REGIONAL: The sku is associated with multiple regions, e.g. "us-
+        west2" and "us-east1".
+    """
+    TYPE_UNSPECIFIED = 0
+    GLOBAL = 1
+    REGIONAL = 2
+    MULTI_REGIONAL = 3
+
+  regions = _messages.StringField(1, repeated=True)
+  type = _messages.EnumField('TypeValueValuesEnum', 2)
+
+
 class ListBillingAccountsResponse(_messages.Message):
   r"""Response message for `ListBillingAccounts`.
 
@@ -756,6 +789,7 @@ class Sku(_messages.Message):
       purpose.
     description: A human readable description of the SKU, has a maximum length
       of 256 characters.
+    geoTaxonomy: The geographic taxonomy for this sku.
     name: The resource name for the SKU. Example:
       "services/DA34-426B-A397/skus/AA95-CD31-42FE"
     pricingInfo: A timeline of pricing info for this SKU in chronological
@@ -770,11 +804,12 @@ class Sku(_messages.Message):
 
   category = _messages.MessageField('Category', 1)
   description = _messages.StringField(2)
-  name = _messages.StringField(3)
-  pricingInfo = _messages.MessageField('PricingInfo', 4, repeated=True)
-  serviceProviderName = _messages.StringField(5)
-  serviceRegions = _messages.StringField(6, repeated=True)
-  skuId = _messages.StringField(7)
+  geoTaxonomy = _messages.MessageField('GeoTaxonomy', 3)
+  name = _messages.StringField(4)
+  pricingInfo = _messages.MessageField('PricingInfo', 5, repeated=True)
+  serviceProviderName = _messages.StringField(6)
+  serviceRegions = _messages.StringField(7, repeated=True)
+  skuId = _messages.StringField(8)
 
 
 class StandardQueryParameters(_messages.Message):

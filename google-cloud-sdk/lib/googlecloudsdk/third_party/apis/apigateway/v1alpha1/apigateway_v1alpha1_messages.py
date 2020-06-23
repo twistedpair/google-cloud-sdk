@@ -29,6 +29,10 @@ class ApigatewayApi(_messages.Message):
     labels: Optional. Resource labels to represent user-provided metadata.
       Refer to cloud documentation on labels for more details.
       https://cloud.google.com/compute/docs/labeling-resources
+    managedService: Optional. Immutable. The name of a Google Managed Service
+      ( https://cloud.google.com/service-
+      infrastructure/docs/glossary#managed). If not specified, a new Service
+      will automatically be created in the same project as this API.
     name: Output only. Resource name of the API. Format:
       projects/{project}/locations/global/apis/{api}
     state: Output only. State of the API.
@@ -83,9 +87,10 @@ class ApigatewayApi(_messages.Message):
   createTime = _messages.StringField(2)
   displayName = _messages.StringField(3)
   labels = _messages.MessageField('LabelsValue', 4)
-  name = _messages.StringField(5)
-  state = _messages.EnumField('StateValueValuesEnum', 6)
-  updateTime = _messages.StringField(7)
+  managedService = _messages.StringField(5)
+  name = _messages.StringField(6)
+  state = _messages.EnumField('StateValueValuesEnum', 7)
+  updateTime = _messages.StringField(8)
 
 
 class ApigatewayApiApiController(_messages.Message):
@@ -96,10 +101,6 @@ class ApigatewayApiApiController(_messages.Message):
   Fields:
     managedService: The name of a Google Managed Service (
       https://cloud.google.com/service-infrastructure/docs/glossary#managed).
-      The API Gateway Service Identity must be granted the
-      `services.configs.get` permission for this Service (  https:
-      //cloud.google.com/service-infrastructur // e/docs/service-
-      management/access-control#permissions ).
   """
 
   managedService = _messages.StringField(1)
@@ -144,6 +145,8 @@ class ApigatewayApiConfig(_messages.Message):
       projects/{project}/locations/global/apis/{api}/configs/{api_config}
     openapiDocuments: Optional. OpenAPI specification documents. If specified,
       grpc_services and managed_service_config must not be included.
+    serviceConfigId: Output only. The ID of the associated Service Config (
+      https://cloud.google.com/service-infrastructure/docs/glossary#config).
     serviceRollout: Immutable. A Managed Service Rollout. The associated API
       Controller of this API Config's parent must be a Managed Service (
       https://cloud.google.com/service-infrastructure/docs/glossary#managed).
@@ -204,9 +207,10 @@ class ApigatewayApiConfig(_messages.Message):
   managedServiceConfigs = _messages.MessageField('ApigatewayApiConfigFile', 6, repeated=True)
   name = _messages.StringField(7)
   openapiDocuments = _messages.MessageField('ApigatewayApiConfigOpenApiDocument', 8, repeated=True)
-  serviceRollout = _messages.MessageField('ApigatewayApiConfigManagedServiceRollout', 9)
-  state = _messages.EnumField('StateValueValuesEnum', 10)
-  updateTime = _messages.StringField(11)
+  serviceConfigId = _messages.StringField(9)
+  serviceRollout = _messages.MessageField('ApigatewayApiConfigManagedServiceRollout', 10)
+  state = _messages.EnumField('StateValueValuesEnum', 11)
+  updateTime = _messages.StringField(12)
 
 
 class ApigatewayApiConfigFile(_messages.Message):
@@ -1507,12 +1511,14 @@ class StandardQueryParameters(_messages.Message):
 
   Fields:
     f__xgafv: V1 error format.
+    access_token: OAuth access token.
     alt: Data format for response.
     callback: JSONP
     fields: Selector specifying which fields to include in a partial response.
     key: API key. Your API key identifies your project and provides you with
       API access, quota, and reports. Required unless you provide an OAuth 2.0
       token.
+    oauth_token: OAuth 2.0 token for the current user.
     prettyPrint: Returns response with indentations and line breaks.
     quotaUser: Available to use for quota purposes for server-side
       applications. Can be any arbitrary string assigned to a user, but should
@@ -1546,15 +1552,17 @@ class StandardQueryParameters(_messages.Message):
     _2 = 1
 
   f__xgafv = _messages.EnumField('FXgafvValueValuesEnum', 1)
-  alt = _messages.EnumField('AltValueValuesEnum', 2, default='json')
-  callback = _messages.StringField(3)
-  fields = _messages.StringField(4)
-  key = _messages.StringField(5)
-  prettyPrint = _messages.BooleanField(6, default=True)
-  quotaUser = _messages.StringField(7)
-  trace = _messages.StringField(8)
-  uploadType = _messages.StringField(9)
-  upload_protocol = _messages.StringField(10)
+  access_token = _messages.StringField(2)
+  alt = _messages.EnumField('AltValueValuesEnum', 3, default='json')
+  callback = _messages.StringField(4)
+  fields = _messages.StringField(5)
+  key = _messages.StringField(6)
+  oauth_token = _messages.StringField(7)
+  prettyPrint = _messages.BooleanField(8, default=True)
+  quotaUser = _messages.StringField(9)
+  trace = _messages.StringField(10)
+  uploadType = _messages.StringField(11)
+  upload_protocol = _messages.StringField(12)
 
 
 encoding.AddCustomJsonFieldMapping(

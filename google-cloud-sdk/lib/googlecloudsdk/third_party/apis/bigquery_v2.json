@@ -4,7 +4,7 @@
  "id": "bigquery:v2",
  "name": "bigquery",
  "version": "v2",
- "revision": "20200605",
+ "revision": "20200618",
  "title": "BigQuery API",
  "description": "A data platform for customers to create, manage, share and query data.",
  "ownerDomain": "google.com",
@@ -1330,9 +1330,17 @@
      "$ref": "EncryptionConfiguration",
      "description": "Custom encryption configuration (e.g., Cloud KMS keys)."
     },
+    "destinationExpirationTime": {
+     "type": "any",
+     "description": "[Optional] The time when the destination table expires. Expired tables will be deleted and their storage reclaimed."
+    },
     "destinationTable": {
      "$ref": "TableReference",
      "description": "[Required] The destination table"
+    },
+    "operationType": {
+     "type": "string",
+     "description": "[Optional] Supported operation types in table copy job."
     },
     "sourceTable": {
      "$ref": "TableReference",

@@ -1977,6 +1977,8 @@ class GooglePrivacyDlpV2ByteContentItem(_messages.Message):
       WORD_DOCUMENT: docx, docm, dotx, dotm
       PDF: pdf
       AVRO: avro
+      CSV: csv
+      TSV: tsv
     """
     BYTES_TYPE_UNSPECIFIED = 0
     IMAGE = 1
@@ -1988,6 +1990,8 @@ class GooglePrivacyDlpV2ByteContentItem(_messages.Message):
     WORD_DOCUMENT = 7
     PDF = 8
     AVRO = 9
+    CSV = 10
+    TSV = 11
 
   data = _messages.BytesField(1)
   type = _messages.EnumField('TypeValueValuesEnum', 2)
@@ -2168,6 +2172,8 @@ class GooglePrivacyDlpV2CloudStorageOptions(_messages.Message):
       WORD: <no description>
       PDF: <no description>
       AVRO: <no description>
+      CSV: <no description>
+      TSV: <no description>
     """
     FILE_TYPE_UNSPECIFIED = 0
     BINARY_FILE = 1
@@ -2176,6 +2182,8 @@ class GooglePrivacyDlpV2CloudStorageOptions(_messages.Message):
     WORD = 4
     PDF = 5
     AVRO = 6
+    CSV = 7
+    TSV = 8
 
   class SampleMethodValueValuesEnum(_messages.Enum):
     r"""SampleMethodValueValuesEnum enum type.

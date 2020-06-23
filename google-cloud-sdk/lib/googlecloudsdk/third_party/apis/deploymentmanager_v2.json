@@ -5,7 +5,7 @@
  "name": "deploymentmanager",
  "canonicalName": "Deployment Manager",
  "version": "v2",
- "revision": "20200605",
+ "revision": "20200618",
  "title": "Google Cloud Deployment Manager API",
  "description": "Declares, configures, and deploys complex solutions on Google Cloud Platform.",
  "ownerDomain": "google.com",
@@ -1244,6 +1244,12 @@
      "httpMethod": "GET",
      "description": "Gets the access control policy for a resource. May be empty if no such policy or resource exists.",
      "parameters": {
+      "optionsRequestedPolicyVersion": {
+       "type": "integer",
+       "description": "Requested IAM Policy version.",
+       "format": "int32",
+       "location": "query"
+      },
       "project": {
        "type": "string",
        "description": "Project ID for this request.",

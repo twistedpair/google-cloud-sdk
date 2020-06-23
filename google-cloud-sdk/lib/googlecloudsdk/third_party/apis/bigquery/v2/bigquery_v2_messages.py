@@ -1780,7 +1780,10 @@ class JobConfigurationTableCopy(_messages.Message):
       job completion.
     destinationEncryptionConfiguration: Custom encryption configuration (e.g.,
       Cloud KMS keys).
+    destinationExpirationTime: [Optional] The time when the destination table
+      expires. Expired tables will be deleted and their storage reclaimed.
     destinationTable: [Required] The destination table
+    operationType: [Optional] Supported operation types in table copy job.
     sourceTable: [Pick one] Source table to copy.
     sourceTables: [Pick one] Source tables to copy.
     writeDisposition: [Optional] Specifies the action that occurs if the
@@ -1796,10 +1799,12 @@ class JobConfigurationTableCopy(_messages.Message):
 
   createDisposition = _messages.StringField(1)
   destinationEncryptionConfiguration = _messages.MessageField('EncryptionConfiguration', 2)
-  destinationTable = _messages.MessageField('TableReference', 3)
-  sourceTable = _messages.MessageField('TableReference', 4)
-  sourceTables = _messages.MessageField('TableReference', 5, repeated=True)
-  writeDisposition = _messages.StringField(6)
+  destinationExpirationTime = _messages.MessageField('extra_types.JsonValue', 3)
+  destinationTable = _messages.MessageField('TableReference', 4)
+  operationType = _messages.StringField(5)
+  sourceTable = _messages.MessageField('TableReference', 6)
+  sourceTables = _messages.MessageField('TableReference', 7, repeated=True)
+  writeDisposition = _messages.StringField(8)
 
 
 class JobList(_messages.Message):

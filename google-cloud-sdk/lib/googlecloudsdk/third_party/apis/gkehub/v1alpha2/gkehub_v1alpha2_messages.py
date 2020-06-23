@@ -825,6 +825,8 @@ class KubernetesMetadata(_messages.Message):
   Fields:
     kubernetesApiServerVersion: Kubernetes API server version string as
       reported by '/version'.
+    memoryMb: The total memory capacity as reported by the sum of all
+      Kubernetes nodes resources, defined in MB.
     nodeCount: Node count as reported by Kubernetes nodes resources.
     nodeProviderId: Node providerID as reported by the first node in the list
       of nodes on the Kubernetes endpoint. It should be noted that some
@@ -838,10 +840,11 @@ class KubernetesMetadata(_messages.Message):
   """
 
   kubernetesApiServerVersion = _messages.StringField(1)
-  nodeCount = _messages.IntegerField(2, variant=_messages.Variant.INT32)
-  nodeProviderId = _messages.StringField(3)
-  updateTime = _messages.StringField(4)
-  vcpuCount = _messages.IntegerField(5, variant=_messages.Variant.INT32)
+  memoryMb = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  nodeCount = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  nodeProviderId = _messages.StringField(4)
+  updateTime = _messages.StringField(5)
+  vcpuCount = _messages.IntegerField(6, variant=_messages.Variant.INT32)
 
 
 class KubernetesResource(_messages.Message):
@@ -1450,12 +1453,14 @@ class StandardQueryParameters(_messages.Message):
 
   Fields:
     f__xgafv: V1 error format.
+    access_token: OAuth access token.
     alt: Data format for response.
     callback: JSONP
     fields: Selector specifying which fields to include in a partial response.
     key: API key. Your API key identifies your project and provides you with
       API access, quota, and reports. Required unless you provide an OAuth 2.0
       token.
+    oauth_token: OAuth 2.0 token for the current user.
     prettyPrint: Returns response with indentations and line breaks.
     quotaUser: Available to use for quota purposes for server-side
       applications. Can be any arbitrary string assigned to a user, but should
@@ -1489,15 +1494,17 @@ class StandardQueryParameters(_messages.Message):
     _2 = 1
 
   f__xgafv = _messages.EnumField('FXgafvValueValuesEnum', 1)
-  alt = _messages.EnumField('AltValueValuesEnum', 2, default='json')
-  callback = _messages.StringField(3)
-  fields = _messages.StringField(4)
-  key = _messages.StringField(5)
-  prettyPrint = _messages.BooleanField(6, default=True)
-  quotaUser = _messages.StringField(7)
-  trace = _messages.StringField(8)
-  uploadType = _messages.StringField(9)
-  upload_protocol = _messages.StringField(10)
+  access_token = _messages.StringField(2)
+  alt = _messages.EnumField('AltValueValuesEnum', 3, default='json')
+  callback = _messages.StringField(4)
+  fields = _messages.StringField(5)
+  key = _messages.StringField(6)
+  oauth_token = _messages.StringField(7)
+  prettyPrint = _messages.BooleanField(8, default=True)
+  quotaUser = _messages.StringField(9)
+  trace = _messages.StringField(10)
+  uploadType = _messages.StringField(11)
+  upload_protocol = _messages.StringField(12)
 
 
 class TestIamPermissionsRequest(_messages.Message):

@@ -300,7 +300,7 @@
           "format": "byte"
         },
         "attributes": {
-          "description": "Attributes for this message. If this field is empty, the message must\ncontain non-empty data.",
+          "description": "Attributes for this message. If this field is empty, the message must\ncontain non-empty data. This can be used to filter messages on the\nsubscription.",
           "type": "object",
           "additionalProperties": {
             "type": "string"
@@ -450,7 +450,7 @@
           "$ref": "ExpirationPolicy"
         },
         "filter": {
-          "description": "An expression written in the Cloud Pub\/Sub filter language. If non-empty,\nthen only `PubsubMessage`s whose `attributes` field matches the filter are\ndelivered on this subscription. If empty, then no messages are filtered\nout.",
+          "description": "An expression written in the Pub\/Sub [filter\nlanguage](https:\/\/cloud.google.com\/pubsub\/docs\/filtering). If non-empty,\nthen only `PubsubMessage`s whose `attributes` field matches the filter are\ndelivered on this subscription. If empty, then no messages are filtered\nout.",
           "type": "string"
         },
         "deadLetterPolicy": {

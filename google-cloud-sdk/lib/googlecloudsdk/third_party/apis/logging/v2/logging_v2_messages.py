@@ -636,6 +636,9 @@ class LogEntry(_messages.Message):
       "type.googleapis.com/google.appengine.logging.v1.RequestLog"
 
   Fields:
+    bucket: Output only. The resource name of the bucket where this log is
+      stored. Example: "projects/my-projectid/locations/my-
+      location/buckets/my-bucketid"
     httpRequest: Optional. Information about the HTTP request associated with
       this log entry, if applicable.
     insertId: Optional. A unique identifier for the log entry. If you provide
@@ -830,24 +833,25 @@ class LogEntry(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  httpRequest = _messages.MessageField('HttpRequest', 1)
-  insertId = _messages.StringField(2)
-  jsonPayload = _messages.MessageField('JsonPayloadValue', 3)
-  labels = _messages.MessageField('LabelsValue', 4)
-  logName = _messages.StringField(5)
-  metadata = _messages.MessageField('MonitoredResourceMetadata', 6)
-  operation = _messages.MessageField('LogEntryOperation', 7)
-  protoPayload = _messages.MessageField('ProtoPayloadValue', 8)
-  receiveTimestamp = _messages.StringField(9)
-  receivedLocation = _messages.StringField(10)
-  resource = _messages.MessageField('MonitoredResource', 11)
-  severity = _messages.EnumField('SeverityValueValuesEnum', 12)
-  sourceLocation = _messages.MessageField('LogEntrySourceLocation', 13)
-  spanId = _messages.StringField(14)
-  textPayload = _messages.StringField(15)
-  timestamp = _messages.StringField(16)
-  trace = _messages.StringField(17)
-  traceSampled = _messages.BooleanField(18)
+  bucket = _messages.StringField(1)
+  httpRequest = _messages.MessageField('HttpRequest', 2)
+  insertId = _messages.StringField(3)
+  jsonPayload = _messages.MessageField('JsonPayloadValue', 4)
+  labels = _messages.MessageField('LabelsValue', 5)
+  logName = _messages.StringField(6)
+  metadata = _messages.MessageField('MonitoredResourceMetadata', 7)
+  operation = _messages.MessageField('LogEntryOperation', 8)
+  protoPayload = _messages.MessageField('ProtoPayloadValue', 9)
+  receiveTimestamp = _messages.StringField(10)
+  receivedLocation = _messages.StringField(11)
+  resource = _messages.MessageField('MonitoredResource', 12)
+  severity = _messages.EnumField('SeverityValueValuesEnum', 13)
+  sourceLocation = _messages.MessageField('LogEntrySourceLocation', 14)
+  spanId = _messages.StringField(15)
+  textPayload = _messages.StringField(16)
+  timestamp = _messages.StringField(17)
+  trace = _messages.StringField(18)
+  traceSampled = _messages.BooleanField(19)
 
 
 class LogEntryOperation(_messages.Message):
@@ -1615,22 +1619,26 @@ class LoggingBillingAccountsLogsListRequest(_messages.Message):
     parent: Required. The resource name that owns the logs:
       "projects/[PROJECT_ID]" "organizations/[ORGANIZATION_ID]"
       "billingAccounts/[BILLING_ACCOUNT_ID]" "folders/[FOLDER_ID]"
-    resourceNames: NOT IMPLEMENTED YET. Required for Logging Data Model V2.
-      The resource name that owns the logs:  projects/PROJECT_ID/locations/LOC
-      ATION_ID/buckets/BUCKET_ID/views/VIEW_ID  organization/ORGANIZATION_ID/l
-      ocations/LOCATION_ID/buckets/BUCKET_ID/views/VIEW_ID  billingAccounts/BI
-      LLING_ACCOUNT_ID/locations/LOCATION_ID/buckets/BUCKET_ID/views/VIEW_ID
-      folders/FOLDER_ID/locations/LOCATION_ID/buckets/BUCKET_ID/views/VIEW_IDT
-      o support legacy queries, it could also be:  "projects/PROJECT_ID"
-      "organizations/ORGANIZATION_ID"  "billingAccounts/BILLING_ACCOUNT_ID"
-      "folders/FOLDER_ID"Note: It is not supported for query across multiple
+    resourceNames: Optional. NOT IMPLEMENTED YET. The resource name that owns
+      the logs:  projects/PROJECT_ID/locations/LOCATION_ID/buckets/BUCKET_ID/v
+      iews/VIEW_ID  organization/ORGANIZATION_ID/locations/LOCATION_ID/buckets
+      /BUCKET_ID/views/VIEW_ID  billingAccounts/BILLING_ACCOUNT_ID/locations/L
+      OCATION_ID/buckets/BUCKET_ID/views/VIEW_ID  folders/FOLDER_ID/locations/
+      LOCATION_ID/buckets/BUCKET_ID/views/VIEW_IDTo support legacy queries, it
+      could also be:  "projects/PROJECT_ID"  "organizations/ORGANIZATION_ID"
+      "billingAccounts/BILLING_ACCOUNT_ID"  "folders/FOLDER_ID"Note: It is not
+      supported for query across multiple
       projects/orgs/folders/billingAccounts
+    sourceResource: Optional. NOT IMPLEMENTED YET. It should be in format of:
+      "projects/PROJECT_ID"  "organizations/ORGANIZATION_ID"
+      "billingAccounts/BILLING_ACCOUNT_ID"  "folders/FOLDER_ID"
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(2)
   parent = _messages.StringField(3, required=True)
   resourceNames = _messages.StringField(4, repeated=True)
+  sourceResource = _messages.StringField(5, repeated=True)
 
 
 class LoggingBillingAccountsSinksCreateRequest(_messages.Message):
@@ -2240,22 +2248,26 @@ class LoggingFoldersLogsListRequest(_messages.Message):
     parent: Required. The resource name that owns the logs:
       "projects/[PROJECT_ID]" "organizations/[ORGANIZATION_ID]"
       "billingAccounts/[BILLING_ACCOUNT_ID]" "folders/[FOLDER_ID]"
-    resourceNames: NOT IMPLEMENTED YET. Required for Logging Data Model V2.
-      The resource name that owns the logs:  projects/PROJECT_ID/locations/LOC
-      ATION_ID/buckets/BUCKET_ID/views/VIEW_ID  organization/ORGANIZATION_ID/l
-      ocations/LOCATION_ID/buckets/BUCKET_ID/views/VIEW_ID  billingAccounts/BI
-      LLING_ACCOUNT_ID/locations/LOCATION_ID/buckets/BUCKET_ID/views/VIEW_ID
-      folders/FOLDER_ID/locations/LOCATION_ID/buckets/BUCKET_ID/views/VIEW_IDT
-      o support legacy queries, it could also be:  "projects/PROJECT_ID"
-      "organizations/ORGANIZATION_ID"  "billingAccounts/BILLING_ACCOUNT_ID"
-      "folders/FOLDER_ID"Note: It is not supported for query across multiple
+    resourceNames: Optional. NOT IMPLEMENTED YET. The resource name that owns
+      the logs:  projects/PROJECT_ID/locations/LOCATION_ID/buckets/BUCKET_ID/v
+      iews/VIEW_ID  organization/ORGANIZATION_ID/locations/LOCATION_ID/buckets
+      /BUCKET_ID/views/VIEW_ID  billingAccounts/BILLING_ACCOUNT_ID/locations/L
+      OCATION_ID/buckets/BUCKET_ID/views/VIEW_ID  folders/FOLDER_ID/locations/
+      LOCATION_ID/buckets/BUCKET_ID/views/VIEW_IDTo support legacy queries, it
+      could also be:  "projects/PROJECT_ID"  "organizations/ORGANIZATION_ID"
+      "billingAccounts/BILLING_ACCOUNT_ID"  "folders/FOLDER_ID"Note: It is not
+      supported for query across multiple
       projects/orgs/folders/billingAccounts
+    sourceResource: Optional. NOT IMPLEMENTED YET. It should be in format of:
+      "projects/PROJECT_ID"  "organizations/ORGANIZATION_ID"
+      "billingAccounts/BILLING_ACCOUNT_ID"  "folders/FOLDER_ID"
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(2)
   parent = _messages.StringField(3, required=True)
   resourceNames = _messages.StringField(4, repeated=True)
+  sourceResource = _messages.StringField(5, repeated=True)
 
 
 class LoggingFoldersSinksCreateRequest(_messages.Message):
@@ -2702,22 +2714,26 @@ class LoggingLogsListRequest(_messages.Message):
     parent: Required. The resource name that owns the logs:
       "projects/[PROJECT_ID]" "organizations/[ORGANIZATION_ID]"
       "billingAccounts/[BILLING_ACCOUNT_ID]" "folders/[FOLDER_ID]"
-    resourceNames: NOT IMPLEMENTED YET. Required for Logging Data Model V2.
-      The resource name that owns the logs:  projects/PROJECT_ID/locations/LOC
-      ATION_ID/buckets/BUCKET_ID/views/VIEW_ID  organization/ORGANIZATION_ID/l
-      ocations/LOCATION_ID/buckets/BUCKET_ID/views/VIEW_ID  billingAccounts/BI
-      LLING_ACCOUNT_ID/locations/LOCATION_ID/buckets/BUCKET_ID/views/VIEW_ID
-      folders/FOLDER_ID/locations/LOCATION_ID/buckets/BUCKET_ID/views/VIEW_IDT
-      o support legacy queries, it could also be:  "projects/PROJECT_ID"
-      "organizations/ORGANIZATION_ID"  "billingAccounts/BILLING_ACCOUNT_ID"
-      "folders/FOLDER_ID"Note: It is not supported for query across multiple
+    resourceNames: Optional. NOT IMPLEMENTED YET. The resource name that owns
+      the logs:  projects/PROJECT_ID/locations/LOCATION_ID/buckets/BUCKET_ID/v
+      iews/VIEW_ID  organization/ORGANIZATION_ID/locations/LOCATION_ID/buckets
+      /BUCKET_ID/views/VIEW_ID  billingAccounts/BILLING_ACCOUNT_ID/locations/L
+      OCATION_ID/buckets/BUCKET_ID/views/VIEW_ID  folders/FOLDER_ID/locations/
+      LOCATION_ID/buckets/BUCKET_ID/views/VIEW_IDTo support legacy queries, it
+      could also be:  "projects/PROJECT_ID"  "organizations/ORGANIZATION_ID"
+      "billingAccounts/BILLING_ACCOUNT_ID"  "folders/FOLDER_ID"Note: It is not
+      supported for query across multiple
       projects/orgs/folders/billingAccounts
+    sourceResource: Optional. NOT IMPLEMENTED YET. It should be in format of:
+      "projects/PROJECT_ID"  "organizations/ORGANIZATION_ID"
+      "billingAccounts/BILLING_ACCOUNT_ID"  "folders/FOLDER_ID"
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(2)
   parent = _messages.StringField(3, required=True)
   resourceNames = _messages.StringField(4, repeated=True)
+  sourceResource = _messages.StringField(5, repeated=True)
 
 
 class LoggingMonitoredResourceDescriptorsListRequest(_messages.Message):
@@ -3115,22 +3131,26 @@ class LoggingOrganizationsLogsListRequest(_messages.Message):
     parent: Required. The resource name that owns the logs:
       "projects/[PROJECT_ID]" "organizations/[ORGANIZATION_ID]"
       "billingAccounts/[BILLING_ACCOUNT_ID]" "folders/[FOLDER_ID]"
-    resourceNames: NOT IMPLEMENTED YET. Required for Logging Data Model V2.
-      The resource name that owns the logs:  projects/PROJECT_ID/locations/LOC
-      ATION_ID/buckets/BUCKET_ID/views/VIEW_ID  organization/ORGANIZATION_ID/l
-      ocations/LOCATION_ID/buckets/BUCKET_ID/views/VIEW_ID  billingAccounts/BI
-      LLING_ACCOUNT_ID/locations/LOCATION_ID/buckets/BUCKET_ID/views/VIEW_ID
-      folders/FOLDER_ID/locations/LOCATION_ID/buckets/BUCKET_ID/views/VIEW_IDT
-      o support legacy queries, it could also be:  "projects/PROJECT_ID"
-      "organizations/ORGANIZATION_ID"  "billingAccounts/BILLING_ACCOUNT_ID"
-      "folders/FOLDER_ID"Note: It is not supported for query across multiple
+    resourceNames: Optional. NOT IMPLEMENTED YET. The resource name that owns
+      the logs:  projects/PROJECT_ID/locations/LOCATION_ID/buckets/BUCKET_ID/v
+      iews/VIEW_ID  organization/ORGANIZATION_ID/locations/LOCATION_ID/buckets
+      /BUCKET_ID/views/VIEW_ID  billingAccounts/BILLING_ACCOUNT_ID/locations/L
+      OCATION_ID/buckets/BUCKET_ID/views/VIEW_ID  folders/FOLDER_ID/locations/
+      LOCATION_ID/buckets/BUCKET_ID/views/VIEW_IDTo support legacy queries, it
+      could also be:  "projects/PROJECT_ID"  "organizations/ORGANIZATION_ID"
+      "billingAccounts/BILLING_ACCOUNT_ID"  "folders/FOLDER_ID"Note: It is not
+      supported for query across multiple
       projects/orgs/folders/billingAccounts
+    sourceResource: Optional. NOT IMPLEMENTED YET. It should be in format of:
+      "projects/PROJECT_ID"  "organizations/ORGANIZATION_ID"
+      "billingAccounts/BILLING_ACCOUNT_ID"  "folders/FOLDER_ID"
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(2)
   parent = _messages.StringField(3, required=True)
   resourceNames = _messages.StringField(4, repeated=True)
+  sourceResource = _messages.StringField(5, repeated=True)
 
 
 class LoggingOrganizationsSinksCreateRequest(_messages.Message):
@@ -3674,22 +3694,26 @@ class LoggingProjectsLogsListRequest(_messages.Message):
     parent: Required. The resource name that owns the logs:
       "projects/[PROJECT_ID]" "organizations/[ORGANIZATION_ID]"
       "billingAccounts/[BILLING_ACCOUNT_ID]" "folders/[FOLDER_ID]"
-    resourceNames: NOT IMPLEMENTED YET. Required for Logging Data Model V2.
-      The resource name that owns the logs:  projects/PROJECT_ID/locations/LOC
-      ATION_ID/buckets/BUCKET_ID/views/VIEW_ID  organization/ORGANIZATION_ID/l
-      ocations/LOCATION_ID/buckets/BUCKET_ID/views/VIEW_ID  billingAccounts/BI
-      LLING_ACCOUNT_ID/locations/LOCATION_ID/buckets/BUCKET_ID/views/VIEW_ID
-      folders/FOLDER_ID/locations/LOCATION_ID/buckets/BUCKET_ID/views/VIEW_IDT
-      o support legacy queries, it could also be:  "projects/PROJECT_ID"
-      "organizations/ORGANIZATION_ID"  "billingAccounts/BILLING_ACCOUNT_ID"
-      "folders/FOLDER_ID"Note: It is not supported for query across multiple
+    resourceNames: Optional. NOT IMPLEMENTED YET. The resource name that owns
+      the logs:  projects/PROJECT_ID/locations/LOCATION_ID/buckets/BUCKET_ID/v
+      iews/VIEW_ID  organization/ORGANIZATION_ID/locations/LOCATION_ID/buckets
+      /BUCKET_ID/views/VIEW_ID  billingAccounts/BILLING_ACCOUNT_ID/locations/L
+      OCATION_ID/buckets/BUCKET_ID/views/VIEW_ID  folders/FOLDER_ID/locations/
+      LOCATION_ID/buckets/BUCKET_ID/views/VIEW_IDTo support legacy queries, it
+      could also be:  "projects/PROJECT_ID"  "organizations/ORGANIZATION_ID"
+      "billingAccounts/BILLING_ACCOUNT_ID"  "folders/FOLDER_ID"Note: It is not
+      supported for query across multiple
       projects/orgs/folders/billingAccounts
+    sourceResource: Optional. NOT IMPLEMENTED YET. It should be in format of:
+      "projects/PROJECT_ID"  "organizations/ORGANIZATION_ID"
+      "billingAccounts/BILLING_ACCOUNT_ID"  "folders/FOLDER_ID"
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(2)
   parent = _messages.StringField(3, required=True)
   resourceNames = _messages.StringField(4, repeated=True)
+  sourceResource = _messages.StringField(5, repeated=True)
 
 
 class LoggingProjectsMetricsCreateRequest(_messages.Message):
@@ -4064,7 +4088,14 @@ class LoggingUpdateCmekSettingsRequest(_messages.Message):
 class MetricDescriptor(_messages.Message):
   r"""Defines a metric type and its schema. Once a metric descriptor is
   created, deleting or altering it stops data collection and makes the metric
-  type's existing data unusable.
+  type's existing data unusable.The following are specific rules for service
+  defined Monitoring metric descriptors: type, metric_kind, value_type,
+  description, display_name,  launch_stage fields are all required. The unit
+  field must be specified  if the value_type is any of DOUBLE, INT64,
+  DISTRIBUTION. Maximum of default 500 metric descriptors per service is
+  allowed. Maximum of default 10 labels per metric descriptor is allowed.The
+  default maximum limit can be overridden. Please follow
+  https://cloud.google.com/monitoring/quotas
 
   Enums:
     LaunchStageValueValuesEnum: Optional. The launch stage of the metric
@@ -4084,7 +4115,10 @@ class MetricDescriptor(_messages.Message):
       "Request count". This field is optional but it is recommended to be set
       for any metrics associated with user-visible concepts, such as Quota.
     labels: The set of labels that can be used to describe a specific instance
-      of this metric type. For example, the
+      of this metric type.The label key name must follow: Only upper and
+      lower-case letters, digits and underscores (_) are  allowed. Label name
+      must start with a letter or digit. The maximum length of a label name is
+      100 characters.For example, the
       appengine.googleapis.com/http/server/response_latencies metric type has
       a label for the HTTP response code, response_code, so you can look at
       latencies for successful responses or just for responses that failed.
@@ -4101,9 +4135,15 @@ class MetricDescriptor(_messages.Message):
       here.
     name: The resource name of the metric descriptor.
     type: The metric type, including its DNS name prefix. The type is not URL-
-      encoded. All user-defined metric types have the DNS name
-      custom.googleapis.com or external.googleapis.com. Metric types should
-      use a natural hierarchical grouping. For example:
+      encoded.All service defined metrics must be prefixed with the service
+      name, in the format of {service name}/{relative metric name}, such as
+      cloudsql.googleapis.com/database/cpu/utilization. The relative metric
+      name must follow: Only upper and lower-case letters, digits, '/' and
+      underscores '_' are  allowed. The maximum number of characters allowed
+      for the relative_metric_name is  100.All user-defined metric types have
+      the DNS name custom.googleapis.com, external.googleapis.com, or
+      logging.googleapis.com/user/.Metric types should use a natural
+      hierarchical grouping. For example:
       "custom.googleapis.com/invoice/paid/amount"
       "external.googleapis.com/prometheus/up"
       "appengine.googleapis.com/http/server/response_latencies"
@@ -4123,25 +4163,26 @@ class MetricDescriptor(_messages.Message):
       (which is 12005/1000), or use Kis{CPU} and write 11.723 (which is
       12005/1024).The supported units are a subset of The Unified Code for
       Units of Measure (http://unitsofmeasure.org/ucum.html) standard:Basic
-      units (UNIT) bit bit By byte s second min minute h hour d dayPrefixes
-      (PREFIX) k kilo (10^3) M mega (10^6) G giga (10^9) T tera (10^12) P peta
-      (10^15) E exa (10^18) Z zetta (10^21) Y yotta (10^24) m milli (10^-3) u
-      micro (10^-6) n nano (10^-9) p pico (10^-12) f femto (10^-15) a atto
-      (10^-18) z zepto (10^-21) y yocto (10^-24) Ki kibi (2^10) Mi mebi (2^20)
-      Gi gibi (2^30) Ti tebi (2^40) Pi pebi (2^50)GrammarThe grammar also
-      includes these connectors: / division or ratio (as an infix operator).
-      For examples,  kBy/{email} or MiBy/10ms (although you should almost
-      never  have /s in a metric unit; rates should always be computed at
-      query time from the underlying cumulative or delta value). .
-      multiplication or composition (as an infix operator). For  examples,
-      GBy.d or k{watt}.h.The grammar for a unit is as follows: Expression =
-      Component { "." Component } { "/" Component } ;  Component = ( [ PREFIX
-      ] UNIT | "%" ) [ Annotation ]           | Annotation           | "1"
-      ;  Annotation = "{" NAME "}" ; Notes: Annotation is just a comment if it
-      follows a UNIT. If the annotation  is used alone, then the unit is
-      equivalent to 1. For examples,  {request}/s == 1/s, By{transmitted}/s ==
-      By/s. NAME is a sequence of non-blank printable ASCII characters not
-      containing { or }. 1 represents a unitary dimensionless  unit
+      units (UNIT) bit bit By byte s second min minute h hour d day 1
+      dimensionlessPrefixes (PREFIX) k kilo (10^3) M mega (10^6) G giga (10^9)
+      T tera (10^12) P peta (10^15) E exa (10^18) Z zetta (10^21) Y yotta
+      (10^24) m milli (10^-3) u micro (10^-6) n nano (10^-9) p pico (10^-12) f
+      femto (10^-15) a atto (10^-18) z zepto (10^-21) y yocto (10^-24) Ki kibi
+      (2^10) Mi mebi (2^20) Gi gibi (2^30) Ti tebi (2^40) Pi pebi
+      (2^50)GrammarThe grammar also includes these connectors: / division or
+      ratio (as an infix operator). For examples,  kBy/{email} or MiBy/10ms
+      (although you should almost never  have /s in a metric unit; rates
+      should always be computed at  query time from the underlying cumulative
+      or delta value). . multiplication or composition (as an infix operator).
+      For  examples, GBy.d or k{watt}.h.The grammar for a unit is as follows:
+      Expression = Component { "." Component } { "/" Component } ;  Component
+      = ( [ PREFIX ] UNIT | "%" ) [ Annotation ]           | Annotation
+      | "1"           ;  Annotation = "{" NAME "}" ; Notes: Annotation is just
+      a comment if it follows a UNIT. If the annotation  is used alone, then
+      the unit is equivalent to 1. For examples,  {request}/s == 1/s,
+      By{transmitted}/s == By/s. NAME is a sequence of non-blank printable
+      ASCII characters not  containing { or }. 1 represents a unitary
+      dimensionless  unit
       (https://en.wikipedia.org/wiki/Dimensionless_quantity) of 1, such  as in
       1/s. It is typically used when none of the basic units are  appropriate.
       For example, "new users per day" can be represented as  1/d or {new-
@@ -4387,9 +4428,16 @@ class MonitoredResourceDescriptor(_messages.Message):
   a type name and a set of labels. For example, the monitored resource
   descriptor for Google Compute Engine VM instances has a type of
   "gce_instance" and specifies the use of the labels "instance_id" and "zone"
-  to identify particular VM instances.Different APIs can support different
-  monitored resource types. APIs generally provide a list method that returns
-  the monitored resource descriptors used by the API.
+  to identify particular VM instances.Different services can support different
+  monitored resource types.The following are specific rules to service defined
+  monitored resources for Monitoring and Logging: The type, display_name,
+  description, labels and launch_stage  fields are all required. The first
+  label of the monitored resource descriptor must be  resource_container.
+  There are legacy monitored resource descritptors  start with project_id. It
+  must include a location label. Maximum of default 5 service defined
+  monitored resource descriptors  is allowed per service. Maximum of default
+  10 labels per monitored resource is allowed.The default maximum limit can be
+  overridden. Please follow https://cloud.google.com/monitoring/quotas
 
   Enums:
     LaunchStageValueValuesEnum: Optional. The launch stage of the monitored
@@ -4403,9 +4451,11 @@ class MonitoredResourceDescriptor(_messages.Message):
       Phrase, without any article or other determiners. For example, "Google
       Cloud SQL Database".
     labels: Required. A set of labels used to describe instances of this
-      monitored resource type. For example, an individual Google Cloud SQL
-      database is identified by values for the labels "database_id" and
-      "zone".
+      monitored resource type. The label key name must follow: Only upper and
+      lower-case letters, digits and underscores (_) are  allowed. Label name
+      must start with a letter or digit. The maximum length of a label name is
+      100 characters.For example, an individual Google Cloud SQL database is
+      identified by values for the labels database_id and location.
     launchStage: Optional. The launch stage of the monitored resource
       definition.
     name: Optional. The resource name of the monitored resource descriptor:
@@ -4415,8 +4465,14 @@ class MonitoredResourceDescriptor(_messages.Message):
       APIs that do not use project information can use the resource name
       format "monitoredResourceDescriptors/{type}".
     type: Required. The monitored resource type. For example, the type
-      "cloudsql_database" represents databases in Google Cloud SQL. The
-      maximum length of this value is 256 characters.
+      cloudsql_database represents databases in Google Cloud SQL.All service
+      defined monitored resource types must be prefixed with the service name,
+      in the format of {service name}/{relative resource name}. The relative
+      resource name must follow: Only upper and lower-case letters and digits
+      are allowed. It must start with upper case character and is recommended
+      to use Upper  Camel Case style. The maximum number of characters allowed
+      for the relative_resource_name  is 100.Note there are legacy service
+      monitored resources not following this rule.
   """
 
   class LaunchStageValueValuesEnum(_messages.Enum):

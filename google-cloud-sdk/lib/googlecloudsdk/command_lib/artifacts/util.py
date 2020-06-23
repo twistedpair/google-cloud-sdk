@@ -27,9 +27,12 @@ import re
 from apitools.base.py import exceptions as api_exceptions
 from googlecloudsdk.api_lib import artifacts
 from googlecloudsdk.api_lib.artifacts import exceptions as ar_exceptions
+
 from googlecloudsdk.command_lib.artifacts import requests as ar_requests
+from googlecloudsdk.command_lib.projects import util as project_util
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
+from googlecloudsdk.core.console import console_io
 from googlecloudsdk.core.util import parallel
 
 _INVALID_REPO_NAME_ERROR = (
@@ -60,6 +63,8 @@ _GCR_BUCKETS = {
 }
 
 _REPO_REGEX = "^[a-z]([a-z0-9-]*[a-z0-9])?$"
+
+_AR_SERVICE_ACCOUNT = "serviceAccount:service-{project_num}@gcp-sa-artifactregistry.iam.gserviceaccount.com"
 
 
 def _GetMessagesForResource(resource_ref):
@@ -109,10 +114,58 @@ def AppendRepoDataToRequest(repo_ref, repo_args, request):
   repo = messages.Repository(
       name=repo_ref.RelativeName(),
       description=repo_args.description,
-      format=repo_format)
+      format=repo_format,
+      kmsKeyName=repo_args.kms_key)
   request.repository = repo
   request.repositoryId = repo_ref.repositoriesId
   return request
+
+
+def CheckServiceAccountPermission(response, args):
+  """Checks and grants key encrypt/decrypt permission for service account.
+
+  Checks if Artifact Registry service account has encrypter/decrypter or owner
+  role for the given key. If not, prompts users to grant key encrypter/decrypter
+  permission to the service account. If users say no to the prompt, logs a
+  message and points to the official documentation.
+
+  Args:
+    response: Create repository response.
+    args: User input arguments.
+
+  Returns:
+    Create repository response.
+  """
+  if args.kms_key:
+    project_num = project_util.GetProjectNumber(GetProject(args))
+    service_account = _AR_SERVICE_ACCOUNT.format(project_num=project_num)
+
+    policy = ar_requests.GetCryptoKeyPolicy(args.kms_key)
+    has_permission = False
+    for binding in policy.bindings:
+      if service_account in binding.members and (
+          binding.role == "roles/cloudkms.cryptoKeyEncrypterDecrypter" or
+          binding.role == "roles/owner"):
+        has_permission = True
+        break
+    if not has_permission:
+      cont = console_io.PromptContinue(
+          prompt_string=(
+              "\nDo you want to grant the Artifact Registry Service Account "
+              "permission to encrypt/decrypt with the selected key [{key_name}]"
+              .format(key_name=args.kms_key)),
+          cancel_on_no=False)
+      if not cont:
+        log.status.Print(
+            "Note: You will need to grant the Artifact Registry Service "
+            "Account permissions to encrypt/decrypt on the selected key.\n"
+            "Learn more: https://cloud.google.com/artifact-registry/docs/cmek")
+        return response
+      ar_requests.AddCryptoKeyPermission(args.kms_key, service_account)
+      log.status.Print(
+          "Added Cloud KMS CryptoKey Encrypter/Decrypter Role to [{key_name}]"
+          .format(key_name=args.kms_key))
+  return response
 
 
 def DeleteVersionTags(ver_ref, ver_args, request):
@@ -145,7 +198,7 @@ def AppendTagDataToRequest(tag_ref, tag_args, request):
 
 
 def SetTagUpdateMask(tag_ref, tag_args, request):
-  """Set update mask to UpdateTagRequest."""
+  """Sets update mask to UpdateTagRequest."""
   messages = _GetMessagesForResource(tag_ref)
   parts = request.name.split("/")
   pkg_path = "/".join(parts[:len(parts) - 2])
@@ -165,7 +218,7 @@ def SlashEscapePackageName(pkg_ref, unused_args, request):
 
 
 def SlashUnescapePackageName(response, unused_args):
-  """Unescape slashes in package name from ListPackagesResponse."""
+  """Unescapes slashes in package name from ListPackagesResponse."""
   ret = []
   for ver in response:
     ver.name = os.path.basename(ver.name)
@@ -222,7 +275,7 @@ def GetGCRRepos(buckets, project):
 
 
 def ListRepositories(args):
-  """List repositories in a given project.
+  """Lists repositories in a given project.
 
   If no location value is specified, list repositories across all locations.
 
@@ -285,4 +338,21 @@ def ValidateLocation(location, project_id):
 
 def ValidateLocationHook(unused_ref, args, req):
   ValidateLocation(GetLocation(args), GetProject(args))
+  return req
+
+
+def AddEncryptionLogToRepositoryInfo(response, unused_args):
+  """Adds encryption info log to repository info."""
+  if response.kmsKeyName:
+    log.status.Print("Encryption: Customer-managed key")
+  else:
+    log.status.Print("Encryption: Google-managed key")
+  return response
+
+
+def SlashUnescapePackageNameHook(ref, args, req):
+  package = args.package if args.package else ref.packagesId
+  if "@" in package:
+    escaped_pkg_name = package.replace("/", "%2F")
+    req.name = req.name.replace(package, escaped_pkg_name)
   return req

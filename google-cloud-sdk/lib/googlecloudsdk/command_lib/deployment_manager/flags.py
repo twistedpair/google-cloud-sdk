@@ -86,7 +86,9 @@ def AddConfigFlags(parser):
   parser.add_argument(
       '--config',
       help='Filename of a top-level yaml config that specifies '
-      'resources to deploy.')
+      'resources to deploy. For a guide to creating a configuration, refer '
+      'to https://cloud.google.com/deployment-manager/docs/configuration/'
+      'create-basic-configuration')
 
   parser.add_argument(
       '--template',
@@ -94,7 +96,10 @@ def AddConfigFlags(parser):
 
   parser.add_argument(
       '--composite-type',
-      help='Name of a composite type to deploy.')
+      help='Name of a composite type to deploy. For an example of creating '
+      'and deploying a composite type, see: https://cloud.google.com/'
+      'deployment-manager/docs/configuration/templates/create-composite-types'
+      '#examplecompositetype')
 
 
 def AddPropertiesFlag(parser):

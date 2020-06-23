@@ -21,7 +21,6 @@
   "servicePath": "",
   "baseUrl": "https://dns.googleapis.com/",
   "batchPath": "batch",
-  "version_module": true,
   "fullyEncodeReservedExpansion": true,
   "parameters": {
     "access_token": {

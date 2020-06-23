@@ -75,12 +75,24 @@ def AllAccounts():
 
 def IsGceAccountCredentials(cred):
   """Checks if the credential is a Compute Engine service account credential."""
-  return isinstance(cred, oauth2client_gce.AppAssertionCredentials)
+  # Import only when necessary to decrease the startup time. Move it to
+  # global once google-auth is ready to replace oauth2client.
+  # pylint: disable=g-import-not-at-top
+  import google.auth.compute_engine as google_auth_gce
+
+  return (isinstance(cred, oauth2client_gce.AppAssertionCredentials) or
+          isinstance(cred, google_auth_gce.credentials.Credentials))
 
 
 def IsServiceAccountCredential(cred):
   """Checks if the credential is a service account credential."""
-  return isinstance(cred, service_account.ServiceAccountCredentials)
+  # Import only when necessary to decrease the startup time. Move it to
+  # global once google-auth is ready to replace oauth2client.
+  # pylint: disable=g-import-not-at-top
+  import google.oauth2.service_account as google_auth_service_account
+
+  return (isinstance(cred, service_account.ServiceAccountCredentials) or
+          isinstance(cred, google_auth_service_account.Credentials))
 
 
 def IsImpersonationCredential(cred):

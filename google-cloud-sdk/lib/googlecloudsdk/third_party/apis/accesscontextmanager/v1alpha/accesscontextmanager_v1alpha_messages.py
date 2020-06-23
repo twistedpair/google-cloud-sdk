@@ -680,9 +680,9 @@ class GcpUserAccessBinding(_messages.Message):
   users using Context-Aware Access.
 
   Fields:
-    accessLevels: Required. Access levels that a user must have to be granted
-      access. This list is ORed, so the user only needs one (or more) of these
-      access levels. Example:
+    accessLevels: Required. Access level that a user must have to be granted
+      access. Only one access level is supported, not multiple. This repeated
+      field must have exactly one element. Example:
       "accessPolicies/9522/accessLevels/device_trusted"
     groupKey: Required. Immutable. Google Group id whose members are subject
       to this binding's restrictions. See "id" in the [G Suite Directory API's

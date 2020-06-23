@@ -362,12 +362,12 @@ def CreatePersistentCreateDiskMessages(compute_client,
       snapshot_key_file = disk.get('source_snapshot_csek')
       if snapshot_key_file:
         initialize_params.snapshotKeyFile = snapshot_key_file
-
+    boot = disk.get('boot') == 'yes'
     device_name = instance_utils.GetDiskDeviceName(disk, name,
                                                    container_mount_disk)
     create_disk = messages.AttachedDisk(
         autoDelete=auto_delete,
-        boot=False,
+        boot=boot,
         deviceName=device_name,
         initializeParams=initialize_params,
         mode=mode,

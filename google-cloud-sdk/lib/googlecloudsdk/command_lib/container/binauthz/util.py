@@ -119,7 +119,7 @@ def MakeSignaturePayload(container_image_url):
   )
   # NOTE: A newline is appended for backwards compatibility with the previous
   # payload serialization which relied on gcloud's default JSON serialization.
-  return '{}\n'.format(payload).encode('utf8')
+  return '{}\n'.format(payload).encode('utf-8')
 
 
 def NormalizeArtifactUrl(artifact_url):

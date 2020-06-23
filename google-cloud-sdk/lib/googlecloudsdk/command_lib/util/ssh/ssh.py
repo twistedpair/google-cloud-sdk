@@ -269,7 +269,7 @@ class Keys(object):
       # which are relatively inconsequential.
       decoded_key = key_string.strip()
       if isinstance(key_string, six.binary_type):
-        decoded_key = decoded_key.decode('utf8', 'replace')
+        decoded_key = decoded_key.decode('utf-8', 'replace')
       parts = decoded_key.split(' ', 2)
       if len(parts) < 2:
         raise InvalidKeyError('Public key [{}] is invalid.'.format(key_string))

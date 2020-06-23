@@ -64,9 +64,6 @@ class ExportPrinter(yaml_printer.YamlPrinter):
       for k in _OMITTED_ANNOTATIONS:
         meta.get('annotations', {}).pop(k, None)
 
-    template = m.get('spec', {}).get('template')
-    if template:
-      m['spec']['template'] = self._FilterForExport(template)
     m.pop('status', None)
 
     return m

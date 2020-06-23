@@ -40,12 +40,17 @@ def SetDefaultScopeIfEmpty(unused_ref, args, request):
   Returns:
     The modified request.
   """
-  if args.IsSpecified('scope'):
-    VerifyScopeForSearch(request.scope)
-  else:
-    request.scope = 'projects/{0}'.format(
-        properties.VALUES.core.project.GetOrFail())
+  request.scope = GetDefaultScopeIfEmpty(args)
   return request
+
+
+def GetDefaultScopeIfEmpty(args):
+  """Return the request scope and fall back to core project if not specified."""
+  if args.IsSpecified('scope'):
+    VerifyScopeForSearch(args.scope)
+    return args.scope
+  else:
+    return 'projects/{0}'.format(properties.VALUES.core.project.GetOrFail())
 
 
 def VerifyScopeForSearch(scope):
@@ -65,8 +70,9 @@ def VerifyScopeForSearch(scope):
   """
   if not re.match('^[^/]+/[^/]+$', scope):
     raise gcloud_exceptions.InvalidArgumentException(
-        '--scope', 'A valid scope should be: projects/<number>, projects/<id>, '
-        'organizations/<number> or folders/<number>.')
+        '--scope', 'A valid scope should be: projects/{PROJECT_ID}, '
+        'projects/{PROJECT_NUMBER}, folders/{FOLDER_NUMBER} or '
+        'organizations/{ORGANIZATION_NUMBER}.')
 
 
 def VerifyParentForExport(organization,

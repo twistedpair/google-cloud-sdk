@@ -759,11 +759,13 @@ class PubsubMessage(_messages.Message):
 
   Messages:
     AttributesValue: Attributes for this message. If this field is empty, the
-      message must contain non-empty data.
+      message must contain non-empty data. This can be used to filter messages
+      on the subscription.
 
   Fields:
     attributes: Attributes for this message. If this field is empty, the
-      message must contain non-empty data.
+      message must contain non-empty data. This can be used to filter messages
+      on the subscription.
     data: The message data field. If this field is empty, the message must
       contain at least one attribute.
     messageId: ID of this message, assigned by the server when the message is
@@ -779,7 +781,8 @@ class PubsubMessage(_messages.Message):
   @encoding.MapUnrecognizedFields('additionalProperties')
   class AttributesValue(_messages.Message):
     r"""Attributes for this message. If this field is empty, the message must
-    contain non-empty data.
+    contain non-empty data. This can be used to filter messages on the
+    subscription.
 
     Messages:
       AdditionalProperty: An additional property for a AttributesValue object.
@@ -909,8 +912,15 @@ class RetryConfig(_messages.Message):
 class RunJobRequest(_messages.Message):
   r"""Request message for forcing a job to run now using
   CloudScheduler.RunJob.
+
+  Fields:
+    legacyAppEngineCron: This field is used to manage the legacy App Engine
+      Cron jobs using the Cloud Scheduler API. If the field is set to true,
+      the job in the __cron queue with the corresponding name will be forced
+      to run instead.
   """
 
+  legacyAppEngineCron = _messages.BooleanField(1)
 
 
 class Schedule(_messages.Message):

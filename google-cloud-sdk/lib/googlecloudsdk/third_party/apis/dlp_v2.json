@@ -766,7 +766,9 @@
             "plain text",
             "docx, docm, dotx, dotm",
             "pdf",
-            "avro"
+            "avro",
+            "csv",
+            "tsv"
           ],
           "type": "string",
           "enum": [
@@ -779,7 +781,9 @@
             "TEXT_UTF8",
             "WORD_DOCUMENT",
             "PDF",
-            "AVRO"
+            "AVRO",
+            "CSV",
+            "TSV"
           ]
         },
         "data": {
@@ -2607,7 +2611,9 @@
             "Included file extensions:\n  bmp, gif, jpg, jpeg, jpe, png.\nbytes_limit_per_file has no effect on image files.\nImage inspection is restricted to 'global', 'us', 'asia', and 'europe'.",
             "Word files >30 MB will be scanned as binary files.\nIncluded file extensions:\n  docx, dotx, docm, dotm",
             "PDF files >30 MB will be scanned as binary files.\nIncluded file extensions:\n  pdf",
-            "Included file extensions:\n  avro"
+            "Included file extensions:\n  avro",
+            "Included file extensions:\n  csv",
+            "Included file extensions:\n  tsv"
           ],
           "type": "array",
           "items": {
@@ -2619,7 +2625,9 @@
               "IMAGE",
               "WORD",
               "PDF",
-              "AVRO"
+              "AVRO",
+              "CSV",
+              "TSV"
             ]
           }
         },

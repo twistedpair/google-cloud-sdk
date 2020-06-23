@@ -158,8 +158,7 @@ class AutoprovisioningNodePoolDefaults(_messages.Message):
 
 
 class AvailableVersion(_messages.Message):
-  r"""AvailableVersion is an additional Kubernetes versions offered to users
-  who subscribed to the release channel.
+  r"""Deprecated.
 
   Fields:
     reason: Reason for availability.
@@ -449,6 +448,7 @@ class Cluster(_messages.Message):
     nodePools: The node pools associated with this cluster. This field should
       not be set if "node_config" or "initial_node_count" are specified.
     nodeSchedulingStrategy: Defines behaviour of k8s scheduler.
+    notificationConfig: Notification configuration of the cluster.
     podSecurityPolicyConfig: Configuration for the PodSecurityPolicy feature.
     privateCluster: If this is a private cluster setup. Private clusters are
       clusters that, by default have no external IP addresses on the nodes and
@@ -603,25 +603,26 @@ class Cluster(_messages.Message):
   nodeIpv4CidrSize = _messages.IntegerField(43, variant=_messages.Variant.INT32)
   nodePools = _messages.MessageField('NodePool', 44, repeated=True)
   nodeSchedulingStrategy = _messages.EnumField('NodeSchedulingStrategyValueValuesEnum', 45)
-  podSecurityPolicyConfig = _messages.MessageField('PodSecurityPolicyConfig', 46)
-  privateCluster = _messages.BooleanField(47)
-  privateClusterConfig = _messages.MessageField('PrivateClusterConfig', 48)
-  releaseChannel = _messages.MessageField('ReleaseChannel', 49)
-  resourceLabels = _messages.MessageField('ResourceLabelsValue', 50)
-  resourceUsageExportConfig = _messages.MessageField('ResourceUsageExportConfig', 51)
-  resourceVersion = _messages.StringField(52)
-  securityProfile = _messages.MessageField('SecurityProfile', 53)
-  selfLink = _messages.StringField(54)
-  servicesIpv4Cidr = _messages.StringField(55)
-  shieldedNodes = _messages.MessageField('ShieldedNodes', 56)
-  status = _messages.EnumField('StatusValueValuesEnum', 57)
-  statusMessage = _messages.StringField(58)
-  subnetwork = _messages.StringField(59)
-  tpuConfig = _messages.MessageField('TpuConfig', 60)
-  tpuIpv4CidrBlock = _messages.StringField(61)
-  verticalPodAutoscaling = _messages.MessageField('VerticalPodAutoscaling', 62)
-  workloadIdentityConfig = _messages.MessageField('WorkloadIdentityConfig', 63)
-  zone = _messages.StringField(64)
+  notificationConfig = _messages.MessageField('NotificationConfig', 46)
+  podSecurityPolicyConfig = _messages.MessageField('PodSecurityPolicyConfig', 47)
+  privateCluster = _messages.BooleanField(48)
+  privateClusterConfig = _messages.MessageField('PrivateClusterConfig', 49)
+  releaseChannel = _messages.MessageField('ReleaseChannel', 50)
+  resourceLabels = _messages.MessageField('ResourceLabelsValue', 51)
+  resourceUsageExportConfig = _messages.MessageField('ResourceUsageExportConfig', 52)
+  resourceVersion = _messages.StringField(53)
+  securityProfile = _messages.MessageField('SecurityProfile', 54)
+  selfLink = _messages.StringField(55)
+  servicesIpv4Cidr = _messages.StringField(56)
+  shieldedNodes = _messages.MessageField('ShieldedNodes', 57)
+  status = _messages.EnumField('StatusValueValuesEnum', 58)
+  statusMessage = _messages.StringField(59)
+  subnetwork = _messages.StringField(60)
+  tpuConfig = _messages.MessageField('TpuConfig', 61)
+  tpuIpv4CidrBlock = _messages.StringField(62)
+  verticalPodAutoscaling = _messages.MessageField('VerticalPodAutoscaling', 63)
+  workloadIdentityConfig = _messages.MessageField('WorkloadIdentityConfig', 64)
+  zone = _messages.StringField(65)
 
 
 class ClusterAutoscaling(_messages.Message):
@@ -724,6 +725,7 @@ class ClusterUpdate(_messages.Message):
     desiredDatapathProvider: The desired datapath provider for the cluster.
     desiredDefaultSnatStatus: The desired status of whether to disable default
       sNAT for this cluster.
+    desiredDnsConfig: DNSConfig contains clusterDNS config for this cluster.
     desiredEnableGvnic: Enable or disable gvnic on this cluster. This field is
       not yet used.
     desiredImage: The desired name of the image to use for this node. This is
@@ -784,6 +786,7 @@ class ClusterUpdate(_messages.Message):
       version - "1.X.Y": picks the highest valid gke.N patch in the 1.X.Y
       version - "1.X.Y-gke.N": picks an explicit Kubernetes version - "-":
       picks the Kubernetes master version
+    desiredNotificationConfig: The desired notification configuration.
     desiredPodSecurityPolicyConfig: The desired configuration options for the
       PodSecurityPolicy feature.
     desiredPrivateClusterConfig: The desired private cluster configuration.
@@ -843,33 +846,35 @@ class ClusterUpdate(_messages.Message):
   desiredDatabaseEncryption = _messages.MessageField('DatabaseEncryption', 8)
   desiredDatapathProvider = _messages.EnumField('DesiredDatapathProviderValueValuesEnum', 9)
   desiredDefaultSnatStatus = _messages.MessageField('DefaultSnatStatus', 10)
-  desiredEnableGvnic = _messages.BooleanField(11)
-  desiredImage = _messages.StringField(12)
-  desiredImageProject = _messages.StringField(13)
-  desiredImageType = _messages.StringField(14)
-  desiredIntraNodeVisibilityConfig = _messages.MessageField('IntraNodeVisibilityConfig', 15)
-  desiredL4ilbSubsettingConfig = _messages.MessageField('ILBSubsettingConfig', 16)
-  desiredLocations = _messages.StringField(17, repeated=True)
-  desiredLoggingService = _messages.StringField(18)
-  desiredMaster = _messages.MessageField('Master', 19)
-  desiredMasterAuthorizedNetworksConfig = _messages.MessageField('MasterAuthorizedNetworksConfig', 20)
-  desiredMasterVersion = _messages.StringField(21)
-  desiredMonitoringService = _messages.StringField(22)
-  desiredNodePoolAutoscaling = _messages.MessageField('NodePoolAutoscaling', 23)
-  desiredNodePoolId = _messages.StringField(24)
-  desiredNodeVersion = _messages.StringField(25)
-  desiredPodSecurityPolicyConfig = _messages.MessageField('PodSecurityPolicyConfig', 26)
-  desiredPrivateClusterConfig = _messages.MessageField('PrivateClusterConfig', 27)
-  desiredPrivateIpv6Access = _messages.MessageField('PrivateIPv6Status', 28)
-  desiredPrivateIpv6GoogleAccess = _messages.EnumField('DesiredPrivateIpv6GoogleAccessValueValuesEnum', 29)
-  desiredReleaseChannel = _messages.MessageField('ReleaseChannel', 30)
-  desiredResourceUsageExportConfig = _messages.MessageField('ResourceUsageExportConfig', 31)
-  desiredShieldedNodes = _messages.MessageField('ShieldedNodes', 32)
-  desiredTpuConfig = _messages.MessageField('TpuConfig', 33)
-  desiredVerticalPodAutoscaling = _messages.MessageField('VerticalPodAutoscaling', 34)
-  desiredWorkloadIdentityConfig = _messages.MessageField('WorkloadIdentityConfig', 35)
-  privateClusterConfig = _messages.MessageField('PrivateClusterConfig', 36)
-  securityProfile = _messages.MessageField('SecurityProfile', 37)
+  desiredDnsConfig = _messages.MessageField('DNSConfig', 11)
+  desiredEnableGvnic = _messages.BooleanField(12)
+  desiredImage = _messages.StringField(13)
+  desiredImageProject = _messages.StringField(14)
+  desiredImageType = _messages.StringField(15)
+  desiredIntraNodeVisibilityConfig = _messages.MessageField('IntraNodeVisibilityConfig', 16)
+  desiredL4ilbSubsettingConfig = _messages.MessageField('ILBSubsettingConfig', 17)
+  desiredLocations = _messages.StringField(18, repeated=True)
+  desiredLoggingService = _messages.StringField(19)
+  desiredMaster = _messages.MessageField('Master', 20)
+  desiredMasterAuthorizedNetworksConfig = _messages.MessageField('MasterAuthorizedNetworksConfig', 21)
+  desiredMasterVersion = _messages.StringField(22)
+  desiredMonitoringService = _messages.StringField(23)
+  desiredNodePoolAutoscaling = _messages.MessageField('NodePoolAutoscaling', 24)
+  desiredNodePoolId = _messages.StringField(25)
+  desiredNodeVersion = _messages.StringField(26)
+  desiredNotificationConfig = _messages.MessageField('NotificationConfig', 27)
+  desiredPodSecurityPolicyConfig = _messages.MessageField('PodSecurityPolicyConfig', 28)
+  desiredPrivateClusterConfig = _messages.MessageField('PrivateClusterConfig', 29)
+  desiredPrivateIpv6Access = _messages.MessageField('PrivateIPv6Status', 30)
+  desiredPrivateIpv6GoogleAccess = _messages.EnumField('DesiredPrivateIpv6GoogleAccessValueValuesEnum', 31)
+  desiredReleaseChannel = _messages.MessageField('ReleaseChannel', 32)
+  desiredResourceUsageExportConfig = _messages.MessageField('ResourceUsageExportConfig', 33)
+  desiredShieldedNodes = _messages.MessageField('ShieldedNodes', 34)
+  desiredTpuConfig = _messages.MessageField('TpuConfig', 35)
+  desiredVerticalPodAutoscaling = _messages.MessageField('VerticalPodAutoscaling', 36)
+  desiredWorkloadIdentityConfig = _messages.MessageField('WorkloadIdentityConfig', 37)
+  privateClusterConfig = _messages.MessageField('PrivateClusterConfig', 38)
+  securityProfile = _messages.MessageField('SecurityProfile', 39)
 
 
 class CompleteIPRotationRequest(_messages.Message):
@@ -1460,6 +1465,56 @@ class CustomImageConfig(_messages.Message):
   image = _messages.StringField(1)
   imageFamily = _messages.StringField(2)
   imageProject = _messages.StringField(3)
+
+
+class DNSConfig(_messages.Message):
+  r"""DNSConfig contains the desired set of options for configuring
+  clusterDNS.
+
+  Enums:
+    ClusterDnsValueValuesEnum: cluster_dns indicates which in-cluster DNS
+      provider should be used.
+    ClusterDnsScopeValueValuesEnum: cluster_dns_scope indicates the scope of
+      access to cluster DNS records.
+
+  Fields:
+    clusterDns: cluster_dns indicates which in-cluster DNS provider should be
+      used.
+    clusterDnsDomain: cluster_dns_domain is the suffix used for all cluster
+      service records.
+    clusterDnsScope: cluster_dns_scope indicates the scope of access to
+      cluster DNS records.
+  """
+
+  class ClusterDnsScopeValueValuesEnum(_messages.Enum):
+    r"""cluster_dns_scope indicates the scope of access to cluster DNS
+    records.
+
+    Values:
+      DNS_SCOPE_UNSPECIFIED: Default value, will be inferred as cluster scope
+      CLUSTER_SCOPE: DNS records are accessible from within the cluster
+      VPC_SCOPE: DNS records are accessible from within the VPC
+    """
+    DNS_SCOPE_UNSPECIFIED = 0
+    CLUSTER_SCOPE = 1
+    VPC_SCOPE = 2
+
+  class ClusterDnsValueValuesEnum(_messages.Enum):
+    r"""cluster_dns indicates which in-cluster DNS provider should be used.
+
+    Values:
+      PROVIDER_UNSPECIFIED: Default value
+      PLATFORM_DEFAULT: Use GKE default DNS provider(kube-dns) for DNS
+        resolution
+      CLOUD_DNS: Use CloudDNS for DNS resolution
+    """
+    PROVIDER_UNSPECIFIED = 0
+    PLATFORM_DEFAULT = 1
+    CLOUD_DNS = 2
+
+  clusterDns = _messages.EnumField('ClusterDnsValueValuesEnum', 1)
+  clusterDnsDomain = _messages.StringField(2)
+  clusterDnsScope = _messages.EnumField('ClusterDnsScopeValueValuesEnum', 3)
 
 
 class DailyMaintenanceWindow(_messages.Message):
@@ -2247,6 +2302,7 @@ class NetworkConfig(_messages.Message):
       set to false, default IP masquerade rules will be applied to the nodes
       to prevent sNAT on cluster internal traffic. Deprecated. Use
       default_snat_status instead
+    dnsConfig: DNSConfig contains clusterDNS config for this cluster.
     enableCloudNat: Whether GKE Cloud NAT is enabled for this cluster.
       Requires that the cluster has already set
       IPAllocationPolicy.use_ip_aliases to true. Deprecated: use
@@ -2308,14 +2364,15 @@ class NetworkConfig(_messages.Message):
   datapathProvider = _messages.EnumField('DatapathProviderValueValuesEnum', 1)
   defaultSnatStatus = _messages.MessageField('DefaultSnatStatus', 2)
   disableDefaultSnat = _messages.BooleanField(3)
-  enableCloudNat = _messages.BooleanField(4)
-  enableIntraNodeVisibility = _messages.BooleanField(5)
-  enableL4ilbSubsetting = _messages.BooleanField(6)
-  enablePrivateIpv6Access = _messages.BooleanField(7)
-  enableSharedNetwork = _messages.BooleanField(8)
-  network = _messages.StringField(9)
-  privateIpv6GoogleAccess = _messages.EnumField('PrivateIpv6GoogleAccessValueValuesEnum', 10)
-  subnetwork = _messages.StringField(11)
+  dnsConfig = _messages.MessageField('DNSConfig', 4)
+  enableCloudNat = _messages.BooleanField(5)
+  enableIntraNodeVisibility = _messages.BooleanField(6)
+  enableL4ilbSubsetting = _messages.BooleanField(7)
+  enablePrivateIpv6Access = _messages.BooleanField(8)
+  enableSharedNetwork = _messages.BooleanField(9)
+  network = _messages.StringField(10)
+  privateIpv6GoogleAccess = _messages.EnumField('PrivateIpv6GoogleAccessValueValuesEnum', 11)
+  subnetwork = _messages.StringField(12)
 
 
 class NetworkPolicy(_messages.Message):
@@ -2768,6 +2825,16 @@ class NodeTaint(_messages.Message):
   value = _messages.StringField(3)
 
 
+class NotificationConfig(_messages.Message):
+  r"""NotificationConfig is the configuration of notifications.
+
+  Fields:
+    pubsub: Notification config for Pub/Sub.
+  """
+
+  pubsub = _messages.MessageField('PubSub', 1)
+
+
 class Operation(_messages.Message):
   r"""This operation resource represents operations that may have happened or
   are happening on the cluster. All fields are output only.
@@ -2982,6 +3049,19 @@ class PrivateIPv6Status(_messages.Message):
   enabled = _messages.BooleanField(1)
 
 
+class PubSub(_messages.Message):
+  r"""Pub/Sub specific notification config.
+
+  Fields:
+    enabled: Enable notifications for Pub/Sub.
+    topic: The desired Pub/Sub topic to which notifications will be sent by
+      GKE. Format is `projects/{project}/topics/{topic}`.
+  """
+
+  enabled = _messages.BooleanField(1)
+  topic = _messages.StringField(2)
+
+
 class RecurringTimeWindow(_messages.Message):
   r"""Represents an arbitrary window of time that recurs.
 
@@ -3013,11 +3093,10 @@ class RecurringTimeWindow(_messages.Message):
 
 class ReleaseChannel(_messages.Message):
   r"""ReleaseChannel indicates which release channel a cluster is subscribed
-  to. Release channels are arranged in order of risk and frequency of updates.
-  When a cluster is subscribed to a release channel, Google maintains both the
-  master version and the node version. Node auto-upgrade defaults to true and
-  cannot be disabled. Updates to version related fields (e.g.
-  current_master_version) return an error.
+  to. Release channels are arranged in order of risk.  When a cluster is
+  subscribed to a release channel, Google maintains both the master version
+  and the node version. Node auto-upgrade defaults to true and cannot be
+  disabled.
 
   Enums:
     ChannelValueValuesEnum: channel specifies which release channel the
@@ -3034,20 +3113,14 @@ class ReleaseChannel(_messages.Message):
     Values:
       UNSPECIFIED: No channel specified.
       RAPID: RAPID channel is offered on an early access basis for customers
-        who want to test new releases before they are qualified for production
-        use or general availability. New upgrades will occur roughly weekly.
-        WARNING: Versions available in the RAPID Channel may be subject to
-        unresolved issues with no known workaround and are not for use with
-        production workloads or subject to any SLAs.
+        who want to test new releases.  WARNING: Versions available in the
+        RAPID Channel may be subject to unresolved issues with no known
+        workaround and are not subject to any SLAs.
       REGULAR: Clusters subscribed to REGULAR receive versions that are
         considered GA quality. REGULAR is intended for production users who
-        want to take advantage of new features. New upgrades will occur
-        roughly every few weeks.
+        want to take advantage of new features.
       STABLE: Clusters subscribed to STABLE receive versions that are known to
-        be stable and reliable in production. STABLE is intended for
-        production users who need stability above all else, or for whom
-        frequent upgrades are too risky. New upgrades will occur roughly every
-        few months.
+        be stable and reliable in production.
     """
     UNSPECIFIED = 0
     RAPID = 1
@@ -3064,10 +3137,12 @@ class ReleaseChannelConfig(_messages.Message):
     ChannelValueValuesEnum: The release channel this configuration applies to.
 
   Fields:
-    availableVersions: List of available versions for the release channel.
+    availableVersions: Deprecated. This field has been deprecated and replaced
+      with the valid_versions field.
     channel: The release channel this configuration applies to.
     defaultVersion: The default version for newly created clusters on the
       channel.
+    validVersions: List of valid versions for the channel.
   """
 
   class ChannelValueValuesEnum(_messages.Enum):
@@ -3076,20 +3151,14 @@ class ReleaseChannelConfig(_messages.Message):
     Values:
       UNSPECIFIED: No channel specified.
       RAPID: RAPID channel is offered on an early access basis for customers
-        who want to test new releases before they are qualified for production
-        use or general availability. New upgrades will occur roughly weekly.
-        WARNING: Versions available in the RAPID Channel may be subject to
-        unresolved issues with no known workaround and are not for use with
-        production workloads or subject to any SLAs.
+        who want to test new releases.  WARNING: Versions available in the
+        RAPID Channel may be subject to unresolved issues with no known
+        workaround and are not subject to any SLAs.
       REGULAR: Clusters subscribed to REGULAR receive versions that are
         considered GA quality. REGULAR is intended for production users who
-        want to take advantage of new features. New upgrades will occur
-        roughly every few weeks.
+        want to take advantage of new features.
       STABLE: Clusters subscribed to STABLE receive versions that are known to
-        be stable and reliable in production. STABLE is intended for
-        production users who need stability above all else, or for whom
-        frequent upgrades are too risky. New upgrades will occur roughly every
-        few months.
+        be stable and reliable in production.
     """
     UNSPECIFIED = 0
     RAPID = 1
@@ -3099,6 +3168,7 @@ class ReleaseChannelConfig(_messages.Message):
   availableVersions = _messages.MessageField('AvailableVersion', 1, repeated=True)
   channel = _messages.EnumField('ChannelValueValuesEnum', 2)
   defaultVersion = _messages.StringField(3)
+  validVersions = _messages.StringField(4, repeated=True)
 
 
 class ReservationAffinity(_messages.Message):

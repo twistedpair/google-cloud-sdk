@@ -472,11 +472,13 @@ class PubsubMessage(_messages.Message):
 
   Messages:
     AttributesValue: Attributes for this message. If this field is empty, the
-      message must contain non-empty data.
+      message must contain non-empty data. This can be used to filter messages
+      on the subscription.
 
   Fields:
     attributes: Attributes for this message. If this field is empty, the
-      message must contain non-empty data.
+      message must contain non-empty data. This can be used to filter messages
+      on the subscription.
     data: The message data field. If this field is empty, the message must
       contain at least one attribute.
     messageId: ID of this message, assigned by the server when the message is
@@ -502,7 +504,8 @@ class PubsubMessage(_messages.Message):
   @encoding.MapUnrecognizedFields('additionalProperties')
   class AttributesValue(_messages.Message):
     r"""Attributes for this message. If this field is empty, the message must
-    contain non-empty data.
+    contain non-empty data. This can be used to filter messages on the
+    subscription.
 
     Messages:
       AdditionalProperty: An additional property for a AttributesValue object.
@@ -1376,10 +1379,11 @@ class Subscription(_messages.Message):
       `expiration_policy` is not set, a *default policy* with `ttl` of 31 days
       will be used. The minimum allowed value for `expiration_policy.ttl` is 1
       day.
-    filter: An expression written in the Cloud Pub/Sub filter language. If
-      non-empty, then only `PubsubMessage`s whose `attributes` field matches
-      the filter are delivered on this subscription. If empty, then no
-      messages are filtered out.
+    filter: An expression written in the Pub/Sub [filter
+      language](https://cloud.google.com/pubsub/docs/filtering). If non-empty,
+      then only `PubsubMessage`s whose `attributes` field matches the filter
+      are delivered on this subscription. If empty, then no messages are
+      filtered out.
     labels: See <a href="https://cloud.google.com/pubsub/docs/labels">
       Creating and managing labels</a>.
     messageRetentionDuration: How long to retain unacknowledged messages in

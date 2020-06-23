@@ -615,7 +615,7 @@ class InstallationState(object):
     # based on the python runtime. We package some python code
     # that is not valid python2 syntax.
     if six.PY2:
-      regex_exclusion = re.compile('(httplib2/python3'
+      regex_exclusion = re.compile('(httplib2/python3|typing/python3'
                                    '|platform/bq/third_party/yaml/lib3)')
     else:
       regex_exclusion = None

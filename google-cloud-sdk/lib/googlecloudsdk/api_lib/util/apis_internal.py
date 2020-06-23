@@ -26,6 +26,7 @@ from __future__ import unicode_literals
 from googlecloudsdk.api_lib.util import apis_util
 from googlecloudsdk.api_lib.util import resource as resource_util
 from googlecloudsdk.core import properties
+from googlecloudsdk.core import transport
 from googlecloudsdk.third_party.apis import apis_map
 
 import six
@@ -167,7 +168,7 @@ def _GetClientInstance(api_name,
     # which is not needed in all cases.
     from googlecloudsdk.core.credentials import http as http_creds
     http_client = http_creds.Http(
-        response_encoding=http_creds.ENCODING, use_google_auth=use_google_auth)
+        response_encoding=transport.ENCODING, use_google_auth=use_google_auth)
 
   client_class = _GetClientClass(api_name, api_version)
   client_instance = client_class(

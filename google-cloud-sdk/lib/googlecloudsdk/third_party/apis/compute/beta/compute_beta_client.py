@@ -1000,7 +1000,7 @@ Example request body:
     )
 
     def Insert(self, request, global_params=None):
-      r"""Creates a BackendService resource in the specified project using the data included in the request. There are several restrictions and guidelines to keep in mind when creating a backend service. Read  Understanding backend services for more information.
+      r"""Creates a BackendService resource in the specified project using the data included in the request. For more information, see  Backend services overview.
 
       Args:
         request: (ComputeBackendServicesInsertRequest) input message
@@ -1052,7 +1052,7 @@ Example request body:
     )
 
     def Patch(self, request, global_params=None):
-      r"""Patches the specified BackendService resource with the data included in the request. There are several Understanding backend services to keep in mind when updating a backend service. Read  Understanding backend services for more information. This method supports PATCH semantics and uses the JSON merge patch format and processing rules.
+      r"""Patches the specified BackendService resource with the data included in the request. For more information, see  Backend services overview. This method supports PATCH semantics and uses the JSON merge patch format and processing rules.
 
       Args:
         request: (ComputeBackendServicesPatchRequest) input message
@@ -1130,7 +1130,7 @@ Example request body:
     )
 
     def Update(self, request, global_params=None):
-      r"""Updates the specified BackendService resource with the data included in the request. There are several Understanding backend services to keep in mind when updating a backend service. Read  Understanding backend services for more information.
+      r"""Updates the specified BackendService resource with the data included in the request. For more information, see Backend services overview.
 
       Args:
         request: (ComputeBackendServicesUpdateRequest) input message
@@ -3797,6 +3797,32 @@ If an empty request body is given, clears the deprecation status instead.
         supports_download=False,
     )
 
+    def Patch(self, request, global_params=None):
+      r"""Patches the specified image with the data included in the request. Only the following fields can be modified: family, description, deprecation status.
+
+      Args:
+        request: (ComputeImagesPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='PATCH',
+        method_id='compute.images.patch',
+        ordered_params=['project', 'image'],
+        path_params=['image', 'project'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/global/images/{image}',
+        request_field='imageResource',
+        request_type_name='ComputeImagesPatchRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
     def SetIamPolicy(self, request, global_params=None):
       r"""Sets the access control policy on the specified resource. Replaces any existing policy.
 
@@ -4156,7 +4182,7 @@ A managed instance group can have up to 1000 VM instances per group. Please cont
     )
 
     def ListErrors(self, request, global_params=None):
-      r"""Lists all errors thrown by actions on instances for a given managed instance group.
+      r"""Lists all errors thrown by actions on instances for a given managed instance group. The filter and orderBy query parameters are not supported.
 
       Args:
         request: (ComputeInstanceGroupManagersListErrorsRequest) input message
@@ -4182,7 +4208,7 @@ A managed instance group can have up to 1000 VM instances per group. Please cont
     )
 
     def ListManagedInstances(self, request, global_params=None):
-      r"""Lists all of the instances in the managed instance group. Each instance in the list has a currentAction, which indicates the action that the managed instance group is performing on the instance. For example, if the group is still creating an instance, the currentAction is CREATING. If a previous action failed, the list displays the errors for that failed action.
+      r"""Lists all of the instances in the managed instance group. Each instance in the list has a currentAction, which indicates the action that the managed instance group is performing on the instance. For example, if the group is still creating an instance, the currentAction is CREATING. If a previous action failed, the list displays the errors for that failed action. The orderBy query parameter is not supported.
 
       Args:
         request: (ComputeInstanceGroupManagersListManagedInstancesRequest) input message
@@ -4208,7 +4234,7 @@ A managed instance group can have up to 1000 VM instances per group. Please cont
     )
 
     def ListPerInstanceConfigs(self, request, global_params=None):
-      r"""Lists all of the per-instance configs defined for the managed instance group.
+      r"""Lists all of the per-instance configs defined for the managed instance group. The orderBy query parameter is not supported.
 
       Args:
         request: (ComputeInstanceGroupManagersListPerInstanceConfigsRequest) input message
@@ -4702,7 +4728,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def ListInstances(self, request, global_params=None):
-      r"""Lists the instances in the specified instance group.
+      r"""Lists the instances in the specified instance group. The orderBy query parameter is not supported.
 
       Args:
         request: (ComputeInstanceGroupsListInstancesRequest) input message
@@ -9626,7 +9652,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def Insert(self, request, global_params=None):
-      r"""Creates a regional BackendService resource in the specified project using the data included in the request. There are several restrictions and guidelines to keep in mind when creating a regional backend service. Read  Understanding backend services for more information.
+      r"""Creates a regional BackendService resource in the specified project using the data included in the request. For more information, see  Backend services overview.
 
       Args:
         request: (ComputeRegionBackendServicesInsertRequest) input message
@@ -9678,7 +9704,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def Patch(self, request, global_params=None):
-      r"""Updates the specified regional BackendService resource with the data included in the request. There are several Understanding backend services to keep in mind when updating a backend service. Read  Understanding backend services for more information. This method supports PATCH semantics and uses the JSON merge patch format and processing rules.
+      r"""Updates the specified regional BackendService resource with the data included in the request. For more information, see  Understanding backend services This method supports PATCH semantics and uses the JSON merge patch format and processing rules.
 
       Args:
         request: (ComputeRegionBackendServicesPatchRequest) input message
@@ -9730,7 +9756,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def Update(self, request, global_params=None):
-      r"""Updates the specified regional BackendService resource with the data included in the request. There are several Understanding backend services to keep in mind when updating a backend service. Read  Understanding backend services for more information.
+      r"""Updates the specified regional BackendService resource with the data included in the request. For more information, see  Backend services overview.
 
       Args:
         request: (ComputeRegionBackendServicesUpdateRequest) input message
@@ -10840,7 +10866,7 @@ A regional managed instance group can contain up to 2000 instances.
     )
 
     def ListErrors(self, request, global_params=None):
-      r"""Lists all errors thrown by actions on instances for a given regional managed instance group.
+      r"""Lists all errors thrown by actions on instances for a given regional managed instance group. The filter and orderBy query parameters are not supported.
 
       Args:
         request: (ComputeRegionInstanceGroupManagersListErrorsRequest) input message
@@ -10866,7 +10892,7 @@ A regional managed instance group can contain up to 2000 instances.
     )
 
     def ListManagedInstances(self, request, global_params=None):
-      r"""Lists the instances in the managed instance group and instances that are scheduled to be created. The list includes any current actions that the group has scheduled for its instances.
+      r"""Lists the instances in the managed instance group and instances that are scheduled to be created. The list includes any current actions that the group has scheduled for its instances. The orderBy query parameter is not supported.
 
       Args:
         request: (ComputeRegionInstanceGroupManagersListManagedInstancesRequest) input message
@@ -10892,7 +10918,7 @@ A regional managed instance group can contain up to 2000 instances.
     )
 
     def ListPerInstanceConfigs(self, request, global_params=None):
-      r"""Lists all of the per-instance configs defined for the managed instance group.
+      r"""Lists all of the per-instance configs defined for the managed instance group. The orderBy query parameter is not supported.
 
       Args:
         request: (ComputeRegionInstanceGroupManagersListPerInstanceConfigsRequest) input message
@@ -11248,7 +11274,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def ListInstances(self, request, global_params=None):
-      r"""Lists the instances in the specified instance group and displays information about the named ports. Depending on the specified options, this method can list all instances or only the instances that are running.
+      r"""Lists the instances in the specified instance group and displays information about the named ports. Depending on the specified options, this method can list all instances or only the instances that are running. The orderBy query parameter is not supported.
 
       Args:
         request: (ComputeRegionInstanceGroupsListInstancesRequest) input message
@@ -14336,7 +14362,7 @@ For more information, see Deleting snapshots.
     )
 
     def ListUsable(self, request, global_params=None):
-      r"""Retrieves an aggregated list of all usable subnetworks in the project. The list contains all of the subnetworks in the project and the subnetworks that were shared by a Shared VPC host project.
+      r"""Retrieves an aggregated list of all usable subnetworks in the project.
 
       Args:
         request: (ComputeSubnetworksListUsableRequest) input message

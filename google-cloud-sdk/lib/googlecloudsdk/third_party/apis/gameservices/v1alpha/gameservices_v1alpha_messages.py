@@ -2273,12 +2273,14 @@ class StandardQueryParameters(_messages.Message):
 
   Fields:
     f__xgafv: V1 error format.
+    access_token: OAuth access token.
     alt: Data format for response.
     callback: JSONP
     fields: Selector specifying which fields to include in a partial response.
     key: API key. Your API key identifies your project and provides you with
       API access, quota, and reports. Required unless you provide an OAuth 2.0
       token.
+    oauth_token: OAuth 2.0 token for the current user.
     prettyPrint: Returns response with indentations and line breaks.
     quotaUser: Available to use for quota purposes for server-side
       applications. Can be any arbitrary string assigned to a user, but should
@@ -2312,15 +2314,17 @@ class StandardQueryParameters(_messages.Message):
     _2 = 1
 
   f__xgafv = _messages.EnumField('FXgafvValueValuesEnum', 1)
-  alt = _messages.EnumField('AltValueValuesEnum', 2, default='json')
-  callback = _messages.StringField(3)
-  fields = _messages.StringField(4)
-  key = _messages.StringField(5)
-  prettyPrint = _messages.BooleanField(6, default=True)
-  quotaUser = _messages.StringField(7)
-  trace = _messages.StringField(8)
-  uploadType = _messages.StringField(9)
-  upload_protocol = _messages.StringField(10)
+  access_token = _messages.StringField(2)
+  alt = _messages.EnumField('AltValueValuesEnum', 3, default='json')
+  callback = _messages.StringField(4)
+  fields = _messages.StringField(5)
+  key = _messages.StringField(6)
+  oauth_token = _messages.StringField(7)
+  prettyPrint = _messages.BooleanField(8, default=True)
+  quotaUser = _messages.StringField(9)
+  trace = _messages.StringField(10)
+  uploadType = _messages.StringField(11)
+  upload_protocol = _messages.StringField(12)
 
 
 class Status(_messages.Message):

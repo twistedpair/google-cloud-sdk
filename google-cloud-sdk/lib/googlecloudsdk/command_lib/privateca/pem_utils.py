@@ -50,5 +50,6 @@ def ValidateAndParsePemChain(pem_chain):
   certs = re.findall(_PEM_CERT_RE, pem_chain)
 
   for i in range(len(certs)):
-    certs[i] = certs[i].strip()
+    # Match service-generated certs, which always end with a single newline.
+    certs[i] = certs[i].strip() + '\n'
   return certs

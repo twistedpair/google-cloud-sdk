@@ -2564,8 +2564,11 @@ class Backend(_messages.Message):
       capacity (based on UTILIZATION, RATE or CONNECTION). Default value is 1,
       which means the group will serve up to 100% of its configured capacity
       (depending on balancingMode). A setting of 0 means the group is
-      completely drained, offering 0% of its available Capacity. Valid range
-      is [0.0,1.0].  This cannot be used for internal load balancing.
+      completely drained, offering 0% of its available capacity. Valid range
+      is 0.0 and [0.1,1.0]. You cannot configure a setting larger than 0 and
+      smaller than 0.1. You cannot configure a setting of 0 when there is only
+      one backend attached to the backend service.  This cannot be used for
+      internal load balancing.
     description: An optional description of this resource. Provide this
       property when you create the resource.
     failover: This field designates whether this is a failover backend. More
@@ -2889,7 +2892,7 @@ class BackendService(_messages.Message):
   Google Compute Engine can be either regionally or globally scoped.  *
   [Global](/compute/docs/reference/rest/{$api_version}/backendServices) * [Reg
   ional](/compute/docs/reference/rest/{$api_version}/regionBackendServices)
-  For more information, read Backend Services.  (== resource_for
+  For more information, see Backend Services.  (== resource_for
   {$api_version}.backendService ==)
 
   Enums:
@@ -2915,7 +2918,7 @@ class BackendService(_messages.Message):
       before the connection was redirected to the load balancer.  - MAGLEV:
       used as a drop in replacement for the ring hash load balancer. Maglev is
       not as stable as ring hash but has faster table lookup build times and
-      host selection times. For more information about Maglev, refer to
+      host selection times. For more information about Maglev, see
       https://ai.google/research/pubs/pub44824   This field is applicable to
       either:   - A regional backend service with the service_protocol set to
       HTTP, HTTPS, or HTTP2, and load_balancing_scheme set to
@@ -3015,7 +3018,7 @@ class BackendService(_messages.Message):
       was redirected to the load balancer.  - MAGLEV: used as a drop in
       replacement for the ring hash load balancer. Maglev is not as stable as
       ring hash but has faster table lookup build times and host selection
-      times. For more information about Maglev, refer to
+      times. For more information about Maglev, see
       https://ai.google/research/pubs/pub44824   This field is applicable to
       either:   - A regional backend service with the service_protocol set to
       HTTP, HTTPS, or HTTP2, and load_balancing_scheme set to
@@ -3080,8 +3083,8 @@ class BackendService(_messages.Message):
       possible values are NONE, CLIENT_IP, GENERATED_COOKIE, HEADER_FIELD, or
       HTTP_COOKIE.
     timeoutSec: The backend service timeout has a different meaning depending
-      on the type of load balancer. For more information read,  Backend
-      service settings The default is 30 seconds.
+      on the type of load balancer. For more information see,  Backend service
+      settings The default is 30 seconds.
   """
 
   class LoadBalancingSchemeValueValuesEnum(_messages.Enum):
@@ -3121,7 +3124,7 @@ class BackendService(_messages.Message):
     was redirected to the load balancer.  - MAGLEV: used as a drop in
     replacement for the ring hash load balancer. Maglev is not as stable as
     ring hash but has faster table lookup build times and host selection
-    times. For more information about Maglev, refer to
+    times. For more information about Maglev, see
     https://ai.google/research/pubs/pub44824   This field is applicable to
     either:   - A regional backend service with the service_protocol set to
     HTTP, HTTPS, or HTTP2, and load_balancing_scheme set to INTERNAL_MANAGED.
@@ -8308,6 +8311,31 @@ class ComputeImagesListRequest(_messages.Message):
   project = _messages.StringField(5, required=True)
 
 
+class ComputeImagesPatchRequest(_messages.Message):
+  r"""A ComputeImagesPatchRequest object.
+
+  Fields:
+    image: Name of the image resource to patch.
+    imageResource: A Image resource to be passed as the request body.
+    project: Project ID for this request.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
+  """
+
+  image = _messages.StringField(1, required=True)
+  imageResource = _messages.MessageField('Image', 2)
+  project = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(4)
+
+
 class ComputeImagesSetIamPolicyRequest(_messages.Message):
   r"""A ComputeImagesSetIamPolicyRequest object.
 
@@ -9718,8 +9746,8 @@ class ComputeInstancesAttachDiskRequest(_messages.Message):
 
   Fields:
     attachedDisk: A AttachedDisk resource to be passed as the request body.
-    forceAttach: Whether to force attach the disk even if it's currently
-      attached to another instance.
+    forceAttach: Whether to force attach the regional disk even if it's
+      currently attached to another instance.
     instance: The instance name for this request.
     project: Project ID for this request.
     requestId: An optional request ID to identify requests. Specify a unique
@@ -9908,14 +9936,21 @@ class ComputeInstancesGetSerialPortOutputRequest(_messages.Message):
   r"""A ComputeInstancesGetSerialPortOutputRequest object.
 
   Fields:
-    instance: Name of the instance scoping this request.
+    instance: Name of the instance for this request.
     port: Specifies which COM or serial port to retrieve data from.
     project: Project ID for this request.
-    start: Returns output starting from a specific byte position. Use this to
-      page through output when the output is too large to return in a single
-      request. For the initial request, leave this field unspecified. For
-      subsequent calls, this field should be set to the next value returned in
-      the previous call.
+    start: Specifies the starting byte position of the output to return. To
+      start with the first byte of output to the specified port, omit this
+      field or set it to `0`.  If the output for that byte position is
+      available, this field matches the `start` parameter sent with the
+      request. If the amount of serial console output exceeds the size of the
+      buffer (1 MB), the oldest output is discarded and is no longer
+      available. If the requested start position refers to discarded output,
+      the start position is adjusted to the oldest output still available, and
+      the adjusted start position is returned as the `start` property value.
+      You can also provide a negative start position, which translates to the
+      most recent number of bytes written to the serial port. For example, -3
+      is interpreted as the most recent 3 bytes written to the serial console.
     zone: The name of the zone for this request.
   """
 
@@ -22020,6 +22055,17 @@ class Disk(_messages.Message):
       sourceSnapshot, the value of sizeGb must not be less than the size of
       the sourceImage or the size of the snapshot. Acceptable values are 1 to
       65536, inclusive.
+    sourceDisk: The source disk used to create this disk. You can provide this
+      as a partial or full URL to the resource. For example, the following are
+      valid values:   - https://www.googleapis.com/compute/v1/projects/project
+      /zones/zone/disks/disk  - projects/project/zones/zone/disks/disk  -
+      zones/zone/disks/disk
+    sourceDiskId: [Output Only] The unique ID of the disk used to create this
+      disk. This value identifies the exact disk that was used to create this
+      persistent disk. For example, if you created the persistent disk from a
+      disk that was later deleted and recreated under the same name, the
+      source disk ID would identify the exact version of the disk that was
+      used.
     sourceImage: The source image used to create this disk. If the source
       image is deleted, this field will not be set.  To create a disk with one
       of the public operating system images, specify the image by its family
@@ -22160,17 +22206,19 @@ class Disk(_messages.Message):
   resourcePolicies = _messages.StringField(21, repeated=True)
   selfLink = _messages.StringField(22)
   sizeGb = _messages.IntegerField(23)
-  sourceImage = _messages.StringField(24)
-  sourceImageEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 25)
-  sourceImageId = _messages.StringField(26)
-  sourceSnapshot = _messages.StringField(27)
-  sourceSnapshotEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 28)
-  sourceSnapshotId = _messages.StringField(29)
-  status = _messages.EnumField('StatusValueValuesEnum', 30)
-  storageType = _messages.EnumField('StorageTypeValueValuesEnum', 31)
-  type = _messages.StringField(32)
-  users = _messages.StringField(33, repeated=True)
-  zone = _messages.StringField(34)
+  sourceDisk = _messages.StringField(24)
+  sourceDiskId = _messages.StringField(25)
+  sourceImage = _messages.StringField(26)
+  sourceImageEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 27)
+  sourceImageId = _messages.StringField(28)
+  sourceSnapshot = _messages.StringField(29)
+  sourceSnapshotEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 30)
+  sourceSnapshotId = _messages.StringField(31)
+  status = _messages.EnumField('StatusValueValuesEnum', 32)
+  storageType = _messages.EnumField('StorageTypeValueValuesEnum', 33)
+  type = _messages.StringField(34)
+  users = _messages.StringField(35, repeated=True)
+  zone = _messages.StringField(36)
 
 
 class DiskAggregatedList(_messages.Message):
@@ -24772,6 +24820,68 @@ class ForwardingRulesScopedList(_messages.Message):
   warning = _messages.MessageField('WarningValue', 2)
 
 
+class GRPCHealthCheck(_messages.Message):
+  r"""A GRPCHealthCheck object.
+
+  Enums:
+    PortSpecificationValueValuesEnum: Specifies how port is selected for
+      health checking, can be one of following values: USE_FIXED_PORT: The
+      port number in port is used for health checking. USE_NAMED_PORT: The
+      portName is used for health checking. USE_SERVING_PORT: For
+      NetworkEndpointGroup, the port specified for each network endpoint is
+      used for health checking. For other backends, the port or named port
+      specified in the Backend Service is used for health checking.   If not
+      specified, gRPC health check follows behavior specified in port and
+      portName fields.
+
+  Fields:
+    grpcServiceName: The gRPC service name for the health check. This field is
+      optional. The value of grpc_service_name has the following meanings by
+      convention: - Empty service_name means the overall status of all
+      services at the backend. - Non-empty service_name means the health of
+      that gRPC service, as defined by the owner of the service. The
+      grpc_service_name can only be ASCII.
+    port: The port number for the health check request. Must be specified if
+      port_name and port_specification are not set or if port_specification is
+      USE_FIXED_PORT. Valid values are 1 through 65535.
+    portName: Port name as defined in InstanceGroup#NamedPort#name. If both
+      port and port_name are defined, port takes precedence. The port_name
+      should conform to RFC1035.
+    portSpecification: Specifies how port is selected for health checking, can
+      be one of following values: USE_FIXED_PORT: The port number in port is
+      used for health checking. USE_NAMED_PORT: The portName is used for
+      health checking. USE_SERVING_PORT: For NetworkEndpointGroup, the port
+      specified for each network endpoint is used for health checking. For
+      other backends, the port or named port specified in the Backend Service
+      is used for health checking.   If not specified, gRPC health check
+      follows behavior specified in port and portName fields.
+  """
+
+  class PortSpecificationValueValuesEnum(_messages.Enum):
+    r"""Specifies how port is selected for health checking, can be one of
+    following values: USE_FIXED_PORT: The port number in port is used for
+    health checking. USE_NAMED_PORT: The portName is used for health checking.
+    USE_SERVING_PORT: For NetworkEndpointGroup, the port specified for each
+    network endpoint is used for health checking. For other backends, the port
+    or named port specified in the Backend Service is used for health
+    checking.   If not specified, gRPC health check follows behavior specified
+    in port and portName fields.
+
+    Values:
+      USE_FIXED_PORT: <no description>
+      USE_NAMED_PORT: <no description>
+      USE_SERVING_PORT: <no description>
+    """
+    USE_FIXED_PORT = 0
+    USE_NAMED_PORT = 1
+    USE_SERVING_PORT = 2
+
+  grpcServiceName = _messages.StringField(1)
+  port = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  portName = _messages.StringField(3)
+  portSpecification = _messages.EnumField('PortSpecificationValueValuesEnum', 4)
+
+
 class GlobalNetworkEndpointGroupsAttachEndpointsRequest(_messages.Message):
   r"""A GlobalNetworkEndpointGroupsAttachEndpointsRequest object.
 
@@ -25226,6 +25336,7 @@ class HealthCheck(_messages.Message):
     creationTimestamp: [Output Only] Creation timestamp in 3339 text format.
     description: An optional description of this resource. Provide this
       property when you create the resource.
+    grpcHealthCheck: A GRPCHealthCheck attribute.
     healthyThreshold: A so-far unhealthy instance will be marked healthy after
       this many consecutive successes. The default value is 2.
     http2HealthCheck: A HTTP2HealthCheck attribute.
@@ -25265,6 +25376,7 @@ class HealthCheck(_messages.Message):
     field.
 
     Values:
+      GRPC: <no description>
       HTTP: <no description>
       HTTP2: <no description>
       HTTPS: <no description>
@@ -25272,31 +25384,33 @@ class HealthCheck(_messages.Message):
       SSL: <no description>
       TCP: <no description>
     """
-    HTTP = 0
-    HTTP2 = 1
-    HTTPS = 2
-    INVALID = 3
-    SSL = 4
-    TCP = 5
+    GRPC = 0
+    HTTP = 1
+    HTTP2 = 2
+    HTTPS = 3
+    INVALID = 4
+    SSL = 5
+    TCP = 6
 
   checkIntervalSec = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   creationTimestamp = _messages.StringField(2)
   description = _messages.StringField(3)
-  healthyThreshold = _messages.IntegerField(4, variant=_messages.Variant.INT32)
-  http2HealthCheck = _messages.MessageField('HTTP2HealthCheck', 5)
-  httpHealthCheck = _messages.MessageField('HTTPHealthCheck', 6)
-  httpsHealthCheck = _messages.MessageField('HTTPSHealthCheck', 7)
-  id = _messages.IntegerField(8, variant=_messages.Variant.UINT64)
-  kind = _messages.StringField(9, default='compute#healthCheck')
-  logConfig = _messages.MessageField('HealthCheckLogConfig', 10)
-  name = _messages.StringField(11)
-  region = _messages.StringField(12)
-  selfLink = _messages.StringField(13)
-  sslHealthCheck = _messages.MessageField('SSLHealthCheck', 14)
-  tcpHealthCheck = _messages.MessageField('TCPHealthCheck', 15)
-  timeoutSec = _messages.IntegerField(16, variant=_messages.Variant.INT32)
-  type = _messages.EnumField('TypeValueValuesEnum', 17)
-  unhealthyThreshold = _messages.IntegerField(18, variant=_messages.Variant.INT32)
+  grpcHealthCheck = _messages.MessageField('GRPCHealthCheck', 4)
+  healthyThreshold = _messages.IntegerField(5, variant=_messages.Variant.INT32)
+  http2HealthCheck = _messages.MessageField('HTTP2HealthCheck', 6)
+  httpHealthCheck = _messages.MessageField('HTTPHealthCheck', 7)
+  httpsHealthCheck = _messages.MessageField('HTTPSHealthCheck', 8)
+  id = _messages.IntegerField(9, variant=_messages.Variant.UINT64)
+  kind = _messages.StringField(10, default='compute#healthCheck')
+  logConfig = _messages.MessageField('HealthCheckLogConfig', 11)
+  name = _messages.StringField(12)
+  region = _messages.StringField(13)
+  selfLink = _messages.StringField(14)
+  sslHealthCheck = _messages.MessageField('SSLHealthCheck', 15)
+  tcpHealthCheck = _messages.MessageField('TCPHealthCheck', 16)
+  timeoutSec = _messages.IntegerField(17, variant=_messages.Variant.INT32)
+  type = _messages.EnumField('TypeValueValuesEnum', 18)
+  unhealthyThreshold = _messages.IntegerField(19, variant=_messages.Variant.INT32)
 
 
 class HealthCheckList(_messages.Message):
@@ -28770,6 +28884,9 @@ class InstanceGroupManagersApplyUpdatesRequest(_messages.Message):
       fail.
 
   Fields:
+    allInstances: Flag to update all instances instead of specified list of
+      ?instances?. If the flag is set to true then the instances may not be
+      specified in the request.
     instances: The list of URLs of one or more instances for which you want to
       apply updates. Each URL can be a full URL or a partial URL, such as
       zones/[ZONE]/instances/[INSTANCE_NAME].
@@ -28829,9 +28946,10 @@ class InstanceGroupManagersApplyUpdatesRequest(_messages.Message):
     REPLACE = 2
     RESTART = 3
 
-  instances = _messages.StringField(1, repeated=True)
-  minimalAction = _messages.EnumField('MinimalActionValueValuesEnum', 2)
-  mostDisruptiveAllowedAction = _messages.EnumField('MostDisruptiveAllowedActionValueValuesEnum', 3)
+  allInstances = _messages.BooleanField(1)
+  instances = _messages.StringField(2, repeated=True)
+  minimalAction = _messages.EnumField('MinimalActionValueValuesEnum', 3)
+  mostDisruptiveAllowedAction = _messages.EnumField('MostDisruptiveAllowedActionValueValuesEnum', 4)
 
 
 class InstanceGroupManagersCreateInstancesRequest(_messages.Message):
@@ -29898,15 +30016,14 @@ class InstanceProperties(_messages.Message):
 
   Enums:
     PrivateIpv6GoogleAccessValueValuesEnum: The private IPv6 google access
-      type for the VM. If not specified, use  INHERIT_FROM_SUBNETWORK as
-      default.
+      type for VMs. If not specified, use  INHERIT_FROM_SUBNETWORK as default.
 
   Messages:
-    LabelsValue: Labels to apply to instances that are created from this
-      template.
+    LabelsValue: Labels to apply to instances that are created from these
+      properties.
 
   Fields:
-    canIpForward: Enables instances created based on this template to send
+    canIpForward: Enables instances created based on these properties to send
       packets with source IP addresses other than their own and receive
       packets with destination IP addresses other than their own. If these
       instances will be used as an IP gateway or it will be set as the next-
@@ -29914,50 +30031,51 @@ class InstanceProperties(_messages.Message):
       false. See the Enable IP forwarding documentation for more information.
     confidentialInstanceConfig: Specifies the Confidential Instance options.
     description: An optional text description for the instances that are
-      created from this instance template.
+      created from these properties.
     disks: An array of disks that are associated with the instances that are
-      created from this template.
+      created from these properties.
     displayDevice: Display Device properties to enable support for remote
       display products like: Teradici, VNC and TeamViewer
     guestAccelerators: A list of guest accelerator cards' type and count to
-      use for instances created from the instance template.
-    labels: Labels to apply to instances that are created from this template.
+      use for instances created from these properties.
+    labels: Labels to apply to instances that are created from these
+      properties.
     machineType: The machine type to use for instances that are created from
-      this template.
+      these properties.
     metadata: The metadata key/value pairs to assign to instances that are
-      created from this template. These pairs can consist of custom metadata
-      or predefined keys. See Project and instance metadata for more
+      created from these properties. These pairs can consist of custom
+      metadata or predefined keys. See Project and instance metadata for more
       information.
-    minCpuPlatform: Minimum cpu/platform to be used by this instance. The
-      instance may be scheduled on the specified or newer cpu/platform.
-      Applicable values are the friendly names of CPU platforms, such as
-      minCpuPlatform: "Intel Haswell" or minCpuPlatform: "Intel Sandy Bridge".
-      For more information, read Specifying a Minimum CPU Platform.
+    minCpuPlatform: Minimum cpu/platform to be used by instances. The instance
+      may be scheduled on the specified or newer cpu/platform. Applicable
+      values are the friendly names of CPU platforms, such as minCpuPlatform:
+      "Intel Haswell" or minCpuPlatform: "Intel Sandy Bridge". For more
+      information, read Specifying a Minimum CPU Platform.
     networkInterfaces: An array of network access configurations for this
       interface.
-    privateIpv6GoogleAccess: The private IPv6 google access type for the VM.
-      If not specified, use  INHERIT_FROM_SUBNETWORK as default.
-    reservationAffinity: Specifies the reservations that this instance can
-      consume from.
+    privateIpv6GoogleAccess: The private IPv6 google access type for VMs. If
+      not specified, use  INHERIT_FROM_SUBNETWORK as default.
+    reservationAffinity: Specifies the reservations that instances can consume
+      from.
     resourcePolicies: Resource policies (names, not ULRs) applied to instances
-      created from this template.
+      created from these properties.
     scheduling: Specifies the scheduling options for the instances that are
-      created from this template.
+      created from these properties.
     serviceAccounts: A list of service accounts with specified scopes. Access
       tokens for these service accounts are available to the instances that
-      are created from this template. Use metadata queries to obtain the
+      are created from these properties. Use metadata queries to obtain the
       access tokens for these instances.
     shieldedInstanceConfig: A ShieldedInstanceConfig attribute.
     shieldedVmConfig: Specifies the Shielded VM options for the instances that
-      are created from this template.
-    tags: A list of tags to apply to the instances that are created from this
-      template. The tags identify valid sources or targets for network
+      are created from these properties.
+    tags: A list of tags to apply to the instances that are created from these
+      properties. The tags identify valid sources or targets for network
       firewalls. The setTags method can modify this list of tags. Each tag
       within the list must comply with RFC1035.
   """
 
   class PrivateIpv6GoogleAccessValueValuesEnum(_messages.Enum):
-    r"""The private IPv6 google access type for the VM. If not specified, use
+    r"""The private IPv6 google access type for VMs. If not specified, use
     INHERIT_FROM_SUBNETWORK as default.
 
     Values:
@@ -29971,7 +30089,7 @@ class InstanceProperties(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
-    r"""Labels to apply to instances that are created from this template.
+    r"""Labels to apply to instances that are created from these properties.
 
     Messages:
       AdditionalProperty: An additional property for a LabelsValue object.
@@ -33642,11 +33760,13 @@ class Network(_messages.Message):
       internal addresses that are legal on this network. This range is a CIDR
       specification, for example: 192.168.0.0/16. Provided by the client when
       the network is created.
-    autoCreateSubnetworks: When set to true, the VPC network is created in
-      "auto" mode. When set to false, the VPC network is created in "custom"
+    autoCreateSubnetworks: Must be set to create a VPC network. If not set, a
+      legacy network is created.  When set to true, the VPC network is created
+      in auto mode. When set to false, the VPC network is created in custom
       mode.  An auto mode VPC network starts with one subnet per region. Each
       subnet has a predetermined range as described in Auto mode VPC network
-      IP ranges.
+      IP ranges.  For custom mode VPC networks, you can add subnets using the
+      subnetworks insert method.
     creationTimestamp: [Output Only] Creation timestamp in RFC3339 text
       format.
     description: An optional description of this resource. Provide this field
@@ -34952,8 +35072,7 @@ class NodeGroup(_messages.Message):
       means the first character must be a lowercase letter, and all following
       characters must be a dash, lowercase letter, or digit, except the last
       character, which cannot be a dash.
-    nodeTemplate: The URL of the node template to which this node group
-      belongs.
+    nodeTemplate: URL of the node template to create the node group from.
     selfLink: [Output Only] Server-defined URL for the resource.
     size: [Output Only] The total number of nodes in the node group.
     status: A StatusValueValuesEnum attribute.
@@ -39558,6 +39677,9 @@ class RegionInstanceGroupManagersApplyUpdatesRequest(_messages.Message):
       fail.
 
   Fields:
+    allInstances: Flag to update all instances instead of specified list of
+      ?instances?. If the flag is set to true then the instances may not be
+      specified in the request.
     instances: The list of URLs of one or more instances for which you want to
       apply updates. Each URL can be a full URL or a partial URL, such as
       zones/[ZONE]/instances/[INSTANCE_NAME].
@@ -39617,9 +39739,10 @@ class RegionInstanceGroupManagersApplyUpdatesRequest(_messages.Message):
     REPLACE = 2
     RESTART = 3
 
-  instances = _messages.StringField(1, repeated=True)
-  minimalAction = _messages.EnumField('MinimalActionValueValuesEnum', 2)
-  mostDisruptiveAllowedAction = _messages.EnumField('MostDisruptiveAllowedActionValueValuesEnum', 3)
+  allInstances = _messages.BooleanField(1)
+  instances = _messages.StringField(2, repeated=True)
+  minimalAction = _messages.EnumField('MinimalActionValueValuesEnum', 3)
+  mostDisruptiveAllowedAction = _messages.EnumField('MostDisruptiveAllowedActionValueValuesEnum', 4)
 
 
 class RegionInstanceGroupManagersCreateInstancesRequest(_messages.Message):
@@ -43695,14 +43818,17 @@ class SerialPortOutput(_messages.Message):
     contents: [Output Only] The contents of the console output.
     kind: [Output Only] Type of the resource. Always compute#serialPortOutput
       for serial port output.
-    next: [Output Only] The position of the next byte of content from the
-      serial console output. Use this value in the next request as the start
+    next: [Output Only] The position of the next byte of content, regardless
+      of whether the content exists, following the output returned in the
+      `contents` property. Use this value in the next request as the start
       parameter.
     selfLink: [Output Only] Server-defined URL for this resource.
     start: The starting byte position of the output that was returned. This
       should match the start parameter sent with the request. If the serial
-      console output exceeds the size of the buffer, older output will be
-      overwritten by newer content and the start values will be mismatched.
+      console output exceeds the size of the buffer (1 MB), older output is
+      overwritten by newer content. The output start value will indicate the
+      byte position of the output that was returned, which might be different
+      than the `start` value that was specified in the request.
   """
 
   contents = _messages.StringField(1)
@@ -45407,8 +45533,9 @@ class Subnetwork(_messages.Message):
     ipCidrRange: The range of internal addresses that are owned by this
       subnetwork. Provide this property when you create the subnetwork. For
       example, 10.0.0.0/8 or 192.168.0.0/16. Ranges must be unique and non-
-      overlapping within a network. Only IPv4 is supported. This field can be
-      set only at resource creation time.
+      overlapping within a network. Only IPv4 is supported. This field is set
+      at resource creation time. The range can be expanded after creation
+      using expandIpCidrRange.
     ipv6CidrRange: [Output Only] The range of internal IPv6 addresses that are
       owned by this subnetwork.
     kind: [Output Only] Type of the resource. Always compute#subnetwork for

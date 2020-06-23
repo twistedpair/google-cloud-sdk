@@ -42,9 +42,6 @@ _NORMALIZED_USER_AGENT = b'user-agent'
 _USER_AGENT_HEADER_KEYS = [_NORMALIZED_USER_AGENT, b'User-Agent', b'USER-AGENT']
 
 
-ENCODING = None if six.PY2 else 'utf8'
-
-
 def Http(timeout='unset', response_encoding=None, ca_certs=None):
   """Get an httplib2.Http client that is properly configured for use by gcloud.
 
@@ -256,7 +253,7 @@ class Modifiers(object):
       exc_handler: f(e), A function that takes an exception and handles it. It
         should also throw an exception if you don't want it to be swallowed.
       exc_type: The type of exception that should be caught and given to the
-        handler.
+        handler. It could be a tuple to catch more than one exception type.
       response_encoding: str, the encoding to use to decode the response.
 
     Returns:
@@ -329,9 +326,9 @@ class Modifiers(object):
   @classmethod
   def _EncodeHeader(cls, header, value):
     if isinstance(header, six.text_type):
-      header = header.encode('utf8')
+      header = header.encode('utf-8')
     if isinstance(value, six.text_type):
-      value = value.encode('utf8')
+      value = value.encode('utf-8')
     return header, value
 
   @classmethod

@@ -605,7 +605,7 @@
           "type": "string"
         },
         "accessLevels": {
-          "description": "Required. Access levels that a user must have to be granted access. This list is\nORed, so the user only needs one (or more) of these access levels.\nExample: \"accessPolicies\/9522\/accessLevels\/device_trusted\"",
+          "description": "Required. Access level that a user must have to be granted access. Only one access\nlevel is supported, not multiple. This repeated field must have exactly\none element.\nExample: \"accessPolicies\/9522\/accessLevels\/device_trusted\"",
           "type": "array",
           "items": {
             "type": "string"
@@ -1376,7 +1376,7 @@
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform"
               ],
-              "description": "Creates a GcpUserAccessBinding. If the\nclient specifies a name,\nthe server will ignore it. Fails if a resource already exists with the same\ngroup_key.\nTo add more access levels to a group, update the existing resource instead.\nCompletion of this long-running operation does not necessarily signify that\nthe new binding is deployed onto all affected users, which may take more\ntime."
+              "description": "Creates a GcpUserAccessBinding. If the\nclient specifies a name,\nthe server will ignore it. Fails if a resource already exists with the same\ngroup_key.\nCompletion of this long-running operation does not necessarily signify that\nthe new binding is deployed onto all affected users, which may take more\ntime."
             },
             "patch": {
               "id": "accesscontextmanager.organizations.gcpUserAccessBindings.patch",

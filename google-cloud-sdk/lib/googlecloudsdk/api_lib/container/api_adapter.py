@@ -412,6 +412,7 @@ class CreateClusterOptions(object):
       subnetwork=None,
       addons=None,
       istio_config=None,
+      cloud_run_config=None,
       local_ssd_count=None,
       local_ssd_volume_configs=None,
       boot_disk_kms_key=None,
@@ -531,6 +532,7 @@ class CreateClusterOptions(object):
     self.subnetwork = subnetwork
     self.addons = addons
     self.istio_config = istio_config
+    self.cloud_run_config = cloud_run_config
     self.local_ssd_count = local_ssd_count
     self.local_ssd_volume_configs = local_ssd_volume_configs
     self.boot_disk_kms_key = boot_disk_kms_key
@@ -3226,8 +3228,9 @@ class V1Alpha1Adapter(V1Beta1Adapter):
           raise util.Error(CLOUDRUN_INGRESS_KUBERNETES_DISABLED_ERROR_MSG)
         enable_alpha_features = options.enable_cloud_run_alpha if \
             options.enable_cloud_run_alpha is not None else False
+        load_balancer_type = _GetCloudRunLoadBalancerType(options, self.messages)
         cluster.addonsConfig.cloudRunConfig = self.messages.CloudRunConfig(
-            disabled=False, enableAlphaFeatures=enable_alpha_features)
+            disabled=False, enableAlphaFeatures=enable_alpha_features, loadBalancerType=load_balancer_type)
       # Cloud Build is disabled by default.
       if CLOUDBUILD in options.addons:
         if not options.enable_stackdriver_kubernetes:
@@ -3592,6 +3595,14 @@ class V1Alpha1Adapter(V1Beta1Adapter):
                                             cluster_ref.zone,
                                             cluster_ref.clusterId)))
 
+
+def _GetCloudRunLoadBalancerType(options, messages):
+  if options.cloud_run_config is not None:
+    input_load_balancer_type = options.cloud_run_config.get('load-balancer-type')
+    if input_load_balancer_type is not None:
+      if input_load_balancer_type == 'INTERNAL':
+        return messages.CloudRunConfig.LoadBalancerTypeValueValuesEnum.LOAD_BALANCER_TYPE_INTERNAL
+  return messages.CloudRunConfig.LoadBalancerTypeValueValuesEnum.LOAD_BALANCER_TYPE_EXTERNAL
 
 def _AddMetadataToNodeConfig(node_config, options):
   if not options.metadata:

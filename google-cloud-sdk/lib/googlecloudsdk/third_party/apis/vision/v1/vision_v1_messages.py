@@ -396,11 +396,13 @@ class Color(_messages.Message):
   as well.  Note: this proto does not carry information about the absolute
   color space that should be used to interpret the RGB value (e.g. sRGB, Adobe
   RGB, DCI-P3, BT.2020, etc.). By default, applications SHOULD assume the sRGB
-  color space.  Example (Java):       import com.google.type.Color;       //
-  ...      public static java.awt.Color fromProto(Color protocolor) {
-  float alpha = protocolor.hasAlpha()            ?
-  protocolor.getAlpha().getValue()            : 1.0;         return new
-  java.awt.Color(            protocolor.getRed(),
+  color space.  Note: when color equality needs to be decided,
+  implementations, unless documented otherwise, will treat two colors to be
+  equal if all their red, green, blue and alpha values each differ by at most
+  1e-5.  Example (Java):       import com.google.type.Color;       // ...
+  public static java.awt.Color fromProto(Color protocolor) {        float
+  alpha = protocolor.hasAlpha()            ? protocolor.getAlpha().getValue()
+  : 1.0;         return new java.awt.Color(            protocolor.getRed(),
   protocolor.getGreen(),            protocolor.getBlue(),            alpha);
   }       public static Color toProto(java.awt.Color color) {        float red
   = (float) color.getRed();        float green = (float) color.getGreen();

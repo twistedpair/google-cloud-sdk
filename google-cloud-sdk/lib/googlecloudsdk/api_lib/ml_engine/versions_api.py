@@ -46,11 +46,25 @@ def GetClientInstance(version='v1', no_http=False):
 class VersionsClient(object):
   """Client for the versions service of Cloud ML Engine."""
 
-  _ALLOWED_YAML_FIELDS = set(['autoScaling', 'description', 'deploymentUri',
-                              'runtimeVersion', 'manualScaling', 'labels',
-                              'machineType', 'framework', 'pythonVersion',
-                              'predictionClass', 'packageUris',
-                              'serviceAccount'])
+  _ALLOWED_YAML_FIELDS = frozenset([
+      'autoScaling',
+      'deploymentUri',
+      'description',
+      'framework',
+      'labels',
+      'machineType',
+      'manualScaling',
+      'packageUris',
+      'predictionClass',
+      'pythonVersion',
+      'runtimeVersion',
+      'serviceAccount',
+  ])
+
+  _CONTAINER_FIELDS = frozenset([
+      'container',
+      'routes',
+  ])
 
   def __init__(self, client=None, messages=None):
     self.client = client or GetClientInstance()
@@ -198,7 +212,8 @@ class VersionsClient(object):
                    service_account=None,
                    explanation_method=None,
                    num_integral_steps=None,
-                   num_paths=None):
+                   num_paths=None,
+                   containers_hidden=True):
     """Create a Version object.
 
     The object is based on an optional YAML configuration file and the
@@ -232,7 +247,8 @@ class VersionsClient(object):
       num_integral_steps: Number of integral steps for Integrated Gradients and
         XRAI.
       num_paths: Number of paths for Sampled Shapley.
-
+      containers_hidden: Whether or not container-related fields are hidden
+        on this track.
 
     Returns:
       A Version object (for the corresponding API version).
@@ -241,7 +257,10 @@ class VersionsClient(object):
       InvalidVersionConfigFile: If the file contains unexpected fields.
     """
     if path:
-      version = self.ReadConfig(path, self._ALLOWED_YAML_FIELDS)
+      allowed_fields = self._ALLOWED_YAML_FIELDS
+      if not containers_hidden:
+        allowed_fields |= self._CONTAINER_FIELDS
+      version = self.ReadConfig(path, allowed_fields)
     else:
       version = self.version_class()
 

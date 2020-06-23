@@ -31,13 +31,13 @@ class AuditConfig(_messages.Message):
   service: the log_types specified in each AuditConfig are enabled, and the
   exempted_members in each AuditLogConfig are exempted.  Example Policy with
   multiple AuditConfigs:      {       "audit_configs": [         {
-  "service": "allServices"           "audit_log_configs": [             {
+  "service": "allServices",           "audit_log_configs": [             {
   "log_type": "DATA_READ",               "exempted_members": [
   "user:jose@example.com"               ]             },             {
-  "log_type": "DATA_WRITE",             },             {
-  "log_type": "ADMIN_READ",             }           ]         },         {
-  "service": "sampleservice.googleapis.com"           "audit_log_configs": [
-  {               "log_type": "DATA_READ",             },             {
+  "log_type": "DATA_WRITE"             },             {
+  "log_type": "ADMIN_READ"             }           ]         },         {
+  "service": "sampleservice.googleapis.com",           "audit_log_configs": [
+  {               "log_type": "DATA_READ"             },             {
   "log_type": "DATA_WRITE",               "exempted_members": [
   "user:aliya@example.com"               ]             }           ]         }
   ]     }  For sampleservice, this policy enables DATA_READ, DATA_WRITE and
@@ -61,7 +61,7 @@ class AuditLogConfig(_messages.Message):
   r"""Provides the configuration for logging a type of permissions. Example:
   {       "audit_log_configs": [         {           "log_type": "DATA_READ",
   "exempted_members": [             "user:jose@example.com"           ]
-  },         {           "log_type": "DATA_WRITE",         }       ]     }
+  },         {           "log_type": "DATA_WRITE"         }       ]     }
   This enables 'DATA_READ' and 'DATA_WRITE' logging, while exempting
   jose@example.com from DATA_READ logging.
 
@@ -212,6 +212,9 @@ class CloudAuditOptions(_messages.Message):
 class Cluster(_messages.Message):
   r"""A cluster in a cluater group. Cluster is a regional resource.
 
+  Enums:
+    StateValueValuesEnum: Output only. State of the resource.
+
   Messages:
     LabelsValue: Labels are a way to attach lightweight metadata to resources
       for filtering and querying resource data. No more than 64 user labels
@@ -239,17 +242,39 @@ class Cluster(_messages.Message):
       of the existing labels along with the new label. If you only provide a
       map with the new label, all of the old labels will be removed (probably
       not what is desired).
+    management: If the resource to be created a management cluster or not.
+      There can only be one management cluster in an SDDC and it has to be the
+      first one.
     name: Output only. The resource name of this Cluster. Resource names are
       schemeless URI's that follow the conventions in
       https://cloud.google.com/apis/design/resource_names For example,
       `projects/my-project/locations/us-central1/clusterGroups/my-
       group/clusters/my-cluster`
     nodeCount: Required. Number of bare metal nodes in this cluster.
-    nodeType: Required. Bare metal node type.
+    nodeType: Required. The baremetal node type used to create a VMWare
+      cluster. The only supported value is c1-highmem-72-metal.
     nodes: Output only. Nodes in the cluster.
-    status: Output only. Status of the resource.
+    state: Output only. State of the resource.
+    status: Output only. Deprecated. Use state instead. Status of the
+      resource.
     updateTime: Output only. Update time of the resource.
   """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Output only. State of the resource.
+
+    Values:
+      STATE_UNSPECIFIED: The default value. This value should never be used.
+      ACTIVE: The cluster is ready.
+      CREATING: The cluster is being created.
+      UPDATING: The cluster is being updated.
+      DELETING: The cluster is being deleted.
+    """
+    STATE_UNSPECIFIED = 0
+    ACTIVE = 1
+    CREATING = 2
+    UPDATING = 3
+    DELETING = 4
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
@@ -288,16 +313,21 @@ class Cluster(_messages.Message):
   createTime = _messages.StringField(1)
   defaultZone = _messages.StringField(2)
   labels = _messages.MessageField('LabelsValue', 3)
-  name = _messages.StringField(4)
-  nodeCount = _messages.IntegerField(5, variant=_messages.Variant.INT32)
-  nodeType = _messages.StringField(6)
-  nodes = _messages.MessageField('Node', 7, repeated=True)
-  status = _messages.StringField(8)
-  updateTime = _messages.StringField(9)
+  management = _messages.BooleanField(4)
+  name = _messages.StringField(5)
+  nodeCount = _messages.IntegerField(6, variant=_messages.Variant.INT32)
+  nodeType = _messages.StringField(7)
+  nodes = _messages.MessageField('Node', 8, repeated=True)
+  state = _messages.EnumField('StateValueValuesEnum', 9)
+  status = _messages.StringField(10)
+  updateTime = _messages.StringField(11)
 
 
 class ClusterGroup(_messages.Message):
   r"""A cluster group resource. ClusterGroup is a regional resource.
+
+  Enums:
+    StateValueValuesEnum: State of the resource.
 
   Messages:
     LabelsValue: Labels are a way to attach lightweight metadata to resources
@@ -333,11 +363,27 @@ class ClusterGroup(_messages.Message):
       `projects/my-project/locations/us-central1/clusterGroups/my-group`
     networkConfig: NetworkConfig passed in the param.
     nsx: Output only. Nsx information.
-    status: Output only. Status of the resource.
+    state: State of the resource.
+    status: Output only. Deprecated. Use state instead. Status of the
+      resource.
     updateTime: Output only. Update time of the resource.
     vcenter: Output only. vCenter information.
     vpcSelfLink: VPC self link
   """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""State of the resource.
+
+    Values:
+      STATE_UNSPECIFIED: The default value. This value should never be used.
+      ACTIVE: The cluster group is ready.
+      CREATING: The cluster group is being created.
+      DELETING: The cluster group is being deleted.
+    """
+    STATE_UNSPECIFIED = 0
+    ACTIVE = 1
+    CREATING = 2
+    DELETING = 3
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
@@ -380,10 +426,11 @@ class ClusterGroup(_messages.Message):
   name = _messages.StringField(5)
   networkConfig = _messages.MessageField('NetworkConfig', 6)
   nsx = _messages.MessageField('Nsx', 7)
-  status = _messages.StringField(8)
-  updateTime = _messages.StringField(9)
-  vcenter = _messages.MessageField('Vcenter', 10)
-  vpcSelfLink = _messages.StringField(11)
+  state = _messages.EnumField('StateValueValuesEnum', 8)
+  status = _messages.StringField(9)
+  updateTime = _messages.StringField(10)
+  vcenter = _messages.MessageField('Vcenter', 11)
+  vpcSelfLink = _messages.StringField(12)
 
 
 class ClusterGroupBackup(_messages.Message):
@@ -1151,14 +1198,20 @@ class RemoveNodeRequest(_messages.Message):
   r"""A RemoveNodeRequest object.
 
   Fields:
-    cluster: Required. The cluster from which the node is removed.
-    nodeName: Required. The name of the node to be removed.
+    cluster: Required. Deprecated. Use the cluster_name instead. The cluster
+      from which the node is removed.
+    clusterName: Required. The cluster from which the node is removed.
+    node: Required. The name of the node to be removed.
+    nodeName: Required. Deprecated, please use the node property instead. The
+      name of the node to be removed.
     zone: Required. The zone where the node belongs to.
   """
 
   cluster = _messages.MessageField('Cluster', 1)
-  nodeName = _messages.StringField(2)
-  zone = _messages.StringField(3)
+  clusterName = _messages.StringField(2)
+  node = _messages.StringField(3)
+  nodeName = _messages.StringField(4)
+  zone = _messages.StringField(5)
 
 
 class Rule(_messages.Message):
@@ -1310,8 +1363,8 @@ class SddcProjectsLocationsClusterGroupsClustersCreateRequest(_messages.Message)
     clusterId: Required. The user-provided id of the new Cluster. This id must
       be unique among Clusters within the parent and will become the final
       token in the name URI.
-    managementCluster: Required. Whether the cluster is the management
-      cluster.
+    managementCluster: Required. Deprecated. Use the management property in
+      the Cluster resource. Whether the cluster is the management cluster.
     parent: Required. The ClusterGroup in where the new Cluster will be
       created. For example: `projects/my-project/locations/us-
       central1/clusterGroups/my-group`

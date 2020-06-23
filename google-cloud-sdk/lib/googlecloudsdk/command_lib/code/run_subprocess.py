@@ -25,6 +25,8 @@ from __future__ import unicode_literals
 import json
 import os.path
 import subprocess
+import threading
+from googlecloudsdk.api_lib.compute import utils
 from googlecloudsdk.core import config
 from googlecloudsdk.core.updater import update_manager
 from googlecloudsdk.core.util import files as file_utils
@@ -64,61 +66,88 @@ def GetGcloudPreferredExecutable(exe):
   return path
 
 
-def Run(cmd, show_output=True):
+# When we drop python 2, use py3's timeout arg to eliminate this.
+class _TimeoutThread(object):
+  """A context manager based on threading.Timer.
+
+  Pass a function to call after the given time has passed. If you exit before
+  the timer fires, nothing happens. If you exit after we've had to call the
+  timer function, we raise TimeoutError at exit time.
+  """
+
+  def __init__(self, func, timeout_sec):
+    self.func = func
+    self.timeout_sec = timeout_sec
+
+  def __enter__(self):
+    self.timer = threading.Timer(self.timeout_sec, self.func)
+    self.timer.start()
+
+  def __exit__(self, exc_type, exc_value, traceback):
+    timed_out = self.timer.finished.is_set()
+    self.timer.cancel()
+
+    if timed_out:
+      raise utils.TimeoutError('Task ran for more than %s seconds' %
+                               self.timeout_sec)
+
+
+def Run(cmd, timeout_sec, show_output=True):
   """Run command and optionally send the output to /dev/null or nul."""
   if show_output:
     p = subprocess.Popen(cmd)
-    p.wait()
+    with _TimeoutThread(p.kill, timeout_sec):
+      p.wait()
   else:
     with file_utils.FileWriter(os.devnull) as devnull:
       p = subprocess.Popen(cmd, stdout=devnull, stderr=devnull)
-      p.wait()
+      with _TimeoutThread(p.kill, timeout_sec):
+        p.wait()
   if p.returncode != 0:
     raise subprocess.CalledProcessError(p.returncode, cmd)
 
 
-def _GetStdout(cmd, show_stderr=True):
+def _GetStdout(cmd, timeout_sec, show_stderr=True):
   p = subprocess.Popen(
       cmd,
       stdout=subprocess.PIPE,
       stderr=None if show_stderr else subprocess.PIPE)
-  stdout, _ = p.communicate()
+  with _TimeoutThread(p.kill, timeout_sec):
+    stdout, _ = p.communicate()
   if p.returncode != 0:
     raise subprocess.CalledProcessError(p.returncode, cmd)
   return six.ensure_text(stdout)
 
 
-def GetOutputLines(cmd, show_stderr=True, strip_output=False):
+def GetOutputLines(cmd, timeout_sec, show_stderr=True, strip_output=False):
   """Run command and get its stdout as a list of lines.
 
   Args:
     cmd: List of executable and arg strings.
+    timeout_sec: Command will be killed if it exceeds this.
     show_stderr: False to suppress stderr from the command.
     strip_output: Strip head/tail whitespace before splitting into lines.
 
   Returns:
     List of lines (without newlines).
   """
-  stdout = _GetStdout(cmd, show_stderr=show_stderr)
+  stdout = _GetStdout(cmd, timeout_sec, show_stderr=show_stderr)
   if strip_output:
     stdout = stdout.strip()
   lines = stdout.splitlines()
   return lines
 
 
-def GetOutputJson(cmd, show_stderr=True):
+def GetOutputJson(cmd, timeout_sec, show_stderr=True):
   """Run command and get its JSON stdout as a parsed dict.
 
   Args:
     cmd: List of executable and arg strings.
+    timeout_sec: Command will be killed if it exceeds this.
     show_stderr: False to suppress stderr from the command.
 
   Returns:
     Parsed JSON.
   """
-  p = subprocess.Popen(
-      cmd,
-      stdout=subprocess.PIPE,
-      stderr=None if show_stderr else subprocess.PIPE)
-  stdout, _ = p.communicate()
-  return json.loads(six.ensure_text(stdout).strip())
+  stdout = _GetStdout(cmd, timeout_sec, show_stderr=show_stderr)
+  return json.loads(stdout.strip())

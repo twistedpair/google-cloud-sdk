@@ -26,7 +26,15 @@ from googlecloudsdk.core.document_renderers import html_renderer
 
 
 class DevSiteRenderer(html_renderer.HTMLRenderer):
-  """Renders markdown to DevSiteHTML."""
+  """Renders markdown to DevSiteHTML.
+
+  Devsite-Specific Attributes:
+  _opentag: True if <code> tag on Example command is not closed, False otherwise
+  """
+
+  def __init__(self, *args, **kwargs):
+    super(DevSiteRenderer, self).__init__(*args, **kwargs)
+    self._opentag = False
 
   def _Title(self):
     """Renders an HTML document title."""
@@ -84,18 +92,33 @@ class DevSiteRenderer(html_renderer.HTMLRenderer):
       self._example = True
       self._fill = 2
       if not self._lang:
-        self._out.write('<pre>\n')
+        self._out.write('<pre class="prettyprint lang-sh">\n')
       elif self._lang in ('pretty', 'yaml'):
-        self._out.write('<pre class="prettyprint">\n')
+        self._out.write('<pre class="prettyprint lang-sh">\n')
       else:
         self._out.write('<pre class="prettyprint lang-{lang}">\n'.format(
             lang=self._lang))
     indent = len(line)
     line = line.lstrip()
     indent -= len(line)
-    self._out.write(' ' * (self._fill + indent))
-    self._out.write(line)
-    self._out.write('\n')
+    terminal_pattern = re.compile(r'\A\$\s+')
+    last_char = line[-1:]
+    last_char_is_backslash = last_char == '\\'
+    if last_char_is_backslash:  # get backslashes out of multiline commands
+      line = line[:-1]
+    if terminal_pattern.match(line):  # if start of command in line open tag
+      self._out.write('<code class="devsite-terminal">')
+      self._opentag = True
+      self._out.write(terminal_pattern.sub('', line))
+    else:
+      if not self._opentag:
+        self._out.write(' ' * (self._fill + indent))  # indent non-commands
+      self._out.write(line)
+    if not last_char_is_backslash:  # if end of command in line close tag
+      if self._opentag:
+        self._out.write('</code>')
+        self._opentag = False
+      self._out.write('\n')  # if last char is backslash don't newline
 
   def Link(self, target, text):
     """Renders an anchor.

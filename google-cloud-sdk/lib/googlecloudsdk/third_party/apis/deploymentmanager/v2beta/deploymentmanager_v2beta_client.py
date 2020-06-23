@@ -316,7 +316,7 @@ class DeploymentmanagerV2beta(base_api.BaseApiClient):
         method_id='deploymentmanager.deployments.getIamPolicy',
         ordered_params=['project', 'resource'],
         path_params=['project', 'resource'],
-        query_params=[],
+        query_params=['optionsRequestedPolicyVersion'],
         relative_path='projects/{project}/global/deployments/{resource}/getIamPolicy',
         request_field='',
         request_type_name='DeploymentmanagerDeploymentsGetIamPolicyRequest',

@@ -2414,6 +2414,15 @@ class GoogleCloudMlV1TrainingInput(_messages.Message):
     scaleTier: Required. Specifies the machine types, the number of replicas
       for workers and parameter servers.
     scheduling: Optional. Scheduling options for a training job.
+    serviceAccount: Optional. The email address of a service account to use
+      when running the training appplication. You must have the
+      `iam.serviceAccounts.actAs` permission for the specified service
+      account. In addition, the AI Platform Training Google-managed service
+      account must have the `roles/iam.serviceAccountAdmin` role for the
+      specified service account. [Learn more about configuring a service
+      account.](/ai-platform/training/docs/custom-service-account)  If not
+      specified, the AI Platform Training Google-managed service account is
+      used by default.
     useChiefInTfConfig: Optional. Use `chief` instead of `master` in the
       `TF_CONFIG` environment variable when training with a custom container.
       Defaults to `false`. [Learn more about this field.](/ai-
@@ -2506,10 +2515,11 @@ class GoogleCloudMlV1TrainingInput(_messages.Message):
   runtimeVersion = _messages.StringField(19)
   scaleTier = _messages.EnumField('ScaleTierValueValuesEnum', 20)
   scheduling = _messages.MessageField('GoogleCloudMlV1Scheduling', 21)
-  useChiefInTfConfig = _messages.BooleanField(22)
-  workerConfig = _messages.MessageField('GoogleCloudMlV1ReplicaConfig', 23)
-  workerCount = _messages.IntegerField(24)
-  workerType = _messages.StringField(25)
+  serviceAccount = _messages.StringField(22)
+  useChiefInTfConfig = _messages.BooleanField(23)
+  workerConfig = _messages.MessageField('GoogleCloudMlV1ReplicaConfig', 24)
+  workerCount = _messages.IntegerField(25)
+  workerType = _messages.StringField(26)
 
 
 class GoogleCloudMlV1TrainingOutput(_messages.Message):

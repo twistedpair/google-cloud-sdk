@@ -329,6 +329,10 @@
           "description": "Optional. The full name of the Google Compute Engine\n[network](\/compute\/docs\/networks-and-firewalls#networks) to which the Job\nis peered. For example, projects\/12345\/global\/networks\/myVPC. Format is of\nthe form projects\/{project}\/global\/networks\/{network}. Where {project} is a\nproject number, as in '12345', and {network} is network name.\".\n\nPrivate services access must already be configured for the network. If left\nunspecified, the Job is not peered with any network. Learn more -\nConnecting Job to user network over private\nIP.",
           "type": "string"
         },
+        "serviceAccount": {
+          "description": "Optional. The email address of a service account to use when running the\ntraining appplication. You must have the `iam.serviceAccounts.actAs`\npermission for the specified service account. In addition, the AI Platform\nTraining Google-managed service account must have the\n`roles\/iam.serviceAccountAdmin` role for the specified service account.\n[Learn more about configuring a service\naccount.](\/ai-platform\/training\/docs\/custom-service-account)\n\nIf not specified, the AI Platform Training Google-managed service account\nis used by default.",
+          "type": "string"
+        },
         "useChiefInTfConfig": {
           "description": "Optional. Use `chief` instead of `master` in the `TF_CONFIG` environment\nvariable when training with a custom container. Defaults to `false`. [Learn\nmore about this\nfield.](\/ai-platform\/training\/docs\/distributed-training-details#chief-versus-master)\n\nThis field has no effect for training jobs that don't use a custom\ncontainer.",
           "type": "boolean"

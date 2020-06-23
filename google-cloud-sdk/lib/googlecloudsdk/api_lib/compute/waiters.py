@@ -133,6 +133,8 @@ class OperationData(object):
     no_followup: str, If True, do not send followup GET request.
     followup_override: str, Overrides the target resource name when
       it is different from the resource name which is used to poll.
+    always_return_operation: If true, always return operation object even if
+      the operation fails.
     errors: An output parameter for capturing errors.
     warnings: An output parameter for capturing warnings.
   """
@@ -143,13 +145,15 @@ class OperationData(object):
                resource_service,
                project=None,
                no_followup=False,
-               followup_override=None):
+               followup_override=None,
+               always_return_operation=False):
     self.operation = operation
     self.operation_service = operation_service
     self.resource_service = resource_service
     self.project = project
     self.no_followup = no_followup
     self.followup_override = followup_override
+    self.always_return_operation = always_return_operation
 
     self.errors = []
     self.warnings = []
@@ -403,7 +407,10 @@ def WaitForOperations(
         # successful.
         if (operation.httpErrorStatusCode and
             operation.httpErrorStatusCode != 200):  # httplib.OK
-          continue
+          if data.always_return_operation:
+            yield operation
+          else:
+            continue
 
         # Just in case the server did not set httpErrorStatusCode but
         # the operation did fail, we check the "error" field.

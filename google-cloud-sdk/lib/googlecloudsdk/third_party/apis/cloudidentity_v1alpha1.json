@@ -204,8 +204,8 @@
       "properties": {
         "resourceType": {
           "enumDescriptions": [
-            "",
-            ""
+            "Default value (not valid)",
+            "For queries on User"
           ],
           "type": "string",
           "enum": [

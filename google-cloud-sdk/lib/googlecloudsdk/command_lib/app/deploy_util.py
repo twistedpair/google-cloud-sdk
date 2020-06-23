@@ -485,6 +485,10 @@ def ArgsDeploy(parser):
       help='Deploy with a specific Docker image.  Docker url must be from one '
       'of the valid gcr hostnames.')
   parser.add_argument(
+      '--appyaml',
+      help='Deploy with a specific app.yaml that will replace '
+      'the one defined in the DEPLOYABLE.')
+  parser.add_argument(
       '--promote',
       action=actions.StoreBooleanProperty(
           properties.VALUES.app.promote_by_default),
@@ -576,7 +580,7 @@ def RunDeploy(
     stager = _MakeStager(args.skip_staging, use_beta_stager,
                          args.staging_command, staging_area)
     services, configs = deployables.GetDeployables(
-        args.deployables, stager, deployables.GetPathMatchers())
+        args.deployables, stager, deployables.GetPathMatchers(), args.appyaml)
     service_infos = [d.service_info for d in services]
 
     flags.ValidateImageUrl(args.image_url, service_infos)

@@ -464,12 +464,14 @@ class FolderOperation(_messages.Message):
 
 class GetAncestryRequest(_messages.Message):
   r"""The request sent to the
-GetAncestry
-method."""
+  [google.cloudresourcemanager.projects.v1beta1.DeveloperProjects.GetAncestry]
+  method.
+  """
+
 
 
 class GetAncestryResponse(_messages.Message):
-  r"""Response from the GetAncestry method.
+  r"""Response from the projects.getAncestry method.
 
   Fields:
     ancestor: Ancestors are ordered from bottom to top of the resource
@@ -696,25 +698,25 @@ class Project(_messages.Message):
   Messages:
     LabelsValue: The labels associated with this Project.  Label keys must be
       between 1 and 63 characters long and must conform to the following
-      regular expression: \[a-z\](\[-a-z0-9\]*\[a-z0-9\])?.  Label values must
-      be between 0 and 63 characters long and must conform to the regular
-      expression (\[a-z\](\[-a-z0-9\]*\[a-z0-9\])?)?. A label value can be
-      empty.  No more than 256 labels can be associated with a given resource.
-      Clients should store labels in a representation such as JSON that does
-      not depend on specific characters being disallowed.  Example:
-      <code>"environment" : "dev"</code> Read-write.
+      regular expression: a-z{0,62}.  Label values must be between 0 and 63
+      characters long and must conform to the regular expression
+      [a-z0-9_-]{0,63}. A label value can be empty.  No more than 256 labels
+      can be associated with a given resource.  Clients should store labels in
+      a representation such as JSON that does not depend on specific
+      characters being disallowed.  Example: <code>"environment" :
+      "dev"</code> Read-write.
 
   Fields:
     createTime: Creation time.  Read-only.
     labels: The labels associated with this Project.  Label keys must be
       between 1 and 63 characters long and must conform to the following
-      regular expression: \[a-z\](\[-a-z0-9\]*\[a-z0-9\])?.  Label values must
-      be between 0 and 63 characters long and must conform to the regular
-      expression (\[a-z\](\[-a-z0-9\]*\[a-z0-9\])?)?. A label value can be
-      empty.  No more than 256 labels can be associated with a given resource.
-      Clients should store labels in a representation such as JSON that does
-      not depend on specific characters being disallowed.  Example:
-      <code>"environment" : "dev"</code> Read-write.
+      regular expression: a-z{0,62}.  Label values must be between 0 and 63
+      characters long and must conform to the regular expression
+      [a-z0-9_-]{0,63}. A label value can be empty.  No more than 256 labels
+      can be associated with a given resource.  Clients should store labels in
+      a representation such as JSON that does not depend on specific
+      characters being disallowed.  Example: <code>"environment" :
+      "dev"</code> Read-write.
     lifecycleState: The Project lifecycle state.  Read-only.
     name: The optional user-assigned display name of the Project. When present
       it must be between 4 to 30 characters. Allowed characters are: lowercase
@@ -756,13 +758,12 @@ class Project(_messages.Message):
   class LabelsValue(_messages.Message):
     r"""The labels associated with this Project.  Label keys must be between 1
     and 63 characters long and must conform to the following regular
-    expression: \[a-z\](\[-a-z0-9\]*\[a-z0-9\])?.  Label values must be
-    between 0 and 63 characters long and must conform to the regular
-    expression (\[a-z\](\[-a-z0-9\]*\[a-z0-9\])?)?. A label value can be
-    empty.  No more than 256 labels can be associated with a given resource.
-    Clients should store labels in a representation such as JSON that does not
-    depend on specific characters being disallowed.  Example:
-    <code>"environment" : "dev"</code> Read-write.
+    expression: a-z{0,62}.  Label values must be between 0 and 63 characters
+    long and must conform to the regular expression [a-z0-9_-]{0,63}. A label
+    value can be empty.  No more than 256 labels can be associated with a
+    given resource.  Clients should store labels in a representation such as
+    JSON that does not depend on specific characters being disallowed.
+    Example: <code>"environment" : "dev"</code> Read-write.
 
     Messages:
       AdditionalProperty: An additional property for a LabelsValue object.
@@ -854,12 +855,14 @@ class StandardQueryParameters(_messages.Message):
 
   Fields:
     f__xgafv: V1 error format.
+    access_token: OAuth access token.
     alt: Data format for response.
     callback: JSONP
     fields: Selector specifying which fields to include in a partial response.
     key: API key. Your API key identifies your project and provides you with
       API access, quota, and reports. Required unless you provide an OAuth 2.0
       token.
+    oauth_token: OAuth 2.0 token for the current user.
     prettyPrint: Returns response with indentations and line breaks.
     quotaUser: Available to use for quota purposes for server-side
       applications. Can be any arbitrary string assigned to a user, but should
@@ -893,15 +896,17 @@ class StandardQueryParameters(_messages.Message):
     _2 = 1
 
   f__xgafv = _messages.EnumField('FXgafvValueValuesEnum', 1)
-  alt = _messages.EnumField('AltValueValuesEnum', 2, default='json')
-  callback = _messages.StringField(3)
-  fields = _messages.StringField(4)
-  key = _messages.StringField(5)
-  prettyPrint = _messages.BooleanField(6, default=True)
-  quotaUser = _messages.StringField(7)
-  trace = _messages.StringField(8)
-  uploadType = _messages.StringField(9)
-  upload_protocol = _messages.StringField(10)
+  access_token = _messages.StringField(2)
+  alt = _messages.EnumField('AltValueValuesEnum', 3, default='json')
+  callback = _messages.StringField(4)
+  fields = _messages.StringField(5)
+  key = _messages.StringField(6)
+  oauth_token = _messages.StringField(7)
+  prettyPrint = _messages.BooleanField(8, default=True)
+  quotaUser = _messages.StringField(9)
+  trace = _messages.StringField(10)
+  uploadType = _messages.StringField(11)
+  upload_protocol = _messages.StringField(12)
 
 
 class TestIamPermissionsRequest(_messages.Message):

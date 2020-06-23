@@ -23,6 +23,11 @@
   "version_module": true,
   "fullyEncodeReservedExpansion": true,
   "parameters": {
+    "access_token": {
+      "type": "string",
+      "description": "OAuth access token.",
+      "location": "query"
+    },
     "alt": {
       "type": "string",
       "description": "Data format for response.",
@@ -52,6 +57,11 @@
     "key": {
       "type": "string",
       "description": "API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.",
+      "location": "query"
+    },
+    "oauth_token": {
+      "type": "string",
+      "description": "OAuth 2.0 token for the current user.",
       "location": "query"
     },
     "prettyPrint": {
@@ -337,6 +347,10 @@
           "description": "Required. Immutable. The API Controller for this API.",
           "$ref": "ApigatewayApiApiController"
         },
+        "managedService": {
+          "description": "Optional. Immutable. The name of a Google Managed Service (\nhttps:\/\/cloud.google.com\/service-infrastructure\/docs\/glossary#managed). If\nnot specified, a new Service will automatically be created in the same\nproject as this API.",
+          "type": "string"
+        },
         "state": {
           "description": "Output only. State of the API.",
           "enumDescriptions": [
@@ -365,7 +379,7 @@
       "type": "object",
       "properties": {
         "managedService": {
-          "description": "The name of a Google Managed Service (\nhttps:\/\/cloud.google.com\/service-infrastructure\/docs\/glossary#managed).\nThe API Gateway Service Identity must be granted the\n`services.configs.get` permission for this Service (\n\nhttps:\n\/\/cloud.google.com\/service-infrastructur\n\/\/ e\/docs\/service-management\/access-control#permissions\n).",
+          "description": "The name of a Google Managed Service (\nhttps:\/\/cloud.google.com\/service-infrastructure\/docs\/glossary#managed).",
           "type": "string"
         }
       }
@@ -432,6 +446,10 @@
         "gatewayConfig": {
           "description": "Immutable. Gateway specific configuration. If not specified, backend authentication\nwill be set to use OIDC authentication using the default compute service\naccount.",
           "$ref": "ApigatewayGatewayConfig"
+        },
+        "serviceConfigId": {
+          "description": "Output only. The ID of the associated Service Config (\nhttps:\/\/cloud.google.com\/service-infrastructure\/docs\/glossary#config).",
+          "type": "string"
         },
         "state": {
           "description": "Output only. State of the API Config.",

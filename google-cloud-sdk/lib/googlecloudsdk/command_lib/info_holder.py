@@ -233,8 +233,8 @@ class InstallationInfo(object):
     if self.sdk_root:
       manager = update_manager.UpdateManager()
       self.components = manager.GetCurrentVersionsInformation()
-      self.old_tool_paths = [anonymizer.ProcessPath(p)
-                             for p in manager.FindAllOldToolsOnPath()]
+      self.other_tool_paths = [anonymizer.ProcessPath(p)
+                               for p in manager.FindAllOtherToolsOnPath()]
       self.duplicate_tool_paths = [
           anonymizer.ProcessPath(p)
           for p in manager.FindAllDuplicateToolsOnPath()]
@@ -247,7 +247,7 @@ class InstallationInfo(object):
       self.on_path = this_path in paths
     else:
       self.components = {}
-      self.old_tool_paths = []
+      self.other_tool_paths = []
       self.duplicate_tool_paths = []
       self.on_path = False
 
@@ -268,20 +268,31 @@ class InstallationInfo(object):
           '\n  '.join(self.additional_repos)))
 
     if self.components:
-      components = ['{0}: [{1}]'.format(name, value) for name, value in
-                    six.iteritems(self.components)]
+      core_version = self.components.get('core', '')
+      component_strs = []
+      for name, value in six.iteritems(self.components):
+        # We want the alpha and beta component dates to match the core date.
+        # Otherwise the alpha and beta dates correspond to the last update to
+        # the respective files, not the gcloud release tracks. Users
+        # are confused thinking it is the alpha and beta tracks, which are
+        # actually included in the core update. (b/155661579)
+        if core_version and (name == 'alpha' or name == 'beta'):
+          component_strs.append('{0}: [{1}]'.format(name, core_version))
+        else:
+          component_strs.append('{0}: [{1}]'.format(name, value))
+
       out.write('Installed Components:\n  {0}\n'.format(
-          '\n  '.join(components)))
+          '\n  '.join(component_strs)))
 
     out.write('System PATH: [{0}]\n'.format(os.pathsep.join(self.path)))
     out.write('Python PATH: [{0}]\n'.format(os.pathsep.join(self.python_path)))
     out.write('Cloud SDK on PATH: [{0}]\n'.format(self.on_path))
     out.write('Kubectl on PATH: [{0}]\n'.format(self.kubectl or False))
 
-    if self.old_tool_paths:
-      out.write('\nWARNING: There are old versions of the Google Cloud '
+    if self.other_tool_paths:
+      out.write('\nWARNING: There are other instances of the Google Cloud '
                 'Platform tools on your system PATH.\n  {0}\n'
-                .format('\n  '.join(self.old_tool_paths)))
+                .format('\n  '.join(self.other_tool_paths)))
     if self.duplicate_tool_paths:
       out.write('There are alternate versions of the following Google Cloud '
                 'Platform tools on your system PATH.\n  {0}\n'

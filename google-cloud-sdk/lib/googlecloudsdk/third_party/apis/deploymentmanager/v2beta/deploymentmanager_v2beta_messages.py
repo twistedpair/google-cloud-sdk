@@ -547,12 +547,14 @@ class DeploymentmanagerDeploymentsGetIamPolicyRequest(_messages.Message):
   r"""A DeploymentmanagerDeploymentsGetIamPolicyRequest object.
 
   Fields:
+    optionsRequestedPolicyVersion: Requested IAM Policy version.
     project: Project ID for this request.
     resource: Name or id of the resource for this request.
   """
 
-  project = _messages.StringField(1, required=True)
-  resource = _messages.StringField(2, required=True)
+  optionsRequestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  project = _messages.StringField(2, required=True)
+  resource = _messages.StringField(3, required=True)
 
 
 class DeploymentmanagerDeploymentsGetRequest(_messages.Message):

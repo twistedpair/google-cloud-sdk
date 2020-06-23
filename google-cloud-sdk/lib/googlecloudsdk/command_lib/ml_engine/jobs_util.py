@@ -47,6 +47,8 @@ _CONTINUE_INTERVAL = 10
 
 _TEXT_FILE_URL = ('https://www.tensorflow.org/guide/datasets'
                   '#consuming_text_data')
+_JSON_FILE_URL = ('https://cloud.google.com/ai-platform/prediction/docs/'
+                  'overview#batch_prediction_input_data')
 _TF_RECORD_URL = ('https://www.tensorflow.org/guide/datasets'
                   '#consuming_tfrecord_data')
 
@@ -55,7 +57,9 @@ _PREDICTION_DATA_FORMAT_MAPPER = arg_utils.ChoiceEnumMapper(
     jobs.GetMessagesModule(
     ).GoogleCloudMlV1PredictionInput.DataFormatValueValuesEnum,
     custom_mappings={
-        'TEXT': ('text', ('Text files; see {}'.format(_TEXT_FILE_URL))),
+        'TEXT': ('text',
+                 ('Text and JSON files; for text files, see {}, for JSON files,'
+                  ' see {}'.format(_TEXT_FILE_URL, _JSON_FILE_URL))),
         'TF_RECORD': ('tf-record',
                       'TFRecord files; see {}'.format(_TF_RECORD_URL)),
         'TF_RECORD_GZIP': ('tf-record-gzip',
@@ -359,6 +363,7 @@ def SubmitTraining(jobs_client,
                    config=None,
                    module_name=None,
                    runtime_version=None,
+                   network=None,
                    python_version=None,
                    stream_logs=None,
                    user_args=None,
@@ -395,6 +400,7 @@ def SubmitTraining(jobs_client,
         scale_tier=scale_tier,
         user_args=user_args,
         runtime_version=runtime_version,
+        network=network,
         python_version=python_version,
         labels=labels,
         kms_key=kms_key,

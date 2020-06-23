@@ -3004,6 +3004,9 @@ class LaunchFlexTemplateParameter(_messages.Message):
   r"""Launch FlexTemplate Parameter.
 
   Messages:
+    LaunchOptionsValue: Launch options for this flex template job. This is a
+      common set of options across languages and templates. This should not be
+      used to pass job parameters.
     ParametersValue: The parameters for FlexTemplate. Ex. {"num_workers":"5"}
 
   Fields:
@@ -3011,8 +3014,38 @@ class LaunchFlexTemplateParameter(_messages.Message):
     containerSpecGcsPath: Gcs path to a file with json serialized
       ContainerSpec as content.
     jobName: Required. The job name to use for the created job.
+    launchOptions: Launch options for this flex template job. This is a common
+      set of options across languages and templates. This should not be used
+      to pass job parameters.
     parameters: The parameters for FlexTemplate. Ex. {"num_workers":"5"}
   """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LaunchOptionsValue(_messages.Message):
+    r"""Launch options for this flex template job. This is a common set of
+    options across languages and templates. This should not be used to pass
+    job parameters.
+
+    Messages:
+      AdditionalProperty: An additional property for a LaunchOptionsValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type LaunchOptionsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LaunchOptionsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class ParametersValue(_messages.Message):
@@ -3041,7 +3074,8 @@ class LaunchFlexTemplateParameter(_messages.Message):
   containerSpec = _messages.MessageField('ContainerSpec', 1)
   containerSpecGcsPath = _messages.StringField(2)
   jobName = _messages.StringField(3)
-  parameters = _messages.MessageField('ParametersValue', 4)
+  launchOptions = _messages.MessageField('LaunchOptionsValue', 4)
+  parameters = _messages.MessageField('ParametersValue', 5)
 
 
 class LaunchFlexTemplateRequest(_messages.Message):

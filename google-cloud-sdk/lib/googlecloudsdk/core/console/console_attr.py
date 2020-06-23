@@ -283,7 +283,7 @@ class ConsoleAttr(object):
 
     # Encoded character attributes.
     is_screen_reader = properties.VALUES.accessibility.screen_reader.GetBool()
-    if self._encoding == 'utf8' and not is_screen_reader:
+    if self._encoding == 'utf-8' and not is_screen_reader:
       self._box_line_characters = BoxLineCharactersUnicode()
       self._bullets = self._BULLETS_UNICODE
       self._progress_tracker_symbols = ProgressTrackerSymbolsUnicode()
@@ -321,7 +321,7 @@ class ConsoleAttr(object):
       locale_encoding = locale.getpreferredencoding()
       if locale_encoding and 'cp1252' in locale_encoding:
         return None
-      return 'utf8'
+      return 'utf-8'
     elif 'cp437' in console_encoding:
       return 'cp437'
     elif 'cp1252' in console_encoding:

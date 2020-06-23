@@ -710,6 +710,49 @@ used for production workloads."""
   parser.add_argument(
       '--enable-cloud-run-alpha', action='store_true', help=help_text)
 
+def AddCloudRunConfigFlag(parser, suppressed=False):
+  """Adds a --cloud-run-config flag to parser."""
+  help_text = """\
+Configurations for Cloud Run addon, requires `--addons=CloudRun` for create
+and `--update-addons=CloudRun=ENABLED` for update.
+
+*load-balancer-type*:::Optional Type of load-balancer-type EXTERNAL or INTERNAL
+Example:
+
+  $ {command} example-cluster --cloud-run-config=load-balancer-type=INTERNAL
+"""
+  parser.add_argument(
+      '--cloud-run-config',
+      metavar='load-balancer-type=EXTERNAL',
+      type=arg_parsers.ArgDict(spec={
+          'load-balancer-type': (lambda x: x.upper()),
+      }),
+      help=help_text,
+      hidden=suppressed)
+
+
+def ValidateCloudRunConfigCreateArgs(cloud_run_config_args, addons_args):
+  """Validates flags specifying Cloud Run config for create.
+
+  Args:
+    cloud_run_config_args: parsed commandline arguments for --cloud-run-config.
+    addons_args: parsed commandline arguments for --addons.
+
+  Raises:
+    InvalidArgumentException: when load-balancer-type is not EXTERNAL nor INTERNAL,
+    or --addons=CloudRun is not specified
+  """
+  if cloud_run_config_args:
+    load_balancer_type = cloud_run_config_args.get('load-balancer-type', '')
+    if load_balancer_type not in ['EXTERNAL', 'INTERNAL']:
+      raise exceptions.InvalidArgumentException(
+          '--cloudrun-config', 'load-balancer-type is either EXTERNAL or INTERNAL'
+          'e.g. --cloudrun-config load-balancer-type=EXTERNAL')
+    if 'CloudRun' not in addons_args:
+      raise exceptions.InvalidArgumentException(
+          '--cloudrun-config', '--addon=CloudRun must be specified when '
+          '--cloudrun-config is given')
+
 
 def AddEnableStackdriverKubernetesFlag(parser):
   """Adds a --enable-stackdriver-kubernetes flag to parser."""

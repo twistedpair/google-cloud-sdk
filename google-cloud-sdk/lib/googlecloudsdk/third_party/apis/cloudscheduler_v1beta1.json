@@ -541,7 +541,7 @@
           "format": "byte"
         },
         "attributes": {
-          "description": "Attributes for this message. If this field is empty, the message must\ncontain non-empty data.",
+          "description": "Attributes for this message. If this field is empty, the message must\ncontain non-empty data. This can be used to filter messages on the\nsubscription.",
           "type": "object",
           "additionalProperties": {
             "type": "string"

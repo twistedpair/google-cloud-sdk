@@ -1746,9 +1746,11 @@ class DynamicGroupQuery(_messages.Message):
     Values:
       RESOURCE_TYPE_UNSPECIFIED: Default value (not valid)
       USER: For queries on User
+      TEAM_DRIVE: For queries on Team Drive
     """
     RESOURCE_TYPE_UNSPECIFIED = 0
     USER = 1
+    TEAM_DRIVE = 2
 
   query = _messages.StringField(1)
   resourceType = _messages.EnumField('ResourceTypeValueValuesEnum', 2)

@@ -1039,6 +1039,35 @@
         }
       }
     },
+    "ImportConsumerOverridesRequest": {
+      "id": "ImportConsumerOverridesRequest",
+      "description": "Request message for ImportConsumerOverrides",
+      "type": "object",
+      "properties": {
+        "inlineSource": {
+          "description": "The import data is specified in the request message itself",
+          "$ref": "OverrideInlineSource"
+        },
+        "force": {
+          "description": "Whether to force the creation of the quota overrides.\nIf creating an override would cause the effective quota for the consumer to\ndecrease by more than 10 percent, the call is rejected, as a safety measure\nto avoid accidentally decreasing quota too quickly. Setting the force\nparameter to true ignores this restriction.",
+          "type": "boolean"
+        }
+      }
+    },
+    "OverrideInlineSource": {
+      "id": "OverrideInlineSource",
+      "description": "Import data embedded in the request message",
+      "type": "object",
+      "properties": {
+        "overrides": {
+          "description": "The overrides to create.\nEach override must have a value for 'metric' and 'unit', to specify\nwhich metric and which limit the override should be applied to.",
+          "type": "array",
+          "items": {
+            "$ref": "QuotaOverride"
+          }
+        }
+      }
+    },
     "GoogleApiService": {
       "id": "GoogleApiService",
       "description": "`Service` is the root object of Google service configuration schema. It\ndescribes basic information about a service, such as the name and the\ntitle, and delegates other aspects to sub-sections. Each sub-section is\neither a proto message or a repeated proto message that configures a\nspecific aspect, such as auth. See each proto message definition for details.\n\nExample:\n\n    type: google.api.Service\n    config_version: 3\n    name: calendar.googleapis.com\n    title: Google Calendar API\n    apis:\n    - name: google.calendar.v3.Calendar\n    authentication:\n      providers:\n      - id: google_calendar_auth\n        jwks_uri: https:\/\/www.googleapis.com\/oauth2\/v1\/certs\n        issuer: https:\/\/securetoken.google.com\n      rules:\n      - selector: \"*\"\n        requirements:\n          provider_id: google_calendar_auth",
@@ -1858,7 +1887,7 @@
     },
     "MonitoredResourceDescriptor": {
       "id": "MonitoredResourceDescriptor",
-      "description": "An object that describes the schema of a MonitoredResource object using a\ntype name and a set of labels.  For example, the monitored resource\ndescriptor for Google Compute Engine VM instances has a type of\n`\"gce_instance\"` and specifies the use of the labels `\"instance_id\"` and\n`\"zone\"` to identify particular VM instances.\n\nDifferent services can support different monitored resource types.\n\nThe following are specific rules to service defined monitored resources for\nMonitoring and Logging:\n\n* The `type`, `display_name`, `description`, `labels` and `launch_stage`\n  fields are all required.\n* The first label of the monitored resource descriptor must be\n  `resource_container`. There are legacy monitored resource descritptors\n  start with `project_id`.\n* It must include a `location` label. * Maximum of default 5 service defined monitored resource descriptors\n  is allowed per service.\n* Maximum of default 10 labels per monitored resource is allowed.\n\nThe default maximum limit can be overridden. Please follow\nhttps:\/\/cloud.google.com\/monitoring\/quotas",
+      "description": "An object that describes the schema of a MonitoredResource object using a\ntype name and a set of labels.  For example, the monitored resource\ndescriptor for Google Compute Engine VM instances has a type of\n`\"gce_instance\"` and specifies the use of the labels `\"instance_id\"` and\n`\"zone\"` to identify particular VM instances.\n\nDifferent services can support different monitored resource types.\n\nThe following are specific rules to service defined monitored resources for\nMonitoring and Logging:\n\n* The `type`, `display_name`, `description`, `labels` and `launch_stage`\n  fields are all required.\n* The first label of the monitored resource descriptor must be\n  `resource_container`. There are legacy monitored resource descritptors\n  start with `project_id`.\n* It must include a `location` label.\n* Maximum of default 5 service defined monitored resource descriptors\n  is allowed per service.\n* Maximum of default 10 labels per monitored resource is allowed.\n\nThe default maximum limit can be overridden. Please follow\nhttps:\/\/cloud.google.com\/monitoring\/quotas\n",
       "type": "object",
       "properties": {
         "name": {
@@ -1866,7 +1895,7 @@
           "type": "string"
         },
         "type": {
-          "description": "Note there are legacy service monitored resources not following this rule.",
+          "description": "Required. The monitored resource type. For example, the type\n`cloudsql_database` represents databases in Google Cloud SQL.\n\nAll service defined monitored resource types must be prefixed with the\nservice name, in the format of `{service name}\/{relative resource name}`.\nThe relative resource name must follow:\n\n* Only upper and lower-case letters and digits are allowed.\n* It must start with upper case character and is recommended to use Upper\n  Camel Case style.\n* The maximum number of characters allowed for the relative_resource_name\n  is 100.\n\nNote there are legacy service monitored resources not following this rule.",
           "type": "string"
         },
         "displayName": {
@@ -1983,18 +2012,18 @@
     },
     "Monitoring": {
       "id": "Monitoring",
-      "description": "Monitoring configuration of the service.\n\nThe example below shows how to configure monitored resources and metrics\nfor monitoring. In the example, a monitored resource and two metrics are\ndefined. The `library.googleapis.com\/book\/returned_count` metric is sent\nto both producer and consumer projects, whereas the\n`library.googleapis.com\/book\/overdue_count` metric is only sent to the\nconsumer project.\n\n    monitored_resources:\n    - type: library.googleapis.com\/branch\n      labels:\n      - key: \/city\n        description: The city where the library branch is located in.\n      - key: \/name\n        description: The name of the branch.\n    metrics:\n    - name: library.googleapis.com\/book\/returned_count\n      metric_kind: DELTA\n      value_type: INT64\n      labels:\n      - key: \/customer_id\n    - name: library.googleapis.com\/book\/overdue_count\n      metric_kind: GAUGE\n      value_type: INT64\n      labels:\n      - key: \/customer_id\n    monitoring:\n      producer_destinations:\n      - monitored_resource: library.googleapis.com\/branch\n        metrics:\n        - library.googleapis.com\/book\/returned_count\n      consumer_destinations:\n      - monitored_resource: library.googleapis.com\/branch\n        metrics:\n        - library.googleapis.com\/book\/returned_count\n        - library.googleapis.com\/book\/overdue_count",
+      "description": "Monitoring configuration of the service.\n\nThe example below shows how to configure monitored resources and metrics\nfor monitoring. In the example, a monitored resource and two metrics are\ndefined. The `library.googleapis.com\/book\/returned_count` metric is sent\nto both producer and consumer projects, whereas the\n`library.googleapis.com\/book\/num_overdue` metric is only sent to the\nconsumer project.\n\n    monitored_resources:\n    - type: library.googleapis.com\/Branch\n      display_name: \"Library Branch\"\n      description: \"A branch of a library.\"\n      launch_stage: GA\n      labels:\n      - key: resource_container\n        description: \"The Cloud container (ie. project id) for the Branch.\"\n      - key: location\n        description: \"The location of the library branch.\"\n      - key: branch_id\n        description: \"The id of the branch.\"\n    metrics:\n    - name: library.googleapis.com\/book\/returned_count\n      display_name: \"Books Returned\"\n      description: \"The count of books that have been returned.\"\n      launch_stage: GA\n      metric_kind: DELTA\n      value_type: INT64\n      unit: \"1\"\n      labels:\n      - key: customer_id\n        description: \"The id of the customer.\"\n    - name: library.googleapis.com\/book\/num_overdue\n      display_name: \"Books Overdue\"\n      description: \"The current number of overdue books.\"\n      launch_stage: GA\n      metric_kind: GAUGE\n      value_type: INT64\n      unit: \"1\"\n      labels:\n      - key: customer_id\n        description: \"The id of the customer.\"\n    monitoring:\n      producer_destinations:\n      - monitored_resource: library.googleapis.com\/Branch\n        metrics:\n        - library.googleapis.com\/book\/returned_count\n      consumer_destinations:\n      - monitored_resource: library.googleapis.com\/Branch\n        metrics:\n        - library.googleapis.com\/book\/returned_count\n        - library.googleapis.com\/book\/num_overdue",
       "type": "object",
       "properties": {
         "producerDestinations": {
-          "description": "Monitoring configurations for sending metrics to the producer project.\nThere can be multiple producer destinations. A monitored resouce type may\nappear in multiple monitoring destinations if different aggregations are\nneeded for different sets of metrics associated with that monitored\nresource type. A monitored resource and metric pair may only be used once\nin the Monitoring configuration.",
+          "description": "Monitoring configurations for sending metrics to the producer project.\nThere can be multiple producer destinations. A monitored resource type may\nappear in multiple monitoring destinations if different aggregations are\nneeded for different sets of metrics associated with that monitored\nresource type. A monitored resource and metric pair may only be used once\nin the Monitoring configuration.",
           "type": "array",
           "items": {
             "$ref": "MonitoringDestination"
           }
         },
         "consumerDestinations": {
-          "description": "Monitoring configurations for sending metrics to the consumer project.\nThere can be multiple consumer destinations. A monitored resouce type may\nappear in multiple monitoring destinations if different aggregations are\nneeded for different sets of metrics associated with that monitored\nresource type. A monitored resource and metric pair may only be used once\nin the Monitoring configuration.",
+          "description": "Monitoring configurations for sending metrics to the consumer project.\nThere can be multiple consumer destinations. A monitored resource type may\nappear in multiple monitoring destinations if different aggregations are\nneeded for different sets of metrics associated with that monitored\nresource type. A monitored resource and metric pair may only be used once\nin the Monitoring configuration.",
           "type": "array",
           "items": {
             "$ref": "MonitoringDestination"
@@ -2405,7 +2434,7 @@
       "type": "object",
       "properties": {
         "name": {
-          "description": "The resource name of the policy.\nThis name is generated by the server when the policy is created.\n\nExample names would be:\n`organizations\/123\/services\/compute.googleapis.com\/consumerQuotaMetrics\/compute.googleapis.com%2Fcpus\/limits\/%2Fproject%2Fregion\/adminPolicies\/4a3f2c1d`",
+          "description": "The resource name of the policy.\nThis name is generated by the server when the policy is created.\n\nExample names would be:\n`organizations\/123\/services\/compute.googleapis.com\/consumerQuotaMetrics\/compute.googleapis.com%2Fcpus\/limits\/%2Fproject%2Fregion\/adminQuotaPolicies\/4a3f2c1d`",
           "type": "string"
         },
         "policyValue": {
@@ -2782,6 +2811,35 @@
                 "https://www.googleapis.com/auth/cloud-platform.read-only"
               ],
               "description": "Retrieves a summary of quota information for a specific quota metric"
+            },
+            "importConsumerOverrides": {
+              "id": "serviceusage.services.consumerQuotaMetrics.importConsumerOverrides",
+              "path": "v1beta1/{+parent}/consumerQuotaMetrics:importConsumerOverrides",
+              "flatPath": "v1beta1/{v1beta1Id}/{v1beta1Id1}/services/{servicesId}/consumerQuotaMetrics:importConsumerOverrides",
+              "httpMethod": "POST",
+              "parameters": {
+                "parent": {
+                  "description": "The resource name of the consumer.\n\nAn example name would be:\n`projects\/123\/services\/compute.googleapis.com`",
+                  "location": "path",
+                  "required": true,
+                  "pattern": "^[^\/]+\/[^\/]+\/services\/[^\/]+$",
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "parent"
+              ],
+              "request": {
+                "$ref": "ImportConsumerOverridesRequest"
+              },
+              "response": {
+                "$ref": "Operation"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform",
+                "https://www.googleapis.com/auth/service.management"
+              ],
+              "description": "Create or update multiple consumer overrides atomically, all on the\nsame consumer, but on many different metrics or limits.\nThe name field in the quota override message should not be set."
             }
           }
           ,

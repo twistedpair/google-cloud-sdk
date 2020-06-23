@@ -924,10 +924,6 @@
           "description": "GitHubEventsConfig describes the configuration of a trigger that creates\na build whenever a GitHub event is received.\n\nMutually exclusive with `trigger_template`.",
           "$ref": "GitHubEventsConfig"
         },
-        "pubsubConfig": {
-          "description": "PubsubConfig describes the configuration of a trigger that creates a\nbuild whenever a Pub\/Sub message is published.",
-          "$ref": "PubsubConfig"
-        },
         "build": {
           "description": "Contents of the build template.",
           "$ref": "Build"
@@ -965,10 +961,6 @@
           "items": {
             "type": "string"
           }
-        },
-        "sourceToBuild": {
-          "description": "The repo and ref of the repository from which to build. This field\nis used only for those triggers that do not respond to SCM events.\nTriggers that respond to such events build source at whatever commit\ncaused the event.",
-          "$ref": "GitRepoSource"
         }
       }
     },
@@ -1043,54 +1035,6 @@
         "invertRegex": {
           "description": "When true, only trigger a build if the revision regex does NOT match the\ngit_ref regex.",
           "type": "boolean"
-        }
-      }
-    },
-    "PubsubConfig": {
-      "id": "PubsubConfig",
-      "description": "PubsubConfig describes the configuration of a trigger that creates a\nbuild whenever a Pub\/Sub message is published.",
-      "type": "object",
-      "properties": {
-        "subscription": {
-          "description": "Output only. Name of the subscription.\nFormat is\n`projects\/{project}\/subscriptions\/{subscription}`.",
-          "type": "string"
-        },
-        "topic": {
-          "description": "The name of the topic from which this subscription is receiving messages.\nFormat is `projects\/{project}\/topics\/{topic}`.",
-          "type": "string"
-        },
-        "serviceAccountEmail": {
-          "description": "Service account that will make the push request.",
-          "type": "string"
-        }
-      }
-    },
-    "GitRepoSource": {
-      "id": "GitRepoSource",
-      "description": "GitRepoSource describes a repo and ref of a code repository.",
-      "type": "object",
-      "properties": {
-        "uri": {
-          "description": "The URI of the repo (required).",
-          "type": "string"
-        },
-        "ref": {
-          "description": "The branch or tag to use. Must start with \"refs\/\" (required).",
-          "type": "string"
-        },
-        "repoType": {
-          "description": "See RepoType below.",
-          "enumDescriptions": [
-            "The default, unknown repo type.",
-            "A Google Cloud Source Repositories-hosted repo.",
-            "A GitHub-hosted repo not necessarily on \"github.com\" (i.e. GitHub\nEnterprise)."
-          ],
-          "type": "string",
-          "enum": [
-            "UNKNOWN",
-            "CLOUD_SOURCE_REPOSITORIES",
-            "GITHUB"
-          ]
         }
       }
     },

@@ -436,6 +436,35 @@ default limit of the service.
         supports_download=False,
     )
 
+    def ImportConsumerOverrides(self, request, global_params=None):
+      r"""Create or update multiple consumer overrides atomically, all on the.
+same consumer, but on many different metrics or limits.
+The name field in the quota override message should not be set.
+
+      Args:
+        request: (ServiceusageServicesConsumerQuotaMetricsImportConsumerOverridesRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('ImportConsumerOverrides')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    ImportConsumerOverrides.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/{v1beta1Id}/{v1beta1Id1}/services/{servicesId}/consumerQuotaMetrics:importConsumerOverrides',
+        http_method='POST',
+        method_id='serviceusage.services.consumerQuotaMetrics.importConsumerOverrides',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=[],
+        relative_path='v1beta1/{+parent}/consumerQuotaMetrics:importConsumerOverrides',
+        request_field='importConsumerOverridesRequest',
+        request_type_name='ServiceusageServicesConsumerQuotaMetricsImportConsumerOverridesRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
     def List(self, request, global_params=None):
       r"""Retrieves a summary of all quota information visible to the service.
 consumer, organized by service metric. Each metric includes information

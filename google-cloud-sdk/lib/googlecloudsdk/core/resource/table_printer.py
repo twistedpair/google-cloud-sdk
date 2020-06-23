@@ -153,7 +153,7 @@ class TablePrinter(resource_printer_base.ResourcePrinter):
     super(TablePrinter, self).__init__(
         *args, by_columns=True, non_empty_projection_required=True, **kwargs)
     encoding = None
-    for name in ['ascii', 'utf8', 'win']:
+    for name in ['ascii', 'utf-8', 'win']:
       if name in self.attributes:
         encoding = name
         break

@@ -303,6 +303,14 @@ class ClusterConfig(_messages.Message):
     securityConfig: Optional. Security settings for the cluster.
     softwareConfig: Optional. The config settings for software inside the
       cluster.
+    tempBucket: Optional. A Cloud Storage bucket used to store ephemeral
+      cluster and jobs data, such as Spark and MapReduce history files. If you
+      do not specify a temp bucket, Dataproc will determine a Cloud Storage
+      location (US, ASIA, or EU) for your cluster's temp bucket according to
+      the Compute Engine zone where your cluster is deployed, and then create
+      and manage this project-level, per-location bucket. The default bucket
+      has a TTL of 90 days, but you can use any TTL (or none) if you specify a
+      bucket.
     workerConfig: Optional. The Compute Engine config settings for worker
       instances in a cluster.
   """
@@ -318,7 +326,8 @@ class ClusterConfig(_messages.Message):
   secondaryWorkerConfig = _messages.MessageField('InstanceGroupConfig', 9)
   securityConfig = _messages.MessageField('SecurityConfig', 10)
   softwareConfig = _messages.MessageField('SoftwareConfig', 11)
-  workerConfig = _messages.MessageField('InstanceGroupConfig', 12)
+  tempBucket = _messages.StringField(12)
+  workerConfig = _messages.MessageField('InstanceGroupConfig', 13)
 
 
 class ClusterMetrics(_messages.Message):
@@ -2470,8 +2479,8 @@ class JobReference(_messages.Message):
       ID must contain only letters (a-z, A-Z), numbers (0-9), underscores (_),
       or hyphens (-). The maximum length is 100 characters.If not specified by
       the caller, the job ID will be provided by the server.
-    projectId: Required. The ID of the Google Cloud Platform project that the
-      job belongs to.
+    projectId: Optional. The ID of the Google Cloud Platform project that the
+      job belongs to. If specified, must match the request project ID.
   """
 
   jobId = _messages.StringField(1)
@@ -3798,12 +3807,14 @@ class StandardQueryParameters(_messages.Message):
 
   Fields:
     f__xgafv: V1 error format.
+    access_token: OAuth access token.
     alt: Data format for response.
     callback: JSONP
     fields: Selector specifying which fields to include in a partial response.
     key: API key. Your API key identifies your project and provides you with
       API access, quota, and reports. Required unless you provide an OAuth 2.0
       token.
+    oauth_token: OAuth 2.0 token for the current user.
     prettyPrint: Returns response with indentations and line breaks.
     quotaUser: Available to use for quota purposes for server-side
       applications. Can be any arbitrary string assigned to a user, but should
@@ -3837,15 +3848,17 @@ class StandardQueryParameters(_messages.Message):
     _2 = 1
 
   f__xgafv = _messages.EnumField('FXgafvValueValuesEnum', 1)
-  alt = _messages.EnumField('AltValueValuesEnum', 2, default='json')
-  callback = _messages.StringField(3)
-  fields = _messages.StringField(4)
-  key = _messages.StringField(5)
-  prettyPrint = _messages.BooleanField(6, default=True)
-  quotaUser = _messages.StringField(7)
-  trace = _messages.StringField(8)
-  uploadType = _messages.StringField(9)
-  upload_protocol = _messages.StringField(10)
+  access_token = _messages.StringField(2)
+  alt = _messages.EnumField('AltValueValuesEnum', 3, default='json')
+  callback = _messages.StringField(4)
+  fields = _messages.StringField(5)
+  key = _messages.StringField(6)
+  oauth_token = _messages.StringField(7)
+  prettyPrint = _messages.BooleanField(8, default=True)
+  quotaUser = _messages.StringField(9)
+  trace = _messages.StringField(10)
+  uploadType = _messages.StringField(11)
+  upload_protocol = _messages.StringField(12)
 
 
 class Status(_messages.Message):
@@ -4167,9 +4180,9 @@ class WorkflowTemplate(_messages.Message):
       For projects.locations.workflowTemplates, the resource name of the
       template has the following format:  projects/{project_id}/locations/{loc
       ation}/workflowTemplates/{template_id}
-    parameters: Optional. emplate parameters whose values are substituted into
-      the template. Values for parameters must be provided when the template
-      is instantiated.
+    parameters: Optional. Template parameters whose values are substituted
+      into the template. Values for parameters must be provided when the
+      template is instantiated.
     placement: Required. WorkflowTemplate scheduling information.
     updateTime: Output only. The time template was last updated.
     version: Optional. Used to perform a consistent read-modify-write.This

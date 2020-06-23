@@ -24,6 +24,11 @@
   "version_module": true,
   "fullyEncodeReservedExpansion": true,
   "parameters": {
+    "access_token": {
+      "type": "string",
+      "description": "OAuth access token.",
+      "location": "query"
+    },
     "alt": {
       "type": "string",
       "description": "Data format for response.",
@@ -53,6 +58,11 @@
     "key": {
       "type": "string",
       "description": "API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.",
+      "location": "query"
+    },
+    "oauth_token": {
+      "type": "string",
+      "description": "OAuth 2.0 token for the current user.",
       "location": "query"
     },
     "prettyPrint": {
@@ -525,7 +535,11 @@
           "type": "string"
         },
         "vpc": {
-          "description": "Required. The VPC name the vm needs to be created in.",
+          "description": "The VPC name the vm needs to be created in.",
+          "type": "string"
+        },
+        "subnet": {
+          "description": "The subnet name the vm needs to be created in.",
           "type": "string"
         }
       }
@@ -691,6 +705,10 @@
         "cloudSqlId": {
           "description": "If the source is a Cloud SQL database, use this field to\nprovide the Cloud SQL instance ID of the source.",
           "type": "string"
+        },
+        "hasPassword": {
+          "description": "Output only. Indicates If this connection profile password is stored.",
+          "type": "boolean"
         }
       }
     },
@@ -756,6 +774,10 @@
         "cloudSqlId": {
           "description": "If the source is a Cloud SQL database, use this field to\nprovide the Cloud SQL instance ID of the source.",
           "type": "string"
+        },
+        "hasPassword": {
+          "description": "Output only. Indicates If this connection profile password is stored.",
+          "type": "boolean"
         }
       }
     },
@@ -882,6 +904,10 @@
         "rootPassword": {
           "description": "Initial root password.",
           "type": "string"
+        },
+        "hasRootPassword": {
+          "description": "Output only. Indicates If this connection profile root password is stored.",
+          "type": "boolean"
         }
       }
     },

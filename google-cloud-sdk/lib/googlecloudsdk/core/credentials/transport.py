@@ -29,8 +29,8 @@ from googlecloudsdk.core.credentials import store
 from googlecloudsdk.core.util import files
 
 from oauth2client import client
-
 import six
+from google.auth import exceptions as google_auth_exceptions
 
 
 class Error(exceptions.Error):
@@ -89,10 +89,9 @@ class CredentialWrappingMixin(object):
 
       http_client = self.AuthorizeClient(http_client, creds)
 
-    # TODO(b/155437862): Do the correct exception handling for google auth.
-    # Wrap the request method to put in our own error handling.
-    http_client = self.WrapRequest(http_client, handlers, _HandleAuthError,
-                                   client.AccessTokenRefreshError)
+    http_client = self.WrapRequest(
+        http_client, handlers, _HandleAuthError,
+        (client.AccessTokenRefreshError, google_auth_exceptions.RefreshError))
 
     return http_client
 

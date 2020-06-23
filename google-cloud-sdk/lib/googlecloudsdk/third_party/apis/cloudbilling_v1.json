@@ -456,6 +456,10 @@
         "serviceProviderName": {
           "description": "Identifies the service provider.\nThis is 'Google' for first party services in Google Cloud Platform.",
           "type": "string"
+        },
+        "geoTaxonomy": {
+          "description": "The geographic taxonomy for this sku.",
+          "$ref": "GeoTaxonomy"
         }
       }
     },
@@ -623,6 +627,36 @@
           "description": "The number of intervals to aggregate over.\nExample: If aggregation_level is \"DAILY\" and aggregation_count is 14,\naggregation will be over 14 days.",
           "type": "integer",
           "format": "int32"
+        }
+      }
+    },
+    "GeoTaxonomy": {
+      "id": "GeoTaxonomy",
+      "description": "Encapsulates the geographic taxonomy data for a sku.",
+      "type": "object",
+      "properties": {
+        "type": {
+          "description": "The type of Geo Taxonomy: GLOBAL, REGIONAL, or MULTI_REGIONAL.",
+          "enumDescriptions": [
+            "The type is not specified.",
+            "The sku is global in nature, e.g. a license sku. Global skus are\navailable in all regions, and so have an empty region list.",
+            "The sku is available in a specific region, e.g. \"us-west2\".",
+            "The sku is associated with multiple regions, e.g. \"us-west2\" and\n\"us-east1\"."
+          ],
+          "type": "string",
+          "enum": [
+            "TYPE_UNSPECIFIED",
+            "GLOBAL",
+            "REGIONAL",
+            "MULTI_REGIONAL"
+          ]
+        },
+        "regions": {
+          "description": "The list of regions associated with a sku. Empty for Global skus, which are\nassociated with all GCP regions.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
         }
       }
     }

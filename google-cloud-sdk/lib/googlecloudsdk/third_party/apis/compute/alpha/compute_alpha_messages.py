@@ -731,6 +731,7 @@ class Address(_messages.Message):
       GCE_ENDPOINT: <no description>
       NAT_AUTO: <no description>
       PRIVATE_SERVICE_CONNECT: <no description>
+      PSC_PRODUCER_NAT_RANGE: <no description>
       SHARED_LOADBALANCER_VIP: <no description>
       VPC_PEERING: <no description>
     """
@@ -738,8 +739,9 @@ class Address(_messages.Message):
     GCE_ENDPOINT = 1
     NAT_AUTO = 2
     PRIVATE_SERVICE_CONNECT = 3
-    SHARED_LOADBALANCER_VIP = 4
-    VPC_PEERING = 5
+    PSC_PRODUCER_NAT_RANGE = 4
+    SHARED_LOADBALANCER_VIP = 5
+    VPC_PEERING = 6
 
   class StatusValueValuesEnum(_messages.Enum):
     r"""[Output Only] The status of the address, which can be one of
@@ -1201,6 +1203,21 @@ class AddressesScopedList(_messages.Message):
 
   addresses = _messages.MessageField('Address', 1, repeated=True)
   warning = _messages.MessageField('WarningValue', 2)
+
+
+class AdvancedMachineFeatures(_messages.Message):
+  r"""Specifies options for controlling advanced machine features. Options
+  that would traditionally be configured in a BIOS belong here. Features that
+  require operating system support may have corresponding entries in the
+  GuestOsFeatures of an Image (e.g., whether or not the OS in the Image
+  supports nested virtualization being enabled or disabled).
+
+  Fields:
+    enableNestedVirtualization: Whether to enable nested virtualization or not
+      (default is false).
+  """
+
+  enableNestedVirtualization = _messages.BooleanField(1)
 
 
 class AliasIpRange(_messages.Message):
@@ -2467,6 +2484,13 @@ class AutoscalingPolicy(_messages.Message):
   Enums:
     ModeValueValuesEnum: Defines operating mode for this policy.
 
+  Messages:
+    ScalingSchedulesValue: Scaling schedules defined for an autoscaler.
+      Multiple schedules can be set on an autoscaler and they can overlap.
+      During overlapping periods the greatest min_required_replicas of all
+      scaling schedules will be applied. Up to 128 scaling schedules are
+      allowed.
+
   Fields:
     coolDownPeriodSec: The number of seconds that the autoscaler should wait
       before it starts collecting information from a new instance. This
@@ -2494,6 +2518,10 @@ class AutoscalingPolicy(_messages.Message):
     mode: Defines operating mode for this policy.
     scaleDownControl: A AutoscalingPolicyScaleDownControl attribute.
     scaleInControl: A AutoscalingPolicyScaleInControl attribute.
+    scalingSchedules: Scaling schedules defined for an autoscaler. Multiple
+      schedules can be set on an autoscaler and they can overlap. During
+      overlapping periods the greatest min_required_replicas of all scaling
+      schedules will be applied. Up to 128 scaling schedules are allowed.
   """
 
   class ModeValueValuesEnum(_messages.Enum):
@@ -2510,6 +2538,35 @@ class AutoscalingPolicy(_messages.Message):
     ONLY_SCALE_OUT = 2
     ONLY_UP = 3
 
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class ScalingSchedulesValue(_messages.Message):
+    r"""Scaling schedules defined for an autoscaler. Multiple schedules can be
+    set on an autoscaler and they can overlap. During overlapping periods the
+    greatest min_required_replicas of all scaling schedules will be applied.
+    Up to 128 scaling schedules are allowed.
+
+    Messages:
+      AdditionalProperty: An additional property for a ScalingSchedulesValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type
+        ScalingSchedulesValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a ScalingSchedulesValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A AutoscalingPolicyScalingSchedule attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('AutoscalingPolicyScalingSchedule', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
   coolDownPeriodSec = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   cpuUtilization = _messages.MessageField('AutoscalingPolicyCpuUtilization', 2)
   customMetricUtilizations = _messages.MessageField('AutoscalingPolicyCustomMetricUtilization', 3, repeated=True)
@@ -2519,6 +2576,7 @@ class AutoscalingPolicy(_messages.Message):
   mode = _messages.EnumField('ModeValueValuesEnum', 7)
   scaleDownControl = _messages.MessageField('AutoscalingPolicyScaleDownControl', 8)
   scaleInControl = _messages.MessageField('AutoscalingPolicyScaleInControl', 9)
+  scalingSchedules = _messages.MessageField('ScalingSchedulesValue', 10)
 
 
 class AutoscalingPolicyCpuUtilization(_messages.Message):
@@ -2709,6 +2767,45 @@ class AutoscalingPolicyScaleInControl(_messages.Message):
   timeWindowSec = _messages.IntegerField(2, variant=_messages.Variant.INT32)
 
 
+class AutoscalingPolicyScalingSchedule(_messages.Message):
+  r"""Scaling based on user-defined schedule. The message describes a single
+  scaling schedule. A scaling schedule changes the minimum number of VM
+  instances an autoscaler can recommend, which can trigger scaling out.
+
+  Fields:
+    description: A description of a scaling schedule.
+    disabled: A boolean value that specifies if a scaling schedule can
+      influence autoscaler recommendations. If set to true, then a scaling
+      schedule has no effect. This field is optional and its value is false by
+      default.
+    durationSec: The duration of time intervals (in seconds) for which this
+      scaling schedule will be running. The minimum allowed value is 300. This
+      field is required.
+    minRequiredReplicas: Minimum number of VM instances that autoscaler will
+      recommend in time intervals starting according to schedule. This field
+      is required.
+    schedule: The start timestamps of time intervals when this scaling
+      schedule should provide a scaling signal. This field uses the extended
+      cron format (with an optional year field). The expression may describe a
+      single timestamp if the optional year is set, in which case a scaling
+      schedule will run once. schedule is interpreted with respect to
+      time_zone. This field is required. NOTE: these timestamps only describe
+      when autoscaler will start providing the scaling signal. The VMs will
+      need additional time to become serving.
+    timeZone: The time zone to be used when interpreting the schedule. The
+      value of this field must be a time zone name from the tz database:
+      http://en.wikipedia.org/wiki/Tz_database. This field will be assigned a
+      default value of ?UTC? if left empty.
+  """
+
+  description = _messages.StringField(1)
+  disabled = _messages.BooleanField(2)
+  durationSec = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  minRequiredReplicas = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  schedule = _messages.StringField(5)
+  timeZone = _messages.StringField(6)
+
+
 class Backend(_messages.Message):
   r"""Message containing information of one individual backend.
 
@@ -2769,8 +2866,11 @@ class Backend(_messages.Message):
       capacity (based on UTILIZATION, RATE or CONNECTION). Default value is 1,
       which means the group will serve up to 100% of its configured capacity
       (depending on balancingMode). A setting of 0 means the group is
-      completely drained, offering 0% of its available Capacity. Valid range
-      is [0.0,1.0].  This cannot be used for internal load balancing.
+      completely drained, offering 0% of its available capacity. Valid range
+      is 0.0 and [0.1,1.0]. You cannot configure a setting larger than 0 and
+      smaller than 0.1. You cannot configure a setting of 0 when there is only
+      one backend attached to the backend service.  This cannot be used for
+      internal load balancing.
     description: An optional description of this resource. Provide this
       property when you create the resource.
     failover: This field designates whether this is a failover backend. More
@@ -3099,7 +3199,7 @@ class BackendService(_messages.Message):
   Google Compute Engine can be either regionally or globally scoped.  *
   [Global](/compute/docs/reference/rest/{$api_version}/backendServices) * [Reg
   ional](/compute/docs/reference/rest/{$api_version}/regionBackendServices)
-  For more information, read Backend Services.  (== resource_for
+  For more information, see Backend Services.  (== resource_for
   {$api_version}.backendService ==)
 
   Enums:
@@ -3125,7 +3225,7 @@ class BackendService(_messages.Message):
       before the connection was redirected to the load balancer.  - MAGLEV:
       used as a drop in replacement for the ring hash load balancer. Maglev is
       not as stable as ring hash but has faster table lookup build times and
-      host selection times. For more information about Maglev, refer to
+      host selection times. For more information about Maglev, see
       https://ai.google/research/pubs/pub44824   This field is applicable to
       either:   - A regional backend service with the service_protocol set to
       HTTP, HTTPS, or HTTP2, and load_balancing_scheme set to
@@ -3225,7 +3325,7 @@ class BackendService(_messages.Message):
       was redirected to the load balancer.  - MAGLEV: used as a drop in
       replacement for the ring hash load balancer. Maglev is not as stable as
       ring hash but has faster table lookup build times and host selection
-      times. For more information about Maglev, refer to
+      times. For more information about Maglev, see
       https://ai.google/research/pubs/pub44824   This field is applicable to
       either:   - A regional backend service with the service_protocol set to
       HTTP, HTTPS, or HTTP2, and load_balancing_scheme set to
@@ -3292,8 +3392,8 @@ class BackendService(_messages.Message):
       possible values are NONE, CLIENT_IP, GENERATED_COOKIE, HEADER_FIELD, or
       HTTP_COOKIE.
     timeoutSec: The backend service timeout has a different meaning depending
-      on the type of load balancer. For more information read,  Backend
-      service settings The default is 30 seconds.
+      on the type of load balancer. For more information see,  Backend service
+      settings The default is 30 seconds.
   """
 
   class LoadBalancingSchemeValueValuesEnum(_messages.Enum):
@@ -3333,7 +3433,7 @@ class BackendService(_messages.Message):
     was redirected to the load balancer.  - MAGLEV: used as a drop in
     replacement for the ring hash load balancer. Maglev is not as stable as
     ring hash but has faster table lookup build times and host selection
-    times. For more information about Maglev, refer to
+    times. For more information about Maglev, see
     https://ai.google/research/pubs/pub44824   This field is applicable to
     either:   - A regional backend service with the service_protocol set to
     HTTP, HTTPS, or HTTP2, and load_balancing_scheme set to INTERNAL_MANAGED.
@@ -10551,8 +10651,8 @@ class ComputeInstancesAttachDiskRequest(_messages.Message):
 
   Fields:
     attachedDisk: A AttachedDisk resource to be passed as the request body.
-    forceAttach: Whether to force attach the disk even if it's currently
-      attached to another instance.
+    forceAttach: Whether to force attach the regional disk even if it's
+      currently attached to another instance.
     instance: The instance name for this request.
     project: Project ID for this request.
     requestId: An optional request ID to identify requests. Specify a unique
@@ -10767,14 +10867,21 @@ class ComputeInstancesGetSerialPortOutputRequest(_messages.Message):
   r"""A ComputeInstancesGetSerialPortOutputRequest object.
 
   Fields:
-    instance: Name of the instance scoping this request.
+    instance: Name of the instance for this request.
     port: Specifies which COM or serial port to retrieve data from.
     project: Project ID for this request.
-    start: Returns output starting from a specific byte position. Use this to
-      page through output when the output is too large to return in a single
-      request. For the initial request, leave this field unspecified. For
-      subsequent calls, this field should be set to the next value returned in
-      the previous call.
+    start: Specifies the starting byte position of the output to return. To
+      start with the first byte of output to the specified port, omit this
+      field or set it to `0`.  If the output for that byte position is
+      available, this field matches the `start` parameter sent with the
+      request. If the amount of serial console output exceeds the size of the
+      buffer (1 MB), the oldest output is discarded and is no longer
+      available. If the requested start position refers to discarded output,
+      the start position is adjusted to the oldest output still available, and
+      the adjusted start position is returned as the `start` property value.
+      You can also provide a negative start position, which translates to the
+      most recent number of bytes written to the serial port. For example, -3
+      is interpreted as the most recent 3 bytes written to the serial console.
     zone: The name of the zone for this request.
   """
 
@@ -25176,6 +25283,7 @@ class Disk(_messages.Message):
       currently supported size is 4096, other sizes may be added in the
       future. If an unsupported value is requested, the error message will
       list the supported values for the caller's project.
+    provisionedIops: Indicates how many IOPS must be provisioned for the disk.
     region: [Output Only] URL of the region where the disk resides. Only
       applicable for regional resources. You must specify this field as part
       of the HTTP request URL. It is not settable as a field in the request
@@ -25358,28 +25466,29 @@ class Disk(_messages.Message):
   name = _messages.StringField(16)
   options = _messages.StringField(17)
   physicalBlockSizeBytes = _messages.IntegerField(18)
-  region = _messages.StringField(19)
-  replicaZones = _messages.StringField(20, repeated=True)
-  resourcePolicies = _messages.StringField(21, repeated=True)
-  selfLink = _messages.StringField(22)
-  selfLinkWithId = _messages.StringField(23)
-  sizeGb = _messages.IntegerField(24)
-  sourceDisk = _messages.StringField(25)
-  sourceDiskId = _messages.StringField(26)
-  sourceImage = _messages.StringField(27)
-  sourceImageEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 28)
-  sourceImageId = _messages.StringField(29)
-  sourceInPlaceSnapshot = _messages.StringField(30)
-  sourceInPlaceSnapshotId = _messages.StringField(31)
-  sourceSnapshot = _messages.StringField(32)
-  sourceSnapshotEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 33)
-  sourceSnapshotId = _messages.StringField(34)
-  sourceStorageObject = _messages.StringField(35)
-  status = _messages.EnumField('StatusValueValuesEnum', 36)
-  storageType = _messages.EnumField('StorageTypeValueValuesEnum', 37)
-  type = _messages.StringField(38)
-  users = _messages.StringField(39, repeated=True)
-  zone = _messages.StringField(40)
+  provisionedIops = _messages.IntegerField(19)
+  region = _messages.StringField(20)
+  replicaZones = _messages.StringField(21, repeated=True)
+  resourcePolicies = _messages.StringField(22, repeated=True)
+  selfLink = _messages.StringField(23)
+  selfLinkWithId = _messages.StringField(24)
+  sizeGb = _messages.IntegerField(25)
+  sourceDisk = _messages.StringField(26)
+  sourceDiskId = _messages.StringField(27)
+  sourceImage = _messages.StringField(28)
+  sourceImageEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 29)
+  sourceImageId = _messages.StringField(30)
+  sourceInPlaceSnapshot = _messages.StringField(31)
+  sourceInPlaceSnapshotId = _messages.StringField(32)
+  sourceSnapshot = _messages.StringField(33)
+  sourceSnapshotEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 34)
+  sourceSnapshotId = _messages.StringField(35)
+  sourceStorageObject = _messages.StringField(36)
+  status = _messages.EnumField('StatusValueValuesEnum', 37)
+  storageType = _messages.EnumField('StorageTypeValueValuesEnum', 38)
+  type = _messages.StringField(39)
+  users = _messages.StringField(40, repeated=True)
+  zone = _messages.StringField(41)
 
 
 class DiskAggregatedList(_messages.Message):
@@ -26406,10 +26515,12 @@ class DistributionPolicy(_messages.Message):
 
     Values:
       ANY: <no description>
+      BALANCED: <no description>
       EVEN: <no description>
     """
     ANY = 0
-    EVEN = 1
+    BALANCED = 1
+    EVEN = 2
 
   targetShape = _messages.EnumField('TargetShapeValueValuesEnum', 1)
   zones = _messages.MessageField('DistributionPolicyZoneConfiguration', 2, repeated=True)
@@ -27540,9 +27651,11 @@ class FirewallPolicyRuleMatcher(_messages.Message):
   Exactly one field must be specified.
 
   Fields:
-    destIpRanges: CIDR IP address range.
+    destIpRanges: CIDR IP address range. Maximum number of destination CIDR IP
+      ranges allowed is 256.
     layer4Configs: Pairs of IP protocols and ports that the rule should match.
-    srcIpRanges: CIDR IP address range.
+    srcIpRanges: CIDR IP address range. Maximum number of source CIDR IP
+      ranges allowed is 256.
   """
 
   destIpRanges = _messages.StringField(1, repeated=True)
@@ -31347,6 +31460,12 @@ class Instance(_messages.Message):
       the latest fingerprint, make get() request to the instance.
     labels: Labels to apply to this instance. These can be later modified by
       the setLabels method.
+    lastStartTimestamp: [Output Only] Last start timestamp in RFC3339 text
+      format.
+    lastStopTimestamp: [Output Only] Last stop timestamp in RFC3339 text
+      format.
+    lastSuspendedTimestamp: [Output Only] Last suspended timestamp in RFC3339
+      text format.
     machineType: Full or partial URL of the machine type resource to use for
       this instance, in the format: zones/zone/machineTypes/machine-type. This
       is provided by the client when the instance is created. For example, the
@@ -31515,32 +31634,35 @@ class Instance(_messages.Message):
   kind = _messages.StringField(15, default='compute#instance')
   labelFingerprint = _messages.BytesField(16)
   labels = _messages.MessageField('LabelsValue', 17)
-  machineType = _messages.StringField(18)
-  metadata = _messages.MessageField('Metadata', 19)
-  minCpuPlatform = _messages.StringField(20)
-  name = _messages.StringField(21)
-  networkInterfaces = _messages.MessageField('NetworkInterface', 22, repeated=True)
-  postKeyRevocationActionType = _messages.EnumField('PostKeyRevocationActionTypeValueValuesEnum', 23)
-  preservedStateSizeGb = _messages.IntegerField(24)
-  privateIpv6GoogleAccess = _messages.EnumField('PrivateIpv6GoogleAccessValueValuesEnum', 25)
-  reservationAffinity = _messages.MessageField('ReservationAffinity', 26)
-  resourcePolicies = _messages.StringField(27, repeated=True)
-  scheduling = _messages.MessageField('Scheduling', 28)
-  selfLink = _messages.StringField(29)
-  selfLinkWithId = _messages.StringField(30)
-  serviceAccounts = _messages.MessageField('ServiceAccount', 31, repeated=True)
-  shieldedInstanceConfig = _messages.MessageField('ShieldedInstanceConfig', 32)
-  shieldedInstanceIntegrityPolicy = _messages.MessageField('ShieldedInstanceIntegrityPolicy', 33)
-  shieldedVmConfig = _messages.MessageField('ShieldedVmConfig', 34)
-  shieldedVmIntegrityPolicy = _messages.MessageField('ShieldedVmIntegrityPolicy', 35)
-  sourceMachineImage = _messages.StringField(36)
-  sourceMachineImageEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 37)
-  startRestricted = _messages.BooleanField(38)
-  status = _messages.EnumField('StatusValueValuesEnum', 39)
-  statusMessage = _messages.StringField(40)
-  tags = _messages.MessageField('Tags', 41)
-  upcomingMaintenance = _messages.MessageField('UpcomingMaintenance', 42)
-  zone = _messages.StringField(43)
+  lastStartTimestamp = _messages.StringField(18)
+  lastStopTimestamp = _messages.StringField(19)
+  lastSuspendedTimestamp = _messages.StringField(20)
+  machineType = _messages.StringField(21)
+  metadata = _messages.MessageField('Metadata', 22)
+  minCpuPlatform = _messages.StringField(23)
+  name = _messages.StringField(24)
+  networkInterfaces = _messages.MessageField('NetworkInterface', 25, repeated=True)
+  postKeyRevocationActionType = _messages.EnumField('PostKeyRevocationActionTypeValueValuesEnum', 26)
+  preservedStateSizeGb = _messages.IntegerField(27)
+  privateIpv6GoogleAccess = _messages.EnumField('PrivateIpv6GoogleAccessValueValuesEnum', 28)
+  reservationAffinity = _messages.MessageField('ReservationAffinity', 29)
+  resourcePolicies = _messages.StringField(30, repeated=True)
+  scheduling = _messages.MessageField('Scheduling', 31)
+  selfLink = _messages.StringField(32)
+  selfLinkWithId = _messages.StringField(33)
+  serviceAccounts = _messages.MessageField('ServiceAccount', 34, repeated=True)
+  shieldedInstanceConfig = _messages.MessageField('ShieldedInstanceConfig', 35)
+  shieldedInstanceIntegrityPolicy = _messages.MessageField('ShieldedInstanceIntegrityPolicy', 36)
+  shieldedVmConfig = _messages.MessageField('ShieldedVmConfig', 37)
+  shieldedVmIntegrityPolicy = _messages.MessageField('ShieldedVmIntegrityPolicy', 38)
+  sourceMachineImage = _messages.StringField(39)
+  sourceMachineImageEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 40)
+  startRestricted = _messages.BooleanField(41)
+  status = _messages.EnumField('StatusValueValuesEnum', 42)
+  statusMessage = _messages.StringField(43)
+  tags = _messages.MessageField('Tags', 44)
+  upcomingMaintenance = _messages.MessageField('UpcomingMaintenance', 45)
+  zone = _messages.StringField(46)
 
 
 class InstanceAggregatedList(_messages.Message):
@@ -34009,18 +34131,19 @@ class InstanceProperties(_messages.Message):
   r"""InstanceProperties message type.
 
   Enums:
-    PostKeyRevocationActionTypeValueValuesEnum: Specifies whether this
-      instance will be shut down on key revocation.
+    PostKeyRevocationActionTypeValueValuesEnum: Specifies whether instances
+      will be shut down on key revocation.
     PrivateIpv6GoogleAccessValueValuesEnum: The private IPv6 google access
-      type for the VM. If not specified, use  INHERIT_FROM_SUBNETWORK as
-      default.
+      type for VMs. If not specified, use  INHERIT_FROM_SUBNETWORK as default.
 
   Messages:
-    LabelsValue: Labels to apply to instances that are created from this
-      template.
+    LabelsValue: Labels to apply to instances that are created from these
+      properties.
 
   Fields:
-    canIpForward: Enables instances created based on this template to send
+    advancedMachineFeatures: Controls for advanced machine-related behavior
+      features.
+    canIpForward: Enables instances created based on these properties to send
       packets with source IP addresses other than their own and receive
       packets with destination IP addresses other than their own. If these
       instances will be used as an IP gateway or it will be set as the next-
@@ -34028,52 +34151,53 @@ class InstanceProperties(_messages.Message):
       false. See the Enable IP forwarding documentation for more information.
     confidentialInstanceConfig: Specifies the Confidential Instance options.
     description: An optional text description for the instances that are
-      created from this instance template.
+      created from these properties.
     disks: An array of disks that are associated with the instances that are
-      created from this template.
+      created from these properties.
     displayDevice: Display Device properties to enable support for remote
       display products like: Teradici, VNC and TeamViewer
     guestAccelerators: A list of guest accelerator cards' type and count to
-      use for instances created from the instance template.
-    labels: Labels to apply to instances that are created from this template.
+      use for instances created from these properties.
+    labels: Labels to apply to instances that are created from these
+      properties.
     machineType: The machine type to use for instances that are created from
-      this template.
+      these properties.
     metadata: The metadata key/value pairs to assign to instances that are
-      created from this template. These pairs can consist of custom metadata
-      or predefined keys. See Project and instance metadata for more
+      created from these properties. These pairs can consist of custom
+      metadata or predefined keys. See Project and instance metadata for more
       information.
-    minCpuPlatform: Minimum cpu/platform to be used by this instance. The
-      instance may be scheduled on the specified or newer cpu/platform.
-      Applicable values are the friendly names of CPU platforms, such as
-      minCpuPlatform: "Intel Haswell" or minCpuPlatform: "Intel Sandy Bridge".
-      For more information, read Specifying a Minimum CPU Platform.
+    minCpuPlatform: Minimum cpu/platform to be used by instances. The instance
+      may be scheduled on the specified or newer cpu/platform. Applicable
+      values are the friendly names of CPU platforms, such as minCpuPlatform:
+      "Intel Haswell" or minCpuPlatform: "Intel Sandy Bridge". For more
+      information, read Specifying a Minimum CPU Platform.
     networkInterfaces: An array of network access configurations for this
       interface.
-    postKeyRevocationActionType: Specifies whether this instance will be shut
-      down on key revocation.
-    privateIpv6GoogleAccess: The private IPv6 google access type for the VM.
-      If not specified, use  INHERIT_FROM_SUBNETWORK as default.
-    reservationAffinity: Specifies the reservations that this instance can
-      consume from.
+    postKeyRevocationActionType: Specifies whether instances will be shut down
+      on key revocation.
+    privateIpv6GoogleAccess: The private IPv6 google access type for VMs. If
+      not specified, use  INHERIT_FROM_SUBNETWORK as default.
+    reservationAffinity: Specifies the reservations that instances can consume
+      from.
     resourcePolicies: Resource policies (names, not ULRs) applied to instances
-      created from this template.
+      created from these properties.
     scheduling: Specifies the scheduling options for the instances that are
-      created from this template.
+      created from these properties.
     serviceAccounts: A list of service accounts with specified scopes. Access
       tokens for these service accounts are available to the instances that
-      are created from this template. Use metadata queries to obtain the
+      are created from these properties. Use metadata queries to obtain the
       access tokens for these instances.
     shieldedInstanceConfig: A ShieldedInstanceConfig attribute.
     shieldedVmConfig: Specifies the Shielded VM options for the instances that
-      are created from this template.
-    tags: A list of tags to apply to the instances that are created from this
-      template. The tags identify valid sources or targets for network
+      are created from these properties.
+    tags: A list of tags to apply to the instances that are created from these
+      properties. The tags identify valid sources or targets for network
       firewalls. The setTags method can modify this list of tags. Each tag
       within the list must comply with RFC1035.
   """
 
   class PostKeyRevocationActionTypeValueValuesEnum(_messages.Enum):
-    r"""Specifies whether this instance will be shut down on key revocation.
+    r"""Specifies whether instances will be shut down on key revocation.
 
     Values:
       NOOP: <no description>
@@ -34085,7 +34209,7 @@ class InstanceProperties(_messages.Message):
     UNSPECIFIED = 2
 
   class PrivateIpv6GoogleAccessValueValuesEnum(_messages.Enum):
-    r"""The private IPv6 google access type for the VM. If not specified, use
+    r"""The private IPv6 google access type for VMs. If not specified, use
     INHERIT_FROM_SUBNETWORK as default.
 
     Values:
@@ -34099,7 +34223,7 @@ class InstanceProperties(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
-    r"""Labels to apply to instances that are created from this template.
+    r"""Labels to apply to instances that are created from these properties.
 
     Messages:
       AdditionalProperty: An additional property for a LabelsValue object.
@@ -34121,26 +34245,27 @@ class InstanceProperties(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  canIpForward = _messages.BooleanField(1)
-  confidentialInstanceConfig = _messages.MessageField('ConfidentialInstanceConfig', 2)
-  description = _messages.StringField(3)
-  disks = _messages.MessageField('AttachedDisk', 4, repeated=True)
-  displayDevice = _messages.MessageField('DisplayDevice', 5)
-  guestAccelerators = _messages.MessageField('AcceleratorConfig', 6, repeated=True)
-  labels = _messages.MessageField('LabelsValue', 7)
-  machineType = _messages.StringField(8)
-  metadata = _messages.MessageField('Metadata', 9)
-  minCpuPlatform = _messages.StringField(10)
-  networkInterfaces = _messages.MessageField('NetworkInterface', 11, repeated=True)
-  postKeyRevocationActionType = _messages.EnumField('PostKeyRevocationActionTypeValueValuesEnum', 12)
-  privateIpv6GoogleAccess = _messages.EnumField('PrivateIpv6GoogleAccessValueValuesEnum', 13)
-  reservationAffinity = _messages.MessageField('ReservationAffinity', 14)
-  resourcePolicies = _messages.StringField(15, repeated=True)
-  scheduling = _messages.MessageField('Scheduling', 16)
-  serviceAccounts = _messages.MessageField('ServiceAccount', 17, repeated=True)
-  shieldedInstanceConfig = _messages.MessageField('ShieldedInstanceConfig', 18)
-  shieldedVmConfig = _messages.MessageField('ShieldedVmConfig', 19)
-  tags = _messages.MessageField('Tags', 20)
+  advancedMachineFeatures = _messages.MessageField('AdvancedMachineFeatures', 1)
+  canIpForward = _messages.BooleanField(2)
+  confidentialInstanceConfig = _messages.MessageField('ConfidentialInstanceConfig', 3)
+  description = _messages.StringField(4)
+  disks = _messages.MessageField('AttachedDisk', 5, repeated=True)
+  displayDevice = _messages.MessageField('DisplayDevice', 6)
+  guestAccelerators = _messages.MessageField('AcceleratorConfig', 7, repeated=True)
+  labels = _messages.MessageField('LabelsValue', 8)
+  machineType = _messages.StringField(9)
+  metadata = _messages.MessageField('Metadata', 10)
+  minCpuPlatform = _messages.StringField(11)
+  networkInterfaces = _messages.MessageField('NetworkInterface', 12, repeated=True)
+  postKeyRevocationActionType = _messages.EnumField('PostKeyRevocationActionTypeValueValuesEnum', 13)
+  privateIpv6GoogleAccess = _messages.EnumField('PrivateIpv6GoogleAccessValueValuesEnum', 14)
+  reservationAffinity = _messages.MessageField('ReservationAffinity', 15)
+  resourcePolicies = _messages.StringField(16, repeated=True)
+  scheduling = _messages.MessageField('Scheduling', 17)
+  serviceAccounts = _messages.MessageField('ServiceAccount', 18, repeated=True)
+  shieldedInstanceConfig = _messages.MessageField('ShieldedInstanceConfig', 19)
+  shieldedVmConfig = _messages.MessageField('ShieldedVmConfig', 20)
+  tags = _messages.MessageField('Tags', 21)
 
 
 class InstanceReference(_messages.Message):
@@ -38313,11 +38438,13 @@ class Network(_messages.Message):
       internal addresses that are legal on this network. This range is a CIDR
       specification, for example: 192.168.0.0/16. Provided by the client when
       the network is created.
-    autoCreateSubnetworks: When set to true, the VPC network is created in
-      "auto" mode. When set to false, the VPC network is created in "custom"
+    autoCreateSubnetworks: Must be set to create a VPC network. If not set, a
+      legacy network is created.  When set to true, the VPC network is created
+      in auto mode. When set to false, the VPC network is created in custom
       mode.  An auto mode VPC network starts with one subnet per region. Each
       subnet has a predetermined range as described in Auto mode VPC network
-      IP ranges.
+      IP ranges.  For custom mode VPC networks, you can add subnets using the
+      subnetworks insert method.
     creationTimestamp: [Output Only] Creation timestamp in RFC3339 text
       format.
     description: An optional description of this resource. Provide this field
@@ -39685,8 +39812,7 @@ class NodeGroup(_messages.Message):
       means the first character must be a lowercase letter, and all following
       characters must be a dash, lowercase letter, or digit, except the last
       character, which cannot be a dash.
-    nodeTemplate: The URL of the node template to which this node group
-      belongs.
+    nodeTemplate: URL of the node template to create the node group from.
     selfLink: [Output Only] Server-defined URL for the resource.
     selfLinkWithId: [Output Only] Server-defined URL for this resource with
       the resource id.
@@ -48790,6 +48916,7 @@ class RouterStatusNatStatus(_messages.Message):
     name: Unique name of this NAT.
     numVmEndpointsWithNatMappings: Number of VM endpoints (i.e., Nics) that
       can use NAT.
+    ruleStatus: Status of rules in this NAT.
     userAllocatedNatIpResources: A list of fully qualified URLs of reserved IP
       address resources.
     userAllocatedNatIps: A list of IPs user-allocated for NAT. They will be
@@ -48802,8 +48929,32 @@ class RouterStatusNatStatus(_messages.Message):
   minExtraNatIpsNeeded = _messages.IntegerField(4, variant=_messages.Variant.INT32)
   name = _messages.StringField(5)
   numVmEndpointsWithNatMappings = _messages.IntegerField(6, variant=_messages.Variant.INT32)
-  userAllocatedNatIpResources = _messages.StringField(7, repeated=True)
-  userAllocatedNatIps = _messages.StringField(8, repeated=True)
+  ruleStatus = _messages.MessageField('RouterStatusNatStatusNatRuleStatus', 7, repeated=True)
+  userAllocatedNatIpResources = _messages.StringField(8, repeated=True)
+  userAllocatedNatIps = _messages.StringField(9, repeated=True)
+
+
+class RouterStatusNatStatusNatRuleStatus(_messages.Message):
+  r"""Status of a NAT Rule contained in this NAT.
+
+  Fields:
+    activeNatIps: A list of active IPs for NAT. Example: ["1.1.1.1",
+      "179.12.26.133"].
+    drainNatIps: A list of IPs for NAT that are in drain mode. Example:
+      ["1.1.1.1", "179.12.26.133"].
+    minExtraIpsNeeded: The number of extra IPs to allocate. This will be
+      greater than 0 only if the existing IPs in this NAT Rule are NOT enough
+      to allow all configured VMs to use NAT.
+    numVmEndpointsWithNatMappings: Number of VM endpoints (i.e., NICs) that
+      have NAT Mappings from this NAT Rule.
+    priority: Priority of the rule.
+  """
+
+  activeNatIps = _messages.StringField(1, repeated=True)
+  drainNatIps = _messages.StringField(2, repeated=True)
+  minExtraIpsNeeded = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  numVmEndpointsWithNatMappings = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  priority = _messages.IntegerField(5, variant=_messages.Variant.INT32)
 
 
 class RouterStatusResponse(_messages.Message):
@@ -49898,14 +50049,17 @@ class SerialPortOutput(_messages.Message):
     contents: [Output Only] The contents of the console output.
     kind: [Output Only] Type of the resource. Always compute#serialPortOutput
       for serial port output.
-    next: [Output Only] The position of the next byte of content from the
-      serial console output. Use this value in the next request as the start
+    next: [Output Only] The position of the next byte of content, regardless
+      of whether the content exists, following the output returned in the
+      `contents` property. Use this value in the next request as the start
       parameter.
     selfLink: [Output Only] Server-defined URL for this resource.
     start: The starting byte position of the output that was returned. This
       should match the start parameter sent with the request. If the serial
-      console output exceeds the size of the buffer, older output will be
-      overwritten by newer content and the start values will be mismatched.
+      console output exceeds the size of the buffer (1 MB), older output is
+      overwritten by newer content. The output start value will indicate the
+      byte position of the output that was returned, which might be different
+      than the `start` value that was specified in the request.
   """
 
   contents = _messages.StringField(1)
@@ -51855,7 +52009,9 @@ class Subnetwork(_messages.Message):
       INTERVAL_15_MIN.
     MetadataValueValuesEnum: Can only be specified if VPC flow logging for
       this subnetwork is enabled. Configures whether metadata fields should be
-      added to the reported VPC flow logs. Default is INCLUDE_ALL_METADATA.
+      added to the reported VPC flow logs. Options are INCLUDE_ALL_METADATA,
+      EXCLUDE_ALL_METADATA, and CUSTOM_METADATA. Default is
+      INCLUDE_ALL_METADATA.
     PrivateIpv6GoogleAccessValueValuesEnum: The private IPv6 google access
       type for the VMs in this subnet. This is an expanded field of
       enablePrivateV6Access. If both fields are set, privateIpv6GoogleAccess
@@ -51931,8 +52087,9 @@ class Subnetwork(_messages.Message):
     ipCidrRange: The range of internal addresses that are owned by this
       subnetwork. Provide this property when you create the subnetwork. For
       example, 10.0.0.0/8 or 192.168.0.0/16. Ranges must be unique and non-
-      overlapping within a network. Only IPv4 is supported. This field can be
-      set only at resource creation time.
+      overlapping within a network. Only IPv4 is supported. This field is set
+      at resource creation time. The range can be expanded after creation
+      using expandIpCidrRange.
     ipv6CidrRange: [Output Only] The range of internal IPv6 addresses that are
       owned by this subnetwork.
     kind: [Output Only] Type of the resource. Always compute#subnetwork for
@@ -51941,7 +52098,9 @@ class Subnetwork(_messages.Message):
       subnetwork. If logging is enabled, logs are exported to Cloud Logging.
     metadata: Can only be specified if VPC flow logging for this subnetwork is
       enabled. Configures whether metadata fields should be added to the
-      reported VPC flow logs. Default is INCLUDE_ALL_METADATA.
+      reported VPC flow logs. Options are INCLUDE_ALL_METADATA,
+      EXCLUDE_ALL_METADATA, and CUSTOM_METADATA. Default is
+      INCLUDE_ALL_METADATA.
     name: The name of the resource, provided by the client when initially
       creating the resource. The name must be 1-63 characters long, and comply
       with RFC1035. Specifically, the name must be 1-63 characters long and
@@ -52024,7 +52183,9 @@ class Subnetwork(_messages.Message):
   class MetadataValueValuesEnum(_messages.Enum):
     r"""Can only be specified if VPC flow logging for this subnetwork is
     enabled. Configures whether metadata fields should be added to the
-    reported VPC flow logs. Default is INCLUDE_ALL_METADATA.
+    reported VPC flow logs. Options are INCLUDE_ALL_METADATA,
+    EXCLUDE_ALL_METADATA, and CUSTOM_METADATA. Default is
+    INCLUDE_ALL_METADATA.
 
     Values:
       EXCLUDE_ALL_METADATA: <no description>
@@ -56991,6 +57152,7 @@ class VmEndpointNatMappingsInterfaceNatMappings(_messages.Message):
     numTotalNatPorts: Total number of ports across all NAT IPs allocated to
       this interface. It equals to the aggregated port number in the field
       nat_ip_port_ranges.
+    ruleMappings: Information about mappings provided by rules in this NAT.
     sourceAliasIpRange: Alias IP range for this interface endpoint. It will be
       a private (RFC 1918) IP range. Examples: "10.33.4.55/32", or
       "192.168.5.0/24".
@@ -57001,8 +57163,37 @@ class VmEndpointNatMappingsInterfaceNatMappings(_messages.Message):
   natIpPortRanges = _messages.StringField(2, repeated=True)
   numTotalDrainNatPorts = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   numTotalNatPorts = _messages.IntegerField(4, variant=_messages.Variant.INT32)
-  sourceAliasIpRange = _messages.StringField(5)
-  sourceVirtualIp = _messages.StringField(6)
+  ruleMappings = _messages.MessageField('VmEndpointNatMappingsInterfaceNatMappingsNatRuleMappings', 5, repeated=True)
+  sourceAliasIpRange = _messages.StringField(6)
+  sourceVirtualIp = _messages.StringField(7)
+
+
+class VmEndpointNatMappingsInterfaceNatMappingsNatRuleMappings(_messages.Message):
+  r"""Contains information of NAT Mappings provided by a NAT Rule.
+
+  Fields:
+    drainNatIpPortRanges: List of all drain IP:port-range mappings assigned to
+      this interface by this rule. These ranges are inclusive, that is, both
+      the first and the last ports can be used for NAT. Example:
+      ["2.2.2.2:12345-12355", "1.1.1.1:2234-2234"].
+    natIpPortRanges: A list of all IP:port-range mappings assigned to this
+      interface by this rule. These ranges are inclusive, that is, both the
+      first and the last ports can be used for NAT. Example:
+      ["2.2.2.2:12345-12355", "1.1.1.1:2234-2234"].
+    numTotalDrainNatPorts: Total number of drain ports across all NAT IPs
+      allocated to this interface by this rule. It equals the aggregated port
+      number in the field drain_nat_ip_port_ranges.
+    numTotalNatPorts: Total number of ports across all NAT IPs allocated to
+      this interface by this rule. It equals the aggregated port number in the
+      field nat_ip_port_ranges.
+    priority: Priority of the NAT Rule.
+  """
+
+  drainNatIpPortRanges = _messages.StringField(1, repeated=True)
+  natIpPortRanges = _messages.StringField(2, repeated=True)
+  numTotalDrainNatPorts = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  numTotalNatPorts = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  priority = _messages.IntegerField(5, variant=_messages.Variant.INT32)
 
 
 class VmEndpointNatMappingsList(_messages.Message):

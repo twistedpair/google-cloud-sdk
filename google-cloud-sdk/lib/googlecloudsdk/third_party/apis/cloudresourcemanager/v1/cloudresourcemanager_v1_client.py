@@ -938,8 +938,8 @@ Permission is denied if the policy or the resource does not exist.
 Authorization requires the Google IAM permission
 `resourcemanager.projects.getIamPolicy` on the project.
 
-For additional information about resource structure and identification,
-see [Resource Names](/apis/design/resource_names).
+For additional information about `resource` (e.g. my-project-id) structure
+and identification, see [Resource Names](/apis/design/resource_names).
 
       Args:
         request: (CloudresourcemanagerProjectsGetIamPolicyRequest) input message
@@ -1098,6 +1098,9 @@ NOTE: Removing service accounts from policies or changing their roles can
 render services completely inoperable. It is important to understand how
 the service account is being used before removing or updating its roles.
 
+For additional information about `resource` (e.g. my-project-id) structure
+and identification, see [Resource Names](/apis/design/resource_names).
+
 The following constraints apply when using `setIamPolicy()`:
 
 + Project does not support `allUsers` and `allAuthenticatedUsers` as
@@ -1192,6 +1195,9 @@ write of the `Policy`.
 
     def TestIamPermissions(self, request, global_params=None):
       r"""Returns permissions that a caller has on the specified Project.
+
+For additional information about `resource` (e.g. my-project-id) structure
+and identification, see [Resource Names](/apis/design/resource_names).
 
 There are no permissions required for making this API call.
 

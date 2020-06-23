@@ -74,7 +74,7 @@ def LookupGroupName(version, email):
       base_url, version, urllib.parse.urlencode(query_params))
   unused_response, raw_content = http.Http().request(uri=url)
 
-  return json.loads(raw_content.decode('utf8'))
+  return json.loads(raw_content.decode('utf-8'))
 
 
 def LookupMembershipName(version, group_id, member_email):
@@ -101,4 +101,4 @@ def LookupMembershipName(version, group_id, member_email):
       base_url, version, group_id, urllib.parse.urlencode(query_params))
   unused_response, raw_content = http.Http().request(uri=url)
 
-  return json.loads(raw_content.decode('utf8'))
+  return json.loads(raw_content.decode('utf-8'))

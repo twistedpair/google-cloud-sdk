@@ -24,6 +24,11 @@
   "version_module": true,
   "fullyEncodeReservedExpansion": true,
   "parameters": {
+    "access_token": {
+      "type": "string",
+      "description": "OAuth access token.",
+      "location": "query"
+    },
     "alt": {
       "type": "string",
       "description": "Data format for response.",
@@ -53,6 +58,11 @@
     "key": {
       "type": "string",
       "description": "API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.",
+      "location": "query"
+    },
+    "oauth_token": {
+      "type": "string",
+      "description": "OAuth 2.0 token for the current user.",
       "location": "query"
     },
     "prettyPrint": {
@@ -693,15 +703,19 @@
       "type": "object",
       "properties": {
         "postalAddress": {
-          "description": "Postal address of the contact.",
+          "description": "Required. Postal address of the contact.",
           "$ref": "PostalAddress"
         },
         "email": {
-          "description": "Email address of the contact.",
+          "description": "Required. Email address of the contact.",
           "type": "string"
         },
         "phoneNumber": {
-          "description": "Phone number of the contact in international format. For example,\n`\"+1-800-555-0123\"`.",
+          "description": "Required. Phone number of the contact in international format. For example,\n`\"+1-800-555-0123\"`.",
+          "type": "string"
+        },
+        "faxNumber": {
+          "description": "Fax number of the contact in international format. For example,\n`\"+1-800-555-0123\"`.",
           "type": "string"
         }
       }

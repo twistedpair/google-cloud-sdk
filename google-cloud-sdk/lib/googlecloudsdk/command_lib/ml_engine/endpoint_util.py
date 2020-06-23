@@ -48,7 +48,7 @@ def MlEndpointOverrides(region=None):
   used_endpoint = GetEffectiveMlEndpoint(region)
   old_endpoint = properties.VALUES.api_endpoint_overrides.ml.Get()
   try:
-    log.warning('Using endpoint [{}]'.format(used_endpoint))
+    log.status.Print('Using endpoint [{}]'.format(used_endpoint))
     if region:
       properties.VALUES.api_endpoint_overrides.ml.Set(used_endpoint)
     yield

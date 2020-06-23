@@ -767,11 +767,13 @@ class PubsubMessage(_messages.Message):
 
   Messages:
     AttributesValue: Attributes for this message. If this field is empty, the
-      message must contain non-empty data.
+      message must contain non-empty data. This can be used to filter messages
+      on the subscription.
 
   Fields:
     attributes: Attributes for this message. If this field is empty, the
-      message must contain non-empty data.
+      message must contain non-empty data. This can be used to filter messages
+      on the subscription.
     data: The message data field. If this field is empty, the message must
       contain at least one attribute.
     messageId: ID of this message, assigned by the server when the message is
@@ -787,7 +789,8 @@ class PubsubMessage(_messages.Message):
   @encoding.MapUnrecognizedFields('additionalProperties')
   class AttributesValue(_messages.Message):
     r"""Attributes for this message. If this field is empty, the message must
-    contain non-empty data.
+    contain non-empty data. This can be used to filter messages on the
+    subscription.
 
     Messages:
       AdditionalProperty: An additional property for a AttributesValue object.

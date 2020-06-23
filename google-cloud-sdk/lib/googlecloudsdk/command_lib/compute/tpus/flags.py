@@ -78,7 +78,8 @@ def AddPreemptibleFlag(parser):
   return parser.add_argument(
       '--preemptible',
       required=False,
-      action='store_false',
+      action='store_true',
+      default=False,
       help="""\
       Create a preemptible Cloud TPU, instead of a normal (non-preemptible) Cloud TPU. A
         preemptible Cloud TPU costs less per hour, but the Cloud TPU service can stop/terminate
@@ -90,7 +91,15 @@ def AddTpuNameArg(parser):
   return parser.add_argument(
       'execution_group_name',
       help="""\
-      Override the name to use for VMs and TPUs (defaults to your username). """
+      The execution group name to delete. """
+      )
+
+
+def AddTpuNameOverrideArg(parser):
+  return parser.add_argument(
+      '--name',
+      help="""\
+      Override the name to use for VMs and TPUs (defaults to your username). """,
       )
 
 
@@ -98,7 +107,8 @@ def AddPreemptibleVmFlag(parser):
   return parser.add_argument(
       '--preemptible-vm',
       required=False,
-      action='store_false',
+      action='store_true',
+      default=False,
       help="""\
       Create a preemptible Compute Engine VM, instead of a normal (non-preemptible) VM.
         A preemptible VM costs less per hour, but the Compute Engine service can terminate the
@@ -106,21 +116,32 @@ def AddPreemptibleVmFlag(parser):
       """)
 
 
-def AddTfVersionFlag(parser):
-  return parser.add_argument(
-      '--tf-version',
-      required=False,
-      help="""\
+def AddTfVersionFlag(parser, help_text_override=None):
+  help_text = """\
       Set the version of TensorFlow to use when creating the Compute Engine VM and the Cloud TPU.
         (It defaults to auto-selecting the latest stable release.)
       """
+  return parser.add_argument(
+      '--tf-version',
+      required=False,
+      help=help_text_override or help_text
       )
+
+
+def AddTfVersionFlagForResume(parser):
+  help_text_override = """\
+      Set the version of TensorFlow to the version originally set when creating the suspended Cloud TPU and Compute Engine VM .
+        (It defaults to auto-selecting the latest stable release.)
+      """
+  AddTfVersionFlag(parser, help_text_override)
 
 
 def AddVmOnlyFlag(parser):
   return parser.add_argument(
       '--vm-only',
+      action='store_true',
       required=False,
+      default=False,
       help="""\
       Do not allocate a TPU, only allocate a VM (useful if you're not ready to run on a TPU yet).
       """)
@@ -138,6 +159,9 @@ def AddDeepLearningImagesFlag(parser):
 def AddDryRunFlag(parser):
   return parser.add_argument(
       '--dry-run',
+      required=False,
+      action='store_true',
+      default=False,
       help="""\
       Do not make changes; print only what would have happened.
       """)
@@ -147,6 +171,7 @@ def AddPortForwardingFlag(parser):
   return parser.add_argument(
       '--forward-ports',
       action='store_false',
+      required=False,
       help="""\
       Automatically forward useful ports from the Compute Engine VM to your local
         machine. The ports forwarded are: 6006 (tensorboard), 8888 (jupyter notebooks),

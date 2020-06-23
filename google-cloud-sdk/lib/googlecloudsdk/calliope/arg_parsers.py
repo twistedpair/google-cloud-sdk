@@ -804,7 +804,7 @@ class ArgList(ArgType):
   ALT_DELIM_CHAR = '^'
 
   def __init__(self, element_type=None, min_length=0, max_length=None,
-               choices=None):
+               choices=None, custom_delim_char=None):
     """Initialize an ArgList.
 
     Args:
@@ -813,6 +813,7 @@ class ArgList(ArgType):
       max_length: int, The maximum size of the list.
       choices: [element_type], a list of valid possibilities for elements. If
           None, then no constraints are imposed.
+      custom_delim_char: char, A customized delimiter character.
 
     Returns:
       (str)->[str], A function to parse the list of values in the argument.
@@ -839,6 +840,8 @@ class ArgList(ArgType):
     self.min_length = min_length
     self.max_length = max_length
 
+    self.custom_delim_char = custom_delim_char
+
   def __call__(self, arg_value):  # pylint:disable=missing-docstring
 
     if isinstance(arg_value, list):
@@ -847,7 +850,7 @@ class ArgList(ArgType):
       raise ArgumentTypeError('Invalid type [{}] for flag value [{}]'.format(
           type(arg_value).__name__, arg_value))
     else:
-      delim = self.DEFAULT_DELIM_CHAR
+      delim = self.custom_delim_char or self.DEFAULT_DELIM_CHAR
       if (arg_value.startswith(self.ALT_DELIM_CHAR) and
           self.ALT_DELIM_CHAR in arg_value[1:]):
         delim, arg_value = arg_value[1:].split(self.ALT_DELIM_CHAR, 1)

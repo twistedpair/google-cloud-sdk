@@ -1149,7 +1149,9 @@ class FieldMetadata(_messages.Message):
         in TextConfig. When the specified transformation cannot be applied to
         a field, RedactConfig is used. For example, a Crypto Hash
         transformation can't be applied to a FHIR Date field.
-      INSPECT_AND_TRANSFORM: Inspect and transform any found PHI.
+      INSPECT_AND_TRANSFORM: Inspect and transform any found PHI. When
+        `AnnotationConfig` is provided, annotations of PHI will be generated,
+        except for Date and Datetime.
       DO_NOT_TRANSFORM: Do not transform.
     """
     ACTION_UNSPECIFIED = 0
@@ -2964,13 +2966,15 @@ class HealthcareProjectsLocationsDatasetsHl7V2StoresMessagesGetRequest(_messages
       RAW_ONLY: <no description>
       PARSED_ONLY: <no description>
       FULL: <no description>
+      SCHEMATIZED_ONLY: <no description>
       BASIC: <no description>
     """
     MESSAGE_VIEW_UNSPECIFIED = 0
     RAW_ONLY = 1
     PARSED_ONLY = 2
     FULL = 3
-    BASIC = 4
+    SCHEMATIZED_ONLY = 4
+    BASIC = 5
 
   name = _messages.StringField(1, required=True)
   view = _messages.EnumField('ViewValueValuesEnum', 2)
@@ -3045,13 +3049,15 @@ class HealthcareProjectsLocationsDatasetsHl7V2StoresMessagesListRequest(_message
       RAW_ONLY: <no description>
       PARSED_ONLY: <no description>
       FULL: <no description>
+      SCHEMATIZED_ONLY: <no description>
       BASIC: <no description>
     """
     MESSAGE_VIEW_UNSPECIFIED = 0
     RAW_ONLY = 1
     PARSED_ONLY = 2
     FULL = 3
-    BASIC = 4
+    SCHEMATIZED_ONLY = 4
+    BASIC = 5
 
   filter = _messages.StringField(1)
   orderBy = _messages.StringField(2)

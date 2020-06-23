@@ -30,9 +30,9 @@ from googlecloudsdk.core.credentials import creds as core_creds
 from googlecloudsdk.core.credentials import store
 from googlecloudsdk.core.util import files
 from oauth2client import client
-import six
 
-ENCODING = None if six.PY2 else 'utf8'
+import six
+from google.auth import exceptions as google_auth_exceptions
 
 
 class Error(exceptions.Error):
@@ -103,9 +103,9 @@ def Http(timeout='unset',
       http_client = creds.authorize(http_client)
 
     # Wrap the request method to put in our own error handling.
-    http_client = http.Modifiers.WrapRequest(http_client, handlers,
-                                             _HandleAuthError,
-                                             client.AccessTokenRefreshError)
+    http_client = http.Modifiers.WrapRequest(
+        http_client, handlers, _HandleAuthError,
+        (client.AccessTokenRefreshError, google_auth_exceptions.RefreshError))
 
   return http_client
 

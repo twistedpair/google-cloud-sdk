@@ -285,11 +285,14 @@ def AddCapacityScalar(parser,
   help_text = """\
       A setting that applies to all balancing modes. This value is multiplied
       by the balancing mode value to set the current max usage of the instance
-      group. Acceptable values are `0.0` (0%) through `1.0` (100%). Setting this
-      value to `0.0` (0%) drains the backend service. Note that draining a
-      backend service only prevents new connections to instances in the group.
-      All existing connections are allowed to continue until they close by
-      normal means. This cannot be used for internal load balancing.
+      group. You can set the capacity scaler to `0.0` or from `0.1` (10%) to
+      `1.0` (100%). You cannot configure a setting that is larger than `0.0` and
+      smaller than `0.1`. A scale factor of zero (`0.0`) prevents all new
+      connections. You cannot configure a setting of
+      `0.0` when there is only one backend attached to the backend service. Note
+      that draining a backend service only prevents new connections to instances
+      in the group. All existing connections are allowed to continue until they
+      close by normal means. This cannot be used for internal load balancing.
       """
   incompatible_types = []
   if support_global_neg:

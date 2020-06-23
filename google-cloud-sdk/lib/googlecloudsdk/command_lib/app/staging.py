@@ -155,26 +155,29 @@ class _Command(six.with_metaclass(abc.ABCMeta, object)):
     """
     raise NotImplementedError()
 
-  def GetArgs(self, descriptor, app_dir, staging_dir):
+  def GetArgs(self, descriptor, app_dir, staging_dir, explicit_appyaml=None):
     """Get the args for the command to execute.
 
     Args:
       descriptor: str, path to the unstaged <service>.yaml or appengine-web.xml
       app_dir: str, path to the unstaged app directory
       staging_dir: str, path to the directory to stage in.
-
+      explicit_appyaml: str or None, the app.yaml location
+      to used for deployment.
     Returns:
       list of str, the args for the command to run
     """
     return [self.GetPath(), descriptor, app_dir, staging_dir]
 
-  def Run(self, staging_area, descriptor, app_dir):
+  def Run(self, staging_area, descriptor, app_dir, explicit_appyaml=None):
     """Invokes a staging command with a given <service>.yaml and temp dir.
 
     Args:
       staging_area: str, path to the staging area.
       descriptor: str, path to the unstaged <service>.yaml or appengine-web.xml
       app_dir: str, path to the unstaged app directory
+      explicit_appyaml: str or None, the app.yaml location
+      to used for deployment.
 
     Returns:
       str, the path to the staged directory or None if staging was not required.
@@ -195,6 +198,10 @@ class _Command(six.with_metaclass(abc.ABCMeta, object)):
     log.info(message)
     if return_code:
       raise StagingCommandFailedError(args, return_code, message)
+    # Optionally use the custom app yaml if available:
+    if explicit_appyaml:
+      shutil.copyfile(explicit_appyaml, os.path.join(staging_dir, 'app.yaml'))
+
     return staging_dir
 
 
@@ -210,10 +217,10 @@ class NoopCommand(_Command):
   def GetPath(self):
     return None
 
-  def GetArgs(self, descriptor, app_dir, staging_dir):
+  def GetArgs(self, descriptor, app_dir, staging_dir, appyaml=None):
     return None
 
-  def Run(self, staging_area, descriptor, app_dir):
+  def Run(self, staging_area, descriptor, app_dir, appyaml=None):
     """Does nothing."""
     pass
 
@@ -230,10 +237,10 @@ class CreateJava11MavenProjectCommand(_Command):
   def GetPath(self):
     return
 
-  def GetArgs(self, descriptor, pom_file, staging_dir):
+  def GetArgs(self, descriptor, pom_file, staging_dir, appyaml=None):
     return
 
-  def Run(self, staging_area, pom_file, project_dir):
+  def Run(self, staging_area, pom_file, project_dir, explicit_appyaml=None):
     # Logic is: copy/symlink the Maven project in the staged area, and create a
     # simple file app.yaml for runtime: java11 if it does not exist.
     # If it exists in the standard and documented default location
@@ -243,16 +250,19 @@ class CreateJava11MavenProjectCommand(_Command):
                                    'WEB-INF', 'appengine-web.xml')
     if os.path.exists(appenginewebxml):
       raise MavenPomNotSupported()
-    appyaml = os.path.join(project_dir, 'src', 'main', 'appengine', 'app.yaml')
-    if os.path.exists(appyaml):
-      # Put the user app.yaml at the root of the staging directory to deploy
-      # as required by the Cloud SDK.
-      shutil.copy2(appyaml, staging_area)
+    if explicit_appyaml:
+      shutil.copyfile(explicit_appyaml, os.path.join(staging_area, 'app.yaml'))
     else:
-      # Create a very simple 1 liner app.yaml for Java11 runtime.
-      files.WriteFileContents(
-          os.path.join(staging_area, 'app.yaml'),
-          'runtime: java11\n')
+      appyaml = os.path.join(project_dir, 'src', 'main', 'appengine',
+                             'app.yaml')
+      if os.path.exists(appyaml):
+        # Put the user app.yaml at the root of the staging directory to deploy
+        # as required by the Cloud SDK.
+        shutil.copy2(appyaml, staging_area)
+      else:
+        # Create a very simple 1 liner app.yaml for Java11 runtime.
+        files.WriteFileContents(
+            os.path.join(staging_area, 'app.yaml'), 'runtime: java11\n')
 
     for name in os.listdir(project_dir):
       # Do not deploy locally built artifacts, buildpack will clean this anyway.
@@ -277,9 +287,6 @@ class CreateJava11MavenProjectCommand(_Command):
     return isinstance(other, CreateJava11MavenProjectCommand)
 
 
-# end ludo
-
-
 class CreateJava11YamlCommand(_Command):
   """A command that creates a java11 runtime app.yaml from a jar file."""
 
@@ -289,17 +296,20 @@ class CreateJava11YamlCommand(_Command):
   def GetPath(self):
     return None
 
-  def GetArgs(self, descriptor, jar_file, staging_dir):
+  def GetArgs(self, descriptor, jar_file, staging_dir, appyaml=None):
     return None
 
-  def Run(self, staging_area, jar_file, app_dir):
+  def Run(self, staging_area, jar_file, app_dir, appyaml=None):
     # Logic is simple: copy the jar in the staged area, and create a simple
     # file app.yaml for runtime: java11.
     shutil.copy2(jar_file, staging_area)
-    files.WriteFileContents(
-        os.path.join(staging_area, 'app.yaml'),
-        'runtime: java11\n',
-        private=True)
+    if appyaml:
+      shutil.copyfile(appyaml, os.path.join(staging_area, 'app.yaml'))
+    else:
+      files.WriteFileContents(
+          os.path.join(staging_area, 'app.yaml'),
+          'runtime: java11\n',
+          private=True)
     manifest = jarfile.ReadManifest(jar_file)
     if manifest:
       main_entry = manifest.main_section.get('Main-Class')
@@ -325,6 +335,35 @@ class CreateJava11YamlCommand(_Command):
     return isinstance(other, CreateJava11YamlCommand)
 
 
+class StageAppWithoutAppYamlCommand(_Command):
+  """A command that creates a staged directory with an optional app.yaml."""
+
+  def EnsureInstalled(self):
+    pass
+
+  def GetPath(self):
+    return None
+
+  def GetArgs(self, descriptor, app, staging_dir, appyaml=None):
+    return None
+
+  def Run(self, staging_area, descriptor, app, appyaml=None):
+    # Copy the application in tmp area, and copy the optional app.yaml in it.
+    scratch_area = os.path.join(staging_area, 'scratch')
+    if os.path.isdir(app):
+      files.CopyTree(app, scratch_area)
+    else:
+      os.mkdir(scratch_area)
+      shutil.copy2(app, scratch_area)
+    if appyaml:
+      shutil.copyfile(appyaml, os.path.join(scratch_area, 'app.yaml'))
+
+    return scratch_area
+
+  def __eq__(self, other):
+    return isinstance(other, StageAppWithoutAppYamlCommand)
+
+
 class _BundledCommand(_Command):
   """Represents a cross-platform command.
 
@@ -339,6 +378,7 @@ class _BundledCommand(_Command):
   """
 
   def __init__(self, nix_path, windows_path, component=None, mapper=None):
+    super(_BundledCommand, self).__init__()
     self._nix_path = nix_path
     self._windows_path = windows_path
     self._component = component
@@ -366,7 +406,7 @@ class _BundledCommand(_Command):
       raise NoSdkRootError()
     return os.path.join(sdk_root, self.name)
 
-  def GetArgs(self, descriptor, app_dir, staging_dir):
+  def GetArgs(self, descriptor, app_dir, staging_dir, appyaml=None):
     if self._mapper:
       return self._mapper(self.GetPath(), descriptor, app_dir, staging_dir)
     else:
@@ -390,6 +430,7 @@ class ExecutableCommand(_Command):
   """
 
   def __init__(self, path):
+    super(ExecutableCommand, self).__init__()
     self._path = path
 
   @property
@@ -402,8 +443,11 @@ class ExecutableCommand(_Command):
   def EnsureInstalled(self):
     pass
 
-  def GetArgs(self, descriptor, app_dir, staging_dir):
-    return [self.GetPath(), descriptor, app_dir, staging_dir]
+  def GetArgs(self, descriptor, app_dir, staging_dir, appyaml=None):
+    if appyaml:
+      return [self.GetPath(), descriptor, app_dir, staging_dir, appyaml]
+    else:
+      return [self.GetPath(), descriptor, app_dir, staging_dir]
 
   @classmethod
   def FromInput(cls, executable):
@@ -471,6 +515,8 @@ _STAGING_REGISTRY = {
         CreateJava11YamlCommand(),
     runtime_registry.RegistryEntry('java-maven-project', {env.STANDARD}):
         CreateJava11MavenProjectCommand(),
+    runtime_registry.RegistryEntry('generic-copy', {env.STANDARD}):
+        StageAppWithoutAppYamlCommand(),
 }
 
 # _STAGING_REGISTRY_BETA extends _STAGING_REGISTRY, overriding entries if the
@@ -484,7 +530,7 @@ class Stager(object):
     self.registry = registry
     self.staging_area = staging_area
 
-  def Stage(self, descriptor, app_dir, runtime, environment):
+  def Stage(self, descriptor, app_dir, runtime, environment, appyaml=None):
     """Stage the given deployable or do nothing if N/A.
 
     Args:
@@ -493,6 +539,7 @@ class Stager(object):
       runtime: str, the name of the runtime for the application to stage
       environment: api_lib.app.env.Environment, the environment for the
         application to stage
+      appyaml: str or None, the app.yaml location to used for deployment.
 
     Returns:
       str, the path to the staged directory or None if no corresponding staging
@@ -506,7 +553,7 @@ class Stager(object):
     if not command:
       return None
     command.EnsureInstalled()
-    return command.Run(self.staging_area, descriptor, app_dir)
+    return command.Run(self.staging_area, descriptor, app_dir, appyaml)
 
 
 def GetRegistry():

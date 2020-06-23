@@ -37,7 +37,7 @@ import six
 from six.moves import urllib
 from six.moves import zip  # pylint: disable=redefined-builtin
 
-ENCODING = None if six.PY2 else 'utf8'
+ENCODING = None if six.PY2 else 'utf-8'
 
 TOKEN_URIS = [
     'https://accounts.google.com/o/oauth2/token',
@@ -177,7 +177,7 @@ class RequestWrapper(six.with_metaclass(abc.ABCMeta, object)):
       exc_handler: f(e), A function that takes an exception and handles it. It
         should also throw an exception if you don't want it to be swallowed.
       exc_type: The type of exception that should be caught and given to the
-        handler.
+        handler. It could be a tuple to catch more than one exception type.
       response_encoding: str, the encoding to use to decode the response.
 
     Returns:
@@ -256,9 +256,9 @@ class Handler(object):
 
 def _EncodeHeader(header, value):
   if isinstance(header, six.text_type):
-    header = header.encode('utf8')
+    header = header.encode('utf-8')
   if isinstance(value, six.text_type):
-    value = value.encode('utf8')
+    value = value.encode('utf-8')
   return header, value
 
 
